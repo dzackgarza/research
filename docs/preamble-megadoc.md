@@ -38,7 +38,7 @@ The poset is drawn in `docs/preamble-graph.html` (pan and zoom), from `docs/prea
 | :--- | ---: |
 | categories in the poset | 313 |
 | of those, built and interrogated | 233 |
-| operations, each written once at its owner | 2021 |
+| operations, each written once at its owner | 2037 |
 | functors | 4, 2 of them with a domain and codomain resolved here |
 | adjunctions | 1 |
 
@@ -213,7 +213,7 @@ would ask for ``Cat()`` while ``Cat`` is under construction.
 
 - **specimens** `Ord`
 
-**Operations introduced here** (67 on objects)
+**Operations introduced here** (68 on objects)
 
 *on objects*
 
@@ -300,6 +300,10 @@ would ask for ``Cat()`` while ``Cat`` is under construction.
 - `MonomorphismArrowCategory() -> 'Category'`
 
   - Return the full arrow subcategory on represented monomorphisms.
+
+- `Mor(codomain)` <sub>object-level</sub>
+
+  - Functor morphisms when this category is asked as an object of Cat.
 
 - `MorCategory() -> 'Category'`
 
@@ -481,9 +485,9 @@ Chamber systems with type-preserving adjacency-preserving morphisms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -514,7 +518,7 @@ The category of represented discrete categories.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 67 |  |  |
+| [`Cat`](#cat-cat) | 68 |  |  |
 
 #### `MorCategories` {#cat-morcategories}
 
@@ -551,7 +555,7 @@ entry of the Mor family of its base category ``C``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 67 |  |  |
+| [`Cat`](#cat-cat) | 68 |  |  |
 
 #### `TopologicalSpaces` {#cat-topologicalspaces}
 
@@ -615,9 +619,9 @@ Sets equipped with a topology, with continuous maps as morphisms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -661,9 +665,9 @@ smooth manifold is the orbifold whose charts have trivial group, so
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -743,9 +747,9 @@ Owned finite-dimensional topological manifolds.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -786,9 +790,9 @@ as well.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -822,8 +826,8 @@ Finite directed graphs with graph homomorphisms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -872,9 +876,9 @@ stabilizer ``Gamma_p`` (Thurston, Ch. 13).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -909,8 +913,8 @@ Finite undirected graphs, viewed as symmetric directed graphs.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -944,8 +948,8 @@ Finite digraphs with selected vertex and edge labels.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -988,9 +992,9 @@ A morphism is a morphism of locally ``C``-ringed spaces.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1035,9 +1039,9 @@ to the same underlying topological space.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1066,9 +1070,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1106,8 +1110,8 @@ Finite undirected graphs with selected vertex and edge labels.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1327,8 +1331,8 @@ Finite Coxeter diagrams: labelled graphs encoding a symmetric angle matrix.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1387,9 +1391,9 @@ supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1531,8 +1535,8 @@ vertex and edge labels; that is the immediate owned placement used here.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1580,9 +1584,9 @@ is a complex orbifold whose charts have trivial group.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -1670,8 +1674,8 @@ the request is recorded in ``COMPLAINTS.md``.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`CoxeterDiagrams`](#cat-coxeterdiagrams) | 51 |  |  |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -1732,8 +1736,8 @@ and :meth:`ParentMethods.dynkin_diagram` returns ``D`` itself.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`CoxeterDiagrams`](#cat-coxeterdiagrams) | 51 |  |  |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`RootedCoxeterDiagrams`](#cat-rootedcoxeterdiagrams) | 11 |  |  |
@@ -1836,10 +1840,10 @@ torsion free.  Both are checked by the ambient lattice's admission method.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModuleSubobjects(R)`](#cat-modulesubobjects) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -1909,9 +1913,9 @@ orbifold.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -2023,12 +2027,12 @@ returning the same object with the reflection algorithms available on it.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -2238,9 +2242,13 @@ underlying sets supplied as different objects::
 
 - **not placed**: `DiscreteCategory(object_set: 'Parent')` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
-**Operations introduced here** (2 on objects)
+**Operations introduced here** (3 on objects)
 
 *on objects*
+
+- `Mor(codomain)` <sub>object-level</sub>
+
+  - Return the Mor in this discrete category to ``codomain``.
 
 - `discrete_category() -> 'DiscreteCategory'`
 
@@ -3937,13 +3945,17 @@ EXAMPLES::
 
 - **build an object** `Lattices(R)(data: 'object', *args: 'object', **options: 'object') -> 'Lattices.ParentMethods'`
 
-**Operations introduced here** (204 on objects, 22 on elements)
+**Operations introduced here** (205 on objects, 22 on elements)
 
 *on objects*
 
 - `ElementType(...)`
 
   - Operations generic to every lattice element.
+
+- `Aut()` <sub>object-level</sub>
+
+  - Return ``Isom(L,L)``, the orthogonal automorphism Mor.
 
 - `BKZ(block_size=20)`
 
@@ -4778,11 +4790,11 @@ EXAMPLES::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -4941,12 +4953,12 @@ quotient; the kernel of that action together with the restriction to
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -4994,13 +5006,13 @@ of the roots is not a consequence of definiteness alone.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5045,13 +5057,13 @@ This is a refinement of lattices, not a property of arbitrary even forms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5100,13 +5112,13 @@ Finite noncrystallographic root lattices over their exact coefficient order.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5179,13 +5191,13 @@ Negative-definite ADE root lattices with a chosen simple-root framing.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Lattices(R)`](#cat-lattices) | 203 | 22 |  |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Lattices(R)`](#cat-lattices) | 204 | 22 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -5369,7 +5381,7 @@ and so a functor, never a supercategory (``CAT-16``).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 67 |  |  |
+| [`Cat`](#cat-cat) | 68 |  |  |
 
 #### `LinearCategories.Additive` {#cat-linearcategories-additive}
 
@@ -5399,7 +5411,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 67 |  |  |
+| [`Cat`](#cat-cat) | 68 |  |  |
 | [`LinearCategories(R)`](#cat-linearcategories) | 1 |  |  |
 
 #### `TriangulatedCategories(R)` {#cat-triangulatedcategories}
@@ -5450,7 +5462,7 @@ class of 1-morphisms is part of the definition.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Cat`](#cat-cat) | 67 |  |  |
+| [`Cat`](#cat-cat) | 68 |  |  |
 
 #### `ModulesOverCommutativeRings` {#cat-modulesovercommutativerings}
 
@@ -5488,9 +5500,9 @@ give the cocartesian/cartesian transports of the represented fibration.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5513,13 +5525,25 @@ Modules over a ring, on the owned additive and scalar spines.
 
 - **build an object** `Modules(R)(x, *args, **opts)`
 
-**Operations introduced here** (78 on objects, 1 on elements)
+**Operations introduced here** (81 on objects, 1 on elements)
 
 *on objects*
 
 - `ElementType(...)`
 
   - The owned root of every element chain: the host element runtime.
+
+- `Aut()` <sub>object-level</sub>
+
+  - Return ``Aut_R(M)``, the automorphisms of this module.
+
+- `End()` <sub>object-level</sub>
+
+  - Return ``End_R(M)``, the endomorphism ring of this module.
+
+- `Mono(codomain)` <sub>object-level</sub>
+
+  - Return the declared injective linear maps into ``codomain``.
 
 - `annihilator()`
 
@@ -5805,9 +5829,9 @@ Modules over a ring, on the owned additive and scalar spines.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5865,10 +5889,10 @@ the case ``C' = C`` with ``r = s`` the identity.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5903,10 +5927,10 @@ the case ``C' = C`` with ``r = s`` the identity.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -5956,10 +5980,10 @@ is an ``R``-linear map ``f`` with ``f(F^p M) subseteq F^p N``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6036,10 +6060,10 @@ equality is the defining quotient relation ``x-y in aR``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6105,10 +6129,10 @@ Modules presented by an abelian group and a ring morphism `rho : R -> End(A)`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6166,10 +6190,10 @@ Represented Mor parents closed under pointwise `R`-linear operations.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6252,10 +6276,10 @@ Modules represented as `S^{-1}M` for a chosen localization `S^{-1}R`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6337,10 +6361,10 @@ Modules carrying a chosen monomorphism into another module.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6369,10 +6393,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 87 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 90 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6401,10 +6425,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 81 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 84 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6433,10 +6457,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 78 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 81 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6477,10 +6501,10 @@ Modules over an integral domain, with their canonical generic fibre.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6551,10 +6575,10 @@ Module objects carrying one represented pairing `X tensor_R Y -> W`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6639,10 +6663,10 @@ data belong to the actual pair ``(M, f)`` and are retained as
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6692,10 +6716,10 @@ Modules carrying a selected tensor-product universal object.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6738,10 +6762,10 @@ Vector spaces over a field.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6826,10 +6850,10 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6879,12 +6903,12 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -6930,10 +6954,10 @@ Degree-two divided powers, classifying quadratic maps.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -6965,13 +6989,17 @@ between the two by coercion, ``F(m)`` and ``M(f)``.
 
 - **build an object** `FormModules(R)(x, *args, **opts)`
 
-**Operations introduced here** (35 on objects, 5 on elements)
+**Operations introduced here** (36 on objects, 5 on elements)
 
 *on objects*
 
 - `ElementType(...)`
 
   - The owned root of every element chain: the host element runtime.
+
+- `Mono(codomain)` <sub>object-level</sub>
+
+  - Return the form-preserving monomorphisms into ``codomain``.
 
 - `O()` <sub>cached</sub>
 
@@ -7135,10 +7163,10 @@ between the two by coercion, ``F(m)`` and ``M(f)``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7208,10 +7236,10 @@ Fractional ideals of an integral domain, as modules in its fraction field.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModuleSubobjects(R)`](#cat-modulesubobjects) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -7224,7 +7252,7 @@ Fractional ideals of an integral domain, as modules in its fraction field.
 
 Modules graded by the totally ordered additive group of integers.
 
-- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:678`
+- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:677`
 
 - **probed as** `Category of integer graded modules`
 
@@ -7252,12 +7280,12 @@ Modules graded by the totally ordered additive group of integers.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -7295,10 +7323,10 @@ The canonical full enriched Mor modules `Hom_R(M,N)`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`LinearMorModules(R)`](#cat-linearmormodules) | 8 |  |  |
@@ -7388,10 +7416,10 @@ value in ``FilteredModules`` of the extended base.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7420,10 +7448,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 90 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 93 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7452,10 +7480,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 81 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 84 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7498,11 +7526,11 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7532,11 +7560,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7610,10 +7638,10 @@ Free modules equipped with the canonical basis map.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7705,10 +7733,10 @@ category over precisely the same scalar ring::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7747,11 +7775,11 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7781,11 +7809,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -7816,11 +7844,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`BilinearFormModules(R)`](#cat-bilinearformmodules) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -7851,10 +7879,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7931,10 +7959,10 @@ Cokernels `A_L = coker(L -> L^#)` of nondegenerate finite lattices.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -7963,11 +7991,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 37 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8009,11 +8037,11 @@ Their scalar extensions to the fraction field have invertible Gram forms.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8063,11 +8091,11 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 34 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -8098,11 +8126,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8135,11 +8163,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 19 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -8169,11 +8197,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8204,11 +8232,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 72 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 73 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8343,11 +8371,11 @@ EXAMPLES::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -8379,11 +8407,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 72 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8414,12 +8442,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 72 | 5 |  |
 | [`QuadraticFormModules(R)`](#cat-quadraticformmodules) | 46 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`PairingObjects(R)`](#cat-pairingobjects) | 9 |  |  |
@@ -8449,12 +8477,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
-| [`FormModules(R)`](#cat-formmodules) | 35 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
+| [`FormModules(R)`](#cat-formmodules) | 36 | 5 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`FreeFormModules(R)`](#cat-freeformmodules) | 11 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
@@ -8534,11 +8562,11 @@ Discriminant modules with `K/R`-valued bilinear form.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 72 | 5 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`DiscriminantModules(R)`](#cat-discriminantmodules) | 11 |  |  |
 | `Element` |  | 9 |  |
@@ -8624,12 +8652,12 @@ Even-lattice discriminant modules with quadratic form in `K/2R`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 91 | 1 |  |
-| [`FormModules(R)`](#cat-formmodules) | 71 | 5 |  |
+| [`Modules(R)`](#cat-modules) | 94 | 1 |  |
+| [`FormModules(R)`](#cat-formmodules) | 72 | 5 |  |
 | [`QuadraticFormModules(R)`](#cat-quadraticformmodules) | 45 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`DiscriminantBilinearModules(R)`](#cat-discriminantbilinearmodules) | 12 |  |  |
 | [`DiscriminantModules(R)`](#cat-discriminantmodules) | 11 |  |  |
@@ -8691,14 +8719,14 @@ EXAMPLES::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
 | [`MatrixSpaces(R)`](#cat-matrixspaces) | 10 | 22 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
@@ -9139,15 +9167,23 @@ requires a monoid; shifts and parity require their additional data.
 The default indexing set is the additive group of integers.
 ```
 
-- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:430`
+- **defined at** `src/dzack_research/preamble/categories/modules/graded_modules.py:429`
 
 - **not placed**: `GradedModules(base_ring, grading_monoid: sage.structure.parent.Parent, parity_key)` annotates no parameter, so the survey has nothing to construct it from (`LEX-12`)
 
 - **below** [`CochainComplexes(R)`](#cat-cochaincomplexes), [`IntegerGradedModules(R)`](#cat-integergradedmodules)
 
-**Operations introduced here** (10 on objects, 3 on elements)
+**Operations introduced here** (12 on objects, 3 on elements)
 
 *on objects*
+
+- `Aut()` <sub>object-level</sub>
+
+  - Automorphisms preserving the chosen degree decomposition.
+
+- `End()` <sub>object-level</sub>
+
+  - Endomorphisms preserving the chosen degree decomposition.
 
 - `combine_degrees(left, right)`
 
@@ -10411,10 +10447,10 @@ modules need not be finitely generated.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -10574,10 +10610,10 @@ axioms above this node.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10607,11 +10643,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10652,11 +10688,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10704,11 +10740,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 35 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10746,11 +10782,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 36 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10788,11 +10824,11 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -10841,11 +10877,11 @@ direction is the functor, not an edge.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -10875,12 +10911,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -10914,12 +10950,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -10961,12 +10997,12 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11053,12 +11089,12 @@ original module, multiplication and unit.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11098,12 +11134,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11173,12 +11209,12 @@ is an augmented algebra.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11250,12 +11286,12 @@ rather than to the presence of finite generators and relations.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11293,14 +11329,14 @@ Graded algebras `H^*(B)` represented from a DGA `B`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11341,14 +11377,14 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11416,14 +11452,14 @@ Tensor algebras of represented modules.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11493,14 +11529,14 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`CochainComplexes(R)`](#cat-cochaincomplexes) | 5 |  |  |
@@ -11542,14 +11578,14 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11607,14 +11643,14 @@ A category over a ring, normalized to the session's owned ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11671,14 +11707,14 @@ See Mathlib ``LinearAlgebra/ExteriorAlgebra/Basic``: the quotient,
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -11721,12 +11757,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 39 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11785,12 +11821,12 @@ Commutative `R`-algebras equipped as selected binary coproducts.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11839,12 +11875,12 @@ Commutative `R`-algebras equipped as selected pushouts of one span.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11900,14 +11936,14 @@ supercommutative differential graded ``R``-algebra.  On a smooth scheme
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`DifferentialGradedAlgebras(R)`](#cat-differentialgradedalgebras) | 11 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -11955,14 +11991,14 @@ Divided-power algebras `Gamma(M)` with their canonical grading.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`OwnedNonUnitalSemirings`](#cat-ownednonunitalsemirings) | 7 |  |  |
@@ -12028,14 +12064,14 @@ Symmetric algebras of represented modules.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`OwnedNonUnitalSemirings`](#cat-ownednonunitalsemirings) | 7 |  |  |
@@ -12074,14 +12110,14 @@ Finite matrix endomorphism Mor objects with their canonical algebra structure.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 92 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 95 | 3 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
 | [`MatrixSpaces(R)`](#cat-matrixspaces) | 10 | 22 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 18 | 3 |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModulesWithChosenFinitePresentation(R)`](#cat-moduleswithchosenfinitepresentation) | 11 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
@@ -13018,9 +13054,9 @@ Ordered by depth: the least structured first.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13081,9 +13117,9 @@ Ordered by depth: the least structured first.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13124,9 +13160,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13158,9 +13194,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13199,9 +13235,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 6 | 2 |  |
@@ -13235,9 +13271,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 6 | 2 |  |
@@ -13275,9 +13311,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 7 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13309,9 +13345,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -13359,9 +13395,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -13416,9 +13452,9 @@ category; ``Cat.ParentMethods`` names these same functions.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -13472,9 +13508,9 @@ category; ``Cat.ParentMethods`` names these same functions.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13500,10 +13536,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13526,13 +13562,17 @@ Groups whose notebook-facing group interface is owned by the preamble.
 
 - **build an object** `OwnedGroups(x, *args, **opts)`
 
-**Operations introduced here** (48 on objects, 2 on elements)
+**Operations introduced here** (50 on objects, 2 on elements)
 
 *on objects*
 
 - `ElementType(...)`
 
   - The owned root of every element chain: the host element runtime.
+
+- `Aut()` <sub>object-level, cached</sub>
+
+- `End()` <sub>object-level</sub>
 
 - `centralizer(element)`
 
@@ -13712,9 +13752,9 @@ Groups whose notebook-facing group interface is owned by the preamble.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13743,9 +13783,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -13794,10 +13834,10 @@ in ``COMPLAINTS.md``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13847,10 +13887,10 @@ its ambient category.  ``lean-categories`` does not formalize ``GL_n``; the requ
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13879,9 +13919,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -13960,10 +14000,10 @@ and the methods below consume it.  Elements act on the left, so
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14010,10 +14050,10 @@ Owned groups equipped with a represented compatible topology.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14061,9 +14101,9 @@ pointwise product of two homomorphisms another homomorphism.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -14111,10 +14151,10 @@ of presentations are ``FreeGroupQuotients().Mor(W, W')``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14143,10 +14183,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14173,10 +14213,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14226,10 +14266,10 @@ class beside its category.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14284,10 +14324,10 @@ group, by its action on ``Omega``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14325,10 +14365,10 @@ Groups (G_K=\operatorname{Aut}_K(\bar K)) with a chosen base point.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14357,10 +14397,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 51 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 53 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14389,10 +14429,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 51 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14447,10 +14487,10 @@ Finitely presented groups with a chosen finite presentation.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 48 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14499,10 +14539,10 @@ is computed by walking that generator.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 52 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14557,11 +14597,11 @@ declaration states.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 47 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 49 | 2 |  |
 | [`TopologicalManifolds`](#cat-topologicalmanifolds) | 16 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14597,10 +14637,10 @@ The procyclic absolute Galois groups of finite fields.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedGroups`](#cat-ownedgroups) | 50 | 2 |  |
+| [`OwnedGroups`](#cat-ownedgroups) | 52 | 2 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -14638,12 +14678,12 @@ Endomorphism algebras over their selected commutative scalar ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -15921,9 +15961,9 @@ The prime spectra \(\operatorname{Spec}R\), ordered by inclusion.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -15970,9 +16010,9 @@ are ``NonUnitalRingHom`` (Algebra/Ring/Hom/Defs).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -16001,9 +16041,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`OwnedNonUnitalSemirings`](#cat-ownednonunitalsemirings) | 8 |  |  |
@@ -16135,10 +16175,10 @@ Ideals of `R`: subobjects of the rank-one `R`-module `R`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`ModuleSubobjects(R)`](#cat-modulesubobjects) | 12 |  |  |
 | `Element` |  | 9 |  |
@@ -16178,9 +16218,9 @@ Rngs on the owned operation spine.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Magmas`](#cat-magmas) | 5 | 2 |  |
@@ -16225,9 +16265,9 @@ Semirings on the owned operation spine.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16252,13 +16292,15 @@ Unital rings whose notebook-facing ring interface is owned here.
 
 - **build an object** `OwnedRings(x, *args, **opts)`
 
-**Operations introduced here** (21 on objects)
+**Operations introduced here** (22 on objects)
 
 *on objects*
 
 - `ElementType(...)`
 
   - Unital rings whose notebook-facing ring interface is owned here.
+
+- `Mor(codomain, category=None)` <sub>object-level</sub>
 
 - `adic_completion(ideal, precision=20)`
 
@@ -16340,9 +16382,9 @@ Unital rings whose notebook-facing ring interface is owned here.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16379,10 +16421,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16428,10 +16470,10 @@ the order is a chosen datum.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16470,10 +16512,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16516,10 +16558,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16553,10 +16595,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16615,10 +16657,10 @@ class beside its category.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16659,10 +16701,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16696,10 +16738,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 23 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16733,10 +16775,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 38 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16770,10 +16812,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 22 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 23 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16811,10 +16853,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16869,10 +16911,10 @@ imposed on this category's ``Mor``.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -16984,10 +17026,10 @@ Adic completions equipped with a source ring and its chosen completion ideal.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17022,10 +17064,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17061,10 +17103,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 38 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17104,10 +17146,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 38 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17141,10 +17183,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17187,10 +17229,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 43 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17251,12 +17293,12 @@ the formal variables need not generate the completed ring as an algebra.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 36 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 37 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17299,10 +17341,10 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 50 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 51 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17461,10 +17503,10 @@ maps between them are the ring maps and this category inherits the ring
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 49 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 50 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17515,11 +17557,11 @@ Number fields carrying the primitive element selected by their presentation.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`OwnedRings`](#cat-ownedrings) | 49 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 50 |  |  |
 | [`OwnedNumberFields`](#cat-ownednumberfields) | 18 | 9 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17560,12 +17602,12 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
-| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
+| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -17573,9 +17615,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | [`Monoids`](#cat-monoids) | 4 | 2 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
+| [`OwnedOrders`](#cat-ownedorders) | 3 |  |  |
 | `_CommutativeUnitalAlgebraParentMethods` | 3 |  |  |
 | [`AdditiveGroups`](#cat-additivegroups) | 2 |  |  |
-| [`OwnedOrders`](#cat-ownedorders) | 2 |  |  |
 | [`OwnedSemirings`](#cat-ownedsemirings) | 2 |  |  |
 | [`OwnedRngs`](#cat-ownedrngs) | 1 |  |  |
 
@@ -17601,13 +17643,15 @@ adjunction with number fields, maximality); it adds no condition.
 
 - **build an object** `OwnedOrders(x, *args, **opts)`
 
-**Operations introduced here** (2 on objects)
+**Operations introduced here** (3 on objects)
 
 *on objects*
 
 - `ElementType(...)`
 
   - Orders: integral domains finitely generated as ``ZZ``-modules (Neukirch I §12).
+
+- `Mor(codomain, category=None)` <sub>object-level</sub>
 
 - `is_maximal() -> bool`
 
@@ -17617,12 +17661,12 @@ adjunction with number fields, maximality); it adds no condition.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 86 | 1 |  |
-| [`OwnedRings`](#cat-ownedrings) | 41 |  |  |
+| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
+| [`OwnedRings`](#cat-ownedrings) | 42 |  |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
@@ -18211,9 +18255,9 @@ underlying space is the image of that functor.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18261,9 +18305,9 @@ Ringed spaces `(X,O_X)`.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18304,9 +18348,9 @@ Ringed spaces whose stalks are local rings.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18463,9 +18507,9 @@ presented without one.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18497,9 +18541,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 34 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18531,9 +18575,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 34 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18565,9 +18609,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 41 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18599,9 +18643,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 39 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18633,9 +18677,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 35 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18674,9 +18718,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 42 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18708,9 +18752,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 45 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18750,9 +18794,9 @@ Introduces no operations of its own: membership is the whole statement, and ever
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 52 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -18878,9 +18922,9 @@ Projective spaces `P^n_R` with chosen homogeneous coordinates `x_0, ..., x_n`.
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -19848,10 +19892,10 @@ module on the hyperplane class \(\{H\}\).  This level adds \(X\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -19945,10 +19989,10 @@ one owned Cartier divisor group::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`GeneralModules(R)`](#cat-generalmodules) | 6 | 2 |  |
@@ -20002,10 +20046,10 @@ free-module level consumes the framing; this level adds \(X\), \(D\) and
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20061,10 +20105,10 @@ level adds \(X\) and \(k\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20118,10 +20162,10 @@ presented-module level; this level adds \(X\) and \(k\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 89 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 92 | 1 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20163,10 +20207,10 @@ datum of its own.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20208,10 +20252,10 @@ Formal divisors with coefficients in a specified ring.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20290,10 +20334,10 @@ this is, and the exponent vector of each monomial.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20362,10 +20406,10 @@ local quotient \(\mathcal{O}_{\mathbb{P},p}/\mathfrak{m}_p^r\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20399,10 +20443,10 @@ Free groups on the torus-orbit closures of one dimension on a toric scheme.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`AdditiveMonoids`](#cat-additivemonoids) | 4 |  |  |
@@ -20475,10 +20519,10 @@ consumed by the free-module level; this level adds the scheme \(X\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 80 | 3 |  |
+| [`Modules(R)`](#cat-modules) | 83 | 3 |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`FramedFreeModules(R)`](#cat-framedfreemodules) | 6 | 3 |  |
@@ -20567,9 +20611,9 @@ This level adds the inclusion ``i``, from which ``W`` is its domain and
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
 | [`ProjectiveSpaces`](#cat-projectivespaces) | 22 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -20630,10 +20674,10 @@ system.
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
 | [`ProjectiveSpaces`](#cat-projectivespaces) | 22 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | [`ProjectiveLinearSystems(R)`](#cat-projectivelinearsystems) | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -20684,10 +20728,10 @@ level adds ``e``.
 | :--- | ---: | ---: | ---: |
 | [`Schemes`](#cat-schemes) | 54 |  |  |
 | [`ProjectiveSpaces`](#cat-projectivespaces) | 22 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | [`ProjectiveLinearSystems(R)`](#cat-projectivelinearsystems) | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`TopologicalSpaces`](#cat-topologicalspaces) | 9 |  |  |
@@ -20766,14 +20810,14 @@ on, given either as \(L\) itself or as a Cartier divisor \(D\) with
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Modules(R)`](#cat-modules) | 77 | 1 |  |
+| [`Modules(R)`](#cat-modules) | 80 | 1 |  |
 | [`Algebras(R)`](#cat-algebras) | 38 |  |  |
-| [`OwnedRings`](#cat-ownedrings) | 20 |  |  |
+| [`OwnedRings`](#cat-ownedrings) | 21 |  |  |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
+| [`GradedModules`](#cat-gradedmodules) | 12 | 3 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
-| [`GradedModules`](#cat-gradedmodules) | 10 | 3 |  |
 | [`Magmas`](#cat-magmas) | 6 | 4 |  |
 | `Element` |  | 9 |  |
 | [`Monoids`](#cat-monoids) | 3 | 2 |  |
@@ -21165,13 +21209,25 @@ boundary.
 
 - **specimens** `Propositions`
 
-**Operations introduced here** (16 on objects)
+**Operations introduced here** (19 on objects)
 
 *on objects*
 
 - `ElementType(...)`
 
   - The owned category of sets.
+
+- `Aut()` <sub>object-level</sub>
+
+  - The automorphisms of this set in its selected category.
+
+- `End()` <sub>object-level</sub>
+
+  - The endomorphisms in the category selected by this set's Mor.
+
+- `Mor(codomain: 'Parent', category: 'Category | None' = None) -> 'Category'` <sub>object-level</sub>
+
+  - ``A.Mor(B) := A.ambient_category().Mor(A, B)``.
 
 - `ambient_category() -> 'Category'`
 
@@ -21327,9 +21383,9 @@ Unverified specimens for unhashable labels and empty products::
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21382,9 +21438,9 @@ Dependent coproducts (disjoint unions) of families of sets.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21419,9 +21475,9 @@ Finite power objects \(P_{fin}(X)\), the finite subsets of \(X\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21454,9 +21510,9 @@ Mor objects \(\operatorname{Hom}(X,Y)\), which are sets.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21510,9 +21566,9 @@ presented (TODO ``partially-ordered-sets-have-monotone-maps``).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21587,9 +21643,9 @@ when \(A\subseteq B\) (the order of the Boolean algebra ``Set X``, Mathlib
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21616,7 +21672,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 17 |  |  |
+| [`Sets`](#cat-sets) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
@@ -21647,8 +21703,8 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -21688,9 +21744,9 @@ category and a set.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21717,7 +21773,7 @@ Introduces no operations of its own: membership is the whole statement, and ever
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
-| [`Sets`](#cat-sets) | 17 |  |  |
+| [`Sets`](#cat-sets) | 20 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
@@ -21752,9 +21808,9 @@ Sets equipped with a total order.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21792,9 +21848,9 @@ on which finite support is a theorem rather than a hypothesis.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21831,9 +21887,9 @@ Well-ordered sets with order-preserving maps.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 18 |  |  |
 | `SageObject` | 8 | 8 |  |
 | `Parent` | 15 |  |  |
-| [`Sets`](#cat-sets) | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
 | [`Objects`](#cat-objects) | 3 |  |  |
@@ -21898,8 +21954,8 @@ that standard target.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -21938,8 +21994,8 @@ category.  Prefixes and print names do not define a new category of sets.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22000,8 +22056,8 @@ enumeration transports from \(I\), which ``EnumeratedSets`` answers.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22045,8 +22101,8 @@ integer index, and indexing takes the corresponding natural number.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22085,8 +22141,8 @@ Infinite enumerated sets ranked by \(\mathbb N\).
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22146,8 +22202,8 @@ and enters through it.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |
@@ -22195,8 +22251,8 @@ sets, not ordinal order types.
 
 | from | objects | elements | morphisms |
 | :--- | ---: | ---: | ---: |
+| [`Sets`](#cat-sets) | 19 |  |  |
 | `SageObject` | 8 | 8 |  |
-| [`Sets`](#cat-sets) | 16 |  |  |
 | `Parent` | 15 |  |  |
 | `CategoryObject` | 14 |  |  |
 | `Element` |  | 9 |  |

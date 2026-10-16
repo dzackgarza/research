@@ -59,8 +59,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -71,12 +77,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -180,8 +180,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 50,
+          "objects": 52,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -192,12 +198,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -316,7 +316,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -328,7 +328,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -340,12 +346,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -476,6 +476,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -483,12 +489,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -560,6 +560,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -567,12 +573,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -651,6 +651,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -658,12 +664,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -723,6 +723,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -730,12 +736,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -840,6 +840,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -847,12 +853,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -940,6 +940,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -947,12 +953,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -1031,6 +1031,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -1038,12 +1044,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -1267,7 +1267,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -1279,12 +1285,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -1407,7 +1407,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -1419,12 +1425,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -1618,8 +1618,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -1630,12 +1636,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -1973,8 +1973,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -1985,12 +1991,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -2077,13 +2077,19 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -2095,12 +2101,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -2203,7 +2203,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -2215,7 +2215,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -2227,12 +2233,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -2366,7 +2366,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -2378,7 +2378,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -2390,12 +2396,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -2530,7 +2530,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -2542,7 +2542,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -2554,12 +2560,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -2681,7 +2681,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -2693,7 +2693,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -2705,12 +2711,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -2823,13 +2823,19 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 36,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -2841,12 +2847,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -2933,13 +2933,19 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 39,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -2951,12 +2957,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -3045,13 +3045,19 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 38,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -3063,12 +3069,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -3236,7 +3236,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -3248,7 +3248,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -3260,12 +3266,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -3396,7 +3396,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -3408,7 +3408,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -3419,13 +3425,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -3434,12 +3440,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -3564,15 +3564,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -3699,14 +3699,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -3717,12 +3723,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -3812,14 +3812,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -3830,12 +3836,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -3937,14 +3937,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 89,
+          "objects": 92,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -3955,12 +3961,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -4062,14 +4062,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 91,
+          "objects": 94,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 71,
+          "objects": 72,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -4080,12 +4086,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -4179,14 +4179,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -4197,12 +4203,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -4398,8 +4398,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -4410,12 +4416,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -4773,6 +4773,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -4780,12 +4786,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -4916,8 +4916,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -4928,12 +4934,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -5195,6 +5195,13 @@
             "summary": "Return the full arrow subcategory on represented monomorphisms.",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/abstract_categories/cat.py:1074"
+          },
+          {
+            "name": "Mor",
+            "signature": "(codomain)",
+            "summary": "Functor morphisms when this category is asked as an object of Cat.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/abstract_categories/cat.py:451"
           },
           {
             "name": "MorCategory",
@@ -5527,6 +5534,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -5534,12 +5547,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -5642,8 +5649,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 89,
+          "objects": 92,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -5654,12 +5667,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -5758,8 +5765,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -5770,12 +5783,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -5898,8 +5905,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -5909,13 +5922,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -5924,12 +5937,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -6102,7 +6109,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -6114,7 +6121,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -6125,13 +6138,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -6140,12 +6153,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -6299,8 +6306,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -6311,12 +6324,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -6475,7 +6482,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -6487,7 +6494,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -6499,12 +6512,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -6678,7 +6685,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -6690,7 +6697,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -6702,12 +6715,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -7066,8 +7073,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -7078,12 +7091,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -7177,13 +7184,19 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 38,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -7195,12 +7208,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -7344,6 +7351,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -7357,12 +7370,6 @@
         },
         {
           "from": "ProjectiveLinearSystems",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -7456,6 +7463,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -7463,12 +7476,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -7555,6 +7562,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -7562,12 +7575,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -7735,6 +7742,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -7742,12 +7755,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -7870,6 +7877,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -7877,12 +7890,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -8091,6 +8098,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -8098,12 +8111,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -8740,15 +8747,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -8830,8 +8837,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -8842,12 +8855,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -8956,8 +8963,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 50,
+          "objects": 52,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -8968,12 +8981,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -9139,7 +9146,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -9151,7 +9158,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -9162,13 +9175,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -9177,12 +9190,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -9332,19 +9339,19 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 203,
+          "objects": 204,
           "elements": 22,
           "morphisms": 0
         },
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
           "morphisms": 0
         },
@@ -9355,6 +9362,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -9362,12 +9375,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -9619,6 +9626,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -9626,12 +9639,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -9805,7 +9812,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -9817,7 +9824,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -9828,13 +9841,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -9843,12 +9856,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -10032,15 +10039,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -10192,7 +10199,7 @@
       "inherits": [
         {
           "from": "Cat",
-          "objects": 67,
+          "objects": 68,
           "elements": 0,
           "morphisms": 0
         }
@@ -10215,6 +10222,13 @@
       "ancestry": [],
       "operations": {
         "objects": [
+          {
+            "name": "Mor",
+            "signature": "(codomain)",
+            "summary": "Return the Mor in this discrete category to ``codomain``.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/abstract_categories/functors.py:186"
+          },
           {
             "name": "discrete_category",
             "signature": "() -> 'DiscreteCategory'",
@@ -10386,14 +10400,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 91,
+          "objects": 94,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 71,
+          "objects": 72,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -10404,12 +10424,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -10595,8 +10609,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 91,
+          "objects": 94,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -10607,12 +10627,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -10806,19 +10820,25 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 91,
+          "objects": 94,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 71,
+          "objects": 72,
           "elements": 5,
           "morphisms": 0
         },
         {
           "from": "QuadraticFormModules",
           "objects": 45,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -10830,12 +10850,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -11020,7 +11034,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -11032,7 +11046,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -11043,13 +11063,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -11058,12 +11078,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -11197,8 +11211,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -11209,12 +11229,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -11334,8 +11348,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -11346,12 +11366,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -11453,8 +11467,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -11465,12 +11485,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -11573,15 +11587,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -11688,15 +11702,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -11834,15 +11848,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -11960,19 +11974,19 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 203,
+          "objects": 204,
           "elements": 22,
           "morphisms": 0
         },
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
           "morphisms": 0
         },
@@ -11983,6 +11997,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -11990,12 +12010,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -12187,8 +12201,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -12199,12 +12219,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -12490,15 +12504,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -12604,6 +12618,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -12611,12 +12631,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -12887,6 +12901,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -12894,12 +12914,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -12968,6 +12982,13 @@
             "summary": "The owned root of every element chain: the host element runtime.",
             "mark": "",
             "source": ""
+          },
+          {
+            "name": "Mono",
+            "signature": "(codomain)",
+            "summary": "Return the form-preserving monomorphisms into ``codomain``.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:1662"
           },
           {
             "name": "O",
@@ -13254,8 +13275,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -13266,12 +13293,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -13364,14 +13385,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 89,
+          "objects": 92,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 36,
+          "objects": 37,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -13382,12 +13409,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -13481,14 +13502,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 91,
+          "objects": 94,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 72,
+          "objects": 73,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -13499,12 +13526,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -13594,14 +13615,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -13612,12 +13639,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -13739,8 +13760,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -13751,12 +13778,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -13896,7 +13917,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -13908,7 +13929,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -13920,12 +13947,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -14199,8 +14220,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -14211,12 +14238,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -14393,8 +14414,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -14405,12 +14432,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -14580,8 +14601,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -14592,12 +14619,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -14684,7 +14705,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
@@ -14695,6 +14716,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -14702,12 +14729,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -14825,7 +14846,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -14837,7 +14858,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -14849,12 +14876,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -15006,14 +15027,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -15024,12 +15051,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -15136,13 +15157,13 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
           "morphisms": 0
         },
@@ -15153,6 +15174,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -15160,12 +15187,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -15267,8 +15288,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -15279,12 +15306,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -15406,15 +15427,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -15503,6 +15524,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -15510,12 +15537,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -15896,8 +15917,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -15908,12 +15935,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -16057,8 +16078,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -16069,12 +16096,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -16304,7 +16325,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -16316,7 +16337,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -16327,13 +16354,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -16342,12 +16369,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -16470,7 +16491,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -16482,7 +16503,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -16493,13 +16520,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -16508,12 +16535,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -16763,7 +16784,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -16775,7 +16796,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -16786,13 +16813,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -16801,12 +16828,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -16908,7 +16929,7 @@
     "GradedModules": {
       "display": "GradedModules",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:430",
+      "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:429",
       "summary": "Modules with a direct-sum decomposition indexed by a set.",
       "owned": true,
       "exported": true,
@@ -16924,74 +16945,88 @@
       "operations": {
         "objects": [
           {
+            "name": "Aut",
+            "signature": "()",
+            "summary": "Automorphisms preserving the chosen degree decomposition.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:522"
+          },
+          {
+            "name": "End",
+            "signature": "()",
+            "summary": "Endomorphisms preserving the chosen degree decomposition.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:517"
+          },
+          {
             "name": "combine_degrees",
             "signature": "(left, right)",
             "summary": "The monoid product of two degrees.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:560"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:559"
           },
           {
             "name": "concentrated_degree",
             "signature": "()",
             "summary": "",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:573"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:572"
           },
           {
             "name": "degree_on_module_generator",
             "signature": "(module_generator)",
             "summary": "Return the selected degree of one homogeneous framing generator.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:579"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:578"
           },
           {
             "name": "graded_piece",
             "signature": "(degree)",
             "summary": "Return the represented degree piece as a subobject of this module.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:617"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:616"
           },
           {
             "name": "grading_index_set",
             "signature": "()",
             "summary": "",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:550"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:549"
           },
           {
             "name": "grading_monoid",
             "signature": "()",
             "summary": "",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:553"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:552"
           },
           {
             "name": "homogeneous_degree",
             "signature": "(element)",
             "summary": "Return the selected degree of one nonzero homogeneous element.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:631"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:630"
           },
           {
             "name": "is_graded",
             "signature": "() -> bool",
             "summary": "",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:538"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:537"
           },
           {
             "name": "module_generators_of_degree",
             "signature": "(degree)",
             "summary": "Return the selected framing generators lying in ``degree``.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:597"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:596"
           },
           {
             "name": "parity_homomorphism",
             "signature": "()",
             "summary": "Return the parity ``M -> ZZ/2`` stated with this module's grading.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:556"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:555"
           }
         ],
         "elements": [
@@ -17000,21 +17035,21 @@
             "signature": "()",
             "summary": "Return the degree-indexed nonzero homogeneous components.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:649"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:648"
           },
           {
             "name": "is_homogeneous",
             "signature": "() -> bool",
             "summary": "Whether all nonzero framing terms lie in one degree.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:640"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:639"
           },
           {
             "name": "truncate",
             "signature": "(degree)",
             "summary": "Return the sum of homogeneous terms of degree strictly below ``degree``.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:663"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:662"
           }
         ],
         "morphisms": []
@@ -17095,15 +17130,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -17235,7 +17270,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -17247,7 +17282,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -17259,12 +17300,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -17677,8 +17712,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 48,
+          "objects": 50,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -17689,12 +17730,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -17821,8 +17856,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 48,
+          "objects": 50,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -17833,12 +17874,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -18023,8 +18058,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -18035,12 +18076,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -18259,20 +18294,26 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 203,
+          "objects": 204,
           "elements": 22,
           "morphisms": 0
         },
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -18283,12 +18324,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -18672,6 +18707,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -18685,12 +18726,6 @@
         },
         {
           "from": "ProjectiveLinearSystems",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -18799,7 +18834,7 @@
     "IntegerGradedModules": {
       "display": "IntegerGradedModules(R)",
       "subsystem": "modules",
-      "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:678",
+      "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:677",
       "summary": "Modules graded by the totally ordered additive group of integers.",
       "owned": true,
       "exported": true,
@@ -18839,7 +18874,7 @@
             "signature": "()",
             "summary": "Maximum of the integer degrees of the finite homogeneous support.",
             "mark": "",
-            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:695"
+            "source": "src/dzack_research/preamble/categories/modules/graded_modules.py:694"
           }
         ],
         "morphisms": []
@@ -18851,8 +18886,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -18862,13 +18903,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -18877,12 +18918,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -19021,8 +19056,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -19033,12 +19074,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -19360,20 +19395,26 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 203,
+          "objects": 204,
           "elements": 22,
           "morphisms": 0
         },
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -19384,12 +19425,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -19603,8 +19638,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -19615,12 +19656,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -19701,15 +19736,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -19786,15 +19821,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -19901,6 +19936,13 @@
             "summary": "Operations generic to every lattice element.",
             "mark": "",
             "source": ""
+          },
+          {
+            "name": "Aut",
+            "signature": "()",
+            "summary": "Return ``Isom(L,L)``, the orthogonal automorphism Mor.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/lattices.py:2566"
           },
           {
             "name": "BKZ",
@@ -21489,14 +21531,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -21507,12 +21555,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -21680,7 +21722,7 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
           "morphisms": 0
         },
@@ -21691,6 +21733,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -21698,12 +21746,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -21828,8 +21870,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -21840,12 +21888,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -21930,7 +21972,7 @@
       "inherits": [
         {
           "from": "Cat",
-          "objects": 67,
+          "objects": 68,
           "elements": 0,
           "morphisms": 0
         }
@@ -21971,7 +22013,7 @@
       "inherits": [
         {
           "from": "Cat",
-          "objects": 67,
+          "objects": 68,
           "elements": 0,
           "morphisms": 0
         },
@@ -22089,8 +22131,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -22101,12 +22149,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -22311,8 +22353,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -22323,12 +22371,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -22430,6 +22472,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -22437,12 +22485,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -22580,6 +22622,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -22587,12 +22635,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -22653,6 +22695,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -22660,12 +22708,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -22730,6 +22772,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -22737,12 +22785,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -22808,6 +22850,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -22815,12 +22863,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -22925,7 +22967,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
@@ -22949,7 +22991,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -22961,12 +23009,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -23160,7 +23202,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
@@ -23184,7 +23226,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -23196,12 +23244,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -23577,7 +23619,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
@@ -23588,6 +23630,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -23595,12 +23643,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -23788,8 +23830,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 86,
+          "objects": 89,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -23800,12 +23848,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -24145,8 +24187,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -24157,12 +24205,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -24256,6 +24298,27 @@
             "summary": "The owned root of every element chain: the host element runtime.",
             "mark": "",
             "source": ""
+          },
+          {
+            "name": "Aut",
+            "signature": "()",
+            "summary": "Return ``Aut_R(M)``, the automorphisms of this module.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1483"
+          },
+          {
+            "name": "End",
+            "signature": "()",
+            "summary": "Return ``End_R(M)``, the endomorphism ring of this module.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1470"
+          },
+          {
+            "name": "Mono",
+            "signature": "(codomain)",
+            "summary": "Return the declared injective linear maps into ``codomain``.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/modules/pure/modules.py:1465"
           },
           {
             "name": "annihilator",
@@ -24814,6 +24877,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -24821,12 +24890,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -24909,8 +24972,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 87,
+          "objects": 90,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -24921,12 +24990,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25009,8 +25072,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 90,
+          "objects": 93,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -25021,12 +25090,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25110,8 +25173,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -25122,12 +25191,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25208,8 +25271,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 81,
+          "objects": 84,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -25220,12 +25289,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25304,8 +25367,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 81,
+          "objects": 84,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -25316,12 +25385,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25400,8 +25463,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 78,
+          "objects": 81,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -25412,12 +25481,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25501,6 +25564,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -25508,12 +25577,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25612,8 +25675,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -25624,12 +25693,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -25795,8 +25858,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 89,
+          "objects": 92,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -25807,12 +25876,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -26015,6 +26078,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -26022,12 +26091,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -26098,6 +26161,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -26105,12 +26174,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -26194,7 +26257,7 @@
       "inherits": [
         {
           "from": "Cat",
-          "objects": 67,
+          "objects": 68,
           "elements": 0,
           "morphisms": 0
         }
@@ -26241,6 +26304,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -26248,12 +26317,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -26383,19 +26446,19 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 203,
+          "objects": 204,
           "elements": 22,
           "morphisms": 0
         },
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
           "morphisms": 0
         },
@@ -26406,6 +26469,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -26413,12 +26482,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -26539,14 +26602,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 86,
+          "objects": 89,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -26557,12 +26626,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -26698,7 +26761,7 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 49,
+          "objects": 50,
           "elements": 0,
           "morphisms": 0
         },
@@ -26709,6 +26772,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -26716,12 +26785,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -27065,6 +27128,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -27072,12 +27141,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -27189,15 +27252,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -27290,7 +27353,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -27302,12 +27371,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -27448,19 +27511,25 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 86,
+          "objects": 89,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "OwnedRings",
-          "objects": 41,
+          "objects": 42,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 38,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -27472,12 +27541,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -27525,6 +27588,12 @@
           "morphisms": 0
         },
         {
+          "from": "OwnedOrders",
+          "objects": 3,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "_CommutativeUnitalAlgebraParentMethods",
           "objects": 3,
           "elements": 0,
@@ -27532,12 +27601,6 @@
         },
         {
           "from": "AdditiveGroups",
-          "objects": 2,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "OwnedOrders",
           "objects": 2,
           "elements": 0,
           "morphisms": 0
@@ -27815,7 +27878,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -27827,12 +27896,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -27965,6 +28028,20 @@
             "summary": "The owned root of every element chain: the host element runtime.",
             "mark": "",
             "source": ""
+          },
+          {
+            "name": "Aut",
+            "signature": "()",
+            "summary": "",
+            "mark": "object-level, cached",
+            "source": "src/dzack_research/preamble/categories/group/groups.py:6065"
+          },
+          {
+            "name": "End",
+            "signature": "()",
+            "summary": "",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/group/groups.py:6061"
           },
           {
             "name": "centralizer",
@@ -28320,6 +28397,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -28327,12 +28410,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -28412,8 +28489,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 51,
+          "objects": 53,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -28424,12 +28507,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -28508,8 +28585,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 48,
+          "objects": 50,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -28520,12 +28603,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -28603,8 +28680,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 49,
+          "objects": 51,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -28615,12 +28698,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -28698,8 +28775,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 48,
+          "objects": 50,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -28710,12 +28793,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -28810,6 +28887,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -28817,12 +28900,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -28901,6 +28978,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -28908,12 +28991,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -29219,7 +29296,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 49,
+          "objects": 50,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -29231,12 +29314,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -29365,7 +29442,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -29377,12 +29460,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -29519,6 +29596,13 @@
             "source": ""
           },
           {
+            "name": "Mor",
+            "signature": "(codomain, category=None)",
+            "summary": "",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:4205"
+          },
+          {
             "name": "is_maximal",
             "signature": "() -> bool",
             "summary": "Return whether this is the maximal order of its fraction field.",
@@ -29536,19 +29620,25 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 86,
+          "objects": 89,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "OwnedRings",
-          "objects": 41,
+          "objects": 42,
           "elements": 0,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 38,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -29560,12 +29650,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -29689,6 +29773,13 @@
             "summary": "Unital rings whose notebook-facing ring interface is owned here.",
             "mark": "",
             "source": ""
+          },
+          {
+            "name": "Mor",
+            "signature": "(codomain, category=None)",
+            "summary": "",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/rings/ring_foundation.py:3855"
           },
           {
             "name": "adic_completion",
@@ -29840,6 +29931,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -29847,12 +29944,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -29968,7 +30059,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 21,
+          "objects": 22,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -29980,12 +30077,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -30110,7 +30201,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 37,
+          "objects": 38,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -30122,12 +30219,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -30248,7 +30339,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 41,
+          "objects": 42,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -30260,12 +30357,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -30388,7 +30479,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 41,
+          "objects": 42,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -30400,12 +30497,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -30532,7 +30623,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 37,
+          "objects": 38,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -30544,12 +30641,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -30669,7 +30760,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 22,
+          "objects": 23,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -30681,12 +30778,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -30821,7 +30912,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 50,
+          "objects": 51,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -30833,12 +30930,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -30967,7 +31058,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 21,
+          "objects": 22,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -30979,12 +31076,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -31105,7 +31196,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 37,
+          "objects": 38,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -31117,12 +31214,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -31248,7 +31339,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 42,
+          "objects": 43,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -31260,12 +31357,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -31384,7 +31475,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 22,
+          "objects": 23,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -31396,12 +31493,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -31519,7 +31610,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 21,
+          "objects": 22,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -31531,12 +31628,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -31652,7 +31743,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 21,
+          "objects": 22,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -31664,12 +31761,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -31794,6 +31885,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -31801,12 +31898,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -31920,6 +32011,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -31927,12 +32024,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -32120,8 +32211,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -32132,12 +32229,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -32237,6 +32328,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -32244,12 +32341,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -32385,8 +32476,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -32397,12 +32494,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -32706,6 +32797,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -32713,12 +32810,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -32992,7 +33083,13 @@
       "inherits": [
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -33004,12 +33101,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -33294,6 +33385,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -33301,12 +33398,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -33504,8 +33595,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -33516,12 +33613,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -33619,8 +33710,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -33631,12 +33728,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -33814,8 +33905,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -33826,12 +33923,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -34047,6 +34138,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -34054,12 +34151,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -34371,6 +34462,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -34378,12 +34475,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -34491,14 +34582,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 34,
+          "objects": 35,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -34509,12 +34606,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -34606,14 +34697,20 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 89,
+          "objects": 92,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -34624,12 +34721,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -34731,19 +34822,25 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 91,
+          "objects": 94,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 71,
+          "objects": 72,
           "elements": 5,
           "morphisms": 0
         },
         {
           "from": "QuadraticFormModules",
           "objects": 46,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -34755,12 +34852,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -35076,13 +35167,19 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
         {
           "from": "Algebras",
           "objects": 35,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -35094,12 +35191,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -35268,8 +35359,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -35280,12 +35377,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -35394,6 +35485,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -35401,12 +35498,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -35499,6 +35590,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -35506,12 +35603,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -35619,6 +35710,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -35626,12 +35723,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -35816,19 +35907,19 @@
       "inherits": [
         {
           "from": "Lattices",
-          "objects": 203,
+          "objects": 204,
           "elements": 22,
           "morphisms": 0
         },
         {
           "from": "Modules",
-          "objects": 92,
+          "objects": 95,
           "elements": 3,
           "morphisms": 0
         },
         {
           "from": "FormModules",
-          "objects": 35,
+          "objects": 36,
           "elements": 5,
           "morphisms": 0
         },
@@ -35839,6 +35930,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -35846,12 +35943,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -36043,15 +36134,15 @@
           "morphisms": 0
         },
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -36168,15 +36259,15 @@
           "morphisms": 0
         },
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -36475,6 +36566,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -36482,12 +36579,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -36581,6 +36672,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -36588,12 +36685,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -36686,6 +36777,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -36693,12 +36790,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -36797,6 +36888,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -36804,12 +36901,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -36907,6 +36998,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -36914,12 +37011,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -37018,6 +37109,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -37025,12 +37122,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -37124,6 +37215,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -37131,12 +37228,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -37230,6 +37321,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -37237,12 +37334,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -37335,6 +37426,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -37342,12 +37439,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -37528,7 +37619,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -37540,7 +37631,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -37551,13 +37648,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -37566,12 +37663,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -37679,6 +37770,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -37686,12 +37783,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -37845,6 +37936,27 @@
             "summary": "The owned category of sets.",
             "mark": "",
             "source": ""
+          },
+          {
+            "name": "Aut",
+            "signature": "()",
+            "summary": "The automorphisms of this set in its selected category.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2323"
+          },
+          {
+            "name": "End",
+            "signature": "()",
+            "summary": "The endomorphisms in the category selected by this set's Mor.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2318"
+          },
+          {
+            "name": "Mor",
+            "signature": "(codomain: 'Parent', category: 'Category | None' = None) -> 'Category'",
+            "summary": "``A.Mor(B) := A.ambient_category().Mor(A, B)``.",
+            "mark": "object-level",
+            "source": "src/dzack_research/preamble/categories/sets/set_categories.py:2294"
           },
           {
             "name": "ambient_category",
@@ -38029,7 +38141,7 @@
       "inherits": [
         {
           "from": "Sets",
-          "objects": 17,
+          "objects": 20,
           "elements": 0,
           "morphisms": 0
         },
@@ -38101,7 +38213,7 @@
       "inherits": [
         {
           "from": "Sets",
-          "objects": 17,
+          "objects": 20,
           "elements": 0,
           "morphisms": 0
         },
@@ -38172,15 +38284,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -38293,6 +38405,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -38300,12 +38418,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -38438,6 +38550,12 @@
           "morphisms": 0
         },
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -38445,12 +38563,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -38720,7 +38832,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -38732,7 +38844,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 36,
+          "objects": 37,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -38743,13 +38861,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -38758,12 +38876,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -38984,8 +39096,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -38996,12 +39114,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -39163,7 +39275,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -39175,7 +39287,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -39186,13 +39304,13 @@
           "morphisms": 0
         },
         {
-          "from": "Parent",
-          "objects": 15,
-          "elements": 0,
+          "from": "GradedModules",
+          "objects": 12,
+          "elements": 3,
           "morphisms": 0
         },
         {
-          "from": "Sets",
+          "from": "Parent",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -39201,12 +39319,6 @@
           "from": "CategoryObject",
           "objects": 14,
           "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "GradedModules",
-          "objects": 10,
-          "elements": 3,
           "morphisms": 0
         },
         {
@@ -39354,8 +39466,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -39366,12 +39484,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -39477,8 +39589,14 @@
       "inherits": [
         {
           "from": "OwnedGroups",
-          "objects": 47,
+          "objects": 49,
           "elements": 2,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -39489,12 +39607,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -39707,6 +39819,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -39714,12 +39832,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -39967,6 +40079,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -39974,12 +40092,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -40498,8 +40610,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -40510,12 +40628,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -40600,6 +40712,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -40607,12 +40725,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -40685,7 +40797,7 @@
       "inherits": [
         {
           "from": "Cat",
-          "objects": 67,
+          "objects": 68,
           "elements": 0,
           "morphisms": 0
         }
@@ -40836,8 +40948,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -40848,12 +40966,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -41138,15 +41250,15 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
-          "from": "SageObject",
-          "objects": 8,
-          "elements": 8,
+          "from": "Sets",
+          "objects": 19,
+          "elements": 0,
           "morphisms": 0
         },
         {
-          "from": "Sets",
-          "objects": 16,
-          "elements": 0,
+          "from": "SageObject",
+          "objects": 8,
+          "elements": 8,
           "morphisms": 0
         },
         {
@@ -41276,8 +41388,14 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 80,
+          "objects": 83,
           "elements": 3,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
           "morphisms": 0
         },
         {
@@ -41288,12 +41406,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -41386,6 +41498,12 @@
       "arrow_unthreaded": [],
       "inherits": [
         {
+          "from": "Sets",
+          "objects": 18,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
           "from": "SageObject",
           "objects": 8,
           "elements": 8,
@@ -41393,12 +41511,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
@@ -41610,7 +41722,7 @@
       "inherits": [
         {
           "from": "Modules",
-          "objects": 77,
+          "objects": 80,
           "elements": 1,
           "morphisms": 0
         },
@@ -41622,7 +41734,13 @@
         },
         {
           "from": "OwnedRings",
-          "objects": 20,
+          "objects": 21,
+          "elements": 0,
+          "morphisms": 0
+        },
+        {
+          "from": "Sets",
+          "objects": 18,
           "elements": 0,
           "morphisms": 0
         },
@@ -41634,12 +41752,6 @@
         },
         {
           "from": "Parent",
-          "objects": 15,
-          "elements": 0,
-          "morphisms": 0
-        },
-        {
-          "from": "Sets",
           "objects": 15,
           "elements": 0,
           "morphisms": 0
