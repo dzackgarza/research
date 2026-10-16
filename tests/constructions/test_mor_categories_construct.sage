@@ -250,7 +250,8 @@ def test_fixed_mor_arrow_subcategories_all_contain_the_unique_two_identity() -> 
     assert two_arrow in end.AutomorphismArrowCategory()
     assert two_arrow in end.MonomorphismArrowCategory()
     assert two_arrow in end.EpimorphismArrowCategory()
-    assert two_arrow in wide
+    assert arrow in wide
+    assert identity_2 in wide.Mor(arrow, arrow)
 
 
 def test_fixed_mor_slice_like_categories_retain_the_only_base_object() -> None:
