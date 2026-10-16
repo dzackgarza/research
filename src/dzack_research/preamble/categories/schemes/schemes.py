@@ -2530,6 +2530,28 @@ class Schemes(OwnedCategoryOverBaseRing):
                 return self.selected_finite_affine_atlas().presentation().scheme().underlying_space()
             return self
 
+        @cached_method
+        def structure_sheaf(self):
+            r"""``O_X`` from the affine presentation or selected affine atlas.
+
+            On an affine scheme use its coordinate algebra. On an atlas,
+            global functions are compatible chart functions, and basis
+            restrictions use the retained overlap maps (Hartshorne, II.1.22).
+            """
+            if self in Schemes(self.scheme_base_ring()).Affine():
+                from dzack_research.preamble.categories.schemes.ringed_spaces import _structure_sheaf
+
+                return _structure_sheaf(self)
+            from dzack_research.preamble.categories.schemes.gluing import _finite_atlas_structure_sheaf
+
+            atlas = self.selected_finite_affine_atlas()
+            functions = atlas.global_function_algebra()
+            restrictions = indexed_family(
+                atlas.chart_index_set(), atlas.global_function_restriction,
+                name="Restrictions of compatible global functions to affine charts",
+            )
+            return _finite_atlas_structure_sheaf(atlas, functions, restrictions)
+
         def _glued_chart_point_map(self, index):
             r"""Supply a selected chart's continuous map to the glued point space.
 
