@@ -5359,8 +5359,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return _engine_finiteness_decision(self._engine)
 
     def _preamble_is_number_field_order(self):
-        r"""Whether this ring was constructed as an order (``ZZ`` or ``_order_in``), read from its placement."""
-        return self in OwnedOrders()
+        r"""Whether the selected ring datum is ZZ or a number-field order."""
+        return self._engine is SageZZ or isinstance(self._engine, SageNumberFieldOrder)
 
     def is_projective(self) -> bool:
         r"""Projectivity as a module over the base ring.
