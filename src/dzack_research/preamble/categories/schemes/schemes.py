@@ -1094,6 +1094,13 @@ class SchemeMorphismMethods:
         if self._is_the_identity():
             return True
         source = self.domain()
+        if source in FiberProductSchemes(source.scheme_base_ring()):
+            # Open immersions are stable under base change (Stacks, 01JY).
+            left, right = source.fiber_product_cospan()
+            if self is source.right_projection() and left.is_open_immersion() is True:
+                return True
+            if self is source.left_projection() and right.is_open_immersion() is True:
+                return True
         return source in OpenImmersions(self.codomain()) and self is source.inclusion()
 
     def is_closed_immersion(self) -> bool:

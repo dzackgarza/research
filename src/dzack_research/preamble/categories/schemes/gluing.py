@@ -1515,6 +1515,29 @@ class _FiniteAffineAtlasEngine:
     def chart_embedding(self, index):
         return self.member(self.normalize_chart_index(index)).domain().arrow()
 
+    @cached_method(key=lambda self, morphism: id(morphism))
+    def pullback(self, morphism):
+        r"""Pull this atlas back along a morphism between affine schemes.
+
+        The charts are ``U_i x_X Y`` with both actual projections. Base
+        change preserves open immersions and covers; overlap transitions
+        come from the pullback universal maps (Stacks, Tags 01JR and 01JA).
+        """
+        if morphism.codomain() is not self.scheme():
+            raise ValueError("atlas pullback requires a morphism into the atlas's scheme")
+        affine = Schemes(self.base_ring()).Affine()
+        assert self.scheme() in affine and morphism.domain() in affine, (
+            "atlas pullback currently requires an affine base and affine new base"
+        )
+        chart_maps = finite_indexed_family(
+            self.chart_index_set(), self.chart_embedding,
+            name="Chart maps of the atlas to be pulled back",
+        )
+        charts, transitions = _affine_atlas_pullback_data(self, chart_maps, morphism)
+        return FiniteAffineAtlases(morphism.domain())(
+            charts, transitions, charts.map(lambda chart: chart.right_projection()),
+        )
+
     @cached_method
     def chart_open_subset(self, index, open_subscheme=None):
         r"""The image of a chart or distinguished open within that chart."""
@@ -7376,6 +7399,53 @@ def _chartwise_closed_subscheme(
     )
 
 
+def _affine_atlas_pullback_data(datum, chart_maps, right_map):
+    r"""Base-change charts and overlaps using their affine pullback maps.
+
+    Used by atlas pullback and by gluing a scheme fibre product over an
+    affine base. The overlap calculation is Stacks, Tag 01JR.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import (
+        _scheme_fiber_product,
+        _scheme_isomorphism,
+    )
+
+    labels = datum.chart_index_set()
+    charts = finite_indexed_family(
+        labels, lambda index: _scheme_fiber_product(chart_maps[index], right_map),
+        name="Base-changed affine charts",
+    )
+
+    def chart_overlap(source, target):
+        chart = charts[source]
+        base_overlap = datum.overlap(source, target)
+        element = datum.chart(source).coordinate_algebra()(base_overlap.distinguished_open_element())
+        return chart.distinguished_open(chart.left_projection().coordinate_algebra_morphism()(element))
+
+    overlaps = {
+        (source, target): chart_overlap(source, target)
+        for source in labels for target in labels if source != target
+    }
+
+    def transition(source, target):
+        inclusion = overlaps[source, target].inclusion()
+        into_base_overlap = datum.overlap(source, target).corestriction(
+            charts[source].left_projection() * inclusion
+        )
+        changed = datum.transition_between(source, target).forward() * into_base_overlap
+        into_target_chart = charts[target].from_pullback_cone(
+            datum.overlap(target, source).inclusion() * changed,
+            charts[source].right_projection() * inclusion,
+        )
+        return overlaps[target, source].corestriction(into_target_chart)
+
+    transitions = {
+        (source, target): _scheme_isomorphism(transition(source, target), transition(target, source))
+        for source, target in combinations(tuple(labels), 2)
+    }
+    return charts, transitions
+
+
 def _glued_fiber_product_over_affine_base(left_map, right_map):
     r"""``X x_Y Y'`` for ``X`` glued from affine charts ``U_i`` and affine ``Y``, ``Y'``.
 
@@ -7393,46 +7463,15 @@ def _glued_fiber_product_over_affine_base(left_map, right_map):
     from dzack_research.preamble.categories.schemes.schemes import (
         FiberProductSchemes,
         SchemeFiberProductConstruction,
-        _scheme_fiber_product,
-        _scheme_isomorphism,
     )
 
     datum = left_map.domain().gluing_datum()
     labels = tuple(datum.chart_indices())
-    charts = {
-        label: _scheme_fiber_product(left_map * datum.chart_embedding(label), right_map)
-        for label in labels
-    }
-
-    def chart_overlap(source, target):
-        chart = charts[source]
-        base_overlap = datum.overlap(source, target)
-        element = datum.chart(source).coordinate_algebra()(base_overlap.distinguished_open_element())
-        return chart.distinguished_open(chart.left_projection().coordinate_algebra_morphism()(element))
-
-    overlaps = {
-        (source, target): chart_overlap(source, target)
-        for source in labels
-        for target in labels
-        if source != target
-    }
-
-    def transition(source, target):
-        inclusion = overlaps[source, target].inclusion()
-        into_base_overlap = datum.overlap(source, target).corestriction(
-            charts[source].left_projection() * inclusion
-        )
-        changed = datum.transition_between(source, target).forward() * into_base_overlap
-        into_target_chart = charts[target].from_pullback_cone(
-            datum.overlap(target, source).inclusion() * changed,
-            charts[source].right_projection() * inclusion,
-        )
-        return overlaps[target, source].corestriction(into_target_chart)
-
-    transitions = tuple(
-        _scheme_isomorphism(transition(source, target), transition(target, source))
-        for source, target in combinations(labels, 2)
+    chart_maps = finite_indexed_family(
+        datum.chart_index_set(), lambda index: left_map * datum.chart_embedding(index),
+        name="Glued-scheme chart maps to the affine base",
     )
+    charts, transitions = _affine_atlas_pullback_data(datum, chart_maps, right_map)
     base = left_map.domain().scheme_base_ring()
 
     def factor(left_cone_map, right_cone_map):
@@ -7442,7 +7481,7 @@ def _glued_fiber_product_over_affine_base(left_map, right_map):
 
     product = Schemes(base).glue_affine_atlas(
         tuple(charts[label] for label in labels),
-        transitions,
+        tuple(transitions.values()),
         placements=(FiberProductSchemes(base),),
         fiber_product_construction=SchemeFiberProductConstruction(
             (left_map, right_map),
