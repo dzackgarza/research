@@ -142,6 +142,14 @@ under /tmp/claude-1000/-home-dzack-research/7de3fff4-5627-45ef-b8ea-4645b6d2e760
 The 2026-10-16 sections-constructor pass is the Codex session
 /home/dzack/.codex/sessions/2026/10/16/rollout-2026-10-16T19-46-12-01a14488-b1d8-7552-ae55-60e3162fb38f.jsonl.
 
+The parallel resumed research / indefinite-port workstream runs on the other
+host against its own handoff, superseded by this document as the authoritative
+one and recoverable in full at the immutable Git source
+`d33da7354b:HANDOFF.md` (its settled decisions, completion table and ranked
+next work). Its obligations live in TODO.md's `## Resumed handoff delivery`
+section; the TODO references to "HANDOFF.md" in that section read that Git
+source.
+
 For targeted specimens, use
 env PYTHONPATH=/home/dzack/research/src /home/dzack/gitclones/sage-dev-allopts/.venv/bin/python.
 For a worktree, select its src directory and verify dzack_research.__file__.
