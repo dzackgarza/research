@@ -27,3 +27,18 @@ def test_strict_form_placement_reads_the_actual_pairing(property_name, entry):
             category(form)
     finally:
         strict_checking(previous)
+
+
+def test_a_unit_form_is_valid_under_strict_checking():
+    module = ZZ.free_module(("e",))
+    form = module.bilinear_hom_space(ZZ)([[1]])
+    previous = strict_checking()
+    try:
+        strict_checking(True)
+        perfect = FormModules(ZZ).Unimodular()(form)
+
+        assert perfect.determinant() == 1
+        assert perfect.is_nondegenerate() is True
+        assert perfect.is_unimodular() is True
+    finally:
+        strict_checking(previous)
