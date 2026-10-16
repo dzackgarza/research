@@ -1361,6 +1361,15 @@ algebra limits or descent of their actual underlying modules as the shared
 prerequisite. This is an implementation gap in the inspected preamble owners,
 not a claim that the formal sheaf mathematics is missing.
 
+General chosen global-section realizations of a finite-atlas line bundle
+still need their chart-component comparisons. The constructor accepts
+`section_space`, but that module alone supplies no map to the chart modules.
+Projective and multiprojective twists supply those maps by dehomogenization;
+the general framed case must retain its actual comparison with descent
+sections. Restricted projective line bundles constructed through
+`_invertible_sheaf_object` also retain the generic unpresented sections route.
+Both obligations remain with `sheaves-compute-sections-on-opens`.
+
 Chart embeddings and chart-image inclusions map prime points into the retained
 topological coequalizer. The scheme accepts its quotient points. Equality of
 classes of the general infinite relation remains a proposition in the set
