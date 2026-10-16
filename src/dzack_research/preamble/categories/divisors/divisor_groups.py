@@ -118,30 +118,19 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
             _extra_categories=(self,),
         )
 
-    def from_terms(self, terms):
-        r"""The formal divisor \(\sum_i a_i P_i\) of a finite family of terms \((a_i, P_i)\).
+    def from_terms(self, coefficients):
+        r"""The formal divisor \(\sum_P a_P P\) of a finitely supported coefficient function \(P \mapsto a_P\).
 
-        A prime divisor occurring in several terms receives the sum of their
-        coefficients, so the result is the finitely supported coefficient
-        function \(P \mapsto \sum_{P_i = P} a_i\).
+        A formal divisor is a finitely supported function from the prime
+        divisors to the coefficient ring, and ``coefficients`` is that
+        function, given as a mapping on its support.
         """
         ring = self.base_ring()
-        terms = tuple(terms)
-        prime_divisors = finite_ordered_set(
-            tuple(prime_divisor for _, prime_divisor in terms)
-        )
-        group = self(tuple(prime_divisors))
+        group = self(tuple(coefficients))
         return group.linear_combination(
             {
-                prime_divisor: sum(
-                    (
-                        ring(coefficient)
-                        for coefficient, component in terms
-                        if component == prime_divisor
-                    ),
-                    ring.zero(),
-                )
-                for prime_divisor in prime_divisors
+                prime_divisor: ring(coefficient)
+                for prime_divisor, coefficient in coefficients.items()
             }
         )
 
