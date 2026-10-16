@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.schemes.gluing import (
 )
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     SheafObjects,
+    _is_empty_open,
     _open_sheaf_placement,
     _unpresented_sheaf_placement,
 )
@@ -130,6 +131,9 @@ class _TotalQuotientSectionsPresheaf(Functor):
     def _apply_object(self, opposite_object):
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
+        if _is_empty_open(self, opposite_object):
+            # The empty-cover condition gives the terminal ring (Stacks, 04B3).
+            return self._structure_presheaf(opposite_object)
         subset = opposite_object.underlying_object().value()
         assert (
             self._scheme in Schemes(self._scheme.scheme_base_ring()).Affine()
@@ -149,6 +153,8 @@ class _TotalQuotientSectionsPresheaf(Functor):
     def _apply_morphism(self, opposite_arrow):
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
+        if _is_empty_open(self, opposite_arrow.domain()) or _is_empty_open(self, opposite_arrow.codomain()):
+            return self.codomain().Mor(source, target).elementwise(lambda _section: target.zero())
         ring_map = self._structure_presheaf(opposite_arrow)
         return self.codomain().Mor(source, target).elementwise(
             lambda section: _total_quotient_pullback(ring_map, section)
