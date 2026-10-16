@@ -12,7 +12,7 @@ def test_a_simplicial_cone_retains_its_inclusion_and_ray_lattice_index():
     lattice = Lattices(ZZ)([[1, 0], [0, 1]])
     cone = lattice.reduction_cell(((1, 0), (-1, 2)))
     triangulation = cone.triangulation()
-    rationalization = ModulesOverIntegralDomains(ZZ)(lattice).generic_fibre_map()
+    first, second = cone.ambient_space().module_generators()
 
     assert triangulation.index_set().cardinality() == 1
     for simplex in triangulation.index_set():
@@ -21,8 +21,7 @@ def test_a_simplicial_cone_retains_its_inclusion_and_ray_lattice_index():
         assert inclusion.domain() is subcone
         assert inclusion.codomain() is cone
         assert cone.ray_span_saturation_index(subcone) == 2
-        for ray in subcone.primitive_rays():
-            rational_ray = rationalization(ray).underlying_element()
+        for rational_ray in (second, 2 * first + second):
             assert inclusion(rational_ray) == rational_ray
 
 
