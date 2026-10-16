@@ -544,6 +544,8 @@ from dzack_research.preamble.logic import Predicate, Propositions, Unknown, ask 
 from dzack_research.preamble.validation import strict_checking  # noqa: F401
 from dzack_research.preamble.rings import (  # noqa: F401
     RR,
+    CC,
+    I,
     binomial,
     cos,
     cosh,
@@ -569,6 +571,8 @@ from dzack_research.preamble.rings import (  # noqa: F401
     DivisionRings,
     ExactRealField,
     ExactRealNumber,
+    ExactComplexField,
+    ExactComplexNumber,
     Fields,
     FormalPowerSeriesRings,
     IntegralDomains,

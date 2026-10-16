@@ -69,7 +69,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _set_owned_ring_display,
     _owned_algebraic_numbers,
     _owned_complex_double_field,
-    _owned_complex_field,
     _owned_integers,
     _owned_rationals,
     _owned_real_algebraic_numbers,
@@ -88,14 +87,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     Zmod as _Zmod,
 )
 from dzack_research.preamble.rings.nonnegative_reals import NonNegativeReals
-from dzack_research.preamble.rings.real import (
-    RR,
+from dzack_research.preamble.rings.complex import (
+    CC,
+    ComplexRelation,
+    ExactComplexField,
+    ExactComplexNumber,
+    I,
     cos,
     cosh,
-    e,
     exp,
     log,
-    pi,
     sech,
     sgn,
     sin,
@@ -104,6 +105,11 @@ from dzack_research.preamble.rings.real import (
     tan,
     tanh,
     zeta,
+)
+from dzack_research.preamble.rings.real import (
+    RR,
+    e,
+    pi,
     ExactRealField,
     ExactRealNumber,
     RealApproximation,
@@ -152,7 +158,6 @@ def QuadraticField(discriminant, name="a"):
 def session_ring_objects() -> dict[str, object]:
     r"""Return the standard session scalar names under their owned parents."""
     from sage.all import AA as SageAA
-    from sage.all import CC as SageCC
     from sage.all import CDF as SageCDF
     from sage.all import QQ as SageQQ
     from sage.all import RDF as SageRDF
@@ -171,12 +176,6 @@ def session_ring_objects() -> dict[str, object]:
     _set_owned_ring_display(rdf, "Real double field", kind="real")
     cdf = _public_commutative_ring(_owned_complex_double_field())
     _set_owned_ring_display(cdf, "Complex double field", kind="complex")
-    cc = _public_commutative_ring(_owned_complex_field())
-    _set_owned_ring_display(
-        cc,
-        f"Complex field with {SageCC.precision()} bits precision",
-        kind="complex",
-    )
     return {
         "ZZ": integers,
         "QQ": rationals,
@@ -185,7 +184,7 @@ def session_ring_objects() -> dict[str, object]:
         "RR": RR,
         "RDF": rdf,
         "CDF": cdf,
-        "CC": cc,
+        "CC": CC,
     }
 
 
@@ -276,6 +275,11 @@ __all__ = [
     "QuadraticField",
     "QuotientRings",
     "RR",
+    "CC",
+    "ComplexRelation",
+    "ExactComplexField",
+    "ExactComplexNumber",
+    "I",
     "binomial",
     "cos",
     "cosh",

@@ -460,13 +460,36 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 return self.Mor(target).embeddings()
 
             source_engine = _engine_ring(self)
+            from dzack_research.preamble.rings.complex import ExactComplexField
             from dzack_research.preamble.rings.real import ExactRealField
 
+            from sage.rings.qqbar import AA as SageAA
+            from sage.rings.qqbar import QQbar as SageQQbar
+
+            # An embedding K -> RR (K -> CC) has image in the real (complex)
+            # algebraic numbers AA (QQbar), since every element of K is
+            # algebraic over QQ.
             match target:
                 case ExactRealField():
-                    from sage.rings.qqbar import AA as SageAA
+                    algebraic_numbers = SageAA
+                case ExactComplexField():
+                    algebraic_numbers = SageQQbar
+                case _:
+                    algebraic_numbers = None
 
-                    engine_embeddings = tuple(source_engine.embeddings(SageAA))
+            match algebraic_numbers:
+                case None:
+                    engine_embeddings = tuple(
+                        source_engine.embeddings(_engine_ring(target))
+                    )
+
+                    def embedding_at(position):
+                        return self.Mor(target)(
+                            engine_embeddings[int(position)]
+                        )
+
+                case _:
+                    engine_embeddings = tuple(source_engine.embeddings(algebraic_numbers))
 
                     def embedding_at(position):
                         engine_embedding = engine_embeddings[int(position)]
@@ -476,16 +499,6 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                                     _engine_element(self, self(element))
                                 )
                             )
-                        )
-
-                case _:
-                    engine_embeddings = tuple(
-                        source_engine.embeddings(_engine_ring(target))
-                    )
-
-                    def embedding_at(position):
-                        return self.Mor(target)(
-                            engine_embeddings[int(position)]
                         )
 
             positions = finite_ordered_set(range(len(engine_embeddings)))

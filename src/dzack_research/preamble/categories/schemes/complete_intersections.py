@@ -88,7 +88,15 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
         f"a complete intersection in {ambient} needs at least one equation, but none were given"
     )
     engine = _engine_projective_subscheme(_engine_scheme(ambient), family)
-    assert _is_regular_sequence(engine), (
+    # A single nonzero homogeneous polynomial is a nonzerodivisor in the
+    # polynomial ring over a field.  This is the length-one case of the
+    # regular-sequence definition (Stacks, Tag 00LF).
+    regular = (
+        family.cardinality() == 1
+        and base in OwnedFields()
+        and bool(engine.defining_polynomials()[0])
+    ) or _is_regular_sequence(engine)
+    assert regular, (
         f"the equations {family} do not form a regular sequence in the homogeneous coordinate "
         f"ring of {ambient}, so V_+ of them is not a complete intersection"
     )
