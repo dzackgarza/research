@@ -2369,7 +2369,7 @@ def _finite_group_quotient_by_gap_normal_subgroup(group, normal_subgroup):
         PermutationGroup(gap_group=permutation_model),
         refinements=(OwnedAbelianGroups(),) if group in OwnedAbelianGroups() else (),
     )
-    projection = group.Mor(quotient)(
+    projection = group.Mor(quotient)._from_engine_morphism(
         gap_projection * permutation_isomorphism
     )
     return quotient, projection
