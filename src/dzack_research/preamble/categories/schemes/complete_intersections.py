@@ -256,13 +256,17 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 return self(ProjectiveCompleteIntersections(self.base_ring()).Smooth()(ambient, sum(v**4 for v in x)))
 
             def _call_(self, scheme):
-                r"""Place the complete intersection ``scheme`` here, as the caller states."""
+                r"""State that the retained projective closed subscheme is a smooth K3 complete intersection."""
                 from dzack_research.preamble.refine import refine
 
                 base = self.base_ring()
-                assert scheme in ProjectiveCompleteIntersections(base), (
-                    f"only a projective complete intersection over {base} is placed in {self}, but "
+                assert scheme in ClosedSubschemes(base), (
+                    f"a stated K3 complete intersection over {base} needs its closed immersion, but "
                     f"{scheme} is in {scheme.category()}"
+                )
+                assert scheme.inclusion().codomain() in ProjectiveSpaces(base), (
+                    f"a stated K3 complete intersection needs an ambient projective space over {base}, "
+                    f"but {scheme} lies in {scheme.inclusion().codomain()}"
                 )
                 return refine(scheme, self)
 
