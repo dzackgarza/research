@@ -239,7 +239,7 @@ For `f: G -> H` with `G` finite, `f(G)` is finite, `|f(G)| <= |G|`. `GroupMorphi
 `CyclotomicDecomposition.component_isometries()` (`categories/lattice_centralizers.py:_restrict_isometry`) asks `is_in_image` of the summand inclusion, which reaches `Modules.smith_form` and builds a finite Cartesian product of sets; its cache lookup compares two finite ordered sets, and `FiniteOrderedSets.__eq__` passes an element equality `e_0 == 0` that is not `True`, `False` or a proposition to `conjunction`, which raises `TypeError`.
 **Observed (executed 2026-10-16, worktree `port-gaps7-prod`):** `swap.cyclotomic_decomposition(2).component_isometries()` on `U + U` raises it, so `L.O().centralizer(swap).group_generators()` stops before the glue; `gluing_subgroup()` of the same decomposition answers order 4. The three-cycle specimens of `tests/lattices/test_cyclotomic_centralizer.sage` also fail earlier, at `Set(nonzero_divisors()) == Set((1, 3))` and at `restrictions[1]` on a family indexed by positions.
 **Consumer:** `arithmetic-centralizers-from-component-gluing` in [TODO.md](TODO.md).
-**Repair:** `lattice-labels-and-divisors-are-owned-points` in [TODO.md](TODO.md): the `e_0` in that equation is a basis label of `U + U`, a Sage symbolic variable (`_lattice._formal_symbol`), and the divisors are Sage integers.
+**Repair:** `lattice-labels-and-divisors-are-owned-points` in [TODO.md](TODO.md): the `e_0` in that equation is a basis label of `U + U`, a Sage symbolic variable (`_lattice._formal_symbol`), and the divisors are Sage integers. Both are repaired in source (labels `Sets.Δ[n-1]`, owned integer divisors); the observed failure stays recorded until the specimens execute.
 
 ### Group colimits do not compose chosen finite presentations
 

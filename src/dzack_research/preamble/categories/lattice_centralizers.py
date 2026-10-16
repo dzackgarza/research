@@ -31,6 +31,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 from dzack_research.preamble.categories.isotropic_orbits import _same_subobject
 from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobjects
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -410,7 +411,8 @@ class CyclotomicDecomposition(SageObject):
                     f"{proper_divisor}-th power is the identity of {lattice}"
                 )
 
-        self._divisors = finite_ordered_set(tuple(divisors(self._order)))
+        integers = _owned_integers()
+        self._divisors = finite_ordered_set(tuple(integers(int(divisor)) for divisor in divisors(self._order)))
         self._summands = finite_indexed_family(
             self._divisors,
             lambda divisor: isometry.cyclotomic_summand(int(divisor)),

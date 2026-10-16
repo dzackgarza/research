@@ -37,7 +37,6 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ
 from sage.structure.category_object import normalize_names
 from sage.structure.element import Matrix, ModuleElement
-from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
@@ -79,56 +78,6 @@ from dzack_research.preamble.tensors.tensor import (
 from dzack_research.static_types import ProductOfNaturalNumbers
 
 
-def _formal_symbol(index):
-    r"""The formal module generator \(e_i\in\mathrm{SR}\)."""
-    index = int(index)
-    return SR.var(f"e_{index}", latex_name=rf"e_{{{index}}}")
-
-
-def _formal_symbol_index(elt):
-    r"""The selected inverse on the formal-symbol image, with ``None`` off it."""
-    if elt not in SR:
-        return None
-    symbol = SR(elt)
-    if not symbol.is_symbol():
-        return None
-    match re.fullmatch(r"e_(0|[1-9][0-9]*)", str(symbol)):
-        case None:
-            return None
-        case matched:
-            return NN(int(matched.group(1)))
-
-
-@cached_function
-def _formal_symbols():
-    r"""The countably infinite set \(\{e_i : i\in\mathbb N\}\subset\mathrm{SR}\).
-
-    It is the image of \(\mathbb N\) under the injection \(i\mapsto e_i\),
-    whose inverse reads the index off the symbol, so it is enumerated by
-    \(\mathbb N\) and ranked by that inverse.
-    """
-    return NN.image_set(
-        _formal_symbol,
-        inverse=_formal_symbol_index,
-    )
-
-
-def _formal_generating_set(rank):
-    r"""The formal symbols \(e_0,\ldots,e_{n-1}\), or all \(e_i\) at infinite rank."""
-    size = cardinal(rank)
-    match size.is_finite():
-        case False:
-            return _formal_symbols()
-        case True:
-            positions = Sets.Δ[int(size) - 1]
-            return FiniteOrderedSets().from_indexed(
-                positions,
-                lambda position: _formal_symbol(int(position)),
-                index_of=lambda symbol: positions[_formal_symbol_index(symbol)],
-                name="Formal lattice generators",
-            )
-
-
 def _as_generating_set(keys, rank):
     r"""Return ``keys`` as an owned enumerated generating set of cardinality ``rank``.
 
@@ -142,17 +91,6 @@ def _as_generating_set(keys, rank):
         f"{selected} cannot be a basis of a free module of rank {size}: it has cardinality {key_cardinality}"
     )
     return selected
-
-
-def _generating_set_from_names(names):
-    r"""Return the SR symbols named by the normalized generator ``names``."""
-    name_source = finite_ordered_set(names)
-    return FiniteOrderedSets().from_indexed(
-        name_source,
-        lambda name: SR.var(str(name)),
-        index_of=lambda symbol: name_source(str(symbol)),
-        name="Named lattice generators",
-    )
 
 
 def _generating_set_for(rank, module_generators, names):
@@ -1288,7 +1226,7 @@ def _orthogonal_sum(summands):
     offsets = _block_offsets(ranks)
     total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
 
-    module = ring.free_module(_formal_generating_set(total))
+    module = ring.free_module(_generating_set_for(total, None, None))
     return _lattice_object(
         category,
         module,
@@ -1335,7 +1273,8 @@ def _colimit_lattice(stage, *, category, row_support=None):
     r"""\(\operatorname{colim}_n \mathrm{stage}(n)\) along \(x\mapsto(x,0)\).
 
     ``stage(n)`` is a rank-\(n\) lattice in ``category``.  The colimit
-    module is the free module on the formal symbols \(e_i\), \(i\in\mathbb N\).
+    module is the free module on \(\mathbb N\), whose generator at \(i\)
+    prints as \(e_i\).
     """
     ring = category.base_ring()
     probe = stage(2)
@@ -1343,7 +1282,7 @@ def _colimit_lattice(stage, *, category, row_support=None):
     assert probe.module_rank() == cardinal(2), (
         f"stage(n) must have rank n, got stage(2) of rank {probe.module_rank()}"
     )
-    module = ring._fresh_free_module_on(_formal_symbols())
+    module = ring._fresh_free_module_on(NN)
     return _lattice_object(category, module, _ColimitGram(module, stage, row_support=row_support))
 
 
