@@ -1935,18 +1935,21 @@ class _ChosenTrivializationQuasiCoherentMorphismMethods:
                 )
         return _line_bundle_compatible_section_map(source_datum, target_datum, self.local_map)
 
-    def __eq__(self, other) -> bool:
-        match other:
-            case _ChosenTrivializationQuasiCoherentMorphismMethods() if other.parent() is self.parent():
-                return all(
-                    self.local_map(index) == other.local_map(index)
-                    for index in self.domain().gluing_datum().chart_index_set()
-                )
-            case _:
-                return False
+    def _richcmp_(self, other, op):
+        r"""Compare the chart maps, preserving undecided equalities."""
+        if op not in (op_EQ, op_NE):
+            return NotImplemented
+        if not isinstance(other, _ChosenTrivializationQuasiCoherentMorphismMethods):
+            return NotImplemented
+        if self.domain() is not other.domain() or self.codomain() is not other.codomain():
+            return op == op_NE
+        decision = conjunction(
+            self.local_map(index) == other.local_map(index)
+            for index in self.domain().gluing_datum().chart_index_set()
+        )
+        return decision if op == op_EQ else negation(decision)
 
-    def __ne__(self, other) -> bool:
-        return not self == other
+    __hash__ = None
 
     def __mul__(self, other):
         match other:
