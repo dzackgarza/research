@@ -156,10 +156,11 @@ def _engine_group(group):
 
 
 def _engine_finiteness(engine, *, compute=False):
-    r"""Return ``True``/``False`` when Sage's category states finiteness, else ``None``.
+    r"""Read Sage's finite placement, optionally deciding a rational matrix group.
 
-    ``None`` means that the engine's category states neither, so the engine
-    supplies no witness either way.
+    Constructor callers only read placement. An explicit generated-group
+    finiteness query may ask the maintained rational-matrix computation.
+    ``None`` means no decision was supplied by these routes.
     """
     if engine in SageFiniteGroups():
         return True
@@ -294,7 +295,7 @@ def _element_from_engine(group, gap_element):
     r"""Return the element of ``group`` modelled by ``gap_element``."""
     match group:
         case _ if group in GroupAutomorphismGroups():
-            return group(gap_element, check=False)
+            return group._from_engine_morphism(gap_element, check=False)
         case _:
             engine = _engine_group(group)
             assert _encodes_elements_in_gap(engine), (
@@ -4114,7 +4115,7 @@ class GroupAutomorphismGroups(OwnedCategory):
                 f"and {self.domain()} is not known to be finite"
             )
             return (
-                self(backend, check=False)
+                self._from_engine_morphism(backend, check=False)
                 for backend in self._libgap_().Elements()
             )
 
