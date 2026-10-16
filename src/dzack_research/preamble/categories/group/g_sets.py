@@ -8,7 +8,6 @@ standard finite free/cofree constructions.
 """
 
 from sage.categories.category import Category
-from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import parent as element_parent
@@ -27,14 +26,12 @@ from dzack_research.preamble.categories.group.g_objects import GObjectMor, GObje
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
+    SymmetricGroups,
     _GroupMorRealizationMixin,
     _engine_cosets,
     _engine_group,
     _engine_point,
-    _integer_engine_point,
-    _own_group,
     _owned_group,
-    _owned_point,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
@@ -291,7 +288,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             for group_generator in determining:
                 permutation = permutations(representation(group_generator))
                 for point in self.point_set():
-                    image = _owned_point(permutation(_integer_engine_point(point)))
+                    image = permutation(point)
                     if image not in self.point_set():
                         raise ValueError(
                             f"{representation} is not an action of {group} on "
@@ -312,7 +309,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             """
             permutation = self.permutation_representation()(group_element)
             return Sets().Mor(self, self)(
-                lambda point: _owned_point(permutation(_integer_engine_point(point)))
+                lambda point: permutation(point)
             )
 
         def point_set(self):
@@ -367,8 +364,8 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             labels = {}
             for point in self:
                 ranks = tuple(
-                    int(ranking(_owned_point(image)))
-                    for image in image_engine.orbit(_engine_point(image_engine, point))
+                    int(image) - 1
+                    for image in image_engine.orbit(int(ranking(point)) + 1)
                 )
                 labels[int(ranking(point))] = min(ranks)
             return labels
@@ -1193,7 +1190,8 @@ def _permutation_from_point_map(permutation_group, point_set, mapping):
     # A permutation is a bijection of the backend point domain. Let the
     # permutation engine check that property instead of searching all pairs
     # of points for preimage counts at this owned/engine boundary.
-    images = [_integer_engine_point(mapping(point)) for point in point_set]
+    ranking = point_set.ranking_map()
+    images = [int(ranking(mapping(point))) + 1 for point in point_set]
     try:
         return permutation_group(images)
     except (TypeError, ValueError) as error:
@@ -1246,11 +1244,10 @@ def _finite_g_set_from_action(
         f"known to be in {point_set.category()}"
     )
     group = _owned_group(group)
-    # Private finite backend serialization: Sage's SymmetricGroup constructor
-    # requires a sliceable concrete domain of engine points, while the
-    # mathematical point set remains the owned set above.
-    backend_points = [_integer_engine_point(point) for point in point_set]
-    permutations = _own_group(SymmetricGroup(backend_points))
+    # The symmetric-group owner retains X and its ranking while its private
+    # engine acts on 1,...,|X|. Arbitrary owned points never become engine
+    # domain labels.
+    permutations = SymmetricGroups()(point_set)
     mor = group.Mor(permutations)
     permutation_representation = mor.elementwise(
         lambda group_element: _permutation_from_point_map(
