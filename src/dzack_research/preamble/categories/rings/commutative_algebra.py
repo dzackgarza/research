@@ -52,6 +52,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedAdicallyCompleteRings,
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedIntegralDomains,
     OwnedOrders,
     OwnedPrincipalIdealDomains,
@@ -954,6 +955,16 @@ class QuotientRings(OwnedCategory):
                 return cardinal(1)
             if self._preamble_engine_ring is not None:
                 return cardinal(self._preamble_engine_ring.cardinality())
+            # For a k-algebra A over a field k and a proper ideal I, the
+            # structure map k -> A/I is a ring map from a field to a nonzero
+            # ring, hence injective, and A -> A/I is onto, so
+            # |k| <= |A/I| <= |A|.  When |k| = |A| the cardinality is decided.
+            base = self.quotient_source().base_ring()
+            if base is not self.quotient_source() and base in OwnedFields():
+                lower = base._cardinality_decision()
+                upper = self.quotient_source()._cardinality_decision()
+                if lower is not None and upper is not None and (cardinal(lower) == cardinal(upper)) is True:
+                    return cardinal(lower)
             if self.quotient_source() in LocalizationRings():
                 comparison = self._finite_localized_quotient_isomorphism()
                 return None if comparison is None else comparison.domain()._cardinality_decision()

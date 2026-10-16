@@ -81,6 +81,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
     SymmetricAlgebras,
+    _symmetric_algebra_on,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -252,10 +253,12 @@ def _engine_polynomial_algebra(engine_polynomial_ring, base):
 
     Affine and projective spaces present their coordinates through Sage's
     polynomial rings; this is the one place such a ring is raised to the owned
-    free, graded free and symmetric algebra it is.
+    free, graded free and symmetric algebra it is.  It is the symmetric
+    algebra over the owned ``base`` itself: raising the engine's own base
+    ring a second time would give a different scalar ring.
     """
     return _commutative_algebra_with_structure(
-        _own_ring(engine_polynomial_ring),
+        _symmetric_algebra_on(base, tuple(engine_polynomial_ring.variable_names())),
         base,
         tuple(engine_polynomial_ring.variable_names()),
         FreeAlgebras(base),
