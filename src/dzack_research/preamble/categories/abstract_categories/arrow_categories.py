@@ -500,11 +500,11 @@ class _SubcategoryOfArrows(OwnedCategory):
         )
 
     def __contains__(self, candidate):
-        return (
-            isinstance(candidate, Functor)
-            and candidate in self.base_category().ArrowCategory()
-            and self.admits_arrow(candidate.arrow())
-        )
+        match candidate:
+            case Functor():
+                return candidate in self.base_category().ArrowCategory() and self.admits_arrow(candidate.arrow())
+            case _:
+                return super().__contains__(candidate)
 
     def an_object(self):
         r"""The identity of an object of ``C``, as an arrow."""
