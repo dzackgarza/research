@@ -80,11 +80,27 @@ class DivisorGroups(Category):
         return [FramedFreeModules(_owned_integers())]
 
     def _call_(self, prime_divisors):
-        r"""The free abelian group on the set ``prime_divisors`` of prime divisors."""
-        return _integers()._fresh_free_module_on(
-            prime_divisors,
-            _extra_categories=(self,),
-        )
+        r"""The free abelian group on ``prime_divisors``: a set of prime divisors, or a framed free abelian group.
+
+        A framed free abelian group \(\mathbb{Z}^{(S)}\) is placed here as it
+        is, because every set \(S\) has the cardinality of the prime divisors
+        of some scheme: \(\operatorname{Spec} k\) for a field \(k\) when \(S\)
+        is empty; \(\operatorname{Spec}\) of a semilocal principal ideal domain
+        with \(|S|\) maximal ideals when \(S\) is finite; and
+        \(\mathbb{A}^1_k\) for an algebraically closed field \(k\) with
+        \(|k| = |S|\) when \(S\) is infinite.
+        """
+        framed_abelian_groups = FramedFreeModules(_owned_integers())
+        match prime_divisors:
+            case _ if prime_divisors in framed_abelian_groups:
+                from dzack_research.preamble.refine import refine
+
+                return refine(prime_divisors, self)
+            case _:
+                return _integers()._fresh_free_module_on(
+                    prime_divisors,
+                    _extra_categories=(self,),
+                )
 
 
 class FormalDivisorGroups(OwnedCategoryOverBaseRing):
