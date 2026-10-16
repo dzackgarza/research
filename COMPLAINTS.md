@@ -1339,14 +1339,28 @@ the whole space and distinguished opens; general opens still raise an explicit
 assertion. The basis comparison theorem and its hypotheses need a checked source
 locator before implementation.
 
-Finite-atlas sections still need basis opens inside charts and comparisons
-between atlases. `chart_open_subset` represents a selected chart image in the
-actual scheme's point space; the module and structure presheaves evaluate
-those images. Images of distinguished opens within charts, including the
-overlaps, still need their retained chart traces. A chart of another atlas
-also needs its point-space comparison with the construction-selected atlas.
+Finite-atlas sections still need comparisons between atlases and sections on
+general opens from their chart traces. `chart_open_subset` retains a chart or
+distinguished open within it, with its actual image in the scheme's point
+space. Ring and module restrictions use the retained overlap transitions and
+localization maps. A chart of another atlas still needs its point-space
+comparison with the construction-selected atlas.
 The topological colimit's general openness criterion asks for preimages whose
 basis presentations are not retained by arbitrary predicate subsets.
+
+Finite-atlas algebra descent also needs its global-sections and sheaf
+construction. The inspected `_FiniteAtlasAlgebraGluingDatumEngine` supplies
+local algebras, semilinear transitions, cocycles and relative spectrum, but no
+compatible-section algebra or sections functor. Its polynomial-algebra
+specimen has infinite underlying modules. The module-descent constructor's
+`_finite_framing` requirement therefore prevents direct use of that adapter.
+An algebra section is a compatible family with componentwise multiplication
+and unit; its fixed scalar ring and all restriction maps must be retained.
+The repair belongs to `sheaves-compute-sections-on-opens`, with general
+algebra limits or descent of their actual underlying modules as the shared
+prerequisite. This is an implementation gap in the inspected preamble owners,
+not a claim that the formal sheaf mathematics is missing.
+
 Chart embeddings and chart-image inclusions map prime points into the retained
 topological coequalizer. The scheme accepts its quotient points. Equality of
 classes of the general infinite relation remains a proposition in the set
