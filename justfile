@@ -302,6 +302,10 @@ test-push:
 test-ci:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
+# Run the scheduled whole-tree audit (semgrep and debt scans) through the central implementation.
+ambient:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . ambient
+
 # The suite runs in parallel, one Sage process per worker, and records which
 # test ran each line; only lines a passing test ran count as covered.
 # Every preamble line and branch no passing test runs, file by file
