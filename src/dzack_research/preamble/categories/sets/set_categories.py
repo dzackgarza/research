@@ -2370,6 +2370,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 )
             )
 
+        @cached_method
         def __pow__(self, exponent):
             r"""Return $X^n$, the product of the constant family over `Sets.Δ[n-1]`."""
             count = int(exponent)

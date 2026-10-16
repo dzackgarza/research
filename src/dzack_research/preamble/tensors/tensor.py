@@ -242,12 +242,6 @@ def _tensor_space_session_and_latex(
     )
 
 
-@cached_function
-def _bidegrees() -> Parent:
-    r"""The set $\mathbb N^2$ of tensor types $(p, q)$, the product built once."""
-    return NN**2
-
-
 class Tensor:
     r"""A tensor of type $(p,q)$.
 
@@ -895,7 +889,7 @@ class Tensor:
         """
         valence = self.tensor_valence()
         first_rank, second_rank = self._index_ranks()
-        if valence in {_bidegrees()((0, 2)), _bidegrees()((2, 0))}:
+        if valence in {(NN**2)((0, 2)), (NN**2)((2, 0))}:
             if first_rank != second_rank:
                 raise ValueError(
                     f"cannot dualize this type-{valence} tensor with index ranks "
@@ -908,7 +902,7 @@ class Tensor:
                 tuple(_owned_engine_element(ring, entry) for entry in row)
                 for row in inverse.rows()
             ]
-            if valence == _bidegrees()((0, 2)):
+            if valence == (NN**2)((0, 2)):
                 return tensor(ring, (first_rank, second_rank), (), components)
             return tensor(ring, (), (first_rank, second_rank), components)
         raise TypeError(
@@ -926,7 +920,7 @@ class Tensor:
         is again type ``(0,2)``.
         """
         valence = self.tensor_valence()
-        match valence == _bidegrees()((0, 2)):
+        match valence == (NN**2)((0, 2)):
             case False:
                 raise TypeError(
                     f"cannot form the dual pairing of a type-{valence} tensor: "
@@ -1051,7 +1045,7 @@ def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):
         case True:
             pass
     valence = value.tensor_valence()
-    match valence == _bidegrees()((0, 2)):
+    match valence == (NN**2)((0, 2)):
         case False:
             raise TypeError(
                 f"a bilinear form is a covariant 2-tensor of type (0, 2), "
@@ -1934,7 +1928,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
         other_valence = other.tensor_valence()
         from itertools import product as cartesian_product
 
-        if len(upper) >= 2 and not lower and other_valence == _bidegrees()((0, 1)):
+        if len(upper) >= 2 and not lower and other_valence == (NN**2)((0, 1)):
             if upper[-1] != other._lower_index_ranks()[0]:
                 raise ValueError(
                     f"cannot multiply a type-{valence} tensor by a covector of rank "
@@ -1952,7 +1946,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 for position in positions
             )
             return tensor(ring, output_upper, (), _nested(entries, output_upper))
-        if other_valence == _bidegrees()((1, 0)):
+        if other_valence == (NN**2)((1, 0)):
             if not lower:
                 raise TypeError(
                     f"a type-{valence} tensor has no covariant index, so it cannot be "
@@ -1986,7 +1980,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
             if not output_shape:
                 return entries[0]
             return tensor(ring, output_upper, output_lower, _nested(entries, output_shape))
-        if valence == _bidegrees()((1, 1)) and other_valence == _bidegrees()((1, 1)):
+        if valence == (NN**2)((1, 1)) and other_valence == (NN**2)((1, 1)):
             if lower != other._upper_index_ranks():
                 raise ValueError(
                     f"cannot compose type-(1, 1) tensors with index ranks "
@@ -2006,7 +2000,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 for j in range(columns)
             )
             return tensor(ring, (rows,), (columns,), _nested(entries, (rows, columns)))
-        if valence == _bidegrees()((0, 1)) and other_valence == _bidegrees()((1, 1)):
+        if valence == (NN**2)((0, 1)) and other_valence == (NN**2)((1, 1)):
             # In V* tensor V tensor W*, evaluate the adjacent V*, V pair.
             if lower != other._upper_index_ranks():
                 raise ValueError(
@@ -2117,7 +2111,7 @@ class _CoordinateTensorModule:
     @cached_method
     def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return the type $(p, q)$ as a point of $\mathbb N^2$ (`CON-15`)."""
-        return _bidegrees()((len(self._upper_ranks), len(self._lower_ranks)))
+        return (NN**2)((len(self._upper_ranks), len(self._lower_ranks)))
 
     def tensor_valence(self) -> ProductOfNaturalNumbers:
         return self.tensor_type()
@@ -2285,7 +2279,7 @@ def _tensor_module_on(base_ring, upper_ranks, lower_ranks):
 
 def _mixed_tensor_valence(valence) -> ProductOfNaturalNumbers:
     r"""Normalize one bidegree ``(p,q)`` of the mixed tensor algebra."""
-    return _bidegrees()(valence)
+    return (NN**2)(valence)
 
 
 class MixedTensorAlgebraElement(GradedDirectSumElement):
@@ -2400,7 +2394,7 @@ def _mixed_tensor_algebra(module):
     )
     ring = _own_ring(module.base_ring())
     size = int(rank)
-    bigrades = _bidegrees()
+    bigrades = (NN**2)
     pieces = indexed_family(
         bigrades,
         lambda valence: TensorModule(
