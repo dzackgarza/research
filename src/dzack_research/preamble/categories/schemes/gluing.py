@@ -7565,6 +7565,8 @@ class _FiniteAtlasStructurePresheaf(Functor):
         True
         sage: second = site(atlas.chart_open_subset(1))
         sage: overlap = site(atlas.chart_open_subset(0, atlas.overlap(0, 1)))
+        sage: overlap.value() == atlas.chart_open_subset(1, atlas.overlap(1, 0))
+        True
         sage: first_arrow = opposite.Mor(opposite(chart), opposite(overlap))(site.Mor(overlap, chart)())
         sage: second_arrow = opposite.Mor(opposite(second), opposite(overlap))(site.Mor(overlap, second)())
         sage: first_restriction = sheaf.open_sections_presheaf().on_morphism(first_arrow)

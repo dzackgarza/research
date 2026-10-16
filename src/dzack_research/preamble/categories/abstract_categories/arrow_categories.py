@@ -1776,8 +1776,8 @@ class SetSubobjectCategory(SliceCategory):
             condition. Other domains retain the subset proposition; more
             structured subsets supply their defining inclusion criterion.
             """
-            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, Sets
-            from dzack_research.preamble.logic import AtomicProposition, conjunction
+            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
+            from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 
             ambient = self.codomain()
             if other.codomain() is not ambient:
@@ -1785,6 +1785,11 @@ class SetSubobjectCategory(SliceCategory):
             power = ambient.power_set()
             if self is other or self is power.bottom() or other is power.top():
                 return True
+            if ambient in FiniteSets() and ambient in EnumeratedSets():
+                return conjunction(
+                    negation(conjunction((self.is_parent_of(member), negation(other.is_parent_of(member)))))
+                    for member in ambient
+                )
             points = self.inclusion().domain()
             if Sets().is_provably_finite(points) and points in EnumeratedSets():
                 return conjunction(other.is_parent_of(self.inclusion()(point)) for point in points)
@@ -1842,38 +1847,13 @@ class SetSubobjectCategory(SliceCategory):
 
         def __le__(self, other):
             r"""\(A\subseteq B\): the inclusion of \(A\) factors through the inclusion of \(B\)."""
-            from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets
-            from dzack_research.preamble.logic import conjunction, negation
-
             if self is other:
                 return True
             if other not in self._set_subobject_category():
                 return False
             if other.codomain() is not self.codomain():
                 return False
-            base = self.codomain()
-            if base in FiniteSets() and base in EnumeratedSets():
-                return conjunction(
-                    negation(conjunction((
-                        self.is_parent_of(member), negation(other.is_parent_of(member)),
-                    )))
-                    for member in base
-                )
-            domain = self.domain()
-            if domain in FiniteSets() and domain in EnumeratedSets():
-                # A finite subobject can be checked at its own represented
-                # points even when the ambient set is infinite.  Retain an
-                # undecided target-membership proposition instead of asking
-                # factor_through_or_none to construct an uncertified factor.
-                inclusion = self.inclusion()
-                return conjunction(
-                    other.is_parent_of(inclusion(point)) for point in domain
-                )
-            # Without a selected containment algorithm, absence of a
-            # factorization witness does not prove noncontainment.
-            from dzack_research.preamble.logic import AtomicProposition
-
-            return AtomicProposition("is_subset", self, other)
+            return self.is_contained_in(other)
 
         def union(self, other):
             from dzack_research.preamble.logic import conjunction, negation

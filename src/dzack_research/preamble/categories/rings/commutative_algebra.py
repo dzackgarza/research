@@ -806,6 +806,8 @@ class DistinguishedOpenSubobjects(OwnedParameterizedCategory):
                 True
                 sage: spectrum.D(x*x).is_contained_in(spectrum.D(x))
                 True
+                sage: spectrum.D(x) == spectrum.D(x*x)
+                True
                 sage: spectrum.D(A.one()).is_contained_in(spectrum.D(x))
                 False
             """
