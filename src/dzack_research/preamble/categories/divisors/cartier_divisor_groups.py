@@ -26,7 +26,10 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_integers,
 )
-from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
+from dzack_research.preamble.categories.schemes.gluing import (
+    FiniteAffineAtlases,
+    _AffineChartOpenSubobjects,
+)
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     SheafObjects,
     _open_sheaf_placement,
@@ -82,6 +85,30 @@ class _TotalQuotientSectionsPresheaf(Functor):
 
     The affine formula and its localization restrictions are those used by
     ``_TotalQuotientSheafEngine`` (Stacks, Tags 01X1 and 02OV).
+
+    A selected affine chart image is an affine open even when the ambient
+    scheme is not affine. Its coordinate algebra comes from the structure
+    sheaf, including the retained chart transition on restrictions.
+
+    Unexecuted projective-line basis specimen::
+
+        sage: from dzack_research.preamble.all import *
+        sage: X = ProjectiveSpaces(QQ)(1)
+        sage: atlas = X.standard_affine_atlas()
+        sage: site = X.open_subsets_site()
+        sage: chart = site(atlas.chart_open_subset(0))
+        sage: overlap = site(atlas.chart_open_subset(0, atlas.overlap(0, 1)))
+        sage: quotient = CartierDivisorGroups().of_scheme(X).quotient_sheaf()
+        sage: K = quotient.numerator_sheaf().ring_sheaf()
+        sage: A = atlas.chart(0).coordinate_algebra()
+        sage: K.sections(chart) is A.total_quotient_ring()
+        True
+        sage: opposite = site.opposite()
+        sage: inclusion = site.Mor(overlap, chart)()
+        sage: arrow = opposite.Mor(opposite(chart), opposite(overlap))(inclusion)
+        sage: restriction = K.open_sections_presheaf().on_morphism(arrow)
+        sage: restriction(K.sections(chart).one()) == K.sections(overlap).one()
+        True
     """
 
     def __init__(self, scheme) -> None:
@@ -94,7 +121,11 @@ class _TotalQuotientSectionsPresheaf(Functor):
     def _apply_object(self, opposite_object):
         from dzack_research.preamble.categories.schemes.schemes import Schemes
 
-        assert self._scheme in Schemes(self._scheme.scheme_base_ring()).Affine(), (
+        subset = opposite_object.underlying_object().value()
+        assert (
+            self._scheme in Schemes(self._scheme.scheme_base_ring()).Affine()
+            or subset in _AffineChartOpenSubobjects(self._scheme)
+        ), (
             f"total quotient sections on {opposite_object}: not implemented; "
             "the open must be identified with an affine chart before applying "
             "the affine total quotient formula"
