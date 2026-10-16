@@ -1380,6 +1380,26 @@ class ModuleMorphismMethods:
             offset = linear.codomain()(offset)
         return AffineModuleFibres(ring)(linear, target_inclusion, offset)
 
+    @cached_method
+    def _framed_coordinate_morphism(self):
+        r"""Realize this linear arrow in the matrix Mor of its selected framings.
+
+        A stronger arrow keeps its own parent under Mor admission. Matrix
+        computations instead use this explicit realization, retaining the
+        original linear arrow as the construction premise. The selected
+        source and target framings, hence the comparison, are fixed.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+        source, target = self.domain(), self.codomain()
+        mor = source.module_category().Mor(source, target)
+        assert mor in MatrixSpaces(source.base_ring()), (
+            f"coordinates of {self} require finite free modules with selected framings"
+        )
+        if self.parent() is mor:
+            return self
+        return mor._from_constructed_element_map(self, premises=(self,))
+
     def preimage(self, element):
         r"""Return one preimage of ``element`` when it lies in the represented image.
 
@@ -1561,9 +1581,7 @@ class ModuleMorphismMethods:
         codomain_labels = tuple(self.codomain().module_generating_set())
         coordinates = element.to_vector()
         target = [coordinates(label) for label in codomain_labels]
-        coordinate_map = self.domain().module_category().Mor(
-            self.domain(), self.codomain()
-        )(self)
+        coordinate_map = self._framed_coordinate_morphism()
         solution = _solve_preimage_integrally(coordinate_map, target, ring)
         if solution is None:
             return None
