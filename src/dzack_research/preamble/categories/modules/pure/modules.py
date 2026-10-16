@@ -3195,7 +3195,7 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
                 inverse = normal.Mor(normal).elementwise(lambda element: transform(element, ~b, a))
                 return automorphisms(forward, inverse)
 
-            if self.base_ring() is _owned_integers() and self.has_selected_module_resolution() and self.module_generating_set() in FiniteSets():
+            if self.base_ring() is _owned_integers() and self.has_selected_module_resolution() and self.module_generating_set() in Sets().Finite():
                 normal.select_group_generators(lambda: finite_ordered_set(tuple(exponential(t) for t in self.module_generators())))
             return factors.Mor(automorphisms).elementwise(induced)
 
