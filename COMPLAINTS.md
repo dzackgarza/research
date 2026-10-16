@@ -1345,10 +1345,11 @@ Finite-atlas chart sections require maps from chart images into the power set.
 `_FiniteAtlasModuleOpenPresheaf` and `_FiniteAtlasStructurePresheaf` consequently
 provide only whole-space sections. Repair the common open-site datum and its
 chart-image maps before extending chart evaluation and inverse-image sheaves.
-The point-map prerequisite is also unresolved: `Schemes.ParentMethods` accepts
-only an already-parented point, while `SchemeMorphismMethods._call_` composes
-scheme-valued points. Neither inspected path transports a prime-spectrum point
-along a chart embedding. The affine route needs contraction of prime ideals;
+The point map for a chart embedding into a glued scheme remains unresolved:
+`Schemes.ParentMethods` accepts only an already-parented point. Affine scheme
+evaluation uses the prime-spectrum functor, and localization spectra lift
+source primes disjoint from the inverted submonoid. Chart embeddings still
+need the glued point set and its overlap identifications.
 `RingMorphism.contraction_of_ideal` has algorithms for canonical quotient and
 localization maps, and for retained Sage ring maps with exact ideal realizations.
 Its general preimage is the ideal defined by membership after the ring
@@ -1357,8 +1358,9 @@ computational presentation, not defining data for that preimage. This shares
 the ideal-representation prerequisite of `general-minimal-prime-locus` in
 `TODO.md`. The formal spectrum and contravariant functor are exported by
 `lean-categories/LeanCategories/Schemes/Spectra.lean`; no new formal definition
-is requested for them. The glued point set must also identify overlap points
-through the supplied transition isomorphisms.
+is requested for them. Topological coproducts and coequalizers retain their
+universal maps; the chart assembly must use the supplied transition
+isomorphisms to identify the overlap points.
 The inspected sheafed-space ancestors also lack a morphism datum at their
 owner. `SheafedSpaces` and `RingedSpaces` declare no fixed Mor; their topological
 ancestor supplies continuous maps alone. A morphism of ringed spaces needs
