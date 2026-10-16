@@ -1877,7 +1877,12 @@ class _PullbackLineBundleQuasiCoherentMor(QuasiCoherentSheafMor):
         return self(QuasiCoherentSheaves(ambient.scheme()).Mor(ambient, ambient).identity())
 
 
-@cached_function
+@cached_function(key=lambda projective_product, degrees, base_change_image=None: (
+    id(projective_product),
+    type(degrees),
+    tuple(int(degree) for degree in degrees),
+    id(base_change_image),
+))
 def _product_projective_o(projective_product, degrees, *, base_change_image=None):
     r"""Return ``O(degrees)`` on one represented product of projective spaces."""
     return _chosen_trivialization_object(
