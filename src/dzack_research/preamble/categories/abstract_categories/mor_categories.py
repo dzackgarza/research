@@ -1060,10 +1060,6 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
     class ParentMethods:
         r"""An arrow, regarded as an object of one fixed Mor category."""
 
-        def __init__(self, fixed_mor_category, **rest) -> None:
-            self._fixed_mor_category = fixed_mor_category
-            super().__init__(**rest)
-
         def Mor(self, codomain):
             r"""Return the represented 2-Mor to ``codomain``.
 
@@ -1071,7 +1067,7 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
             ordinary fixed Mors are discrete, while specializations such as
             functor categories may declare genuine natural transformations.
             """
-            return self._fixed_mor_category.Mor(self, codomain)
+            return self.functor_category().Mor(self, codomain)
 
     def mor_family(self) -> _MorCategoryOf:
         return self._family

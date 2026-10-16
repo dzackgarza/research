@@ -83,9 +83,9 @@ class _ArrowAsFunctor(Functor):
     def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         match obj.position():
             case 0:
-                return self.arrow().domain()
+                return self._arrow.domain()
             case 1:
-                return self.arrow().codomain()
+                return self._arrow.codomain()
             case _:
                 raise ValueError(
                     f"the walking arrow 0 -> 1 has only the objects 0 and 1, but got {obj}"
@@ -95,10 +95,10 @@ class _ArrowAsFunctor(Functor):
         left = morphism.domain().position()
         right = morphism.codomain().position()
         if left == right:
-            endpoint = self.arrow().domain() if left == 0 else self.arrow().codomain()
+            endpoint = self._arrow.domain() if left == 0 else self._arrow.codomain()
             return _category_mor_parent(self.codomain(), endpoint, endpoint).identity()
         if left == 0 and right == 1:
-            return self.arrow()
+            return self._arrow
         raise ValueError(f"the walking arrow 0 -> 1 has no morphism {left} -> {right}")
 
 

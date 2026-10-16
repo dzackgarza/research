@@ -35,7 +35,7 @@ def test_fixed_mor_category_retains_family_endpoints_and_underlying_mor() -> Non
     assert end.arrow_set() is point.Mor(point)
     assert end.underlying_mor() is point.Mor(point)
     assert end.accepts(identity)
-    assert end.object(identity) is arrow
+    assert end(identity) is arrow
     assert end.object_set() is end.arrow_set()
     assert end.objects().value(identity) is arrow
     assert end.arrows().cardinality() == cardinal(1)
@@ -119,7 +119,7 @@ def test_fixed_mor_limit_and_colimit_categories_and_functors_fix_the_only_object
     _point, end, _identity, arrow = _identity_object()
     diagrams = Cat().Mor(end, end)
     diagram = diagrams.constant_functor(arrow)
-    diagram_object = diagrams.object(diagram)
+    diagram_object = diagrams(diagram)
     limits = end.Limits(end)
     colimits = end.Colimits(end)
     products = end.Products(end)
@@ -217,7 +217,7 @@ def test_restricted_fixed_mor_object_set_is_the_admitted_arrow_subobject() -> No
 def test_functor_category_keeps_natural_transformations_as_two_morphisms() -> None:
     functor_category = Cat().Mor(Sets(), Sets())
     identity = Sets().identity_functor()
-    identity_object = functor_category.object(identity)
+    identity_object = functor_category(identity)
     transformations = identity.natural_transformations_to(identity)
     three = Sets.Δ[2]
 

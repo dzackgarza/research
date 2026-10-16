@@ -26,6 +26,7 @@ from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoricalArrow,
     OwnedMor,
 )
 
@@ -298,7 +299,7 @@ def realize_owned_category[SageObjectT: SageObject](obj: SageObjectT) -> SageObj
     construction data or category membership after instantiation.
     """
     category = obj.category()
-    if isinstance(obj, Morphism):
+    if isinstance(obj, (Morphism, CategoricalArrow)):
         _rebuild_morphism_class(obj, category)
         return obj
     if isinstance(obj, Parent):
@@ -356,7 +357,7 @@ def refine[SageObjectT: SageObject](
 
     target = category if isinstance(category, Category) else owned_category_join(tuple(category))
     check_certifying_predicates(obj, target, obj.category())
-    if isinstance(obj, Morphism):
+    if isinstance(obj, (Morphism, CategoricalArrow)):
         # A morphism's mathematical membership is determined by its Mor
         # parent.  There is no independent Sage category slot to mutate here;
         # the target only supplies the owned morphism-method surface selected

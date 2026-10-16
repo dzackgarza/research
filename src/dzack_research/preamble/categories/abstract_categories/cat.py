@@ -1647,31 +1647,6 @@ class _FunctorCategory(FixedMorCategory):
             return None
         return self._core_isomorphism_from_apex(core_mor, witness * ~inclusion(transporter))
 
-    class ParentMethods:
-        r"""A functor ``F: C -> D`` as an object of ``[C, D]``.
-
-        The functor is the defining datum.  It is stored here and nowhere
-        else; every other operation on the object reads it.
-        """
-
-        def __init__(self, functor: Functor, **rest) -> None:
-            self._functor = functor
-            super().__init__(**rest)
-
-        def functor(self) -> Functor:
-            return self._functor
-
-        def functor_category(self) -> _FunctorCategory:
-            r"""``[C, D]`` for the functor's own endpoints, whichever subcategory the object was built in."""
-            return self.functor().functor_category()
-
-        def arrow(self) -> CategoryFunctorMorphism:
-            r"""Return the same functor as the corresponding morphism in ``Cat``."""
-            return Cat().arrow(self.functor())
-
-        def _repr_(self) -> str:
-            return f"Functor object ({self.functor()})"
-
     def object(
         self,
         functor: Functor | CategoryFunctorMorphism,

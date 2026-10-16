@@ -87,6 +87,9 @@ class Functor(CategoricalArrow):
         # not determine a preimage; chosen preimages belong to ImageOfFunctor.
         self._object_images: dict[int, tuple[ObjectOfCategory, ObjectOfCategory]] = {}
         self._morphism_images: dict[int, tuple[Map, Map]] = {}
+        from dzack_research.preamble.refine import owned_parent_class
+
+        self.__class__ = owned_parent_class(type(self), self.functor_category())
 
     def _cache_key(self) -> int:
         r"""Functors have identity semantics as parameters of categorical constructions."""
@@ -97,6 +100,9 @@ class Functor(CategoricalArrow):
 
     def codomain(self) -> Category:
         return self._codomain
+
+    def category(self):
+        return self.functor_category()
 
     @abstract_method
     def _apply_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:
