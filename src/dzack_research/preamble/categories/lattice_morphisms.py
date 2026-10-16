@@ -431,7 +431,7 @@ class LatticeEmbeddingMethods:
     def validate_injectivity(self) -> None:
         r"""Raise ``ValueError`` unless ``ker(f) = 0`` is established for the underlying linear map."""
         domain = self.domain()
-        decision = domain.module_category().Mor(domain, self.codomain())(self).is_injective()
+        decision = self.module_morphism().is_injective()
         if decision is False:
             raise ValueError(f"{domain} -> {self.codomain()} is not a lattice embedding: its kernel is nonzero")
         if decision is not True:
@@ -769,7 +769,7 @@ class LatticeIsometryMethods:
     def validate_surjectivity(self) -> None:
         r"""Raise ``ValueError`` unless ``coker(f) = 0`` is established for the underlying linear map."""
         domain = self.domain()
-        decision = domain.module_category().Mor(domain, self.codomain())(self).is_surjective()
+        decision = self.module_morphism().is_surjective()
         if decision is False:
             raise ValueError(f"{domain} -> {self.codomain()} is not an isometry: it is not surjective")
         if decision is not True:

@@ -1233,7 +1233,7 @@ def _arithmetic_centralizer_group_generators(centralizer):
     group = centralizer.supergroup()
     isometry = centralizer.centralizing_element()
     lattice = group.lattice()
-    order = lattice.module_category().Mor(lattice, lattice)(isometry).multiplicative_order()
+    order = isometry.module_morphism().multiplicative_order()
     assert order != Infinity, (
         f"the centralizer of {isometry} in {group} has group generators computed here only "
         f"for an isometry of finite order, through the cyclotomic summands ker Phi_d(f); "
