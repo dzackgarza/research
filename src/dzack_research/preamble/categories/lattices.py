@@ -6259,10 +6259,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             ranking = self.parent().module_generating_set().ranking_map()
             coordinates = self.to_vector()
             return sorted(
-                (
-                    (label, coordinates(label))
-                    for label in coordinates.support().domain()
-                ),
+                coordinates.parent()._selected_module_coefficients(coordinates).items(),
                 key=lambda term: int(ranking(term[0])),
             )
 

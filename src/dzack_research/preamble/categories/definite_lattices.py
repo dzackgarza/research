@@ -661,7 +661,7 @@ class _ExactCVPEngine:
             lambda vector: by_coordinates[
                 _coordinate_tuple(self.lattice, vector)
             ],
-            name=f"Vectors of {self.lattice} close to {target}",
+            name="Close lattice vectors",
         )
 
 
