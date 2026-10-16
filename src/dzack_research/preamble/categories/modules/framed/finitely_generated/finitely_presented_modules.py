@@ -1926,15 +1926,26 @@ class _GeneralPresentedModule:
         cover, which contains the relations; over ZZ the engine's echelonized
         basis of that preimage is its Hermite normal form, which is unique.
         """
+        inclusion = subobject.inclusion()
+        assert inclusion.codomain() is self, f"{subobject} is not a submodule of {self}"
+        return self._submodule_key_from_generators(
+            tuple(inclusion(generator) for generator in subobject.module_generators())
+        )
+
+    def _submodule_key_from_generators(self, generators):
+        r"""The same canonical preimage key from a supplied generating family.
+
+        Private module adapter used by finite submodule actions. It lets an
+        action recognize an already represented image before constructing
+        another presentation of that same submodule.
+        """
         assert self.base_ring() is _owned_integers(), (
             f"the echelonized basis of a preimage is canonical over ZZ, but {self} is over {self.base_ring()}"
         )
         assert self._relation_submodule is not None, (
             f"{self} has no engine relation module, so its submodules have no engine preimage to compare"
         )
-        inclusion = subobject.inclusion()
-        assert inclusion.codomain() is self, f"{subobject} is not a submodule of {self}"
-        lifts = [self(inclusion(generator))._representative() for generator in subobject.module_generators()]
+        lifts = [self(generator)._representative() for generator in generators]
         preimage = self._free_module.submodule(lifts + list(self._relation_submodule.basis()))
         return tuple(tuple(row) for row in preimage.echelonized_basis_matrix().rows())
 
