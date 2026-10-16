@@ -1156,6 +1156,7 @@ class LatticeIsometryMethods:
             denominator_clearing=(self, ideal, scale),
         )
 
+    @cached_method
     def inverse(self):
         r"""Return the inverse isometry."""
         codomain = self.codomain()
