@@ -1415,58 +1415,6 @@ class FormModules(OwnedCategoryOverBaseRing):
             PairingObjects(self.base_ring()),
         ]
 
-    def _call_(
-        self,
-        form,
-        *,
-        _extra_categories=(),
-        _extra_construction_data=None,
-        _subobject_ambient=None,
-        _subobject_generator_images=None,
-        _subobject_lift=None,
-        _subobject_inclusion_factory=None,
-    ):
-        r"""Equip the module classified by ``form`` with that selected form."""
-        # A formed module is the pair (M,b), where b is already an element
-        # of Hom_R(M tensor M,W) or Hom_R(Gamma^2 M,W).  Bare tensors,
-        # functions and other maps do not construct this pair: their owner
-        # is the relevant Mor's element constructor.
-        from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-            ModuleMorphismMethods,
-        )
-
-        if not isinstance(form, ModuleMorphismMethods):
-            raise TypeError(
-                f"{self} takes an already constructed module Hom element b, not a callable or tensor: "
-                f"first construct b in M.bilinear_hom_space(W)"
-            )
-        if form.codomain() not in Modules(self.base_ring()):
-            raise TypeError(
-                f"the value object {form.codomain()} of {form} is not an {self.base_ring()}-module"
-            )
-        if _is_bilinear_form(form):
-            module = form.module()
-            if form.parent() is not module.bilinear_hom_space(form.codomain()):
-                raise TypeError(f"{form} is not an element of the chosen bilinear Hom of {module}")
-        elif _is_quadratic_form(form):
-            module = form.module()
-        else:
-            raise TypeError(f"{form} is not a bilinear or quadratic module-Hom element")
-        if module.base_ring() is not self.base_ring():
-            raise ValueError(
-                f"{self} is over {self.base_ring()}, but the form {form} is on {module}, "
-                f"which is over {module.base_ring()}"
-            )
-        return _form_module(
-            form,
-            _extra_categories=(self, *tuple(_extra_categories)),
-            _extra_construction_data=_extra_construction_data,
-            _subobject_ambient=_subobject_ambient,
-            _subobject_generator_images=_subobject_generator_images,
-            _subobject_lift=_subobject_lift,
-            _subobject_inclusion_factory=_subobject_inclusion_factory,
-        )
-
     _MorCategory = FormedModuleMorCategoryConstruction
     _MonoCategory = FormedModuleMonoCategoryConstruction
 
@@ -1934,6 +1882,58 @@ class FormModules(OwnedCategoryOverBaseRing):
             return bool(self.q() == parent.value_module()(value))
 
     class SubcategoryMethods:
+        def _call_(
+            self,
+            form,
+            *,
+            _extra_categories=(),
+            _extra_construction_data=None,
+            _subobject_ambient=None,
+            _subobject_generator_images=None,
+            _subobject_lift=None,
+            _subobject_inclusion_factory=None,
+        ):
+            r"""Equip the module classified by ``form`` with that selected form."""
+            # A formed module is the pair (M,b), where b is already an element
+            # of Hom_R(M tensor M,W) or Hom_R(Gamma^2 M,W).  Bare tensors,
+            # functions and other maps do not construct this pair: their owner
+            # is the relevant Mor's element constructor.
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                ModuleMorphismMethods,
+            )
+
+            if not isinstance(form, ModuleMorphismMethods):
+                raise TypeError(
+                    f"{self} takes an already constructed module Hom element b, not a callable or tensor: "
+                    f"first construct b in M.bilinear_hom_space(W)"
+                )
+            if form.codomain() not in Modules(self.base_ring()):
+                raise TypeError(
+                    f"the value object {form.codomain()} of {form} is not an {self.base_ring()}-module"
+                )
+            if _is_bilinear_form(form):
+                module = form.module()
+                if form.parent() is not module.bilinear_hom_space(form.codomain()):
+                    raise TypeError(f"{form} is not an element of the chosen bilinear Hom of {module}")
+            elif _is_quadratic_form(form):
+                module = form.module()
+            else:
+                raise TypeError(f"{form} is not a bilinear or quadratic module-Hom element")
+            if module.base_ring() is not self.base_ring():
+                raise ValueError(
+                    f"{self} is over {self.base_ring()}, but the form {form} is on {module}, "
+                    f"which is over {module.base_ring()}"
+                )
+            return _form_module(
+                form,
+                _extra_categories=(self, *tuple(_extra_categories)),
+                _extra_construction_data=_extra_construction_data,
+                _subobject_ambient=_subobject_ambient,
+                _subobject_generator_images=_subobject_generator_images,
+                _subobject_lift=_subobject_lift,
+                _subobject_inclusion_factory=_subobject_inclusion_factory,
+            )
+
         def Nondegenerate(self):
             r"""Return this category with the axiom that both radicals of the form are zero."""
             return self._with_axiom("Nondegenerate")
@@ -2384,7 +2384,7 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             raise TypeError(
                 f"{self} is constructed from a bilinear form, but {form} is not bilinear"
             )
-        return FormModules._call_(
+        return FormModules.SubcategoryMethods._call_(
             self,
             form,
             _extra_categories=_extra_categories,
