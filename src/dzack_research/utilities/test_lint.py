@@ -91,7 +91,7 @@ PROPERTY_REFINEMENTS = frozenset({
     "FreeModules", "FinitelyGeneratedModules", "FinitelyPresentedModules",
     "FinitelyPresentedTorsionModules", "TorsionModules", "ProjectiveModules",
     "VectorSpaces", "ModulesOverCommutativeRings", "GeneralModules", "FreeFormModules",
-    "EnumeratedSets", "TotallyOrderedSets", "PartiallyOrderedSets",
+    "EnumeratedSets", "TotallyOrderedSets",
     "EnumeratedByNaturals", "EnumeratedByIntegers", "FunctionEnumeratedSets",
     "PredicateSubgroups", "PredicateSubrings", "OrderedRings", "FinitePowerSets",
 })
