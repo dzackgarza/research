@@ -430,6 +430,40 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 augmentation=augmentation,
             )
 
+        def setwise_stabilizer(self, subset):
+            r"""Return ``{g : g.S = S}`` by the finite orbit of ``S``.
+
+            Direct image gives the action on the power set
+            (Mathlib ``Set.mulActionSet``). Its point stabilizer is the
+            setwise stabilizer. Reuse finite-orbit enumeration and Schreier
+            generators; do not enumerate the entire power set. Subsets are
+            owned subobjects, interned here by their finite rank sets so
+            their presentation identity cannot split one orbit point.
+            """
+            points = self.point_set()
+            power = points.power_set()
+            subset = power(subset)
+            ranking = points.ranking_map()
+            selected = {}
+
+            def point(members):
+                ranks = frozenset(int(ranking(member)) for member in members)
+                if ranks not in selected:
+                    selected[ranks] = power(tuple(points[rank] for rank in sorted(ranks)))
+                return selected[ranks]
+
+            def members(subobject):
+                inclusion = subobject.inclusion()
+                return (inclusion(member) for member in inclusion.domain())
+
+            start = point(members(subset))
+
+            def action(element, subobject):
+                return point(self.act(element, member) for member in members(subobject))
+
+            orbit = FiniteGSets(self.acting_group()).from_finite_orbits((start,), action)
+            return orbit.stabilizer(start)
+
         @cached_method(key=lambda self, point: self.ranking_map()(point))
         def _orbit_of(self, point):
             r"""The single orbit datum of ``point``: its orbit ``G``-set and its words, by the selected cover."""

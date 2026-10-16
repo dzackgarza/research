@@ -697,12 +697,14 @@ class LatticeEmbeddingMethods:
         inclusion = _subgroup_inclusion_into(subgroup, source.O())
         representation = source.discriminant_representation()
         discriminant_group = representation.codomain()
-        submodules = discriminant_group.subobject_action()
+        elements = discriminant_group.element_action()
         restricted = FiniteGSets(subgroup)(
-            submodules.point_set(),
-            lambda element, point: submodules.act(representation(inclusion(element)), point),
+            elements.point_set(),
+            lambda element, point: elements.act(representation(inclusion(element)), point),
         )
-        extending = restricted.stabilizer(discriminant_group.subobject_point(self.gluing_subgroup()))
+        glue = self.gluing_subgroup().inclusion()
+        subset = elements.point_set().power_set()(tuple(glue(point) for point in glue.domain().elements()))
+        extending = restricted.setwise_stabilizer(subset)
         into_source = inclusion * extending.inclusion()
         return self.codomain().O().subgroup(
             finite_ordered_set(

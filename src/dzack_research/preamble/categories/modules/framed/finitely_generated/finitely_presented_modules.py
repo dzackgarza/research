@@ -36,7 +36,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _coordinate_images,
     _engine_matrix,
     _morphism_from_engine_matrix,
-    _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
