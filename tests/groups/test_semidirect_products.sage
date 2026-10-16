@@ -58,14 +58,14 @@ def test_the_split_radical_extension_preserves_the_form_and_projects_to_its_fact
             images[labels[position + 1]] = lattice.linear_combination(coefficients)
         return lattice.O()(images)
 
-    generators = tuple(extension.group_generators())
-    for generator in generators:
+    group_generators = tuple(extension.group_generators())
+    for generator in group_generators:
         image = represented(generator)
         for left in lattice.module_generators():
             for right in lattice.module_generators():
                 assert image(left).b(image(right)) == left.b(right)
         point = generator.acting_component()
         assert extension.quotient_projection()(extension.acting_inclusion()(point)) == point
-    for left in generators:
-        for right in generators:
+    for left in group_generators:
+        for right in group_generators:
             assert represented(left * right) == represented(left) * represented(right)

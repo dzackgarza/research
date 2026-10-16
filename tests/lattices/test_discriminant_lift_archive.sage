@@ -38,11 +38,11 @@ def test_the_group_generators_of_O_q_A2_lift_to_O_A2() -> None:
     target = lattice.discriminant_group().orthogonal_group()
     lifts = lattice.O().discriminant_orthogonal_group_generator_lifts()
 
-    generators = target.group_generators()
-    assert lifts.index_set() == generators.index_set()
+    group_generators = target.group_generators()
+    assert lifts.index_set() == group_generators.index_set()
     for label in lifts.index_set():
         assert lifts.value(label) in lattice.O()
-        assert lifts.value(label).discriminant_morphism() == generators.value(label)
+        assert lifts.value(label).discriminant_morphism() == group_generators.value(label)
 
 
 def test_minus_one_on_A2_factors_through_the_stable_orthogonal_group() -> None:
