@@ -1048,9 +1048,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             inclusion = generated.inclusion()
             restricted = (morphism * inclusion).preimage_subgroup(target)
             augmentation = restricted.schreier_generating_morphism()
-            return augmentation.domain().Mor(self).elementwise(
-                inclusion * restricted.inclusion() * augmentation
-            )
+            return (inclusion * restricted.inclusion() * augmentation).factor_through(self.inclusion())
 
 __all__ = [
     "CentralizerSubgroups",
