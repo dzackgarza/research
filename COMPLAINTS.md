@@ -1345,6 +1345,19 @@ Finite-atlas chart sections require maps from chart images into the power set.
 `_FiniteAtlasModuleOpenPresheaf` and `_FiniteAtlasStructurePresheaf` consequently
 provide only whole-space sections. Repair the common open-site datum and its
 chart-image maps before extending chart evaluation and inverse-image sheaves.
+The point-map prerequisite is also unresolved: `Schemes.ParentMethods` accepts
+only an already-parented point, while `SchemeMorphismMethods._call_` composes
+scheme-valued points. Neither inspected path transports a prime-spectrum point
+along a chart embedding. The affine route needs contraction of prime ideals;
+`RingMorphism.contraction_of_ideal` currently accepts only the canonical quotient
+case. Its general preimage is the ideal defined by membership after the ring
+map, with primality inherited from the target prime. Finite generators are a
+computational presentation, not defining data for that preimage. This shares
+the ideal-representation prerequisite of `general-minimal-prime-locus` in
+`TODO.md`. The formal spectrum and contravariant functor are exported by
+`lean-categories/LeanCategories/Schemes/Spectra.lean`; no new formal definition
+is requested for them. The glued point set must also identify overlap points
+through the supplied transition isomorphisms.
 The existing `sheaves-compute-sections-on-opens` owner in [TODO.md](TODO.md)
 retains those obligations. The inspected boundary is the topology, open-cover,
 affine-scheme and finite-atlas constructors named here; no absence of the

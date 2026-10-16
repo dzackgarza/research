@@ -5880,9 +5880,9 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             (Stacks Project, Tag 01I8; algebra tensor product multiplication)::
 
                 sage: from dzack_research.preamble.all import *
-                sage: A = QQ.polynomial_ring(('x',)); x = A.gen()
-                sage: X = A.affine_spectrum(base_ring=QQ)
-                sage: cover = DistinguishedAffineCovers(X)((x, A.one()-x))
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: X = AffineSchemes(QQ)(A)
+                sage: cover = X.distinguished_open_cover(x, A.one()-x)
                 sage: datum = AlgebraGluingData(cover).an_object()
                 sage: sheaf = datum.sheaf()
                 sage: whole = sheaf.descent_data().coverage().whole_open()
