@@ -39,7 +39,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.logic import AtomicProposition, negation
+from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import Category
 
@@ -461,7 +461,7 @@ def _regular_unit_ratio(ring, left, right):
     ratio = total(left) * total(right).inverse_of_unit()
     match ratio in ring:
         case True:
-            return bool(ring(ratio).is_unit())
+            return ring(ratio).is_unit()
         case False:
             return False
 
@@ -614,9 +614,9 @@ class _CartierSectionClasses:
     r"""The underlying set of global Cartier-quotient sections.
 
     Finite-atlas lifts are identified when their local equations differ by
-    chartwise regular units.  For distinct represented atlases, equality is
-    the proposition ``equal(D, E)`` until a common refinement is available;
-    this does not change the section represented by either lift.
+    regular units on a common cover. For an affine scheme, intersections
+    are computed by the affine fibre products of chart embeddings. Over a
+    nonaffine scheme a common refinement remains required.
     """
 
     def __init__(self, quotient_sheaf, **rest) -> None:
@@ -801,7 +801,7 @@ class _CartierSectionClasses:
 
     def _finite_atlas_is_zero(self, value):
         atlas = value._atlas
-        return all(
+        return conjunction(
             _regular_unit_ratio(
                 atlas.chart(index).coordinate_algebra(),
                 value.local_equation(index),
@@ -812,13 +812,62 @@ class _CartierSectionClasses:
 
     def _same_atlas_equal(self, left, right):
         atlas = left._atlas
-        return all(
+        return conjunction(
             _regular_unit_ratio(
                 atlas.chart(index).coordinate_algebra(),
                 left.local_equation(index),
                 right.local_equation(index),
             )
             for index in atlas.chart_indices()
+        )
+
+    def _affine_common_refinement_equal(self, left, right):
+        r"""Compare local equations on every ``U_i x_X V_j``.
+
+        These affine intersections cover ``X``. Equality in ``K^*/O^*``
+        is local, so the two sections agree exactly when every ratio is a
+        regular unit (Stacks, Tag 02AQ). The affine pullbacks retain both
+        coordinate maps; no local equation is identified across parents.
+
+        Unexecuted comparison of distinct affine presentations::
+
+            sage: from dzack_research.preamble.all import *
+            sage: A = QQ['x']; x = A.algebra_generator('x')
+            sage: X = AffineSchemes(QQ)(A)
+            sage: divisors = CartierDivisorGroups().of_scheme(X)
+            sage: D = divisors.principal_divisor(x)
+            sage: identity = X.categorical_identity_morphism()
+            sage: E = divisors.restriction_map(identity)(D)
+            sage: E.gluing_datum() is D.gluing_datum()
+            False
+            sage: E == D
+            True
+            sage: E == divisors.principal_divisor(x*x)
+            False
+        """
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        schemes = Schemes(self.scheme().scheme_base_ring())
+
+        def agree(left_index, right_index):
+            intersection = schemes.fiber_product(
+                left._atlas.chart_embedding(left_index),
+                right._atlas.chart_embedding(right_index),
+            )
+            left_equation = _total_quotient_pullback(
+                intersection.left_projection().coordinate_algebra_morphism(),
+                left.local_equation(left_index),
+            )
+            right_equation = _total_quotient_pullback(
+                intersection.right_projection().coordinate_algebra_morphism(),
+                right.local_equation(right_index),
+            )
+            return _regular_unit_ratio(intersection.coordinate_algebra(), left_equation, right_equation)
+
+        return conjunction(
+            agree(left_index, right_index)
+            for left_index in left._atlas.chart_indices()
+            for right_index in right._atlas.chart_indices()
         )
 
     def equal(self, left, right):
@@ -831,6 +880,8 @@ class _CartierSectionClasses:
         """
         left = self(left)
         right = self(right)
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
         match (left._kind, right._kind):
             case _ if left is right:
                 return True
@@ -842,6 +893,8 @@ class _CartierSectionClasses:
                 return self._finite_atlas_is_zero(left)
             case ("finite_atlas", "finite_atlas") if left._atlas is right._atlas:
                 return self._same_atlas_equal(left, right)
+            case ("finite_atlas", "finite_atlas") if self.scheme() in Schemes(self.scheme().scheme_base_ring()).Affine():
+                return self._affine_common_refinement_equal(left, right)
             case ("sum", "sum") if (
                 self.equal(left._left, right._left) is True
                 and self.equal(left._right, right._right) is True
