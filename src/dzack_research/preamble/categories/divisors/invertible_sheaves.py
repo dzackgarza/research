@@ -178,8 +178,6 @@ class _DistinguishedCoverInvertibleSheafEngine(_ModuleGluingSheafEngine):
     def global_sections(self):
         return self.gluing_datum().compatible_sections()
 
-    sections = global_sections
-
     def morphism_to(self, target, local_maps):
         r"""Return the sheaf morphism represented by the supplied chart maps."""
         return QuasiCoherentSheaves(self.scheme()).Mor(self, target)(local_maps)

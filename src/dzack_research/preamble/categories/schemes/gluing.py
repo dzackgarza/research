@@ -63,6 +63,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     ZariskiCoveringFamilies,
     PresheafObjects,
     zariski_coverage,
+    _AffineModuleOpenPresheaf,
     _open_sheaf_placement,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -4874,10 +4875,37 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             construction_data=None,
             _engine=_ModuleGluingSheafEngine,
         ):
-            r"""Construct this descent datum's sheaf with optional stronger placement."""
-            sheaves = self.cover().cech_coverage().sheaves(
-                Modules(self.scheme().coordinate_algebra())
-            )
+            r"""Construct the affine descended sheaf on ``Open(X)``.
+
+            The equivalence ``QCoh(Spec A) = Modules(A)`` identifies it with
+            the sheaf of its module of compatible sections (Stacks, Tag 01I8).
+            The chosen local modules and transitions remain in this datum.
+
+            Unexecuted trivial-bundle descent specimen::
+
+                sage: from dzack_research.preamble.all import *
+                sage: ring = QQ["x"]
+                sage: x = ring.algebra_generator("x")
+                sage: line = AffineSchemes(QQ)(ring)
+                sage: cover = line.distinguished_open_cover(x, 1 - x)
+                sage: left = cover.open(0).coordinate_algebra().free_module(1)
+                sage: right = cover.open(1).coordinate_algebra().free_module(1)
+                sage: left_overlap = cover.restrict_module(left, 0, 1)
+                sage: right_overlap = cover.restrict_module(right, 1, 0)
+                sage: transition = left_overlap.Mor(right_overlap)(
+                ....:     {0: right_overlap.module_generator(0)}
+                ....: )
+                sage: sheaf = cover.glue_modules((left, right), {(0, 1): transition})
+                sage: site = line.open_subsets_site()
+                sage: basic = site(line.underlying_space().distinguished_open(x))
+                sage: localized = sheaf.sections(basic)
+                sage: localized.base_ring()(x).is_unit()
+                True
+                sage: whole = sheaf.descent_data().coverage().whole_open()
+                sage: sheaf.sections(whole).module_rank() == 1
+                True
+            """
+            sheaves = QuasiCoherentSheaves(self.scheme())
             data = dict(construction_data or {})
             if "module_gluing_datum" in data:
                 raise ValueError(
@@ -4885,12 +4913,15 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
                     f"{self} and must not be given again"
                 )
             data["module_gluing_datum"] = self
+            presheaf = _AffineModuleOpenPresheaf(
+                self.scheme(),
+                lambda: sheaves.associated_sheaf(self.compatible_sections()),
+            )
             return sheaves.object(
-                self.descent_presheaf(),
-                self.descent_data(),
-                categories=(QuasiCoherentSheaves(self.scheme()), *tuple(categories)),
+                categories=categories,
                 construction_data=data,
                 _engine=_engine,
+                open_sections_presheaf=presheaf,
             )
 
         @cached_method
@@ -4903,7 +4934,7 @@ class ModuleGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
             With no additional placement this is the canonical cached sheaf
             represented by the datum.  A specialization may add semantic
             categories and a private engine, but construction still passes
-            through the same ``Sheaves.object`` entry.
+            through the same quasi-coherent sheaf entry.
             """
             if not categories and construction_data is None and _engine is None:
                 return self._canonical_sheaf()
