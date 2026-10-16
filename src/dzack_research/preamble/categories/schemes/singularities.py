@@ -73,7 +73,7 @@ class _PlaneLinearRightEquivalence(CategoricalIsomorphism):
     def __init__(self, parent, forward, inverse, *, source, target) -> None:
         self._source_germ = source
         self._target_germ = target
-        super().__init__(parent, forward, inverse, verify=False)
+        super().__init__(parent, forward, lambda: inverse, verify=False)
 
     def source(self):
         return self._source_germ

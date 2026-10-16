@@ -162,7 +162,7 @@ class TorsionFormIsometry(CategoricalIsomorphism):
         ``check=True``, or strict checking, runs the validators
         :meth:`validate_inverse` and :meth:`validate_form_preservation`.
         """
-        super().__init__(parent, forward, inverse, verify=False)
+        super().__init__(parent, forward, lambda: inverse, verify=False)
         self._quadratic = bool(quadratic)
         self.validate_inverse(check=check)
         self.validate_form_preservation(check=check)
@@ -223,7 +223,7 @@ class TorsionFormIsometry(CategoricalIsomorphism):
 
     def inverse_morphism(self):
         r"""Return the underlying inverse module morphism."""
-        return self._inverse
+        return self._inverse_morphism()
 
 
 def _torsion_form_isometry(forward, inverse, *, quadratic: bool):

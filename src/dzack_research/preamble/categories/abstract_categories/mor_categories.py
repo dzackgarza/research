@@ -84,6 +84,8 @@ from dzack_research.preamble.refine import (
 from dzack_research.preamble.validation import validator
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
     from dzack_research.preamble.logic import Predicate
     from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -1353,13 +1355,20 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
 
 
 class CategoricalIsomorphism(Morphism):
-    r"""An isomorphism represented by mutually inverse arrows."""
+    r"""An isomorphism represented by mutually inverse arrows.
+
+    The defining datum is the forward arrow ``f: X -> Y``; the inverse
+    ``f^{-1}: Y -> X`` is determined by it.  It is supplied as a zero-argument
+    computation, asked on the first request and cached (``OWN-22``): a known
+    inverse is the constant computation, and a composite ``g f`` supplies
+    ``f^{-1} g^{-1}`` without composing it at construction.
+    """
 
     def __init__(
         self,
         parent: Parent,
         forward: Morphism,
-        inverse: Morphism,
+        inverse_computation: Callable[[], Morphism],
         *,
         verify: bool = False,
     ) -> None:
@@ -1369,18 +1378,28 @@ class CategoricalIsomorphism(Morphism):
                 f"an isomorphism {self.domain()} -> {self.codomain()} needs a forward map "
                 f"{self.domain()} -> {self.codomain()}, but {forward} is a map {forward.domain()} -> {forward.codomain()}"
             )
-        if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
-            raise ValueError(
-                f"an isomorphism {self.domain()} -> {self.codomain()} needs an inverse map "
-                f"{self.codomain()} -> {self.domain()}, but {inverse} is a map {inverse.domain()} -> {inverse.codomain()}"
-            )
         self._forward = forward
-        self._inverse = inverse
+        self._inverse_computation = inverse_computation
         if verify:
             self.validate_inverse_pair()
 
     def forward(self) -> Morphism:
         return self._forward
+
+    @cached_method
+    def _inverse_morphism(self) -> Morphism:
+        r"""The base inverse arrow ``Y -> X``, computed once (protected; ``OWN-05``).
+
+        Owner: this isomorphism; callers: its own methods and those of its
+        subclasses.  Any other caller asks ``inverse().forward()``.
+        """
+        inverse = self._inverse_computation()
+        if inverse.domain() is not self.codomain() or inverse.codomain() is not self.domain():
+            raise ValueError(
+                f"an isomorphism {self.domain()} -> {self.codomain()} needs an inverse map "
+                f"{self.codomain()} -> {self.domain()}, but {inverse} is a map {inverse.domain()} -> {inverse.codomain()}"
+            )
+        return inverse
 
     def inverse(self) -> CategoricalIsomorphism:
         r"""The inverse isomorphism ``Y -> X``, an element of the core Mor from the codomain.
@@ -1393,17 +1412,17 @@ class CategoricalIsomorphism(Morphism):
             _isomorphism_from_known_inverse_pair,
         )
 
-        return _isomorphism_from_known_inverse_pair(self._inverse, self._forward)
+        return _isomorphism_from_known_inverse_pair(self._inverse_morphism(), self._forward)
 
     def __invert__(self) -> CategoricalIsomorphism:
         return self.inverse()
 
     def left_inverse_decision(self):
-        composite = self._inverse * self.forward()
+        composite = self._inverse_morphism() * self.forward()
         return composite == composite.parent().identity()
 
     def right_inverse_decision(self):
-        composite = self.forward() * self._inverse
+        composite = self.forward() * self._inverse_morphism()
         return composite == composite.parent().identity()
 
     def inverse_pair_decision(self):
@@ -1415,7 +1434,7 @@ class CategoricalIsomorphism(Morphism):
         decision = self.inverse_pair_decision()
         if decision is False:
             raise ValueError(
-                f"{self._inverse} is not an inverse of {self.forward()}: at least one inverse equation fails"
+                f"{self._inverse_morphism()} is not an inverse of {self.forward()}: at least one inverse equation fails"
             )
         return decision
 
@@ -1426,19 +1445,20 @@ class CategoricalIsomorphism(Morphism):
         return self.forward()(element)
 
     def __eq__(self, other: Any) -> bool | Predicate:
+        r"""Two isomorphisms of one Mor are equal when their forward arrows are.
+
+        An inverse is unique when it exists, so the forward arrows decide;
+        neither inverse is computed.
+        """
         if self is other:
             return True
         # A represented isomorphism can be parented by an ordinary Mor object of
         # its base category, beside maps that are not isomorphisms.
         match other:
             case CategoricalIsomorphism() if parent(other) is self.parent():
-                pass
+                return self.forward() == other.forward()
             case _:
                 return False
-        equalities = (self.forward() == other.forward(), self._inverse == other._inverse)
-        from dzack_research.preamble.logic import conjunction
-
-        return conjunction(equalities)
 
     def __ne__(self, other: Any) -> bool | Predicate:
         from dzack_research.preamble.logic import negation
@@ -1452,24 +1472,21 @@ class CategoricalIsomorphism(Morphism):
         r"""Compose with ``other``; a composite of isomorphisms is an element of the Iso Mor.
 
         For isomorphisms ``f: A -> B`` and ``g: B -> C`` the composite ``g f``
-        has inverse ``f^{-1} g^{-1}``, so it is that known inverse pair in
-        ``Core(C).Mor(A, C)``, whose arrows are those of ``Iso_C(A, C)``.
-        Composed with an arrow that is not an isomorphism, it is the
-        composite of the forward arrow with that arrow.
+        has inverse ``f^{-1} g^{-1}``, so it is the isomorphism of
+        ``Core(C).Mor(A, C)`` with forward arrow ``g f`` whose inverse is
+        that composite, computed when it is first asked.  ``f`` may be any
+        arrow of the core Mor, whatever type realizes it: its inverse is
+        asked through ``f.inverse()``.  Composed with an arrow that is not an
+        isomorphism, it is the composite of the forward arrow with that arrow.
         """
         if not _precomposable(self, other):
             return NotImplemented
         core = self.parent().mor_category().Core()
         if other not in core.Mor(other.domain(), self.domain()):
             return self.forward() * other
-        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
-            _isomorphism_from_known_inverse_pair,
-        )
-
-        return _isomorphism_from_known_inverse_pair(
+        return core.Mor(other.domain(), self.codomain())._from_inverse_computation(
             self.forward() * other.forward(),
-            other._inverse * self._inverse,
-            base_category=core,
+            lambda: other.inverse().forward() * self._inverse_morphism(),
         )
 
 

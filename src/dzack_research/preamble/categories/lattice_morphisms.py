@@ -1892,6 +1892,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
 
     def _from_known_inverse_pair(self, forward, inverse):
         r"""The isometry whose forward arrow is ``forward``; its inverse is that of the isometry."""
+        return self._from_inverse_computation(forward, lambda: inverse)
+
+    def _from_inverse_computation(self, forward, inverse_computation):
+        r"""The isometry whose forward arrow is ``forward``; the isometry computes its own inverse."""
         domain = self.domain()
         return self(lambda label: forward(domain.module_generator(label)))
 

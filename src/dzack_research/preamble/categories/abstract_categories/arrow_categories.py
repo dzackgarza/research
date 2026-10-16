@@ -2388,7 +2388,7 @@ class CoreMor(CategoricalMor):
         if inverse is None:
             forward, inverse = forward
         self._require_base_morphisms(forward, inverse)
-        return self.element_class(self, forward, inverse)
+        return self.element_class(self, forward, lambda: inverse)
 
     def _require_base_morphisms(self, forward: Morphism, inverse: Morphism) -> None:
         base = self.core_category().base_category()
@@ -2405,7 +2405,17 @@ class CoreMor(CategoricalMor):
     def _from_known_inverse_pair(self, forward, inverse):
         r"""Construct an isomorphism from an inverse pair proved by its owner."""
         self._require_base_morphisms(forward, inverse)
-        return self.element_class(self, forward, inverse, verify=False)
+        return self._from_inverse_computation(forward, lambda: inverse)
+
+    def _from_inverse_computation(self, forward, inverse_computation):
+        r"""The isomorphism ``forward``, whose inverse ``inverse_computation()`` is asked on first request.
+
+        Protected (``OWN-05``): the caller has proved that ``forward`` is an
+        arrow of the base category with that inverse; a composite of two
+        isomorphisms of this core (``CategoricalIsomorphism.__mul__``) is the
+        first caller.  Nothing is checked or composed here (``OWN-22``).
+        """
+        return self.element_class(self, forward, inverse_computation, verify=False)
 
     def identity(self) -> CategoricalIsomorphism:
         if self.domain() is not self.codomain():
