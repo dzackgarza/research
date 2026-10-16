@@ -411,9 +411,6 @@ class ExactComplexNumber(FieldElement):
         )
 
 
-ComplexNumber = ExactComplexNumber
-
-
 class ExactComplexField(UniqueRepresentation, Field):
     r"""The field \(\mathbb C = \mathbb R[i]/(i^2+1)\) of exact complex numbers.
 
@@ -736,7 +733,6 @@ def _restore_exact_complex(expression: Expression) -> ExactComplexNumber:
 __all__ = [
     "CC",
     "I",
-    "ComplexNumber",
     "ComplexRelation",
     "ExactComplexField",
     "ExactComplexNumber",
