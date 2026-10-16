@@ -316,7 +316,7 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
 
 def _tensor_view(morphism):
 
-    return tensor.from_morphism(morphism)
+    return tensor.from_morphism(morphism.module_morphism())
 
 
 def _rational_spinor_norm_representative(isometry):
