@@ -55,10 +55,9 @@ def test_the_double_cosets_of_gamma_zero_two_are_its_two_cusps():
     plane = ZZ.free_module(points)
     e_0, e_1 = plane.module_generator(first), plane.module_generator(second)
     general_linear = plane.general_linear_group()
-    endomorphisms = plane.Mor(plane)
 
     def automorphism(image_of_e_0, image_of_e_1):
-        return general_linear(endomorphisms({first: image_of_e_0, second: image_of_e_1}))
+        return general_linear({first: image_of_e_0, second: image_of_e_1})
 
     translation = automorphism(e_0, e_0 + e_1)
     lower = automorphism(e_0 + 2 * e_1, e_1)
@@ -77,10 +76,9 @@ def test_the_double_cosets_of_sl2z_are_its_one_cusp():
     plane = ZZ.free_module(points)
     e_0, e_1 = plane.module_generator(first), plane.module_generator(second)
     general_linear = plane.general_linear_group()
-    endomorphisms = plane.Mor(plane)
 
     def automorphism(image_of_e_0, image_of_e_1):
-        return general_linear(endomorphisms({first: image_of_e_0, second: image_of_e_1}))
+        return general_linear({first: image_of_e_0, second: image_of_e_1})
 
     rotation = automorphism(e_1, -e_0)
     translation = automorphism(e_0, e_0 + e_1)
