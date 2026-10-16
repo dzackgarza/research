@@ -41,73 +41,6 @@ def _column_matrix_from_images(lattice, images):
     )
 
 
-class TwoUFullGeneratingDatum(SageObject):
-    r"""Finite generators supplied by the ``2U`` approximate-model theorem.
-
-    Let ``A`` be the finite-generator approximate subgroup, let ``v`` be the
-    selected primitive base vector, and let ``r_i`` run through the approximate
-    orbit representatives lying in the full ``O(L)``-orbit of ``v``.  Choose
-    ``t_i`` with ``t_i(v)=r_i`` and generators of ``P_v=Stab(v)``.  Since the
-    approximate-model oracle says every vector in that full orbit is
-    ``A``-equivalent to some ``r_i``, the elementary orbit argument gives
-
-    ``O(L) = < A, P_v, t_i >``.
-
-    The object retains precisely those finite families.  It does not claim a
-    word algorithm in the approximate subgroup beyond the sourced oracle.
-    """
-
-    def __init__(
-        self,
-        model,
-        square,
-        base_vector,
-        approximate_generators,
-        stabilizer_generators,
-        orbit_representatives,
-        orbit_transporters,
-        generating_family,
-    ) -> None:
-        self._model = model
-        self._square = square
-        self._base_vector = base_vector
-        self._approximate_generators = approximate_generators
-        self._stabilizer_generators = stabilizer_generators
-        self._orbit_representatives = orbit_representatives
-        self._orbit_transporters = orbit_transporters
-        self._generating_family = generating_family
-
-    def model(self):
-        return self._model
-
-    def lattice(self):
-        return self.model().lattice()
-
-    def square(self):
-        return self._square
-
-    def base_vector(self):
-        return self._base_vector
-
-    def approximate_generators(self):
-        return self._approximate_generators
-
-    def stabilizer_generators(self):
-        return self._stabilizer_generators
-
-    def orbit_representatives(self):
-        return self._orbit_representatives
-
-    def orbit_transporters(self):
-        return self._orbit_transporters
-
-    def generating_family(self):
-        return self._generating_family
-
-    def __repr__(self) -> str:
-        return f"Finite 2U orthogonal generating datum for {self.lattice()}"
-
-
 class TwoUEichlerModel(SageObject):
     r"""The represented determinant model ``U + U + K`` used by Eichler's theorem.
 
@@ -419,64 +352,6 @@ class TwoUEichlerModel(SageObject):
 
         return OrbitCoverModel.split_covering_vectors(self, square)
 
-    def source_generating_family(self):
-        r"""Return the represented source-defined finite family inside ``O(2U+K)``.
-
-        The family retains five mathematically different sources of
-        isometries: the two determinant-model ``SL_2(ZZ)`` actions, the
-        chosen generators of ``O(K)`` extended by the identity on ``2U``,
-        the selected ``K``-direction Eichler transvections, and explicit
-        lifts of generators of ``O(A_L)``.  Labels retain those sources even
-        when two labels happen to determine the same lattice isometry.
-
-        This is generating *data*, not a claim that the generated subgroup is
-        the full orthogonal group.  That equality belongs to the recursive
-        generation theorem and its parabolic-stabilizer hypotheses.
-        """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-            finite_ordered_set,
-        )
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        special_linear_generators = self.special_linear_group().group_generators()
-        complement_generators = self.orthogonal_complement().O().group_generators()
-        eichler = self.complement_eichler_transvections()
-        discriminant_lifts = self.lattice().O().discriminant_orthogonal_group_generator_lifts()
-        labels = finite_ordered_set(
-            tuple(("left-SL2", generator) for generator in special_linear_generators)
-            + tuple(("right-SL2", generator) for generator in special_linear_generators)
-            + tuple(("O(K)", generator) for generator in complement_generators)
-            + tuple(("Eichler", label) for label in eichler.index_set())
-            + tuple(("discriminant-lift", label) for label in discriminant_lifts.index_set())
-        )
-
-        def generator(label):
-            kind, datum = label
-            match kind:
-                case "left-SL2":
-                    return self.left_action(datum)
-                case "right-SL2":
-                    return self.right_action(datum)
-                case "O(K)":
-                    return self.complement_action(datum)
-                case "Eichler":
-                    return eichler[datum]
-                case "discriminant-lift":
-                    return discriminant_lifts[datum]
-                case _:
-                    raise ValueError(
-                        f"{label!r} does not name a generator of O(2U + K) for {self}: its kind "
-                        f"{kind!r} is not a known kind of generator"
-                    )
-
-        return finite_indexed_family(
-            labels,
-            generator,
-            name=f"Source-defined Eichler generating family in O({self.lattice()})",
-        )
-
     def full_generating_data(self, square):
         r"""Dispatch the specialized approximate-model generation theorem to the port."""
         from sage_indefinite_port.indefinite.eichler import OrbitCoverModel
@@ -486,5 +361,4 @@ class TwoUEichlerModel(SageObject):
 
 __all__ = [
     "TwoUEichlerModel",
-    "TwoUFullGeneratingDatum",
 ]
