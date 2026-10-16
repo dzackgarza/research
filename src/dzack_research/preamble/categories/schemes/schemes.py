@@ -6569,6 +6569,88 @@ def _multiprojective_closed_fibre(left_map, right_map):
     return None
 
 
+def _projective_closed_affine_pullback(left_map, right_map):
+    r"""Pull a projective closed immersion back to an affine scheme.
+
+    The inverse image is cut out by the pulled homogeneous equations
+    (Stacks, Definition 26.17.7 and Lemma 26.17.6). Its quotient algebra
+    gives the universal factorization; both scheme projections are retained.
+
+    Unexecuted conic chart pullback::
+
+        sage: from dzack_research.preamble.all import *
+        sage: P = ProjectiveSpaces(QQ)(2)
+        sage: S = P.O(1).global_sections().homogeneous_coordinate_ring()
+        sage: x0, x1, x2 = tuple(S.algebra_generators())
+        sage: Z = P.closed_subscheme(x0*x2-x1*x1)
+        sage: chart = P.standard_affine_chart_embedding(0)
+        sage: product = Schemes(QQ).fiber_product(Z.inclusion(), chart)
+        sage: product.left_projection().codomain() is Z
+        True
+        sage: product.right_projection().codomain() is chart.domain()
+        True
+        sage: product.left_projection().is_open_immersion()
+        True
+        sage: Z.inclusion()*product.left_projection() == chart*product.right_projection()
+        True
+        sage: product.from_pullback_cone(product.left_projection(), product.right_projection()) == product.categorical_identity_morphism()
+        True
+    """
+    for closed_map, affine_map, closed_on_left in (
+        (left_map, right_map, True), (right_map, left_map, False),
+    ):
+        closed = closed_map.domain()
+        affine = affine_map.domain()
+        ambient = closed_map.codomain()
+        base = affine.scheme_base_ring()
+        if not (
+            closed in ClosedSubschemes(base)
+            and (closed_map == closed.inclusion()) is True
+            and affine in Schemes(base).Affine()
+            and (ambient in ProjectiveSpaces(base) or ambient in ProductProjectiveSpaces(base))
+        ):
+            continue
+        coordinate_map = _projective_coordinate_morphism(affine_map)
+        coordinates = tuple(coordinate_map.homogeneous_coordinates())
+        ring = affine.coordinate_algebra()
+        if ambient in ProjectiveSpaces(base):
+            homogeneous_ring = ambient.O(1).global_sections().homogeneous_coordinate_ring()
+            equations = tuple(closed.homogeneous_defining_equations(homogeneous_ring))
+        else:
+            equations = tuple(closed.defining_equations())
+        local_equations = tuple(
+            ring(_evaluate_owned_homogeneous_polynomial_on_coordinates(equation, equation.parent(), coordinates))
+            for equation in equations
+        )
+        quotient, quotient_map = ring._quotient_by_algebra_elements(local_equations)
+        local_coordinates = tuple(quotient_map(ring(coordinate)) for coordinate in coordinates)
+
+        def closed_projection(mor):
+            return _ProjectiveCoordinateMorphism(
+                mor, local_coordinates,
+                coefficient_map=quotient_map * coordinate_map.coefficient_map(),
+            )
+
+        projection_data = (
+            (closed_projection, quotient_map) if closed_on_left
+            else (quotient_map, closed_projection)
+        )
+
+        def factor(left_cone_map, right_cone_map):
+            return product.corestriction(right_cone_map if closed_on_left else left_cone_map)
+
+        product = affine.closed_subscheme(
+            local_equations,
+            placements=(FiberProductSchemes(base),),
+            _quotient_data=(quotient, quotient_map),
+            fiber_product_construction=SchemeFiberProductConstruction(
+                (left_map, right_map), projection_data, scheme_factorization=factor,
+            ),
+        )
+        return product
+    return None
+
+
 def _scheme_fiber_product(left_map, right_map):
     r"""Return ``X x_S Y`` in the represented affine and scalar-projective regimes."""
     assert left_map.codomain() is right_map.codomain(), (
@@ -6578,6 +6660,9 @@ def _scheme_fiber_product(left_map, right_map):
     projective_base_change = _projective_space_scalar_base_change(left_map, right_map)
     if projective_base_change is not None:
         return projective_base_change
+    closed_affine_pullback = _projective_closed_affine_pullback(left_map, right_map)
+    if closed_affine_pullback is not None:
+        return closed_affine_pullback
     multiprojective_fibre = _multiprojective_closed_fibre(left_map, right_map)
     if multiprojective_fibre is not None:
         return multiprojective_fibre
