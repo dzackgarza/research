@@ -325,8 +325,8 @@ def _finite_form_isometries(start):
         and target in QuadraticFormModules(target.base_ring())
     )
     for automorphism in target.O():
-        forward = automorphism.forward() * start.forward()
-        inverse = start.inverse().forward() * automorphism.inverse_morphism()
+        forward = automorphism.forward() * start.forward().module_morphism()
+        inverse = start.inverse().forward().module_morphism() * automorphism.inverse_morphism()
 
         yield _torsion_form_isometry(
             forward,

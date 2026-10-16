@@ -819,7 +819,7 @@ class RingMor(CategoricalMor):
             f"but {domain} -> {codomain} is not a pair of fields"
         )
         return owned_sets.finite_ordered_set(tuple(
-            self(engine_embedding)
+            self._from_engine_morphism(engine_embedding)
             for engine_embedding in _engine_ring(domain).embeddings(_engine_ring(codomain))
         ))
 
