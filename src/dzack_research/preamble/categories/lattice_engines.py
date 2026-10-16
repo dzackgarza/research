@@ -129,25 +129,7 @@ def _signed_vector_witness(lattice, sign):
     )
     if lattice.module_rank() == 0:
         return None
-    labels = tuple(lattice.module_generating_set())
-
-    def hessian_entry(left_label, right_label):
-        left = lattice.module_generator(left_label)
-        right = lattice.module_generator(right_label)
-        forward = lattice.b(left, right)
-        return forward + lattice.b(right, left)
-
-    size = len(labels)
-    hessian = tensor(
-        ring,
-        (),
-        (size, size),
-        tuple(
-            tuple(hessian_entry(left, right) for right in labels)
-            for left in labels
-        ),
-    )
-    coordinates = _rational_signed_direction(hessian, sign)
+    coordinates = _rational_signed_direction(lattice.gram_tensor(), sign)
     return None if coordinates is None else _raise_rational_lattice_vector(lattice, coordinates)
 
 

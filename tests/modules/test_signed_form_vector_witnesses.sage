@@ -1,7 +1,7 @@
-r"""The diagonal function of a bilinear Gram matrix uses its symmetric part.
+r"""Signed vectors of symmetric bilinear forms come from their Gram tensor.
 
-[2] is positive definite; diag(2,-2) is indefinite; the nonsymmetric
-matrix [[0,2],[0,0]] has diagonal function 2xy, of both signs.
+[2] is positive definite; diag(2,-2) is indefinite; the hyperbolic
+matrix [[0,1],[1,0]] has diagonal function 2xy, of both signs.
 """
 
 import pytest
@@ -9,7 +9,7 @@ import pytest
 from dzack_research.preamble.all import *
 
 
-@pytest.mark.parametrize("rows, has_negative", (([[2]], False), ([[2, 0], [0, -2]], True), ([[0, 2], [0, 0]], True)))
+@pytest.mark.parametrize("rows, has_negative", (([[2]], False), ([[2, 0], [0, -2]], True), ([[0, 1], [1, 0]], True)))
 def test_signed_witnesses_use_the_actual_diagonal_form(rows, has_negative):
     module = ZZ.free_module(tuple(range(len(rows))))
     formed = FormModules(ZZ)(module.bilinear_hom_space(ZZ)(rows))
