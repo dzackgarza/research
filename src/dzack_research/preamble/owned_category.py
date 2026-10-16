@@ -725,6 +725,19 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     # categories.
     _cmp_key = _OwnedCategoryComparisonKey()
 
+    def _call_(self, *arguments, **options):
+        r"""Run the constructor declared on this category's method surface.
+
+        Sage's concrete ``Category._call_`` otherwise masks an operation
+        inherited through ``SubcategoryMethods`` on property categories.
+        This is the same named-class surface used for the other category
+        operations; it introduces no constructor when none is declared.
+        """
+        constructor = getattr(self.subcategory_class, "_call_", None)
+        if constructor is None:
+            raise NotImplementedError(f"{self} declares no object constructor")
+        return constructor(self, *arguments, **options)
+
     def is_subcategory(self, category):
         r"""Compare owned categories through their declared mathematical graph.
 
