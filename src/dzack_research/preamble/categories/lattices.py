@@ -205,7 +205,7 @@ from dzack_research.preamble.categories.vector_orbits import (
     _gluing_route_discriminant_classes,
     _stable_complement_root_reflections,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate, negation
+from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction, negation
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -7975,9 +7975,9 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
         def _levi_image_contains(self, isometry):
             r"""Whether ``isometry`` lies in the image of :meth:`levi_action`: some fibre of :meth:`_levi_fibres` has an integral member."""
-            return any(
-                fibre.integral_members().is_empty() is False for fibre in self._levi_fibres(isometry)
-            )
+            return negation(conjunction(
+                fibre.integral_members().is_empty() for fibre in self._levi_fibres(isometry)
+            ))
 
         def _levi_section(self, isometry):
             r"""One point of \(\rho^{-1}(\gamma)\): the integral base point of the first nonempty fibre of :meth:`_levi_fibres`.
