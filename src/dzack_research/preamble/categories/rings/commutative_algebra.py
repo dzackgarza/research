@@ -3427,6 +3427,7 @@ def _quotient_ring(source, defining_ideal):
         and not exact_source_quotient
         and not prime_field
         and source.base_ring() in PrimeFields()
+        and source.base_ring().characteristic() != 0
         and source in SymmetricAlgebras(source.base_ring())
         and source.algebra_generating_set().is_finite() is True
         and (source.algebra_generating_set().cardinality() == cardinal(1)) is True
