@@ -535,6 +535,9 @@ class ExactRealField(UniqueRepresentation, Field):
             FinitelyGeneratedFreeModules,
         )
 
+        # The constructing category is construction data (OWN-15): a field is
+        # built by the ring route, as every owned ring is.
+        self._constructing_category = OwnedRings()
         regular_algebra = Algebras(self).Associative().Unital().Commutative()
         Field.__init__(
             self,
@@ -562,13 +565,31 @@ class ExactRealField(UniqueRepresentation, Field):
     def _refine_category_(self, category) -> None:
         r"""Keep the category fixed at construction.
 
-        This field is its own computation model, so Sage algorithms that
-        receive it ask Sage's ``_refine_category_`` to add Sage's ``Fields()``
-        or ``Sets().Infinite()`` as a cached answer.  Placement comes only from
-        construction: the field is already in the owned fields and the owned
-        uncountable sets, and an engine's answer never changes the category
-        or the operations it selects.
+        A Sage membership test such as ``RR in Fields()`` asks Sage's
+        ``_refine_category_`` to add Sage's ``Fields()`` as a cached answer.
+        Placement comes only from construction: the field is already in the
+        owned fields and the owned uncountable sets, and an engine's answer
+        never changes the category or the operations it selects.
         """
+
+    def _selected_engine_ring(self):
+        r"""Return Sage's symbolic ring, the private model of exact real computation.
+
+        An element of ``RR`` is an exact symbolic expression, so Sage's
+        polynomial rings, matrices and schemes over ``RR`` compute over the
+        symbolic ring ``SR`` on those expressions.  Results cross back through
+        :meth:`_from_engine_element`, which admits only real values, and every
+        equality between them is decided by this field.
+        """
+        return SR
+
+    def _engine_element(self, element):
+        r"""Lower an exact real number to its symbolic expression."""
+        return self(element).expression()
+
+    def _from_engine_element(self, element) -> ExactRealNumber:
+        r"""Raise a symbolic value of a computation over ``SR`` into ``RR``."""
+        return self._from_engine_expression(element)
 
     def _repr_(self) -> str:
         return "Real Field"

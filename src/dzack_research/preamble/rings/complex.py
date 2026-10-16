@@ -25,6 +25,7 @@ from __future__ import annotations
 import operator
 
 from sage.arith.numerical_approx import digits_to_bits
+from sage.categories.rings import Rings as SageRings
 from sage.functions import generalized as _sage_generalized
 from sage.functions import hyperbolic as _sage_hyperbolic
 from sage.functions import log as _sage_log
@@ -287,9 +288,7 @@ class ExactComplexNumber(FieldElement):
 
         if source in Modules(ring):
             return source.scalar_multiple(self, other)
-        if ring.has_coerce_map_from(source):
-            return ExactComplexNumber._mul_(self, ring(other))
-        return NotImplemented
+        return FieldElement.__mul__(self, other)
 
     def __rmul__(self, other):
         return ExactComplexNumber.__mul__(self, other)
@@ -430,6 +429,9 @@ class ExactComplexField(UniqueRepresentation, Field):
             FinitelyGeneratedFreeModules,
         )
 
+        # The constructing category is construction data (OWN-15): a field is
+        # built by the ring route, as every owned ring is.
+        self._constructing_category = OwnedRings()
         regular_algebra = Algebras(self).Associative().Unital().Commutative()
         Field.__init__(
             self,
@@ -460,13 +462,31 @@ class ExactComplexField(UniqueRepresentation, Field):
     def _refine_category_(self, category) -> None:
         r"""Keep the category fixed at construction.
 
-        This field is its own computation model, so Sage algorithms that
-        receive it ask Sage's ``_refine_category_`` to add Sage's ``Fields()``
-        or ``Sets().Infinite()`` as a cached answer.  Placement comes only from
-        construction: the field is already in the owned fields and the owned
-        uncountable sets, and an engine's answer never changes the category
-        or the operations it selects.
+        A Sage membership test such as ``CC in Fields()`` asks Sage's
+        ``_refine_category_`` to add Sage's ``Fields()`` as a cached answer.
+        Placement comes only from construction: the field is already in the
+        owned fields and the owned uncountable sets, and an engine's answer
+        never changes the category or the operations it selects.
         """
+
+    def _selected_engine_ring(self):
+        r"""Return Sage's symbolic ring, the private model of exact complex computation.
+
+        An element of ``CC`` is an exact symbolic expression, so Sage's
+        polynomial rings, matrices and schemes over ``CC`` compute over the
+        symbolic ring ``SR`` on those expressions.  Results cross back through
+        :meth:`_from_engine_element`, and every equality between them is
+        decided by this field.
+        """
+        return SR
+
+    def _engine_element(self, element):
+        r"""Lower an exact complex number to its symbolic expression."""
+        return self(element).expression()
+
+    def _from_engine_element(self, element) -> ExactComplexNumber:
+        r"""Raise a symbolic value of a computation over ``SR`` into ``CC``."""
+        return self._from_engine_expression(element)
 
     def _repr_(self) -> str:
         return "Complex Field"
@@ -494,13 +514,16 @@ class ExactComplexField(UniqueRepresentation, Field):
 
     def _coerce_map_from_(self, source):
         r"""``RR`` and the exact rings that embed in ``QQbar`` coerce into ``CC``."""
+        # A coercion into a ring is a ring morphism, so only a ring has one.
         match source:
             case _ if source is RR:
                 return True
             case _ if source in OwnedRings():
                 return QQbar.has_coerce_map_from(_engine_ring(source)) or None
-            case _:
+            case _ if source in SageRings():
                 return QQbar.has_coerce_map_from(source) or None
+            case _:
+                return None
 
     def relation(self, left: ExactComplexNumber, right: ExactComplexNumber, relation):
         r"""Return a decided Boolean or an exact complex relation predicate."""

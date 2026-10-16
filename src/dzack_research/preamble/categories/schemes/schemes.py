@@ -81,6 +81,7 @@ from dzack_research.preamble.categories.algebras.free_algebras import (
     FreeAlgebras,
     GradedFreeAlgebras,
     SymmetricAlgebras,
+    _symmetric_algebra_on,
 )
 from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
 from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -255,7 +256,7 @@ def _engine_polynomial_algebra(engine_polynomial_ring, base):
     free, graded free and symmetric algebra it is.
     """
     return _commutative_algebra_with_structure(
-        _own_ring(engine_polynomial_ring),
+        _symmetric_algebra_on(base, tuple(engine_polynomial_ring.variable_names())),
         base,
         tuple(engine_polynomial_ring.variable_names()),
         FreeAlgebras(base),
