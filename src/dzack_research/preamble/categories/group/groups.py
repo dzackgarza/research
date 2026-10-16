@@ -4026,7 +4026,7 @@ class GroupAutomorphismGroup(GroupMor):
         if group.is_finite() is True:
             backend_generators = tuple(self._libgap_().GeneratorsOfGroup())
             generators = finite_ordered_set(
-                tuple(self(generator, check=False) for generator in backend_generators)
+                tuple(self._from_engine_morphism(generator, check=False) for generator in backend_generators)
             )
             source = Groups.Free(index_set=generators)
             generator_morphism = Sets().Mor(generators, self)(lambda generator: generator)
