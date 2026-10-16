@@ -18,6 +18,7 @@ from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.modules.general_modules import GeneralModules
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
     OwnedNoetherianRings,
@@ -28,6 +29,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
     SheafObjects,
+    _open_sheaf_placement,
     _unpresented_sheaf_placement,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
@@ -106,6 +108,27 @@ class _RegularUnitSheafEngine:
         return f"Regular unit sheaf O^* on {self.scheme()}"
 
 
+class _UnitSectionsPresheaf(Functor):
+    r"""Apply the unit-group functor to a ring sheaf's sections and restrictions.
+
+    Ring maps preserve units and their inverses, so the same restrictions
+    define the sheaf of units (Stacks, Tag 02AQ).
+    """
+
+    def __init__(self, ring_presheaf) -> None:
+        from dzack_research.preamble.categories.group.magmas import Monoids
+
+        self._ring_presheaf = ring_presheaf
+        self._units = Monoids().unit_group()
+        super().__init__(ring_presheaf.domain(), self._units.codomain())
+
+    def _apply_object(self, opposite_object):
+        return self._units(self._ring_presheaf(opposite_object))
+
+    def _apply_morphism(self, opposite_arrow):
+        return self._units(self._ring_presheaf(opposite_arrow))
+
+
 class _CartierDivisorQuotientSheafEngine:
     r"""Private realization of the quotient sheaf ``K_X^* / O_X^*``."""
 
@@ -156,7 +179,10 @@ def _total_quotient_sheaf(scheme):
 @cached_function(key=lambda ring_sheaf: id(ring_sheaf))
 def _unit_sheaf(ring_sheaf):
     sheaves = SheafObjects(ring_sheaf.scheme())
-    fibre, presheaf_data = _unpresented_sheaf_placement(ring_sheaf.scheme(), f"the units of {ring_sheaf}")
+    fibre, presheaf_data = _open_sheaf_placement(
+        ring_sheaf.scheme(),
+        _UnitSectionsPresheaf(ring_sheaf.open_sections_presheaf()),
+    )
     return _object_of(
         owned_category_join((sheaves, fibre)),
         _engine=(fibre, _UnitSheafEngine, None),
@@ -168,7 +194,10 @@ def _unit_sheaf(ring_sheaf):
 @cached_function(key=lambda scheme: id(scheme))
 def _regular_unit_sheaf(scheme):
     sheaves = SheafObjects(scheme)
-    fibre, presheaf_data = _unpresented_sheaf_placement(scheme, f"O_{{{scheme}}}^*")
+    fibre, presheaf_data = _open_sheaf_placement(
+        scheme,
+        _UnitSectionsPresheaf(scheme.structure_sheaf().open_sections_presheaf()),
+    )
     return _object_of(
         owned_category_join((sheaves, fibre)),
         _engine=(fibre, _RegularUnitSheafEngine, None),
