@@ -378,12 +378,32 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
             return quotient.codomain().elements().condition_set(integral)
 
         @cached_method
-        def integral_base_point(self):
-            r"""Select an integral lift, or raise when the integral lift locus is empty."""
+        def _integral_base_point_or_none(self):
+            r"""Decide existence and retain one integral lift, or ``None``.
+
+            Private witness contract used by the selected Levi section and
+            its image predicate. An integral rational base point proves
+            nonemptiness immediately. A nonintegral base point proves
+            nothing; only exhaustion of the complete residue locus proves
+            emptiness.
+            """
+            source = self.source_reduction().isotropic_embedding().codomain()
+            target = self.target_reduction().isotropic_embedding().codomain()
+            base = self.base_point()
+            if base.integral_restriction(source, target) is not None:
+                return base
             quotient = self.integral_parameter_quotient()
             for residue in self.integral_parameter_classes():
                 parameter = quotient.domain().inclusion()(quotient.preimage(residue)).underlying_element()
                 return self.parameterization()(parameter)
+            return None
+
+        @cached_method
+        def integral_base_point(self):
+            r"""Select an integral lift, or raise when the integral lift locus is empty."""
+            point = self._integral_base_point_or_none()
+            if point is not None:
+                return point
             raise ValueError("the integral reduction-lift locus is empty")
 
         @cached_method

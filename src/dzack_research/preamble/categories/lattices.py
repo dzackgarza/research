@@ -7976,9 +7976,10 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
         def _levi_image_contains(self, isometry):
             r"""Whether ``isometry`` lies in the image of :meth:`levi_action`: some fibre of :meth:`_levi_fibres` has an integral member."""
-            return negation(conjunction(
-                fibre.integral_members().is_empty() for fibre in self._levi_fibres(isometry)
-            ))
+            return any(
+                fibre._integral_base_point_or_none() is not None
+                for fibre in self._levi_fibres(isometry)
+            )
 
         def _levi_section(self, isometry):
             r"""One point of \(\rho^{-1}(\gamma)\): the integral base point of the first nonempty fibre of :meth:`_levi_fibres`.
@@ -7992,7 +7993,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             fibre = next(
                 fibre
                 for fibre in self._levi_fibres(isometry)
-                if fibre.integral_members().is_empty() is False
+                if fibre._integral_base_point_or_none() is not None
             )
             return self.parabolic_subgroup()(lattice.integral_isometry(fibre.integral_base_point()))
 
