@@ -14,7 +14,7 @@ from collections.abc import Mapping
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
-from sage.rings.infinity import Infinity
+from dzack_research.preamble.categories.sets.cardinals import omega0
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     _category_accepts_morphism,
@@ -172,7 +172,7 @@ class ModuleResolutions(OwnedCategory):
             projective_object, projective_object
         ).identity()
         match self.truncation():
-            case _ if self.truncation() is Infinity:
+            case _ if self.truncation() is omega0:
                 return _object_of(
                     self,
                     resolution_target=projective_object,
@@ -273,7 +273,7 @@ class ModuleResolutions(OwnedCategory):
     ):
         r"""Build an admitted augmented chain complex through this truncation."""
         match self.truncation():
-            case _ if self.truncation() is Infinity:
+            case _ if self.truncation() is omega0:
                 raise ValueError(
                     "an arbitrary infinite chain resolution cannot be admitted by finite "
                     "source checks; use a theorem-backed infinite construction"
@@ -391,7 +391,7 @@ class ModuleResolutions(OwnedCategory):
                 case True:
                     pass
         match length:
-            case _ if length is Unknown or length is Infinity:
+            case _ if length is Unknown or length is omega0:
                 pass
             case _:
                 finite_length = int(length)

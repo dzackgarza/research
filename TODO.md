@@ -696,10 +696,6 @@ Repair the existing public construction routes and inherited methods before prov
   **Owner and delta:** the augmentation of the selected resolution of a group is a morphism of `Modules(ZZ[G])` from its degree-0 term to `ZZ`. `Groups.C(2).selected_group_resolution().augmentation()` raises `RecursionError` in the cardinality of a `FiniteOrderedSet`.
   **Closure:** that call returns the augmentation, whose image is `ZZ`.
 
-- [ ] **`resolution-truncations-in-the-session`**. **Needs:** none.
-  **Owner and delta:** a chosen resolution is truncated at an index in `ℕ ∪ {∞}`, where `∞` is a cofibrant replacement (`CAT-29`). `Resolutions` takes `Infinity` (`abstract_categories/resolutions.py:25`), but the session star import binds neither `Infinity` nor `oo`. So `tests/categories/test_resolution_categories.sage:9` imports it from `sage.rings.infinity` (TL01). The truncation index is an ordinal `<= omega`, and the session binds the ordinal `omega` (`sets/cardinals.py`); `Resolutions` takes the session ordinal, not Sage's `Infinity`.
-  **Closure:** `tests/categories/test_resolution_categories.sage` passes the test lint.
-
 - [ ] **`prime-prolongations-from-p-adic-embeddings`**. **Needs:** none.
   **Violated statement:** `CON-08`: a Frobenius element at a specific prime of `Kbar` is selected by its selecting datum, and the preamble has no stateless constructor of that datum. A Frobenius element is determined only up to that choice (`IsArithFrobAt`, `Mathlib/RingTheory/Frobenius.lean`). `frobenius(p)` without one restricts only to abelian stages.
   **Evidence:** a query-order-dependent default prolongation was rejected on review: on two stages that are not nested and share a subfield `M`, the two contractions to `M` can differ, and then no prime of the compositum lies over both. A stateless coherent prolongation needs an embedding `iota: Kbar -> Qbar_p`, with `P_L = {x in O_L : |iota(x)|_p < 1}`. COMPLAINTS.md, *No embedding of the algebraic closure into Qbar_p is represented*.
