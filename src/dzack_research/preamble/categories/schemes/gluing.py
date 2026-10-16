@@ -2967,9 +2967,7 @@ class _FiniteAtlasModuleGluingDatumEngine:
         construction_data=None,
         _engine,
     ):
-        r"""Construct the represented sheaf through the concrete Čech sheaf owner."""
-        atlas = self.gluing_datum()
-        sheaves = atlas.cech_coverage().sheaves(Modules(atlas.global_function_algebra()))
+        r"""Construct the represented quasi-coherent sheaf on its open site."""
         data = dict(construction_data or {})
         match "module_gluing_datum" in data:
             case True:
@@ -2980,13 +2978,9 @@ class _FiniteAtlasModuleGluingDatumEngine:
             case False:
                 pass
         data["module_gluing_datum"] = self
-        data.update(PresheafObjects(self.scheme()).presheaf_datum(
-            _FiniteAtlasModuleOpenPresheaf(self)
-        ))
-        return sheaves.object(
-            self.descent_presheaf(),
-            self.descent_data(),
-            categories=(QuasiCoherentSheaves(self.scheme()), *tuple(categories)),
+        return QuasiCoherentSheaves(self.scheme()).object(
+            open_sections_presheaf=_FiniteAtlasModuleOpenPresheaf(self),
+            categories=tuple(categories),
             construction_data=data,
             _engine=_engine,
         )
@@ -2998,10 +2992,9 @@ class _FiniteAtlasModuleGluingDatumEngine:
     def sheaf(self, *, categories=(), construction_data=None, _engine=None):
         r"""Return the quasi-coherent sheaf represented by this finite-atlas descent datum.
 
-        Construction passes through the actual sheaf category of the finite
-        Čech coverage and adds ``QuasiCoherentSheaves(X)`` as semantic
-        placement.  The chosen atlas datum remains first-class construction
-        data rather than defining another category of sheaves.
+        Construction uses ``Sh(Open(X), Modules(O(X)))`` through the
+        quasi-coherent sheaf owner. The chosen atlas and its Čech comparison
+        remain defining data of the descent presentation.
         """
         match (bool(categories), construction_data is None, _engine is None):
             case (False, True, True):
@@ -3358,6 +3351,37 @@ class _FiniteAtlasModuleGluingDatumEngine:
             chart_index,
         )
         return self.local_module(chart_index)(component.underlying_element())
+
+    def chart_restriction(self, source_index, target_index, section):
+        r"""Restrict from one chart to a chart contained in its image.
+
+        Restrict to the source overlap, apply the inverse transition, and
+        identify the target overlap with the target chart. The last map
+        exists exactly when that overlap covers the target chart; its
+        inverted functions must be units on the whole target chart.
+        """
+        atlas = self.gluing_datum()
+        source_index = atlas.normalize_chart_index(source_index)
+        target_index = atlas.normalize_chart_index(target_index)
+        source = self.local_module(source_index)
+        target = self.local_module(target_index)
+        if source_index == target_index:
+            return target(section)
+        overlap = atlas.overlap(source_index, target_index)
+        localized = _base_change_element(
+            source, self.pair_module(source_index, target_index),
+            overlap.inclusion().coordinate_algebra_morphism(), section,
+        )
+        across = self.transition(source_index, target_index).inverse_pullback()(localized)
+        target_chart = atlas.chart(target_index)
+        target_overlap = atlas.overlap(target_index, source_index)
+        scalar_restriction = target_chart.structure_sheaf().restriction_map(target_overlap, target_chart)
+        target_pair = self.pair_module(target_index, source_index)
+        inverse_localization = ModulesOverCommutativeRings().Mor(target_pair, target)(
+            scalar_restriction,
+            {label: target.module_generator(label) for label in target_pair.module_generating_set()},
+        )
+        return inverse_localization(across)
 
     def tensor_product(self, other):
         r"""Return the descent datum for the chartwise tensor product with ``other``."""
@@ -6384,8 +6408,29 @@ class _FiniteAtlasModuleOpenPresheaf(Functor):
     r"""The sections functor of module descent data on the opens of its scheme.
 
     On the whole space its value is the equalizer of the two chart
-    restriction maps (Hartshorne, II, Exercise 1.22). Sections on other
-    opens require their traces on the chosen affine atlas.
+    restriction maps (Hartshorne, II, Exercise 1.22). On a selected chart
+    image it is the chart module, read over ``O(X)``. Other opens require
+    their traces on this atlas.
+
+    Unexecuted structure-module specimen on the projective line::
+
+        sage: from dzack_research.preamble.all import *
+        sage: X = ProjectiveSpaces(QQ)(1)
+        sage: atlas = X.standard_affine_atlas()
+        sage: datum = FiniteAtlasModuleGluingData(atlas).an_object()
+        sage: sheaf = datum.sheaf()
+        sage: site = X.open_subsets_site()
+        sage: chart = site(atlas.presentation().chart_image(0).open_subset())
+        sage: sections = sheaf.sections(chart)
+        sage: sections.module_over_extension() is datum.local_module(0)
+        True
+        sage: whole = sheaf.descent_data().coverage().whole_open()
+        sage: unit = datum.compatible_section({i: datum.local_module(i).module_generator(0) for i in atlas.chart_indices()})
+        sage: opposite = site.opposite()
+        sage: arrow = opposite.Mor(opposite(whole), opposite(chart))(site.Mor(chart, whole)())
+        sage: restriction = sheaf.open_sections_presheaf().on_morphism(arrow)
+        sage: restriction(unit).underlying_element() == datum.local_module(0).module_generator(0)
+        True
     """
 
     def __init__(self, datum) -> None:
@@ -6395,27 +6440,63 @@ class _FiniteAtlasModuleOpenPresheaf(Functor):
             Modules(datum.gluing_datum().global_function_algebra()),
         )
 
-    def _apply_object(self, opposite_object):
+    def _is_whole(self, opposite_object):
         subset = opposite_object.underlying_object().value()
-        scheme = self._datum.scheme()
         opens = self.domain().base_category().object_set()
-        assert subset is opens.inclusion().codomain().top(), (
+        return subset is opens.inclusion().codomain().top()
+
+    def _chart_index(self, opposite_object):
+        subset = opposite_object.underlying_object().value()
+        atlas = self._datum.gluing_datum()
+        assert (
+            subset in _AffineChartImageSubobjects(self._datum.scheme())
+            and subset.gluing_datum() is atlas.presentation()
+        ), (
             f"sections of the module sheaf on {subset}: not implemented; "
-            "the open's traces on the chosen affine atlas are not represented"
+            "the open must be the whole space or a chart image of the selected atlas"
         )
-        return self._datum.compatible_sections()
+        return subset.chart_index()
+
+    def _apply_object(self, opposite_object):
+        if self._is_whole(opposite_object):
+            return self._datum.compatible_sections()
+        index = self._chart_index(opposite_object)
+        return self._datum.local_module(index).restrict_scalars(
+            self._datum.gluing_datum().global_function_restriction(index)
+        )
 
     def _apply_morphism(self, opposite_arrow):
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
-        return source.module_category().Mor(source, target).identity()
+        if opposite_arrow.domain() is opposite_arrow.codomain() or (
+            self._is_whole(opposite_arrow.domain()) and self._is_whole(opposite_arrow.codomain())
+        ):
+            return self.codomain().Mor(source, target).identity()
+
+        def restrict(section):
+            if self._is_whole(opposite_arrow.domain()):
+                index = self._chart_index(opposite_arrow.codomain())
+                return target.wrap(self._datum.compatible_section_component(section, index))
+            source_index = self._chart_index(opposite_arrow.domain())
+            local = source(section).underlying_element()
+            if self._is_whole(opposite_arrow.codomain()):
+                components = finite_indexed_family(
+                    self._datum.chart_index_set(),
+                    lambda index: self._datum.chart_restriction(source_index, index, local),
+                    name="Chart sections restricted from a chart covering the whole space",
+                )
+                return self._datum.compatible_section(components)
+            target_index = self._chart_index(opposite_arrow.codomain())
+            return target.wrap(self._datum.chart_restriction(source_index, target_index, local))
+
+        return self.codomain().Mor(source, target)._from_constructed_element_map(restrict)
 
 
 class _FiniteAtlasModuleSheafEngine:
     r"""Private realization of a quasi-coherent sheaf by finite-atlas descent.
 
-    The sheaf itself is constructed by ``Sheaves.object`` for the atlas Čech
-    coverage and is placed in ``QuasiCoherentSheaves(X)``.  This engine retains
+    The sheaf is constructed on the open site through
+    ``QuasiCoherentSheaves(X).object``. This engine retains
     the selected local-module presentation needed by chartwise computations; it
     does not define another category of sheaves.
     """
