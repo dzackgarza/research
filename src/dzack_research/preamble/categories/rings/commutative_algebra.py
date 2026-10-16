@@ -610,6 +610,15 @@ class _PrimeSpectrumFunctor(Functor):
         sage: identity = opposite.Mor(opposite(A), opposite(A)).identity()
         sage: spec.on_morphism(identity)(image(p)) == image(p)
         True
+        sage: negation_map = A.Mor(A)({'x': -x})
+        sage: involution = OwnedRings().Commutative().Core().Mor(A, A)(negation_map, negation_map)
+        sage: reverse = opposite.Mor(opposite(A), opposite(A))(involution)
+        sage: homeomorphism = spec.on_morphism(reverse)
+        sage: q = A.spectrum()(A.ideal(x - A.one()))
+        sage: homeomorphism(q) == A.spectrum()(A.ideal(x + A.one()))
+        True
+        sage: homeomorphism.inverse()(homeomorphism(q)) == q
+        True
     """
 
     def __init__(self, rings) -> None:
@@ -619,22 +628,40 @@ class _PrimeSpectrumFunctor(Functor):
         return opposite_ring.underlying_object().spectrum()
 
     def _apply_morphism(self, opposite_arrow):
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            _isomorphism_from_known_inverse_pair,
+        )
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+            CategoricalIsomorphism,
+        )
+
         ring_map = opposite_arrow.underlying_arrow()
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
+
+        def prime_map(prime_source, prime_target, preimage):
+            def image(point):
+                contracted = preimage(prime_source(point).ideal())
+                # PrimeSpectrum.comap_asIdeal: primality follows from the
+                # unital map and the source prime.
+                return prime_target.element_class(prime_target, contracted)
+
+            return self.codomain().Mor(prime_source, prime_target)._from_continuous_set_map(
+                Sets().Mor(prime_source, prime_target)(image)
+            )
+
+        if isinstance(ring_map, CategoricalIsomorphism):
+            # For an isomorphism f, f^-1(J) is extension along its inverse.
+            # These ideal transports are inverse, so their continuous maps
+            # form the homeomorphism Spec(f), without a new inverse search.
+            forward = prime_map(source, target, ring_map.inverse().forward().extension_of_ideal)
+            inverse = prime_map(target, source, ring_map.forward().extension_of_ideal)
+            return _isomorphism_from_known_inverse_pair(
+                forward, inverse, base_category=self.codomain()
+            )
         if ring_map.is_identity():
             return self.codomain().Mor(source, target).identity()
-
-        def image(point):
-            prime = source(point).ideal()
-            contracted = ring_map.contraction_of_ideal(prime)
-            # PrimeSpectrum.comap_asIdeal: primality follows from the unital
-            # map and the source prime, independently of an ideal algorithm.
-            return target.element_class(target, contracted)
-
-        return self.codomain().Mor(source, target)._from_continuous_set_map(
-            Sets().Mor(source, target)(image)
-        )
+        return prime_map(source, target, ring_map.contraction_of_ideal)
 
 
 class IntegralPrimeSpectra(OwnedCategory):
