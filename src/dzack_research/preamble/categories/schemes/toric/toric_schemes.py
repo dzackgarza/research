@@ -875,7 +875,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             fan, so the class group is this cokernel whether or not ``X`` has a
             torus factor; it is exact on the left exactly when ``X`` has none.
             """
-            return ClassGroups()(self, self.character_divisor_morphism())
+            return ClassGroups().cokernel_of_principal_divisors(self, self.character_divisor_morphism())
 
         @cached_method
         def class_group_projection(self):
