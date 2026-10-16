@@ -997,6 +997,7 @@ Consolidate the suite around the frozen API, retaining distinct mathematical obl
   **Closure:** the default suite run is green on all four gates, with no gate raised.
 
 - [ ] **`terminal-session`**. **Needs:** `category-method-coverage-sweep`, `triage-long-tail`, `suite-within-time-gates`, `sheaves-compute-sections-on-opens`, `bounded-rational-group-integral-structures`, `pointwise-perpendicular-kernel`, `lattice-algorithm-dispatch`, `isotropic-binary-orthogonal-groups-are-finite`, `geometry-stub-operations-compute`, `exact-complex-numbers`.
+  **Retained mathematical inventory:** reconcile the mathematical specimens in `f02974fd7099bd3e8991f548fdfe7b2b03828bbb:HANDOFF.md` (sections *In progress*, *Next checks* and *Closure work*) with their live assertion files and TODO owners. They remain required where unexecuted; the replaced document's historical closure narratives supply neither acceptance nor priority. The current `HANDOFF.md` owns the resumed session scope and ranked next work.
 
   **Owner and delta:** execute the integrated mathematical proof burden against the frozen API on the final owned session and research notebook. This is full acceptance within the already-active execution phase.
   **Invariants:** a fresh process imports `from dzack_research.preamble.all import *` and exposes Cat and Lattices.
