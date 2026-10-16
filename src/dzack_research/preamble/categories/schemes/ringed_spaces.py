@@ -1622,12 +1622,11 @@ class _AffineModuleSheafEngine:
         return f"Affine module sheaf associated to {self.module()} on {self.scheme()}"
 
 
-class _AffineModuleOpenPresheaf(Functor):
-    r"""The additive sections of ``M~`` on ``Spec A`` and its basis opens.
+class _ModuleOpenPresheaf(Functor):
+    r"""Additive sections computed by one represented module sheaf.
 
-    Values and restrictions use the associated sheaf's localization operations
-    (Stacks, Tag 01I8). Forgetting scalars sends the restriction
-    ``M -> Res(A_f, M_f)`` to its additive map ``M -> M_f``.
+    The whole-space value uses its global sections. A basis realization
+    supplies the other open schemes at which its restrictions are computed.
     """
 
     def __init__(self, scheme, sheaf) -> None:
@@ -1641,19 +1640,13 @@ class _AffineModuleOpenPresheaf(Functor):
         )
 
     def _open_scheme(self, opposite_object):
-        from dzack_research.preamble.categories.rings.commutative_algebra import (
-            DistinguishedOpenSubobjects,
-        )
-
         subset = opposite_object.underlying_object().value()
-        spectrum = self._scheme.underlying_space()
-        if subset is spectrum.power_set().top():
+        opens = self.domain().base_category().object_set()
+        if subset is opens.inclusion().codomain().top():
             return self._scheme
-        if subset in DistinguishedOpenSubobjects(spectrum):
-            return self._scheme.distinguished_open(subset.function())
         assert False, (
-            f"sections of the associated module sheaf on {subset}: not implemented; "
-            "only the basis opens X and D(f) are computed"
+            f"sections of the module sheaf on {subset}: not implemented; "
+            "the open's traces on its affine charts are not represented"
         )
 
     def _apply_object(self, opposite_object):
@@ -1667,13 +1660,37 @@ class _AffineModuleOpenPresheaf(Functor):
         return module.underlying_additive_group()
 
     def _apply_morphism(self, opposite_arrow):
+        source_open = self._open_scheme(opposite_arrow.domain())
+        target_open = self._open_scheme(opposite_arrow.codomain())
+        if source_open is target_open:
+            sections = self(opposite_arrow.domain())
+            return self.codomain().Mor(sections, sections).identity()
         restriction = self._sheaf().restriction_map(
-            self._open_scheme(opposite_arrow.domain()),
-            self._open_scheme(opposite_arrow.codomain()),
+            source_open, target_open,
         )
         return restriction.domain().module_category().underlying_additive_group_functor()(
             restriction
         )
+
+
+class _AffineModuleOpenPresheaf(_ModuleOpenPresheaf):
+    r"""The additive sections of ``M~`` on ``Spec A`` and its basis opens.
+
+    Values and restrictions use the associated sheaf's localization operations
+    (Stacks, Tag 01I8). Forgetting scalars sends the restriction
+    ``M -> Res(A_f, M_f)`` to its additive map ``M -> M_f``.
+    """
+
+    def _open_scheme(self, opposite_object):
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            DistinguishedOpenSubobjects,
+        )
+
+        subset = opposite_object.underlying_object().value()
+        spectrum = self._scheme.underlying_space()
+        if subset in DistinguishedOpenSubobjects(spectrum):
+            return self._scheme.distinguished_open(subset.function())
+        return super()._open_scheme(opposite_object)
 
 
 class QuasiCoherentSheafMorphismMethods:
@@ -2072,11 +2089,14 @@ class InvertibleSheavesWithChosenTrivialization(OwnedParameterizedCategory):
 
     def _realize(self, engine, **construction_data):
         r"""Realize one represented trivialization through the quasi-coherent sheaf owner."""
-        return QuasiCoherentSheaves(self.scheme()).object(
+        presheaf = _ModuleOpenPresheaf(self.scheme(), lambda: sheaf)
+        sheaf = QuasiCoherentSheaves(self.scheme()).object(
             categories=(self,),
             construction_data=construction_data,
             _engine=engine,
+            open_sections_presheaf=presheaf,
         )
+        return sheaf
 
     def _call_(
         self,

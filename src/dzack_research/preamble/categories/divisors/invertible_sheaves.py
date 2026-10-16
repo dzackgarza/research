@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheafMor,
     QuasiCoherentSheafMorphismMethods,
     QuasiCoherentSheaves,
+    _ModuleOpenPresheaf,
 )
 
 
@@ -485,8 +486,6 @@ class _FiniteAtlasInvertibleSheafEngine:
             case section_space:
                 return section_space
 
-    sections = global_sections
-
     @cached_method
     def module_sheaf(self):
         from dzack_research.preamble.categories.schemes.gluing import (
@@ -652,11 +651,14 @@ def _chosen_trivialization_object(
 ):
     r"""Realize one line-bundle engine in the chosen-trivialization owner."""
     category = InvertibleSheavesWithChosenTrivialization(scheme)
-    return QuasiCoherentSheaves(scheme).object(
+    presheaf = _ModuleOpenPresheaf(scheme, lambda: sheaf)
+    sheaf = QuasiCoherentSheaves(scheme).object(
         categories=(category, *placements),
         construction_data=construction_data,
         _engine=engine,
+        open_sections_presheaf=presheaf,
     )
+    return sheaf
 
 
 def _invertible_sheaf_object(
@@ -681,6 +683,18 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
     This is a specialization of finite-atlas invertible-sheaf descent.  Its
     local basis on ``U_i`` has transition ``(x_j/x_i)^d`` to ``U_j``; tensor
     product therefore adds degrees and duality negates them.
+
+    Unexecuted sections specimens (Hartshorne, Proposition II.5.13)::
+
+        sage: from dzack_research.preamble.all import *
+        sage: line = ProjectiveSpaces(QQ)(1)
+        sage: bundle = line.O(2)
+        sage: whole = bundle.descent_data().coverage().whole_open()
+        sage: bundle.sections(whole).module_rank() == 3
+        True
+        sage: negative = line.O(-1)
+        sage: negative.sections(whole).is_zero()
+        True
     """
 
     # The standard atlas and the transition units are computed here from the
