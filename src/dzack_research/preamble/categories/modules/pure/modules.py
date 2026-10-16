@@ -4346,6 +4346,10 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""Return this element read in ``M``."""
             return self._underlying_element
 
+        def __hash__(self):
+            r"""Restriction of scalars retains the underlying element's hash."""
+            return hash(self._underlying_element)
+
         def _add_(self, other):
             return self.parent().element_class(
                 self.parent(),
