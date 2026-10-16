@@ -1877,12 +1877,23 @@ class _PullbackLineBundleQuasiCoherentMor(QuasiCoherentSheafMor):
         return self(QuasiCoherentSheaves(ambient.scheme()).Mor(ambient, ambient).identity())
 
 
-@cached_function(key=lambda projective_product, degrees, base_change_image=None: (
-    id(projective_product),
-    type(degrees),
-    tuple(int(degree) for degree in degrees),
-    id(base_change_image),
-))
+def _product_projective_o_key(projective_product, degrees, base_change_image=None):
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+    match degrees:
+        case IndexedFamily():
+            indices = id(degrees.index_set())
+        case _:
+            indices = None
+    return (
+        id(projective_product),
+        indices,
+        tuple(int(degree) for degree in degrees),
+        id(base_change_image),
+    )
+
+
+@cached_function(key=_product_projective_o_key)
 def _product_projective_o(projective_product, degrees, *, base_change_image=None):
     r"""Return ``O(degrees)`` on one represented product of projective spaces."""
     return _chosen_trivialization_object(
