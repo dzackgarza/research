@@ -29,6 +29,7 @@ from dzack_research.preamble.categories.group.groups import (
     SymmetricGroups,
     _GroupMorRealizationMixin,
     _engine_cosets,
+    _encodes_as_permutations,
     _engine_group,
     _engine_point,
     _owned_group,
@@ -1350,6 +1351,13 @@ def _left_coset_g_set(group, subgroup):
             underlying_category=Sets(),
             facade=points,
             coset_subgroup=subgroup,
+        )
+    if not _encodes_as_permutations(_engine_group(group)):
+        points = _LeftCosetPointSet(group, subgroup)
+        return FiniteGSets(group).pointed_orbit(
+            subgroup,
+            points(group.one()),
+            lambda element, coset: points(element * coset.representative()),
         )
     cosets = _engine_cosets(group, subgroup, "left")
 

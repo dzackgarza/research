@@ -42,13 +42,16 @@ def test_the_split_two_plane_preimage_uses_the_supplied_kernel_and_cosets():
         for label, vector in zip(lattice.module_generating_set(), lattice.module_generators(), strict=True)
     })
     kernel_family = (lattice.eichler_transvection(e, a), lattice.eichler_transvection(e, b), reversal)
+    supplied_family = (
+        *(parabolic(value) for value in kernel_family),
+        *(levi.lift(value) for value in quotient.group_generators()),
+    )
+    supplied = parabolic.subgroup(supplied_family)
+    levi = supplied.Mor(quotient)(lambda value: reduction.levi_action()(supplied.inclusion()(value)))
+    levi.select_section(Sets().Mor(quotient, supplied)(lambda value: supplied(reduction.levi_action().lift(value))))
     kernel = levi.kernel()
     kernel.select_group_resolution(generators=Set(tuple(kernel(value) for value in kernel_family)))
     quotient_family = tuple(quotient.group_generators())
-    parabolic.select_group_resolution(generators=Set((
-        *(parabolic(value) for value in kernel_family),
-        *(levi.lift(value) for value in quotient_family),
-    )))
     image = levi.image()
     point = Sets.Δ[0](0)
     quotient.select_left_cosets(FiniteGSets(quotient).pointed_orbit(image, point, lambda _value, point: point))
@@ -57,6 +60,6 @@ def test_the_split_two_plane_preimage_uses_the_supplied_kernel_and_cosets():
 
     family = tuple(preimage.group_generators())
 
-    assert all(any(preimage.inclusion()(value) == parabolic(expected) for value in family) for expected in kernel_family)
-    assert all(preimage.inclusion()(value)(e) in (e, -e) for value in family)
+    assert all(any(supplied.inclusion()(preimage.inclusion()(value)) == parabolic(expected) for value in family) for expected in kernel_family)
+    assert all(supplied.inclusion()(preimage.inclusion()(value))(e) in (e, -e) for value in family)
     assert target.subgroup(tuple(target(levi(preimage.inclusion()(value))) for value in family)).cardinality() == quotient.cardinality()
