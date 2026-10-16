@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from itertools import count
+from itertools import count, product
 from math import comb
 from operator import index as integer_index
 from typing import TYPE_CHECKING, Any, Self, SupportsIndex, TypeVar
@@ -976,6 +976,28 @@ class SetMorCategory(CategoricalMor):
     """
 
     ElementMethods = OwnedSetMorphism
+
+    def __iter__(self):
+        r"""Enumerate functions between finite sets by their finite value tuples."""
+        assert Sets().is_provably_finite(self.domain()) and Sets().is_provably_finite(self.codomain()), (
+            f"enumerating every function in {self} requires finite endpoints"
+        )
+        source = tuple(self.domain())
+        target = tuple(self.codomain())
+        for values in product(target, repeat=len(source)):
+            if self.domain() is self.codomain() and all(
+                (left == right) is True for left, right in zip(source, values, strict=True)
+            ):
+                arrow = self.identity()
+            else:
+                arrow = self(lambda point, values=values: values[source.index(point)])
+            if arrow in self:
+                yield arrow
+
+    def _an_element_(self):
+        if self.domain() is self.codomain():
+            return self.identity()
+        return next(iter(self))
 
     def __init__(
         self,

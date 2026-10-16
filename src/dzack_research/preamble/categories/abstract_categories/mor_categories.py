@@ -540,6 +540,10 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
 
     _mor_placement: Category
 
+    def object_set(self):
+        r"""The objects of this represented Mor are its actual elements."""
+        return self
+
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
 
@@ -1168,8 +1172,11 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
         """
         return self.two_mor(arrow, arrow).identity()
 
-    def identity(self, arrow_object: Parent | Morphism) -> Morphism:
-        return self.Mor(arrow_object, arrow_object).identity()
+    @object_level
+    def identity(self):
+        if self.domain_object() is not self.codomain_object():
+            raise ValueError(f"an identity needs equal endpoints, but got {self}")
+        return self.arrow_set().identity()
 
     def super_categories(self):
         supers = []
@@ -2220,6 +2227,17 @@ class _RestrictedMorCategoryOf(_MorCategoryOf):
 _RestrictedCategoryOf = _RestrictedMorCategoryOf
 
 
+def _is_selected_identity_in(category, arrow):
+    r"""Recognize a retained identity, including along category inclusions."""
+    mor = arrow.parent()
+    return (
+        arrow.domain() is arrow.codomain()
+        and mor in MorCategories()
+        and _declared_category_reaches(mor.base_category(), category)
+        and arrow is mor.identity()
+    )
+
+
 class _MonoCategoryOf(_RestrictedMorCategoryOf):
     r"""Represented monomorphisms absent a stronger theory-specific decision.
 
@@ -2235,7 +2253,7 @@ class _MonoCategoryOf(_RestrictedMorCategoryOf):
         return _category_packet(category).Monos()
 
     def accepts(self, arrow: Morphism) -> bool:
-        return self._accepts_by_placement(arrow)
+        return _is_selected_identity_in(self.base_category(), arrow) or self._accepts_by_placement(arrow)
 
 
 class _EpiCategoryOf(_RestrictedMorCategoryOf):
@@ -2252,7 +2270,7 @@ class _EpiCategoryOf(_RestrictedMorCategoryOf):
         return _category_packet(category).Epis()
 
     def accepts(self, arrow: Morphism) -> bool:
-        return self._accepts_by_placement(arrow)
+        return _is_selected_identity_in(self.base_category(), arrow) or self._accepts_by_placement(arrow)
 
 
 class _IsoCategoryOf(_MorCategoryOf):

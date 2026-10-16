@@ -2024,7 +2024,7 @@ def _discrete_common_object_of_finite_family(category, factors, *, construction:
             f"the empty {construction} does not exist in {category}: it would be a {extremum} object, and a discrete "
             f"category has a {extremum} object exactly when it has one object"
         )
-    return family, category.object(object_set.an_element())
+    return family, category(object_set.an_element())
 
 
 def _discrete_product_construction(category, factors):

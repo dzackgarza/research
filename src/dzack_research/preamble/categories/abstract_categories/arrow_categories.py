@@ -47,6 +47,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _category_accepts_morphism,
     _category_mor_parent,
     _declared_construction,
+    _is_selected_identity_in,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -498,6 +499,13 @@ class _SubcategoryOfArrows(OwnedCategory):
             and _category_accepts_morphism(base, arrow.domain(), arrow.codomain(), arrow)
         )
 
+    def __contains__(self, candidate):
+        return (
+            isinstance(candidate, Functor)
+            and candidate in self.base_category().ArrowCategory()
+            and self.admits_arrow(candidate.arrow())
+        )
+
     def an_object(self):
         r"""The identity of an object of ``C``, as an arrow."""
         base = self.base_category()
@@ -515,7 +523,7 @@ class _SubcategoryOfArrows(OwnedCategory):
 
     @cached_method(key=lambda self, functor: id(functor))
     def _object_on(self, functor: Functor):
-        return _object_of(self, functor=functor, fixed_mor_category=self)
+        return self.base_category().ArrowCategory()(functor)
 
     def Mor(self, source: Parent, target: Parent) -> ArrowMor:
         if source not in self or target not in self:
@@ -1324,8 +1332,9 @@ class _IsoArrowCategory(_FullSubcategoryOfArrows):
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
     def admits_arrow(self, arrow: Morphism) -> bool:
-        return super().admits_arrow(arrow) and arrow in self.base_category().Core().Mor(
-            arrow.domain(), arrow.codomain()
+        return super().admits_arrow(arrow) and (
+            _is_selected_identity_in(self.base_category(), arrow)
+            or arrow in self.base_category().Core().Mor(arrow.domain(), arrow.codomain())
         )
 
     def _repr_(self) -> str:

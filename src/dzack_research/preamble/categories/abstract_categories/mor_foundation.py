@@ -53,7 +53,7 @@ class OwnedMor(SageHomset):
             if self._already_parented_arrow(arrow):
                 if not kwargs:
                     return arrow
-            elif arrow.domain() is self.domain() and arrow.codomain() is self.codomain():
+            else:
                 raise TypeError(
                     f"{arrow} belongs to {arrow.parent()}, not to {self}; apply the functor between "
                     "the categories instead of constructing an arrow from another arrow (CON-17)"
