@@ -63,7 +63,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     ZariskiCoveringFamilies,
     PresheafObjects,
     zariski_coverage,
-    _unpresented_sheaf_placement,
+    _open_sheaf_placement,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
@@ -6395,7 +6395,12 @@ class _FiniteAtlasInverseImageModuleSheaves(OwnedCategory):
                 f"{sheaf.atlas_datum()}, not on the coarse atlas {self.refinement().coarse_datum()}"
             )
         fine_scheme = self.refinement().fine_scheme()
-        fibre, presheaf_data = _unpresented_sheaf_placement(fine_scheme, f"f^{{-1}} of {sheaf}", self)
+        # An atlas refinement is a morphism over X whose target edge is
+        # id_(id_X); its underlying scheme comparison is id_X. Inverse
+        # image therefore keeps F(U) and its restrictions on Open(X).
+        fibre, presheaf_data = _open_sheaf_placement(
+            fine_scheme, sheaf.open_sections_presheaf(), self
+        )
         return _object_of(
             owned_category_join((self, fibre)),
             source_sheaf=sheaf,
