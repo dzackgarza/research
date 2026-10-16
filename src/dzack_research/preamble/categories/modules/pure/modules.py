@@ -6340,7 +6340,7 @@ def _matrix_index(index_set, key):
 
 
 def _engine_matrix(morphism):
-    r"""Privately materialize one matrix-Mor element in Sage, in one engine call.
+    r"""Privately materialize the selected framed realization in one engine call.
 
     Column ``s`` is the coordinate vector of the image of ``e_s``, read once
     in row-label order; the rows of the engine matrix are read off those
@@ -6348,6 +6348,7 @@ def _engine_matrix(morphism):
     """
     from sage.matrix.constructor import matrix as sage_matrix
 
+    morphism = morphism._framed_coordinate_morphism()
     parent = _require_matrix_mor(morphism.parent())
     if parent not in MatrixSpaces(parent.base_ring()):
         raise TypeError(
