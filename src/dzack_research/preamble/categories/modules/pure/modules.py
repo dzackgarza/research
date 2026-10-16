@@ -4996,6 +4996,7 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
             return TensorProductModuleMor
 
+        @cached_method
         def tensor_factors(self):
             r"""Return the family of factors, indexed by the product's own index set."""
 

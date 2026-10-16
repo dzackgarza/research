@@ -3044,12 +3044,15 @@ class TensorProductModuleMorphismMethods:
             case _:
                 return AtomicProposition("is_linear", self)
 
+    @cached_method
     def left_module(self):
         return self.domain().tensor_factor(0)
 
+    @cached_method
     def right_module(self):
         return self.domain().tensor_factor(1)
 
+    @cached_method
     def module(self):
         if self.left_module() is not self.right_module():
             raise TypeError(f"the pairing {self.left_module()} x {self.right_module()} -> {self.codomain()} is not a bilinear form on one module: its two arguments lie in different modules")
