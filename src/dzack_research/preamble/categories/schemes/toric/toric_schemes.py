@@ -1768,11 +1768,10 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 }
             )
 
-            module = relation.cokernel()
-            return ChowGroups(module.base_ring())(
-                module,
+            return ChowGroups(integers)(
                 self,
                 cycle_dimension,
+                relation,
             )
 
         @cached_method
