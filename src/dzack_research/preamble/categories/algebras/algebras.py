@@ -457,13 +457,15 @@ class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
                 f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, "
                 f"but {evaluator!r} is not callable"
             )
-        represented = SetMorphism(
-            Sets().Mor(self.domain(), self.codomain()),
-            lambda element: self.codomain()(evaluator(self.domain()(element))),
+        linearity_premises = tuple(linearity_premises)
+        linear = self.domain().module_category().Mor(
+            self.domain(), self.codomain()
+        )._from_constructed_element_map(
+            evaluator, premises=linearity_premises
         )
         return self.element_class(
-            self, represented,
-            _construction_premises=(tuple(linearity_premises), tuple(equations)),
+            self, linear,
+            _construction_premises=(linearity_premises, tuple(equations)),
             _transported_morphism=transported_morphism,
         )
 
