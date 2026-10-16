@@ -1379,8 +1379,7 @@ class CategoricalIsomorphism(Morphism):
             )
         self._forward = forward
         self._inverse_computation = inverse_computation
-        if verify:
-            self.validate_inverse_pair()
+        self.validate_inverse_pair(check=verify)
 
     def forward(self) -> Morphism:
         return self._forward
@@ -1429,6 +1428,7 @@ class CategoricalIsomorphism(Morphism):
 
         return conjunction((self.left_inverse_decision(), self.right_inverse_decision()))
 
+    @validator
     def validate_inverse_pair(self):
         decision = self.inverse_pair_decision()
         if decision is False:
