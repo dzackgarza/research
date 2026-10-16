@@ -1,6 +1,6 @@
 r"""Invertible sheaves represented by rank-one affine module descent data."""
 
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.categories.morphism import Morphism
 
@@ -1877,6 +1877,7 @@ class _PullbackLineBundleQuasiCoherentMor(QuasiCoherentSheafMor):
         return self(QuasiCoherentSheaves(ambient.scheme()).Mor(ambient, ambient).identity())
 
 
+@cached_function
 def _product_projective_o(projective_product, degrees, *, base_change_image=None):
     r"""Return ``O(degrees)`` on one represented product of projective spaces."""
     return _chosen_trivialization_object(
