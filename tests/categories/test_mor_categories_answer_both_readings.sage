@@ -29,6 +29,7 @@ def test_the_two_arrows_of_the_unique_endomorphism_of_a_point() -> None:
     assert end.identity(arrow) == end.identity_2(arrow)
     assert end.End(arrow).identity() == end.identity(arrow)
     assert end.Aut(arrow).one() == end.identity(arrow)
+    assert end.identity(arrow) == end.Aut(arrow).one()
 
 
 def test_the_object_readings_of_the_endomorphism_monoid_of_a_point() -> None:
