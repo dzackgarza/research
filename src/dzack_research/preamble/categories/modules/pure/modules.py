@@ -3153,6 +3153,52 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
             """
             return self._preamble_base_ring
 
+        def automorphism_action(self, source_action, target_action):
+            r"""The action on Hom(M,N) induced by supplied actions on M and N.
+
+            For ``a`` acting on M and ``b`` on N, the action is
+            ``t |-> b ∘ t ∘ a^(-1)``. Addition on Hom is written
+            multiplicatively by its existing GroupExp identification, so
+            the result is a group morphism ``G x H -> Aut(exp(Hom))``.
+            This is the Hom bifunctor on automorphisms; composing this
+            action with the group owner's semidirect product gives the
+            split radical extension when N is the radical of M ⊕ N.
+            """
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            source, target = self.domain(), self.codomain()
+            assert source_action.codomain().domain() is source
+            assert source_action.codomain().codomain() is source
+            assert target_action.codomain().domain() is target
+            assert target_action.codomain().codomain() is target
+            product = OwnedGroups().product_construction((source_action.domain(), target_action.domain()))
+            factors = product.object()
+            shape = product.diagram().domain()
+            source_projection = product.structure_morphism(shape(0))
+            target_projection = product.structure_morphism(shape(1))
+            exponential = self.multiplicative_group_identification()
+            normal = exponential.codomain()
+            logarithm = exponential.inverse()
+            automorphisms = normal.Aut()
+
+            def induced(pair):
+                a = source_action(source_projection(pair))
+                b = target_action(target_projection(pair))
+
+                def transform(element, left, right):
+                    linear = logarithm(element)
+                    moved = self(lambda label: left(linear(right(source.module_generator(label)))))
+                    return exponential(moved)
+
+                forward = normal.Mor(normal).elementwise(lambda element: transform(element, b, ~a))
+                inverse = normal.Mor(normal).elementwise(lambda element: transform(element, ~b, a))
+                return automorphisms(forward, inverse)
+
+            if self.base_ring() is _owned_integers() and self.has_selected_module_resolution() and self.module_generating_set() in FiniteSets():
+                normal.select_group_generators(lambda: finite_ordered_set(tuple(exponential(t) for t in self.module_generators())))
+            return factors.Mor(automorphisms).elementwise(induced)
+
         def source_module(self):
             return self.domain()
 
