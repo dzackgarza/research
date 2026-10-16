@@ -2480,11 +2480,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             _stabilizer_generators,
         )
 
-        realization = _realization(self.lattice(), family)
-        return self.predicate_subgroup(
-            lambda automorphism: _matching(realization, realization, automorphism) is not None,
+        def preserves_family(automorphism):
+            realization = _realization(self.lattice(), family)
+            return _matching(realization, realization, automorphism) is not None
+
+        stabilizer = self.predicate_subgroup(
+            preserves_family,
             f"g o v = v o sigma for a colour-preserving bijection sigma, for the family {family}",
-            generating_morphism=self.free_cover(_stabilizer_generators(self, family)),
+        )
+        return stabilizer.select_group_generators(
+            lambda: finite_ordered_set(_stabilizer_generators(self, family))
         )
 
     def index_action(self, family):
