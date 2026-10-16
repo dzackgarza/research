@@ -3248,7 +3248,7 @@ class GroupMorphism:
         target_image = target_inclusion.image()
         if not all(self(element) in target_image for element in witnesses):
             return None
-        return source.Mor(target)(lambda element: target_inclusion.lift(self(element)))
+        return source.Mor(target).elementwise(lambda element: target_inclusion.lift(self(element)))
 
     def factor_through(self, target_inclusion):
         factor = self.factor_through_or_none(target_inclusion)
