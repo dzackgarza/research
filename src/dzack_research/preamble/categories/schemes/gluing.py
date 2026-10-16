@@ -5873,7 +5873,38 @@ class AlgebraGluingData(CategoryPacketMethods, OwnedParameterizedCategory):
 
         @cached_method
         def sheaf(self):
-            r"""Return the descended algebra sheaf on the open site of ``X``."""
+            r"""Return the descended algebra sheaf on the open site of ``X``.
+
+            Unexecuted affine localization specimen. The restrictions are
+            unital algebra maps, and ``x`` becomes invertible on ``D(x)``
+            (Stacks Project, Tag 01I8; algebra tensor product multiplication)::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ.polynomial_ring(('x',)); x = A.gen()
+                sage: X = A.affine_spectrum(base_ring=QQ)
+                sage: cover = DistinguishedAffineCovers(X)((x, A.one()-x))
+                sage: datum = AlgebraGluingData(cover).an_object()
+                sage: sheaf = datum.sheaf()
+                sage: whole = sheaf.descent_data().coverage().whole_open()
+                sage: site = X.open_subsets_site()
+                sage: basic = site(X.underlying_space().distinguished_open(x))
+                sage: B = sheaf.sections(whole)
+                sage: B is datum.compatible_sections()
+                True
+                sage: local = sheaf.sections(basic)
+                sage: opposite = site.opposite()
+                sage: inclusion = site.Mor(basic, whole)()
+                sage: arrow = opposite.Mor(opposite(whole), opposite(basic))(inclusion)
+                sage: restriction = sheaf.open_sections_presheaf().on_morphism(arrow)
+                sage: restriction(B.one()) == local.one()
+                True
+                sage: R = basic.value().coordinate_ring()
+                sage: adjunction = Algebras(A).Associative().Unital().base_change_adjunction(R.localization_map())
+                sage: extended = adjunction.left_adjoint()(B)
+                sage: inverse_x = local(extended(extended.unformed_module().fraction(B.unformed_module()(B.one()), x)))
+                sage: restriction(B.scalar_multiple(x, B.one())) * inverse_x == local.one()
+                True
+            """
             return AlgebraSheaves(self.scheme()).object(
                 _AffineAlgebraOpenPresheaf(self),
                 categories=(QuasiCoherentSheaves(self.scheme()),),
