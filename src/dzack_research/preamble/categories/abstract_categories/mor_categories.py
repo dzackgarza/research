@@ -46,6 +46,7 @@ def _compose_operation_preserving_mor(left, right, fallback):
     )
 
 from typing import TYPE_CHECKING, Any
+from types import NotImplementedType
 
 from sage.categories.category import Category, JoinCategory as SageJoinCategory
 from sage.categories.category_with_axiom import CategoryWithAxiom as SageCategoryWithAxiom
@@ -306,11 +307,14 @@ class MorArrowIdentity(Morphism):
     def _call_(self, value):
         return value
 
-    def __eq__(self, other: Any) -> bool:
-        return parent(other) is self.parent()
+    def __eq__(self, other: Any) -> bool | NotImplementedType:
+        if parent(other) is self.parent():
+            return True
+        return NotImplemented
 
-    def __ne__(self, other: Any) -> bool:
-        return not self == other
+    def __ne__(self, other: Any) -> bool | NotImplementedType:
+        comparison = self.__eq__(other)
+        return NotImplemented if comparison is NotImplemented else not comparison
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))
