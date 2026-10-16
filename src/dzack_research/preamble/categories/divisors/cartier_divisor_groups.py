@@ -109,6 +109,15 @@ class _TotalQuotientSectionsPresheaf(Functor):
         sage: restriction = K.open_sections_presheaf().on_morphism(arrow)
         sage: restriction(K.sections(chart).one()) == K.sections(overlap).one()
         True
+        sage: second = site(atlas.chart_open_subset(1))
+        sage: second_arrow = opposite.Mor(opposite(second), opposite(overlap))(site.Mor(overlap, second)())
+        sage: change_chart = K.open_sections_presheaf().on_morphism(second_arrow)
+        sage: B = atlas.chart(1).coordinate_algebra()
+        sage: x = next(iter(A.algebra_generators()))
+        sage: y = next(iter(B.algebra_generators()))
+        sage: R = atlas.overlap(0, 1).coordinate_algebra()
+        sage: change_chart(K.sections(second)(y)) == K.sections(overlap)(R(x)).inverse_of_unit()
+        True
     """
 
     def __init__(self, scheme) -> None:
