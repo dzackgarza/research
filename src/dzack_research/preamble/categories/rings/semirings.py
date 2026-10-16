@@ -6,6 +6,7 @@ still receives the unique semiring morphism from the natural numbers.
 """
 
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -264,7 +265,7 @@ class SemiringMor(CategoricalMor):
     ElementMethods = SemiringMorphism
 
     def _element_constructor_(self, function):
-        if isinstance(function, SemiringMorphism):
+        if isinstance(function, Morphism):
             if (
                 function.domain() is not self.domain()
                 or function.codomain() is not self.codomain()

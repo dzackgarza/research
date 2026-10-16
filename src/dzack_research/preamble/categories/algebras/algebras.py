@@ -278,18 +278,10 @@ class MultiplicativeAlgebraMor(CategoricalMor):
     ElementMethods = MultiplicativeAlgebraMorphism
 
     def _element_constructor_(self, datum):
-        # The one boundary admitting data this Mor did not build.  An arrow of
-        # an algebra Mor with these endpoints is admitted by the linear map the
-        # forgetful functor reads it as; any other datum states the linear map.
-        parent = element_parent(datum)
-        if parent is self:
-            return datum
-        algebras = Algebras(self.domain().algebra_base_ring())
-        match parent:
-            case CategoricalMor() if parent.mor_category().is_subcategory(algebras):
-                datum = algebras.underlying_module()(datum)
-            case _:
-                pass
+        if isinstance(datum, Map):
+            if self._already_parented_arrow(datum):
+                return datum
+            raise TypeError(f"{datum} is an arrow of another Mor; give defining generator data or apply the functor")
         return self.element_class(self, datum)
 
     @object_level
@@ -299,7 +291,7 @@ class MultiplicativeAlgebraMor(CategoricalMor):
             f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
         )
         algebra = self.domain()
-        identity = self(algebra.module_category().Mor(algebra, algebra).identity())
+        identity = self.element_class(self, algebra.module_category().Mor(algebra, algebra).identity())
         from dzack_research.preamble.categories.rings.ring_foundation import RingMorphism
 
         if isinstance(identity, RingMorphism):

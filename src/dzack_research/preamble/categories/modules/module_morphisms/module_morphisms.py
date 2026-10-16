@@ -3736,18 +3736,8 @@ class TensorProductModuleMor(ModuleMor):
             tensor,
         )
 
-        # Re-reading an admitted pairing in an equivalent Mor parent retains
-        # its *same* selected coordinate datum, not just its evaluation.
-        defining_tensor = (
-            images._defining_pairing_tensor
-            if isinstance(images, TensorProductModuleMorphismMethods)
-            else None
-        )
-        defining_values = (
-            images._defining_pairing_values
-            if isinstance(images, TensorProductModuleMorphismMethods)
-            else None
-        )
+        defining_tensor = None
+        defining_values = None
         match images:
             case Tensor():
                 rows = _covariant_bilinear_coordinate_rows(

@@ -2881,8 +2881,9 @@ class SetInjectionMor(SetMorCategory):
                     f"cannot view {datum} as an injection {self.domain()} -> {self.codomain()}: it is a map "
                     f"{datum.domain()} -> {datum.codomain()}"
                 )
-            if datum.parent() is self:
+            if self._already_parented_arrow(datum):
                 return datum
+            raise TypeError(f"{datum} is an arrow of another Mor; give a function on points")
         elif not callable(datum):
             raise TypeError(
                 f"an injection {self.domain()} -> {self.codomain()} needs a function on points, but "
@@ -2960,8 +2961,9 @@ class SetSurjectionMor(SetMorCategory):
                     f"cannot view {datum} as a surjection {self.domain()} -> {self.codomain()}: it is a map "
                     f"{datum.domain()} -> {datum.codomain()}"
                 )
-            if datum.parent() is self:
+            if self._already_parented_arrow(datum):
                 return datum
+            raise TypeError(f"{datum} is an arrow of another Mor; give a function on points")
         elif not callable(datum):
             raise TypeError(
                 f"a surjection {self.domain()} -> {self.codomain()} needs a function on points, but "

@@ -269,17 +269,7 @@ class ArrowMor(NaturalTransformationMor):
                 if left.parent() is self:
                     left.validate_commutativity(check=check)
                     return left
-                if left.domain() is not self.domain() or left.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {left} as a morphism {self.domain()} -> {self.codomain()} in the arrow category: "
-                        f"it is a square {left.domain()} -> {left.codomain()}"
-                    )
-                square = self._transformation(left, element_class=self.element_class)
-                square._commutativity_premises = (left,)
-                square.left()
-                square.right()
-                square.validate_commutativity(check=check)
-                return square
+                raise TypeError(f"{left} belongs to another Mor; apply the functor between the categories")
             case NaturalTransformation() if right is None:
                 # The inherited supplier retains this literal transformation
                 # and checks its original functor endpoints.  Request both
@@ -1563,36 +1553,7 @@ class SubobjectMor(CategoricalMor):
                 if factor_morphism.parent() is self:
                     factor_morphism.validate_commutativity(check=check)
                     return factor_morphism
-                if factor_morphism.domain() is not self.domain() or factor_morphism.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {factor_morphism} as a morphism of subobjects {self.domain()} -> {self.codomain()}: "
-                        f"it is a morphism {factor_morphism.domain()} -> {factor_morphism.codomain()}"
-                    )
-                old_square = factor_morphism._slice_square
-                slice_mor = self._slice_mor()
-                old_slice_mor = old_square.parent()
-                premises = (
-                    (old_square,)
-                    if (
-                        old_slice_mor._domain_arrow() is slice_mor._domain_arrow()
-                        and old_slice_mor._codomain_arrow() is slice_mor._codomain_arrow()
-                    )
-                    else None
-                )
-                fixed = slice_mor._domain_arrow().codomain()
-                identity = _category_mor_parent(
-                    slice_mor._edge_category(), fixed, fixed
-                ).identity()
-                # Changing the base category changes the slice functors, not
-                # the admitted factor. Reuse its old triangle proof only for
-                # literally the same two retained inclusion arrows.
-                square = slice_mor._square(
-                    factor_morphism.factor_morphism(), identity,
-                    commutativity_premises=premises,
-                )
-                return SubobjectMorphism(
-                    self, square.left(), verify=check, _slice_square=square
-                )
+                raise TypeError(f"{factor_morphism} belongs to another Mor; apply the functor between the categories")
             case None:
                 result = self.canonical_morphism()
                 result.validate_commutativity(check=check)

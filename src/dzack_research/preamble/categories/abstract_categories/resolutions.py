@@ -229,19 +229,7 @@ class ResolutionMor(CategoricalMor):
                     case True:
                         return morphism
                     case False:
-                        match self.domain().truncation():
-                            case _ if self.domain().truncation() is Infinity:
-                                components = morphism.component
-                            case truncation:
-                                components = {
-                                    degree: morphism.component(degree)
-                                    for degree in range(truncation + 1)
-                                }
-                        return self.element_class(
-                            self,
-                            components,
-                            target_morphism=morphism.target_morphism(),
-                        )
+                        raise TypeError(f"{morphism} belongs to another Mor; give the resolution components")
             case _:
                 return self.element_class(
                     self,

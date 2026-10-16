@@ -2,6 +2,7 @@ r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 
 from itertools import combinations
 
+from sage.categories.morphism import Morphism
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.graphs.graph import Graph
@@ -293,6 +294,8 @@ class CoxeterDiagramMor(CategoricalMor):
         r"""The vertex map given by a callable, or by the images of the vertices in their order."""
         if element_parent(datum) is self:
             return datum
+        if isinstance(datum, Morphism):
+            raise TypeError(f"{datum} is an arrow of another Mor; give the vertex images")
         if callable(datum):
             function = datum
         else:

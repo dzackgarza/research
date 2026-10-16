@@ -1771,20 +1771,7 @@ class FiniteAtlasMor(CoveringFamilyMor):
                     if check:
                         index_map.validate_overlap_compatibility()
                     return index_map
-                if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {index_map} a refinement {self.domain()} -> {self.codomain()}: it is a "
-                        f"refinement {index_map.domain()} -> {index_map.codomain()}"
-                    )
-                target_map = index_map.target_map()
-                chart_maps = {
-                    label: index_map.chart_map(label)
-                    for label in index_map.domain().chart_indices()
-                }
-                index_map = {
-                    label: index_map.coarse_index(label)
-                    for label in self.domain().chart_indices()
-                }
+                raise TypeError(f"{index_map} belongs to another Mor; apply the functor between the categories")
         if chart_maps is None:
             raise TypeError(
                 f"cannot build a refinement {self.domain()} -> {self.codomain()} from {index_map}: a map "

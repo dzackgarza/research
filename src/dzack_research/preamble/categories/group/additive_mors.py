@@ -54,8 +54,9 @@ def _additive_operation_mor_element(parent, datum):
                 f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a morphism "
                 f"{parent.domain()} -> {parent.codomain()}"
             )
-        if datum.parent() is parent:
+        if parent._already_parented_arrow(datum):
             return datum
+        raise TypeError(f"{datum} is an arrow of another Mor; give its defining additive map")
     if not callable(datum):
         raise TypeError(
             f"an additive morphism {parent.domain()} -> {parent.codomain()} needs a map on elements, "

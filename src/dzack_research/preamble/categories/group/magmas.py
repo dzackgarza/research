@@ -1,5 +1,6 @@
 """The owned operation spine below groups."""
 
+from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 
@@ -116,7 +117,7 @@ class MagmaMor(CategoricalMor):
     ElementMethods = MagmaMorphism
 
     def _element_constructor_(self, function):
-        if isinstance(function, MagmaMorphism):
+        if isinstance(function, Morphism):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
                 raise ValueError(
                     f"{function} is a morphism {function.domain()} -> {function.codomain()}, "
@@ -891,7 +892,7 @@ class MonoidMor(CategoricalMor):
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, function):
-        if isinstance(function, MonoidMorphism):
+        if isinstance(function, Morphism):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
                 raise ValueError(
                     f"{function} is a monoid morphism {function.domain()} -> "

@@ -3604,8 +3604,10 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 morphism.validate_homomorphism(check=True)
             case GapElement():
                 morphism = self.element_class(self, images)
-            case Morphism() if images.parent() is self:
+            case Morphism() if self._already_parented_arrow(images):
                 return images
+            case Morphism():
+                raise TypeError(f"{images} is an arrow of another Mor; give generator images or apply the functor")
             case tuple() | list():
                 morphism = self._from_gap_generator_images(images)
             case _ if callable(images):
@@ -3883,8 +3885,10 @@ class GeneralGroupMor(_GroupMorRealizationMixin, CategoricalMor):
 
     def _element_constructor_(self, datum):
         match datum:
-            case Morphism() if datum.parent() is self:
+            case Morphism() if self._already_parented_arrow(datum):
                 return datum
+            case Morphism():
+                raise TypeError(f"{datum} is an arrow of another Mor; give defining data or apply the functor")
             case _ if callable(datum):
                 return self._from_elementwise_rule(datum)
             case _ if self in AbelianGroupEndomorphismRings():
