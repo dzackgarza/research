@@ -507,8 +507,52 @@ class PrimeSpectra(OwnedCategory):
             return self._element_constructor_(ideal)
 
         def _element_constructor_(self, ideal):
+            r"""Construct from a prime ideal, or lift a localization-source prime.
+
+            Primes of ``S^-1 A`` correspond to primes of ``A`` disjoint from
+            ``S``; the lift is extension of the ideal (Mathlib,
+            ``PrimeSpectrum.localization_comap_range``).
+
+            Unexecuted inverse-image specimen::
+
+                sage: from dzack_research.preamble.all import *
+                sage: A = QQ['x']; x = A.algebra_generator('x')
+                sage: B = A.localization(x)
+                sage: p = A.spectrum()(A.ideal(x - A.one()))
+                sage: lifted = B.spectrum()(p)
+                sage: lifted.ideal() == p.ideal().extension_to_localization(B)
+                True
+                sage: spec = OwnedRings().Commutative().prime_spectrum_functor()
+                sage: opposite = spec.domain()
+                sage: arrow = opposite.Mor(opposite(B), opposite(A))(B.localization_map())
+                sage: spec.on_morphism(arrow)(lifted) == p
+                True
+                sage: B.inverted_submonoid_meets(A.ideal(x))
+                True
+            """
             if isinstance(ideal, self.category().ElementType) and ideal.parent() is self:
                 return ideal
+            source = element_parent(ideal)
+            ring = self.ring()
+            if (
+                source in PrimeSpectra()
+                and ring in LocalizationRings()
+                and ring.localization_source() is source.ring()
+            ):
+                prime = ideal.ideal()
+                match ring.inverted_submonoid_meets(prime):
+                    case False:
+                        return self.element_class(self, prime.extension_to_localization(ring))
+                    case True:
+                        raise ValueError(
+                            f"the prime {prime} meets the inverted submonoid of {ring}, "
+                            "so it has no point above it in this localization"
+                        )
+                    case _:
+                        assert False, (
+                            f"lifting {ideal} to {self} requires deciding whether its prime "
+                            "meets the inverted submonoid"
+                        )
             candidate = _owned_ideal(self.ring(), ideal)
             if not bool(candidate.is_prime()):
                 raise ValueError(f"{candidate} is not a prime ideal of {self.ring()}")
