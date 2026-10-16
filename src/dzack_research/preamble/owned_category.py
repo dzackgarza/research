@@ -717,10 +717,6 @@ class OwnedCategoryMixin(CatConstructionsMixin):
 
     _TIED_NAMED_CLASSES = frozenset(("parent_class", "element_class", "morphism_class"))
 
-    def category(self) -> Category:
-        r"""Every owned category, including a join or axiom category, is in Cat."""
-        return _cat()
-
     # Sage's default key ends in a global creation counter.  Owned categories
     # instead derive that ordering component from their declared graph, so class
     # construction is independent of which branch a session happened to touch
@@ -943,6 +939,10 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
     dictionaries; :class:`OwnedCategoryMixin` therefore linearizes the
     immediate branch implementations directly.
     """
+
+    def category(self) -> Category:
+        r"""The category constructed as this intersection is an object of Cat."""
+        return _cat()
 
     def is_subcategory(self, category):
         r"""Compare this intersection through its mathematical branches.
@@ -1690,4 +1690,7 @@ class OwnedCategoryObject:
         """
         SageParent.__init__(self, category=None)
         CategoryObject._init_category_(self, _cat())
+
+    def category(self) -> Category:
+        return _cat()
 
