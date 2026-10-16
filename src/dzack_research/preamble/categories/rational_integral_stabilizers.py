@@ -128,17 +128,12 @@ class _FiniteIntegralRepresentation(SageObject):
         self._submodules = [selected]
         self._positions = {self._submodule_key(selected): 0}
         self._registering_orbit = True
-        augmentation = self.generating_augmentation()
-        free = augmentation.domain()
         zero = _owned_integers().zero()
-        self._word_orbit = FiniteGSets(free).from_finite_orbits(
+        self._g_set = FiniteGSets(action.rational_group()).from_finite_orbits(
             (zero,),
-            lambda word, position: self._act_on_position(augmentation(word), position),
+            self._act_on_position,
         )
         self._registering_orbit = False
-        self._g_set = FiniteGSets(action.rational_group())(
-            self._word_orbit.point_set(), self._act_on_position
-        )
 
     def action(self):
         return self._action
