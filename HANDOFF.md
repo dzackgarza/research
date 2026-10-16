@@ -38,8 +38,8 @@ assertions before relying on that status.
 | Families X → Y and one-parameter families X → C | Represent a family by its actual morphism, as an object of the appropriate slice. Construct fibres with their pullback projections and universal maps. | Partial: Hesse affine and projective pencils construct; a projective-pencil fibre retains both projections. The Legendre family morphism constructs. Check all named families, bases and fibre operations. |
 | Function fields k(t) | Construct the function field of a nonempty affine chart of an integral scheme; P¹ gives k(t). | Partial: the projective-space function field constructs. Check the P¹ specimen and the chart and scalar maps. |
 | Affine and projective hypersurfaces | Construct the defining coordinate rings, equation, closed subscheme and inclusion through the public owners. Retain homogeneous grading in the projective case. | Partial: both constructors are present and exercised. Check defining maps, required placement and all named specimens. |
-| O on projective space and its twists O(m) | Construct the invertible sheaf and its sections. For O(m) on Pⁿ, H⁰ is the degree-m forms, Hⁿ is dual to the degree −m−n−1 forms, and intermediate cohomology vanishes. | Partial: H⁰(P²,O(1)) has rank three and derived global sections construct. Check positive and negative twists and the higher-cohomology specimens. |
-| Presheaves and sheaves valued in sets, groups, rings, ZZ-modules, R-modules and R-algebras | Present the value categories and the actual sections functor on opens, its restriction maps and sheaf descent. Keep fixed-value functor categories distinct from the varying-value construction. | Partial: the fixed-value presheaf categories construct for all listed values. The affine structure sheaf constructs. Actual sections and restrictions remain to be established across the requested owners; live constructors still use _UnpresentedSectionsPresheaf. |
+| O on projective space and its twists O(m) | Construct the invertible sheaf and its sections. For O(m) on Pⁿ, H⁰ is the degree-m forms, Hⁿ is dual to the degree −m−n−1 forms, and intermediate cohomology vanishes. | Partial: H⁰(P²,O(1)) has rank three and derived global sections construct. Finite-atlas and restricted line bundles now compute chart and compatible global sections through module descent. Check positive and negative twists and the higher-cohomology specimens; none of the section functors has run. |
+| Presheaves and sheaves valued in sets, groups, rings, ZZ-modules, R-modules and R-algebras | Present the value categories and the actual sections functor on opens, its restriction maps and sheaf descent. Keep fixed-value functor categories distinct from the varying-value construction. | Partial: the fixed-value presheaf categories construct for all listed values. The affine structure, associated-module, unit, total-quotient, descended-algebra, Cartier-quotient, finite-atlas module and line-bundle, meromorphic, and projective closed-subscheme structure constructors now retain open-site sections functors with their restriction maps. Source-level only: no constructor has run, and the generic `_UnpresentedSectionsPresheaf` route and its callers remain to be retired. Sections on non-basis opens still need their explicit missing-computation assertions checked. |
 | Projectivization P(V) | Construct Proj Sym(V) with its projection, tautological invertible sheaf and universal quotient. Retain the comparison with projective space for a free module and the required relative maps. | Partial: rank-two projectivization, its surjective universal quotient and the projective-space comparison construct. Check the complete relative construction and slice API. |
 | Module duals | Construct Mor_R(M,R¹) at the module owner with its module structure and evaluation maps. | Partial: the rank-two vector-space dual has rank two. Check the requested functorial maps and variance. |
 | Linear systems and monomial section bases | Retain the selected section space, embedding into global sections, base locus, domain of definition and associated map. Construct restriction and jet maps where requested. | Partial: the complete conic system on P² has six monomial sections and its associated map. Coordinate-hyperplane restrictions and jet specimens were exercised. Reconcile the remaining maps and systems. |
@@ -91,21 +91,37 @@ request before marking the item complete. An unverified permission stays open.
 
 ## Next work, ranked
 
-1. Verify the current sections constructors before relying on any sheaf
-   claim. Start with the existing sheaves-compute-sections-on-opens TODO owner.
-   On Spec QQ[x], the sheaf associated to M = QQ[x]¹ must give M on the whole
-   space and M_x on D(x), with the localization restriction. Verify the units
-   sheaf on that affine scheme and the stated chart-section specimen on P¹.
-   Repair the common sections owner and its finite-atlas descent paths.
-2. Reconcile each scope row against its live owner, immediate ancestors and
-   public constructions. Start with rows whose actual defining functors or
-   maps remain unverified. Update this table with exact acceptance status and
-   the remaining mathematical obligation. Preserve the independent assertions.
-3. Verify the remaining named constructions, including the plane-cubic
+Nothing in this handoff has been executed. Every sheaf-section constructor
+named below was written under the DEV-58 source-phase rule, and none of its
+mathematical assertions has run; treat every status above as a source-level
+claim a running session must falsify before it believes it.
+
+1. Execute the required assertions of the `sheaves-compute-sections-on-opens`
+   TODO node as soon as execution is authorized: on `Spec(QQ[x])`, the sheaf
+   associated to `M=QQ[x]^1` has whole-space sections `M`, sections `M_x` on
+   `D(x)`, and the localization restriction; the regular-units sheaf has the
+   unit group of `QQ[x]`; on `P^1_QQ`, the inverse image of a chart module
+   sheaf has its stated chart sections. Repair at the shared owners whatever
+   these specimens falsify; do not patch individual constructors.
+2. Reconcile the `sheaves-compute-sections-on-opens` and
+   `nonaffine-structure-sheaf-coverage` TODO rows against the delivered
+   source, and complete their remaining delta: comparisons between distinct
+   presentation atlases and nonprincipal Cartier divisors through common
+   refinement, finite-atlas algebra descent on the open site without finite
+   underlying modules of polynomial algebras, sections on general opens from
+   their chart traces with explicit missing-computation assertions where a
+   computation is absent, and removal of `_UnpresentedSectionsPresheaf` and
+   `_unpresented_sheaf_placement` once their actual callers have sections
+   functors.
+3. Reconcile each remaining scope row against its live owner, immediate
+   ancestors and public constructions, starting with the rows whose defining
+   functors or maps remain unverified. Update this table with exact acceptance
+   status and the remaining mathematical obligation.
+4. Verify the remaining named constructions, including the plane-cubic
    primitive kernel, relative de Rham and Cartan maps, connection morphisms,
    higher-cohomology twists and classification parameters. Repair shared
    structural causes at their owners.
-4. Close the task only after every required item meets its acceptance
+5. Close the task only after every required item meets its acceptance
    condition or has an explicitly permitted and precisely stated stub.
    Selected successful specimens alone do not satisfy that condition.
 
@@ -123,8 +139,8 @@ The original construction detail is in the Claude session
 /home/dzack/.claude/projects/-home-dzack-research/7de3fff4-5627-45ef-b8ea-4645b6d2e760.jsonl.
 Use the reading-transcripts parser to inspect it. The corresponding briefs are
 under /tmp/claude-1000/-home-dzack-research/7de3fff4-5627-45ef-b8ea-4645b6d2e760/scratchpad/.
-The governing task, acceptance conditions and decisions needed to resume are
-stated above.
+The 2026-10-16 sections-constructor pass is the Codex session
+/home/dzack/.codex/sessions/2026/10/16/rollout-2026-10-16T19-46-12-01a14488-b1d8-7552-ae55-60e3162fb38f.jsonl.
 
 For targeted specimens, use
 env PYTHONPATH=/home/dzack/research/src /home/dzack/gitclones/sage-dev-allopts/.venv/bin/python.
