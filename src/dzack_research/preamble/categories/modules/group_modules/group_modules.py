@@ -1530,7 +1530,7 @@ def _equip_action(module, group_or_action, action=None):
             and ring_action.domain() is group_algebra
             and ring_action.codomain() is additive_endomorphisms
         )
-        else group_algebra.Mor(additive_endomorphisms)(
+        else OwnedRings().Mor(group_algebra, additive_endomorphisms)(
             linearized_scalar,
         )
     )
