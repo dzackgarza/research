@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheafMor,
     QuasiCoherentSheafMorphismMethods,
     QuasiCoherentSheaves,
+    _is_empty_open,
 )
 
 
@@ -264,7 +265,8 @@ class _FiniteAtlasLineBundleOpenPresheaf(Functor):
 
     Global sections retain their selected realization. Basis sections use
     the actual module descent datum, and global restriction uses the chosen
-    trivialization's chart component (Hartshorne, II.5.13).
+    trivialization's chart component (Hartshorne, II.5.13). The empty-cover
+    condition gives the zero module on the empty open (Stacks, Tag 04B3).
     """
 
     def __init__(self, scheme, line_bundle):
@@ -294,6 +296,8 @@ class _FiniteAtlasLineBundleOpenPresheaf(Functor):
         return sections.restrict_scalars(bundle.gluing_datum().global_function_algebra().algebra_structure_morphism())
 
     def _apply_object(self, open_object):
+        if _is_empty_open(self, open_object):
+            return self.codomain().base_ring().free_module(0)
         if self._is_whole(open_object):
             return self._whole_module()
         bundle = self._line_bundle()
@@ -326,6 +330,8 @@ class _FiniteAtlasLineBundleOpenPresheaf(Functor):
     def _apply_morphism(self, arrow):
         source = self(arrow.domain())
         target = self(arrow.codomain())
+        if _is_empty_open(self, arrow.domain()) or _is_empty_open(self, arrow.codomain()):
+            return self.codomain().Mor(source, target).zero()
         if arrow.domain() is arrow.codomain() or (self._is_whole(arrow.domain()) and self._is_whole(arrow.codomain())):
             return self.codomain().Mor(source, target).identity()
         if self._is_whole(arrow.domain()):

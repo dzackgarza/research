@@ -64,6 +64,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     PresheafObjects,
     zariski_coverage,
     _AffineModuleOpenPresheaf,
+    _is_empty_open,
     _open_sheaf_placement,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
@@ -6724,6 +6725,12 @@ class _FiniteAtlasModuleOpenPresheaf(Functor):
         sage: restriction = sheaf.open_sections_presheaf().on_morphism(arrow)
         sage: restriction(unit).underlying_element() == datum.local_module(0).module_generator(0)
         True
+        sage: empty = site(site.object_set().inclusion().codomain().bottom())
+        sage: sheaf.sections(empty).module_rank() == 0
+        True
+        sage: to_empty = opposite.Mor(opposite(chart), opposite(empty))(site.Mor(empty, chart)())
+        sage: sheaf.open_sections_presheaf().on_morphism(to_empty)(sections.zero()) == sheaf.sections(empty).zero()
+        True
     """
 
     def __init__(self, datum) -> None:
@@ -6751,6 +6758,9 @@ class _FiniteAtlasModuleOpenPresheaf(Functor):
         return subset.chart_index()
 
     def _apply_object(self, opposite_object):
+        if _is_empty_open(self, opposite_object):
+            # The empty cover forces the terminal module (Stacks, Tag 04B3).
+            return self.codomain().base_ring().free_module(0)
         if self._is_whole(opposite_object):
             return self._datum.compatible_sections()
         index = self._chart_index(opposite_object)
@@ -6764,6 +6774,8 @@ class _FiniteAtlasModuleOpenPresheaf(Functor):
     def _apply_morphism(self, opposite_arrow):
         source = self(opposite_arrow.domain())
         target = self(opposite_arrow.codomain())
+        if _is_empty_open(self, opposite_arrow.domain()) or _is_empty_open(self, opposite_arrow.codomain()):
+            return self.codomain().Mor(source, target).zero()
         if opposite_arrow.domain() is opposite_arrow.codomain() or (
             self._is_whole(opposite_arrow.domain()) and self._is_whole(opposite_arrow.codomain())
         ):

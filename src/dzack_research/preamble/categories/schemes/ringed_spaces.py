@@ -242,6 +242,12 @@ def _unpresented_sheaf_placement(
     return _open_sheaf_placement(space, presheaf, mor_category)
 
 
+def _is_empty_open(presheaf, opposite_object):
+    r"""Recognize the canonical empty open of the presheaf's open site."""
+    opens = presheaf.domain().base_category().object_set()
+    return opposite_object.underlying_object().value() is opens.inclusion().codomain().bottom()
+
+
 def _open_sheaf_placement(space, presheaf, mor_category=None):
     r"""Place a sections functor in the sheaves on the open site of its space."""
     from dzack_research.preamble.categories.abstract_categories.presheaves import (
