@@ -410,11 +410,11 @@ class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
 
 
 class LatticeEmbeddingMethods:
+    r"""A form-preserving monomorphism of lattices."""
+
     def is_injective(self) -> bool:
         r"""True: membership in the embedding Mor states it (``OWN-22``)."""
         return True
-
-    r"""A form-preserving monomorphism of lattices."""
 
     def _factor_from_generator_preimages(self, target_embedding, preimages):
         base = self.domain().lattice_category()
