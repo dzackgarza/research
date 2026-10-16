@@ -714,9 +714,10 @@ class _AffineChartImageSubobjects(OwnedParameterizedCategory):
         return f"open images of selected affine charts of {self.base()}"
 
     class ParentMethods:
-        def __init__(self, chart_gluing_datum, chart_index, **rest):
+        def __init__(self, chart_gluing_datum, chart_index, chart_embedding, **rest):
             self._chart_gluing_datum = chart_gluing_datum
             self._chart_index = chart_gluing_datum.normalize_chart_index(chart_index)
+            self._chart_embedding = chart_embedding
             super().__init__(**rest)
 
         def gluing_datum(self):
@@ -725,8 +726,22 @@ class _AffineChartImageSubobjects(OwnedParameterizedCategory):
         def chart_index(self):
             return self._chart_index
 
-        def open_subscheme(self):
-            return self.gluing_datum().chart_image(self.chart_index())
+        def chart_embedding(self):
+            return self._chart_embedding
+
+
+def _affine_chart_image_subset(scheme, datum, index, point_map, embedding):
+    space = scheme.underlying_space()
+    image = point_map.underlying_set_morphism().image()
+    domain = space.condition_set(image.is_parent_of)
+    return Sets().Subobjects(space).object(
+        domain.inclusion(),
+        categories=(_AffineChartImageSubobjects(scheme),),
+        construction_data={
+            "chart_gluing_datum": datum, "chart_index": index,
+            "chart_embedding": embedding,
+        },
+    )
 
 
 def _glued_chart_image(datum, index):
@@ -912,13 +927,8 @@ class _GluedScheme(SageObject):
         """
         datum = self.gluing_datum()
         index = datum.normalize_chart_index(index)
-        space = self.underlying_space()
-        image = self.chart_point_map(index).underlying_set_morphism().image()
-        domain = space.condition_set(image.is_parent_of)
-        return Sets().Subobjects(space).object(
-            domain.inclusion(),
-            categories=(_AffineChartImageSubobjects(datum.scheme()),),
-            construction_data={"chart_gluing_datum": datum, "chart_index": index},
+        return _affine_chart_image_subset(
+            datum.scheme(), datum, index, self.chart_point_map(index), datum.chart_embedding(index),
         )
 
     def _native_realization_for_scheme_adapter(self):
@@ -1486,6 +1496,19 @@ class _FiniteAffineAtlasEngine:
 
     def chart_embedding(self, index):
         return self.member(self.normalize_chart_index(index)).domain().arrow()
+
+    @cached_method
+    def chart_open_subset(self, index):
+        r"""The point-space image of a chart of the construction-selected atlas."""
+        scheme = self.scheme()
+        index = self.normalize_chart_index(index)
+        assert self.presentation() is scheme.selected_finite_affine_atlas().presentation(), (
+            "a chart of another atlas needs its point-space comparison with the selected atlas"
+        )
+        return _affine_chart_image_subset(
+            scheme, self.presentation(), index,
+            scheme._glued_chart_point_map(index), self.chart_embedding(index),
+        )
 
     @cached_method
     def structure_module_datum(self):
@@ -6420,7 +6443,7 @@ class _FiniteAtlasModuleOpenPresheaf(Functor):
         sage: datum = FiniteAtlasModuleGluingData(atlas).an_object()
         sage: sheaf = datum.sheaf()
         sage: site = X.open_subsets_site()
-        sage: chart = site(atlas.presentation().chart_image(0).open_subset())
+        sage: chart = site(atlas.chart_open_subset(0))
         sage: sections = sheaf.sections(chart)
         sage: sections.module_over_extension() is datum.local_module(0)
         True
@@ -7408,30 +7431,94 @@ class _FiniteAtlasStructurePresheaf(Functor):
 
     ``O_X(X) = Gamma(X, O_X)``, the equalizer of the restrictions
     ``prod_i O(U_i) => prod_{i,j} O(U_i cap U_j)`` (Hartshorne, Exercise
-    II.1.22).  The opens of ``X`` other than ``X`` are not yet presented
-    through their traces on the charts, so their sections are not computed.
+    II.1.22). On a selected chart image its value is that chart's coordinate
+    ring. Restrictions use the supplied global-function maps and the overlap
+    transitions. Other opens require their chart traces.
+
+    Unexecuted projective-line chart specimen (Hartshorne, II.5.13)::
+
+        sage: from dzack_research.preamble.all import *
+        sage: X = ProjectiveSpaces(QQ)(1)
+        sage: atlas = X.standard_affine_atlas()
+        sage: sheaf = X.structure_sheaf()
+        sage: site = X.open_subsets_site()
+        sage: chart = site(atlas.chart_open_subset(0))
+        sage: sheaf.sections(chart) is atlas.chart(0).coordinate_algebra()
+        True
+        sage: whole = sheaf.descent_data().coverage().whole_open()
+        sage: sheaf.sections(whole) is QQ
+        True
+        sage: opposite = site.opposite()
+        sage: arrow = opposite.Mor(opposite(whole), opposite(chart))(site.Mor(chart, whole)())
+        sage: restriction = sheaf.open_sections_presheaf().on_morphism(arrow)
+        sage: restriction(QQ(2)) == sheaf.sections(chart)(2)
+        True
     """
 
-    def __init__(self, scheme, global_section_ring) -> None:
-        self._scheme = scheme
+    def __init__(self, atlas, global_section_ring, global_restrictions) -> None:
+        self._atlas = atlas
+        self._scheme = atlas.scheme()
         self._global_section_ring = global_section_ring
-        Functor.__init__(self, scheme.open_subsets_site().opposite(), OwnedRings().Commutative())
+        self._global_restrictions = _family_on_finite_ordered_set(
+            atlas.chart_index_set(), global_restrictions,
+            name="Restrictions of global functions to affine charts",
+            noun="global-function restriction",
+        )
+        for index in atlas.chart_indices():
+            restriction = self._global_restrictions[index]
+            if (
+                restriction.domain() is not global_section_ring
+                or restriction.codomain() is not atlas.chart(index).coordinate_algebra()
+            ):
+                raise ValueError("a global-function restriction must retain its global and chart ring endpoints")
+        Functor.__init__(self, self._scheme.open_subsets_site().opposite(), OwnedRings().Commutative())
 
     def scheme(self):
         return self._scheme
 
-    def _apply_object(self, opposite_object):
+    def _is_whole(self, opposite_object):
         subset = opposite_object.underlying_object().value()
         opens = self.domain().base_category().object_set()
-        assert subset is opens.inclusion().codomain().top(), (
-            f"sections of O_{{{self.scheme()}}} on {subset}: not implemented; only the whole space is "
-            "computed, since an open of a glued scheme is not yet presented through its traces on the charts"
+        return subset is opens.inclusion().codomain().top()
+
+    def _chart_index(self, opposite_object):
+        subset = opposite_object.underlying_object().value()
+        assert (
+            subset in _AffineChartImageSubobjects(self.scheme())
+            and subset.gluing_datum() is self._atlas.presentation()
+        ), (
+            f"sections of O_{{{self.scheme()}}} on {subset}: not implemented; "
+            "the open must be the whole space or a chart image of the selected atlas"
         )
-        return self._global_section_ring
+        return subset.chart_index()
+
+    def _apply_object(self, opposite_object):
+        if self._is_whole(opposite_object):
+            return self._global_section_ring
+        return self._atlas.chart(self._chart_index(opposite_object)).coordinate_algebra()
 
     def _apply_morphism(self, opposite_arrow):
         source = self(opposite_arrow.domain())
-        return source.Mor(self(opposite_arrow.codomain())).identity()
+        target = self(opposite_arrow.codomain())
+        if opposite_arrow.domain() is opposite_arrow.codomain() or (
+            self._is_whole(opposite_arrow.domain()) and self._is_whole(opposite_arrow.codomain())
+        ):
+            return source.Mor(target).identity()
+        if self._is_whole(opposite_arrow.domain()):
+            return self._global_restrictions[self._chart_index(opposite_arrow.codomain())]
+        source_index = self._chart_index(opposite_arrow.domain())
+        if self._is_whole(opposite_arrow.codomain()):
+            # This arrow exists only when the selected chart covers X.
+            return self._global_restrictions[source_index].inverse()
+        target_index = self._chart_index(opposite_arrow.codomain())
+        if source_index == target_index:
+            return source.Mor(target).identity()
+        source_overlap = self._atlas.overlap(source_index, target_index)
+        target_overlap = self._atlas.overlap(target_index, source_index)
+        localize = source_overlap.inclusion().coordinate_algebra_morphism()
+        across = self._atlas.transition_between(source_index, target_index).inverse().forward().coordinate_algebra_morphism()
+        target_chart = self._atlas.chart(target_index)
+        return target_chart.structure_sheaf().restriction_map(target_overlap, target_chart) * across * localize
 
     def _repr_(self):
         return f"Structure presheaf of {self.scheme()} on its opens"
@@ -7471,25 +7558,14 @@ class _FiniteAtlasStructureSheafEngine:
         return f"Structure sheaf O_{{{self.scheme()}}} glued from its affine charts"
 
 
-def _finite_atlas_structure_sheaf(atlas, global_section_ring):
+def _finite_atlas_structure_sheaf(atlas, global_section_ring, global_restrictions):
     r"""Construct ``O_X`` on ``Open(|X|)`` from the charts of ``atlas`` and ``Gamma(X, O_X)``."""
     scheme = atlas.scheme()
-    presheaf = _FiniteAtlasStructurePresheaf(scheme, global_section_ring)
-    coverage = OpenCoveringFamilies(scheme)
-
-    def inverse_for(equalizer):
-        return equalizer.canonical_map().inverse()
-
-    # O_X glued from the chart structure sheaves satisfies descent for every
-    # open cover (Stacks, Tag 01JA); the comparison inverse is computed on the
-    # cover a caller asks for.
-    descent = DescentData(coverage, presheaf, inverse_for)
-    return coverage.sheaves(presheaf.codomain()).object(
+    presheaf = _FiniteAtlasStructurePresheaf(atlas, global_section_ring, global_restrictions)
+    return AlgebraSheaves(scheme).object(
         presheaf,
-        descent,
-        categories=(SheafObjects(scheme),),
+        categories=(QuasiCoherentSheaves(scheme), QuasiCoherentSheaves(scheme).Invertible()),
         construction_data={
-            **PresheafObjects(scheme).presheaf_datum(presheaf),
             "atlas": atlas,
             "global_section_ring": global_section_ring,
         },

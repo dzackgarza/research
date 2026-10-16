@@ -690,6 +690,14 @@ class SchemeMorphismMethods:
             target = self.codomain()
             if element_parent(point) is not source.underlying_space():
                 raise ValueError(f"{point} is not a prime point of the domain {source}")
+            if target.has_selected_finite_affine_atlas():
+                atlas = target.selected_finite_affine_atlas()
+                for index in atlas.chart_indices():
+                    embedding = atlas.chart_embedding(index)
+                    if self is embedding or (
+                        source is embedding.domain() and (self == embedding) is True
+                    ):
+                        return target._glued_chart_point_map(index)(point)
             match source, target:
                 case _ if (
                     source in Schemes(source.scheme_base_ring()).Affine()
@@ -2491,12 +2499,12 @@ class Schemes(OwnedCategoryOverBaseRing):
         _derived_construction_parameters = frozenset({"topology_data"})
 
         def __contains__(self, point) -> bool:
-            if self._is_glued_from_affine_atlas():
+            if self.has_selected_finite_affine_atlas():
                 return point in self.underlying_space()
             return element_parent(point) is self
 
         def _element_constructor_(self, point):
-            if self._is_glued_from_affine_atlas():
+            if self.has_selected_finite_affine_atlas():
                 return self.underlying_space()(point)
             match element_parent(point) is self:
                 case True:
@@ -2511,6 +2519,8 @@ class Schemes(OwnedCategoryOverBaseRing):
             r"""The topological space retained by this scheme's construction."""
             if self._is_glued_from_affine_atlas():
                 return self._scheme_engine_realization.underlying_space()
+            if self.has_selected_finite_affine_atlas():
+                return self.selected_finite_affine_atlas().presentation().scheme().underlying_space()
             return self
 
         def _glued_chart_point_map(self, index):
@@ -2519,10 +2529,12 @@ class Schemes(OwnedCategoryOverBaseRing):
             Protected scheme-realization operation. Its callers are the chart
             embedding and chart-image inclusion realizations in ``gluing``.
             """
-            assert self._is_glued_from_affine_atlas(), (
+            assert self.has_selected_finite_affine_atlas(), (
                 f"{self} has no selected affine gluing presentation"
             )
-            return self._scheme_engine_realization.chart_point_map(index)
+            if self._is_glued_from_affine_atlas():
+                return self._scheme_engine_realization.chart_point_map(index)
+            return self.selected_finite_affine_atlas().presentation().scheme()._glued_chart_point_map(index)
 
         def _glued_chart_image_subset(self, index):
             r"""Supply the point-space subset for a selected affine chart image.
@@ -5325,8 +5337,15 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                 _finite_atlas_structure_sheaf,
             )
 
-            return _finite_atlas_structure_sheaf(self.standard_affine_atlas(), self.scheme_base_ring())
+            atlas = self.standard_affine_atlas()
+            restrictions = indexed_family(
+                atlas.chart_index_set(),
+                lambda index: atlas.chart(index).coordinate_algebra().algebra_structure_morphism(),
+                name="Projective global-function restrictions",
+            )
+            return _finite_atlas_structure_sheaf(atlas, self.scheme_base_ring(), restrictions)
 
+        @cached_method
         def standard_affine_atlas(self):
             r"""Return the verified standard affine atlas on this exact projective space."""
             from dzack_research.preamble.categories.schemes.gluing import (
