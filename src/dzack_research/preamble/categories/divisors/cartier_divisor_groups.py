@@ -77,6 +77,44 @@ class _TotalQuotientSheafEngine:
         return f"Total quotient sheaf on {self.scheme()}"
 
 
+class _TotalQuotientSectionsPresheaf(Functor):
+    r"""Total quotient sections on the represented Noetherian affine opens.
+
+    The affine formula and its localization restrictions are those used by
+    ``_TotalQuotientSheafEngine`` (Stacks, Tags 01X1 and 02OV).
+    """
+
+    def __init__(self, scheme) -> None:
+        self._scheme = scheme
+        self._structure_presheaf = scheme.structure_sheaf().open_sections_presheaf()
+        super().__init__(
+            self._structure_presheaf.domain(), OwnedRings().Commutative()
+        )
+
+    def _apply_object(self, opposite_object):
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        assert self._scheme in Schemes(self._scheme.scheme_base_ring()).Affine(), (
+            f"total quotient sections on {opposite_object}: not implemented; "
+            "the open must be identified with an affine chart before applying "
+            "the affine total quotient formula"
+        )
+        ring = self._structure_presheaf(opposite_object)
+        assert ring in OwnedNoetherianRings(), (
+            f"total quotient sections on {opposite_object} require a Noetherian "
+            f"affine coordinate ring, but {ring} is not known to be Noetherian"
+        )
+        return ring.total_quotient_ring()
+
+    def _apply_morphism(self, opposite_arrow):
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+        ring_map = self._structure_presheaf(opposite_arrow)
+        return self.codomain().Mor(source, target).elementwise(
+            lambda section: _total_quotient_pullback(ring_map, section)
+        )
+
+
 class _UnitSheafEngine:
     r"""Private realization of the sheaf of units of a represented ring sheaf."""
 
@@ -165,8 +203,9 @@ class _CartierDivisorQuotientSheafEngine:
 @cached_function(key=lambda scheme: id(scheme))
 def _total_quotient_sheaf(scheme):
     sheaves = SheafObjects(scheme)
-    fibre, presheaf_data = _unpresented_sheaf_placement(
-        scheme, f"K_{{{scheme}}}", value_category=OwnedRings().Commutative()
+    fibre, presheaf_data = _open_sheaf_placement(
+        scheme,
+        _TotalQuotientSectionsPresheaf(scheme),
     )
     return _object_of(
         owned_category_join((sheaves, fibre)),
@@ -235,6 +274,8 @@ def _total_quotient_pullback(ring_morphism, rational_section):
     source_total = source.total_quotient_ring()
     target_total = target.total_quotient_ring()
     rational_section = source_total(rational_section)
+    if source_total is source:
+        return target_total(ring_morphism(rational_section))
     match source_total in LocalizationRings():
         case True:
             target_map = target.total_quotient_map()
