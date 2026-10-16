@@ -1517,7 +1517,7 @@ class _FiniteAffineAtlasEngine:
 
     @cached_method(key=lambda self, morphism: id(morphism))
     def pullback(self, morphism):
-        r"""Pull this atlas back along a morphism between affine schemes.
+        r"""Pull this atlas back along a represented affine morphism.
 
         The charts are ``U_i x_X Y`` with both actual projections. Base
         change preserves open immersions and covers; overlap transitions
@@ -1542,8 +1542,15 @@ class _FiniteAffineAtlasEngine:
         if morphism.codomain() is not self.scheme():
             raise ValueError("atlas pullback requires a morphism into the atlas's scheme")
         affine = Schemes(self.base_ring()).Affine()
-        assert self.scheme() in affine and morphism.domain() in affine, (
-            "atlas pullback currently requires an affine base and affine new base"
+        from dzack_research.preamble.categories.schemes.schemes import ClosedSubschemes, ProjectiveSpaces, ProductProjectiveSpaces
+
+        closed_projective = (
+            morphism.domain() in ClosedSubschemes(self.base_ring())
+            and (morphism == morphism.domain().inclusion()) is True
+            and (self.scheme() in ProjectiveSpaces(self.base_ring()) or self.scheme() in ProductProjectiveSpaces(self.base_ring()))
+        )
+        assert (self.scheme() in affine and morphism.domain() in affine) or closed_projective, (
+            "atlas pullback requires affine endpoints or a represented projective closed immersion"
         )
         chart_maps = finite_indexed_family(
             self.chart_index_set(), self.chart_embedding,

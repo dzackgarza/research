@@ -2658,6 +2658,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                     return self.standard_affine_atlas()
                 case _ if self in ProductProjectiveSpaces(base):
                     return self.standard_affine_atlas()
+                case _ if self in ClosedSubschemes(base) and (
+                    self.inclusion().codomain() in ProjectiveSpaces(base)
+                    or self.inclusion().codomain() in ProductProjectiveSpaces(base)
+                ):
+                    return self.standard_affine_atlas()
                 case _:
                     raise TypeError(
                         f"{self} has no finite affine atlas chosen at its construction: it was not glued from "
@@ -2674,6 +2679,11 @@ class Schemes(OwnedCategoryOverBaseRing):
                 case _ if self in ProjectiveSpaces(base):
                     return True
                 case _ if self in ProductProjectiveSpaces(base):
+                    return True
+                case _ if self in ClosedSubschemes(base) and (
+                    self.inclusion().codomain() in ProjectiveSpaces(base)
+                    or self.inclusion().codomain() in ProductProjectiveSpaces(base)
+                ):
                     return True
                 case _:
                     return False
@@ -2702,6 +2712,27 @@ class Schemes(OwnedCategoryOverBaseRing):
                     return True
                 case False:
                     pass
+
+            # A base-changed Zariski cover is a cover (Stacks, Tag 00VI).
+            # Read its original arrows from the retained pullback cospans.
+            original_embeddings = []
+            base_changes = []
+            for embedding in family:
+                chart = embedding.domain()
+                if chart not in FiberProductSchemes(chart.scheme_base_ring()):
+                    break
+                left, right = chart.fiber_product_cospan()
+                if embedding is chart.right_projection():
+                    original_embeddings.append(left)
+                    base_changes.append(right)
+                elif embedding is chart.left_projection():
+                    original_embeddings.append(right)
+                    base_changes.append(left)
+                else:
+                    break
+            else:
+                if base_changes and all((base_change == base_changes[0]) is True for base_change in base_changes):
+                    return base_changes[0].codomain().is_covered_by_open_immersions(original_embeddings)
 
             match self._is_glued_from_affine_atlas():
                 case True:
@@ -7027,6 +7058,21 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
 
 
     class ParentMethods:
+        @cached_method
+        def standard_affine_atlas(self):
+            r"""The inverse images of the ambient standard projective charts.
+
+            Each chart is the actual pullback of the closed immersion and
+            retains its map to this subscheme. Chart overlaps and transitions
+            are their base changes (Stacks, Tags 01JR and 01JY).
+            """
+            ambient = self.inclusion().codomain()
+            base = self.scheme_base_ring()
+            assert ambient in ProjectiveSpaces(base) or ambient in ProductProjectiveSpaces(base), (
+                "a standard closed-subscheme atlas requires a projective-space ambient atlas"
+            )
+            return ambient.standard_affine_atlas().pullback(self.inclusion())
+
         def __init__(
             self,
             defining_equations=None,
