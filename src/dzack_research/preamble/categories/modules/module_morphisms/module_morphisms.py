@@ -1809,17 +1809,40 @@ class ModuleMorphismMethods:
         if element.parent() is not codomain:
             element = codomain(element)
 
+        extension_framing, scale, cleared_span = self._integral_extension_coordinate_span()
+        target_coordinates = extension_framing.lift(element.underlying_element())
+        coefficients = {
+            label: scale * coefficient
+            for label, coefficient in target_coordinates.parent()._selected_module_coefficients(target_coordinates).items()
+        }
+        if any(coefficient not in ring for coefficient in coefficients.values()):
+            return None
+        target = cleared_span.codomain().linear_combination({
+            label: ring(coefficient) for label, coefficient in coefficients.items()
+        })
+        return cleared_span._preimage_or_none(target)
+
+    @cached_method
+    def _integral_extension_coordinate_span(self):
+        r"""Retain the integral coordinate span used by extension-framing preimages.
+
+        The module morphism owns this private workspace. Its fixed generator
+        images determine one denominator and one integral linear system; a
+        queried target changes only the right-hand side.
+        """
+        domain, codomain = self.domain(), self.codomain()
+        ring = domain.base_ring()
+        extension = codomain.module_over_extension()
         extension_framing = extension.framing_morphism()
         image_coordinates = {
             label: extension_framing.lift(self(domain.module_generator(label)).underlying_element())
             for label in domain.module_generating_set()
         }
-        target_coordinates = extension_framing.lift(element.underlying_element())
         denominator = reduce(
             lambda current, coefficient: current.lcm(coefficient.denominator()),
             tuple(
                 coefficient
-                for coordinates in (*image_coordinates.values(), target_coordinates)
+                for coordinates in image_coordinates.values()
                 for coefficient in coordinates.parent()._selected_module_coefficients(coordinates).values()
             ),
             ring.one(),
@@ -1834,7 +1857,7 @@ class ModuleMorphismMethods:
             })
 
         cleared_span = domain.module_category().Mor(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
-        return cleared_span._preimage_or_none(cleared(target_coordinates))
+        return extension_framing, scale, cleared_span
 
     def orthogonal_complement(self):
         r"""Return ``im(self)^perp`` when the codomain carries a scalar-valued pairing."""
