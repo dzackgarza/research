@@ -361,14 +361,7 @@ Preserve the phase-T execution rules.
 
 Repair the existing public construction routes and inherited methods before proving the daily core. Placement and engine audits cover the existing preamble; the exercise core tests mathematically useful composed pathways.
 
-- [ ] **`images-of-finite-groups-are-placed-finite`**. **Needs:** none.
-  **Violated statement:** `CON-07`: "A constructor for a specific object may decide the property from a cheap computation that a `lean-categories` theorem makes equivalent, and place the result"; the group owner states the rule for this case at `_finite_if_bounded_by` (`categories/group/groups.py`): "a construction of one of these from ``group`` is placed in finite groups at construction when ``group`` is ... and no order is computed". The image `f(G)` of a group morphism is the range of a map out of `G`, finite when `G` is (Mathlib `Set.fintypeRange` and the `Finite` range instances, `Mathlib/Data/Set/Finite/Range.lean`). `GroupMorphism.image()` constructs `self.codomain().subgroup(...)`, placed only by the finiteness of the codomain.
-  **Evidence (executed 2026-10-16, worktree `port-gaps7-prod`):** for `s` the swap of `U` and `G = <s> <= O(U)`, the orthogonal-sum map `G x G -> O(U + U)` (`BiproductLattices.orthogonal_sum_map`) has an image of order four, but `image().cardinality()` asserts in `_group_cardinality`: `O(U + U)` is indefinite of rank four and not placed finite, so the generated image is placed neither finite nor infinite. The same holds for every map from a finite group into an infinite one.
-  **Policy search:** `CON-07`, `CAT-01` (the cardinality frontier is for cases with no route; here placement by construction is the route), `OWN-22` (placing by the source's finiteness computes nothing), `STY-129` and `ARC-08` (no engine answer is read). None permits leaving the image unplaced when its source is finite.
-  **Owner and delta:** `GroupMorphism.image()` and the generated-subgroup constructor it calls (`_engine_subgroup`, `categories/group/groups.py`): the image of a morphism out of a finite group is placed in `OwnedFiniteGroups()` at construction, by the source's placement, with no order computed; the existing codomain bound stays.
-  **Acceptance:** for `G = <s>` above and `sum_map = (U + U).orthogonal_sum_map(Groups().product_construction((G, G)))`, `sum_map.image()` lies in `OwnedFiniteGroups()` and has cardinality 4; the image of `Groups.C(4) -> Groups.C(2)` stays finite of order 2; the image of a map out of an infinite group is not placed finite by this rule. Retain execution under T.
-
-- [ ] **`effective-categorical-constructions`**. **Needs:** `images-of-finite-groups-are-placed-finite`.
+- [ ] **`effective-categorical-constructions`**. **Needs:** none.
   **Priority:** one.
   **Owner and delta:** the common categorical constructors and their group,
   module and set owners. Deliver effective constructions as actual objects
@@ -381,6 +374,8 @@ Repair the existing public construction routes and inherited methods before prov
     or submodule, its inclusion and the induced surjection. Known source
     generators supply image generators; selected finite presentations supply
     actual generators and relations where the image is finitely presented.
+    Execute under T `tests/groups/test_products_of_infinite_groups.sage::test_images_of_morphisms_out_of_finite_groups_are_placed_finite`
+    (the image of a morphism out of a finite group is placed finite).
   - Finite products and coproducts of finitely generated and finitely
     presented groups and modules, with projections, injections and universal
     maps. Include empty diagrams and infinite groups with chosen finite
