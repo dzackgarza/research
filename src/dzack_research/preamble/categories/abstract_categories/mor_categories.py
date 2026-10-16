@@ -2230,12 +2230,15 @@ _RestrictedCategoryOf = _RestrictedMorCategoryOf
 def _is_selected_identity_in(category, arrow):
     r"""Recognize a retained identity, including along category inclusions."""
     mor = arrow.parent()
-    return (
-        arrow.domain() is arrow.codomain()
-        and mor in MorCategories()
-        and _declared_category_reaches(mor.base_category(), category)
-        and arrow is mor.identity()
-    )
+    if (
+        arrow.domain() is not arrow.codomain()
+        or mor not in MorCategories()
+        or arrow is not mor.identity()
+        or arrow.domain() not in category
+    ):
+        return False
+    selected = _category_packet(category).Mors().Of(arrow.domain(), arrow.codomain())
+    return mor is selected or _declared_category_reaches(mor, selected)
 
 
 class _MonoCategoryOf(_RestrictedMorCategoryOf):
