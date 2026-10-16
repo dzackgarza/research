@@ -1,5 +1,6 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
+from sage.arith.misc import gcd as engine_gcd
 from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.matrix.matrix0 import Matrix
@@ -93,13 +94,16 @@ def _raise_rational_lattice_vector(lattice, coordinates):
     ring = lattice.base_ring()
     engine_ring = _engine_ring(ring)
     if engine_ring is SageZZ:
-        coordinates = coordinates * coordinates.denominator()
-    vector = lattice.linear_combination({
+        integral = sage_vector(SageZZ, coordinates * coordinates.denominator())
+        content = engine_gcd(tuple(integral))
+        if not content:
+            raise ValueError("the zero vector has no primitive part")
+        coordinates = tuple(coordinate // content for coordinate in integral)
+    return lattice.linear_combination({
         label: _owned_engine_element(ring, engine_ring(coordinate))
         for label, coordinate in zip(lattice.module_generating_set(), coordinates, strict=True)
         if coordinate
     })
-    return vector.primitive_part() if engine_ring is SageZZ else vector
 
 
 def _signed_vector_witness(lattice, sign):
