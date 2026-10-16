@@ -49,6 +49,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoricalArrow,
     _refuse_foreign_arrow,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
@@ -1631,7 +1632,7 @@ class LatticeMor(CategoricalMor):
         return morphism
 
     def _morphism_from_images(self, images):
-        if isinstance(images, Map):
+        if isinstance(images, (Map, CategoricalArrow)):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice morphism from {self.domain()} to {self.codomain()}"
@@ -1644,7 +1645,7 @@ class LatticeMor(CategoricalMor):
         return self.element_class(self, images)
 
     def elementwise(self, function):
-        if isinstance(function, Map):
+        if isinstance(function, (Map, CategoricalArrow)):
             return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice morphism from {self.domain()} to {self.codomain()}: it is not a function of the elements of {self.domain()}")
@@ -1690,7 +1691,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return embedding
 
     def _morphism_from_images(self, images):
-        if isinstance(images, Map):
+        if isinstance(images, (Map, CategoricalArrow)):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice embedding of {self.domain()} into {self.codomain()}"
@@ -1703,7 +1704,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return self.element_class(self, images)
 
     def elementwise(self, function):
-        if isinstance(function, Map):
+        if isinstance(function, (Map, CategoricalArrow)):
             return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice embedding of {self.domain()} into {self.codomain()}: it is not a function of the elements of {self.domain()}")
@@ -2084,7 +2085,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             if images.parent() is self:
                 return images
             _refuse_foreign_arrow(self, images, "use the functor between the source and target categories")
-        if isinstance(images, Map):
+        if isinstance(images, (Map, CategoricalArrow)):
             # A module isomorphism or automorphism, a lattice endomorphism or a
             # set map: almost none is an isometry (``CON-17``).
             _refuse_foreign_arrow(

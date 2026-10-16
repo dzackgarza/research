@@ -9,6 +9,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoricalArrow,
     _refuse_foreign_arrow,
 )
 from sage.misc.cachefunc import cached_method
@@ -307,7 +308,7 @@ class ModuleMorphismMethods:
                 # A linear map is its generator images: keep them rather than
                 # re-evaluating the map on every element (``OWN-22``).
                 images = images.module_generator_morphism()
-            case Morphism() if images.domain() is domain and images.codomain() is codomain:
+            case Morphism() | CategoricalArrow() if images.domain() is domain and images.codomain() is codomain:
                 source_morphism = images
                 if isinstance(source_morphism, ModuleMorphismMethods):
                     self._source_module_morphism = source_morphism
@@ -324,7 +325,7 @@ class ModuleMorphismMethods:
             return
         labels = self.domain().module_generating_set()
         set_mor = Sets().Mor(labels, self.codomain())
-        if isinstance(images, SetMorphism):
+        if isinstance(images, (SetMorphism, CategoricalArrow)):
             if images.domain() is not labels or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot define a linear map {domain} -> {codomain} from the generator images {images}: they must be a map {labels} -> {codomain}, but they are a map {images.domain()} -> {images.codomain()}")
             self._generator_images = indexed_family(
@@ -883,7 +884,7 @@ class ModuleMorphismMethods:
         # not scalar multiplication.  Delegate to the left morphism so the
         # ordinary endpoint check and composition constructor remain the one
         # owner of the operation.
-        if isinstance(actor, Morphism) and _precomposable(actor, self):
+        if isinstance(actor, (Morphism, CategoricalArrow)) and _precomposable(actor, self):
             return actor.__mul__(self)
         # A scalar can itself be a morphism when the retained coefficient
         # ring is an endomorphism ring. Noncomposable map-valued scalars
@@ -2373,12 +2374,12 @@ class ModuleEmbeddingMor(CategoricalMor):
     def _element_constructor_(self, images, *, lift=None, check=False):
         r"""Construct the monomorphism with these images; ``check=True`` runs its validators (``OWN-22``)."""
         generator_map = (
-            isinstance(images, SetMorphism)
+            isinstance(images, (SetMorphism, CategoricalArrow))
             and self.domain().has_selected_module_resolution()
             and images.domain() is self.domain().module_generating_set()
             and images.codomain() is self.codomain()
         )
-        if isinstance(images, Map) and not generator_map:
+        if isinstance(images, (Map, CategoricalArrow)) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if self._already_parented_arrow(images):
@@ -2661,7 +2662,7 @@ class _ModuleMorCommonMethods:
         ):
             return self.from_rows(images)
         generator_map = (
-            isinstance(images, SetMorphism)
+            isinstance(images, (SetMorphism, CategoricalArrow))
             and self.domain().has_selected_module_resolution()
             and images.domain() is self.domain().module_generating_set()
             and images.codomain() is self.codomain()
@@ -2674,7 +2675,7 @@ class _ModuleMorCommonMethods:
             _refuse_foreign_arrow(
                 self, images, "apply the functor changing the module category, or supply the defining generator images"
             )
-        elif isinstance(images, Map) and not generator_map:
+        elif isinstance(images, (Map, CategoricalArrow)) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             # A set map, group map or other non-linear arrow of these
@@ -2802,7 +2803,7 @@ class _ModuleMorCommonMethods:
         generator-assignment constructor when possible: its linear extension
         is linear by construction and presentation relations are checked.
         """
-        if isinstance(function, Map):
+        if isinstance(function, (Map, CategoricalArrow)):
             return self(function)
         if not callable(function):
             raise TypeError(f"cannot define a linear map {self.domain()} -> {self.codomain()} elementwise from {function!r}: it must be a function on elements")
@@ -3476,13 +3477,13 @@ class ModuleAutomorphismGroup(CoreMor):
         if isinstance(datum, ModuleAutomorphismMethods):
             if datum.parent() is self:
                 return datum
-        if isinstance(datum, Morphism):
+        if isinstance(datum, (Morphism, CategoricalArrow)):
             # An endomorphism of End_R(M), or any other arrow, is not an
             # automorphism: almost none is invertible (``CON-17``).
             _refuse_foreign_arrow(
                 self, datum, "an automorphism is given by its generator images, or by the pair (forward, inverse)"
             )
-        if isinstance(datum, tuple) and len(datum) == 2 and all(isinstance(part, Morphism) for part in datum):
+        if isinstance(datum, tuple) and len(datum) == 2 and all(isinstance(part, (Morphism, CategoricalArrow)) for part in datum):
             return self._from_known_inverse_pair(*datum)
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)

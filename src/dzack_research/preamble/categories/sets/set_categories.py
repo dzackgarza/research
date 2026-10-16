@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoricalArrow,
     CategoryPacketMethods,
     _refuse_foreign_arrow,
 )
@@ -946,7 +947,7 @@ class OwnedSetMorphism(SetMorphism):
         composes: a composite of two group homomorphisms is a group
         homomorphism of the composite's endpoints.
         """
-        if not isinstance(other, Morphism) or other.codomain() is not self.domain():
+        if not isinstance(other, (Morphism, CategoricalArrow)) or other.codomain() is not self.domain():
             return NotImplemented
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
@@ -1049,7 +1050,7 @@ class SetMorCategory(CategoricalMor):
         it.  An expression with no free variable or with several is not a
         map of one argument, and is rejected naming its variables.
         """
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
@@ -2899,7 +2900,7 @@ class SetInjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""An injection given by a set map or a function on points; injectivity is its validator."""
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as an injection {self.domain()} -> {self.codomain()}: it is a map "
@@ -2979,7 +2980,7 @@ class SetSurjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""A surjection given by a set map or a function on points; surjectivity is its validator."""
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a surjection {self.domain()} -> {self.codomain()}: it is a map "
