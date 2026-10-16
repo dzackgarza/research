@@ -1579,6 +1579,18 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def linear_combination(self, coefficients):
             r"""Return the linear combination of the selected module generators."""
+            return self._linear_combination_from_generator_coefficients(coefficients)
+
+        @RealizationHook
+        def _linear_combination_from_generator_coefficients(self, coefficients):
+            r"""Realize the selected augmentation on a finite coefficient mapping.
+
+            Protected computation of ``Modules.linear_combination`` (OWN-05).
+            That operation is the only caller. Keys are the selected generator
+            labels, values are scalars, and the result belongs to this module
+            and equals their linear combination. A realization may fuse this
+            evaluation; the general formula needs no extra hypotheses.
+            """
             return sum(
                 (
                     self.scalar_multiple(
