@@ -1433,6 +1433,15 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the selected form datum, stated on the unformed module."""
             return self._preamble_form
 
+        @validator
+        def validate_form_placement(self):
+            r"""Check the declared form properties against the defining pairing."""
+            from dzack_research.preamble.refine import check_certifying_predicates
+
+            check_certifying_predicates(
+                self, self.category(), self.unformed_module().category()
+            )
+
         def algebraic_correlation_morphism(self):
             r"""Return ``b^flat : M -> Hom_R(M,R)`` for this scalar-valued polar pairing."""
             injective = self in FormModules(self.base_ring()).Nondegenerate()
@@ -1449,6 +1458,12 @@ class FormModules(OwnedCategoryOverBaseRing):
             ring = self.base_ring()
             if self.category().is_subcategory(FormModules(ring).Unimodular()):
                 return True
+            return self._unimodularity_decision()
+
+        @cached_method
+        def _unimodularity_decision(self):
+            r"""Decide perfection from the correlation, independently of placement."""
+            ring = self.base_ring()
             if (
                 self.value_module() is not ring
                 or ring not in OwnedRings().Commutative()
@@ -1456,7 +1471,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 or self.module_generating_set().is_finite() is not True
             ):
                 return AtomicProposition("is_unimodular", self)
-            correlation = self.algebraic_correlation_morphism()
+            correlation = _algebraic_correlation_morphism(self, injective=False)
             return conjunction(
                 (correlation.is_injective(), correlation.is_surjective())
             )
@@ -1631,7 +1646,17 @@ class FormModules(OwnedCategoryOverBaseRing):
                 case True:
                     return True
                 case False:
-                    return self.left_curry().is_injective() and self.right_curry().is_injective()
+                    return self._nondegeneracy_decision()
+
+        @cached_method
+        def _nondegeneracy_decision(self):
+            r"""Decide vanishing of both radicals from the pairing itself."""
+            ring = self.base_ring()
+            if (self.value_module() is ring and ring in OwnedIntegralDomains()
+                    and self in FramedFreeModules(ring)
+                    and self.module_generating_set().is_finite() is True):
+                return self.determinant() != ring.zero()
+            return conjunction((self.left_curry().is_injective(), self.right_curry().is_injective()))
 
 
         @object_level
@@ -1945,7 +1970,7 @@ class FormModules(OwnedCategoryOverBaseRing):
     class Nondegenerate(CategoryWithAxiom):
         r"""Form modules whose left and right radicals are zero."""
 
-        _certifying_predicate = "is_nondegenerate"
+        _certifying_predicate = "_nondegeneracy_decision"
 
         def an_object(self):
             r"""The hyperbolic plane U, whose form is unimodular."""
@@ -1956,7 +1981,7 @@ class FormModules(OwnedCategoryOverBaseRing):
     class Unimodular(CategoryWithAxiom):
         r"""Form modules whose correlation morphism is an isomorphism."""
 
-        _certifying_predicate = "is_unimodular"
+        _certifying_predicate = "_unimodularity_decision"
 
         def an_object(self):
             r"""The hyperbolic plane U."""
@@ -3227,6 +3252,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             exactly when the Gram determinant is a unit.  No correlation
             morphism or dual-module presentation needs constructing.
             """
+            return self._unimodularity_decision()
+
+        @cached_method
+        def _unimodularity_decision(self):
             ring = self.base_ring()
             if (
                 self.module_rank().is_finite()
@@ -3234,11 +3263,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 and ring in OwnedRings().Commutative()
             ):
                 return bool(self.determinant().is_unit())
-            injective = self in FormModules(self.base_ring()).Nondegenerate()
             correlation = _algebraic_correlation_morphism(
-                self, injective=injective
+                self, injective=False
             )
-            return correlation.is_injective() and correlation.is_surjective()
+            return conjunction((correlation.is_injective(), correlation.is_surjective()))
 
         def subobject_on(self, module_generating_set):
             r"""Return the span equipped with the pulled-back form."""
@@ -3554,7 +3582,9 @@ def _form_module(
                 subobject_lift=_subobject_lift,
                 subobject_inclusion_factory=_subobject_inclusion_factory,
             )
-    return module._module_with_structure(tuple(categories), construction_data)
+    formed = module._module_with_structure(tuple(categories), construction_data)
+    formed.validate_form_placement(check=False)
+    return formed
 
 
 @cached_function(key=lambda module, basis: (id(module), basis))
