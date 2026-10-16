@@ -1,5 +1,6 @@
 """Modules graded by a monoid."""
 
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -346,21 +347,10 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the graded map; ``check=True`` runs its validators (``OWN-22``)."""
-        if isinstance(images, ModuleMorphismMethods):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{images} is not a map {self.domain()} -> {self.codomain()}: it is a map "
-                    f"{images.domain()} -> {images.codomain()}"
-                )
-            if isinstance(images, GradedModuleMorphismMethods):
-                if images.parent() is self:
-                    return images
-                morphism = self._from_constructed_graded_map(images, premises=(images,))
-            else:
-                morphism = self.element_class(self, images)
-            morphism.validate_linearity(check=check)
-            morphism.validate_degree_preservation(check=check)
-            return morphism
+        if isinstance(images, Morphism):
+            if self._already_parented_arrow(images):
+                return images
+            raise TypeError(f"{images} belongs to another Mor; apply the functor between the categories")
         morphism = super()._element_constructor_(images, check=check)
         if isinstance(morphism, GradedModuleMorphismMethods):
             morphism.validate_degree_preservation(check=check)

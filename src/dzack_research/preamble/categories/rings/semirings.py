@@ -275,7 +275,7 @@ class SemiringMor(CategoricalMor):
                 )
             if function.parent() is self:
                 return function
-            function = function.__call__
+            raise TypeError(f"{function} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, function)
 
     @object_level

@@ -487,7 +487,7 @@ class AlgebraSheafMor(CategoricalMor):
         if isinstance(underlying_morphism, AlgebraSheafMorphismMethods):
             if underlying_morphism.parent() is self:
                 return underlying_morphism
-            underlying_morphism = underlying_morphism.underlying_sheaf_morphism()
+            raise TypeError(f"{underlying_morphism} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, underlying_morphism)
 
     def _from_known_algebra_map(self, underlying_morphism):
@@ -1723,16 +1723,7 @@ class AffineQuasiCoherentSheafMor(QuasiCoherentSheafMor):
             case AffineQuasiCoherentSheafMorphismMethods() if module_morphism.parent() is self:
                 return module_morphism
             case AffineQuasiCoherentSheafMorphismMethods():
-                if (
-                    module_morphism.domain() is not self.domain()
-                    or module_morphism.codomain() is not self.codomain()
-                ):
-                    raise ValueError(
-                        f"the morphism {module_morphism} of quasi-coherent sheaves goes from "
-                        f"{module_morphism.domain()} to {module_morphism.codomain()}, not from "
-                        f"{self.domain()} to {self.codomain()}"
-                    )
-                module_morphism = module_morphism.underlying_module_morphism()
+                raise TypeError(f"{module_morphism} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         return self.element_class(self, module_morphism)

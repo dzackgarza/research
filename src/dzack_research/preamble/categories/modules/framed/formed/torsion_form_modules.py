@@ -1331,9 +1331,9 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
                 )
             if datum.parent() is self:
                 return datum
-            return self._from_engine(datum._engine())
+            raise TypeError(f"{datum} belongs to another Mor; apply the realization functor")
         if isinstance(datum, ModuleMorphismMethods):
-            return self.from_morphism(datum)
+            raise TypeError(f"{datum} is a module arrow; supply a form-isomorphism under its realization functor")
         return self._from_engine(datum)
 
     def accepts(self, candidate) -> bool:

@@ -47,7 +47,7 @@ class _CardinalityFunctor(Functor):
                 isomorphism = morphism
             case _:
                 set_mor = Sets().Mor(morphism.domain(), morphism.codomain())
-                if not set_mor._already_parented_arrow(morphism):
+                if not set_mor.accepts(morphism):
                     raise TypeError(f"{morphism} is not a set map; apply the underlying-set functor first")
                 isomorphism = morphism.as_isomorphism()
         return super().morphism_image(isomorphism)

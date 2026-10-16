@@ -124,7 +124,7 @@ class MagmaMor(CategoricalMor):
                 )
             if function.parent() is self:
                 return function
-            function = function.__call__
+            raise TypeError(f"{function} belongs to another Mor; apply the functor between the categories")
         if not callable(function):
             raise TypeError(
                 f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, "
@@ -899,7 +899,7 @@ class MonoidMor(CategoricalMor):
                 )
             if function.parent() is self:
                 return function
-            function = function.__call__
+            raise TypeError(f"{function} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, function)
 
     @cached_method

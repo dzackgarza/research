@@ -70,7 +70,7 @@ class FunctorImageMor(CategoricalMor):
             case FunctorImageMorphism():
                 if arrow.parent() is self:
                     return arrow
-                arrow = arrow.underlying_arrow()
+                raise TypeError(f"{arrow} belongs to another Mor; apply the functor between the categories")
         if not _category_accepts_morphism(
             self.image_category().functor().codomain(),
             self.domain().underlying_image(),

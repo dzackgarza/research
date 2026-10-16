@@ -581,16 +581,7 @@ class RelativeProjectivizationQuasiCoherentMor(QuasiCoherentSheafMor):
             case RelativeProjectivizationQuasiCoherentMorphismMethods() if datum.parent() is self:
                 return datum
             case RelativeProjectivizationQuasiCoherentMorphismMethods():
-                if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"the morphism {datum} of quasi-coherent sheaves goes from {datum.domain()} to "
-                        f"{datum.codomain()}, not from {self.domain()} to {self.codomain()}"
-                    )
-                return self.element_class(
-                    self,
-                    datum.relative_projectivization(),
-                    identity=datum.is_identity(),
-                )
+                raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case _ if datum in RelativeProjectivizations(self.domain().scheme().scheme_base_ring()):
                 if (
                     self.domain() is datum.pulled_source_sheaf()

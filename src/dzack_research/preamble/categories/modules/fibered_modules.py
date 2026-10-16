@@ -272,8 +272,7 @@ class SemilinearModuleMor(CategoricalMor):
         if compatible_map is None and isinstance(scalar_map, SemilinearModuleMorphism):
             if scalar_map.parent() is self:
                 return scalar_map
-            compatible_map = scalar_map.restricted_morphism()
-            scalar_map = scalar_map.scalar_map()
+            raise TypeError(f"{scalar_map} belongs to another Mor; give the scalar map and compatible linear map")
         self._validate_scalar_map(scalar_map)
         restricted = self.restricted_codomain(scalar_map)
         compatible_mor = self.compatible_mor(scalar_map)

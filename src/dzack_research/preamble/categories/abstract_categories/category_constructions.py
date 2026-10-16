@@ -96,12 +96,7 @@ class OppositeMor(CategoricalMor):
             case OppositeMorphism():
                 if underlying_arrow.parent() is self:
                     return underlying_arrow
-                if underlying_arrow.domain() is not self.domain() or underlying_arrow.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {underlying_arrow} as a morphism {self.domain()} -> {self.codomain()} in the "
-                        f"opposite category: it is a morphism {underlying_arrow.domain()} -> {underlying_arrow.codomain()}"
-                    )
-                underlying_arrow = underlying_arrow.underlying_arrow()
+                raise TypeError(f"{underlying_arrow} belongs to another Mor; apply the functor between the categories")
         base = self.opposite_category().base_category()
         if not _category_accepts_morphism(
             base,
@@ -293,12 +288,7 @@ class ProductMor(CategoricalMor):
             case ProductMorphism() if second is None:
                 if first.parent() is self:
                     return first
-                if first.domain() is not self.domain() or first.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {first} as a morphism {self.domain()} -> {self.codomain()} in the product "
-                        f"category: it is a morphism {first.domain()} -> {first.codomain()}"
-                    )
-                first, second = first.first(), first.second()
+                raise TypeError(f"{first} belongs to another Mor; apply the functor between the categories")
         if second is None:
             first, second = first
         product = self.product_category()

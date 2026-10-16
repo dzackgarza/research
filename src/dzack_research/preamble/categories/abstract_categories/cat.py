@@ -212,7 +212,7 @@ class CategoryFunctorMor(CategoricalMor):
             case CategoryFunctorMorphism():
                 if functor.parent() is self:
                     return functor
-                functor = functor.functor()
+                raise TypeError(f"{functor} belongs to another Mor; apply the functor between the categories")
         return CategoryFunctorMorphism(self, functor)
 
     @object_level

@@ -1687,51 +1687,13 @@ class SchemeMorCategory(CategoricalMor):
             case SchemeMorphismMethods() if datum.parent() is self:
                 return datum
             case _ProjectiveCoordinateMorphism():
-                assert datum.domain() is domain and datum.codomain() is codomain, (
-                    f"cannot make {datum} a morphism {domain} -> {codomain}: it is a morphism "
-                    f"{datum.domain()} -> {datum.codomain()}"
-                )
-                if self.mor_category().is_subcategory(Schemes(base)):
-                    scalar_structure = _restriction_to_base(datum.coefficient_map().codomain(), base)
-                    assert _ring_morphisms_equal(datum.coefficient_map(), scalar_structure) is not False, (
-                        f"cannot make {datum} a morphism {domain} -> {codomain} over {base}: its map on "
-                        f"coefficients {datum.coefficient_map()} is not the structure map of "
-                        f"{datum.coefficient_map().codomain()} as a {base}-algebra, so the morphism does not "
-                        f"commute with the structure morphisms to Spec {base}"
-                    )
-                return _ProjectiveCoordinateMorphism(
-                    self, tuple(datum.homogeneous_coordinates()), coefficient_map=datum.coefficient_map(),
-                    cone_construction=datum.cone_construction(), point_coordinates=datum._represented_point_coordinates(),
-                )
+                raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case _ScalarStructureSchemeMorphism():
-                assert datum.domain() is domain and datum.codomain() is codomain, (
-                    f"cannot make {datum} a morphism {domain} -> {codomain}: it is a morphism "
-                    f"{datum.domain()} -> {datum.codomain()}"
-                )
-                if self.mor_category().is_subcategory(Schemes(base)):
-                    assert _scalar_maps_equal_on_scheme(domain, datum.scalar_pullback(), base.Mor(base).identity()) is not False, (
-                        f"cannot make {datum} a morphism {domain} -> {codomain} over {base}: Spec of the ring map "
-                        f"{datum.scalar_pullback()} is not the identity of Spec {base} on {domain}, so the "
-                        f"morphism does not commute with the structure morphisms to Spec {base}"
-                    )
-                return _ScalarStructureSchemeMorphism(self, datum.scalar_pullback(), cone_construction=datum.cone_construction())
+                raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case SchemeMorphismMethods() if affine_endpoints:
-                assert datum.domain() is domain and datum.codomain() is codomain, (
-                    f"cannot make {datum} a morphism {domain} -> {codomain}: it is a morphism "
-                    f"{datum.domain()} -> {datum.codomain()}"
-                )
-                admitted = self(datum.coordinate_algebra_morphism())
-                return _RepresentedAffineSchemeMorphism(
-                    self, admitted.coordinate_algebra_morphism(),
-                    cone_construction=datum.cone_construction(),
-                    point_coordinates=datum._represented_point_coordinates(),
-                )
+                raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case SchemeMorphismMethods():
-                assert datum.domain() is domain and datum.codomain() is codomain, (
-                    f"cannot make {datum} a morphism {domain} -> {codomain}: it is a morphism "
-                    f"{datum.domain()} -> {datum.codomain()}"
-                )
-                return datum._in_mor(self)
+                raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case _SageSchemeMorphism():
                 assert datum.domain() is _engine_scheme(domain) and datum.codomain() is _engine_scheme(codomain), (
                     f"cannot make the Sage morphism {datum} a morphism {domain} -> {codomain}: it is a "

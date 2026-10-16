@@ -663,9 +663,7 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
                 )
             if datum.parent() is self:
                 return datum
-            return _GluedSchemeMorphism(
-                self, datum.local_maps(), cone_construction=datum.cone_construction(),
-            )
+            raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
         if isinstance(datum, (tuple, list, IndexedFamily, Mapping)):
             return _GluedSchemeMorphism(self, datum)
         return super()._element_constructor_(datum)
@@ -3657,12 +3655,7 @@ class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
                     local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasModuleSheafMorphismMethods():
-                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {local_maps.domain()} -> {local_maps.codomain()}"
-                    )
-                local_maps = local_maps.local_maps()
+                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         morphism = self.element_class(self, local_maps)
@@ -3709,12 +3702,7 @@ class FiniteAtlasModuleGluingMor(CategoricalMor):
                     local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasModuleGluingMorphismMethods():
-                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {local_maps.domain()} -> {local_maps.codomain()}"
-                    )
-                local_maps = local_maps.local_maps()
+                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         morphism = self.element_class(self, local_maps)
@@ -4225,12 +4213,7 @@ class FiniteAtlasAlgebraGluingMor(CategoricalMor):
                     local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasAlgebraGluingMorphism():
-                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {local_maps.domain()} -> {local_maps.codomain()}"
-                    )
-                local_maps = local_maps.local_maps()
+                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         morphism = self.element_class(self, local_maps)
@@ -5325,7 +5308,7 @@ class ModuleGluingMor(CategoricalMor):
                 )
             if local_maps.parent() is self:
                 return local_maps
-            local_maps = local_maps.local_maps()
+            raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, local_maps)
 
     @object_level
@@ -6092,7 +6075,7 @@ class AlgebraGluingMor(CategoricalMor):
                 )
             if local_maps.parent() is self:
                 return local_maps
-            local_maps = local_maps.local_maps()
+            raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, local_maps)
 
     @object_level
@@ -6287,7 +6270,7 @@ class _FiniteAtlasInverseImageModuleMor(CategoricalMor):
             case _FiniteAtlasInverseImageModuleMorphism() if source_morphism.parent() is self:
                 return source_morphism
             case _FiniteAtlasInverseImageModuleMorphism():
-                source_morphism = source_morphism.source_morphism()
+                raise TypeError(f"{source_morphism} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         source_mor = self.base_category().source_category().Mor(

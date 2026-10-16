@@ -2381,8 +2381,7 @@ class CoreMor(CategoricalMor):
             case CategoricalIsomorphism() if inverse is None:
                 if forward.parent() is self:
                     return forward
-                self._require_base_morphisms(forward.forward(), forward.inverse().forward())
-                return self._from_known_inverse_pair(forward.forward(), forward.inverse().forward())
+                raise TypeError(f"{forward} belongs to another Mor; apply the functor between the categories")
         if inverse is None:
             forward, inverse = forward
         self._require_base_morphisms(forward, inverse)

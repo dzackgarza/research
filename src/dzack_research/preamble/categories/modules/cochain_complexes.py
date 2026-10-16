@@ -735,30 +735,11 @@ class CochainMor(CategoricalMor):
         )
 
     def _element_constructor_(self, components):
-        if isinstance(components, CochainMorphismMethods):
-            if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{components} is a cochain map {components.domain()} -> {components.codomain()}, "
-                    f"not an element of {self}"
-                )
-            if components.parent() is self:
+        if isinstance(components, Morphism):
+            if self._already_parented_arrow(components):
                 return components
-            return self._from_constructed_components(
-                indexed_family(
-                    self.domain().degree_index_set(),
-                    components._selected_degree_component,
-                    name="Reparented cochain-morphism components",
-                ),
-                premises=(components,),
-            )
-        elif isinstance(components, Morphism):
-            if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{components} is a map {components.domain()} -> {components.codomain()}, "
-                    f"not an element of {self}"
-                )
-            return self.elementwise(lambda element: components(element))
-        elif isinstance(components, dict):
+            raise TypeError(f"{components} belongs to another Mor; apply the functor between the categories")
+        if isinstance(components, dict):
             selected = {int(degree): morphism for degree, morphism in components.items()}
 
             def component_at(degree):

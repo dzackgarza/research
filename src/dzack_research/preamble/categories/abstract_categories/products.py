@@ -1375,12 +1375,7 @@ class ConeMor(CategoricalMor):
             case ConeMorphism():
                 if apex_map.parent() is self:
                     return apex_map
-                if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {apex_map} as a morphism of cones {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
-                    )
-                apex_map = apex_map.apex_map()
+                raise TypeError(f"{apex_map} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, apex_map)
 
     def _from_commuting_apex_map(self, apex_map):
@@ -1422,12 +1417,7 @@ class CoconeMor(CategoricalMor):
             case CoconeMorphism():
                 if apex_map.parent() is self:
                     return apex_map
-                if apex_map.domain() is not self.domain() or apex_map.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {apex_map} as a morphism of cocones {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {apex_map.domain()} -> {apex_map.codomain()}"
-                    )
-                apex_map = apex_map.apex_map()
+                raise TypeError(f"{apex_map} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, apex_map)
 
     @object_level
