@@ -337,9 +337,22 @@ class RingMorphism:
         That is the case a closed subscheme is written in, and taking ``J`` to
         be zero recovers the kernel.
 
-        A general morphism has no such description, and computing the preimage
-        needs elimination in a selected engine realization, which an owned
-        morphism given elementwise does not carry.
+        Along a localization map contraction is saturation, supplied by the
+        ideal owner. These formulas apply to the canonical maps, not to an
+        arbitrary map with the same endpoints. General preimage ideals need
+        their membership presentation; finite generators require a further
+        algorithm (Atiyah--Macdonald, Proposition 3.11).
+
+        Unexecuted saturation specimen::
+
+            sage: from dzack_research.preamble.all import *
+            sage: A = QQ['x']; x = A.algebra_generator('x')
+            sage: S = A.localization(x)
+            sage: f = S.localization_map()
+            sage: f.contraction_of_ideal(S.ideal(S(x))) == A.ideal(A.one())
+            True
+            sage: f.contraction_of_ideal(S.ideal(S.zero())) == A.ideal(A.zero())
+            True
         """
 
         from dzack_research.preamble.categories.rings.commutative_algebra import (
@@ -351,17 +364,23 @@ class RingMorphism:
         assert ideal.ring() is codomain, (
             f"cannot contract {ideal} along {self}: it is an ideal of {ideal.ring()}, not of {codomain}"
         )
-        assert (
-            codomain in QuotientRings()
-            and codomain.quotient_source() is domain
-        ), (
-            f"cannot contract {ideal} along {self}: contraction is computed here only when {codomain} is "
-            f"a quotient of {domain} and {self} is its quotient map"
-        )
-        return domain.ideal(
-            *codomain.defining_ideal().ideal_generators(),
-            *(generator.lift() for generator in ideal.ideal_generators()),
-        )
+        match codomain:
+            case _ if codomain in LocalizationRings() and self is codomain.localization_map():
+                return ideal.contraction_from_localization()
+            case _ if (
+                codomain in QuotientRings()
+                and codomain.quotient_source() is domain
+                and self is codomain.quotient_map()
+            ):
+                return domain.ideal(
+                    *codomain.defining_ideal().ideal_generators(),
+                    *(generator.lift() for generator in ideal.ideal_generators()),
+                )
+            case _:
+                assert False, (
+                    f"contraction of {ideal} along {self} requires a general preimage-ideal "
+                    "construction; the available algorithms use canonical localization or quotient maps"
+                )
 
     def kernel(self):
         r"""Return the kernel ideal ``f^{-1}(0)`` of this ring morphism.
