@@ -991,6 +991,14 @@ class MorArrowDiscreteMor(CategoricalMor):
     def mor_category(self) -> Category:
         return self.base_category()
 
+    def _emptiness_decision(self):
+        return self.domain() is not self.codomain()
+
+    def _cardinality_decision(self):
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        return cardinal(0 if self._emptiness_decision() else 1)
+
     def _element_constructor_(self, value=None):
         if self.domain() is not self.codomain():
             raise ValueError(

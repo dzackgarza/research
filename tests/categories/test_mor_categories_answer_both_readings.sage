@@ -45,7 +45,7 @@ def test_the_orthogonal_group_of_a2_asks_the_group_readings() -> None:
     r"""``O(A2)`` is a group of order 12: ``O(A2).Mor(O(A2))`` is the group
     homomorphisms, containing the identity homomorphism, and ``O(A2).identity()``
     is the group identity, the identity isometry."""
-    group = Lattices.A2.O()
+    group = Lattices(ZZ)("A2").O()
     homomorphisms = group.Mor(group)
     unit = group.identity()
 
