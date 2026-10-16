@@ -3066,7 +3066,7 @@ class Modules(OwnedCategoryOverBaseRing):
     class Torsion(CategoryWithAxiom):
         r"""Modules whose generic fibre vanishes."""
 
-        _certifying_predicate = "is_torsion"
+        _certifying_predicate = "_torsion_decision"
 
         def an_object(self):
             r"""The discriminant group of U, which is torsion."""
