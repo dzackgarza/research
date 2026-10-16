@@ -150,6 +150,10 @@ class _OppositeCategory(OwnedCategory):
         def underlying_object(self) -> ObjectOfCategory:
             return self._underlying_object
 
+        def Mor(self, codomain: Parent) -> OppositeMor:
+            r"""``Mor_{C^op}(X, Y) = Mor_C(Y, X)``, with this object as ``X``."""
+            return self.opposite_category().Mor(self, codomain)
+
         def _repr_(self) -> str:
             return f"op({self.underlying_object()})"
 
@@ -164,7 +168,19 @@ class _OppositeCategory(OwnedCategory):
         return self._base_category
 
     def super_categories(self):
-        return [Objects()]
+        r"""``D^op`` for each declared ``C -> D``; the root ``Objects()`` above ``Objects()^op``.
+
+        ``C^op`` has the objects of ``C``, and a forgetful functor
+        ``U: C -> D`` is also a functor ``U^op: C^op -> D^op``
+        (Mac Lane, *Categories for the Working Mathematician*, II.2).  The
+        owned root has no supercategory, so ``Objects()^op`` declares the
+        root itself: each ``op(X)`` is a represented object.
+        """
+        match self.base_category().super_categories():
+            case []:
+                return [Objects()]
+            case supers:
+                return [supercategory.opposite() for supercategory in supers]
 
     @cached_method(key=lambda self, underlying_object: id(underlying_object))
     def object(self, underlying_object: Parent) -> ObjectOfCategory:

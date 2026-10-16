@@ -2,14 +2,19 @@ r"""Derived categories of modules and the localization functor from cochain comp
 
 from sage.misc.cachefunc import cached_function
 
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.cochain_complexes import (
     CochainComplexes,
+)
+from dzack_research.preamble.categories.modules.linear_categories import (
+    TriangulatedCategories,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     _owned_ring,
 )
+from dzack_research.preamble.owned_category import _object_of
 
 
 class DerivedCategories(OwnedCategoryOverBaseRing):
@@ -18,11 +23,12 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
     \(D(R) = \mathrm{Ch}(R)[W^{-1}]\) is the localization of the category
     \(\mathrm{Ch}(R)\) of \(\mathbb{Z}\)-graded cochain complexes of
     \(R\)-modules at the class \(W\) of quasi-isomorphisms, the cochain maps
-    \(f\) for which every \(H^n(f)\) is an isomorphism.  It comes with the
-    localization functor \(Q : \mathrm{Ch}(R) \to D(R)\), which is the
-    identity on objects, sends every quasi-isomorphism to an isomorphism,
-    and is initial among functors out of \(\mathrm{Ch}(R)\) with that
-    property.  Mathlib states this as ``DerivedCategory C`` with
+    \(f\) for which every \(H^n(f)\) is an isomorphism (Stacks Project, Tag
+    05RU, Definition 13.11.3).  It comes with the localization functor
+    \(Q : \mathrm{Ch}(R) \to D(R)\), which is the identity on objects, sends
+    every quasi-isomorphism to an isomorphism, and is initial among functors
+    out of \(\mathrm{Ch}(R)\) with that property.  Mathlib states this as
+    ``DerivedCategory C`` with
     ``DerivedCategory.Q : CochainComplex C ℤ ⥤ DerivedCategory C`` and the
     instance ``Q.IsLocalization`` for the quasi-isomorphisms
     (``Mathlib/Algebra/Homology/DerivedCategory/Basic.lean``).
@@ -31,35 +37,63 @@ class DerivedCategories(OwnedCategoryOverBaseRing):
     invert quasi-isomorphisms, so each factors uniquely as
     \(H^n = H^n_D \circ Q\).
 
-    ``super_categories`` is not declared.  An object of \(D(R)\) is a
-    cochain complex, but a morphism of \(D(R)\) is a roof
-    \(X \xleftarrow{s} X' \to Y\) with \(s\) a quasi-isomorphism, not a
-    cochain map, so \(D(R)\) is not a subcategory of
-    ``CochainComplexes(R)``; and no category of triangulated \(R\)-linear
-    categories is presented in this tree to receive it.  The category
-    therefore refuses to construct until that placement is formalized.
+    \(D(R)\) is an \(R\)-linear triangulated category (Stacks Project, Tag
+    0145, Definition 13.3.2; Mathlib ``DerivedCategory.instPretriangulated``
+    and ``IsTriangulated``), so as an object of ``Cat`` it is placed in
+    ``TriangulatedCategories(R)``: that is ``category()``, a statement about
+    \(D(R)\) itself.  ``super_categories`` states what every *object* of
+    \(D(R)\) is.  An object of \(D(R)\) is a cochain complex, but a morphism
+    of \(D(R)\) is a roof \(X \xleftarrow{s} X' \to Y\) with \(s\) a
+    quasi-isomorphism, not a cochain map, so \(D(R)\) is not a subcategory of
+    ``CochainComplexes(R)``, and no structure of an object of \(D(R)\) can
+    be forgotten in place to reach another category: the declaration is the
+    root.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "objects of the derived category"
+    def _repr_object_names(self):
+        return f"objects of the derived category over {self.base_ring()}"
+
+    def category(self):
+        r"""``D(R)`` as an object of ``Cat``: an ``R``-linear triangulated category."""
+        return TriangulatedCategories(self.base_ring())
+
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        r"""``Q(C)`` of the sample cochain complex ``C``."""
+        return CochainComplexes(self.base_ring()).localization_at_quasi_isomorphisms()(
+            CochainComplexes(self.base_ring()).an_object()
+        )
 
     def cohomology(self, degree):
         r"""``H^degree : D(R) -> Mod_R``, the factorization of cochain cohomology through ``Q``."""
         assert False, "cohomology on DerivedCategories: not implemented"
 
     class ParentMethods:
+        def __init__(self, representing_complex, **rest) -> None:
+            self._preamble_representing_complex = representing_complex
+            super().__init__(**rest)
+
+        def representing_complex(self):
+            r"""The cochain complex \(C\) with \(Q(C)\) this object."""
+            return self._preamble_representing_complex
+
         def cohomology(self, degree):
             r"""``H^degree(K)`` of an object \(K\) of \(D(R)\), an object of ``Modules(R)``.
 
             It is \(H^{\mathrm{degree}}\) of any cochain complex representing
             \(K\); quasi-isomorphic representatives give isomorphic modules.
             """
-            assert False, "cohomology on DerivedCategories: not implemented"
+            return self.representing_complex().cohomology(degree)
 
         def graded_cohomology(self):
             r"""\(\bigoplus_n H^n(K)\), an object of ``GradedModules(R)`` with \(H^n(K)\) in degree \(n\)."""
             assert False, "graded_cohomology on DerivedCategories: not implemented"
+
+        def _repr_(self):
+            complex_ = self.representing_complex()
+            return f"Image in the derived category over {complex_.base_ring()} of {complex_}"
 
 
 class _DerivedLocalizationFunctor(Functor):
@@ -76,8 +110,8 @@ class _DerivedLocalizationFunctor(Functor):
         return self._base_ring
 
     def _apply_object(self, complex_):
-        r"""A cochain complex \(C\) as an object \(Q(C)\) of \(D(R)\)."""
-        assert False, "localization on CochainComplexes: not implemented"
+        r"""A cochain complex \(C\) as the object \(Q(C)\) of \(D(R)\); ``Q`` is the identity on objects."""
+        return _object_of(self.codomain(), representing_complex=complex_)
 
     def _apply_morphism(self, morphism):
         r"""A cochain map \(f\) as the roof \(Q(f)\) with identity left leg."""

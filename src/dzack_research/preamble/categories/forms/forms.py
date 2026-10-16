@@ -77,9 +77,8 @@ QuadraticFormMor = QuadraticModuleMor
 class BilinearFormMors(OwnedCategoryOverBaseRing):
     r"""Diagonal pairing Mor objects carrying the bilinear-form operations."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "bilinear-form Mor objects"
+    def _repr_object_names(self):
+        return f"bilinear-form Mor objects over {self.base_ring()}"
 
     def super_categories(self):
 

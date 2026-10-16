@@ -3032,7 +3032,12 @@ Sets._EpiCategory = SetEpiCategoryConstruction
 
 
 class PowerSets(OwnedCategory):
-    r"""The power object \(P(X)\), represented by subobjects of ``X``."""
+    r"""The power object \(P(X)\), represented by subobjects of ``X``.
+
+    ``inclusion_order()`` is \(P(X)\) partially ordered by \(A\le B\) exactly
+    when \(A\subseteq B\) (the order of the Boolean algebra ``Set X``, Mathlib
+    ``Set.instBooleanAlgebra`` in ``Mathlib/Order/BooleanAlgebra/Set.lean``).
+    """
 
     def an_object(self) -> ObjectOfCategory:
         r"""One object of this category."""
@@ -3138,7 +3143,7 @@ class PowerSets(OwnedCategory):
                     )
                 return subobjects(candidate)
             if candidate is self.base_set():
-                return self.from_predicate(lambda _member: True)
+                return self.top()
             if candidate in Sets():
                 assert Sets().is_provably_finite(candidate) and candidate in EnumeratedSets(), (
                     f"cannot read {candidate} as a subset of {self.base_set()}: a set is read as a subset here only "
@@ -3181,11 +3186,48 @@ class PowerSets(OwnedCategory):
         # Preserve undecidable subset containment through the owned API.
         is_parent_of = __contains__
 
+        @cached_method
         def top(self):
+            r"""\(X\) as the greatest point of \(P(X)\)."""
             return self.from_predicate(lambda _member: True)
 
+        @cached_method
         def bottom(self):
+            r"""The empty subset, the least point of \(P(X)\)."""
             return self(())
+
+        @cached_method
+        def inclusion_order(self) -> PartiallyOrderedSets().ObjectType:
+            r"""\((P(X),\subseteq)\), the power set partially ordered by inclusion.
+
+            The inclusion order is chosen structure on the set \(P(X)\), so it
+            is its own object of ``PartiallyOrderedSets()`` on the points of
+            \(P(X)\).  A finite enumerated \(P(X)\) is also well ordered by its
+            enumeration, which is a different order on the same set.
+            """
+            return PartiallyOrderedSets()(self, self._is_contained_in)
+
+        def _is_contained_in(self, smaller, larger) -> bool | Predicate:
+            r"""Whether \(A\subseteq B\): every point of \(A\) lies in \(B\).
+
+            Decided when \(A\) is empty, when \(B\) is \(X\), and when \(A\) is
+            finite and enumerated; otherwise the proposition \(A\subseteq B\).
+            """
+            from dzack_research.preamble.logic import AtomicProposition, conjunction
+
+            left = self(smaller)
+            right = self(larger)
+            inclusion = left.inclusion()
+            points = inclusion.domain()
+            match left:
+                case _ if left is self.bottom():
+                    return True
+                case _ if right is self.top():
+                    return True
+                case _ if Sets().is_provably_finite(points) and points in EnumeratedSets():
+                    return conjunction(right.is_parent_of(inclusion(point)) for point in points)
+                case _:
+                    return AtomicProposition("is_subset", left, right)
 
         def inverse_image_morphism(self, morphism: SetMorphism) -> SetMorphism:
             if morphism.codomain() is not self.base_set():
@@ -4807,9 +4849,18 @@ class CoproductsOfSets(OwnedCategory):
             return cofactor
 
         def an_element(self):
-            r"""Choose one point from one represented summand."""
-            index = self.index_set().an_element()
-            return self(index, self.cofactor(index).an_element())
+            r"""Choose one point ``(i, x)`` with ``x`` in a nonempty summand ``X_i``.
+
+            ``coprod_i X_i`` is empty exactly when every ``X_i`` is, so the
+            point comes from the first summand decided nonempty: in
+            ``Pic(P^n_k) = Pic(Spec k) + ZZ[O(1)]`` the basis is
+            ``{} coprod {O(1)}``, and its point lies in the second summand.
+            """
+            for index in self.index_set():
+                cofactor = self.cofactor(index)
+                if cofactor.is_empty() is False:
+                    return self(index, cofactor.an_element())
+            assert False, f"cannot choose a point of {self}: no summand is decided nonempty"
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""

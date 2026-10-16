@@ -7,7 +7,6 @@ from sage.categories.morphism import Morphism
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
-from sage.structure.element import parent as element_parent
 from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.richcmp import op_EQ, op_NE
 from sage.structure.sage_object import SageObject
@@ -15,6 +14,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
     CategoricalMor,
+    FixedMorCategory,
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -30,7 +30,7 @@ from dzack_research.preamble.categories.abstract_categories.presheaves import (
     CoveringFamilyMorphism,
     DescentData,
 )
-from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.functors.core import Functor, IdentityFunctor
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.indexed_families import finite_indexed_family
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
@@ -42,25 +42,20 @@ from dzack_research.preamble.validation import validator
 
 if "Invertible" not in all_axioms:
     all_axioms.add("Invertible")
+if "FiniteLocallyFree" not in all_axioms:
+    all_axioms.add("FiniteLocallyFree")
 
 
-class _SchemeUnderlyingSpaceTopologyData(SageObject):
-    r"""The topology of ``|X|`` retained by the represented ringed space ``X``.
+class _SchemeTopologyData(SageObject):
+    r"""The Zariski topology of a scheme ``X`` glued from affine charts.
 
-    The public topology is the collection of open subsets of ``|X|``.  The
-    ringed-space layer already owns open immersions and Zariski coverings, but
-    it does not yet own a pointwise decision procedure turning an arbitrary
-    subset of a non-affine scheme into an open immersion.  The topology is
-    therefore represented as the exact subobject of the power set cut out by
-    openness, with arbitrary membership assertion-gated until such a
-    presentation is supplied.  The empty and whole opens are unconditional.
+    The open subsets of ``X`` are the subsets ``U`` whose preimage in every
+    chart ``U_i = Spec A_i`` is open (Stacks, Lemma 26.14.1, Tag 01JB).  The topology is the
+    subobject of the power set of ``X`` cut out by openness.  Openness is
+    decided for the empty set and the whole space, and is assertion-gated
+    otherwise until a subset can be presented through its traces on the
+    charts.
     """
-
-    def __init__(self, ringed_space) -> None:
-        self._ringed_space = ringed_space
-
-    def ringed_space(self):
-        return self._ringed_space
 
     def open_subsets(self, space):
         return space.power_set().condition_set(
@@ -71,69 +66,194 @@ class _SchemeUnderlyingSpaceTopologyData(SageObject):
         power = space.power_set()
         selected = power(subset)
         match selected:
-            case _ if selected == power.bottom():
+            case _ if power.inclusion_order().le(selected, power.bottom()) is True:
                 return True
-            case _ if selected == power.top():
+            case _ if power.inclusion_order().le(power.top(), selected) is True:
                 return True
             case _:
                 assert False, (
-                    f"whether {subset} is open in {space} is decided only for the empty set, the "
-                    f"whole space, and subsets of the spectrum of an affine scheme; {space} is "
-                    "the space of a non-affine scheme"
+                    f"whether {subset} is open in {space} is decided only for the empty set and "
+                    f"the whole space; {space} is a scheme glued from affine charts"
                 )
 
 
-class _SchemeUnderlyingSpaceEngine:
-    r"""Private realization of ``|X|`` as an object of ``TopologicalSpaces``."""
+class _AffineSchemeTopologyData(SageObject):
+    r"""The Zariski topology of ``X = Spec A``, read from the prime spectrum of ``A``.
 
-    def __init__(self, ringed_space, **rest) -> None:
-        self._ringed_space = ringed_space
-        super().__init__(**rest)
+    The points of ``Spec A`` are the prime ideals of ``A`` (Stacks, Definition
+    10.17.1, Tag 00DZ), and the opens of ``X`` are the opens of that prime
+    spectrum.
+    """
 
-    def ringed_space(self):
-        return self._ringed_space
+    def __init__(self, coordinate_algebra) -> None:
+        self._coordinate_algebra = coordinate_algebra
 
-    scheme = ringed_space
+    def open_subsets(self, space):
+        return self._coordinate_algebra.spectrum().open_subsets()
 
-    def __contains__(self, point) -> bool:
-        return element_parent(point) is self
-
-    is_parent_of = __contains__
-
-    def _element_constructor_(self, point):
-        match element_parent(point) is self:
-            case True:
-                return point
-            case False:
-                assert False, (
-                    f"{point} is not a point of {self}: points of the space of the non-affine "
-                    f"scheme {self.ringed_space()} are constructed only from points of its affine charts"
-                )
-
-    def _repr_(self) -> str:
-        return f"Underlying topological space of {self.ringed_space()}"
+    def is_open_subset(self, space, subset) -> bool:
+        return self._coordinate_algebra.spectrum().is_open_subset(subset)
 
 
-@cached_function(key=lambda ringed_space: id(ringed_space))
-def _scheme_underlying_space(ringed_space):
-    return _object_of(
-        TopologicalSpaces(),
-        _engine=(TopologicalSpaces(), _SchemeUnderlyingSpaceEngine, None),
-        topology_data=_SchemeUnderlyingSpaceTopologyData(ringed_space),
-        ringed_space=ringed_space,
+class PresheafObjects(OwnedParameterizedCategory):
+    r"""Presheaves on a topological space ``X``: the Grothendieck construction ``∫_{D in Cat} [Open(X)^op, D]``.
+
+    An object is a pair ``(D, F)`` of a category ``D`` and a functor
+    ``F: Open(X)^op -> D`` (Mathlib ``TopCat.Presheaf``, which fixes ``D``;
+    here ``D`` varies).  A morphism ``(D, F) -> (D', F')`` is a pair
+    ``(G, alpha)`` of a functor ``G: D -> D'`` and a natural transformation
+    ``alpha: G F => F'``; composition is ``(G', alpha') (G, alpha) =
+    (G' G, alpha' . G' alpha)``.  This is the Grothendieck construction of
+    the functor ``Cat -> Cat``, ``D -> [Open(X)^op, D]``, ``G -> G_*``
+    (Mathlib ``CategoryTheory.Grothendieck``).  The projection to
+    ``Cat`` sends ``(D, F)`` to ``D``; its fibre over ``D`` is the functor
+    category ``[Open(X)^op, D]`` (:meth:`with_values`), whose morphisms are
+    the pairs ``(id_D, alpha)``.  The coslice ``Open(X)^op / Cat`` is the
+    wide subcategory of the pairs ``(G, id)``, so it is no supercategory.
+
+    No Grothendieck construction of a ``Cat``-valued functor is presented
+    in the tree, so this category declares no supercategory.
+    """
+
+    def parameter_category(self):
+        return TopologicalSpaces()
+
+    def space(self):
+        return self.base()
+
+    def _repr_object_names(self):
+        return f"presheaves on {self.space()}"
+
+    def site(self) -> Category:
+        r"""``Open(X)``, the poset category of the opens of ``X``."""
+        return self.space().open_subsets_site()
+
+    def super_categories(self):
+        return []
+
+    def with_values(self, value_category: Category) -> Category:
+        r"""``[Open(X)^op, D]``, the fibre over ``D`` of the projection ``∫ [Open(X)^op, -] -> Cat``.
+
+        Its objects are the presheaves on ``X`` with values in ``D``; its
+        morphisms are the pairs ``(id_D, alpha)``, the natural
+        transformations.
+        """
+        return self.site().presheaves(value_category)
+
+    def value_change(self, value_functor: Functor) -> Functor:
+        r"""``G_*: [Open(X)^op, D] -> [Open(X)^op, D']``, ``F -> G F``, for ``G: D -> D'``.
+
+        The action on arrows of the functor whose Grothendieck construction
+        this category is: the presheaf bifunctor on ``(id_{Open(X)}, G)``.
+        """
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().presheaf_transport(IdentityFunctor(self.site()), value_functor)
+
+    def morphism(self, source, target, value_functor: Functor, transformation):
+        r"""``(G, alpha): (D, F) -> (D', F')`` for ``G: D -> D'`` and ``alpha: G F => F'``."""
+        assert False, "morphism (G, alpha) of presheaves on PresheafObjects: not implemented"
+
+    def presheaf_datum(self, presheaf: Functor):
+        r"""The datum ``F: Open(X)^op -> D`` of an object ``(D, F)`` of this category."""
+        assert presheaf.domain() is self.site().opposite(), (
+            f"a presheaf on {self.space()} is a functor on Open(X)^op, but {presheaf} is a "
+            f"functor on {presheaf.domain()}"
+        )
+        return {"open_sections_presheaf": presheaf}
+
+    class ParentMethods:
+        r"""A presheaf ``(D, F)`` on ``X``, with its functor ``F: Open(X)^op -> D``."""
+
+        def __init__(self, open_sections_presheaf: Functor, **rest) -> None:
+            self._open_sections_presheaf = open_sections_presheaf
+            super().__init__(**rest)
+
+        def open_sections_presheaf(self) -> Functor:
+            r"""``F: Open(X)^op -> D``, ``U -> F(U)``, with the restriction maps."""
+            return self._open_sections_presheaf
+
+        def value_category(self) -> Category:
+            r"""``D``, the image of ``(D, F)`` under the projection to ``Cat``."""
+            return self._open_sections_presheaf.codomain()
+
+
+class _UnpresentedSectionsPresheaf(Functor):
+    r"""``F: Open(X)^op -> D`` of a sheaf whose sections on the opens of ``X`` are not presented.
+
+    The sheaf is represented by a private realization on a basis or an atlas
+    of ``X``; its values ``F(U)`` on the opens ``U`` of ``X`` are not computed.
+    """
+
+    def __init__(self, space, value_category: Category, sheaf_name: str) -> None:
+        self._sheaf_name = sheaf_name
+        Functor.__init__(self, space.open_subsets_site().opposite(), value_category)
+
+    def _apply_object(self, opposite_object):
+        assert False, f"sections of {self._sheaf_name} on {opposite_object}: not implemented"
+
+    def _apply_morphism(self, opposite_arrow):
+        assert False, f"restriction of {self._sheaf_name} along {opposite_arrow}: not implemented"
+
+    def _repr_(self):
+        return f"Sections presheaf of {self._sheaf_name}"
+
+
+def _unpresented_sections_presheaf(space, sheaf_name: str, value_category: Category | None = None):
+    r"""``F: Open(X)^op -> D`` of a sheaf whose sections on the opens of ``space`` are not presented.
+
+    ``D`` defaults to ``Ab = Modules(ZZ)``, an abelian group being a
+    ``ZZ``-module: the sections of a sheaf of ``O_X``-modules, or of a sheaf of
+    abelian groups such as ``O_X^*``, form abelian groups.
+    """
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+
+    values = Modules(_owned_integers()) if value_category is None else value_category
+    return _UnpresentedSectionsPresheaf(space, values, sheaf_name)
+
+
+def _unpresented_sheaf_placement(
+    space, sheaf_name: str, mor_category: Category | None = None, value_category: Category | None = None
+):
+    r"""``Sh(Open(X), D)`` and its data for a sheaf whose sections on opens are not presented.
+
+    An object ``(D, F)`` of ``∫ [Open(X)^op, -]`` lies in the fibre over ``D``
+    of the projection to ``Cat``; a sheaf lies in the full subcategory
+    ``Sh(Open(X), D)`` of that fibre, on ``F`` with its descent data for the
+    open covers of ``X``.  The descent comparison on a cover is computed when
+    a caller asks for it.  ``mor_category`` is the category whose morphisms
+    the sheaf's arrows are, such as ``O_X``-linear maps; by default it is the
+    fibre, whose morphisms are the natural transformations of the sections
+    functors.
+    """
+    from dzack_research.preamble.categories.abstract_categories.presheaves import (
+        OpenCoveringFamilies,
     )
+
+    presheaf = _unpresented_sections_presheaf(space, sheaf_name, value_category)
+    presheaves = PresheafObjects(space)
+    coverage = OpenCoveringFamilies(space)
+    sheaves = coverage.sheaves(presheaf.codomain())
+
+    def inverse_for(equalizer):
+        return equalizer.canonical_map().inverse()
+
+    return sheaves, {
+        **presheaves.presheaf_datum(presheaf),
+        "functor": presheaf,
+        "descent_data": DescentData(coverage, presheaf, inverse_for),
+        "fixed_mor_category": sheaves if mor_category is None else mor_category,
+    }
 
 
 class SheafObjects(OwnedParameterizedCategory):
-    r"""Represented sheaves on one base space.
+    r"""Sheaves on a ringed space ``X``: the full subcategory of :class:`PresheafObjects` cut out by descent.
 
-    This is the semantic placement shared by represented sheaves on one
-    ringed space.  A sheaf that materializes a
-    specific site/coverage additionally lies in the corresponding
-    :class:`~dzack_research.preamble.categories.abstract_categories.presheaves.Sheaves`
-    full subcategory; this base-space category does not replace that descent
-    datum or pretend that every represented space currently exposes one common
-    site presentation.
+    An object ``(D, F)`` satisfies descent for the open coverings of ``X``
+    (Mathlib ``TopCat.Sheaf``).  For one ``D`` these are the objects of
+    :meth:`with_values`, ``Sh(Open(X), D)``.  Sections are computed on the basis
+    opens that a sheaf's realization presents.
     """
 
     def parameter_category(self):
@@ -146,19 +266,26 @@ class SheafObjects(OwnedParameterizedCategory):
         return f"sheaves on {self.space()}"
 
     def super_categories(self):
-        return [Objects()]
+        return [PresheafObjects(self.space())]
+
+    def with_values(self, value_category: Category) -> Category:
+        r"""``Sh(Open(X), D)``, the sheaves in the fibre over ``D`` of the projection to ``Cat``."""
+        from dzack_research.preamble.categories.abstract_categories.presheaves import (
+            OpenCoveringFamilies,
+        )
+
+        return OpenCoveringFamilies(self.space()).sheaves(value_category)
 
     def an_object(self):
         return self.space().structure_sheaf()
 
 
 class SheafedSpaces(OwnedCategory):
-    r"""Represented spaces equipped with a chosen sheaf.
+    r"""Sheafed spaces ``(X, F)``: a topological space ``X`` with a sheaf ``F`` on ``Open(X)``.
 
-    A sheafed-space object retains its underlying space as construction data;
-    it is not identified with that underlying point-set parent.  Consequently
-    this category remains an object-level owner, while ``underlying_space()``
-    returns the actual object of ``TopologicalSpaces``.
+    Forgetting the sheaf is the functor to ``TopologicalSpaces``.  A sheafed
+    space is therefore constructed on its own points and opens, and its
+    underlying space is the image of that functor.
     """
 
     @classmethod
@@ -166,10 +293,19 @@ class SheafedSpaces(OwnedCategory):
         return "sheafed spaces"
 
     def super_categories(self):
-        return [Objects()]
+        return [TopologicalSpaces()]
 
     def an_object(self):
         return RingedSpaces().an_object()
+
+    class ParentMethods:
+        def underlying_space(self):
+            r"""``|X|``, the image of ``(X, F)`` under the forgetful functor to ``TopologicalSpaces``.
+
+            Forgetting the sheaf leaves the space ``X`` itself, with its own
+            points and opens.
+            """
+            return self
 
 
 
@@ -231,9 +367,26 @@ class ModuleSheaves(OwnedParameterizedCategory):
             r"""``RΓ(X, F)``, an object of ``DerivedCategories(Γ(X, O_X))``.
 
             The image of this sheaf ``F`` under
-            ``ModuleSheaves(X).derived_global_sections()``.
+            ``ModuleSheaves(X).derived_global_sections()``.  Computed for the
+            standard line bundles ``O(d)`` on ``P^n_R``, ``n >= 1``, from
+            Hartshorne, Theorem III.5.1, and for a quasi-coherent sheaf on an
+            affine scheme from its one-chart Čech complex, which is acyclic
+            (Stacks, Tag 01XB).
             """
-            assert False, "derived_global_sections on ModuleSheaves: not implemented"
+            from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                _projective_space_line_bundle_derived_global_sections,
+            )
+            from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces, Schemes
+
+            space = self.scheme()
+            base = space.scheme_base_ring()
+            match space:
+                case _ if space in ProjectiveSpaces(base) and self in InvertibleSheavesWithChosenTrivialization(space):
+                    return _projective_space_line_bundle_derived_global_sections(self)
+                case _ if space in Schemes(base).Affine() and self in QuasiCoherentSheaves(space):
+                    return self.geometric_cohomology_complex().derived_global_sections()
+                case _:
+                    assert False, "derived_global_sections on ModuleSheaves: not implemented"
 
         def sheaf_cohomology(self, degree):
             r"""``H^degree(X, F) = H^degree(RΓ(X, F))``, an object of ``Modules(Γ(X, O_X))``."""
@@ -527,7 +680,10 @@ def _structure_sheaf(ringed_space):
             QuasiCoherentSheaves(ringed_space),
             QuasiCoherentSheaves(ringed_space).Invertible(),
         ),
-        construction_data={"ringed_space": ringed_space},
+        construction_data={
+            "ringed_space": ringed_space,
+            **PresheafObjects(ringed_space).presheaf_datum(_AffineOpenStructurePresheaf(ringed_space)),
+        },
         _engine=_StructureSheafEngine,
     )
 
@@ -609,6 +765,149 @@ class _AffineStructurePresheaf(Functor):
         return f"Affine structure presheaf of {self.scheme()}"
 
 
+@cached_function(key=lambda scheme: id(scheme))
+def _affine_de_rham_complex(scheme):
+    r"""``Ω^•_{X/R}`` on the distinguished affine basis of an affine ``X``.
+
+    The presheaf ``U -> DR_R(O(U))`` composes the coordinate algebra with the
+    de Rham functor ``DR_R : CAlg_R -> SCDGA_R``.  It is a sheaf on the basis:
+    each ``Ω^p_{X/R}`` is quasi-coherent with ``Ω^p_{A_f/R} = (Ω^p_{A/R})_f``
+    (Stacks, Tags 00RT and 01UM), and a sheaf on a basis determines the sheaf
+    on ``X`` (Stacks, Tag 009O).
+    """
+    from dzack_research.preamble.categories.functors.de_rham import _de_rham_functor
+
+    coverage = distinguished_affine_coverage(scheme)
+    presheaf = _AffineDeRhamPresheaf(scheme)
+
+    def inverse_for(equalizer):
+        return equalizer.canonical_map().inverse()
+
+    descent = DescentData(coverage, presheaf, inverse_for)
+    values = _de_rham_functor(scheme.scheme_base_ring()).codomain()
+    return coverage.sheaves(values).object(
+        presheaf,
+        descent,
+        categories=(SheafObjects(scheme),),
+        construction_data=PresheafObjects(scheme).presheaf_datum(_AffineOpenDeRhamPresheaf(scheme)),
+    )
+
+
+class _AffineOpenDeRhamPresheaf(Functor):
+    r"""``Ω^•_{X/R}: Open(X)^op -> SCDGA_R`` of an affine ``X = Spec A``, on the basis opens.
+
+    ``U -> DR_R(O_X(U))``: the de Rham functor ``DR_R`` composed with the
+    structure presheaf, so ``X -> DR_R(A)``, ``D(f) -> DR_R(A_f)``, and a
+    restriction is ``DR_R`` of the localization map (Stacks, Tag 00RT:
+    ``Ω_{S^{-1}A/R} = S^{-1} Ω_{A/R}``).  Sections over an open that is not a
+    basis open are not computed.
+    """
+
+    def __init__(self, scheme) -> None:
+        from dzack_research.preamble.categories.functors.de_rham import _de_rham_functor
+
+        self._scheme = scheme
+        self._structure_presheaf = _AffineOpenStructurePresheaf(scheme)
+        self._de_rham_functor = _de_rham_functor(scheme.scheme_base_ring())
+        Functor.__init__(self, scheme.open_subsets_site().opposite(), self._de_rham_functor.codomain())
+
+    def scheme(self):
+        return self._scheme
+
+    def _apply_object(self, opposite_object):
+        return self._de_rham_functor(self._structure_presheaf(opposite_object))
+
+    def _apply_morphism(self, opposite_arrow):
+        return self._de_rham_functor(self._structure_presheaf(opposite_arrow))
+
+    def _repr_(self):
+        return f"De Rham presheaf of {self.scheme()} on its opens"
+
+
+class _AffineDeRhamPresheaf(Functor):
+    r"""``U -> DR_R(O(U))`` on the represented affine slice over an affine ``X``.
+
+    An arrow ``V -> U`` over ``X`` acts by ``DR_R`` of its coordinate
+    pullback ``O(U) -> O(V)``, an ``R``-algebra morphism.
+    """
+
+    def __init__(self, scheme) -> None:
+        from dzack_research.preamble.categories.functors.de_rham import _de_rham_functor
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        base = scheme.scheme_base_ring()
+        assert scheme in Schemes(base).Affine(), (
+            f"the de Rham presheaf on affine schemes over X is constructed only for affine X, "
+            f"but {scheme} is in {scheme.category()}"
+        )
+        self._scheme = scheme
+        self._de_rham_functor = _de_rham_functor(base)
+        site = distinguished_affine_coverage(scheme).site_category()
+        Functor.__init__(self, site.opposite(), self._de_rham_functor.codomain())
+
+    def scheme(self):
+        return self._scheme
+
+    def _apply_object(self, opposite_object):
+        affine = opposite_object.underlying_object().arrow().domain()
+        return self._de_rham_functor(affine.coordinate_algebra())
+
+    def _apply_morphism(self, opposite_arrow):
+        triangle = opposite_arrow.underlying_arrow()
+        return self._de_rham_functor(triangle.left().coordinate_algebra_morphism())
+
+    def _repr_(self):
+        return f"Affine de Rham presheaf of {self.scheme()}"
+
+
+class _AffineOpenStructurePresheaf(Functor):
+    r"""``O_X: Open(X)^op -> CRing`` of an affine ``X = Spec A``, on the basis opens.
+
+    ``O_X(X) = A`` and ``O_X(D(f)) = A_f``; restriction ``X -> D(f)`` is the
+    localization map ``A -> A_f`` and ``D(f) -> D(g)`` is the induced map of
+    localizations (Hartshorne II.2.2).  Sections over an open that is not a
+    basis open are not computed.
+    """
+
+    def __init__(self, scheme) -> None:
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+
+        self._scheme = scheme
+        Functor.__init__(self, scheme.open_subsets_site().opposite(), OwnedRings().Commutative())
+
+    def scheme(self):
+        return self._scheme
+
+    def _apply_object(self, opposite_object):
+        from dzack_research.preamble.categories.rings.commutative_algebra import (
+            DistinguishedOpenSubobjects,
+        )
+
+        subset = opposite_object.underlying_object().value()
+        spectrum = self.scheme().underlying_space()
+        match subset:
+            case _ if subset is spectrum.power_set().top():
+                return self.scheme().coordinate_algebra()
+            case _ if subset in DistinguishedOpenSubobjects(spectrum):
+                return subset.coordinate_ring()
+        assert False, (
+            f"sections of O_{{{self.scheme()}}} on {subset}: not implemented; only the basis "
+            "opens X and D(f) are computed"
+        )
+
+    def _apply_morphism(self, opposite_arrow):
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+        if source is target:
+            return source.Mor(target).identity()
+        if source is self.scheme().coordinate_algebra():
+            return target.localization_map()
+        return _localization_restriction_map(source, target)
+
+    def _repr_(self):
+        return f"Structure presheaf of {self.scheme()} on its opens"
+
+
 def _is_distinguished_open_of(open_subscheme, ambient) -> bool:
     from dzack_research.preamble.categories.schemes.schemes import OpenImmersions
 
@@ -623,6 +922,7 @@ def _localization_restriction_map(source, target):
 
     from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalizationRings,
+    OwnedRings,
 )
 
     if source is target:
@@ -654,7 +954,7 @@ def _localization_restriction_map(source, target):
         denominator = target_unit(element.denominator())
         return numerator * denominator.inverse_of_unit()
 
-    return source.Mor(target)(restrict)
+    return source.Mor(target, category=OwnedRings())(restrict)
 
 
 class DistinguishedAffineCoverRefinement(CoveringFamilyMorphism):
@@ -1218,10 +1518,6 @@ class _AffineModuleSheafEngine:
 
         return _affine_geometric_cohomology_complex(self, cover=cover)
 
-    def geometric_cohomology(self, degree):
-        r"""Return the represented affine cohomology in ``degree``."""
-        return self.geometric_cohomology_complex().cohomology(int(degree))
-
     def geometric_scalar_cohomology_map(self, degree, scalar, *, cover=None):
         r"""Return the cohomology map induced by scalar multiplication."""
         from dzack_research.preamble.categories.schemes.geometric_cohomology import (
@@ -1583,14 +1879,13 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
         regime selected by the caller.  Stronger semantic placement is joined
         here so specializations do not initialize a second ``Parent`` shell.
         """
-        category = (
-            self
-            if not categories
-            else owned_category_join((self, *tuple(categories)))
+        fibre, presheaf_data = _unpresented_sheaf_placement(
+            self.scheme(), f"a quasi-coherent sheaf on {self.scheme()}", self
         )
         return _object_of(
-            category,
+            owned_category_join((self, fibre, *tuple(categories))),
             _engine=(self, _engine, None),
+            **presheaf_data,
             **dict(construction_data or {}),
         )
 
@@ -1598,6 +1893,26 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
         def Invertible(self):
             r"""Return the full subcategory of invertible ``O_X``-modules."""
             return self._with_axiom("Invertible")
+
+        def FiniteLocallyFree(self):
+            r"""Return the full subcategory of locally free ``O_X``-modules of finite rank.
+
+            ``F`` is locally free of finite rank when ``X`` has an open cover by
+            sets ``U`` with ``F|_U`` isomorphic to ``O_U^{n_U}``, ``n_U`` finite
+            (Hartshorne, *Algebraic Geometry*, II.5).  These are the vector
+            bundles on ``X``.
+            """
+            return self._with_axiom("FiniteLocallyFree")
+
+    class FiniteLocallyFree(CategoryWithAxiom):
+        r"""Locally free ``O_X``-modules of finite rank: the vector bundles on ``X``.
+
+        Local freeness is a property of the sheaf; a trivializing cover is
+        additional data.
+        """
+
+        def _repr_object_names(self):
+            return f"vector bundles on {self.base_category().scheme()}"
 
     class Invertible(CategoryWithAxiom):
         r"""Invertible quasi-coherent sheaves on ``X``.
@@ -1607,6 +1922,10 @@ class QuasiCoherentSheaves(CategoryPacketMethods, OwnedParameterizedCategory):
         Tag 0B8M).  A particular trivializing cover is additional data and is
         recorded separately by the line-bundle descent category.
         """
+
+        def extra_super_categories(self):
+            r"""An invertible ``O_X``-module is locally free of rank one (Stacks, Tag 0B8M)."""
+            return [self.base_category().FiniteLocallyFree()]
 
         class ParentMethods:
             def is_invertible(self) -> bool:
@@ -1828,10 +2147,6 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             r"""Return ``CDiv(X)=Gamma(X,K_X^*/O_X^*)``."""
             return self.cartier_divisor_sheaf().global_sections()
 
-        @cached_method
-        def underlying_space(self):
-            return _scheme_underlying_space(self)
-
 
 class LocallyRingedMorCategoryConstruction(MorCategoryConstruction):
     r"""The Mor of locally ringed spaces, realized by the domain's presentation.
@@ -1862,6 +2177,16 @@ class LocallyRingedSpaces(CategoryPacketMethods, OwnedCategory):
         return [RingedSpaces()]
 
     class ParentMethods:
+        def _locally_ringed_mor_class(self):
+            r"""The arrow class of ``Mor(X, Y)`` in locally ringed spaces.
+
+            A morphism of locally ringed spaces is a continuous map with a
+            local map of sheaves of rings (Stacks, Tag 01HA).  A space whose
+            presentation computes no such maps has the general Mor; a scheme
+            refines this by its affine or gluing presentation.
+            """
+            return FixedMorCategory
+
         def stalk(self, point):
             return self.structure_sheaf().stalk(point)
 

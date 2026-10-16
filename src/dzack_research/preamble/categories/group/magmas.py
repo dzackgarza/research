@@ -427,6 +427,10 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
                 r"""Return the two-sided unit of this magma."""
 
         class ElementMethods:
+            def is_one(self):
+                r"""Whether this element is the two-sided unit ``1`` of its magma."""
+                return self == self.parent().one()
+
             @RealizationHook
             def _unit_decision(self):
                 r"""Supply the existence of a two-sided inverse in this magma.

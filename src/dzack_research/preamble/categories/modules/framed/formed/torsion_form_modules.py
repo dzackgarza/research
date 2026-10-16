@@ -1542,9 +1542,8 @@ def _invariant_factor_form_isomorphism(form, quadratic: bool):
 class CokernelTorsionFormModules(OwnedCategoryOverBaseRing):
     r"""Finite formed modules retained as literal cokernels of a selected module map."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "cokernel torsion forms"
+    def _repr_object_names(self):
+        return f"cokernel torsion forms over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.framed.formed.form_modules import (

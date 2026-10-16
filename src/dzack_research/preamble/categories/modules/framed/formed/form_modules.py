@@ -1079,9 +1079,8 @@ def _value_module_of(value_object):
 class PairingObjects(OwnedCategoryOverBaseRing):
     r"""Module objects carrying one represented pairing ``X tensor_R Y -> W``."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "pairing-bearing module objects"
+    def _repr_object_names(self):
+        return f"pairing-bearing module objects over {self.base_ring()}"
 
     def super_categories(self):
         r"""Paired modules are slice objects and formed modules are modules; both are sets."""
@@ -1421,9 +1420,8 @@ class FormModules(OwnedCategoryOverBaseRing):
         r"""Return the bilinear owner's formed-module witness over this base."""
         return BilinearFormModules(self.base_ring()).an_object()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "form modules"
+    def _repr_object_names(self):
+        return f"form modules over {self.base_ring()}"
 
     def super_categories(self):
         return [
@@ -2313,9 +2311,8 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             form = module.bilinear_forms(ring)(lambda left, right: ring.zero())
         return BilinearFormModules(ring).Symmetric().Even()(form)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a bilinear form"
+    def _repr_object_names(self):
+        return f"modules with a bilinear form over {self.base_ring()}"
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
@@ -2776,9 +2773,8 @@ class QuadraticFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U").discriminant_group()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a quadratic form"
+    def _repr_object_names(self):
+        return f"modules with a quadratic form over {self.base_ring()}"
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
@@ -3219,9 +3215,8 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
         return Lattices(self.base_ring())("U")
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "free form modules"
+    def _repr_object_names(self):
+        return f"free form modules over {self.base_ring()}"
 
     def super_categories(self):
 

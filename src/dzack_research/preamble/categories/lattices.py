@@ -6251,10 +6251,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: Lattices(ZZ)("U").basis_vector(0)
                 e_0
             """
-            return repr_lincomb(self._lattice_terms(), strip_one=True)
+            return repr_lincomb(
+                [(f"e_{label}", coefficient) for label, coefficient in self._lattice_terms()],
+                strip_one=True,
+            )
 
         def _latex_(self):
-            return repr_lincomb(self._lattice_terms(), is_latex=True, strip_one=True)
+            return repr_lincomb(
+                [(f"e_{{{label}}}", coefficient) for label, coefficient in self._lattice_terms()],
+                is_latex=True,
+                strip_one=True,
+            )
 
         def __mul__(self, other):
             r"""``v * w`` is \(b(v,w)\) for a vector of this lattice, and ``v * r`` the scalar multiple for ``r`` in the base ring.
@@ -6629,9 +6636,8 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
         lattice = Lattices(self.base_ring()).an_object()
         return Lattices(self.base_ring()).biproduct((lattice, lattice))
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "chosen lattice biproducts"
+    def _repr_object_names(self):
+        return f"chosen lattice biproducts over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -7280,9 +7286,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         plane = Lattices(self.base_ring())("U")
         return (plane + plane).basis_vector(0).isotropic_reduction()
 
-    @classmethod
-    def _repr_object_names(cls) -> str:
-        return "isotropic reductions"
+    def _repr_object_names(self) -> str:
+        return f"isotropic reductions over {self.base_ring()}"
 
     def super_categories(self):
         return [Lattices(self.base_ring())]
@@ -8170,9 +8175,8 @@ class NoncrystallographicRootLattices(OwnedCategoryOverBaseRing):
     def an_object(self):
         return Lattices.root_lattice("H", 3)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "noncrystallographic root lattices"
+    def _repr_object_names(self):
+        return f"noncrystallographic root lattices over {self.base_ring()}"
 
     def super_categories(self):
         return [Lattices(self.base_ring()).FinitelyGenerated().Nondegenerate().Even()]
@@ -8265,6 +8269,7 @@ class RootLattices(OwnedCategory):
             r"""Return the private engine Cartan type named by :meth:`root_system_type_name`."""
             return CartanType(self.root_system_type_name())
 
+        @cached_method
         def dynkin_diagram(self):
             r"""Return the Dynkin diagram of the simple roots.
 

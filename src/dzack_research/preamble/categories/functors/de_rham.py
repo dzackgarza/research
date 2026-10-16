@@ -7,9 +7,10 @@ from dzack_research.preamble.categories.algebras.algebras import (
 from dzack_research.preamble.categories.algebras.differential_graded_algebras import (
     DifferentialGradedAlgebras,
 )
+from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_ring
+from dzack_research.preamble.categories.rings.ring_foundation import LocalizationRings, _owned_ring
 
 
 from dzack_research.preamble.categories.modules.powers import _exterior_word
@@ -37,6 +38,13 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
         )
 
     source_exterior = source_dga.extension_algebra()
+    # The Kähler differentials of S^{-1}A are S^{-1}A tensor_A Omega_{A/R}, so
+    # their labels ("d", a) name algebra generators a of A (Stacks, Tag 00RT).
+    generator_algebra = (
+        source_algebra.localization_source()
+        if source_algebra in LocalizationRings()
+        else source_algebra
+    )
 
     def image(element):
         represented = source_dga.realize(element)
@@ -56,8 +64,8 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
                     # .differential_generator``); read ``a`` from that datum.
                     match differential_label:
                         case ("d", generator_label):
-                            source_generator = source_algebra.algebra_generator(
-                                generator_label
+                            source_generator = source_algebra(
+                                generator_algebra.algebra_generator(generator_label)
                             )
                         case _:
                             raise ValueError(
@@ -71,13 +79,20 @@ def _extend_degree_zero_map(source_dga, target_dga, algebra_morphism):
                 result += term
         return result
 
-    mor = DifferentialGradedAlgebras(source_dga.base_ring()).Mor(
-        source_dga,
-        target_dga,
-    )
-    return mor._from_differential_preserving_generator_map(
-        lambda label: image(source_dga.algebra_generator(label))
-    )
+    # ``image`` is the unique extension on every element, so the arrow is
+    # built from that element map: functoriality of the de Rham complex makes
+    # it R-linear, multiplicative, degree-preserving and compatible with ``d``
+    # (Stacks, Tag 0FKF, Section 10.132, "The de Rham complex").  The algebra generators of DR_R(A) need not be a
+    # free family over an engine ring, so generator extension is not used.
+    base = source_dga.base_ring()
+    linear = source_dga.module_category().Mor(
+        source_dga, target_dga
+    )._from_constructed_element_map(image)
+    graded = GradedAlgebras(base, source_dga.grading_monoid()).Mor(
+        source_dga, target_dga
+    )._from_degree_preserving_underlying_morphism(linear)
+    mor = DifferentialGradedAlgebras(base).Mor(source_dga, target_dga)
+    return mor._from_differential_preserving_underlying_morphism(graded, True)
 
 
 class _DeRhamFunctor(Functor):
@@ -216,6 +231,10 @@ class _DegreeZeroDGAFunctor(Functor):
     def _apply_object(self, dga):
         r"""Return the algebra on the actual represented degree-zero piece."""
         return self._degree_zero_data(dga)[0]
+
+    def inclusion(self, dga):
+        r"""The linear inclusion ``B^0 -> B`` of the degree-zero algebra as the degree-zero piece."""
+        return self._degree_zero_data(dga)[1]
 
     def _apply_morphism(self, morphism):
         source_dga = morphism.domain()

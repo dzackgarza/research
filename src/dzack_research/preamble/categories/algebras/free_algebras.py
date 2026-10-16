@@ -40,7 +40,7 @@ from dzack_research.preamble.categories.algebras.algebras import (
     _fix_selected_algebra_presentation,
 )
 from dzack_research.preamble.categories.algebras.graded_algebras import GradedAlgebras
-from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra
+from dzack_research.preamble.categories.algebras.power_algebras import _PowerAlgebra, _PowerAlgebraElement
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleMorphismMethods,
 )
@@ -666,6 +666,14 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             else None
         )
 
+    def _repr_(self):
+        r"""``P/(r_1, ..., r_k)``: the quotient named by its chosen presentation."""
+        display = self._preamble_ring_display
+        if display is not None:
+            return display
+        relations = ", ".join(repr(relation) for relation in self.relations())
+        return f"{self.presentation_ring()}/({relations})"
+
 
 
 
@@ -1181,9 +1189,8 @@ class FreeAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.tensor_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "free algebras"
+    def _repr_object_names(self):
+        return f"free algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [Algebras(self.base_ring()).Associative().Unital()]
@@ -1233,9 +1240,8 @@ class GradedFreeAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.symmetric_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "graded free algebras"
+    def _repr_object_names(self):
+        return f"graded free algebras over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -1418,9 +1424,8 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.tensor_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "tensor algebras"
+    def _repr_object_names(self):
+        return f"tensor algebras over {self.base_ring()}"
 
     def super_categories(self):
 
@@ -1570,9 +1575,8 @@ class SymmetricAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.symmetric_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "symmetric algebras"
+    def _repr_object_names(self):
+        return f"symmetric algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]
@@ -1753,9 +1757,8 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
         modules = Modules(self.base_ring())
         return modules.exterior_algebra()(modules.an_object())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "alternating algebras"
+    def _repr_object_names(self):
+        return f"alternating algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
@@ -1778,6 +1781,9 @@ class AlternatingAlgebras(OwnedCategoryOverBaseRing):
 
     class ParentMethods(_PowerAlgebra):
         r"""The exterior power realization of the alternating algebra on ``M``."""
+
+    class ElementMethods(_PowerAlgebraElement):
+        pass
 
 
 def _presentation_data(algebra):
@@ -1996,9 +2002,8 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
 
         return Modules(self.base_ring()).an_object().divided_power_algebra()
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "divided power algebras"
+    def _repr_object_names(self):
+        return f"divided power algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [GradedAlgebras(self.base_ring()).Commutative()]
@@ -2013,6 +2018,9 @@ class DividedPowerAlgebras(OwnedCategoryOverBaseRing):
             f"{module} is over {module.base_ring()}"
         )
         return _power_algebra_of(module, "divided")
+
+    class ElementMethods(_PowerAlgebraElement):
+        pass
 
     class ParentMethods(_PowerAlgebra):
         def divided_power(self, value, exponent):

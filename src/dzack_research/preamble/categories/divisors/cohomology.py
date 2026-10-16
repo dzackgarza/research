@@ -16,9 +16,8 @@ class LineBundleCohomologySpaces(OwnedCategoryOverBaseRing):
     \(i\).
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "line-bundle cohomology spaces"
+    def _repr_object_names(self):
+        return f"line-bundle cohomology spaces over {self.base_ring()}"
 
     def an_object(self):
         r"""A toric H^0(O(1)) witness over the stated base ring."""

@@ -26,13 +26,16 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_integers,
 )
 from dzack_research.preamble.categories.schemes.gluing import FiniteAffineAtlases
-from dzack_research.preamble.categories.schemes.ringed_spaces import SheafObjects
+from dzack_research.preamble.categories.schemes.ringed_spaces import (
+    SheafObjects,
+    _unpresented_sheaf_placement,
+)
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition, negation
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import Category
 
 
@@ -139,9 +142,13 @@ class _CartierDivisorQuotientSheafEngine:
 @cached_function(key=lambda scheme: id(scheme))
 def _total_quotient_sheaf(scheme):
     sheaves = SheafObjects(scheme)
+    fibre, presheaf_data = _unpresented_sheaf_placement(
+        scheme, f"K_{{{scheme}}}", value_category=OwnedRings().Commutative()
+    )
     return _object_of(
-        sheaves,
-        _engine=(sheaves, _TotalQuotientSheafEngine, None),
+        owned_category_join((sheaves, fibre)),
+        _engine=(fibre, _TotalQuotientSheafEngine, None),
+        **presheaf_data,
         scheme=scheme,
     )
 
@@ -149,9 +156,11 @@ def _total_quotient_sheaf(scheme):
 @cached_function(key=lambda ring_sheaf: id(ring_sheaf))
 def _unit_sheaf(ring_sheaf):
     sheaves = SheafObjects(ring_sheaf.scheme())
+    fibre, presheaf_data = _unpresented_sheaf_placement(ring_sheaf.scheme(), f"the units of {ring_sheaf}")
     return _object_of(
-        sheaves,
-        _engine=(sheaves, _UnitSheafEngine, None),
+        owned_category_join((sheaves, fibre)),
+        _engine=(fibre, _UnitSheafEngine, None),
+        **presheaf_data,
         ring_sheaf=ring_sheaf,
     )
 
@@ -159,9 +168,11 @@ def _unit_sheaf(ring_sheaf):
 @cached_function(key=lambda scheme: id(scheme))
 def _regular_unit_sheaf(scheme):
     sheaves = SheafObjects(scheme)
+    fibre, presheaf_data = _unpresented_sheaf_placement(scheme, f"O_{{{scheme}}}^*")
     return _object_of(
-        sheaves,
-        _engine=(sheaves, _RegularUnitSheafEngine, None),
+        owned_category_join((sheaves, fibre)),
+        _engine=(fibre, _RegularUnitSheafEngine, None),
+        **presheaf_data,
         scheme=scheme,
     )
 
@@ -172,9 +183,11 @@ def _cartier_divisor_quotient_sheaf(scheme):
     sheaves = SheafObjects(scheme)
     total_quotient_units = _unit_sheaf(_total_quotient_sheaf(scheme))
     regular_units = _regular_unit_sheaf(scheme)
+    fibre, presheaf_data = _unpresented_sheaf_placement(scheme, f"K^*/O^* on {scheme}")
     return _object_of(
-        sheaves,
-        _engine=(sheaves, _CartierDivisorQuotientSheafEngine, None),
+        owned_category_join((sheaves, fibre)),
+        _engine=(fibre, _CartierDivisorQuotientSheafEngine, None),
+        **presheaf_data,
         numerator_sheaf=total_quotient_units,
         denominator_sheaf=regular_units,
     )
@@ -639,7 +652,6 @@ class CartierDivisorGroups(Category):
             zero=sections.zero(),
             negation=sections.negate,
             scalar_action=sections.scale,
-            verify=False,
         )
 
     class ParentMethods:

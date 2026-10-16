@@ -52,9 +52,8 @@ class FractionalIdeals(OwnedCategoryOverBaseRing):
         r"""The fractional ideal (2) of the base ring."""
         return self.base_ring().fractional_ideal(2)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "fractional ideals"
+    def _repr_object_names(self):
+        return f"fractional ideals over {self.base_ring()}"
 
     def super_categories(self):
         r"""A fractional ideal is a framed submodule of the fraction field.

@@ -42,7 +42,7 @@ from dzack_research.preamble.categories.schemes.schemes import (
     _scheme_mor_category,
     _structure_morphism_rule,
 )
-from dzack_research.preamble.categories.schemes.varieties import Surfaces
+from dzack_research.preamble.categories.schemes.varieties import Curves, Surfaces, Varieties
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -94,11 +94,25 @@ def _projective_complete_intersection(ambient, equations, placements=(), **level
     )
     decided = [ProjectiveCompleteIntersections(base)]
     expected_dimension = int(ambient.relative_dimension()) - int(family.cardinality())
+    # Integrality is placement (CON-07), never computed here (OWN-22): the
+    # caller states Schemes(k).Integral(), or states smoothness, and a smooth
+    # complete intersection of positive dimension is connected (Hartshorne,
+    # Exercise III.5.5), hence integral.  An integral projective scheme over a
+    # field is a projective variety (Hartshorne I.2, II.4).
+    stated_integral = any(category.is_subcategory(Schemes(base).Integral()) for category in placements)
+    stated_smooth = any(
+        category.is_subcategory(ProjectiveCompleteIntersections(base).Smooth()) for category in placements
+    )
+    integral = stated_integral or (stated_smooth and expected_dimension >= 1)
     match base:
         case _ if base in OwnedFields():
             match expected_dimension:
-                case 2 if bool(engine.defining_ideal().is_prime()):
+                case 1 if integral:
+                    decided.append(Curves(base).Projective())
+                case 2 if integral:
                     decided.append(Surfaces(base).Projective())
+                case _ if integral:
+                    decided.append(Varieties(base).Projective())
                 case _:
                     pass
         case _:
@@ -154,16 +168,18 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
         x, _y = line.homogeneous_coordinate_generators()
         return self(line, x)
 
-    def _call_(self, ambient, *equations):
+    def _call_(self, ambient, *equations, placements=()):
         r"""``V_+(f_1, ..., f_r) <= P^n_R`` for a regular sequence of homogeneous equations.
 
-        The equations are given one by one or as one finite family.
+        The equations are given one by one or as one finite family.  A caller
+        that knows the scheme integral states ``Schemes(R).Integral()`` in
+        ``placements``.
         """
         assert ambient.scheme_base_ring() is self.base_ring(), (
             f"cannot construct a complete intersection of {self} in {ambient}: it lies over "
             f"{ambient.scheme_base_ring()}, not over {self.base_ring()}"
         )
-        return _projective_complete_intersection(ambient, equations)
+        return _projective_complete_intersection(ambient, equations, placements=placements)
 
     def _repr_object_names(self):
         return f"projective complete intersections over {self.base_ring()}"
@@ -216,10 +232,20 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 return [Surfaces(self.base_ring()).K3()]
 
             def an_object(self):
-                r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3``."""
+                r"""The Fermat quartic ``V_+(x_0^4 + x_1^4 + x_2^4 + x_3^4) <= P^3``, when ``2`` is a unit of ``R``.
+
+                The partial derivatives are ``4 x_i^3``, so the quartic is smooth over
+                ``R`` exactly when ``2`` is invertible in ``R``; in characteristic ``2``
+                it is ``(x_0 + x_1 + x_2 + x_3)^4``, the fourfold plane.
+                """
+                base = self.base_ring()
+                assert base(2).is_unit(), (
+                    f"the Fermat quartic is smooth over {base} only when 2 is a unit of {base}; "
+                    f"an object of {self} over a base where 2 is not a unit: not implemented"
+                )
                 ambient = ProjectiveSpaces(self.base_ring())(3)
                 x = tuple(ambient.homogeneous_coordinate_generators())
-                return self(ProjectiveCompleteIntersections(self.base_ring())(ambient, sum(v**4 for v in x)))
+                return self(ProjectiveCompleteIntersections(self.base_ring()).Smooth()(ambient, sum(v**4 for v in x)))
 
             def _call_(self, scheme):
                 r"""Place the complete intersection ``scheme`` here, as the caller states."""
@@ -248,8 +274,11 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                     by the intersection form (Deligne, Théorie de Hodge II, (2.1.1),
                     (2.1.15), (2.3.1)).
                     """
-                    from dzack_research.preamble.categories.schemes.geometric_cohomology import _QuarticK3HodgeData
-                    return _QuarticK3HodgeData(self)
+                    from dzack_research.preamble.categories.schemes.geometric_cohomology import (
+                        _quartic_k3_hodge_structure,
+                    )
+
+                    return _quartic_k3_hodge_structure(self)
 
         class ParentMethods:
             def validate_smoothness(self) -> None:
@@ -461,6 +490,27 @@ class ProjectiveCompleteIntersections(OwnedCategoryOverBaseRing):
                 _integral_singular_cohomology_over_rationals,
             )
             return _integral_singular_cohomology_over_rationals(self, degree)
+
+        def _picard_group(self, base_picard_group=None):
+            r"""``Pic(X)``, the isomorphism classes of invertible ``O_X``-modules, with unit ``[O_X(0)]``."""
+            from dzack_research.preamble.categories.divisors.picard_groups import (
+                _invertible_sheaf_class_group,
+            )
+
+            assert base_picard_group is None, (
+                f"cannot use the supplied base Picard group {base_picard_group} to compute Pic({self}): "
+                "a complete intersection has no projective-bundle base datum"
+            )
+            return _invertible_sheaf_class_group(self, self.O(0))
+
+        def hyperplane_class(self):
+            r"""``[O_X(1)] = i^*[O_P(1)]`` in ``Pic(X)``, for the inclusion ``i: X -> P^n``.
+
+            ``O_X(1)`` is very ample, so ``(X, [O_X(1)])`` is a polarized
+            variety (Hartshorne, *Algebraic Geometry*, II.5.16.1 and II.7).
+            """
+            picard = self.picard_group()
+            return picard(picard.underlying_set()(self.O(1)))
 
         def _del_pezzo_degree(self):
             r"""Return ``(-K_X)^2 = (n + 1 - sum d_i)^2 prod d_i`` for a del Pezzo complete intersection."""

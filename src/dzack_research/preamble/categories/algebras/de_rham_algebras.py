@@ -77,9 +77,8 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
             )
         return _de_rham_algebra_from_source(algebra)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebraic de Rham algebras"
+    def _repr_object_names(self):
+        return f"algebraic de Rham algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [DifferentialGradedAlgebras(self.base_ring()).Supercommutative().Alternating()]
@@ -90,6 +89,69 @@ class DeRhamAlgebras(OwnedCategoryOverBaseRing):
 
         def kahler_differentials(self):
             return self._kahler_differentials
+
+        def cohomology(self, degree):
+            r"""``H^degree_dR(A/R)``, the cohomology of ``Omega^*_{A/R}``.
+
+            Let ``R`` be a ``QQ``-algebra and ``A = Sym_R(F)`` with ``F``
+            finite free, a polynomial algebra ``R[x_1, ..., x_n]``.  The
+            augmentation ``A -> Sym_R(0) = R`` sending every generator of
+            ``F`` to zero and the unit ``R -> A`` induce cochain maps of de Rham
+            complexes that are inverse up to homotopy (Stacks Project,
+            Lemma 50.10.5, Tag 0FUI, whose proof states that
+            ``Omega^*_{B/R} -> Omega^*_{B[t]/R}`` is a quasi-isomorphism for
+            every ``R``-algebra ``B``; induct on the generators).  So
+            ``H^0 = R`` and ``H^k = 0`` for ``k != 0``, computed on the de
+            Rham complex of ``Sym_R(0)``.  The homotopy integrates in ``t``,
+            which needs ``QQ ⊆ R``; over ``F_p`` the statement fails
+            (Stacks Project, Example 50.10.6, Tag 0FUJ).  Every other
+            algebra has the cycle quotient of its own de Rham complex.
+            """
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                SymmetricAlgebras,
+            )
+            from dzack_research.preamble.categories.modules.cochain_complexes import (
+                _cohomology,
+            )
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _owned_rationals,
+            )
+
+            source = self.de_rham_source_algebra()
+            base = self.base_ring()
+            match source:
+                case _ if (
+                    source in SymmetricAlgebras(base)
+                    and base in Algebras(_owned_rationals())
+                    and source.generating_module() in Modules(base).FinitelyGenerated().Free()
+                ):
+                    return _polynomial_de_rham_cohomology(self, degree)
+                case _:
+                    return _cohomology(self, degree)
+
+
+@cached_function(key=lambda de_rham_algebra, degree: (id(de_rham_algebra), int(degree)))
+def _polynomial_de_rham_cohomology(de_rham_algebra, degree):
+    r"""``H^degree_dR(Sym_R(F)/R)`` through the de Rham complex of ``Sym_R(0)``.
+
+    Stacks Project, Lemma 50.10.5, Tag 0FUI: for a ``QQ``-algebra ``R`` the
+    augmentation and the unit of ``Sym_R(F)`` over ``Sym_R(0)`` induce de Rham
+    cochain maps inverse to each other up to homotopy.
+    """
+    from dzack_research.preamble.categories.modules.cochain_complexes import (
+        _cohomology_along,
+    )
+
+    polynomial = de_rham_algebra.de_rham_source_algebra()
+    base = de_rham_algebra.base_ring()
+    constants = base.free_module(0).symmetric_algebra()
+    augmentation = polynomial.Mor(constants)(
+        {label: constants.zero() for label in polynomial.algebra_generating_set()}
+    )
+    unit = constants.Mor(polynomial)({})
+    de_rham = Algebras(base).Associative().Unital().Commutative().de_rham()
+    return _cohomology_along(de_rham_algebra, degree, de_rham(augmentation), de_rham(unit))
 
 
 def _de_rham_differential_on_extension(exterior_algebra, omega, universal_derivation, element):

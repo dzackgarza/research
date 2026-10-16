@@ -2,10 +2,11 @@
 
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.algebras.algebras import Algebras
+from dzack_research.preamble.categories.algebras.graded_nonassociative_algebras import GradedNonassociativeAlgebras
 from dzack_research.preamble.categories.modules.graded_modules import GradedModules
 from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 from dzack_research.preamble.lexicon.algebra import MonoidObject
+from dzack_research.preamble.logic import AtomicProposition
 
 
 class GradedLieAlgebras(OwnedCategoryOverBaseRing):
@@ -64,15 +65,38 @@ class GradedLieAlgebras(OwnedCategoryOverBaseRing):
         return (super()._make_named_class_key(name), self._graded_modules)
 
     def super_categories(self):
-        r"""The bracket is an algebra multiplication; the grading is a graded-module datum."""
+        r"""Forgetting the antisymmetry and Jacobi identities leaves a graded nonassociative algebra."""
         return [
-            Algebras(self.base_ring()),
-            self._graded_modules,
+            GradedNonassociativeAlgebras(
+                self.base_ring(), self.grading_monoid(), self.parity_homomorphism()
+            ),
         ]
 
     def _call_(self, graded_module, bracket):
-        r"""The pair ``(L, [-,-])`` of a graded module and a degree-zero graded bracket on it."""
-        assert False, "construction of a graded Lie algebra on GradedLieAlgebras: not implemented"
+        r"""The pair ``(L, [-,-])`` of a graded module and a degree-zero graded bracket on it.
+
+        Domain: an object ``L`` of ``GradedModules(R, M, parity)`` and an
+        ``R``-linear morphism ``[-,-]: L tensor_R L -> L`` of degree zero.
+        Construction trusts the caller with the three identities, recorded as
+        the propositions ``respects_grading``, ``graded_antisymmetry`` and
+        ``graded_jacobi`` of the bracket; it checks none of them.
+        """
+        from dzack_research.preamble.categories.algebras.algebras import _algebra_on_module
+
+        assert graded_module in self._graded_modules, (
+            f"a graded Lie algebra in {self} is built on an object of {self._graded_modules}, "
+            f"but {graded_module} is not one"
+        )
+        return _algebra_on_module(
+            graded_module,
+            bracket,
+            placement=(self,),
+            law_decisions={
+                "grading": AtomicProposition("respects_grading", bracket),
+                "graded_antisymmetry": AtomicProposition("graded_antisymmetry", bracket),
+                "graded_jacobi": AtomicProposition("graded_jacobi", bracket),
+            },
+        )
 
     def universal_enveloping_algebra_functor(self):
         r"""``U : GrLie_R -> GrAlg_R``, left adjoint to the graded commutator Lie algebra.

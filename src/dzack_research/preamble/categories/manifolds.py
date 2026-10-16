@@ -6,10 +6,17 @@ of labelled charts, and exact forward/inverse coordinate expressions for each
 represented atlas transition.
 """
 
+from itertools import combinations
+
 from sage.categories.category_with_axiom import all_axioms
+from sage.combinat.root_system.coxeter_group import CoxeterGroup
+from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.manifolds.manifold import Manifold as _SageManifold
+from sage.matrix.constructor import matrix as _engine_matrix
+from sage.matrix.special import identity_matrix as _engine_identity_matrix
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity
+from sage.rings.qqbar import QQbar as SageQQbar
 from sage.structure.element import Element
 from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
@@ -25,8 +32,12 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
+    _engine_ring,
     _own_ring,
+    _owned_complex_field,
     _owned_engine_element,
+    _owned_integers,
+    _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
@@ -98,6 +109,8 @@ class ManifoldAtlasTransition(SageObject):
         engine_transition,
         forward_expressions,
         inverse_expressions,
+        source_overlap,
+        target_overlap,
     ) -> None:
         self._source = source
         self._target = target
@@ -110,6 +123,8 @@ class ManifoldAtlasTransition(SageObject):
             inverse_expressions,
             name=f"Coordinate change {target.label()} to {source.label()}",
         )
+        self._source_overlap = source_overlap
+        self._target_overlap = target_overlap
         self._inverse_transition = None
 
     def source(self):
@@ -127,6 +142,19 @@ class ManifoldAtlasTransition(SageObject):
     def inverse_expressions(self):
         return self._inverse_expressions
 
+    def source_overlap(self):
+        r"""The functions on the source chart whose common nonvanishing locus is the overlap.
+
+        The coordinate change is defined on the image of ``U_s \cap U_t`` in
+        the source chart ``U_s``, the open set where every one of these
+        functions is nonzero; the empty family is the whole chart.
+        """
+        return self._source_overlap
+
+    def target_overlap(self):
+        r"""The functions on the target chart whose common nonvanishing locus is the overlap."""
+        return self._target_overlap
+
     def regularity(self):
         return self.manifold().regularity()
 
@@ -138,6 +166,8 @@ class ManifoldAtlasTransition(SageObject):
                 self._engine.inverse(),
                 self.inverse_expressions(),
                 self.forward_expressions(),
+                self.target_overlap(),
+                self.source_overlap(),
             )
             inverse._inverse_transition = self
             self._inverse_transition = inverse
@@ -184,8 +214,11 @@ def _engine_manifold_chart(chart):
 
 @cached_function
 def _manifold_expression_ring():
-    r"""Return the owned facade of Sage's exact symbolic-expression ring."""
-    return _own_ring(SR)
+    r"""Return the owned facade of Sage's exact symbolic-expression ring.
+
+    Its elements are chart formulas, and print as Sage prints the expression.
+    """
+    return _set_owned_ring_display(SR, "Symbolic Ring", kind="symbolic")
 
 
 def _raise_manifold_expression(value):
@@ -210,11 +243,98 @@ def _engine_manifold_expression(value):
     return _engine_element(_manifold_expression_ring(), expression)
 
 
+def _upper_triangle(n):
+    r"""The index pairs ``(i, j)``, ``i <= j < n``, of the entries of an ``n x n`` symmetric matrix."""
+    return tuple((row, column) for row in range(int(n)) for column in range(row, int(n)))
+
+
+def _symmetric_entry(coordinates, row, column):
+    return coordinates[(min(row, column), max(row, column))]
+
+
+def _skew_entry(coordinates, row, column):
+    match row - column:
+        case 0:
+            return SR.zero()
+        case difference if difference > 0:
+            return -coordinates[(column, row)]
+        case _:
+            return coordinates[(row, column)]
+
+
+def _engine_positive_definite(hermitian):
+    r"""Sylvester's criterion: a Hermitian matrix is positive definite iff each leading principal minor is positive.
+
+    The minors of a Hermitian matrix are real; the conditions compare their
+    real parts with ``0`` so that the engine reads each as a real inequality.
+    """
+    return tuple(
+        hermitian[:size, :size].det().real_part() > 0
+        for size in range(1, hermitian.nrows() + 1)
+    )
+
+
+def _engine_positive_root_count(diagram, vertices):
+    r"""``|Phi_X^+|`` for the subdiagram on ``vertices``: the length of the longest element of ``W_X``."""
+    from dzack_research.preamble.categories.coxeter_diagrams import (
+        _engine_coxeter_matrix_entry,
+    )
+
+    match len(vertices):
+        case 0:
+            return 0
+        case _:
+            group = CoxeterGroup(
+                CoxeterMatrix(
+                    [
+                        [
+                            _engine_coxeter_matrix_entry(diagram.coxeter_entry(left, right))
+                            for right in vertices
+                        ]
+                        for left in vertices
+                    ]
+                ),
+                implementation="reflection",
+            )
+            return group.long_element().length()
+
+
+def _symmetric_space_rank_and_dimension(satake_diagram):
+    r"""The real rank ``dim a_0`` and the dimension ``dim p_0`` of ``G/K`` for the real form of a Satake diagram.
+
+    ``a_0`` is a maximal abelian subspace of ``p_0``; its dimension is the
+    number of ``tau``-orbits of white nodes (Araki, 1962).  The roots
+    vanishing on ``a_0`` are the roots ``Phi_X`` of the black subdiagram, so
+    ``dim n_0 = |Phi^+| - |Phi_X^+|``, and the Iwasawa decomposition
+    ``g_0 = k_0 + a_0 + n_0`` (Helgason, Ch. VI) gives
+    ``dim G/K = dim p_0 = dim a_0 + dim n_0``.
+    """
+    diagram = satake_diagram.dynkin_diagram()
+    tau = satake_diagram.involution()
+    black = tuple(satake_diagram.black_nodes())
+    vertices = tuple(diagram.index_set())
+    white = tuple(vertex for vertex in vertices if vertex not in satake_diagram.black_nodes())
+    rank = len({frozenset((vertex, tau(vertex))) for vertex in white})
+    return rank, rank + _engine_positive_root_count(diagram, vertices) - _engine_positive_root_count(
+        diagram, black
+    )
+
+
 def _admit_manifold_expression_family(values, *, name):
     return finite_family(
         tuple(_admit_manifold_expression(value) for value in values),
         name=name,
     )
+
+
+def _engine_nonvanishing_conditions(functions):
+    r"""Lower the open set ``{f != 0 for every f}`` to SageManifolds chart restrictions.
+
+    SageManifolds reads a list of restrictions as their conjunction; the empty
+    family is ``None``, no restriction.
+    """
+    conditions = [_engine_manifold_expression(function) != 0 for function in functions]
+    return conditions or None
 
 
 def _raise_manifold_expression_family(values, *, name):
@@ -304,12 +424,17 @@ class TopologicalManifolds(OwnedCategory):
         )
 
     class ElementMethods(Element):
-        r"""A point of a manifold, given by its coordinates in a labelled chart."""
+        r"""A point of a manifold, given by its coordinates in a labelled chart.
+
+        A chart is a homeomorphism onto an open subset of ``K^n``, so the
+        coordinates of a point are elements of the coordinate field ``K``.
+        """
 
         def __init__(self, parent: Parent, coordinates, chart_label) -> None:
             Element.__init__(self, parent)
-            self._coordinates = _admit_manifold_expression_family(
-                coordinates,
+            field = parent.coordinate_field()
+            self._coordinates = finite_family(
+                tuple(field(coordinate) for coordinate in coordinates),
                 name=f"Coordinates of point of {parent}",
             )
             self._chart_label = chart_label
@@ -334,11 +459,30 @@ class TopologicalManifolds(OwnedCategory):
             return self._engine_point
 
         def __eq__(self, other) -> bool:
-            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given."""
-            return (
-                element_parent(other) is self.parent()
-                and _engine_manifold_point(other) == self._engine_manifold_point()
-            )
+            r"""Two points of one manifold are equal when they are the same point, in whichever charts they were given.
+
+            In one chart ``phi``, which is injective, ``p = p'`` exactly when
+            ``phi(p) = phi(p')``: the coordinates are compared as elements of
+            the coordinate field, which decides the equality of exact numbers.
+            Points given in two charts are compared by the private
+            SageManifolds points, through the transition map.
+            """
+            if element_parent(other) is not self.parent():
+                return False
+            match other.chart().label() == self.chart().label():
+                case True:
+                    relations = tuple(
+                        left == right
+                        for left, right in zip(self.coordinates(), other.coordinates(), strict=True)
+                    )
+                    assert all(relation is True or relation is False for relation in relations), (
+                        f"cannot decide whether {self} and {other} are the same point of "
+                        f"{self.parent()}: the equality of their coordinates in the chart "
+                        f"{self.chart().label()} is undecided"
+                    )
+                    return all(relation is True for relation in relations)
+                case False:
+                    return _engine_manifold_point(other) == self._engine_manifold_point()
 
         def __ne__(self, other) -> bool:
             return not self == other
@@ -347,7 +491,8 @@ class TopologicalManifolds(OwnedCategory):
             return hash(id(self.parent()))
 
         def _repr_(self):
-            return f"Point {self.coordinates()} of {self.manifold()}"
+            coordinates = ", ".join(str(coordinate) for coordinate in self.coordinates())
+            return f"Point ({coordinates}) in the chart {self._chart_label} of {self.manifold()}"
 
     class ParentMethods:
         def __init__(
@@ -389,6 +534,10 @@ class TopologicalManifolds(OwnedCategory):
 
         def base_field_type(self):
             return self._preamble_manifold_field
+
+        def coordinate_field(self):
+            r"""The field ``RR``: a chart of a real manifold is a homeomorphism onto an open subset of ``RR^n``."""
+            return RR
 
         def regularity(self):
             degree = self._preamble_differentiability_degree
@@ -478,7 +627,22 @@ class TopologicalManifolds(OwnedCategory):
             target_label,
             forward_expressions,
             inverse_expressions,
+            source_overlap=(),
+            target_overlap=(),
         ):
+            r"""Record the coordinate change between the charts ``U_s`` and ``U_t`` on ``U_s \cap U_t``.
+
+            A transition map of an atlas is the homeomorphism
+            ``phi_t o phi_s^{-1} : phi_s(U_s \cap U_t) -> phi_t(U_s \cap U_t)``
+            (Lee, *Introduction to Smooth Manifolds*, 2nd ed., Ch. 1).  Its
+            domain is the overlap read in the source chart, given by
+            ``source_overlap``: functions on ``U_s`` whose common nonvanishing
+            locus is ``U_s \cap U_t``.  ``target_overlap`` gives the same open
+            set in ``U_t``.  Empty families state that the overlap is the
+            whole chart.  The inverse expressions are the coordinate change
+            ``phi_s o phi_t^{-1}``; construction trusts the caller that the two
+            are mutually inverse on the overlap.
+            """
             source = self.atlas()[source_label]
             target = self.atlas()[target_label]
             forward_expressions = _admit_manifold_expression_family(
@@ -488,6 +652,14 @@ class TopologicalManifolds(OwnedCategory):
             inverse_expressions = _admit_manifold_expression_family(
                 inverse_expressions,
                 name=f"Coordinate change {target_label} to {source_label}",
+            )
+            source_overlap = _admit_manifold_expression_family(
+                source_overlap,
+                name=f"Overlap of {source_label} with {target_label} in {source_label}",
+            )
+            target_overlap = _admit_manifold_expression_family(
+                target_overlap,
+                name=f"Overlap of {source_label} with {target_label} in {target_label}",
             )
             if int(forward_expressions.cardinality()) != self.dimension():
                 raise ValueError(
@@ -507,12 +679,15 @@ class TopologicalManifolds(OwnedCategory):
                     _engine_manifold_expression(expression)
                     for expression in forward_expressions
                 ),
+                restrictions1=_engine_nonvanishing_conditions(source_overlap),
+                restrictions2=_engine_nonvanishing_conditions(target_overlap),
             )
             engine_transition.set_inverse(
                 *(
                     _engine_manifold_expression(expression)
                     for expression in inverse_expressions
-                )
+                ),
+                check=False,
             )
             transition = ManifoldAtlasTransition(
                 source,
@@ -520,6 +695,8 @@ class TopologicalManifolds(OwnedCategory):
                 engine_transition,
                 forward_expressions,
                 inverse_expressions,
+                source_overlap,
+                target_overlap,
             )
             reverse = transition.inverse()
             self._preamble_transitions[source_label, target_label] = transition
@@ -599,10 +776,18 @@ class DifferentiableManifolds(OwnedCategory):
 
 
 class SmoothManifolds(OwnedCategory):
-    r"""Owned smooth real manifolds."""
+    r"""Owned smooth real manifolds.
+
+    A smooth manifold is a ``C^k`` manifold for every ``k``, and it is the
+    orbifold whose charts all have trivial group (Thurston, *The Geometry and
+    Topology of Three-Manifolds*, Ch. 13).  Both forgetful functors send it
+    to the same underlying topological space.
+    """
 
     def super_categories(self):
-        return [DifferentiableManifolds()]
+        from dzack_research.preamble.categories.orbifolds import Orbifolds
+
+        return [DifferentiableManifolds(), Orbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -635,6 +820,163 @@ class SmoothManifolds(OwnedCategory):
             manifold_field="real",
         )
 
+    @cached_method
+    def sphere(self, dimension, name=None):
+        r"""The unit sphere ``S^n = {x in R^{n+1} : |x| = 1}``, a compact smooth manifold of dimension ``n``.
+
+        The atlas is the stereographic one: ``U_N = S^n - {N}`` and
+        ``U_S = S^n - {S}``, projected from the north and the south pole onto
+        the equatorial ``R^n``, with coordinate change ``y = x/|x|^2`` on
+        ``U_N cap U_S``, where ``|x|^2 != 0`` (Lee, *Introduction to Smooth
+        Manifolds*, 2nd ed., Ch. 1).  ``S^n`` is closed and bounded in
+        ``R^{n+1}``, so it is compact.  The chart labels are ``U_N`` and
+        ``U_S``, with coordinates ``x1, ..., xn`` and ``y1, ..., yn``.  Engine
+        adapter: SageManifolds' open subsets, charts and transition maps, the
+        atlas of its ``Sphere``.
+        """
+        dimension = int(dimension)
+        if name is None:
+            name = f"S^{dimension}"
+        assert dimension > 0, (
+            f"cannot construct the sphere {name} of dimension {dimension} as a manifold of "
+            f"positive dimension"
+        )
+        engine = _SageManifold(dimension, str(name), structure="smooth", unique_tag=object())
+        sphere = _object_of(
+            self.Compact(),
+            _engine=(SmoothManifolds(), _StandardSphere, None),
+            topology_data=_ManifoldTopologyData(engine),
+            engine_manifold=engine,
+            manifold_dimension=dimension,
+            manifold_name=str(name),
+            manifold_structure="smooth",
+            differentiability_degree=Infinity,
+            manifold_field="real",
+        )
+        north, south = (
+            sphere._register_chart(
+                label,
+                engine.open_subset(label).chart(
+                    " ".join(f"{letter}{k}" for k in range(1, dimension + 1))
+                ),
+            )
+            for label, letter in (("U_N", "x"), ("U_S", "y"))
+        )
+
+        def inversion(chart):
+            coordinates = chart.coordinates()
+            norm_squared = sum(coordinate**2 for coordinate in coordinates)
+            return tuple(coordinate / norm_squared for coordinate in coordinates), norm_squared
+
+        forward, north_overlap = inversion(north)
+        inverse, south_overlap = inversion(south)
+        sphere.transition_map(
+            "U_N", "U_S", forward, inverse,
+            source_overlap=(north_overlap,), target_overlap=(south_overlap,),
+        )
+        engine.declare_union(engine.subsets())
+        return sphere
+
+
+class _StandardSphere:
+    r"""The unit sphere ``S^n``, with the homotopy groups that are known in closed form; a realization, not a category.
+
+    ``S^n`` is path connected for ``n >= 1``, so ``pi_k(S^n, x)`` does not
+    depend on the base point ``x`` up to isomorphism, and one module per
+    degree serves every base point (Hatcher, *Algebraic Topology*, §4.1).
+    """
+
+    def _an_element_(self):
+        r"""The south pole: the origin of the chart ``U_N``, stereographic projection from the north pole."""
+        return self.point((0,) * self.dimension(), "U_N")
+
+    def _homotopy_group_module(self, base_point, degree):
+        r"""``pi_k(S^n, x)`` for ``k < n``, ``k = n``, and ``(n, k) = (2, 3)``.
+
+        ``pi_k(S^n) = 0`` for ``k < n`` (Hatcher, Corollary 4.9);
+        ``pi_n(S^n) = ZZ iota_n``, generated by the class of the identity
+        (Corollary 4.25); ``pi_3(S^2) = ZZ eta``, generated by the Hopf map
+        ``eta: S^3 -> S^2`` (Example 4.51), with ``eta`` the generator of
+        Hopf invariant ``1`` (§4.B).  Every other degree is a frontier.
+        """
+        return self._homotopy_group_in_degree(int(degree))
+
+    @cached_method
+    def _homotopy_group_in_degree(self, degree):
+        sphere_dimension = int(self.dimension())
+        integers = _owned_integers()
+        match degree:
+            case _ if 1 <= degree < sphere_dimension:
+                labels = ()
+            case _ if degree == sphere_dimension:
+                labels = (f"iota_{sphere_dimension}",)
+            case 3 if sphere_dimension == 2:
+                labels = ("eta",)
+            case _:
+                assert False, (
+                    f"pi_{degree}({self}) is not presented: the homotopy groups of S^{sphere_dimension} "
+                    f"are known here in degrees 1 to {sphere_dimension}"
+                    + (" and 3" if sphere_dimension == 2 else "")
+                )
+        return integers.free_module(finite_ordered_set(labels))
+
+    @cached_method
+    def singular_cohomology(self, coefficients):
+        r"""``H^*(S^n; R) = R[s]/(s^2)`` with ``|s| = n``.
+
+        ``H^k(S^n; R)`` is ``R`` for ``k = 0, n`` and zero otherwise (Hatcher,
+        *Algebraic Topology*, Cor. 2.14 and Thm. 3.2), and the cup square of
+        the degree-``n`` class lies in ``H^{2n} = 0``.
+        """
+        from dzack_research.preamble.categories.algebras.graded_algebras import (
+            _truncated_polynomial_graded_algebra,
+        )
+
+        return _truncated_polynomial_graded_algebra(coefficients, int(self.dimension()), 1)
+
+    def _fundamental_group_at(self, base_point):
+        r"""``pi_1(S^n, x) = 1`` for ``n >= 2`` (Hatcher, Corollary 4.9)."""
+        from dzack_research.preamble.categories.group.groups import OwnedGroups
+
+        assert int(self.dimension()) >= 2, (
+            f"pi_1({self}) is infinite cyclic (Hatcher, Theorem 1.7), and the infinite cyclic group "
+            "is not presented here as a group"
+        )
+        return OwnedGroups().C(1)
+
+    def _whitehead_pairing(self, base_point, left_degree, right_degree):
+        r"""``pi_p(S^n) x pi_q(S^n) -> pi_{p+q-1}(S^n)``, where the factors and the values are known.
+
+        A factor that is zero gives the zero pairing.  On ``S^1`` the product
+        ``pi_1 x pi_1 -> pi_1`` is the commutator, which is trivial because
+        ``pi_1(S^1)`` is abelian.  On ``S^2``, ``[iota_2, iota_2] = 2 eta``:
+        ``[iota_2, iota_2]`` is the attaching map of the 4-cell of ``J(S^2)``,
+        whose Hopf invariant is ``2`` (Hatcher, Example 4.52 and §4.B), the
+        Hopf invariant is a homomorphism ``pi_3(S^2) -> ZZ``
+        (Proposition 4B.1), and ``H(eta) = 1``.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import BilinearMap
+
+        left_degree, right_degree = int(left_degree), int(right_degree)
+        left = self._homotopy_group_module(base_point, left_degree)
+        right = self._homotopy_group_module(base_point, right_degree)
+        target = self._homotopy_group_module(base_point, left_degree + right_degree - 1)
+        sphere_dimension = int(self.dimension())
+        match (left_degree, right_degree):
+            case _ if left.module_generating_set().is_empty() is True or right.module_generating_set().is_empty() is True:
+                images = {}
+            case (1, 1) if sphere_dimension == 1:
+                images = {("iota_1", "iota_1"): target.zero()}
+            case (2, 2) if sphere_dimension == 2:
+                eta = target.module_generator("eta")
+                images = {("iota_2", "iota_2"): eta + eta}
+            case _:
+                assert False, (
+                    f"the Whitehead product pi_{left_degree} x pi_{right_degree} -> "
+                    f"pi_{left_degree + right_degree - 1} of {self} is not presented"
+                )
+        return BilinearMap(left, right, target, images)
+
 
 class RiemannianManifolds(OwnedCategory):
     r"""Smooth real manifolds ``(M, g)`` with a chosen Riemannian metric ``g``.
@@ -650,10 +992,16 @@ class RiemannianManifolds(OwnedCategory):
     A morphism ``(M, g) -> (N, h)`` is a smooth map ``f`` with ``f^* h = g``,
     a local isometry.  The Mor category with that condition is not presented
     yet; ``isometry_group()`` is the automorphism group of ``(M, g)`` in it.
+
+    A Riemannian manifold is the Riemannian orbifold whose charts have
+    trivial group, so ``RiemannianOrbifolds()`` is its second immediate
+    supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
     """
 
     def super_categories(self):
-        return [SmoothManifolds()]
+        from dzack_research.preamble.categories.orbifolds import RiemannianOrbifolds
+
+        return [SmoothManifolds(), RiemannianOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -713,6 +1061,7 @@ class RiemannianManifolds(OwnedCategory):
         geodesic symmetry at ``p``.
         """
 
+        @cached_method
         def noncompact_type(self, satake_diagram):
             r"""Return the irreducible symmetric space ``G/K`` of noncompact type of a real form.
 
@@ -733,6 +1082,13 @@ class RiemannianManifolds(OwnedCategory):
             right translation is a diffeomorphism of ``G``, not a group morphism.
             The smooth structure and the ``G``-invariant metric induced by
             the Killing form of ``g_0`` restricted to ``p_0`` place it here.
+
+            The construction is the smooth manifold on the one global chart
+            ``Exp: p_0 -> G/K``, a diffeomorphism for noncompact type
+            (Helgason, Ch. VI, Theorem 1.1), with coordinates ``x_0, ...``
+            on ``p_0``.  ``dim p_0`` and the real rank are read from the
+            Satake diagram by the Iwasawa decomposition.  The orbit-space
+            route above and the metric are not constructed.
             """
             from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
 
@@ -741,7 +1097,34 @@ class RiemannianManifolds(OwnedCategory):
                 f"a noncompact real form of a simple Lie algebra is classified by an object "
                 f"of SatakeDiagrams(), and {satake_diagram} is in {satake_diagram.category()}"
             )
-            assert False, "noncompact_type on RiemannianManifolds.GloballySymmetric: not implemented"
+            assert satake_diagram.dynkin_diagram().is_connected(), (
+                f"cannot construct the irreducible symmetric space of {satake_diagram}: an "
+                f"irreducible space comes from a simple Lie algebra, whose Dynkin diagram is "
+                f"connected"
+            )
+            rank, dimension = _symmetric_space_rank_and_dimension(satake_diagram)
+            assert rank >= 1, (
+                f"{satake_diagram} has every node black, so it is the compact real form, and "
+                f"its symmetric space G/K is a point, not of the noncompact type"
+            )
+            engine = _SageManifold(
+                int(dimension), "G/K", structure="smooth", unique_tag=object()
+            )
+            space = _object_of(
+                self,
+                _engine=(SmoothManifolds(), _RealFormSymmetricSpace, None),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=int(dimension),
+                manifold_name="G/K",
+                manifold_structure="smooth",
+                differentiability_degree=Infinity,
+                manifold_field="real",
+                satake_diagram=satake_diagram,
+                real_rank=rank,
+            )
+            space.chart("p0", " ".join(f"x{index}" for index in range(int(dimension))))
+            return space
 
         def hyperbolic_space(self, component):
             r"""Return the hyperbolic space ``HH(C^+)`` of a chosen positive-cone component.
@@ -752,7 +1135,13 @@ class RiemannianManifolds(OwnedCategory):
             ``{x in C^+ : q(x) = 1}`` of dimension ``n``, with the metric
             ``-b`` on each tangent space ``x^perp``; it is
             ``SO_0(1, n)/SO(n)``, of Cartan type BDI with ``q = 1`` (Helgason,
-            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(component)``.
+            Ch. X, §6, Table V), placed in ``HyperbolicSpaces(n)``.
+
+            Its one global chart ``hyperboloid`` has the coordinates
+            ``y_0, ..., y_{n-1}`` of the orthogonal projection of ``x`` to
+            ``t^perp``, for ``t`` the timelike vector of ``C^+``: ``x = s t + y``
+            with ``s = sqrt((1 - q(y))/q(t)) > 0`` is a diffeomorphism
+            ``t^perp_RR -> HH(C^+)``, since ``t^perp`` is negative definite.
             """
             from dzack_research.preamble.categories.hyperbolic_geometry import (
                 HyperbolicSpaces,
@@ -760,19 +1149,21 @@ class RiemannianManifolds(OwnedCategory):
 
             dimension = int(component.lattice().module_rank()) - 1
             engine = _SageManifold(
-                dimension, "HH", structure="smooth", unique_tag=object()
+                dimension, f"HH^{dimension}", structure="smooth", unique_tag=object()
             )
-            return _object_of(
-                HyperbolicSpaces(component),
+            space = _object_of(
+                HyperbolicSpaces(dimension),
                 topology_data=_ManifoldTopologyData(engine),
                 engine_manifold=engine,
                 manifold_dimension=dimension,
-                manifold_name="HH",
+                manifold_name=f"HH^{dimension}",
                 manifold_structure="smooth",
                 differentiability_degree=Infinity,
                 manifold_field="real",
                 component=component,
             )
+            space.chart("hyperboloid", " ".join(f"y{index}" for index in range(dimension)))
+            return space
 
         class ParentMethods:
             def geodesic_symmetry(self, point):
@@ -786,28 +1177,43 @@ class RiemannianManifolds(OwnedCategory):
 
 
 class HolomorphicMapPresentation:
-    r"""The selected chart presentation defining one represented holomorphic map."""
+    r"""The coordinate representations defining one represented holomorphic map.
 
-    def __init__(self, engine_map, coordinate_expressions, source_label, target_label) -> None:
+    A holomorphic map ``f : X -> Y`` is given by its coordinate representations
+    ``f_{st} = psi_t o f o phi_s^{-1}`` on ``phi_s(U_s cap f^{-1}(V_t))``, for
+    chart pairs ``(s, t)`` whose open sets ``U_s cap f^{-1}(V_t)`` cover ``X``
+    (Lee, *Introduction to Smooth Manifolds*, 2nd ed., Ch. 2).  The domain of
+    each representation, read in ``U_s``, is the common nonvanishing locus of
+    its domain functions; the empty family is all of ``U_s``.
+    """
+
+    def __init__(self, engine_map, representations) -> None:
         self._engine_map = engine_map
-        self._coordinate_expressions = _admit_manifold_expression_family(
-            coordinate_expressions,
-            name="Holomorphic-map coordinate expressions",
-        )
-        self._source_label = source_label
-        self._target_label = target_label
+        self._representations = {
+            pair: (
+                _admit_manifold_expression_family(
+                    expressions,
+                    name=f"Coordinate representation {pair[0]} to {pair[1]}",
+                ),
+                _admit_manifold_expression_family(
+                    domain,
+                    name=f"Domain of the coordinate representation {pair[0]} to {pair[1]}",
+                ),
+            )
+            for pair, (expressions, domain) in representations.items()
+        }
 
     def _engine_map_crossing(self):
         return self._engine_map
 
-    def coordinate_expressions(self):
-        return self._coordinate_expressions
+    def chart_pairs(self):
+        return finite_ordered_set(tuple(self._representations))
 
-    def source_chart_label(self):
-        return self._source_label
+    def coordinate_representation(self, source_label, target_label):
+        return self._representations[source_label, target_label][0]
 
-    def target_chart_label(self):
-        return self._target_label
+    def representation_domain(self, source_label, target_label):
+        return self._representations[source_label, target_label][1]
 
 
 def _engine_holomorphic_map(morphism):
@@ -817,32 +1223,89 @@ def _engine_holomorphic_map(morphism):
     implementation endpoint is :meth:\`HolomorphicMap._engine_holomorphic_map\`.
     Its sole external role is exact composition of represented holomorphic
     maps; the resulting Sage map is immediately raised by
-    :func:\`_holomorphic_map_from_engine\`.
+    :meth:\`ComplexManifoldMor._from_engine_map\`.
     """
     return morphism._engine_holomorphic_map()
 
 
-def _holomorphic_map_from_engine(
-    mor,
-    engine,
-    expressions,
-    source_label,
-    target_label,
-):
-    r"""Raise a private Sage map into the selected owned holomorphic Mor object."""
-    return mor._from_engine_polynomial_map(
-        engine,
-        _raise_manifold_expression_family(
-            expressions,
-            name="Holomorphic-map coordinate expressions",
-        ),
-        source_label,
-        target_label,
+def _substitute_chart_coordinates(expressions, chart, values):
+    r"""Substitute ``values`` for the coordinates of ``chart`` in each expression."""
+    substitutions = {
+        _engine_manifold_expression(variable): _engine_manifold_expression(value)
+        for variable, value in zip(chart.coordinates(), values, strict=True)
+    }
+    return tuple(
+        _raise_manifold_expression(_engine_manifold_expression(expression).subs(substitutions))
+        for expression in expressions
+    )
+
+
+
+def _is_zero_rational_function(expression):
+    r"""Whether a rational chart expression is the zero function.
+
+    Engine adapter: the numerator of the normalized symbolic expression is
+    read as a polynomial with exact coefficients in ``QQbar``.
+    """
+    return _engine_manifold_expression(expression).numerator().polynomial(SageQQbar).is_zero()
+
+
+def _representations_agree(first_map, first_pair, second_map, second_pair):
+    r"""Whether two holomorphic maps ``X -> Y`` agree where two of their representations are given.
+
+    Read on ``U_s`` for ``first_pair = (s, t)`` and ``second_pair = (s', t')``,
+    the overlap of the two domains is cut out by the domain functions of both
+    representations, the overlap ``U_s cap U_{s'}`` and the preimage of
+    ``V_t cap V_{t'}``; the maps agree on it when
+    ``psi_{t'} psi_t^{-1} o f_{st} = g_{s't'} o phi_{s'} phi_s^{-1}``.  Both
+    sides are rational functions on an open subset of ``C^n``, and the
+    overlap is the nonvanishing locus of finitely many rational functions on
+    it: it is empty when one of them is the zero function, and otherwise a
+    nonempty open set, on which two rational functions agree only if they are
+    equal.
+    """
+    source_label, target_label = first_pair
+    second_source, second_target = second_pair
+    source = first_map.domain()
+    target = first_map.codomain()
+    first = tuple(first_map.coordinate_representation(source_label, target_label))
+    conditions = tuple(first_map.representation_domain(source_label, target_label))
+    if second_source == source_label:
+        second = tuple(second_map.coordinate_representation(second_source, second_target))
+        conditions += tuple(second_map.representation_domain(second_source, second_target))
+    else:
+        change = source.transition(source_label, second_source)
+        middle = source.atlas()[second_source]
+        coordinates = tuple(change.forward_expressions())
+        second = _substitute_chart_coordinates(
+            second_map.coordinate_representation(second_source, second_target),
+            middle,
+            coordinates,
+        )
+        conditions += tuple(change.source_overlap()) + _substitute_chart_coordinates(
+            second_map.representation_domain(second_source, second_target),
+            middle,
+            coordinates,
+        )
+    if second_target != target_label:
+        change = target.transition(target_label, second_target)
+        chart = target.atlas()[target_label]
+        conditions += _substitute_chart_coordinates(change.source_overlap(), chart, first)
+        first = _substitute_chart_coordinates(change.forward_expressions(), chart, first)
+    if any(_is_zero_rational_function(condition) for condition in conditions):
+        return True
+    return all(
+        _is_zero_rational_function(
+            _raise_manifold_expression(
+                _engine_manifold_expression(left) - _engine_manifold_expression(right)
+            )
+        )
+        for left, right in zip(first, second, strict=True)
     )
 
 
 class HolomorphicMap:
-    r"""A holomorphic map represented by polynomial formulas in selected complex charts."""
+    r"""A holomorphic map represented by its coordinate representations in selected charts."""
 
     def __init__(self, parent, presentation) -> None:
         self._presentation = presentation
@@ -854,72 +1317,97 @@ class HolomorphicMap:
     def presentation(self):
         return self._presentation
 
-    def coordinate_expressions(self):
-        return self.presentation().coordinate_expressions()
+    def chart_pairs(self):
+        r"""The chart pairs ``(s, t)`` on which a coordinate representation is given."""
+        return self.presentation().chart_pairs()
 
-    def source_chart(self):
-        return self.domain().atlas()[self.presentation().source_chart_label()]
+    def coordinate_representation(self, source_label, target_label):
+        r"""``psi_t o f o phi_s^{-1}``, the coordinates of ``V_t`` as functions on ``U_s``."""
+        return self.presentation().coordinate_representation(source_label, target_label)
 
-    def target_chart(self):
-        return self.codomain().atlas()[self.presentation().target_chart_label()]
+    def representation_domain(self, source_label, target_label):
+        r"""Functions on ``U_s`` whose common nonvanishing locus is ``U_s cap f^{-1}(V_t)``."""
+        return self.presentation().representation_domain(source_label, target_label)
 
     def _engine_holomorphic_map(self):
         return self.presentation()._engine_map_crossing()
 
     def _evaluate_point(self, point):
-        r"""Evaluate the retained chart formulas on one owned source point."""
+        r"""Evaluate a coordinate representation whose domain contains the owned source point.
+
+        Engine adapter: the point's coordinates are substituted in the
+        domain functions, and a representation applies when none vanishes.
+        """
         source_point = self.domain()(point)
-        source_chart = self.source_chart()
-        assert source_point.chart().label() == source_chart.label(), (
-            f"cannot evaluate {self} at {source_point}: its coordinates are in the chart "
-            f"{source_point.chart().label()!r}, while this represented holomorphic map is written in "
-            f"{source_chart.label()!r}"
-        )
-        substitutions = {
-            _engine_manifold_expression(variable): _engine_manifold_expression(value)
-            for variable, value in zip(
-                source_chart.coordinates(),
-                source_point.coordinates(),
-                strict=True,
+        chart = source_point.chart()
+        applicable = tuple(
+            (source_label, target_label)
+            for source_label, target_label in self.chart_pairs()
+            if source_label == chart.label()
+            and all(
+                bool(_engine_manifold_expression(value) != 0)
+                for value in _substitute_chart_coordinates(
+                    self.representation_domain(source_label, target_label),
+                    chart,
+                    source_point.coordinates(),
+                )
             )
-        }
-        values = tuple(
-            _raise_manifold_expression(
-                _engine_manifold_expression(expression).subs(substitutions)
-            )
-            for expression in self.coordinate_expressions()
         )
-        return self.codomain().point(values, self.target_chart().label())
+        assert applicable, (
+            f"cannot evaluate {self} at {source_point}: no coordinate representation of this "
+            f"map is given on a domain containing it in the chart {chart.label()!r}"
+        )
+        source_label, target_label = applicable[0]
+        values = _substitute_chart_coordinates(
+            self.coordinate_representation(source_label, target_label),
+            chart,
+            source_point.coordinates(),
+        )
+        return self.codomain().point(values, target_label)
 
     def __mul__(self, other):
-        r"""Return the composite ``self o other`` of holomorphic maps ``X -> Y -> Z``."""
+        r"""Return the composite ``self o other`` of holomorphic maps ``X -> Y -> Z``.
+
+        On ``U_s cap f^{-1}(V_t) cap f^{-1}g^{-1}(W_u)`` the composite
+        ``g o f`` has the coordinate representation ``g_{tu} o f_{st}``.
+        """
         assert other.codomain() is self.domain(), (
             f"cannot compose {self} with {other}: the codomain {other.codomain()} of the "
             f"first map is not the domain {self.domain()} of the second"
         )
-        engine = _engine_holomorphic_map(self) * _engine_holomorphic_map(other)
-        source = other.source_chart()
-        target = self.target_chart()
-        # SageManifolds returns the coordinate expressions of a map as a tuple
-        # in every dimension (``MultiCoordFunction.expr``).
-        expressions = engine.expr(
-            _engine_manifold_chart(source),
-            _engine_manifold_chart(target),
-        )
-        return _holomorphic_map_from_engine(
-            other.domain().Mor(self.codomain()),
-            engine,
-            expressions,
-            source.label(),
-            target.label(),
+        representations = {}
+        for source_label, middle_label in other.chart_pairs():
+            inner = other.coordinate_representation(source_label, middle_label)
+            middle = self.domain().atlas()[middle_label]
+            for outer_source, target_label in self.chart_pairs():
+                if outer_source != middle_label or (source_label, target_label) in representations:
+                    continue
+                representations[source_label, target_label] = (
+                    _substitute_chart_coordinates(
+                        self.coordinate_representation(middle_label, target_label), middle, inner
+                    ),
+                    tuple(other.representation_domain(source_label, middle_label))
+                    + _substitute_chart_coordinates(
+                        self.representation_domain(middle_label, target_label), middle, inner
+                    ),
+                )
+        return other.domain().Mor(self.codomain())._from_engine_map(
+            _engine_holomorphic_map(self) * _engine_holomorphic_map(other),
+            representations,
         )
 
     def __eq__(self, other) -> bool:
-        return (
-            element_parent(other) is self.parent()
-            and other.coordinate_expressions() == self.coordinate_expressions()
-            and other.source_chart().label() == self.source_chart().label()
-            and other.target_chart().label() == self.target_chart().label()
+        r"""Whether ``self`` and ``other`` are the same holomorphic map ``X -> Y``.
+
+        They are when they agree at every point.  Every point lies in the
+        domain of a coordinate representation of each, so they are equal
+        exactly when every representation of one agrees with every
+        representation of the other on the overlap of their domains.
+        """
+        return element_parent(other) is self.parent() and all(
+            _representations_agree(self, first, other, second)
+            for first in self.chart_pairs()
+            for second in other.chart_pairs()
         )
 
     def __ne__(self, other) -> bool:
@@ -986,31 +1474,50 @@ class ComplexManifoldMor(CategoricalMor):
             chart1=_engine_manifold_chart(source),
             chart2=_engine_manifold_chart(target),
         )
-        return self._from_engine_polynomial_map(
-            engine, expressions, source.label(), target.label()
-        )
+        return self._from_engine_map(engine, {(source.label(), target.label()): (expressions, ())})
 
-    def _from_engine_polynomial_map(self, engine, expressions, source_label, target_label):
-        presentation = HolomorphicMapPresentation(
-            engine,
-            expressions,
-            source_label,
-            target_label,
+    def rational(self, representations):
+        r"""Construct the holomorphic map with the given rational coordinate representations.
+
+        ``representations`` sends a chart pair ``(s, t)`` to the pair
+        ``(expressions, domain)``: the coordinates of ``V_t`` as rational
+        functions on ``U_s``, and functions on ``U_s`` whose common
+        nonvanishing locus is ``U_s cap f^{-1}(V_t)``.  A rational function
+        is holomorphic where its denominator does not vanish.  Construction
+        trusts the caller that the denominators do not vanish on the stated
+        domains, that the domains cover the source, and that the
+        representations agree on overlaps through the atlas transitions.
+        """
+        engine = _engine_manifold(self.domain()).diff_map(
+            _engine_manifold(self.codomain()),
+            {
+                (
+                    _engine_manifold_chart(self.domain().atlas()[source_label]),
+                    _engine_manifold_chart(self.codomain().atlas()[target_label]),
+                ): tuple(_engine_manifold_expression(expression) for expression in expressions)
+                for (source_label, target_label), (expressions, _domain) in representations.items()
+            },
         )
-        return self.element_class(
-            self,
-            presentation,
-        )
+        return self._from_engine_map(engine, representations)
+
+    def _from_engine_map(self, engine, representations):
+        r"""Raise a private Sage map with its coordinate representations into this Mor object."""
+        return self.element_class(self, HolomorphicMapPresentation(engine, representations))
 
     @cached_method
     def identity(self):
+        r"""The identity, represented on each chart ``U_s`` by its own coordinates."""
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"there is no identity map from {self.domain()} to {self.codomain()}: an "
                 f"identity needs its domain and codomain to be the same complex manifold"
             )
-        chart = self._unique_chart(self.domain())
-        return self.polynomial(chart.coordinates())
+        return self.rational(
+            {
+                (label, label): (self.domain().atlas()[label].coordinates(), ())
+                for label in self.domain().chart_labels()
+            }
+        )
 
 
 class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
@@ -1026,14 +1533,19 @@ class ComplexManifolds(OwnedCategory):
     ``R^{2n}`` and ``R^{2m}``.  A holomorphic atlas is therefore a smooth atlas
     of the underlying real manifold, of real dimension twice the complex
     dimension, and a holomorphic map is smooth.  Forgetting the complex
-    structure is the functor to ``SmoothManifolds()``, the immediate
-    supercategory.
+    structure is the functor to ``SmoothManifolds()``.  A complex manifold is
+    also the complex orbifold whose charts have trivial group, hence a
+    reduced, normal complex analytic space (Grauert--Remmert, *Coherent
+    Analytic Sheaves*, Ch. 1); both routes send it to the same smooth
+    orbifold.
     """
 
     _MorCategory = ComplexManifoldMorCategoryConstruction
 
     def super_categories(self):
-        return [SmoothManifolds()]
+        from dzack_research.preamble.categories.orbifolds import ComplexOrbifolds
+
+        return [SmoothManifolds(), ComplexOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -1082,6 +1594,70 @@ class ComplexManifolds(OwnedCategory):
             )
         manifold = self(dimension, name)
         manifold.chart("standard", " ".join(coordinate_names))
+        return manifold
+
+    def projective_space(self, dimension, name=None):
+        r"""Complex projective space ``CP^n = (C^{n+1} - 0)/C^*``, a compact complex manifold.
+
+        The atlas is the standard one (Griffiths--Harris, *Principles of
+        Algebraic Geometry*, Ch. 0, Sec. 1): ``U_i = {x_i != 0}`` with chart ``x_k/x_i`` (``k != i``), and on
+        ``U_i \cap U_j`` the holomorphic coordinate change
+        ``x_k/x_j = (x_k/x_i)/(x_j/x_i)``.  ``CP^n`` is the image of the
+        compact sphere ``S^{2n+1}`` under the quotient map, so it is compact.
+        The chart labels are ``U0, ..., Un`` and the coordinates are named
+        ``x{k}_over_x{i}``, as on the standard affine charts of ``P^n``.
+        Engine adapter: SageManifolds' open subsets, charts and transition
+        maps, the pattern of its ``RealProjectiveSpace`` with complex field.
+        """
+        dimension = int(dimension)
+        if name is None:
+            name = f"CP^{dimension}"
+        assert dimension > 0, (
+            f"cannot construct the complex projective space {name} of dimension {dimension}: "
+            f"the dimension must be positive"
+        )
+        engine = _SageManifold(
+            dimension, str(name), field="complex", structure="smooth", unique_tag=object(),
+        )
+        manifold = _object_of(
+            self.Compact(),
+            topology_data=_ManifoldTopologyData(engine),
+            engine_manifold=engine,
+            manifold_dimension=dimension,
+            manifold_name=str(name),
+            manifold_structure="complex analytic",
+            differentiability_degree=Infinity,
+            manifold_field="complex",
+        )
+        indices = range(dimension + 1)
+        charts = {
+            i: manifold._register_chart(
+                f"U{i}",
+                engine.open_subset(f"U{i}").chart(
+                    " ".join(f"x{k}_over_x{i}" for k in indices if k != i)
+                ),
+            )
+            for i in indices
+        }
+        one = _manifold_expression_ring().one()
+
+        def homogeneous(i):
+            # Homogeneous coordinates of a point of U_i, normalized by x_i = 1.
+            affine = iter(charts[i].coordinates())
+            return {k: one if k == i else next(affine) for k in indices}
+
+        for i, j in combinations(indices, 2):
+            on_i = homogeneous(i)
+            on_j = homogeneous(j)
+            manifold.transition_map(
+                f"U{i}",
+                f"U{j}",
+                tuple(on_i[k] / on_i[j] for k in indices if k != j),
+                tuple(on_j[k] / on_j[i] for k in indices if k != i),
+                source_overlap=(on_i[j],),
+                target_overlap=(on_j[i],),
+            )
+        engine.declare_union(engine.subsets())
         return manifold
 
     def _open_submanifold_data(self, containing_manifold, name, restriction):
@@ -1168,6 +1744,10 @@ class ComplexManifolds(OwnedCategory):
         def real_dimension(self):
             return 2 * int(self.dimension())
 
+        def coordinate_field(self):
+            r"""The field ``CC``: a holomorphic chart is a biholomorphism onto an open subset of ``CC^n``."""
+            return _owned_complex_field()
+
         def is_analytic(self) -> bool:
             return True
 
@@ -1214,34 +1794,94 @@ class ComplexManifolds(OwnedCategory):
         globally symmetric space of noncompact type.
         """
 
+        def extra_super_categories(self):
+            r"""``RiemannianManifolds().GloballySymmetric()``: the domain with its Bergman metric.
+
+            The Bergman metric is determined by the complex structure, so it
+            is no choice; with it ``G/K`` is a Riemannian globally symmetric
+            space of noncompact type (Helgason, Ch. VIII, §7).
+            """
+            return [RiemannianManifolds().GloballySymmetric()]
+
+        @cached_method
         def type_I(self, p, q):
             r"""Return ``I_{p,q} = SU(p, q)/S(U(p) x U(q))``, Cartan type AIII.
 
             Bounded realization ``{Z in M_{p x q}(C) : 1_q - Z^* Z > 0}``,
             of complex dimension ``pq``, for positive integers ``p`` and
             ``q``.  ``I_{1,1}`` is the disc, biholomorphic to
-            ``upper_half_plane()``.
+            ``upper_half_plane()``.  The positivity of the Hermitian matrix
+            ``1_q - Z^* Z`` is read by Sylvester's criterion: every leading
+            principal minor is positive.
             """
-            assert False, "type_I on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert p >= 1 and q >= 1, (
+                f"I_{{p,q}} is defined for positive integers p and q, not p = {p}, q = {q}"
+            )
+            index_pairs = tuple(
+                (row, column) for row in range(int(p)) for column in range(int(q))
+            )
+            space, coordinates = self._matrix_coordinate_space(f"I_{p}_{q}", index_pairs)
+            matrix = _engine_matrix(
+                SR, int(p), int(q), lambda row, column: coordinates[(row, column)]
+            )
+            return self._bounded_open_domain(
+                space,
+                f"I_{p}_{q}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(q)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
+        @cached_method
         def type_II(self, n):
             r"""Return ``II_n = SO^*(2n)/U(n)``, Cartan type DIII.
 
             Bounded realization ``{Z in M_n(C) : Z^t = -Z, 1_n - Z^* Z > 0}``,
-            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``.
+            of complex dimension ``n(n - 1)/2``, for an integer ``n >= 2``;
+            the coordinates are the entries ``z_{ij}``, ``i < j``.
             """
-            assert False, "type_II on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 2, f"II_n is defined for integers n >= 2, not n = {n}"
+            index_pairs = tuple(
+                (row, column) for row in range(int(n)) for column in range(row + 1, int(n))
+            )
+            space, coordinates = self._matrix_coordinate_space(f"II_{n}", index_pairs)
+            matrix = _engine_matrix(
+                SR, int(n), int(n), lambda row, column: _skew_entry(coordinates, row, column)
+            )
+            return self._bounded_open_domain(
+                space,
+                f"II_{n}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(n)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
+        @cached_method
         def type_III(self, n):
             r"""Return ``III_n = Sp_{2n}(RR)/U(n)``, Cartan type CI.
 
             Bounded realization ``{Z in M_n(C) : Z^t = Z, 1_n - Z^* Z > 0}``,
             of complex dimension ``n(n + 1)/2``, for a positive integer
-            ``n``.  The Cayley transform identifies it with
+            ``n``; the coordinates are the entries ``z_{ij}``, ``i <= j``.
+            The Cayley transform identifies it with
             ``siegel_upper_half_space(n)``; ``III_1 = I_{1,1}``.
             """
-            assert False, "type_III on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 1, f"III_n is defined for positive integers n, not n = {n}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"III_{n}", _upper_triangle(n)
+            )
+            matrix = _engine_matrix(
+                SR, int(n), int(n), lambda row, column: _symmetric_entry(coordinates, row, column)
+            )
+            return self._bounded_open_domain(
+                space,
+                f"III_{n}",
+                _engine_positive_definite(
+                    _engine_identity_matrix(SR, int(n)) - matrix.conjugate_transpose() * matrix
+                ),
+            )
 
+        @cached_method
         def type_IV(self, n):
             r"""Return ``IV_n = SO_0(2, n)/(SO(2) x SO(n))``, Cartan type BDI with ``q = 2``.
 
@@ -1254,17 +1894,94 @@ class ComplexManifolds(OwnedCategory):
             two components and that choosing one is additional data;
             ``LeanCategories/Lattices/Valued/PeriodDomainData.lean``,
             ``latticePeriodDomainData``).
+
+            The construction is the tube domain
+            ``{z in C^n : Im z in C^+}``, ``C^+ = {y : y_1 > 0, (y, y) > 0}``
+            for ``(y, y) = y_1^2 - y_2^2 - ... - y_n^2``.  Write
+            ``V = U + W`` with ``U`` a hyperbolic plane on ``e, f`` and ``W``
+            of signature ``(1, n - 1)``.  A line with ``(omega, e) != 0`` has
+            the unique representative ``omega = -(z, z)/2 e + f + z``,
+            ``z in W_C``, which is isotropic, and
+            ``(omega, bar omega) = 2 (Im z, Im z)``.  No line of the period
+            domain has ``(omega, e) = 0``: then ``Re omega`` and
+            ``Im omega`` would span a positive definite real ``2``-plane in
+            ``e^perp/e = W``, which has one positive direction.  The two
+            components of ``{(y, y) > 0}`` are the two components of the
+            period domain, and ``y_1 > 0`` chooses one.
             """
-            assert False, "type_IV on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert n >= 1, f"IV_n is defined for positive integers n, not n = {n}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"IV_{n}", tuple((0, index) for index in range(int(n)))
+            )
+            imaginary = tuple(
+                coordinates[(0, index)].imag_part() for index in range(int(n))
+            )
+            return self._bounded_open_domain(
+                space,
+                f"IV_{n}",
+                (
+                    imaginary[0] > 0,
+                    imaginary[0] ** 2 - sum(y**2 for y in imaginary[1:]) > 0,
+                ),
+            )
 
         def type_EIII(self):
-            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``."""
-            assert False, "type_EIII on ComplexManifolds.BoundedSymmetric: not implemented"
+            r"""Return ``E_{6(-14)}/(Spin(10) x U(1))``, of complex dimension ``16``.
+
+            Built on the Satake diagram of ``E_{6(-14)}`` (Araki, 1962): in
+            Bourbaki's labels the black nodes are ``3, 4, 5`` and ``tau``
+            swaps ``1 <-> 6`` and ``3 <-> 5``; real rank ``2``.  The vertices
+            of the session's ``E6`` diagram are Bourbaki's labels minus one.
+            The bounded realization is ``harish_chandra_realization()``.
+            """
+            return self._exceptional_domain("EIII", "E6", (2, 3, 4), (5, 1, 4, 3, 2, 0))
 
         def type_EVII(self):
-            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``."""
-            assert False, "type_EVII on ComplexManifolds.BoundedSymmetric: not implemented"
+            r"""Return ``E_{7(-25)}/(E_6 x U(1))``, of complex dimension ``27``.
 
+            Built on the Satake diagram of ``E_{7(-25)}`` (Araki, 1962): in
+            Bourbaki's labels the black nodes are ``2, 3, 4, 5`` and ``tau``
+            is the identity; real rank ``3``.  The vertices of the session's
+            ``E7`` diagram are Bourbaki's labels minus one.
+            """
+            return self._exceptional_domain("EVII", "E7", (1, 2, 3, 4), (0, 1, 2, 3, 4, 5, 6))
+
+        def _exceptional_domain(self, name, cartan_name, black_nodes, involution_images):
+            r"""The Hermitian symmetric domain ``G/K`` of the real form with the given Satake diagram.
+
+            Its complex dimension is ``dim p_0 / 2``; the complex manifold has
+            no chart until its Harish-Chandra realization is constructed.
+            """
+            from dzack_research.preamble.categories.lattices import Lattices
+            from dzack_research.preamble.categories.satake_diagrams import SatakeDiagrams
+
+            diagram = Lattices(_owned_integers())(cartan_name).dynkin_diagram()
+            satake = SatakeDiagrams()(
+                diagram, black_nodes, diagram.Mor(diagram)(involution_images)
+            )
+            rank, dimension = _symmetric_space_rank_and_dimension(satake)
+            engine = _SageManifold(
+                dimension // 2,
+                name,
+                field="complex",
+                structure="smooth",
+                unique_tag=object(),
+            )
+            return _object_of(
+                self,
+                _engine=(SmoothManifolds(), _RealFormSymmetricSpace, None),
+                topology_data=_ManifoldTopologyData(engine),
+                engine_manifold=engine,
+                manifold_dimension=dimension // 2,
+                manifold_name=name,
+                manifold_structure="complex analytic",
+                differentiability_degree=Infinity,
+                manifold_field="complex",
+                satake_diagram=satake,
+                real_rank=rank,
+            )
+
+        @cached_method
         def upper_half_plane(self, name="HH"):
             r"""Return the upper half-plane ``{tau in C : Im(tau) > 0}``.
 
@@ -1282,20 +1999,65 @@ class ComplexManifolds(OwnedCategory):
             )
             return _object_of(
                 self,
-                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=1,
                 **complex_manifolds._open_submanifold_data(
                     line, name, tau.imag_part() > 0
                 ),
             )
 
+        @cached_method
         def siegel_upper_half_space(self, g):
             r"""Return ``H_g = {Z in M_g(C) : Z^t = Z, Im(Z) > 0}``, the Siegel upper half-space.
 
             It is ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``, of complex
             dimension ``g(g + 1)/2``, for a positive integer ``g``;
-            ``H_1 = upper_half_plane()``.
+            ``H_1 = upper_half_plane()``.  The coordinates are the entries
+            ``z_{ij}``, ``i <= j``, of ``Z``, and the positive definiteness
+            of the real symmetric matrix ``Im(Z)`` is read by Sylvester's
+            criterion: every leading principal minor is positive.
             """
-            assert False, "siegel_upper_half_space on ComplexManifolds.BoundedSymmetric: not implemented"
+            assert g >= 1, f"H_g is defined for positive integers g, not g = {g}"
+            space, coordinates = self._matrix_coordinate_space(
+                f"H_{g}", _upper_triangle(g)
+            )
+            imaginary = _engine_matrix(
+                SR,
+                int(g),
+                int(g),
+                lambda row, column: _symmetric_entry(coordinates, row, column).imag_part(),
+            )
+            complex_manifolds = self.base_category()
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _SiegelUpperHalfSpace, None),
+                siegel_genus=int(g),
+                **complex_manifolds._open_submanifold_data(
+                    space, f"H_{g}", _engine_positive_definite(imaginary)
+                ),
+            )
+
+        def _matrix_coordinate_space(self, name, index_pairs):
+            r"""The complex affine space with one coordinate ``z_i_j`` per index pair, and its engine coordinates."""
+            space = self.base_category().affine_space(
+                len(index_pairs),
+                name=f"{name}_space",
+                coordinate_names=tuple(f"z_{row}_{column}" for row, column in index_pairs),
+            )
+            chart = space.atlas()[tuple(space.chart_labels())[0]]
+            return space, {
+                pair: _engine_manifold_expression(chart.coordinate(index))
+                for index, pair in enumerate(index_pairs)
+            }
+
+        def _bounded_open_domain(self, space, name, restriction):
+            r"""The open subset of ``space`` cut out by ``restriction``, an object of this category."""
+            complex_manifolds = self.base_category()
+            return _object_of(
+                self,
+                _engine=(complex_manifolds, _ComplexOpenEngine, None),
+                **complex_manifolds._open_submanifold_data(space, name, restriction),
+            )
 
         class ParentMethods:
             def harish_chandra_realization(self):
@@ -1318,6 +2080,38 @@ class ComplexManifolds(OwnedCategory):
                 the real form ``Lie(Aut(D)^0)``.
                 """
                 assert False, "bergman_metric_space on ComplexManifolds.BoundedSymmetric: not implemented"
+
+
+class _RealFormSymmetricSpace:
+    r"""The symmetric space ``G/K`` of a real form, built on its Satake diagram; a realization, not a category.
+
+    The Satake diagram classifies the real form ``g_0 = Lie(G)`` (Araki,
+    1962), so it is the datum the construction is on; the real rank
+    ``dim a_0`` is read from it.
+    """
+
+    def __init__(self, satake_diagram, real_rank, **rest) -> None:
+        self._satake_diagram = satake_diagram
+        self._real_rank = real_rank
+        super().__init__(**rest)
+
+    def satake_diagram(self):
+        r"""Return the Satake diagram of the real form ``g_0`` of which this is ``G/K``."""
+        return self._satake_diagram
+
+    def real_rank(self):
+        r"""Return ``dim a_0``, the rank of the symmetric space: the number of ``tau``-orbits of white nodes."""
+        return self._real_rank
+
+    def _repr_(self):
+        diagram = self._satake_diagram
+        return (
+            f"{self.dimension()}-dimensional {self.manifold_structure()} symmetric space "
+            f"{self.manifold_name()} of real rank {self._real_rank}, of the real form of "
+            f"{diagram.dynkin_diagram().label()} with black nodes "
+            f"{tuple(diagram.black_nodes())} and involution "
+            f"{tuple(diagram.involution()(vertex) for vertex in diagram.dynkin_diagram().index_set())}"
+        )
 
 
 class _ComplexOpenEngine:
@@ -1349,6 +2143,77 @@ class _ComplexOpenEngine:
         return self.Mor(self._containing_manifold).polynomial(coordinates)
 
 
+class _SiegelUpperHalfSpace(_ComplexOpenEngine):
+    r"""The Siegel upper half-space ``H_g`` with its symplectic action; a realization, not a category.
+
+    ``Sp_{2g}(RR)`` acts on ``H_g`` by biholomorphisms
+    ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M = [[A, B], [C, D]]`` with
+    ``g x g`` blocks; it is transitive with stabilizer ``U(g)`` at ``iI``,
+    which presents ``H_g`` as ``Sp_{2g}(RR)/U(g)``, the domain ``III_g``
+    (Helgason, Ch. X, §6, Table V).  For ``g = 1`` this is the Möbius
+    action of ``SL_2(RR) = Sp_2(RR)`` on the upper half-plane.
+    """
+
+    def __init__(self, siegel_genus, **rest) -> None:
+        self._siegel_genus = siegel_genus
+        super().__init__(**rest)
+
+    def siegel_genus(self):
+        return self._siegel_genus
+
+    def symplectic_action(self, group):
+        r"""Return the ``Gamma``-space ``(H_g, rho)`` of a group of integral symplectic matrices.
+
+        ``group`` is a group ``Gamma`` of ``2g x 2g`` matrices in
+        ``Sp_{2g}(ZZ)``; ``SL_2(ZZ) = Sp_2(ZZ)`` for ``g = 1``.  ``rho``
+        restricts the action of ``Sp_{2g}(RR)`` along the inclusion, so
+        ``rho(M)`` is the biholomorphism ``Z |-> (AZ + B)(CZ + D)^{-1}``
+        of ``H_g``, and ``(MN) . Z = M . (N . Z)`` makes it a left action.
+        ``Sp_{2g}(ZZ)`` is discrete in ``Sp_{2g}(RR)`` and the stabilizer
+        ``U(g)`` is compact, so ``Gamma`` acts properly discontinuously.  The
+        result is an object of
+        ``GObjects(Gamma, ComplexManifolds()).ProperlyDiscontinuous()``; its
+        ``orbit_space()`` is the complex orbifold ``Gamma\H_g``.
+        """
+        from dzack_research.preamble.categories.group.g_objects import GObjects
+
+        return GObjects(group, ComplexManifolds()).ProperlyDiscontinuous().on_space(
+            self,
+            lambda element, point: self._symplectic_transform(group, element, point),
+        )
+
+    def _symplectic_transform(self, group, element, point):
+        r"""The point ``M . Z = (AZ + B)(CZ + D)^{-1}`` for ``M`` the matrix of ``element``."""
+        from dzack_research.preamble.categories.group.groups import (
+            _matrix_group_element_matrix,
+        )
+
+        g = self._siegel_genus
+        point = self(point)
+        matrix = _matrix_group_element_matrix(group, element)
+        assert matrix.nrows() == 2 * g and matrix.ncols() == 2 * g, (
+            f"{element} does not act on {self}: Sp_{2 * g} acts on the Siegel upper "
+            f"half-space H_{g} by 2g x 2g = {2 * g} x {2 * g} matrices, and its matrix is "
+            f"{matrix.nrows()} x {matrix.ncols()}"
+        )
+        field = _owned_complex_field()
+        engine_field = _engine_ring(field)
+        entries = dict(zip(_upper_triangle(g), tuple(point.coordinates()), strict=True))
+        Z = _engine_matrix(
+            engine_field,
+            g,
+            g,
+            lambda row, column: _engine_element(field, _symmetric_entry(entries, row, column)),
+        )
+        M = matrix.change_ring(engine_field)
+        A, B, C, D = M[:g, :g], M[:g, g:], M[g:, :g], M[g:, g:]
+        W = (A * Z + B) * (C * Z + D).inverse()
+        return self.point(
+            tuple(_owned_engine_element(field, W[row, column]) for row, column in _upper_triangle(g)),
+            point.chart().label(),
+        )
+
+
 class _ComplexDiscEngine(_ComplexOpenEngine):
     r"""The disc parameters refine the chart-restriction engine, not the category."""
 
@@ -1362,6 +2227,22 @@ class _ComplexDiscEngine(_ComplexOpenEngine):
 
     def is_punctured(self) -> bool:
         return self._punctured
+
+    def _element_constructor_(self, datum, chart_label="standard"):
+        r"""Return the point ``z`` of the disc for a complex number ``z``, or the point with coordinates ``datum``.
+
+        A point of the disc ``{|z| < r}`` is a complex number ``z`` with
+        ``|z| < r``, and ``z != 0`` when the disc is punctured: its one
+        coordinate in the chart cut out of the line.  The chart restriction
+        decides membership.
+        """
+        match datum:
+            case _ if element_parent(datum) is self:
+                return datum
+            case _ if datum in _owned_complex_field():
+                return super()._element_constructor_((datum,), chart_label)
+            case _:
+                return super()._element_constructor_(datum, chart_label)
 
 
 __all__ = [

@@ -21,6 +21,22 @@ The stabilizers and transporters of coloured families of lattice vectors (#399, 
 Remediation: present `Isom`/`Aut` of labelled graphs at that owner, routed to Sage's graph isomorphism.
 Source inspection only.
 
+### A ring is a module over its base only, never over itself
+
+A ring `A` over `R` constructs into `Modules(R)`, not into `Modules(A)`. The regular module `A^1 = F_A({0})` is a separate free `A`-module, the one `A.regular_module()` returns. So `Der_R(A, A)` needs the target `A^1`, and its values were `r e_0` instead of elements of `A`.
+
+**Evidence (2026-10-16):** for `A = QQ[x]` and `D = d/dx`, `D(x)` printed `[0]`. `S.derivations(S)` for `S = QQ[x, y]` raised `TypeError: an R-derivation A -> M needs M to be a module over A = Rational Field[x, y], but Rational Field[x, y] is a module over Rational Field`. The graded derivation `p` with `x |-> 1, y |-> 0` raised `cannot convert y*[0] into Rational Field[x, y]` on `p(x*y)`.
+
+**Ruling in force, (a):** the values land in `A` through the named isomorphism `A^1 -> A`, `e_0 |-> 1` (`regular_module_isomorphism` in `ring_foundation.py`), and `regular_module()` stays.
+
+**Options for the OWNER TO RULE:**
+- (b) The ring answers `Modules(A)`, and the module layer takes its scalars from the category of the operation.
+- (c) Each ring is its own base, and an `R`-algebra is an `R`-module through restriction of scalars `Res` along `R -> A`.
+
+**Affected consumers:** `Der_R(A, A)` (`algebras/derivations.py`); `Mor_A(Omega_{A/R}, A)` (`algebras/kahler_differentials.py`); the Lie bracket and the contractions (`algebras/cartan_calculus.py`); ideals of `A` as submodules of `A`.
+
+**Repair:** `TODO.md` `ring-modules-over-two-bases`.
+
 ### A realization's class method is unreachable behind a category operation of the same name
 
 The owned runtime puts a category's method classes before the realization class (`refine.RealizationHook`, `_rebuild_parent_class`), so a class method named like a category operation that is not a `RealizationHook` or an abstract contract is never called.
@@ -552,6 +568,7 @@ For algebraic de Rham cohomology of `F2[x]`, `H^0=F2[x^2]` and `H^1=F2[x^2] x dx
 **Source evidence (2026-10-11):** `functors/cohomology.py` has the general codomain `Modules(R)`, while `modules/cochain_complexes.py:_cohomology` still selects a chosen finite cycle presentation after obtaining the actual kernel, image and boundary-in-cycle factorization.
 The unresolved computation is the general represented cycle quotient, not the functor's mathematical codomain.
 The existing `placement-owner-cohomologymodules` owns this remainder and its unavailable-computation assertions.
+**Coverage (2026-10-16):** for a polynomial algebra `Sym_R(F)` on a finitely generated free module `F` over a `QQ`-algebra `R`, `DeRhamAlgebras.cohomology` compares `DR(Sym_R(F))` with `DR(R)` by cochain maps inverse up to homotopy (Stacks Lemma 50.10.5, tag 0FUI), so `H^k_dR(QQ[x0,x1])` is computed without a cycle quotient of `Z^1`, which is not finitely generated over `QQ`. Every other complex, including `F2[x]` (Stacks Example 50.10.6, tag 0FUJ), still uses the finite cycle quotient.
 
 **Searched / Found / Conclusion:** read the cohomology functor, cycles, boundaries, `_cohomology`, and the de Rham consumer; found the selected finite construction and the named frontier, not a general unbounded solver along this route.
 Confidence is high for this source trace; broader algorithms and runtime behavior are uninspected.
@@ -1306,69 +1323,21 @@ Source inspection, 2026-10-15: the engine `CartanType` stays private in `definit
 On 2026-10-16 the owner directed that these categories be stubbed with their placements and functorial constructions, ahead of formalization: varieties over a ring, curves, surfaces, K3 and del Pezzo surfaces, hypersurfaces, families as slice objects and their analytic fibres, primitive cohomology, Lefschetz operators, residues and logarithmic differentials, graded Lie algebras, pointed spaces and `pi_*` with the Whitehead product and the rational homotopy Lie algebra, categories of elements, `Pic` as a functor, polarized varieties, filtered modules, mixed and pure Hodge structures, polarizations, the Gauss–Manin connection, `HH`, `Gamma \ HH`, `HH^n`, `H_g`, `G/K` by Satake type, Hermitian symmetric domains, derived categories, Riemannian manifolds, Lie groups and the orbit space of a group action on a space.
 **Request (not filed):** `lean-categories` formalizes each notion with its source; the presentations run beside the request. Every citation locator written in these stubs was recalled, not opened, and needs checking against the source: Hatcher Thm 3.11, Félix–Halperin–Thomas §21, Whitehead 1941, Hartshorne II.6 and II.7.6, Voisin §6.2 and §7.1, Deligne *Hodge II*, Mac Lane II.6, Riehl 2.4.1, Dolgachev 2012 Rem 8.1.19, Hidaka–Watanabe 1981, Huybrechts Def 1.1.
 
-### `PositiveConeComponents` is unhashable
+### Abelian groups and `ZZ`-modules are two categories with no equivalence
 
-A component of the positive cone of a hyperbolic real quadratic space is the object from which `HyperbolicSpaces(component)` constructs `HH^n`. `PositiveConeComponents` is a `Sets().Subobjects()` parent that is unhashable, so the category constructor, which caches on its arguments, raises `TypeError`. `tests/lattices/test_hyperbolic_space.sage` fails on main (2026-10-16). **Consumer:** `HyperbolicSpaces`, and so `HH^n` and its quotients. **Repair:** the subobject parent hashes on its defining inclusion.
+`Pic(X)` is an abelian group, so the Picard functor `Varieties(k).Projective().picard_functor()` should land in the category of abelian groups. The tree presents `AdditiveGroups().AdditiveCommutative()` (`group/magmas.py:744`) and `Modules(ZZ)`, and no equivalence `Ab ≃ Mod_ZZ` between them, so the functor lands in `Modules(ZZ)`. **Dependency path:** abelian groups -> the `ZZ`-module structure that each abelian group determines (Mathlib `AddCommGroup.toIntModule`, `ModuleCat` over `ℤ`) -> the equivalence as a functor pair with unit and counit -> `Pic` valued in abelian groups. **Request:** `lean-categories` states the equivalence.
 
-### Output-named cohomology and fundamental-group categories (`CAT-28`)
+### `integral_singular_cohomology` names two spaces on schemes
 
-`IntegralTopologicalCohomologyGroups`, `IntegralSingularCohomologyGroups`, `ResolutionIntegralCohomologyGroups`, `ToricIntegralSingularCohomologyGroups`, `GeometricFundamentalGroups`, `ToricFundamentalGroups` (`schemes/geometric_cohomology.py`) and `PicardGroups` (`divisors/picard_groups.py`) are categories declared for the class of objects one construction produces. `H^k(X; ZZ)` is a `ZZ`-module, `pi_1(X, x)` a group and `Pic(X)` an abelian group; each belongs to the category of its kind with the construction as a functor (`X.singular_cohomology(R)`, `Pic` as `Varieties(k).Projective().picard_functor()`). **Tell:** `rg -n 'class \w*(Cohomology|Fundamental|Picard)Groups' src`. `IntegralTopologicalCohomologyGroups.cohomology_algebra` also needs the embedding `sigma : k -> CC` to state its source.
-
-### `TopologicalSpaces` has no coequalizer
-
-The orbit space `G \ X` of a group action is the coequalizer of the action map and the projection `G x X -> X` in `Top`. Only `Sets` presents coequalizers (`set_categories.py:1616`), so `GObjects.orbit_space` and the quotients `Gamma \ HH`, `Gamma \ H_g`, `Gamma \ HH^n` are stubs. **Path:** coequalizer in `Sets` -> quotient topology on it -> coequalizer in `Top` -> orbit spaces.
-
-### `DerivedCategories(R)` has no triangulated parent
-
-`D(R)` is the localization of `CochainComplexes(R)` at quasi-isomorphisms, an `R`-linear triangulated category. The tree presents no category of triangulated categories, so `DerivedCategories(R)` leaves `super_categories` abstract and does not construct; `RΓ(X, F)` lands there. **Request:** `lean-categories` formalizes triangulated `R`-linear categories and the derived category.
-
-### Two spellings of sheaf cohomology
-
-`_AffineModuleSheafEngine.geometric_cohomology(i)` (`schemes/ringed_spaces.py:1211`) and `F.sheaf_cohomology(i)` on `ModuleSheaves(X)` both name `H^i(X, F)`. **Repair:** one spelling, `sheaf_cohomology(i)`, computed through the engine.
-
-### Hodge structures are answered as Hodge numbers
-
-`hodge_structure()` on toric varieties and quartic K3 surfaces returns Hodge-number data (`_ToricHodgeData`, `_QuarticK3HodgeData`), not an object of `MixedHodgeStructures(QQ)`. The engine `is_pure()` answers on total cohomology, which is pure only in each degree: `H^*(P^2)` has weights 0, 2, 4. The homsets of `MixedHodgeStructures(R)` are those of the underlying module and not the maps preserving `W`, `F` and the rational structure. Tate twists, tensor products and duals of Hodge structures are absent, and `VectorBundlesWithConnection(S)` has abstract supercategories.
-
-### Analytification and arrow categories are absent
-
-`X -> X(CC)` (analytification of a variety over `CC`) is absent, so `pointed_space()` on the fundamental-group classes is a stub. No closed-immersion arrow category exists, so the residue `Omega^p_X(log D) -> Omega^{p-1}_D` sits on `EffectiveCartierDivisors(X)`. No comma category exists, so the category of elements `int F` has abstract supercategories. No graded nonassociative algebra category exists, so `GradedAlgebras` and `GradedLieAlgebras` meet only at modules. `Pic` is a stub, so `Varieties(k).Projective().polarized_varieties()` fails at construction when its supercategory `int Pic` is computed.
+A scheme `X` is an object of `TopologicalSpaces()` through its Zariski space, so the inherited `singular_cohomology` and `integral_singular_cohomology` are those of the Zariski space. On toric varieties, complete intersections and projective spaces (`schemes.py`, `ProjectiveSpaces.ParentMethods.integral_singular_cohomology`) the same name answers `H^*(X(CC); ZZ)` of the complex points. One name thus means two different spaces according to the subcategory, and a scheme without the override reaches the `TopologicalSpaces` stub for its Zariski space. **Repair:** singular cohomology of the complex points is the composite of the analytification `X -> X(CC)` along an embedding `sigma: k -> CC` with singular cohomology on `TopologicalSpaces`, a method that takes `sigma`; the Zariski-space name stays with `TopologicalSpaces`.
 
 ### Families need base restriction and fibre products
 
-The Hesse pencil is an object of `Schemes(QQ).SliceOver(A^1_QQ)`; the tree presents slices only over affine bases. A Horikawa family is the universal double cover of `P^1 x P^1 x A^13 -> A^13`. A general fibre of a slice of `ComplexManifolds()` needs the fibre product. `HesseBertiniFamily` is a free function that constructs an object (AGENTS §3), and `analytic_families.py:260` compares against `float(radius)`, a machine float where the radius is a real number.
-
-### Bounded symmetric domains are placed only as complex manifolds
-
-`ComplexManifolds().BoundedSymmetric()` holds `HH` and the types I–IV, EIII, EVII. A Hermitian symmetric domain is also a Riemannian globally symmetric space of noncompact type, `G/K`, so the axiom places `HH` in only one of its two categories. **Repair:** the join of `ComplexManifolds()` with `RiemannianManifolds().GloballySymmetric()`, with the Hermitian type as its axiom.
-
-### `isinstance` dispatch in derivations
-
-`categories/algebras/derivations.py` routes on `isinstance` at lines 86, 132, 325, 350, 407, 555, 557, 567, 624, 745 (`rg -n isinstance` on 2026-10-16). AGENTS.md (*Dynamic peeking is prohibited*) requires membership routing. **Consumers:** derivations, the de Rham complex.
-
-### A free module is placed with a chosen finite presentation that it cannot give
-
-`QQ.free_module(2) in ModulesWithChosenFinitePresentation(QQ)` holds, but its object type has no `presentation()`; the method is at `modules/finitely_presented_modules.py:652`. So `M.projectivization()` (`P(M) = Proj Sym(M)` over `Spec R`, EGA II 4.1.1) raises `AttributeError` in `_chart_algebra` (`schemes/relative_proj.py:805`), and `RelativeProjectivizations(R).an_object()` fails the same way (2026-10-16). Membership in a data subcategory and the datum it states disagree (`CAT-29`).
-
-### `dual_module()` of a framed free module has no dual framing
-
-The framed duplicate of `dual_module` is retired into `Modules(R)`, so `M.dual_module()` is the homset `Mor(M, R)`. That homset accepts no coordinate data and gives no dual basis (`FramedFreeModules...dual_basis` is a stub, `modules/framed/framed_free_modules.py:790`). The expectation files `tests/user_simulations/test_module_session.sage:86` and `test_lattice_session.sage:67,161`, with `tests/tensors/test_mixed_tensor_*.sage`, `test_tensors.sage`, `tests/forms/test_infinite_form_duality.sage` and `tests/lattices/test_hyperbolic_chambers.sage`, call `.dual_module()((5, 7))` and `.dual_module().module_generators()`. **Repair:** the homset `Mor(M, R)` of a framed free module constructs elements from coordinates in the dual basis.
-
-### Section spaces on products of projective spaces
-
-`_multihomogeneous_polynomial_section_space` asserts every `d_i >= 0` (`divisors/linear_systems.py`), though `H^0(P^{n_1} x ... x P^{n_k}, O(d_1, ..., d_k)) = 0` when some `d_i < 0`. Its category and `ProjectiveJetSpaces` declare `VectorSpaces(R)`, which is false over `ZZ`; `HomogeneousPolynomialSectionSpaces` now declares `FramedFreeModules(R)`.
-
-### Linear systems do not specialize `ProjectiveLinearSystems`
-
-A complete linear system is `P(H^0(X, L))` and an imposed-multiplicity system is `P(W)` for `W` the kernel of a jet evaluation; both are linear systems `P(W)`, `W <= H^0(X, L)`. `CompleteLinearSystems` and `ImposedMultiplicityLinearSystems` store their own data and not the line bundle and section embedding of `ProjectiveLinearSystems` (`OWN-14`), so `closed_immersion_into_complete_linear_system` (a stub) exists only there. All three are constructed as projective spaces on a framing of `W`; for a general `L` the space `W` has no chosen basis, and the unframed `P(W)` is an object of `RelativeProjectivizations(R)`, whose parent is `Schemes(R)` and not `Schemes(R).Projective()`.
+The fibre product of schemes is constructed for affine bases, for glued schemes over an affine base, for the scalar base change of `P^n`, and for a closed subscheme of a product of projective spaces over a rational point of one factor (`_multiprojective_closed_fibre`, `schemes.py`). It is not constructed over a projective or glued base in general: a family `X -> P^m` that is not presented as a projection out of `prod P^{n_i}`, or a point with a residue field larger than the base ring, has no fibre. **Repair:** a point of a glued base factors through one chart, and the fibre is computed on the preimage of that chart. A Horikawa family is the universal double cover of `P^1 x P^1 x A^13 -> A^13`. A general fibre of a slice of `ComplexManifolds()` needs the fibre product of complex manifolds along a submersion. `HesseBertiniFamily` is a free function that constructs an object (AGENTS §3).
 
 ### Sheaves on a space are built on bases, not on `Open(X)`
 
-A sheaf on a topological space `X` with values in `D` is an object of `Sh(Open(X), D)`, the full subcategory of `[Open(X)^op, D]` satisfying descent (Mathlib `TopCat.Sheaf`). So the immediate parent of `SheafObjects(X)` is `Sheaves(OpenCoveringFamilies(|X|), Sets())`, and that of `ModuleSheaves(X)` is the module-valued sheaf category on the same site. The represented sheaves are built elsewhere: `O_X` on `distinguished_affine_coverage(X)` valued in `Modules(O(X))`, gluing sheaves on Čech sites, and `M~` with no functor and no descent datum (`QuasiCoherentSheaves`, `schemes/ringed_spaces.py`). The comparison lemma (restriction `Sh(Open(X), D) -> Sh(B, D)` is an equivalence for a basis `B`; Stacks 009H, locator to check) is stubbed as `Sheaves.extension_from_basis(X)` (`abstract_categories/presheaves.py`). **Dependency path:** `Open(X)` (`TopologicalSpaces...open_subsets_site()`) -> `OpenCoveringFamilies(X)` -> the extension functor -> every represented sheaf an object of `Sh(Open(X), D)` -> the honest supercategories. **Consequences:** `O_X.global_sections()` keeps a method returning the ring `O(X)`, where the general `Sheaves.ParentMethods.global_sections()` would return the regular module, and `M~` keeps its own section methods.
-
-### The power set is not ordered by inclusion
-
-`P(S)` is a poset under inclusion, and `PowerSets` declares only `Sets()` (`sets/set_categories.py:3041`). So `open_subsets_site()` decides `U <= V` by enumerating the points of `U` (`topological_spaces.py`), which is correct only for the finite enumerated topologies the tree presents. **Repair:** `PowerSets` presents the inclusion order; `Open(X)` is the subposet of the opens.
+A sheaf on a topological space `X` with values in `D` is an object of `Sh(Open(X), D)`, the full subcategory of `[Open(X)^op, D]` satisfying descent (Mathlib `TopCat.Sheaf`). `PresheafObjects(X)` is the Grothendieck construction `∫_D [Open(X)^op, D]` with fibres `with_values(D)`, and `SheafObjects(X)` declares it (`schemes/ringed_spaces.py`); `PresheafObjects(X)` declares no supercategory, because no category of Grothendieck constructions of a `Cat`-valued functor is presented. The affine structure sheaf is still built on `distinguished_affine_coverage(X)` valued in `Modules(O(X))` (`_structure_sheaf`, `schemes/ringed_spaces.py`), and `M~` has no functor and no descent datum (`QuasiCoherentSheaves`). The comparison lemma (restriction `Sh(Open(X), D) -> Sh(B, D)` is an equivalence for a basis `B`; Stacks 009H, locator to check) is stubbed as `Sheaves.extension_from_basis(X)` (`abstract_categories/presheaves.py`). **Dependency path:** `Open(X)` (`TopologicalSpaces...open_subsets_site()`) -> `OpenCoveringFamilies(X)` -> the extension functor -> every represented sheaf an object of `Sh(Open(X), D)` -> the honest supercategories. **Consequences:** `O_X.global_sections()` keeps a method returning the ring `O(X)`, where the general `Sheaves.ParentMethods.global_sections()` would return the regular module, and `M~` keeps its own section methods.
 
 ## Workflow Papercuts
 

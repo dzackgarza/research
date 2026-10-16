@@ -61,9 +61,14 @@ class _PowerAlgebra:
                 return self.scalar_multiple(value, self.one())
             case _ if source is self.generating_module():
                 return self.from_component(1, value)
+            case _ if source is self.unformed_module():
+                # The algebra is built on the graded module M: an element of
+                # M passes by the module-level coercion of that construction.
+                return super()._element_constructor_(value)
             case dict():
                 return super()._element_constructor_(value)
-            case _ if value in self.base_ring():
+            case _ if self.base_ring().is_parent_of(value) is True:
+                # Membership is a proposition; only a decided one routes here.
                 return self.scalar_multiple(self.base_ring()(value), self.one())
             case _:
                 return super()._element_constructor_(value)
@@ -85,6 +90,25 @@ class _PowerAlgebra:
     def _repr_(self):
         symbol = "Lambda" if self._power_flavor == "alternating" else "Gamma"
         return f"{symbol}({self.generating_module()})"
+
+
+class _PowerAlgebraElement:
+    r"""An element of ``Lambda(M)`` or ``Gamma(M)`` as the sum of its homogeneous components.
+
+    The degree-zero piece is ``Lambda^0(M) = Gamma^0(M) = R``, so its component
+    is written as the scalar the augmentation ``Lambda(M) -> R`` reads from it;
+    a component of positive degree is written in its own power module.
+    """
+
+    def _repr_(self):
+        terms = []
+        for degree, component in self.homogeneous_components().items():
+            match degree:
+                case _ if degree == 0:
+                    terms.append(str(self.parent().augmentation()(self)))
+                case _:
+                    terms.append(str(component))
+        return " + ".join(terms) if terms else "0"
 
 
 class PowerAlgebraMorphism:

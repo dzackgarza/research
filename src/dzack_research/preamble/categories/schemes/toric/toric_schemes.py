@@ -41,6 +41,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.schemes.toric.variety import ToricVariety as _SageToricVariety
 
+from dzack_research.preamble.categories.algebras.algebras import Algebras
 from dzack_research.preamble.categories.algebras.semigroup_algebras import (
     AffineSemigroupAlgebras,
 )
@@ -49,7 +50,6 @@ from dzack_research.preamble.categories.divisors.chow_groups import (
     TorusInvariantCycleGroups,
 )
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import (
     WeilDivisorGroups,
 )
@@ -244,7 +244,9 @@ def _face_transition_morphism(face, source_cone, target_cone, base_ring):
     target_chart = _affine_chart(target_cone, base_ring)
     target_algebra = target_chart.coordinate_algebra()
     labels = tuple(target_algebra.algebra_generating_set())
-    extension = target_algebra.Mor(source_open.coordinate_algebra())(
+    extension = Algebras(base_ring).Associative().Unital().Commutative().Mor(
+        target_algebra, source_open.coordinate_algebra()
+    )(
         {
             labels[position]: _character_on_overlap(
                 generator, face, source_cone, base_ring
@@ -1038,7 +1040,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "divisor is Cartier; its fan is not smooth, so test the divisors in question "
                 "with is_cartier instead"
             )
-            return PicardGroups()(self.character_divisor_morphism().cokernel())
+            return self.character_divisor_morphism().cokernel()
 
         @cached_method
         def _picard_to_class_group_morphism(

@@ -40,6 +40,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
     indexed_family,
 )
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.schemes.ringed_spaces import QuasiCoherentSheaves
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_integers,
@@ -264,15 +265,15 @@ class VectorBundlesWithConnection(OwnedParameterizedCategory):
     ``(E, nabla)`` are an object of ``ModulesWithConnection(A)``.
 
     Forgetting ``nabla`` lands in the locally free ``O_X``-modules of finite
-    rank, the subcategory of ``QuasiCoherentSheaves(X)`` cut out by local
-    freeness.  That subcategory is the one immediate supercategory; it is
-    declared once ``QuasiCoherentSheaves(X)`` states local freeness as an
-    axiom, so :meth:`super_categories` stays abstract (``CAT-15``).
+    rank, ``QuasiCoherentSheaves(X).FiniteLocallyFree()``, the one immediate
+    supercategory (``CAT-15``).
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "vector bundles with connection"
+    def super_categories(self):
+        return [QuasiCoherentSheaves(self.scheme()).FiniteLocallyFree()]
+
+    def _repr_object_names(self):
+        return f"vector bundles with connection on {self.scheme()}"
 
     def scheme(self):
         r"""The scheme ``X`` on which the bundles live."""
@@ -308,11 +309,13 @@ class VectorBundlesWithConnection(OwnedParameterizedCategory):
         map, so this axiom declares no morphisms of its own.
         """
 
-        @classmethod
-        def _repr_object_names(cls):
-            return "vector bundles with integrable connection"
+        def _repr_object_names(self):
+            return f"vector bundles with integrable connection on {self.base_category().scheme()}"
 
         class ParentMethods:
+            def is_integrable(self) -> bool:
+                return True
+
             def de_rham_complex(self):
                 r"""The de Rham complex ``Omega^*_{X/S} tensor E`` of ``(E, nabla)``.
 
@@ -345,6 +348,55 @@ VectorBundlesWithConnection.__dict__["Integrable"]._base_category_class_and_axio
     VectorBundlesWithConnection,
     "Integrable",
 )
+
+
+class _GaussManinConnection:
+    r"""``(H^k_dR(X/S), nabla_GM)`` for a smooth proper ``f: X -> S``.
+
+    The defining data are the arrow ``f`` and the degree ``k``.  The bundle is
+    the hyperdirect image ``R^k f_*(Omega^*_{X/S})`` and ``nabla_GM`` is the
+    Gauss-Manin connection relative to the base of ``S``; it is integrable
+    (Katz, *Nilpotent connections and the monodromy theorem*, Publ. Math.
+    IHES 39 (1970), (3.0)).  The caller supplies a smooth proper ``f``.
+    """
+
+    def __init__(self, family_morphism, degree, underlying_vector_bundle, **rest) -> None:
+        self._family_morphism = family_morphism
+        self._degree = degree
+        self._underlying_vector_bundle = underlying_vector_bundle
+        super().__init__(**rest)
+
+    def family_morphism(self):
+        r"""The smooth proper arrow ``f: X -> S``."""
+        return self._family_morphism
+
+    def degree(self):
+        r"""The cohomological degree ``k``."""
+        return self._degree
+
+    def scheme(self):
+        return self.family_morphism().codomain()
+
+    def underlying_vector_bundle(self):
+        r"""``R^k f_*(Omega^*_{X/S})``, an object of ``QuasiCoherentSheaves(S).FiniteLocallyFree()``."""
+        return self._underlying_vector_bundle
+
+    def connection(self):
+        r"""``nabla_GM: H^k_dR(X/S) -> Omega^1_{S/T} tensor H^k_dR(X/S)``, for ``T`` the base of ``S``.
+
+        Katz and Oda compute ``nabla_GM`` as the connecting map of the
+        filtration of ``Omega^*_X`` by pullbacks of forms on ``S`` (Katz,
+        Oda, *On the differentiation of de Rham cohomology classes with
+        respect to parameters*, J. Math. Kyoto Univ. 8 (1968)).
+        """
+        assert False, "connection on the Gauss-Manin connection of a scheme morphism: not implemented"
+
+    def _repr_(self) -> str:
+        f = self.family_morphism()
+        return (
+            f"Gauss-Manin connection on H^{self.degree()}_dR(X/S) of the family "
+            f"X = {f.domain()} over S = {f.codomain()}"
+        )
 
 
 class Connection(Element):
@@ -546,8 +598,8 @@ class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
 class ConnectionSpace(RestrictedMorCategoryParent):
     Element = Connection
 
-    def __init__(self, family, restricted_source, restricted_target) -> None:
-        module = restricted_source.module_over_extension()
+    def __init__(self, family, domain, codomain, *, category) -> None:
+        module = domain.module_over_extension()
         algebra = module.base_ring()
         if algebra not in Algebras(algebra.base_ring()).Associative().Unital().Commutative():
             raise TypeError(
@@ -558,7 +610,7 @@ class ConnectionSpace(RestrictedMorCategoryParent):
         self._algebra = algebra
         self._one_forms = algebra.kahler_differentials()
 
-        self._target_module = restricted_target.module_over_extension()
+        self._target_module = codomain.module_over_extension()
         expected_target = Modules(module.base_ring()).tensor_product(
             (module, self._one_forms)
         )
@@ -573,8 +625,9 @@ class ConnectionSpace(RestrictedMorCategoryParent):
         RestrictedMorCategoryParent.__init__(
             self,
             family,
-            restricted_source,
-            restricted_target,
+            domain,
+            codomain,
+            category=category,
         )
         # The inclusion is injective and its arrows are constructed here, so
         # its image is recorded together with its section.  The Leibniz rule
@@ -840,7 +893,7 @@ class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
 class ConnectionMor(RestrictedMorCategoryParent):
     Element = ConnectionMorphism
 
-    def __init__(self, family, domain, codomain) -> None:
+    def __init__(self, family, domain, codomain, *, category) -> None:
         # Horizontality of an arbitrary linear map is decided only on module
         # generators under a chosen finite presentation, so an arrow of the
         # underlying linear Mor belongs here when it is the underlying map of
@@ -857,6 +910,7 @@ class ConnectionMor(RestrictedMorCategoryParent):
             family,
             domain,
             codomain,
+            category=category,
         )
 
     def _element_constructor_(self, images, *, check=False):

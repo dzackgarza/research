@@ -314,9 +314,8 @@ def _fix_lazy_selected_module_presentation(module, base_ring, realization_factor
 class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
     r"""Implementation refinement for modules with a selected finite presentation."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "modules with a represented selected finite-presentation backend"
+    def _repr_object_names(self):
+        return f"modules with a represented selected finite-presentation backend over {self.base_ring()}"
 
     def super_categories(self):
         return [ModulesWithChosenFinitePresentation(self.base_ring())]
@@ -649,18 +648,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                 zero,
             )
 
-        def presentation(self):
-            r"""Return the selected relation morphism ``F_1 -> F_0``."""
-            selected = self.selected_module_resolution()
-            match selected.truncation():
-                case 1:
-                    return selected.differential(1)
-                case _:
-                    raise TypeError(
-                        f"{self} has no selected relation map F_1 -> F_0: its chosen module resolution "
-                        f"is truncated in degree {selected.truncation()}"
-                    )
-
         def presentation_matrix(self):
             r"""Return the relation morphism ``r: F_1 -> F_0`` as a type-``(1,1)`` tensor.
 
@@ -671,16 +658,6 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.tensors.tensor import tensor
 
             return tensor.from_morphism(self.presentation())
-
-        def _selected_relation_morphism(self):
-            r"""Return the selected relation morphism ``r: F_1 -> F_0`` to module-construction adapters.
-
-            Protected presented-module contract under OWN-05--07. Permitted
-            callers are module, group-module and module-morphism constructors
-            that rebuild owned kernels, quotients, direct constructions, or
-            scalar changes from the selected finite presentation.
-            """
-            return self.presentation()
 
         def _represented_kernel_of_morphism(self, morphism):
             if self not in (morphism.domain(), morphism.codomain()):
@@ -2153,6 +2130,11 @@ class _GeneralPresentedModule:
             if value.parent() is self:
                 return value
             value = value._representative()
+        match value:
+            # Framing coordinates ``a : S -> R`` name the class of
+            # ``sum_s a(s) e_s``, the image of the cover vector they state.
+            case dict():
+                return self.linear_combination(value)
         match element_parent(value):
             case Parent() as source if source is not self and self._built_on_the_same_data(source):
                 return self._element_on_the_same_data(source, value)

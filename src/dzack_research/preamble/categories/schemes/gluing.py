@@ -28,6 +28,7 @@ from dzack_research.preamble.categories.abstract_categories.presheaves import (
     CoveringFamilyMorphism,
     DescentData,
     DescentDataOnCover,
+    OpenCoveringFamilies,
     Sheaves,
     _CechCoveringFamilies,
 )
@@ -60,7 +61,9 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
     SheafObjects,
     ZariskiCoveringFamilies,
+    PresheafObjects,
     zariski_coverage,
+    _unpresented_sheaf_placement,
 )
 from dzack_research.preamble.categories.schemes.schemes import (
     OpenImmersions,
@@ -1004,6 +1007,7 @@ class _FiniteSchemeGluingDatum(SageObject):
         self._triple_transition_maps = []
 
         self._verify_pairwise_transitions()
+        self.validate_transition_inverses(check=False)
         self._scheme = _glued_scheme(self, placements, {} if level_data is None else level_data)
 
     def base_ring(self):
@@ -1107,6 +1111,21 @@ class _FiniteSchemeGluingDatum(SageObject):
                     f"the inverse chart change must be {target_overlap} -> {source_overlap}, but it is "
                     f"{inverse.domain()} -> {inverse.codomain()}"
                 )
+
+    @validator
+    def validate_transition_inverses(self):
+        r"""Each chart change ``phi_ij: U_ij -> U_ji`` and its stated inverse compose to the identities.
+
+        This is the law ``phi_ji phi_ij = id`` of a gluing datum (Hartshorne,
+        *Algebraic Geometry*, Exercise II.2.12).  Construction calls it with
+        ``check=False``.
+        """
+        for source_index, target_index in self.transition_index_set():
+            transition = self.transitions()[source_index, target_index]
+            forward = transition.forward()
+            inverse = transition.inverse().forward()
+            source_overlap = forward.domain()
+            target_overlap = forward.codomain()
             if inverse * forward != source_overlap.categorical_identity_morphism():
                 raise ValueError(
                     f"cannot glue along the chart change from chart {source_index} to chart {target_index}: "
@@ -6331,10 +6350,13 @@ class _FiniteAtlasInverseImageModuleSheaves(OwnedCategory):
                 f"cannot pull {sheaf} back along the refinement {self.refinement()}: it is a sheaf on "
                 f"{sheaf.atlas_datum()}, not on the coarse atlas {self.refinement().coarse_datum()}"
             )
+        fine_scheme = self.refinement().fine_scheme()
+        fibre, presheaf_data = _unpresented_sheaf_placement(fine_scheme, f"f^{{-1}} of {sheaf}", self)
         return _object_of(
-            self,
+            owned_category_join((self, fibre)),
             source_sheaf=sheaf,
-            _engine=_FiniteAtlasInverseImageModuleSheafEngine,
+            _engine=(self, _FiniteAtlasInverseImageModuleSheafEngine, None),
+            **presheaf_data,
         )
 
     def __call__(self, *args, **kwargs):
@@ -6625,6 +6647,136 @@ def _chartwise_closed_subscheme(
     )
 
 
+def _glued_fiber_product_over_affine_base(left_map, right_map):
+    r"""``X x_Y Y'`` for ``X`` glued from affine charts ``U_i`` and affine ``Y``, ``Y'``.
+
+    The fibre product is local on ``X`` (Hartshorne, *Algebraic Geometry*,
+    II.3.3, steps 3 and 7; Stacks, Tag 01JR).  Its charts are the affine
+    fibre products ``V_i = U_i x_Y Y'`` of the restrictions ``U_i -> X -> Y``.
+    The overlap of ``V_i`` with ``V_j`` is the preimage of the overlap
+    ``U_ij = D(e) <= U_i``, which is ``D(p_i^* e) <= V_i`` for the projection
+    ``p_i: V_i -> U_i``.  The chart change ``V_ij -> V_ji`` is the
+    factorization through ``V_j`` of the cone ``(phi_ij p_i, q_i)``, with
+    ``phi_ij: U_ij -> U_ji`` the chart change of ``X`` and ``q_i: V_i -> Y'``,
+    corestricted to ``V_ji``.  The projections glue from ``V_i -> U_i -> X``
+    and ``q_i``.
+    """
+    from dzack_research.preamble.categories.schemes.schemes import (
+        FiberProductSchemes,
+        SchemeFiberProductConstruction,
+        _scheme_fiber_product,
+        _scheme_isomorphism,
+    )
+
+    datum = left_map.domain().gluing_datum()
+    labels = tuple(datum.chart_indices())
+    charts = {
+        label: _scheme_fiber_product(left_map * datum.chart_embedding(label), right_map)
+        for label in labels
+    }
+
+    def chart_overlap(source, target):
+        chart = charts[source]
+        base_overlap = datum.overlap(source, target)
+        element = datum.chart(source).coordinate_algebra()(base_overlap.distinguished_open_element())
+        return chart.distinguished_open(chart.left_projection().coordinate_algebra_morphism()(element))
+
+    overlaps = {
+        (source, target): chart_overlap(source, target)
+        for source in labels
+        for target in labels
+        if source != target
+    }
+
+    def transition(source, target):
+        inclusion = overlaps[source, target].inclusion()
+        into_base_overlap = datum.overlap(source, target).corestriction(
+            charts[source].left_projection() * inclusion
+        )
+        changed = datum.transition_between(source, target).forward() * into_base_overlap
+        into_target_chart = charts[target].from_pullback_cone(
+            datum.overlap(target, source).inclusion() * changed,
+            charts[source].right_projection() * inclusion,
+        )
+        return overlaps[target, source].corestriction(into_target_chart)
+
+    transitions = tuple(
+        _scheme_isomorphism(transition(source, target), transition(target, source))
+        for source, target in combinations(labels, 2)
+    )
+    base = left_map.domain().scheme_base_ring()
+
+    def factor(left_cone_map, right_cone_map):
+        return _glued_fiber_product_factorization(
+            product, datum, labels, charts, left_cone_map, right_cone_map,
+        )
+
+    product = Schemes(base).glue_affine_atlas(
+        tuple(charts[label] for label in labels),
+        transitions,
+        placements=(FiberProductSchemes(base),),
+        fiber_product_construction=SchemeFiberProductConstruction(
+            (left_map, right_map),
+            (
+                tuple(datum.chart_embedding(label) * charts[label].left_projection() for label in labels),
+                tuple(charts[label].right_projection() for label in labels),
+            ),
+            scheme_factorization=factor,
+        ),
+    )
+    return product
+
+
+def _glued_fiber_product_factorization(product, datum, labels, charts, left_cone_map, right_cone_map):
+    r"""The factorization ``T -> X x_Y Y'`` of a cone ``(a: T -> X, b: T -> Y')``.
+
+    The fibre product is local on ``X`` and on ``T`` (Hartshorne II.3.3,
+    steps 3 and 7; Stacks, Tag 01JR).  When ``a = e_i g`` factors through
+    the chart ``e_i: U_i -> X``, the pair ``(g, b)`` is a cone over
+    ``U_i -> Y <- Y'`` and factors as ``h`` through the chart fibre product
+    ``V_i = U_i x_Y Y'``; the factorization is ``e^V_i h``.  When ``T`` is
+    glued from charts ``t_k: T_k -> T``, the factorizations of the restricted
+    cones ``(a t_k, b t_k)`` agree on the overlaps, because a factorization
+    through a pullback is unique, and they glue to the factorization on ``T``.
+
+    Representation dispatch (OWN-06) on how ``a`` reaches the glued ``X``:
+    through one chart, or out of a glued domain chart by chart.
+    """
+    source = left_cone_map.domain()
+    product_datum = product.gluing_datum()
+    match left_cone_map:
+        case _GluedSchemeChartMap():
+            chart_map = left_cone_map.chart_map()
+        case _GluedSchemeChartEmbedding():
+            chart_map = source.categorical_identity_morphism()
+        case _:
+            chart_map = None
+    if chart_map is not None:
+        label = datum.normalize_chart_index(left_cone_map.chart_index())
+        local = charts[label].from_pullback_cone(chart_map, right_cone_map)
+        return product_datum.chart_embedding(labels.index(label)) * local
+    assert source._is_glued_from_affine_atlas(), (
+        f"factorization through the fibre product {product} of the cone ({left_cone_map}, {right_cone_map}): "
+        f"not implemented when {left_cone_map} is not given through one chart of {datum.scheme()} and its "
+        f"domain {source} is not glued from affine charts"
+    )
+    source_datum = source.gluing_datum()
+    return Schemes(source.scheme_base_ring()).Mor(source, product)(
+        finite_indexed_family(
+            source_datum.chart_index_set(),
+            lambda index: _glued_fiber_product_factorization(
+                product,
+                datum,
+                labels,
+                charts,
+                left_cone_map * source_datum.chart_embedding(index),
+                right_cone_map * source_datum.chart_embedding(index),
+            ),
+            name=f"Chartwise factorizations through {product}",
+        )
+    )
+
+
 def _glued_chartwise_distinguished_open(
     datum,
     fine_indices,
@@ -6852,6 +7004,99 @@ def _glued_chartwise_subscheme(
         ),
         _object_engine=_engine,
         **dict(construction_data or {}),
+    )
+
+
+class _FiniteAtlasStructurePresheaf(Functor):
+    r"""``O_X: Open(X)^op -> CRing`` of a scheme glued from a finite affine atlas.
+
+    ``O_X(X) = Gamma(X, O_X)``, the equalizer of the restrictions
+    ``prod_i O(U_i) => prod_{i,j} O(U_i cap U_j)`` (Hartshorne, Exercise
+    II.1.22).  The opens of ``X`` other than ``X`` are not yet presented
+    through their traces on the charts, so their sections are not computed.
+    """
+
+    def __init__(self, scheme, global_section_ring) -> None:
+        self._scheme = scheme
+        self._global_section_ring = global_section_ring
+        Functor.__init__(self, scheme.open_subsets_site().opposite(), OwnedRings().Commutative())
+
+    def scheme(self):
+        return self._scheme
+
+    def _apply_object(self, opposite_object):
+        subset = opposite_object.underlying_object().value()
+        assert subset is self.scheme().power_set().top(), (
+            f"sections of O_{{{self.scheme()}}} on {subset}: not implemented; only the whole space is "
+            "computed, since an open of a glued scheme is not yet presented through its traces on the charts"
+        )
+        return self._global_section_ring
+
+    def _apply_morphism(self, opposite_arrow):
+        source = self(opposite_arrow.domain())
+        return source.Mor(self(opposite_arrow.codomain())).identity()
+
+    def _repr_(self):
+        return f"Structure presheaf of {self.scheme()} on its opens"
+
+
+class _FiniteAtlasStructureSheafEngine:
+    r"""``O_X`` glued from the structure sheaves of the charts of a finite affine atlas.
+
+    The charts ``U_i = Spec A_i`` carry ``O_{U_i}``, and the transition
+    isomorphisms ``phi_ij`` of the atlas identify them on the overlaps; the
+    glued sheaf restricts to ``O_{U_i}`` on each chart (Hartshorne, Exercise
+    II.1.22; Stacks, Tag 01JA).
+    """
+
+    def __init__(self, atlas, global_section_ring, **rest) -> None:
+        self._atlas = atlas
+        self._global_section_ring = global_section_ring
+        super().__init__(**rest)
+
+    def atlas(self):
+        return self._atlas
+
+    def scheme(self):
+        return self.atlas().scheme()
+
+    ringed_space = scheme
+
+    def chart_structure_sheaf(self, index):
+        r"""``O_X|_{U_i} = O_{U_i}``, the structure sheaf of the chart at ``index``."""
+        return self.atlas().chart(index).structure_sheaf()
+
+    def global_sections(self):
+        r"""``Gamma(X, O_X)``, a commutative ring."""
+        return self._global_section_ring
+
+    def _repr_(self):
+        return f"Structure sheaf O_{{{self.scheme()}}} glued from its affine charts"
+
+
+def _finite_atlas_structure_sheaf(atlas, global_section_ring):
+    r"""Construct ``O_X`` on ``Open(|X|)`` from the charts of ``atlas`` and ``Gamma(X, O_X)``."""
+    scheme = atlas.scheme()
+    presheaf = _FiniteAtlasStructurePresheaf(scheme, global_section_ring)
+    coverage = OpenCoveringFamilies(scheme)
+
+    def inverse_for(equalizer):
+        return equalizer.canonical_map().inverse()
+
+    # O_X glued from the chart structure sheaves satisfies descent for every
+    # open cover (Stacks, Tag 01JA); the comparison inverse is computed on the
+    # cover a caller asks for.
+    descent = DescentData(coverage, presheaf, inverse_for)
+    return coverage.sheaves(presheaf.codomain()).object(
+        presheaf,
+        descent,
+        categories=(SheafObjects(scheme),),
+        construction_data={
+            **PresheafObjects(scheme).presheaf_datum(presheaf),
+            "atlas": atlas,
+            "global_section_ring": global_section_ring,
+        },
+        _engine=_FiniteAtlasStructureSheafEngine,
     )
 
 

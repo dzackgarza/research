@@ -27,6 +27,7 @@ from sage.structure.sage_object import SageObject
 from dzack_research.preamble.categories.functors.group_actions import GroupActionFunctor
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.manifolds import ComplexManifolds
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormModules,
 )
@@ -78,11 +79,8 @@ class PointedAnalyticFundamentalGroup(SageObject):
         r"""``(space(), base_point())`` as an object of ``CosliceUnder(*)`` on ``TopologicalSpaces()``.
 
         ``group()`` is its ``fundamental_group()`` (``TopologicalSpaceCoslices``).
-        The underlying topological space of a complex manifold is not
-        presented in ``TopologicalSpaces()``, so the pointed space cannot be
-        built yet.
         """
-        assert False, "pointed_space on PointedAnalyticFundamentalGroup: not implemented"
+        return TopologicalSpaces().pointed_space(self.space(), self.base_point())
 
     def _repr_(self) -> str:
         return f"pi_1({self.space()}, {self.base_point()}) = {self.group()}"

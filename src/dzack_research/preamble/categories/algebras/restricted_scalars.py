@@ -60,9 +60,8 @@ class RestrictedScalarsAlgebras(OwnedCategoryOverBaseRing):
             ring.Mor(ring)(lambda element: element)
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "restricted-scalars algebras"
+    def _repr_object_names(self):
+        return f"restricted-scalars algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [Algebras(self.base_ring())]

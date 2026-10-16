@@ -31,9 +31,8 @@ class AlgebraicCycleGroups(OwnedCategoryOverBaseRing):
     level adds \(X\) and \(k\).
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebraic cycle groups"
+    def _repr_object_names(self):
+        return f"algebraic cycle groups over {self.base_ring()}"
 
     def an_object(self):
         r"""The zero cycle group on the base scheme."""
@@ -86,9 +85,8 @@ class ChowGroups(OwnedCategoryOverBaseRing):
     presented-module level; this level adds \(X\) and \(k\).
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "Chow groups"
+    def _repr_object_names(self):
+        return f"Chow groups over {self.base_ring()}"
 
     def an_object(self):
         r"""The zero Chow group presented by the zero cycle group."""
@@ -207,9 +205,8 @@ class ChowGroups(OwnedCategoryOverBaseRing):
 class TorusInvariantCycleGroups(OwnedCategoryOverBaseRing):
     r"""Free groups on the torus-orbit closures of one dimension on a toric scheme."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "torus-invariant cycle groups"
+    def _repr_object_names(self):
+        return f"torus-invariant cycle groups over {self.base_ring()}"
 
     def an_object(self):
         r"""The free cycle module on the torus fixed points of a toric projective line."""

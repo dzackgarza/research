@@ -687,6 +687,12 @@ class _CommutativeUnitalAlgebraParentMethods:
 
         return DeRhamAlgebras(self.base_ring())(self)
 
+    def de_rham_cohomology(self, degree):
+        r"""``H^degree_dR(A/R)``, the image of this algebra under the de Rham cohomology functor."""
+        commutative_algebras = Algebras(self.base_ring()).Associative().Unital().Commutative()
+        return commutative_algebras.de_rham_cohomology(degree)(self)
+
+
 class _AlgebraTensorSquareFunctor(Functor):
     r"""The diagonal tensor-square endofunctor on modules over a commutative ring."""
 
@@ -798,6 +804,9 @@ def _install_selected_algebra_generators(
                     source = module.tensor_algebra()
                 case False:
                     source = module.symmetric_algebra()
+            # The free module on a label set is cached by equality of label
+            # sets, so the free algebra states its maps on its own label set.
+            labels = source.algebra_generating_set()
         case _:
             pass
     generator_morphism = Sets().Mor(labels, algebra)(values.value)
@@ -918,11 +927,12 @@ def _fix_selected_algebra_presentation(
                 case "relation":
                     return relations.value(tagged[1])
 
+        degree_one_generating_set = degree_one.algebra_generating_set()
         first_face = degree_one.Mor(presentation_ring)(
-            Sets().Mor(degree_one_labels, presentation_ring)(first_face_value)
+            Sets().Mor(degree_one_generating_set, presentation_ring)(first_face_value)
         )
         second_face = degree_one.Mor(presentation_ring)(
-            Sets().Mor(degree_one_labels, presentation_ring)(second_face_value)
+            Sets().Mor(degree_one_generating_set, presentation_ring)(second_face_value)
         )
         degeneracy = presentation_ring.Mor(degree_one)(
             Sets().Mor(
@@ -1129,9 +1139,8 @@ class Algebras(OwnedCategoryOverBaseRing):
         """
         return _scalar_module(self.base_ring())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebras"
+    def _repr_object_names(self):
+        return f"algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [Modules(self.base_ring()), Magmas()]
@@ -2390,48 +2399,56 @@ class Algebras(OwnedCategoryOverBaseRing):
                         .FinitelyGeneratedAsAlgebra()
                     ]
 
-                @cached_method
-                def resolution_category(self):
-                    r"""Return finite projective presentation data in the actual theory.
+                class SubcategoryMethods:
+                    r"""Operations of every subcategory of finitely presented algebras, the commutative ones included.
 
-                    Associative presentations use algebra-projective
-                    sources. Commutative presentations use symmetric
-                    algebras with projective degree-one modules, witnessed
-                    here by their projective underlying modules. Finite
-                    levels and an underlying-surjective augmentation are
-                    required; the reflexive coequalizer laws belong to the
-                    represented presentation data. No presentation is
-                    chosen by this property selector.
+                    ``Commutative().FinitelyPresentedAsAlgebra()`` is a join, which
+                    reaches only these methods; the presentation data of a
+                    commutative quotient is built there.
                     """
-                    from dzack_research.preamble.categories.abstract_categories.resolutions import (
-                        Resolutions,
-                    )
-                    from dzack_research.preamble.categories.algebras.free_algebras import (
-                        SymmetricAlgebras,
-                    )
 
-                    ordinary = Algebras(self.base_ring()).Associative().Unital()
-                    commutative = ordinary.Commutative()
-                    if self.is_subcategory(commutative):
-                        theory = commutative
-                        projectives = Cat().meet((
-                            SymmetricAlgebras(self.base_ring()),
-                            Modules(self.base_ring()).Projective(),
-                        ))
-                    else:
-                        theory = ordinary
-                        projectives = ordinary.ProjectiveAsAlgebra()
-                    finite_projectives = Cat().meet(
-                        (projectives, ordinary.FinitelyGeneratedAsAlgebra())
-                    )
-                    return Resolutions(
-                        theory, projectives, 1, finite_projectives,
-                        augmentation_family=Sets().category_packet().Epis(),
-                    )
+                    @cached_method
+                    def resolution_category(self):
+                        r"""Return finite projective presentation data in the actual theory.
 
-                @cached_method
-                def resolution_classifier(self):
-                    return self.resolution_category().target_functor()
+                        Associative presentations use algebra-projective
+                        sources. Commutative presentations use symmetric
+                        algebras with projective degree-one modules, witnessed
+                        here by their projective underlying modules. Finite
+                        levels and an underlying-surjective augmentation are
+                        required; the reflexive coequalizer laws belong to the
+                        represented presentation data. No presentation is
+                        chosen by this property selector.
+                        """
+                        from dzack_research.preamble.categories.abstract_categories.resolutions import (
+                            Resolutions,
+                        )
+                        from dzack_research.preamble.categories.algebras.free_algebras import (
+                            SymmetricAlgebras,
+                        )
+
+                        ordinary = Algebras(self.base_ring()).Associative().Unital()
+                        commutative = ordinary.Commutative()
+                        if self.is_subcategory(commutative):
+                            theory = commutative
+                            projectives = Cat().meet((
+                                SymmetricAlgebras(self.base_ring()),
+                                Modules(self.base_ring()).Projective(),
+                            ))
+                        else:
+                            theory = ordinary
+                            projectives = ordinary.ProjectiveAsAlgebra()
+                        finite_projectives = Cat().meet(
+                            (projectives, ordinary.FinitelyGeneratedAsAlgebra())
+                        )
+                        return Resolutions(
+                            theory, projectives, 1, finite_projectives,
+                            augmentation_family=Sets().category_packet().Epis(),
+                        )
+
+                    @cached_method
+                    def resolution_classifier(self):
+                        return self.resolution_category().target_functor()
 
                 def an_object(self):
                     r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
@@ -2476,6 +2493,18 @@ class Algebras(OwnedCategoryOverBaseRing):
                 @classmethod
                 def _repr_object_names(cls):
                     return "commutative algebras"
+
+                class FinitelyPresentedAsAlgebra(CategoryWithAxiom):
+                    r"""Commutative ``R``-algebras ``R[x_1, ..., x_n]/(f_1, ..., f_r)``: finitely presented commutative algebras.
+
+                    A property, as for associative unital algebras; its
+                    presentation data are those of the commutative theory,
+                    read by the inherited ``resolution_category``.
+                    """
+
+                    @classmethod
+                    def _repr_object_names(cls):
+                        return "finitely presented commutative algebras"
 
                 def an_object(self):
                     modules = Modules(self.base_ring())
@@ -2719,6 +2748,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                 ring = self.algebra_base_ring()
                 source = element_parent(value)
                 match source:
+                    case _ if self is _scalar_module(ring):
+                        # U_R(R) is the domain of its own unit map r |-> r * 1.
+                        return super()._element_constructor_(value)
                     case _ if source is ring and self.unformed_module() is not ring:
                         return self.unit_morphism()(value)
                     case _ if source not in Modules(ring) and source in OwnedRings() and value in ring:
@@ -2954,9 +2986,8 @@ class MatrixAlgebras(OwnedCategoryOverBaseRing):
         plane = Sets().free_module(ring)(finite_ordinal_set(2))
         return Modules(ring).Mor(plane, plane)
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "matrix algebras"
+    def _repr_object_names(self):
+        return f"matrix algebras over {self.base_ring()}"
 
     def super_categories(self):
         if self.base_ring() not in OwnedRings().Commutative():
@@ -3028,9 +3059,8 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         r"""``R[x]/(x^2)``, the dual numbers: one generator and one relation."""
         return _dual_numbers_example(self.base_ring())
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "algebras with a chosen finite presentation"
+    def _repr_object_names(self):
+        return f"algebras with a chosen finite presentation over {self.base_ring()}"
 
     def super_categories(self):
         return [
@@ -4579,7 +4609,8 @@ def _algebra_structure_on(
         law_decisions["commutativity"] = True
     retained_categories = tuple(
         category for category in selected_ring.category().all_super_categories()
-        if category._without_axioms() is OwnedRings() or category._without_axioms() is Sets()
+        if category is OwnedRings()._with_axioms(category.axioms())
+        or category is Sets()._with_axioms(category.axioms())
     )
     category = Cat().meet((algebras, *retained_categories))
     # Conversion specializes both the algebra's data crossing and the

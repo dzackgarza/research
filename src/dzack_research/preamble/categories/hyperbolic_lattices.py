@@ -429,9 +429,8 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
     returning the same object with the reflection algorithms available on it.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "hyperbolic lattices"
+    def _repr_object_names(self):
+        return f"hyperbolic lattices over {self.base_ring()}"
 
     def an_object(self):
         r"""The hyperbolic plane \(U\), of signature \((1,1)\)."""
@@ -580,7 +579,10 @@ class HyperbolicLattices(OwnedCategoryOverBaseRing):
                 max_roots=max_roots,
                 max_decompositions=max_decompositions,
             )
-            return self.O().subgroup([self.reflection(root) for root in roots])
+            return self.O().subgroup(
+                [self.reflection(root) for root in roots],
+                description=f"W({self})",
+            )
 
         def weyl_group(self, controlling_vector=None, *, max_roots=None, max_decompositions=None):
             r"""Return the reflection/Weyl subgroup \(W(L)\leq O(L)\).

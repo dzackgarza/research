@@ -50,9 +50,8 @@ class PrimitiveIsotropicSubobjects(OwnedCategoryOverBaseRing):
     torsion free.  Both are checked by the ambient lattice's admission method.
     """
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "primitive totally isotropic subobjects"
+    def _repr_object_names(self):
+        return f"primitive totally isotropic subobjects over {self.base_ring()}"
 
     def an_object(self):
         r"""The isotropic line spanned by the first generator of ``U``."""

@@ -28,6 +28,7 @@ data are only a realization of the categorical action.
 """
 
 from sage.categories.category import Category
+from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
@@ -47,12 +48,15 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     _owned_group,
 )
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
 from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
 
+if "ProperlyDiscontinuous" not in all_axioms:
+    all_axioms.add("ProperlyDiscontinuous")
 
 def _verify_relators(action, group, endomorphisms) -> None:
     r"""Check the represented action law without manufacturing presentation data.
@@ -784,6 +788,55 @@ class GObjectMorCategoryConstruction(MorCategoryConstruction):
         return GObjectMor
 
 
+class _GSpaceOnSpace:
+    r"""A ``G``-space on a given space ``X``, with the procedure deciding its orbit relation.
+
+    The data are ``X`` and the relation, a function of two points answering
+    ``True``, ``False`` or ``Unknown``; the action is the ``GObjects`` datum.
+    """
+
+    def __init__(self, space, orbit_relation, **rest) -> None:
+        self._space = space
+        self._orbit_relation = orbit_relation
+        super().__init__(**rest)
+
+    def space(self):
+        r"""The space ``X`` acted on, retained as defining data."""
+        return self._space
+
+    def __contains__(self, point) -> bool:
+        return point in self.space()
+
+    is_parent_of = __contains__
+
+    def __call__(self, point):
+        return self._element_constructor_(point)
+
+    def _element_constructor_(self, point):
+        return self.space()(point)
+
+    def __iter__(self):
+        return iter(self.space())
+
+    def cardinality(self):
+        return self.space().cardinality()
+
+    @cached_method
+    def ranking_map(self):
+        r"""The enumeration of ``X``, whose points are the points of this ``G``-space."""
+        ranking = self.space().ranking_map()
+        return self._ranking_isomorphism(
+            lambda point: int(ranking(point)),
+            lambda position: ranking.inverse()(position),
+        )
+
+    def _orbit_relation_decision(self, source, target):
+        return self._orbit_relation(source, target)
+
+    def _repr_(self) -> str:
+        return f"{self.space()} with {self.acting_group()}-action"
+
+
 class GObjects(CategoryPacketMethods, OwnedCategory):
     r"""The category of objects of ``C`` with a chosen ``G``-action.
 
@@ -870,6 +923,53 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 lambda element: action(element, point) == point,
                 f"stabilizer of {point}",
             ),
+        )
+
+    def on_space(self, space, action, *, orbit_relation=None):
+        r"""The ``G``-space ``(X, rho)``: ``G`` acting on the space ``X`` by ``action(g, x)``.
+
+        ``rho: G -> Aut_C(X)`` sends ``g`` to the homeomorphism
+        ``x |-> action(g, x)``; it is a left action, checked by
+        ``validate_action``.  The ``G``-space has the points and the
+        topology of ``X``, which is retained as defining data.  An optional
+        orbit decision ``orbit_relation(x, y)`` realizes ``y in G . x``; its
+        absence leaves that relation a proposition.
+        """
+        return self._g_space_in(self, space, action, orbit_relation)
+
+    def _g_space_in(self, placement, space, action, orbit_relation):
+        r"""The ``G``-space ``(X, rho)`` of :meth:`on_space`, an object of ``placement``.
+
+        ``placement`` is this category or an axiom subcategory of it that the
+        caller's construction states, such as :meth:`ProperlyDiscontinuous`.
+        """
+        from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+
+        category = self.underlying_category()
+        assert category.is_subcategory(TopologicalSpaces()), (
+            f"on_space needs an action in a category of topological spaces, but the "
+            f"actions of {self} are in {category}"
+        )
+        assert space in category, f"{space} is not an object of {category}"
+        match space:
+            case _ if space in FiniteSets() and space in EnumeratedSets():
+                g_spaces = owned_category_join((placement, FiniteSets(), EnumeratedSets()))
+            case _:
+                g_spaces = placement
+        # The G-space is X itself with the action added: its points, topology
+        # and every lower structure of X are X's own defining data, and only the
+        # acting group and the action are new.
+        return space._with_structure(
+            (g_spaces,),
+            {
+                "space": space,
+                "orbit_relation": (lambda left, right: Unknown) if orbit_relation is None else orbit_relation,
+                "acting_group": self.acting_group(),
+                "action": lambda group_element: (lambda point: action(group_element, point)),
+                "underlying_category": category,
+                "facade": space,
+            },
+            engine=_GSpaceOnSpace,
         )
 
     def orbit_generated_submodule(self, action, seed, *, containing=None):
@@ -1185,6 +1285,33 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         trivial = Modules(ring).trivial_action(group)(sample)
         return Modules(ring[group]).restriction_along_group_inclusion()(trivial)
 
+    class SubcategoryMethods:
+        def ProperlyDiscontinuous(self):
+            r"""The axiom: the action of the discrete group ``G`` on ``X`` is properly discontinuous.
+
+            For every compact ``K`` in ``X`` the set
+            ``{g in G : gK meets K}`` is finite (Thurston, *The Geometry and
+            Topology of Three-Manifolds*, Ch. 13).  A group ``Gamma`` that is
+            discrete in a Lie group ``G`` acts properly discontinuously on
+            ``G/K`` for ``K`` compact: ``Sp_{2g}(ZZ)`` on
+            ``H_g = Sp_{2g}(RR)/U(g)`` and ``O(L)`` on ``HH^n``.  The
+            property is stated by the construction of the action, never
+            computed.
+            """
+            return self._with_axiom("ProperlyDiscontinuous")
+
+    class ProperlyDiscontinuous(CategoryWithAxiom):
+        r"""``G``-spaces on which ``G`` acts properly discontinuously.
+
+        The orbit space ``G\X`` of such an action on a manifold is an
+        orbifold, whose chart at the orbit of ``p`` has the finite
+        stabilizer ``G_p`` as its group (Thurston, Ch. 13).
+        """
+
+        def on_space(self, space, action, *, orbit_relation=None):
+            r"""The ``G``-space ``(X, rho)`` of ``GObjects.on_space``, stated properly discontinuous."""
+            return self.base_category()._g_space_in(self, space, action, orbit_relation)
+
     class ParentMethods:
         def __init__(self, acting_group, action, underlying_category, **rest) -> None:
             self._acting_group = acting_group
@@ -1363,10 +1490,17 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             universal pair ``(G\X, q)`` with ``q a = q pr_2``.  Its underlying
             set is the orbit set ``orbits()`` and its topology is the final
             topology of ``q: X -> G\X``.  For a discrete group ``Gamma``
-            acting properly discontinuously on a manifold, ``Gamma\X`` is in
-            general an orbifold, not a manifold (lean-categories
-            FOUNDATIONS, Definition 61.4), so the result is placed in
-            ``TopologicalSpaces()`` and nowhere lower.  The arithmetic
+            acting properly discontinuously on a manifold, which the
+            construction of the action states by the axiom
+            ``ProperlyDiscontinuous``, ``Gamma\X`` is in general an orbifold,
+            not a manifold (Thurston, *The Geometry and Topology of
+            Three-Manifolds*, Ch. 13).  It is placed in ``ComplexOrbifolds()``
+            for an action on a complex manifold, by biholomorphisms, which
+            makes it a normal complex analytic space (H. Cartan, "Quotient
+            d'un espace analytique par un groupe d'automorphismes", 1957); in
+            ``RiemannianOrbifolds()`` for an action by isometries of a
+            Riemannian manifold; in ``Orbifolds()`` for a smooth manifold;
+            and in ``TopologicalSpaces()`` otherwise.  The arithmetic
             quotients ``Gamma\HH``, ``Gamma\H_g`` and ``Gamma\HH^n`` are this
             construction on ``GObjects(Gamma, C)`` for ``C`` the category of
             the symmetric space; so is ``G/K`` for the right action of ``K``
@@ -1382,7 +1516,87 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
                 f"orbit space is a coequalizer in topological spaces, and {category} is "
                 f"not a category of topological spaces"
             )
-            assert False, "orbit_space on GObjects: not implemented"
+            return self._orbit_space_construction()[0]
+
+        def orbit_space_projection(self):
+            r"""The projection ``q: X -> G\X``, sending a point to its orbit.
+
+            ``q`` is continuous for the final topology, and ``q rho(g) = q``
+            for every ``g`` in ``G``.
+            """
+            return self._orbit_space_construction()[1]
+
+        @cached_method
+        def _orbit_space_construction(self):
+            r"""The pair ``(G\X, q)``.
+
+            ``G\X`` is the colimit of the action functor ``BG -> Top``.  The
+            forgetful functor ``U: Top -> Set`` creates it: its points are the
+            orbit set of the ``G``-set ``UX``, the colimit of ``BG -> Set``, and
+            its topology is the final topology along ``q`` (Mathlib,
+            ``TopCat.colimit_isOpen_iff``: ``V`` is open exactly when
+            ``q^{-1}(V)`` is open).  Top has no product ``G x X`` of a group
+            with a space, so the parallel pair ``a, pr_2`` is not formed; the
+            colimit over ``BG`` is the same universal pair.
+            """
+            from dzack_research.preamble.categories.topological_spaces import (
+                TopologicalSpaces,
+                _final_topology_space,
+                _OrbitSpaceEngine,
+            )
+
+            from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+            group = self.acting_group()
+            match self:
+                case _ if self in FiniteSets():
+                    # A finite G-set decides its orbit relation from its
+                    # permutation representation G -> Sym(UX).
+                    g_set = FiniteGSets(group)(self, self.act)
+                    category = TopologicalSpaces()
+                case _:
+                    g_set = GObjects(group, Sets()).on_set(
+                        self, self.act, orbit_relation=self._orbit_relation_decision
+                    )
+                    category = self._orbit_space_category()
+            orbits = g_set.orbits()
+            space, projection, _ = _final_topology_space(
+                self,
+                Sets().Mor(self, orbits)(orbits.orbit_of),
+                category=category,
+                engine=_OrbitSpaceEngine,
+                g_space=self,
+            )
+            return space, projection
+
+        def _orbit_space_category(self):
+            r"""The category the construction of the action places ``G\X`` in; see :meth:`orbit_space`."""
+            from dzack_research.preamble.categories.manifolds import (
+                ComplexManifolds,
+                RiemannianManifolds,
+                SmoothManifolds,
+            )
+            from dzack_research.preamble.categories.orbifolds import (
+                ComplexOrbifolds,
+                Orbifolds,
+                RiemannianOrbifolds,
+            )
+            from dzack_research.preamble.categories.topological_spaces import (
+                TopologicalSpaces,
+            )
+
+            category = self.underlying_category()
+            match category:
+                case _ if self not in GObjects(self.acting_group(), category).ProperlyDiscontinuous():
+                    return TopologicalSpaces()
+                case _ if category.is_subcategory(ComplexManifolds()):
+                    return ComplexOrbifolds()
+                case _ if category.is_subcategory(RiemannianManifolds()):
+                    return RiemannianOrbifolds()
+                case _ if category.is_subcategory(SmoothManifolds()):
+                    return Orbifolds()
+                case _:
+                    return TopologicalSpaces()
 
         def orbits_presented_by(self, covering):
             r"""The orbit set ``X/G`` presented by a finite set of points meeting every orbit.

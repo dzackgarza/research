@@ -3336,9 +3336,8 @@ class _ModuleCore(_CoreCategory):
 class ModuleAutomorphismGroups(OwnedCategoryOverBaseRing):
     r"""The groups ``Aut_R(M)`` of invertible module endomorphisms."""
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "module automorphism groups"
+    def _repr_object_names(self):
+        return f"module automorphism groups over {self.base_ring()}"
 
     def an_object(self):
         from dzack_research.preamble.categories.modules.pure.modules import Modules

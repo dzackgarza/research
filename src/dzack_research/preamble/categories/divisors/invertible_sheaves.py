@@ -1243,13 +1243,9 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
                     else ratio.inverse_of_unit() ** int(-degree)
                 )
             units[source_choice, target_choice] = unit
-        section_space = (
-            _multihomogeneous_polynomial_section_space(
-                projective_product,
-                self.multidegree(),
-            )
-            if all(self.multidegree()[label] >= 0 for label in factor_labels)
-            else None
+        section_space = _multihomogeneous_polynomial_section_space(
+            projective_product,
+            self.multidegree(),
         )
         super().__init__(
             atlas,

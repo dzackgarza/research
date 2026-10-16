@@ -56,9 +56,8 @@ class GroupAlgebras(OwnedCategoryOverBaseRing):
         r"""\(R[C_2]\), the smallest group algebra with a nontrivial group."""
         return self.base_ring()[OwnedGroups.C(2)]
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "group algebras"
+    def _repr_object_names(self):
+        return f"group algebras over {self.base_ring()}"
 
     def super_categories(self):
         return [AugmentedAlgebras(self.base_ring())]

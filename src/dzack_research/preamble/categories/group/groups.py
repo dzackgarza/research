@@ -327,10 +327,13 @@ def _matrix_group_element_matrix(group, element):
     r"""Return the private exact matrix of one owned matrix-group element.
 
     Protected group contract (\`OWN-05\`--\`OWN-07\`).  The permitted
-    external caller is the Eichler determinant-model lattice adapter for its
-    represented \`SL_2(ZZ)\` action.  The group owner validates and lowers the
-    owned element; only the exact matrix required by that adapter crosses, and
-    its entries are immediately raised into the lattice's owned scalar ring.
+    external callers are the Eichler determinant-model lattice adapter for its
+    represented \`SL_2(ZZ)\` action, and the Siegel upper half-space
+    realization in \`manifolds.py\` for the action of a group of integral
+    symplectic matrices by \`Z |-> (AZ + B)(CZ + D)^{-1}\`.  The group owner
+    validates and lowers the owned element; only the exact matrix required by
+    that adapter crosses, and the adapter raises its result into owned data
+    at once: lattice scalars, or the complex coordinates of a point.
     """
     represented = group._to_engine(group(element))
     matrix = getattr(represented, "matrix", None)
@@ -799,8 +802,29 @@ def _engine_element_text(group, backend_element) -> str:
         case PermutationGroup_generic():
             cycles = tuple(tuple(cycle) for cycle in backend_element.cycle_tuples())
             return "".join("(" + " ".join(map(str, cycle)) + ")" for cycle in cycles)
+        case MatrixGroup_generic():
+            return "[" + "; ".join(" ".join(map(str, row)) for row in backend_element.matrix().rows()) + "]"
         case _:
             return ""
+
+
+def _rational_matrix_order(matrix):
+    r"""The multiplicative order of an invertible rational matrix ``A``.
+
+    ``A`` has finite order exactly when its minimal polynomial divides some
+    ``x^m - 1``, that is, when it is squarefree and each irreducible factor is
+    a cyclotomic polynomial ``Phi_n``; the order is then the least common
+    multiple of those ``n``.  Sage implements this over ``ZZ``
+    (``Matrix.multiplicative_order``, sage/matrix/matrix0.pyx), the reference
+    implementation; it refuses ``QQ``, where the same criterion holds.
+    """
+    from sage.arith.functions import lcm
+
+    minimal = matrix.minpoly()
+    factors = tuple(factor for factor, _ in minimal.factor())
+    if not minimal.is_squarefree() or not all(factor.is_cyclotomic() for factor in factors):
+        return infinity
+    return lcm(factor.is_cyclotomic(certificate=True) for factor in factors)
 
 
 def _engine_element_latex(group, backend_element) -> str:
@@ -1235,7 +1259,14 @@ class _GroupEngine:
         return engine_subgroup(self._to_engine(element))
 
     def _engine_subgroup_contains(self, element, engine_subgroup):
-        return self._to_engine(element) in engine_subgroup
+        # A matrix subgroup over a smaller ring (SL_n(ZZ) in GL_n(QQ)) does
+        # not coerce the elements of its containing group; it decides
+        # membership of their matrices.
+        match engine_subgroup:
+            case MatrixGroup_generic():
+                return self._to_engine(element).matrix() in engine_subgroup
+            case _:
+                return self._to_engine(element) in engine_subgroup
 
     def _from_subgroup_engine(self, engine_element):
         return self._from_engine(engine_element)
@@ -1383,7 +1414,12 @@ class _GroupElement(MultiplicativeGroupElement):
 
     def order(self):
         r"""The order of this element: an integer when finite, else the cardinality of ``<g>``."""
-        backend_order = self._backend().order()
+        engine = _engine_group(self.parent())
+        match engine:
+            case MatrixGroup_generic() if engine.base_ring() is QQ:
+                backend_order = _rational_matrix_order(self._backend().matrix())
+            case _:
+                backend_order = self._backend().order()
         if backend_order == infinity:
             return aleph(0)
         return _owned_engine_element(ZZ, ZZ(backend_order))
@@ -1616,7 +1652,7 @@ def _transported_subgroup(group, engine_subgroup):
     return subgroup
 
 
-def _integral_points_subgroup(group, engine_subgroup, ring, *, refinements=()):
+def _integral_points_subgroup(group, engine_subgroup, ring, *, refinements=(), description=None):
     r"""The subgroup of integral points ``G(ring)`` of ``group``, computed by ``engine_subgroup``.
 
     The construction records ``ring`` as its datum: a subgroup built here is
@@ -1634,12 +1670,13 @@ def _integral_points_subgroup(group, engine_subgroup, ring, *, refinements=()):
         _ambient=OwnedGroups(),
         _engine=(OwnedGroups(), _GroupEngine, _GroupElement),
         engine=engine_subgroup,
+        description=description,
         supergroup=group,
         integral_points_ring=ring,
     )
 
 
-def _generated_subgroup(group, engine_subgroup, generators):
+def _generated_subgroup(group, engine_subgroup, generators, description=None):
     r"""Return the subgroup of ``group`` generated by ``generators``, computed by ``engine_subgroup``."""
     return _object_of(
         Cat().meet(
@@ -1655,16 +1692,18 @@ def _generated_subgroup(group, engine_subgroup, generators):
         engine=engine_subgroup,
         supergroup=group,
         selected_subgroup_generators=generators,
+        description=description,
     )
 
 
-def _engine_subgroup(group, generators):
-    r"""Return the subgroup of ``group`` generated by ``generators``."""
+def _engine_subgroup(group, generators, description=None):
+    r"""Return the subgroup of ``group`` generated by ``generators``, named ``description`` when given."""
     selected = finite_ordered_set(tuple(group(generator) for generator in generators))
     return _generated_subgroup(
         group,
         group._engine_subgroup_from_generators(selected),
         selected,
+        description,
     )
 
 
@@ -1975,13 +2014,25 @@ def _SL(degree, ring, var="a"):
     # SL_n(ZZ) is constructed as the integral points of SL_n inside
     # GL_n(QQ): arithmeticity is a property of that subgroup (Mathlib
     # Subgroup.IsArithmetic), not an axiom of the abstract group.  SL_2(ZZ)
-    # is generated by S and T (Serre, A Course in Arithmetic, VII.1, Thm. 2).
-    if _owned_ring(ring) is ZZ:
-        return _integral_points_subgroup(
+    # is generated by S and T (Serre, A Course in Arithmetic, VII.1, Thm. 2),
+    # and SL_n(ZZ) by the elementary matrices, since ZZ is Euclidean; the
+    # engine's finite generating set is selected as the group generators.
+    if _owned_ring(ring) is _own_ring(ZZ):
+        engine = SL(int(degree), _engine_ring(ZZ), var=var)
+        group = _integral_points_subgroup(
             _GL(int(degree), _own_ring(QQ)),
-            SL(int(degree), _engine_ring(ZZ), var=var),
+            engine,
             _owned_ring(ring),
-            refinements=(OwnedGroups().FinitelyGeneratedAsMagma(),) if degree == 2 else (),
+            refinements=(OwnedGroups().FinitelyGeneratedAsMagma(),),
+            description=f"SL_{int(degree)}(ZZ)",
+        )
+        return group.select_group_generators(
+            lambda: finite_ordered_set(
+                tuple(
+                    group([[int(entry) for entry in row] for row in generator.matrix().rows()])
+                    for generator in engine.gens()
+                )
+            )
         )
     return _group_over_ring(SL, degree, ring, var=var)
 
@@ -1989,6 +2040,52 @@ def _SL(degree, ring, var="a"):
 def _Sp(degree, ring, var="a", invariant_form=None):
     from sage.groups.matrix_gps.catalog import Sp
 
+    # Sp_{2g}(ZZ) is the group of integral points of Sp_{2g} inside
+    # GL_{2g}(QQ) for the form J = [[0, 1_g], [-1_g, 0]], the form of the
+    # Siegel action Z |-> (AZ + B)(CZ + D)^{-1}.  It is generated by J and the
+    # translations [[1_g, S], [0, 1_g]] with S an integral symmetric matrix
+    # (Hua and Reiner, Trans. AMS 65 (1949); Klingen, Introductory Lectures on
+    # Siegel Modular Forms, Ch. I), so by J and the translations for S in the
+    # basis E_ii, E_ij + E_ji of Sym_g(ZZ).  Sage's Sp(2g, ZZ) has membership
+    # but no generators, so the generators are selected here.
+    if _owned_ring(ring) is _own_ring(ZZ) and invariant_form is None:
+        if degree not in ZZ or degree < 2 or ZZ(degree) % 2 != 0:
+            raise ValueError("Sp_{2g}(ZZ) requires an even positive degree 2g")
+        genus = int(degree) // 2
+
+        def block(upper_left, upper_right, lower_left, lower_right):
+            return [
+                *(upper_left[row] + upper_right[row] for row in range(genus)),
+                *(lower_left[row] + lower_right[row] for row in range(genus)),
+            ]
+
+        def square(entry):
+            return [[entry(row, column) for column in range(genus)] for row in range(genus)]
+
+        one = square(lambda row, column: int(row == column))
+        zero = square(lambda row, column: 0)
+        minus_one = square(lambda row, column: -int(row == column))
+        form = block(zero, one, minus_one, zero)
+        group = _integral_points_subgroup(
+            _GL(2 * genus, _own_ring(QQ)),
+            Sp(2 * genus, _engine_ring(ZZ), var=var, invariant_form=form),
+            _owned_ring(ring),
+            refinements=(OwnedGroups().FinitelyGeneratedAsMagma(),),
+            description=f"Sp_{2 * genus}(ZZ)",
+        )
+        translations = tuple(
+            block(
+                one,
+                square(lambda row, column, i=i, j=j: int({row, column} == {i, j})),
+                zero,
+                one,
+            )
+            for i in range(genus)
+            for j in range(i, genus)
+        )
+        return group.select_group_generators(
+            lambda: finite_ordered_set(tuple(group(matrix) for matrix in (form, *translations)))
+        )
     return _group_over_ring(Sp, degree, ring, var=var, invariant_form=invariant_form)
 
 
@@ -5171,8 +5268,9 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 lambda value: lifts[image_set(value)]
             )
 
-        def subgroup(self, generators):
-            return _engine_subgroup(self, generators)
+        def subgroup(self, generators, description=None):
+            r"""Return the subgroup of ``self`` generated by ``generators``, named ``description`` when given."""
+            return _engine_subgroup(self, generators, description)
 
         def predicate_subgroup(
             self,

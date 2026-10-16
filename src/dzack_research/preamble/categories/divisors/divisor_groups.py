@@ -129,9 +129,8 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
             }
         )
 
-    @classmethod
-    def _repr_object_names(cls):
-        return "formal divisor groups"
+    def _repr_object_names(self):
+        return f"formal divisor groups over {self.base_ring()}"
 
     def super_categories(self):
         return [FramedFreeModules(self.base_ring())]
