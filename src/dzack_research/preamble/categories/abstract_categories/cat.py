@@ -35,7 +35,7 @@ from dzack_research.preamble.categories.functors.core import (
 )
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
-from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow, object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
@@ -1262,7 +1262,7 @@ class Cat(CategoryPacketMethods, Category):
         return "Cat: categories with functors as morphisms"
 
 
-class NaturalTransformationMorphism(Morphism):
+class NaturalTransformationMorphism(CategoricalArrow):
     r"""A natural transformation as a morphism in a functor category."""
 
     def __init__(
@@ -1270,7 +1270,7 @@ class NaturalTransformationMorphism(Morphism):
         parent: NaturalTransformationMor,
         transformation: NaturalTransformation,
     ) -> None:
-        Morphism.__init__(self, parent)
+        CategoricalArrow.__init__(self, parent)
         if transformation.source() is not parent.source():
             raise ValueError(
                 f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "

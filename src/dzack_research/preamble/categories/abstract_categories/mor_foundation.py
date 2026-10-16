@@ -48,7 +48,7 @@ class OwnedMor(SageHomset):
         return arrow.parent() is self
 
     def __call__(self, *args, **kwargs) -> Morphism:
-        if len(args) == 1 and isinstance(args[0], Map):
+        if len(args) == 1 and isinstance(args[0], (Map, CategoricalArrow)):
             arrow = args[0]
             if self._already_parented_arrow(arrow):
                 if not kwargs:
@@ -66,6 +66,31 @@ class OwnedMor(SageHomset):
                 f"the identity of {obj} is not in Mor({self.domain()}, {self.codomain()})"
             )
         return self.identity()
+
+
+class CategoricalArrow(Element):
+    r"""An arrow with its actual categorical endpoints.
+
+    Sage's ``Map`` stores endpoints as ``Parent`` instances. Objects of a
+    category need not be parents: in particular an arrow is an object of a
+    Mor category. This realization stores only the Mor parent and reads its
+    endpoints without replacing them by auxiliary objects.
+    """
+
+    def domain(self):
+        return self.parent().domain()
+
+    def codomain(self):
+        return self.parent().codomain()
+
+    def Mor(self, codomain):
+        return self.parent().two_mor(self, codomain)
+
+    def __call__(self, value):
+        return self._call_(value)
+
+    def _repr_(self):
+        return f"Morphism from {self.domain()} to {self.codomain()}"
 
 
 def _refuse_foreign_arrow(mor: Parent, arrow: Morphism, functor: str) -> None:

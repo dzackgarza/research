@@ -27,7 +27,7 @@ reuses the arrow objects without inheriting all the squares between them.
 """
 
 from __future__ import annotations
-from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow, object_level
 
 
 def _compose_operation_preserving_mor(left, right, fallback):
@@ -270,7 +270,7 @@ def _precomposable(second: Morphism, first) -> bool:
     codomain is ``second``'s domain.  The arrow's own Mor is asked.
     """
     match first:
-        case Morphism() if first.codomain() is second.domain():
+        case Morphism() | CategoricalArrow() if first.codomain() is second.domain():
             base = second.parent().base_category()
             return _category_accepts_morphism(base, first.domain(), first.codomain(), first)
         case _:
@@ -301,7 +301,7 @@ def _fixed_mor_arrow_object(
     )
 
 
-class MorArrowIdentity(Morphism):
+class MorArrowIdentity(CategoricalArrow):
     r"""The identity 2-arrow on one arrow object."""
 
     def _call_(self, value):
@@ -340,7 +340,7 @@ class _DiscreteTwoMorConstructions:
         arrows = self.object_set()
         return indexed_family(
             arrows,
-            self.object,
+            lambda arrow: arrow,
             name=f"Arrow objects of {self}",
         )
 
@@ -566,6 +566,21 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
 
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
+
+        def Mor(self, codomain):
+            return self.parent().two_mor(self, codomain)
+
+        def arrow(self):
+            return self
+
+        def source_object(self):
+            return self.domain()
+
+        def target_object(self):
+            return self.codomain()
+
+        def arrow_category(self):
+            return self.parent().base_category().ArrowCategory()
 
         def then(self, other):
             r"""Return ``other ∘ self`` for composable represented arrows."""
@@ -922,7 +937,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
                 )
 
     def _mor_endpoint(self, obj: Parent | Category | Morphism):
-        return self.object(obj)
+        return self(obj)
 
     def __contains__(self, candidate: Any) -> bool:
         r"""Read raw-map element membership separately from object placement.
@@ -933,7 +948,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         underlying arrow is not reclassified by that element predicate.
         """
         match candidate:
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 return self.accepts(candidate)
             case _:
                 return Category.__contains__(self, candidate)
@@ -970,8 +985,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     Mor = two_mor
 
     def identity_2(self, arrow: Morphism) -> Morphism:
-        arrow_object = self.object(arrow)
-        return self.two_mor(arrow_object, arrow_object).identity()
+        return self.two_mor(arrow, arrow).identity()
 
 
 class MorArrowDiscreteMor(CategoricalMor):
