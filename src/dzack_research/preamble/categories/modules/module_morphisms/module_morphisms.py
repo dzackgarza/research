@@ -2323,39 +2323,21 @@ class ModuleEmbeddingMor(CategoricalMor):
 
     def _element_constructor_(self, images, *, lift=None, check=False):
         r"""Construct the monomorphism with these images; ``check=True`` runs its validators (``OWN-22``)."""
-        if isinstance(images, ModuleEmbeddingMethods):
+        generator_map = (
+            isinstance(images, SetMorphism)
+            and self.domain().has_selected_module_resolution()
+            and images.domain() is self.domain().module_generating_set()
+            and images.codomain() is self.codomain()
+        )
+        if isinstance(images, Morphism) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            # The same embedding read in another Mono parent: it is linear and
-            # injective because ``images`` is, and keeps its selected lift.
-            keeps_lift = lift is None and images.has_selected_lift()
-            embedding = self.element_class(
-                self,
-                images,
-                lift=(images._lift_function if keeps_lift else lift),
-                linearity_premises=(images,),
-                injectivity_premises=(images,),
-                lift_is_section=(
-                    True
-                    if keeps_lift and images.selected_lift_exactness_decision() is True
-                    else None
-                ),
+            refuse_arrow_of_another_mor(
+                self, images, "construct the monomorphism from its generator images, with its selected lift"
             )
-        elif isinstance(images, ModuleMorphismMethods):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            # A linear map read as a monomorphism: linear because ``images``
-            # is; its injectivity is what validation computes.
-            embedding = self.element_class(
-                self,
-                images,
-                lift=lift,
-                linearity_premises=(images,),
-            )
-        else:
-            embedding = self.element_class(self, images, lift=lift)
+        embedding = self.element_class(self, images, lift=lift)
         embedding.validate_linearity(check=check)
         embedding.validate_lift(check=check)
         embedding.validate_injectivity(check=check)
@@ -2599,7 +2581,26 @@ class _ModuleMorCommonMethods:
         )
 
     def _element_constructor_(self, images, *, check=False):
-        r"""Construct the linear map with these images; ``check=True`` runs its validators (``OWN-22``)."""
+        r"""Construct the linear map with these images; ``check=True`` runs its validators (``OWN-22``).
+
+        The map on the chosen generating set is defining data. A map on the
+        whole underlying set is not a linear-map datum (``CON-17``).
+
+        Unverified separating specimen::
+
+            sage: from dzack_research.preamble.all import *
+            sage: M = ZZ.free_module(Sets.Δ[1])
+            sage: e = M.module_generator(0)
+            sage: f = M.End()(lambda label: M.module_generator(label) + e)
+            sage: U = Modules(ZZ).underlying_set()
+            sage: assert U(f)(e) == 2*e
+            sage: assert M.End()(f) is f
+            sage: translation = Sets().Mor(M, M)(lambda v: v + e)
+            sage: M.End()(translation)
+            Traceback (most recent call last):
+            ...
+            TypeError: ...
+        """
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         if (
@@ -2609,25 +2610,21 @@ class _ModuleMorCommonMethods:
             and all(isinstance(row, (tuple, list)) for row in images)
         ):
             return self.from_rows(images)
+        generator_map = (
+            isinstance(images, SetMorphism)
+            and self.domain().has_selected_module_resolution()
+            and images.domain() is self.domain().module_generating_set()
+            and images.codomain() is self.codomain()
+        )
         if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            if images.linearity_decision() is not True or not self.domain().is_framed_module():
-                # The same map, read in this Mor: linear exactly when it is.
-                return self.element_class(
-                    self,
-                    images,
-                    elementwise=True,
-                    linearity_premises=(images,),
-                )
-            match images.has_module_generator_images():
-                case True:
-                    images = images.module_generator_morphism()
-                case False:
-                    images = {label: images(self.domain().module_generator(label)) for label in self.domain().module_generating_set()}
-        elif isinstance(images, Morphism):
+            refuse_arrow_of_another_mor(
+                self, images, "apply the functor changing the module category, or supply the defining generator images"
+            )
+        elif isinstance(images, Morphism) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             # A set map, group map or other non-linear arrow of these
@@ -3430,9 +3427,6 @@ class ModuleAutomorphismGroup(CoreMor):
         if isinstance(datum, ModuleAutomorphismMethods):
             if datum.parent() is self:
                 return datum
-            datum = datum.as_morphism()
-        if isinstance(datum, CategoricalIsomorphism):
-            return self._from_inverse_computation(datum.forward(), lambda: datum.inverse().forward())
         if isinstance(datum, Morphism):
             # An endomorphism of End_R(M), or any other arrow, is not an
             # automorphism: almost none is invertible (``CON-17``).
