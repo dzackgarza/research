@@ -5429,7 +5429,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 # pair of points.
                 from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 
-                return FiniteGSets(group)(candidates, lambda isometry, point: isometry(point)).orbits()
+                return FiniteGSets(group)(candidates.domain(), lambda isometry, point: isometry(point)).orbits()
 
             def same_orbit(left, right, *, special_only):
                 if left == right:
