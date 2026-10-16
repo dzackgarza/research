@@ -10,9 +10,8 @@ standard finite free/cofree constructions.
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import parent as element_parent
+from sage.structure.element import Element, parent as element_parent
 from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -1267,15 +1266,12 @@ def _finite_g_set_from_action(
     )
 
 
-class _LeftCosetPoint(SageObject):
+class _LeftCosetPoint(Element):
     r"""An equivalence class ``gH`` represented by ``g``; no coset enumeration."""
 
     def __init__(self, parent, representative):
-        self._parent = parent
+        Element.__init__(self, parent)
         self._representative = representative
-
-    def parent(self):
-        return self._parent
 
     def representative(self):
         return self._representative
