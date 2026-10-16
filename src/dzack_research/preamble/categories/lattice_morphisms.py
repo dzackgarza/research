@@ -2643,6 +2643,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         no engine for all of ``O(L)``.
         """
         matrices = tuple(self._row_action_matrix(generator) for generator in generators)
+        lattice = self.domain()
+        if lattice.base_ring() is _owned_integers() and lattice.is_definite():
+            from dzack_research.preamble.categories.group.groups import _engine_generated_subgroup
+
+            ambient = self._engine_group()
+            return _engine_generated_subgroup(ambient, tuple(ambient(matrix) for matrix in matrices))
         if not matrices:
             rank = int(self.domain().module_rank())
             identity = engine_matrix.identity(SageZZ, rank)
