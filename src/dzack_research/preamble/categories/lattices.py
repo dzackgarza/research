@@ -2698,11 +2698,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
             def generators():
+                from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
                 signs = Groups.C(2)
                 determinant = orthogonal.Mor(signs).elementwise(
                     lambda isometry: signs.one() if isometry.determinant() == 1 else signs.group_generators()[0]
                 )
-                return determinant.kernel().group_generators()
+                return finite_ordered_set(tuple(determinant.kernel().group_generators()))
 
             special.select_group_generators(generators)
             return special
