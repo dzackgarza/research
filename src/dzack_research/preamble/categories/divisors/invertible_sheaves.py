@@ -1173,10 +1173,39 @@ class _ProjectiveSubschemeLineBundleEngine(_RestrictedLineBundleDescent):
     r"""The pullback ``i^* O_P(d)`` along a projective closed immersion.
 
     The defining datum is the actual closed immersion together with the
-    ambient projective line bundle.  No second projective-coordinate sheaf is
-    built on the subscheme.  This is the line-bundle object needed by
-    adjunction and strict-transform comparisons; computations of sections may
-    use the existing image-valued restriction map separately.
+    ambient projective line bundle. Its chart modules and transitions are
+    pulled back on the actual inverse-image atlas. Global sections are the
+    module of compatible chart sections. The image-valued restriction map
+    retains its own section-image operation.
+
+    Unexecuted conic sections (Hartshorne, II.5.12)::
+
+        sage: from dzack_research.preamble.all import *
+        sage: P = ProjectiveSpaces(QQ)(2)
+        sage: S = P.O(1).global_sections().homogeneous_coordinate_ring()
+        sage: x0, x1, x2 = tuple(S.algebra_generators())
+        sage: Z = P.closed_subscheme(x0*x2-x1*x1)
+        sage: L = Z.inclusion().module_pullback(P.O(1))
+        sage: atlas = Z.standard_affine_atlas()
+        sage: L.gluing_datum() is atlas
+        True
+        sage: site = Z.open_subsets_site()
+        sage: chart = site(atlas.chart_open_subset(0))
+        sage: sections = L.sections(chart).module_over_extension()
+        sage: sections is L.local_module(0)
+        True
+        sage: sections.base_ring() is atlas.chart(0).coordinate_algebra()
+        True
+        sage: first = P.standard_affine_chart(0).coordinate_algebra()
+        sage: ratio = first.algebra_generator('x1_over_x0')
+        sage: restriction = atlas.overlap(0, 1).inclusion().coordinate_algebra_morphism() * atlas.chart(0).left_projection().coordinate_algebra_morphism()
+        sage: L.transition_unit(0, 1) == restriction(ratio)
+        True
+        sage: trivial = Z.inclusion().module_pullback(P.O(0))
+        sage: datum = trivial.module_descent_datum()
+        sage: unit = datum.compatible_section({i: trivial.local_module(i).module_generator(0) for i in atlas.chart_indices()})
+        sage: trivial.section_on_chart(unit, 0) == trivial.local_module(0).module_generator(0)
+        True
     """
 
     def __init__(
