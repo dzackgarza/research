@@ -1,5 +1,46 @@
 # Issue 401: remaining implementation work
 
+## Requested category work
+
+The active request is to present the following categories, their immediate
+supercategories and subtrees, and their functorial constructions. Each named
+object must construct through the preamble and have the correct placement.
+Computations may remain explicit stubs where the construction briefs permit them.
+
+- Varieties over a field `k`, including the exact complex field `CC`; curves,
+  surfaces and K3 surfaces.
+- Families of varieties as morphisms `X -> Y`, including one-parameter families
+  `X -> C` over a curve.
+- Function fields, including `k(t)`; affine and projective hypersurfaces.
+- The line bundles `O_{P^n}(m)` and their sections.
+- Presheaves and sheaves with values in sets, groups, rings, `ZZ`-modules,
+  `R`-modules and `R`-algebras; sections and restriction maps.
+- Projectivization `P(V)` and module duals.
+- Linear systems and monomial bases of section spaces.
+- Graded singular cohomology, with its cup product.
+- The de Rham algebra and de Rham cohomology.
+- Derived sheaf cohomology and derived global sections `RΓ`.
+- Primitive cohomology of polarized varieties.
+- Residue maps on differential forms.
+- Homotopy Lie algebras of pointed spaces, including the low-degree sphere
+  specimens in the construction briefs.
+- Hodge structures, including mixed Hodge structures, Tate twists, tensor
+  products and duals.
+- Connections and Gauss–Manin connections.
+- Fibres of analytic families over a complex disc.
+- The upper half-plane `HH` and arithmetic quotients `Gamma\HH`.
+- Real hyperbolic spaces `H^n` and their quotients.
+- Siegel upper half-spaces `H_g` and their arithmetic quotients.
+- Riemannian symmetric spaces `G/K`, parameterized by Satake type.
+- Hermitian symmetric domains by classification type.
+
+The source session is
+`/home/dzack/.claude/projects/-home-dzack-research/7de3fff4-5627-45ef-b8ea-4645b6d2e760.jsonl`.
+Its construction briefs are in
+`/tmp/claude-1000/-home-dzack-research/7de3fff4-5627-45ef-b8ea-4645b6d2e760/scratchpad/`.
+
+## Earlier workstream
+
 Issue 401's research-side primitives are complete. Continue the remaining
 mathematical placement and ownership work in the priority order below.
 
