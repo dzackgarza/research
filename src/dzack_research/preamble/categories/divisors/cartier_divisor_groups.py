@@ -324,25 +324,35 @@ class _CartierDivisorSectionsPresheaf(Functor):
             return self.codomain().Mor(source, target).identity()
         if self._is_whole(arrow.domain()):
             atlas, index, selected = self._basis(arrow.codomain())
+            if atlas.scheme() is atlas.chart(index):
+                return source.restriction_map(selected.inclusion())
             return source.restriction_to_chart(atlas, index, selected)
         atlas, source_index, source_open = self._basis(arrow.domain())
+        if not self._is_whole(arrow.codomain()):
+            target_atlas, target_index, target_open = self._basis(arrow.codomain())
+            assert target_atlas is atlas, "Cartier restriction between atlases requires their comparison"
+            scalar_map = atlas.basis_coordinate_restriction(source_index, source_open, target_index, target_open)
+            from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+            open_map = Schemes(self._scheme.scheme_base_ring()).Mor(target_open, source_open)(scalar_map)
+            # The open-site arrow and its basis comparison give this open
+            # immersion, including cross-chart coordinate changes.
+            return self.codomain().Mor(source, target)._from_constructed_element_map(
+                lambda divisor: source(divisor).underlying_element()._restrict_to_affine_open(open_map, target),
+            )
+
         source_atlas = FiniteAffineAtlases(source_open).identity_atlas()
 
         def restrict(divisor):
             equation = source(divisor).underlying_element()._equation_on_chart(source_atlas, 0)
-            if self._is_whole(arrow.codomain()):
-                equations = {
-                    index: _total_quotient_pullback(
-                        atlas.basis_coordinate_restriction(source_index, source_open, index, atlas.chart(index)),
-                        equation,
-                    )
-                    for index in atlas.chart_indices()
-                }
-                return target.finite_atlas_section(atlas, equations)
-            target_atlas, target_index, target_open = self._basis(arrow.codomain())
-            assert target_atlas is atlas, "Cartier restriction between atlases requires their comparison"
-            scalar_map = atlas.basis_coordinate_restriction(source_index, source_open, target_index, target_open)
-            return target.principal_divisor(_total_quotient_pullback(scalar_map, equation))
+            equations = {
+                index: _total_quotient_pullback(
+                    atlas.basis_coordinate_restriction(source_index, source_open, index, atlas.chart(index)),
+                    equation,
+                )
+                for index in atlas.chart_indices()
+            }
+            return target.finite_atlas_section(atlas, equations)
 
         return self.codomain().Mor(source, target)._from_constructed_element_map(restrict)
 
@@ -519,6 +529,35 @@ class _CartierSectionClass:
                 return self._operand._equation_on_chart(atlas, index).inverse_of_unit()
             case "multiple":
                 return self._operand._equation_on_chart(atlas, index) ** int(self._scalar)
+        raise ValueError(f"unrecognized Cartier section expression: {self._kind}")
+
+    def _restrict_to_affine_open(self, morphism, target):
+        r"""Restrict along the supplied open map using the whole local cover.
+
+        The Cartier group restriction constructor and the open-site
+        sections functor supply the open immersion. Pulling the atlas back
+        retains nonprincipal divisors: no global meromorphic lift is chosen
+        (Stacks, Tags 02AQ and 01JY).
+        """
+        match self._kind:
+            case "zero":
+                return target.zero()
+            case "finite_atlas":
+                pulled = self._atlas.pullback(morphism)
+                equations = {
+                    index: _total_quotient_pullback(
+                        pulled.chart(index).left_projection().coordinate_algebra_morphism(),
+                        self.local_equation(index),
+                    )
+                    for index in pulled.chart_indices()
+                }
+                return target.finite_atlas_section(pulled, equations)
+            case "sum":
+                return self._left._restrict_to_affine_open(morphism, target) + self._right._restrict_to_affine_open(morphism, target)
+            case "negation":
+                return -self._operand._restrict_to_affine_open(morphism, target)
+            case "multiple":
+                return self._scalar * self._operand._restrict_to_affine_open(morphism, target)
         raise ValueError(f"unrecognized Cartier section expression: {self._kind}")
 
     def transition_unit(self, source_index, target_index):
@@ -971,6 +1010,24 @@ class CartierDivisorGroups(Category):
                 return target.principal_divisor(equation)
 
             return Modules(_integers()).Mor(self, target)._from_constructed_element_map(restrict)
+
+        def restriction_map(self, open_immersion):
+            r"""``CDiv(X) -> CDiv(U)`` for a represented affine open map.
+
+            Pull back every local equation on its pulled-back covering
+            atlas, with no principal-divisor hypothesis (Stacks, 02AQ).
+            """
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+            if open_immersion.codomain() is not self.divisor_scheme():
+                raise ValueError("Cartier restriction requires an open map into the divisor scheme")
+            assert open_immersion.is_open_immersion() is True, (
+                "Cartier restriction requires an established open immersion"
+            )
+            target = CartierDivisorGroups().of_scheme(open_immersion.domain())
+            return Modules(_integers()).Mor(self, target)._from_constructed_element_map(
+                lambda divisor: self(divisor).underlying_element()._restrict_to_affine_open(open_immersion, target),
+            )
 
     class ElementMethods:
         def gluing_datum(self):
