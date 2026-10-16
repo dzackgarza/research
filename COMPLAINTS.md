@@ -1350,7 +1350,8 @@ only an already-parented point, while `SchemeMorphismMethods._call_` composes
 scheme-valued points. Neither inspected path transports a prime-spectrum point
 along a chart embedding. The affine route needs contraction of prime ideals;
 `RingMorphism.contraction_of_ideal` has algorithms for canonical quotient and
-localization maps. Its general preimage is the ideal defined by membership after the ring
+localization maps, and for retained Sage ring maps with exact ideal realizations.
+Its general preimage is the ideal defined by membership after the ring
 map, with primality inherited from the target prime. Finite generators are a
 computational presentation, not defining data for that preimage. This shares
 the ideal-representation prerequisite of `general-minimal-prime-locus` in

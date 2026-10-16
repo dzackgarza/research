@@ -45,6 +45,7 @@ from sage.misc.lazy_attribute import lazy_attribute
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.finite_rings.integer_mod_ring import IntegerModRing_generic
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.morphism import RingHomomorphism as SageRingHomomorphism
 from sage.rings.infinity import Infinity as SageInfinity
 from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
 from sage.rings.polynomial.polynomial_quotient_ring import PolynomialQuotientRing_generic
@@ -342,6 +343,8 @@ class RingMorphism:
         arbitrary map with the same endpoints. General preimage ideals need
         their membership presentation; finite generators require a further
         algorithm (Atiyah--Macdonald, Proposition 3.11).
+        A retained Sage ring homomorphism supplies its documented
+        ``inverse_image`` algorithm on exact computation-ring ideals.
 
         Unexecuted saturation specimen::
 
@@ -352,6 +355,12 @@ class RingMorphism:
             sage: f.contraction_of_ideal(S.ideal(S(x))) == A.ideal(A.one())
             True
             sage: f.contraction_of_ideal(S.ideal(S.zero())) == A.ideal(A.zero())
+            True
+            sage: Q = A.quotient_ring(A.ideal(x*x))
+            sage: collapse = A.Mor(Q)({'x': Q.zero()})
+            sage: collapse.contraction_of_ideal(Q.ideal(Q.zero())) == A.ideal(x)
+            True
+            sage: Q.quotient_map().contraction_of_ideal(Q.ideal(Q.zero())) == A.ideal(x*x)
             True
         """
 
@@ -378,10 +387,40 @@ class RingMorphism:
                     *codomain.defining_ideal().ideal_generators(),
                     *(generator.lift() for generator in ideal.ideal_generators()),
                 )
+            case _ if (
+                isinstance(self._engine_morphism, SageRingHomomorphism)
+                and domain not in LocalizationRings()
+                and codomain not in LocalizationRings()
+            ):
+                from dzack_research.preamble.categories.rings.commutative_ideals import (
+                    _engine_commutative_ideal,
+                )
+
+                source_engine = _engine_ring(domain)
+                target_engine = _engine_ring(codomain)
+                assert (
+                    self._engine_morphism.domain() is source_engine
+                    and self._engine_morphism.codomain() is target_engine
+                ), "ideal preimage requires the retained ring map's exact computation endpoints"
+                # Sage RingHomomorphism.inverse_image owns elimination of
+                # the graph ideal; see sage/rings/morphism.pyx. Both ideal
+                # lattices here belong to the actual computation rings.
+                represented = _engine_commutative_ideal(ideal)
+                assert represented.ring() is target_engine, (
+                    "ideal preimage requires an ideal of the retained target computation ring"
+                )
+                preimage = self._engine_morphism.inverse_image(represented)
+                assert preimage.ring() is source_engine, (
+                    "the computed ideal preimage must belong to the retained source computation ring"
+                )
+                return domain.ideal(
+                    *(_owned_engine_element(domain, generator) for generator in preimage.gens())
+                )
             case _:
                 assert False, (
                     f"contraction of {ideal} along {self} requires a general preimage-ideal "
-                    "construction; the available algorithms use canonical localization or quotient maps"
+                    "construction; available algorithms use canonical localization or quotient maps, "
+                    "or a retained Sage ring homomorphism with exact ideal realizations"
                 )
 
     def kernel(self):
