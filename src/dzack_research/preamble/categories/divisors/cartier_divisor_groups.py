@@ -34,7 +34,6 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     SheafObjects,
     _is_empty_open,
     _open_sheaf_placement,
-    _unpresented_sheaf_placement,
 )
 from dzack_research.preamble.categories.sets.indexed_families import (
     finite_indexed_family,
@@ -246,6 +245,108 @@ class _CartierDivisorQuotientSheafEngine:
         return f"Cartier quotient sheaf K^*/O^* on {self.scheme()}"
 
 
+class _CartierDivisorSectionsPresheaf(Functor):
+    r"""``U |-> CDiv(U)`` on whole, empty and represented affine opens.
+
+    This is the quotient *sheaf* ``K^*/O^*`` (Stacks, Tag 02AQ), not the
+    quotient of the two groups of global units. Local lifts are restricted
+    on their presentation atlas; another presentation needs a common
+    refinement before its local equation can be computed.
+
+    Unexecuted projective-line chart restriction (Stacks, Tag 02AQ)::
+
+        sage: from dzack_research.preamble.all import *
+        sage: X = ProjectiveSpaces(QQ)(1)
+        sage: atlas = X.standard_affine_atlas()
+        sage: A = atlas.chart(0).coordinate_algebra()
+        sage: B = atlas.chart(1).coordinate_algebra()
+        sage: y = next(iter(B.algebra_generators()))
+        sage: divisors = CartierDivisorGroups().of_scheme(X)
+        sage: D = divisors.finite_atlas_section(atlas, {0: A.one(), 1: y})
+        sage: sheaf = divisors.quotient_sheaf()
+        sage: whole = sheaf.descent_data().coverage().whole_open()
+        sage: sheaf.sections(whole) is divisors
+        True
+        sage: site = X.open_subsets_site(); opposite = site.opposite()
+        sage: chart = site(atlas.chart_open_subset(1))
+        sage: arrow = opposite.Mor(opposite(whole), opposite(chart))(site.Mor(chart, whole)())
+        sage: local = sheaf.open_sections_presheaf().on_morphism(arrow)(D)
+        sage: local == sheaf.sections(chart).principal_divisor(y)
+        True
+        sage: overlap = site(atlas.chart_open_subset(0, atlas.overlap(0, 1)))
+        sage: restriction = opposite.Mor(opposite(chart), opposite(overlap))(site.Mor(overlap, chart)())
+        sage: sheaf.open_sections_presheaf().on_morphism(restriction)(local) == sheaf.sections(overlap).zero()
+        True
+    """
+
+    def __init__(self, scheme, quotient_sheaf):
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        self._scheme = scheme
+        self._quotient_sheaf = quotient_sheaf
+        super().__init__(scheme.open_subsets_site().opposite(), Modules(_integers()))
+
+    def _is_whole(self, open_object):
+        opens = self.domain().base_category().object_set()
+        return open_object.underlying_object().value() is opens.inclusion().codomain().top()
+
+    def _basis(self, open_object):
+        from dzack_research.preamble.categories.rings.commutative_algebra import DistinguishedOpenSubobjects
+        from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+        subset = open_object.underlying_object().value()
+        if self._scheme in Schemes(self._scheme.scheme_base_ring()).Affine():
+            assert subset in DistinguishedOpenSubobjects(self._scheme.underlying_space()), (
+                "Cartier sections require an affine distinguished-open presentation"
+            )
+            atlas = FiniteAffineAtlases(self._scheme).identity_atlas()
+            return atlas, 0, self._scheme.distinguished_open(subset.function())
+        atlas = self._scheme.selected_finite_affine_atlas()
+        assert subset in _AffineChartOpenSubobjects(self._scheme) and subset.gluing_datum() is atlas.presentation(), (
+            "Cartier sections require a basis open of the selected affine atlas"
+        )
+        return atlas, subset.chart_index(), subset.chart_open()
+
+    def _apply_object(self, open_object):
+        if _is_empty_open(self, open_object):
+            return _integers().free_module(0)
+        if self._is_whole(open_object):
+            return self._quotient_sheaf().global_sections()
+        _atlas, _index, selected = self._basis(open_object)
+        return CartierDivisorGroups().of_scheme(selected)
+
+    def _apply_morphism(self, arrow):
+        source = self(arrow.domain())
+        target = self(arrow.codomain())
+        if _is_empty_open(self, arrow.domain()) or _is_empty_open(self, arrow.codomain()):
+            return self.codomain().Mor(source, target).zero()
+        if arrow.domain() is arrow.codomain() or (self._is_whole(arrow.domain()) and self._is_whole(arrow.codomain())):
+            return self.codomain().Mor(source, target).identity()
+        if self._is_whole(arrow.domain()):
+            atlas, index, selected = self._basis(arrow.codomain())
+            return source.restriction_to_chart(atlas, index, selected)
+        atlas, source_index, source_open = self._basis(arrow.domain())
+        source_atlas = FiniteAffineAtlases(source_open).identity_atlas()
+
+        def restrict(divisor):
+            equation = source(divisor).underlying_element()._equation_on_chart(source_atlas, 0)
+            if self._is_whole(arrow.codomain()):
+                equations = {
+                    index: _total_quotient_pullback(
+                        atlas.basis_coordinate_restriction(source_index, source_open, index, atlas.chart(index)),
+                        equation,
+                    )
+                    for index in atlas.chart_indices()
+                }
+                return target.finite_atlas_section(atlas, equations)
+            target_atlas, target_index, target_open = self._basis(arrow.codomain())
+            assert target_atlas is atlas, "Cartier restriction between atlases requires their comparison"
+            scalar_map = atlas.basis_coordinate_restriction(source_index, source_open, target_index, target_open)
+            return target.principal_divisor(_total_quotient_pullback(scalar_map, equation))
+
+        return self.codomain().Mor(source, target)._from_constructed_element_map(restrict)
+
+
 @cached_function(key=lambda scheme: id(scheme))
 def _total_quotient_sheaf(scheme):
     sheaves = SheafObjects(scheme)
@@ -297,14 +398,16 @@ def _cartier_divisor_quotient_sheaf(scheme):
     sheaves = SheafObjects(scheme)
     total_quotient_units = _unit_sheaf(_total_quotient_sheaf(scheme))
     regular_units = _regular_unit_sheaf(scheme)
-    fibre, presheaf_data = _unpresented_sheaf_placement(scheme, f"K^*/O^* on {scheme}")
-    return _object_of(
+    presheaf = _CartierDivisorSectionsPresheaf(scheme, lambda: sheaf)
+    fibre, presheaf_data = _open_sheaf_placement(scheme, presheaf)
+    sheaf = _object_of(
         owned_category_join((sheaves, fibre)),
         _engine=(fibre, _CartierDivisorQuotientSheafEngine, None),
         **presheaf_data,
         numerator_sheaf=total_quotient_units,
         denominator_sheaf=regular_units,
     )
+    return sheaf
 
 
 def _total_quotient_pullback(ring_morphism, rational_section):
@@ -392,6 +495,31 @@ class _CartierSectionClass:
     def local_equation(self, index):
         atlas = self.gluing_datum()
         return self._local_equations[atlas.normalize_chart_index(index)]
+
+    def _equation_on_chart(self, atlas, index):
+        r"""A local lift of this expression on a chart of its given atlas.
+
+        The quotient map ``K^* -> K^*/O^*`` is a group homomorphism:
+        addition, negation and integer multiplication lift to product,
+        inverse and powers of equations (Stacks, Tag 02AQ). Different
+        presentation atlases require a common refinement.
+        """
+        ring = atlas.chart(index).coordinate_algebra().total_quotient_ring()
+        match self._kind:
+            case "zero":
+                return ring.one()
+            case "finite_atlas":
+                assert self._atlas is atlas, (
+                    "a Cartier local equation on another atlas requires a common refinement"
+                )
+                return self.local_equation(index)
+            case "sum":
+                return self._left._equation_on_chart(atlas, index) * self._right._equation_on_chart(atlas, index)
+            case "negation":
+                return self._operand._equation_on_chart(atlas, index).inverse_of_unit()
+            case "multiple":
+                return self._operand._equation_on_chart(atlas, index) ** int(self._scalar)
+        raise ValueError(f"unrecognized Cartier section expression: {self._kind}")
 
     def transition_unit(self, source_index, target_index):
         atlas = self.gluing_datum()
@@ -812,6 +940,37 @@ class CartierDivisorGroups(Category):
             """
             atlas = FiniteAffineAtlases(self.divisor_scheme()).identity_atlas()
             return self.finite_atlas_section(atlas, {0: rational_function})
+
+        def restriction_to_chart(self, atlas, index, open_subscheme=None):
+            r"""Restrict a Cartier section to an affine chart or its ``D(f)``.
+
+            Local equations restrict through the retained coordinate map;
+            regular unit ratios remain units. Hence the map descends to
+            ``K^*/O^*`` and is ``ZZ``-linear (Stacks, Tag 02AQ).
+            Computing a lift presented on a different atlas requires its
+            common refinement with ``atlas``.
+            """
+            from dzack_research.preamble.categories.modules.pure.modules import Modules
+            from dzack_research.preamble.categories.schemes.schemes import OpenImmersions
+
+            if atlas not in FiniteAffineAtlases(self.divisor_scheme()):
+                raise ValueError("Cartier restriction requires an atlas of the divisor's scheme")
+            index = atlas.normalize_chart_index(index)
+            chart = atlas.chart(index)
+            selected = chart if open_subscheme is None else open_subscheme
+            if selected is not chart:
+                assert selected in OpenImmersions(chart) and selected.is_distinguished_open() is True, (
+                    "Cartier chart restriction requires the chart or one of its distinguished opens"
+                )
+            target = CartierDivisorGroups().of_scheme(selected)
+
+            def restrict(divisor):
+                equation = self(divisor).underlying_element()._equation_on_chart(atlas, index)
+                if selected is not chart:
+                    equation = _total_quotient_pullback(selected.inclusion().coordinate_algebra_morphism(), equation)
+                return target.principal_divisor(equation)
+
+            return Modules(_integers()).Mor(self, target)._from_constructed_element_map(restrict)
 
     class ElementMethods:
         def gluing_datum(self):
