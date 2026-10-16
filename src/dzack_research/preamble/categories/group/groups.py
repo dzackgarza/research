@@ -3592,6 +3592,18 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
             ),
         )
 
+    def _from_engine_morphism(self, mapping, *, check=False):
+        r"""Raise the selected GAP computation of this group map at exact owned endpoints.
+
+        Protected crossing for group universal constructions, automorphism
+        arithmetic and functor adapters. The element owner checks Source
+        and Range against these endpoints; public construction takes group
+        generator images or a declared function.
+        """
+        morphism = self.element_class(self, mapping)
+        morphism.validate_homomorphism(check=check)
+        return morphism
+
     def _element_constructor_(self, images, *, check=False, **_options):
         match images:
             case dict():
@@ -3603,7 +3615,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 # regardless of the optional check flag.
                 morphism.validate_homomorphism(check=True)
             case GapElement():
-                morphism = self.element_class(self, images)
+                raise TypeError("a GAP whole group map is private engine output; give generator images")
             case Morphism() if self._already_parented_arrow(images):
                 return images
             case Morphism():
@@ -3686,7 +3698,7 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
 class GroupAutomorphismMethods:
     def inverse(self):
         r"""Invert inside this represented automorphism group."""
-        return self.parent()(
+        return self.parent()._from_engine_morphism(
             self._gap_morphism_crossing().InverseGeneralMapping(),
             check=False,
         )
@@ -3700,7 +3712,7 @@ class GroupAutomorphismMethods:
     def _composition(self, right):
         r"""Compose automorphisms inside their represented automorphism group."""
         if right.parent() is self.parent():
-            return self.parent()(
+            return self.parent()._from_engine_morphism(
                 right._gap_morphism_crossing() * self._gap_morphism_crossing(),
                 check=False,
             )
@@ -3744,7 +3756,7 @@ class GroupAutomorphismGroups(OwnedCategory):
 
         def _from_engine(self, engine_automorphism):
             r"""Raise one private engine element as an ambient automorphism."""
-            return self(engine_automorphism.gap(), check=False)
+            return self._from_engine_morphism(engine_automorphism.gap(), check=False)
 
         def _engine_subgroup_from_generators(self, generators):
             return _engine_generated_subgroup(
@@ -3759,10 +3771,10 @@ class GroupAutomorphismGroups(OwnedCategory):
             return self._to_engine(automorphism) in engine_subgroup
 
         def _from_subgroup_engine(self, engine_automorphism):
-            return self(engine_automorphism.gap(), check=False)
+            return self._from_engine_morphism(engine_automorphism.gap(), check=False)
 
         def one(self):
-            return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
+            return self._from_engine_morphism(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
 
         def __iter__(self):
             r"""Enumerate automorphisms when the underlying group is finite."""
@@ -3804,7 +3816,7 @@ class GroupAutomorphismGroups(OwnedCategory):
     class ElementMethods:
         def _composition_(self, right, mor):
             assert right.parent() is self.parent(), f"cannot compose {self} with {right}: they are automorphisms of different groups, in {self.parent()} and {right.parent()}"
-            return self.parent()(
+            return self.parent()._from_engine_morphism(
                 right._gap_morphism_crossing() * self._gap_morphism_crossing(),
                 check=False,
             )
@@ -3856,7 +3868,7 @@ class GroupAutomorphismGroup(GroupMor):
 
     @object_level
     def identity(self):
-        return self(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
+        return self._from_engine_morphism(libgap.IdentityMapping(_gap_model(self.domain())), check=False)
 
     one = identity
     identity_automorphism = identity
@@ -4219,7 +4231,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 result = libgap.Projection(product_engine, position)
                 if presentation_isomorphisms:
                     result = result * presentation_isomorphisms[position - 1].InverseGeneralMapping()
-                return product.Mor(family[label])(result)
+                return product.Mor(family[label])._from_engine_morphism(result)
 
             universal_cone = (diagram).ProductCones().cone(
                 product,
@@ -4397,7 +4409,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
 
             def injection(label):
                 position = labels.index(label)
-                return family[label].Mor(coproduct)(
+                return family[label].Mor(coproduct)._from_engine_morphism(
                     presentation_isomorphisms[position] * embeddings[position]
                 )
 

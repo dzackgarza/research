@@ -124,7 +124,7 @@ class _AbelianizationFunctor(Functor):
                         f"the group morphism {morphism} does not induce a map of abelianizations "
                         f"{source_abelianization} -> {target_abelianization}"
                     )
-                return source_abelianization.Mor(target_abelianization)(induced)
+                return source_abelianization.Mor(target_abelianization)._from_engine_morphism(induced)
             case _:
                 assert False, (
                     f"the induced map on abelianizations of {morphism} is defined by the universal property, but "
