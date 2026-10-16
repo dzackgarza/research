@@ -67,7 +67,7 @@ class OwnedMor(SageHomset):
         return self.identity()
 
 
-def refuse_arrow_of_another_mor(mor: Parent, arrow: Morphism, functor: str) -> None:
+def _refuse_foreign_arrow(mor: Parent, arrow: Morphism, functor: str) -> None:
     r"""Refuse ``arrow``, an arrow of another Mor, at the element constructor of ``mor``.
 
     ``CON-17``, owner ruling 2026-10-16: the element constructor of
@@ -92,7 +92,6 @@ __all__ = [
     "OwnedMor",
     "UnderlyingSetMor",
     "object_level",
-    "refuse_arrow_of_another_mor",
 ]
 
 class UnderlyingSetMor(OwnedMor):
@@ -113,7 +112,7 @@ class UnderlyingSetMor(OwnedMor):
             if datum.parent() is self:
                 return datum
         if isinstance(datum, Morphism):
-            refuse_arrow_of_another_mor(
+            _refuse_foreign_arrow(
                 self, datum, "the underlying map of an arrow of a structured category is its image under that "
                 "category's forgetful functor to sets"
             )

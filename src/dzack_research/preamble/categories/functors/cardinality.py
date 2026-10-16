@@ -46,8 +46,10 @@ class _CardinalityFunctor(Functor):
             case _ if morphism in core_mor:
                 isomorphism = morphism
             case _:
-                set_map = Sets().Mor(morphism.domain(), morphism.codomain())(morphism)
-                isomorphism = set_map.as_isomorphism()
+                set_mor = Sets().Mor(morphism.domain(), morphism.codomain())
+                if not set_mor._already_parented_arrow(morphism):
+                    raise TypeError(f"{morphism} is not a set map; apply the underlying-set functor first")
+                isomorphism = morphism.as_isomorphism()
         return super().morphism_image(isomorphism)
 
     def cartesian_product_comparison(self, product):

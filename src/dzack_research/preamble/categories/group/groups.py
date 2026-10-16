@@ -3377,6 +3377,8 @@ class _GroupMorRealizationMixin:
         free source still uses its existing basis realization through
         ``_from_elementwise_rule``; no second group-map engine is created.
         """
+        if isinstance(function, Morphism):
+            return self(function)
         if not callable(function):
             raise TypeError(f"a morphism in {self} needs a function on elements")
         return self._from_elementwise_rule(function)

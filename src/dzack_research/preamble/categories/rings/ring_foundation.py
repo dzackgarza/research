@@ -541,12 +541,14 @@ class RngMor(CategoricalMor):
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def __call__(self, datum):
-        return self._element_constructor_(datum)
+        return CategoricalMor.__call__(self, datum)
 
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RngMorphism)
 
     def elementwise(self, function):
+        if isinstance(function, Morphism):
+            return self(function)
         return self.element_class(self, function)
 
     def _elementwise_with_engine(self, function, engine_morphism):
@@ -771,12 +773,14 @@ class RingMor(CategoricalMor):
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def __call__(self, datum):
-        return self._element_constructor_(datum)
+        return CategoricalMor.__call__(self, datum)
 
     def _element_constructor_(self, datum):
         return _ringlike_mor_element(self, datum, RingMorphism)
 
     def elementwise(self, function):
+        if isinstance(function, Morphism):
+            return self(function)
         return self.element_class(self, function)
 
     def _elementwise_with_engine(self, function, engine_morphism):

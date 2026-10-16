@@ -10,7 +10,7 @@ presentation representative.
 import operator
 
 from sage.categories.action import Action
-from sage.categories.morphism import SetMorphism
+from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.element import ModuleElement, parent
@@ -591,10 +591,7 @@ class DerivationSpace(RestrictedMorCategoryParent):
                 selected = generator_images.derivation()
                 if selected.parent() is self:
                     return selected
-                generator_images = {
-                    label: selected.generator_image(label)
-                    for label in self.generator_labels()
-                }
+                raise TypeError(f"{generator_images} belongs to another derivation space; apply the mathematical transport")
             case _ if generator_images in self.arrow_set():
                 raise ValueError(
                     f"{generator_images} is only a linear map; a derivation must also satisfy the Leibniz rule "
@@ -1100,10 +1097,7 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
                 derivation = function.derivation()
                 if derivation.parent() is self:
                     return derivation
-                return self._from_derived_elementwise(
-                    lambda element: derivation(element),
-                    derivation,
-                )
+                raise TypeError(f"{function} belongs to another graded derivation space; apply the mathematical transport")
             case _ if function in self.arrow_set():
                 raise ValueError(
                     f"{function} is only a linear map; a graded derivation of degree {self.degree_shift()} must "
@@ -1156,6 +1150,8 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     def elementwise(self, function, *, check=False):
         r"""Construct the graded derivation given on elements; ``check=True`` runs its validator (``OWN-22``)."""
+        if isinstance(function, Morphism):
+            return self(function)
         if not callable(function):
             raise TypeError(
                 f"a graded derivation of {self.algebra()} needs a map on elements, but {function!r} is not callable"

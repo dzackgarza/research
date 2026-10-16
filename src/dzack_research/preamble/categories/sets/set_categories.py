@@ -41,7 +41,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
-    refuse_arrow_of_another_mor,
+    _refuse_foreign_arrow,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -1035,7 +1035,7 @@ class SetMorCategory(CategoricalMor):
             arrows = datum.parent()
             if arrows is self or (arrows in MorCategories() and self in arrows.super_categories()):
                 return datum
-            refuse_arrow_of_another_mor(
+            _refuse_foreign_arrow(
                 self, datum, "its underlying map is its image under the forgetful functor to sets, such as "
                 "Modules(R).underlying_set()"
             )

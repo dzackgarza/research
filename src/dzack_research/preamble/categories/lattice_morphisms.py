@@ -49,7 +49,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
-    refuse_arrow_of_another_mor,
+    _refuse_foreign_arrow,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
     FormedModuleMorphism,
@@ -1509,12 +1509,14 @@ class LatticeMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            refuse_arrow_of_another_mor(self, images, "use the functor between the source and target categories")
+            _refuse_foreign_arrow(self, images, "use the functor between the source and target categories")
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
 
     def elementwise(self, function):
+        if isinstance(function, Morphism):
+            return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice morphism from {self.domain()} to {self.codomain()}: it is not a function of the elements of {self.domain()}")
         source = self.domain()
@@ -1566,12 +1568,14 @@ class LatticeEmbeddingMor(CategoricalMor):
                 )
             if images.parent() is self:
                 return images
-            refuse_arrow_of_another_mor(self, images, "use the functor between the source and target categories")
+            _refuse_foreign_arrow(self, images, "use the functor between the source and target categories")
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
 
     def elementwise(self, function):
+        if isinstance(function, Morphism):
+            return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice embedding of {self.domain()} into {self.codomain()}: it is not a function of the elements of {self.domain()}")
         source = self.domain()
@@ -1950,11 +1954,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                 )
             if images.parent() is self:
                 return images
-            refuse_arrow_of_another_mor(self, images, "use the functor between the source and target categories")
+            _refuse_foreign_arrow(self, images, "use the functor between the source and target categories")
         if isinstance(images, Morphism):
             # A module isomorphism or automorphism, a lattice endomorphism or a
             # set map: almost none is an isometry (``CON-17``).
-            refuse_arrow_of_another_mor(
+            _refuse_foreign_arrow(
                 self, images, "an isometry is given by its generator images, a function on elements or a "
                 "matrix; the scalar extension of an isometry is its base_change"
             )

@@ -8,7 +8,7 @@ from itertools import product
 from sage.categories.morphism import Morphism, SetMorphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
-    refuse_arrow_of_another_mor,
+    _refuse_foreign_arrow,
 )
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
@@ -2339,7 +2339,7 @@ class ModuleEmbeddingMor(CategoricalMor):
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            refuse_arrow_of_another_mor(
+            _refuse_foreign_arrow(
                 self, images, "construct the monomorphism from its generator images, with its selected lift"
             )
         embedding = self.element_class(self, images, lift=lift)
@@ -2626,7 +2626,7 @@ class _ModuleMorCommonMethods:
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if images.parent() is self:
                 return images
-            refuse_arrow_of_another_mor(
+            _refuse_foreign_arrow(
                 self, images, "apply the functor changing the module category, or supply the defining generator images"
             )
         elif isinstance(images, Morphism) and not generator_map:
@@ -2634,7 +2634,7 @@ class _ModuleMorCommonMethods:
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             # A set map, group map or other non-linear arrow of these
             # endpoints: almost none is linear, so it is not read here as one.
-            refuse_arrow_of_another_mor(
+            _refuse_foreign_arrow(
                 self, images, "a linear map is given by the images of the module generators or by its "
                 "function on elements, whose linearity is its validator"
             )
@@ -2757,6 +2757,8 @@ class _ModuleMorCommonMethods:
         generator-assignment constructor when possible: its linear extension
         is linear by construction and presentation relations are checked.
         """
+        if isinstance(function, Morphism):
+            return self(function)
         if not callable(function):
             raise TypeError(f"cannot define a linear map {self.domain()} -> {self.codomain()} elementwise from {function!r}: it must be a function on elements")
         return self.element_class(
@@ -3435,7 +3437,7 @@ class ModuleAutomorphismGroup(CoreMor):
         if isinstance(datum, Morphism):
             # An endomorphism of End_R(M), or any other arrow, is not an
             # automorphism: almost none is invertible (``CON-17``).
-            refuse_arrow_of_another_mor(
+            _refuse_foreign_arrow(
                 self, datum, "an automorphism is given by its generator images, or by the pair (forward, inverse)"
             )
         if isinstance(datum, tuple) and len(datum) == 2 and all(isinstance(part, Morphism) for part in datum):

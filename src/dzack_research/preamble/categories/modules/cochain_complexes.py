@@ -856,6 +856,8 @@ class CochainMor(CategoricalMor):
         return self._module_scalar_multiple(scalar, self.identity())
 
     def elementwise(self, function):
+        if isinstance(function, Morphism):
+            return self(function)
         if not callable(function):
             raise TypeError(
                 f"an element of {self} given elementwise needs a function on {self.domain()}, "

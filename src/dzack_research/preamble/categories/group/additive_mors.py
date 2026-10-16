@@ -563,6 +563,8 @@ class AdditiveMor(CategoricalMor):
 
     def elementwise(self, function):
         r"""Construct the additive map declared by ``function``."""
+        if isinstance(function, Morphism):
+            return self(function)
         assert callable(function), (
             f"cannot build a morphism {self.domain()} -> {self.codomain()} from {function}: "
             f"an additive morphism is given by a map on elements, and {function} is not a map"
