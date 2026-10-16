@@ -182,6 +182,7 @@ def _central_projector(module, character: IsotypicCharacter):
 
     computation_ring = _owned_rationals() if engine_ring is SageZZ else base_ring
     rank = int(coefficient_module.module_rank())
+    labels = tuple(coefficient_module.module_generating_set())
     matrices = computation_ring.matrix_space(rank)
     projector = matrices.zero()
     order = computation_ring(int(group.order()))
@@ -205,7 +206,7 @@ def _central_projector(module, character: IsotypicCharacter):
                 [
                     _owned_engine_element(computation_ring,
                         computation_engine(
-                            _engine_element(base_ring, source[row, column])
+                            _engine_element(base_ring, source[labels[row], labels[column]])
                         )
                     )
                     for column in range(rank)
