@@ -228,7 +228,11 @@ Products over infinite index sets remain unrepresented: the group product hook t
 
 For `f: G -> H` with `G` finite, `f(G)` is finite, `|f(G)| <= |G|`. `GroupMorphism.image()` (`categories/group/groups.py`) returns `H.subgroup(...)` on the images of the generators, placed only by the finiteness of `H`.
 **Observed (executed 2026-10-16):** the orthogonal-sum map `<s> x <s> -> O(U + U)`, `s` the swap of `U`, has an image of order four, but `image().cardinality()` asserts: `O(U + U)` is indefinite of rank four and not placed finite, so the generated image subgroup is placed neither finite nor infinite.
-**Repair:** the image constructor places the subgroup finite when its source is finite, by the bound above (`_finite_if_bounded_by` of the source); no TODO node selects it yet.
+**Repair:** `images-of-finite-groups-are-placed-finite` in [TODO.md](TODO.md): the image constructor places the subgroup finite when its source is finite (Mathlib `Mathlib/Data/Set/Finite/Range.lean`), as `_finite_if_bounded_by` does for subgroups and quotients. Related: [Group morphisms lose computational closure across represented data](#group-morphisms-lose-computational-closure-across-represented-data), which owns the image computation itself.
+
+### `gluing_subgroup` names two different subgroups
+
+`LEX-11` asks that one name be one operation in one codomain. `gluing_subgroup()` of a finite-index embedding `j: M -> L` (`LatticeEmbeddingMethods`, `categories/lattice_morphisms.py`) and of `CyclotomicDecomposition` (which delegates to it) is `L/M` inside `A_M = M^#/M`. `IsometryPrimitiveExtension.gluing_subgroup()` (`categories/lattice_centralizers.py`) is `H_+ = L/(L^f + (L^f)^perp)` inside `A_{L^f}`, the projection of that glue to one summand's discriminant group: a different subgroup of a different group. Observed by source reading 2026-10-16; neither name was changed. The owner of the lexicon decides which operation keeps the name; no TODO node yet.
 
 ### Restricting an isometry to a cyclotomic summand compares a symbolic equation
 

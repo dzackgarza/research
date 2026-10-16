@@ -2434,15 +2434,17 @@ class _GroupProductElement(MultiplicativeGroupElement):
     def is_one(self):
         return self == self.parent().one()
 
-    def __eq__(self, other):
-        if not isinstance(other, _GroupProductElement) or other.parent() is not self.parent():
-            return False
-        # Equality in a product is componentwise; a component equality can
-        # be an undecided proposition, which the conjunction keeps.
-        return conjunction(self._components[label] == other._components[label] for label in self._components)
+    def _richcmp_(self, other, op):
+        r"""Equality in a product is componentwise (``STY-167``).
 
-    def __ne__(self, other):
-        return negation(self == other)
+        Sage calls this only with ``other`` in the same parent.  A component
+        equality can be an undecided proposition, which the conjunction keeps.
+        """
+        assert op in (op_EQ, op_NE), (
+            f"points of the product {self.parent()} are compared for equality only; they carry no order"
+        )
+        equal = conjunction(self._components[label] == other._components[label] for label in self._components)
+        return equal if op == op_EQ else negation(equal)
 
     def __hash__(self):
         return hash(tuple(hash(component) for component in self._components.values()))

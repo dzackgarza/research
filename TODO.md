@@ -361,7 +361,14 @@ Preserve the phase-T execution rules.
 
 Repair the existing public construction routes and inherited methods before proving the daily core. Placement and engine audits cover the existing preamble; the exercise core tests mathematically useful composed pathways.
 
-- [ ] **`effective-categorical-constructions`**. **Needs:** none.
+- [ ] **`images-of-finite-groups-are-placed-finite`**. **Needs:** none.
+  **Violated statement:** `CON-07`: "A constructor for a specific object may decide the property from a cheap computation that a `lean-categories` theorem makes equivalent, and place the result"; the group owner states the rule for this case at `_finite_if_bounded_by` (`categories/group/groups.py`): "a construction of one of these from ``group`` is placed in finite groups at construction when ``group`` is ... and no order is computed". The image `f(G)` of a group morphism is the range of a map out of `G`, finite when `G` is (Mathlib `Set.fintypeRange` and the `Finite` range instances, `Mathlib/Data/Set/Finite/Range.lean`). `GroupMorphism.image()` constructs `self.codomain().subgroup(...)`, placed only by the finiteness of the codomain.
+  **Evidence (executed 2026-10-16, worktree `port-gaps7-prod`):** for `s` the swap of `U` and `G = <s> <= O(U)`, the orthogonal-sum map `G x G -> O(U + U)` (`BiproductLattices.orthogonal_sum_map`) has an image of order four, but `image().cardinality()` asserts in `_group_cardinality`: `O(U + U)` is indefinite of rank four and not placed finite, so the generated image is placed neither finite nor infinite. The same holds for every map from a finite group into an infinite one.
+  **Policy search:** `CON-07`, `CAT-01` (the cardinality frontier is for cases with no route; here placement by construction is the route), `OWN-22` (placing by the source's finiteness computes nothing), `STY-129` and `ARC-08` (no engine answer is read). None permits leaving the image unplaced when its source is finite.
+  **Owner and delta:** `GroupMorphism.image()` and the generated-subgroup constructor it calls (`_engine_subgroup`, `categories/group/groups.py`): the image of a morphism out of a finite group is placed in `OwnedFiniteGroups()` at construction, by the source's placement, with no order computed; the existing codomain bound stays.
+  **Acceptance:** for `G = <s>` above and `sum_map = (U + U).orthogonal_sum_map(Groups().product_construction((G, G)))`, `sum_map.image()` lies in `OwnedFiniteGroups()` and has cardinality 4; the image of `Groups.C(4) -> Groups.C(2)` stays finite of order 2; the image of a map out of an infinite group is not placed finite by this rule. Retain execution under T.
+
+- [ ] **`effective-categorical-constructions`**. **Needs:** `images-of-finite-groups-are-placed-finite`.
   **Priority:** one.
   **Owner and delta:** the common categorical constructors and their group,
   module and set owners. Deliver effective constructions as actual objects
@@ -378,6 +385,12 @@ Repair the existing public construction routes and inherited methods before prov
     presented groups and modules, with projections, injections and universal
     maps. Include empty diagrams and infinite groups with chosen finite
     presentations. Preserve the general module product construction.
+    The group product owner realizes every finite family of groups on
+    families of components (`OwnedGroups._componentwise_product_construction`,
+    source delivered 2026-10-16 and executed on `<s> x <s>` and
+    `O(<1> + <-2>) x <s>`); finite permutation and finitely presented families
+    keep the GAP route. Presentations of products of finitely presented
+    groups remain with this item.
   - Equalizers, coequalizers, kernels, cokernels and quotients, with their
     inclusions or quotient maps and universal factorizations. Compose them
     into finite diagram limits and colimits, pullback cones and pushout
@@ -1018,7 +1031,7 @@ Consolidate the suite around the frozen API, retaining distinct mathematical obl
   **Observed (2026-09-26):** the smallest `ADELogPairs` witness, type `A_1`, costs 0.7 s per base ring and `P^2` from its fan 0.9 s, nearly all of it in the fan's chart changes.
   **Closure:** the default suite run is green on all four gates, with no gate raised.
 
-- [ ] **`terminal-session`**. **Needs:** `category-method-coverage-sweep`, `port-isotropic-action-maps`, `port-configurations-cones-and-integral-lifts`, `triage-long-tail`, `suite-within-time-gates`, `sheaves-compute-sections-on-opens`, `bounded-rational-group-integral-structures`, `pointwise-perpendicular-kernel`, `lattice-algorithm-dispatch`, `isotropic-binary-orthogonal-groups-are-finite`, `norm-two-root-types-of-definite-lattices`, `arithmetic-centralizers-from-component-gluing`, `geometry-stub-operations-compute`, `exact-complex-numbers`.
+- [ ] **`terminal-session`**. **Needs:** `category-method-coverage-sweep`, `port-group-primitives-with-generators`, `port-isotropic-action-maps`, `port-configurations-cones-and-integral-lifts`, `triage-long-tail`, `suite-within-time-gates`, `sheaves-compute-sections-on-opens`, `bounded-rational-group-integral-structures`, `pointwise-perpendicular-kernel`, `lattice-algorithm-dispatch`, `isotropic-binary-orthogonal-groups-are-finite`, `norm-two-root-types-of-definite-lattices`, `arithmetic-centralizers-from-component-gluing`, `geometry-stub-operations-compute`, `exact-complex-numbers`.
 
   **Owner and delta:** execute the integrated mathematical proof burden against the frozen API on the final owned session and research notebook. This is full acceptance within the already-active execution phase.
   **Invariants:** a fresh process imports `from dzack_research.preamble.all import *` and exposes Cat and Lattices.
@@ -1519,7 +1532,7 @@ These remain required constructions with their original generality, maps, specim
   - `Stab_{O(L)}(S)` as the owned pullback `O(S)_{H_S} x_{O(H)} O(T)_{H_T}`, with its projections and the gluing map back into `O(L)`;
 
   - `Gamma_{h,T} = rho-bar_T^{-1}(gamma rho-bar_S(O(S,h)) gamma^{-1})` as a subgroup of `O(T)` with its inclusion.
-    With generators of `O(S,h)` and `O(T)` (and relations, if any), it answers generators (and a presentation) of `Gamma_{h,T}`. The theory and its leads (Peters–Sterk 15.1; Nikulin 1979) are in `docs/theory/glue-stabilizers.md`. **Closure specimens:** for `L = U + U` with `S = U` and `T = U`, the stabilizer of `S` is `O(U) x O(U)`. For `L` unimodular, `Gamma_{h,T} = rho_T^{-1}(gamma rho_S(O(S,h)) gamma^{-1})`. For a rank-one `S = <h>` with `h^2 = 2` in `II_{1,9}`, the pullback description reconstructs the stabilizer of `h`.
+    With generators of `O(S,h)` and `O(T)` (and relations, if any), it answers generators (and a presentation) of `Gamma_{h,T}`. The product `O(S) x O(T)` and its orthogonal-sum map into `O(S + T)` exist as `OwnedGroups().product_construction` and `BiproductLattices.orthogonal_sum_map` (2026-10-16). The theory and its leads (Peters–Sterk 15.1; Nikulin 1979) are in `docs/theory/glue-stabilizers.md`. **Closure specimens:** for `L = U + U` with `S = U` and `T = U`, the stabilizer of `S` is `O(U) x O(U)`. For `L` unimodular, `Gamma_{h,T} = rho_T^{-1}(gamma rho_S(O(S,h)) gamma^{-1})`. For a rank-one `S = <h>` with `h^2 = 2` in `II_{1,9}`, the pullback description reconstructs the stabilizer of `h`.
 
 - [ ] **`coxeter-group-structure`**. **Needs:** `lattice-reflection-groups`. **Owner and delta:** the category of Coxeter systems `(W, S)` owns:
 
