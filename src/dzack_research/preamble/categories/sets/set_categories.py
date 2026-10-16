@@ -646,7 +646,7 @@ class OwnedSetMorphism(SetMorphism):
             # subgroup word or a subset-inclusion premise (OWN-09, OWN-14).
             return function(element, *args, **kwargs)
         if (
-            isinstance(function, Morphism)
+            isinstance(function, (Morphism, CategoricalArrow))
             and function.domain() is self.domain()
             and function.codomain() is self.codomain()
         ):
@@ -1447,7 +1447,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             labels = tuple(index_set)
             reference = morphisms.value(labels[0])
             match reference:
-                case Morphism():
+                case Morphism() | CategoricalArrow():
                     pass
                 case _:
                     raise TypeError(
@@ -1463,7 +1463,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             for label in labels:
                 arrow = morphisms.value(label)
                 if not (
-                    isinstance(arrow, Morphism)
+                    isinstance(arrow, (Morphism, CategoricalArrow))
                     and arrow.domain() is source
                     and arrow.codomain() is target
                     and _category_accepts_morphism(self, source, target, arrow)
@@ -3131,7 +3131,7 @@ class PowerSets(OwnedCategory):
         ):
             r"""The subset classified by \(\chi\colon X\to\Delta[1]\): where \(\chi=1\)."""
             if not (
-                isinstance(characteristic_morphism, Morphism)
+                isinstance(characteristic_morphism, (Morphism, CategoricalArrow))
                 and _category_accepts_morphism(
                     Sets(), self.base_set(), self.truth_values(), characteristic_morphism
                 )
@@ -3171,7 +3171,7 @@ class PowerSets(OwnedCategory):
             subobjects = Sets().Subobjects(self.base_set())
             if candidate in subobjects:
                 return candidate
-            if isinstance(candidate, Morphism):
+            if isinstance(candidate, (Morphism, CategoricalArrow)):
                 if candidate.codomain() is not self.base_set():
                     raise ValueError(
                         f"{candidate} is a map into {candidate.codomain()}, so it is not a subset of {self.base_set()}"
@@ -3213,7 +3213,7 @@ class PowerSets(OwnedCategory):
                     from dzack_research.preamble.logic import conjunction
 
                     return conjunction(base.is_parent_of(point) for point in candidate)
-                case _ if isinstance(candidate, Morphism):
+                case _ if isinstance(candidate, (Morphism, CategoricalArrow)):
                     return Sets().Subobjects(base).admits_arrow(candidate)
                 case _:
                     return False

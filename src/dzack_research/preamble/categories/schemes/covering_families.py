@@ -11,6 +11,7 @@ from itertools import combinations
 
 from sage.categories.morphism import Morphism
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.presheaves import (
     CoveringFamilies,
 )
@@ -99,7 +100,7 @@ def _ringed_covering_family(
     ambient_index = chart_family.index_set()(ambient_chart_index)
     for index in chart_family.index_set():
         embedding = embedding_family[index]
-        if not isinstance(embedding, Morphism):
+        if not isinstance(embedding, (Morphism, CategoricalArrow)):
             raise TypeError(
                 f"the embedding of chart {index} into {ambient_space} must be a morphism of ringed "
                 f"spaces, but it is {embedding}"
@@ -154,7 +155,7 @@ def _ringed_covering_family(
     overlap_data = {}
     for left, right in expected_pairs:
         overlap_space, left_map, right_map = normalized[left, right]
-        if not isinstance(left_map, Morphism) or not isinstance(right_map, Morphism):
+        if not isinstance(left_map, (Morphism, CategoricalArrow)) or not isinstance(right_map, (Morphism, CategoricalArrow)):
             raise TypeError(
                 f"the overlap of charts {left} and {right} must be given by morphisms of ringed "
                 f"spaces into each chart, but it is given by {left_map} and {right_map}"

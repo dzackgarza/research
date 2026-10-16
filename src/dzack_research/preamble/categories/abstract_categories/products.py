@@ -14,6 +14,7 @@ from sage.structure.element import parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.cat import (
     Cat,
     _FunctorCategory,
@@ -517,7 +518,7 @@ class _FiniteSequenceFunctorCategory(_FunctorCategory):
                 )
             base = self.codomain_category()
             for transition in transitions:
-                if not isinstance(transition, Morphism) or not _category_accepts_morphism(
+                if not isinstance(transition, (Morphism, CategoricalArrow)) or not _category_accepts_morphism(
                     base, transition.domain(), transition.codomain(), transition
                 ):
                     raise TypeError(
@@ -936,7 +937,7 @@ class ParallelFamilyDiagram(Functor):
             )
         reference = morphisms.value(morphisms.index_set().an_element())
         match reference:
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 pass
             case _:
                 raise TypeError(
@@ -981,7 +982,7 @@ class ParallelFamilyDiagram(Functor):
             return _category_mor_parent(self.codomain(), image, image).identity()
         image = self.morphisms().value(morphism.label())
         match image:
-            case Morphism() if (
+            case Morphism() | CategoricalArrow() if (
                 image.domain() is self.source_object()
                 and image.codomain() is self.target_object()
                 and _category_accepts_morphism(

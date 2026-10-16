@@ -14,6 +14,7 @@ from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.element import parent
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -354,7 +355,7 @@ class _DiscreteFunctor(Functor):
                 f"not an arbitrary functor {domain} -> {codomain}"
             )
         match object_map:
-            case Morphism() if (
+            case Morphism() | CategoricalArrow() if (
                 object_map.domain() is not domain.object_set()
                 or object_map.codomain() is not codomain.object_set()
             ):

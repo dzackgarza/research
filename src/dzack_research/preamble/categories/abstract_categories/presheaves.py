@@ -61,6 +61,7 @@ from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
@@ -604,7 +605,7 @@ def _covering_family(category: Category, target: Parent, members, overlaps, *, _
         )
     for arrow in family:
         match arrow:
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 pass
             case _:
                 raise TypeError(

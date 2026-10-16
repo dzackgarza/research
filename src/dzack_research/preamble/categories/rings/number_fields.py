@@ -13,6 +13,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories._lattice import signature_pair
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoryPacketMethods,
@@ -493,7 +494,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             if source_engine is SageQQ:
                 def embedding_position(embedding):
                     if (
-                        not isinstance(embedding, Morphism)
+                        not isinstance(embedding, (Morphism, CategoricalArrow))
                         or embedding.domain() is not self
                         or embedding.codomain() is not target
                         or positions.cardinality() != 1
@@ -505,7 +506,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
 
                 def embedding_position(embedding):
                     if (
-                        not isinstance(embedding, Morphism)
+                        not isinstance(embedding, (Morphism, CategoricalArrow))
                         or embedding.domain() is not self
                         or embedding.codomain() is not target
                     ):

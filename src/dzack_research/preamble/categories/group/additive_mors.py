@@ -14,6 +14,7 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.coerce_actions import IntegerMulAction
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategories,
@@ -346,7 +347,7 @@ class AdditiveMorGroups(OwnedCategory):
             return mor.elementwise(lambda element: self(right(element)))
 
         def __rmul__(self, scalar):
-            if isinstance(scalar, Morphism):
+            if isinstance(scalar, (Morphism, CategoricalArrow)):
                 return scalar.__mul__(self)
             return self._pointwise_mor()._owned_scalar_multiple(scalar, self)
 

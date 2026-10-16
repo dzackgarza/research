@@ -2,6 +2,7 @@ r"""Cochain complexes of owned modules and their cohomology."""
 
 from sage.categories.map import Map
 from sage.categories.category import Category
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
 from sage.categories.morphism import Morphism
@@ -676,7 +677,7 @@ class CochainMorphismMethods:
         return NotImplemented
 
     def __rmul__(self, scalar):
-        if isinstance(scalar, Morphism) and _precomposable(scalar, self):
+        if isinstance(scalar, (Morphism, CategoricalArrow)) and _precomposable(scalar, self):
             return scalar.__mul__(self)
         return self.parent().scalar_multiple(scalar, self)
 

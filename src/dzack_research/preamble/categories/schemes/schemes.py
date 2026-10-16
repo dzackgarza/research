@@ -61,6 +61,7 @@ from sage.schemes.projective.projective_space import (
 )
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     _MonoCategoryOf,
@@ -1709,7 +1710,7 @@ class SchemeMorCategory(CategoricalMor):
                 raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case _SageSchemeMorphism():
                 raise TypeError("a native scheme arrow is private engine output, not scheme-morphism defining data")
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 assert affine_endpoints, (
                     f"cannot make the ring morphism {datum} a morphism {domain} -> {codomain}: a ring morphism "
                     f"defines a morphism of schemes only between affine schemes, and {domain} or {codomain} "

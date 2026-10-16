@@ -27,6 +27,7 @@ from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -253,7 +254,7 @@ class MultiplicativeAlgebraMorphism:
         factors. In particular, a unit-preserving left factor cannot add
         unit preservation to a right factor admitted only in the root Mor.
         """
-        if not isinstance(other, Morphism) or other.codomain() is not self.domain():
+        if not isinstance(other, (Morphism, CategoricalArrow)) or other.codomain() is not self.domain():
             return NotImplemented
         other_parent = element_parent(other)
         if not isinstance(other_parent, CategoricalMor):

@@ -8,6 +8,7 @@ from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.richcmp import op_EQ
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
@@ -649,16 +650,16 @@ class FormEmbeddingMor(CategoricalMor):
         CategoricalMor.__init__(self, mor_family, domain, codomain)
 
     def __call__(self, images, *, value_morphism=None, **kwargs):
-        if isinstance(images, Morphism) and value_morphism is not None:
+        if isinstance(images, (Morphism, CategoricalArrow)) and value_morphism is not None:
             return super().__call__((images, value_morphism), **kwargs)
         return super().__call__(images, value_morphism=value_morphism, **kwargs)
 
     def _element_constructor_(self, images, *, quadratic: bool | None = None, value_morphism=None, denominator_clearing=None, check=False):
         domain = self.domain()
         codomain = self.codomain()
-        if isinstance(images, tuple) and len(images) == 2 and all(isinstance(part, Morphism) for part in images):
+        if isinstance(images, tuple) and len(images) == 2 and all(isinstance(part, (Morphism, CategoricalArrow)) for part in images):
             images, value_morphism = images
-        elif isinstance(images, Morphism):
+        elif isinstance(images, (Morphism, CategoricalArrow)):
             if self._already_parented_arrow(images):
                 images.validate_form_preservation(check=check)
                 images.validate_injectivity(check=check)
@@ -726,7 +727,7 @@ class FormedModuleMor(CategoricalMor):
         explicit_pair = (
             isinstance(datum, tuple)
             and len(datum) == 2
-            and all(isinstance(part, Morphism) for part in datum)
+            and all(isinstance(part, (Morphism, CategoricalArrow)) for part in datum)
         )
         if (
             not explicit_pair
@@ -742,7 +743,7 @@ class FormedModuleMor(CategoricalMor):
                 raise TypeError(f"{self} requires an explicit value map between {source_values} and {target_values}")
             datum = (module_morphism, source_values.module_category().Mor(source_values, target_values).identity())
 
-        if isinstance(datum, Morphism):
+        if isinstance(datum, (Morphism, CategoricalArrow)):
             if self._already_parented_arrow(datum):
                 datum.validate_form_preservation(check=check)
                 return datum
