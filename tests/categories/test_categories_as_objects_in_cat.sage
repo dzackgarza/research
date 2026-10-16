@@ -19,3 +19,20 @@ def test_cat_keeps_the_object_and_category_readings_of_mor():
     target = Sets()
 
     assert categories.Mor(target) is Cat().Mor(categories, target)
+
+
+def test_a_category_with_a_chosen_functor_retains_its_category_operations():
+    r"""The two-object chain equipped with its identity functor is an object of Cat/I."""
+    chain = PosetCategory(Sets.Δ[1])
+    over = Cat().SliceOver(chain)
+    selected = over(Cat().identity(chain))
+
+    assert selected in over
+    assert over.arrow(selected).domain() is chain
+    assert over.arrow(selected).codomain() is chain
+    assert selected.object_set().cardinality() == cardinal(2)
+    first = selected(0)
+    identity = selected.Mor(first, first).identity()
+    assert identity.domain() is first
+    assert identity.codomain() is first
+    assert identity * identity == identity
