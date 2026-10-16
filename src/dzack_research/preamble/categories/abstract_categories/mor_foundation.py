@@ -104,7 +104,7 @@ class UnderlyingSetMor(OwnedMor):
         SageHomset.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, SetMorphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
@@ -112,7 +112,7 @@ class UnderlyingSetMor(OwnedMor):
                 )
             if datum.parent() is self:
                 return datum
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             _refuse_foreign_arrow(
                 self, datum, "the underlying map of an arrow of a structured category is its image under that "
                 "category's forgetful functor to sets"

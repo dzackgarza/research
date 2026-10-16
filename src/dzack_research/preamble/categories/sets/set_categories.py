@@ -8,6 +8,7 @@ from math import comb
 from operator import index as integer_index
 from typing import TYPE_CHECKING, Any, Self, SupportsIndex, TypeVar
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism, SetMorphism
@@ -1026,7 +1027,7 @@ class SetMorCategory(CategoricalMor):
         it.  An expression with no free variable or with several is not a
         map of one argument, and is rejected naming its variables.
         """
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
@@ -2875,7 +2876,7 @@ class SetInjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""An injection given by a set map or a function on points; injectivity is its validator."""
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as an injection {self.domain()} -> {self.codomain()}: it is a map "
@@ -2955,7 +2956,7 @@ class SetSurjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""A surjection given by a set map or a function on points; surjectivity is its validator."""
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a surjection {self.domain()} -> {self.codomain()}: it is a map "

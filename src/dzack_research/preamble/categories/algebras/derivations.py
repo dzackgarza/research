@@ -587,10 +587,12 @@ class DerivationSpace(RestrictedMorCategoryParent):
         r"""Construct the derivation; ``check=True`` runs its validator (``OWN-22``)."""
         match generator_images:
             case _ if parent(generator_images) is self:
+                generator_images.validate_relations(check=check)
                 return generator_images
             case _ if generator_images in self.arrow_set() and self.accepts(generator_images):
                 selected = generator_images.derivation()
                 if selected.parent() is self:
+                    selected.validate_relations(check=check)
                     return selected
                 raise TypeError(f"{generator_images} belongs to another derivation space; apply the mathematical transport")
             case _ if generator_images in self.arrow_set():
@@ -604,6 +606,8 @@ class DerivationSpace(RestrictedMorCategoryParent):
                     f"{self.restricted_target_module()}: it is a map {generator_images.domain()} -> "
                     f"{generator_images.codomain()}"
                 )
+            case Map():
+                raise TypeError(f"{generator_images} is an arrow of another Mor; give the derivation generator images")
             case _:
                 pass
         derivation = Derivation(self, generator_images)
@@ -1093,10 +1097,12 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
         r"""Construct the graded derivation; ``check=True`` runs its validator (``OWN-22``)."""
         match function:
             case _ if parent(function) is self:
+                function.validate_graded_leibniz(check=check)
                 return function
             case _ if function in self.arrow_set() and self.accepts(function):
                 derivation = function.derivation()
                 if derivation.parent() is self:
+                    derivation.validate_graded_leibniz(check=check)
                     return derivation
                 raise TypeError(f"{function} belongs to another graded derivation space; apply the mathematical transport")
             case _ if function in self.arrow_set():
@@ -1109,6 +1115,8 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
                     f"cannot view {function} as a graded derivation {self.algebra()} -> {self.target()}: it is a "
                     f"map {function.domain()} -> {function.codomain()}"
                 )
+            case Map():
+                raise TypeError(f"{function} is an arrow of another Mor; give the graded derivation defining function")
             case _ if callable(function):
                 return self.elementwise(function, check=check)
             case _:
@@ -1152,7 +1160,7 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
     def elementwise(self, function, *, check=False):
         r"""Construct the graded derivation given on elements; ``check=True`` runs its validator (``OWN-22``)."""
         if isinstance(function, Map):
-            return self(function)
+            return self(function, check=check)
         if not callable(function):
             raise TypeError(
                 f"a graded derivation of {self.algebra()} needs a map on elements, but {function!r} is not callable"
