@@ -4385,6 +4385,33 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
         def extension_ring(self):
             return _owned_ring(self.module_over_extension().base_ring())
 
+        @cached_method
+        def regular_module_identification(self):
+            r"""The isomorphism ``Res_f(S^1) -> S`` of ``R``-modules, ``s e_0 |-> s``.
+
+            Here ``f: R -> S`` is the structure morphism of the ``R``-algebra
+            ``S`` and ``S^1`` is the regular ``S``-module.  The target is
+            ``S`` with its own ``R``-module structure, on which ``r`` acts as
+            multiplication by ``f(r)``.  Both modules have the underlying set
+            of ``S``, and the map is ``R``-linear because
+            ``r.(s e_0) = (f(r) s) e_0 |-> f(r) s = r.s``.
+            """
+            from dzack_research.preamble.categories.algebras.algebras import Algebras
+
+            scalars = self.extension_ring()
+            assert self.module_over_extension() is scalars.regular_module(), (
+                f"{self} is not restricted from the regular module of {scalars}, so it has no identification "
+                f"with {scalars}"
+            )
+            assert scalars in Algebras(self.base_ring()) and self.ring_map() is scalars.algebra_structure_morphism(), (
+                f"{self} is restricted along {self.ring_map()}, which is not the structure morphism of {scalars} "
+                f"as a {self.base_ring()}-algebra"
+            )
+            to_scalars = scalars.regular_module_isomorphism()
+            return self.module_category().Mor(self, scalars)._from_constructed_element_map(
+                lambda element: to_scalars(self(element).underlying_element())
+            )
+
         def underlying_additive_group(self):
             r"""Return the unchanged additive group of the extension-ring module."""
             return self.module_over_extension().underlying_additive_group()
@@ -4702,9 +4729,10 @@ def _restricted_scalars_view(
     already represented dimension is multiplied by that basis cardinality.
     This dimension transport does not require or create a finite frame of M.
     """
-    assert _engine_ring(ring_map.codomain()) is _engine_ring(module.base_ring()), (
-        f"{module} cannot be restricted along {ring_map}: the ring morphism must end at the base ring "
-        f"{module.base_ring()}, but its codomain is {ring_map.codomain()}"
+    extension_ring = _owned_ring(module.base_ring())
+    assert _owned_ring(ring_map.codomain()) is extension_ring, (
+        f"{module} cannot be restricted along {ring_map}: the ring morphism must end at the scalar ring "
+        f"{extension_ring} of the module, but its codomain is {ring_map.codomain()}"
     )
     from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
         _SelectedFinitePresentationModules,
@@ -4714,7 +4742,6 @@ def _restricted_scalars_view(
     )
 
     base_ring = _owned_ring(ring_map.domain())
-    extension_ring = _owned_ring(module.base_ring())
     placement = [RestrictedScalarsModules(base_ring)]
     if base_ring in OwnedFields():
         placement.append(VectorSpaces(base_ring))
