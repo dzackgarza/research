@@ -155,6 +155,14 @@ class PrimeSpectra(OwnedCategory):
         True
         sage: R.ideal(R(x)) in spectrum
         True
+        sage: px in spectrum.D(R(y))
+        True
+        sage: px in spectrum.D(R(x))
+        False
+        sage: py in spectrum.V(R.ideal(R(x)))
+        False
+        sage: closed in spectrum.V(R.ideal(R(x)))
+        True
     """
 
     def an_object(self):
@@ -674,10 +682,7 @@ class DistinguishedOpenSubobjects(OwnedParameterizedCategory):
 
 def _zariski_closed_subobject(spectrum, ideal):
     domain = spectrum.condition_set(
-        lambda point: bool(
-            _engine_ideal(spectrum.ring(), ideal)
-            <= _engine_ideal(spectrum.ring(), point.ideal())
-        )
+        lambda point: ideal.is_contained_in(point.ideal())
     )
     inclusion = domain.inclusion()
     return Sets().Subobjects(spectrum).object(
@@ -690,8 +695,7 @@ def _zariski_closed_subobject(spectrum, ideal):
 def _distinguished_open_subobject(spectrum, function):
     function = spectrum.ring()(function)
     domain = spectrum.condition_set(
-        lambda point: _engine_element(spectrum.ring(), function)
-        not in _engine_ideal(spectrum.ring(), point.ideal())
+        lambda point: negation(point.ideal().contains_ambient_element(function))
     )
     inclusion = domain.inclusion()
     return Sets().Subobjects(spectrum).object(
