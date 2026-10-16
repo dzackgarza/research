@@ -19,6 +19,13 @@ Specimens:
   finite (rank two, ``-det = 2`` not a square).  In the product the point
   ``x = (t, s)`` has components ``t`` and ``s``, ``x^2 = (t^2, 1)`` and
   ``x != 1``.
+- The image of the orthogonal-sum map ``<s> x <s> -> O(U + U)`` is the range
+  of a function out of a group of order four, so it is finite (Mathlib
+  ``Set.finite_range``, ``Mathlib/Data/Set/Finite/Range.lean``) although
+  ``O(U + U)`` is not placed finite; by injectivity it has order four.  The
+  image of ``C4 -> C2``, ``a |-> b``, is all of ``C2``.  A morphism out of the
+  infinite free group ``F(x)`` into itself, ``x |-> x^2``, has the infinite
+  image ``<x^2>``, so the finite-source rule does not place it finite.
 
 Source-level specimens; execution is retained under terminal T.
 """
@@ -124,3 +131,24 @@ def test_product_with_an_infinite_orthogonal_group_is_componentwise() -> None:
     assert right(point * point) == group.one()
     assert point != product.one()
     assert left(~point) == ~orthogonal(t)
+
+
+def test_images_of_morphisms_out_of_finite_groups_are_placed_finite() -> None:
+    plane, swap, group = _swap_subgroup()
+    lattice = plane + plane
+    construction = Groups().product_construction((group, group))
+    sum_map = lattice.orthogonal_sum_map(construction)
+    assert lattice.O() not in OwnedFiniteGroups()
+    assert sum_map.image() in OwnedFiniteGroups()
+    assert sum_map.image().cardinality() == cardinal(4)
+
+    cyclic_four, cyclic_two = Groups.C(4), Groups.C(2)
+    a, b = cyclic_four.group_generators()[0], cyclic_two.group_generators()[0]
+    reduction = cyclic_four.Mor(cyclic_two)({a: b})
+    assert reduction.image() in OwnedFiniteGroups()
+    assert reduction.image().cardinality() == cardinal(2)
+
+    free = Groups.Free(1)
+    x = free.group_generators()[0]
+    squaring = free.Mor(free)({next(iter(free.free_basis())): x * x})
+    assert squaring.image() not in OwnedFiniteGroups()
