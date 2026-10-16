@@ -1331,6 +1331,11 @@ A sheaf on a topological space `X` with values in `D` is an object of `Sh(Open(X
 
 ## Workflow Papercuts
 
+### The live TODO has dependency edges to absent nodes
+
+A source scan on 2026-10-16 found ten Needs edges whose target has no open node: `normalization-extensions-retain-coefficients`, `bounded-rational-group-integral-structures`, `pointwise-perpendicular-kernel`, `lattice-algorithm-dispatch`, `finite-index-subgroup-generators`, and `images-of-subgroups-and-predicate-subsets` (the latter two have several consumers). This prevents the affected milestone and downstream nodes from becoming ready under the documented DAG rule. Their mathematical acceptance banks still exist; deleting an edge without checking the target's completion would discard an obligation. Reconcile the removal commits and retain unexecuted assertions at their actual owner under `triage-long-tail`. This observation does not reopen a completed construction or authorize replacing the DAG.
+
+
 ### The required reading does not fit a worker context
 
 AGENTS.md requires every subagent to read `INTENT.md`, `CONTRIBUTING.md` in full, `TODO.md`, `COMPLAINTS.md` and `docs/preamble-megadoc.md`. On 2026-10-16 their sizes were:

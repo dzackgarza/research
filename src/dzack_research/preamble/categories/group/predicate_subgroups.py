@@ -358,10 +358,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
             With complete finite-character data ``H`` is the preimage of a
             subgroup of a finite quotient, so ``|H| = |G| |image of H| /
-            |image of G|``.  In a finite ``G``, a selected generating family
-            of ``H`` (its constructing owner's claim, trusted under
-            ``OWN-22``) gives ``|H|`` as the order of the engine subgroup it
-            generates.  Otherwise, in a finite ``G``, ``H`` is the set of
+            |image of G|``. A selected finite generating family of ``H``
+            gives its order through its own generated engine subgroup,
+            independently of the ambient group's order. Otherwise, in a
+            finite ``G``, ``H`` is the set of
             elements satisfying the predicate, counted exactly in one pass over
             ``G``, at a cost linear in ``|G|``: the predicate is a Python
             function, which GAP's subgroup search by a property cannot evaluate.
