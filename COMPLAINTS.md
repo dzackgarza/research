@@ -228,17 +228,6 @@ Products over infinite index sets remain unrepresented: the group product hook t
 
 `LEX-11` asks that one name be one operation in one codomain. `gluing_subgroup()` of a finite-index embedding `j: M -> L` (`LatticeEmbeddingMethods`, `categories/lattice_morphisms.py`) and of `CyclotomicDecomposition` (which delegates to it) is `L/M` inside `A_M = M^#/M`. `IsometryPrimitiveExtension.gluing_subgroup()` (`categories/lattice_centralizers.py`) is `H_+ = L/(L^f + (L^f)^perp)` inside `A_{L^f}`, the projection of that glue to one summand's discriminant group: a different subgroup of a different group. Observed by source reading 2026-10-16; neither name was changed. The owner of the lexicon decides which operation keeps the name; no TODO node yet.
 
-### Glued centralizer generators repeatedly reconstruct integral-lift comparisons
-
-For a finite-index inclusion `j: M -> L`, lifting a point of `j(M)` should reuse the integral linear-system comparison attached to that same morphism. Cyclotomic centralizer assembly repeatedly applies this lift while extending a component isometry to the orthogonal sum. The exact source, target, chosen framings and Smith comparison must be retained; a rational preimage is not an integral solution.
-
-**Measured (2026-10-16, source `16e7f896f1`):** on `L = U + U`, with `sw` exchanging its hyperbolic planes, a 20-second `cProfile` of `L.O().centralizer(sw).group_generators()` stopped during block-isometry construction. There were 26 integral-preimage solver constructions and 26 `smith_form()` calls (14.058 s cumulative), and 18 `_orthogonal_sum_image` calls (10.086 s cumulative). Command: `direnv exec /home/dzack/research env PYTHONPATH=/home/dzack/research/.tmp/wt-cyclo/src sage -python /home/dzack/research/.tmp/wt-cyclo/.tmp/profile_centralizer.py`. The scratch probe enables `cProfile` only after constructing the swap and interrupts after 20 s; those figures include profiler overhead and describe one rank-four specimen, not a growth curve or an engine-only measurement.
-
-**Source:** `CyclotomicDecomposition._orthogonal_sum_image` (`categories/lattice_centralizers.py`) calls `orthogonal_sum_inclusion().lift` for each vector. `ModuleMorphismMethods._preimage_or_none` calls `_solve_preimage_integrally`; the latter constructs `_integral_preimage_positional_solver` anew, and `_integral_preimage_solver` calls `morphism.smith_form()` each time. Existing invariant-factor normalization and its change-of-presentation maps already supply the mathematical comparison. `OWN-22` requires computed data to be cached and reused; `DEV-12` requires the existing shared memoization mechanisms, not a new consumer-local cache.
-
-**Separate unresolved observation from the handoff:** the unprofiled full generator request exceeds 60 s, with the later traceback in `_divided_square -> _presented_degree_power -> _divided_relations -> ranking_map()(label) ->` membership in `NN`. The bounded profile stops earlier and does not establish the cause of that later stall. Diagnose it at the reached shared owner; no missing mathematical foundation has been established by these observations.
-
-**Consumer and repair:** `arithmetic-centralizers-from-component-gluing` in [TODO.md](TODO.md). Its complete mathematical specimens and component-generator obligations remain required. The label/divisor defect is discharged separately; it does not establish the glued centralizer result.
 
 ### Group colimits do not compose chosen finite presentations
 
