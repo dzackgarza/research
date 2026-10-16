@@ -324,13 +324,6 @@ def _identity_of_object(category: Category, obj: Parent) -> Morphism:
     return category.MorCategory().Of(obj, obj).identity()
 
 
-def _category_reading_owner(owner):
-    r"""Read a represented Cat endpoint through its defining category datum."""
-    from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
-
-    return owner.represented_category() if isinstance(owner, CategoryObject) else owner
-
-
 def _asked_of_the_category(owner: Parent, objects: tuple) -> bool:
     r"""Whether a name of the Mor packet is asked of ``owner`` as a category.
 
@@ -346,7 +339,6 @@ def _asked_of_the_category(owner: Parent, objects: tuple) -> bool:
     """
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-    owner = _category_reading_owner(owner)
     match objects:
         case ():
             return False
@@ -404,7 +396,7 @@ class ObjectLevelOperation:
 
         def operation(*objects, **options):
             if not options and len(objects) == self._category_arity and _asked_of_the_category(instance, objects):
-                return category_level(_category_reading_owner(instance), *objects)
+                return category_level(instance, *objects)
             return reading(*objects, **options)
 
         update_wrapper(operation, reading)

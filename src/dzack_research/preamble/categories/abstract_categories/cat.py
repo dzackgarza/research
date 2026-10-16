@@ -42,43 +42,6 @@ if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
 
 
-class CategoryObject(Objects.ParentMethods):
-    r"""A category regarded as a Mor endpoint, retaining its placement in ``Cat``.
-
-    The private computation class (``OWN-06``) of the objects that
-    :meth:`Cat.object` constructs through ``_object_of``; its datum is the
-    represented category.  A category is an object, so its host runtime is
-    the root of the owned chain.  ``Cat`` cannot declare the owned
-    ``Objects`` (see :meth:`Cat.super_categories`), so this class names that
-    root.  Constructed this way, the endpoint records its defining
-    construction, so a level that adds structure to a category (the slice
-    ``Cat/C`` adds a functor to ``C``) constructs on the data of that exact
-    category (``OWN-16``).
-
-    The endpoint represents that exact category; it does not select another
-    fixed Mor.
-    """
-
-    def __init__(
-        self,
-        category_of_categories: Cat,
-        represented_category: Category,
-        **rest,
-    ) -> None:
-        self._category_of_categories = category_of_categories
-        self._represented_category = represented_category
-        super().__init__(**rest)
-
-    def category_of_categories(self) -> Cat:
-        return self._category_of_categories
-
-    def represented_category(self) -> Category:
-        return self._represented_category
-
-    def _repr_(self) -> str:
-        return f"[{self.represented_category()}]"
-
-
 class FunctorMorCategoryConstruction(MorCategoryConstruction):
     r"""The family ``(C,D) |-> [C,D]``, with its actual natural transformations."""
 
@@ -87,8 +50,8 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
 
     def fixed_category_class_for(
         self,
-        domain: CategoryObject,
-        codomain: CategoryObject,
+        domain: Category,
+        codomain: Category,
     ) -> type[_FunctorCategory]:
         r"""The realization of ``[C, D]`` for these endpoints.
 
@@ -122,8 +85,8 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
 
     def Of(
         self,
-        domain: Category | CategoryObject,
-        codomain: Category | CategoryObject,
+        domain: Category,
+        codomain: Category,
     ) -> _FunctorCategory:
         category = self.base_category()
         source, target = category.object(domain), category.object(codomain)
@@ -175,8 +138,8 @@ class Cat(CategoryPacketMethods, Category):
         # declaring the owned ``Objects`` recurses at import, because Sage's
         # ``Category.__init__`` builds ``subcategory_class`` from the
         # supercategories, and ``Objects()`` records ``Cat()`` when it is
-        # built.  The objects of ``Cat`` reach the owned root through
-        # :class:`CategoryObject` instead.
+        # built. Its objects are the actual categories, whose owned bases
+        # supply the operations of Cat.
         return [SageObjects()]
 
     def category(self) -> Cat:
@@ -205,8 +168,8 @@ class Cat(CategoryPacketMethods, Category):
     @cached_method(key=lambda self, domain, codomain: (id(self.object(domain)), id(self.object(codomain))))
     def functor_mor(
         self,
-        domain: Category | CategoryObject,
-        codomain: Category | CategoryObject,
+        domain: Category,
+        codomain: Category,
     ) -> _FunctorCategory:
         return self.Mor(self.object(domain), self.object(codomain))
 
@@ -1606,7 +1569,6 @@ class _EvaluationFunctor(Functor):
 
 __all__ = [
     "Cat",
-    "CategoryObject",
     "NaturalTransformationMor",
     "NaturalTransformationMorphism",
 ]

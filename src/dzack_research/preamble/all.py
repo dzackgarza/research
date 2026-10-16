@@ -21,7 +21,6 @@ from dzack_research.preamble import language_runtime as _language_runtime
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
     Cat,
     CategoricalIsomorphism,
-    CategoryObject,
     CommutativeSquare,
     Coverage,
     CoveringFamilies,
