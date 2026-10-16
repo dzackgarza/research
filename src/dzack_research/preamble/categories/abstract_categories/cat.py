@@ -208,12 +208,9 @@ class CategoryFunctorMor(CategoricalMor):
                 return candidate in self.functor_category()
 
     def _element_constructor_(self, functor):
-        match functor:
-            case CategoryFunctorMorphism():
-                if functor.parent() is self:
-                    return functor
-                raise TypeError(f"{functor} belongs to another Mor; apply the functor between the categories")
-        return CategoryFunctorMorphism(self, functor)
+        if not isinstance(functor, Functor) or functor.parent() is not self:
+            raise TypeError(f"{functor} is not a functor in {self}")
+        return functor
 
     @object_level
     @cached_method
@@ -223,7 +220,7 @@ class CategoryFunctorMor(CategoricalMor):
                 f"the identity functor exists only on Mor(C, C), but this is Mor({self.domain()}, {self.codomain()})"
             )
 
-        return self(IdentityFunctor(self.domain().represented_category()))
+        return self(IdentityFunctor(self.domain()))
 
 
 class FunctorMorCategoryConstruction(MorCategoryConstruction):
@@ -252,7 +249,7 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
             _FiniteSequenceFunctorCategory,
         )
 
-        match domain.represented_category():
+        match domain:
             case shape if shape is FiniteOrdinalCategory(2):
                 realization = _WalkingArrowFunctorCategory
             case FiniteOrdinalCategory():
@@ -264,7 +261,7 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
         # diagrams as the nested ``ArrowDiagrams`` / ``SequenceDiagrams``
         # (subclasses of these realizations), through its class inheritance.
         name = "ArrowDiagrams" if realization is _WalkingArrowFunctorCategory else "SequenceDiagrams"
-        construction = _declared_construction(codomain.represented_category(), name)
+        construction = _declared_construction(codomain, name)
         return realization if construction is None else construction
 
     def Of(
@@ -282,8 +279,8 @@ class FunctorMorCategoryConstruction(MorCategoryConstruction):
             typecall(
                 self.fixed_category_class_for(source, target),
                 category,
-                source.represented_category(),
-                target.represented_category(),
+                source,
+                target,
             ),
         )
 
@@ -341,51 +338,13 @@ class Cat(CategoryPacketMethods, Category):
         """
         return super().__contains__(candidate) or candidate in MorCategories()
 
-    def object(self, category: Category | CategoryObject) -> CategoryObject:
-        r"""The Mor endpoint representing ``category`` in ``Cat``.
-
-        Sage's morphisms need a ``Parent`` at each end, and ``Cat`` itself, the
-        joins Sage assembles and Sage's own categories are not parents, so
-        every category enters ``Cat``'s Mors through one represented endpoint.
-        The input is the category or an endpoint already built for it.
-        """
-        match category:
-            case CategoryObject():
-                return category
-            case Category():
-                return self._object_on(category)
-            case _:
-                raise TypeError(
-                    f"an object of Cat is a category, but {category!r} is not a category"
-                )
+    def object(self, category: Category) -> Category:
+        r"""Admit the actual category as an object of ``Cat``."""
+        if not isinstance(category, Category):
+            raise TypeError(f"an object of Cat is a category, but {category!r} is not a category")
+        return category
 
     _mor_endpoint = object
-
-    @cached_method(key=lambda self, category: id(category))
-    def _object_on(self, category):
-        r"""The object of ``Cat`` on the datum ``category``, in its constructed placement.
-
-        A represented discrete category remains an object of
-        ``DiscreteCategories`` at a functor endpoint.  This is selected when
-        the endpoint is constructed, not recovered by a containment
-        predicate.  A Mor parent's independent set/module enrichment is not a
-        category of categories and is not transferred to this endpoint; its
-        constructed placement among ``MorCategories`` is retained instead.
-        """
-        placement = category.category()
-        match placement.is_subcategory(self):
-            case True:
-                pass
-            case False if MorCategories().is_subcategory(self) and category in MorCategories():
-                placement = MorCategories()
-            case False:
-                placement = self
-        return _object_of(
-            placement,
-            _engine=(placement, CategoryObject, None),
-            category_of_categories=self,
-            represented_category=category,
-        )
 
     @cached_method(key=lambda self, domain, codomain: (id(self.object(domain)), id(self.object(codomain))))
     def functor_mor(
@@ -1730,7 +1689,7 @@ class _FunctorCategory(FixedMorCategory):
                 f"{functor} is not an object of the functor category {self}: its domain or codomain is wrong"
             )
         if _engine is None and construction_data is None:
-            return self._object_on(functor)
+            return functor
         return _object_of(
             self,
             _engine=None if _engine is None else (self, _engine, None),
@@ -1769,13 +1728,8 @@ class _FunctorCategory(FixedMorCategory):
                 return obj
 
     def __contains__(self, candidate: Any) -> bool:
-        r"""Whether ``candidate`` is an object of ``[C, D]``.
-
-        Membership is placement only.  A raw ``Functor`` or the corresponding
-        arrow of ``Cat`` is defining/equivalent data; it enters this category
-        through :meth:`object` rather than being admitted by endpoint shape.
-        """
-        return Category.__contains__(self, candidate)
+        r"""A functor ``C -> D`` is itself an object of ``[C,D]``."""
+        return isinstance(candidate, Functor) and self._has_endpoints_of(candidate)
 
     def Mor(
         self,

@@ -22,6 +22,7 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 if TYPE_CHECKING:
@@ -44,13 +45,10 @@ def _functor_factor_family(factors):
     )
 
 
-class Functor:
-    r"""Construction data for a functor with explicit object and arrow actions.
+class Functor(CategoricalArrow):
+    r"""A functor with explicit object and arrow actions.
 
-    The mathematical object is ``self.object()`` in the existing functor
-    category ``[C,D]``.  This class is the retained action engine used by that
-    object and by the corresponding arrow of ``Cat``; it is not a second
-    uncategorized functor object.
+    The functor itself is an arrow of ``Cat`` and an object of ``[C,D]``.
 
     Unverified specimen: a proposed identity on underlying sets is not a
     functor to the category of injections when applied to a noninjective map::
@@ -82,6 +80,9 @@ class Functor:
     def __init__(self, domain: Category, codomain: Category) -> None:
         self._domain = domain
         self._codomain = codomain
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        CategoricalArrow.__init__(self, Cat().functor_mor(domain, codomain))
         # Cache the forward action by source identity.  A codomain object does
         # not determine a preimage; chosen preimages belong to ImageOfFunctor.
         self._object_images: dict[int, tuple[ObjectOfCategory, ObjectOfCategory]] = {}
@@ -341,14 +342,22 @@ class Functor:
         return Cat().Mor(self.domain(), self.codomain())
 
     def object(self):
-        r"""Return this datum as the object of its functor category ``[C,D]``."""
-        return self.functor_category().object(self)
+        return self
+
+    def functor(self):
+        return self
+
+    def Mor(self, target):
+        return self.natural_transformations_to(target)
 
     def arrow(self):
         r"""Return this same functor as the corresponding morphism in ``Cat``."""
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        return self
 
-        return Cat().arrow(self)
+    def __mul__(self, other):
+        if not isinstance(other, Functor) or other.codomain() is not self.domain():
+            return NotImplemented
+        return other.then(self)
 
     def natural_transformations_to(self, target: Functor):
         r"""Return the Mor of natural transformations ``self ⇒ target``."""
