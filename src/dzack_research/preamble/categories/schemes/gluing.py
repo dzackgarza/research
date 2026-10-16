@@ -2830,6 +2830,9 @@ class _FiniteAtlasModuleGluingDatumEngine:
             case False:
                 pass
         data["module_gluing_datum"] = self
+        data.update(PresheafObjects(self.scheme()).presheaf_datum(
+            _FiniteAtlasModuleOpenPresheaf(self)
+        ))
         return sheaves.object(
             self.descent_presheaf(),
             self.descent_data(),
@@ -6099,6 +6102,36 @@ class AlgebraGluingMor(CategoricalMor):
                 lambda algebra: _algebra_mor(algebra, algebra).identity()
             )
         )
+
+
+class _FiniteAtlasModuleOpenPresheaf(Functor):
+    r"""The sections functor of module descent data on the opens of its scheme.
+
+    On the whole space its value is the equalizer of the two chart
+    restriction maps (Hartshorne, II, Exercise 1.22). Sections on other
+    opens require their traces on the chosen affine atlas.
+    """
+
+    def __init__(self, datum) -> None:
+        self._datum = datum
+        super().__init__(
+            datum.scheme().open_subsets_site().opposite(),
+            Modules(datum.gluing_datum().global_function_algebra()),
+        )
+
+    def _apply_object(self, opposite_object):
+        subset = opposite_object.underlying_object().value()
+        scheme = self._datum.scheme()
+        assert subset is scheme.power_set().top(), (
+            f"sections of the module sheaf on {subset}: not implemented; "
+            "the open's traces on the chosen affine atlas are not represented"
+        )
+        return self._datum.compatible_sections()
+
+    def _apply_morphism(self, opposite_arrow):
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+        return source.module_category().Mor(source, target).identity()
 
 
 class _FiniteAtlasModuleSheafEngine:
