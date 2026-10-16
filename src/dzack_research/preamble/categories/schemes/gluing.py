@@ -7009,8 +7009,8 @@ def _line_bundle_transition_images(line_bundle, source_index, target_index):
     return images
 
 
-def _finite_atlas_line_bundle_module_sheaf(line_bundle):
-    r"""Return the rank-one module sheaf underlying a finite-atlas line bundle."""
+def _finite_atlas_line_bundle_module_datum(line_bundle):
+    r"""Return the rank-one module descent datum of a finite-atlas line bundle."""
     datum = line_bundle.gluing_datum()
     local_modules = {
         index: line_bundle.local_module(index)
@@ -7028,7 +7028,7 @@ def _finite_atlas_line_bundle_module_sheaf(line_bundle):
         for source_index, target_index in datum.transition_index_set()
     }
     category = FiniteAtlasModuleGluingData(datum)
-    descent = _object_of(
+    return _object_of(
         category,
         _engine=(category, _FiniteAtlasLineBundleModuleGluingDatumEngine, None),
         line_bundle=line_bundle,
@@ -7036,7 +7036,6 @@ def _finite_atlas_line_bundle_module_sheaf(line_bundle):
         local_modules=local_modules,
         transitions=transitions,
     )
-    return descent.sheaf()
 
 
 class FiniteAtlasLineBundlePullbackComparison(SageObject):

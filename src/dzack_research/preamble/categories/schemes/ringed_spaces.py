@@ -2097,7 +2097,11 @@ class InvertibleSheavesWithChosenTrivialization(OwnedParameterizedCategory):
 
     def _realize(self, engine, **construction_data):
         r"""Realize one represented trivialization through the quasi-coherent sheaf owner."""
-        presheaf = _ModuleOpenPresheaf(self.scheme(), lambda: sheaf)
+        from dzack_research.preamble.categories.divisors.invertible_sheaves import (
+            _FiniteAtlasLineBundleOpenPresheaf,
+        )
+
+        presheaf = _FiniteAtlasLineBundleOpenPresheaf(self.scheme(), lambda: sheaf)
         sheaf = QuasiCoherentSheaves(self.scheme()).object(
             categories=(self,),
             construction_data=construction_data,

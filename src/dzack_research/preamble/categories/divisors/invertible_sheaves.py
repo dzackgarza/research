@@ -9,7 +9,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 )
 from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
+    Modules,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_integers,
@@ -18,6 +20,7 @@ from dzack_research.preamble.categories.schemes.gluing import (
     FiniteAffineAtlases,
     ModuleGluingData,
     _ModuleGluingSheafEngine,
+    _AffineChartOpenSubobjects,
 )
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.categories.schemes.ringed_spaces import (
@@ -25,7 +28,6 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheafMor,
     QuasiCoherentSheafMorphismMethods,
     QuasiCoherentSheaves,
-    _ModuleOpenPresheaf,
 )
 
 
@@ -257,6 +259,91 @@ class _DistinguishedCoverInvertibleSheafEngine(_ModuleGluingSheafEngine):
         return f"Invertible sheaf on {self.scheme()} trivialized by {self.cover()}"
 
 
+class _FiniteAtlasLineBundleOpenPresheaf(Functor):
+    r"""Sections of a finite-atlas line bundle as modules over the scheme base.
+
+    Global sections retain their selected realization. Basis sections use
+    the actual module descent datum, and global restriction uses the chosen
+    trivialization's chart component (Hartshorne, II.5.13).
+    """
+
+    def __init__(self, scheme, line_bundle):
+        self._scheme = scheme
+        self._line_bundle = line_bundle
+        Functor.__init__(self, scheme.open_subsets_site().opposite(), Modules(scheme.scheme_base_ring()))
+
+    def _is_whole(self, open_object):
+        opens = self.domain().base_category().object_set()
+        return open_object.underlying_object().value() is opens.inclusion().codomain().top()
+
+    def _basis(self, open_object):
+        subset = open_object.underlying_object().value()
+        atlas = self._line_bundle().gluing_datum()
+        assert (
+            subset in _AffineChartOpenSubobjects(self._scheme)
+            and subset.gluing_datum() is atlas.presentation()
+        ), f"sections on {subset} require a basis open of the line bundle's selected atlas"
+        return subset.chart_index(), subset.chart_open()
+
+    @cached_method
+    def _whole_module(self):
+        bundle = self._line_bundle()
+        sections = bundle.global_sections()
+        if sections.base_ring() is self._scheme.scheme_base_ring():
+            return sections
+        return sections.restrict_scalars(bundle.gluing_datum().global_function_algebra().algebra_structure_morphism())
+
+    def _apply_object(self, open_object):
+        if self._is_whole(open_object):
+            return self._whole_module()
+        bundle = self._line_bundle()
+        index, chart_open = self._basis(open_object)
+        chart = bundle.gluing_datum().chart(index)
+        scalar_map = chart.coordinate_algebra().algebra_structure_morphism()
+        if chart_open is not chart:
+            scalar_map = chart_open.inclusion().coordinate_algebra_morphism() * scalar_map
+        module = bundle.module_descent_datum().basis_module(index, chart_open)
+        return module.restrict_scalars(scalar_map)
+
+    @cached_method(key=lambda self, open_object: id(open_object))
+    def _whole_to_basis(self, open_object):
+        bundle = self._line_bundle()
+        source = self._whole_module()
+        target = self(open_object)
+        index, chart_open = self._basis(open_object)
+        datum = bundle.module_descent_datum()
+
+        def restrict(section):
+            if source is not bundle.global_sections():
+                section = source(section).underlying_element()
+            local = bundle.section_on_chart(section, index)
+            return target.wrap(datum.basis_restriction(
+                index, bundle.gluing_datum().chart(index), index, chart_open, local,
+            ))
+
+        return self.codomain().Mor(source, target)._from_constructed_element_map(restrict)
+
+    def _apply_morphism(self, arrow):
+        source = self(arrow.domain())
+        target = self(arrow.codomain())
+        if arrow.domain() is arrow.codomain() or (self._is_whole(arrow.domain()) and self._is_whole(arrow.codomain())):
+            return self.codomain().Mor(source, target).identity()
+        if self._is_whole(arrow.domain()):
+            return self._whole_to_basis(arrow.codomain())
+        if self._is_whole(arrow.codomain()):
+            # Such an inclusion identifies this basis open with the whole space.
+            return self._whole_to_basis(arrow.domain()).inverse()
+        source_index, source_open = self._basis(arrow.domain())
+        target_index, target_open = self._basis(arrow.codomain())
+        datum = self._line_bundle().module_descent_datum()
+        return self.codomain().Mor(source, target)._from_constructed_element_map(
+            lambda section: target.wrap(datum.basis_restriction(
+                source_index, source_open, target_index, target_open,
+                source(section).underlying_element(),
+            ))
+        )
+
+
 class _FiniteAtlasInvertibleSheafEngine:
     r"""A line bundle on a finite glued affine atlas via transition functions.
 
@@ -485,16 +572,34 @@ class _FiniteAtlasInvertibleSheafEngine:
                 return section_space
 
     @cached_method
-    def module_sheaf(self):
+    def module_descent_datum(self):
+        r"""The rank-one chart modules with their semilinear descent maps."""
         from dzack_research.preamble.categories.schemes.gluing import (
-            _finite_atlas_line_bundle_module_sheaf,
+            _finite_atlas_line_bundle_module_datum,
         )
 
-        return _finite_atlas_line_bundle_module_sheaf(self)
+        return _finite_atlas_line_bundle_module_datum(self)
+
+    @cached_method
+    def module_sheaf(self):
+        return self.module_descent_datum().sheaf()
 
     @cached_method
     def compatible_sections(self):
         return self.module_sheaf().global_sections()
+
+    def section_on_chart(self, section, index):
+        r"""The chart component of a global section in this trivialization."""
+        assert self._section_space is None, (
+            "a selected framed space of global sections needs its chart-component comparison"
+        )
+        return self.module_descent_datum().compatible_section_component(section, index)
+
+    def compatible_section(self, section):
+        r"""The compatible chart family represented by this global section."""
+        atlas = self.gluing_datum()
+        components = {index: self.section_on_chart(section, index) for index in atlas.chart_indices()}
+        return self.module_descent_datum().compatible_section(components)
 
     def sheaf(self):
         return self
@@ -649,7 +754,7 @@ def _chosen_trivialization_object(
 ):
     r"""Realize one line-bundle engine in the chosen-trivialization owner."""
     category = InvertibleSheavesWithChosenTrivialization(scheme)
-    presheaf = _ModuleOpenPresheaf(scheme, lambda: sheaf)
+    presheaf = _FiniteAtlasLineBundleOpenPresheaf(scheme, lambda: sheaf)
     sheaf = QuasiCoherentSheaves(scheme).object(
         categories=(category, *placements),
         construction_data=construction_data,
@@ -692,6 +797,23 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
         True
         sage: negative = line.O(-1)
         sage: negative.sections(whole).is_zero()
+        True
+        sage: atlas = line.standard_affine_atlas()
+        sage: site = line.open_subsets_site()
+        sage: chart = site(atlas.chart_open_subset(1))
+        sage: negative.sections(chart).module_over_extension().module_rank() == 1
+        True
+        sage: forms = bundle.global_sections()
+        sage: S = forms.homogeneous_coordinate_ring()
+        sage: x0 = S.algebra_generator(line.variable_names()[0])
+        sage: section = forms.section_from_homogeneous_polynomial(x0*x0)
+        sage: opposite = site.opposite()
+        sage: arrow = opposite.Mor(opposite(whole), opposite(chart))(site.Mor(chart, whole)())
+        sage: restriction = bundle.open_sections_presheaf().on_morphism(arrow)
+        sage: y = next(iter(atlas.chart(1).coordinate_algebra().algebra_generators()))
+        sage: local = bundle.local_module(1)
+        sage: generator = local.module_generator(next(iter(local.module_generating_set())))
+        sage: restriction(section).underlying_element() == local.scalar_multiple(y*y, generator)
         True
     """
 
@@ -901,6 +1023,28 @@ class _ProjectiveSpaceLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
         )
 
         return _imposed_point_multiplicity_linear_system(self, point, order)
+
+    def section_on_chart(self, section, index):
+        r"""Dehomogenize a degree-d form in the trivialization by ``x_i^d``.
+
+        Each monomial becomes the product of affine ratios away from its
+        selected coordinate (Hartshorne, Proposition II.5.13).
+        """
+        sections = self.global_sections()
+        coordinates = sections.framing_morphism().lift(sections(section))
+        atlas = self.gluing_datum()
+        index = atlas.normalize_chart_index(index)
+        ring = atlas.chart(index).coordinate_algebra()
+        scalar_map = ring.algebra_structure_morphism()
+        coefficient = ring.zero()
+        for monomial in coordinates.support().domain():
+            term = scalar_map(coordinates(monomial))
+            for coordinate, exponent in enumerate(sections.monomial_exponents(monomial)):
+                if exponent and coordinate != int(index):
+                    term *= self.projective_space()._standard_chart_coordinate(int(index), coordinate) ** int(exponent)
+            coefficient += term
+        module = self.local_module(index)
+        return module.scalar_multiple(coefficient, _rank_one_generator(module))
 
     def homogeneous_polynomial_sections(self):
         return self.global_sections()
@@ -1408,48 +1552,42 @@ class _ProductProjectiveLineBundleEngine(_FiniteAtlasInvertibleSheafEngine):
 
         return BilinearMap(left, right, target, product)
 
-    def compatible_section(self, section):
+    def section_on_chart(self, section, choice):
         r"""Dehomogenize one global section on the standard affine atlas.
 
         On the chart where homogeneous coordinate ``x_{i,j_i}`` of each
         factor is nonzero, ``O(d_i)`` is trivialized by ``x_{i,j_i}^{d_i}``.
         Dividing a multihomogeneous monomial by those selected powers therefore
         replaces every selected coordinate by ``1`` and every other coordinate
-        by the corresponding affine ratio.  The finite-atlas equalizer checks
-        that these chart coefficients glue through the line-bundle transitions.
+        by the corresponding affine ratio. The result lies in the selected
+        chart's rank-one module.
         """
         sections = self.global_sections()
         section = sections(section)
         coordinates = sections.framing_morphism().lift(section)
         atlas = self.gluing_datum()
+        choice = atlas.normalize_chart_index(choice)
         factors = self.projective_product().factors()
         factor_labels = tuple(factors.index_set())
         positions = {label: position for position, label in enumerate(factor_labels)}
-        module_sheaf = self.module_sheaf()
-        components = {}
-        for choice in atlas.chart_indices():
-            chart = atlas.chart(choice)
-            chart_ring = chart.coordinate_algebra()
-            scalar_map = chart_ring.algebra_structure_morphism()
-            local_coefficient = chart_ring.zero()
-            for monomial in coordinates.support().domain():
-                term = scalar_map(coordinates(monomial))
-                blocks = sections.monomial_exponents(monomial)
-                for label, block in zip(factor_labels, blocks, strict=True):
-                    selected = choice[positions[label]]
-                    factor = factors[label]
-                    projection = chart.projection(label).coordinate_algebra_morphism()
-                    for coordinate, exponent in enumerate(block):
-                        if not exponent or coordinate == selected:
-                            continue
-                        term *= projection(
-                            factor._standard_chart_coordinate(selected, coordinate)
-                        ) ** int(exponent)
-                local_coefficient += term
-            module = module_sheaf.sections_on_chart(choice)
-            generator = _rank_one_generator(module)
-            components[choice] = module.scalar_multiple(local_coefficient, generator)
-        return module_sheaf.gluing_datum().compatible_section(components)
+        chart = atlas.chart(choice)
+        chart_ring = chart.coordinate_algebra()
+        scalar_map = chart_ring.algebra_structure_morphism()
+        local_coefficient = chart_ring.zero()
+        for monomial in coordinates.support().domain():
+            term = scalar_map(coordinates(monomial))
+            blocks = sections.monomial_exponents(monomial)
+            for label, block in zip(factor_labels, blocks, strict=True):
+                selected = choice[positions[label]]
+                factor = factors[label]
+                projection = chart.projection(label).coordinate_algebra_morphism()
+                for coordinate, exponent in enumerate(block):
+                    if not exponent or coordinate == selected:
+                        continue
+                    term *= projection(factor._standard_chart_coordinate(selected, coordinate)) ** int(exponent)
+            local_coefficient += term
+        module = self.local_module(choice)
+        return module.scalar_multiple(local_coefficient, _rank_one_generator(module))
 
     @cached_method
     def section_ring(self):
