@@ -4777,9 +4777,9 @@ class AffineSpaces(OwnedCategoryOverBaseRing):
                 f"cannot compute the Picard group of {self}: Pic(A^n) = 0 is used here only over a field, "
                 f"but the base ring is {base}"
             )
-            from dzack_research.preamble.categories.divisors.picard_groups import _zero_picard_group
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 
-            return _zero_picard_group()
+            return PicardGroups().trivial(self)
 
         @cached_method
         def _class_group(self):
@@ -4960,11 +4960,9 @@ class ProjectiveSpaces(OwnedCategoryOverBaseRing):
                     )
                     return self.picard_to_class_group_morphism().domain()
                 case _:
-                    from dzack_research.preamble.categories.divisors.picard_groups import (
-                        _projective_bundle_picard_group,
-                    )
+                    from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 
-                    return _projective_bundle_picard_group(base_picard_group)
+                    return PicardGroups().projective_bundle(self, base_picard_group)
 
         def hyperplane_class(self):
             r"""``[O(1)]``, the module generator of ``Pic(P^n_k) = ZZ[O(1)]`` over a field ``k``.

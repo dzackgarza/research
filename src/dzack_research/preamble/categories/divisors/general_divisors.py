@@ -17,10 +17,7 @@ divisor group.
 from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.divisors.class_groups import ClassGroups
-from dzack_research.preamble.categories.divisors.picard_groups import (
-    _hyperplane_picard_group,
-    _projective_bundle_picard_group,
-)
+from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
 from dzack_research.preamble.categories.divisors.weil_divisor_groups import WeilDivisorGroups
 from dzack_research.preamble.categories.rings.commutative_algebra import (
     _engine_ideal,
@@ -127,7 +124,7 @@ def _projective_space_over_field_picard_to_class_group_morphism(projective_space
     and II.6.17).  The map sends ``[O(1)]`` to the hyperplane class ``[H]``;
     it is an isomorphism because ``P^n_k`` is regular (Hartshorne, II.6.16).
     """
-    picard = _hyperplane_picard_group()
+    picard = PicardGroups().projective_space_over_field(projective_space)
     classes = ClassGroups().projective_space_over_field(projective_space)
     return picard.module_category().Mor(picard, classes)(
         {"O(1)": classes.module_generator("H")}
@@ -163,7 +160,7 @@ def _projective_space_picard_to_class_group_morphism(
         f"Pic(S) -> Cl(S) has codomain {base_picard_to_class.codomain()}, not the base class "
         f"group {base_class_group}"
     )
-    picard = _projective_bundle_picard_group(base_picard_group)
+    picard = projective_space.picard_group(base_picard_group)
     classes = ClassGroups().projective_bundle(projective_space, base_class_group)
     picard_hyperplane = picard.biproduct_factor(1)
     class_hyperplane = classes.biproduct_factor(1)
