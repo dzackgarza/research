@@ -32,6 +32,7 @@ from sage.misc.cachefunc import cached_method
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
 from sage.rings.complex_mpfr import ComplexField as _SageComplexField
+from sage.rings.complex_interval_field import ComplexIntervalField
 from sage.rings.integer_ring import ZZ
 from sage.rings.rational_field import QQ
 from sage.rings.qqbar import QQbar
@@ -80,7 +81,42 @@ function preamble_cc_equal(a, b)
         rethrow()
     end
 end""")
+    julia.eval("""function preamble_cc_algebraic(coefficients, rl, ru, il, iu, precision)
+    Qbar = Oscar.Nemo.algebraic_closure(Oscar.QQ)
+    polynomial_parent, variable = Oscar.polynomial_ring(Oscar.QQ, "x")
+    polynomial = sum(Oscar.QQ(coefficients[j]) * variable^(j-1) for j in eachindex(coefficients))
+    balls = Oscar.Nemo.AcbField(precision)
+    reals = Oscar.Nemo.ArbField(precision)
+    real_part = Oscar.Nemo.ball(reals((rl + ru)/2), reals((ru - rl)/2))
+    imaginary_part = Oscar.Nemo.ball(reals((il + iu)/2), reals((iu - il)/2))
+    target = balls(real_part, imaginary_part)
+    matching = [root for root in Oscar.roots(Qbar, polynomial) if Oscar.Nemo.overlaps(balls(root), target)]
+    return length(matching) == 1 ? PreambleExactCC(only(matching)) : nothing
+end""")
     return julia.sage("PreambleExactCC")
+
+
+def _qqbar_to_calcium(value):
+    r"""Embed an algebraic number into the selected complex root of its minimal polynomial."""
+    _calcium_field()
+    polynomial = value.minpoly()
+    coefficients = tuple(QQ(coefficient) for coefficient in polynomial.list())
+    for precision in (128, 256, 512, 1024, 2048, 4096):
+        enclosure = value.interval(ComplexIntervalField(precision))
+        real = enclosure.real()
+        imaginary = enclosure.imag()
+        native = julia.call(
+            "preamble_cc_algebraic",
+            coefficients,
+            QQ(real.lower()),
+            QQ(real.upper()),
+            QQ(imaginary.lower()),
+            QQ(imaginary.upper()),
+            precision,
+        )
+        if native is not None:
+            return native
+    raise ValueError(f"Nemo did not isolate the complex embedding of {value}")
 
 
 def _calcium_value(expression):
@@ -94,9 +130,7 @@ def _calcium_value(expression):
         return julia.sage("PreambleExactCC(pi)")
     operation = expression.operator()
     if operation is None and expression in QQbar:
-        radical = expression.pyobject().radical_expression()
-        if SR(radical).operator() is not None:
-            return _calcium_value(SR(radical))
+        return _qqbar_to_calcium(QQbar(expression))
     arguments = tuple(_calcium_value(argument) for argument in expression.operands())
     if operation is add_vararg:
         return julia.call("+", *arguments)
@@ -518,6 +552,8 @@ class ExactComplexField(UniqueRepresentation, Field):
         source = parent(value)
         if source in Modules(self) and source.unformed_module() is self:
             return source._element_of_unformed_module(value)
+        if source is QQbar:
+            return self.element_class(self, _closed_exact_complex_expression(value), _qqbar_to_calcium(value))
         return self.element_class(self, _closed_exact_complex_expression(value))
 
     def _from_engine_expression(self, value) -> ExactComplexNumber:
