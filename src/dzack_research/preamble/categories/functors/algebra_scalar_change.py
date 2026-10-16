@@ -8,7 +8,8 @@ Restriction is represented for every live algebra because it changes only the
 structure map.  Scalar extension is materialized on tensor/symmetric free
 constructions through scalar change of their exact generating module, and on
 chosen finite commutative polynomial presentations through their selected
-relations.  The functors act on algebra morphisms, and the represented
+relations. Localization uses the module localization with its induced
+algebra multiplication. The functors act on algebra morphisms, and the represented
 adjunction supplies the actual Mor bijection, unit, and counit on that
 executable subdomain.
 """
@@ -28,6 +29,7 @@ from dzack_research.preamble.categories.algebras.finitely_presented_algebras imp
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    LocalizationRings,
     OwnedOrders,
     _engine_element,
     _engine_ring,
@@ -234,6 +236,82 @@ class _AlgebraScalarExtensionFunctor(Functor):
         return f"Algebra scalar extension along {self.ring_map()}"
 
 
+class _AlgebraLocalizationFunctor(_AlgebraScalarExtensionFunctor):
+    r"""Scalar extension along a localization, using the localized module.
+
+    Multiplication is the localization of ``Algebra.TensorProduct.mul_apply``
+    (Mathlib, ``RingTheory/TensorProduct/Basic``):
+    ``(b/s)(c/t) = (bc)/(st)``. The module localization owner supplies the
+    fractions, equality, scalar action and maps; this owner adds the product
+    and unit through the algebra constructor.
+
+    Unexecuted noncommutative localization and adjunction specimen::
+
+        sage: from dzack_research.preamble.all import *
+        sage: module = ZZ.free_module(("u", "v"))
+        sage: algebra = Modules(ZZ).tensor_algebra()(module)
+        sage: u = algebra.algebra_generator("u")
+        sage: v = algebra.algebra_generator("v")
+        sage: scalars = ZZ.localization(2)
+        sage: adjunction = Algebras(ZZ).Associative().Unital().base_change_adjunction(
+        ....:     scalars.localization_map()
+        ....: )
+        sage: extension = adjunction.left_adjoint()
+        sage: localized = extension(algebra)
+        sage: fractions = localized.unformed_module()
+        sage: u_local = localized(fractions.fraction(algebra.unformed_module()(u)))
+        sage: v_local = localized(fractions.fraction(algebra.unformed_module()(v)))
+        sage: half_u = localized.scalar_multiple(scalars.fraction(1, 2), u_local)
+        sage: half_u * v_local != v_local * half_u
+        True
+        sage: unit = adjunction.unit(algebra)
+        sage: unit(u * v) == unit(u) * unit(v)
+        True
+        sage: triangle = adjunction.counit(localized) * extension(unit)
+        sage: triangle(half_u) == half_u
+        True
+    """
+
+    def _apply_object(self, algebra):
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        ring = self.ring_map().codomain()
+        original = algebra.unformed_module()
+        module = ring.localize_module(original)
+
+        def product(left, right):
+            return module.fraction(
+                original(algebra(left.numerator()) * algebra(right.numerator())),
+                left.denominator() * right.denominator(),
+            )
+
+        square = Modules(ring).tensor_product((module, module))
+        multiplication = square.from_bilinear_map(module, product)
+        unit = module.fraction(original(algebra.one()))
+        category = Algebras(ring).Associative().Unital()
+        if algebra in Algebras(algebra.base_ring()).Associative().Unital().Commutative():
+            category = category.Commutative()
+        return category(module, multiplication, unit)
+
+    def _apply_morphism(self, morphism):
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        source_module = source.unformed_module()
+        target_module = target.unformed_module()
+        original_target = morphism.codomain().unformed_module()
+
+        def image(element):
+            fraction = source_module(element)
+            numerator = morphism(morphism.domain()(fraction.numerator()))
+            return target(target_module.fraction(
+                original_target(numerator), fraction.denominator()
+            ))
+
+        return self.codomain().Mor(source, target)._from_constructed_element_map(
+            image, linearity_premises=(morphism,),
+        )
+
+
 class _AlgebraRestrictionOfScalarsFunctor(Functor):
     r"""``Res_f : Alg_S -> Alg_R`` along ``f : R -> S``."""
 
@@ -285,11 +363,14 @@ class _AlgebraRestrictionOfScalarsFunctor(Functor):
 class _AlgebraBaseChangeAdjunction(Adjunction):
     r"""The represented algebra adjunction ``S tensor_R - ⊣ Res_f``."""
 
+    _extension_functor = _AlgebraScalarExtensionFunctor
+    _restriction_functor = _AlgebraRestrictionOfScalarsFunctor
+
     def __init__(self, ring_map) -> None:
         self._ring_map = ring_map
         super().__init__(
-            _AlgebraScalarExtensionFunctor(ring_map),
-            _AlgebraRestrictionOfScalarsFunctor(ring_map),
+            self._extension_functor(ring_map),
+            self._restriction_functor(ring_map),
         )
 
     def _unit_component(self, algebra):
@@ -311,8 +392,44 @@ class _AlgebraBaseChangeAdjunction(Adjunction):
         return f"Algebra scalar-extension/restriction adjunction along {self._ring_map}"
 
 
+class _AlgebraLocalizationAdjunction(_AlgebraBaseChangeAdjunction):
+    r"""The algebra scalar-change adjunction along a localization map."""
+
+    _extension_functor = _AlgebraLocalizationFunctor
+
+    def _unit_component(self, algebra):
+        extended = self.left_adjoint()(algebra)
+        restricted = self.right_adjoint()(extended)
+        original = algebra.unformed_module()
+        module = extended.unformed_module()
+        return Algebras(algebra.base_ring()).Associative().Unital().Mor(
+            algebra, restricted
+        )._from_constructed_element_map(
+            lambda element: restricted(extended(module.fraction(original(element))))
+        )
+
+    def _counit_component(self, algebra):
+        restricted = self.right_adjoint()(algebra)
+        extended = self.left_adjoint()(restricted)
+        module = extended.unformed_module()
+
+        def evaluate(element):
+            fraction = module(element)
+            scalar = self._ring_map(fraction.denominator()).inverse_of_unit()
+            return algebra.scalar_multiple(
+                scalar, algebra(fraction.numerator().underlying_element())
+            )
+
+        return Algebras(algebra.base_ring()).Associative().Unital().Mor(
+            extended, algebra
+        )._from_constructed_element_map(evaluate)
+
+
 @cached_function(key=lambda ring_map: id(ring_map))
 def _algebra_base_change_adjunction(ring_map) -> _AlgebraBaseChangeAdjunction:
+    target = ring_map.codomain()
+    if target in LocalizationRings() and ring_map is target.localization_map():
+        return _AlgebraLocalizationAdjunction(ring_map)
     return _AlgebraBaseChangeAdjunction(ring_map)
 
 
