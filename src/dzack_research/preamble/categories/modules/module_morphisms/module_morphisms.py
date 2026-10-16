@@ -3245,7 +3245,8 @@ class ModuleAutomorphismMethods:
     def __init__(self, parent, forward, inverse_computation) -> None:
         module = parent.domain()
         self._inverse_computation = inverse_computation
-        super().__init__(parent, module.module_category().Mor(module, module)(forward))
+        self._forward_module_morphism = module.module_category().Mor(module, module)(forward)
+        super().__init__(parent, self._forward_module_morphism)
 
     @cached_method
     def _inverse_morphism(self):
@@ -3254,17 +3255,14 @@ class ModuleAutomorphismMethods:
         return module.module_category().Mor(module, module)(self._inverse_computation())
 
     def forward(self):
-        module = self.domain()
-        return module.module_category().Mor(module, module)(self)
+        return self._forward_module_morphism
 
     def as_morphism(self):
         return self.forward()
 
     def order(self):
         forward = self.forward()
-        linear = forward.domain().module_category().Mor(
-            forward.domain(), forward.codomain()
-        )(forward)
+        linear = forward._framed_coordinate_morphism()
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
