@@ -21,15 +21,24 @@ from dzack_research.preamble.owned_category_bases import Category
 
 
 class ClassGroups(Category):
-    r"""Weil divisor class groups \(\operatorname{Cl}(X)\) with a chosen presentation.
+    r"""The abelian groups isomorphic to the Weil divisor class group \(\operatorname{Cl}(X)\) of some scheme \(X\).
 
-    An object is a framed abelian group presenting the divisor class group of
-    one scheme \(X\).  Its underlying group is built by a module construction:
+    This is the full subcategory of ``Modules(ZZ)`` cut out by that condition
+    on objects; its morphisms are all group homomorphisms.  Every abelian group
+    satisfies the condition: every abelian group is the ideal class group of a
+    Dedekind domain \(A\) (Claborn, "Every abelian group is a class group",
+    Pacific J. Math. 18 (1966), no. 2, 219--222), and the prime divisors of
+    \(\operatorname{Spec} A\) are its nonzero primes, so
+    \(\operatorname{Cl}(\operatorname{Spec} A)\) is the ideal class group of \(A\).
+
+    The value \(\operatorname{Cl}(X)\) is constructed with its scheme \(X\),
+    which this level stores and ``class_group_scheme()`` returns: as
     \(\operatorname{coker}(\rho)\) of a principal-divisor morphism
-    \(\rho\colon P \to \operatorname{Div}\) (the entry), or the biproduct
+    \(\rho\colon P \to \operatorname{Div}(X)\), as the biproduct
     \(\operatorname{Cl}(S) \oplus \mathbb{Z}[H]\) of the projective bundle
-    formula.  Over a field, \(\operatorname{Cl}(\mathbb{P}^n_k)\) is the free
-    module on the hyperplane class \(\{H\}\).  This level adds \(X\).
+    formula, or, over a field, as the free module on the hyperplane class
+    \(\{H\}\) of \(\mathbb{P}^n_k\).  A group placed here by the condition alone
+    has no chosen scheme.
     """
 
     def an_object(self):
@@ -43,8 +52,23 @@ class ClassGroups(Category):
     def super_categories(self):
         return [Modules(_owned_integers())]
 
-    def _call_(self, scheme, principal_divisors):
-        r"""\(\operatorname{Div}/\operatorname{im}(\rho)\) for the principal-divisor morphism ``principal_divisors`` \(\rho\)."""
+    def _call_(self, group):
+        r"""The abelian group ``group``, placed in ``ClassGroups()`` by Claborn's theorem."""
+        from dzack_research.preamble.refine import refine
+
+        abelian_groups = Modules(_owned_integers())
+        assert group in abelian_groups, (
+            f"{group} is not a class group: an object of {self} is an abelian group, "
+            f"and {group} is not an object of {abelian_groups}"
+        )
+        return refine(group, self)
+
+    def cokernel_of_principal_divisors(self, scheme, principal_divisors):
+        r"""\(\operatorname{Cl}(X) = \operatorname{Div}(X)/\operatorname{im}(\rho)\) for the principal-divisor morphism ``principal_divisors`` \(\rho\colon P \to \operatorname{Div}(X)\).
+
+        The result is the cokernel, with ``scheme`` as its scheme and \(\rho\)
+        as its retained principal-divisor morphism.
+        """
         return _cokernel_in_category(
             principal_divisors,
             self,
@@ -121,6 +145,11 @@ class ClassGroups(Category):
         )
 
     class ParentMethods:
+        # The value Cl(X) is constructed with X; a group placed by the
+        # defining condition alone has neither X nor a principal-divisor map.
+        _class_group_scheme = None
+        _principal_to_weil = None
+
         def __init__(self, class_group_scheme, principal_to_weil=None, **rest) -> None:
             self._class_group_scheme = class_group_scheme
             self._principal_to_weil = principal_to_weil
@@ -128,6 +157,10 @@ class ClassGroups(Category):
 
         def class_group_scheme(self):
             r"""The scheme whose divisor classes this group presents."""
+            assert self._class_group_scheme is not None, (
+                f"class_group_scheme on class groups: {self} was placed by Claborn's theorem, and the "
+                "construction of a Dedekind domain A with Cl(A) isomorphic to it is not implemented"
+            )
             return self._class_group_scheme
 
         def principal_to_weil_morphism(self):

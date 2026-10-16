@@ -875,7 +875,7 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
             fan, so the class group is this cokernel whether or not ``X`` has a
             torus factor; it is exact on the left exactly when ``X`` has none.
             """
-            return ClassGroups()(self, self.character_divisor_morphism())
+            return ClassGroups().cokernel_of_principal_divisors(self, self.character_divisor_morphism())
 
         @cached_method
         def class_group_projection(self):
@@ -1040,7 +1040,9 @@ class ToricSchemes(OwnedCategoryOverBaseRing):
                 "divisor is Cartier; its fan is not smooth, so test the divisors in question "
                 "with is_cartier instead"
             )
-            return self.character_divisor_morphism().cokernel()
+            from dzack_research.preamble.categories.divisors.picard_groups import PicardGroups
+
+            return PicardGroups().cokernel_of_principal_divisors(self, self.character_divisor_morphism())
 
         @cached_method
         def _picard_to_class_group_morphism(

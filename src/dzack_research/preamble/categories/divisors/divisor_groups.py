@@ -80,11 +80,27 @@ class DivisorGroups(Category):
         return [FramedFreeModules(_owned_integers())]
 
     def _call_(self, prime_divisors):
-        r"""The free abelian group on the set ``prime_divisors`` of prime divisors."""
-        return _integers()._fresh_free_module_on(
-            prime_divisors,
-            _extra_categories=(self,),
-        )
+        r"""The free abelian group on ``prime_divisors``: a set of prime divisors, or a framed free abelian group.
+
+        A framed free abelian group \(\mathbb{Z}^{(S)}\) is placed here as it
+        is, because every set \(S\) has the cardinality of the prime divisors
+        of some scheme: \(\operatorname{Spec} k\) for a field \(k\) when \(S\)
+        is empty; \(\operatorname{Spec}\) of a semilocal principal ideal domain
+        with \(|S|\) maximal ideals when \(S\) is finite; and
+        \(\mathbb{A}^1_k\) for an algebraically closed field \(k\) with
+        \(|k| = |S|\) when \(S\) is infinite.
+        """
+        framed_abelian_groups = FramedFreeModules(_owned_integers())
+        match prime_divisors:
+            case _ if prime_divisors in framed_abelian_groups:
+                from dzack_research.preamble.refine import refine
+
+                return refine(prime_divisors, self)
+            case _:
+                return _integers()._fresh_free_module_on(
+                    prime_divisors,
+                    _extra_categories=(self,),
+                )
 
 
 class FormalDivisorGroups(OwnedCategoryOverBaseRing):
@@ -102,30 +118,19 @@ class FormalDivisorGroups(OwnedCategoryOverBaseRing):
             _extra_categories=(self,),
         )
 
-    def from_terms(self, terms):
-        r"""The formal divisor \(\sum_i a_i P_i\) of a finite family of terms \((a_i, P_i)\).
+    def from_terms(self, coefficients):
+        r"""The formal divisor \(\sum_P a_P P\) of a finitely supported coefficient function \(P \mapsto a_P\).
 
-        A prime divisor occurring in several terms receives the sum of their
-        coefficients, so the result is the finitely supported coefficient
-        function \(P \mapsto \sum_{P_i = P} a_i\).
+        A formal divisor is a finitely supported function from the prime
+        divisors to the coefficient ring, and ``coefficients`` is that
+        function, given as a mapping on its support.
         """
         ring = self.base_ring()
-        terms = tuple(terms)
-        prime_divisors = finite_ordered_set(
-            tuple(prime_divisor for _, prime_divisor in terms)
-        )
-        group = self(tuple(prime_divisors))
+        group = self(tuple(coefficients))
         return group.linear_combination(
             {
-                prime_divisor: sum(
-                    (
-                        ring(coefficient)
-                        for coefficient, component in terms
-                        if component == prime_divisor
-                    ),
-                    ring.zero(),
-                )
-                for prime_divisor in prime_divisors
+                prime_divisor: ring(coefficient)
+                for prime_divisor, coefficient in coefficients.items()
             }
         )
 

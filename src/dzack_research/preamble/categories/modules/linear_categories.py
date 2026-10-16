@@ -86,10 +86,10 @@ class TriangulatedCategories(OwnedCategoryOverBaseRing):
     def an_object(self):
         r"""The derived category \(D(R)\) of \(R\)-modules."""
         from dzack_research.preamble.categories.modules.derived_categories import (
-            DerivedCategories,
+            DerivedCategory,
         )
 
-        return DerivedCategories(self.base_ring())
+        return DerivedCategory(self.base_ring())
 
 
 __all__ = ["LinearCategories", "TriangulatedCategories"]

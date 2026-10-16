@@ -1,13 +1,12 @@
-r"""The Picard functor ``Pic : C^op -> Mod_ZZ`` on a category of schemes.
+r"""The category ``PicardGroups()`` and the Picard functor ``Pic : C^op -> PicardGroups()``.
 
 For a scheme ``X`` the Picard group ``Pic(X)`` is the abelian group of
 isomorphism classes of invertible ``O_X``-modules under tensor product, and a
 morphism ``f: X -> Y`` induces the pullback ``f^* : Pic(Y) -> Pic(X)``,
 ``[L] |-> [f^* L]`` (Hartshorne, *Algebraic Geometry*, II.6).  An abelian group
-is a ``ZZ``-module, so the values are objects of ``Modules(ZZ)``.  The value at
-one scheme is that scheme's ``picard_group()``; this module holds the functor
-and the represented values that the projective-bundle formula and the field
-case build.
+is a ``ZZ``-module, and the abelian groups isomorphic to some ``Pic(X)`` form
+the full subcategory ``PicardGroups()`` of ``Modules(ZZ)``, in which ``Pic``
+takes its values.  The value at one scheme is that scheme's ``picard_group()``.
 """
 
 from sage.categories.map import Map
@@ -16,30 +15,215 @@ from sage.structure.element import parent as element_parent
 from sage.structure.parent import Parent
 from sage.structure.richcmp import op_EQ, op_NE
 
-from dzack_research.preamble.categories.divisors.divisor_groups import _integers
+from dzack_research.preamble.categories.divisors.divisor_groups import (
+    _affine_line_over_rationals,
+    _cokernel_in_category,
+    _integers,
+)
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.modules.pure.modules import Modules
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.categories.modules.pure.modules import BiproductModules, Modules
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _owned_integers
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.logic import AtomicProposition, negation
-from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import Category
 
 
+class PicardGroups(Category):
+    r"""The abelian groups isomorphic to ``Pic(X)`` for some scheme ``X``.
+
+    This is the full subcategory of ``Modules(ZZ)`` cut out by that condition
+    on objects; its morphisms are all group homomorphisms.  Every abelian group
+    satisfies the condition: every abelian group ``G`` is the ideal class group
+    of a Dedekind domain ``A`` (Claborn, "Every abelian group is a class group",
+    Pacific J. Math. 18 (1966), no. 2, 219--222), and ``Pic(Spec A) = Cl(A)``
+    because ``Spec A`` is Noetherian, integral, separated and regular, hence
+    locally factorial (Hartshorne, *Algebraic Geometry*, II.6.16).
+
+    The value ``Pic(X)`` of the Picard functor is constructed with its scheme
+    ``X``, which this level stores and ``picard_scheme()`` returns.  A group
+    placed here by the condition alone has no chosen scheme.
+    """
+
+    def an_object(self):
+        r"""``Pic(A^1_QQ) = 0``."""
+        return self.trivial(_affine_line_over_rationals())
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "Picard groups"
+
+    def super_categories(self):
+        return [Modules(_owned_integers())]
+
+    def _call_(self, group):
+        r"""The abelian group ``group``, placed in ``PicardGroups()`` by Claborn's theorem."""
+        from dzack_research.preamble.refine import refine
+
+        abelian_groups = Modules(_owned_integers())
+        assert group in abelian_groups, (
+            f"{group} is not a Picard group: an object of {self} is an abelian group, "
+            f"and {group} is not an object of {abelian_groups}"
+        )
+        return refine(group, self)
+
+    def cokernel_of_principal_divisors(self, scheme, principal_divisors):
+        r"""``Pic(X) = CDiv(X)/im(rho)`` for the principal Cartier divisor morphism ``rho: P -> CDiv(X)``.
+
+        For an integral scheme ``X`` the Cartier divisor class group is
+        isomorphic to ``Pic(X)`` (Hartshorne, II.6.15).  The result is the
+        cokernel, with ``scheme`` as its Picard scheme.
+        """
+        return _cokernel_in_category(principal_divisors, self, picard_scheme=scheme)
+
+    def trivial(self, scheme):
+        r"""``Pic(X) = 0`` for a scheme ``X`` whose invertible sheaves are all trivial.
+
+        The free ``ZZ``-module on no classes, with ``scheme`` as its Picard
+        scheme.  Examples: ``Spec A`` for a unique factorization domain ``A``
+        (Hartshorne, II.6.2 and II.6.16), so ``Spec k``, ``A^n_k`` and
+        ``Spec ZZ``.
+        """
+        return _integers()._fresh_free_module_on(
+            finite_ordered_set(()),
+            _extra_categories=(self,),
+            _extra_construction_data={"picard_scheme": scheme},
+        )
+
+    def projective_space_over_field(self, projective_space):
+        r"""``Pic(P^n_k) = ZZ[O(1)]`` for a field ``k``, free on the class of ``O(1)``.
+
+        Hartshorne, II.6.4 and II.6.17.  The result has ``projective_space``
+        as its Picard scheme.
+        """
+        base = projective_space.scheme_base_ring()
+        assert base in OwnedFields(), (
+            f"cannot apply Pic(P^n_k) = ZZ[O(1)] to {projective_space}: the base ring {base} is not a field, "
+            "so Pic(P^n_S) = Pic(S) + ZZ[O(1)] needs the Picard group of the base, through projective_bundle"
+        )
+        return _integers()._fresh_free_module_on(
+            finite_ordered_set(("O(1)",)),
+            _extra_categories=(self,),
+            _extra_construction_data={"picard_scheme": projective_space},
+        )
+
+    def projective_bundle(self, projective_space, base_picard_group):
+        r"""``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``, the biproduct of the base Picard group and the hyperplane summand.
+
+        Hartshorne, II.6.17 and II, Exercise 6.1.  The first injection is the
+        pullback ``pi^* : Pic(S) -> Pic(P^n_S)`` along the structure morphism
+        ``pi: P^n_S -> S``; the second sends ``O(1)`` to the hyperplane class.
+        The base Picard group is required input, so a nontrivial base
+        contribution is never replaced by zero.
+        """
+        assert base_picard_group in self, (
+            f"cannot apply Pic(P^n_S) = Pic(S) + ZZ[O(1)] to {base_picard_group}: the second argument "
+            f"must be the Picard group Pic(S) of the base, but it is not an object of {self}"
+        )
+        assert base_picard_group.picard_scheme() is projective_space.base_scheme(), (
+            f"cannot apply Pic(P^n_S) = Pic(S) + ZZ[O(1)] to {projective_space}: the given group is "
+            f"Pic({base_picard_group.picard_scheme()}), not the Picard group of the base "
+            f"{projective_space.base_scheme()}"
+        )
+        integers = _integers()
+        hyperplane = integers.free_module(finite_ordered_set(("O(1)",)))
+        return Modules(integers).biproduct(
+            (base_picard_group, hyperplane),
+            extra_categories=(self,),
+            extra_construction_data={"picard_scheme": projective_space},
+        )
+
+    class ParentMethods:
+        # The value Pic(X) of the Picard functor is constructed with X; a
+        # group placed by the defining condition alone has none.
+        _picard_scheme = None
+
+        def __init__(self, picard_scheme, **rest) -> None:
+            self._picard_scheme = picard_scheme
+            super().__init__(**rest)
+
+        def picard_scheme(self):
+            r"""The scheme ``X`` of which this group is the value ``Pic(X)``."""
+            assert self._picard_scheme is not None, (
+                f"picard_scheme on Picard groups: {self} was placed by Claborn's theorem, and the "
+                "construction of a Dedekind domain A with Cl(A) isomorphic to it is not implemented"
+            )
+            return self._picard_scheme
+
+        def _assert_projective_bundle_decomposition(self):
+            r"""Assert that this is ``Pic(P^n_S)`` constructed as the biproduct ``Pic(S) + ZZ[O(1)]``."""
+            from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+            scheme = self.picard_scheme()
+            base = scheme.scheme_base_ring()
+            assert scheme in ProjectiveSpaces(base), (
+                f"{self} has no projective-bundle decomposition: it is Pic({scheme}), and {scheme} "
+                f"is not a projective space over {base}"
+            )
+            assert self in BiproductModules(_integers()), (
+                f"{self} has no chosen decomposition Pic(S) + ZZ[O(1)]: it was not constructed as that "
+                "biproduct by PicardGroups().projective_bundle"
+            )
+
+        def projective_base_picard_group(self):
+            r"""The summand ``Pic(S)`` of ``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``."""
+            self._assert_projective_bundle_decomposition()
+            return self.biproduct_factor(0)
+
+        def projective_hyperplane_factor(self):
+            r"""The summand ``ZZ[O(1)]`` of ``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``."""
+            self._assert_projective_bundle_decomposition()
+            return self.biproduct_factor(1)
+
+        def base_picard_inclusion(self):
+            r"""The pullback ``pi^* : Pic(S) -> Pic(P^n_S)``, the injection of the base summand."""
+            self._assert_projective_bundle_decomposition()
+            return self.injection(0)
+
+        def hyperplane_class(self):
+            r"""The class ``[O(1)]`` in ``Pic(P^n_S)``.
+
+            In ``Pic(S) + ZZ[O(1)]`` it is the image of the hyperplane
+            summand's module generator; in ``Pic(P^n_k) = ZZ[O(1)]`` over a
+            field ``k`` it is the module generator itself (Hartshorne, II.6.4
+            and II.6.17).
+            """
+            from dzack_research.preamble.categories.schemes.schemes import ProjectiveSpaces
+
+            scheme = self.picard_scheme()
+            base = scheme.scheme_base_ring()
+            assert scheme in ProjectiveSpaces(base), (
+                f"{self} has no hyperplane class: it is Pic({scheme}), and {scheme} is not a projective "
+                f"space over {base}"
+            )
+            match self:
+                case _ if self in BiproductModules(_integers()):
+                    factor = self.projective_hyperplane_factor()
+                    return self.injection(1)(factor.module_generator("O(1)"))
+                case _:
+                    assert base in OwnedFields(), (
+                        f"{self} has no hyperplane class: Pic({scheme}) over the base ring {base}, which is "
+                        "not a field, is constructed as Pic(S) + ZZ[O(1)] by PicardGroups().projective_bundle"
+                    )
+                    return self.module_generator("O(1)")
+
+
 class _PicardFunctor(Functor):
-    r"""``Pic : C^op -> Mod_ZZ`` on a category ``C`` of schemes over a base ring.
+    r"""``Pic : C^op -> PicardGroups()`` on a category ``C`` of schemes over a base ring.
 
     ``op(X) |-> Pic(X)``, the group of isomorphism classes of invertible
     ``O_X``-modules under tensor product, and ``op(f) |-> f^*`` for
     ``f: X -> Y`` (Hartshorne, *Algebraic Geometry*, II.6).  Pullback
     preserves tensor products, so ``f^*`` is a group homomorphism, and
-    ``(g f)^* = f^* g^*``, so ``Pic`` is contravariant.
+    ``(g f)^* = f^* g^*``, so ``Pic`` is contravariant.  ``PicardGroups()``
+    is a full subcategory of ``Modules(ZZ)``, so ``f^*`` is a morphism of
+    abelian groups between two of its objects.
     """
 
     def __init__(self, scheme_category: Category) -> None:
         self._scheme_category = scheme_category
-        super().__init__(scheme_category.opposite(), Modules(_owned_integers()))
+        super().__init__(scheme_category.opposite(), PicardGroups())
 
     def _apply_object(self, opposite_scheme: ObjectOfCategory) -> Parent:
         r"""``Pic(X)`` for the object ``op(X)`` of ``C^op``."""
@@ -65,7 +249,7 @@ class _PicardFunctor(Functor):
             f"of Pic(P^n_k), and {target_scheme} is not a projective space over {base}"
         )
         pulled_hyperplane = target(target.underlying_set()(arrow.module_pullback(target_scheme.O(1))))
-        return self.codomain().Mor(source, target)(
+        return source.module_category().Mor(source, target)(
             {label: pulled_hyperplane for label in source.module_generating_set()}
         )
 
@@ -84,38 +268,6 @@ class _PicardFunctor(Functor):
 
     def _repr_(self) -> str:
         return "Pic"
-
-
-def _zero_picard_group() -> Parent:
-    r"""``Pic(X) = 0``, the free ``ZZ``-module on no classes.
-
-    The value for ``X = Spec k`` with ``k`` a field, and more generally for
-    the schemes whose invertible sheaves are all trivial, such as ``A^n_k``:
-    there ``Pic = Cl`` (Hartshorne, II.6.16), and ``Cl = 0`` because
-    ``k[x_1, ..., x_n]`` is a unique factorization domain.
-    """
-    return _integers().free_module(finite_ordered_set(()))
-
-
-def _hyperplane_picard_group() -> Parent:
-    r"""``ZZ[O(1)]``, the free ``ZZ``-module on the one class ``[O(1)]``.
-
-    This is ``Pic(P^n_k)`` for ``k`` a field (Hartshorne, II.6.4 and
-    II.6.17), and the hyperplane summand of ``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``
-    over a general base.
-    """
-    return _integers().free_module(finite_ordered_set(("O(1)",)))
-
-
-def _projective_bundle_picard_group(base_picard_group: Parent) -> Parent:
-    r"""``Pic(P^n_S) = Pic(S) + ZZ[O(1)]``, the biproduct of ``Pic(S)`` and the hyperplane summand.
-
-    The base Picard group is required input, so this never replaces it by
-    zero.  The injection of the second factor sends its generator ``O(1)``
-    to the hyperplane class ``[O(1)]`` (Hartshorne, II.6.17 and II,
-    Exercise 6.1).
-    """
-    return Modules(_integers()).biproduct((base_picard_group, _hyperplane_picard_group()))
 
 
 class _InvertibleSheafClass:
@@ -235,14 +387,6 @@ class _InvertibleSheafClasses:
 class _PicardGroupEngine:
     r"""``Pic(X)`` as a ``ZZ``-module on the isomorphism classes of invertible sheaves."""
 
-    def __init__(self, picard_scheme, **rest) -> None:
-        self._picard_scheme = picard_scheme
-        super().__init__(**rest)
-
-    def picard_scheme(self):
-        r"""The scheme ``X`` in ``Pic(X)``."""
-        return self._picard_scheme
-
     def _repr_(self):
         return f"Pic({self.picard_scheme()})"
 
@@ -266,7 +410,7 @@ def _invertible_sheaf_class_group(scheme, unit_sheaf):
     )
     integers = _integers()
     return _object_of(
-        GeneralModules(integers),
+        owned_category_join((GeneralModules(integers), PicardGroups())),
         _engine=(GeneralModules(integers), _PicardGroupEngine, None),
         picard_scheme=scheme,
         base_ring=integers,
@@ -278,4 +422,4 @@ def _invertible_sheaf_class_group(scheme, unit_sheaf):
     )
 
 
-__all__ = []
+__all__ = ["PicardGroups"]
