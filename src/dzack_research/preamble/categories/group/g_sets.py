@@ -28,8 +28,6 @@ from dzack_research.preamble.categories.group.groups import (
     OwnedGroups,
     SymmetricGroups,
     _GroupMorRealizationMixin,
-    _engine_cosets,
-    _encodes_as_permutations,
     _engine_group,
     _engine_point,
     _owned_group,
@@ -1352,32 +1350,11 @@ def _left_coset_g_set(group, subgroup):
             facade=points,
             coset_subgroup=subgroup,
         )
-    if not _encodes_as_permutations(_engine_group(group)):
-        points = _LeftCosetPointSet(group, subgroup)
-        return FiniteGSets(group).pointed_orbit(
-            subgroup,
-            points(group.one()),
-            lambda element, coset: points(element * coset.representative()),
-        )
-    cosets = _engine_cosets(group, subgroup, "left")
-
-    def coset_of(element):
-        element = group(element)
-        for coset in cosets:
-            if element in coset:
-                return coset
-        raise ArithmeticError(
-            f"{element} belongs to no represented left coset of {subgroup} in {group}"
-        )
-
-    return _finite_g_set_from_action(
-        group,
-        cosets,
-        lambda group_element, coset: coset_of(
-            group_element * next(iter(coset))
-        ),
-        category=LeftCosetGSets(subgroup),
-        construction_data={"coset_subgroup": subgroup},
+    points = _LeftCosetPointSet(group, subgroup)
+    return FiniteGSets(group).pointed_orbit(
+        subgroup,
+        points(group.one()),
+        lambda element, coset: points(element * coset.representative()),
     )
 
 

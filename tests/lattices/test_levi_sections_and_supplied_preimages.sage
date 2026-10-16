@@ -58,7 +58,8 @@ def test_the_split_two_plane_preimage_uses_the_supplied_kernel_and_cosets():
     target = quotient.subgroup(quotient_family)
     preimage = levi.preimage_subgroup(target)
 
-    family = tuple(preimage.group_generators())
+    augmentation = preimage.kernel_image_generating_morphism()
+    family = tuple(augmentation(letter) for letter in augmentation.domain().group_generators())
 
     assert all(any(preimage.inclusion()(value) == parabolic(expected) for value in family) for expected in kernel_family)
     assert all(preimage.inclusion()(value)(e) in (e, -e) for value in family)
