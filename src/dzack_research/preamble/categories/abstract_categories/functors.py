@@ -183,6 +183,7 @@ class DiscreteCategory(OwnedCategory):
         def discrete_category(self) -> DiscreteCategory:
             return self.category()
 
+        @object_level
         def Mor(self, codomain):
             r"""Return the Mor in this discrete category to ``codomain``."""
             return self.discrete_category().Mor(self, codomain)

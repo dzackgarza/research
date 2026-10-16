@@ -448,7 +448,10 @@ class Cat(CategoryPacketMethods, Category):
         EpiCategory = CategoryPacketMethods.EpiCategory
         IsoCategory = CategoryPacketMethods.IsoCategory
         AutCategory = CategoryPacketMethods.AutCategory
-        Mor = CategoryPacketMethods.Mor
+        @object_level
+        def Mor(self, codomain):
+            r"""Functor morphisms when this category is asked as an object of Cat."""
+            return Cat().Mor(self, codomain)
         End = CategoryPacketMethods.End
         Mono = CategoryPacketMethods.Mono
         Epi = CategoryPacketMethods.Epi
