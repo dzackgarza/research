@@ -7087,6 +7087,28 @@ class ClosedSubschemes(OwnedCategoryOverBaseRing):
             Each chart is the actual pullback of the closed immersion and
             retains its map to this subscheme. Chart overlaps and transitions
             are their base changes (Stacks, Tags 01JR and 01JY).
+
+            Unexecuted conic chart and structure-sheaf assertions::
+
+                sage: from dzack_research.preamble.all import *
+                sage: P = ProjectiveSpaces(QQ)(2)
+                sage: S = P.O(1).global_sections().homogeneous_coordinate_ring()
+                sage: x0, x1, x2 = tuple(S.algebra_generators())
+                sage: Z = P.closed_subscheme(x0*x2-x1*x1)
+                sage: atlas = Z.standard_affine_atlas()
+                sage: atlas.scheme() is Z
+                True
+                sage: Z.selected_finite_affine_atlas() is atlas
+                True
+                sage: local = atlas.chart(0)
+                sage: local.right_projection().codomain() is Z
+                True
+                sage: Z.inclusion()*atlas.chart_embedding(0) == P.standard_affine_chart_embedding(0)*local.left_projection()
+                True
+                sage: site = Z.open_subsets_site()
+                sage: basic = site(atlas.chart_open_subset(0))
+                sage: Z.structure_sheaf().sections(basic) is local.coordinate_algebra()
+                True
             """
             ambient = self.inclusion().codomain()
             base = self.scheme_base_ring()
