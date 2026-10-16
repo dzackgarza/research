@@ -5,7 +5,9 @@ semiring Mor theory by their stronger ring Mor theory, while every unital ring
 still receives the unique semiring morphism from the natural numbers.
 """
 
+from sage.categories.map import Map
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -24,6 +26,7 @@ from dzack_research.preamble.categories.group.magmas import (
 )
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class NonUnitalSemiringMor(MagmaMor):
@@ -263,7 +266,7 @@ class SemiringMor(CategoricalMor):
     ElementMethods = SemiringMorphism
 
     def _element_constructor_(self, function):
-        if isinstance(function, SemiringMorphism):
+        if isinstance(function, Map):
             if (
                 function.domain() is not self.domain()
                 or function.codomain() is not self.codomain()
@@ -274,9 +277,10 @@ class SemiringMor(CategoricalMor):
                 )
             if function.parent() is self:
                 return function
-            function = function.__call__
+            raise TypeError(f"{function} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, function)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

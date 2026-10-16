@@ -91,6 +91,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _ordered_transition_images(datum, transition_data, source_index, target_index):
@@ -678,13 +679,12 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
                 )
             if datum.parent() is self:
                 return datum
-            return _GluedSchemeMorphism(
-                self, datum.local_maps(), cone_construction=datum.cone_construction(),
-            )
+            raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
         if isinstance(datum, (tuple, list, IndexedFamily, Mapping)):
             return _GluedSchemeMorphism(self, datum)
         return super()._element_constructor_(datum)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -2249,20 +2249,7 @@ class FiniteAtlasMor(CoveringFamilyMor):
                     if check:
                         index_map.validate_overlap_compatibility()
                     return index_map
-                if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {index_map} a refinement {self.domain()} -> {self.codomain()}: it is a "
-                        f"refinement {index_map.domain()} -> {index_map.codomain()}"
-                    )
-                target_map = index_map.target_map()
-                chart_maps = {
-                    label: index_map.chart_map(label)
-                    for label in index_map.domain().chart_indices()
-                }
-                index_map = {
-                    label: index_map.coarse_index(label)
-                    for label in self.domain().chart_indices()
-                }
+                raise TypeError(f"{index_map} belongs to another Mor; apply the functor between the categories")
         if chart_maps is None:
             raise TypeError(
                 f"cannot build a refinement {self.domain()} -> {self.codomain()} from {index_map}: a map "
@@ -4193,12 +4180,7 @@ class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
                     local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasModuleSheafMorphismMethods():
-                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {local_maps.domain()} -> {local_maps.codomain()}"
-                    )
-                local_maps = local_maps.local_maps()
+                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         morphism = self.element_class(self, local_maps)
@@ -4206,6 +4188,7 @@ class FiniteAtlasModuleSheafMor(QuasiCoherentSheafMor):
             morphism.validate_overlap_compatibility()
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -4244,12 +4227,7 @@ class FiniteAtlasModuleGluingMor(CategoricalMor):
                     local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasModuleGluingMorphismMethods():
-                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {local_maps.domain()} -> {local_maps.codomain()}"
-                    )
-                local_maps = local_maps.local_maps()
+                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         morphism = self.element_class(self, local_maps)
@@ -4257,6 +4235,7 @@ class FiniteAtlasModuleGluingMor(CategoricalMor):
             morphism.validate_overlap_compatibility()
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -4759,12 +4738,7 @@ class FiniteAtlasAlgebraGluingMor(CategoricalMor):
                     local_maps.validate_overlap_compatibility()
                 return local_maps
             case FiniteAtlasAlgebraGluingMorphism():
-                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
-                        f"morphism {local_maps.domain()} -> {local_maps.codomain()}"
-                    )
-                local_maps = local_maps.local_maps()
+                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         morphism = self.element_class(self, local_maps)
@@ -4772,6 +4746,7 @@ class FiniteAtlasAlgebraGluingMor(CategoricalMor):
             morphism.validate_overlap_compatibility()
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -5888,9 +5863,10 @@ class ModuleGluingMor(CategoricalMor):
                 )
             if local_maps.parent() is self:
                 return local_maps
-            local_maps = local_maps.local_maps()
+            raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, local_maps)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -6739,9 +6715,10 @@ class AlgebraGluingMor(CategoricalMor):
                 )
             if local_maps.parent() is self:
                 return local_maps
-            local_maps = local_maps.local_maps()
+            raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, local_maps)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -7051,7 +7028,7 @@ class _FiniteAtlasInverseImageModuleMor(CategoricalMor):
             case _FiniteAtlasInverseImageModuleMorphism() if source_morphism.parent() is self:
                 return source_morphism
             case _FiniteAtlasInverseImageModuleMorphism():
-                source_morphism = source_morphism.source_morphism()
+                raise TypeError(f"{source_morphism} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         source_mor = self.base_category().source_category().Mor(
@@ -7066,6 +7043,7 @@ class _FiniteAtlasInverseImageModuleMor(CategoricalMor):
             )
         return self.element_class(self, source_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

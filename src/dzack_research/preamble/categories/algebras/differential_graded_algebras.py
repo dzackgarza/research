@@ -24,6 +24,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedCatego
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.logic import AtomicProposition, Propositions
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class DegreewiseLinearMorphism(ModuleMorphism):
@@ -565,6 +566,7 @@ class DGAMor(CategoricalMor):
             differential_compatibility=decision,
         )
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

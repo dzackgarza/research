@@ -36,13 +36,16 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _category_mor_parent,
     _category_packet,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    object_level,
+)
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.categories.sets.cardinals import omega0
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _normalize_truncation(truncation):
@@ -150,8 +153,7 @@ class ResolutionMorphism(Morphism):
                 category = self.domain().resolution_category()
                 return category.Mor(other.domain(), self.codomain())(
                     lambda degree: self.component(degree) * other.component(degree),
-                    target_morphism=self.target_morphism()
-                    * other.target_morphism(),
+                    target_morphism=self.target_morphism() * other.target_morphism(),
                 )
             case _:
                 return NotImplemented
@@ -229,18 +231,8 @@ class ResolutionMor(CategoricalMor):
                     case True:
                         return morphism
                     case False:
-                        match self.domain().truncation():
-                            case _ if self.domain().truncation() is omega0:
-                                components = morphism.component
-                            case truncation:
-                                components = {
-                                    degree: morphism.component(degree)
-                                    for degree in range(truncation + 1)
-                                }
-                        return self.element_class(
-                            self,
-                            components,
-                            target_morphism=morphism.target_morphism(),
+                        raise TypeError(
+                            f"{morphism} belongs to another Mor; give the resolution components"
                         )
             case _:
                 return self.element_class(
@@ -249,6 +241,7 @@ class ResolutionMor(CategoricalMor):
                     target_morphism=target_morphism,
                 )
 
+    @object_level
     @cached_method
     def identity(self):
         match self.domain() is self.codomain():
@@ -344,9 +337,7 @@ class _DegreeZeroResolutionTransport(Functor):
         target = self(morphism.codomain())
         return self.codomain().Mor(source, target)(
             {0: self.transported_functor()(morphism.component(0))},
-            target_morphism=self.transported_functor()(
-                morphism.target_morphism()
-            ),
+            target_morphism=self.transported_functor()(morphism.target_morphism()),
         )
 
     def _repr_(self) -> str:
@@ -596,7 +587,10 @@ class Resolutions(OwnedCategory):
                 )
             case True:
                 pass
-        match generator_morphism.domain() is generating_set and generator_morphism.codomain() is target:
+        match (
+            generator_morphism.domain() is generating_set
+            and generator_morphism.codomain() is target
+        ):
             case False:
                 raise ValueError(
                     f"the selected generator map of {target} must be a map from "
@@ -1086,11 +1080,9 @@ class Resolutions(OwnedCategory):
                     pass
             for degree in range(1, self.truncation() + 1):
                 for index in range(degree + 1):
-                    match (
-                        target.face(degree, index) * component_function(degree)
-                        == component_function(degree - 1)
-                        * self.face(degree, index)
-                    ):
+                    match target.face(degree, index) * component_function(
+                        degree
+                    ) == component_function(degree - 1) * self.face(degree, index):
                         case False:
                             raise ValueError(
                                 f"the resolution morphism {self} -> {target} does not commute "
@@ -1100,11 +1092,10 @@ class Resolutions(OwnedCategory):
                             pass
             for degree in range(self.truncation()):
                 for index in range(degree + 1):
-                    match (
-                        target.degeneracy(degree, index)
-                        * component_function(degree)
-                        == component_function(degree + 1)
-                        * self.degeneracy(degree, index)
+                    match target.degeneracy(degree, index) * component_function(
+                        degree
+                    ) == component_function(degree + 1) * self.degeneracy(
+                        degree, index
                     ):
                         case False:
                             raise ValueError(

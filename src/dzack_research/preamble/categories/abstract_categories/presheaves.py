@@ -86,6 +86,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _OppositeFunctor(Functor):
@@ -536,23 +537,9 @@ class CoveringFamilyMor(CategoricalMor):
     def _element_constructor_(self, index_map, member_maps=None, *, target_map=None, check=False):
         match index_map:
             case CoveringFamilyMorphism() if member_maps is None:
-                if index_map.domain() is not self.domain() or index_map.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {index_map} as a morphism {self.domain()} -> {self.codomain()} of covering "
-                        f"families: it is a morphism {index_map.domain()} -> {index_map.codomain()}"
-                    )
                 if index_map.parent() is self:
                     return index_map
-                if target_map is None:
-                    target_map = index_map.target_map()
-                member_maps = {
-                    label: index_map.component(label)
-                    for label in self.domain().index_set()
-                }
-                index_map = {
-                    label: index_map.index_map(label)
-                    for label in self.domain().index_set()
-                }
+                raise TypeError(f"{index_map} belongs to another Mor; apply the functor between the categories")
         if member_maps is None:
             raise TypeError(
                 f"a morphism of covering families {self.domain()} -> {self.codomain()} needs a component map "
@@ -566,6 +553,7 @@ class CoveringFamilyMor(CategoricalMor):
             check=check,
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

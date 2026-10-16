@@ -41,53 +41,6 @@ def _column_matrix_from_images(lattice, images):
     )
 
 
-class EichlerOrthogonalFactorizationDatum(SageObject):
-    r"""The exact extension factorization of one ``g in O(2U+K)``.
-
-    The quotient factor is a live lift of the discriminant action of ``g``;
-    the residual factor lies in the stable orthogonal group.  Thus the datum
-    realizes the standard exact-sequence decomposition by the stable kernel
-    and a lift of the finite discriminant action.  It does not identify the
-    separately represented finite approximate subgroup with that kernel.
-    """
-
-    def __init__(self, isometry, stable_factor, discriminant_lift) -> None:
-        if stable_factor * discriminant_lift != isometry:
-            raise ValueError(
-                f"{stable_factor} and {discriminant_lift} do not factor {isometry}: their product "
-                f"is {stable_factor * discriminant_lift}"
-            )
-        if stable_factor not in isometry.domain().stable_orthogonal_group():
-            raise ValueError(
-                f"{stable_factor} is not in the stable orthogonal group of "
-                f"{isometry.domain()}: it acts nontrivially on the discriminant group"
-            )
-        if discriminant_lift.discriminant_morphism() != isometry.discriminant_morphism():
-            raise ValueError(
-                f"{discriminant_lift} does not lift the discriminant action of {isometry}: it "
-                f"induces {discriminant_lift.discriminant_morphism()} on the discriminant group "
-                f"instead of {isometry.discriminant_morphism()}"
-            )
-        self._isometry = isometry
-        self._stable_factor = stable_factor
-        self._discriminant_lift = discriminant_lift
-
-    def isometry(self):
-        return self._isometry
-
-    def stable_factor(self):
-        return self._stable_factor
-
-    def discriminant_lift(self):
-        return self._discriminant_lift
-
-    def reconstruct(self):
-        return self.stable_factor() * self.discriminant_lift()
-
-    def __repr__(self) -> str:
-        return f"Stable/discriminant factorization of {self.isometry()}"
-
-
 class TwoUFullGeneratingDatum(SageObject):
     r"""Finite generators supplied by the ``2U`` approximate-model theorem.
 
@@ -466,79 +419,6 @@ class TwoUEichlerModel(SageObject):
 
         return OrbitCoverModel.split_covering_vectors(self, square)
 
-    def discriminant_generator_lifts(self):
-        r"""Return live lifts in ``O(2U+K)`` of generators of ``O(A_K)``.
-
-        The discriminant form of ``2U+K`` is canonically the one of ``K``.
-        This method asks the actual arithmetic orthogonal-group generators to
-        lift each generator of the full finite orthogonal group of that
-        discriminant form.  It therefore succeeds exactly when the computed
-        discriminant representation is surjective; otherwise it refuses
-        rather than replacing the missing lift by a formal discriminant action.
-        """
-        from dzack_research.preamble.categories.sets.indexed_families import (
-            finite_indexed_family,
-        )
-
-        lattice = self.lattice()
-        discriminant_orthogonal_group = lattice.discriminant_group().O()
-        generators = discriminant_orthogonal_group.group_generators()
-
-        def lift(generator):
-            witness = lattice.O().discriminant_lift(generator)
-            assert witness is not None, (
-                f"cannot lift {generator} from O(A_L) to O(L) for L = {lattice}: no isometry of "
-                f"L was found that induces it, so O(L) -> O(A_L) is not known to be surjective "
-                f"on the generators of O(A_L)"
-            )
-            if witness.discriminant_morphism() != generator:
-                raise ArithmeticError(
-                    f"{witness} does not lift {generator}: it induces "
-                    f"{witness.discriminant_morphism()} on the discriminant group of {lattice}"
-                )
-            return witness
-
-        return finite_indexed_family(
-            generators,
-            lift,
-            name=f"Discriminant-generator lifts in O({lattice})",
-        )
-
-    def stable_kernel(self):
-        r"""Return ``ker(O(L) -> O(A_L))``, the stable orthogonal subgroup."""
-        return self.lattice().stable_orthogonal_group()
-
-    def factor_orthogonal_isometry(self, isometry):
-        r"""Factor ``g`` as a stable-kernel factor times a discriminant lift.
-
-        This is the exact-sequence factorization for the represented ``2U`` construction.
-        The finite discriminant image is enumerated from exact generators of
-        ``O(L)`` while retaining a live lift.  Since the selected image is the
-        image of ``g`` itself, failure to lift is an arithmetic inconsistency,
-        not a supported ``None`` branch.
-        """
-        orthogonal_group = self.lattice().O()
-        isometry = orthogonal_group(isometry)
-        quotient_action = isometry.discriminant_morphism()
-        quotient_lift = orthogonal_group.discriminant_lift(quotient_action)
-        if quotient_lift is None:
-            raise ArithmeticError(
-                f"cannot factor {isometry}: its action {quotient_action} on the discriminant group "
-                f"of {self.lattice()} was not found in the image of O(L) -> O(A_L), although it "
-                f"is the image of {isometry}"
-            )
-        stable_factor = isometry * ~quotient_lift
-        if stable_factor not in self.stable_kernel():
-            raise ArithmeticError(
-                f"cannot factor {isometry}: dividing by the lift {quotient_lift} of its discriminant "
-                f"action leaves {stable_factor}, which is not in the stable orthogonal group"
-            )
-        return EichlerOrthogonalFactorizationDatum(
-            isometry,
-            stable_factor,
-            quotient_lift,
-        )
-
     def source_generating_family(self):
         r"""Return the represented source-defined finite family inside ``O(2U+K)``.
 
@@ -563,7 +443,7 @@ class TwoUEichlerModel(SageObject):
         special_linear_generators = self.special_linear_group().group_generators()
         complement_generators = self.orthogonal_complement().O().group_generators()
         eichler = self.complement_eichler_transvections()
-        discriminant_lifts = self.discriminant_generator_lifts()
+        discriminant_lifts = self.lattice().O().discriminant_orthogonal_group_generator_lifts()
         labels = finite_ordered_set(
             tuple(("left-SL2", generator) for generator in special_linear_generators)
             + tuple(("right-SL2", generator) for generator in special_linear_generators)
@@ -605,7 +485,6 @@ class TwoUEichlerModel(SageObject):
 
 
 __all__ = [
-    "EichlerOrthogonalFactorizationDatum",
     "TwoUEichlerModel",
     "TwoUFullGeneratingDatum",
 ]

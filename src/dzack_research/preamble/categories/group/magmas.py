@@ -1,5 +1,7 @@
 """The owned operation spine below groups."""
 
+from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_function, cached_method
 
@@ -16,6 +18,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class MagmaMorphism:
@@ -115,7 +118,7 @@ class MagmaMor(CategoricalMor):
     ElementMethods = MagmaMorphism
 
     def _element_constructor_(self, function):
-        if isinstance(function, MagmaMorphism):
+        if isinstance(function, Map):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
                 raise ValueError(
                     f"{function} is a morphism {function.domain()} -> {function.codomain()}, "
@@ -123,7 +126,7 @@ class MagmaMor(CategoricalMor):
                 )
             if function.parent() is self:
                 return function
-            function = function.__call__
+            raise TypeError(f"{function} belongs to another Mor; apply the functor between the categories")
         if not callable(function):
             raise TypeError(
                 f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, "
@@ -131,6 +134,7 @@ class MagmaMor(CategoricalMor):
             )
         return self.element_class(self, function)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -889,7 +893,7 @@ class MonoidMor(CategoricalMor):
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, function):
-        if isinstance(function, MonoidMorphism):
+        if isinstance(function, Map):
             if function.domain() is not self.domain() or function.codomain() is not self.codomain():
                 raise ValueError(
                     f"{function} is a monoid morphism {function.domain()} -> "
@@ -897,7 +901,7 @@ class MonoidMor(CategoricalMor):
                 )
             if function.parent() is self:
                 return function
-            function = function.__call__
+            raise TypeError(f"{function} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, function)
 
     @cached_method
@@ -914,6 +918,7 @@ class MonoidMor(CategoricalMor):
             submonoid_of_codomain=True,
         )
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

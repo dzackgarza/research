@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     RingMorphism,
     _engine_ring,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class OrderEmbedding:
@@ -72,6 +73,7 @@ class OrderMor(CategoricalMor):
         target_field = self.codomain().fraction_field()
         return self.element_class(self, source_field.Mor(target_field)(field_embedding))
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

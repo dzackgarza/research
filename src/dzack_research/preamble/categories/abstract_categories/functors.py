@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.sets.indexed_families import IndexedFami
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 SourcePointT = TypeVar("SourcePointT")
 TargetPointT = TypeVar("TargetPointT")
@@ -123,6 +124,7 @@ class DiscreteMor(CategoricalMor):
             return value
         return DiscreteMorphism(self)
 
+    @object_level
     @cached_method
     def identity(self) -> DiscreteMorphism:
         return self()

@@ -22,6 +22,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.group.groups import OwnedGroups, _owned_group
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class ClassifyingMorphism(Morphism):
@@ -67,6 +68,7 @@ class ClassifyingMor(CategoricalMor):
             return datum
         return self.element_class(self, datum)
 
+    @object_level
     @cached_method
     def identity(self):
         return self(self.mor_category().group().one())

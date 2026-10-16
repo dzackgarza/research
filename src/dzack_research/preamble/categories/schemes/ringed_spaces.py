@@ -38,6 +38,7 @@ from dzack_research.preamble.logic import AtomicProposition, conjunction, negati
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 if "Invertible" not in all_axioms:
@@ -508,12 +509,13 @@ class AlgebraSheafMor(CategoricalMor):
         if isinstance(underlying_morphism, AlgebraSheafMorphismMethods):
             if underlying_morphism.parent() is self:
                 return underlying_morphism
-            underlying_morphism = underlying_morphism.underlying_sheaf_morphism()
+            raise TypeError(f"{underlying_morphism} belongs to another Mor; apply the functor between the categories")
         return self.element_class(self, underlying_morphism)
 
     def _from_known_algebra_map(self, underlying_morphism):
         return self.element_class(self, underlying_morphism, algebra_laws=True)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -1821,20 +1823,12 @@ class AffineQuasiCoherentSheafMor(QuasiCoherentSheafMor):
             case AffineQuasiCoherentSheafMorphismMethods() if module_morphism.parent() is self:
                 return module_morphism
             case AffineQuasiCoherentSheafMorphismMethods():
-                if (
-                    module_morphism.domain() is not self.domain()
-                    or module_morphism.codomain() is not self.codomain()
-                ):
-                    raise ValueError(
-                        f"the morphism {module_morphism} of quasi-coherent sheaves goes from "
-                        f"{module_morphism.domain()} to {module_morphism.codomain()}, not from "
-                        f"{self.domain()} to {self.codomain()}"
-                    )
-                module_morphism = module_morphism.underlying_module_morphism()
+                raise TypeError(f"{module_morphism} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         return self.element_class(self, module_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

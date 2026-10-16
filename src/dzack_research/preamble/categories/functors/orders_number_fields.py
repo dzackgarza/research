@@ -77,7 +77,7 @@ class _OrderNumberFieldAdjunction(Adjunction):
             if source is field:
                 return field.Mor(field).identity()
             # The two fields share one engine field, so the counit is its identity.
-            return source.Mor(field)(
+            return source.Mor(field)._from_engine_morphism(
                 _engine_ring(source).hom(_engine_ring(field))
             )
         embeddings = source.Mor(field).embeddings()

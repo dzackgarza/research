@@ -56,6 +56,7 @@ from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import Category as OwnedCategoryBase
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
@@ -268,17 +269,7 @@ class ArrowMor(NaturalTransformationMor):
                 if left.parent() is self:
                     left.validate_commutativity(check=check)
                     return left
-                if left.domain() is not self.domain() or left.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {left} as a morphism {self.domain()} -> {self.codomain()} in the arrow category: "
-                        f"it is a square {left.domain()} -> {left.codomain()}"
-                    )
-                square = self._transformation(left, element_class=self.element_class)
-                square._commutativity_premises = (left,)
-                square.left()
-                square.right()
-                square.validate_commutativity(check=check)
-                return square
+                raise TypeError(f"{left} belongs to another Mor; apply the functor between the categories")
             case NaturalTransformation() if right is None:
                 # The inherited supplier retains this literal transformation
                 # and checks its original functor endpoints.  Request both
@@ -352,6 +343,7 @@ class ArrowMor(NaturalTransformationMor):
             left, right, commutativity_premises=commutativity_premises
         )
 
+    @object_level
     @cached_method
     def identity(self) -> CommutativeSquare:
         if self.domain() is not self.codomain():
@@ -1561,42 +1553,14 @@ class SubobjectMor(CategoricalMor):
                 if factor_morphism.parent() is self:
                     factor_morphism.validate_commutativity(check=check)
                     return factor_morphism
-                if factor_morphism.domain() is not self.domain() or factor_morphism.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"cannot view {factor_morphism} as a morphism of subobjects {self.domain()} -> {self.codomain()}: "
-                        f"it is a morphism {factor_morphism.domain()} -> {factor_morphism.codomain()}"
-                    )
-                old_square = factor_morphism._slice_square
-                slice_mor = self._slice_mor()
-                old_slice_mor = old_square.parent()
-                premises = (
-                    (old_square,)
-                    if (
-                        old_slice_mor._domain_arrow() is slice_mor._domain_arrow()
-                        and old_slice_mor._codomain_arrow() is slice_mor._codomain_arrow()
-                    )
-                    else None
-                )
-                fixed = slice_mor._domain_arrow().codomain()
-                identity = _category_mor_parent(
-                    slice_mor._edge_category(), fixed, fixed
-                ).identity()
-                # Changing the base category changes the slice functors, not
-                # the admitted factor. Reuse its old triangle proof only for
-                # literally the same two retained inclusion arrows.
-                square = slice_mor._square(
-                    factor_morphism.factor_morphism(), identity,
-                    commutativity_premises=premises,
-                )
-                return SubobjectMorphism(
-                    self, square.left(), verify=check, _slice_square=square
-                )
+                raise TypeError(f"{factor_morphism} belongs to another Mor; apply the functor between the categories")
             case None:
                 result = self.canonical_morphism()
                 result.validate_commutativity(check=check)
                 return result
         return SubobjectMorphism(self, factor_morphism, verify=check)
 
+    @object_level
     def identity(self) -> SubobjectMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -2270,21 +2234,6 @@ class CoreMor(CategoricalMor):
             case _:
                 return None
 
-    def cardinality(self):
-        r"""``|Iso_C(X, Y)|`` for a core Mor with distinct endpoints.
-
-        Such a Mor is placed in no owned category of sets, so this is its
-        cardinality operation; a vertex group ``Aut_C(X)`` reaches the same
-        count through ``Sets``' ``cardinality`` and this realization's
-        ``_cardinality_decision``.
-        """
-        count = self._cardinality_decision()
-        assert count is not None, (
-            f"cannot compute the cardinality of {self}: the bijections are counted only between finite "
-            f"sets, and {self.domain()} -> {self.codomain()} is a core Mor of {self.core_category().base_category()}"
-        )
-        return count
-
     def __init__(
         self,
         family: MorCategoryConstruction,
@@ -2360,8 +2309,13 @@ class CoreMor(CategoricalMor):
         r"""One isomorphism, or ``None``: the base category's decision (its protected core contract)."""
         return self.core_category().base_category()._core_isomorphism_witness(self)
 
-    def is_empty(self) -> bool:
-        r"""Whether there is no isomorphism between the endpoints, as the base category decides."""
+    def _emptiness_decision(self) -> bool:
+        r"""``Iso_C(X, Y) = ∅``, supplied to the ``Sets`` emptiness hook: the base category's decision.
+
+        ``is_empty`` is the one operation of ``Sets``, where every fixed Mor
+        is placed (``CategoricalMor``); this realization supplies only the
+        decision.  On a vertex group the group owner's hook answers first.
+        """
         return self._isomorphism_witness() is None
 
     def an_element(self) -> CategoricalIsomorphism:
@@ -2379,17 +2333,21 @@ class CoreMor(CategoricalMor):
         """
         return self.core_category().base_category()._core_isomorphism_in(self, subgroup)
 
+    def __call__(self, forward, inverse=None, **kwargs):
+        if inverse is not None:
+            return super().__call__((forward, inverse), **kwargs)
+        return super().__call__(forward, **kwargs)
+
     def _element_constructor_(self, forward, inverse=None):
         match forward:
             case CategoricalIsomorphism() if inverse is None:
                 if forward.parent() is self:
                     return forward
-                self._require_base_morphisms(forward.forward(), forward.inverse().forward())
-                return self._from_known_inverse_pair(forward.forward(), forward.inverse().forward())
+                raise TypeError(f"{forward} belongs to another Mor; apply the functor between the categories")
         if inverse is None:
             forward, inverse = forward
         self._require_base_morphisms(forward, inverse)
-        return self.element_class(self, forward, inverse)
+        return self.element_class(self, forward, lambda: inverse)
 
     def _require_base_morphisms(self, forward: Morphism, inverse: Morphism) -> None:
         base = self.core_category().base_category()
@@ -2406,8 +2364,19 @@ class CoreMor(CategoricalMor):
     def _from_known_inverse_pair(self, forward, inverse):
         r"""Construct an isomorphism from an inverse pair proved by its owner."""
         self._require_base_morphisms(forward, inverse)
-        return self.element_class(self, forward, inverse, verify=False)
+        return self._from_inverse_computation(forward, lambda: inverse)
 
+    def _from_inverse_computation(self, forward, inverse_computation):
+        r"""The isomorphism ``forward``, whose inverse ``inverse_computation()`` is asked on first request.
+
+        Protected (``OWN-05``): the caller has proved that ``forward`` is an
+        arrow of the base category with that inverse; a composite of two
+        isomorphisms of this core (``CategoricalIsomorphism.__mul__``) is the
+        first caller.  Nothing is checked or composed here (``OWN-22``).
+        """
+        return self.element_class(self, forward, inverse_computation, verify=False)
+
+    @object_level
     def identity(self) -> CategoricalIsomorphism:
         if self.domain() is not self.codomain():
             raise ValueError(

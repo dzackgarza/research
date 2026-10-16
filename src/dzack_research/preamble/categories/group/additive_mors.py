@@ -6,6 +6,7 @@ identities.  This is the additive specialization of the existing owned Mor
 packet, using Sage's ``Mor``, ``Morphism`` and integer multiplication action.
 """
 
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -29,6 +30,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
     OwnedRings,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class AdditiveMagmaMorphism:
@@ -47,14 +49,15 @@ class AdditiveMagmaMorphism:
 
 
 def _additive_operation_mor_element(parent, datum):
-    if isinstance(datum, Morphism):
+    if isinstance(datum, Map):
         if datum.domain() is not parent.domain() or datum.codomain() is not parent.codomain():
             raise ValueError(
                 f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a morphism "
                 f"{parent.domain()} -> {parent.codomain()}"
             )
-        if datum.parent() is parent:
+        if parent._already_parented_arrow(datum):
             return datum
+        raise TypeError(f"{datum} is an arrow of another Mor; give its defining additive map")
     if not callable(datum):
         raise TypeError(
             f"an additive morphism {parent.domain()} -> {parent.codomain()} needs a map on elements, "
@@ -529,6 +532,7 @@ class AdditiveMor(CategoricalMor):
         r"""The integer scalar ring of this additive Mor group."""
         return self._preamble_base_ring
 
+    @object_level
     @cached_method
     def identity(self):
         r"""The canonical identity in this additive Mor's diagonal."""
@@ -540,7 +544,7 @@ class AdditiveMor(CategoricalMor):
         return self._scalar_identity(self.base_ring().one())
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             assert datum.domain() is self.domain() and datum.codomain() is self.codomain(), (
                 f"{datum} is a morphism {datum.domain()} -> {datum.codomain()}, not a "
                 f"morphism {self.domain()} -> {self.codomain()}"
@@ -561,6 +565,8 @@ class AdditiveMor(CategoricalMor):
 
     def elementwise(self, function):
         r"""Construct the additive map declared by ``function``."""
+        if isinstance(function, Map):
+            return self(function)
         assert callable(function), (
             f"cannot build a morphism {self.domain()} -> {self.codomain()} from {function}: "
             f"an additive morphism is given by a map on elements, and {function} is not a map"

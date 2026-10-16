@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+from functools import update_wrapper
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.categories.homset import Homset as SageHomset
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.misc.cachefunc import cached_method
@@ -42,7 +44,20 @@ class OwnedMor(SageHomset):
     # its category is set; the presented-modules slot starts empty here too.
     _selected_module_presentation = None
 
+    def _already_parented_arrow(self, arrow: Morphism) -> bool:
+        return arrow.parent() is self
+
     def __call__(self, *args, **kwargs) -> Morphism:
+        if len(args) == 1 and isinstance(args[0], Map):
+            arrow = args[0]
+            if self._already_parented_arrow(arrow):
+                if not kwargs:
+                    return arrow
+            elif arrow.domain() is self.domain() and arrow.codomain() is self.codomain():
+                raise TypeError(
+                    f"{arrow} belongs to {arrow.parent()}, not to {self}; apply the functor between "
+                    "the categories instead of constructing an arrow from another arrow (CON-17)"
+                )
         return self._element_constructor_(*args, **kwargs)
 
     def identity_at(self, obj: Parent) -> Morphism:
@@ -53,7 +68,32 @@ class OwnedMor(SageHomset):
         return self.identity()
 
 
-__all__ = ["CategoryPacketMethods", "OwnedMor", "UnderlyingSetMor"]
+def _refuse_foreign_arrow(mor: Parent, arrow: Morphism, functor: str) -> None:
+    r"""Refuse ``arrow``, an arrow of another Mor, at the element constructor of ``mor``.
+
+    ``CON-17``, owner ruling 2026-10-16: the element constructor of
+    ``Mor_C(A, B)`` admits an arrow already in it and the defining data of a
+    new arrow.  An arrow of a different Mor -- another category, or other
+    structure on the same endpoints -- reaches it only as the image under a
+    functor, never by reading its formula, matrix or callable to rebuild it:
+    almost no arrow of a weaker category lifts, and admitting it unchecked is
+    a backdoor to an ill-defined arrow.  ``functor`` names the route the
+    caller takes instead.
+    """
+    raise TypeError(
+        f"{arrow} is an arrow of {arrow.parent()}, not of {mor}: an element of {mor} is constructed from "
+        f"its defining data (a function on elements, generator images, a matrix of a framed map), and an "
+        f"arrow of another category reaches it only as the image under a functor (CON-17); {functor}"
+    )
+
+
+__all__ = [
+    "CategoryPacketMethods",
+    "ObjectLevelOperation",
+    "OwnedMor",
+    "UnderlyingSetMor",
+    "object_level",
+]
 
 class UnderlyingSetMor(OwnedMor):
     r"""Plain-function Mor used only when an owned category declares no stronger arrows."""
@@ -64,7 +104,7 @@ class UnderlyingSetMor(OwnedMor):
         SageHomset.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, SetMorphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
@@ -72,7 +112,11 @@ class UnderlyingSetMor(OwnedMor):
                 )
             if datum.parent() is self:
                 return datum
-            datum = datum._call_
+        if isinstance(datum, Map):
+            _refuse_foreign_arrow(
+                self, datum, "the underlying map of an arrow of a structured category is its image under that "
+                "category's forgetful functor to sets"
+            )
         if not callable(datum):
             raise TypeError(
                 f"a map {self.domain()} -> {self.codomain()} needs a function on points, but {datum!r} is not callable"
@@ -248,3 +292,93 @@ class CategoryPacketMethods:
 
     def Aut(self, obj: Parent) -> Category:
         return self.AutCategory().Of(obj)
+
+
+def _identity_of_object(category: Category, obj: Parent) -> Morphism:
+    r"""``C.identity(X)``: the identity arrow of the object ``X`` of ``C``, read in ``Mor_C(X, X)``."""
+    return category.MorCategory().Of(obj, obj).identity()
+
+
+def _asked_of_the_category(owner: Parent, objects: tuple) -> bool:
+    r"""Whether a name of the Mor packet is asked of ``owner`` as a category.
+
+    Owner ruling 2026-10-16 (``ARC-07``): an object that is also a category,
+    such as a Mor category that is a monoid (``End(X)``) or a group
+    (``O(L) = Aut(L)``), answers ``Mor``, ``End``, ``Aut``, ``Mono`` and
+    ``identity`` in two readings.  Asked of it as an object, they are the
+    operations of its nearest ambient category (``O(L).Mor(H)`` is the group
+    homomorphisms).  Asked of it as a category, they take its own objects as
+    arguments (``End(X).Mor(f, g)`` is the 2-arrows from ``f`` to ``g``).
+    The reading is decided by what is asked: the category reading exactly
+    when ``owner`` is a category and every argument is one of its objects.
+    """
+    from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+    match objects:
+        case ():
+            return False
+        case _ if owner in Cat():
+            return all(obj in owner for obj in objects)
+        case _:
+            return False
+
+
+def _category_level_operations() -> dict:
+    r"""The category-level operation of each name of the Mor packet, at its one owner."""
+    packet = CategoryPacketMethods.__dict__
+    return {
+        "Mor": packet["Mor"],
+        "End": packet["End"],
+        "Aut": packet["Aut"],
+        "Mono": packet["Mono"],
+        "Epi": packet["Epi"],
+        "Iso": packet["Iso"],
+        "identity": _identity_of_object,
+    }
+
+
+class ObjectLevelOperation:
+    r"""The object-level reading of a name of the Mor packet (``ARC-07``).
+
+    Declared at each owner of the object-level operation, as
+    :class:`~dzack_research.preamble.refine.RealizationHook` is declared at
+    each hook.  A call is routed by what it asks of whom
+    (:func:`_asked_of_the_category`): arguments that are objects of the
+    receiver regarded as a category go to the category-level operation
+    (:func:`_category_level_operations`); every other call is the declared
+    object-level body.  The category's method classes precede a realization
+    in the owned runtime (``refine._rebuild_parent_class``), so on an object
+    that is also a category the object-level owner is the one Python finds;
+    this descriptor is where both readings meet, without reordering that
+    resolution and without a convention per class.
+
+    A data descriptor: Sage's ``cached_method`` stores its caller on the
+    instance by the method's name when it can, which would bypass the
+    routing, and falls back to its private cache when that store is refused.
+    """
+
+    def __init__(self, reading) -> None:
+        self._reading = reading
+        update_wrapper(self, reading)
+
+    def __get__(self, instance, owner=None):
+        if instance is None:
+            return self._reading.__get__(None, owner)
+        reading = self._reading.__get__(instance, owner)
+        category_level = _category_level_operations()[self.__name__]
+
+        def operation(*objects, **options):
+            if not options and _asked_of_the_category(instance, objects):
+                return category_level(instance, *objects)
+            return reading(*objects, **options)
+
+        update_wrapper(operation, reading)
+        return operation
+
+    def __set__(self, instance, value) -> None:
+        raise AttributeError(
+            f"{self.__name__} is an operation of the Mor packet, not a field of {instance}"
+        )
+
+
+object_level = ObjectLevelOperation

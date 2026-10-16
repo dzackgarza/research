@@ -1,5 +1,6 @@
 r"""Cochain complexes of owned modules and their cohomology."""
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
@@ -42,6 +43,7 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.owned_category import owned_category_join
 from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class CochainComplexes(OwnedCategoryOverBaseRing):
@@ -537,7 +539,7 @@ class CochainMorphismMethods:
         return True
 
     def __init__(self, parent, components, *, cochain_premises=None) -> None:
-        if isinstance(components, Morphism):
+        if isinstance(components, Map):
             if (
                 components.domain() is not parent.domain()
                 or components.codomain() is not parent.codomain()
@@ -734,30 +736,11 @@ class CochainMor(CategoricalMor):
         )
 
     def _element_constructor_(self, components):
-        if isinstance(components, CochainMorphismMethods):
-            if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{components} is a cochain map {components.domain()} -> {components.codomain()}, "
-                    f"not an element of {self}"
-                )
-            if components.parent() is self:
+        if isinstance(components, Map):
+            if self._already_parented_arrow(components):
                 return components
-            return self._from_constructed_components(
-                indexed_family(
-                    self.domain().degree_index_set(),
-                    components._selected_degree_component,
-                    name="Reparented cochain-morphism components",
-                ),
-                premises=(components,),
-            )
-        elif isinstance(components, Morphism):
-            if components.domain() is not self.domain() or components.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{components} is a map {components.domain()} -> {components.codomain()}, "
-                    f"not an element of {self}"
-                )
-            return self.elementwise(lambda element: components(element))
-        elif isinstance(components, dict):
+            raise TypeError(f"{components} belongs to another Mor; apply the functor between the categories")
+        if isinstance(components, dict):
             selected = {int(degree): morphism for degree, morphism in components.items()}
 
             def component_at(degree):
@@ -855,6 +838,8 @@ class CochainMor(CategoricalMor):
         return self._module_scalar_multiple(scalar, self.identity())
 
     def elementwise(self, function):
+        if isinstance(function, Map):
+            return self(function)
         if not callable(function):
             raise TypeError(
                 f"an element of {self} given elementwise needs a function on {self.domain()}, "
@@ -889,6 +874,7 @@ class CochainMor(CategoricalMor):
             result += self.scalar_multiple(coefficient, morphism)
         return result
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

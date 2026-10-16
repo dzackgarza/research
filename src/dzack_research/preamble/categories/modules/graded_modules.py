@@ -1,5 +1,7 @@
 """Modules graded by a monoid."""
 
+from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.infinity import Infinity as _Infinity
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -33,6 +35,7 @@ from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.lexicon.set_theory import SetObject
 from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _normalize_grading_monoid(monoid: Parent | None) -> SetObject:
@@ -345,21 +348,12 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def _element_constructor_(self, images, *, check=False):
         r"""Construct the graded map; ``check=True`` runs its validators (``OWN-22``)."""
-        if isinstance(images, ModuleMorphismMethods):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError(
-                    f"{images} is not a map {self.domain()} -> {self.codomain()}: it is a map "
-                    f"{images.domain()} -> {images.codomain()}"
-                )
-            if isinstance(images, GradedModuleMorphismMethods):
-                if images.parent() is self:
-                    return images
-                morphism = self._from_constructed_graded_map(images, premises=(images,))
-            else:
-                morphism = self.element_class(self, images)
-            morphism.validate_linearity(check=check)
-            morphism.validate_degree_preservation(check=check)
-            return morphism
+        if isinstance(images, Map):
+            if self._already_parented_arrow(images):
+                images.validate_linearity(check=check)
+                images.validate_degree_preservation(check=check)
+                return images
+            raise TypeError(f"{images} belongs to another Mor; apply the functor between the categories")
         morphism = super()._element_constructor_(images, check=check)
         if isinstance(morphism, GradedModuleMorphismMethods):
             morphism.validate_degree_preservation(check=check)
@@ -521,10 +515,12 @@ class GradedModules(OwnedCategoryOverBaseRing):
 
     class ParentMethods:
 
+        @object_level
         def End(self):
             r"""Endomorphisms preserving the chosen degree decomposition."""
             return self._graded_module_placement().End(self)
 
+        @object_level
         def Aut(self):
             r"""Automorphisms preserving the chosen degree decomposition."""
             return self._graded_module_placement().Aut(self)

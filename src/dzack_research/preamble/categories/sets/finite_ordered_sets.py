@@ -507,7 +507,20 @@ class FiniteOrderedSets(OwnedCategory):
 
         def __eq__(self, other) -> bool | Predicate:
             r"""Equal to a finite set with the same points; two finite ordered sets also agree in order."""
-            from dzack_research.preamble.logic import conjunction
+            from dzack_research.preamble.logic import Predicate, conjunction
+
+            def point_equality(left, right):
+                equal = True if left is right else left == right
+                match equal:
+                    case True | False | Predicate():
+                        return equal
+                    case _:
+                        raise AssertionError(
+                            f"cannot compare the finite ordered sets {self} and {other}: their points "
+                            f"{left!r} and {right!r} answer equality with {equal!r}, which is neither "
+                            "True, False nor a proposition, so one of them is not a point that decides "
+                            "its own equality"
+                        )
 
             match other:
                 case _ if other is self:
@@ -516,7 +529,7 @@ class FiniteOrderedSets(OwnedCategory):
                     if self.cardinality() != other.cardinality():
                         return False
                     return conjunction(
-                        True if left is right else left == right
+                        point_equality(left, right)
                         for left, right in zip(self, other, strict=True)
                     )
                 case _:

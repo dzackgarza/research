@@ -19,6 +19,7 @@ from collections import Counter
 from collections.abc import Hashable, Mapping, Sequence
 from functools import cache
 from typing import TYPE_CHECKING, overload
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from sage.categories.category import Category
@@ -379,8 +380,8 @@ def _lattice_subobject_on_basis(module, basis, extra_categories, construction_da
             )
 
     def inclusion_factory(source):
-        module_inclusion = source.Mono(module)(embedded)
-        return source.Emb(module)(module_inclusion)
+        # The inclusion is built from its generator images in its own Mor (``CON-17``).
+        return source.Emb(module)(embedded)
 
     return _lattice_object(
         Lattices(ring),
@@ -2562,6 +2563,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             return _lattice_isometry_mor(self, codomain)
 
+        @object_level
         def Aut(self):
             r"""Return ``Isom(L,L)``, the orthogonal automorphism Mor."""
             return self.Isom(self)
@@ -6777,6 +6779,51 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
 
             return source.module_category().Mor(source, self)(image)
 
+        def orthogonal_sum_map(self, product):
+            r"""Return ``prod_i G_i -> O(L)``, ``(g_i) |-> sum_i g_i``, for subgroups ``G_i <= O(L_i)``.
+
+            ``L = sum_i L_i`` is this orthogonal sum.  ``product`` is a selected
+            product of groups ``prod_i G_i`` (``OwnedGroups().product_construction``),
+            its ``i``-th factor, in the order of the summands, a subgroup of
+            ``O(L_i)``.  ``sum_i g_i`` is the isometry acting by ``g_i`` on the
+            summand ``L_i``: the map out of the biproduct whose legs are
+            ``L_i --g_i--> L_i --> L``.  The map is injective, since
+            ``sum_i g_i`` restricts to ``g_i`` on ``L_i``.
+            """
+            from dzack_research.preamble.categories.lattice_morphisms import (
+                _subgroup_inclusion_into,
+            )
+
+            factors = self.biproduct_factors()
+            labels = tuple(factors.index_set())
+            shape = product.diagram().domain()
+            projections = {
+                index: product.structure_morphism(shape(position))
+                for position, index in enumerate(labels)
+            }
+            inclusions = {
+                index: _subgroup_inclusion_into(projections[index].codomain(), factors[index].O())
+                for index in labels
+            }
+            source = product.object()
+
+            def block_isometry(element):
+                legs = finite_indexed_family(
+                    factors.index_set(),
+                    lambda index: factors[index].module_category().Mor(factors[index], self)(
+                        lambda label, index=index: self.injection(index)(
+                            inclusions[index](projections[index](element))(
+                                factors[index].module_generator(label)
+                            )
+                        )
+                    ),
+                    name=f"Blocks of an element of {source}",
+                )
+                block_sum = self.from_coproduct_cocone(legs)
+                return self.O()(lambda label: block_sum(self.module_generator(label)))
+
+            return source.Mor(self.O()).elementwise(block_isometry)
+
 
 class DefiniteLattices(OwnedCategoryOverBaseRing):
     r"""Finite-rank definite lattices.
@@ -7781,20 +7828,17 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 return result
 
             def isometry(parameter):
-                forward = ambient.module_category().Mor(ambient, ambient)({
+                # The Eichler-type transvection is given by its generator images
+                # in O(L) itself (``CON-17``); its inverse is the transvection
+                # at ``-parameter``, computed on request.
+                forward = ambient.Mor(ambient)({
                     label: ambient.module_generator(label)
                     + shift(parameter, ambient.module_generator(label))
                     for label in ambient.module_generating_set()
                 })
-                inverse = ambient.module_category().Mor(ambient, ambient)({
-                    label: ambient.module_generator(label)
-                    - shift(parameter, ambient.module_generator(label))
-                    for label in ambient.module_generating_set()
-                })
-                module_isomorphism = ambient.module_category().Core().Mor(
-                    ambient, ambient
-                )._from_known_inverse_pair(forward, inverse)
-                return ambient.Isom(ambient)(module_isomorphism)
+                return ambient.Isom(ambient)._from_inverse_computation(
+                    forward, lambda: isometry(-parameter)
+                )
 
             return solution, isometry
 

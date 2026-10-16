@@ -321,7 +321,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                     lambda label: words.value(label)
                 )
             )
-            return free.Mor(self).elementwise(ambient_map)
+            return ambient_map.factor_through(self.inclusion())
 
         def finite_index_schreier_generating_morphism(self, *, index_bound, generators=None):
             r"""The free generating epimorphism onto a bounded finite-index subgroup."""
@@ -837,7 +837,7 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
                 *lifts,
             )
             cover = self.supergroup().free_cover(elements)
-            return cover.domain().Mor(self).elementwise(cover)
+            return cover.factor_through(self.inclusion())
 
 class StabilizerSubgroups(_PredicateSubgroupConstruction):
     def an_object(self):

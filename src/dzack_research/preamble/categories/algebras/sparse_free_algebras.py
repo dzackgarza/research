@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily, indexed_family
 from dzack_research.preamble.categories.sets.set_categories import Sets as OwnedSets
 from dzack_research.preamble.logic import AtomicProposition, conjunction
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class _SparseFreeAlgebra(_WordModule):
@@ -378,8 +379,20 @@ class SparseFreeAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebra
         )
 
     def _element_constructor_(self, images):
+        r"""Extend defining generator data through the free-algebra universal property."""
+        if isinstance(images, Map):
+            if self._already_parented_arrow(images):
+                return images
+            source = self.domain()
+            generating = source.generating_module()
+            labels = source.algebra_generating_set()
+            generator_mor = generating.module_category().Mor(generating, self.codomain())
+            label_mor = Sets().Mor(labels, self.codomain())
+            if not (generator_mor.accepts(images) or label_mor.accepts(images)):
+                raise TypeError(f"{images} is a whole arrow of another Mor; give the free-generator map")
         return self.element_class(self, images)
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

@@ -2,6 +2,8 @@ r"""Finite Coxeter diagrams, optionally rooted in an integral lattice."""
 
 from itertools import combinations
 
+from sage.categories.map import Map
+from sage.categories.morphism import Morphism
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.graphs.graph import Graph
@@ -43,6 +45,7 @@ from dzack_research.preamble.categories.sets.set_categories import (
 from dzack_research.preamble.logic import conjunction, negation
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _engine_cartan_type_data(value):
@@ -292,6 +295,8 @@ class CoxeterDiagramMor(CategoricalMor):
         r"""The vertex map given by a callable, or by the images of the vertices in their order."""
         if element_parent(datum) is self:
             return datum
+        if isinstance(datum, Map):
+            raise TypeError(f"{datum} is an arrow of another Mor; give the vertex images")
         if callable(datum):
             function = datum
         else:
@@ -301,6 +306,7 @@ class CoxeterDiagramMor(CategoricalMor):
         morphism.validate_preservation(check=False)
         return morphism
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

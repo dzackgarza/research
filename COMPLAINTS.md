@@ -28,11 +28,10 @@ Observed (executed, 2026-10-15): `LatticeIsometryMor.centralizer`, which selects
 Population tell, executed 2026-10-15 (`.tmp/shadow_probe.py`, MRO walk of the realized class, worktree `port-gaps3-shadow`) on `O(A2)`, `O(U)`, `Isom(diag(1,14), diag(2,7))`, `Mono(A1, U)`, `LatticeMor(A2, A2)`, a marked-lattice `Core().Mor` in `Lattices(ZZ).CosliceUnder(<2>)`, `Sets().Core().Mor` at `(Δ1, Δ1)` and `(Δ1, Δ2)`, `Sets().End(Δ0)`, `ZZ^2.Mor(ZZ)`, `Modules(ZZ).Aut(ZZ^2)`, `Mono(diag(2,2), itself)`, `ZZ`, `QQ[x]`, `GF(5)`, `S3`, `C4`. Preamble realization methods losing to a category `ParentMethods`, and their disposition:
 - `CoreMor.cardinality` (the bijections of finite sets, `m!` or `0`) lost to `Sets.ParentMethods.cardinality` on every vertex group: `Sets().Core().Mor(Δ1, Δ1).cardinality()` reached the group default. Repaired: the count is `CoreMor._cardinality_decision`, and any other vertex group goes to the group owner's `_group_cardinality`, because a realization of a hook replaces the category's default body and has no way to fall through to it. On distinct endpoints `CoreMor.cardinality` stays the operation and reads the same hook, which also gives `Isom(U, I_{1,1}).cardinality() == 0` (formerly a `TypeError`).
 - `ModuleAutomorphismGroup.identity`, `one`, `identity_automorphism` and `ModuleMor.linear_combination` were copies of `ModuleAutomorphismGroups.ParentMethods` and `Modules.ParentMethods`, which every such object is placed in. Deleted.
-- `LatticeIsometryMor.is_empty`, `LatticeEmbeddingMor.is_empty`, `CoreMor.is_empty` lose to `Sets.ParentMethods.is_empty` only on a monoid (`O(L)`, `Aut`), where `Monoids.ParentMethods._emptiness_decision` answers `False` as they do; they are the live operation on distinct endpoints.
-- `CategoryPacketMethods.Mor`, `End`, `Aut`, `Mono` and `CategoricalMor.Mor` lose to `Sets`, `OwnedGroups` and `Modules` `ParentMethods`: these are a different operation of the same name, below.
+- `LatticeIsometryMor.is_empty`, `LatticeEmbeddingMor.is_empty`, `CoreMor.is_empty` and `CoreMor.cardinality` lost to `Sets.ParentMethods` on every fixed Mor, which `CategoricalMor.__init__` places in the owned `Sets()`; repaired: they are the realizations' `_emptiness_decision` (and `_cardinality_decision`) hooks.
 - `_ModuleMorCommonMethods.base_ring` equals `LinearMorModules.ParentMethods.base_ring` and is read during construction, before the placement exists. `CoreMor.identity` and `one` are the generic arrows that `ModuleAutomorphismGroups` specializes.
 
-Residue. (1) A Mor object with distinct endpoints is placed only in Sage's `Sets().Homsets()`, while a vertex group is placed in `OwnedGroups()` and so in the owned `Sets()`; `is_empty` and `cardinality` therefore have two owners, by placement, though `Mor_C(X, Y)` is a set in both cases (`OWN-22`). (2) `Mor`, `End`, `Aut`, `Mono` and `identity(x)` name both the category-level operation of a Mor category (`C.Mor(f, g)`, 2-arrows between its objects) and the object-level operation of the set or group it also is (`X.Mor(Y)`, `ARC-07`). On a monoid the object-level one wins, and the protected `tests/constructions/test_mor_categories_construct.sage` (lines 57, 76, 80-81) asks the category-level reading of `End(Δ0)`. `CategoricalMor.identity_2` now asks `two_mor`, which no category redefines. Placing every Mor in the owned `Sets()` would extend the collision of (2) to every Mor category, so (1) waits on a ruling for (2).
+Residue. The two readings of `Mor`, `End`, `Aut`, `Mono` and `identity` on an object that is also a category (owner ruling 2026-10-16, `ARC-07`) are routed by `mor_foundation.ObjectLevelOperation`; `__call__` keeps only its element reading on a fixed Mor, so `End(X)(f)` is `f` and not the arrow object `End(X).object(f)` that the protected `test_mor_categories_construct.sage` asks for.
 Repair: `realization-methods-reach-their-category-operations` in [TODO.md](TODO.md).
 
 ### Port consumers of binary fibres and cone marks must move (port #33, #15)
@@ -191,7 +190,7 @@ For group morphisms `a: G -> Q` and `b: H -> Q`, the pullback has elements `(g,h
 The `pullbacks-in-every-category` node owns this construction.
 
 **Observed source boundary, 2026-10-11:** `Cat.fiber_product` (`categories/abstract_categories/cat.py:840`) composes products and equalizers but returns the equalizer result rather than a selected pullback cone.
-The inspected `OwnedGroups._categorical_product_construction` (`categories/group/groups.py:2997`) accepts only nonempty finite families of finite groups.
+`OwnedGroups._categorical_product_construction` realizes products of arbitrary finite families (2026-10-16).
 No equalizer realization was found in the inspected group owner files.
 Selected products and equalizers at the general category owner, predicate inverse images and finite-index Schreier generators are existing partial capabilities.
 
@@ -203,27 +202,27 @@ Request additional mathematics from `lean-categories` only after checking its ex
 
 The [expressive-power assessment](docs/preamble-expressive-power.md) records the general interfaces and their composition boundaries.
 
-### Products of infinite groups are not represented
+### The product in Grp and its factor inclusions are not formalized in `lean-categories`
 
-For groups G1, G2 the product G1 x G2 has elements (g1, g2), componentwise law, projections p_i and factor inclusions g |-> (g, 1), (1, g), with the universal cone; for finitely generated factors it is generated by the images of both generating sets.
-**Observed source boundary, 2026-10-14:** `OwnedGroups._categorical_product_construction` (`categories/group/groups.py`) realizes the product through GAP for nonempty finite families of finite groups only; `Cat.fiber_product` composes that product with an equalizer.
-No represented product of infinite owned groups (pairs of owned elements) exists.
-**Consumers:** `G1.direct_product(G2)` for subgroups of lattice orthogonal groups (#397), group pullbacks and subgroup intersections, and the stabilizer of a family `v: I -> L` under `O(L) x Sym_C(I)` itself: only its image `L.O().stabilizer(family)` in `O(L)` is presented, its kernel `K_v` stated in `coloured_vector_families.py`, and families that do not span `L tensor Q` (whose stabilizer contains the pointwise stabilizer of the span) are asserted out.
-**Dependency path:** owned groups -> product group with cone -> orthogonal-sum image in O(L1 + L2) -> pullbacks.
-**Request:** filed as [lean-categories#91](https://github.com/dzackgarza/lean-categories/issues/91): `lean-categories` states the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2) for lattices; check its existing `Grp` limits first.
-Remediation: `port-group-primitives-with-generators` in [TODO.md](TODO.md).
+`OwnedGroups().product_construction` realizes the product of an arbitrary finite family of groups on families of components, with projections and the universal factorization `h |-> (f_i(h))` (`_componentwise_product_construction`, `categories/group/groups.py`); `L.orthogonal_sum_map(product)` gives `prod_i G_i -> O(L)` for `G_i <= O(L_i)` on a lattice biproduct. Mathlib states the product monoid with `MonoidHom.fst`, `MonoidHom.inl` (`x |-> (x, 1)`) and `MonoidHom.prod` (`Mathlib/Algebra/Group/Prod.lean`); `lean-categories` has no product in its group category (searched `LeanCategories/` and FOUNDATIONS.md for `Grp` products, 2026-10-16).
+**Request:** [lean-categories#91](https://github.com/dzackgarza/lean-categories/issues/91): the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2). It runs beside the delivered computation and parks nothing.
+Products over infinite index sets remain unrepresented: the group product hook takes finitely many factors (`_finite_factor_family`).
 
-**Source refinement, 2026-10-14:** selected group direct products now
-factor cones by evaluating their actual legs and applying GAP's maintained
-factor embeddings. Their universal map no longer asks for a GAP engine
-or generating family of the arbitrary cone apex. Likewise, the selected
-free-product cocone factor uses owned images of the chosen coproduct
-generators and the existing presentation-relation validator, so its
-target apex need not have a GAP realization. Both preserve the original
-projections/injections and the same selected universal construction;
-infinite predicate-subgroup apexes distinguish this source boundary.
-Computing the *product/free product object* still needs the explicitly
-admitted factor presentations, and source equations await terminal T.
+### `gluing_subgroup` names two different subgroups
+
+`LEX-11` asks that one name be one operation in one codomain. `gluing_subgroup()` of a finite-index embedding `j: M -> L` (`LatticeEmbeddingMethods`, `categories/lattice_morphisms.py`) and of `CyclotomicDecomposition` (which delegates to it) is `L/M` inside `A_M = M^#/M`. `IsometryPrimitiveExtension.gluing_subgroup()` (`categories/lattice_centralizers.py`) is `H_+ = L/(L^f + (L^f)^perp)` inside `A_{L^f}`, the projection of that glue to one summand's discriminant group: a different subgroup of a different group. Observed by source reading 2026-10-16; neither name was changed. The owner of the lexicon decides which operation keeps the name; no TODO node yet.
+
+### Glued centralizer generators repeatedly reconstruct integral-lift comparisons
+
+For a finite-index inclusion `j: M -> L`, lifting a point of `j(M)` should reuse the integral linear-system comparison attached to that same morphism. Cyclotomic centralizer assembly repeatedly applies this lift while extending a component isometry to the orthogonal sum. The exact source, target, chosen framings and Smith comparison must be retained; a rational preimage is not an integral solution.
+
+**Measured (2026-10-16, source `16e7f896f1`):** on `L = U + U`, with `sw` exchanging its hyperbolic planes, a 20-second `cProfile` of `L.O().centralizer(sw).group_generators()` stopped during block-isometry construction. There were 26 integral-preimage solver constructions and 26 `smith_form()` calls (14.058 s cumulative), and 18 `_orthogonal_sum_image` calls (10.086 s cumulative). Command: `direnv exec /home/dzack/research env PYTHONPATH=/home/dzack/research/.tmp/wt-cyclo/src sage -python /home/dzack/research/.tmp/wt-cyclo/.tmp/profile_centralizer.py`. The scratch probe enables `cProfile` only after constructing the swap and interrupts after 20 s; those figures include profiler overhead and describe one rank-four specimen, not a growth curve or an engine-only measurement.
+
+**Source:** `CyclotomicDecomposition._orthogonal_sum_image` (`categories/lattice_centralizers.py`) calls `orthogonal_sum_inclusion().lift` for each vector. `ModuleMorphismMethods._preimage_or_none` calls `_solve_preimage_integrally`; the latter constructs `_integral_preimage_positional_solver` anew, and `_integral_preimage_solver` calls `morphism.smith_form()` each time. Existing invariant-factor normalization and its change-of-presentation maps already supply the mathematical comparison. `OWN-22` requires computed data to be cached and reused; `DEV-12` requires the existing shared memoization mechanisms, not a new consumer-local cache.
+
+**Separate unresolved observation from the handoff:** the unprofiled full generator request exceeds 60 s, with the later traceback in `_divided_square -> _presented_degree_power -> _divided_relations -> ranking_map()(label) ->` membership in `NN`. The bounded profile stops earlier and does not establish the cause of that later stall. Diagnose it at the reached shared owner; no missing mathematical foundation has been established by these observations.
+
+**Consumer and repair:** `arithmetic-centralizers-from-component-gluing` in [TODO.md](TODO.md). Its complete mathematical specimens and component-generator obligations remain required. The label/divisor defect is discharged separately; it does not establish the glued centralizer result.
 
 ### Group colimits do not compose chosen finite presentations
 
@@ -1582,21 +1581,17 @@ Not executed (DEV-58).
 
 **Formal statements found** (formalization corpus API, 2026-10-14): double cosets `doubleCoset`, `DoubleCoset.Quotient` (leanprover-community__mathlib4, `Mathlib/GroupTheory/DoubleCoset.lean`); `doubleCosetEquivOrbitQuotient`, `preimage_orbit_eq_doubleCoset` (TauCetiProject__TauCeti, `TauCeti/GroupTheory/DoubleCoset/Orbits.lean`), identifying H \ G / K with orbits on G/K; the inversion bijection the inverted route uses (TauCetiProject__TauCeti, `TauCeti/GroupTheory/DoubleCoset/Inv.lean`); Schreier's lemma `Subgroup.closure_mul_image_eq` (mathlib4, `Mathlib/GroupTheory/Schreier.lean`); cusp orbits `CuspOrbits`, `cosetToCuspOrbit` (mathlib4, `Mathlib/NumberTheory/ModularForms/Cusps.lean`: "Surjection from SL(2, ℤ) / (𝒢 ⊓ SL(2, ℤ)) to cusp orbits of 𝒢"); certified coset enumeration `TauCeti.CosetTable.finiteIndex`, `index_le` (TauCetiProject__TauCeti, `TauCeti/GroupTheory/Coset/Table.lean`: "a certified table on k points for a subgroup H shows H.index ≤ k"). Request to `lean-categories`, filed as [lean-categories#88](https://github.com/dzackgarza/lean-categories/issues/88): present these (double cosets as orbit sets, Schreier generators, cusps of a finite-index subgroup as its orbits on P^1(QQ) = B \ GL_2(ZZ)) in its vocabulary, citing them; it has none of them (`rg -i 'double ?coset|cusp|schreier'` over `~/gitclones/lean-categories`).
 
-## A finite presentation of GL_2(ZZ)
+## A finite presentation of GL_2(ZZ) is not formalized
 
-**Desired mathematics.** GL_2(ZZ) = SL_2(ZZ) ⋊ <e>, e = diag(1,-1), with SL_2(ZZ) = < s_2, s_3 | s_2^4, s_2^2 = s_3^3 > (the amalgam Z/4 *_{Z/2} Z/6), and the extension presented by adjoining e with e^2 = 1 and e s_i e^-1 written as words in s_2, s_3.
+**Desired mathematics.** SL_2(ZZ) = Z/4 *_{Z/2} Z/6 on omega_1 = [[0,1],[-1,0]] and omega_2 = [[0,1],[-1,1]], and GL_2(ZZ) presented by adjoining e = diag(1,-1) with e^2 = 1, e omega_1 e^-1 = omega_1^-1, e omega_2 e^-1 = omega_1 omega_2^-1 omega_1^-1.
 
 **Dependency path.** `ModuleAutomorphismGroup.finite_index_left_cosets` -> `_finite_index_coset_engine_action` -> GAP `CosetTable` on that presentation (`tensors/tensor.py`, `_engine_general_linear_two_coset_permutations`).
 
-**Evidence.** Formal statements found (formalization corpus API, 2026-10-14): generation `Matrix.SpecialLinearGroup.SL2Z_generators : closure {S, T} = ⊤` (leanprover-community__mathlib4, `Mathlib/LinearAlgebra/Matrix/FixedDetMatrices.lean`) and `closure_S_T_mul_S` (TauCetiProject__TauCeti, `TauCeti/LinearAlgebra/Matrix/SpecialLinearGroup/ModularGroup.lean`); the relations `T_mul_S_pow_three : (T * S) ^ 3 = -1` and their PSL(2, ℤ) images (TauCetiProject__TauCeti, `TauCeti/NumberTheory/Modular/Relations.lean`); `PresentedGroup` and `toGroup` (TauCetiProject__TauCeti, `TauCeti/GroupTheory/PresentedGroup.lean`). Not found in the corpus: that these relations present SL_2(ZZ) (an isomorphism from a `PresentedGroup`), nor a presentation of GL_2(ZZ); searched `PresentedGroup` with SL, `S_sq`, `S_pow_four`, `amalgam`, `FreeProduct` with PSL, "modular group present".
-Opened texts (2026-10-14), partial evidence only: Conrad, *SL_2(ZZ)* (kconrad.math.uconn.edu/blurbs/grouptheory/SL(2,Z).pdf), Cor.
-2.3, p. 5: SL_2(ZZ) = <S, T> = <S, ST>, S of order 4, ST of order 6, (ST)^3 = -I; Appendix C, Thm.
-C.1, p. 18 (proved): every element of PSL_2(ZZ) is uniquely a reduced word in x = S, y = ST, so PSL_2(ZZ) = ZZ/2 * ZZ/3, and S^2 = R^3 = -I in SL_2(ZZ). Milne, *Modular Functions and Modular Forms* v1.31, Remark 2.14, p. 33: the same PSL_2(ZZ) relations, stated without proof.
-Neither states the presentation of SL_2(ZZ) or of its extension by e. Hand check: s_2 = S and s_3 = [[0,1],[-1,1]] = S^-1 T^-1 = (TS)^-1, so s_2^2 = -I = s_3^3 by `T_mul_S_pow_three`; (s_2, s_3) is a Tietze change of Conrad's (x, y), since TS = S^-1 (ST) S. This shows the relators hold; it does not show they present the group.
-Sage's `arithgroup_perm.py` docstring (lines 9-28) states s_2^2 = s_3^3 = -1 only, and is engine documentation in any case.
-Not opened: Serre, *Trees* (`Ser80`) and Diamond--Shurman (`DS05`) are in the Zotero library, whose storage is reachable only from the workstation.
-Confidence: the adapter is correct only if the presentation is.
-Request to `lean-categories`, filed as [lean-categories#89](https://github.com/dzackgarza/lean-categories/issues/89): SL_2(ZZ) ≅ the group presented by <S, T | S^4, (TS)^3 = S^2> (the amalgam Z/4 *_{Z/2} Z/6) and GL_2(ZZ) as its extension by diag(1,-1), citing the generation and relation statements above.
+**Source (opened 2026-10-16), cited at the adapter.** A. Ram, *Advanced Discrete Math MAST90030 notes* (10 August 2025), Section 16, Proposition 16.1(b), p. 128 (https://math.soimeme.org/~arunram/Teaching/2025AdvDiscreteMath/250810Modulargroup.pdf): the relations above, with omega_1^2 central and omega_1^4 = 1, omega_2^3 = omega_1^2, are a presentation of GL_2(ZZ); the proof (pp. 129--135) takes the amalgam from Serre, *Trees*, 4.2(c) and Theorem 6. Corroborating SL_2(ZZ): Blanc--Deserti, arXiv:1103.0114v2, Section 2.1, p. 4, `<R, S | S^4 = (RS)^3 = 1, S^2 (RS) = (RS) S^2>` with R = [[1,1],[0,1]], S = omega_1, citing Newman, *Integral Matrices*, Ch. VIII. Abstract GL_2(ZZ) presentation without matrices: Bucher--Talambutsa, arXiv:1209.4071v1, Section 6, (6.3), citing Coxeter--Moser formula 7.21. Ram's notes are draft lecture notes; their (a)-from-(b) step is a sketch resting on the cited Serre theorem.
+
+**Formal corpus.** Formalization corpus API (2026-10-14 and 2026-10-16): generation `Matrix.SpecialLinearGroup.SL2Z_generators` (mathlib4, `Mathlib/LinearAlgebra/Matrix/FixedDetMatrices.lean`), `T_mul_S_pow_three` (TauCeti, `TauCeti/NumberTheory/Modular/Relations.lean`), `PresentedGroup` (TauCeti); no isomorphism of SL_2(ZZ) or GL_2(ZZ) with a `PresentedGroup` (queries `PresentedGroup` with SL, `amalgam`, `GeneralLinearGroup (Fin 2) ℤ`, `ZMod 4.*ZMod 6`). Not covered: Loogle, LeanSearch, the forum.
+
+**Request to `lean-categories`**, filed as [lean-categories#89](https://github.com/dzackgarza/lean-categories/issues/89): SL_2(ZZ) ≅ the amalgam Z/4 *_{Z/2} Z/6 and GL_2(ZZ) as its extension by diag(1,-1), from Serre, *Trees*, and the opened statements above. It runs beside the computation and parks no node.
 
 ## Finiteness of O(L) for split binary lattices is not formalized
 
@@ -1673,3 +1668,7 @@ Not repaired.
 ## Submodules of a finitely presented module have no owned equality or hash
 
 `_FiniteIntegralRepresentation` (`categories/rational_integral_stabilizers.py`) registers the residue orbit of a lattice by submodules of `M/dM` and needs to look a submodule up among those found. Subobjects compare by identity, so the lookup goes through the owner's private `_GeneralPresentedModule._submodule_key` (the Hermite normal form of the preimage in the cover, over ZZ) instead of `{submodule: position}`. Desired (STY-132, STY-167): `_richcmp_` and a matching `__hash__` on module subobjects, realized there for finitely presented modules over ZZ, so that equal subobjects are equal keys. Not done: it changes equality for every subobject consumer.
+
+## The post-commit hook invokes a missing host hook
+
+Observed while banking the Mor-constructor repair: `.githooks/post-commit` line 4 executes `/home/dzack/.config/git/hooks/post-commit`, which does not exist on this host. Git still creates the commit, but prints `exec: .../post-commit: not found`; the hook's intended post-commit operation does not run. This is a workflow papercut, not a mathematical capability gap. The source hook and its host installation own the repair; terminal workflow verification in [`terminal-session`](TODO.md) must keep this failure distinct from mathematical acceptance. No hook was changed by the constructor repair.

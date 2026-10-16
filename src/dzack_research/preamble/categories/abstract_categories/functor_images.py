@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class FunctorImageMorphism(Morphism):
@@ -69,7 +70,7 @@ class FunctorImageMor(CategoricalMor):
             case FunctorImageMorphism():
                 if arrow.parent() is self:
                     return arrow
-                arrow = arrow.underlying_arrow()
+                raise TypeError(f"{arrow} belongs to another Mor; apply the functor between the categories")
         if not _category_accepts_morphism(
             self.image_category().functor().codomain(),
             self.domain().underlying_image(),
@@ -82,6 +83,7 @@ class FunctorImageMor(CategoricalMor):
             )
         return FunctorImageMorphism(self, arrow)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

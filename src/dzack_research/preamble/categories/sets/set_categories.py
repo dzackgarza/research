@@ -8,6 +8,7 @@ from math import comb
 from operator import index as integer_index
 from typing import TYPE_CHECKING, Any, Self, SupportsIndex, TypeVar
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism, SetMorphism
@@ -41,6 +42,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
+    _refuse_foreign_arrow,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -48,6 +50,7 @@ from dzack_research.preamble.owned_category import OwnedParent, _object_of, owne
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 if TYPE_CHECKING:
     from dzack_research.preamble.categories.sets.cardinals import (
@@ -299,7 +302,10 @@ def _integer_translation_relation_quotient(integers, displacements):
     if all(offset == integers.zero() for offset in offsets):
         return integers, Sets().Mor(integers, integers).identity(), integers
     quotient = integers.quotient_ring(integers.ideal(*offsets))
-    projection = Sets().Mor(integers, quotient)(quotient.quotient_map())
+    # The underlying function of the ring quotient map, read by the
+    # forgetful functor to sets, not admitted as a ring arrow (``CON-17``).
+    ring_projection = quotient.quotient_map()
+    projection = Sets().Mor(integers, quotient)(lambda integer: ring_projection(integer))
     return quotient, projection, lambda cls: cls.lift()
 
 
@@ -1021,7 +1027,7 @@ class SetMorCategory(CategoricalMor):
         it.  An expression with no free variable or with several is not a
         map of one argument, and is rejected naming its variables.
         """
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
@@ -1030,6 +1036,10 @@ class SetMorCategory(CategoricalMor):
             arrows = datum.parent()
             if arrows is self or (arrows in MorCategories() and self in arrows.super_categories()):
                 return datum
+            _refuse_foreign_arrow(
+                self, datum, "its underlying map is its image under the forgetful functor to sets, such as "
+                "Modules(R).underlying_set()"
+            )
         match datum:
             case Expression() if element_parent(datum) is SR:
                 datum = _formula_binding_its_variable(datum, self.domain(), self.codomain())
@@ -1042,6 +1052,7 @@ class SetMorCategory(CategoricalMor):
             )
         return self.element_class(self, datum)
 
+    @object_level
     @cached_method
     def identity(self) -> OwnedSetMorphism:
         r"""The identity arrow, interned: ``is_identity`` reads it by identity."""
@@ -2280,6 +2291,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
             return _ambient_of(constructing)
 
+        @object_level
         def Mor(
             self,
             codomain: Parent,
@@ -2303,10 +2315,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             )
             return ambient.Mor(self, codomain)
 
+        @object_level
         def End(self):
             r"""The endomorphisms in the category selected by this set's Mor."""
             return Sets().End(self)
 
+        @object_level
         def Aut(self):
             r"""The automorphisms of this set in its selected category."""
             return Sets().Aut(self)
@@ -2862,14 +2876,15 @@ class SetInjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""An injection given by a set map or a function on points; injectivity is its validator."""
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as an injection {self.domain()} -> {self.codomain()}: it is a map "
                     f"{datum.domain()} -> {datum.codomain()}"
                 )
-            if datum.parent() is self:
+            if self._already_parented_arrow(datum):
                 return datum
+            raise TypeError(f"{datum} is an arrow of another Mor; give a function on points")
         elif not callable(datum):
             raise TypeError(
                 f"an injection {self.domain()} -> {self.codomain()} needs a function on points, but "
@@ -2912,6 +2927,7 @@ class SetInjectionMor(SetMorCategory):
             and Sets().MonoCategory().accepts(arrow)
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -2940,14 +2956,15 @@ class SetSurjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""A surjection given by a set map or a function on points; surjectivity is its validator."""
-        if isinstance(datum, Morphism):
+        if isinstance(datum, Map):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a surjection {self.domain()} -> {self.codomain()}: it is a map "
                     f"{datum.domain()} -> {datum.codomain()}"
                 )
-            if datum.parent() is self:
+            if self._already_parented_arrow(datum):
                 return datum
+            raise TypeError(f"{datum} is an arrow of another Mor; give a function on points")
         elif not callable(datum):
             raise TypeError(
                 f"a surjection {self.domain()} -> {self.codomain()} needs a function on points, but "
@@ -2970,6 +2987,7 @@ class SetSurjectionMor(SetMorCategory):
             and Sets().EpiCategory().accepts(arrow)
         )
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -5916,6 +5934,7 @@ class WellOrderedSetMor(CategoricalMor):
             )
         return self.element_class(self, set_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

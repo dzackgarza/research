@@ -37,6 +37,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.lexicon.algebra import MonoidObject
 from dzack_research.preamble.logic import AtomicProposition
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 # Bourbaki, Algebra III §4.9: an alternating graded algebra is one satisfying
 # the Koszul sign rule in which every odd-degree element squares to zero.
@@ -287,6 +288,7 @@ class GradedAlgebraMor(CategoricalMor):
             degree_preservation_premises=tuple(degree_preservation_premises),
         )
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(

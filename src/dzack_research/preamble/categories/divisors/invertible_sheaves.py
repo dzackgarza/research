@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.schemes.ringed_spaces import (
     QuasiCoherentSheaves,
     _is_empty_open,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 def _homogeneous_section_identity_comparison(sections):
@@ -1988,19 +1989,12 @@ class _ChosenTrivializationQuasiCoherentMor(QuasiCoherentSheafMor):
             case _ChosenTrivializationQuasiCoherentMorphismMethods() if local_maps.parent() is self:
                 return local_maps
             case _ChosenTrivializationQuasiCoherentMorphismMethods():
-                if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"{local_maps} is a morphism {local_maps.domain()} -> {local_maps.codomain()}, not "
-                        f"{self.domain()} -> {self.codomain()}"
-                    )
-                local_maps = {
-                    index: local_maps.local_map(index)
-                    for index in self.domain().gluing_datum().chart_index_set()
-                }
+                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         return self.element_class(self, local_maps)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
@@ -2155,16 +2149,12 @@ class _PullbackLineBundleQuasiCoherentMor(QuasiCoherentSheafMor):
             case _PullbackLineBundleQuasiCoherentMorphismMethods() if ambient_morphism.parent() is self:
                 return ambient_morphism
             case _PullbackLineBundleQuasiCoherentMorphismMethods():
-                if ambient_morphism.domain() is not self.domain() or ambient_morphism.codomain() is not self.codomain():
-                    raise ValueError(
-                        f"{ambient_morphism} is a morphism {ambient_morphism.domain()} -> "
-                        f"{ambient_morphism.codomain()}, not {self.domain()} -> {self.codomain()}"
-                    )
-                ambient_morphism = ambient_morphism.ambient_morphism()
+                raise TypeError(f"{ambient_morphism} belongs to another Mor; apply the functor between the categories")
             case _:
                 pass
         return self.element_class(self, ambient_morphism)
 
+    @object_level
     @cached_method
     def identity(self):
         if self.domain() is not self.codomain():

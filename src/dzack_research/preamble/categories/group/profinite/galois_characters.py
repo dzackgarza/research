@@ -157,7 +157,7 @@ def _cyclotomic_stage(domain, n):
 
             owned_field = CyclotomicField(int(n), f"zeta_{n}")
             field = _engine_ring(owned_field)
-            embedding = owned_field.Mor(domain.algebraic_closure())(field.hom([root], closure))
+            embedding = owned_field.Mor(domain.algebraic_closure())._from_engine_morphism(field.hom([root], closure))
             stage = domain.extension_data(owned_field, embedding=embedding)
             return owned_root, _owned_engine_element(owned_field, field.gen()), stage
         case _:
@@ -326,7 +326,7 @@ class QuadraticCharacter(ProfiniteCharacter):
             owned_field = (t**2 - polynomial_ring(owned_a)).number_field("sqrt_a")
             field = _engine_ring(owned_field)
             backend = field.hom([root], closure)
-            embedding = owned_field.Mor(domain.algebraic_closure())(backend)
+            embedding = owned_field.Mor(domain.algebraic_closure())._from_engine_morphism(backend)
             stage = domain.extension_data(owned_field, embedding=embedding)
             root_at_stage = _owned_engine_element(owned_field, field.gen())
 

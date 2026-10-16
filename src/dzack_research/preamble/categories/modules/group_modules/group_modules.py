@@ -82,6 +82,7 @@ from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.validation import validator
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
 class GroupModuleMorCategoryConstruction(MorCategoryConstruction):
@@ -630,6 +631,7 @@ class ModulesOverGroupAlgebra(Modules):
             return self(element)
 
 
+        @object_level
         def End(self):
             r"""``End_{R[G]}(M)``, the equivariant endomorphism object.
 
@@ -640,6 +642,7 @@ class ModulesOverGroupAlgebra(Modules):
             """
             return Modules(self.group_algebra()).End(self)
 
+        @object_level
         def Aut(self):
             r"""``Aut_{R[G]}(M)``, the equivariant module automorphisms.
 
@@ -1224,6 +1227,14 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
     def _element_constructor_(self, images, *, lift=None, check=False):
         if isinstance(images, GroupModuleMorphismMethods) and images.parent() is self and lift is None:
             return images
+        if isinstance(images, Map):
+            generator_map = (
+                self.domain().has_selected_module_resolution()
+                and images.domain() is self.domain().module_generating_set()
+                and images.codomain() is self.codomain()
+            )
+            if not generator_map:
+                raise TypeError(f"{images} is a whole arrow of another Mor; give equivariant generator images")
         morphism = self.element_class(self, images, lift=lift)
         morphism.validate_linearity(check=check)
         morphism.validate_equivariance(check=check)
@@ -1257,6 +1268,7 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         morphism.validate_linearity(check=False)
         return morphism
 
+    @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
