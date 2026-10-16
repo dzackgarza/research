@@ -1341,15 +1341,21 @@ locator before implementation.
 
 Finite-atlas chart sections require maps from chart images into the power set.
 `_glued_chart_image` retains an open subscheme and its scheme inclusion, but
-`_SchemeTopologyData.is_open_subset` handles only the empty and whole subsets.
+it still has no associated subset of the glued point space. Scheme topology
+uses the topological coequalizer of chart and overlap coproducts; its openness
+criterion asks for chart preimages, whose basis presentations are not retained
+by arbitrary predicate subsets.
 `_FiniteAtlasModuleOpenPresheaf` and `_FiniteAtlasStructurePresheaf` consequently
 provide only whole-space sections. Repair the common open-site datum and its
 chart-image maps before extending chart evaluation and inverse-image sheaves.
-The point map for a chart embedding into a glued scheme remains unresolved:
-`Schemes.ParentMethods` accepts only an already-parented point. Affine scheme
-evaluation uses the prime-spectrum functor, and localization spectra lift
-source primes disjoint from the inverted submonoid. Chart embeddings still
-need the glued point set and its overlap identifications.
+Chart embeddings and chart-image inclusions map prime points into the retained
+topological coequalizer. The scheme accepts its quotient points. Equality of
+classes of the general infinite relation remains a proposition in the set
+coequalizer realization. The gluing cocycle gives a stronger decision route:
+two chart representatives agree exactly when they lie in the corresponding
+overlaps and the transition identifies them (Mathlib.Topology.Gluing,
+`TopCat.GlueData.ι_eq_iff_rel`). That computation and typed chart-image subsets
+remain required before chart sections can consume this point-space datum.
 `RingMorphism.contraction_of_ideal` has algorithms for canonical quotient and
 localization maps, and for retained Sage ring maps with exact ideal realizations.
 Its general preimage is the ideal defined by membership after the ring
@@ -1358,9 +1364,8 @@ computational presentation, not defining data for that preimage. This shares
 the ideal-representation prerequisite of `general-minimal-prime-locus` in
 `TODO.md`. The formal spectrum and contravariant functor are exported by
 `lean-categories/LeanCategories/Schemes/Spectra.lean`; no new formal definition
-is requested for them. Topological coproducts and coequalizers retain their
-universal maps; the chart assembly must use the supplied transition
-isomorphisms to identify the overlap points.
+is requested for them. The chart coequalizer retains the supplied transition
+isomorphisms through their coordinate-ring inverse pairs and spectrum maps.
 The inspected sheafed-space ancestors also lack a morphism datum at their
 owner. `SheafedSpaces` and `RingedSpaces` declare no fixed Mor; their topological
 ancestor supplies continuous maps alone. A morphism of ringed spaces needs
