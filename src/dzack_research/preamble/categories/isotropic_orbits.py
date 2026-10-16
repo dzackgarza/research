@@ -833,8 +833,10 @@ def _marked_isotropic_object(obj, *, flag):
                     f"the frozen isotropic flag algorithm accepts a rank-(1,2) flag, but {obj} has {len(terms)} terms"
                 )
             line, plane = terms
-            line_into_plane = line.inclusion().factor_through(plane.inclusion())
-            line_into_plane = line.Emb(plane)(line_into_plane)
+            factor = line.inclusion().factor_through(plane.inclusion())
+            # The lattice embedding is given by the generator images of the
+            # factor, in its own Mor (``CON-17``).
+            line_into_plane = line.Emb(plane)(lambda label: factor(line.module_generator(label)))
             return _marked_isotropic_category(obj.lattice(), flag=True).object(
                 (line_into_plane, plane.inclusion())
             )

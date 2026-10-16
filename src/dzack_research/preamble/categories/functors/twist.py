@@ -63,24 +63,24 @@ class TwistFunctor(Functor):
         source = self(morphism.domain())
         target = self(morphism.codomain())
 
-        def transported(arrow, domain, codomain):
+        def transported(arrow):
+            r"""The generator images of ``T(arrow)``: ``T`` keeps every module map and rescales only the form."""
             def image(label):
                 original_image = arrow(arrow.domain().module_generator(label))
                 coordinates = arrow.codomain().framing_morphism().lift(original_image)
-                return codomain.linear_combination(
+                return target.linear_combination(
                     {basis_label: coordinates(basis_label) for basis_label in coordinates.support().domain()}
                 )
 
-            return domain.module_category().Mor(domain, codomain)(image)
+            return image
 
-        forward = transported(morphism, source, target)
+        # ``T(f)`` is built from its defining data in its own Mor (``CON-17``):
+        # an arrow of another Mor between the twisted lattices is never re-read.
         if isinstance(morphism, (LatticeIsometryMethods, CategoricalIsomorphism)):
-            backward = transported(morphism.inverse(), target, source)
-            inverse_pair = source.module_category().Core().Mor(source, target)(forward, backward)
-            return source.Isom(target)(inverse_pair)
+            return source.Isom(target)(transported(morphism))
         if isinstance(morphism, LatticeEmbeddingMethods):
-            return source.Emb(target)(forward)
-        return source.Mor(target)(forward)
+            return source.Emb(target)(transported(morphism))
+        return source.Mor(target)(transported(morphism))
 
     def _repr_(self):
         return f"Twist by {self.scale()}"

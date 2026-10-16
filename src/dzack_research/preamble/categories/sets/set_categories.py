@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
     CategoryPacketMethods,
+    refuse_arrow_of_another_mor,
 )
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
@@ -300,7 +301,10 @@ def _integer_translation_relation_quotient(integers, displacements):
     if all(offset == integers.zero() for offset in offsets):
         return integers, Sets().Mor(integers, integers).identity(), integers
     quotient = integers.quotient_ring(integers.ideal(*offsets))
-    projection = Sets().Mor(integers, quotient)(quotient.quotient_map())
+    # The underlying function of the ring quotient map, read by the
+    # forgetful functor to sets, not admitted as a ring arrow (``CON-17``).
+    ring_projection = quotient.quotient_map()
+    projection = Sets().Mor(integers, quotient)(lambda integer: ring_projection(integer))
     return quotient, projection, lambda cls: cls.lift()
 
 
@@ -1031,6 +1035,10 @@ class SetMorCategory(CategoricalMor):
             arrows = datum.parent()
             if arrows is self or (arrows in MorCategories() and self in arrows.super_categories()):
                 return datum
+            refuse_arrow_of_another_mor(
+                self, datum, "its underlying map is its image under the forgetful functor to sets, such as "
+                "Modules(R).underlying_set()"
+            )
         match datum:
             case Expression() if element_parent(datum) is SR:
                 datum = _formula_binding_its_variable(datum, self.domain(), self.codomain())

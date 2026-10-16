@@ -6,6 +6,10 @@ from inspect import Parameter, isfunction, ismethod, signature
 from itertools import product
 
 from sage.categories.morphism import Morphism, SetMorphism
+
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    refuse_arrow_of_another_mor,
+)
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -2626,7 +2630,12 @@ class _ModuleMorCommonMethods:
         elif isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            return self.elementwise(lambda element: images(element))
+            # A set map, group map or other non-linear arrow of these
+            # endpoints: almost none is linear, so it is not read here as one.
+            refuse_arrow_of_another_mor(
+                self, images, "a linear map is given by the images of the module generators or by its "
+                "function on elements, whose linearity is its validator"
+            )
         base_ring = self.base_ring()
         image_data = isinstance(
             images,
@@ -3424,6 +3433,12 @@ class ModuleAutomorphismGroup(CoreMor):
             datum = datum.as_morphism()
         if isinstance(datum, CategoricalIsomorphism):
             return self._from_inverse_computation(datum.forward(), lambda: datum.inverse().forward())
+        if isinstance(datum, Morphism):
+            # An endomorphism of End_R(M), or any other arrow, is not an
+            # automorphism: almost none is invertible (``CON-17``).
+            refuse_arrow_of_another_mor(
+                self, datum, "an automorphism is given by its generator images, or by the pair (forward, inverse)"
+            )
         module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
         return self._from_inverse_computation(forward, forward.inverse)
@@ -3484,7 +3499,7 @@ class ModuleAutomorphismGroup(CoreMor):
             )
             for column in _engine_column_matrix_from_row_action(row_action_matrix).columns()
         )
-        return self(module.module_category().Mor(module, module)(images))
+        return self(images)
 
     def _to_engine(self, automorphism):
         return self._engine_group()(self._row_action_matrix(automorphism))

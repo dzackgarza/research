@@ -380,8 +380,8 @@ def _lattice_subobject_on_basis(module, basis, extra_categories, construction_da
             )
 
     def inclusion_factory(source):
-        module_inclusion = source.Mono(module)(embedded)
-        return source.Emb(module)(module_inclusion)
+        # The inclusion is built from its generator images in its own Mor (``CON-17``).
+        return source.Emb(module)(embedded)
 
     return _lattice_object(
         Lattices(ring),
@@ -7783,20 +7783,14 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
                 return result
 
             def isometry(parameter):
-                forward = ambient.module_category().Mor(ambient, ambient)({
+                # The Eichler-type transvection is given by its generator images
+                # in O(L) itself (``CON-17``); its inverse is the transvection
+                # at ``-parameter``, computed on request.
+                return ambient.Isom(ambient)({
                     label: ambient.module_generator(label)
                     + shift(parameter, ambient.module_generator(label))
                     for label in ambient.module_generating_set()
                 })
-                inverse = ambient.module_category().Mor(ambient, ambient)({
-                    label: ambient.module_generator(label)
-                    - shift(parameter, ambient.module_generator(label))
-                    for label in ambient.module_generating_set()
-                })
-                module_isomorphism = ambient.module_category().Core().Mor(
-                    ambient, ambient
-                )._from_known_inverse_pair(forward, inverse)
-                return ambient.Isom(ambient)(module_isomorphism)
 
             return solution, isometry
 

@@ -92,7 +92,8 @@ class GSetFixedPointsFunctor(Functor):
     def _apply_morphism(self, morphism):
         source = self(morphism.domain())
         target = self(morphism.codomain())
-        return Sets().Mor(source, target)(morphism)
+        # ``f^G`` is the function ``f`` computes on fixed points (``CON-17``).
+        return Sets().Mor(source, target)(lambda point: morphism(point))
 
     def _repr_(self):
         return f"{self.group()}-fixed-point functor on finite G-sets"

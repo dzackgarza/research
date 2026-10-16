@@ -50,10 +50,11 @@ class _GroupUnderlyingSetFunctor(Functor):
         return group
 
     def _apply_morphism(self, group_morphism):
+        r"""``U(f)`` is the function ``f`` computes on points (``CON-17``)."""
         return Sets().Mor(
             group_morphism.domain(),
             group_morphism.codomain(),
-        )(group_morphism)
+        )(lambda element: group_morphism(element))
 
     def _repr_(self):
         return "Underlying-set functor on groups"

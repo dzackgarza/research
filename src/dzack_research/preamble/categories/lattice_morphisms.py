@@ -47,12 +47,15 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_automorphism_from_engine_matrix,
     _torsion_form_isometry,
 )
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    refuse_arrow_of_another_mor,
+)
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+    FormedModuleMorphism,
     _represented_value_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
     ModuleAutomorphismMethods,
-    ModuleEmbeddingMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
 )
@@ -928,7 +931,8 @@ class LatticeIsometryMethods:
         target_map = frame.from_summands(
             target_inclusion * self, Modules(field).Mor(scalars, target)(lambda label: target_vector)
         )
-        extension = source.Isom(target)(target_map * source_map.section())
+        extended_map = target_map * source_map.section()
+        extension = source.Isom(target)(lambda label: extended_map(source.module_generator(label)))
         points = locus.object()
         return points.inclusion()(points(extension))
 
@@ -1471,22 +1475,23 @@ class LatticeMor(CategoricalMor):
         return morphism
 
     def _morphism_from_images(self, images):
-        if isinstance(images, ModuleMorphismMethods):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError(
-                    f"the module morphism {images} goes from {images.domain()} to "
-                    f"{images.codomain()}, so it is not a lattice morphism from "
-                    f"{self.domain()} to {self.codomain()}"
-                )
-            if images.parent() is self:
-                return images
-            return self.element_class(self, images)
         if isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice morphism from {self.domain()} to {self.codomain()}"
                 )
-            return self.elementwise(lambda element: images(element))
+            if images.parent() is self:
+                return images
+            if not isinstance(images, FormedModuleMorphism):
+                # A module map, set map or other arrow of these endpoints:
+                # almost none preserves the form (``CON-17``).
+                refuse_arrow_of_another_mor(
+                    self, images, "a lattice morphism is given by its generator images or its function on elements, "
+                    "whose form preservation is its validator"
+                )
+            # TODO(mor-element-constructors-admit-no-foreign-arrow): an arrow of
+            # another formed-module Mor between these lattices is still re-read here.
+            return self.element_class(self, images)
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
@@ -1536,30 +1541,23 @@ class LatticeEmbeddingMor(CategoricalMor):
         return embedding
 
     def _morphism_from_images(self, images):
-        if isinstance(images, ModuleEmbeddingMethods):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError(
-                    f"the module embedding {images} goes from {images.domain()} to "
-                    f"{images.codomain()}, so it is not a lattice embedding of "
-                    f"{self.domain()} into {self.codomain()}"
-                )
-            return self.element_class(self, images)
-        if isinstance(images, ModuleMorphismMethods):
-            if images.domain() is not self.domain() or images.codomain() is not self.codomain():
-                raise ValueError(
-                    f"the module morphism {images} goes from {images.domain()} to "
-                    f"{images.codomain()}, so it is not a lattice embedding of "
-                    f"{self.domain()} into {self.codomain()}"
-                )
-            if images.parent() is self:
-                return images
-            return self.element_class(self, images)
         if isinstance(images, Morphism):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice embedding of {self.domain()} into {self.codomain()}"
                 )
-            return self.elementwise(lambda element: images(element))
+            if images.parent() is self:
+                return images
+            if not isinstance(images, FormedModuleMorphism):
+                # A module embedding or other arrow of these endpoints: almost
+                # none preserves the form (``CON-17``).
+                refuse_arrow_of_another_mor(
+                    self, images, "a lattice embedding is given by its generator images or its function on elements, "
+                    "whose form preservation and injectivity are its validators"
+                )
+            # TODO(mor-element-constructors-admit-no-foreign-arrow): an arrow of
+            # another formed-module Mor between these lattices is still re-read here.
+            return self.element_class(self, images)
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)
@@ -1940,7 +1938,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                 )
             if images.parent() is self:
                 return images
+            # TODO(mor-element-constructors-admit-no-foreign-arrow): an isometry
+            # of another isometry Mor between these lattices is still re-read here.
             return self.element_class(self, images)
+        if isinstance(images, Morphism):
+            # A module isomorphism or automorphism, a lattice endomorphism or a
+            # set map: almost none is an isometry (``CON-17``).
+            refuse_arrow_of_another_mor(
+                self, images, "an isometry is given by its generator images, a function on elements or a "
+                "matrix; the scalar extension of an isometry is its base_change"
+            )
         if isinstance(images, dict):
             images = _labelled_generator_images(self.domain(), images)
         return self.element_class(self, images)

@@ -54,12 +54,32 @@ class OwnedMor(SageHomset):
         return self.identity()
 
 
+def refuse_arrow_of_another_mor(mor: Parent, arrow: Morphism, functor: str) -> None:
+    r"""Refuse ``arrow``, an arrow of another Mor, at the element constructor of ``mor``.
+
+    ``CON-17``, owner ruling 2026-10-16: the element constructor of
+    ``Mor_C(A, B)`` admits an arrow already in it and the defining data of a
+    new arrow.  An arrow of a different Mor -- another category, or other
+    structure on the same endpoints -- reaches it only as the image under a
+    functor, never by reading its formula, matrix or callable to rebuild it:
+    almost no arrow of a weaker category lifts, and admitting it unchecked is
+    a backdoor to an ill-defined arrow.  ``functor`` names the route the
+    caller takes instead.
+    """
+    raise TypeError(
+        f"{arrow} is an arrow of {arrow.parent()}, not of {mor}: an element of {mor} is constructed from "
+        f"its defining data (a function on elements, generator images, a matrix of a framed map), and an "
+        f"arrow of another category reaches it only as the image under a functor (CON-17); {functor}"
+    )
+
+
 __all__ = [
     "CategoryPacketMethods",
     "ObjectLevelOperation",
     "OwnedMor",
     "UnderlyingSetMor",
     "object_level",
+    "refuse_arrow_of_another_mor",
 ]
 
 class UnderlyingSetMor(OwnedMor):
@@ -79,7 +99,11 @@ class UnderlyingSetMor(OwnedMor):
                 )
             if datum.parent() is self:
                 return datum
-            datum = datum._call_
+        if isinstance(datum, Morphism):
+            refuse_arrow_of_another_mor(
+                self, datum, "the underlying map of an arrow of a structured category is its image under that "
+                "category's forgetful functor to sets"
+            )
         if not callable(datum):
             raise TypeError(
                 f"a map {self.domain()} -> {self.codomain()} needs a function on points, but {datum!r} is not callable"
