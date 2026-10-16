@@ -2834,6 +2834,8 @@ class Schemes(OwnedCategoryOverBaseRing):
                     )
                 case _ if self in Schemes(base).Affine():
                     return self.dimension() - base.krull_dimension()
+                case _ if base in OwnedFields():
+                    return self.dimension()
                 case _:
                     return _owned_engine_element(
                         SageZZ,

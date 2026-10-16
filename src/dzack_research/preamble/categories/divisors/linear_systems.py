@@ -826,8 +826,8 @@ def _coordinate_hyperplane_section_restriction(projective_space, degree, coordin
         degree,
         coordinate_names=source_names,
     )
-    native_ring = projective_space.coordinate_ring()
-    hyperplane = projective_space.closed_subscheme(native_ring.gen(coordinate_index))
+    equation = tuple(projective_space.homogeneous_coordinate_generators())[coordinate_index]
+    hyperplane = projective_space.hypersurface(equation)
     target_names = tuple(
         name for index, name in enumerate(source_names) if index != coordinate_index
     )
