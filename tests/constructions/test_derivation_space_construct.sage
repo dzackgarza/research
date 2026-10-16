@@ -39,4 +39,5 @@ def test_affine_plane_derivations_have_the_expected_lie_and_cartan_operations() 
     assert bracket.linear_endomorphism()(y) == algebra.one()
     assert partial_x.interior_product()(dx) == de_rham.one()
     assert partial_x.lie_derivative()(de_rham(x)) == de_rham.one()
+    assert partial_x.lie_derivative()(dx) == de_rham.zero()
 

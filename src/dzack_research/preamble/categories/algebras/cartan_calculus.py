@@ -7,19 +7,12 @@ contractions and Lie derivatives are actual graded derivations of the existing
 de Rham DGA.
 """
 
-from dzack_research.preamble.categories.algebras.derivations import (
-    Derivation,
-    GradedDerivation,
-)
+from sage.structure.element import parent
 
 
 def _lie_bracket(left, right):
     r"""Return the commutator ``[left,right]`` of two vector fields."""
-    if not isinstance(left, Derivation) or not isinstance(right, Derivation):
-        raise TypeError(
-            f"the Lie bracket [X, Y] is defined on vector fields, but got {left!r} and {right!r}"
-        )
-    if left.parent() is not right.parent():
+    if parent(left) is not parent(right):
         raise ValueError(
             f"the Lie bracket [X, Y] needs vector fields on one algebra, but {left} lies in {left.parent()} "
             f"and {right} lies in {right.parent()}"
@@ -47,10 +40,6 @@ def _graded_commutator(left, right):
     For homogeneous derivations of shifts ``p`` and ``q`` this is
     ``D E - (-1)^(pq) E D`` and has shift ``p+q``.
     """
-    if not isinstance(left, GradedDerivation) or not isinstance(right, GradedDerivation):
-        raise TypeError(
-            f"the graded commutator needs two graded derivations, but got {left!r} and {right!r}"
-        )
     if left.algebra() is not right.algebra():
         raise ValueError(
             f"the graded commutator needs derivations of one graded algebra, but {left} is on "
@@ -88,10 +77,6 @@ def _exterior_label(word):
 
 def _interior_product(vector_field):
     r"""Return contraction ``i_X`` as a degree ``-1`` derivation of ``DR(A)``."""
-    if not isinstance(vector_field, Derivation):
-        raise TypeError(
-            f"the contraction i_X needs a vector field X, but {vector_field!r} is not one"
-        )
     algebra = vector_field.domain()
     if vector_field.parent() is not algebra.vector_fields():
         raise TypeError(
@@ -116,16 +101,11 @@ def _interior_product(vector_field):
                 coefficient = coordinates(label)
                 word =_exterior_word(label, degree)
                 for position, differential_label in enumerate(word):
-                    if (
-                        not isinstance(differential_label, tuple)
-                        or len(differential_label) != 2
-                        or differential_label[0] != "d"
-                    ):
-                        raise ValueError(
-                            f"the basis element {label} of the de Rham algebra is not a product of Kahler differentials "
-                            f"da: its factor {differential_label} is not of the form da"
-                        )
-                    scalar = endomorphism(algebra.algebra_generator(differential_label[1]))
+                    differential_kind, algebra_label = differential_label
+                    assert differential_kind == "d", (
+                        f"the Kahler generator {differential_label} in {label} must be a differential"
+                    )
+                    scalar = endomorphism(algebra.algebra_generator(algebra_label))
                     if not scalar:
                         continue
                     remaining = word[:position] + word[position + 1 :]

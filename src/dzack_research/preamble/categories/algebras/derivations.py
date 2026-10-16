@@ -63,9 +63,6 @@ from dzack_research.preamble.validation import validator
 def _commutative_presentation_data(algebra):
     r"""Return ``(P, labels, variables, relations, lift)`` for ``A = P/I``."""
 
-    from sage.rings.polynomial.multi_polynomial_ring_base import MPolynomialRing_base
-    from sage.rings.polynomial.polynomial_ring import PolynomialRing_generic
-
     base = algebra.base_ring()
     if algebra not in Algebras(base).Associative().Unital().Commutative():
         raise TypeError(
@@ -89,9 +86,7 @@ def _commutative_presentation_data(algebra):
         relations = finite_ordered_set(())
         lift = presentation
 
-    assert presentation in SymmetricAlgebras(base) and isinstance(
-        _engine_ring(presentation), (PolynomialRing_generic, MPolynomialRing_base)
-    ), (
+    assert presentation in SymmetricAlgebras(base), (
         f"the selected conormal and differential computation for {algebra} needs "
         f"a polynomial presentation; its retained presentation {presentation} "
         "needs a different differential computation"

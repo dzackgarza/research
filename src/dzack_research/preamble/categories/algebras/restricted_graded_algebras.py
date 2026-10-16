@@ -90,6 +90,8 @@ class _RestrictedGradedAlgebra(_DirectSumOfModules):
                 return self.from_realization(value)
             case _ if source is self.degree_zero_algebra():
                 return self.from_degree_zero(value)
+            case _ if source in Modules(self.degree_zero_algebra()):
+                return self.from_realization(self.extension_algebra()(value))
             case _ if source in Modules(self.base_ring()) and self._built_on_the_same_data(source):
                 return super()._element_constructor_(value)
             case dict():
