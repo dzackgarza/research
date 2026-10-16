@@ -2103,7 +2103,7 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
 
         @cached_method
         def picard_group(self):
-            r"""Return the Picard group of this ringed space when a represented algorithm applies.
+            r"""Return the Picard group of this ringed space.
 
             Mathematically ``Pic(X)`` is the abelian group of isomorphism
             classes of invertible ``O_X``-modules under tensor product, so the
@@ -2113,11 +2113,12 @@ class RingedSpaces(CategoryPacketMethods, OwnedCategory):
             return self._picard_group()
 
         def _picard_group(self):
-            raise AssertionError(
-                f"the Picard group of the ringed space {self} is the group of isomorphism classes of "
-                "invertible structure-sheaf modules under tensor product, but no represented algorithm "
-                "for that group applies to this object"
+            r"""Invertible sheaf classes under tensor product (Hartshorne, II.6.12)."""
+            from dzack_research.preamble.categories.divisors.picard_groups import (
+                _invertible_sheaf_class_group,
             )
+
+            return _invertible_sheaf_class_group(self, self.structure_sheaf())
 
         @cached_method
         def cartier_divisor_sheaf(self):
