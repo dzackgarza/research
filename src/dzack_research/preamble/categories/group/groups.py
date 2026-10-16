@@ -4294,7 +4294,11 @@ class GroupIsoCategoryConstruction(IsoCategoryConstruction):
         # group (including additive groups written multiplicatively) need
         # not have a GAP model at all.
         if domain in GroupsWithChosenFreeBasis() or domain not in OwnedFiniteGroups():
-            return super().Of(domain, codomain)
+            cached = self._cached_between(domain, domain)
+            if cached is not None:
+                return cached
+            result = self.base_category().Core().Mor(domain, domain)
+            return self._remember_between(domain, domain, result)
 
         cached = self._cached_between(domain, domain)
         if cached is not None:
