@@ -6123,7 +6123,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 """
                 if not self.has_selected_resolution(OwnedGroups()):
                     _fix_selected_group_resolution_on(
-                        self, lambda: finite_ordered_set(tuple(self))
+                        self, lambda: finite_ordered_set(tuple(element for element in self))
                     )
                 return self.selected_resolution(OwnedGroups())
 
