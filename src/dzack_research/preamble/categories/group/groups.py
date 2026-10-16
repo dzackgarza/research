@@ -2582,6 +2582,135 @@ def _componentwise_group_product(category, family):
     return product
 
 
+class _SemidirectProductElement(MultiplicativeGroupElement):
+    r"""A pair in ``N ⋊ G`` for the retained action ``G -> Aut(N)``."""
+
+    def __init__(self, parent, components):
+        MultiplicativeGroupElement.__init__(self, parent)
+        normal, acting = components
+        self._normal = parent.normal_factor()(normal)
+        self._acting = parent.acting_factor()(acting)
+
+    def normal_component(self):
+        return self._normal
+
+    def acting_component(self):
+        return self._acting
+
+    def _mul_(self, other):
+        return self.parent()((
+            self._normal * self.parent().action()(self._acting)(other._normal),
+            self._acting * other._acting,
+        ))
+
+    def __invert__(self):
+        inverse = ~self._acting
+        return self.parent()((self.parent().action()(inverse)(~self._normal), inverse))
+
+    def _richcmp_(self, other, op):
+        assert op in (op_EQ, op_NE), "a semidirect product has no specified order"
+        equal = conjunction((self._normal == other._normal, self._acting == other._acting))
+        return equal if op == op_EQ else negation(equal)
+
+    def __hash__(self):
+        return hash((self._normal, self._acting))
+
+    def _repr_(self):
+        return repr((self._normal, self._acting))
+
+
+class _SemidirectProductGroup:
+    r"""The coordinate realization of Mathlib's ``SemidirectProduct``.
+
+    The factors and the homomorphism into the normal factor's automorphism
+    group are defining data. Construction neither enumerates a factor nor
+    computes generators or verifies the action laws.
+    """
+
+    def __init__(self, normal_factor, action, **rest):
+        self._normal_factor = normal_factor
+        self._action = action
+        super().__init__(**rest)
+
+    def normal_factor(self):
+        return self._normal_factor
+
+    def acting_factor(self):
+        return self.action().domain()
+
+    def action(self):
+        return self._action
+
+    def __call__(self, components):
+        return self._element_constructor_(components)
+
+    def _element_constructor_(self, components):
+        if isinstance(components, _SemidirectProductElement) and components.parent() is self:
+            return components
+        return self.element_class(self, components)
+
+    def __contains__(self, element):
+        return isinstance(element, _SemidirectProductElement) and element.parent() is self
+
+    def one(self):
+        return self((self.normal_factor().one(), self.acting_factor().one()))
+
+    @cached_method
+    def normal_inclusion(self):
+        return self.normal_factor().Mor(self).elementwise(
+            lambda n: self((n, self.acting_factor().one()))
+        )
+
+    @cached_method
+    def acting_inclusion(self):
+        return self.acting_factor().Mor(self).elementwise(
+            lambda g: self((self.normal_factor().one(), g))
+        )
+
+    @cached_method
+    def quotient_projection(self):
+        return self.Mor(self.acting_factor()).elementwise(lambda pair: pair.acting_component())
+
+    def lift(self, normal_map, acting_map):
+        r"""The homomorphism induced by compatible maps from the two factors.
+
+        The supplied maps have a common codomain and obey
+        ``f(action(g)(n)) = h(g)*f(n)*h(g)^(-1)``.
+        """
+        assert normal_map.domain() is self.normal_factor()
+        assert acting_map.domain() is self.acting_factor()
+        assert normal_map.codomain() is acting_map.codomain()
+        return self.Mor(normal_map.codomain()).elementwise(
+            lambda pair: normal_map(pair.normal_component()) * acting_map(pair.acting_component())
+        )
+
+    def _cardinality_decision(self):
+        return self.normal_factor().cardinality() * self.acting_factor().cardinality()
+
+    def _repr_(self):
+        return f"{self.normal_factor()} ⋊ {self.acting_factor()}"
+
+
+def _semidirect_product(normal, action):
+    assert action.domain() in OwnedGroups()
+    assert action.codomain().domain() is normal and action.codomain().codomain() is normal
+    assert action.codomain() in GroupAutomorphismGroups()
+    acting = action.domain()
+    placement = (OwnedFiniteGroups(),) if normal in OwnedFiniteGroups() and acting in OwnedFiniteGroups() else ()
+    result = _object_of(
+        Cat().meet((OwnedGroups(), *placement)),
+        _engine=(OwnedGroups(), _SemidirectProductGroup, _SemidirectProductElement),
+        normal_factor=normal, action=action,
+    )
+    if normal.has_selected_group_resolution() and acting.has_selected_group_resolution():
+        result.select_group_generators(lambda: finite_ordered_set(tuple(
+            inclusion(generator)
+            for factor, inclusion in ((normal, result.normal_inclusion()), (acting, result.acting_inclusion()))
+            for generator in factor.group_generators()
+        )))
+    return result
+
+
 def _canonical_subgroup_inclusion(subgroup):
     r"""The inclusion ``H -> G`` of a subgroup whose elements are elements of ``G``."""
     return subgroup.Mor(subgroup.supergroup())._from_subgroup_inclusion()
@@ -4950,6 +5079,14 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 f"computation with {self} through a group engine requires a selected realization; "
                 "this group supplies none"
             )
+
+        def semidirect_product(self, action):
+            r"""Return ``self ⋊ G`` from a homomorphism ``G -> Aut(self)``.
+
+            Formal owner: ``Mathlib.GroupTheory.SemidirectProduct``, imported
+            by ``LeanCategories.Algebra.GroupTheory``.
+            """
+            return _semidirect_product(self, action)
 
         @RealizationHook
         def _engine_subgroup_from_generators(self, generators):
