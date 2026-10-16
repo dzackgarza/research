@@ -701,6 +701,34 @@ class _GluedSchemeMorCategory(SchemeMorCategory):
         )
 
 
+class _AffineChartImageSubobjects(OwnedParameterizedCategory):
+    r"""The open subsets that are images of a scheme's selected affine charts."""
+
+    def parameter_category(self):
+        return TopologicalSpaces()
+
+    def super_categories(self):
+        return [Sets().Subobjects(self.base().underlying_space())]
+
+    def _repr_object_names(self):
+        return f"open images of selected affine charts of {self.base()}"
+
+    class ParentMethods:
+        def __init__(self, chart_gluing_datum, chart_index, **rest):
+            self._chart_gluing_datum = chart_gluing_datum
+            self._chart_index = chart_gluing_datum.normalize_chart_index(chart_index)
+            super().__init__(**rest)
+
+        def gluing_datum(self):
+            return self._chart_gluing_datum
+
+        def chart_index(self):
+            return self._chart_index
+
+        def open_subscheme(self):
+            return self.gluing_datum().chart_image(self.chart_index())
+
+
 def _glued_chart_image(datum, index):
     r"""The open image of chart ``index`` in the glued scheme, an open subscheme with its inclusion."""
     chart = datum.chart(index)
@@ -873,6 +901,25 @@ class _GluedScheme(SageObject):
         quotient = self.topological_gluing_construction()
         projection = quotient.costructure_morphism(quotient.diagram().domain().target())
         return projection * charts.costructure_morphism(charts.diagram().domain()(index))
+
+    @cached_method
+    def chart_image_subset(self, index):
+        r"""The actual image of the chart point map, as a subset of the glued space.
+
+        The chart maps of gluing data are open embeddings (Mathlib,
+        ``TopCat.GlueData.ι_isOpenEmbedding``). The set-image construction
+        retains existential membership even when no inverse search is known.
+        """
+        datum = self.gluing_datum()
+        index = datum.normalize_chart_index(index)
+        space = self.underlying_space()
+        image = self.chart_point_map(index).underlying_set_morphism().image()
+        domain = space.condition_set(image.is_parent_of)
+        return Sets().Subobjects(space).object(
+            domain.inclusion(),
+            categories=(_AffineChartImageSubobjects(datum.scheme()),),
+            construction_data={"chart_gluing_datum": datum, "chart_index": index},
+        )
 
     def _native_realization_for_scheme_adapter(self):
         r"""The optional native scheme of this same atlas, supplied by its construction."""

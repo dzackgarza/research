@@ -60,13 +60,19 @@ class _SchemeTopologyData(SageObject):
 
     def open_subsets(self, space):
         if space._is_glued_from_affine_atlas():
-            return space.underlying_space().open_subsets()
+            return space.underlying_space().power_set().condition_set(
+                lambda subset: self.is_open_subset(space, subset)
+            )
         return space.power_set().condition_set(
             lambda subset: self.is_open_subset(space, subset)
         )
 
     def is_open_subset(self, space, subset) -> bool:
         if space._is_glued_from_affine_atlas():
+            from dzack_research.preamble.categories.schemes.gluing import _AffineChartImageSubobjects
+
+            if subset in _AffineChartImageSubobjects(space):
+                return True
             return space.underlying_space().is_open_subset(subset)
         power = space.power_set()
         selected = power(subset)

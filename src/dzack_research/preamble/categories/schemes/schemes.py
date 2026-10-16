@@ -2524,6 +2524,17 @@ class Schemes(OwnedCategoryOverBaseRing):
             )
             return self._scheme_engine_realization.chart_point_map(index)
 
+        def _glued_chart_image_subset(self, index):
+            r"""Supply the point-space subset for a selected affine chart image.
+
+            Protected realization operation consumed by
+            ``OpenImmersions.ParentMethods.open_subset``.
+            """
+            assert self._is_glued_from_affine_atlas(), (
+                f"{self} has no selected affine gluing presentation"
+            )
+            return self._scheme_engine_realization.chart_image_subset(index)
+
         def __init__(
             self, scheme_base_ring, scheme_engine=None, topology_data=None, **rest
         ) -> None:
@@ -7259,6 +7270,27 @@ class OpenImmersions(_SchemeSubobjectsOf):
         return base_object.distinguished_open(next(iter(base_object.coordinate_algebra().algebra_generators())))
 
     class ParentMethods:
+        @cached_method
+        def open_subset(self):
+            r"""The image of this open subscheme in its ambient point space.
+
+            Distinguished opens retain their defining function. Selected
+            affine chart images retain the image of their continuous chart
+            map, which is open by the gluing theorem.
+            """
+            ambient = self.inclusion().codomain()
+            if ambient._is_glued_from_affine_atlas():
+                datum = ambient.gluing_datum()
+                for index in datum.chart_indices():
+                    if self is datum.chart_image(index):
+                        return ambient._glued_chart_image_subset(index)
+            if self.is_distinguished_open() is True:
+                return ambient.underlying_space().distinguished_open(self.distinguished_open_element())
+            assert False, (
+                f"the point-space image of {self} requires an open-immersion image "
+                "construction beyond distinguished opens and selected affine chart images"
+            )
+
         def flat_pullback_cycle(self, cycle):
             r"""Restrict a cycle to this open subscheme, preserving multiplicities.
 
