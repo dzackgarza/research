@@ -1,19 +1,14 @@
 r"""The exact complex field.
 
-Sage's global ``CC`` is MPFR: a 53-bit approximation field.  Its arithmetic
-is rounded, so it is not the field \(\mathbb C\).  This module presents
-\(\mathbb C = \mathbb R[i]/(i^2+1)\) over the exact real field ``RR`` of
-:mod:`dzack_research.preamble.rings.real`, with the same representation: a
-complex number is a closed exact Sage symbolic expression.  Algebraic
-subproblems are decided in ``QQbar``; Arb enclosures of the real and
-imaginary parts certify that a difference is nonzero without storing an
-approximation as the value.  Approximation is explicit: ``z.n(prec)`` is the
-image of ``z`` in the owned ``ComplexField(prec)``.
+Sage's global ``CC`` is MPFR: a 53-bit approximation field.  This module
+presents \(\mathbb C = \mathbb R[i]/(i^2+1)\) with Nemo's ``CalciumField``
+as its exact arithmetic and comparison engine.  An element also retains a
+closed Sage expression for display and for Sage polynomial construction.
+Approximation is explicit: ``z.n(prec)`` maps into the owned
+``ComplexField(prec)``.
 
-Equality is a partial algorithm on a language that contains transcendental
-expressions.  An equality that is not decided at once is returned as a
-predicate, which ``ask(...)`` evaluates.  The field is not ordered, so it has
-no order relations.
+When Calcium cannot decide an equality, the relation remains a predicate.
+The field is not ordered.
 
 The session's elementary functions live here because they choose between the
 two fields: on a real argument whose value is real they are the operations of
@@ -23,6 +18,7 @@ two fields: on a real argument whose value is real they are the operations of
 from __future__ import annotations
 
 import operator
+from functools import cache
 
 from sage.arith.numerical_approx import digits_to_bits
 from sage.categories.rings import Rings as SageRings
@@ -37,12 +33,15 @@ from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
 from sage.rings.complex_mpfr import ComplexField as _SageComplexField
 from sage.rings.integer_ring import ZZ
+from sage.rings.rational_field import QQ
 from sage.rings.qqbar import QQbar
 from sage.rings.ring import Field
 from sage.structure.element import FieldElement, parent
 from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.expression import Expression
+from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
+from sage_julia_bridge import julia
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -59,13 +58,55 @@ from dzack_research.preamble.categories.sets.cardinals import continuum
 from dzack_research.preamble.categories.sets.set_categories import UncountableSets
 from dzack_research.preamble.logic import Predicate, Propositions, ask
 from dzack_research.preamble.refine import realize_owned_category
-from dzack_research.preamble.rings.real import (
-    RR,
-    ExactRealNumber,
-    _contains_approximation,
-    _sign_from_ball,
-    _simplified_difference,
-)
+from dzack_research.preamble.rings.real import RR, ExactRealNumber, _contains_approximation
+
+
+@cache
+def _calcium_field():
+    r"""Nemo's exact complex field, through the repository's Julia bridge.
+
+    Nemo's ``CalciumField`` represents the mathematical complex field:
+    https://nemocas.github.io/Nemo.jl/stable/exact/
+    """
+    julia.eval("""using Oscar
+PreambleExactCC = Oscar.Nemo.CalciumField()
+function preamble_cc_equal(a, b)
+    try
+        return a == b
+    catch error
+        if occursin("failed deciding truth of a predicate", sprint(showerror, error))
+            return nothing
+        end
+        rethrow()
+    end
+end""")
+    return julia.sage("PreambleExactCC")
+
+
+def _calcium_value(expression):
+    r"""Interpret a closed Sage expression in Nemo's exact complex field."""
+    _calcium_field()
+    if expression in QQbar and expression in QQ:
+        return julia.call("PreambleExactCC", QQ(expression))
+    if expression == SR.I():
+        return julia.sage("PreambleExactCC(1im)")
+    if expression == SR.pi():
+        return julia.sage("PreambleExactCC(pi)")
+    operation = expression.operator()
+    if operation is None and expression in QQbar:
+        radical = expression.pyobject().radical_expression()
+        if SR(radical).operator() is not None:
+            return _calcium_value(SR(radical))
+    arguments = tuple(_calcium_value(argument) for argument in expression.operands())
+    if operation is add_vararg:
+        return julia.call("+", *arguments)
+    if operation is mul_vararg:
+        return julia.call("*", *arguments)
+    if operation is operator.pow:
+        return julia.call("^", *arguments)
+    if operation is not None and operation.__name__ in {"exp", "log", "sin", "cos", "tan", "sinh", "cosh", "tanh"}:
+        return julia.call(operation.__name__, *arguments)
+    raise TypeError(f"Nemo cannot construct the exact complex expression {expression}")
 
 
 def _exact_complex_expression(value) -> Expression | None:
@@ -111,33 +152,6 @@ def _closed_exact_complex_expression(value) -> Expression:
     return expression
 
 
-def _ball_excludes_zero(expression: Expression, precision: int) -> bool:
-    r"""Whether Arb enclosures of the real or imaginary part of ``expression`` exclude zero."""
-    signs = (
-        _sign_from_ball(expression.real_part(), precision),
-        _sign_from_ball(expression.imag_part(), precision),
-    )
-    return any(sign is not None and sign != 0 for sign in signs)
-
-
-def _decide_equality(left: Expression, right: Expression, *, precision: int | None):
-    r"""Decide ``left == right``: symbolic zero, then ``QQbar``, then Arb; ``None`` if undecided.
-
-    ``QQbar`` decides every algebraic difference exactly.  A nonzero
-    difference is certified by an Arb ball for its real or imaginary part.
-    ``simplify_full`` is reached only for a difference that neither decides.
-    """
-    for difference_of in (operator.sub, _simplified_difference):
-        difference = difference_of(left, right)
-        if difference.is_zero() is True:
-            return True
-        if difference in QQbar:
-            return QQbar(difference).is_zero()
-        if precision is not None and _ball_excludes_zero(difference, precision):
-            return False
-    return None
-
-
 def _relation_answer(equal: bool, relation) -> bool:
     match relation:
         case operator.eq:
@@ -171,17 +185,8 @@ class ComplexRelation(Predicate):
         return self._relation
 
     def _ask_(self, *, max_prec: int = 4096):
-        precision = 128
-        while precision <= max_prec:
-            equal = _decide_equality(
-                self._left.expression(),
-                self._right.expression(),
-                precision=precision,
-            )
-            if equal is not None:
-                return _relation_answer(equal, self._relation)
-            precision *= 2
-        return Unknown
+        equal = julia.call("preamble_cc_equal", self._left._calcium_(), self._right._calcium_())
+        return Unknown if equal is None else _relation_answer(equal, self._relation)
 
     def _repr_(self) -> str:
         symbol = {operator.eq: "==", operator.ne: "!="}[self._relation]
@@ -195,9 +200,15 @@ class ComplexRelation(Predicate):
 class ExactComplexNumber(FieldElement):
     r"""An exact complex number, given by a closed exact symbolic expression."""
 
-    def __init__(self, parent: ExactComplexField, expression: Expression) -> None:
+    def __init__(self, parent: ExactComplexField, expression: Expression, native=None) -> None:
         self._expression = expression
+        self._native = native
         FieldElement.__init__(self, parent)
+
+    def _calcium_(self):
+        if self._native is None:
+            self._native = _calcium_value(self._expression)
+        return self._native
 
     def expression(self) -> Expression:
         r"""Return the exact symbolic expression representing this complex number."""
@@ -266,13 +277,22 @@ class ExactComplexNumber(FieldElement):
         return RR(abs(self._expression))
 
     def _add_(self, other):
-        return self.parent()(self._expression + other._expression)
+        return self.parent().element_class(
+            self.parent(), self._expression + other._expression,
+            julia.call("+", self._calcium_(), other._calcium_()),
+        )
 
     def _sub_(self, other):
-        return self.parent()(self._expression - other._expression)
+        return self.parent().element_class(
+            self.parent(), self._expression - other._expression,
+            julia.call("-", self._calcium_(), other._calcium_()),
+        )
 
     def _mul_(self, other):
-        return self.parent()(self._expression * other._expression)
+        return self.parent().element_class(
+            self.parent(), self._expression * other._expression,
+            julia.call("*", self._calcium_(), other._calcium_()),
+        )
 
     def __mul__(self, other):
         r"""Use the exact scalar product, or the action on an owned module.
@@ -302,10 +322,13 @@ class ExactComplexNumber(FieldElement):
             raise ValueError(
                 f"cannot divide {self} by {other}: it is undecided whether {other} is zero"
             )
-        return self.parent()(self._expression / other._expression)
+        return self.parent().element_class(
+            self.parent(), self._expression / other._expression,
+            julia.call("/", self._calcium_(), other._calcium_()),
+        )
 
     def _neg_(self):
-        return self.parent()(-self._expression)
+        return self.parent().element_class(self.parent(), -self._expression, julia.call("-", self._calcium_()))
 
     def __invert__(self):
         return self.parent().one() / self
@@ -470,22 +493,15 @@ class ExactComplexField(UniqueRepresentation, Field):
         """
 
     def _selected_engine_ring(self):
-        r"""Return Sage's symbolic ring, the private model of exact complex computation.
-
-        An element of ``CC`` is an exact symbolic expression, so Sage's
-        polynomial rings, matrices and schemes over ``CC`` compute over the
-        symbolic ring ``SR`` on those expressions.  Results cross back through
-        :meth:`_from_engine_element`, and every equality between them is
-        decided by this field.
-        """
+        r"""Return the symbolic parent required by Sage's projective-space machinery."""
         return SR
 
     def _engine_element(self, element):
-        r"""Lower an exact complex number to its symbolic expression."""
+        r"""Lower the exact element for Sage polynomial and scheme construction."""
         return self(element).expression()
 
     def _from_engine_element(self, element) -> ExactComplexNumber:
-        r"""Raise a symbolic value of a computation over ``SR`` into ``CC``."""
+        r"""Raise a Sage expression with Nemo's exact complex arithmetic."""
         return self._from_engine_expression(element)
 
     def _repr_(self) -> str:
@@ -529,7 +545,7 @@ class ExactComplexField(UniqueRepresentation, Field):
         r"""Return a decided Boolean or an exact complex relation predicate."""
         left = self(left)
         right = self(right)
-        equal = _decide_equality(left.expression(), right.expression(), precision=128)
+        equal = julia.call("preamble_cc_equal", left._calcium_(), right._calcium_())
         if equal is not None:
             return _relation_answer(equal, relation)
         return ComplexRelation(left, right, relation)
