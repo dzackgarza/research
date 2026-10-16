@@ -92,7 +92,7 @@ def test_discrete_category_limit_and_colimit_categories_and_functors_fix_the_onl
     star = category("*")
     diagrams = Cat().Mor(category, category)
     diagram = diagrams.constant_functor(star)
-    diagram_object = diagrams.object(diagram)
+    diagram_object = diagrams(diagram)
     limits = category.Limits(category)
     colimits = category.Colimits(category)
     products = category.Products(category)

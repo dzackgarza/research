@@ -159,7 +159,7 @@ def test_the_limit_over_two_discrete_objects_is_the_product() -> None:
     diagram = diagrams.constant_functor(Sets.Δ[1])
 
     assert Sets().Limits(shape).construction(diagram).object().cardinality() == cardinal(4)
-    assert Sets().limit_functor(shape)(diagrams.object(diagram)).cardinality() == cardinal(4)
+    assert Sets().limit_functor(shape)(diagrams(diagram)).cardinality() == cardinal(4)
 
 
 def test_the_colimit_over_two_discrete_objects_is_the_disjoint_union() -> None:
@@ -168,7 +168,7 @@ def test_the_colimit_over_two_discrete_objects_is_the_disjoint_union() -> None:
     diagram = diagrams.constant_functor(Sets.Δ[1])
 
     assert Sets().Colimits(shape).construction(diagram).object().cardinality() == cardinal(4)
-    assert Sets().colimit_functor(shape)(diagrams.object(diagram)).cardinality() == cardinal(4)
+    assert Sets().colimit_functor(shape)(diagrams(diagram)).cardinality() == cardinal(4)
 
 
 def test_the_fiber_product_of_parity_and_a_two_class_map_has_six_elements() -> None:
