@@ -89,19 +89,6 @@ class _DiagramCategory(_FunctorCategory):
             r"""Return the diagram image of one represented indexing arrow."""
             return self.functor()(morphism)
 
-        def Cones(self):
-            r"""Return the common cone category over this diagram's defining functor."""
-            return self.functor().Cones()
-
-        def Cocones(self):
-            r"""Return the common cocone category under this diagram's defining functor."""
-            return self.functor().Cocones()
-
-        def restrict(self, indexing_functor):
-            r"""Precompose by ``indexing_functor`` and retain that map in the general diagram owner."""
-            restricted = self.functor().restrict(indexing_functor)
-            category = Cat().Mor(indexing_functor.domain(), self.target_category())
-            return category(restricted)
 
 
 class DirectedSystem(_DiagramCategory):
