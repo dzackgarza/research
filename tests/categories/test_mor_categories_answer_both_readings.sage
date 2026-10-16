@@ -13,7 +13,7 @@ def _singleton_end():
     point = Sets.Δ[0]
     end = Sets().End(point)
     arrow = end.identity()
-    return end, arrow, end.object(arrow)
+    return end, arrow, end(arrow)
 
 
 def test_the_two_arrows_of_the_unique_endomorphism_of_a_point() -> None:
