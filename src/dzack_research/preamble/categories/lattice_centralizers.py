@@ -974,7 +974,7 @@ class IsometryPrimitiveExtension:
             element = coinvariant_form.module_generator(label)
             twisted = twisted_coinvariant_form(element)
             target_element = target_inclusion.lift(twisted)
-            source_element = glue.inverse_morphism()(target_element)
+            source_element = glue.inverse().forward()(target_element)
             invariant_class = source_inclusion(source_element)
             moved_invariant_class = invariant_automorphism(invariant_class)
             moved_source = source_inclusion.lift(moved_invariant_class)
@@ -982,7 +982,13 @@ class IsometryPrimitiveExtension:
             moved_twisted = target_inclusion(moved_target)
             images[label] = coinvariant_form(moved_twisted)
         morphism = coinvariant_form.module_category().Mor(coinvariant_form, coinvariant_form)(images)
-        return coinvariant_form.O()(morphism)
+        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+            _torsion_form_isometry,
+        )
+
+        group = coinvariant_form.O()
+        isometry = _torsion_form_isometry(morphism, morphism.inverse(), quadratic=group.is_quadratic())
+        return group.from_morphism(isometry)
 
     def lift_coinvariant_extension_element(self, coinvariant_part):
         r"""Lift ``g_-`` from the anti-invariant extension group to ``O(L,f)``.

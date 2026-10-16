@@ -1312,14 +1312,8 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         normalized_form = normalization.codomain()
 
         original_form = normalization.domain()
-        forward = original_form.module_category().Mor(
-            original_form,
-            normalized_form,
-        )(normalization.forward())
-        inverse = normalized_form.module_category().Mor(
-            normalized_form,
-            normalization.domain(),
-        )(normalization.inverse().forward())
+        forward = normalization.forward().module_morphism()
+        inverse = normalization.inverse().forward().module_morphism()
         from sage.matrix.constructor import matrix as sage_matrix
 
         labels = tuple(normalized_form.module_generating_set())

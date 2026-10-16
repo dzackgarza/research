@@ -326,7 +326,7 @@ def _finite_form_isometries(start):
     )
     for automorphism in target.O():
         forward = automorphism.forward() * start.forward()
-        inverse = start.inverse() * automorphism.inverse_morphism()
+        inverse = start.inverse().forward() * automorphism.inverse_morphism()
 
         yield _torsion_form_isometry(
             forward,

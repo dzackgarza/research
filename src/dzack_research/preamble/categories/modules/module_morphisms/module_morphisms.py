@@ -2337,7 +2337,7 @@ class ModuleEmbeddingMor(CategoricalMor):
         if isinstance(images, Morphism) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            if images.parent() is self:
+            if self._already_parented_arrow(images):
                 return images
             _refuse_foreign_arrow(
                 self, images, "construct the monomorphism from its generator images, with its selected lift"
@@ -2624,7 +2624,7 @@ class _ModuleMorCommonMethods:
         if isinstance(images, ModuleMorphismMethods):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
-            if images.parent() is self:
+            if self._already_parented_arrow(images):
                 return images
             _refuse_foreign_arrow(
                 self, images, "apply the functor changing the module category, or supply the defining generator images"
@@ -2872,7 +2872,7 @@ class _AuxiliaryLinearModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         )
 
     def __call__(self, images):
-        return self._element_constructor_(images)
+        return CategoricalMor.__call__(self, images)
 
 
 def _auxiliary_linear_module_mor(domain, codomain):
@@ -2893,7 +2893,7 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
 
     def __call__(self, images):
         r"""Construct a module morphism without Sage coercion discovery."""
-        return self._element_constructor_(images)
+        return CategoricalMor.__call__(self, images)
 
     def _from_scalar_extension(self, morphism, datum, functor, *, elementwise=False):
         r"""``S tensor_R f`` for ``f = morphism``, given by its images on the extended framing or on elements.

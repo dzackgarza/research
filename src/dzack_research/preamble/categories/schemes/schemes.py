@@ -1678,6 +1678,19 @@ class SchemeMorCategory(CategoricalMor):
         r"""Return the private Sage Mor object these morphisms are computed in."""
         return _native_scheme_mor(self.domain(), self.codomain())
 
+    def _from_engine_morphism(self, datum):
+        r"""Raise a selected native scheme computation at its exact owned endpoints.
+
+        Protected engine crossing for the scheme structure and native
+        realization owners; public construction takes coordinate pullbacks
+        or the construction's defining data.
+        """
+        domain, codomain = self.domain(), self.codomain()
+        assert datum.domain() is _engine_scheme(domain) and datum.codomain() is _engine_scheme(codomain)
+        if domain in Schemes(domain.scheme_base_ring()).Affine() and codomain in Schemes(codomain.scheme_base_ring()).Affine():
+            return self(_engine_coordinate_pullback_of(datum, domain.coordinate_algebra(), codomain.coordinate_algebra()))
+        return SchemeMorphism(datum, mor=self)
+
     def _element_constructor_(self, datum):
         domain = self.domain()
         codomain = self.codomain()
@@ -1695,14 +1708,7 @@ class SchemeMorCategory(CategoricalMor):
             case SchemeMorphismMethods():
                 raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case _SageSchemeMorphism():
-                assert datum.domain() is _engine_scheme(domain) and datum.codomain() is _engine_scheme(codomain), (
-                    f"cannot make the Sage morphism {datum} a morphism {domain} -> {codomain}: it is a "
-                    f"morphism {datum.domain()} -> {datum.codomain()} of Sage schemes, not one between the "
-                    f"Sage schemes of {domain} and {codomain}"
-                )
-                if affine_endpoints:
-                    return self(_engine_coordinate_pullback_of(datum, domain.coordinate_algebra(), codomain.coordinate_algebra()))
-                return SchemeMorphism(datum, mor=self)
+                raise TypeError("a native scheme arrow is private engine output, not scheme-morphism defining data")
             case Morphism():
                 assert affine_endpoints, (
                     f"cannot make the ring morphism {datum} a morphism {domain} -> {codomain}: a ring morphism "
@@ -2755,7 +2761,7 @@ class Schemes(OwnedCategoryOverBaseRing):
                         mor=_scheme_mor_category(self, base_scheme),
                     )
                 case _:
-                    return _scheme_mor_category(self, base_scheme)(_engine_scheme(self).base_morphism())
+                    return _scheme_mor_category(self, base_scheme)._from_engine_morphism(_engine_scheme(self).base_morphism())
 
         def dimension(self):
             r"""The Krull dimension of ``Spec A`` for affine ``X``, else the realization's."""
