@@ -3560,6 +3560,17 @@ class FiniteAtlasModuleSheafMorphismMethods:
     def local_map(self, index):
         return self.local_maps()[self.source_datum().gluing_datum().normalize_chart_index(index)]
 
+    def is_surjective(self) -> bool:
+        r"""Surjectivity on the affine cover, hence on stalks (Hartshorne, II.5.5).
+
+        Quasi-coherent sheaves on an affine scheme are equivalent to
+        modules. Surjectivity is local on the target scheme.
+        """
+        return all(
+            self.local_map(index).is_surjective()
+            for index in self.source_datum().gluing_datum().chart_indices()
+        )
+
     def source_datum(self):
         return self.domain().gluing_datum()
 
