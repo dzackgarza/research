@@ -1,5 +1,6 @@
 r"""Cochain complexes of owned modules and their cohomology."""
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
 
@@ -837,7 +838,7 @@ class CochainMor(CategoricalMor):
         return self._module_scalar_multiple(scalar, self.identity())
 
     def elementwise(self, function):
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         if not callable(function):
             raise TypeError(

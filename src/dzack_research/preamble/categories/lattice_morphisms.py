@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from sage.categories.map import Map
 from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix as engine_matrix
@@ -1515,7 +1516,7 @@ class LatticeMor(CategoricalMor):
         return self.element_class(self, images)
 
     def elementwise(self, function):
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice morphism from {self.domain()} to {self.codomain()}: it is not a function of the elements of {self.domain()}")
@@ -1574,7 +1575,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return self.element_class(self, images)
 
     def elementwise(self, function):
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice embedding of {self.domain()} into {self.codomain()}: it is not a function of the elements of {self.domain()}")

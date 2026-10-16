@@ -11,6 +11,7 @@ from functools import reduce, wraps
 from itertools import combinations
 from operator import mul
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.finite_groups import FiniteGroups as SageFiniteGroups
@@ -3377,7 +3378,7 @@ class _GroupMorRealizationMixin:
         free source still uses its existing basis realization through
         ``_from_elementwise_rule``; no second group-map engine is created.
         """
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         if not callable(function):
             raise TypeError(f"a morphism in {self} needs a function on elements")

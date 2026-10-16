@@ -558,7 +558,7 @@ class RngMor(CategoricalMor):
         return _ringlike_mor_element(self, datum, RngMorphism)
 
     def elementwise(self, function):
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         return self.element_class(self, function)
 
@@ -793,7 +793,7 @@ class RingMor(CategoricalMor):
         return _ringlike_mor_element(self, datum, RingMorphism)
 
     def elementwise(self, function):
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         return self.element_class(self, function)
 

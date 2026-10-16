@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from sage.categories.category import Category
 from sage.categories.homset import Homset as SageHomset
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.categories.sets_cat import Sets as SageSets
 from sage.misc.cachefunc import cached_method
@@ -47,7 +48,7 @@ class OwnedMor(SageHomset):
         return arrow.parent() is self
 
     def __call__(self, *args, **kwargs) -> Morphism:
-        if len(args) == 1 and isinstance(args[0], Morphism):
+        if len(args) == 1 and isinstance(args[0], Map):
             arrow = args[0]
             if self._already_parented_arrow(arrow):
                 if not kwargs:

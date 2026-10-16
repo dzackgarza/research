@@ -5,6 +5,7 @@ from functools import reduce
 from inspect import Parameter, isfunction, ismethod, signature
 from itertools import product
 
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
@@ -2598,6 +2599,7 @@ class _ModuleMorCommonMethods:
             sage: e = M.module_generator(0)
             sage: f = M.End()(lambda label: M.module_generator(label) + e)
             sage: U = Modules(ZZ).underlying_set()
+            sage: assert U(f).parent() is Sets().Mor(U(M), U(M))
             sage: assert U(f)(e) == 2*e
             sage: assert M.End()(f) is f
             sage: translation = Sets().Mor(M, M)(lambda v: v + e)
@@ -2757,7 +2759,7 @@ class _ModuleMorCommonMethods:
         generator-assignment constructor when possible: its linear extension
         is linear by construction and presentation relations are checked.
         """
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         if not callable(function):
             raise TypeError(f"cannot define a linear map {self.domain()} -> {self.codomain()} elementwise from {function!r}: it must be a function on elements")

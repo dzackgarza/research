@@ -6,6 +6,7 @@ identities.  This is the additive specialization of the existing owned Mor
 packet, using Sage's ``Mor``, ``Morphism`` and integer multiplication action.
 """
 
+from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
@@ -564,7 +565,7 @@ class AdditiveMor(CategoricalMor):
 
     def elementwise(self, function):
         r"""Construct the additive map declared by ``function``."""
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         assert callable(function), (
             f"cannot build a morphism {self.domain()} -> {self.codomain()} from {function}: "

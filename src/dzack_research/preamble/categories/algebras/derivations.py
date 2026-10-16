@@ -9,6 +9,7 @@ presentation representative.
 
 import operator
 
+from sage.categories.map import Map
 from sage.categories.action import Action
 from sage.categories.morphism import Morphism, SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
@@ -1150,7 +1151,7 @@ class GradedDerivationSpace(RestrictedMorCategoryParent):
 
     def elementwise(self, function, *, check=False):
         r"""Construct the graded derivation given on elements; ``check=True`` runs its validator (``OWN-22``)."""
-        if isinstance(function, Morphism):
+        if isinstance(function, Map):
             return self(function)
         if not callable(function):
             raise TypeError(
