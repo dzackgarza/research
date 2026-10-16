@@ -1,12 +1,8 @@
 r"""Private exact computational realizations for owned lattice constructions."""
 
 from sage.arith.misc import gcd as engine_gcd
-from sage.libs.gap.libgap import libgap
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.matrix.matrix0 import Matrix
-from sage.quadratic_forms.binary_qf import BinaryQF
-from sage.quadratic_forms.qfsolve import qfsolve
-from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer import Integer as SageInteger
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
@@ -65,6 +61,8 @@ def _rational_signed_direction(gram, sign):
     and negative-direction-in-span computations. A subspace supplies its own
     restricted Gram tensor through its formed subobject construction.
     """
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
+
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
     engine_hessian = _engine_symmetrized_form_matrix(gram).change_ring(SageQQ)
@@ -155,6 +153,8 @@ def _isotropic_vector_witness(lattice):
     )
     if lattice.module_rank() == 0:
         return None
+    from sage.quadratic_forms.qfsolve import qfsolve
+
     solution = qfsolve(_engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ))
     if isinstance(solution, SageInteger):
         return None
@@ -273,6 +273,8 @@ def _rational_representation_witness(lattice, value):
     gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageQQ)
     rank = gram.nrows()
     augmented = gram.block_sum(engine_matrix(SageQQ, [[-SageQQ(_engine_element(lattice.base_ring(), value))]]))
+    from sage.quadratic_forms.qfsolve import qfsolve
+
     solution = qfsolve(augmented)
     if solution in SageZZ:
         return None
@@ -297,6 +299,8 @@ def _binary_special_orthogonal_representatives(lattice, square):
     if _engine_ring(ring) is not SageZZ or lattice.module_rank() != 2:
         raise ValueError("binary representation classes require a rank-two ZZ-lattice")
     gram = _engine_component_matrix(lattice.gram_tensor())
+    from sage.quadratic_forms.binary_qf import BinaryQF
+
     form = BinaryQF((gram[0, 0], 2 * gram[0, 1], gram[1, 1]))
     discriminant = form.discriminant()
     if discriminant <= 0 or discriminant.is_square():
@@ -347,6 +351,8 @@ def _gap_rational_spinor_norm_class(gram, isometry):
     row_action = _engine_row_action_matrix(isometry).change_ring(SageQQ)
     if row_action.is_one():
         return SageQQ.one()
+    from sage.libs.gap.libgap import libgap
+
     wall_form = libgap.WallForm(libgap(2 * _rational_engine_matrix(gram)), libgap(row_action))
     value = SageQQ(libgap.DeterminantMat(wall_form["form"]).sage())
     if value == 0:
@@ -901,6 +907,7 @@ def _roots_generating_lattice(gram, lengths):
     """
     from sage.arith.functions import lcm
     from sage.libs.pari import pari
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
 
     form = _engine_component_matrix(gram).change_ring(SageZZ)
     rank = form.nrows()

@@ -8,8 +8,6 @@ from functools import cache
 from sage.libs.pari import pari
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.modules.free_module_element import vector as engine_vector
-from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
-from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
@@ -253,6 +251,8 @@ def _hkz_reduction(lattice):
 
 
 def _minimum(lattice):
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
     sign, positive_gram = _positive_gram(lattice)
     backend = IntegralLattice(_engine_component_matrix(positive_gram))
     minimum_value = _owned_engine_element(lattice.base_ring(),
@@ -274,6 +274,8 @@ def _vectors_of_square(lattice, square):
     target = sign * square
     if target < 0:
         return finite_ordered_set(())
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
     backend = IntegralLattice(_engine_component_matrix(positive_gram))
     lists = backend.short_vectors(int(target) + 1)
     if int(target) >= len(lists):
@@ -300,6 +302,8 @@ def _roots_of_square(lattice, square):
     if target <= 0:
         return finite_ordered_set(())
     gram = _engine_component_matrix(positive_gram)
+    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+
     shells = IntegralLattice(gram).short_vectors(target + 1)
     if target >= len(shells) or not shells[target]:
         return finite_ordered_set(())
@@ -1081,6 +1085,7 @@ def _packing_density(lattice):
 
 
 def _theta_series(lattice, precision=20, variable="q"):
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
 
     _sign, positive_gram = _positive_gram(lattice)
     quadratic_form = QuadraticForm(

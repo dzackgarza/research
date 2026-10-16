@@ -29,7 +29,6 @@ if TYPE_CHECKING:
 from sage.arith.misc import gcd
 from sage.misc.abstract_method import abstract_method
 from sage.combinat.root_system.cartan_type import CartanType
-from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
@@ -8367,6 +8366,8 @@ class RootLattices(OwnedCategory):
             basis vectors go to the simple roots, of the coefficient vector of
             the highest root in the basis of simple roots.
             """
+            from sage.combinat.root_system.root_system import RootSystem
+
             cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(
