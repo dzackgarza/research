@@ -2377,12 +2377,17 @@ class FramedFreeAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebra
         )
 
     def _element_constructor_(self, datum):
-        r"""Retain a whole map, or extend explicitly supplied generator data.
-
-        A linear map with these endpoints is its actual elementwise datum.
-        Agreement on the algebra generators alone cannot replace it: the
-        zero linear map and the generator-zero augmentation differ at 1.
-        """
+        r"""Extend defining generator data through the free-algebra universal property."""
+        if isinstance(datum, Map):
+            if self._already_parented_arrow(datum):
+                return datum
+            source = self.domain()
+            generating = source.generating_module()
+            labels = source.algebra_generating_set()
+            generator_mor = generating.module_category().Mor(generating, self.codomain())
+            label_mor = Sets().Mor(labels, self.codomain())
+            if not (generator_mor.accepts(datum) or label_mor.accepts(datum)):
+                raise TypeError(f"{datum} is a whole arrow of another Mor; give the free-generator map")
         return self.element_class(self, datum)
 
     @object_level

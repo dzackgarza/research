@@ -6,6 +6,7 @@ relation submodule in the appropriate sense; these constructors check that
 descent before equipping the module with the form.
 """
 
+from sage.categories.map import Map
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
@@ -1349,8 +1350,8 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             if datum.parent() is self:
                 return datum
             raise TypeError(f"{datum} belongs to another Mor; apply the realization functor")
-        if isinstance(datum, ModuleMorphismMethods):
-            raise TypeError(f"{datum} is a module arrow; supply a form-isomorphism under its realization functor")
+        if isinstance(datum, Map):
+            raise TypeError(f"{datum} is a whole arrow; apply the form-Core normalization homomorphism")
         return self._from_engine(datum)
 
     def accepts(self, candidate) -> bool:
