@@ -2694,7 +2694,7 @@ class _SemidirectProductGroup:
 def _semidirect_product(normal, action):
     assert action.domain() in OwnedGroups()
     assert action.codomain().domain() is normal and action.codomain().codomain() is normal
-    assert action.codomain() in GroupAutomorphismGroups()
+    assert action.codomain() is normal.Aut()
     acting = action.domain()
     placement = (OwnedFiniteGroups(),) if normal in OwnedFiniteGroups() and acting in OwnedFiniteGroups() else ()
     result = _object_of(
@@ -4288,10 +4288,12 @@ class GroupIsoCategoryConstruction(IsoCategoryConstruction):
         if domain is not codomain:
             return super().Of(domain, codomain)
 
-        # A free group on a set has no GAP elementwise model, so its
-        # automorphism group has no stronger computational parent than the
-        # generic Iso object.
-        if domain in GroupsWithChosenFreeBasis():
+        # The generic core already presents automorphisms by actual
+        # forward/inverse pairs. Selecting the finite GAP computation is
+        # justified only for its finite-group route; an arbitrary infinite
+        # group (including additive groups written multiplicatively) need
+        # not have a GAP model at all.
+        if domain in GroupsWithChosenFreeBasis() or domain not in OwnedFiniteGroups():
             return super().Of(domain, codomain)
 
         cached = self._cached_between(domain, domain)
