@@ -1858,6 +1858,136 @@ class FiniteAtlasRefinementMethods:
 
         return source.module_category().Mor(source, target)._from_constructed_element_map(image)
 
+    def _coarse_chart_open(self, fine_index, open_subscheme):
+        fine = self.fine_datum()
+        coarse = self.coarse_datum()
+        fine_index = fine.normalize_chart_index(fine_index)
+        coarse_index = self.coarse_index(fine_index)
+        fine_chart = fine.chart(fine_index)
+        coarse_chart = coarse.chart(coarse_index)
+        selected = fine_chart if open_subscheme is None else open_subscheme
+        if selected is not fine_chart:
+            assert selected in OpenImmersions(fine_chart) and selected.is_distinguished_open() is True, (
+                "a refinement basis open must be the fine chart or one of its distinguished opens"
+            )
+        chart_map = self.chart_map(fine_index)
+        if chart_map.coordinate_algebra_morphism().is_identity() is True:
+            image = (
+                coarse_chart if selected is fine_chart else
+                coarse_chart.distinguished_open(selected.distinguished_open_element())
+            )
+            return coarse_index, selected, image
+        if (
+            fine_chart in OpenImmersions(coarse_chart)
+            and fine_chart.is_distinguished_open() is True
+            and (chart_map == fine_chart.inclusion()) is True
+        ):
+            if selected is fine_chart:
+                return coarse_index, selected, fine_chart
+            ring = fine_chart.coordinate_algebra()
+            numerator, _denominator = ring.localization_fraction_data(selected.distinguished_open_element())
+            image = coarse_chart.distinguished_open(fine_chart.distinguished_open_element() * numerator)
+            return coarse_index, selected, image
+        assert False, (
+            f"the image of the fine chart {fine_index} needs an affine-open image construction "
+            "beyond identity chart maps and represented distinguished-open inclusions"
+        )
+
+    @cached_method
+    def chart_open_subset(self, fine_index, open_subscheme=None):
+        r"""Express a fine basis open in the coarse atlas.
+
+        For ``D(f)`` in a coarse chart and ``g=a/s`` on ``D(f)``, the
+        image of ``D(g)`` is ``D(fa)``. The denominator is already a unit
+        on ``D(f)`` (Stacks, Tag 00E0).
+
+        Unexecuted refinement specimen: add the overlap as a chart of the
+        projective line, then restrict the inverse-image sheaf there::
+
+            sage: from dzack_research.preamble.all import *
+            sage: X = ProjectiveSpaces(QQ)(1)
+            sage: coarse = X.standard_affine_atlas()
+            sage: U = coarse.chart(0); V = coarse.chart(1)
+            sage: W = coarse.overlap(0, 1)
+            sage: B = W.coordinate_algebra()
+            sage: whole_W = W.distinguished_open(B.one())
+            sage: C = whole_W.coordinate_algebra()
+            sage: schemes = Schemes(QQ)
+            sage: unit_chart = schemes.Core().Mor(W, whole_W)(
+            ....:     schemes.Mor(W, whole_W)(C.induced_morphism(B.Mor(B).identity())),
+            ....:     schemes.Mor(whole_W, W)(C.localization_map()),
+            ....: )
+            sage: fine = FiniteAffineAtlases(X)(
+            ....:     (U, V, W),
+            ....:     {(0, 1): coarse.transition_between(0, 1), (0, 2): unit_chart,
+            ....:      (1, 2): unit_chart * coarse.transition_between(1, 0)},
+            ....:     (coarse.chart_embedding(0), coarse.chart_embedding(1),
+            ....:      coarse.chart_embedding(0) * W.inclusion()),
+            ....: )
+            sage: refinement = FiniteAffineAtlases(X).Mor(fine, coarse)(
+            ....:     {0: 0, 1: 1, 2: 0},
+            ....:     {0: U.categorical_identity_morphism(), 1: V.categorical_identity_morphism(), 2: W.inclusion()},
+            ....: )
+            sage: refinement.chart_open_subset(2) == coarse.chart_open_subset(0, W)
+            True
+            sage: datum = FiniteAtlasModuleGluingData(coarse).an_object()
+            sage: inverse_image = refinement.inverse_image_functor()(datum.sheaf())
+            sage: inverse_image.sections_on_chart(2).module_over_extension().base_ring() is B
+            True
+            sage: comparison = refinement.chart_open_comparison(2)
+            sage: comparison.domain() is W and comparison.codomain() is W
+            True
+            sage: refinement.global_function_map()(coarse.global_function_algebra().one()) == fine.global_function_algebra().one()
+            True
+            sage: unit = datum.compatible_section({i: datum.local_module(i).module_generator(0) for i in coarse.chart_indices()})
+            sage: section_map = refinement.global_section_pullback(datum)
+            sage: fine_datum = refinement.module_pullback_functor()(datum.sheaf()).gluing_datum()
+            sage: image = section_map(unit).underlying_element()
+            sage: fine_datum.compatible_section_component(image, 2) == fine_datum.local_module(2).module_generator(0)
+            True
+            sage: f = W.distinguished_open_element()
+            sage: smaller = W.distinguished_open(B(U.coordinate_algebra().one() - f))
+            sage: expected = U.distinguished_open(f * (U.coordinate_algebra().one() - f))
+            sage: refinement.chart_open_subset(2, smaller) == coarse.chart_open_subset(0, expected)
+            True
+            sage: comparison = refinement.chart_open_comparison(2, smaller)
+            sage: ring = comparison.codomain().coordinate_algebra()
+            sage: denominator_inverse = ring(f * (U.coordinate_algebra().one() - f)).inverse_of_unit()
+            sage: forward = comparison.forward().coordinate_algebra_morphism()
+            sage: reverse = comparison.inverse().forward().coordinate_algebra_morphism()
+            sage: reverse(forward(denominator_inverse)) == denominator_inverse
+            True
+        """
+        coarse_index, _selected, image = self._coarse_chart_open(fine_index, open_subscheme)
+        return self.coarse_datum().chart_open_subset(coarse_index, image)
+
+    @cached_method
+    def chart_open_comparison(self, fine_index, open_subscheme=None):
+        r"""The affine isomorphism from the fine open to its coarse image.
+
+        Both coordinate maps are induced by localization. In particular,
+        ``(A_f)_g`` and ``A_fa`` retain their actual inverse universal maps.
+        """
+        coarse_index, selected, image = self._coarse_chart_open(fine_index, open_subscheme)
+        fine_chart = self.fine_datum().chart(fine_index)
+        coarse_chart = self.coarse_datum().chart(coarse_index)
+        original = coarse_chart.coordinate_algebra()
+        middle = fine_chart.coordinate_algebra()
+        fine_ring = selected.coordinate_algebra()
+        image_ring = image.coordinate_algebra()
+        to_fine = self.chart_map(fine_index).coordinate_algebra_morphism()
+        if selected is not fine_chart:
+            to_fine = selected.inclusion().coordinate_algebra_morphism() * to_fine
+        forward = to_fine if image_ring is original else image_ring.induced_morphism(to_fine)
+        to_image = original.Mor(original).identity() if image_ring is original else image_ring.localization_map()
+        reverse = to_image if middle is original else middle.induced_morphism(to_image)
+        if fine_ring is not middle:
+            reverse = fine_ring.induced_morphism(reverse)
+        schemes = Schemes(selected.scheme_base_ring())
+        return schemes.Core().Mor(selected, image)(
+            schemes.Mor(selected, image)(forward), schemes.Mor(image, selected)(reverse),
+        )
+
     def overlap_map(self, source_index, target_index):
         r"""Map one fine overlap to the corresponding coarse overlap or chart."""
         fine = self.fine_datum()
@@ -6808,6 +6938,11 @@ class _FiniteAtlasInverseImageModuleSheafEngine:
         return self.refinement().chart_map(
             fine_index
         ).coordinate_algebra_morphism()
+
+    def sections_on_chart(self, fine_index):
+        r"""Evaluate the inverse-image sheaf on a represented fine chart image."""
+        subset = self.refinement().chart_open_subset(fine_index)
+        return self.sections(self.scheme().open_subsets_site()(subset))
 
     def module_pullback(self):
         r"""Return ``O_X tensor_{f^{-1}O_Y} f^{-1}F`` as an ``O_X``-module sheaf."""
