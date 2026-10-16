@@ -7,6 +7,7 @@ from dzack_research.preamble.categories.abstract_categories.products import Dire
 from dzack_research.preamble.categories.abstract_categories.cat import NaturalTransformationMorphism
 from dzack_research.preamble.categories.functors.core import Functor, NaturalTransformation
 from dzack_research.preamble.categories.sets.set_categories import NN
+from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
 
 from dzack_research.preamble.categories.schemes.schemes import Schemes, _affine_spec_morphism
@@ -69,7 +70,7 @@ class _FormalThickeningSystem(Functor):
         higher = self.thickening_ring(higher_exponent)
         lower = self.thickening_ring(lower_exponent)
         lower_projection = lower.quotient_map()
-        return higher.Mor(lower).elementwise(
+        return OwnedRings().Mor(higher, lower)(
             lambda element: lower_projection(element.lift())
         )
 

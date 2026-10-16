@@ -156,7 +156,7 @@ class _YonedaEmbedding(Functor):
         super().__init__(category, category.presheaves())
 
     def _apply_object(self, obj: Parent) -> ObjectOfCategory:
-        return self.codomain().object(_RepresentablePresheaf(self._category, obj))
+        return self.codomain()(_RepresentablePresheaf(self._category, obj))
 
     def _apply_morphism(self, morphism: Map) -> Map:
         r"""Postcomposition with ``h: X -> Y``, natural in the argument."""
@@ -207,7 +207,7 @@ class _PresheafTransport(Functor):
         return self._opposite_site_functor.then(presheaf).then(self.value_functor())
 
     def _apply_object(self, obj: Parent) -> ObjectOfCategory:
-        return self.codomain().object(self._transport_presheaf(obj.functor()))
+        return self.codomain()(self._transport_presheaf(obj.functor()))
 
     def _apply_morphism(self, morphism: Map) -> Map:
         transformation = morphism.transformation()
