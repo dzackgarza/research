@@ -1156,7 +1156,11 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
             )
 
         def module_rank(self):
-            r"""Return the rank of the free summand over a PID."""
+            r"""Return the dimension of the generic fibre over an integral domain.
+
+            Over a PID the invariant factors give the same rank as the
+            dimension after extension to the fraction field.
+            """
 
             ring = self.base_ring()
             if ring in OwnedFields():
@@ -1166,6 +1170,8 @@ class _SelectedFinitePresentationModules(OwnedCategoryOverBaseRing):
                     "supplies no decided diagonal or exact field-rank computation"
                 )
                 return cardinal(dimension)
+            if ring in OwnedIntegralDomains() and ring not in PrincipalIdealDomains():
+                return self.base_change(ring.fraction_field_map()).module_rank()
             assert ring in PrincipalIdealDomains(), (
                 f"cannot compute the rank of {self} from invariant factors: "
                 f"the base ring {ring} must be a principal ideal domain or a field"

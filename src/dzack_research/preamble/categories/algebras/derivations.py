@@ -8,6 +8,7 @@ presentation representative.
 """
 
 import operator
+from collections.abc import Mapping
 
 from sage.categories.action import Action
 from sage.categories.morphism import SetMorphism
@@ -608,6 +609,29 @@ class DerivationSpace(RestrictedMorCategoryParent):
                     f"{self.restricted_target_module()}: it is a map {generator_images.domain()} -> "
                     f"{generator_images.codomain()}"
                 )
+            case _:
+                pass
+        match generator_images:
+            case Mapping():
+                labels = self.generator_labels()
+                normalized = {}
+                for key, image in generator_images.items():
+                    if key in labels:
+                        normalized[key] = image
+                        continue
+                    matching = tuple(
+                        label for label in labels
+                        if self.algebra().algebra_generator(label) == key
+                    )
+                    if len(matching) != 1:
+                        raise ValueError(
+                            f"{key} does not select one algebra generator of {self.algebra()}"
+                        )
+                    label = matching[0]
+                    if label in normalized:
+                        raise ValueError(f"the image of the algebra generator {label} is given twice")
+                    normalized[label] = image
+                generator_images = normalized
             case _:
                 pass
         derivation = Derivation(self, generator_images)
