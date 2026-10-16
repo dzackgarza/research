@@ -46,8 +46,8 @@ def test_the_split_two_plane_preimage_uses_the_supplied_kernel_and_cosets():
         *(parabolic(value) for value in kernel_family),
         *(levi.lift(value) for value in quotient.group_generators()),
     )
-    supplied = parabolic.subgroup(supplied_family)
-    levi = supplied.Mor(quotient)(lambda value: reduction.levi_action()(supplied.inclusion()(value)))
+    supplied = lattice.O().subgroup(supplied_family)
+    levi = supplied.Mor(quotient)(lambda value: reduction.levi_action()(parabolic(supplied.inclusion()(value))))
     levi.select_section(Sets().Mor(quotient, supplied)(lambda value: supplied(reduction.levi_action().lift(value))))
     kernel = levi.kernel()
     kernel.select_group_resolution(generators=Set(tuple(kernel(value) for value in kernel_family)))

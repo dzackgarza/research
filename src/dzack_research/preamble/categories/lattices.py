@@ -205,7 +205,7 @@ from dzack_research.preamble.categories.vector_orbits import (
     _gluing_route_discriminant_classes,
     _stable_complement_root_reflections,
 )
-from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction, negation
+from dzack_research.preamble.logic import AtomicProposition, Predicate, negation
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
