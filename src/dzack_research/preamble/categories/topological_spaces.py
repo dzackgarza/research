@@ -546,6 +546,9 @@ class TopologicalSpaceMor(CategoricalMor):
         ``h: Y -> Z`` is continuous because the ``q``-preimage of the preimage
         of an open ``V`` is ``h^{-1}(V)``. The same statement for a family
         of injections supplies coproduct injections and their universal maps.
+        The prime-spectrum functor uses ``PrimeSpectrum.continuous_comap``:
+        preimages of basis opens are basis opens, ``D(a)`` pulling back to
+        ``D(f(a))`` along a ring map ``f``.
         No arbitrary caller datum enters
         through this route.
         """

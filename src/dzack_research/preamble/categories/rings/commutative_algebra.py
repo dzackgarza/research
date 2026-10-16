@@ -539,6 +539,60 @@ class PrimeSpectra(OwnedCategory):
             return f"Spec({self.ring()})"
 
 
+class _PrimeSpectrumFunctor(Functor):
+    r"""``Spec: CRing^op -> Top``, acting on primes by contraction.
+
+    A preimage of a prime along a unital ring map is prime. Continuity follows
+    from ``Spec(f)^-1 D(a) = D(f(a))`` (Mathlib,
+    ``PrimeSpectrum.comap_asIdeal``, ``PrimeSpectrum.continuous_comap`` and
+    ``PrimeSpectrum.comap_basicOpen``). Contraction algorithms remain at the
+    ring-map owner.
+
+    Unexecuted localization-point specimen::
+
+        sage: from dzack_research.preamble.all import *
+        sage: A = QQ['x']; x = A.algebra_generator('x')
+        sage: B = A.localization(x)
+        sage: f = B.localization_map()
+        sage: spec = OwnedRings().Commutative().prime_spectrum_functor()
+        sage: opposite = spec.domain()
+        sage: arrow = opposite.Mor(opposite(B), opposite(A))(f)
+        sage: image = spec.on_morphism(arrow)
+        sage: p = B.spectrum()(B.ideal(B(x - A.one())))
+        sage: image(p) == A.spectrum()(A.ideal(x - A.one()))
+        True
+        sage: image(p) in A.spectrum().D(x)
+        True
+        sage: identity = opposite.Mor(opposite(A), opposite(A)).identity()
+        sage: spec.on_morphism(identity)(image(p)) == image(p)
+        True
+    """
+
+    def __init__(self, rings) -> None:
+        Functor.__init__(self, rings.opposite(), TopologicalSpaces())
+
+    def _apply_object(self, opposite_ring):
+        return opposite_ring.underlying_object().spectrum()
+
+    def _apply_morphism(self, opposite_arrow):
+        ring_map = opposite_arrow.underlying_arrow()
+        source = self(opposite_arrow.domain())
+        target = self(opposite_arrow.codomain())
+        if ring_map.is_identity():
+            return self.codomain().Mor(source, target).identity()
+
+        def image(point):
+            prime = source(point).ideal()
+            contracted = ring_map.contraction_of_ideal(prime)
+            # PrimeSpectrum.comap_asIdeal: primality follows from the unital
+            # map and the source prime, independently of an ideal algorithm.
+            return target.element_class(target, contracted)
+
+        return self.codomain().Mor(source, target)._from_continuous_set_map(
+            Sets().Mor(source, target)(image)
+        )
+
+
 class IntegralPrimeSpectra(OwnedCategory):
     r"""Spectra of integral domains, with their distinguished generic point."""
 

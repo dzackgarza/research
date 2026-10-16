@@ -364,6 +364,8 @@ class RingMorphism:
         assert ideal.ring() is codomain, (
             f"cannot contract {ideal} along {self}: it is an ideal of {ideal.ring()}, not of {codomain}"
         )
+        if self.is_identity():
+            return ideal
         match codomain:
             case _ if codomain in LocalizationRings() and self is codomain.localization_map():
                 return ideal.contraction_from_localization()
@@ -2883,6 +2885,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             return _owned_integers()
 
         class SubcategoryMethods:
+            @cached_method
+            def prime_spectrum_functor(self):
+                r"""The contravariant prime-spectrum functor to topological spaces."""
+                from dzack_research.preamble.categories.rings.commutative_algebra import (
+                    _PrimeSpectrumFunctor,
+                )
+
+                return _PrimeSpectrumFunctor(self)
+
             def Local(self):
                 r"""Return this category with the axiom of a unique maximal ideal."""
                 return self._with_axiom("Local")
