@@ -502,7 +502,7 @@ def _attach_aut_family(owner: CategoricalMor, family: _AutCategoryOf) -> None:
     owner._aut_family = category_owner
     category_owner._remember_between(owner.domain_object(), owner.codomain_object(), owner)
 
-class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
+class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
     r"""A represented Mor object which is both a Sage Mor and a category.
 
     This mixed runtime parent deliberately retains Sage's raw ``Category`` base.

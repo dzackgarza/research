@@ -352,7 +352,7 @@ class Cat(CategoryPacketMethods, Category):
         domain: Category | CategoryObject,
         codomain: Category | CategoryObject,
     ) -> CategoryFunctorMor:
-        return CategoryFunctorMor(self, self.object(domain), self.object(codomain))
+        return self.Mor(self.object(domain), self.object(codomain))
 
     def arrow(self, functor: Functor) -> CategoryFunctorMorphism:
         key = id(functor)
@@ -1392,7 +1392,7 @@ class _EvaluationFunctor(Functor):
         return transformation.component(self.evaluation_object())
 
 
-class _FunctorCategory(FixedMorCategory):
+class _FunctorCategory(CategoricalMor):
     r"""The category ``[C,D]`` of represented functors and natural transformations.
 
     Unverified construction specimens: all Cat Mor entrances select one
@@ -1437,6 +1437,7 @@ class _FunctorCategory(FixedMorCategory):
     """
 
     _MorCategory = NaturalTransformationMorCategoryConstruction
+    Element = Functor
 
     @staticmethod
     def __classcall__(cls, category_of_categories: Cat, domain: Category, codomain: Category):
@@ -1460,7 +1461,7 @@ class _FunctorCategory(FixedMorCategory):
         self._cat = category_of_categories
         self._domain_category = domain
         self._codomain_category = codomain
-        FixedMorCategory.__init__(
+        CategoricalMor.__init__(
             self,
             category_of_categories.MorCategory(),
             category_of_categories.object(domain),
@@ -1481,7 +1482,7 @@ class _FunctorCategory(FixedMorCategory):
 
     def arrow_set(self) -> CategoryFunctorMor:
         r"""The canonical Mor object of functors classified by ``[C,D]``."""
-        return self._cat.functor_mor(self.domain_category(), self.codomain_category())
+        return self
 
     underlying_mor = arrow_set
 
@@ -1729,8 +1730,12 @@ class _FunctorCategory(FixedMorCategory):
         obj = self.object(arrow)
         return self.Mor(obj, obj).identity()
 
-    def identity(self, functor_object: Parent) -> NaturalTransformationMorphism:
-        return self.Mor(functor_object, functor_object).identity()
+    @object_level
+    @cached_method
+    def identity(self):
+        if self.domain_category() is not self.codomain_category():
+            raise ValueError(f"an identity functor needs the same domain and codomain, but got {self}")
+        return self(IdentityFunctor(self.domain_category()))
 
     def evaluation_functor(self, obj: Parent) -> _EvaluationFunctor:
         r"""``ev_c: [C, D] -> D``, evaluation at the object ``c`` of ``C``.
