@@ -18,12 +18,6 @@ from __future__ import annotations
 
 import operator
 
-from sage.functions import generalized as _sage_generalized
-from sage.functions import hyperbolic as _sage_hyperbolic
-from sage.functions import log as _sage_log
-from sage.functions import transcendental as _sage_transcendental
-from sage.functions import trig as _sage_trig
-from sage.misc import functional as _sage_functional
 from sage.misc.latex import latex
 from sage.misc.unknown import Unknown
 from sage.categories.rings import Rings as SageRings
@@ -565,6 +559,17 @@ class ExactRealField(UniqueRepresentation, Field):
         r"""A field is commutative; answered by the class so ``Modules(RR)`` can place itself during construction."""
         return True
 
+    def _refine_category_(self, category) -> None:
+        r"""Keep the category fixed at construction.
+
+        This field is its own computation model, so Sage algorithms that
+        receive it ask Sage's ``_refine_category_`` to add Sage's ``Fields()``
+        or ``Sets().Infinite()`` as a cached answer.  Placement comes only from
+        construction: the field is already in the owned fields and the owned
+        uncountable sets, and an engine's answer never changes the category
+        or the operations it selects.
+        """
+
     def _repr_(self) -> str:
         return "Real Field"
 
@@ -666,120 +671,6 @@ pi = RR.pi()
 e = RR.e()
 
 
-# The elementary functions of a session.  On a real number each is the
-# operation of the real field.  Any other argument -- a power series, a
-# matrix, a symbolic expression -- goes to Sage's function of the same name,
-# which applies the argument's own method where it has one.
-
-
-def sqrt(x):
-    r"""The square root of ``x``; of a real number, the nonnegative real root."""
-    match x:
-        case _ if x in RR:
-            return RR(x).sqrt()
-        case _:
-            return _sage_functional.sqrt(x)
-
-
-def exp(x):
-    r"""The exponential of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).exp()
-        case _:
-            return _sage_log.exp(x)
-
-
-def log(x, base=None):
-    r"""The logarithm of ``x``, natural unless ``base`` is given."""
-    match x:
-        case _ if x in RR:
-            return RR(x).log(base)
-        case _:
-            return _sage_functional.log(x) if base is None else _sage_functional.log(x, base)
-
-
-def sin(x):
-    r"""The sine of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).sin()
-        case _:
-            return _sage_trig.sin(x)
-
-
-def cos(x):
-    r"""The cosine of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).cos()
-        case _:
-            return _sage_trig.cos(x)
-
-
-def tan(x):
-    r"""The tangent of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).tan()
-        case _:
-            return _sage_trig.tan(x)
-
-
-def sinh(x):
-    r"""The hyperbolic sine of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).sinh()
-        case _:
-            return _sage_hyperbolic.sinh(x)
-
-
-def cosh(x):
-    r"""The hyperbolic cosine of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).cosh()
-        case _:
-            return _sage_hyperbolic.cosh(x)
-
-
-def tanh(x):
-    r"""The hyperbolic tangent of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).tanh()
-        case _:
-            return _sage_hyperbolic.tanh(x)
-
-
-def sech(x):
-    r"""The hyperbolic secant of ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).sech()
-        case _:
-            return _sage_hyperbolic.sech(x)
-
-
-def sgn(x):
-    r"""The sign of ``x``: \(1\), \(0\) or \(-1\) for a real number."""
-    match x:
-        case _ if x in RR:
-            return RR(x).sgn()
-        case _:
-            return _sage_generalized.sgn(x)
-
-
-def zeta(x):
-    r"""The Riemann zeta function at ``x``."""
-    match x:
-        case _ if x in RR:
-            return RR(x).zeta()
-        case _:
-            return _sage_transcendental.zeta(x)
-
-
 def _owned_real_from_engine_expression(value) -> ExactRealNumber:
     r"""Raise a private exact symbolic expression into the owned real field.
 
@@ -797,20 +688,8 @@ def _restore_exact_real(expression: Expression) -> ExactRealNumber:
 
 
 __all__ = [
-    "cos",
-    "cosh",
     "e",
-    "exp",
-    "log",
     "pi",
-    "sech",
-    "sgn",
-    "sin",
-    "sinh",
-    "sqrt",
-    "tan",
-    "tanh",
-    "zeta",
     "ExactRealField",
     "ExactRealNumber",
     "RR",

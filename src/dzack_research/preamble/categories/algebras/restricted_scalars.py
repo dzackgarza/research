@@ -455,7 +455,8 @@ def _restrict_algebra_scalars(algebra, ring_map):
         placement=tuple(placement),
         categories=tuple(
             category for category in algebra.category().all_super_categories()
-            if category._without_axioms() is OwnedRings() or category._without_axioms() is Sets()
+            if OwnedRings()._with_axioms(category.axioms()) is category
+            or Sets()._with_axioms(category.axioms()) is category
         ),
         unit=unit,
         construction_data=construction_data,
