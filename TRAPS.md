@@ -12,15 +12,19 @@ Write to it in the turn the measurement is made.
 
 ### Sage's `orthogonal_group()` of a finite quadratic module searches the whole module; GAP's `forms` package is absent
 
-Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`). `TorsionQuadraticForm(diagonal_matrix(QQ, [2/3]*6)).orthogonal_group()` (no generators, so `sage.groups.fqf_orthogonal._isom_fqf` on all of `T`) did not finish within 40 minutes (`timeout 2400`, exit 124; probe sage-indefinite-port `.tmp/probe/o3_6.py`); on `(Z/3)^4` it takes 3.6 s. GAP `GO(-1, 6, 3)` (order 26127360) conjugated onto the form gives generators in 0.9 s (probe `.tmp/probe/fastO.py`, which also checks equal orders with brute force on `(Z/3)^2`, `(Z/3)^4` and `A2+A2+<2>`: 8, 1152, 8). `LoadPackage("forms")` prints `#I forms package is not available`, so `BilinearFormByMatrix`/`BaseChangeToCanonical` cannot be used. Route chosen: `torsion_form_modules._engine_orthogonal_group`.
+Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`). `TorsionQuadraticForm(diagonal_matrix(QQ, [2/3]*6)).orthogonal_group()` (no generators, so `sage.groups.fqf_orthogonal._isom_fqf` on all of `T`) did not finish within 40 minutes (`timeout 2400`, exit 124; probe sage-indefinite-port `.tmp/probe/o3_6.py`); on `(Z/3)^4` it takes 3.6 s. GAP `GO(-1, 6, 3)` (order 26127360) conjugated onto the form gives generators in 0.9 s (probe `.tmp/probe/fastO.py`, which also checks equal orders with brute force on `(Z/3)^2`, `(Z/3)^4` and `A2+A2+<2>`: 8, 1152, 8). `LoadPackage("forms")` prints `#I forms package is not available`, so `BilinearFormByMatrix`/`BaseChangeToCanonical` cannot be used.
+Route chosen: `torsion_form_modules._engine_orthogonal_group`.
 
 ### Sage multiplies an element of a ZZ-span in QQ^n by a matrix not through its ambient entries
 
-Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`): `V = (QQ**4).span([e_i/3], ZZ)`, `u = V([0, 1/3, 0, 2/3])`, `G` the integer Gram matrix of sage-indefinite-port centralizer case `oscar_lattices_with_isometry_110`: `u * G` is `(-51, -27, -12, -27)` while `vector(QQ, u.list()) * G` is `(-11, -6, -3, -6)`. Lifts of finite-quadratic-module elements (`x.lift()`) are such elements. Probe: sage-indefinite-port `.tmp/probe/submul.py`. Route chosen: `hermitian_miranda_morrison._ambient` reads lifts as ambient rational vectors before any product.
+Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`): `V = (QQ**4).span([e_i/3], ZZ)`, `u = V([0, 1/3, 0, 2/3])`, `G` the integer Gram matrix of sage-indefinite-port centralizer case `oscar_lattices_with_isometry_110`: `u * G` is `(-51, -27, -12, -27)` while `vector(QQ, u.list()) * G` is `(-11, -6, -3, -6)`. Lifts of finite-quadratic-module elements (`x.lift()`) are such elements.
+Probe: sage-indefinite-port `.tmp/probe/submul.py`. Route chosen: `hermitian_miranda_morrison._ambient` reads lifts as ambient rational vectors before any product.
 
 ### Sage's `Matrix_cyclo_dense` returns stale products after in-place row operations
 
-Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`): for `S`, `F` 3x3 over `CyclotomicField(4)`, after one product `S * F`, `S.set_row(1, S.row(1) - (zeta4/3) * S.row(0))` leaves `S * F` different from `matrix(E, 3, 3, S.list()) * F` (row 1 of the product is the old one), while `S.list()` and `S.row(1)` are updated. The same matrix in `MatrixSpace(E, 3, 3, implementation="generic")` gives the correct product. Probe: sage-indefinite-port `.tmp/probe/cyclo_bug2.py`. Route chosen: `hermitian_miranda_morrison` mutates only generic matrices (`copy_matrix`, `_mutable_matrix`).
+Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`): for `S`, `F` 3x3 over `CyclotomicField(4)`, after one product `S * F`, `S.set_row(1, S.row(1) - (zeta4/3) * S.row(0))` leaves `S * F` different from `matrix(E, 3, 3, S.list()) * F` (row 1 of the product is the old one), while `S.list()` and `S.row(1)` are updated.
+The same matrix in `MatrixSpace(E, 3, 3, implementation="generic")` gives the correct product.
+Probe: sage-indefinite-port `.tmp/probe/cyclo_bug2.py`. Route chosen: `hermitian_miranda_morrison` mutates only generic matrices (`copy_matrix`, `_mutable_matrix`).
 
 ### Sage's `PointConfiguration(..., projective=True)` accepts only points with last coordinate one
 
