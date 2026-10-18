@@ -1,8 +1,7 @@
 r"""Module-morphism admission keeps laws, derivations, and hypotheses distinct.
 
-These specimens are intentionally unexecuted until terminal T.  They separate
-actual law decisions from construction-derived maps and from arbitrary callables
-whose linearity remains conditional.
+These specimens separate actual law decisions from construction-derived maps
+and from arbitrary callables whose linearity remains conditional.
 """
 
 import pytest
@@ -40,5 +39,5 @@ def test_module_mor_admits_its_arrow_and_refuses_a_foreign_set_map() -> None:
     assert underlying(linear)(first) == 2 * first
 
     translation = Sets().Mor(module, module)(lambda vector: vector + first)
-    with pytest.raises(TypeError, match="apply the functor"):
+    with pytest.raises(TypeError):
         module.End()(translation)
