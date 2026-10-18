@@ -123,10 +123,11 @@ These are the research obligations in handoff ranks 1 and 2. The [boundary assig
   **Acceptance:** `Lattices(QQ)(2).minimum()` reaches the frontier and `Lattices(ZZ)(2).minimum()` stays 1. Retain execution under T.
   **Closure:** `definite_lattices._minimum` admits only finite definite lattices over `ZZ`; its `shortest_vectors()` and Voronoi-perfection consumers reach the same frontier. The focused integral/rational line specimen passes at `d5e6dd2b92`.
 
-- [ ] **`rational-indefinite-orthogonal-groups-are-not-the-port-integral-group`**. **Needs:** none.
+- [x] **`rational-indefinite-orthogonal-groups-are-not-the-port-integral-group`**. **Needs:** none.
   **Owner and delta:** `LatticeIsometryMor._computed_group_generators` and `_cardinality_decision` (`categories/lattice_morphisms.py`), indefinite branch. They pass every indefinite lattice, whatever its base ring, to the port's `automorphism_group_generators(Lattices(R), L)`, whose assigned algorithm is the indefinite O(L) of an integral lattice. Route the port call by base ring ZZ; an indefinite lattice over another base ring reaches the stated `CAT-01` frontier.
   **Cited violation:** `AGENTS.md`, *Concrete boundary with sage-indefinite-port* (the port implements "recursive indefinite O(L)" of integral lattices), and `DEV-51` ("a finite group image is not the group"): for a QQ-lattice the group is O(V). Specimen: `Lattices(QQ)("U").O().group_generators()` routes to the port with `Lattices(QQ)` (source reading), while O(U tensor QQ) contains diag(2, 1/2), which preserves no integral span of the chosen basis. Searched: `CAT-01`, `OWN-08`, `ENG-09`; none sanctions sending a rational space to an integral algorithm. See COMPLAINTS.md, *Indefinite QQ-lattices reach the port's integral orthogonal-group algorithm*.
   **Acceptance:** `Lattices(QQ)("U").O().group_generators()` and `.cardinality()` reach the frontier without calling the port; `Lattices(ZZ)("U").O().cardinality()` stays 4. Retain execution under T.
+  **Closure:** the indefinite generator route asserts the integral `ZZ` hypothesis before importing the port. The focused specimen retains the rational dilation `diag(2,1/2)`, refuses rational generator/cardinality computation, and obtains `|O(U)|=4` over `ZZ` at `9caa3a7a10`.
 
 
 - [ ] **`port-isotropic-action-maps`**. **Needs:** `port-group-primitives-with-generators`.

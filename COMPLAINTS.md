@@ -1634,12 +1634,6 @@ Finiteness of O(L) for definite L is a statement about ZZ-lattices (`orthogonalG
 **Request (not yet filed).** `lean-categories` states: for a nondegenerate (in particular definite) quadratic space V over QQ with dim V >= 2, O(V) is infinite and countable. No source has been opened; open one before filing (`FSA-06`). When it is released, `_cardinality_decision` can route `aleph_0` on it.
 Specimens: `tests/lattices/test_rational_definite_orthogonal_groups.sage`, unexecuted under T.
 
-## Indefinite QQ-lattices reach the port's integral orthogonal-group algorithm
-
-`LatticeIsometryMor._computed_group_generators` and `_cardinality_decision` send every indefinite lattice of finite rank, whatever its base ring, to `sage_indefinite_port.indefinite.marked_lattices.automorphism_group_generators(Lattices(R), L)`. The port's assigned algorithm is the recursive indefinite O(L) of an integral lattice (`AGENTS.md`, *Concrete boundary with sage-indefinite-port*). For a QQ-lattice the group is O(V) of the quadratic space: O(U tensor QQ) contains diag(2, 1/2), which preserves no integral span of the chosen basis.
-Evidence: source routing only (`lattice_morphisms.py`, `_computed_group_generators`, the `else` branch); what the port does on a QQ-lattice was not run.
-**Node.** `rational-indefinite-orthogonal-groups-are-not-the-port-integral-group`.
-
 ## The dual lattice of a unimodular lattice has integer norms without the field-element interface
 
 **Observed.** For L with Gram ((-4, 1), (1, 0)) (unimodular), `_descended_quadratic_gram(L.dual_lattice(), ...)` raises `AttributeError: ... has no attribute 'underlying_element'` at `dual_lattice.norm(...).underlying_element()`: the norms of `L.dual_lattice()` are elements of the integers, while for non-unimodular L they are elements of Res(K) carrying `underlying_element`. The two cases of L^# do not present one element interface for the same operation.
