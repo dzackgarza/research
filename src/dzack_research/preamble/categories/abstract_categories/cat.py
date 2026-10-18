@@ -197,6 +197,14 @@ class Cat(CategoryPacketMethods, Category):
             )
         return second * first
 
+    def SliceOver(self, base_object: Category) -> Category:
+        r"""Return the slice ``Cat/base_object``."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+            SliceCategory,
+        )
+
+        return SliceCategory(self, base_object)
+
     class ParentMethods:
         r"""What a category can do, as an object of ``Cat``.
 
