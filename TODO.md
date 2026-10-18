@@ -9,7 +9,7 @@ The wider M1–M5 programme remains required under its existing contracts.
 
 | Rank | Select from these unfinished obligations | Required result |
 | --- | --- | --- |
-| 1 | `realization-methods-reach-their-category-operations`, then `foreign-arrow-constructor-boundary` | Actual categories retain chosen functors and category operations; ordinary and higher arrows use the shared Mor boundary throughout the affected consumers. |
+| 1 | `foreign-arrow-constructor-boundary` | Ordinary and higher arrows use the shared Mor boundary throughout the affected consumers. |
 | 2 | `fresh-preamble-import-within-budget` first, then the remaining [immediate repairs](#immediate-priority-repairs) and the port computations under [resumed handoff delivery](#resumed-handoff-delivery) | The unchanged import gate admits execution; supplied-data primitives, labels, centralizers, radical actions, construction cost and port algorithms meet their stated contracts. |
 | 3 | `terminal-session`, `port-handoff-frozen-acceptance` and `resumed-handoff-delivery`, including their unfinished prerequisites | Full required research and port execution, review and publication hold at the integrated source revisions. |
 
