@@ -444,6 +444,10 @@ class FormedModuleMorphism:
     def map_value(self, value):
         return _mapped_value(self.domain(), self.codomain(), self.value_morphism(), value)
 
+    def is_injective(self) -> bool:
+        r"""Return injectivity of the retained underlying-module component."""
+        return self.module_morphism().is_injective()
+
     def preserves_forms(self) -> bool | Predicate:
         r"""Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on the module generators.
 
@@ -497,6 +501,10 @@ class FormedModuleMorphism:
                 f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
                 f"is not the domain {self.domain()} of {self}"
             )
+        if getattr(self, "_preamble_fibered_formed_identity", False):
+            return other
+        if getattr(other, "_preamble_fibered_formed_identity", False):
+            return self
         if self.parent().identity() is self:
             return other
         if other.parent().identity() is other:
@@ -1090,6 +1098,7 @@ class FiberedFormedModuleMor(CategoricalMor):
         return morphism
 
     @object_level
+    @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
@@ -1120,7 +1129,9 @@ class FiberedFormedModuleMor(CategoricalMor):
                 for label in source_values.module_generating_set()
             }
         )
-        return self((module_map, value_map))
+        identity = self((module_map, value_map))
+        identity._preamble_fibered_formed_identity = True
+        return identity
 
 
 def _value_module_of(value_object):
