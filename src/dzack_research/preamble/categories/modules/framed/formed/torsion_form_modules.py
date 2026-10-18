@@ -289,7 +289,7 @@ def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
     inverse_component = inverse.module_morphism() if isinstance(inverse, FormedModuleMorphism) else inverse
     formed_forward = category.Mor(source, target)((forward_component, value_identity))
     formed_inverse = category.Mor(target, source)((inverse_component, value_identity))
-    return category.Core().Mor(source, target)((formed_forward, formed_inverse))
+    return category.Iso(source, target)((formed_forward, formed_inverse))
 
 
 def _representative_gram(form, *, quadratic: bool):
