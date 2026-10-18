@@ -1999,10 +1999,16 @@ def _S(points):
         case _ if points in Sets():
             return _symmetric_group(points)
         case _:
-            assert points in ZZ and points >= 0, (
+            try:
+                size = ZZ(points)
+            except (TypeError, ValueError):
+                raise AssertionError(
+                    f"Groups.S takes a finite set or a number n >= 0 of points, but got {points!r}"
+                ) from None
+            assert size >= 0, (
                 f"Groups.S takes a finite set or a number n >= 0 of points, but got {points!r}"
             )
-            return _symmetric_group(_standard_symmetric_points(int(points)))
+            return _symmetric_group(_standard_symmetric_points(int(size)))
 
 
 def _general_linear_group(ring, degree, var="a"):

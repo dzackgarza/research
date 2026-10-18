@@ -171,7 +171,10 @@ class Cat(CategoryPacketMethods, Category):
         domain: Category,
         codomain: Category,
     ) -> _FunctorCategory:
-        return self.Mor(self.object(domain), self.object(codomain))
+        return self.MorCategory().Of(
+            self.object(domain),
+            self.object(codomain),
+        )
 
     def arrow(self, functor: Functor) -> Functor:
         key = id(functor)
