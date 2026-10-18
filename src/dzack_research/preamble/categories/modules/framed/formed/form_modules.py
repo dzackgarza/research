@@ -429,6 +429,11 @@ class FormedModuleMorphism:
         values = value_morphism.domain()
         if value_morphism.codomain() is not values:
             return False
+        if (
+            hasattr(value_morphism, "is_identity")
+            and value_morphism.is_identity() is True
+        ):
+            return True
         if value_morphism.parent().identity() is value_morphism:
             return True
         identity = values.module_category().Mor(values, values).identity()
@@ -909,6 +914,11 @@ class FiberedFormedModuleMorphism:
         values = value_morphism.domain()
         if value_morphism.codomain() is not values:
             return False
+        if (
+            hasattr(value_morphism, "is_identity")
+            and value_morphism.is_identity() is True
+        ):
+            return True
         if value_morphism.parent().identity() is value_morphism:
             return True
         identity = values.module_category().Mor(values, values).identity()
