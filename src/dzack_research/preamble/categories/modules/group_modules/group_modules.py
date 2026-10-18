@@ -950,6 +950,10 @@ class GroupModuleMorphismMethods(ModuleMorphismMethods):
         r"""Initialize the actual equivariant Mor, not a scalar-extension map."""
         Morphism.__init__(self, parent)
 
+    def __call__(self, element):
+        r"""Evaluate through the retained coefficient-module morphism."""
+        return self._call_(element)
+
     def __init__(
         self,
         parent,
