@@ -11,6 +11,7 @@ from sage.structure.richcmp import op_EQ
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
+    MorCategories,
     MorCategoryConstruction,
     MonoCategoryConstruction,
     _category_mor_parent,
@@ -428,6 +429,8 @@ class FormedModuleMorphism:
         values = value_morphism.domain()
         if value_morphism.codomain() is not values:
             return False
+        if value_morphism.parent().identity() is value_morphism:
+            return True
         identity = values.module_category().Mor(values, values).identity()
         if value_morphism is identity:
             return True
@@ -885,6 +888,14 @@ class FiberedFormedModuleMorphism:
     def value_morphism(self):
         return self._value_morphism
 
+    def module_morphism(self):
+        r"""Return the retained module component of the defining pair."""
+        return self._form_module_morphism
+
+    def underlying_semilinear_morphism(self):
+        r"""Return this arrow with only its semilinear module structure read."""
+        return self
+
     def __eq__(self, other) -> bool | Predicate:
         r"""Compare both the semilinear and value components of a formed pair."""
         if not isinstance(other, FiberedFormedModuleMorphism):
@@ -1012,6 +1023,7 @@ class FiberedFormedModuleMor(CategoricalMor):
             FormModules(domain.base_ring()).MorCategory(),
             domain,
             codomain,
+            category=MorCategories(),
         )
 
     def ring_map(self):
@@ -1747,7 +1759,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             target = module_morphism.codomain()
             if target is self.unformed_module():
                 target = self
-            return self.Mor(target)(
+            return FormModules(self.base_ring()).Mor(self, target)(
                 (module_morphism, value_morphism)
             )
 

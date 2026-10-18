@@ -397,6 +397,10 @@ class LatticeMorphismMethods:
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
+        if self.parent().identity() is self:
+            return other
+        if other.parent().identity() is other:
+            return self
         source = other.domain()
         return source.Mor(self.codomain())(lambda label: self(other(source.module_generator(label))))
 
