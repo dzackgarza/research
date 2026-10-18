@@ -201,3 +201,26 @@ def test_two_u_eichler_model_can_wrap_existing_biproduct_without_rebuilding() ->
     assert model.first_hyperbolic_plane() is lattice.biproduct_factor(0)
     assert model.second_hyperbolic_plane() is lattice.biproduct_factor(1)
     assert model.orthogonal_complement().module_rank() == ZZ.zero()
+
+
+def test_two_u_eichler_model_retains_every_remaining_biproduct_factor() -> None:
+    first_complement = Lattices(ZZ)("A1")
+    second_complement = Lattices(ZZ)("A2")
+    lattice = (
+        Lattices(ZZ)("U")
+        + Lattices(ZZ)("U")
+        + first_complement
+        + second_complement
+    )
+    model = lattice.two_u_eichler_model_from_represented_biproduct()
+    complement = model.orthogonal_complement()
+    inclusion = model.complement_inclusion()
+
+    assert complement.module_rank() == first_complement.module_rank() + second_complement.module_rank()
+    assert inclusion.domain() is complement
+    assert inclusion.codomain() is lattice
+    assert tuple(inclusion(generator) for generator in complement.module_generators()) == tuple(
+        lattice.injection(index)(generator)
+        for index in (2, 3)
+        for generator in lattice.biproduct_factor(index).module_generators()
+    )
