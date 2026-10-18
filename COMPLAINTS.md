@@ -1634,14 +1634,6 @@ Finiteness of O(L) for definite L is a statement about ZZ-lattices (`orthogonalG
 **Request (not yet filed).** `lean-categories` states: for a nondegenerate (in particular definite) quadratic space V over QQ with dim V >= 2, O(V) is infinite and countable. No source has been opened; open one before filing (`FSA-06`). When it is released, `_cardinality_decision` can route `aleph_0` on it.
 Specimens: `tests/lattices/test_rational_definite_orthogonal_groups.sage`, unexecuted under T.
 
-## The minimum of a definite QQ-lattice is computed on its integral span
-
-For a definite lattice L of finite rank over ZZ, min{q(v) : v != 0} is attained and its shell is finite. Over QQ the space V = <1> + <1> has q((1/n) e_0) = 1/n^2, so the infimum over nonzero vectors is 0 and is not attained.
-`definite_lattices._minimum` (read by `minimum()`) hands the Gram matrix to Sage's `IntegralLattice(...).minimum()` for any definite lattice, so for `Lattices(QQ)(2)` it answers 1, the minimum of the integral span of the chosen basis (source reading, not executed).
-`shortest_vectors()` (`vectors_of_square(minimum())`) therefore returns, over QQ, the complete fibre at the wrong value 1, which is not a set of shortest vectors (there are none), and `is_voronoi_perfect` reads `shortest_vectors()`.
-Same false belief as the entry above ("definite implies the integral-span computation is the answer, whatever the base ring").
-**Node.** `rational-definite-minima-are-not-integral-minima`.
-
 ## Indefinite QQ-lattices reach the port's integral orthogonal-group algorithm
 
 `LatticeIsometryMor._computed_group_generators` and `_cardinality_decision` send every indefinite lattice of finite rank, whatever its base ring, to `sage_indefinite_port.indefinite.marked_lattices.automorphism_group_generators(Lattices(R), L)`. The port's assigned algorithm is the recursive indefinite O(L) of an integral lattice (`AGENTS.md`, *Concrete boundary with sage-indefinite-port*). For a QQ-lattice the group is O(V) of the quadratic space: O(U tensor QQ) contains diag(2, 1/2), which preserves no integral span of the chosen basis.
