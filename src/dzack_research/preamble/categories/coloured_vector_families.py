@@ -288,9 +288,7 @@ class _ColouredFamilyRealization:
                 for label in rational.module_generating_set()
             })
 
-        rho = automorphisms.Mor(orthogonal)({
-            generator: realization(generator) for generator in automorphisms.group_generators()
-        })
+        rho = automorphisms.Mor(orthogonal)(realization)
         return rho.image()
 
     @cached_method
