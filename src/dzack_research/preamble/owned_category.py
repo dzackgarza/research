@@ -1774,7 +1774,11 @@ class OwnedCategoryObject:
         CategoryObject._init_category_(self, _cat())
 
     def category(self) -> Category:
-        return getattr(self, "_category", _cat())
+        return getattr(
+            self,
+            "_structured_category",
+            getattr(self, "_category", _cat()),
+        )
 
 
 @cached_function
@@ -1814,6 +1818,7 @@ def _category_structure_realization(
             args,
             dict(keywords),
         )
+        structured._structured_category = _structured_category
         CategoryObject._init_category_(structured, _structured_category)
 
     initialize._retains_owned_category_call = True
