@@ -3955,6 +3955,13 @@ class GroupMor(_GroupMorRealizationMixin, CategoricalMor):
         morphism.validate_homomorphism(check=check)
         return morphism
 
+    def _an_element_(self):
+        r"""Return the trivial homomorphism, from its selected generator images."""
+        domain = self.domain()
+        if not domain.has_selected_group_resolution():
+            return self._from_elementwise_rule(lambda _element: self.codomain().one())
+        return self({generator: self.codomain().one() for generator in domain.group_generators()})
+
     def _element_constructor_(self, images, *, check=False, **_options):
         match images:
             case dict():
@@ -5191,8 +5198,18 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
         def group_generator_morphism(self):
             return self.selected_group_resolution().generator_morphism()
 
-        def group_generator(self, label):
-            return self.selected_group_resolution().generator(label)
+        def group_generator(self, *labels):
+            r"""Return a selected generator by label, or the unique one when unambiguous."""
+            if len(labels) == 1:
+                return self.selected_group_resolution().generator(labels[0])
+            if labels:
+                raise TypeError("group_generator takes at most one label")
+            generators = self.group_generators()
+            if generators.cardinality() != cardinal(1):
+                raise TypeError(
+                    f"{self} has {generators.cardinality()} selected group generators; give a label"
+                )
+            return next(iter(generators))
 
         def group_generators(self):
             return self.selected_group_resolution().generators(

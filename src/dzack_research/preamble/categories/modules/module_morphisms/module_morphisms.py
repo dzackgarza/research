@@ -3490,6 +3490,17 @@ class ModuleAutomorphismGroup(CoreMor):
         if isinstance(datum, ModuleAutomorphismMethods):
             if datum.parent() is self:
                 return datum
+        module = self.domain()
+        module_endomorphisms = module.module_category().Mor(module, module)
+        if (
+            isinstance(datum, ModuleMorphismMethods)
+            and datum.parent() is module_endomorphisms
+        ):
+            # The forward module map is the immediate defining component of
+            # an automorphism.  It is admitted only from this exact module
+            # endomorphism Mor; arbitrary arrows with the same endpoints do
+            # not acquire invertibility by crossing the constructor boundary.
+            return self._from_inverse_computation(datum, datum.inverse)
         if isinstance(datum, (Morphism, CategoricalArrow)):
             # An endomorphism of End_R(M), or any other arrow, is not an
             # automorphism: almost none is invertible (``CON-17``).
@@ -3498,7 +3509,6 @@ class ModuleAutomorphismGroup(CoreMor):
             )
         if isinstance(datum, tuple) and len(datum) == 2 and all(isinstance(part, (Morphism, CategoricalArrow)) for part in datum):
             return self._from_known_inverse_pair(*datum)
-        module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
         return self._from_inverse_computation(forward, forward.inverse)
 

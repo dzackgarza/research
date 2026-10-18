@@ -270,7 +270,23 @@ class MultiplicativeAlgebraMorphism:
         source = other.domain()
         forget = algebras.underlying_module()
         category = Cat().join((left_category, right_category))
-        return category.Mor(source, self.codomain())(forget(self) * forget(other))
+        mor = category.Mor(source, self.codomain())
+        left_linear = forget(self)
+        right_linear = forget(other)
+        if isinstance(mor, UnitalMultiplicativeAlgebraMor):
+            equations = [self.is_multiplicative(), other.is_multiplicative()]
+            if hasattr(self, "preserves_unit") and hasattr(other, "preserves_unit"):
+                equations.extend((self.preserves_unit(), other.preserves_unit()))
+            return mor._from_constructed_element_map(
+                lambda element: self(other(element)),
+                linearity_premises=(left_linear, right_linear),
+                equations=equations,
+            )
+        # The root algebra Mor has no unital construction supplier.  Its
+        # defining datum is the already-composed linear map; enter it at the
+        # algebra arrow type rather than redispatching that whole module arrow
+        # through the public constructor boundary.
+        return mor.element_class(mor, left_linear * right_linear)
 
 
 class MultiplicativeAlgebraMor(CategoricalMor):
