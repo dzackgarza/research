@@ -10,7 +10,9 @@ def linearizations():
     swap = ProjectiveLines(QQ)(line).coordinate_swap_action()
     group = swap.acting_group()
     trivial_character = group.trivial_character()
-    sign_character = next(chi for chi in group.characters() if chi != trivial_character)
+    sign_character = next(
+        chi for chi in group.irreducible_characters() if chi != trivial_character
+    )
     trivial = bundle.linearize(swap, trivial_character)
     sign = bundle.linearize(swap, sign_character)
     involution = next(g for g in group if g != group.one())
