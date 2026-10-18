@@ -23,6 +23,7 @@ from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
+    CoreMor,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -223,9 +224,53 @@ class TorsionFormIsometry(CategoricalIsomorphism):
     def is_quadratic(self) -> bool:
         return self._quadratic
 
+    def is_isomorphism(self) -> bool:
+        r"""Return ``True``: membership in this Core Mor carries the inverse pair."""
+        return True
+
     def inverse_morphism(self):
         r"""Return the underlying inverse module morphism."""
         return self._inverse_morphism()
+
+
+class TorsionFormIsometryMor(CoreMor):
+    r"""The Core Mor of isometries between two finite torsion forms."""
+
+    Element = TorsionFormIsometry
+
+    def __init__(self, family, domain, codomain) -> None:
+        self._quadratic = bool(family.quadratic)
+        super().__init__(family, domain, codomain)
+
+    def _element_constructor_(self, forward, inverse=None, *, check=False):
+        if isinstance(forward, TorsionFormIsometry) and inverse is None:
+            if forward.parent() is self:
+                return forward
+            raise TypeError(
+                f"{forward} belongs to another Mor; apply the functor between the categories"
+            )
+        if inverse is None:
+            forward, inverse = forward
+        self._require_base_morphisms(forward, inverse)
+        return self.element_class(
+            self,
+            forward,
+            inverse,
+            quadratic=self._quadratic,
+            check=check,
+        )
+
+    def _from_known_inverse_pair(self, forward, inverse):
+        self._require_base_morphisms(forward, inverse)
+        return self.element_class(
+            self,
+            forward,
+            inverse,
+            quadratic=self._quadratic,
+        )
+
+    def _from_inverse_computation(self, forward, inverse_computation):
+        return self._from_known_inverse_pair(forward, inverse_computation())
 
 
 def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
@@ -1498,6 +1543,9 @@ class _TorsionFormIsoCategoryConstruction(IsoCategoryConstruction):
     r"""Finite torsion-form isometries with maintained orthogonal groups on the diagonal."""
 
     quadratic = False
+
+    def fixed_category_class(self):
+        return TorsionFormIsometryMor
 
     def Of(self, domain, codomain=None):
         if codomain is None:
