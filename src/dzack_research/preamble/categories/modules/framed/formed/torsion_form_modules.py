@@ -1347,6 +1347,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         source = category.Core().Mor(self.domain(), self.domain())
         return OwnedGroups().Mor(source, self)(self._normalized_form_automorphism)
 
+    def normalization_homomorphism(self):
+        r"""Return the group homomorphism from the form Core to this finite realization."""
+        return self._normalization_homomorphism()
+
     def from_morphism(self, morphism):
         r"""Apply the normalization homomorphism to an automorphism of the formed-module core."""
         homomorphism = self._normalization_homomorphism()
