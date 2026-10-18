@@ -1579,6 +1579,18 @@ class Modules(OwnedCategoryOverBaseRing):
 
         def linear_combination(self, coefficients):
             r"""Return the linear combination of the selected module generators."""
+            return self._linear_combination_from_generator_coefficients(coefficients)
+
+        @RealizationHook
+        def _linear_combination_from_generator_coefficients(self, coefficients):
+            r"""Realize the selected augmentation on a finite coefficient mapping.
+
+            Protected computation of ``Modules.linear_combination`` (OWN-05).
+            That operation is the only caller. Keys are the selected generator
+            labels, values are scalars, and the result belongs to this module
+            and equals their linear combination. A realization may fuse this
+            evaluation; the general formula needs no extra hypotheses.
+            """
             return sum(
                 (
                     self.scalar_multiple(
@@ -3066,7 +3078,7 @@ class Modules(OwnedCategoryOverBaseRing):
     class Torsion(CategoryWithAxiom):
         r"""Modules whose generic fibre vanishes."""
 
-        _certifying_predicate = "is_torsion"
+        _certifying_predicate = "_torsion_decision"
 
         def an_object(self):
             r"""The discriminant group of U, which is torsion."""
@@ -3152,6 +3164,53 @@ class LinearMorModules(OwnedCategoryOverBaseRing):
             recomputing a centre from its endpoints would change it.
             """
             return self._preamble_base_ring
+
+        def automorphism_action(self, source_action, target_action):
+            r"""The action on Hom(M,N) induced by supplied actions on M and N.
+
+            For ``a`` acting on M and ``b`` on N, the action is
+            ``t |-> b ∘ t ∘ a^(-1)``. Addition on Hom is written
+            multiplicatively by its existing GroupExp identification, so
+            the result is a group morphism ``G x H -> Aut(exp(Hom))``.
+            This is the Hom bifunctor on automorphisms; composing this
+            action with the group owner's semidirect product gives the
+            split radical extension when N is the radical of M ⊕ N.
+            """
+            from dzack_research.preamble.categories.group.groups import OwnedGroups
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            source, target = self.domain(), self.codomain()
+            assert source_action.codomain().domain() is source
+            assert source_action.codomain().codomain() is source
+            assert target_action.codomain().domain() is target
+            assert target_action.codomain().codomain() is target
+            product = OwnedGroups().product_construction((source_action.domain(), target_action.domain()))
+            factors = product.object()
+            shape = product.diagram().domain()
+            source_projection = product.structure_morphism(shape(0))
+            target_projection = product.structure_morphism(shape(1))
+            exponential = self.multiplicative_group_identification()
+            normal = exponential.codomain()
+            logarithm = exponential.inverse()
+            automorphisms = normal.Aut()
+
+            def induced(pair):
+                a = source_action(source_projection(pair))
+                b = target_action(target_projection(pair))
+
+                forward_action = (~a).internal_mor_map(
+                    b, source_internal_mor=self, target_internal_mor=self
+                )
+                inverse_action = a.internal_mor_map(
+                    ~b, source_internal_mor=self, target_internal_mor=self
+                )
+                forward = normal.Mor(normal).elementwise(lambda element: exponential(forward_action(logarithm(element))))
+                inverse = normal.Mor(normal).elementwise(lambda element: exponential(inverse_action(logarithm(element))))
+                return automorphisms(forward, inverse)
+
+            if self.base_ring() is _owned_integers() and self.has_selected_module_resolution() and self.module_generating_set() in Sets().Finite():
+                normal.select_group_generators(lambda: finite_ordered_set(tuple(exponential(t) for t in self.module_generators())))
+            return factors.Mor(automorphisms).elementwise(induced)
 
         def source_module(self):
             return self.domain()
@@ -4299,6 +4358,10 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
             r"""Return this element read in ``M``."""
             return self._underlying_element
 
+        def __hash__(self):
+            r"""Restriction of scalars retains the underlying element's hash."""
+            return hash(self._underlying_element)
+
         def _add_(self, other):
             return self.parent().element_class(
                 self.parent(),
@@ -4960,6 +5023,7 @@ class TensorProductModules(OwnedCategoryOverBaseRing):
 
             return TensorProductModuleMor
 
+        @cached_method
         def tensor_factors(self):
             r"""Return the family of factors, indexed by the product's own index set."""
 
@@ -6169,8 +6233,14 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 )
             return result
 
+        @cached_method
         def smith_form(self):
-            r"""Return the named product ``(D,U,V)`` from invariant-factor presentation normalization."""
+            r"""Return the named product ``(D,U,V)`` from invariant-factor presentation normalization.
+
+            The comparison maps belong to this fixed morphism. Retain them
+            across integral-preimage requests instead of normalizing the same
+            presentation for every right-hand side.
+            """
 
             ring = self.parent().base_ring()
             assert ring in PrincipalIdealDomains(), (
@@ -6362,7 +6432,7 @@ def _matrix_index(index_set, key):
 
 
 def _engine_matrix(morphism):
-    r"""Privately materialize one matrix-Mor element in Sage, in one engine call.
+    r"""Privately materialize the selected framed realization in one engine call.
 
     Column ``s`` is the coordinate vector of the image of ``e_s``, read once
     in row-label order; the rows of the engine matrix are read off those
@@ -6370,6 +6440,7 @@ def _engine_matrix(morphism):
     """
     from sage.matrix.constructor import matrix as sage_matrix
 
+    morphism = morphism._framed_coordinate_morphism()
     parent = _require_matrix_mor(morphism.parent())
     if parent not in MatrixSpaces(parent.base_ring()):
         raise TypeError(

@@ -11,6 +11,7 @@ from sage.misc.cachefunc import cached_method
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 # The marker every owned category base carries, axiom categories included.
 # Re-exported so the Mor packet can recognize one without reaching past this
 # module into the bases it is built from.
@@ -143,7 +144,7 @@ class OwnedCategory(OwnedCategoryBase):
         category whose objects are arrows states its own membership.
         """
         match value:
-            case Map():
+            case Map() | CategoricalArrow():
                 return False
             case _:
                 return super().__contains__(value)
@@ -226,6 +227,15 @@ class Objects(OwnedCategory):
     ``Objects``/``Sets`` categories remain runtime substrate only and are not
     semantic ancestors of owned categories.
     """
+
+    def __contains__(self, value: Any) -> bool:
+        match value:
+            case Map() | CategoricalArrow():
+                from dzack_research.preamble.categories.abstract_categories.mor_categories import MorCategories
+
+                return value.parent() in MorCategories()
+            case _:
+                return super().__contains__(value)
 
     def an_object(self) -> ObjectOfCategory:
         r"""The set 2, which is an object like any other.

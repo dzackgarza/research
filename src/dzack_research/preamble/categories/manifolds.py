@@ -11,10 +11,10 @@ from itertools import combinations
 from sage.categories.category_with_axiom import all_axioms
 from sage.combinat.root_system.coxeter_group import CoxeterGroup
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
-from sage.manifolds.manifold import Manifold as _SageManifold
 from sage.matrix.constructor import matrix as _engine_matrix
 from sage.matrix.special import identity_matrix as _engine_identity_matrix
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.lazy_import import lazy_import
 from sage.rings.infinity import Infinity
 from sage.rings.qqbar import QQbar as SageQQbar
 from sage.structure.element import Element
@@ -54,6 +54,8 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.rings.real import RR
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
+
+lazy_import("sage.manifolds.manifold", "Manifold", as_="_SageManifold")
 
 for _manifold_axiom in ("GloballySymmetric", "BoundedSymmetric"):
     if _manifold_axiom not in all_axioms:

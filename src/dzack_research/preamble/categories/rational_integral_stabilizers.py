@@ -128,17 +128,12 @@ class _FiniteIntegralRepresentation(SageObject):
         self._submodules = [selected]
         self._positions = {self._submodule_key(selected): 0}
         self._registering_orbit = True
-        augmentation = self.generating_augmentation()
-        free = augmentation.domain()
         zero = _owned_integers().zero()
-        self._word_orbit = FiniteGSets(free).from_finite_orbits(
+        self._g_set = FiniteGSets(action.rational_group()).from_finite_orbits(
             (zero,),
-            lambda word, position: self._act_on_position(augmentation(word), position),
+            self._act_on_position,
         )
         self._registering_orbit = False
-        self._g_set = FiniteGSets(action.rational_group())(
-            self._word_orbit.point_set(), self._act_on_position
-        )
 
     def action(self):
         return self._action
@@ -178,26 +173,24 @@ class _FiniteIntegralRepresentation(SageObject):
         r"""The position of ``submodule`` among the orbit submodules found so far, or ``None``."""
         return self._positions.get(self._submodule_key(submodule))
 
-    def _move_submodule(self, group_element, submodule):
+    def _act_on_position(self, group_element, position):
         quotient = self.action().finite_module()
+        submodule = self._submodules[int(position)]
         automorphism = self.action().quotient_automorphism(group_element)
         inclusion = submodule.inclusion()
         images = tuple(
             automorphism(inclusion(submodule.module_generator(label)))
             for label in submodule.module_generating_set()
         )
-        return quotient.subobject_on(images)
-
-    def _act_on_position(self, group_element, position):
-        candidate = self._move_submodule(group_element, self._submodules[int(position)])
-        image_position = self._position_of(candidate)
+        image_key = quotient._submodule_key_from_generators(images)
+        image_position = self._positions.get(image_key)
         if image_position is None:
             assert self._registering_orbit, (
                 "the supplied rational action leaves its computed finite lattice orbit"
             )
             image_position = len(self._submodules)
-            self._submodules.append(candidate)
-            self._positions[self._submodule_key(candidate)] = image_position
+            self._submodules.append(quotient.subobject_on(images))
+            self._positions[image_key] = image_position
         return _owned_integers()(image_position)
 
     def orbit_submodules(self):

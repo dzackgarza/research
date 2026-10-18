@@ -61,6 +61,7 @@ from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalIsomorphism,
@@ -156,7 +157,7 @@ class _YonedaEmbedding(Functor):
         super().__init__(category, category.presheaves())
 
     def _apply_object(self, obj: Parent) -> ObjectOfCategory:
-        return self.codomain().object(_RepresentablePresheaf(self._category, obj))
+        return self.codomain()(_RepresentablePresheaf(self._category, obj))
 
     def _apply_morphism(self, morphism: Map) -> Map:
         r"""Postcomposition with ``h: X -> Y``, natural in the argument."""
@@ -207,7 +208,7 @@ class _PresheafTransport(Functor):
         return self._opposite_site_functor.then(presheaf).then(self.value_functor())
 
     def _apply_object(self, obj: Parent) -> ObjectOfCategory:
-        return self.codomain().object(self._transport_presheaf(obj.functor()))
+        return self.codomain()(self._transport_presheaf(obj.functor()))
 
     def _apply_morphism(self, morphism: Map) -> Map:
         transformation = morphism.transformation()
@@ -604,7 +605,7 @@ def _covering_family(category: Category, target: Parent, members, overlaps, *, _
         )
     for arrow in family:
         match arrow:
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 pass
             case _:
                 raise TypeError(

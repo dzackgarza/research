@@ -14,9 +14,9 @@ from sage.structure.element import parent
 from sage.structure.parent import Parent
 from sage.structure.sage_object import SageObject
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.cat import (
     Cat,
-    CategoryFunctorMorphism,
     _FunctorCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
@@ -90,19 +90,6 @@ class _DiagramCategory(_FunctorCategory):
             r"""Return the diagram image of one represented indexing arrow."""
             return self.functor()(morphism)
 
-        def Cones(self):
-            r"""Return the common cone category over this diagram's defining functor."""
-            return self.functor().Cones()
-
-        def Cocones(self):
-            r"""Return the common cocone category under this diagram's defining functor."""
-            return self.functor().Cocones()
-
-        def restrict(self, indexing_functor):
-            r"""Precompose by ``indexing_functor`` and retain that map in the general diagram owner."""
-            restricted = self.functor().restrict(indexing_functor)
-            category = Cat().Mor(indexing_functor.domain(), self.target_category())
-            return category.object(restricted)
 
 
 class DirectedSystem(_DiagramCategory):
@@ -513,13 +500,7 @@ class FiniteSequenceDiagram(Functor):
 class _FiniteSequenceFunctorCategory(_FunctorCategory):
     r"""The canonical functor category on a finite ordinal, with its adjacent arrows."""
 
-    def object(
-        self,
-        functor: Functor | CategoryFunctorMorphism | tuple[Morphism, ...] | list[Morphism],
-        *,
-        _engine=None,
-        construction_data=None,
-    ):
+    def __call__(self, functor: Functor | tuple[Morphism, ...] | list[Morphism]):
         r"""Read a functor or its ordered family of consecutive arrows."""
         if isinstance(functor, (tuple, list)):
             transitions = tuple(functor)
@@ -537,7 +518,7 @@ class _FiniteSequenceFunctorCategory(_FunctorCategory):
                 )
             base = self.codomain_category()
             for transition in transitions:
-                if not isinstance(transition, Morphism) or not _category_accepts_morphism(
+                if not isinstance(transition, (Morphism, CategoricalArrow)) or not _category_accepts_morphism(
                     base, transition.domain(), transition.codomain(), transition
                 ):
                     raise TypeError(
@@ -548,13 +529,7 @@ class _FiniteSequenceFunctorCategory(_FunctorCategory):
                 if transitions else ()
             )
             functor = FiniteSequenceDiagram(objects, transitions, base)
-        return super().object(
-            functor,
-            _engine=_engine,
-            construction_data=construction_data,
-        )
-
-    __call__ = object
+        return super().__call__(functor)
 
     class ParentMethods:
         @cached_method
@@ -962,7 +937,7 @@ class ParallelFamilyDiagram(Functor):
             )
         reference = morphisms.value(morphisms.index_set().an_element())
         match reference:
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 pass
             case _:
                 raise TypeError(
@@ -1007,7 +982,7 @@ class ParallelFamilyDiagram(Functor):
             return _category_mor_parent(self.codomain(), image, image).identity()
         image = self.morphisms().value(morphism.label())
         match image:
-            case Morphism() if (
+            case Morphism() | CategoricalArrow() if (
                 image.domain() is self.source_object()
                 and image.codomain() is self.target_object()
                 and _category_accepts_morphism(
@@ -2024,7 +1999,7 @@ def _discrete_common_object_of_finite_family(category, factors, *, construction:
             f"the empty {construction} does not exist in {category}: it would be a {extremum} object, and a discrete "
             f"category has a {extremum} object exactly when it has one object"
         )
-    return family, category.object(object_set.an_element())
+    return family, category(object_set.an_element())
 
 
 def _discrete_product_construction(category, factors):

@@ -615,7 +615,10 @@ class RationalPolyhedralCones(OwnedParameterizedCategory):
                 f"pointed cone, and this cone contains the lines {self.lineality_generators()}"
             )
             lattice = self.ambient_lattice()
-            rows = [tuple(int(entry) for entry in ray.to_tuple()) for ray in self.primitive_rays()]
+            rows = [
+                tuple(int(ray.to_vector()(label)) for label in lattice.module_generating_set())
+                for ray in self.primitive_rays()
+            ]
             cone = SageCone(rows)
             return finite_ordered_set(tuple(_owned_vector(lattice, row) for row in cone.Hilbert_basis()))
 

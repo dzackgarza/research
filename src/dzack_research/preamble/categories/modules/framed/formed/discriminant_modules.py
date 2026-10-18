@@ -2,7 +2,6 @@ r"""Discriminant modules and their quotient-valued forms."""
 
 from math import lcm, prod
 
-import numpy
 from sage.categories.category import Category
 from sage.rings.integer import Integer
 from dzack_research.preamble.categories.modules.pure.modules import ModulesWithChosenFinitePresentation
@@ -696,6 +695,8 @@ def _isotropic_subgroups(ambient, quadratic):
 
     The subgroups are raised into ``ambient`` when they are asked for.
     """
+    import numpy
+
     unformed = ambient.unformed_module()
     smith_engine = unformed._smith_engine()
     assert smith_engine is not None, (

@@ -14,7 +14,8 @@ from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.element import parent
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.abstract_categories.cat import Cat, CategoryObject
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
@@ -183,6 +184,7 @@ class DiscreteCategory(OwnedCategory):
         def discrete_category(self) -> DiscreteCategory:
             return self.category()
 
+        @object_level
         def Mor(self, codomain):
             r"""Return the Mor in this discrete category to ``codomain``."""
             return self.discrete_category().Mor(self, codomain)
@@ -353,7 +355,7 @@ class _DiscreteFunctor(Functor):
                 f"not an arbitrary functor {domain} -> {codomain}"
             )
         match object_map:
-            case Morphism() if (
+            case Morphism() | CategoricalArrow() if (
                 object_map.domain() is not domain.object_set()
                 or object_map.codomain() is not codomain.object_set()
             ):
@@ -384,9 +386,6 @@ class ObjectSetFunctor(Functor):
         super().__init__(DiscreteCategories(), Sets())
 
     def _apply_object(self, category: Parent) -> Sets().ObjectType:
-        match category:
-            case CategoryObject():
-                category = category.represented_category()
         return category.object_set()
 
     def _apply_morphism(self, functor: Map) -> Map:

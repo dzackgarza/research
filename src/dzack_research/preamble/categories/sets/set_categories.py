@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterable
-from itertools import count
+from itertools import count, product
 from math import comb
 from operator import index as integer_index
 from typing import TYPE_CHECKING, Any, Self, SupportsIndex, TypeVar
@@ -41,6 +41,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoricalArrow,
     CategoryPacketMethods,
     _refuse_foreign_arrow,
 )
@@ -645,7 +646,7 @@ class OwnedSetMorphism(SetMorphism):
             # subgroup word or a subset-inclusion premise (OWN-09, OWN-14).
             return function(element, *args, **kwargs)
         if (
-            isinstance(function, Morphism)
+            isinstance(function, (Morphism, CategoricalArrow))
             and function.domain() is self.domain()
             and function.codomain() is self.codomain()
         ):
@@ -946,7 +947,7 @@ class OwnedSetMorphism(SetMorphism):
         composes: a composite of two group homomorphisms is a group
         homomorphism of the composite's endpoints.
         """
-        if not isinstance(other, Morphism) or other.codomain() is not self.domain():
+        if not isinstance(other, (Morphism, CategoricalArrow)) or other.codomain() is not self.domain():
             return NotImplemented
         if other.domain() is other.codomain() and other is other.parent().identity():
             return self
@@ -976,6 +977,28 @@ class SetMorCategory(CategoricalMor):
     """
 
     ElementMethods = OwnedSetMorphism
+
+    def __iter__(self):
+        r"""Enumerate functions between finite sets by their finite value tuples."""
+        assert Sets().is_provably_finite(self.domain()) and Sets().is_provably_finite(self.codomain()), (
+            f"enumerating every function in {self} requires finite endpoints"
+        )
+        source = tuple(self.domain())
+        target = tuple(self.codomain())
+        for values in product(target, repeat=len(source)):
+            if self.domain() is self.codomain() and all(
+                (left == right) is True for left, right in zip(source, values, strict=True)
+            ):
+                arrow = self.identity()
+            else:
+                arrow = self(lambda point, values=values: values[source.index(point)])
+            if arrow in self:
+                yield arrow
+
+    def _an_element_(self):
+        if self.domain() is self.codomain():
+            return self.identity()
+        return next(iter(self))
 
     def __init__(
         self,
@@ -1027,7 +1050,7 @@ class SetMorCategory(CategoricalMor):
         it.  An expression with no free variable or with several is not a
         map of one argument, and is rejected naming its variables.
         """
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
@@ -1215,13 +1238,6 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         return self.Mor(integers, integers)(
             _IntegerTranslationOnZZ(integers, displacement)
         )
-
-    def Mor(self, domain: Parent, codomain: Parent) -> SetMorCategory:
-        if domain not in self or codomain not in self:
-            raise TypeError(
-                f"a map of sets needs a set as domain and codomain, but got {domain} and {codomain}"
-            )
-        return _set_mor_category(domain, codomain)
 
     def Subobjects(self, base_object: Parent) -> Category:
         r"""Return the monomorphism subcategory of the slice over ``base_object``.
@@ -1431,7 +1447,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             labels = tuple(index_set)
             reference = morphisms.value(labels[0])
             match reference:
-                case Morphism():
+                case Morphism() | CategoricalArrow():
                     pass
                 case _:
                     raise TypeError(
@@ -1447,7 +1463,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
             for label in labels:
                 arrow = morphisms.value(label)
                 if not (
-                    isinstance(arrow, Morphism)
+                    isinstance(arrow, (Morphism, CategoricalArrow))
                     and arrow.domain() is source
                     and arrow.codomain() is target
                     and _category_accepts_morphism(self, source, target, arrow)
@@ -2318,12 +2334,12 @@ class Sets(CategoryPacketMethods, OwnedCategory):
         @object_level
         def End(self):
             r"""The endomorphisms in the category selected by this set's Mor."""
-            return Sets().End(self)
+            return self.ambient_category().End(self)
 
         @object_level
         def Aut(self):
             r"""The automorphisms of this set in its selected category."""
-            return Sets().Aut(self)
+            return self.ambient_category().Aut(self)
 
         def condition_set(self, predicate) -> Sets().ObjectType:
             r"""Return the represented subset of ``self`` cut out by ``predicate``."""
@@ -2370,6 +2386,7 @@ class Sets(CategoryPacketMethods, OwnedCategory):
                 )
             )
 
+        @cached_method
         def __pow__(self, exponent):
             r"""Return $X^n$, the product of the constant family over `Sets.Δ[n-1]`."""
             count = int(exponent)
@@ -2876,7 +2893,7 @@ class SetInjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""An injection given by a set map or a function on points; injectivity is its validator."""
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as an injection {self.domain()} -> {self.codomain()}: it is a map "
@@ -2956,7 +2973,7 @@ class SetSurjectionMor(SetMorCategory):
 
     def _element_constructor_(self, datum, *, check=False):
         r"""A surjection given by a set map or a function on points; surjectivity is its validator."""
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a surjection {self.domain()} -> {self.codomain()}: it is a map "
@@ -3114,7 +3131,7 @@ class PowerSets(OwnedCategory):
         ):
             r"""The subset classified by \(\chi\colon X\to\Delta[1]\): where \(\chi=1\)."""
             if not (
-                isinstance(characteristic_morphism, Morphism)
+                isinstance(characteristic_morphism, (Morphism, CategoricalArrow))
                 and _category_accepts_morphism(
                     Sets(), self.base_set(), self.truth_values(), characteristic_morphism
                 )
@@ -3154,7 +3171,7 @@ class PowerSets(OwnedCategory):
             subobjects = Sets().Subobjects(self.base_set())
             if candidate in subobjects:
                 return candidate
-            if isinstance(candidate, Morphism):
+            if isinstance(candidate, (Morphism, CategoricalArrow)):
                 if candidate.codomain() is not self.base_set():
                     raise ValueError(
                         f"{candidate} is a map into {candidate.codomain()}, so it is not a subset of {self.base_set()}"
@@ -3196,7 +3213,7 @@ class PowerSets(OwnedCategory):
                     from dzack_research.preamble.logic import conjunction
 
                     return conjunction(base.is_parent_of(point) for point in candidate)
-                case _ if isinstance(candidate, Morphism):
+                case _ if isinstance(candidate, (Morphism, CategoricalArrow)):
                     return Sets().Subobjects(base).admits_arrow(candidate)
                 case _:
                     return False

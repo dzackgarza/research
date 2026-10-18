@@ -29,7 +29,6 @@ if TYPE_CHECKING:
 from sage.arith.misc import gcd
 from sage.misc.abstract_method import abstract_method
 from sage.combinat.root_system.cartan_type import CartanType
-from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
@@ -2690,11 +2689,24 @@ class Lattices(OwnedCategoryOverBaseRing):
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
 
-            return self.Aut().predicate_subgroup(
+            orthogonal = self.Aut()
+            special = orthogonal.predicate_subgroup(
                 lambda automorphism: automorphism.determinant() == 1,
                 "det(g)=1",
                 character_data={"determinant_kernel": True},
             )
+
+            def generators():
+                from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+                signs = Groups.C(2)
+                determinant = orthogonal.Mor(signs).elementwise(
+                    lambda isometry: signs.one() if isometry.determinant() == 1 else signs.group_generators()[0]
+                )
+                return finite_ordered_set(tuple(determinant.kernel().group_generators()))
+
+            special.select_group_generators(generators)
+            return special
 
         def SO(self, *args, **kwargs):
             return self.special_orthogonal_group(*args, **kwargs)
@@ -5422,6 +5434,15 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             else:
                 candidates = self.vectors_of_square(square)
+                # Here enumeration is the entire fibre (definite, or a
+                # nonzero square in a split binary form). Its orbit relation
+                # is the supplied group action on that finite set, without
+                # reconstructing perpendicular extension torsors for each
+                # pair of points.
+                from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+                action = FiniteGSets(group)(candidates.domain(), lambda isometry, point: isometry(point))
+                return action.orbits_presented_by(candidates.domain())
 
             def same_orbit(left, right, *, special_only):
                 if left == right:
@@ -6237,10 +6258,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             ranking = self.parent().module_generating_set().ranking_map()
             coordinates = self.to_vector()
             return sorted(
-                (
-                    (label, coordinates(label))
-                    for label in coordinates.support().domain()
-                ),
+                coordinates.parent()._selected_module_coefficients(coordinates).items(),
                 key=lambda term: int(ranking(term[0])),
             )
 
@@ -7955,7 +7973,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def _levi_image_contains(self, isometry):
             r"""Whether ``isometry`` lies in the image of :meth:`levi_action`: some fibre of :meth:`_levi_fibres` has an integral member."""
             return any(
-                fibre.integral_members().is_empty() is False for fibre in self._levi_fibres(isometry)
+                fibre._integral_base_point_or_none() is not None
+                for fibre in self._levi_fibres(isometry)
             )
 
         def _levi_section(self, isometry):
@@ -7970,7 +7989,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             fibre = next(
                 fibre
                 for fibre in self._levi_fibres(isometry)
-                if fibre.integral_members().is_empty() is False
+                if fibre._integral_base_point_or_none() is not None
             )
             return self.parabolic_subgroup()(lattice.integral_isometry(fibre.integral_base_point()))
 
@@ -8347,6 +8366,8 @@ class RootLattices(OwnedCategory):
             basis vectors go to the simple roots, of the coefficient vector of
             the highest root in the basis of simple roots.
             """
+            from sage.combinat.root_system.root_system import RootSystem
+
             cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(

@@ -941,6 +941,10 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
     immediate branch implementations directly.
     """
 
+    def category(self) -> Category:
+        r"""The category constructed as this intersection is an object of Cat."""
+        return _cat()
+
     def is_subcategory(self, category):
         r"""Compare this intersection through its mathematical branches.
 
@@ -1690,3 +1694,4 @@ class OwnedCategoryObject:
 
     def category(self) -> Category:
         return _cat()
+

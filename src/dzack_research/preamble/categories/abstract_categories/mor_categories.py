@@ -27,7 +27,7 @@ reuses the arrow objects without inheriting all the squares between them.
 """
 
 from __future__ import annotations
-from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow, object_level
 
 
 def _compose_operation_preserving_mor(left, right, fallback):
@@ -46,6 +46,7 @@ def _compose_operation_preserving_mor(left, right, fallback):
     )
 
 from typing import TYPE_CHECKING, Any
+from types import NotImplementedType
 
 from sage.categories.category import Category, JoinCategory as SageJoinCategory
 from sage.categories.category_with_axiom import CategoryWithAxiom as SageCategoryWithAxiom
@@ -269,48 +270,27 @@ def _precomposable(second: Morphism, first) -> bool:
     codomain is ``second``'s domain.  The arrow's own Mor is asked.
     """
     match first:
-        case Morphism() if first.codomain() is second.domain():
+        case Morphism() | CategoricalArrow() if first.codomain() is second.domain():
             base = second.parent().base_category()
             return _category_accepts_morphism(base, first.domain(), first.codomain(), first)
         case _:
             return False
 
 
-@cached_function(key=lambda category, arrow: (id(category), id(arrow)))
-def _fixed_mor_arrow_object(
-    category: FixedMorObject,
-    arrow: Morphism,
-) -> ObjectOfCategory:
-    r"""Construct the one object of a fixed Mor on this admitted arrow.
-
-    The two fixed-Mor realizations share this entry. Their raw arrows have
-    parent semantics, while their objects carry the fixed Mor's category
-    placement and the walking-arrow functor. Interning by those two
-    identities makes every spelling of an endpoint select the same object;
-    it does not identify two distinct arrow data by a sampled equality test.
-    """
-    if not category.accepts(arrow):
-        raise ValueError(f"{arrow} is not an arrow of {category}")
-    arrows = category.base_category().ArrowCategory()
-    represented = arrows(arrow)
-    return _object_of(
-        owned_category_join((arrows, category)),
-        functor=represented.functor(),
-        fixed_mor_category=category,
-    )
-
-
-class MorArrowIdentity(Morphism):
+class MorArrowIdentity(CategoricalArrow):
     r"""The identity 2-arrow on one arrow object."""
 
     def _call_(self, value):
         return value
 
-    def __eq__(self, other: Any) -> bool:
-        return parent(other) is self.parent()
+    def __eq__(self, other: Any) -> bool | NotImplementedType:
+        if parent(other) is self.parent():
+            return True
+        return NotImplemented
 
-    def __ne__(self, other: Any) -> bool:
-        return not self == other
+    def __ne__(self, other: Any) -> bool | NotImplementedType:
+        comparison = self.__eq__(other)
+        return NotImplemented if comparison is NotImplemented else not comparison
 
     def __hash__(self) -> int:
         return hash(id(self.parent()))
@@ -336,7 +316,7 @@ class _DiscreteTwoMorConstructions:
         arrows = self.object_set()
         return indexed_family(
             arrows,
-            self.object,
+            lambda arrow: arrow,
             name=f"Arrow objects of {self}",
         )
 
@@ -522,7 +502,7 @@ def _attach_aut_family(owner: CategoricalMor, family: _AutCategoryOf) -> None:
     owner._aut_family = category_owner
     category_owner._remember_between(owner.domain_object(), owner.codomain_object(), owner)
 
-class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
+class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
     r"""A represented Mor object which is both a Sage Mor and a category.
 
     This mixed runtime parent deliberately retains Sage's raw ``Category`` base.
@@ -560,8 +540,27 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
 
     _mor_placement: Category
 
+    def object_set(self):
+        r"""The objects of this represented Mor are its actual elements."""
+        return self
+
     class ElementMethods(Morphism):
         r"""Root runtime for arrows generated from the fixed-Mor category graph."""
+
+        def Mor(self, codomain):
+            return self.parent().two_mor(self, codomain)
+
+        def arrow(self):
+            return self
+
+        def source_object(self):
+            return self.domain()
+
+        def target_object(self):
+            return self.codomain()
+
+        def arrow_category(self):
+            return self.parent().base_category().ArrowCategory()
 
         def then(self, other):
             r"""Return ``other ∘ self`` for composable represented arrows."""
@@ -694,6 +693,11 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             tuple(bases),
             doccls=providers[0] if providers else CategoricalMor.ElementMethods,
         )
+
+    @property
+    def ObjectType(self) -> type:
+        r"""Objects of this Mor category are its arrows."""
+        return self.ElementType
 
     @property
     def ElementType(self) -> type:
@@ -900,25 +904,8 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
             return False
         return self._already_parented_arrow(arrow)
 
-    def object(self, arrow: Parent | Morphism):
-        r"""``arrow`` as an object placed in this fixed Mor and in ``Ar(C)``."""
-        match arrow:
-            case Morphism():
-                if not self.accepts(arrow):
-                    arrow = self(arrow)
-                return _fixed_mor_arrow_object(self, arrow)
-            case _ if Category.__contains__(self, arrow):
-                return arrow
-            case _ if arrow in self.base_category().ArrowCategory():
-                return self.object(arrow.arrow())
-            case _:
-                raise TypeError(
-                    f"an object of {self} is an arrow of {self.base_category()} or an object of its arrow category, "
-                    f"but got {arrow!r}"
-                )
-
     def _mor_endpoint(self, obj: Parent | Category | Morphism):
-        return self.object(obj)
+        return self(obj)
 
     def __contains__(self, candidate: Any) -> bool:
         r"""Read raw-map element membership separately from object placement.
@@ -929,7 +916,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
         underlying arrow is not reclassified by that element predicate.
         """
         match candidate:
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 return self.accepts(candidate)
             case _:
                 return Category.__contains__(self, candidate)
@@ -966,8 +953,7 @@ class CategoricalMor(OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Catego
     Mor = two_mor
 
     def identity_2(self, arrow: Morphism) -> Morphism:
-        arrow_object = self.object(arrow)
-        return self.two_mor(arrow_object, arrow_object).identity()
+        return self.two_mor(arrow, arrow).identity()
 
 
 class MorArrowDiscreteMor(CategoricalMor):
@@ -990,6 +976,14 @@ class MorArrowDiscreteMor(CategoricalMor):
 
     def mor_category(self) -> Category:
         return self.base_category()
+
+    def _emptiness_decision(self):
+        return self.domain() is not self.codomain()
+
+    def _cardinality_decision(self):
+        from dzack_research.preamble.categories.sets.cardinals import cardinal
+
+        return cardinal(0 if self._emptiness_decision() else 1)
 
     def _element_constructor_(self, value=None):
         if self.domain() is not self.codomain():
@@ -1014,8 +1008,8 @@ class MorArrowDiscreteMor(CategoricalMor):
 class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, OwnedCategoryBase):
     r"""The category ``Hom_C(A,B)`` of arrows with fixed endpoints.
 
-    Its objects are the objects of ``Ar(C)`` lying over ``(A, B)``; it owns
-    no object class, and ``object(f)`` builds through ``Ar(C)``'s entry.
+    Its objects are the arrows ``A -> B`` themselves. Calling the category
+    uses the arrow constructor; an arrow already in it is returned unchanged.
 
     Host initialization protocol.  This class is the root of the fixed-Mor
     category chain, and its ``__init__`` alone runs the host initialization
@@ -1070,10 +1064,6 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
     class ParentMethods:
         r"""An arrow, regarded as an object of one fixed Mor category."""
 
-        def __init__(self, fixed_mor_category, **rest) -> None:
-            self._fixed_mor_category = fixed_mor_category
-            super().__init__(**rest)
-
         def Mor(self, codomain):
             r"""Return the represented 2-Mor to ``codomain``.
 
@@ -1081,7 +1071,7 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
             ordinary fixed Mors are discrete, while specializations such as
             functor categories may declare genuine natural transformations.
             """
-            return self._fixed_mor_category.Mor(self, codomain)
+            return self.functor_category().Mor(self, codomain)
 
     def mor_family(self) -> _MorCategoryOf:
         return self._family
@@ -1146,28 +1136,22 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
         mor = self.arrow_set()
         return arrow.parent() is mor or _arrow_is_inherited_from_subcategory(self, arrow)
 
-    def object(self, arrow: Parent | Morphism):
-        r"""``arrow`` as an object placed in this fixed Mor and in ``Ar(C)``."""
-        match arrow:
-            case Morphism():
-                return _fixed_mor_arrow_object(self, arrow)
-            case _ if Category.__contains__(self, arrow):
-                return arrow
-            case _ if arrow in self.base_category().ArrowCategory():
-                return self.object(arrow.arrow())
-            case _:
-                raise TypeError(
-                    f"an object of {self} is an arrow of {self.base_category()} or an object of its arrow category, "
-                    f"but got {arrow!r}"
-                )
-
-    __call__ = object
+    def __call__(self, *data, **options):
+        if len(data) == 1 and not options and isinstance(data[0], (Morphism, CategoricalArrow)):
+            if self.accepts(data[0]):
+                return data[0]
+            raise TypeError(f"{data[0]} is not an arrow of {self}; apply a functor between the categories")
+        return self.arrow_set()(*data, **options)
 
     def _mor_endpoint(self, obj: Parent | Category | Morphism):
-        return self.object(obj)
+        return self(obj)
 
     def __contains__(self, candidate: Any) -> bool:
-        return Category.__contains__(self, candidate)
+        match candidate:
+            case Morphism() | CategoricalArrow():
+                return self.accepts(candidate)
+            case _:
+                return False
 
     def Mor(
         self,
@@ -1188,8 +1172,11 @@ class FixedMorCategory(_DiscreteTwoMorConstructions, CategoryPacketMethods, Owne
         """
         return self.two_mor(arrow, arrow).identity()
 
-    def identity(self, arrow_object: Parent | Morphism) -> Morphism:
-        return self.Mor(arrow_object, arrow_object).identity()
+    @object_level
+    def identity(self):
+        if self.domain_object() is not self.codomain_object():
+            raise ValueError(f"an identity needs equal endpoints, but got {self}")
+        return self.arrow_set().identity()
 
     def super_categories(self):
         supers = []
@@ -1353,7 +1340,7 @@ class RestrictedMorCategoryParent(FixedRestrictedMorCategory):
                 return Category.__contains__(self, candidate)
 
 
-class CategoricalIsomorphism(Morphism):
+class CategoricalIsomorphism(CategoricalArrow):
     r"""An isomorphism represented by mutually inverse arrows.
 
     The defining datum is the forward arrow ``f: X -> Y``; the inverse
@@ -1371,7 +1358,7 @@ class CategoricalIsomorphism(Morphism):
         *,
         verify: bool = False,
     ) -> None:
-        Morphism.__init__(self, parent)
+        CategoricalArrow.__init__(self, parent)
         if forward.domain() is not self.domain() or forward.codomain() is not self.codomain():
             raise ValueError(
                 f"an isomorphism {self.domain()} -> {self.codomain()} needs a forward map "
@@ -1379,8 +1366,7 @@ class CategoricalIsomorphism(Morphism):
             )
         self._forward = forward
         self._inverse_computation = inverse_computation
-        if verify:
-            self.validate_inverse_pair()
+        self.validate_inverse_pair(check=verify)
 
     def forward(self) -> Morphism:
         return self._forward
@@ -1429,6 +1415,7 @@ class CategoricalIsomorphism(Morphism):
 
         return conjunction((self.left_inverse_decision(), self.right_inverse_decision()))
 
+    @validator
     def validate_inverse_pair(self):
         decision = self.inverse_pair_decision()
         if decision is False:
@@ -1444,18 +1431,18 @@ class CategoricalIsomorphism(Morphism):
         return self.forward()(element)
 
     def __eq__(self, other: Any) -> bool | Predicate:
-        r"""Two isomorphisms of one Mor are equal when their forward arrows are.
+        r"""Compare through the retained forward arrows of the core inclusion.
 
         An inverse is unique when it exists, so the forward arrows decide;
         neither inverse is computed.
         """
         if self is other:
             return True
-        # A represented isomorphism can be parented by an ordinary Mor object of
-        # its base category, beside maps that are not isomorphisms.
         match other:
-            case CategoricalIsomorphism() if parent(other) is self.parent():
+            case CategoricalIsomorphism():
                 return self.forward() == other.forward()
+            case Morphism() | CategoricalArrow() if other in self.forward().parent():
+                return self.forward() == other
             case _:
                 return False
 
@@ -1465,7 +1452,7 @@ class CategoricalIsomorphism(Morphism):
         return negation(self == other)
 
     def __hash__(self) -> int:
-        return hash(id(self.parent()))
+        return hash(self.forward())
 
     def __mul__(self, other):
         r"""Compose with ``other``; a composite of isomorphisms is an element of the Iso Mor.
@@ -2057,16 +2044,9 @@ class _MorCategoryOf(OwnedCategoryBase):
         Aut attachment records its canonical owning family at attachment, so
         an inherited constructor need not be followed by an owner query.
 
-        ``Cat.object(M)`` is the already-constructed Sage-Mor endpoint for
-        the exact category ``M``.  At this representation boundary its stored
-        category is the same object to look up, not new defining data to feed
-        to ``Of``.  No arbitrary object with similar methods is unwrapped.
+        ``Cat.object(M)`` is the exact category ``M``; membership reads
+        that category directly.
         """
-        from dzack_research.preamble.categories.abstract_categories.cat import CategoryObject
-
-        match candidate:
-            case CategoryObject():
-                candidate = candidate.represented_category()
         if candidate not in MorCategories():
             return False
         return self._cached_between(
@@ -2093,7 +2073,7 @@ class _DiscreteTwoMorCategoryOf(_MorCategoryOf):
         sage: points = finite_ordered_set(("a", "b"))
         sage: Mor = Sets().Mor(points, points)
         sage: swap = Mor(lambda point: {"a": "b", "b": "a"}[point])
-        sage: obj = Mor.object(swap)
+        sage: obj = Mor(swap)
         sage: two_mor = Mor.two_mor(swap, swap)
         sage: two_mor is Mor.MorCategory().Of(obj, obj)
         True
@@ -2122,7 +2102,7 @@ class _DiscreteTwoMorCategoryOf(_MorCategoryOf):
         sage: module = QQ.free_module(1)
         sage: linear_mor = Modules(QQ).Mor(module, module)
         sage: identity = linear_mor.identity()
-        sage: obj = linear_mor.object(identity)
+        sage: obj = linear_mor(identity)
         sage: two_mor = linear_mor.two_mor(identity, identity)
         sage: _category_mor_parent(linear_mor, obj, obj) is two_mor
         True
@@ -2240,6 +2220,20 @@ class _RestrictedMorCategoryOf(_MorCategoryOf):
 _RestrictedCategoryOf = _RestrictedMorCategoryOf
 
 
+def _is_selected_identity_in(category, arrow):
+    r"""Recognize a retained identity, including along category inclusions."""
+    mor = arrow.parent()
+    if (
+        arrow.domain() is not arrow.codomain()
+        or mor not in MorCategories()
+        or arrow is not mor.identity()
+        or arrow.domain() not in category
+    ):
+        return False
+    selected = _category_packet(category).Mors().Of(arrow.domain(), arrow.codomain())
+    return mor is selected or _declared_category_reaches(mor, selected)
+
+
 class _MonoCategoryOf(_RestrictedMorCategoryOf):
     r"""Represented monomorphisms absent a stronger theory-specific decision.
 
@@ -2255,7 +2249,7 @@ class _MonoCategoryOf(_RestrictedMorCategoryOf):
         return _category_packet(category).Monos()
 
     def accepts(self, arrow: Morphism) -> bool:
-        return self._accepts_by_placement(arrow)
+        return _is_selected_identity_in(self.base_category(), arrow) or self._accepts_by_placement(arrow)
 
 
 class _EpiCategoryOf(_RestrictedMorCategoryOf):
@@ -2272,7 +2266,7 @@ class _EpiCategoryOf(_RestrictedMorCategoryOf):
         return _category_packet(category).Epis()
 
     def accepts(self, arrow: Morphism) -> bool:
-        return self._accepts_by_placement(arrow)
+        return _is_selected_identity_in(self.base_category(), arrow) or self._accepts_by_placement(arrow)
 
 
 class _IsoCategoryOf(_MorCategoryOf):

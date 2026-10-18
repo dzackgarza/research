@@ -22,8 +22,8 @@ def test_hyperbolic_swap_extension_retains_inclusions_glue_and_negation() -> Non
     assert coinvariant.codomain() is lattice
     assert sum_inclusion.codomain() is lattice
     assert sum_inclusion.index() == 2
-    assert extension.gluing_subgroup().cardinality() == cardinal(2)
-    assert extension.glue().domain() is extension.gluing_subgroup()
+    assert extension.invariant_gluing_subgroup().cardinality() == cardinal(2)
+    assert extension.glue().domain() is extension.invariant_gluing_subgroup()
     assert extension.glue_graph().cardinality() == cardinal(2)
 
 

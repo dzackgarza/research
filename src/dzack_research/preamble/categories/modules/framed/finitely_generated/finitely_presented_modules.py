@@ -36,7 +36,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     _coordinate_images,
     _engine_matrix,
     _morphism_from_engine_matrix,
-    _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -1840,6 +1839,7 @@ class _GeneralPresentedElement(ModuleElement):
         equal = AtomicProposition("equal", self, other) if contained is None else contained
         return equal if op == op_EQ else negation(equal)
 
+    @cached_method
     def __hash__(self):
         parent = self.parent()
         smith_engine = parent._smith_engine()
@@ -1932,15 +1932,26 @@ class _GeneralPresentedModule:
         cover, which contains the relations; over ZZ the engine's echelonized
         basis of that preimage is its Hermite normal form, which is unique.
         """
+        inclusion = subobject.inclusion()
+        assert inclusion.codomain() is self, f"{subobject} is not a submodule of {self}"
+        return self._submodule_key_from_generators(
+            tuple(inclusion(generator) for generator in subobject.module_generators())
+        )
+
+    def _submodule_key_from_generators(self, generators):
+        r"""The same canonical preimage key from a supplied generating family.
+
+        Private module adapter used by finite submodule actions. It lets an
+        action recognize an already represented image before constructing
+        another presentation of that same submodule.
+        """
         assert self.base_ring() is _owned_integers(), (
             f"the echelonized basis of a preimage is canonical over ZZ, but {self} is over {self.base_ring()}"
         )
         assert self._relation_submodule is not None, (
             f"{self} has no engine relation module, so its submodules have no engine preimage to compare"
         )
-        inclusion = subobject.inclusion()
-        assert inclusion.codomain() is self, f"{subobject} is not a submodule of {self}"
-        lifts = [self(inclusion(generator))._representative() for generator in subobject.module_generators()]
+        lifts = [self(generator)._representative() for generator in generators]
         preimage = self._free_module.submodule(lifts + list(self._relation_submodule.basis()))
         return tuple(tuple(row) for row in preimage.echelonized_basis_matrix().rows())
 
@@ -2326,8 +2337,7 @@ def _relation_morphism(module):
     relations = module._selected_relation_morphism()
     if relations is None:
         raise TypeError(f"{module} is finitely presented, but its relations are not known explicitly")
-    _require_matrix_mor(relations.parent())
-    return relations
+    return relations._framed_coordinate_morphism()
 
 
 
@@ -3209,7 +3219,7 @@ def _presented_module_from_morphism(
         and presentation.domain() in FramedFreeModules(base_ring)
         and codomain in FramedFreeModules(base_ring)
     ):
-        selected_presentation = presentation
+        selected_presentation = presentation._framed_coordinate_morphism()
     else:
         existing_labels = existing.domain().module_generating_set()
         relation_labels = Sets().coproduct(

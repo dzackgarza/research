@@ -31,7 +31,7 @@ Population tell, executed 2026-10-15 (`.tmp/shadow_probe.py`, MRO walk of the re
 - `LatticeIsometryMor.is_empty`, `LatticeEmbeddingMor.is_empty`, `CoreMor.is_empty` and `CoreMor.cardinality` lost to `Sets.ParentMethods` on every fixed Mor, which `CategoricalMor.__init__` places in the owned `Sets()`; repaired: they are the realizations' `_emptiness_decision` (and `_cardinality_decision`) hooks.
 - `_ModuleMorCommonMethods.base_ring` equals `LinearMorModules.ParentMethods.base_ring` and is read during construction, before the placement exists. `CoreMor.identity` and `one` are the generic arrows that `ModuleAutomorphismGroups` specializes.
 
-Residue. The two readings of `Mor`, `End`, `Aut`, `Mono` and `identity` on an object that is also a category (owner ruling 2026-10-16, `ARC-07`) are routed by `mor_foundation.ObjectLevelOperation`; `__call__` keeps only its element reading on a fixed Mor, so `End(X)(f)` is `f` and not the arrow object `End(X).object(f)` that the protected `test_mor_categories_construct.sage` asks for.
+Residue. The separate functor-object entry and the unused Cat arrow/endpoint wrappers have been removed. Actual-arrow consumers now reach a missing construction at `Cat`: adding chosen structure to an actual category. The projective-line section-action specimen reaches `FiniteAffineAtlases -> _covering_family -> SliceCategory(Cat(), site)`; the covering functor has the actual indexing `PosetCategory` as domain, and `SliceCategory._construct_on` asks that category for `_with_structure`, which is absent. Ordinary objects already reconstruct from their defining data through `Objects.ParentMethods._with_structure`; categories need their corresponding owner construction. Reintroducing a category or functor wrapper does not supply it. The category must retain its objects, arrows, composition and identity while the slice level retains its chosen functor. This is an implementation gap for the existing category/slice foundations, not evidence that their mathematics is absent from `lean-categories`. The finite-category, fixed-Mor and first three adic specimens execute; the projective-action specimen does not reach its section assertions yet.
 Repair: `realization-methods-reach-their-category-operations` in [TODO.md](TODO.md).
 
 ### Port consumers of binary fibres and cone marks must move (port #33, #15)
@@ -184,6 +184,7 @@ The represented object and its computation hypotheses must remain distinct.
 
 The existing `images-of-subgroups-and-predicate-subsets` and `finite-index-subgroup-generators` nodes in [TODO.md](TODO.md) own the corresponding image and generator work.
 
+
 ### Effective group pullbacks require general products and equalizers
 
 For group morphisms `a: G -> Q` and `b: H -> Q`, the pullback has elements `(g,h)` with `a(g)=b(h)`, together with both projections and its universal map.
@@ -207,22 +208,6 @@ The [expressive-power assessment](docs/preamble-expressive-power.md) records the
 `OwnedGroups().product_construction` realizes the product of an arbitrary finite family of groups on families of components, with projections and the universal factorization `h |-> (f_i(h))` (`_componentwise_product_construction`, `categories/group/groups.py`); `L.orthogonal_sum_map(product)` gives `prod_i G_i -> O(L)` for `G_i <= O(L_i)` on a lattice biproduct. Mathlib states the product monoid with `MonoidHom.fst`, `MonoidHom.inl` (`x |-> (x, 1)`) and `MonoidHom.prod` (`Mathlib/Algebra/Group/Prod.lean`); `lean-categories` has no product in its group category (searched `LeanCategories/` and FOUNDATIONS.md for `Grp` products, 2026-10-16).
 **Request:** [lean-categories#91](https://github.com/dzackgarza/lean-categories/issues/91): the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2). It runs beside the delivered computation and parks nothing.
 Products over infinite index sets remain unrepresented: the group product hook takes finitely many factors (`_finite_factor_family`).
-
-### `gluing_subgroup` names two different subgroups
-
-`LEX-11` asks that one name be one operation in one codomain. `gluing_subgroup()` of a finite-index embedding `j: M -> L` (`LatticeEmbeddingMethods`, `categories/lattice_morphisms.py`) and of `CyclotomicDecomposition` (which delegates to it) is `L/M` inside `A_M = M^#/M`. `IsometryPrimitiveExtension.gluing_subgroup()` (`categories/lattice_centralizers.py`) is `H_+ = L/(L^f + (L^f)^perp)` inside `A_{L^f}`, the projection of that glue to one summand's discriminant group: a different subgroup of a different group. Observed by source reading 2026-10-16; neither name was changed. The owner of the lexicon decides which operation keeps the name; no TODO node yet.
-
-### Glued centralizer generators repeatedly reconstruct integral-lift comparisons
-
-For a finite-index inclusion `j: M -> L`, lifting a point of `j(M)` should reuse the integral linear-system comparison attached to that same morphism. Cyclotomic centralizer assembly repeatedly applies this lift while extending a component isometry to the orthogonal sum. The exact source, target, chosen framings and Smith comparison must be retained; a rational preimage is not an integral solution.
-
-**Measured (2026-10-16, source `16e7f896f1`):** on `L = U + U`, with `sw` exchanging its hyperbolic planes, a 20-second `cProfile` of `L.O().centralizer(sw).group_generators()` stopped during block-isometry construction. There were 26 integral-preimage solver constructions and 26 `smith_form()` calls (14.058 s cumulative), and 18 `_orthogonal_sum_image` calls (10.086 s cumulative). Command: `direnv exec /home/dzack/research env PYTHONPATH=/home/dzack/research/.tmp/wt-cyclo/src sage -python /home/dzack/research/.tmp/wt-cyclo/.tmp/profile_centralizer.py`. The scratch probe enables `cProfile` only after constructing the swap and interrupts after 20 s; those figures include profiler overhead and describe one rank-four specimen, not a growth curve or an engine-only measurement.
-
-**Source:** `CyclotomicDecomposition._orthogonal_sum_image` (`categories/lattice_centralizers.py`) calls `orthogonal_sum_inclusion().lift` for each vector. `ModuleMorphismMethods._preimage_or_none` calls `_solve_preimage_integrally`; the latter constructs `_integral_preimage_positional_solver` anew, and `_integral_preimage_solver` calls `morphism.smith_form()` each time. Existing invariant-factor normalization and its change-of-presentation maps already supply the mathematical comparison. `OWN-22` requires computed data to be cached and reused; `DEV-12` requires the existing shared memoization mechanisms, not a new consumer-local cache.
-
-**Separate unresolved observation from the handoff:** the unprofiled full generator request exceeds 60 s, with the later traceback in `_divided_square -> _presented_degree_power -> _divided_relations -> ranking_map()(label) ->` membership in `NN`. The bounded profile stops earlier and does not establish the cause of that later stall. Diagnose it at the reached shared owner; no missing mathematical foundation has been established by these observations.
-
-**Consumer and repair:** `arithmetic-centralizers-from-component-gluing` in [TODO.md](TODO.md). Its complete mathematical specimens and component-generator obligations remain required. The label/divisor defect is discharged separately; it does not establish the glued centralizer result.
 
 ### Group colimits do not compose chosen finite presentations
 
@@ -1407,6 +1392,11 @@ corresponding mathematics in `lean-categories` is asserted.
 
 ## Workflow Papercuts
 
+### The live TODO has dependency edges to absent nodes
+
+A source scan on 2026-10-16 found ten Needs edges whose target has no open node: `normalization-extensions-retain-coefficients`, `bounded-rational-group-integral-structures`, `pointwise-perpendicular-kernel`, `lattice-algorithm-dispatch`, `finite-index-subgroup-generators`, and `images-of-subgroups-and-predicate-subsets` (the latter two have several consumers). This prevents the affected milestone and downstream nodes from becoming ready under the documented DAG rule. Their mathematical acceptance banks still exist; deleting an edge without checking the target's completion would discard an obligation. Reconcile the removal commits and retain unexecuted assertions at their actual owner under `triage-long-tail`. This observation does not reopen a completed construction or authorize replacing the DAG.
+
+
 ### The required reading does not fit a worker context
 
 AGENTS.md requires every subagent to read `INTENT.md`, `CONTRIBUTING.md` in full, `TODO.md`, `COMPLAINTS.md` and `docs/preamble-megadoc.md`. On 2026-10-16 their sizes were:
@@ -1671,6 +1661,3 @@ Not repaired.
 Subobjects compare by identity, so the lookup goes through the owner's private `_GeneralPresentedModule._submodule_key` (the Hermite normal form of the preimage in the cover, over ZZ) instead of `{submodule: position}`. Desired (STY-132, STY-167): `_richcmp_` and a matching `__hash__` on module subobjects, realized there for finitely presented modules over ZZ, so that equal subobjects are equal keys.
 Not done: it changes equality for every subobject consumer.
 
-## The post-commit hook invokes a missing host hook
-
-Observed while banking the Mor-constructor repair: `.githooks/post-commit` line 4 executes `/home/dzack/.config/git/hooks/post-commit`, which does not exist on this host. Git still creates the commit, but prints `exec: .../post-commit: not found`; the hook's intended post-commit operation does not run. This is a workflow papercut, not a mathematical capability gap. The source hook and its host installation own the repair; terminal workflow verification in [`terminal-session`](TODO.md) must keep this failure distinct from mathematical acceptance. No hook was changed by the constructor repair.

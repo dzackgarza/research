@@ -42,7 +42,7 @@ class OrbitSpanConstructions(OwnedCategoryOverBaseRing):
             return tuple(action(arrows(element)) for element in elements)
 
         generators = tuple(seed(vector) for vector in seed.domain().module_generators())
-        if group.is_finite() is True:
+        if group.is_finite() is True and containing is None:
             span = ambient.subobject_on(tuple(act(vector) for act in acting_maps(group) for vector in generators))
         else:
             if containing is None:

@@ -61,6 +61,7 @@ from sage.schemes.projective.projective_space import (
 )
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     _MonoCategoryOf,
@@ -1776,7 +1777,7 @@ class SchemeMorCategory(CategoricalMor):
                 raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case _SageSchemeMorphism():
                 raise TypeError("a native scheme arrow is private engine output, not scheme-morphism defining data")
-            case Morphism():
+            case Morphism() | CategoricalArrow():
                 assert affine_endpoints, (
                     f"cannot make the ring morphism {datum} a morphism {domain} -> {codomain}: a ring morphism "
                     f"defines a morphism of schemes only between affine schemes, and {domain} or {codomain} "
@@ -4027,14 +4028,16 @@ class Schemes(OwnedCategoryOverBaseRing):
                 element = algebra(element)
                 localized = algebra.localization(element)
                 base = self.scheme_base_ring()
-                localization = localized.localization_map()
                 return _affine_scheme(
                     localized,
                     base,
                     (OpenImmersions(self),),
                     inclusion_codomain=self,
-                    inclusion_datum=Algebras(base).Associative().Unital().Commutative().Mor(algebra, localized)(
-                        localization
+                    # The canonical R-algebra map is a |-> a/1. The
+                    # localization's scalar action is R -> A -> S^-1 A,
+                    # so this formula preserves scalars, product and unit.
+                    inclusion_datum=Algebras(base).Associative().Unital().Commutative().Mor(algebra, localized)._from_constructed_element_map(
+                        lambda element: localized.fraction(element)
                     ),
                 )
 

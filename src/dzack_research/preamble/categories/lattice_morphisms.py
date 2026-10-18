@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.abstract_categories.arrow_categories imp
     _CoreCategory,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
-    CategoricalIsomorphism,
     CategoricalMor,
     _distinct_supercategories,
     _category_accepts_morphism,
@@ -50,6 +49,7 @@ from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modul
     _torsion_form_isometry,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoricalArrow,
     _refuse_foreign_arrow,
 )
 from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
@@ -57,7 +57,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     _represented_value_module,
 )
 from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleAutomorphismMethods,
     ModuleMorphism,
     ModuleMorphismMethods,
 )
@@ -126,15 +125,7 @@ def _framing_tuple(element):
 
 def _module_matrix(morphism):
     r"""Return the finite-free underlying module Mor element for computation."""
-    linear = morphism.domain().module_category().Mor(morphism.domain(), morphism.codomain())(morphism)
-    from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
-
-    assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
-        f"{morphism} has no matrix: its domain {morphism.domain()} and codomain "
-        f"{morphism.codomain()} must be free modules of finite rank with a chosen basis, "
-        f"but the module maps between them form {linear.parent()}"
-    )
-    return linear
+    return morphism._framed_coordinate_morphism()
 
 
 def _binary_form_from_gram(gram):
@@ -316,7 +307,7 @@ def _binary_indefinite_isometry_matrix(domain_gram, codomain_gram):
 
 def _tensor_view(morphism):
 
-    return tensor.from_morphism(morphism)
+    return tensor.from_morphism(morphism.module_morphism())
 
 
 def _rational_spinor_norm_representative(isometry):
@@ -420,6 +411,10 @@ class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
 class LatticeEmbeddingMethods:
     r"""A form-preserving monomorphism of lattices."""
 
+    def is_injective(self) -> bool:
+        r"""True: membership in the embedding Mor states it (``OWN-22``)."""
+        return True
+
     def _factor_from_generator_preimages(self, target_embedding, preimages):
         base = self.domain().lattice_category()
         assert _category_accepts_morphism(base, target_embedding.domain(), self.codomain(), target_embedding), (
@@ -431,7 +426,7 @@ class LatticeEmbeddingMethods:
     def validate_injectivity(self) -> None:
         r"""Raise ``ValueError`` unless ``ker(f) = 0`` is established for the underlying linear map."""
         domain = self.domain()
-        decision = domain.module_category().Mor(domain, self.codomain())(self).is_injective()
+        decision = self.module_morphism().is_injective()
         if decision is False:
             raise ValueError(f"{domain} -> {self.codomain()} is not a lattice embedding: its kernel is nonzero")
         if decision is not True:
@@ -695,14 +690,14 @@ class LatticeEmbeddingMethods:
         self._assert_finite_index_overlattice()
         source = self.domain()
         inclusion = _subgroup_inclusion_into(subgroup, source.O())
-        representation = source.discriminant_representation()
-        discriminant_group = representation.codomain()
-        submodules = discriminant_group.subobject_action()
+        points = source.discriminant_group().elements()
         restricted = FiniteGSets(subgroup)(
-            submodules.point_set(),
-            lambda element, point: submodules.act(representation(inclusion(element)), point),
+            points,
+            lambda element, point: inclusion(element).discriminant_isometry()(point),
         )
-        extending = restricted.stabilizer(discriminant_group.subobject_point(self.gluing_subgroup()))
+        glue = self.gluing_subgroup().inclusion()
+        subset = points.power_set()(tuple(glue(point) for point in glue.domain().elements()))
+        extending = restricted.setwise_stabilizer(subset)
         into_source = inclusion * extending.inclusion()
         return self.codomain().O().subgroup(
             finite_ordered_set(
@@ -730,34 +725,19 @@ def _subgroup_inclusion_into(subgroup, group):
 class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
     r"""Compatibility shell for private lattice-embedding realizations."""
 
-    def is_injective(self) -> bool:
-        r"""True: membership in the embedding Mor states it (``OWN-22``)."""
-        return True
-
 
 class LatticeIsometryMethods:
     r"""An invertible lattice morphism."""
 
     def __init__(self, parent, images, *, inverse_computation=None) -> None:
         self._isometry_inverse_computation = inverse_computation
-        match images:
-            # A module isomorphism of the underlying modules: an inverse pair,
-            # or an element of Aut_R(M) = Core(Mod_R)(M, M) when L = M.
-            case CategoricalIsomorphism() | ModuleAutomorphismMethods():
-                domain = parent.domain()
-                codomain = parent.codomain()
-                forward = domain.module_category().Mor(domain, codomain)(images.forward())
-                values = _represented_value_module(domain)
-                target_values = _represented_value_module(codomain)
-                if target_values is not values:
-                    raise TypeError(
-                        f"a lattice isometry {domain} -> {codomain} needs both forms valued in one module, "
-                        f"but they take values in {values} and {target_values}"
-                    )
-                self._value_morphism = values.module_category().Mor(values, values).identity()
-                self._underlying_module_isomorphism = images
-                ModuleMorphismMethods.__init__(self, parent, forward)
-                return
+        domain = parent.domain()
+        codomain = parent.codomain()
+        if images in domain.module_category().Core().Mor(domain, codomain):
+            forward = domain.module_category().Mor(domain, codomain)(images.forward())
+            self._underlying_module_isomorphism = images
+            super().__init__(parent, forward)
+            return
         self._underlying_module_isomorphism = None
         super().__init__(parent, images)
 
@@ -769,7 +749,7 @@ class LatticeIsometryMethods:
     def validate_surjectivity(self) -> None:
         r"""Raise ``ValueError`` unless ``coker(f) = 0`` is established for the underlying linear map."""
         domain = self.domain()
-        decision = domain.module_category().Mor(domain, self.codomain())(self).is_surjective()
+        decision = self.module_morphism().is_surjective()
         if decision is False:
             raise ValueError(f"{domain} -> {self.codomain()} is not an isometry: it is not surjective")
         if decision is not True:
@@ -1172,6 +1152,7 @@ class LatticeIsometryMethods:
             denominator_clearing=(self, ideal, scale),
         )
 
+    @cached_method
     def inverse(self):
         r"""Return the inverse isometry."""
         codomain = self.codomain()
@@ -1687,7 +1668,7 @@ class LatticeMor(CategoricalMor):
         return morphism
 
     def _morphism_from_images(self, images):
-        if isinstance(images, Map):
+        if isinstance(images, (Map, CategoricalArrow)):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice morphism from {self.domain()} to {self.codomain()}"
@@ -1700,7 +1681,7 @@ class LatticeMor(CategoricalMor):
         return self.element_class(self, images)
 
     def elementwise(self, function):
-        if isinstance(function, Map):
+        if isinstance(function, (Map, CategoricalArrow)):
             return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice morphism from {self.domain()} to {self.codomain()}: it is not a function of the elements of {self.domain()}")
@@ -1746,7 +1727,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return embedding
 
     def _morphism_from_images(self, images):
-        if isinstance(images, Map):
+        if isinstance(images, (Map, CategoricalArrow)):
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(
                     f"the morphism {images} goes from {images.domain()} to {images.codomain()}, so it is not a lattice embedding of {self.domain()} into {self.codomain()}"
@@ -1759,7 +1740,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         return self.element_class(self, images)
 
     def elementwise(self, function):
-        if isinstance(function, Map):
+        if isinstance(function, (Map, CategoricalArrow)):
             return self(function)
         if not callable(function):
             raise TypeError(f"{function} cannot define a lattice embedding of {self.domain()} into {self.codomain()}: it is not a function of the elements of {self.domain()}")
@@ -2140,7 +2121,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             if images.parent() is self:
                 return images
             _refuse_foreign_arrow(self, images, "use the functor between the source and target categories")
-        if isinstance(images, Map):
+        if isinstance(images, (Map, CategoricalArrow)):
             # A module isomorphism or automorphism, a lattice endomorphism or a
             # set map: almost none is an isometry (``CON-17``).
             _refuse_foreign_arrow(
@@ -2515,11 +2496,16 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             _stabilizer_generators,
         )
 
-        realization = _realization(self.lattice(), family)
-        return self.predicate_subgroup(
-            lambda automorphism: _matching(realization, realization, automorphism) is not None,
+        def preserves_family(automorphism):
+            realization = _realization(self.lattice(), family)
+            return _matching(realization, realization, automorphism) is not None
+
+        stabilizer = self.predicate_subgroup(
+            preserves_family,
             f"g o v = v o sigma for a colour-preserving bijection sigma, for the family {family}",
-            generating_morphism=self.free_cover(_stabilizer_generators(self, family)),
+        )
+        return stabilizer.select_group_generators(
+            lambda: finite_ordered_set(_stabilizer_generators(self, family))
         )
 
     def index_action(self, family):
@@ -2688,6 +2674,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         no engine for all of ``O(L)``.
         """
         matrices = tuple(self._row_action_matrix(generator) for generator in generators)
+        lattice = self.domain()
+        if lattice.base_ring() is _owned_integers() and lattice.is_definite():
+            from dzack_research.preamble.categories.group.groups import _engine_generated_subgroup
+
+            ambient = self._engine_group()
+            return _engine_generated_subgroup(ambient, tuple(ambient(matrix) for matrix in matrices))
         if not matrices:
             rank = int(self.domain().module_rank())
             identity = engine_matrix.identity(SageZZ, rank)
