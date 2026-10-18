@@ -60,7 +60,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     LinearEndCategoryConstruction,
     LinearMorModules,
-    ModuleMorCategoryConstruction,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
@@ -150,6 +149,13 @@ class ModulesOverGroupAlgebra(Modules):
 
     _MorCategory = GroupModuleMorCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
+
+    class ElementMethods:
+        r"""An acted-module element on the data of its coefficient-module element."""
+
+        def __hash__(self):
+            r"""Retain the hash of the coefficient-module element on the same data."""
+            return hash(self.parent()._element_of_unformed_module(self))
 
     def an_object(self):
         r"""The trivial action on the free module of rank one."""
@@ -1192,8 +1198,14 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             sage: f.domain() is A and f.codomain() is A and f * f == f
             True
         """
-        generic_modules = GeneralModules(self.domain().base_ring())
-        ordinary = ModuleMorCategoryConstruction(generic_modules).Of(
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            OwnedCategoryOverBaseRing,
+        )
+
+        ordinary_modules = OwnedCategoryOverBaseRing.__classcall__(
+            Modules, self.domain().base_ring()
+        )
+        ordinary = ordinary_modules.Mor(
             self.domain(),
             self.codomain(),
         )
