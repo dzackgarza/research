@@ -1486,17 +1486,6 @@ The graph either represents their parameters sufficiently to retain the strict r
 **Coverage boundary:** the failing slice command and the declaration at `categories/schemes/ringed_spaces.py::DistinguishedAffineCovers.super_categories` were inspected.
 No claim is made here about other same-class parameterized relations.
 
-### A slice object does not answer the set invariants of its underlying object
-
-**Missing general mathematics:** an object `(A, p: A -> X)` of `C/X` has the underlying object `U(A, p) = A` under the projection `U: C/X -> C`, so its underlying set, its cardinality and its finiteness are those of `A`. A subset of `X` is the case `C = Set` with `p` monic.
-**Dependency path:** `Sets().Subobjects(X)` and `X.power_set()` construct a subset as an object of `Set/X` through `SliceCategory._construct_on` and `Objects.ParentMethods._with_structure`; `Sets().ParentMethods.cardinality` answers only from placement in a cardinality category or from a formula.
-**Evidence (2026-10-09):** with `points = Sets.Δ[2]` and `pair = points.power_set()((points(0), points(1)))`, `pair.category()` is the join of the facade sets and `Sets/{0,...,2}`; `pair.domain() in FiniteSets()` is `True`; `pair.cardinality()` and `points.power_set().top().cardinality()` raise `AssertionError: cannot compute the cardinality ... it is not known to be finite or countably infinite`. The protected expectation `tests/objects/test_power_set_of_a_three_element_set.sage::test_the_boolean_operations` asks `pair.cardinality() == 2`. `Lattices(ZZ).vectors_of_square` returns such a subset, so `represents` reads `.domain().cardinality()` in its place.
-**How it entered:** `520ffee4d8` (2026-10-08) applied the owner's ruling that an object of `C/X` lies in `C/X` and its supercategories only, and removed `FiniteSets` with the other categories of `A`. Its specimen asserted that the slice object is not in `FiniteSets`; no specimen asked a slice object for a set invariant.
-`SetSubobjectCategory`'s docstring states that the points, membership and cardinality of `(A, i)` are those of `A`; no level supplies them.
-**Existing partial capability:** the arrow's domain answers every set question; `SetSubobjectCategory` supplies the subobject lattice only.
-**Affected consumers:** every subset of a set (`power_set`, `finite_subsets`, `Subobjects`, `subsets_of_size`), every slice object over a set, and `represents`. **Coverage boundary:** `set_categories.py` power sets, `arrow_categories.py` `SliceCategory` and `SetSubobjectCategory`, and `objects.py` `_with_structure` were inspected; the module and algebra `_with_structure` routes were not probed.
-**Repair:** `TODO.md` `slice-objects-answer-the-set-invariants-of-their-underlying-object`.
-
 ### Toric scalar base change drops the toric construction data
 
 Scalar base change of a toric scheme should retain the fan that defines the toric variety.
