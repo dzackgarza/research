@@ -18,6 +18,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -927,7 +928,14 @@ def _coefficient_morphism_from_images(
         )
 
     if isinstance(images, dict):
-        return mor({label: target(value) for label, value in images.items()})
+        return mor({
+            (
+                parent.domain()._element_of_unformed_module(label)
+                if element_parent(label) is parent.domain()
+                else label
+            ): target(value)
+            for label, value in images.items()
+        })
     if isinstance(images, (tuple, list)):
         return mor(tuple(target(value) for value in images))
     if callable(images):
@@ -935,7 +943,7 @@ def _coefficient_morphism_from_images(
     return mor(images)
 
 
-class GroupModuleMorphismMethods:
+class GroupModuleMorphismMethods(ModuleMorphismMethods):
     r"""An ``R``-linear map commuting with the chosen ``G``-actions."""
 
     def _initialize_lower_arrow(self, parent):
