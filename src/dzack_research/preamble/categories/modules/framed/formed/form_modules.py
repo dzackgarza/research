@@ -3631,14 +3631,6 @@ def _form_module(
         categories.append(FreeFormModules(base_ring).FinitelyGenerated())
     if _is_bilinear_form(form):
         categories.append(BilinearFormModules(base_ring))
-        from dzack_research.preamble.categories.modules.pure.modules import RestrictedScalarsModules
-
-        values = form.codomain()
-        scalar_values = values in OwnedRings() or (
-            values in RestrictedScalarsModules(base_ring)
-            and values.module_over_extension() in OwnedRings()
-        )
-        has_finite_scalar_gram = scalar_values and _has_finite_framing(module)
         symmetric = BilinearFormModules(base_ring).Symmetric()
         # An existing category inclusion already establishes symmetry.  For
         # example Lattices(R) is a subcategory of symmetric bilinear forms,
@@ -3647,7 +3639,7 @@ def _form_module(
         known_symmetric = any(
             category.is_subcategory(symmetric) for category in _extra_categories
         )
-        if known_symmetric or (has_finite_scalar_gram and form._as_numerical_tensor().is_symmetric()):
+        if known_symmetric:
             categories.append(symmetric)
     else:
         categories.append(QuadraticFormModules(base_ring))
