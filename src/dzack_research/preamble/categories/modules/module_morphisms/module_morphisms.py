@@ -2809,11 +2809,19 @@ class _ModuleMorCommonMethods:
             return self(function)
         if not callable(function):
             raise TypeError(f"cannot define a linear map {self.domain()} -> {self.codomain()} elementwise from {function!r}: it must be a function on elements")
-        return self.element_class(
+        morphism = self.element_class(
             self,
             function,
             elementwise=True,
         )
+        # ``elementwise`` explicitly claims that this callable is a map on
+        # arbitrary module elements.  Run the available decision procedure at
+        # that boundary so a witnessed law failure is refused immediately.
+        # An undecidable law remains the proposition ``is_linear(f)`` carried
+        # by the arrow; it is not promoted to a proof or rejected merely for
+        # lacking a finite decision procedure.
+        morphism.linearity_decision()
+        return morphism
 
     def _product_projection(self, underlying_projection):
         r"""The projection of a product whose module operations are componentwise, linear by that construction."""
