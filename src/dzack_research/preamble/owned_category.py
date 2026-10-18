@@ -65,11 +65,13 @@ from abc import ABCMeta
 from _abc import _abc_init
 from collections.abc import Hashable
 from dataclasses import dataclass
+from functools import wraps
 from inspect import Parameter, isclass, ismethod, signature
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters, JoinCategory
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.misc.constant_function import ConstantFunction
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.category_object import CategoryObject
@@ -725,6 +727,40 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     # ``owned_category_bases.py`` and intentionally does not affect Sage-native
     # categories.
     _cmp_key = _OwnedCategoryComparisonKey()
+
+    def __init_subclass__(cls, **options) -> None:
+        r"""Retain the defining call of each owned category constructor.
+
+        A category can itself receive chosen structure: an object of
+        ``Cat/C`` is a category together with a selected functor to ``C``.
+        Reconstructing that structured object must therefore use the same
+        category constructor and its exact defining arguments.  The outermost
+        constructor records those arguments after its cooperative chain has
+        completed; inherited constructors record the concrete runtime
+        declaration, so axiom and parameterized category subclasses retain
+        their own category kind rather than the base implementation class.
+
+        This is construction data of the category owner (``OWN-16``), not a
+        public serialization format.  It is consumed only by
+        :class:`OwnedCategoryObject` when another category level is added.
+        """
+        super().__init_subclass__(**options)
+        initializer = vars(cls).get("__init__")
+        if initializer is None or getattr(initializer, "_retains_owned_category_call", False):
+            return
+
+        @wraps(initializer)
+        def retaining_initializer(self, *args, **keywords):
+            initializer(self, *args, **keywords)
+            declared = _declared_category_class(self)
+            self._owned_category_construction = (
+                declared,
+                tuple(args),
+                dict(keywords),
+            )
+
+        retaining_initializer._retains_owned_category_call = True
+        cls.__init__ = retaining_initializer
 
     def is_subcategory(self, category):
         r"""Compare owned categories through their declared mathematical graph.
@@ -1677,6 +1713,51 @@ class OwnedCategoryObject:
 
     base_ring = _BaseRingOfACategoryOverABase()
 
+    def _with_structure(
+        self,
+        categories: tuple[Category, ...],
+        construction_data: dict[str, ConstructionData],
+        *,
+        engine: type | None = None,
+    ) -> Category:
+        r"""Construct this actual category with further chosen structure.
+
+        Protected construction contract (``OWN-05``, ``OWN-16``), parallel
+        to ``Objects.ParentMethods._with_structure`` for ordinary objects.
+        The category owner reconstructs its exact declaration from the
+        defining constructor call retained at initialization.  The added
+        category levels consume their own data cooperatively; the resulting
+        object remains an actual instance of the original category class, so
+        its objects, arrows, identity and composition are those of that
+        category rather than operations on a category wrapper.
+        """
+        construction = getattr(self, "_owned_category_construction", None)
+        assert construction is not None, (
+            f"cannot construct the category {self} with the further structure of {categories}: "
+            "its owner did not retain the category's defining constructor call"
+        )
+        added_categories, added_data = self._added_structure(construction_data)
+        target = owned_category_join((*added_categories, *categories))
+        declared, _, _ = construction
+        realization = _category_structure_realization(declared, engine)
+
+        from dzack_research.preamble.refine import owned_parent_class
+
+        implementation = owned_parent_class(realization, target)
+        return typecall(
+            implementation,
+            _received_category=self,
+            _structured_category=target,
+            **added_data,
+        )
+
+    def _added_structure(
+        self,
+        construction_data: dict[str, ConstructionData],
+    ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+        r"""Return category levels already added above this category owner."""
+        return (), dict(construction_data)
+
     def _init_cat_object(self) -> None:
         r"""Initialize the parent shell without a second class rewrite.
 
@@ -1693,5 +1774,61 @@ class OwnedCategoryObject:
         CategoryObject._init_category_(self, _cat())
 
     def category(self) -> Category:
-        return _cat()
+        return getattr(self, "_category", _cat())
+
+
+@cached_function
+def _category_structure_realization(
+    declared: type,
+    engine: type | None,
+) -> type:
+    r"""The private realization of ``declared`` with added category levels.
+
+    Added ``ParentMethods`` precede this boundary and consume their own
+    construction data.  The boundary then invokes the original category
+    declaration with the exact call retained by the received category.  It
+    finally records the structured placement selected before construction.
+    No public category or functor wrapper is introduced: instances remain
+    instances of ``declared``.
+    """
+
+    def initialize(
+        structured,
+        *,
+        _received_category: Category,
+        _structured_category: Category,
+        **remaining,
+    ) -> None:
+        assert not remaining, (
+            f"the category levels added to {_received_category} did not consume "
+            f"their construction data {sorted(remaining)}"
+        )
+        constructor, args, keywords = _received_category._owned_category_construction
+        assert constructor is declared, (
+            f"the retained constructor of {_received_category} changed from "
+            f"{declared.__name__} to {constructor.__name__} during reconstruction"
+        )
+        constructor.__init__(structured, *args, **keywords)
+        structured._owned_category_construction = (
+            constructor,
+            args,
+            dict(keywords),
+        )
+        CategoryObject._init_category_(structured, _structured_category)
+
+    initialize._retains_owned_category_call = True
+
+    bases = (declared,) if engine is None else (engine, declared)
+    name = f"{declared.__name__}WithChosenStructure"
+    realization = _abc_metaclass_for(bases)(
+        name,
+        bases,
+        {
+            "__init__": initialize,
+            "__module__": declared.__module__,
+            "__doc__": declared.__doc__,
+        },
+    )
+    _abc_init(realization)
+    return realization
 
