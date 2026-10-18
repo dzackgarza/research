@@ -58,8 +58,8 @@ def test_the_rational_plane_has_an_isometry_outside_the_group_of_its_integral_sp
 
 
 def test_only_the_integral_orthogonal_group_is_placed_finite() -> None:
-    assert _integral_plane().O() in OwnedFiniteGroups()
-    assert _rational_plane().O() not in OwnedFiniteGroups()
+    assert _integral_plane().O() in Groups().Finite()
+    assert _rational_plane().O() not in Groups().Finite()
 
 
 def test_cardinality_is_eight_over_ZZ_and_not_the_integral_count_over_QQ() -> None:
@@ -121,9 +121,9 @@ def test_vector_stabilizers_are_reduced_in_the_integral_group_only() -> None:
     r"""In ``ZZ^2`` the stabilizer of ``e_0`` is ``{1, e_1 -> -e_1}``."""
     integral = _integral_plane()
     e0, e1 = integral.module_generators()
-    generators = integral.O().vector_stabilizer_generators(e0)
-    assert all(g(e0) == e0 for g in generators)
-    assert any(g(e1) == -e1 for g in generators)
+    stabilizer_generators = integral.O().vector_stabilizer_generators(e0)
+    assert all(g(e0) == e0 for g in stabilizer_generators)
+    assert any(g(e1) == -e1 for g in stabilizer_generators)
 
     rational = _rational_plane()
     f0, _ = rational.module_generators()
