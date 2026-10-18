@@ -343,13 +343,21 @@ def _labelled_generator_images(domain, images):
     r"""Read the keys of a generator-image mapping as labels of ``domain``'s framing.
 
     Lattice framings may use formal symbols even though ``module_generator(i)``
-    deliberately accepts the integer position ``i``.  A key that is not a
-    label is that position in the framing's enumeration, so an explicit image
-    mapping keeps the positional spelling before the generic module-morphism
-    layer sees the actual labels.
+    deliberately accepts the integer position ``i``.  A key that is neither a
+    label nor an element of ``domain`` is that position in the framing's
+    enumeration.  Generator elements remain generator elements for the generic
+    module-morphism layer to resolve against the framing.
     """
     labels = domain.module_generating_set()
-    return {(labels(key) if key in labels else labels[int(key)]): value for key, value in images.items()}
+    return {
+        (
+            key
+            if element_parent(key) is domain
+            else labels(key) if key in labels
+            else labels[int(key)]
+        ): value
+        for key, value in images.items()
+    }
 
 
 class LatticeMorphismMethods:
