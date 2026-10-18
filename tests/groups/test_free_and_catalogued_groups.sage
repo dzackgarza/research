@@ -15,6 +15,8 @@ braid group on three strands is infinite (it surjects onto $\mathbb{Z}$ by
 the exponent sum).  All are computations from the definitions.
 """
 
+import pytest
+
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
@@ -97,14 +99,14 @@ def test_engine_generator_image_family_has_exact_arity() -> None:
     else:
         assert False, "an image of order three was accepted for a C4 generator"
 
-    # The public dictionary constructor also has check=False by default.
-    # Its generator images must nevertheless descend through C4's relation.
-    try:
-        four.Mor(three)({four.group_generators()[0]: three.group_generators()[0]})
-    except ValueError as error:
-        assert "relations" in str(error)
-    else:
-        assert False, "an invalid generator assignment was admitted without check=True"
+    # Construction retains the proposed generator map.  Its relation law is
+    # decided only by the explicit validator, under the shared strict-checking
+    # contract.
+    proposed = four.Mor(three)(
+        {four.group_generators()[0]: three.group_generators()[0]}
+    )
+    with pytest.raises(ValueError):
+        proposed.validate_homomorphism(check=True)
 
 
 def test_gap_group_morphism_requires_its_selected_endpoints() -> None:
