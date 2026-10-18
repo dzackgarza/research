@@ -158,9 +158,9 @@ def test_O_of_2U_plus_A2_surjects_onto_O_of_its_discriminant_form() -> None:
     target = lattice.discriminant_group().O()
     lifts = lattice.O().discriminant_orthogonal_group_generator_lifts()
 
-    generators = target.group_generators()
-    assert lifts.index_set() == generators.index_set()
+    group_generators = target.group_generators()
+    assert lifts.index_set() == group_generators.index_set()
     for label in lifts.index_set():
         witness = lifts.value(label)
         assert witness in lattice.O()
-        assert witness.discriminant_morphism() == generators.value(label)
+        assert witness.discriminant_morphism() == group_generators.value(label)
