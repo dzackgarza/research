@@ -251,6 +251,10 @@ def _hkz_reduction(lattice):
 
 
 def _minimum(lattice):
+    assert _engine_ring(lattice.base_ring()) is SageZZ, (
+        f"the minimum of {lattice} is computed here only for integral lattices "
+        f"over ZZ, but {lattice} is over {lattice.base_ring()}"
+    )
     from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
 
     sign, positive_gram = _positive_gram(lattice)
