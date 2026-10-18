@@ -2093,6 +2093,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         r"""Return the negative-definite Leech lattice through Hecke's maintained construction."""
         integers = _owned_integers()
         positive = Lattices(integers)(lattice_engines._oscar_lattices.leech_gram_rows())
+        lattice_engines.validate_even_unimodular_gram(
+            positive.gram_tensor(), check=False
+        )
         return positive.twist(-integers.one())
 
     @cached_method
@@ -4448,14 +4451,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 for column in range(int(self.module_rank()))
             )
             embedding = self.Emb(target)(images)
-            if not embedding.is_primitive():
-                raise ArithmeticError(
-                    f"the embedding of {self!r} into II_{{{positive},{negative}}} computed by OSCAR is not primitive: its cokernel has torsion"
-                )
-            if target.signature_pair() != signature_pair(positive, negative):
-                raise ArithmeticError(
-                    f"the target lattice {target!r} computed by OSCAR for a primitive embedding of {self!r} has signature {target.signature_pair()}, not ({positive}, {negative})"
-                )
+            embedding.validate_primitivity(check=False)
+            lattice_engines.validate_lattice_signature(
+                (target, signature_pair(positive, negative)), check=False
+            )
             return embedding
 
         def glue_map(self, first, second):

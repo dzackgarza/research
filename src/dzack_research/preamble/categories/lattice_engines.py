@@ -46,12 +46,25 @@ def validate_isometric_embedding(embedding_datum):
 
 @validator
 def validate_even_unimodular_gram(gram):
-    r"""Check that the Gram tensor ``gram`` is unimodular (``det = +-1``) and even (every ``G(e_i, e_i)`` is even)."""
+    r"""Check that ``gram`` is symmetric, unimodular and even."""
     engine_gram = _engine_component_matrix(gram)
+    if not engine_gram.is_symmetric():
+        raise ValueError(f"the form {gram} is not symmetric")
     if abs(engine_gram.determinant()) != 1:
         raise ValueError(f"the form {gram} is not unimodular: its determinant is {engine_gram.determinant()}")
     if any(entry % 2 for entry in engine_gram.diagonal()):
         raise ValueError(f"the form {gram} is not even: some diagonal entry is odd")
+
+
+@validator
+def validate_lattice_signature(data):
+    r"""Check that a computed lattice has the requested signature pair."""
+    lattice, expected = data
+    actual = lattice.signature_pair()
+    if actual != expected:
+        raise ValueError(
+            f"the computed lattice {lattice} has signature {actual}, not {expected}"
+        )
 
 
 def _rational_signed_direction(gram, sign):
@@ -845,13 +858,6 @@ class _OscarLatticeAdapter:
         matrix_rows = tuple(tuple(SageZZ(entry) for entry in row) for row in rows)
         if any(len(row) != 24 for row in matrix_rows):
             raise RuntimeError(f"the Gram matrix of the Leech lattice from OSCAR has row lengths {tuple(len(row) for row in matrix_rows)}, not 24 each")
-        gram = engine_matrix(SageZZ, matrix_rows)
-        if not gram.is_symmetric():
-            raise ArithmeticError(f"the Gram matrix of the Leech lattice from OSCAR is not symmetric:\n{gram}")
-        if abs(gram.det()) != 1:
-            raise ArithmeticError(f"the Gram matrix of the Leech lattice from OSCAR is not unimodular: its determinant is {gram.det()}")
-        if any(gram[index, index] % 2 for index in range(24)):
-            raise ArithmeticError("the Gram matrix of the Leech lattice from OSCAR is not even: some diagonal entry is odd")
         return matrix_rows
 
 

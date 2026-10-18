@@ -436,6 +436,14 @@ class LatticeEmbeddingMethods:
         if decision is not True:
             raise ValueError(f"cannot accept {domain} -> {self.codomain()} as a lattice embedding: its injectivity cannot be decided")
 
+    @validator
+    def validate_primitivity(self) -> None:
+        r"""Raise ``ValueError`` unless this embedding has torsion-free cokernel."""
+        if not self.is_primitive():
+            raise ValueError(
+                f"the lattice embedding {self} is not primitive: its cokernel has torsion"
+            )
+
     def __mul__(self, other):
         if not isinstance(other, LatticeEmbeddingMethods):
             return super().__mul__(other)
@@ -1868,8 +1876,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         )
         composed = target_prime_to_target * inclusion * source_to_prime
         embedding = self(tuple(composed(source.module_generator(label)) for label in source.module_generating_set()))
-        if not embedding.is_primitive():
-            raise ArithmeticError(f"the embedding {embedding} of {source} into {target} built from OSCAR's primitive embedding is not primitive")
+        embedding.validate_primitivity(check=False)
         return embedding
 
     def primitive_embedding_class_representatives(self, classification="emb"):
