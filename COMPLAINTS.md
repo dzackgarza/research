@@ -1532,6 +1532,20 @@ The existing finite-sequence functor and the line-in-plane cokernel's free trivi
 The hyperbolic owner admits both signatures (1,n) and (n,1), but its new literal-lattice edgewalk call passed the former convention to a specialization requiring the latter.
 Negating the form preserves the reflection geometry; returning its result requires transport to the original lattice, with reversed wall-root signs, rather than dropping the admitted sign convention.
 
+Executed on 2026-10-18, the marked primitive-vector dispatcher also has no
+route for spacelike vectors.  The primitive embeddings of A1 into U + A1
+are exactly the primitive vectors of square -2 modulo the target orthogonal
+group when the source marking is retained.  Calling
+`primitive_marking_classes` for that coslice reaches
+`MarkedCellOrbitAlgorithm` and raises `NoLocalMarkTheoremError` because the
+vectors lie outside its closed positive cone.  Negating the form produces
+signature (2,1) and square 2, but the same sign-normalized cone test rejects
+that presentation too.  The existing OSCAR primitive-embedding classifier
+does cover this general computation, although loading OSCAR currently exceeds
+the per-test limit on this host.  The missing specialized computation remains
+the port's primitive-marking obligation; research should dispatch once the
+port supplies it and must not implement another indefinite orbit algorithm.
+
 **Owning repair:** the existing `lattice-algorithm-dispatch` node, including the reached canonical diagram and finite/countable representative-set inputs.
 The public primitive-locus entry must also retain the binary finite subset: its inclusion gives the ambient lattice, while the former `universe()` check assumed only a condition-set representation.
 Both mathematical consumers now use the existing public orbit decomposition, with the definite square-zero singleton and finite nonzero-square covering route retained.
