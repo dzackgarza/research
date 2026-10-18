@@ -60,7 +60,7 @@ def test_the_subsets_of_a_given_size() -> None:
 
 def test_subset_cardinality_must_be_a_natural_number() -> None:
     points = three()
-    for invalid in (-1, 1.5):
+    for invalid in (-1, QQ(3) / QQ(2)):
         with pytest.raises(ValueError):
             points.subsets_of_size(invalid)
 
@@ -83,5 +83,7 @@ def test_empty_codomain_exponential_needs_known_nonempty_domain() -> None:
     assert unknown not in Sets().Infinite()
     undecided = empty.exponential(unknown)
     assert undecided in Sets()
-    assert undecided not in Sets().Finite()
+    assert undecided in Sets().Finite()
     assert undecided not in Sets().Infinite()
+    with pytest.raises(AssertionError):
+        undecided.cardinality()
