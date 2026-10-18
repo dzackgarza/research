@@ -42,7 +42,12 @@ class OrderEmbedding:
                     f"it sends the basis element {basis_element} to {image}, which is not in {codomain}"
                 )
         self._field_embedding = field_embedding
-        super().__init__(parent, self._evaluate_field_embedding)
+        domain = parent.domain()
+        codomain = parent.codomain()
+        linear = domain.module_category().Mor(domain, codomain).elementwise(
+            self._evaluate_field_embedding
+        )
+        super().__init__(parent, linear)
 
     def field_embedding(self) -> RingMorphism:
         return self._field_embedding

@@ -397,9 +397,9 @@ class LatticeMorphismMethods:
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
-        if self.parent().identity() is self:
+        if getattr(self, "_preamble_lattice_identity", False):
             return other
-        if other.parent().identity() is other:
+        if getattr(other, "_preamble_lattice_identity", False):
             return self
         source = other.domain()
         return source.Mor(self.codomain())(lambda label: self(other(source.module_generator(label))))
@@ -1696,10 +1696,13 @@ class LatticeMor(CategoricalMor):
         )
 
     @object_level
+    @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(f"there is no identity morphism from {self.domain()} to {self.codomain()}: they are different lattices")
-        return self.elementwise(lambda element: element)
+        identity = self.elementwise(lambda element: element)
+        identity._preamble_lattice_identity = True
+        return identity
 
     def _repr_(self):
         return f"LatticeMor({self.domain()}, {self.codomain()})"

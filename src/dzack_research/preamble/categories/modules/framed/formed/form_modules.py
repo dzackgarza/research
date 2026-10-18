@@ -894,7 +894,27 @@ class FiberedFormedModuleMorphism:
 
     def underlying_semilinear_morphism(self):
         r"""Return this arrow with only its semilinear module structure read."""
-        return self
+        from dzack_research.preamble.categories.modules.fibered_modules import (
+            ModulesOverCommutativeRings,
+        )
+
+        source = self.domain().unformed_module()
+        target = self.codomain().unformed_module()
+        mor = ModulesOverCommutativeRings().Mor(source, target)
+        return mor._from_linearization(self.ring_map(), self.module_morphism())
+
+    def preserves_form_exactly(self) -> bool | Predicate:
+        r"""Return whether the retained value component is an identity."""
+        value_morphism = self.value_morphism()
+        values = value_morphism.domain()
+        if value_morphism.codomain() is not values:
+            return False
+        if value_morphism.parent().identity() is value_morphism:
+            return True
+        identity = values.module_category().Mor(values, values).identity()
+        if value_morphism is identity:
+            return True
+        return value_morphism == identity
 
     def __eq__(self, other) -> bool | Predicate:
         r"""Compare both the semilinear and value components of a formed pair."""
