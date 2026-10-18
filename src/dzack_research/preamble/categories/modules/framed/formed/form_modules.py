@@ -345,6 +345,32 @@ def _form_square_commutes(domain, codomain, module_morphism, value_morphism) -> 
     return undecided
 
 
+def _formed_component_map(domain, codomain, module_morphism):
+    r"""Realize an underlying-module component on its formed endpoints."""
+    if (
+        module_morphism.domain() is domain
+        and module_morphism.codomain() is codomain
+    ):
+        return module_morphism
+    source_module = domain.unformed_module()
+    target_module = codomain.unformed_module()
+    if (
+        module_morphism.domain() is not source_module
+        or module_morphism.codomain() is not target_module
+    ):
+        raise ValueError(
+            f"a formed-module component {domain} -> {codomain} must be a module map "
+            f"{source_module} -> {target_module}, but {module_morphism} is "
+            f"{module_morphism.domain()} -> {module_morphism.codomain()}"
+        )
+    return domain.module_category().Mor(domain, codomain)._from_constructed_element_map(
+        lambda element: codomain._element_from_unformed_module(
+            module_morphism(domain._element_of_unformed_module(element))
+        ),
+        premises=(module_morphism,),
+    )
+
+
 class FormedModuleMorphism:
     r"""A morphism of formed modules in one coefficient-ring fiber.
 
@@ -360,16 +386,9 @@ class FormedModuleMorphism:
     def __init__(self, parent, module_morphism, value_morphism) -> None:
         domain = parent.domain()
         codomain = parent.codomain()
-        if module_morphism.domain() is not domain:
-            raise ValueError(
-                f"a morphism of formed modules {domain} -> {codomain} needs a module map "
-                f"with domain {domain}, but {module_morphism} has domain {module_morphism.domain()}"
-            )
-        if module_morphism.codomain() is not codomain:
-            raise ValueError(
-                f"a morphism of formed modules {domain} -> {codomain} needs a module map "
-                f"with codomain {codomain}, but {module_morphism} has codomain {module_morphism.codomain()}"
-            )
+        realized_module_morphism = _formed_component_map(
+            domain, codomain, module_morphism
+        )
         source_values = _represented_value_module(domain)
         target_values = _represented_value_module(codomain)
         if value_morphism.domain() is not source_values:
@@ -384,7 +403,12 @@ class FormedModuleMorphism:
             )
         self._form_module_morphism = module_morphism
         self._value_morphism = value_morphism
-        super().__init__(parent, module_morphism)
+        super().__init__(
+            parent,
+            lambda element: realized_module_morphism(element),
+            elementwise=True,
+            linearity_premises=(realized_module_morphism,),
+        )
 
     def module_morphism(self):
         r"""Return the retained first component ``f`` of the defining pair ``(f,h)``.
@@ -419,7 +443,7 @@ class FormedModuleMorphism:
         it, and its answer is an untrusted computation.
         """
         return _form_square_commutes(
-            self.domain(), self.codomain(), self.module_morphism(), self.value_morphism()
+            self.domain(), self.codomain(), self, self.value_morphism()
         )
 
     @validator
@@ -465,6 +489,10 @@ class FormedModuleMorphism:
                 f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
                 f"is not the domain {self.domain()} of {self}"
             )
+        if self.parent().identity() is self:
+            return other
+        if other.parent().identity() is other:
+            return self
         source = other.domain()
         target = self.codomain()
         modules = source.module_category()
@@ -822,17 +850,9 @@ class FiberedFormedModuleMorphism:
         domain = parent.domain()
         codomain = parent.codomain()
         changed = parent.base_changed_domain()
-        if module_morphism.domain() is not changed:
-            raise ValueError(
-                f"a morphism of formed modules over {parent.ring_map()} needs a module map out of the "
-                f"scalar extension {changed} of {domain}, but {module_morphism} starts at "
-                f"{module_morphism.domain()}"
-            )
-        if module_morphism.codomain() is not codomain:
-            raise ValueError(
-                f"a morphism of formed modules into {codomain} needs a module map with that "
-                f"codomain, but {module_morphism} ends at {module_morphism.codomain()}"
-            )
+        realized_module_morphism = _formed_component_map(
+            changed, codomain, module_morphism
+        )
         source_values = _represented_value_module(changed)
         target_values = _represented_value_module(codomain)
         if value_morphism.domain() is not source_values:
@@ -845,12 +865,13 @@ class FiberedFormedModuleMorphism:
                 f"the value map {value_morphism} must end at the value module {target_values} of "
                 f"{codomain}, but ends at {value_morphism.codomain()}"
             )
+        self._form_module_morphism = module_morphism
         self._value_morphism = value_morphism
         module_mor = parent.module_mor()
         compatible = module_mor.base_change_adjunction(
             parent.ring_map()
         ).mor_set_isomorphism_forward(
-            module_morphism,
+            realized_module_morphism,
             domain,
         )
         super().__init__(parent, parent.ring_map(), compatible)
@@ -1723,13 +1744,29 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def formed_mor(self, module_morphism, value_morphism):
             r"""Construct the general fixed-fiber formed morphism ``(f,h)``."""
-            return self.Mor(module_morphism.codomain())(
+            target = module_morphism.codomain()
+            if target is self.unformed_module():
+                target = self
+            return self.Mor(target)(
                 (module_morphism, value_morphism)
             )
 
-        def fibered_formed_mor(self, codomain, ring_map):
-            r"""Return formed morphisms from this module to ``codomain`` over ``ring_map``."""
-            return FiberedFormedModuleMor(self, codomain, ring_map)
+        def fibered_formed_mor(
+            self,
+            codomain,
+            ring_map,
+            module_morphism=None,
+            value_morphism=None,
+        ):
+            r"""Return, or construct in, the formed Mor over ``ring_map``."""
+            mor = FiberedFormedModuleMor(self, codomain, ring_map)
+            if module_morphism is None and value_morphism is None:
+                return mor
+            if module_morphism is None or value_morphism is None:
+                raise TypeError(
+                    "a fibered formed arrow needs both its module and value components"
+                )
+            return mor((module_morphism, value_morphism))
 
         def _Hom_(self, codomain, category=None):
             ring = self.base_ring()
