@@ -501,10 +501,6 @@ class FormedModuleMorphism:
                 f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
                 f"is not the domain {self.domain()} of {self}"
             )
-        if getattr(self, "_preamble_fibered_formed_identity", False):
-            return other
-        if getattr(other, "_preamble_fibered_formed_identity", False):
-            return self
         if self.parent().identity() is self:
             return other
         if other.parent().identity() is other:
@@ -994,6 +990,10 @@ class FiberedFormedModuleMorphism:
                 f"cannot compose {self} after {other}: the codomain {other.codomain()} of {other} "
                 f"is not the domain {self.domain()} of {self}"
             )
+        if getattr(self, "_preamble_fibered_formed_identity", False):
+            return other
+        if getattr(other, "_preamble_fibered_formed_identity", False):
+            return self
         composite_ring_map = self.ring_map() * other.ring_map()
         mor = other.domain().fibered_formed_mor(
             self.codomain(), composite_ring_map
