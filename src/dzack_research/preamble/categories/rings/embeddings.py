@@ -44,8 +44,13 @@ class OrderEmbedding:
         self._field_embedding = field_embedding
         domain = parent.domain()
         codomain = parent.codomain()
+
+        def evaluate(element):
+            source_owned = source_field(domain(element))
+            return codomain(field_embedding(source_owned))
+
         linear = domain.module_category().Mor(domain, codomain).elementwise(
-            self._evaluate_field_embedding
+            evaluate
         )
         super().__init__(parent, linear)
 
