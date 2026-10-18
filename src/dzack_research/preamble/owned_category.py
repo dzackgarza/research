@@ -1823,13 +1823,30 @@ def _category_structure_realization(
 
     initialize._retains_owned_category_call = True
 
-    bases = (declared,) if engine is None else (engine, declared)
+    boundary_bases = (declared,)
     name = f"{declared.__name__}WithChosenStructure"
+    boundary = _abc_metaclass_for(boundary_bases)(
+        f"{name}OwnerBoundary",
+        boundary_bases,
+        {
+            "__init__": initialize,
+            "__module__": declared.__module__,
+            "__doc__": declared.__doc__,
+        },
+    )
+    _abc_init(boundary)
+    if engine is None:
+        return boundary
+
+    # The private engine owns construction data at this realization level.
+    # Put it before the owner boundary so its cooperative initializer consumes
+    # that datum, then let the boundary reconstruct the original category from
+    # the retained defining call.
+    bases = (engine, boundary)
     realization = _abc_metaclass_for(bases)(
         name,
         bases,
         {
-            "__init__": initialize,
             "__module__": declared.__module__,
             "__doc__": declared.__doc__,
         },
