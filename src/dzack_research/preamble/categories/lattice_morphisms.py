@@ -2753,6 +2753,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             self._assert_definite_over_integers("compute generators of")
             generators = tuple(self._from_engine(generator) for generator in self._engine_group().gens())
         else:
+            assert lattice.base_ring() is _owned_integers(), (
+                f"the indefinite orthogonal-group algorithm computes O(L) for "
+                f"integral lattices over ZZ, but {lattice} is over "
+                f"{lattice.base_ring()}"
+            )
             from dzack_research.preamble.categories.lattices import Lattices
             from sage_indefinite_port.indefinite.marked_lattices import (
                 automorphism_group_generators,
