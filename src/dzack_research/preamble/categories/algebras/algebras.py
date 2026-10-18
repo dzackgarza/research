@@ -267,6 +267,10 @@ class MultiplicativeAlgebraMorphism:
             and right_category.is_subcategory(algebras)
         ):
             return NotImplemented
+        if getattr(self, "_preamble_is_identity", False):
+            return other
+        if getattr(other, "_preamble_is_identity", False):
+            return self
         source = other.domain()
         forget = algebras.underlying_module()
         category = Cat().join((left_category, right_category))
@@ -309,12 +313,8 @@ class MultiplicativeAlgebraMor(CategoricalMor):
         )
         algebra = self.domain()
         identity = self.element_class(self, algebra.module_category().Mor(algebra, algebra).identity())
-        from dzack_research.preamble.categories.rings.ring_foundation import RingMorphism
-
-        if isinstance(identity, RingMorphism):
-            # The retained module identity proves the function is the identity;
-            # preserve the existing ring supplier's datum when it is present.
-            identity._preamble_is_identity = True
+        # The retained module identity proves the function is the identity.
+        identity._preamble_is_identity = True
         return identity
 
     def _repr_(self):
@@ -1837,8 +1837,8 @@ class Algebras(OwnedCategoryOverBaseRing):
 
 
 
-        @cached_method
         @RealizationHook
+        @cached_method
         def _center_construction(self):
             r"""Supply the inherited magma centre and its algebra inclusion.
 
@@ -4231,9 +4231,12 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraM
             )
         domain = self.domain()
         if domain.is_framed_algebra():
-            return self(lambda label: domain.algebra_generator(label))
-        engine = _engine_ring(domain)
-        return self._from_engine_morphism(engine.hom(engine))
+            identity = self(lambda label: domain.algebra_generator(label))
+        else:
+            engine = _engine_ring(domain)
+            identity = self._from_engine_morphism(engine.hom(engine))
+        identity._preamble_is_identity = True
+        return identity
 
 
 class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
@@ -4262,7 +4265,9 @@ class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
                 f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
             )
         algebra = self.domain()
-        return self._from_constructed_element_map(lambda element: element)
+        identity = self._from_constructed_element_map(lambda element: element)
+        identity._preamble_is_identity = True
+        return identity
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"

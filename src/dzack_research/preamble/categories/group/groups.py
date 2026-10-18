@@ -6022,8 +6022,8 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             )
             return left_cosets.inverted_double_cosets(right_subgroup)
 
-        @cached_method
         @RealizationHook
+        @cached_method
         def _center_construction(self):
             r"""Supply the magma center as a group and its literal inclusion.
 

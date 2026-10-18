@@ -1540,8 +1540,8 @@ class TensorAlgebras(OwnedCategoryOverBaseRing):
             )
             return self.algebra_base_ring()
 
-        @cached_method
         @RealizationHook
+        @cached_method
         def _center_construction(self):
             r"""Supply the inherited magma centre from the tensor word-basis theorem.
 
