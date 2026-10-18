@@ -999,6 +999,28 @@ class SliceCategory(_SubcategoryOfArrows):
             r"""The chosen arrow, when this object was constructed in one slice or coslice only."""
             return _chosen_arrow(self)
 
+        def _underlying_slice_object(self):
+            r"""Return A from the retained arrow p: A -> X."""
+            return self.arrow().domain()
+
+        def _cardinality_decision(self):
+            r"""The slice object has the cardinality of its underlying object."""
+            return self._underlying_slice_object().cardinality()
+
+        def _finiteness_decision(self):
+            r"""The slice object is finite exactly when its underlying object is finite."""
+            return self._underlying_slice_object().is_finite()
+
+        def __iter__(self):
+            r"""Enumerate the points of the underlying object when it is enumerated."""
+            return iter(self._underlying_slice_object())
+
+        def __contains__(self, element):
+            r"""Membership in a slice object is membership in its underlying object."""
+            return element in self._underlying_slice_object()
+
+        is_parent_of = __contains__
+
         def _slice_arrow_in(self, category: Category) -> Morphism:
             r"""The arrow of this object as an object of the slice ``category``.
 
