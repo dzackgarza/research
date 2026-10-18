@@ -1902,6 +1902,21 @@ class LatticeEmbeddingMor(CategoricalMor):
             )
         source = self.domain()
         target = self.codomain()
+        if (
+            classification == "emb"
+            and source.module_rank() == 1
+            and target.definiteness() == "indefinite"
+        ):
+            source_generator = next(iter(source.module_generators()))
+            representatives = _primitive_pointed_classes(
+                target, source.q(source_generator)
+            )
+            return finite_ordered_set(
+                tuple(
+                    self({source_generator: representative})
+                    for representative in representatives
+                )
+            )
         assert (
             _engine_ring(source.base_ring()) is SageZZ
             and _engine_ring(target.base_ring()) is SageZZ
