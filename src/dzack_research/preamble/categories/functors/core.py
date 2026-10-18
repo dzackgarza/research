@@ -411,7 +411,7 @@ class Functor(CategoricalArrow):
         r"""Return the represented functor category containing this functor."""
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-        return Cat().Mor(self.domain(), self.codomain())
+        return Cat().functor_mor(self.domain(), self.codomain())
 
     def object(self):
         return self

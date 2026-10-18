@@ -418,7 +418,7 @@ class CategoryPacketMethods(_CategoryPacketOperations):
     def Mor(self, codomain):
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-        return Cat().Mor(self, codomain)
+        return Cat().functor_mor(self, codomain)
 
     @object_level
     def End(self):

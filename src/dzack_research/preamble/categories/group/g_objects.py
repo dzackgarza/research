@@ -895,7 +895,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     def functor_category(self):
         r"""Return the represented functor category ``[BG,C]``."""
-        return Cat().Mor(
+        return Cat().functor_mor(
             self.acting_group().classifying_category(),
             self.underlying_category(),
         )

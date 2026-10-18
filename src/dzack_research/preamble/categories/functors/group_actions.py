@@ -72,7 +72,7 @@ def _action_functor_of(acted, group, category):
     r"""Return the unique represented ``BG -> C`` action carried by ``acted``."""
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-    functor_category = Cat().Mor(group.classifying_category(), category)
+    functor_category = Cat().functor_mor(group.classifying_category(), category)
     if acted in functor_category:
         return acted.arrow().functor()
     functor = acted.action_functor()
@@ -89,7 +89,7 @@ def _underlying_equivariant_arrow(arrow, group, category):
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
     from dzack_research.preamble.categories.group.g_objects import GObjects
 
-    functor_category = Cat().Mor(group.classifying_category(), category)
+    functor_category = Cat().functor_mor(group.classifying_category(), category)
     if arrow.domain() in functor_category and arrow.codomain() in functor_category:
         point = group.classifying_category().an_object()
         return arrow.component(point)
