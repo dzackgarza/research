@@ -24,7 +24,7 @@ def test_cat_keeps_the_object_and_category_readings_of_mor():
 def test_a_category_with_a_chosen_functor_retains_its_category_operations():
     r"""The two-object chain equipped with its identity functor is an object of Cat/I."""
     chain = PosetCategory(Sets.Δ[1])
-    over = Cat().SliceOver(chain)
+    over = SliceCategory(Cat(), chain)
     selected = over(Cat().identity(chain))
 
     assert selected in over
@@ -41,11 +41,11 @@ def test_a_category_with_a_chosen_functor_retains_its_category_operations():
 def test_repeated_category_slice_enrichment_retains_each_functor_and_composition():
     r"""Each slice level retains its own chosen functor on the same category datum."""
     chain = PosetCategory(Sets.Δ[1])
-    first_slice = Cat().SliceOver(chain)
+    first_slice = SliceCategory(Cat(), chain)
     first_functor = Cat().identity(chain)
     once = first_slice(first_functor)
 
-    second_slice = Cat().SliceOver(once)
+    second_slice = SliceCategory(Cat(), once)
     second_functor = Cat().identity(once)
     twice = second_slice(second_functor)
 
