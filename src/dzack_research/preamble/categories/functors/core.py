@@ -19,7 +19,7 @@ from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
@@ -27,6 +27,52 @@ from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
+
+
+@cached_function
+def _structured_functor_realization(
+    implementation: type,
+    category: Category,
+    engine: type | None,
+) -> type:
+    r"""Realize added category data on an already constructed functor."""
+    from _abc import _abc_init
+
+    from dzack_research.preamble.owned_category import _abc_metaclass_for
+    from dzack_research.preamble.refine import owned_parent_class
+
+    def finish(structured, *, _structured_category: Category, **remaining) -> None:
+        assert not remaining, (
+            f"the category levels added to {structured} did not consume "
+            f"their construction data {sorted(remaining)}"
+        )
+        structured._structured_category = _structured_category
+
+    boundary_bases = (implementation,)
+    boundary = _abc_metaclass_for(boundary_bases)(
+        f"{implementation.__name__}WithChosenStructureBoundary",
+        boundary_bases,
+        {
+            "__init__": finish,
+            "__module__": implementation.__module__,
+            "__doc__": implementation.__doc__,
+        },
+    )
+    _abc_init(boundary)
+    if engine is None:
+        staged = boundary
+    else:
+        bases = (engine, boundary)
+        staged = _abc_metaclass_for(bases)(
+            f"{implementation.__name__}WithChosenStructure",
+            bases,
+            {
+                "__module__": implementation.__module__,
+                "__doc__": implementation.__doc__,
+            },
+        )
+        _abc_init(staged)
+    return owned_parent_class(staged, category)
 
 
 def _functor_factor_family(factors):
@@ -102,7 +148,27 @@ class Functor(CategoricalArrow):
         return self._codomain
 
     def category(self):
-        return self.functor_category()
+        return getattr(self, "_structured_category", self.functor_category())
+
+    def _with_structure(
+        self,
+        categories: tuple[Category, ...],
+        construction_data: dict[str, object],
+        *,
+        engine: type | None = None,
+    ) -> Functor:
+        r"""Retain this actual functor while adding chosen category data."""
+        from dzack_research.preamble.owned_category import owned_category_join
+
+        target = owned_category_join((*categories, self.functor_category()))
+        implementation = _structured_functor_realization(type(self), target, engine)
+        self.__class__ = implementation
+        implementation.__init__(
+            self,
+            _structured_category=target,
+            **construction_data,
+        )
+        return self
 
     @abstract_method
     def _apply_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:

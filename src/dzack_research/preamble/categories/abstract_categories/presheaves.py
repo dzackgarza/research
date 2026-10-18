@@ -1683,8 +1683,14 @@ class Sheaves(OwnedCategoryBase):
     class ParentMethods:
         r"""A presheaf with its chosen descent datum for the coverage."""
 
-        def __init__(self, descent_data: DescentData, **rest) -> None:
+        def __init__(
+            self,
+            descent_data: DescentData,
+            fixed_mor_category: Category,
+            **rest,
+        ) -> None:
             self._descent_data = descent_data
+            self._fixed_mor_category = fixed_mor_category
             super().__init__(**rest)
 
         def descent_data(self) -> DescentData:
@@ -1747,22 +1753,27 @@ class Sheaves(OwnedCategoryBase):
                 f"the descent data {descent_data} belong to the presheaf {descent_data.presheaf()}, not to {presheaf}"
             )
         if categories or construction_data is not None or _engine is not None:
-            category = Cat().meet((self, *tuple(categories)))
             data = dict(construction_data or {})
-            engine = None if _engine is None else (self, _engine, None)
-            return _object_of(
-                category,
-                _engine=engine,
-                functor=functor,
-                descent_data=descent_data,
-                fixed_mor_category=self,
-                **data,
+            return functor._with_structure(
+                (self, *tuple(categories)),
+                {
+                    "descent_data": descent_data,
+                    "fixed_mor_category": self,
+                    **data,
+                },
+                engine=_engine,
             )
         return self._object_on(functor, descent_data)
 
     @cached_method(key=lambda self, functor, descent_data: (id(functor), id(descent_data)))
     def _object_on(self, functor: Functor, descent_data: DescentData):
-        return _object_of(self, functor=functor, descent_data=descent_data, fixed_mor_category=self)
+        return functor._with_structure(
+            (self,),
+            {
+                "descent_data": descent_data,
+                "fixed_mor_category": self,
+            },
+        )
 
     __call__ = object
 

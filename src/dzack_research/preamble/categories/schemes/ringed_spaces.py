@@ -264,7 +264,6 @@ def _open_sheaf_placement(space, presheaf, mor_category=None):
 
     return sheaves, {
         **presheaves.presheaf_datum(presheaf),
-        "functor": presheaf,
         "descent_data": DescentData(coverage, presheaf, inverse_for),
         "fixed_mor_category": sheaves if mor_category is None else mor_category,
     }
@@ -550,11 +549,13 @@ class AlgebraSheaves(OwnedParameterizedCategory):
     def object(self, presheaf, *, categories=(), construction_data=None, _engine):
         r"""Construct an algebra sheaf from its sections on the open site."""
         fibre, presheaf_data = _open_sheaf_placement(self.scheme(), presheaf, self)
-        return _object_of(
-            owned_category_join((self, fibre, *tuple(categories))),
-            _engine=(self, _engine, None),
-            **presheaf_data,
-            **dict(construction_data or {}),
+        return open_sections_presheaf._with_structure(
+            (self, fibre, *tuple(categories)),
+            {
+                **presheaf_data,
+                **dict(construction_data or {}),
+            },
+            engine=_engine,
         )
 
     def an_object(self):
