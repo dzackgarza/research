@@ -232,6 +232,13 @@ class TorsionFormIsometry(CategoricalIsomorphism):
         r"""Return the underlying inverse module morphism."""
         return self._inverse_morphism()
 
+    def inverse(self):
+        r"""Return the inverse in the same specialized torsion-form Iso family."""
+        reverse = self.parent().mor_family().Of(self.codomain(), self.domain())
+        return reverse._from_known_inverse_pair(
+            self.inverse_morphism(), self.forward()
+        )
+
 
 class TorsionFormIsometryMor(CoreMor):
     r"""The Core Mor of isometries between two finite torsion forms."""
