@@ -2103,6 +2103,10 @@ def _orthogonal_group_is_finite_by_theorem(lattice) -> bool:
     """
     if _engine_ring(lattice.base_ring()) is not SageZZ or not lattice.module_rank().is_finite():
         return False
+    from dzack_research.preamble.categories.lattices import RootLattices
+
+    if lattice in RootLattices():
+        return True
     if lattice.module_rank() == 2:
         minus_determinant = lattice_engines._binary_form_discriminant(lattice)
         if minus_determinant != 0 and minus_determinant.is_square():

@@ -2011,6 +2011,7 @@ def _symmetric_group(points):
     defining datum ``Omega`` under its own equality, so equal point sets give
     one group and the engine is built once per point set.
     """
+    from sage.groups.perm_gps.permgroup import PermutationGroup
     from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 
     assert points in FiniteSets(), (
@@ -2024,8 +2025,17 @@ def _symmetric_group(points):
         OwnedGroups().Finite(),
         *((OwnedGroups().Commutative(),) if size <= 2 else ()),
     )
+    degree = int(size)
+    if standard:
+        engine = SymmetricGroup(degree)
+    elif degree <= 1:
+        engine = PermutationGroup(())
+    else:
+        transposition = [2, 1, *range(3, degree + 1)]
+        cycle = [*range(2, degree + 1), 1]
+        engine = PermutationGroup((transposition, cycle))
     return _own_group(
-        SymmetricGroup(int(size)),
+        engine,
         refinements=refinements,
         description=(
             f"Symmetric group S_{size}"

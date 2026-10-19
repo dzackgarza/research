@@ -1672,17 +1672,13 @@ def _identity_lattice(data, ring, names, module_generators, category):
 
 def _root_lattice(cartan_type, ring, names, module_generators, category):
     r"""The root lattice of a finite crystallographic Cartan type, in its simple-root framing."""
-    axioms = [
-        category.FinitelyGenerated(),
-        category.Nondegenerate(),
-        category.Even(),
-    ]
+    placement = category.FinitelyGenerated().Nondegenerate().Even()
     if (
         cartan_type.is_irreducible()
         and cartan_type.type() == "E"
         and int(cartan_type.rank()) == 8
     ):
-        axioms.append(category.Unimodular())
+        placement = placement.Unimodular()
     return _lattice_from_gram_tensor(
         _root_cartan_gram_tensor(ring, cartan_type),
         ring,
@@ -1690,7 +1686,7 @@ def _root_lattice(cartan_type, ring, names, module_generators, category):
         module_generators,
         category,
         root_system_type_name=_root_system_type_name(cartan_type),
-        axiom_categories=tuple(axioms),
+        axiom_categories=(placement,),
     )
 
 
