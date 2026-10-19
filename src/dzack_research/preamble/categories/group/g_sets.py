@@ -247,7 +247,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             {"acting_group", "action", "underlying_category"}
         )
 
-        def __init__(self, point_set, permutation_representation, **rest) -> None:
+        def __init__(self, point_set, permutation_representation, point_action=None, **rest) -> None:
             assert point_set in FiniteSets(), (
                 f"cannot form a finite G-set on {point_set}: it is not a finite set, only "
                 f"known to be in {point_set.category()}"
@@ -255,6 +255,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             group = permutation_representation.domain()
             self._point_set = point_set
             self._permutation_representation = permutation_representation
+            self._point_action = point_action
             super().__init__(
                 acting_group=group,
                 action=self.action_of,
@@ -311,6 +312,10 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             its element is represented in the containing group; evaluating the
             action does not ask the subgroup's membership problem again.
             """
+            if self._point_action is not None:
+                return Sets().Mor(self, self)(
+                    lambda point: self._point_action(group_element, point)
+                )
             permutation = self.permutation_representation()(group_element)
             return Sets().Mor(self, self)(
                 lambda point: permutation(point)
@@ -1288,6 +1293,7 @@ def _finite_g_set_from_action(
         selected_category,
         point_set=point_set,
         permutation_representation=permutation_representation,
+        point_action=action,
         **dict(construction_data or {}),
     )
 
