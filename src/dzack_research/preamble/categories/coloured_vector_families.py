@@ -88,10 +88,18 @@ class _LabelledPairingGraph:
         return self._positions.ranking_map().inverse()(int(vertex))
 
     @cached_method
-    def _graph(self):
+    def _pairings(self):
         from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
-        pairings = _engine_component_matrix(self._gram)
+        return _engine_component_matrix(self._gram)
+
+    def rank(self):
+        r"""The rank of the family pairing matrix, used only inside this engine adapter."""
+        return self._pairings().rank()
+
+    @cached_method
+    def _graph(self):
+        pairings = self._pairings()
         size = self._size()
         graph = Graph(loops=True, multiedges=False)
         graph.add_vertices(range(size))
@@ -210,17 +218,21 @@ class _ColouredFamilyRealization:
             f"the pairing permutation action of a family in {lattice} is faithful only when the lattice is "
             f"nondegenerate, and {lattice} is not known to be"
         )
-        assert self.span().module_rank() == lattice.rank(), (
-            f"the vectors of {self._family} span a sublattice of rank {self.span().module_rank()} of {lattice}, "
+        family_rank = self.pairing_graph().rank()
+        assert family_rank == lattice.rank(), (
+            f"the vectors of {self._family} span a rational subspace of rank {family_rank} of {lattice}, "
             f"of rank {lattice.rank()}: the pairings of a non-spanning family do not determine an isometry, and "
             f"its stabilizer contains the pointwise stabilizer of its span, which is not computed here"
         )
 
     @cached_method
+    def pairing_tensor(self):
+        r"""The Gram tensor of the indexed family."""
+        return self._lattice.gram_tensor().pullback(self.family_morphism())
+
+    @cached_method
     def pairing_graph(self):
-        self.assert_spanning_nondegenerate()
-        gram = self._lattice.gram_tensor().pullback(self.family_morphism())
-        return _LabelledPairingGraph(self._indices, gram, self.colouring())
+        return _LabelledPairingGraph(self._indices, self.pairing_tensor(), self.colouring())
 
     def rationalization(self):
         r"""The lattice in its rational space, ``L -> Res(L tensor Q)``."""
@@ -293,6 +305,7 @@ class _ColouredFamilyRealization:
         only supplied generators.
         """
         graph = self.pairing_graph()
+        self.assert_spanning_nondegenerate()
         automorphisms = graph.automorphism_group()
         return finite_ordered_set(tuple(
             self.configuration_isometry(generator)
@@ -303,6 +316,7 @@ class _ColouredFamilyRealization:
     def configuration_group(self):
         r"""``G = rho(Aut(Gamma))`` for the group morphism ``rho: Aut(Gamma) -> O(L tensor Q)``."""
         graph = self.pairing_graph()
+        self.assert_spanning_nondegenerate()
         automorphisms = graph.automorphism_group()
         orthogonal = self.rational_space().O()
         rho = automorphisms.Mor(orthogonal)(self.configuration_isometry)
