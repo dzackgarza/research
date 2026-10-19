@@ -357,7 +357,7 @@ def _lattice_object(
     """
     from dzack_research.preamble.categories.lattices import Lattices
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-        FormModules,
+        _form_module_from_bilinear_computation,
     )
 
     ring = module.base_ring()
@@ -381,8 +381,9 @@ def _lattice_object(
                 "_subobject_lift": subobject_construction.selected_lift(),
                 "_subobject_inclusion_factory": subobject_construction.inclusion_factory(),
             }
-    return FormModules(ring)(
-        _form_of_gram(module, gram),
+    return _form_module_from_bilinear_computation(
+        module,
+        lambda: _form_of_gram(module, gram),
         _extra_categories=(
             lattices,
             *(

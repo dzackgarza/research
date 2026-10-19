@@ -1550,9 +1550,13 @@ class FormModules(OwnedCategoryOverBaseRing):
     _MonoCategory = FormedModuleMonoCategoryConstruction
 
     class ParentMethods:
-        def __init__(self, source_form, **rest) -> None:
-            r"""The form determines its module; the two are not independent data."""
+        def __init__(self, source_form, source_form_computation=None, **rest) -> None:
+            r"""Retain the selected form, or its defining-data computation."""
+            assert (source_form is None) != (source_form_computation is None), (
+                "a formed module needs exactly one selected form or form computation"
+            )
             self._preamble_form = source_form
+            self._preamble_form_computation = source_form_computation
             super().__init__(**rest)
 
         def _added_structure(self, construction_data: "dict[str, ConstructionData]") -> "tuple[tuple[Category, ...], dict[str, ConstructionData]]":
@@ -1562,6 +1566,9 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         def form(self):
             r"""Return the selected form datum, stated on the unformed module."""
+            if self._preamble_form is None:
+                self._preamble_form = self._preamble_form_computation()
+                self._preamble_form_computation = None
             return self._preamble_form
 
         @validator
@@ -3591,6 +3598,40 @@ def _scaled_form_module(source, scalar):
     return _form_module(scaled, _extra_categories=categories, _extra_construction_data=data)
 
 
+def _form_module_categories(module, *, bilinear, extra_categories):
+    r"""Return the placement of a module equipped with the stated kind of form."""
+    base_ring = module.base_ring()
+    categories = [FormModules(base_ring)]
+    if module in VectorSpaces(base_ring):
+        categories.append(VectorSpaces(base_ring))
+    is_free = module in FramedFreeModules(base_ring)
+    is_presented = module in ModulesWithChosenFinitePresentation(base_ring)
+    if is_free:
+        categories.append(FreeFormModules(base_ring))
+    if is_presented:
+        categories.append(FormModules(base_ring).FinitelyPresented())
+        if module in Modules(base_ring).FinitelyPresented().Torsion():
+            categories.append(FormModules(base_ring).FinitelyPresented().Torsion())
+    if module in FramedFreeModules(base_ring).FinitelyGenerated():
+        categories.append(FreeFormModules(base_ring).FinitelyGenerated())
+    if bilinear:
+        categories.append(BilinearFormModules(base_ring))
+        symmetric = BilinearFormModules(base_ring).Symmetric()
+        # An existing category inclusion already establishes symmetry.  For
+        # example Lattices(R) is a subcategory of symmetric bilinear forms,
+        # and scalar changes preserve this property.  Rechecking all tensor
+        # entries at construction would redo an established fact.
+        known_symmetric = any(
+            category.is_subcategory(symmetric) for category in extra_categories
+        )
+        if known_symmetric:
+            categories.append(symmetric)
+    else:
+        categories.append(QuadraticFormModules(base_ring))
+    categories.extend(tuple(extra_categories))
+    return categories
+
+
 def _form_module(
     form,
     *,
@@ -3615,37 +3656,36 @@ def _form_module(
             f"a module with a form is built from a bilinear or quadratic form, but {form} is neither"
         )
     module = form.module()
-    base_ring = module.base_ring()
-    categories = [FormModules(base_ring)]
-    if module in VectorSpaces(base_ring):
-        categories.append(VectorSpaces(base_ring))
-    is_free = module in FramedFreeModules(base_ring)
-    is_presented = module in ModulesWithChosenFinitePresentation(base_ring)
-    if is_free:
-        categories.append(FreeFormModules(base_ring))
-    if is_presented:
-        categories.append(FormModules(base_ring).FinitelyPresented())
-        if module in Modules(base_ring).FinitelyPresented().Torsion():
-            categories.append(FormModules(base_ring).FinitelyPresented().Torsion())
-    if module in FramedFreeModules(base_ring).FinitelyGenerated():
-        categories.append(FreeFormModules(base_ring).FinitelyGenerated())
-    if _is_bilinear_form(form):
-        categories.append(BilinearFormModules(base_ring))
-        symmetric = BilinearFormModules(base_ring).Symmetric()
-        # An existing category inclusion already establishes symmetry.  For
-        # example Lattices(R) is a subcategory of symmetric bilinear forms,
-        # and scalar changes preserve this property.  Rechecking all tensor
-        # entries at construction would redo an established fact.
-        known_symmetric = any(
-            category.is_subcategory(symmetric) for category in _extra_categories
-        )
-        if known_symmetric:
-            categories.append(symmetric)
-    else:
-        categories.append(QuadraticFormModules(base_ring))
-    categories.extend(tuple(_extra_categories))
+    categories = _form_module_categories(
+        module,
+        bilinear=_is_bilinear_form(form),
+        extra_categories=_extra_categories,
+    )
     construction_data = dict(_extra_construction_data or {})
     construction_data["source_form"] = form
+    return _construct_form_module(
+        module,
+        categories,
+        construction_data,
+        _subobject_ambient=_subobject_ambient,
+        _subobject_generator_images=_subobject_generator_images,
+        _subobject_lift=_subobject_lift,
+        _subobject_inclusion_factory=_subobject_inclusion_factory,
+    )
+
+
+def _construct_form_module(
+    module,
+    categories,
+    construction_data,
+    *,
+    _subobject_ambient=None,
+    _subobject_generator_images=None,
+    _subobject_lift=None,
+    _subobject_inclusion_factory=None,
+):
+    r"""Build the formed module after its placement and defining data are selected."""
+    base_ring = module.base_ring()
     match (_subobject_ambient, _subobject_inclusion_factory):
         case (None, None):
             pass
@@ -3672,6 +3712,37 @@ def _form_module(
     formed = module._module_with_structure(tuple(categories), construction_data)
     formed.validate_form_placement(check=False)
     return formed
+
+
+def _form_module_from_bilinear_computation(
+    module,
+    form_computation,
+    *,
+    _extra_categories=(),
+    _extra_construction_data=None,
+    _subobject_ambient=None,
+    _subobject_generator_images=None,
+    _subobject_lift=None,
+    _subobject_inclusion_factory=None,
+):
+    r"""Equip ``module`` from defining data that computes its bilinear form lazily."""
+    categories = _form_module_categories(
+        module,
+        bilinear=True,
+        extra_categories=_extra_categories,
+    )
+    construction_data = dict(_extra_construction_data or {})
+    construction_data["source_form"] = None
+    construction_data["source_form_computation"] = form_computation
+    return _construct_form_module(
+        module,
+        categories,
+        construction_data,
+        _subobject_ambient=_subobject_ambient,
+        _subobject_generator_images=_subobject_generator_images,
+        _subobject_lift=_subobject_lift,
+        _subobject_inclusion_factory=_subobject_inclusion_factory,
+    )
 
 
 @cached_function(key=lambda module, basis: (id(module), basis))
