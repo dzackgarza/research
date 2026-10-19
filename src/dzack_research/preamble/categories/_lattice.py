@@ -330,6 +330,7 @@ def _lattice_object(
     *,
     names=None,
     extra_categories=(),
+    axiom_categories=None,
     construction_data=None,
     subobject_construction=None,
 ):
@@ -377,7 +378,11 @@ def _lattice_object(
         _form_of_gram(module, gram),
         _extra_categories=(
             lattices,
-            *_gram_axiom_categories(lattices, gram),
+            *(
+                _gram_axiom_categories(lattices, gram)
+                if axiom_categories is None
+                else tuple(axiom_categories)
+            ),
             *tuple(extra_categories),
         ),
         _extra_construction_data=data,
@@ -386,7 +391,9 @@ def _lattice_object(
 
 
 @cached_function
-def _lattice_on_gram(category, module, gram, names, root_system_type_name):
+def _lattice_on_gram(
+    category, module, gram, names, root_system_type_name, axiom_categories=None
+):
     r"""The lattice on ``module`` with Gram presentation ``gram``.
 
     A lattice is its module together with its form, so two constructions
@@ -397,7 +404,13 @@ def _lattice_on_gram(category, module, gram, names, root_system_type_name):
     """
     match root_system_type_name:
         case None:
-            return _lattice_object(category, module, gram, names=names)
+            return _lattice_object(
+                category,
+                module,
+                gram,
+                names=names,
+                axiom_categories=axiom_categories,
+            )
         case _:
             from dzack_research.preamble.categories.lattices import RootLattices
 
@@ -407,6 +420,7 @@ def _lattice_on_gram(category, module, gram, names, root_system_type_name):
                 gram,
                 names=names,
                 extra_categories=(RootLattices(),),
+                axiom_categories=axiom_categories,
                 construction_data={"root_system_type_name": root_system_type_name},
             )
 
@@ -1517,6 +1531,7 @@ def _lattice_from_gram_tensor(
     module_generators,
     category,
     root_system_type_name=None,
+    axiom_categories=None,
 ):
     r"""The lattice with Gram presentation ``gram_tensor``.
 
@@ -1539,6 +1554,7 @@ def _lattice_from_gram_tensor(
                 gram_tensor,
                 _normalized_lattice_names(names, rank),
                 None,
+                axiom_categories,
             )
     selected_names = _normalized_lattice_names(names, rank)
     generating_set = _generating_set_for(rank, module_generators, selected_names)
@@ -1548,7 +1564,14 @@ def _lattice_from_gram_tensor(
         else ring._fresh_free_module_on(generating_set)
     )
     root_label = root_system_type_name if ring is _owned_integers() else None
-    return _lattice_on_gram(category, module, gram_tensor, selected_names, root_label)
+    return _lattice_on_gram(
+        category,
+        module,
+        gram_tensor,
+        selected_names,
+        root_label,
+        axiom_categories,
+    )
 
 
 def _basis_keys(module):

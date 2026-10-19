@@ -47,6 +47,7 @@ from dzack_research.preamble.categories._lattice import (
     _gram_is_even,
     _IdentityGram,
     _lattice,
+    _lattice_from_gram_tensor,
     _lattice_latex,
     _lattice_object,
     _nested_gram_tensor,
@@ -2132,11 +2133,23 @@ class Lattices(OwnedCategoryOverBaseRing):
         integers = _owned_integers()
         entries = {entry for row in _LEECH_GRAM_ROWS for entry in row}
         coefficients = {entry: integers(-entry) for entry in entries}
-        leech = Lattices(integers)(
-            tuple(
-                tuple(coefficients[entry] for entry in row)
-                for row in _LEECH_GRAM_ROWS
-            )
+        rows = tuple(
+            tuple(coefficients[entry] for entry in row)
+            for row in _LEECH_GRAM_ROWS
+        )
+        category = Lattices(integers)
+        leech = _lattice_from_gram_tensor(
+            _nested_gram_tensor(rows, integers),
+            integers,
+            None,
+            None,
+            category,
+            axiom_categories=(
+                category.FinitelyGenerated(),
+                category.Nondegenerate(),
+                category.Unimodular(),
+                category.Even(),
+            ),
         )
         lattice_engines.validate_even_unimodular_gram(
             leech.gram_tensor(), check=False
