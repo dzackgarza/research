@@ -1935,10 +1935,6 @@ class _MorCategoryOf(OwnedCategoryBase):
         if _has_category_packet_surface(self.base_category()):
             domain = self.base_category()._mor_endpoint(domain)
             codomain = self.base_category()._mor_endpoint(codomain)
-        if domain not in self.base_category() or codomain not in self.base_category():
-            raise TypeError(
-                f"Mor(X, Y) in {self.base_category()} needs X and Y objects of it, but got {domain} and {codomain}"
-            )
         # Endpoint identity, not a hash: hashing a Mor endpoint re-enters Mor
         # construction, so Sage's cached_method recurses here.  Endpoint
         # refinement may strengthen the represented fixed Mor, so a
@@ -1958,6 +1954,10 @@ class _MorCategoryOf(OwnedCategoryBase):
                 and previous_result is cached
             ):
                 return cached
+        if domain not in self.base_category() or codomain not in self.base_category():
+            raise TypeError(
+                f"Mor(X, Y) in {self.base_category()} needs X and Y objects of it, but got {domain} and {codomain}"
+            )
         # A family with its own fixed-Mor class cannot reuse an inherited
         # object unless an admitted supercategory builds that class (or a
         # specialization of it). Decide that from the declarations before
