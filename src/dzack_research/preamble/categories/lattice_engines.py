@@ -21,6 +21,7 @@ from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_column_matrix_from_row_action,
+    _engine_component_vector,
     _engine_component_matrix,
     _engine_inverse_form_pullback,
     _engine_row_action_matrix,
@@ -308,14 +309,13 @@ def _split_binary_orthogonal_group_elements(lattice):
         else _split_binary_vectors_of_square(lattice, gram[1, 1])
     )
     labels = tuple(lattice.module_generating_set())
-    cross_pairing = _owned_engine_element(lattice.base_ring(), gram[0, 1])
     elements = []
     for left in first:
-        left_coordinates = tuple(left.to_vector()(label) for label in labels)
+        left_coordinates = _engine_component_vector(left.to_vector())
         for right in second:
-            if left.b(right) != cross_pairing:
+            right_coordinates = _engine_component_vector(right.to_vector())
+            if left_coordinates.dot_product(gram * right_coordinates) != gram[0, 1]:
                 continue
-            right_coordinates = tuple(right.to_vector()(label) for label in labels)
             determinant = (
                 left_coordinates[0] * right_coordinates[1]
                 - left_coordinates[1] * right_coordinates[0]
