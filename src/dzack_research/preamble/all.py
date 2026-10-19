@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     DescentEqualizerComparison,
     DirectedSystem,
     DirectSumObjects,
+    FiniteOrdinalCategory,
     MorCategories,
     InverseSystem,
     NaturalTransformationMorphism,
