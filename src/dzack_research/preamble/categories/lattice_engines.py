@@ -255,8 +255,6 @@ def _split_binary_vectors_of_square(lattice, square):
             y = numerator // transformed_b
             solutions.add((v * x + p * y, -u * x + q * y))
     labels = tuple(lattice.module_generating_set())
-    negative_first_basis = sage_vector(SageZZ, (-1, 0))
-    negative_second_basis = sage_vector(SageZZ, (0, -1))
     ring = lattice.base_ring()
     return tuple(
         lattice.linear_combination({label: ring(int(coordinate)) for label, coordinate in zip(labels, solution, strict=True)})
@@ -312,6 +310,8 @@ def _split_binary_orthogonal_group_generators(lattice):
         else _split_binary_vectors_of_square(lattice, gram[1, 1])
     )
     labels = tuple(lattice.module_generating_set())
+    negative_first_basis = sage_vector(SageZZ, (-1, 0))
+    negative_second_basis = sage_vector(SageZZ, (0, -1))
     negation = None
     reversing = None
     for left in first:
