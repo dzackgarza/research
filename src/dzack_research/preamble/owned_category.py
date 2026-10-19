@@ -587,6 +587,7 @@ class CatConstructionsMixin:
         return result
 
 
+@cache
 def declared_implementation_types(
     declaring_class: type,
     provider_names: tuple[str, ...],
