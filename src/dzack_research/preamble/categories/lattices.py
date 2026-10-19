@@ -4498,6 +4498,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 target = _orthogonal_sum(
                     tuple(block for _ in range((positive + negative) // 8))
                 )
+                (source_generator,) = self.module_generators()
+                source_square = self.b(source_generator, source_generator)
+                for target_generator in target.module_generators():
+                    if target.b(target_generator, target_generator) != source_square:
+                        continue
+                    embedding = self.Emb(target)((target_generator,))
+                    if embedding.is_primitive():
+                        return embedding
                 for embedding in self.Emb(target):
                     if embedding.is_primitive():
                         return embedding
