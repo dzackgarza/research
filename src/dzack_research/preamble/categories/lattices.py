@@ -225,6 +225,38 @@ _Rings = OwnedRings()
 _INDECOMPOSABLE_NAMES = {}
 
 
+# This fixed integral presentation was published in Sage's named-lattice
+# catalogue (poeschko/sage@3014850b7c, special_lattices.py, Leech entry). Hecke's
+# `leech_lattice()` remains the independent maintained oracle: it constructs
+# the same lattice by the Conway--Sloane holy construction.
+_LEECH_GRAM_ROWS = (
+    (8, 4, 4, 4, 4, 4, 4, 2, 4, 4, 4, 2, 4, 2, 2, 2, 4, 2, 2, 2, 0, 0, 0, -3),
+    (4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 2, 1, 0, 0, -1),
+    (4, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 2, 1, 1, 1, 0, 0, -1),
+    (4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1, 2, 1, 1, 0, 0, -1),
+    (4, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, -1),
+    (4, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 1, 2, 2, 1, 1, 2, 1, 2, 1, 0, 0, 0, -1),
+    (4, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 0, 0, 0, -1),
+    (2, 2, 2, 2, 2, 2, 2, 4, 1, 1, 1, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 0, 0, 1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, -1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 4, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 0, 1, 0, -1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 4, 2, 2, 1, 2, 1, 2, 1, 2, 1, 0, 0, 1, -1),
+    (2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 4, 1, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 4, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, -1),
+    (2, 2, 1, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2, 4, 2, 2, 1, 2, 2, 2, 2, 2, 1, 1),
+    (2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 4, 2, 1, 2, 2, 2, 2, 1, 2, 1),
+    (2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 4, 1, 2, 2, 2, 2, 1, 1, 1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 1, 4, 2, 2, 2, 1, 1, 1, -1),
+    (2, 1, 2, 1, 2, 1, 1, 2, 2, 2, 1, 2, 1, 2, 2, 2, 2, 4, 2, 2, 2, 2, 1, 1),
+    (2, 1, 1, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 4, 2, 2, 1, 2, 1),
+    (2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 4, 2, 1, 1, 1),
+    (0, 1, 1, 1, 1, 0, 0, 2, 1, 0, 0, 2, 1, 2, 2, 2, 1, 2, 2, 2, 4, 2, 2, 2),
+    (0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 2, 1, 1, 1, 2, 1, 1, 2, 4, 2, 2),
+    (0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 2, 4, 2),
+    (-3, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, 1, -1, 1, 1, 1, 2, 2, 2, 4),
+)
+
+
 class LatticeMorCategoryConstruction(MorCategoryConstruction):
     r"""The strict form-preserving Mor categories of lattices."""
 
@@ -2090,9 +2122,15 @@ class Lattices(OwnedCategoryOverBaseRing):
     @staticmethod
     @cached_function
     def leech_lattice():
-        r"""Return the negative-definite Leech lattice through Hecke's maintained construction."""
+        r"""Return the negative-definite Leech lattice in its fixed integral presentation.
+
+        The named object has no input-dependent computation.  Its Gram
+        presentation is retained locally so constructing it does not cold-load
+        OSCAR; Hecke's ``leech_lattice()`` is the independent oracle from which
+        this presentation is checked.
+        """
         integers = _owned_integers()
-        positive = Lattices(integers)(lattice_engines._oscar_lattices.leech_gram_rows())
+        positive = Lattices(integers)(_LEECH_GRAM_ROWS)
         lattice_engines.validate_even_unimodular_gram(
             positive.gram_tensor(), check=False
         )
