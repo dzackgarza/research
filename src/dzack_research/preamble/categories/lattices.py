@@ -5316,6 +5316,38 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
+        def _split_binary_square_fibre_action(self, square):
+            r"""Return the O(L)-action on a complete split binary fibre."""
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            orthogonal = self.orthogonal_group()
+            reversing_data = None
+            reversing = None
+
+            def reversing_isometry():
+                nonlocal reversing_data, reversing
+                if reversing_data is None:
+                    reversing_data = lattice_engines._split_binary_orthogonal_group_generators(self)
+                if reversing is None and len(reversing_data) == 2:
+                    reversing = orthogonal(reversing_data[1])
+                return reversing
+
+            def same_orbit(left, right):
+                if right == left or right == -left:
+                    return True
+                reflection = reversing_isometry()
+                return reflection is not None and (
+                    right == reflection(left) or right == -reflection(left)
+                )
+
+            return GObjects(orthogonal, Sets()).on_set(
+                self._split_binary_square_fibre(square),
+                lambda isometry, vector: isometry(vector),
+                orbit_relation=same_orbit,
+            )
+
+        @cached_method
         def vectors_of_square_and_divisibility(self, square, divisibility):
             return _vectors_of_square_and_divisibility(self, square, divisibility)
 
@@ -5574,46 +5606,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                     # so its domain is the action's actual point set.  Building
                     # a second equalizer presentation of that same fibre would
                     # eagerly reconstruct the form and its value module.
-                    from dzack_research.preamble.categories.group.g_objects import GObjects
-                    from dzack_research.preamble.categories.sets.set_categories import Sets
-
-                    reversing_data = (
-                        lattice_engines._split_binary_orthogonal_group_generators(self)
-                        if not restricted
-                        else ()
-                    )
-                    reversing = None
-
-                    def reversing_isometry():
-                        nonlocal reversing
-                        if reversing is None and len(reversing_data) == 2:
-                            reversing = orthogonal(reversing_data[1])
-                        return reversing
-
-                    def same_split_orbit(left, right, *, special_only):
-                        if right == left or right == -left:
-                            return True
-                        if special_only:
-                            return False
-                        reflection = reversing_isometry()
-                        return (
-                            reflection is not None
-                            and (right == reflection(left) or right == -reflection(left))
-                        )
-
-                    action = GObjects(orthogonal, Sets()).on_set(
-                        candidates,
-                        lambda isometry, vector: isometry(vector),
-                        orbit_relation=lambda left, right: same_split_orbit(
-                            left, right, special_only=False
-                        ),
-                    )
+                    action = self._split_binary_square_fibre_action(square)
                     if restricted:
                         action = action.restrict_action(
                             special.inclusion(),
-                            orbit_relation=lambda left, right: same_split_orbit(
-                                left, right, special_only=True
-                            ),
+                            orbit_relation=lambda left, right: right == left or right == -left,
                         )
                     return action.orbits_presented_by(candidates)
 
