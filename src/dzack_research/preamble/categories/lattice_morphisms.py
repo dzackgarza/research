@@ -667,12 +667,9 @@ class LatticeEmbeddingMethods:
         assert isometry in source.O(), (
             f"{isometry} cannot be extended along {self}: it is not an isometry of {source}"
         )
-        moved = source.module_category().Mor(source, lattice)(
-            lambda label: self(isometry(source.module_generator(label)))
-        )
         scalar, lifted = self._scaled_lattice_generator_lifts()
         images = {
-            label: moved(lifted[label])
+            label: self(isometry(lifted[label]))
             for label in lattice.module_generating_set()
         }
         return scalar, images
