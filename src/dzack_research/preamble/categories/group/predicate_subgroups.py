@@ -590,7 +590,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda element: morphism(element) == identity,
-            description=f"{morphism}(g)=1",
+            description="elements mapped to the identity by the defining morphism",
             kernel_morphism=morphism,
         )
 
