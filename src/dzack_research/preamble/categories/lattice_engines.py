@@ -219,21 +219,41 @@ def _binary_form_discriminant(lattice):
 def _split_binary_vectors_of_square(lattice, square):
     r"""All vectors of nonzero square for a split nondegenerate binary form.
 
-    SymPy's BinaryQuadratic.solve handles the finite square-discriminant
-    case by its maintained factor/divisor algorithm; unlike qfbsolve this
-    returns the full fibre here. See sympy/solvers/diophantine/diophantine.py,
-    BinaryQuadratic, case (3), and its Alpertron reference.
+    Sage's ``BinaryQF.solve_integer`` reduces a reducible form by an integral
+    unimodular change of variables to ``A X^2 + B X Y`` and tests divisors of
+    the target.  Apply the same maintained reduction to every signed divisor,
+    rather than returning its single representative, to obtain the full
+    finite fibre.
     """
-    from sympy import symbols
-    from sympy.solvers.diophantine.diophantine import BinaryQuadratic
-
     discriminant = _binary_form_discriminant(lattice)
     if not square or discriminant <= 0 or not discriminant.is_square():
         raise ValueError("a finite split binary square fibre requires nonzero square and positive square discriminant")
     gram = _engine_component_matrix(lattice.gram_tensor())
-    x, y = symbols("x y", integer=True)
-    polynomial = int(gram[0, 0]) * x*x + 2*int(gram[0, 1]) * x*y + int(gram[1, 1]) * y*y - int(square)
-    solutions = BinaryQuadratic(polynomial, free_symbols=[x, y]).solve()
+    a, b, c = gram[0, 0], 2 * gram[0, 1], gram[1, 1]
+    polynomial_discriminant = b * b - 4 * a * c
+    root = polynomial_discriminant.sqrt()
+    if a:
+        slope = (-b + (root if root != b else -root)) / (2 * a)
+        p, q = slope.as_integer_ratio()
+        _gcd, u, v = p.xgcd(q)
+    elif c:
+        v, p, u, q = SageZZ.zero(), SageZZ.one(), -SageZZ.one(), SageZZ.zero()
+    else:
+        v, p, u, q = SageZZ.one(), SageZZ.zero(), SageZZ.zero(), SageZZ.one()
+    transformed_a = a * v * v - b * u * v + c * u * u
+    transformed_b = 2 * a * v * p + b * (v * q - u * p) - 2 * c * u * q
+    target = _engine_ring(lattice.base_ring())(square)
+    signed_divisors = tuple(
+        sign * divisor
+        for divisor in abs(target).divisors()
+        for sign in (SageZZ.one(), -SageZZ.one())
+    )
+    solutions = set()
+    for x in signed_divisors:
+        numerator = target // x - transformed_a * x
+        if transformed_b.divides(numerator):
+            y = numerator // transformed_b
+            solutions.add((v * x + p * y, -u * x + q * y))
     labels = tuple(lattice.module_generating_set())
     ring = lattice.base_ring()
     return tuple(
