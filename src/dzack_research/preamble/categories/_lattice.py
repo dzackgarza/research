@@ -213,11 +213,13 @@ def _form_of_gram(module, gram):
             return form
 
 
+@cached_function
 def _gram_rank(gram):
     r"""The rank of the module a Gram presentation is stated on, as a cardinal."""
     return cardinal(gram.tensor_shape()[0])
 
 
+@cached_function
 def _gram_determinant(gram, ring):
     r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration.
 
@@ -278,6 +280,7 @@ def _gram_is_unimodular(gram, ring):
             return gram.is_unimodular()
 
 
+@cached_function
 def _gram_is_even(gram, ring):
     r"""Whether \(b(x,x)\in 2R\) for every \(x\) of the presented symmetric form.
 
@@ -287,13 +290,17 @@ def _gram_is_even(gram, ring):
     ideal is asked of a commutative base ring; over any other ring the answer
     is the proposition that the form is even.
     """
+    rank = _gram_rank(gram)
+    if _engine_ring(ring) is SageZZ and rank.is_finite():
+        size = int(rank)
+        return all(SageZZ(gram[index, index]).is_even() for index in range(size))
     match ring in OwnedRings().Commutative():
         case False:
             return AtomicProposition("is_even", gram)
     twice = ring.ideal(ring(2))
-    match _gram_rank(gram).is_finite():
+    match rank.is_finite():
         case True:
-            size = int(_gram_rank(gram))
+            size = int(rank)
             return all(ring(gram[index, index]) in twice for index in range(size))
         case False:
             return gram.is_even_in(twice)
