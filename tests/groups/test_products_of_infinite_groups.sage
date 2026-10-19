@@ -37,7 +37,7 @@ def _swap_subgroup():
     plane = NamedLattices.U
     e, f = plane.module_generators()[0], plane.module_generators()[1]
     swap = plane.Aut()({0: f, 1: e})
-    return plane, swap, plane.O().subgroup(finite_ordered_set((swap,)))
+    return plane, swap, plane.O().subgroup(Set((swap,)))
 
 
 def test_product_of_two_swap_groups_has_order_four_with_projections_and_inclusions() -> None:
@@ -104,7 +104,7 @@ def test_product_with_an_infinite_orthogonal_group_is_componentwise() -> None:
     e0, e1 = split.module_generator(first_label), split.module_generator(second_label)
     t = split.Aut()({first_label: 3 * e0 + 2 * e1, second_label: 4 * e0 + 3 * e1})
     orthogonal = split.O()
-    assert orthogonal not in OwnedFiniteGroups()
+    assert orthogonal not in Groups().Finite()
 
     construction = Groups().product_construction((orthogonal, group))
     product = construction.object()
@@ -138,17 +138,17 @@ def test_images_of_morphisms_out_of_finite_groups_are_placed_finite() -> None:
     lattice = plane + plane
     construction = Groups().product_construction((group, group))
     sum_map = lattice.orthogonal_sum_map(construction)
-    assert lattice.O() not in OwnedFiniteGroups()
-    assert sum_map.image() in OwnedFiniteGroups()
+    assert lattice.O() not in Groups().Finite()
+    assert sum_map.image() in Groups().Finite()
     assert sum_map.image().cardinality() == cardinal(4)
 
     cyclic_four, cyclic_two = Groups.C(4), Groups.C(2)
     a, b = cyclic_four.group_generators()[0], cyclic_two.group_generators()[0]
     reduction = cyclic_four.Mor(cyclic_two)({a: b})
-    assert reduction.image() in OwnedFiniteGroups()
+    assert reduction.image() in Groups().Finite()
     assert reduction.image().cardinality() == cardinal(2)
 
     free = Groups.Free(1)
     x = free.group_generators()[0]
     squaring = free.Mor(free)({next(iter(free.free_basis())): x * x})
-    assert squaring.image() not in OwnedFiniteGroups()
+    assert squaring.image() not in Groups().Finite()
