@@ -2021,7 +2021,11 @@ def _symmetric_group(points):
     return _own_group(
         SymmetricGroup(int(size)),
         refinements=refinements,
-        description=f"Symmetric group S_{size}" if standard else None,
+        description=(
+            f"Symmetric group S_{size}"
+            if standard
+            else f"Symmetric group on {points}"
+        ),
         symmetric_points=points,
         constructing_category=OwnedGroups(),
     )
