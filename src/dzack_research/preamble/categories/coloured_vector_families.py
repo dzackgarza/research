@@ -470,7 +470,7 @@ class _ColouredFamilyRealization:
         labels = tuple(self._lattice.module_generating_set())
         ring = self._lattice.base_ring()
         images = []
-        for generator in subgroup.gens():
+        for generator in subgroup.gens_small():
             permutation = tuple(int(generator(index + 1)) - 1 for index in range(size))
             transformation = self._coordinate_automorphism(permutation)
             images.append(
