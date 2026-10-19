@@ -282,13 +282,21 @@ class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
 def _gram_key(gram):
     rank = int(gram.tensor_shape()[0])
     return tuple(
-        tuple(gram[row, column] for column in range(rank)) for row in range(rank)
+        tuple(int(gram[row, column]) for column in range(rank)) for row in range(rank)
     )
 
 
 def _register_indecomposable_gram(name, gram):
     r"""Register an exact Gram matrix under its indecomposable display name."""
     _INDECOMPOSABLE_NAMES.setdefault(_gram_key(gram), str(name))
+
+
+def _register_indecomposable_gram_rows(name, rows):
+    r"""Register integral Gram rows without constructing the lattice or its tensor."""
+    _INDECOMPOSABLE_NAMES.setdefault(
+        tuple(tuple(int(entry) for entry in row) for row in rows),
+        str(name),
+    )
 
 
 def _register_indecomposable(name, lattice):

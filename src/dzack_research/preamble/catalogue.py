@@ -3,15 +3,12 @@ r"""Named integral lattices and primitive embeddings used by the research layer.
 from collections.abc import Mapping
 from functools import cache
 
-from sage.combinat.root_system.cartan_type import CartanType
 from sage.misc.lazy_attribute import lazy_class_attribute
-from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.lattices import (
     EvenTwoElementaryLattices,
     Lattices,
-    _register_indecomposable,
-    _register_indecomposable_gram,
+    _register_indecomposable_gram_rows,
     nikulin_invariants,
     signature_pair,
 )
@@ -28,18 +25,6 @@ from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import tensor
 
 ZZ = _owned_integers()
-
-
-def _gram_from_engine_matrix(engine_matrix):
-    r"""Cross one private Sage Gram matrix into the public tensor layer."""
-    rows = int(engine_matrix.nrows())
-    columns = int(engine_matrix.ncols())
-    return tensor(
-        ZZ,
-        (),
-        (rows, columns),
-        [[_owned_engine_element(ZZ, SageZZ(engine_matrix[i, j])) for j in range(columns)] for i in range(rows)],
-    )
 
 
 def _block_gram(*grams):
@@ -277,24 +262,40 @@ for _name in _NAMED_LATTICE_NAMES:
 # Exact Gram-block names used by the represented direct-sum decomposition.
 # A1 and D2 are intentionally omitted: they are scalar twists of rank-one
 # blocks and should display as I_{0,1}(2), not as competing root names.
-_register_indecomposable_gram("I_{1,0}", tensor(ZZ, (), (1, 1), [[1]]))
-_register_indecomposable_gram("I_{0,1}", tensor(ZZ, (), (1, 1), [[-1]]))
+_register_indecomposable_gram_rows("I_{1,0}", ((1,),))
+_register_indecomposable_gram_rows("I_{0,1}", ((-1,),))
+
+
+def _register_root_gram(kind, rank):
+    r"""Register the negative simple-root Gram from its Dynkin edges."""
+    rows = [[0 for _column in range(rank)] for _row in range(rank)]
+    for index in range(rank):
+        rows[index][index] = -2
+    if kind == "A":
+        edges = tuple((index, index + 1) for index in range(rank - 1))
+    elif kind == "D":
+        edges = (
+            *tuple((index, index + 1) for index in range(rank - 3)),
+            (rank - 3, rank - 2),
+            (rank - 3, rank - 1),
+        )
+    else:
+        edges = (
+            *tuple((index, index + 1) for index in range(rank - 2)),
+            (2, rank - 1),
+        )
+    for left, right in edges:
+        rows[left][right] = rows[right][left] = 1
+    _register_indecomposable_gram_rows(f"{kind}_{{{rank}}}", rows)
+
+
 for _rank in range(2, 22):
-    _register_indecomposable_gram(
-        f"A_{{{_rank}}}",
-        -_gram_from_engine_matrix(CartanType(["A", _rank]).cartan_matrix()),
-    )
+    _register_root_gram("A", _rank)
 for _rank in range(3, 23):
-    _register_indecomposable_gram(
-        f"D_{{{_rank}}}",
-        -_gram_from_engine_matrix(CartanType(["D", _rank]).cartan_matrix()),
-    )
+    _register_root_gram("D", _rank)
 for _rank in (6, 7, 8):
-    _register_indecomposable_gram(
-        f"E_{{{_rank}}}",
-        -_gram_from_engine_matrix(CartanType(["E", _rank]).cartan_matrix()),
-    )
-_register_indecomposable("U", NamedLattices.U)
+    _register_root_gram("E", _rank)
+_register_indecomposable_gram_rows("U", ((0, 1), (1, 0)))
 
 
 # Nikulin, Math. USSR-Izv. 14 (1980), DOI
