@@ -2147,16 +2147,15 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         return self.element_class(self, forward, inverse_computation=inverse_computation)
 
     def __init__(self, mor_family, domain, codomain) -> None:
-        group = CoreMor._vertex_group_placement(domain, codomain)
-        categories = [] if group is None else [group]
+        category = CoreMor._vertex_group_placement(domain, codomain)
         if domain is codomain and _orthogonal_group_is_finite_by_theorem(domain):
-            categories.append(OwnedFiniteGroups())
+            category = OwnedFiniteGroups()
         LatticeEmbeddingMor.__init__(
             self,
             mor_family,
             domain,
             codomain,
-            category=Cat().meet(tuple(categories)) if categories else None,
+            category=category,
         )
         if domain is codomain:
             self._initialize_vertex_group()

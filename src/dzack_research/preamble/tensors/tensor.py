@@ -1098,6 +1098,7 @@ def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):
 
 
 
+@cached_function
 def _engine_component_matrix(value):
     r"""Private engine adapter (`OWN-06`): the Sage matrix of a two-index tensor.
 
