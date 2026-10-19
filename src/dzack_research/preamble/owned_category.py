@@ -63,6 +63,7 @@ import copyreg
 import hashlib
 from abc import ABCMeta
 from _abc import _abc_init
+from collections import Counter
 from collections.abc import Hashable
 from dataclasses import dataclass
 from functools import wraps
@@ -104,11 +105,14 @@ def _c3_merge(sequences: list[list[type]]) -> list[type]:
     ``type.mro`` implements.
     """
     sequences = [list(sequence) for sequence in sequences if sequence]
+    tail_occurrences = Counter(
+        entry for sequence in sequences for entry in sequence[1:]
+    )
     merged: list[type] = []
     while sequences:
         for sequence in sequences:
             head = sequence[0]
-            if not any(head in other[1:] for other in sequences):
+            if tail_occurrences[head] == 0:
                 break
         else:
             raise TypeError(
@@ -116,9 +120,12 @@ def _c3_merge(sequences: list[list[type]]) -> list[type]:
                 + ", ".join(sequence[0].__name__ for sequence in sequences)
             )
         merged.append(head)
-        sequences = [
-            (sequence[1:] if sequence[0] is head else sequence) for sequence in sequences
-        ]
+        for sequence in sequences:
+            if sequence[0] is not head:
+                continue
+            sequence.pop(0)
+            if sequence:
+                tail_occurrences[sequence[0]] -= 1
         sequences = [sequence for sequence in sequences if sequence]
     return merged
 
