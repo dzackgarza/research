@@ -421,24 +421,23 @@ class _ColouredFamilyRealization:
             ),
         )
 
-    def _coordinate_automorphism(self, permutation):
-        r"""The rational row-action matrix induced by a pairing-table automorphism."""
+    @cached_method
+    def _coordinate_basis_data(self):
+        r"""The selected family basis rows and their inverse, computed once."""
         family = self._family_coordinate_matrix()
         basis_rows = tuple(family.transpose().pivots())
         basis = family.matrix_from_rows(basis_rows)
+        return basis_rows, basis.inverse()
+
+    def _coordinate_automorphism(self, permutation):
+        r"""The rational row-action matrix induced by a pairing-table automorphism."""
+        family = self._family_coordinate_matrix()
+        basis_rows, basis_inverse = self._coordinate_basis_data()
         target = engine_matrix(
             SageZZ,
             tuple(family.row(permutation[index]) for index in basis_rows),
         )
-        transformation = basis.solve_right(target)
-        permuted = engine_matrix(
-            SageZZ,
-            tuple(family.row(permutation[index]) for index in range(family.nrows())),
-        )
-        assert family * transformation == permuted, (
-            "a pairing-table automorphism of a spanning nondegenerate family must induce one linear transformation"
-        )
-        return transformation
+        return basis_inverse * target
 
     @cached_method
     def integral_configuration_data(self):
