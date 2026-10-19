@@ -3441,13 +3441,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert self.module_rank().is_finite(), (
                 f"{self!r} has rank {self.module_rank()}, so it has no Gram matrix on a basis; a Gram matrix needs finite rank. Pass a finite family of vectors to take their Gram matrix"
             )
-            correlation = self.algebraic_correlation_morphism()
-            linear = (
-                correlation.domain()
-                .module_category()
-                .Mor(correlation.domain(), correlation.codomain())(correlation)
+            gram = self.gram_tensor()
+            size = int(self.module_rank())
+            return self.base_ring().matrix_space(size, size).from_rows(
+                tuple(
+                    tuple(gram[row, column] for column in range(size))
+                    for row in range(size)
+                )
             )
-            return linear.matrix()
 
         def basis_vector(self, position):
             r"""Return the selected lattice basis vector at integer ``position``.
