@@ -382,10 +382,16 @@ def _category_parameter_signature(category: Category):
             continue
         if parameter is category:
             continue
-        if isinstance(parameter, Category):
-            return (accessor, _category_graph_signature(parameter))
         parameter_type = type(parameter)
         signature = (accessor, parameter_type.__module__, parameter_type.__qualname__)
+        # A fixed Mor is both a Category and a Sage Parent.  As a parameter it
+        # is the parent object, just like any other ambient group or module;
+        # its runtime type supplies the structural part and Sage's retained
+        # session counter separates distinct instances.  Traversing its whole
+        # semantic Mor graph here would compute derived arrow structure merely
+        # to construct a category parameterized by that parent.
+        if isinstance(parameter, Category) and not isinstance(parameter, SageParent):
+            return (accessor, _category_graph_signature(parameter))
         engine = getattr(parameter, "_engine", None)
         if engine is not None:
             engine_type = type(engine)
