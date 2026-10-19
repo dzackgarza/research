@@ -4489,6 +4489,19 @@ class Lattices(OwnedCategoryOverBaseRing):
                     f"{self!r} has no primitive embedding into II_{{{positive},{negative}}}: by Nikulin's criterion no even lattice of the complementary signature has discriminant form -q_L"
                 )
 
+            positive = int(positive)
+            negative = int(negative)
+            if self.module_rank() == 1 and (positive == 0 or negative == 0):
+                category = Lattices(self.base_ring())
+                e8 = category("E8")
+                block = e8.twist(-1) if positive else e8
+                target = _orthogonal_sum(
+                    tuple(block for _ in range((positive + negative) // 8))
+                )
+                for embedding in self.Emb(target):
+                    if embedding.is_primitive():
+                        return embedding
+
             target_gram, embedding_matrix = (
                 lattice_engines._oscar_lattices.even_unimodular_primitive_embedding(
                     self.gram_tensor(), positive, negative
