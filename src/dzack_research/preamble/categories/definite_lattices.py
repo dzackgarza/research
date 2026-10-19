@@ -255,12 +255,11 @@ def _minimum(lattice):
         f"the minimum of {lattice} is computed here only for integral lattices "
         f"over ZZ, but {lattice} is over {lattice.base_ring()}"
     )
-    from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
-
     sign, positive_gram = _positive_gram(lattice)
-    backend = IntegralLattice(_engine_component_matrix(positive_gram))
-    minimum_value = _owned_engine_element(lattice.base_ring(),
-        SageZZ(backend.minimum())
+    engine_gram = _engine_component_matrix(positive_gram)
+    minimum_value = _owned_engine_element(
+        lattice.base_ring(),
+        SageZZ(engine_gram.__pari__().qfminim(None, 0)[1]),
     )
     return sign * minimum_value
 
