@@ -305,6 +305,14 @@ class _ColouredFamilyRealization:
     @cached_method
     def pairing_tensor(self):
         r"""The Gram tensor of the indexed family."""
+        generators = self._lattice.module_generating_set()
+        if self._indices is generators and all(
+            self.vector(index) == self._lattice.module_generator(index)
+            for index in self._indices
+        ):
+            # The family morphism is the selected framing identity, so its
+            # pullback is literally the Gram tensor already retained by L.
+            return self._lattice.gram_tensor()
         return self._lattice.gram_tensor().pullback(self.family_morphism())
 
     @cached_method
