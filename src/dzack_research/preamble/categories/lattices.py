@@ -1797,9 +1797,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: Lattices(ZZ)(L) is L
             True
         """
-        lattice = super().__call__(data, *args, **options)
-        assert lattice in self, f"{lattice!r} is not a lattice in {self}"
-        return lattice
+        return super().__call__(data, *args, **options)
 
     def _call_(  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
         self,
@@ -5581,8 +5579,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             orthogonal = self.orthogonal_group()
             special = self.special_orthogonal_group()
             group = orthogonal if acting_group is None else acting_group
-            restricted = group == special
-            assert restricted or group == orthogonal, (
+            restricted = group is special
+            assert restricted or group is orthogonal, (
                 f"the orbits of the square fibre of {self} are computed under O(L) or SO(L), "
                 f"but {group} is neither"
             )

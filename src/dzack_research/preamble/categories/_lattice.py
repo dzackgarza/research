@@ -328,20 +328,20 @@ def _gram_axiom_categories(lattices, gram):
     decides that it holds, so an undecided property places nothing.
     """
     ring = lattices.base_ring()
-    axioms = []
+    placement = lattices
     match _gram_rank(gram).is_finite():
         case True:
-            axioms.append(lattices.FinitelyGenerated())
+            placement = placement.FinitelyGenerated()
     match _gram_is_nondegenerate(gram, ring):
         case True:
-            axioms.append(lattices.Nondegenerate())
+            placement = placement.Nondegenerate()
             match _gram_is_unimodular(gram, ring):
                 case True:
-                    axioms.append(lattices.Unimodular())
+                    placement = placement.Unimodular()
     match _gram_is_even(gram, ring):
         case True:
-            axioms.append(lattices.Even())
-    return tuple(axioms)
+            placement = placement.Even()
+    return () if placement is lattices else (placement,)
 
 
 def _lattice_object(
