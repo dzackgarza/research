@@ -94,7 +94,7 @@ def test_the_orbit_of_a_flag_splits_under_the_stable_group() -> None:
     line = lattice.subobject_on([e1])
     whole = lattice.subobject_on([e1, e2])
     line_into_whole = line.Emb(whole)(line.inclusion().factor_through(whole.inclusion()))
-    marked = flags.object((line_into_whole, whole.inclusion()))
+    marked = flags((line_into_whole, whole.inclusion()))
 
     assert group.split_orbit(marked, lattice.stable_orthogonal_group()).cardinality() == 2
     assert group.split_orbit(marked, group).cardinality() == 1
