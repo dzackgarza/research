@@ -502,6 +502,11 @@ def _attach_aut_family(owner: CategoricalMor, family: _AutCategoryOf) -> None:
     owner._aut_family = category_owner
     category_owner._remember_between(owner.domain_object(), owner.codomain_object(), owner)
 
+
+class _DeferredMorElementClass:
+    r"""Initialization marker which carries no eager element operations."""
+
+
 class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryPacketMethods, OwnedMor, Category):
     r"""A represented Mor object which is both a Sage Mor and a category.
 
@@ -699,11 +704,38 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
             ]
             bases.append(candidate)
 
-        return dynamic_class(
+        result = dynamic_class(
             f"{type(self).__name__}.ArrowType",
             tuple(bases),
             doccls=providers[0] if providers else CategoricalMor.ElementMethods,
         )
+        self._configure_generated_arrow_operations(result)
+        return result
+
+    def _configure_generated_arrow_operations(self, element_class):
+        r"""Apply Sage's deferred parent-operation dispatch to an arrow type."""
+        previous = self.__dict__.get("element_class", None)
+        self.__dict__["element_class"] = element_class
+        try:
+            if all(
+                hasattr(self, name)
+                for name in ("product", "product_from_element_class_mul")
+            ) and hasattr(element_class, "_mul_parent"):
+                from sage.categories.magmas import Magmas
+
+                Magmas.ParentMethods.__init_extra__(self)
+            if all(
+                hasattr(self, name)
+                for name in ("summation", "summation_from_element_class_add")
+            ) and hasattr(element_class, "_add_parent"):
+                from sage.categories.additive_magmas import AdditiveMagmas
+
+                AdditiveMagmas.ParentMethods.__init_extra__(self)
+        finally:
+            if previous is None:
+                self.__dict__.pop("element_class", None)
+            else:
+                self.__dict__["element_class"] = previous
 
     def _owned_direct_supercategories(self):
         r"""Retain this Mor's declared graph until an input is refined.
@@ -827,7 +859,16 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
 
             category = Sets()
         self._mor_placement = category
-        SageHomset.__init__(self, domain, codomain, category=SageSets())
+        # Sage's additive-magma and magma initialization hooks inspect the
+        # element class only to select parent-dispatched ``+`` and ``*``.  The
+        # real arrow type is a derived value of the complete fixed-Mor graph;
+        # expose a marker during host initialization and apply those two rules
+        # when that type is first requested.
+        self.__dict__["element_class"] = _DeferredMorElementClass
+        try:
+            SageHomset.__init__(self, domain, codomain, category=SageSets())
+        finally:
+            self.__dict__.pop("element_class", None)
         with construction_scope(self) as reached:
             realize_owned_category(self)
             run_construction_hooks(self, reached)
