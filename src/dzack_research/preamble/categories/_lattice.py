@@ -1496,15 +1496,34 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
     negative-definite root lattices, hence ``-D A``.  In the simply-laced
     case ``D=1`` and this is the existing ``-A`` construction.
     """
-    cartan = cartan_type.cartan_matrix()
-    indices = tuple(cartan_type.index_set())
     rank = int(cartan_type.rank())
-    if cartan_type.is_simply_laced():
-        components = [
-            tuple(-_owned_engine_element(ring, cartan[i, j]) for j in range(rank))
-            for i in range(rank)
-        ]
+    kind = cartan_type.type()
+    if cartan_type.is_irreducible() and kind in ("A", "D", "E"):
+        zero = ring.zero()
+        one = ring.one()
+        minus_two = ring(-2)
+        components = [[zero for _ in range(rank)] for _ in range(rank)]
+        for index in range(rank):
+            components[index][index] = minus_two
+        if kind == "A":
+            edges = tuple((index, index + 1) for index in range(rank - 1))
+        elif kind == "D":
+            edges = (
+                *tuple((index, index + 1) for index in range(rank - 3)),
+                (rank - 3, rank - 2),
+                (rank - 3, rank - 1),
+            )
+        else:
+            edges = (
+                *tuple((index, index + 1) for index in range(rank - 2)),
+                (2, rank - 1),
+            )
+        for left, right in edges:
+            components[left][right] = one
+            components[right][left] = one
     else:
+        cartan = cartan_type.cartan_matrix()
+        indices = tuple(cartan_type.index_set())
         symmetrizer = cartan_type.symmetrizer()
         assert symmetrizer is not None, (
             f"{cartan_type} has no integral Cartan symmetrizer"
