@@ -2550,9 +2550,15 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         from dzack_research.preamble.categories.group.g_sets import FiniteGSets
 
         realization = _assert_injective(self, family)
+        lattice = self.lattice()
+        faithful = (
+            lattice.is_nondegenerate() is True
+            and realization.pairing_graph().rank() == lattice.rank()
+        )
         return FiniteGSets(self.stabilizer(family))(
             realization.indices(),
             lambda automorphism, index: _index_permutation(self, family, automorphism)[index],
+            injectivity_decision=True if faithful else None,
         )
 
     def pointwise_stabilizer(self, embedding):

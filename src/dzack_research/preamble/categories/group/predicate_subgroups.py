@@ -645,6 +645,8 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
 
         def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
+            if self.kernel_morphism().is_injective() is True:
+                return cardinal(1)
             if self.supergroup().is_finite() is True:
                 return _finite_group_morphism_kernel_cardinality(
                     self.kernel_morphism()

@@ -3710,16 +3710,20 @@ class _GroupMorRealizationMixin:
                     continue
             return endpoint(element)
 
-    def _from_elementwise_rule(self, function):
+    def _from_elementwise_rule(self, function, *, injectivity_decision=None):
         r"""Retain an admitted group map by its rule on elements (``OWN-22``).
 
         The multiplication-preserving law is construction data, not a
         request for a GAP model or a generating resolution. A free-source
         realization reads this same rule on its selected free generators.
         """
-        return self.element_class(self, function)
+        return self.element_class(
+            self,
+            function,
+            injectivity_decision=injectivity_decision,
+        )
 
-    def elementwise(self, function):
+    def elementwise(self, function, *, injectivity_decision=None):
         r"""Retain an admitted homomorphism on elements in this exact Mor.
 
         This is the shared pointwise-arithmetic constructor contract. A
@@ -3730,7 +3734,10 @@ class _GroupMorRealizationMixin:
             return self(function)
         if not callable(function):
             raise TypeError(f"a morphism in {self} needs a function on elements")
-        return self._from_elementwise_rule(function)
+        return self._from_elementwise_rule(
+            function,
+            injectivity_decision=injectivity_decision,
+        )
 
     def _apply_pointwise_scalar(self, scalar, element):
         r"""The integer action on the multiplicatively written abelian target.
@@ -3890,13 +3897,15 @@ class IndexedFreeGroupMor(_GroupMorRealizationMixin, CategoricalMor):
                 raise TypeError(f"{images!r} cannot define a homomorphism {self.domain()} -> {self.codomain()}: give the images of the free basis {indices} as a map, a function, or a dictionary")
         return self.element_class(self, generator_morphism)
 
-    def _from_elementwise_rule(self, function):
+    def _from_elementwise_rule(self, function, *, injectivity_decision=None):
         r"""Restrict an admitted elementwise rule to the selected free basis."""
         domain = self.domain()
-        return self(
+        return self.element_class(
+            self,
             Sets().Mor(domain.free_basis(), self.codomain())(
                 lambda index: function(domain.free_generator(index))
-            )
+            ),
+            injectivity_decision=injectivity_decision,
         )
 
     @cached_method

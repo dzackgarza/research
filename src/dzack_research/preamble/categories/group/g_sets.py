@@ -121,9 +121,14 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     def _repr_object_names(self):
         return f"finite {self.group()}-sets"
 
-    def _call_(self, point_set, action):
+    def _call_(self, point_set, action, *, injectivity_decision=None):
         r"""The finite ``G``-set on ``point_set`` with the action ``action(g, x)``."""
-        return _finite_g_set_from_action(self.group(), point_set, action)
+        return _finite_g_set_from_action(
+            self.group(),
+            point_set,
+            action,
+            injectivity_decision=injectivity_decision,
+        )
 
     def trivial(self, point_set):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
@@ -1225,6 +1230,7 @@ def _finite_g_set_from_action(
     point_set,
     action,
     *,
+    injectivity_decision=None,
     category=None,
     construction_data=None,
 ):
@@ -1251,7 +1257,8 @@ def _finite_g_set_from_action(
     permutation_representation = mor.elementwise(
         lambda group_element: _permutation_from_point_map(
             permutations, point_set, lambda point: action(group_element, point),
-        )
+        ),
+        injectivity_decision=injectivity_decision,
     )
     selected_category = (
         FiniteGSets(permutation_representation.domain())
