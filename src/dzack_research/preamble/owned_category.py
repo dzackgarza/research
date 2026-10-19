@@ -274,8 +274,14 @@ def _category_graph_signature(category: Category, memo=None):
     Sage's ``_cmp_key``.  Parameter values that induce the same category graph
     therefore share a signature, matching ``CategoryWithParameters``' named-
     class optimization; parameter regimes with different supercategory graphs
-    do not.
+    do not. Once this signature has been incorporated into the category's
+    persistent comparison key, that same signature is retained on the category
+    for the overlapping supergraphs of later comparison keys. Before then only
+    the call-local ``memo`` is used.
     """
+    persistent = category.__dict__.get("_owned_graph_signature")
+    if persistent is not None:
+        return persistent
     if memo is None:
         memo = {}
     identity = id(category)
@@ -303,7 +309,15 @@ def _category_graph_signature(category: Category, memo=None):
 
 
 def _category_graph_depth(category: Category, memo=None) -> int:
-    r"""Return the depth of ``category`` in the immediate-supercategory DAG."""
+    r"""Return the depth of ``category`` in the immediate-supercategory DAG.
+
+    As for the graph signature, a depth already fixed into the persistent
+    comparison key is reusable by later keys; an unfixed graph stays local to
+    this traversal.
+    """
+    persistent = category.__dict__.get("_owned_graph_depth")
+    if persistent is not None:
+        return persistent
     if memo is None:
         memo = {}
     identity = id(category)
@@ -332,7 +346,12 @@ def _category_parameter_signature(category: Category):
     runtime class and base category without being the same category.  Categories
     over scalars expose ``base``.  Record those parameters structurally without
     using object identity or ``repr``.
+    Once this signature is stored in the category's persistent comparison key,
+    later parameter chains reuse that same value.
     """
+    persistent = category.__dict__.get("_owned_parameter_signature")
+    if persistent is not None:
+        return persistent
     mor_family = getattr(category, "mor_family", None)
     if callable(mor_family):
         try:
@@ -408,10 +427,19 @@ class _OwnedCategoryComparisonKey:
         # immediately replaces that value with the owned structural key.
         native_descriptor = Category.__dict__["_cmp_key"]
         flags, session_counter = native_descriptor.__get__(category, type(category))
+        # The comparison key is stored permanently on this category below.
+        # Retain the graph inputs at exactly that boundary: caching them before
+        # the key is fixed would freeze a category whose construction has not
+        # yet finished, while recomputing them afterward cannot change the key.
         depth = _category_graph_depth(category)
+        graph_signature = _category_graph_signature(category)
+        category._owned_graph_depth = depth
+        category._owned_graph_signature = graph_signature
+        parameter_signature = _category_parameter_signature(category)
+        category._owned_parameter_signature = parameter_signature
         signature = (
-            _category_graph_signature(category),
-            _category_parameter_signature(category),
+            graph_signature,
+            parameter_signature,
         )
         structural = (
             self._OWNED_FLOOR
