@@ -2130,11 +2130,18 @@ class Lattices(OwnedCategoryOverBaseRing):
         this presentation is checked.
         """
         integers = _owned_integers()
-        positive = Lattices(integers)(_LEECH_GRAM_ROWS)
-        lattice_engines.validate_even_unimodular_gram(
-            positive.gram_tensor(), check=False
+        entries = {entry for row in _LEECH_GRAM_ROWS for entry in row}
+        coefficients = {entry: integers(-entry) for entry in entries}
+        leech = Lattices(integers)(
+            tuple(
+                tuple(coefficients[entry] for entry in row)
+                for row in _LEECH_GRAM_ROWS
+            )
         )
-        return positive.twist(-integers.one())
+        lattice_engines.validate_even_unimodular_gram(
+            leech.gram_tensor(), check=False
+        )
+        return leech
 
     @cached_method
     def super_categories(self):
