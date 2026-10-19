@@ -285,6 +285,45 @@ def _binary_primitive_isotropic_vectors(lattice):
     return tuple(points)
 
 
+def _split_binary_orthogonal_group_elements(lattice):
+    r"""All integral isometries of a nondegenerate split binary lattice.
+
+    An isometry is determined by the images of the two framed generators.
+    Each image lies in the finite fibre of the corresponding diagonal Gram
+    entry (or on one of the four primitive null rays), their pairing is the
+    off-diagonal entry, and their coordinate determinant is a unit.
+    """
+    gram = _engine_component_matrix(lattice.gram_tensor())
+    discriminant = _binary_form_discriminant(lattice)
+    if not discriminant or discriminant <= 0 or not discriminant.is_square():
+        raise ValueError("explicit split-binary isometries require a nondegenerate square discriminant")
+    first = (
+        _binary_primitive_isotropic_vectors(lattice)
+        if gram[0, 0] == 0
+        else _split_binary_vectors_of_square(lattice, gram[0, 0])
+    )
+    second = (
+        _binary_primitive_isotropic_vectors(lattice)
+        if gram[1, 1] == 0
+        else _split_binary_vectors_of_square(lattice, gram[1, 1])
+    )
+    labels = tuple(lattice.module_generating_set())
+    elements = []
+    for left in first:
+        left_coordinates = tuple(left.to_vector()(label) for label in labels)
+        for right in second:
+            if left.b(right) != lattice.base_ring()(gram[0, 1]):
+                continue
+            right_coordinates = tuple(right.to_vector()(label) for label in labels)
+            determinant = (
+                left_coordinates[0] * right_coordinates[1]
+                - left_coordinates[1] * right_coordinates[0]
+            )
+            if determinant in (lattice.base_ring().one(), -lattice.base_ring().one()):
+                elements.append(dict(zip(labels, (left, right), strict=True)))
+    return tuple(elements)
+
+
 def _rational_representation_witness(lattice, value):
     r"""Return a vector ``x`` of the nondegenerate ``QQ``-lattice with ``b(x, x) = value``, or ``None``.
 
