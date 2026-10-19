@@ -377,6 +377,11 @@ class _ColouredFamilyRealization:
         return cardinal(automorphism_order // kernel_order)
 
     @cached_method
+    def spans_lattice(self):
+        r"""Whether the family generates the whole integral lattice."""
+        return self.span().inclusion().cokernel().exponent() == 1
+
+    @cached_method
     def configuration_group(self):
         r"""``G = rho(Aut(Gamma))`` for the group morphism ``rho: Aut(Gamma) -> O(L tensor Q)``."""
         graph = self.pairing_graph()

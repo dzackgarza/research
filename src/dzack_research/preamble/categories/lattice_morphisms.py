@@ -2522,11 +2522,19 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             realization = _realization(self.lattice(), family)
             return _matching(realization, realization, automorphism) is not None
 
+        def cardinality():
+            realization = _realization(self.lattice(), family)
+            if realization.spans_lattice():
+                return realization.stabilizer_cardinality()
+            return self.subgroup(
+                finite_ordered_set(_stabilizer_generators(self, family))
+            ).cardinality()
+
         stabilizer = self.predicate_subgroup(
             preserves_family,
             "isometries preserving the defining coloured vector family up to reindexing",
             character_data={"stabilized_family": family},
-            cardinality_decision=lambda: _realization(self.lattice(), family).stabilizer_cardinality(),
+            cardinality_decision=cardinality,
         )
         return stabilizer.select_group_generators(
             lambda: finite_ordered_set(_stabilizer_generators(self, family))
