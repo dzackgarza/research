@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.group.cyclic_subgroups import CyclicGrou
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
+    _engine_subgroup,
 )
 from dzack_research.preamble.categories.group.predicate_subgroups import (
     IntersectionSubgroups,
@@ -2526,8 +2527,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             realization = _realization(self.lattice(), family)
             if realization.spans_lattice():
                 return realization.stabilizer_cardinality()
-            return self.subgroup(
-                finite_ordered_set(_stabilizer_generators(self, family))
+            return _engine_subgroup(
+                self,
+                _stabilizer_generators(self, family),
+                refinements=(OwnedFiniteGroups(),),
             ).cardinality()
 
         stabilizer = self.predicate_subgroup(
