@@ -30,8 +30,10 @@ data are only a realization of the categorical action.
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown
+from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -58,6 +60,12 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 
 if "ProperlyDiscontinuous" not in all_axioms:
     all_axioms.add("ProperlyDiscontinuous")
+
+
+@cached_function(key=lambda cls, group, category: (cls, id(group), id(category)))
+def _g_objects_category(cls, group, category):
+    r"""Construct the category selected by these exact mathematical parameters."""
+    return typecall(cls, group, category)
 
 def _verify_relators(action, group, endomorphisms) -> None:
     r"""Check the represented action law without manufacturing presentation data.
@@ -861,7 +869,9 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     @staticmethod
     def __classcall__(cls, group, category):
-        return Category.__classcall__(cls, _owned_group(group), category)
+        if isinstance(cls, DynamicMetaclass):
+            cls = cls.__base__
+        return _g_objects_category(cls, _owned_group(group), category)
 
     def __init__(self, group, category) -> None:
         self._group = group
