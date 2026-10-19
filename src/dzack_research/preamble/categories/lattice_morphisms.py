@@ -1231,9 +1231,19 @@ class LatticeIsometryMethods:
     def __eq__(self, other) -> bool:
         if self is other:
             return True
-        return (
-            isinstance(other, LatticeIsometryMethods) and other.domain() is self.domain() and other.codomain() is self.codomain() and other._coordinate_tensor() == self._coordinate_tensor()
-        )
+        if not (
+            isinstance(other, LatticeIsometryMethods)
+            and other.domain() is self.domain()
+            and other.codomain() is self.codomain()
+        ):
+            return False
+        domain = self.domain()
+        if domain.module_rank().is_finite():
+            return all(
+                self(generator) == other(generator)
+                for generator in domain.module_generators()
+            )
+        return other._coordinate_tensor() == self._coordinate_tensor()
 
     def __ne__(self, other) -> bool:
         return not self == other
@@ -2460,6 +2470,13 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         from dzack_research.preamble.categories.lattice_centralizers import (
             arithmetic_centralizer,
         )
+
+        lattice = self.lattice()
+        framing = tuple(lattice.module_generators())
+        if all(isometry(generator) == generator for generator in framing) or all(
+            isometry(generator) == -generator for generator in framing
+        ):
+            return self
 
         return arithmetic_centralizer(self, isometry)
 

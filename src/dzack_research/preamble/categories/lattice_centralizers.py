@@ -1237,7 +1237,7 @@ def _arithmetic_centralizer_group_generators(centralizer):
     if all(isometry(generator) == generator for generator in framing) or all(
         isometry(generator) == -generator for generator in framing
     ):
-        return finite_ordered_set(tuple(centralizer(generator) for generator in group.group_generators()))
+        return finite_ordered_set(tuple(group.group_generators()))
     order = isometry.module_morphism().multiplicative_order()
     assert order != Infinity, (
         f"the centralizer of {isometry} in {group} has group generators computed here only "
