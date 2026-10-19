@@ -608,7 +608,7 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
 
         def arrow_supercategories(mor):
             fixed = mor.__dict__.get("_owned_graph_supercategories")
-            return fixed if fixed is not None else tuple(mor.super_categories())
+            return fixed if fixed is not None else mor._owned_direct_supercategories()
 
         def visit(mor):
             marker = id(mor)
@@ -703,6 +703,50 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
             f"{type(self).__name__}.ArrowType",
             tuple(bases),
             doccls=providers[0] if providers else CategoricalMor.ElementMethods,
+        )
+
+    def _owned_direct_supercategories(self):
+        r"""Retain this Mor's declared graph until an input is refined.
+
+        A fixed Mor's graph is determined by its concrete Mor class, its
+        endpoint placements, its base category, and its optional End/Aut role.
+        Sage asks for that declared graph independently while initializing the
+        arrow type and the category comparison graph.  Retain the first answer
+        across those requests, but discard it whenever one of those defining
+        runtime inputs changes.
+        """
+        state = self._owned_direct_supercategory_state()
+        retained = self.__dict__.get("_owned_direct_supercategory_record")
+        if retained is not None and retained[0] == state:
+            return retained[1]
+        result = tuple(self.super_categories())
+        # Construction of the supergraph can refine an endpoint or attach a
+        # diagonal role.  Record the post-construction state so that such a
+        # change cannot validate the graph computed before it.
+        self._owned_direct_supercategory_record = (
+            self._owned_direct_supercategory_state(),
+            result,
+        )
+        return result
+
+    def _owned_direct_supercategory_state(self):
+        r"""Return the mutable inputs to this fixed Mor's declared graph."""
+        domain_category = self.domain_object().category()
+        codomain_category = self.codomain_object().category()
+        base_category = self.base_category()
+        return (
+            type(self),
+            type(self.domain_object()),
+            type(self.codomain_object()),
+            domain_category,
+            type(domain_category),
+            codomain_category,
+            type(codomain_category),
+            base_category,
+            type(base_category),
+            base_category.__dict__.get("_set_of_super_categories"),
+            self.end_family(),
+            self.aut_family(),
         )
 
     @property

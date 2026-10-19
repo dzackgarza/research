@@ -443,7 +443,12 @@ class _OwnedCategoryComparisonKey:
         graph_signature = _category_graph_signature(category)
         category._owned_graph_depth = depth
         category._owned_graph_signature = graph_signature
-        category._owned_graph_supercategories = tuple(category.super_categories())
+        direct_graph = getattr(category, "_owned_direct_supercategories", None)
+        category._owned_graph_supercategories = (
+            tuple(category.super_categories())
+            if direct_graph is None
+            else direct_graph()
+        )
         parameter_signature = _category_parameter_signature(category)
         category._owned_parameter_signature = parameter_signature
         signature = (
