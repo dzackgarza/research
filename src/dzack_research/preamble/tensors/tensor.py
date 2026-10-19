@@ -597,15 +597,25 @@ class Tensor:
                     f"covariant tensor contraction takes, in a slot of rank {rank}, "
                     f"a vector of {slot_module}"
                 )
-        # The ubiquitous pairing G(x, y) = x^t G y is one product in the
-        # selected exact matrix backend, crossed back into the owned ring.
+        # The ubiquitous pairing G(x, y) = x^t G y is evaluated here, at the
+        # tensor owner.  Reading its exact components directly avoids loading
+        # a numerical array stack merely to contract a small exact tensor.
         if len(vectors) == 2:
             left, right = vectors
-            return _owned_engine_element(
-                self.base_ring(),
-                _engine_component_vector(left)
-                * _engine_component_matrix(self)
-                * _engine_component_vector(right),
+            left_rank, right_rank = self._lower_index_ranks()
+            if Infinity in (left_rank, right_rank):
+                raise ValueError(
+                    f"cannot contract a type-{self.tensor_valence()} tensor with an infinite-rank index by finite component enumeration"
+                )
+            return sum(
+                (
+                    left[left_index]
+                    * self[left_index, right_index]
+                    * right[right_index]
+                    for left_index in range(left_rank)
+                    for right_index in range(right_rank)
+                ),
+                start=self.base_ring().zero(),
             )
         from itertools import product as cartesian_product
 
