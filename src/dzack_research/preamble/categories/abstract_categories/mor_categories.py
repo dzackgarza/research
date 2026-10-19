@@ -1947,24 +1947,39 @@ class _MorCategoryOf(OwnedCategoryBase):
             domain = self.base_category()._mor_endpoint(domain)
             codomain = self.base_category()._mor_endpoint(codomain)
         # Endpoint identity, not a hash: hashing a Mor endpoint re-enters Mor
-        # construction, so Sage's cached_method recurses here.  Endpoint
-        # refinement may strengthen the represented fixed Mor, so a
-        # cached parent is reusable only if it still has the selected class.
-        fixed_class = self.fixed_category_class_for(domain, codomain)
+        # construction, so Sage's cached_method recurses here.  Endpoint or
+        # category refinement may strengthen the represented fixed Mor.  Their
+        # runtime classes are the inputs to every specialized
+        # ``fixed_category_class_for``, so an unchanged tuple lets a resolved
+        # parent return before selecting that class again.
         cached = self._cached_between(domain, codomain)
         endpoint_categories = (domain.category(), codomain.category())
         declared_supers = self.base_category()._set_of_super_categories
+        runtime_classes = (
+            type(self.base_category()),
+            type(domain),
+            type(codomain),
+            type(endpoint_categories[0]),
+            type(endpoint_categories[1]),
+        )
         resolved = self._resolved_endpoint_categories.get((id(domain), id(codomain)))
         if resolved is not None:
-            previous_domain, previous_codomain, previous_supers, previous_class, previous_result = resolved
+            (
+                previous_domain,
+                previous_codomain,
+                previous_supers,
+                previous_runtime_classes,
+                previous_result,
+            ) = resolved
             if (
                 previous_domain is endpoint_categories[0]
                 and previous_codomain is endpoint_categories[1]
                 and previous_supers is declared_supers
-                and previous_class is fixed_class
+                and previous_runtime_classes == runtime_classes
                 and previous_result is cached
             ):
                 return cached
+        fixed_class = self.fixed_category_class_for(domain, codomain)
         if domain not in self.base_category() or codomain not in self.base_category():
             raise TypeError(
                 f"Mor(X, Y) in {self.base_category()} needs X and Y objects of it, but got {domain} and {codomain}"
@@ -1996,7 +2011,7 @@ class _MorCategoryOf(OwnedCategoryBase):
             self._resolved_endpoint_categories[id(domain), id(codomain)] = (
                 *endpoint_categories,
                 declared_supers,
-                fixed_class,
+                runtime_classes,
                 result,
             )
             return result
@@ -2070,7 +2085,10 @@ class _MorCategoryOf(OwnedCategoryBase):
         # Store the categories read before construction: if construction
         # refined an endpoint, the next call must resolve the new declaration.
         self._resolved_endpoint_categories[id(domain), id(codomain)] = (
-            *endpoint_categories, declared_supers, fixed_class, result,
+            *endpoint_categories,
+            declared_supers,
+            runtime_classes,
+            result,
         )
         return result
 
