@@ -423,32 +423,39 @@ class _ColouredFamilyRealization:
 
     @cached_method
     def _coordinate_basis_data(self):
-        r"""The selected family basis rows and their inverse, computed once."""
+        r"""The selected family basis rows, adjugate and determinant, computed once."""
         family = self._family_coordinate_matrix()
         basis_rows = tuple(family.transpose().pivots())
         basis = family.matrix_from_rows(basis_rows)
-        return basis_rows, basis.inverse()
+        return basis_rows, basis.adjugate(), basis.det()
 
-    def _coordinate_automorphism(self, permutation):
-        r"""The rational row-action matrix induced by a pairing-table automorphism."""
+    def _integral_coordinate_automorphism(self, permutation):
+        r"""The induced integral matrix, or ``None`` when the rational symmetry does not preserve the lattice."""
         family = self._family_coordinate_matrix()
-        basis_rows, basis_inverse = self._coordinate_basis_data()
+        basis_rows, adjugate, determinant = self._coordinate_basis_data()
         target = engine_matrix(
             SageZZ,
             tuple(family.row(permutation[index]) for index in basis_rows),
         )
-        return basis_inverse * target
+        numerator = adjugate * target
+        if any(not determinant.divides(entry) for entry in numerator.list()):
+            return None
+        return engine_matrix(
+            SageZZ,
+            numerator.nrows(),
+            numerator.ncols(),
+            tuple(entry // determinant for entry in numerator.list()),
+        )
 
     @cached_method
     def integral_configuration_data(self):
         r"""Pairing automorphisms whose induced rational transformation preserves the lattice."""
         self.assert_spanning_nondegenerate()
-        result = []
-        for permutation in self.pairing_graph().automorphism_permutations():
-            transformation = self._coordinate_automorphism(permutation)
-            if all(entry in SageZZ for entry in transformation.list()) and abs(transformation.det()) == 1:
-                result.append((permutation, transformation.change_ring(SageZZ)))
-        return tuple(result)
+        return tuple(
+            permutation
+            for permutation in self.pairing_graph().automorphism_permutations()
+            if self._integral_coordinate_automorphism(permutation) is not None
+        )
 
     @cached_method
     def integral_stabilizer_cardinality(self):
@@ -461,17 +468,18 @@ class _ColouredFamilyRealization:
     def integral_configuration_generator_images(self):
         r"""Images of lattice basis vectors for generators of the integral configuration subgroup."""
         size = int(self.indices().cardinality())
-        data = dict(self.integral_configuration_data())
+        permutations = self.integral_configuration_data()
         symmetric = SymmetricGroup(size)
         subgroup = symmetric.subgroup(
-            tuple(symmetric([image + 1 for image in permutation]) for permutation in data)
+            tuple(symmetric([image + 1 for image in permutation]) for permutation in permutations)
         )
         labels = tuple(self._lattice.module_generating_set())
         ring = self._lattice.base_ring()
         images = []
         for generator in subgroup.gens_small():
             permutation = tuple(int(generator(index + 1)) - 1 for index in range(size))
-            transformation = self._coordinate_automorphism(permutation)
+            transformation = self._integral_coordinate_automorphism(permutation)
+            assert transformation is not None
             images.append(
                 {
                     label: self._lattice.linear_combination(
