@@ -5316,12 +5316,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def _split_binary_square_fibre_action(self, square):
-            r"""Return the O(L)-action on a complete split binary fibre."""
+        def _split_binary_square_fibre_action(self, square, special=False):
+            r"""Return the O(L)- or SO(L)-action on a complete split binary fibre."""
             from dzack_research.preamble.categories.group.g_objects import GObjects
             from dzack_research.preamble.categories.sets.set_categories import Sets
 
             orthogonal = self.orthogonal_group()
+            acting_group = self.special_orthogonal_group() if special else orthogonal
             reversing_data = None
             reversing = None
 
@@ -5336,12 +5337,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             def same_orbit(left, right):
                 if right == left or right == -left:
                     return True
+                if special:
+                    return False
                 reflection = reversing_isometry()
                 return reflection is not None and (
                     right == reflection(left) or right == -reflection(left)
                 )
 
-            return GObjects(orthogonal, Sets()).on_set(
+            return GObjects(acting_group, Sets()).on_set(
                 self._split_binary_square_fibre(square),
                 lambda isometry, vector: isometry(vector),
                 orbit_relation=same_orbit,
@@ -5606,12 +5609,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                     # so its domain is the action's actual point set.  Building
                     # a second equalizer presentation of that same fibre would
                     # eagerly reconstruct the form and its value module.
-                    action = self._split_binary_square_fibre_action(square)
-                    if restricted:
-                        action = action.restrict_action(
-                            special.inclusion(),
-                            orbit_relation=lambda left, right: right == left or right == -left,
-                        )
+                    action = self._split_binary_square_fibre_action(
+                        square,
+                        special=restricted,
+                    )
                     return action.orbits_presented_by(candidates)
 
                 # Definite fibres use their actual finite group action.

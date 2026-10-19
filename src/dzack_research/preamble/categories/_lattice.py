@@ -220,13 +220,19 @@ def _gram_rank(gram):
 
 
 @cached_function
+def _gram_engine_matrix(gram):
+    r"""The finite Gram presentation lowered once for private engine computations."""
+    return _engine_component_matrix(gram)
+
+
+@cached_function
 def _gram_determinant(gram, ring):
     r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration.
 
     Computed by Sage's matrix determinant on the presentation's components
     (`OWN-06`) and raised into ``ring``.
     """
-    determinant = _engine_component_matrix(gram).determinant()
+    determinant = _gram_engine_matrix(gram).determinant()
     return _owned_engine_element(ring, _engine_ring(ring)(determinant))
 
 
@@ -293,7 +299,11 @@ def _gram_is_even(gram, ring):
     rank = _gram_rank(gram)
     if _engine_ring(ring) is SageZZ and rank.is_finite():
         size = int(rank)
-        return all(SageZZ(gram[index, index]).is_even() for index in range(size))
+        components = _gram_engine_matrix(gram)
+        return all(
+            components[index, index].is_even()
+            for index in range(size)
+        )
     match ring in OwnedRings().Commutative():
         case False:
             return AtomicProposition("is_even", gram)
@@ -301,7 +311,11 @@ def _gram_is_even(gram, ring):
     match rank.is_finite():
         case True:
             size = int(rank)
-            return all(ring(gram[index, index]) in twice for index in range(size))
+            components = gram._flat_components()
+            return all(
+                components[index * size + index] in twice
+                for index in range(size)
+            )
         case False:
             return gram.is_even_in(twice)
 
