@@ -1590,7 +1590,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             postcomposing it postcomposes each leg.
             """
             transitions = tuple(marked.arrows())
-            return self.object((*transitions[:-1], _postcomposed(automorphism, transitions[-1])))
+            return self((*transitions[:-1], _postcomposed(automorphism, transitions[-1])))
 
         def apex_stabilizer(self, marked):
             r"""``{g in O(L) : g(F(j -> top)(F(j))) = F(j -> top)(F(j)) for every j}``, for a chain of monomorphisms.
