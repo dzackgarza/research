@@ -1497,17 +1497,27 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
     case ``D=1`` and this is the existing ``-A`` construction.
     """
     cartan = cartan_type.cartan_matrix()
-    symmetrizer = cartan_type.symmetrizer()
-    assert symmetrizer is not None, f"{cartan_type} has no integral Cartan symmetrizer"
     indices = tuple(cartan_type.index_set())
     rank = int(cartan_type.rank())
-    components = [
-        tuple(
-            -_owned_engine_element(ring, symmetrizer[indices[i]] * cartan[i, j])
-            for j in range(rank)
+    if cartan_type.is_simply_laced():
+        components = [
+            tuple(-_owned_engine_element(ring, cartan[i, j]) for j in range(rank))
+            for i in range(rank)
+        ]
+    else:
+        symmetrizer = cartan_type.symmetrizer()
+        assert symmetrizer is not None, (
+            f"{cartan_type} has no integral Cartan symmetrizer"
         )
-        for i in range(rank)
-    ]
+        components = [
+            tuple(
+                -_owned_engine_element(
+                    ring, symmetrizer[indices[i]] * cartan[i, j]
+                )
+                for j in range(rank)
+            )
+            for i in range(rank)
+        ]
     gram_tensor = tensor(ring, (), (rank, rank), components)
     assert gram_tensor.tensor_valence() == (NN**2)((0, 2))
     return gram_tensor

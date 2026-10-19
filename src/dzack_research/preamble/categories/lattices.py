@@ -4498,9 +4498,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 for target_generator in target.module_generators():
                     if target.b(target_generator, target_generator) != source_square:
                         continue
-                    embedding = self.Emb(target)((target_generator,))
-                    if embedding.is_primitive():
-                        return embedding
+                    return self.Emb(target)((target_generator,))
                 for embedding in self.Emb(target):
                     if embedding.is_primitive():
                         return embedding
