@@ -274,21 +274,38 @@ class _ColouredFamilyRealization:
         )
 
     @cached_method
+    def configuration_isometry(self, generator):
+        r"""The rational isometry induced by a pairing-graph automorphism."""
+        graph = self.pairing_graph()
+        rational = self.rational_space()
+        isometry = self.rational_transformation(self, graph.position_permutation(generator))
+        return rational.O()({
+            label: isometry(rational.module_generator(label))
+            for label in rational.module_generating_set()
+        })
+
+    @cached_method
+    def configuration_generators(self):
+        r"""Images in ``O(L tensor Q)`` of generators of ``Aut(Gamma)``.
+
+        These generate ``rho(Aut(Gamma))`` directly.  Retaining them avoids
+        reconstructing that image as an engine subgroup when a consumer needs
+        only supplied generators.
+        """
+        graph = self.pairing_graph()
+        automorphisms = graph.automorphism_group()
+        return finite_ordered_set(tuple(
+            self.configuration_isometry(generator)
+            for generator in automorphisms.group_generators()
+        ))
+
+    @cached_method
     def configuration_group(self):
         r"""``G = rho(Aut(Gamma))`` for the group morphism ``rho: Aut(Gamma) -> O(L tensor Q)``."""
         graph = self.pairing_graph()
-        rational = self.rational_space()
         automorphisms = graph.automorphism_group()
-        orthogonal = rational.O()
-
-        def realization(generator):
-            isometry = self.rational_transformation(self, graph.position_permutation(generator))
-            return orthogonal({
-                label: isometry(rational.module_generator(label))
-                for label in rational.module_generating_set()
-            })
-
-        rho = automorphisms.Mor(orthogonal)(realization)
+        orthogonal = self.rational_space().O()
+        rho = automorphisms.Mor(orthogonal)(self.configuration_isometry)
         return rho.image()
 
     @cached_method
@@ -362,11 +379,11 @@ def _stabilizer_generators(orthogonal_group, family):
 
     lattice = orthogonal_group.lattice()
     realization = _realization(lattice, family)
-    rational_group = realization.configuration_group()
-    generators = rational_group.group_generators()
+    generators = realization.configuration_generators()
     if all(generator.integral_restriction(lattice, lattice) is not None for generator in generators):
         integral = generators
     else:
+        rational_group = realization.configuration_group()
         _exponent, containing = realization.containing_bound()
         integral = IntegralStructureAction(rational_group, realization.rationalization()).with_stable_containing_bound(
             containing
