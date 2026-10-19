@@ -266,10 +266,26 @@ def _definite_complement_extensions(lattice, left, right):
     through the general nonisotropic orthogonal splitting, and its integral
     restriction exists exactly when it preserves both ambient lattices.
     """
+    if left.q() != right.q():
+        return ()
+    if (
+        lattice.module_rank() == 2
+        and left.q() != 0
+        and left.content() == 1
+        and right.content() == 1
+    ):
+        from dzack_research.preamble.categories import lattice_engines
+
+        discriminant = lattice_engines._binary_form_discriminant(lattice)
+        if discriminant > 0 and discriminant.is_square():
+            orthogonal = lattice.O()
+            return tuple(
+                isometry
+                for images in lattice_engines._split_binary_orthogonal_group_generators(lattice)
+                if (isometry := orthogonal(images))(left) == right
+            )
     source = VectorPrimitiveExtension(lattice, left)
     target = VectorPrimitiveExtension(lattice, right)
-    if source.vector.q() != target.vector.q():
-        return ()
     if not source.complement_is_definite() or not target.complement_is_definite():
         raise ValueError(
             f"cannot list isometries of {lattice} carrying {left} to {right}: "
