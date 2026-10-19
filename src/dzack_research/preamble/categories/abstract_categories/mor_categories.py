@@ -1958,6 +1958,37 @@ class _MorCategoryOf(OwnedCategoryBase):
                 and previous_result is cached
             ):
                 return cached
+        # A family with its own fixed-Mor class cannot reuse an inherited
+        # object unless an admitted supercategory builds that class (or a
+        # specialization of it). Decide that from the declarations before
+        # constructing every supercategory Mor merely to reject it. The
+        # resulting object's ``super_categories`` still realizes the complete
+        # mathematical graph when that graph is asked for.
+        if fixed_class is not FixedMorCategory and not any(
+            domain in supercategory
+            and codomain in supercategory
+            and self._inherits_morphisms_from(supercategory, domain, codomain)
+            and issubclass(
+                self.family_over(supercategory).fixed_category_class_for(
+                    domain, codomain
+                ),
+                fixed_class,
+            )
+            for supercategory in _packet_supercategories(self.base_category())
+        ):
+            result = (
+                cached
+                if isinstance(cached, fixed_class) and cached.mor_family() is self
+                else fixed_class(self, domain, codomain)
+            )
+            self._remember_between(domain, codomain, result)
+            self._resolved_endpoint_categories[id(domain), id(codomain)] = (
+                *endpoint_categories,
+                declared_supers,
+                fixed_class,
+                result,
+            )
+            return result
         # What decides whether this category needs a Mor parent of its own is
         # whether the Mor it would build differs from one it already inherits,
         # not whether a class was declared somewhere in its Python ancestry: a
