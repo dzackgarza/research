@@ -5723,6 +5723,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             character_data=None,
             character_data_complete=None,
             generating_morphism=None,
+            cardinality_decision=None,
         ):
             r"""Return the subgroup of elements satisfying ``predicate``.
 
@@ -5739,6 +5740,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 character_data=character_data,
                 character_data_complete=character_data_complete,
                 generating_morphism=generating_morphism,
+                cardinality_decision=cardinality_decision,
             )
 
         @RealizationHook

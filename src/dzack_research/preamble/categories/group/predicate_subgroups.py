@@ -133,6 +133,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         character_data=None,
         character_data_complete=None,
         generating_morphism=None,
+        cardinality_decision=None,
     ):
         r"""Construct the predicate subgroup of this category's ambient group.
 
@@ -150,6 +151,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data=character_data,
             character_data_complete=character_data_complete,
             generating_morphism=generating_morphism,
+            cardinality_decision=cardinality_decision,
         )
 
     class ParentMethods:
@@ -161,6 +163,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data=None,
             character_data_complete=None,
             generating_morphism=None,
+            cardinality_decision=None,
             **rest,
         ) -> None:
             self._predicate = predicate
@@ -172,6 +175,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 if character_data_complete is None
                 else bool(character_data_complete)
             )
+            self._specified_cardinality_decision = cardinality_decision
             super().__init__(supergroup=supergroup, **rest)
             # A generating morphism E -> G supplied by the constructing owner,
             # with image this subgroup, is a selected datum; its corestriction
@@ -366,6 +370,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             ``G``, at a cost linear in ``|G|``: the predicate is a Python
             function, which GAP's subgroup search by a property cannot evaluate.
             """
+            if self._specified_cardinality_decision is not None:
+                return self._specified_cardinality_decision()
             if _retains_group_resolution(self) and not self.contains_character_kernel():
                 generated = self.supergroup()._engine_subgroup_from_generators(
                     tuple(self.group_generators())

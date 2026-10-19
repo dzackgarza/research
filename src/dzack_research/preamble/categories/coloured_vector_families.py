@@ -47,11 +47,14 @@ never enumerated.  Spanning, nondegeneracy and the base ring ``ZZ`` are the
 current computational frontier, asserted where they are used.
 """
 
+from math import factorial
+
 from sage.graphs.graph import Graph
 from sage.misc.cachefunc import cached_function, cached_method
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -311,6 +314,29 @@ class _ColouredFamilyRealization:
             self.configuration_isometry(generator)
             for generator in automorphisms.group_generators()
         ))
+
+    @cached_method
+    def stabilizer_cardinality(self):
+        r"""``|Aut(Gamma)| / |K_v|``, the order of the family stabilizer.
+
+        The kernel ``K_v`` consists exactly of the independent permutations
+        of indices carrying the same vector and colour.
+        """
+        classes = []
+        for index in self.indices():
+            value = self.vector(index)
+            colour = self.colour(index)
+            for position, (representative, representative_colour, multiplicity) in enumerate(classes):
+                if representative == value and representative_colour == colour:
+                    classes[position] = (representative, representative_colour, multiplicity + 1)
+                    break
+            else:
+                classes.append((value, colour, 1))
+        kernel_order = 1
+        for _value, _colour, multiplicity in classes:
+            kernel_order *= factorial(multiplicity)
+        automorphism_order = int(self.pairing_graph().automorphism_group().cardinality())
+        return cardinal(automorphism_order // kernel_order)
 
     @cached_method
     def configuration_group(self):

@@ -2525,6 +2525,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         stabilizer = self.predicate_subgroup(
             preserves_family,
             f"g o v = v o sigma for a colour-preserving bijection sigma, for the family {family}",
+            cardinality_decision=lambda: _realization(self.lattice(), family).stabilizer_cardinality(),
         )
         return stabilizer.select_group_generators(
             lambda: finite_ordered_set(_stabilizer_generators(self, family))
