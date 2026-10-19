@@ -470,11 +470,30 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
 
             category = FiniteGSets(self.acting_group())
             augmentation = self.acting_group().selected_group_resolution().augmentation()
-            orbit_points, _words = category._orbit_words(
+            orbit_points, words = category._orbit_words(
                 (start,), action, augmentation, point_key=subset_ranks,
             )
             orbit = category(finite_ordered_set(tuple(orbit_points)), action)
-            return orbit.stabilizer(start)
+            orbit_ranking = orbit.ranking_map()
+            word_section = Sets().Mor(orbit, augmentation.domain())(
+                lambda image: words[int(orbit_ranking(image))]
+            )
+            generating_morphism = _orbit_schreier_morphism(
+                orbit,
+                word_section,
+                augmentation,
+            )
+            from dzack_research.preamble.categories.group.predicate_subgroups import (
+                StabilizerSubgroups,
+            )
+
+            return StabilizerSubgroups(self.acting_group())(
+                start,
+                orbit.action_functor(),
+                lambda group_element: orbit.act(group_element, start) == start,
+                description=f"setwise stabilizer of {subset} in {self.acting_group()}",
+                generating_morphism=generating_morphism,
+            )
 
         @cached_method(key=lambda self, point: self.ranking_map()(point))
         def _orbit_of(self, point):
