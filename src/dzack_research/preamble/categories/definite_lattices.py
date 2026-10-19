@@ -257,9 +257,19 @@ def _minimum(lattice):
     )
     sign, positive_gram = _positive_gram(lattice)
     engine_gram = _engine_component_matrix(positive_gram)
+    lower = SageZZ.zero()
+    upper = min(engine_gram.diagonal())
+    pari_gram = engine_gram.__pari__()
+    while lower + 1 < upper:
+        bound = (lower + upper) // 2
+        count = SageZZ(pari_gram.qfminim(bound, 0)[0])
+        if count:
+            upper = bound
+        else:
+            lower = bound
     minimum_value = _owned_engine_element(
         lattice.base_ring(),
-        SageZZ(engine_gram.__pari__().qfminim(None, 0)[1]),
+        upper,
     )
     return sign * minimum_value
 
