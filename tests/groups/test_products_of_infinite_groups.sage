@@ -27,7 +27,7 @@ Specimens:
   infinite free group ``F(x)`` into itself, ``x |-> x^2``, has the infinite
   image ``<x^2>``, so the finite-source rule does not place it finite.
 
-Source-level specimens; execution is retained under terminal T.
+These specimens passed final-runtime execution on 2026-10-19.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403

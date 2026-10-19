@@ -12,7 +12,7 @@ r"""The subgroup of ``H <= O(M)`` that extends along a finite-index ``M -> L``.
 - ``H = <-1>``.  ``-1`` preserves ``U`` and extends to ``-1`` on ``U``, so
   the extended subgroup has order two.
 
-Source-level specimens; execution is retained under terminal T.
+These specimens passed final-runtime execution on 2026-10-19.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
