@@ -379,8 +379,8 @@ coverage-report *include:
 # The specification subtrees are red until the preamble meets them, so a
 # failing suite still yields its coverage; the caller reports the exit status.
 # No per-test timeout: its SIGALRM inside Cython ends the whole run (TRAPS.md),
-# and coverage's tracing makes the time gates meaningless.  One-line
-# tracebacks keep failure reports from computing owned reprs.
+# and coverage tracing changes runtime materially. One-line tracebacks keep
+# failure reports from computing owned reprs.
 [positional-arguments]
 _coverage-pytest data log *args:
     #!/usr/bin/env bash
@@ -390,7 +390,7 @@ _coverage-pytest data log *args:
     log="$2"
     shift 2
     "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" -m pytest -p qc_sage_session \
-        -q --no-time-gates --timeout=0 --tb=line --report-log="$log" \
+        -q --timeout=0 --tb=line --report-log="$log" \
         --cov=src/dzack_research/preamble --cov-branch --cov-context=test --cov-report= \
         "$@"
 

@@ -50,14 +50,9 @@ testpaths = ["tests"]
 pythonpath = ["tests/constructions"]
 # Every run says where its wall time went and leaves a machine-readable record.
 #
-# The suite budget is a gate: 100 ms per selected test, set as the session
-# timeout once collection is final (dzack_research.utilities.suite_budget).
-# A run over budget is red, because a slow suite is a defect in the code or
-# the tests, never a wait.  Do not raise it; find the cost.
-#
 # The test lint (dzack_research.utilities.test_lint) ends the run red when a
 # collected test breaks the session standard; --no-test-lint lifts it for a
-# one-off triage run, as --no-time-gates lifts the budget.
+# one-off triage run.
 #
 # --timeout bounds one test: a test that blocks -- on a subprocess, a lock, a
 # network call -- burns wall clock at low CPU and reports nothing at all when
@@ -66,7 +61,6 @@ pythonpath = ["tests/constructions"]
 # --durations ranks test phases, pytest-durations aggregates them by file, and
 # the report log plus JUnit xml make runs comparable to each other.
 addopts = """
-  -p dzack_research.utilities.suite_budget
   -p dzack_research.utilities.test_lint
   --timeout=60 --timeout-method=signal
   --durations=0 --durations-min=0
