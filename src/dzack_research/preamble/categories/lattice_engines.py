@@ -21,7 +21,6 @@ from dzack_research.preamble.categories.sets.set_categories import NN
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_column_matrix_from_row_action,
-    _engine_component_vector,
     _engine_component_matrix,
     _engine_inverse_form_pullback,
     _engine_row_action_matrix,
@@ -311,9 +310,15 @@ def _split_binary_orthogonal_group_elements(lattice):
     labels = tuple(lattice.module_generating_set())
     elements = []
     for left in first:
-        left_coordinates = _engine_component_vector(left.to_vector())
+        left_coordinates = sage_vector(
+            SageZZ,
+            tuple(_engine_element(lattice.base_ring(), left.to_vector()(label)) for label in labels),
+        )
         for right in second:
-            right_coordinates = _engine_component_vector(right.to_vector())
+            right_coordinates = sage_vector(
+                SageZZ,
+                tuple(_engine_element(lattice.base_ring(), right.to_vector()(label)) for label in labels),
+            )
             if left_coordinates.dot_product(gram * right_coordinates) != gram[0, 1]:
                 continue
             determinant = (
