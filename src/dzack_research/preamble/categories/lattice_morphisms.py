@@ -2524,7 +2524,8 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
 
         stabilizer = self.predicate_subgroup(
             preserves_family,
-            f"g o v = v o sigma for a colour-preserving bijection sigma, for the family {family}",
+            "isometries preserving the defining coloured vector family up to reindexing",
+            character_data={"stabilized_family": family},
             cardinality_decision=lambda: _realization(self.lattice(), family).stabilizer_cardinality(),
         )
         return stabilizer.select_group_generators(
