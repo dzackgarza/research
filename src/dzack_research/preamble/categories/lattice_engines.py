@@ -325,7 +325,7 @@ def _split_binary_orthogonal_group_elements(lattice):
                 left_coordinates[0] * right_coordinates[1]
                 - left_coordinates[1] * right_coordinates[0]
             )
-            if determinant in (lattice.base_ring().one(), -lattice.base_ring().one()):
+            if abs(determinant) == SageZZ.one():
                 elements.append(dict(zip(labels, (left, right), strict=True)))
     return tuple(elements)
 
