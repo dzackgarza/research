@@ -1506,7 +1506,7 @@ class Modules(OwnedCategoryOverBaseRing):
             return self.selected_module_resolution().generator_morphism()
 
         def module_generator(self, label):
-            return self.selected_module_resolution().generator(label)
+            return self.selected_resolution_generator(self.module_category(), label)
 
         def module_generators(self):
             return self.selected_module_resolution().generators(
@@ -4304,6 +4304,7 @@ def _fix_selected_module_resolution(
         Modules(base_ring),
         selected_resolution,
         generating_set=labels,
+        generator_function=lambda label: module(generator_function(label)),
     )
 
 

@@ -81,7 +81,7 @@ class _PendingResolution:
     object of the resolution category, not a second framing record.
     """
 
-    def __init__(self, resolution_factory, generating_set=None) -> None:
+    def __init__(self, resolution_factory, generating_set=None, generator_function=None) -> None:
         match callable(resolution_factory):
             case True:
                 pass
@@ -92,6 +92,7 @@ class _PendingResolution:
                 )
         self._resolution_factory = resolution_factory
         self._generating_set = generating_set
+        self._generator_function = generator_function
 
     def generating_set(self):
         r"""The set ``S`` of the degree-zero free object ``F(S)``, when the registration states it.
@@ -102,11 +103,28 @@ class _PendingResolution:
         """
         return self._generating_set
 
+    def generator(self, label):
+        r"""Return the registered degree-zero generator without realizing the resolution."""
+        if self._generator_function is None:
+            raise ValueError("this pending resolution did not register its generator function")
+        return self._generator_function(label)
+
+    def has_generator_function(self) -> bool:
+        return self._generator_function is not None
+
     def realize(self):
         return self._resolution_factory()
 
 
-def _fix_selected_resolution(target, owner, resolution_factory, *, replace=False, generating_set=None):
+def _fix_selected_resolution(
+    target,
+    owner,
+    resolution_factory,
+    *,
+    replace=False,
+    generating_set=None,
+    generator_function=None,
+):
     r"""Fix one chosen resolution of target relative to owner."""
     selected_by_owner = target._selected_data_registry()
     match owner in selected_by_owner, replace:
@@ -117,7 +135,11 @@ def _fix_selected_resolution(target, owner, resolution_factory, *, replace=False
             )
         case _:
             pass
-    selected_by_owner[owner] = _PendingResolution(resolution_factory, generating_set)
+    selected_by_owner[owner] = _PendingResolution(
+        resolution_factory,
+        generating_set,
+        generator_function,
+    )
 
 
 class OwnedCategory(OwnedCategoryBase):
@@ -372,6 +394,15 @@ class Objects(OwnedCategory):
                     return selected.generating_set()
                 case _:
                     return self.selected_resolution(owner).generating_set()
+
+        def selected_resolution_generator(self, owner, label):
+            r"""Return a retained degree-zero generator, realizing only when it was not registered."""
+            selected = self._selected_data_registry().get(owner)
+            match selected:
+                case _PendingResolution() if selected.has_generator_function():
+                    return selected.generator(label)
+                case _:
+                    return self.selected_resolution(owner).generator(label)
 
         def __call__(self, *arguments, **options):
             r"""Construct an element of this object, without coercion discovery.
