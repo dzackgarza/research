@@ -644,8 +644,20 @@ class LatticeEmbeddingMethods:
         )
         return discriminant.subobject_generated_by(classes)
 
+    @cached_method
+    def _scaled_lattice_generator_lifts(self):
+        r"""The index and the fixed lifts ``j^-1(m e_i)`` used by every extension test."""
+        lattice = self.codomain()
+        scalar = lattice.base_ring()(int(self.index().finite_value()))
+        return scalar, {
+            label: self.lift(
+                lattice.scalar_multiple(scalar, lattice.module_generator(label))
+            )
+            for label in lattice.module_generating_set()
+        }
+
     def _scaled_isometry_images(self, isometry):
-        r"""Return ``m_L: L -> L``, multiplication by the index ``m``, and ``x -> j h j^{-1}(m x)``.
+        r"""Return ``m`` and the images ``j h j^{-1}(m e_i)``.
 
         ``m L`` lies in ``j(M)`` because ``m`` annihilates ``L/M``.
         """
@@ -658,15 +670,26 @@ class LatticeEmbeddingMethods:
         moved = source.module_category().Mor(source, lattice)(
             lambda label: self(isometry(source.module_generator(label)))
         )
-        scalar = lattice.base_ring()(int(self.index().finite_value()))
-        scaling = lattice.module_category().Mor(lattice, lattice)(
-            lambda label: lattice.scalar_multiple(scalar, lattice.module_generator(label))
-        )
+        scalar, lifted = self._scaled_lattice_generator_lifts()
         images = {
-            label: moved(self.lift(lattice.scalar_multiple(scalar, lattice.module_generator(label))))
+            label: moved(lifted[label])
             for label in lattice.module_generating_set()
         }
-        return scaling, images
+        return scalar, images
+
+    def _divide_lattice_element(self, element, scalar):
+        r"""Return ``element/scalar`` in the codomain lattice, or ``None`` when it is not integral."""
+        lattice = self.codomain()
+        coordinates = element.to_vector()
+        divided = {}
+        for label in lattice.module_generating_set():
+            coefficient = coordinates(label)
+            quotient = coefficient // scalar
+            if scalar * quotient != coefficient:
+                return None
+            if quotient:
+                divided[label] = quotient
+        return lattice.linear_combination(divided)
 
     def isometry_extends(self, isometry) -> bool:
         r"""Whether ``h`` in ``O(M)`` satisfies ``h_Q(L) = L`` for this finite-index ``j: M -> L``.
@@ -676,8 +699,11 @@ class LatticeEmbeddingMethods:
         ``m L``, since ``h_Q`` is an isometry of ``L tensor QQ`` and ``L``
         has the rank of ``M``.
         """
-        scaling, images = self._scaled_isometry_images(isometry)
-        return all(scaling.is_in_image(image) for image in images.values())
+        scalar, images = self._scaled_isometry_images(isometry)
+        return all(
+            self._divide_lattice_element(image, scalar) is not None
+            for image in images.values()
+        )
 
     def isometry_extension(self, isometry):
         r"""Return ``h_Q`` restricted to ``L``, for ``h`` in ``O(M)`` with ``h_Q(L) = L``.
@@ -685,12 +711,16 @@ class LatticeEmbeddingMethods:
         This is the restriction ``O(M_Q)_L -> O(L)`` applied to the base
         change of ``h``; it is computed as ``x -> (1/m) j h j^{-1}(m x)``.
         """
-        scaling, images = self._scaled_isometry_images(isometry)
-        assert all(scaling.is_in_image(image) for image in images.values()), (
+        scalar, images = self._scaled_isometry_images(isometry)
+        divided = {
+            label: self._divide_lattice_element(image, scalar)
+            for label, image in images.items()
+        }
+        assert all(image is not None for image in divided.values()), (
             f"{isometry} does not extend to an isometry of {self.codomain()}: its rational extension "
             f"along {self} does not map {self.codomain()} into itself"
         )
-        return self.codomain().O()(lambda label: scaling.lift(images[label]))
+        return self.codomain().O()(lambda label: divided[label])
 
     def extended_subgroup(self, subgroup):
         r"""Return ``{h in H : h_Q(L) = L}`` restricted to ``O(L)``, for ``H <= O(M)``.
