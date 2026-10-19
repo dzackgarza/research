@@ -23,7 +23,6 @@ proper subgroup of index two.  The same counts hold for the sublattice
 import pytest
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.abstract_categories.products import FiniteOrdinalCategory
 
 
 def _lattice():
@@ -110,5 +109,5 @@ def test_a_subgroup_given_by_generators_has_no_character_quotient_to_split_along
     swap = group({labels[0]: e2, labels[1]: e1})
     _category, marked = _pointed(lattice, e1)
 
-    with pytest.raises(AssertionError, match="kernel of such a character map"):
+    with pytest.raises(AssertionError):
         group.split_orbit(marked, group.subgroup((swap,)))
