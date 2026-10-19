@@ -264,25 +264,26 @@ def _split_binary_vectors_of_square(lattice, square):
 
 def _binary_primitive_isotropic_vectors(lattice):
     r"""Raise the primitive generators of the rational linear factors, with both signs."""
-    from sympy import Poly, factor_list, symbols
-
     discriminant = _binary_form_discriminant(lattice)
     if not discriminant:
         raise ValueError("this finite null-line computation requires a nondegenerate binary form")
     if discriminant < 0 or not discriminant.is_square():
         return ()
     gram = _engine_component_matrix(lattice.gram_tensor())
-    x, y = symbols("x y", integer=True)
-    polynomial = int(gram[0, 0]) * x*x + 2*int(gram[0, 1]) * x*y + int(gram[1, 1]) * y*y
-    labels = tuple(lattice.module_generating_set())
-    ring = lattice.base_ring()
-    points = []
-    for factor, _multiplicity in factor_list(polynomial)[1]:
-        line = Poly(factor, x, y)
-        coefficients = (-int(line.coeff_monomial(y)), int(line.coeff_monomial(x)))
-        vector = lattice.linear_combination(dict(zip(labels, (ring(c) for c in coefficients), strict=True))).primitive_part()
-        points.extend((vector, -vector))
-    return tuple(points)
+    a, b, c = gram[0, 0], 2 * gram[0, 1], gram[1, 1]
+    root = discriminant.sqrt()
+    if a:
+        directions = tuple(
+            sage_vector(SageZZ, (-b + sign * 2 * root, 2 * a))
+            for sign in (SageZZ.one(), -SageZZ.one())
+        )
+    else:
+        directions = (
+            sage_vector(SageZZ, (SageZZ.one(), SageZZ.zero())),
+            sage_vector(SageZZ, (c, -b)),
+        )
+    primitive = tuple(_raise_rational_lattice_vector(lattice, direction) for direction in directions)
+    return tuple(vector for point in primitive for vector in (point, -point))
 
 
 def _split_binary_orthogonal_group_generators(lattice):
