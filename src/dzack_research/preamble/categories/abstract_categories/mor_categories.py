@@ -606,12 +606,16 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
         postorder = []
         visited = set()
 
+        def arrow_supercategories(mor):
+            fixed = mor.__dict__.get("_owned_graph_supercategories")
+            return fixed if fixed is not None else tuple(mor.super_categories())
+
         def visit(mor):
             marker = id(mor)
             if marker in visited:
                 return
             visited.add(marker)
-            for super_category in reversed(mor.super_categories()):
+            for super_category in reversed(arrow_supercategories(mor)):
                 if isinstance(super_category, CategoricalMor):
                     visit(super_category)
             postorder.append(mor)
@@ -652,7 +656,7 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
                 successors.setdefault(provider, set())
             for earlier, later in zip(own, own[1:]):
                 successors[earlier].add(later)
-            for super_category in mor.super_categories():
+            for super_category in arrow_supercategories(mor):
                 if not isinstance(super_category, CategoricalMor):
                     continue
                 for later in own_providers(super_category):
