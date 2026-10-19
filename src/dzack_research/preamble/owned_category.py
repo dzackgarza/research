@@ -66,7 +66,7 @@ from _abc import _abc_init
 from collections import Counter
 from collections.abc import Hashable
 from dataclasses import dataclass
-from functools import wraps
+from functools import cache, wraps
 from inspect import Parameter, isclass, ismethod, signature
 from typing import TYPE_CHECKING
 
@@ -130,6 +130,7 @@ def _c3_merge(sequences: list[list[type]]) -> list[type]:
     return merged
 
 
+@cache
 def _owned_providers(cls: type) -> tuple[type, ...]:
     r"""The authored method classes a generated category class declares as its own bases."""
     return vars(cls).get("_owned_providers", ())
