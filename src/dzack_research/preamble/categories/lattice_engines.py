@@ -255,6 +255,8 @@ def _split_binary_vectors_of_square(lattice, square):
             y = numerator // transformed_b
             solutions.add((v * x + p * y, -u * x + q * y))
     labels = tuple(lattice.module_generating_set())
+    negative_first_basis = sage_vector(SageZZ, (-1, 0))
+    negative_second_basis = sage_vector(SageZZ, (0, -1))
     ring = lattice.base_ring()
     return tuple(
         lattice.linear_combination({label: ring(int(coordinate)) for label, coordinate in zip(labels, solution, strict=True)})
@@ -285,13 +287,15 @@ def _binary_primitive_isotropic_vectors(lattice):
     return tuple(points)
 
 
-def _split_binary_orthogonal_group_elements(lattice):
-    r"""All integral isometries of a nondegenerate split binary lattice.
+def _split_binary_orthogonal_group_generators(lattice):
+    r"""Generators of the integral orthogonal group of a nondegenerate split binary lattice.
 
     An isometry is determined by the images of the two framed generators.
     Each image lies in the finite fibre of the corresponding diagonal Gram
     entry (or on one of the four primitive null rays), their pairing is the
-    off-diagonal entry, and their coordinate determinant is a unit.
+    off-diagonal entry, and their coordinate determinant is a unit.  Since
+    ``SO(L) = {+-1}``, negation and one determinant-minus-one element, when
+    that coset exists, generate all of ``O(L)``.
     """
     gram = _engine_component_matrix(lattice.gram_tensor())
     discriminant = _binary_form_discriminant(lattice)
@@ -308,7 +312,8 @@ def _split_binary_orthogonal_group_elements(lattice):
         else _split_binary_vectors_of_square(lattice, gram[1, 1])
     )
     labels = tuple(lattice.module_generating_set())
-    elements = []
+    negation = None
+    reversing = None
     for left in first:
         left_coordinates = sage_vector(
             SageZZ,
@@ -326,8 +331,16 @@ def _split_binary_orthogonal_group_elements(lattice):
                 - left_coordinates[1] * right_coordinates[0]
             )
             if abs(determinant) == SageZZ.one():
-                elements.append(dict(zip(labels, (left, right), strict=True)))
-    return tuple(elements)
+                images = dict(zip(labels, (left, right), strict=True))
+                if (
+                    left_coordinates == negative_first_basis
+                    and right_coordinates == negative_second_basis
+                ):
+                    negation = images
+                elif determinant == -SageZZ.one() and reversing is None:
+                    reversing = images
+    assert negation is not None, "negation is an isometry of every binary lattice"
+    return (negation,) if reversing is None else (negation, reversing)
 
 
 def _rational_representation_witness(lattice, value):

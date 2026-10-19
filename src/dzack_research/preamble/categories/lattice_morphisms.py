@@ -2761,7 +2761,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         ):
             generators = tuple(
                 self(images)
-                for images in lattice_engines._split_binary_orthogonal_group_elements(lattice)
+                for images in lattice_engines._split_binary_orthogonal_group_generators(lattice)
             )
         elif lattice.is_definite():
             self._assert_definite_over_integers("compute generators of")
