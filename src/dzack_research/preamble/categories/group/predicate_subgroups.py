@@ -134,6 +134,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         character_data_complete=None,
         generating_morphism=None,
         cardinality_decision=None,
+        enumeration=None,
     ):
         r"""Construct the predicate subgroup of this category's ambient group.
 
@@ -152,6 +153,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data_complete=character_data_complete,
             generating_morphism=generating_morphism,
             cardinality_decision=cardinality_decision,
+            enumeration=enumeration,
         )
 
     class ParentMethods:
@@ -164,6 +166,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data_complete=None,
             generating_morphism=None,
             cardinality_decision=None,
+            enumeration=None,
             **rest,
         ) -> None:
             self._predicate = predicate
@@ -176,6 +179,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 else bool(character_data_complete)
             )
             self._specified_cardinality_decision = cardinality_decision
+            self._specified_enumeration = enumeration
             super().__init__(supergroup=supergroup, **rest)
             # A generating morphism E -> G supplied by the constructing owner,
             # with image this subgroup, is a selected datum; its corestriction
@@ -216,6 +220,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             enumeration of ``G``.
             """
             group = self.supergroup()
+            if self._specified_enumeration is not None:
+                selected = self._specified_enumeration()
+                if selected is not None:
+                    return iter(selected)
             match group:
                 case _ if group in OwnedFiniteGroups():
                     return self._points_satisfying(group)

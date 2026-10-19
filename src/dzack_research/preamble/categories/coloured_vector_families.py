@@ -124,9 +124,9 @@ class _LabelledPairingGraph:
 
     @cached_method
     def _symmetric_group(self):
-        from dzack_research.preamble.categories.group.groups import Groups
+        from dzack_research.preamble.categories.group.groups import SymmetricGroups
 
-        return Groups.S(self._size())
+        return SymmetricGroups()(self._positions)
 
     @cached_method
     def _small_automorphisms(self):
@@ -163,7 +163,10 @@ class _LabelledPairingGraph:
         r"""The zero-based tuple represented by an engine automorphism."""
         if self._small_automorphisms() is None:
             return tuple(int(element(vertex)) for vertex in range(self._size()))
-        return tuple(int(element(vertex + 1)) - 1 for vertex in range(self._size()))
+        return tuple(
+            self._vertex(element(self._position(vertex)))
+            for vertex in range(self._size())
+        )
 
     @cached_method
     def automorphism_group(self):
@@ -208,7 +211,7 @@ class _LabelledPairingGraph:
     def position_permutation(self, automorphism):
         r"""The permutation of the indices induced by an element of ``Aut(Gamma)``."""
         return Sets().Mor(self._positions, self._positions)(
-            lambda position: self._position(int(automorphism(self._vertex(position) + 1)) - 1)
+            automorphism
         )
 
     def isomorphism(self, other):
@@ -544,6 +547,10 @@ class _ColouredFamilyRealization:
     def integral_configuration_generator_images(self):
         r"""Images of lattice basis vectors for generators of the integral configuration subgroup."""
         _order, permutations = self._integral_configuration_group_data()
+        return self._integral_configuration_images(permutations)
+
+    def _integral_configuration_images(self, permutations):
+        r"""Lattice-framing images of the selected integral family permutations."""
         labels = tuple(self._lattice.module_generating_set())
         ring = self._lattice.base_ring()
         images = []
@@ -563,6 +570,23 @@ class _ColouredFamilyRealization:
                 }
             )
         return tuple(images)
+
+    @cached_method
+    def integral_configuration_element_images(self):
+        r"""All integral isometries induced by the finite pairing symmetries.
+
+        When the family spans the lattice, every permutation preserving its
+        pairing and colours preserves the integral span.  The small pairing
+        table therefore supplies the complete stabilizer enumeration without
+        enumerating the ambient orthogonal group.
+        """
+        assert self.spans_lattice(), (
+            "the full pairing-symmetry enumeration is integral only when the "
+            "family spans the lattice"
+        )
+        return self._integral_configuration_images(
+            self.pairing_graph().automorphism_permutations()
+        )
 
     @cached_method
     def configuration_group(self):

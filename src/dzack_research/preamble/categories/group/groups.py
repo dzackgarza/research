@@ -1667,7 +1667,10 @@ def _own_group(
             if free_basis is not None and not _has_chosen_presentation(group):
                 _fix_selected_group_resolution(owned, free_basis=free_basis)
             elif not _has_chosen_presentation(group) and _has_chosen_generators(group):
-                _fix_selected_group_resolution(owned)
+                _fix_selected_group_resolution_on(
+                    owned,
+                    lambda: _engine_generators(owned),
+                )
             return owned
 
 
@@ -1688,7 +1691,10 @@ def _transported_subgroup(group, engine_subgroup):
         supergroup=group,
     )
     if _is_finitely_generated_witness(engine_subgroup):
-        _fix_selected_group_resolution(subgroup)
+        _fix_selected_group_resolution_on(
+            subgroup,
+            lambda: _engine_generators(subgroup),
+        )
     return subgroup
 
 
@@ -5838,6 +5844,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
             character_data_complete=None,
             generating_morphism=None,
             cardinality_decision=None,
+            enumeration=None,
         ):
             r"""Return the subgroup of elements satisfying ``predicate``.
 
@@ -5855,6 +5862,7 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 character_data_complete=character_data_complete,
                 generating_morphism=generating_morphism,
                 cardinality_decision=cardinality_decision,
+                enumeration=enumeration,
             )
 
         @RealizationHook

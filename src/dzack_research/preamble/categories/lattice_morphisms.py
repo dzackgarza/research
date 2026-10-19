@@ -2544,12 +2544,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             _stabilizer_generators,
         )
 
+        realization = _realization(self.lattice(), family)
+
         def preserves_family(automorphism):
-            realization = _realization(self.lattice(), family)
             return _matching(realization, realization, automorphism) is not None
 
         def cardinality():
-            realization = _realization(self.lattice(), family)
             if realization.spans_lattice():
                 return realization.stabilizer_cardinality()
             return realization.integral_stabilizer_cardinality()
@@ -2559,6 +2559,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             "isometries preserving the defining coloured vector family up to reindexing",
             character_data={"stabilized_family": family},
             cardinality_decision=cardinality,
+            enumeration=lambda: (
+                tuple(
+                    self(images)
+                    for images in realization.integral_configuration_element_images()
+                )
+                if realization.spans_lattice()
+                else None
+            ),
         )
         return stabilizer.select_group_generators(
             lambda: finite_ordered_set(_stabilizer_generators(self, family))
