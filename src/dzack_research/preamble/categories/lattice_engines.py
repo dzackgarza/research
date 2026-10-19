@@ -308,11 +308,12 @@ def _split_binary_orthogonal_group_elements(lattice):
         else _split_binary_vectors_of_square(lattice, gram[1, 1])
     )
     labels = tuple(lattice.module_generating_set())
+    cross_pairing = _owned_engine_element(lattice.base_ring(), gram[0, 1])
     elements = []
     for left in first:
         left_coordinates = tuple(left.to_vector()(label) for label in labels)
         for right in second:
-            if left.b(right) != lattice.base_ring()(gram[0, 1]):
+            if left.b(right) != cross_pairing:
                 continue
             right_coordinates = tuple(right.to_vector()(label) for label in labels)
             determinant = (
