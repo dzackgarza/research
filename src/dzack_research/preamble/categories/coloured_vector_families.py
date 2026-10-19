@@ -51,10 +51,16 @@ from itertools import permutations
 from math import factorial
 
 from sage.graphs.graph import Graph
+from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _owned_integers,
+)
 from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
@@ -168,6 +174,19 @@ class _LabelledPairingGraph:
         if automorphisms is not None:
             return cardinal(len(automorphisms))
         return self.automorphism_group().cardinality()
+
+    @cached_method
+    def automorphism_permutations(self):
+        r"""All labelled pairing-table automorphisms as zero-based tuples."""
+        small = self._small_automorphisms()
+        if small is not None:
+            return small
+        size = self._size()
+        engine = self._graph().automorphism_group(edge_labels=True)
+        return tuple(
+            tuple(int(automorphism(vertex)) for vertex in range(size))
+            for automorphism in engine
+        )
 
     def position_permutation(self, automorphism):
         r"""The permutation of the indices induced by an element of ``Aut(Gamma)``."""
@@ -360,6 +379,12 @@ class _ColouredFamilyRealization:
         The kernel ``K_v`` consists exactly of the independent permutations
         of indices carrying the same vector and colour.
         """
+        automorphism_order = int(self.pairing_graph().automorphism_order())
+        return cardinal(automorphism_order // self.permutation_kernel_order())
+
+    @cached_method
+    def permutation_kernel_order(self):
+        r"""The order of the permutations preserving every coloured vector."""
         classes = []
         for index in self.indices():
             value = self.vector(index)
@@ -373,13 +398,94 @@ class _ColouredFamilyRealization:
         kernel_order = 1
         for _value, _colour, multiplicity in classes:
             kernel_order *= factorial(multiplicity)
-        automorphism_order = int(self.pairing_graph().automorphism_order())
-        return cardinal(automorphism_order // kernel_order)
+        return kernel_order
 
     @cached_method
     def spans_lattice(self):
         r"""Whether the family generates the whole integral lattice."""
         return self.span().inclusion().cokernel().exponent() == 1
+
+    @cached_method
+    def _family_coordinate_matrix(self):
+        r"""Rows of family vectors in the lattice framing, at the private engine boundary."""
+        labels = tuple(self._lattice.module_generating_set())
+        ring = self._lattice.base_ring()
+        return engine_matrix(
+            SageZZ,
+            tuple(
+                tuple(
+                    _engine_element(ring, self.vector(index).to_vector()(label))
+                    for label in labels
+                )
+                for index in self.indices()
+            ),
+        )
+
+    def _coordinate_automorphism(self, permutation):
+        r"""The rational row-action matrix induced by a pairing-table automorphism."""
+        family = self._family_coordinate_matrix()
+        basis_rows = tuple(family.transpose().pivots())
+        basis = family.matrix_from_rows(basis_rows)
+        target = engine_matrix(
+            SageZZ,
+            tuple(family.row(permutation[index]) for index in basis_rows),
+        )
+        transformation = basis.solve_right(target)
+        permuted = engine_matrix(
+            SageZZ,
+            tuple(family.row(permutation[index]) for index in range(family.nrows())),
+        )
+        assert family * transformation == permuted, (
+            "a pairing-table automorphism of a spanning nondegenerate family must induce one linear transformation"
+        )
+        return transformation
+
+    @cached_method
+    def integral_configuration_data(self):
+        r"""Pairing automorphisms whose induced rational transformation preserves the lattice."""
+        self.assert_spanning_nondegenerate()
+        result = []
+        for permutation in self.pairing_graph().automorphism_permutations():
+            transformation = self._coordinate_automorphism(permutation)
+            if all(entry in SageZZ for entry in transformation.list()) and abs(transformation.det()) == 1:
+                result.append((permutation, transformation.change_ring(SageZZ)))
+        return tuple(result)
+
+    @cached_method
+    def integral_stabilizer_cardinality(self):
+        r"""The number of distinct integral isometries induced by the configuration."""
+        return cardinal(
+            len(self.integral_configuration_data()) // self.permutation_kernel_order()
+        )
+
+    @cached_method
+    def integral_configuration_generator_images(self):
+        r"""Images of lattice basis vectors for generators of the integral configuration subgroup."""
+        size = int(self.indices().cardinality())
+        data = dict(self.integral_configuration_data())
+        symmetric = SymmetricGroup(size)
+        subgroup = symmetric.subgroup(
+            tuple(symmetric([image + 1 for image in permutation]) for permutation in data)
+        )
+        labels = tuple(self._lattice.module_generating_set())
+        ring = self._lattice.base_ring()
+        images = []
+        for generator in subgroup.gens():
+            permutation = tuple(int(generator(index + 1)) - 1 for index in range(size))
+            transformation = self._coordinate_automorphism(permutation)
+            images.append(
+                {
+                    label: self._lattice.linear_combination(
+                        {
+                            target: ring(int(transformation[row, column]))
+                            for column, target in enumerate(labels)
+                            if transformation[row, column]
+                        }
+                    )
+                    for row, label in enumerate(labels)
+                }
+            )
+        return tuple(images)
 
     @cached_method
     def configuration_group(self):
@@ -462,6 +568,11 @@ def _stabilizer_generators(orthogonal_group, family):
 
     lattice = orthogonal_group.lattice()
     realization = _realization(lattice, family)
+    if not realization.spans_lattice():
+        return tuple(
+            orthogonal_group(images)
+            for images in realization.integral_configuration_generator_images()
+        )
     generators = realization.configuration_generators()
     if all(generator.integral_restriction(lattice, lattice) is not None for generator in generators):
         integral = generators
