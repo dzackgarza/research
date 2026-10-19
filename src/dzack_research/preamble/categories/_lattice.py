@@ -397,7 +397,16 @@ def _lattice_object(
     )
 
 
-@cached_function
+@cached_function(
+    key=lambda category, module, gram, names, root_system_type_name, axiom_categories=None: (
+        id(category),
+        id(module),
+        gram,
+        names,
+        root_system_type_name,
+        None if axiom_categories is None else tuple(id(axiom) for axiom in axiom_categories),
+    )
+)
 def _lattice_on_gram(
     category, module, gram, names, root_system_type_name, axiom_categories=None
 ):
