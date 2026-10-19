@@ -626,15 +626,22 @@ class CategoricalMor(_DiscreteTwoMorConstructions, OwnedCategoryMixin, CategoryP
         # the same providers and add no order between them.  The providers
         # are then sorted topologically (Kahn, Comm. ACM 5 (1962) 558), ties
         # going to the first supplier in reverse postorder.
+        providers_by_type = {}
+
         def own_providers(mor):
+            mor_type = type(mor)
+            known = providers_by_type.get(mor_type)
+            if known is not None:
+                return known
             found = []
-            for ancestor in type(mor).__mro__:
+            for ancestor in mor_type.__mro__:
                 if ancestor is CategoricalMor:
                     break
                 provider = ancestor.__dict__.get("ElementMethods")
                 if isinstance(provider, type) and provider not in found:
                     found.append(provider)
-            return found
+            providers_by_type[mor_type] = tuple(found)
+            return providers_by_type[mor_type]
 
         first_supplier = {}
         successors = {}
