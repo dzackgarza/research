@@ -2066,12 +2066,11 @@ def _orthogonal_group_is_finite_by_theorem(lattice) -> bool:
     """
     if _engine_ring(lattice.base_ring()) is not SageZZ or not lattice.module_rank().is_finite():
         return False
-    if lattice.is_definite():
-        return True
-    if lattice.module_rank() != 2:
-        return False
-    minus_determinant = lattice_engines._binary_form_discriminant(lattice)
-    return bool(minus_determinant != 0 and minus_determinant.is_square())
+    if lattice.module_rank() == 2:
+        minus_determinant = lattice_engines._binary_form_discriminant(lattice)
+        if minus_determinant != 0 and minus_determinant.is_square():
+            return True
+    return lattice.is_definite()
 
 
 class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
