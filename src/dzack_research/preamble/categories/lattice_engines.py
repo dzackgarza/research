@@ -274,15 +274,26 @@ def _binary_primitive_isotropic_vectors(lattice):
     root = discriminant.sqrt()
     if a:
         directions = tuple(
-            sage_vector(SageZZ, (-b + sign * 2 * root, 2 * a))
+            (-b + sign * 2 * root, 2 * a)
             for sign in (SageZZ.one(), -SageZZ.one())
         )
     else:
         directions = (
-            sage_vector(SageZZ, (SageZZ.one(), SageZZ.zero())),
-            sage_vector(SageZZ, (c, -b)),
+            (SageZZ.one(), SageZZ.zero()),
+            (c, -b),
         )
-    primitive = tuple(_raise_rational_lattice_vector(lattice, direction) for direction in directions)
+    labels = tuple(lattice.module_generating_set())
+    ring = lattice.base_ring()
+    primitive = tuple(
+        lattice.linear_combination(
+            {
+                label: ring(int(coordinate // engine_gcd(direction)))
+                for label, coordinate in zip(labels, direction, strict=True)
+                if coordinate
+            }
+        )
+        for direction in directions
+    )
     return tuple(vector for point in primitive for vector in (point, -point))
 
 
@@ -311,21 +322,24 @@ def _split_binary_orthogonal_group_generators(lattice):
         else _split_binary_vectors_of_square(lattice, gram[1, 1])
     )
     labels = tuple(lattice.module_generating_set())
-    negative_first_basis = sage_vector(SageZZ, (-1, 0))
-    negative_second_basis = sage_vector(SageZZ, (0, -1))
+    negative_first_basis = (-SageZZ.one(), SageZZ.zero())
+    negative_second_basis = (SageZZ.zero(), -SageZZ.one())
     negation = None
     reversing = None
     for left in first:
-        left_coordinates = sage_vector(
-            SageZZ,
-            tuple(_engine_element(lattice.base_ring(), left.to_vector()(label)) for label in labels),
+        left_coordinates = tuple(
+            _engine_element(lattice.base_ring(), left.to_vector()(label)) for label in labels
         )
         for right in second:
-            right_coordinates = sage_vector(
-                SageZZ,
-                tuple(_engine_element(lattice.base_ring(), right.to_vector()(label)) for label in labels),
+            right_coordinates = tuple(
+                _engine_element(lattice.base_ring(), right.to_vector()(label)) for label in labels
             )
-            if left_coordinates.dot_product(gram * right_coordinates) != gram[0, 1]:
+            cross_pairing = sum(
+                left_coordinates[row] * gram[row, column] * right_coordinates[column]
+                for row in range(2)
+                for column in range(2)
+            )
+            if cross_pairing != gram[0, 1]:
                 continue
             determinant = (
                 left_coordinates[0] * right_coordinates[1]
