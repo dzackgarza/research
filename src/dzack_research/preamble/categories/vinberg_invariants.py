@@ -327,7 +327,7 @@ class VinbergInvariantMatrices(OwnedCategory):
               \(\pi/2\);
             - signature \((n-1, 1, 0)\).
 
-            The signature is the Sylvester pair \((p, q)\) of the symmetric
+            The signature is the pair \((p, q)\) of positive and negative indices of inertia of the symmetric
             form \(G\) on \(R^n\); \(p + q = n\) is the statement that the
             radical is zero, so the form is nondegenerate.
             """
