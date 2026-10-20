@@ -117,7 +117,7 @@ def test_root_and_theta_catalogue_invariants_are_owned_by_the_lattice() -> None:
     theta = lattice.theta_series(precision=5)
     assert tuple(int(theta[index]) for index in range(5)) == (1, 0, 6, 0, 0)
     rank_one = Lattices(ZZ)([[1]]).reflective_root_system_components()
-    assert [(component.type, component.scale) for component in rank_one] == [("A1", QQ(1) / 2)]
+    assert [(component.label(), component.root_scale()) for component in rank_one] == [("A1", QQ(1) / 2)]
 
 
 def test_affine_quadric_zeta_factorization_is_owned_by_the_lattice() -> None:
