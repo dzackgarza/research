@@ -3021,6 +3021,8 @@ class TensorProductModuleMorphismMethods:
 
     _bilinear_evaluation = None
     _defining_pairing_tensor = None
+    _pullback_form = None
+    _pullback_morphism = None
     _defining_pairing_values = None
 
     def __init__(
@@ -3150,6 +3152,17 @@ class TensorProductModuleMorphismMethods:
         from dzack_research.preamble.tensors.tensor import tensor
 
         n, m = int(left_size.finite_value()), int(right_size.finite_value())
+        if self._pullback_form is not None:
+            from dzack_research.preamble.tensors.tensor import Tensor
+            from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+            original = self._pullback_form._as_numerical_tensor()
+            morphism = self._pullback_morphism
+            ordinary = morphism.domain().module_category().Mor(morphism.domain(), morphism.codomain())
+            if isinstance(original, Tensor) and ordinary in MatrixSpaces(left.base_ring()):
+                if morphism.parent() is not ordinary:
+                    morphism = ordinary._from_constructed_element_map(morphism, premises=(morphism,))
+                return original.pullback(morphism)
         if self.codomain() not in OwnedRings():
             from dzack_research.preamble.categories.modules.pure.modules import RestrictedScalarsModules
 
@@ -3257,9 +3270,14 @@ class TensorProductModuleMorphismMethods:
         # framing e_i tensor e_j of the source tensor square; constructing it
         # from them makes it an element of that Mor, where a composite whose
         # parent is already that Mor would be returned as a bare composite.
-        return source.module_category().Mor(source, self.codomain())(
+        result = source.module_category().Mor(source, self.codomain())(
             lambda pair: self(induced(source.module_generator(pair)))
         )
+        # Retain the defining pullback. A later scalar-coordinate request
+        # transports the original tensor instead of expanding nested pure tensors.
+        result._pullback_form = self
+        result._pullback_morphism = morphism
+        return result
 
     def polar_form(self):
         if self.left_module() is not self.right_module():

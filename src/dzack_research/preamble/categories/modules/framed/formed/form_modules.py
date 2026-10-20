@@ -82,6 +82,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     MatrixSpaces,
     Modules,
     ModulesWithChosenFinitePresentation,
+    RestrictedScalarsModules,
     TensorProductModules,
     VectorSpaces,
 )
@@ -241,7 +242,8 @@ def _mapped_value(domain, codomain, value_morphism, value):
 def _form_square_commutes(domain, codomain, module_morphism, value_morphism) -> bool | Predicate:
     r"""Whether ``h(b_M(x, y)) = b_N(f(x), f(y))`` for the pair ``(f, h)`` from ``M`` to ``N``.
 
-    When both forms are bilinear and ring-valued, ``h`` is the identity and
+    When both forms are bilinear with values in the same R-algebra S,
+    regarded as an R-module by restriction of scalars, ``h`` is the identity and
     ``f`` is a map of framed free modules of finite rank, the square is the
     tensor equation ``f^* G_N = G_M``: the Gram tensor of ``N`` pulled back
     along ``f`` is the Gram tensor of ``M``, and :meth:`Tensor.pullback` owns
@@ -302,9 +304,13 @@ def _form_square_commutes(domain, codomain, module_morphism, value_morphism) -> 
         and module_morphism.linearity_decision() is True
         and value_morphism.linearity_decision() is True
     )
+    algebra_values = source_form.codomain() in OwnedRings() or (
+        source_form.codomain() in RestrictedScalarsModules(domain.base_ring())
+        and source_form.codomain().module_over_extension() in OwnedRings()
+    )
     match kind:
         case True, _ if (
-            source_form.codomain() in OwnedRings()
+            algebra_values
             and value_morphism is value_identity
             and module_mor in MatrixSpaces(domain.base_ring())
             and established_linear
