@@ -966,6 +966,16 @@ class _Genus(Sets().ObjectType):
     def __iter__(self):
         return iter(self.representatives())
 
+    def _cardinality_decision(self):
+        r"""Supply the cardinality through the computed finite class representatives.
+
+        The genus is the fibre of ``isometryClassToGenus`` in
+        ``Lattices/Valued/LocalGlobal.lean``. Its chosen representatives give
+        a bijection with that fibre, so Sets' cardinality owner reads the
+        cardinality of this finite enumeration.
+        """
+        return self.representatives().cardinality()
+
     def class_number(self):
         r"""Return the number of isometry classes in this genus [PS24, Def. 1.10.5]."""
         return _owned_integers()(int(self.cardinality()))

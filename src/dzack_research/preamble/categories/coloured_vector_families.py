@@ -455,7 +455,9 @@ class _ColouredFamilyRealization:
     def _coordinate_basis_data(self):
         r"""The selected family basis rows, adjugate and determinant, computed once."""
         family = self._family_coordinate_matrix()
-        basis_rows = tuple(family.transpose().pivots())
+        from dzack_research.preamble.tensors.tensor import _engine_row_basis_positions
+
+        basis_rows = tuple(_engine_row_basis_positions(family))
         basis = family.matrix_from_rows(basis_rows)
         return basis_rows, basis.adjugate(), basis.det()
 
