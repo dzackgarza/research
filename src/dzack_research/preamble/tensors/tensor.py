@@ -1403,22 +1403,6 @@ def _engine_dual_row_family(row_family):
     return row_family.inverse().transpose()
 
 
-def _engine_inverse_form_pullback(form, isomorphism):
-    r"""Private engine adapter (``OWN-24``): pull a form back along an inverse map.
-
-    ``isomorphism`` uses coordinate columns: it sends the standard basis
-    to its columns.  The returned Gram matrix represents
-    ``(isomorphism^{-1})^* form``.  The inverse, transpose and action
-    conventions are confined to this tensor boundary.
-
-    For the rational diagonalization ``T^t (2G) T = D``, pullback of
-    ``|D|`` along ``T^{-1}`` gives the positive-definite majorant
-    ``M`` with ``|2G(x,x)| <= M(x,x)``. Thus the engine does not choose
-    between row and column conjugation when constructing its search bound.
-    """
-    return _engine_row_family_gram(form, _engine_dual_row_family(isomorphism))
-
-
 def _engine_modular_pairing_pullback(form, row_family, modulus, *, diagonal_only=False):
     r"""Private engine adapter (``OWN-24``): a finite-family pairing contraction.
 

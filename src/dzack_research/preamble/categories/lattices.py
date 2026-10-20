@@ -5396,8 +5396,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return a set of roots of \(L\) that generates \(L\) as a module.
 
             A semi-decision for \(L=\mathbb Z\Phi(L)\) on a lattice of any
-            signature: the roots are searched in balls of growing radius for a
-            positive definite majorant of \(b\), so the search returns exactly
+            signature: PARI enumerates integer coordinates in increasing L1
+            degree, so the search returns exactly
             when \(\Phi(L)\) generates \(L\) and runs without end otherwise.
             """
             from dzack_research.preamble.categories.lattice_engines import (

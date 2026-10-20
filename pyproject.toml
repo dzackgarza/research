@@ -24,7 +24,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-dzack_research = ["py.typed"]
+dzack_research = ["py.typed", "preamble/categories/*.gp"]
 
 # Fetched from its repository, not a sibling directory. A relative path here
 # is inherited by every consumer that fetches this project from git, where it

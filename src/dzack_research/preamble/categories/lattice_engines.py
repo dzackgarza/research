@@ -22,7 +22,6 @@ from dzack_research.preamble.tensors.tensor import (
     Tensor,
     _engine_column_matrix_from_row_action,
     _engine_component_matrix,
-    _engine_inverse_form_pullback,
     _engine_row_action_matrix,
     _engine_symmetrized_form_matrix,
     tensor,
@@ -977,55 +976,26 @@ def isometric_within_genus(domain, codomain):
 __all__: list[str] = []
 
 
-_ROOTS_IN_ANNULUS = (
-    "(form, majorant, inner, outer, lengths) -> my(found = List());"
-    " forqfvec(v, majorant, outer, if(v~ * majorant * v > inner,"
-    " my(square = v~ * form * v);"
-    " if(square && setsearch(lengths, abs(square)) && content(2 * form * v) % square == 0, listput(found, v))));"
-    " Vec(found)"
-)
-r"""PARI closure listing, one of each pair \(\pm v\), the roots \(v\) with ``inner < M(v) <= outer``.
-
-``forqfvec`` visits the ball without storing it, so memory holds only the roots found.
-"""
-
-
 def _roots_generating_lattice(gram, lengths):
-    r"""Return coordinate rows of roots that generate \(\mathbb Z^n\) under the integral form ``gram``.
+    r"""Return coordinate rows of reflective roots generating the integral module.
 
-    A root is a vector \(r\) with \(b(r,r)\ne 0\) dividing \(2b(r,x)\) for every
-    \(x\); its \(|b(r,r)|\) lies in ``lengths``. For a nondegenerate
-    Gram form \(G\), Sage supplies a rational diagonalization
-    \(T^{t}(2G)T=D\). The pullback \(M=(T^{-1})^*|D|\) is positive
-    definite and satisfies \(|2G(x,x)|\le M(x,x)\), by the triangle
-    inequality in the diagonal basis. Thus each ball of \(M\) holds finitely many
-    vectors.  The annuli between radii \(R\) and \(2R\) are searched in turn,
-    and a root is kept when it enlarges the span of those kept.  The search
-    returns once they span \(\mathbb Z^n\), and runs without end, in memory
-    bounded by the roots found, when \(\mathbb Z\Phi(L)\ne L\).
+    PARI's exact ``forvec(v=vector(n), ...)`` enumerates all integer vectors
+    in increasing L1 degree (Programming in GP: control statements, ``forvec``).
+    ``matinverseimage`` decides membership in the retained independent column
+    span over QQ, and integral coefficients decide membership over ZZ;
+    ``mathnf`` retains its basis. Only roots enlarging that span are retained.
+    A returned family therefore consists of roots and generates the module;
+    otherwise the semi-decision keeps enumerating without a precision bound.
+
+    ``_root_generators.gp`` composes those maintained operations. TRAPS.md,
+    "PARI forqfvec imposes a fixed floating-point bound", records why the
+    former annular iterator cannot implement this unbounded procedure.
     """
-    from sage.arith.functions import lcm
+    from pathlib import Path
+
     from sage.libs.pari import pari
-    from sage.quadratic_forms.quadratic_form import QuadraticForm
 
     form = _engine_component_matrix(gram).change_ring(SageZZ)
-    rank = form.nrows()
-    diagonal, change = QuadraticForm(SageQQ, 2 * form).rational_diagonal_form(return_matrix=True)
-    majorant = _engine_inverse_form_pullback(diagonal.matrix().apply_map(abs), change)
-    majorant = (lcm(entry.denominator() for entry in majorant.list()) * majorant).change_ring(SageZZ)
-    roots_in_annulus = pari(_ROOTS_IN_ANNULUS)
-    lengths = pari(sorted(int(length) for length in lengths))
-    identity = engine_matrix.identity(SageZZ, rank)
-    kept = []
-    span = engine_matrix(SageZZ, 0, rank)
-    inner, outer = 0, max(majorant.diagonal())
-    while span != identity:
-        for column in roots_in_annulus(pari(form), pari(majorant), inner, outer, lengths):
-            vector = tuple(int(entry) for entry in column)
-            enlarged = engine_matrix(SageZZ, [*span.rows(), vector]).echelon_form()
-            enlarged = enlarged.matrix_from_rows([row for row in range(enlarged.nrows()) if not enlarged.row(row).is_zero()])
-            if enlarged != span:
-                kept.append(vector)
-                span = enlarged
-        inner, outer = outer, 2 * outer
-    return tuple(kept)
+    source = Path(__file__).with_name("_root_generators.gp").read_text()
+    generators = pari(source)(pari(form), pari(sorted(int(length) for length in lengths)))
+    return tuple(tuple(int(entry) for entry in column) for column in generators)
