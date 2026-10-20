@@ -4,9 +4,7 @@ These are mathematical tests of the preamble objects themselves.  Lattice-db
 only serializes the returned values and never rechecks these formulas.
 """
 
-from fractions import Fraction
-
-from dzack_research.preamble.all import QQ, ZZ, Lattices
+from dzack_research.preamble.all import *
 
 
 def test_positive_a2_genus_and_orthogonal_group_are_owned_by_the_lattice() -> None:
@@ -27,7 +25,7 @@ def test_rational_definite_orthogonal_group_is_owned_by_the_lattice() -> None:
     lattice = Lattices(QQ)([[QQ(1) / 2]])
     group = lattice.orthogonal_group()
     assert group.cardinality() == 2
-    assert len(tuple(group.group_generators())) == 1
+    assert Set(group.group_generators()).cardinality() == 1
 
 
 def test_a2_orbit_and_discriminant_certification_data_are_owned_by_the_lattice() -> None:
@@ -47,7 +45,7 @@ def test_a2_orbit_and_discriminant_certification_data_are_owned_by_the_lattice()
     sequence = lattice.discriminant_sequence_data()
     assert sequence["discriminant_group_order"] == 2
     assert sequence["image_order"] == 2
-    assert len(sequence["coset_representatives"]) == 1
+    assert Set(sequence["coset_representatives"]).cardinality() == 1
     assert sequence["mm_trivial"] is True
 
 
@@ -57,7 +55,7 @@ def test_discriminant_sequence_retains_a_nontrivial_pointed_coset_quotient() -> 
     assert sequence["discriminant_factors"] == [2, 10]
     assert sequence["discriminant_group_order"] == 4
     assert sequence["image_order"] == 2
-    assert len(sequence["coset_representatives"]) == 2
+    assert Set(sequence["coset_representatives"]).cardinality() == 2
     assert sequence["mm_trivial"] is False
     assert sequence["quotient_multiplication"] == [[0, 1], [1, 0]]
 
@@ -119,7 +117,7 @@ def test_root_and_theta_catalogue_invariants_are_owned_by_the_lattice() -> None:
     theta = lattice.theta_series(precision=5)
     assert tuple(int(theta[index]) for index in range(5)) == (1, 0, 6, 0, 0)
     rank_one = Lattices(ZZ)([[1]]).reflective_root_system_components()
-    assert [(component.type, component.scale) for component in rank_one] == [("A1", Fraction(1, 2))]
+    assert [(component.type, component.scale) for component in rank_one] == [("A1", QQ(1) / 2)]
 
 
 def test_affine_quadric_zeta_factorization_is_owned_by_the_lattice() -> None:
