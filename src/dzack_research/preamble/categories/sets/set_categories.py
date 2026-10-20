@@ -2549,7 +2549,7 @@ class _FiniteLiteralSet(Sets().ObjectType):
 
     def _cardinality_decision(self):
         r"""The retained finite set of literal points supplies its exact size."""
-        return cardinal(len(self._points))
+        return cardinal(self._points.cardinality())
 
     def _element_constructor_(self, point):
         member = self.is_parent_of(point)
