@@ -1442,21 +1442,35 @@ def _root_basis_diagram(roots, names=None, positions=None, type_label=None):
         f"the roots {roots} do not all lie in one lattice: the first lies in "
         f"{realization}, and a Coxeter diagram of roots needs a single lattice"
     )
-    ring = realization.base_ring()
+    # A root lattice may have a pairing valued in a scalar extension, such
+    # as QQ restricted to ZZ. Evaluate its scalar Gram tensor in that ring;
+    # the values of the restricted module are not elements of the base ring.
+    form_gram = realization.gram_tensor()
+    ring = form_gram.base_ring()
+    framing = realization.framing_morphism()
+    coordinates = {
+        index: tensor.vector(ring, tuple(framing.lift(roots.value(index))))
+        for index in mirrors
+    }
+    pairings = {
+        (left, right): form_gram.contract(coordinates[left], coordinates[right])
+        for left in mirrors
+        for right in mirrors
+    }
     gram = tensor(
         ring,
         (),
         (mirrors.cardinality(), mirrors.cardinality()),
-        [[roots.value(left).b(roots.value(right)) for right in mirrors] for left in mirrors],
+        [[pairings[left, right] for right in mirrors] for left in mirrors],
     )
     entries = {
         (left, right): cardinal(1)
         if left == right
         else _coxeter_entry(
             ring,
-            roots.value(left).q(),
-            roots.value(right).q(),
-            roots.value(left).b(roots.value(right)),
+            pairings[left, left],
+            pairings[right, right],
+            pairings[left, right],
         )
         for left in mirrors
         for right in mirrors
