@@ -1391,6 +1391,13 @@ retains those obligations. The inspected boundary is the topology, open-cover,
 affine-scheme and finite-atlas constructors named here; no absence of the
 corresponding mathematics in `lean-categories` is asserted.
 
+### An exact real that is rational does not convert to a rational
+
+Missing mathematics: the rational number of an exact real that is rational. `QQ ⊂ AA ⊂ RR` are subfields, so an algebraic exact real lies in `QQ` exactly when its `AA` image does, and that image is the rational. The owned `RR` (`ExactRealField`, `rings/real.py`) already decides relations through `AA` (`_sign_from_algebraic`), but `ExactRealNumber._rational_` (`rings/real.py:298`) is a bare `QQ(self._expression)`. Sage's symbolic ring does not combine distinct square roots (`sqrt(3)*sqrt(2)` stays unreduced, while `sqrt(2)*sqrt(2)` becomes `2`), so the conversion raises on a value the same owner decides is rational.
+Observed (executed 2026-10-21): with `x = RR(37/3*sqrt(6)*sqrt(3)*sqrt(2))`, `x == RR(74)` is `True` and `QQ(x)` raises `TypeError: unable to convert 37/3*sqrt(6)*sqrt(3)*sqrt(2) to a rational`, in both the owned `QQ` and Sage's `QQ`. `QQ(AA(x))` is `74`.
+Consumer: `LatticeGenera.siegel_eisenstein_coefficient` (`categories/lattices.py`) on odd rank, where the real density and the `L`-value each carry square roots. It raised on lattice-db card 0087 (`E6 + A1`) at `m = 2` and `m = 8` in certification run 39565313962, and the worker died. Commit acf9eb473f works around it at that one site: it computes in raw `SR` rather than the owned `RR` and reads the rational as the nonnegative root of the expanded square. That is not general: it uses that a theta coefficient is nonnegative and that squaring clears the radicals of this product.
+Remediation: `ExactRealNumber._rational_` decides membership in `QQ` through `AA` when the expression is algebraic, and raises only on a value that is not rational or not decided to be. The Siegel product is then computed in the owned `RR`, and its workaround is deleted (`tests/lattices/test_siegel_eisenstein_coefficients.sage` keeps the specimen). Coverage boundary: transcendental exact reals that happen to be rational, such as a product of powers of `pi` that cancels, are outside this repair. `lean-categories` request: not checked whether it states the subfield chain `QQ ⊂ AA ⊂ RR`.
+
 ## Workflow Papercuts
 
 ### The live TODO has dependency edges to absent nodes
