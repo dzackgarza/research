@@ -283,13 +283,14 @@ _lock:
     uv lock
 
 # Run commit-tier SageMath QC through the central implementation
-test-commit: tensor-boundary
+test-commit: (tensor-boundary "staged")
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
 
 # Run push-tier SageMath QC through the central implementation
 test-push:
     #!/usr/bin/env bash
     set -euo pipefail
+    just tensor-boundary all
     just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
     # A push that changes the book refreshes what lattice-research.localhost serves.
     # The push gate itself is machine-wide and owns none of this; the deploy belongs
@@ -453,11 +454,22 @@ test-universe:
 # AST provenance, not identical source-line text, exempts the typed Mor
 # transpose. Encoding Smith coordinates as ordinal indices is not a pairing.
 # The scan is necessary but not sufficient: semantic ownership needs review.
-tensor-boundary:
+# scope=staged scans the staged preamble files (commit tier, seconds);
+# scope=all scans the whole preamble (push tier).
+tensor-boundary scope="all":
     #!/usr/bin/env bash
     set -uo pipefail
-    files=$(git ls-files 'src/dzack_research/preamble/*.py' \
-        | grep -v '^src/dzack_research/preamble/tensors/') || exit 1
+    case "{{scope}}" in
+        all) files=$(git ls-files 'src/dzack_research/preamble/*.py' \
+            | grep -v '^src/dzack_research/preamble/tensors/') || exit 1 ;;
+        staged) files=$(git diff --cached --name-only --diff-filter=ACMR -- 'src/dzack_research/preamble/*.py' \
+            | grep -v '^src/dzack_research/preamble/tensors/')
+            if [ -z "$files" ]; then
+                echo "tensor-boundary: no staged preamble Python files."
+                exit 0
+            fi ;;
+        *) echo "tensor-boundary scope must be all or staged, not {{scope}}" >&2; exit 2 ;;
+    esac
     total=0
     for pattern in '$X.transpose()' '$X.T' '$X.matrix_action_right($$$A)' '$X.matrix_action_left($$$A)' '$X.einsum($$$A)' 'einsum($$$A)' '$X.matmul($$$A)' 'matmul($$$A)' '$X.dot($$$A)' '$X @ $Y'; do
         matches=$(ast-grep run --lang python --pattern "$pattern" --json $files)
