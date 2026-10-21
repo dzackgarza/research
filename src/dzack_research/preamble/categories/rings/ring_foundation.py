@@ -5434,7 +5434,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         if parent is not None:
             if parent in OwnedRings():
                 return self._from_engine_element(
-                    self._engine(_engine_element(parent, value))
+                    self._engine(_rational_engine_value(self._engine, _engine_element(parent, value)))
                 )
             from dzack_research.preamble.categories.sets.set_categories import NN
 
@@ -6507,6 +6507,25 @@ def _engine_quotient_cover_ideal(ring, engine_ideal):
     defining = engine.defining_ideal()
     lifted = tuple(engine(generator).lift() for generator in engine_ideal.gens())
     return cover.ideal(tuple(defining.gens()) + lifted)
+
+
+def _rational_engine_value(engine, value):
+    r"""Return ``value`` in a form that the engine ``ZZ`` or ``QQ`` converts exactly.
+
+    The symbolic ring keeps distinct square roots apart, so it cannot read
+    ``sqrt(6)*sqrt(3)*sqrt(2)`` as ``6`` and Sage's ``QQ`` rejects it.  ``AA``
+    decides an algebraic value exactly, so a symbolic value bound for ``ZZ`` or
+    ``QQ`` crosses through it; ``ZZ`` or ``QQ`` still rejects an irrational one.
+    Every other value and target is returned unchanged.
+    """
+    from sage.rings.integer_ring import ZZ as SageIntegers
+    from sage.rings.qqbar import AA
+    from sage.rings.rational_field import QQ as SageRationals
+    from sage.symbolic.expression import Expression
+
+    if engine in (SageIntegers, SageRationals) and isinstance(value, Expression) and value in AA:
+        return AA(value)
+    return value
 
 
 def _engine_element(ring, element):

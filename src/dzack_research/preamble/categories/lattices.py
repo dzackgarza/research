@@ -824,14 +824,10 @@ class _Genus(Sets().ObjectType):
         coefficient = (
             hauptsatz_factor * real_density * generic_density * exceptional_density
         )
-        # The symbolic ring leaves a product such as sqrt(6)*sqrt(3)*sqrt(2)
-        # unreduced, while its square expands to a rational.  The coefficient
-        # counts representations, so it is the nonnegative root of that square.
-        square = SageQQ(SR(coefficient**2).expand())
-        assert square.is_square(), (
-            f"the Siegel product of {self!r} at {m} must be rational, and its square is {square}"
-        )
-        return _owned_engine_element(rationals, square.sqrt())
+        # The product is an exact real; reading it in QQ decides that it is rational.
+        from dzack_research.preamble.rings.real import RR
+
+        return rationals(RR(SR(coefficient)))
 
     def siegel_eisenstein_series(self, precision=20, variable="q"):
         r"""Return ``1 + sum_{0 < m < precision} a_E(m) q^m`` for this definite genus.

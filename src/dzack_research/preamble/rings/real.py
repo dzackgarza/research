@@ -293,9 +293,14 @@ class ExactRealNumber(FieldElement):
         return self._expression._sympy_()
 
     def _integer_(self, integer_ring):
-        return integer_ring(self._expression)
+        return integer_ring(self._rational_())
 
     def _rational_(self):
+        # The symbolic ring keeps distinct square roots apart, so
+        # sqrt(6)*sqrt(3)*sqrt(2) is no numeric rational to it. AA decides an
+        # algebraic value exactly, as the relations of this field already do.
+        if self._expression in AA:
+            return QQ(AA(self._expression))
         return QQ(self._expression)
 
     def _algebraic_(self, algebraic_field):
