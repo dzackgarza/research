@@ -965,20 +965,25 @@ def isometric_within_genus(domain, codomain):
     one spinor genus decides isometry [CS99, Ch. 15, Thms 14-15].  Input: two
     preamble lattices over ``ZZ``, nondegenerate, of finite rank at least 3,
     already established to lie in one genus.  Output: a Python ``bool``, the
-    exact verdict of the native integral-isometry construction.
+    exact verdict of the native spinor-genus computation.
 
-    The port's plain-lattice entry implements the pinned
-    ``INDEF_FORM_TestEquivalence`` reduction and recursion
-    (Indefinite.jl ``374a5ebb``, ``IndefiniteForms.g:1312-1393``).
-    Its indefinite branch enters the Lorentzian or Eichler kernel directly,
-    without asking this isometry Mor for its emptiness again.  Witnesses
-    retain the original domain and codomain, and the port's groupoid caches
-    the kernel witness for a subsequent ``Isom(...).an_element()`` request.
+    Hecke ``e2ab5716``, ``ZLatticeMorphism.jl:797--893``, first identifies
+    the rational spaces, then weakly approximates the local lattice maps
+    at primes dividing ``2 det``.  The spinor operator of the remaining
+    intersection index decides isometry.  Sage supplies rational-space
+    isometry, local normal forms and the improper spinor kernel; the
+    source's exact reflection-and-CRT approximation lives at the tensor
+    arithmetic owner.  No Julia bridge or integral-group enumeration is
+    used.  This decision requires no rational hyperbolic planes.  An
+    integral isometry remains the separate ``Isom(...).an_element()``
+    construction; the rational approximation is not such a witness.
     """
-    from dzack_research.preamble.categories.lattices import Lattices
-    from sage_indefinite_port.indefinite.marked_lattices import isometry
+    from dzack_research.preamble.tensors._spinor_isometry import _isometric_indefinite
 
-    return isometry(Lattices(domain.base_ring()), domain, codomain) is not None
+    return _isometric_indefinite(
+        _engine_component_matrix(domain.gram_tensor()),
+        _engine_component_matrix(codomain.gram_tensor()),
+    )
 
 __all__: list[str] = []
 
