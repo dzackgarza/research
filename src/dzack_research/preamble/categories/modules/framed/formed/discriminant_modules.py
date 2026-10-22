@@ -189,8 +189,13 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     f"the discriminant form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
                 )
-            # The pairing of L^# lies in Res(K); K/R is a quotient of K.
-            value = self.dual_lattice().b(self.dual_lattice_lift(left), self.dual_lattice_lift(right))
+            dual = self.dual_lattice()
+            value = dual.b(self.dual_lattice_lift(left), self.dual_lattice_lift(right))
+            # An integral metric dual pairs directly in R.  Otherwise its
+            # values lie in Res(K), whose underlying K-element represents
+            # the class in K/R.
+            if dual.value_module() is self.base_ring():
+                return self.bilinear_value_module()(value)
             return self.bilinear_value_module()(value.underlying_element())
 
         def orthogonal_subgroup(self, subgroup):

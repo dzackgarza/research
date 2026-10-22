@@ -1092,14 +1092,24 @@ class NaturalTransformationMorphism(CategoricalArrow):
         return self.transformation().naturality_square(morphism)
 
     def __eq__(self, other: Any) -> bool | Predicate:
+        r"""Compare every component when the domain is a represented finite chain.
+
+        Equality of natural transformations is equality of their component
+        families.  A finite ordinal supplies its complete object family, so
+        the conjunction of the component equalities decides equality whenever
+        those morphism equalities are decidable.  An undecided component stays
+        a proposition; an arbitrary category is not silently enumerated.
+        """
         if parent(other) is not self.parent():
             return False
         if self.transformation() is other.transformation():
             return True
-        # Different component functions need not define different natural
-        # transformations, and the source category need not be finite.
-        from dzack_research.preamble.logic import AtomicProposition
+        from dzack_research.preamble.categories.abstract_categories.products import FiniteOrdinalCategory
+        from dzack_research.preamble.logic import AtomicProposition, conjunction
 
+        shape = self.transformation().source().domain()
+        if isinstance(shape, FiniteOrdinalCategory):
+            return conjunction(self.component(obj) == other.component(obj) for obj in shape.objects())
         return AtomicProposition("equal", self, other)
 
     def __ne__(self, other: Any) -> bool | Predicate:
