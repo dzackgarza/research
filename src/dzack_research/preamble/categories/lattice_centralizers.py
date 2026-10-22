@@ -690,6 +690,99 @@ class CyclotomicDecomposition(SageObject):
         blocks = orthogonal_sum.O().subgroup(block_generators)
         return self.orthogonal_sum_inclusion().extended_subgroup(blocks).group_generators()
 
+    @cached_method
+    def glued_centralizer_discriminant_image(self):
+        r"""Glue the component finite images to ``rho_L(Z_{O(L)}(f))``.
+
+        Write ``M = direct_sum_d L_d`` and ``H = L/M <= A_M``.  The image
+        of the product of component centralizers is the block product of
+        their images in ``O(A_{L_d})``.  Its setwise stabilizer of ``H``
+        is exactly the image of the compatible arithmetic tuples: any
+        chosen arithmetic lifts preserve ``L`` precisely when their finite
+        action preserves ``H``.  Descending that stabilizer to
+        ``H^perp/H = A_L`` therefore gives the required image.
+
+        This is the finite compatibility calculation of OSCAR's pinned
+        ``_glue_stabilizers`` (``embeddings.jl:3085-3196``, ``d135b70b``).
+        The finite setwise stabilizer includes both restriction kernels
+        and the matching actions on the glue, without requiring generators
+        of an indefinite component's full arithmetic centralizer.
+        """
+        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+            _torsion_form_isometry,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        divisors = self.nonzero_divisors()
+        orthogonal_sum = self.orthogonal_sum()
+        form = orthogonal_sum.discriminant_group()
+        group = form.orthogonal_group()
+
+        def discriminant_inclusion(divisor):
+            summand = self.summand(divisor)
+            inclusion = summand.Emb(orthogonal_sum)(
+                lambda label: self._orthogonal_sum_image(
+                    divisor, summand.module_generator(label)
+                )
+            )
+            return inclusion.discriminant_inclusion()
+
+        inclusions = finite_indexed_family(divisors, discriminant_inclusion)
+        factors = finite_indexed_family(
+            divisors, lambda divisor: inclusions[divisor].domain()
+        )
+        product = Modules(orthogonal_sum.base_ring()).biproduct(factors)
+        merge = product.from_coproduct_cocone(finite_indexed_family(
+            divisors, lambda divisor: inclusions[divisor].module_morphism()
+        ))
+        split = merge.inverse()
+
+        def block_isometry(divisor, component):
+            inclusion = inclusions[divisor]
+            factor = inclusion.domain()
+            projection = product.projection(divisor) * split
+
+            def image(label, action):
+                element = form.module_generator(label)
+                coordinate = projection(element)
+                # An even summand inside an odd M is represented here by
+                # its bilinear discriminant form.  Both readings retain
+                # the same underlying presented module.
+                component_class = action.domain()(factor.unformed_module()(coordinate))
+                moved = factor(action(component_class))
+                return element + inclusion(moved - coordinate)
+
+            morphisms = form.module_category().Mor(form, form)
+            inverse = ~component
+            return group.from_morphism(_torsion_form_isometry(
+                morphisms(lambda label: image(label, component)),
+                morphisms(lambda label: image(label, inverse)),
+                quadratic=orthogonal_sum.is_even(),
+            ))
+
+        restrictions = self.component_isometries()
+        block_generators = tuple(
+            block_isometry(divisor, generator)
+            for divisor in divisors
+            for generator in restrictions[divisor].centralizer_discriminant_image().group_generators()
+        )
+        blocks = group.subgroup_on(block_generators)
+        points = form.elements()
+        action = FiniteGSets(blocks)(
+            points, lambda automorphism, element: blocks.inclusion()(automorphism)(element)
+        )
+        glue = self.gluing_subgroup().inclusion()
+        subset = points.power_set()(tuple(
+            glue(element) for element in glue.domain().elements()
+        ))
+        compatible = action.setwise_stabilizer(subset)
+        into_form_group = blocks.inclusion() * compatible.inclusion()
+        extension = self.orthogonal_sum_inclusion()
+        return self.lattice().discriminant_group().orthogonal_group().subgroup_on(tuple(
+            extension.discriminant_isometry_extension(into_form_group(generator))
+            for generator in compatible.group_generators()
+        ))
+
 
 class PolarizedEquivariantLattice(SageObject):
     r"""An equivariant lattice ``(L,f)`` with an invariant polarization ``h``.

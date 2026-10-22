@@ -965,13 +965,20 @@ def isometric_within_genus(domain, codomain):
     one spinor genus decides isometry [CS99, Ch. 15, Thms 14-15].  Input: two
     preamble lattices over ``ZZ``, nondegenerate, of finite rank at least 3,
     already established to lie in one genus.  Output: a Python ``bool``, the
-    untrusted Hecke answer; no engine object crosses back.  It lowers the Gram
-    tensors and calls :meth:`_OscarLatticeAdapter.integer_lattices_are_isometric`.
+    exact verdict of the native integral-isometry construction.
+
+    The port's plain-lattice entry implements the pinned
+    ``INDEF_FORM_TestEquivalence`` reduction and recursion
+    (Indefinite.jl ``374a5ebb``, ``IndefiniteForms.g:1312-1393``).
+    Its indefinite branch enters the Lorentzian or Eichler kernel directly,
+    without asking this isometry Mor for its emptiness again.  Witnesses
+    retain the original domain and codomain, and the port's groupoid caches
+    the kernel witness for a subsequent ``Isom(...).an_element()`` request.
     """
-    return _oscar_lattices.integer_lattices_are_isometric(
-        _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ),
-        _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ),
-    )
+    from dzack_research.preamble.categories.lattices import Lattices
+    from sage_indefinite_port.indefinite.marked_lattices import isometry
+
+    return isometry(Lattices(domain.base_ring()), domain, codomain) is not None
 
 __all__: list[str] = []
 

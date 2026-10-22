@@ -2,20 +2,23 @@ r"""Hermitian Miranda--Morrison theory: the image of ``Z_{O(L)}(f)`` in ``O(A_L)
 
 A private engine realization of Brandhorst--Hofmann [BH23, Section 6]: for an
 even indefinite lattice ``L`` of rank at least three with an isometry ``f``
-whose minimal polynomial is the cyclotomic polynomial ``Phi_n`` of degree two,
+whose minimal polynomial is a cyclotomic polynomial ``Phi_n`` of degree at
+least two and whose hermitian rank is at least two,
 the image of the centralizer of ``f`` in ``O(A_L)`` is the kernel of the local
 determinants morphism ``delta`` of [BH23, Theorem 6.15] restricted to the
 centralizer of the induced isometry ``D_f`` in ``O(A_L)``.
 
-The algorithm is a translation of OSCAR (c08ad7e)
+The algorithm is a translation of OSCAR (d135b70b)
 ``src/NumberTheory/QuadFormAndIsom/hermitian_miranda_morrison.jl`` and of the
 Hecke (827383e) hermitian-lattice routines it calls
 (``hermitian_structure_with_transfer_data``, ``jordan_decomposition``,
 ``is_modular``, ``bad_primes``, the local genus symbol and its equality,
 ``_special_unit``, ``_get_norm_valuation_from_gram_matrix``).  The hermitian
-extension is ``E = Q(zeta_n)`` over ``K = Q``; it has class number one, so
-every hermitian lattice here is a free ``O_E``-module and the pseudo-matrix
-machinery of Hecke reduces to basis matrices.  This restriction is asserted.
+extension is ``E = Q(zeta_n)`` over its maximal real subfield ``K``.  Lattices
+are represented by pseudo-bases, so no class-number or freeness hypothesis
+is imposed.  Local factors are indexed by prime ideals of ``O_K``; the
+relative different controls local lifting, while the absolute different
+controls the trace dual.
 
 Everything in this module is engine data (Sage number fields, PARI ideal-star
 groups, Sage finite quadratic modules and GAP groups).  The single caller is
@@ -25,14 +28,14 @@ images of the dual-basis classes under generators of the image and builds the
 owned automorphisms of ``A_L`` from them.
 """
 
-from sage.arith.misc import hilbert_symbol
+from functools import cache
+
 from sage.libs.gap.libgap import libgap
 from sage.libs.pari import pari
 from sage.matrix.constructor import block_diagonal_matrix, identity_matrix, matrix, zero_matrix
 from sage.matrix.matrix_space import MatrixSpace
 from sage.modules.free_module import FreeModule
 from sage.modules.free_module_element import vector
-from sage.rings.finite_rings.integer_mod_ring import Integers
 from sage.rings.infinity import Infinity
 from sage.rings.integer_ring import ZZ
 from sage.rings.number_field.number_field import CyclotomicField
@@ -40,7 +43,7 @@ from sage.rings.rational_field import QQ
 
 
 # ---------------------------------------------------------------------------
-# Valuations and ideals over E = Q(zeta_n), K = Q
+# Valuations and ideals over E = Q(zeta_n) and its real subfield K
 # ---------------------------------------------------------------------------
 
 
@@ -56,25 +59,67 @@ def _conjugate_matrix(M):
     return M.apply_map(_conjugate)
 
 
+class _CMField:
+    r"""The quadratic extension ``E/K`` in absolute Sage coordinates.
+
+    Keeping ``E`` absolute lets PARI handle ideals and pseudo-bases directly.
+    The explicit embedding is used for every relative norm, trace and ideal
+    extension; an absolute norm must never substitute for a relative one.
+    """
+
+    def __init__(self, E):
+        self.E = E
+        self.K, self.embedding = E.subfield(E.gen() + _conjugate(E.gen()), name="real_zeta")
+        assert E.degree() == 2 * self.K.degree()
+        self.absolute_different = E.different()
+        self.relative_different = self.absolute_different / self.extend_ideal(self.K.different())
+
+    def to_K(self, x):
+        return self.embedding.preimage(self.E(x))
+
+    def norm(self, x):
+        return self.to_K(x * _conjugate(x))
+
+    def trace(self, x):
+        return self.to_K(x + _conjugate(x))
+
+    def extend_ideal(self, I):
+        return self.E.ideal([self.embedding(x) for x in I.gens()])
+
+    def primes_over(self, p):
+        return list(self.extend_ideal(p).factor())
+
+    @cache
+    def prime_below(self, P):
+        for p, _e in self.K.ideal(P.smallest_integer()).factor():
+            if self.extend_ideal(p).valuation(P) > 0:
+                return p
+        raise AssertionError(f"no prime below {P} in {self.K}")
+
+    def trace_ideal(self, I):
+        return self.K.ideal([self.trace(x) for x in I.basis()])
+
+    def norm_ideal(self, I):
+        result = self.K.ideal(1)
+        for P, v in I.factor():
+            p = self.prime_below(P)
+            f = ZZ(P.residue_class_degree()) // p.residue_class_degree()
+            result *= p ** (v * f)
+        return result
+
+
+@cache
+def _cm(E):
+    return _CMField(E)
+
+
 def _primes_over(E, p):
-    r"""The primes of ``O_E`` over the rational prime ``p``, with ramification indices."""
-    return [(P, e) for P, e in E.ideal(p).factor()]
+    r"""Primes of ``O_E`` above the prime ideal ``p`` of ``O_K``."""
+    return _cm(E).primes_over(p)
 
 
-def _trace_gcd(E, elements):
-    r"""The rational generator of ``Tr(sum_x x O_E)``: the gcd of ``Tr(x b)`` over ``b`` in a ``Z``-basis of ``O_E``."""
-    basis = E.ring_of_integers().basis()
-    traces = [(x * b).trace() for x in elements for b in basis]
-    nonzero = [t for t in traces if t != 0]
-    if not nonzero:
-        return QQ.zero()
-    numerator = ZZ.zero()
-    denominator = ZZ.one()
-    for t in nonzero:
-        denominator = denominator.lcm(t.denominator())
-    for t in nonzero:
-        numerator = numerator.gcd(ZZ(t * denominator))
-    return QQ(numerator) / denominator
+def _trace_ideal(E, elements):
+    return _cm(E).trace_ideal(E.ideal(elements))
 
 
 def _scale_valuation(M, P):
@@ -93,25 +138,33 @@ def _norm_valuation(G, P):
     E = G.base_ring()
     n = G.ncols()
     off_diagonal = [G[i, j] for i in range(n) for j in range(i + 1, n)]
-    trace = _trace_gcd(E, off_diagonal)
-    ramification = dict(_primes_over(E, P.smallest_integer()))[P]
-    T = Infinity if trace == 0 else ramification * trace.valuation(P.smallest_integer())
+    nonzero = [x for x in off_diagonal if x != 0]
+    T = _cm(E).extend_ideal(_trace_ideal(E, nonzero)).valuation(P) if nonzero else Infinity
     diagonal = min(_valuation(G[i, i], P) for i in range(n))
     return min(T, diagonal)
 
 
 def _p_uniformizer(E, P, p):
     r"""An element of ``O_E`` of ``P``-valuation one and valuation zero at the other primes over ``p``."""
-    others = [Q for Q, _e in _primes_over(E, p) if Q != P]
-    zeta = E.gen()
-    bound = 1
-    while True:
-        for a in range(-bound, bound + 1):
-            for b in range(-bound, bound + 1):
-                x = a + b * zeta
-                if x != 0 and x.valuation(P) == 1 and all(x.valuation(Q) == 0 for Q in others):
-                    return x
-        bound += 1
+    return _local_ideal_generator(P, [Q for Q, _e in _primes_over(E, p)])
+
+
+def _local_ideal_generator(I, primes):
+    r"""An element of ``I`` generating it at all the indicated primes.
+
+    PARI ``idealappr`` accepts zero exponents.  Including the primes where
+    ``I`` has valuation zero is essential at split primes.  At all remaining
+    primes its output is integral, so this gives a submodule local basis even
+    when the coefficient ideal is nonprincipal.
+    """
+    E = I.number_field()
+    valuations = dict(I.factor())
+    for P in primes:
+        valuations.setdefault(P, 0)
+    factors = pari.matrix(len(valuations), 2, [x for P, v in valuations.items() for x in (P.pari_prime(), v)])
+    c = E(E.pari_nf().idealappr(factors))
+    assert c in I and all(c.valuation(P) == I.valuation(P) for P in primes)
+    return c
 
 
 def _anti_uniformizer(P):
@@ -122,7 +175,7 @@ def _anti_uniformizer(P):
 
 
 # ---------------------------------------------------------------------------
-# Hermitian structure of (L, f) and free hermitian lattices
+# Hermitian structure of (L, f) and projective hermitian lattices
 # ---------------------------------------------------------------------------
 
 
@@ -137,19 +190,21 @@ class _HermitianTransfer:
 
     def __init__(self, gram, isometry, order):
         E = CyclotomicField(order)
-        assert E.degree() == 2, f"the hermitian structure is computed for Q(zeta_n) of degree two, but Q(zeta_{order}) has degree {E.degree()}"
-        assert E.class_number() == 1, f"{E} must have class number one for free hermitian lattices"
         self.E = E
+        self.cm = _cm(E)
         self.zeta = E.gen()
         self.gram = gram
         self.F = isometry
         r = gram.nrows()
-        assert r % 2 == 0, f"a Z[zeta_{order}]-module of rank {r} over Q has even rank"
-        self.m = r // 2
+        d = E.degree()
+        assert d >= 2 and r % d == 0, f"the rational rank {r} must be divisible by [Q(zeta_{order}):Q]={d}"
+        self.d = d
+        self.m = r // d
+        self.powers = [isometry ** i for i in range(d)]
         rows = []
         for i in range(r):
             e = vector(QQ, [1 if j == i else 0 for j in range(r)])
-            candidate = rows + [e, e * isometry]
+            candidate = rows + [e * power for power in self.powers]
             if matrix(QQ, candidate).rank() == len(candidate):
                 rows = candidate
             if len(rows) == r:
@@ -157,73 +212,69 @@ class _HermitianTransfer:
         assert len(rows) == r, f"no E-basis of the rational span of {gram} under {isometry}"
         self.Qbasis = matrix(QQ, rows)
         self.Qbasis_inverse = self.Qbasis.inverse()
-        self.w = [rows[2 * j] for j in range(self.m)]
-        traces = (E.one().trace(), self.zeta.trace(), (self.zeta ** 2).trace())
-        self._trace_system = matrix(QQ, [[traces[0], traces[1]], [traces[1], traces[2]]]).inverse()
+        self.w = [rows[d * j] for j in range(self.m)]
+        self._trace_system = matrix(QQ, d, d, [(self.zeta ** (i + j)).trace() for i in range(d) for j in range(d)]).inverse()
         self.ambient_gram = matrix(E, self.m, self.m, [self.h(self.w[j], self.w[k]) for j in range(self.m) for k in range(self.m)])
 
     def h(self, x, y):
-        r"""``h(x, y)``, from ``Tr(h) = b(x, y)`` and ``Tr(zeta h) = b(x F, y)``."""
-        t0 = x * self.gram * y
-        t1 = (x * self.F) * self.gram * y
-        u, v = self._trace_system * vector(QQ, [t0, t1])
-        return u + v * self.zeta
+        r"""Solve ``Tr(zeta^i h(x,y)) = b(x F^i,y)`` for all ``0 <= i < [E:Q]``."""
+        coefficients = self._trace_system * vector(QQ, [(x * power) * self.gram * y for power in self.powers])
+        return self.E(list(coefficients))
 
     def to_E(self, x):
         r"""The ``E``-coordinates of a rational vector, on the ``E``-basis ``w``."""
         c = x * self.Qbasis_inverse
-        return vector(self.E, [c[2 * j] + c[2 * j + 1] * self.zeta for j in range(self.m)])
+        return vector(self.E, [self.E(list(c[self.d * j:self.d * (j + 1)])) for j in range(self.m)])
 
     def from_E(self, X):
-        r"""The rational vector with ``E``-coordinates ``X``: ``sum_j w_j (a_j + b_j F)``."""
+        r"""The rational vector with ``E``-coordinates ``X`` under ``zeta -> F``."""
         total = vector(QQ, [0] * self.gram.nrows())
         for j in range(self.m):
-            a, b = (list(X[j]) + [0, 0])[:2]
-            total += self.w[j] * a + (self.w[j] * self.F) * b
+            for a, power in zip(X[j].list(), self.powers):
+                total += a * (self.w[j] * power)
         return total
 
-    def restrict_scalars(self, B):
-        r"""The ``Z``-span of an ``O_E``-lattice with basis matrix ``B``, as rational row vectors."""
-        integral = self.E.ring_of_integers().basis()
-        return [self.from_E(c * B.row(i)) for i in range(B.nrows()) for c in integral]
+    def restrict_scalars(self, B, ideals=None):
+        r"""A ``Z``-basis of the module with pseudo-basis ``(B, ideals)``."""
+        if ideals is None:
+            ideals = [self.E.ideal(1)] * B.nrows()
+        return [self.from_E(c * B.row(i)) for i, I in enumerate(ideals) for c in I.basis()]
 
 
-def _o_e_basis(transfer, generators):
-    r"""A basis matrix of the ``O_E``-span of ``generators`` (class number one): PARI ``nfhnf`` on integral-basis coordinates."""
+def _o_e_lattice(transfer, generators):
+    r"""The projective ``O_E``-span of ``generators``, via PARI ``nfhnf``.
+
+    Scalar coordinates are exchanged through PARI's actual integral basis,
+    not an assumed power basis.  Reducing to the rational span also permits
+    the proper subspaces arising after removing a local unimodular block.
+    """
     E = transfer.E
-    zeta = E.gen()
-    assert list(E.integral_basis()) == [E.one(), zeta], f"the integral basis of {E} must be 1, zeta for the coordinate exchange with PARI"
     nf = E.pari_nf()
-    columns = [[_pari_column(g[j]) for g in generators] for j in range(transfer.m)]
-    A = pari.matrix(transfer.m, len(generators), [entry for row in columns for entry in row])
-    basis_columns, ideals = nf.nfhnf([A, [1] * len(generators)])
+    generators = matrix(E, generators)
+    span_basis = generators.row_space().basis_matrix()
+    coordinates = span_basis.solve_left(generators)
+    rank = span_basis.nrows()
+    columns = [[nf.nfalgtobasis(g[j]) for g in coordinates.rows()] for j in range(rank)]
+    A = pari.matrix(rank, generators.nrows(), [entry for row in columns for entry in row])
+    basis_columns, ideals = nf.nfhnf([A, [1] * generators.nrows()])
     rows = []
+    coefficient_ideals = []
     for k in range(len(ideals)):
         hnf = nf.idealhnf(ideals[k])
-        ideal = E.ideal([_from_coordinates(E, [hnf[i, j] for i in range(hnf.nrows())]) for j in range(hnf.ncols())])
-        generator = ideal.gens_reduced()
-        assert len(generator) == 1, f"{ideal} is not principal, but {E} has class number one"
-        column = [_from_coordinates(E, list(basis_columns[k][j]) if basis_columns[k][j].type() == "t_COL" else [basis_columns[k][j], 0]) for j in range(transfer.m)]
-        rows.append(vector(E, column) * generator[0])
-    return matrix(E, rows)
+        coefficient_ideals.append(E.ideal([E(nf.nfbasistoalg(hnf[j])) for j in range(hnf.ncols())]))
+        column = [E(nf.nfbasistoalg(basis_columns[k][j])) if basis_columns[k][j].type() == "t_COL" else E(basis_columns[k][j]) for j in range(rank)]
+        rows.append(vector(E, column))
+    return _HermitianLattice(transfer, matrix(E, rows) * span_basis, coefficient_ideals)
 
 
-def _pari_column(x):
-    return pari([QQ(c) for c in (list(x.list()) + [0, 0])[:2]]).Col()
+class _HermitianLattice:
+    r"""The projective module ``sum_i ideals[i] B[i]`` in a hermitian space."""
 
-
-def _from_coordinates(E, coordinates):
-    a, b = (QQ(t) for t in coordinates)
-    return a + b * E.gen()
-
-
-class _FreeHermitianLattice:
-    r"""A free ``O_E``-lattice: basis matrix ``B`` (rows) in the ambient hermitian space of ``transfer``."""
-
-    def __init__(self, transfer, B):
+    def __init__(self, transfer, B, ideals=None):
         self.transfer = transfer
         self.E = transfer.E
         self.B = B
+        self.ideals = list(ideals) if ideals is not None else [self.E.ideal(1)] * B.nrows()
 
     def rank(self):
         return self.B.nrows()
@@ -232,31 +283,34 @@ class _FreeHermitianLattice:
         return self.B * self.transfer.ambient_gram * _conjugate_matrix(self.B).transpose()
 
     def scale_valuation(self, P):
-        return _scale_valuation(self.gram(), P)
+        return self.scale_ideal().valuation(P)
 
     def volume_valuation(self, P):
-        return _valuation(self.gram().det(), P)
+        return self.volume_ideal().valuation(P)
+
+    def local_basis(self, p):
+        primes = [P for P, _e in _primes_over(self.E, p)]
+        return matrix(self.E, [_local_ideal_generator(I, primes) * row for I, row in zip(self.ideals, self.B.rows())])
+
+    def volume_ideal(self):
+        result = self.E.ideal(self.gram().det())
+        for I in self.ideals:
+            result *= I * _conjugate_ideal(self.E, I)
+        return result
 
     def scale_ideal(self):
         G = self.gram()
-        entries = [G[i, j] for i in range(G.nrows()) for j in range(G.ncols())]
-        entries += [_conjugate(x) for x in entries]
-        return self.E.ideal([x for x in entries if x != 0])
+        parts = [G[i, j] * self.ideals[i] * _conjugate_ideal(self.E, self.ideals[j]) for i in range(G.nrows()) for j in range(G.ncols()) if G[i, j] != 0]
+        return sum(parts[1:], parts[0])
 
-    def norm_generator(self):
-        r"""Hecke ``norm(L)``: the rational generator of the ideal of ``K`` generated by ``h(x, x)``."""
+    def norm_ideal(self):
+        r"""The ideal of ``O_K`` generated by ``h(x,x)`` (Hecke ``norm(L)``)."""
+        cm = _cm(self.E)
         G = self.gram()
         n = G.nrows()
-        diagonal = [QQ(G[i, i]) for i in range(n)]
-        trace = _trace_gcd(self.E, [G[i, j] for i in range(n) for j in range(i + 1, n)])
-        numbers = [x for x in diagonal + [trace] if x != 0]
-        denominator = ZZ.one()
-        for x in numbers:
-            denominator = denominator.lcm(x.denominator())
-        numerator = ZZ.zero()
-        for x in numbers:
-            numerator = numerator.gcd(ZZ(x * denominator))
-        return QQ(numerator) / denominator
+        parts = [cm.to_K(G[i, i]) * cm.norm_ideal(self.ideals[i]) for i in range(n) if G[i, i] != 0]
+        parts += [cm.trace_ideal(G[i, j] * self.ideals[i] * _conjugate_ideal(self.E, self.ideals[j])) for i in range(n) for j in range(i + 1, n) if G[i, j] != 0]
+        return sum(parts[1:], parts[0])
 
     def is_modular(self, p):
         r"""Hecke ``is_modular(L, p)``: ``(True, v)`` when ``L_p`` is ``P^v``-modular, ``P`` the first prime over ``p``."""
@@ -268,38 +322,36 @@ class _FreeHermitianLattice:
 
     def bad_primes(self):
         r"""Hecke ``bad_primes(L; discriminant=true, dyadic=true)``."""
-        volume_norm = QQ(self.gram().det().norm())
-        primes = set(volume_norm.numerator().prime_divisors()) | set(volume_norm.denominator().prime_divisors())
-        scale_norm = QQ(self.scale_ideal().norm())
-        primes |= set(scale_norm.numerator().prime_divisors()) | set(scale_norm.denominator().prime_divisors())
-        primes |= set(ZZ(self.E.discriminant()).prime_divisors())
-        primes.add(ZZ(2))
-        return sorted(primes)
+        cm = _cm(self.E)
+        primes = {cm.prime_below(P) for I in (self.volume_ideal(), self.scale_ideal(), cm.relative_different) for P, _v in I.factor()}
+        primes.update(p for p, _v in cm.K.ideal(2).factor())
+        return sorted(primes, key=lambda p: (p.smallest_integer(), p.norm(), str(p)))
 
     def dual(self):
         r"""``L^# = {y : h(L, y) in O_E}``: the basis ``D`` with ``B G conj(D)^T = 1``."""
         BG = self.B * self.transfer.ambient_gram
         D = _conjugate_matrix(BG.inverse().transpose())
         assert BG * _conjugate_matrix(D).transpose() == identity_matrix(self.E, self.rank())
-        return _FreeHermitianLattice(self.transfer, D)
+        return _HermitianLattice(self.transfer, D, [_conjugate_ideal(self.E, I) ** -1 for I in self.ideals])
 
-    def scaled(self, c):
-        return _FreeHermitianLattice(self.transfer, c * self.B)
+    def scaled_ideal(self, J):
+        return _HermitianLattice(self.transfer, self.B, [I * J for I in self.ideals])
 
     def contains(self, other):
-        r"""Whether every basis vector of ``other`` is an ``O_E``-combination of the basis of ``self``."""
+        r"""Exact containment, including the coefficient ideals of both modules."""
         if self.rank() == self.transfer.m:
             coordinates = other.B * self.B.inverse()
         else:
             coordinates = self.B.solve_left(other.B)
-        return all(x.is_integral() for x in coordinates.list())
+        return all(coordinates[i, j] * x in self.ideals[j] for i, J in enumerate(other.ideals) for j in range(self.rank()) for x in J.basis())
 
 
 def _jordan_decomposition(L, p):
-    r"""Hecke ``jordan_decomposition(L::HermLat, p)`` (Herm/Lattices.jl:326) for a free lattice."""
+    r"""Hecke ``jordan_decomposition(L::HermLat, p)`` (Herm/Lattices.jl:326)."""
     E = L.E
-    even = p == 2
-    S = _copy_matrix(L.B)
+    cm = _cm(E)
+    even = p.smallest_integer() == 2
+    S = _copy_matrix(L.local_basis(p))
     D = _primes_over(E, p)
     split = len(D) == 2
     ram = D[0][1] == 2
@@ -309,9 +361,9 @@ def _jordan_decomposition(L, p):
         pi = _p_uniformizer(E, P, p)
         assert pi.valuation(D[1][0]) == 0
     elif ram:
-        pi = P.gens_reduced()[0]
+        pi = E.uniformizer(P)
     else:
-        pi = E(p)
+        pi = cm.embedding(cm.K.uniformizer(p))
         su = _special_unit(E, P, p) if even else E.one()
     oldval = None
     blocks = []
@@ -341,7 +393,7 @@ def _jordan_decomposition(L, p):
                 lam = pi if _valuation(pi * a, P) == m else _conjugate(pi)
             elif ram:
                 assert m % 2 == 0
-                lam = E(pi.norm() ** (m // 2)) / a
+                lam = (pi * _conjugate(pi)) ** (m // 2) / a
             else:
                 lam = pi ** m / a * su
             S.add_multiple_of_row(i, j, _conjugate(lam))
@@ -356,7 +408,7 @@ def _jordan_decomposition(L, p):
             X1 = SF * _conjugate_matrix(S.matrix_from_rows([k])).transpose()
             X2 = SF * _conjugate_matrix(S.matrix_from_rows([k + 1])).transpose()
             for l in range(k + 2, n):
-                den = X2[k, 0].norm() - X1[k, 0] * X2[k + 1, 0]
+                den = X2[k, 0] * _conjugate(X2[k, 0]) - X1[k, 0] * X2[k + 1, 0]
                 t1 = (X2[l, 0] * X1[k + 1, 0] - X1[l, 0] * X2[k + 1, 0]) / den
                 t2 = (X1[l, 0] * X2[k, 0] - X2[l, 0] * X1[k, 0]) / den
                 S.set_row(l, S.row(l) - (t1 * S.row(k) + t2 * S.row(k + 1)))
@@ -390,36 +442,21 @@ def _mutable_matrix(ring, nrows, ncols, entries):
 
 
 def _special_unit(E, P, p):
-    r"""Hecke ``_special_unit(P, p::ZZRingElem)`` (Misc.jl:663): a ``P``-unit of trace one, ``P`` dyadic and inert."""
-    x = E.gen()
-    x = x - x.trace() / 2
-    a = QQ((x ** 2).list()[0])
-    assert (x ** 2).list()[1:] == [0] * (E.degree() - 1)
-    pi = QQ(p)
-    v = a.valuation(p)
-    if v != 0:
-        assert v % 2 == 0
-        a = a / pi ** v
-        x = x / pi ** (v // 2)
-    k = Integers(p)
-    t = QQ(ZZ(k(a.numerator() * a.denominator().inverse_mod(p)).sqrt()))
-    a = a / t ** 2
-    x = x / t
-    w = (a - 1).valuation(p)
-    e = ZZ(2).valuation(p)
-    while w < 2 * e:
-        assert w % 2 == 0
-        b = (a - 1) / pi ** w
-        s = k(b.numerator() * b.denominator().inverse_mod(p)).sqrt()
-        t = 1 + QQ(ZZ(s)) * pi ** (w // 2)
-        a = a / t ** 2
-        x = x / t
-        w = (a - 1).valuation(p)
-    assert w == 2 * e
-    u = (1 + x) / 2
-    assert u.trace() == 1
-    assert u.valuation(P) == 0
-    return u
+    r"""A local unit of relative trace one at an inert unramified prime.
+
+    The trace ideal of the maximal order is locally the unit ideal.  Some
+    integral-basis element therefore has unit trace; dividing by that trace
+    constructs exactly the element required by Hecke's Jordan reduction.
+    This works over an arbitrary real base field, including dyadic primes.
+    """
+    cm = _cm(E)
+    for x in E.ideal(1).basis():
+        t = cm.trace(x)
+        if t != 0 and t.valuation(p) == 0:
+            u = x / cm.embedding(t)
+            assert cm.trace(u) == 1 and u.valuation(P) == 0
+            return u
+    raise AssertionError(f"the unramified trace ideal is not a unit at {p}")
 
 
 # ---------------------------------------------------------------------------
@@ -428,10 +465,9 @@ def _special_unit(E, P, p):
 
 
 def _is_local_norm(E, a, p):
-    x = E.gen()
-    b = (2 * x - x.trace()) ** 2
-    bQ = QQ(b.list()[0])
-    return hilbert_symbol(QQ(a), bQ, p) == 1
+    cm = _cm(E)
+    b = cm.to_K((E.gen() - _conjugate(E.gen())) ** 2)
+    return cm.K.hilbert_symbol(cm.to_K(a), b, p) == 1
 
 
 def _local_genus_symbol(L, p):
@@ -440,10 +476,10 @@ def _local_genus_symbol(L, p):
     blocks, grams, scales = _jordan_decomposition(L, p)
     D = _primes_over(E, p)
     ramified = D[0][1] == 2
-    dyadic = p == 2
+    dyadic = p.smallest_integer() == 2
     symbol = []
     for B, G, s in zip(blocks, grams, scales):
-        det_class = 1 if _is_local_norm(E, QQ(G.det()), p) else -1
+        det_class = 1 if _is_local_norm(E, G.det(), p) else -1
         if dyadic and ramified:
             normi = _norm_valuation(G, D[0][0])
             assert normi % 2 == 0
@@ -484,7 +520,7 @@ def _local_genera_equal(E, p, first, second):
     D = _primes_over(E, p)
     assert len(D) == 1 and D[0][1] == 2
     Q = D[0][0]
-    e = E.different().valuation(Q)
+    e = _cm(E).relative_different.valuation(Q)
     for i in range(t - 1):
         d = 1
         for j in range(i + 1):
@@ -504,13 +540,13 @@ def _is_special(L, p):
     if any(B.nrows() != 2 for B in blocks):
         return False
     P = D[0][0]
-    e = E.different().valuation(P)
+    e = _cm(E).relative_different.valuation(P)
     if any((e - s) % 2 != 0 for s in S):
         return False
-    u = P.gens_reduced()[0]
+    u = E.uniformizer(P)
     su = _conjugate(u)
     H = block_diagonal_matrix([matrix(E, 2, 2, [0, u ** s, su ** s, 0]) for s in S])
-    model = _FreeHermitianLattice(_GramTransfer(E, H), identity_matrix(E, H.nrows()))
+    model = _HermitianLattice(_GramTransfer(E, H), identity_matrix(E, H.nrows()))
     return _local_genera_equal(E, p, _local_genus_symbol(L, p), _local_genus_symbol(model, p))
 
 
@@ -556,11 +592,11 @@ class _UnitQuotient:
         if kind == "split" or self.modulus is None:
             self.subspace = V
         else:
-            # (Z/p^j)^* through PARI znstar/znlog on its own generators.
-            modulus = ZZ(p) ** j
-            target = pari.znstar(modulus, 1)
-            target_orders = [ZZ(c) for c in pari("(G) -> G.cyc")(target)]
-            images = [[ZZ(c) for c in pari.znlog(ZZ(QQ(g.norm())) % modulus, target)] for g in self.values]
+            # Relative norm into (O_K/p^j)^*, in its own ideal-star basis.
+            modulus = p ** j
+            target = modulus.idealstar(2)
+            target_orders = list(target.gens_orders())
+            images = [list(modulus.ideallog(_cm(E).norm(g))) for g in self.values]
             self.subspace = _norm_kernel(k, images, target_orders)
         self.group = self.subspace / W
 
@@ -612,7 +648,7 @@ def _local_quotient(E, p, i):
         return _UnitQuotient(E, P, i, "split", p)
     if D[0][1] == 1:
         return _UnitQuotient(E, P, i, "inert", p, j=i)
-    e = E.different().valuation(P)
+    e = _cm(E).relative_different.valuation(P)
     if i < e:
         return _UnitQuotient(E, P, 0, "split", p)
     t = e - 1
@@ -668,25 +704,29 @@ def _embed(v, offset, total):
 
 
 def _find_rho(E, P, p, e):
-    r"""OSCAR ``_find_rho``: an element of trace one, ``1/2`` away from 2, a special unit or a ramified dyadic choice at 2."""
-    if p != 2:
+    r"""The relative-trace-one element required by [BH23, Algorithm 8].
+
+    At a dyadic ramified prime, ``Tr(P^(1-e))`` is the local unit ideal,
+    where ``e`` is the relative different exponent.  A basis element with
+    unit trace, divided by that trace, has valuation exactly ``1-e``.  This
+    gives the same defining conditions as OSCAR's ``_find_rho`` without a
+    search that assumes the real subfield is rational.
+    """
+    if p.smallest_integer() != 2:
         return E(QQ(1) / 2)
     D = _primes_over(E, p)
-    if D[0][1] == 1:
+    if len(D) == 1 and D[0][1] == 1:
         return _special_unit(E, P, p)
-    nu = 2 * E(2).valuation(P) - 2 * e + 2
-    r = 0
-    while True:
-        g = E(-(r ** 2) - 1)
-        if g.valuation(P) == nu:
-            d = ZZ((g + 1).denominator())
-            roots = (E['t'].gen() ** 2 - (g + 1) * d ** 2).roots(multiplicities=False)
-            if roots:
-                rho = (1 + roots[0]) / 2
-                assert rho.valuation(P) == 1 - e
-                assert rho.trace() == 1
-                return rho
-        r += 1
+    cm = _cm(E)
+    I = P ** (1 - e) if D[0][1] == 2 else E.ideal(1)
+    for x in I.basis():
+        t = cm.trace(x)
+        if t != 0 and t.valuation(p) == 0:
+            rho = x / cm.embedding(t)
+            assert cm.trace(rho) == 1
+            assert all(rho.valuation(Q) >= (1 - e if ram == 2 else 0) for Q, ram in D)
+            return rho
+    raise AssertionError(f"no relative-trace-one element at {p}")
 
 
 def _local_hermitian_lifting(G, F, rho, l, P, P2, split, a):
@@ -715,15 +755,15 @@ def _local_basis_matrix_and_projection(Hv, p, a, transfer):
         pr = Ball.solve_right(Bp0)
     else:
         Bp = _block_matrix_rows(Bv)
-    H2v = _FreeHermitianLattice(transfer, Bp)
+    H2v = _HermitianLattice(transfer, Bp)
     if not Hv.contains(H2v):
-        denominator = _lcm_denominator(transfer.restrict_scalars(Hv.B) + transfer.restrict_scalars(Bp))
-        Lv = (QQ ** transfer.gram.nrows()).span([denominator * vector(QQ, x) for x in transfer.restrict_scalars(Hv.B)], ZZ)
+        denominator = _lcm_denominator(transfer.restrict_scalars(Hv.B, Hv.ideals) + transfer.restrict_scalars(Bp))
+        Lv = (QQ ** transfer.gram.nrows()).span([denominator * vector(QQ, x) for x in transfer.restrict_scalars(Hv.B, Hv.ideals)], ZZ)
         L2 = (QQ ** transfer.gram.nrows()).span([denominator * vector(QQ, x) for x in transfer.restrict_scalars(Bp)], ZZ)
         intersection = Lv.intersection(L2)
         generators = [transfer.to_E(vector(QQ, b) / denominator) for b in intersection.basis()]
-        Bp = _o_e_basis(transfer, generators)
-        assert Hv.contains(_FreeHermitianLattice(transfer, Bp))
+        Bp = _o_e_lattice(transfer, generators).local_basis(p)
+        assert Hv.contains(_HermitianLattice(transfer, Bp))
     assert Bp.rank() == (Bp * pr).rank()
     return Bp, Bp * pr, pr
 
@@ -764,7 +804,7 @@ def _centralizer_image_matrices(gram, isometry):
     r = gram.nrows()
     assert all(gram[i, i] % 2 == 0 for i in range(r)), f"hermitian Miranda--Morrison is computed for even lattices; {gram} is odd"
     minimal = F.minpoly()
-    assert minimal.is_cyclotomic() and minimal.degree() == 2, f"the minimal polynomial {minimal} of {F} must be a cyclotomic polynomial of degree two"
+    assert minimal.is_cyclotomic() and minimal.degree() >= 2, f"the minimal polynomial {minimal} of {F} must be cyclotomic of degree at least two"
     assert r > minimal.degree(), f"the hermitian structure must have rank at least two, but {gram} has rank {r}"
     order = matrix(ZZ, F).multiplicative_order()
 
@@ -782,20 +822,21 @@ def _centralizer_image_matrices(gram, isometry):
 
     # The hermitian structure H of (L, f) and H2 = D_{E/Q}^{-1} H^#.
     generators = [transfer.to_E(vector(QQ, [1 if j == i else 0 for j in range(r)])) for i in range(r)]
-    H = _FreeHermitianLattice(transfer, _o_e_basis(transfer, generators))
-    DEQ = E.different()
-    delta_generator = DEQ.gens_reduced()[0]
-    H2 = H.dual().scaled(delta_generator ** -1)
+    H = _o_e_lattice(transfer, generators)
+    cm = transfer.cm
+    DEQ = cm.absolute_different
+    DEK = cm.relative_different
+    H2 = H.dual().scaled_ideal(DEQ ** -1)
     assert H2.contains(H), "H must be a sublattice of D^{-1} H^# since L is integral"
     _assert_trace_dual(transfer, H2, gram)
 
     S = _elementary_divisors(H, DEQ)
-    N = H.norm_generator()
+    N = cm.extend_ideal(H.norm_ideal())
 
     Fsharp_data = []
     for p in S:
         P = _primes_over(E, p)[0][0]
-        n = _ideal_valuation_of_rational(E, N, P)
+        n = N.valuation(P)
         a = DEQ.valuation(P)
         Fsharp_data.append((p, n + a))
     RmodFsharp = _ProductQuotient(E, Fsharp_data)
@@ -809,7 +850,7 @@ def _centralizer_image_matrices(gram, isometry):
                 list_ker.append(p)
         else:
             P = _primes_over(E, p)[0][0]
-            e = DEQ.valuation(P)
+            e = DEK.valuation(P)
             F_data.append((p, e))
             if Fsharp_data[index][1] == e:
                 list_ker.append(p)
@@ -823,8 +864,11 @@ def _centralizer_image_matrices(gram, isometry):
     FmodFsharp = phi.kernel()
 
     units = E.unit_group()
-    assert units.rank() == 0, f"{E} is imaginary quadratic, so its units are the roots of unity"
+    # For every CM field, ker(N: O_E^* -> O_K^*) is the roots of unity:
+    # all conjugates of a norm-one unit have absolute value one (Kronecker).
+    # The positive-rank units of E therefore do not contribute to this kernel.
     norm_one = [units.torsion_generator().value()]
+    assert all(cm.norm(x) == 1 for x in norm_one)
     FOEmodFsharp = A.submodule([A(RmodFsharp.log([x] * len(S))) for x in norm_one])
     I = (FOEmodFsharp.V().intersection(FmodFsharp.V())) / A.W()
     Q = FmodFsharp / I
@@ -841,9 +885,9 @@ def _centralizer_image_matrices(gram, isometry):
                 ds.append(E.one())
             else:
                 P = _primes_over(E, p)[0][0]
-                k = _ideal_valuation_of_rational(E, N, P)
+                k = N.valuation(P)
                 a = DEQ.valuation(P)
-                e = DEQ.valuation(P)
+                e = DEK.valuation(P)
                 g_approx = _approximate_isometry(H, H2, g, qL, P, p, e, a, k, transfer)
                 ds.append(g_approx.det())
         imgs.append(dlog(ds))
@@ -895,21 +939,17 @@ def _dual_basis_matrix(qL, g, gram):
 def _assert_trace_dual(transfer, H2, gram):
     r"""The trace construction carries ``D^{-1} H^#`` onto ``L^#``: the ``Z``-spans agree."""
     r = gram.nrows()
-    spanned = (QQ ** r).span([vector(QQ, x) for x in transfer.restrict_scalars(H2.B)], ZZ)
+    spanned = (QQ ** r).span([vector(QQ, x) for x in transfer.restrict_scalars(H2.B, H2.ideals)], ZZ)
     dual = (QQ ** r).span(gram.inverse().rows(), ZZ)
     assert spanned == dual, "the trace dual of the hermitian structure is not L^#: the transfer convention is wrong"
 
 
-def _ideal_valuation_of_rational(E, x, P):
-    return Infinity if x == 0 else E(x).valuation(P)
-
-
 def _elementary_divisors(H, D):
-    r"""OSCAR ``_elementary_divisors(L, D)``: the rational primes ``p`` with ``(D^{-1} L^#/L)_p`` nontrivial."""
+    r"""OSCAR ``_elementary_divisors(L, D)``: prime ideals of ``O_K`` supporting the trace discriminant."""
     primes = []
     minima = []
     for P, _e in D.factor():
-        p = P.smallest_integer()
+        p = _cm(H.E).prime_below(P)
         minima.append(p)
         ok, a = H.is_modular(p)
         if ok and a == -D.valuation(P):

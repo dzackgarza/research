@@ -323,6 +323,8 @@ def _roots(lattice):
 def _roots_of_square(lattice, square):
     r"""Return the vectors ``v`` with ``b(v,v) = square`` whose reflection is integral."""
     square = lattice.base_ring()(square)
+    if lattice.module_rank() == 0:
+        return finite_ordered_set(())
     sign, positive_gram = _positive_gram(lattice)
     target = int(sign * square)
     if target <= 0:

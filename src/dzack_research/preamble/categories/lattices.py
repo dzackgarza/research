@@ -4086,6 +4086,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             linear_dual = self.linear_dual()
 
             def coordinate_functional(label):
+                if self.module_rank().is_finite():
+                    # Finite free form modules retain their algebraic dual
+                    # on this selected dual basis, rather than as a Mor
+                    # parent accepting a callable functional.
+                    return linear_dual.module_generator(label)
+
                 def value(source_label):
                     match source_label == label:
                         case True:
@@ -5299,6 +5305,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             and it is not the finite shell of the integral span.
             """
             square = self.base_ring()(square)
+            if self.module_rank() == 0:
+                points = (self.zero(),) if square == self.base_ring().zero() else ()
+                return self.finite_subsets()(finite_ordered_set(points))
             if not self.module_rank().is_finite():
                 return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
