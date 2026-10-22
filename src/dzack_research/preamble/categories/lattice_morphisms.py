@@ -80,6 +80,7 @@ from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
     _engine_binary_form_pullback,
     _engine_column_matrix_from_row_action,
+    _engine_coisotropic_witt_extension,
     _engine_component_matrix,
     _engine_row_action_matrix,
     tensor,
@@ -1000,9 +1001,16 @@ class LatticeIsometryMethods:
         return Sets().equalizer_construction(restriction, constant)
 
     def witt_extension(self, source_inclusion, target_inclusion):
-        r"""Extend a codimension-one partial rational isometry when compatible with radicals.
+        r"""Extend a coisotropic partial rational isometry, or a radical-compatible hyperplane isometry.
 
-        The affine pairing fibre supplies the image of a complementary vector.
+        For nondegenerate ambient spaces and coisotropic specified spaces,
+        the affine pairing equations and the symmetric linear norm correction
+        give an extension in every codimension.  A saturated homogeneous
+        correction removes avoidable denominators.  The complementary frame
+        is the Euclidean nullspace in the chosen framing; all form equations
+        use the actual quadratic forms.
+
+        For the remaining codimension-one cases, the affine pairing fibre supplies the image of a complementary vector.
         Its norm equation is linear for an isotropic normal, and quadratic
         otherwise. A complementary ambient radical vector is handled as a
         radical vector. This is the codimension-one Witt construction; the
@@ -1025,6 +1033,21 @@ class LatticeIsometryMethods:
             sage: extension.inverse() * extension == V.Isom(V).identity()
             True
 
+        A maximal isotropic plane has codimension two.  Its full linear
+        group extends, including a swap and a transvection::
+
+            sage: V = (Lattices(ZZ)("U") + Lattices(ZZ)("U")).vector_space()
+            sage: e, f, a, b = tuple(V.module_generators())
+            sage: H = V.subobject_on((e, a))
+            sage: u, v = tuple(H.module_generators())
+            sage: i = H.inclusion()
+            sage: partials = (H.Isom(H)((v, u)), H.Isom(H)((u + v, v)))
+            sage: extensions = tuple(p.witt_extension(i, i) for p in partials)
+            sage: all(g(i(x)) == i(p(x)) for p, g in zip(partials, extensions) for x in H.module_generators())
+            True
+            sage: all(g.inverse() * g == V.Isom(V).identity() for g in extensions)
+            True
+
             sage: W = Lattices(QQ)([[1, 0, 0], [0, -1, 0], [0, 0, 0]])
             sage: e, f, r = tuple(W.module_generators())
             sage: H = W.subobject_on((e + f, r))
@@ -1039,10 +1062,17 @@ class LatticeIsometryMethods:
         source, target = source_inclusion.codomain(), target_inclusion.codomain()
         field = source.base_ring()
         if field is not _owned_rationals() or target.base_ring() is not field:
-            raise TypeError("this codimension-one extension requires rational quadratic spaces")
+            raise TypeError("this extension computation requires rational quadratic spaces")
+        coisotropic = _engine_coisotropic_witt_extension(self, source_inclusion, target_inclusion)
+        if coisotropic is not None:
+            extension = source.Isom(target)._isometry_from_column_matrix(
+                _engine_column_matrix_from_row_action(coisotropic)
+            )
+            points = locus.object()
+            return points.inclusion()(points(extension))
         for inclusion in (source_inclusion, target_inclusion):
             if inclusion.domain().module_rank() + 1 != inclusion.codomain().module_rank():
-                raise ValueError("the specified subspaces must have codimension one")
+                raise ValueError("the specified subspaces must be coisotropic in nondegenerate spaces or have codimension one")
         source_radical = source.metric_map().kernel()
         target_radical = target.metric_map().kernel()
         if source_radical.module_rank() != target_radical.module_rank():
