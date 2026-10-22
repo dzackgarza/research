@@ -2845,7 +2845,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             \(V=H_1\perp\cdots\perp H_r\perp V_0\) with \(V_0\) zero or
             anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
             A lattice answers through its quadratic space :meth:`vector_space`.
-            Over number fields the private OSCAR/Hecke realization decomposes
+            Over QQ, PARI supplies an exact isotropic vector or an anisotropy
+            obstruction at each step of rational hyperbolic splitting.
+            Over other number fields the private OSCAR/Hecke realization decomposes
             the quadratic space into its anisotropic and hyperbolic summands; half
             the dimension of the latter is the Witt index.
             """
@@ -2865,9 +2867,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             match field:
                 case _ if _engine_ring(field) is SageQQ:
-                    index = lattice_engines._oscar_lattices.rational_witt_index(
-                        self.gram_tensor()
-                    )
+                    index = lattice_engines._rational_witt_index(self)
                 case _ if (
                     field in OwnedNumberFields()
                     and field in NumberFieldsWithChosenPrimitiveElement()

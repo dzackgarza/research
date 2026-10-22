@@ -175,6 +175,48 @@ def _isotropic_vector_witness(lattice):
     return _raise_rational_lattice_vector(lattice, solution)
 
 
+def _rational_witt_index(space):
+    r"""Count exact rational hyperbolic splittings of a nondegenerate space.
+
+    This is Hecke ``e2ab5716``, ``Quad/Spaces.jl:1751--1815``:
+    find an isotropic vector, split off its hyperbolic plane, and repeat
+    on the perpendicular until the remainder is anisotropic.  The number
+    of planes is the Witt index (O'Meara, §42F).
+
+    If ``e`` is isotropic and ``d = b(e,h) != 0``, then
+    ``f = h/d - q(h)e/(2d^2)`` satisfies ``q(f)=0`` and ``b(e,f)=1``.
+    Nondegeneracy supplies such an ``h`` among the module generators.
+    The retained subobject and its orthogonal complement perform the
+    splitting; only the existing isotropic-witness owner lowers the Gram
+    tensor for PARI's exact rational solvability decision.
+    """
+    field = space.base_ring()
+    assert (
+        _engine_ring(field) is SageQQ
+        and space.module_rank().is_finite()
+        and space.is_nondegenerate()
+    ), f"rational Witt index requires a nondegenerate finite-dimensional QQ-space, not {space}"
+    index = SageZZ.zero()
+    remainder = space
+    while int(remainder.module_rank()) >= 2:
+        isotropic = _isotropic_vector_witness(remainder)
+        if isotropic is None:
+            break
+        partner = next(
+            generator for generator in remainder.module_generators()
+            if remainder.b(isotropic, generator) != field.zero()
+        )
+        pairing = remainder.b(isotropic, partner)
+        partner = remainder.scalar_multiple(field.one() / pairing, partner)
+        partner -= remainder.scalar_multiple(
+            remainder.q(partner) / field(2), isotropic
+        )
+        plane = remainder.subobject_on((isotropic, partner))
+        remainder = plane.orthogonal_complement()
+        index += 1
+    return index
+
+
 def _unit_divisibility_isotropic_witness(lattice):
     r"""Select a primitive integral null vector of divisibility one.
 
