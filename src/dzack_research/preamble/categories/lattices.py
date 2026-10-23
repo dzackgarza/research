@@ -6970,16 +6970,31 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.parent().subobject_on((self,))
 
         def is_primitive(self) -> bool:
-            r"""Return whether \(Rv\hookrightarrow L\) has torsion-free cokernel.
+            r"""Test primitivity of the map ``R -> L``, ``1 |-> self``.
+
+            This map must be injective and have torsion-free cokernel.
+            The inclusion of its image alone loses the first condition:
+            the zero submodule is primitive but the zero vector in a
+            lattice over a nonzero integral domain is not primitive.
 
             EXAMPLES::
 
                 sage: from dzack_research.preamble.categories.lattices import Lattices
-                sage: e, f = Lattices(ZZ)("U").module_generators()
+                sage: U = Lattices(ZZ)("U")
+                sage: e, f = U.module_generators()
                 sage: e.is_primitive(), (2 * e).is_primitive(), (2 * e + 3 * f).is_primitive()
                 (True, False, True)
+                sage: U.zero().is_primitive()
+                False
+                sage: U.zero().sublattice().is_primitive()
+                True
+                sage: Q = Lattices(QQ)([[1]])
+                sage: (Q.basis_vector(0) * QQ(2)).is_primitive()
+                True
             """
-            return self.sublattice().is_primitive()
+            lattice = self.parent()
+            line = lattice.base_ring().free_module(1)
+            return line.module_category().Mor(line, lattice)((self,)).is_primitive()
 
         def orthogonal_complement(self):
             r"""Return \(v^\perp\hookrightarrow L\) as a subobject of the lattice."""

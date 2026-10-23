@@ -579,6 +579,12 @@ $S^\perp$. This construction exists even when $S$ is degenerate; the
 direct-sum conclusion needs the additional hypotheses used in (3).
 Over $\mathbb Z$, a primitive image means that the quotient module is
 torsion-free, not just that one selected vector has coprime coordinates.
+For a primitive vector, retain the map $R\to L$, $1\mapsto v$, and require
+both injectivity and torsion-free cokernel. Testing only the inclusion of
+its image loses injectivity: the zero submodule is primitive although the
+zero vector over $\mathbb Z$ or a field is not primitive. The vector's
+`is_primitive()` operation now delegates this map from the free module of
+rank one to the general module-morphism operation.
 
 ### Which tools each construction actually needs
 
