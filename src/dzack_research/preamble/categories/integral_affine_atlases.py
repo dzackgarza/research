@@ -36,8 +36,11 @@ class IntegralAffineAtlasMor(CategoricalMor):
         def _call_(self, point):
             return self._smooth_map(point)
 
-        def integral_affine_morphism(self):
-            pass
+        def integral_affine_morphism(self, source, target):
+            return IntegralAffineManifolds().Mor(source, target)(
+                self.underlying_smooth_morphism(),
+                self.chartwise_affine_maps(),
+            )
 
         def smooth_atlas_morphism(self):
             pass
@@ -80,7 +83,9 @@ class _AtlasMaximalizationFunctor(Functor):
         return atlas.integral_affine_manifold()
 
     def _apply_morphism(self, morphism):
-        return morphism.integral_affine_morphism()
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        return morphism.integral_affine_morphism(source, target)
 
 
 class _UnderlyingSmoothAtlasFunctor(Functor):
@@ -222,8 +227,12 @@ class IntegralAffineAtlases(OwnedCategory):
         def smooth_atlas(self):
             pass
 
+        @cached_method
         def integral_affine_manifold(self):
-            pass
+            return IntegralAffineManifolds(self.underlying_smooth_manifold().dimension()).on(
+                self.underlying_smooth_manifold(),
+                self,
+            )
 
     class Oriented(CategoryWithAxiom):
         r"""Atlases with determinant-one integral linear transitions."""
