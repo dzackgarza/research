@@ -157,6 +157,21 @@ class _AffineModelVectorSpaceFunctor(Functor):
         return morphism.linear_part()
 
 
+class _RealAffineAtlasFunctor(Functor):
+    r"""Present real affine spaces and maps by their C^k charts."""
+
+    def __init__(self, degree):
+        from dzack_research.preamble.categories.real_ck_atlases import RealCkAtlases
+
+        super().__init__(RealAffineSpaces(), RealCkAtlases(degree))
+
+    def _apply_object(self, affine_space):
+        pass
+
+    def _apply_morphism(self, affine_map):
+        pass
+
+
 class RealAffineSpaces(OwnedCategory):
     r"""Torsors for additive real vector spaces, with affine maps."""
 
@@ -190,6 +205,16 @@ class RealAffineSpaces(OwnedCategory):
     @cached_method
     def model_vector_space(self):
         return _AffineModelVectorSpaceFunctor()
+
+    @cached_method
+    def real_ck_atlas(self, degree):
+        return _RealAffineAtlasFunctor(degree)
+
+    @cached_method
+    def real_ck_manifold(self, degree):
+        from dzack_research.preamble.categories.real_ck_atlases import RealCkAtlases
+
+        return self.real_ck_atlas(degree).then(RealCkAtlases(degree).maximalization())
 
     class ParentMethods:
         def __init__(self, model_vector_space, point_set, translation_action, **rest):
