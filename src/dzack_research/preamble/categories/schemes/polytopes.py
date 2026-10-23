@@ -228,10 +228,10 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
             pass
 
         def abstract_automorphisms(self):
-            pass
+            return self.face_poset().Aut()
 
         def geometric_automorphisms(self):
-            pass
+            return self.Aut()
 
         def geometric_to_abstract_automorphisms(self):
             pass
