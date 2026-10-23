@@ -1992,7 +1992,9 @@ class FormModules(OwnedCategoryOverBaseRing):
             submodule its inclusion supplies the ambient vector. Exact
             diagonalization supplies the computation over ``QQ``, ``ZZ``
             and ``AA`` with a finite framing and scalar form values;
-            the integral result is primitive. A bilinear form uses its
+            the integral result is primitive. For a lattice over represented
+            exact ``RR``, its retained diagonalization and decided signs
+            supply a normalized witness of square +1 or -1. A bilinear form uses its
             diagonal function, and a quadratic form retains its own norm.
 
             EXAMPLES::

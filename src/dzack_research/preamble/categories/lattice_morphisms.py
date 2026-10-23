@@ -2273,8 +2273,8 @@ class LatticeEmbeddingMor(CategoricalMor):
         embedding can have nontrivial finite index, and absence of an
         isometry or primitive embedding does not exclude such a map.
 
-        For finite nondegenerate spaces over QQ or AA, Witt cancellation
-        gives ``Emb(S,T) != empty`` exactly when
+        For finite nondegenerate spaces over QQ, AA or represented RR,
+        Witt cancellation gives ``Emb(S,T) != empty`` exactly when
         ``witt_index(T orthogonal_sum (-S)) >= dim(S)``. Indeed an embedding
         splits off ``S`` and ``S orthogonal_sum (-S)`` is hyperbolic. In
         the reverse direction, the anisotropic part of ``T - S``, together
@@ -2318,9 +2318,10 @@ class LatticeEmbeddingMor(CategoricalMor):
         ):
             return True
         from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
 
         if (
-            source.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers())
+            source.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers(), RR)
             and source.module_rank().is_finite()
             and target.module_rank().is_finite()
             and source.is_nondegenerate()
@@ -2361,8 +2362,8 @@ class LatticeEmbeddingMor(CategoricalMor):
             return self._integral_embedding_factorization() is False
         return None
 
-    def _real_algebraic_embedding(self):
-        r"""Construct an AA embedding by matching exact diagonal signs.
+    def _real_embedding(self):
+        r"""Construct a real embedding by matching exact diagonal signs.
 
         Both endpoints have finite nondegenerate forms. Their retained
         diagonalization isometries give orthogonal bases. Send a source
@@ -2401,8 +2402,8 @@ class LatticeEmbeddingMor(CategoricalMor):
     def an_element(self):
         r"""Construct an embedding through an applicable complete route.
 
-        Over AA, finite nondegenerate endpoints use exact diagonalization
-        and matching signs, retaining the original endpoints. Isometries
+        Over AA or represented RR, finite nondegenerate endpoints use
+        exact diagonalization and matching signs, retaining the original endpoints. Isometries
         and primitive embeddings supply other affirmative cases;
         their absence does not eliminate finite-index embeddings over ZZ.
         Even-overlattice inclusions retain those nonprimitive candidates.
@@ -2462,15 +2463,16 @@ class LatticeEmbeddingMor(CategoricalMor):
         source = self.domain()
         target = self.codomain()
         from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
 
         if (
-            source.base_ring() is _owned_real_algebraic_numbers()
+            source.base_ring() in (_owned_real_algebraic_numbers(), RR)
             and source.module_rank().is_finite()
             and target.module_rank().is_finite()
             and source.is_nondegenerate()
             and target.is_nondegenerate()
         ):
-            return self._real_algebraic_embedding()
+            return self._real_embedding()
         if (
             source.module_rank().is_finite()
             and target.module_rank().is_finite()
@@ -3801,9 +3803,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         if domain.signature_pair() != codomain.signature_pair():
             return (True, None)
         from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
 
         if (
-            domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers())
+            domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers(), RR)
             and domain.is_nondegenerate()
             and codomain.is_nondegenerate()
         ):
@@ -3929,8 +3932,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         if domain is codomain:
             return self.identity()
         from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
 
-        if domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers()):
+        if domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
             embeddings = domain.Emb(codomain)
             embedding = (
                 next(iter(embeddings))

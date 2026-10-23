@@ -129,8 +129,8 @@ def _congruence_diagonalization(lattice):
     return normal.Isom(lattice)(images)
 
 
-def _real_algebraic_representation_witness(lattice, value):
-    r"""Find a nonzero AA vector of the requested norm, or return None.
+def _real_representation_witness(lattice, value):
+    r"""Find a nonzero exact real vector of the requested norm, or return None.
 
     Use the retained congruence-diagonalization isometry. A nonzero value
     is represented exactly when a diagonal entry has the same sign; the
@@ -163,20 +163,22 @@ def _real_algebraic_representation_witness(lattice, value):
     return None
 
 
-def _real_algebraic_witt_bases(lattice):
-    r"""Raise an AA Witt basis using Sage's congruence diagonalization.
+def _real_witt_bases(lattice):
+    r"""Raise an exact real Witt basis using congruence diagonalization.
 
     Private supplier to ``Lattices.witt_decomposition``. Sage's
     ``QuadraticForm.rational_diagonal_form(return_matrix=True)`` returns
     ``(D,T)`` with ``T.transpose()*G*T == D.matrix()``. Its columns are
     therefore an orthogonal basis in the input space. Normalize each
     positive or negative vector to square +1 or -1 using the positive
-    square root in AA. For an orthogonal pair p,n of these squares,
-    e=p+n and f=(p-n)/2 have Gram U. The unpaired vectors all have the
+    square root in the selected real field. For an orthogonal pair p,n of
+    these squares, e=p+n and f=(p-n)/2 have Gram U. The unpaired vectors all have the
     same sign, so their span is anisotropic.
 
-    The input is a finite nondegenerate symmetric space over AA; no
-    numerical sign, approximate root or exhaustive real iterator is used.
+    The input is a finite nondegenerate symmetric space over AA or the
+    represented exact RR field. Real comparisons must be decided; a
+    proposition has no Python truth value. No approximate root or
+    exhaustive real iterator is used.
     Sage documents the retained transformation in
     ``quadratic_form__local_field_invariants.rational_diagonal_form``.
     """
@@ -235,6 +237,11 @@ def _signed_vector_witness(lattice, sign):
     from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
 
     ring = lattice.base_ring()
+    from dzack_research.preamble.rings.real import RR
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    if ring is RR and lattice in Lattices(RR):
+        return _real_representation_witness(lattice, ring(sign))
     assert (_engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ
             or ring is _owned_real_algebraic_numbers()), (
         f"signed vector witnesses are computed over ZZ, QQ or AA, not {ring}"

@@ -106,6 +106,33 @@ asserted missing. Pending definite, negative-definite, empty and rank-zero
 specimens are in the method docstring and owned by
 `hyperbolic-splitting-dependency-tools` in TODO.md. Execution remains under T.
 
+### Represented-real form computations still need execution and broader coverage
+
+The owned exact `RR` field already supplies closed real expressions,
+arithmetic, positive square roots and exact relation decisions where known.
+The lattice Witt, norm-witness and field embedding routes previously rejected
+it at their AA-only dispatch despite using congruence/sign/root constructions
+that apply to this presentation too. Signature also lowered RR coefficients
+to symbolic scalars and counted their signs inside Sage's generic routine.
+
+The source now reuses the existing congruence constructions for represented
+RR and counts diagonal signs only after raising the coefficients to the owned
+real field. An undecided sign is refused, rather than coerced to a Python
+truth value. Norm/isotropic witnesses, signed lattice vectors, Witt
+index/decomposition and Emb/Isom retain the existing maps and inverses.
+The pi-coefficient specimens in the theory note remain unexecuted under
+DEV-58. This is conditional coverage of represented expressions; the distinct
+certified-approximation algorithm for all promised nonsingular computable
+inputs remains unimplemented. Arbitrary singular oracle inputs still admit
+no uniform zero decision.
+
+**Dependency path:** exact real scalar arithmetic and relations -> congruence
+diagonalization with its map -> inertia and normalized vectors -> field
+Witt and embedding operations. No new mathematical definition is introduced;
+the formal bilinear-form and Witt owners already supply these notions.
+The remaining computation and execution belong to
+`hyperbolic-splitting-dependency-tools` in TODO.md.
+
 ### Labelled graphs present no isomorphisms or automorphism groups
 
 `LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group.

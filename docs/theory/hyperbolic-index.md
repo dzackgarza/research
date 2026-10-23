@@ -134,6 +134,53 @@ signature computation under the promise; it gives no uniform precision bound
 near singularity. A diagonalizing basis can be computed with certified nonzero
 pivots and represented by computable real expressions.
 
+**Current represented-real route.** This computation takes elements of
+`RR` through their closed exact real expressions. The lattice operations
+now reuse Sage's
+[`rational_diagonal_form(return_matrix=True)`](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/quadratic_form.html#sage.quadratic_forms.quadratic_form.QuadraticForm.rational_diagonal_form)
+on its private symbolic realization. Signature raises each resulting
+diagonal coefficient back into `RR` and uses that field's exact relation
+operation. An unresolved sign raises `NotImplementedError`; it contributes
+neither a positive, negative nor zero square. This avoids deriving an owned
+real sign from Python truth conversion of a symbolic comparison.
+
+The same existing diagonalization and positive-square-root constructions
+now supply represented-real Witt index/decomposition, isotropic and
+specified-norm witnesses, signed lattice vectors, and embeddings/isometries
+with their original endpoints and inverses where applicable. This route
+requires the represented arithmetic, congruence computation and comparisons
+to succeed. It is not the certified-approximation algorithm of the preceding
+paragraph, and it is not a total algorithm on all computable real oracles.
+In particular, an unresolved equality needed by a pivot or a sign remains
+a computation boundary. No exhaustive real iterator is introduced.
+
+The nonalgebraic specimen below and its inverse/form assertions remain
+unexecuted under DEV-58:
+
+```python
+p = RR.pi()
+V = Lattices(RR)([[p, 0], [0, -1]])
+assert V.witt_index() == ZZ(1) and V.is_anisotropic() is False
+phi = V.witt_decomposition()
+assert phi.codomain() is V
+assert V.gram_tensor().pullback(phi) == phi.domain().gram_tensor()
+assert all(phi(phi.inverse()(v)) == v for v in V.module_generators())
+e = V.isotropic_vector()
+assert e.parent() is V and V.q(e) == RR.zero()
+f = e.hyperbolic_partner()
+assert V.b(e, f) == RR.one() and V.q(f) == RR.zero()
+assert V.q(V.representation_vector(p)) == p
+assert V.q(V.positive_vector()) > RR.zero()
+S = Lattices(RR)([[p]])
+T = Lattices(RR)([[1]])
+j = S.Emb(T).an_element()
+assert j.domain() is S and j.codomain() is T
+assert T.gram_tensor().pullback(j) == S.gram_tensor()
+g = S.Isom(T).an_element()
+assert all(g.inverse()(g(v)) == v for v in S.module_generators())
+assert S.Emb(Lattices(RR)([[-1]])).is_empty() is True
+```
+
 If singular computable inputs are allowed, a uniform index algorithm would
 decide whether a computable $a\ge0$ is zero: the form
 $\operatorname{diag}(a,-1)$ has index $0$ when $a=0$ and $1$ when $a>0$.
@@ -1158,7 +1205,7 @@ not replace the mathematical assertions or their pending execution.
 | Finite coordinate subset and embedding filter | `framed_free_modules.py`: `coordinate_subset`; `lattice_morphisms.py`: `with_generator_images_in` | Inclusion into the original module and inclusion into the original embedding set; members retain evaluation and both endpoints |
 | Orthogonal complement | `lattice_morphisms.py`: `orthogonal_complement`; `form_modules.py`: general pairing-kernel route | Full integral kernel over ZZ, or the general module kernel, with inclusion and restricted form; no direct-sum conclusion is presumed |
 | Splitting of a supplied summand | `lattice_morphisms.py`: `orthogonal_splitting`; `lattices.py`: `orthogonal_decomposition` | Original first summand and its specified embedding, complement inclusion, and isometry with inverse over the original ring |
-| Field Witt decomposition and field isometry | `lattices.py`: `witt_decomposition`; `lattice_morphisms.py`: field `Isom` decision and witness | QQ/AA endpoints, form equation and inverse maps; the Witt domain retains both summands and their module inclusions and projections |
+| Field Witt decomposition and field isometry | `lattices.py`: `witt_decomposition`; `lattice_morphisms.py`: field `Isom` decision and witness | QQ/AA and applicable represented-RR endpoints, form equation and inverse maps; the Witt domain retains both summands and their module inclusions and projections |
 
 ### Which tools each construction actually needs
 
@@ -1217,7 +1264,8 @@ unit = V.base_change_unit()       # L -> restriction of V to ZZ
 It must not be treated as an isometry between objects over one coefficient
 ring. `phi` is an isometry over `QQ`, with evaluation and inverse. Over `AA`,
 `witt_decomposition()` uses exact congruence diagonalization and positive
-square roots; `diagonalization()` itself returns an isometry from the diagonal
+square roots; the represented `RR` route uses the same construction when
+its exact arithmetic and sign decisions succeed; `diagonalization()` itself returns an isometry from the diagonal
 space to the original space and also allows a degenerate form.
 
 A finite orthogonal sum is constructed by

@@ -1381,9 +1381,24 @@ def _sylvester(gram: Tensor):
     r"""Return $(p,q)$ by Sylvester's law over the represented ordered fraction field."""
     field = _ordered_fraction_field(gram.base_ring())
     engine_gram = _engine_component_matrix(gram).change_ring(field)
-    positive, negative, _radical = QuadraticForm(
-        field, engine_gram
-    ).signature_vector()
+    from dzack_research.preamble.rings.real import RR
+
+    form = QuadraticForm(field, engine_gram)
+    if gram.base_ring() is RR:
+        diagonal = form.rational_diagonal_form().matrix()
+        positive = negative = 0
+        for entry in diagonal.diagonal():
+            value = _owned_engine_element(RR, entry)
+            if (value > RR.zero()) is True:
+                positive += 1
+            elif (value < RR.zero()) is True:
+                negative += 1
+            elif (value == RR.zero()) is not True:
+                raise NotImplementedError(
+                    f"the sign of a real diagonal coefficient is undecided: {value}"
+                )
+        return signature_pair(positive, negative)
+    positive, negative, _radical = form.signature_vector()
     return signature_pair(int(positive), int(negative))
 
 

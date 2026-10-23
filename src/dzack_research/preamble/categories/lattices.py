@@ -2936,8 +2936,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             Over number fields the private OSCAR/Hecke realization decomposes
             the quadratic space into its anisotropic and hyperbolic summands; half
             the dimension of the latter is the Witt index.
-            Over the exact real algebraic numbers, Sylvester's law gives
-            ``min(p,q)`` from the existing exact signature computation.
+            Over AA and represented exact RR, Sylvester's law gives
+            ``min(p,q)`` from exact signature. For RR, congruence and the
+            owned scalar sign decisions must succeed; undecided signs
+            are refused instead of being counted as zero or negative.
 
             EXAMPLES::
 
@@ -2947,6 +2949,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: D = Lattices(AA)([[2]])
                 sage: assert D.witt_index() == ZZ(0)
                 sage: assert D.is_anisotropic() is True
+                sage: a = RR.pi()
+                sage: V = Lattices(RR)([[a, 0], [0, -1]])
+                sage: assert V.witt_index() == ZZ(1)
+                sage: assert V.is_anisotropic() is False
             """
             space = self.vector_space()
             if space is not self:
@@ -2965,8 +2971,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 OwnedNumberFields,
             )
 
+            from dzack_research.preamble.rings.real import RR
+
             match field:
-                case _ if field is _owned_real_algebraic_numbers():
+                case _ if field in (_owned_real_algebraic_numbers(), RR):
                     signature = self.signature_pair()
                     index = min(
                         signature.first().finite_value(),
@@ -2986,7 +2994,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _:
                     assert False, (
-                        f"the Witt index of {self!r} is computed here over AA and represented absolute number fields, but {self!r} is over {field}"
+                        f"the Witt index of {self!r} is computed here over AA, represented RR and represented absolute number fields, but {self!r} is over {field}"
                     )
             integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(index))
@@ -3053,9 +3061,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             as ``witt_index``. Its basis vectors are raised into this
             space and assembled through the existing hyperbolic-plane,
             subobject and orthogonal-decomposition constructions.
-            Over AA, Sage congruence diagonalization and exact positive
-            square roots supply the normalized hyperbolic pairs and a
-            definite complement.
+            Over AA or represented exact RR, Sage congruence diagonalization
+            and decided scalar signs and positive square roots supply the
+            normalized hyperbolic pairs and a definite complement. This
+            RR computation uses closed real expressions and supplies no
+            arbitrary-real-oracle interface; an undecided comparison is
+            refused.
 
             EXAMPLES::
 
@@ -3079,12 +3090,19 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert phi.domain().biproduct_factor(1).is_anisotropic() is True
                 sage: assert all(phi(phi.inverse()(v)) == v for v in V.module_generators())
                 sage: assert Lattices(AA)(0).witt_decomposition().domain().module_rank() == 0
+                sage: V = Lattices(RR)([[RR.pi(), 0], [0, -1]])
+                sage: phi = V.witt_decomposition()
+                sage: assert phi.codomain() is V
+                sage: assert V.gram_tensor().pullback(phi) == phi.domain().gram_tensor()
+                sage: assert all(phi(phi.inverse()(v)) == v for v in V.module_generators())
             """
             from dzack_research.preamble.categories.rings.ring_foundation import (
                 OwnedFields,
                 _owned_rationals,
                 _owned_real_algebraic_numbers,
             )
+
+            from dzack_research.preamble.rings.real import RR
 
             field = self.base_ring()
             assert field in OwnedFields(), (
@@ -3098,13 +3116,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 anisotropic_basis, hyperbolic_basis = (
                     lattice_engines._oscar_lattices.rational_witt_bases(self)
                 )
-            elif field is _owned_real_algebraic_numbers():
+            elif field in (_owned_real_algebraic_numbers(), RR):
                 anisotropic_basis, hyperbolic_basis = (
-                    lattice_engines._real_algebraic_witt_bases(self)
+                    lattice_engines._real_witt_bases(self)
                 )
             else:
                 raise NotImplementedError(
-                    f"a Witt decomposition of {self} is computed here over QQ and AA, not {field}"
+                    f"a Witt decomposition of {self} is computed here over QQ, AA and represented RR, not {field}"
                 )
             complement = self.subobject_on(anisotropic_basis)
             plane = Lattices(field)("U")
@@ -3154,7 +3172,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             is integral and primitive. A nonzero radical also supplies a
             witness; the zero lattice has none. Over AA the retained
             diagonalization supplies a radical vector or a normalized
-            opposite-sign pair, without enumerating real points.
+            opposite-sign pair, without enumerating real points. The same
+            construction applies to represented RR when its exact scalar
+            operations and comparisons are decided.
 
             EXAMPLES::
 
@@ -3177,9 +3197,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert D.isotropic_vector() != D.zero()
             """
             from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+            from dzack_research.preamble.rings.real import RR
 
-            if self.base_ring() is _owned_real_algebraic_numbers():
-                vector = lattice_engines._real_algebraic_representation_witness(
+            if self.base_ring() in (_owned_real_algebraic_numbers(), RR):
+                vector = lattice_engines._real_representation_witness(
                     self, self.base_ring().zero()
                 )
             else:
@@ -3221,8 +3242,8 @@ class Lattices(OwnedCategoryOverBaseRing):
               can be a spinor exception. In this remaining case, the finite
               integral-overlattice and primitive-embedding decision for
               ``<a> -> L`` decides representation, including the exceptions.
-            - Over ``AA``, ``a != 0``: a positive value is represented exactly
-              when the positive index of inertia is nonzero, and likewise
+            - Over ``AA`` or applicable represented ``RR``, ``a != 0``:
+              a positive value is represented exactly when the positive index of inertia is nonzero, and likewise
               for a negative value and the negative index.
 
             EXAMPLES::
@@ -3242,6 +3263,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             from sage.rings.rational_field import QQ as SageQQ
             from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+            from dzack_research.preamble.rings.real import RR
 
             ring = self.base_ring()
             value = ring(value)
@@ -3254,7 +3276,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return False
                 case _ if value == ring.zero():
                     return self.is_isotropic()
-                case _ if ring is _owned_real_algebraic_numbers():
+                case _ if ring in (_owned_real_algebraic_numbers(), RR):
                     signature = self.signature_pair()
                     index = signature.first() if value > ring.zero() else signature.second()
                     return index != cardinal(0)
@@ -3265,7 +3287,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _ if _engine_ring(ring) is not SageZZ:
                     assert False, (
-                        f"representation of {value} by {self!r} is decided here over ZZ, QQ and AA, not over {ring}"
+                        f"representation of {value} by {self!r} is decided here over ZZ, QQ, AA and represented RR, not over {ring}"
                     )
                 case _ if self.is_definite():
                     return self.vectors_of_square(value).domain().cardinality() != 0
@@ -3289,8 +3311,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             - ``a = 0``: :meth:`isotropic_vector`, primitive over ``ZZ``.
             - Over ``QQ``: the zero of ``L perp <-a>`` that decides
               :meth:`represents`, rescaled.
-            - Over ``AA``: rescale a diagonal vector of the required sign
-              using the positive square root of the norm ratio.
+            - Over ``AA`` or represented exact ``RR``: rescale a diagonal
+              vector of the required sign using the positive square root of the norm ratio.
             - Over ``ZZ``, definite: a vector of :meth:`vectors_of_square`.
             - Over ``ZZ``, indefinite of rank 2 with ``L tensor QQ``
               anisotropic: PARI's ``qfbsolve`` representatives.  With ``L
@@ -3346,6 +3368,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             from sage.rings.rational_field import QQ as SageQQ
             from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+            from dzack_research.preamble.rings.real import RR
 
             ring = self.base_ring()
             value = ring(value)
@@ -3358,8 +3381,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                     found = None
                 case _ if value == ring.zero():
                     return self.isotropic_vector()
-                case _ if ring is _owned_real_algebraic_numbers():
-                    found = lattice_engines._real_algebraic_representation_witness(
+                case _ if ring in (_owned_real_algebraic_numbers(), RR):
+                    found = lattice_engines._real_representation_witness(
                         self, value
                     )
                 case _ if _engine_ring(ring) is SageQQ:
@@ -3368,7 +3391,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _ if _engine_ring(ring) is not SageZZ:
                     assert False, (
-                        f"a representation of {value} in {self!r} is constructed here over ZZ, QQ and AA, not over {ring}"
+                        f"a representation of {value} in {self!r} is constructed here over ZZ, QQ, AA and represented RR, not over {ring}"
                     )
                 case _ if self.is_definite():
                     found = next(iter(self.vectors_of_square(value)), None)
