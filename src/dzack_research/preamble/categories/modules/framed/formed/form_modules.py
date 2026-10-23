@@ -2765,6 +2765,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     sage: P = Lattices(RR).Nondegenerate()([[1, a], [a, a*a + RR(2)**(-512)]])
                     sage: assert P.signature_pair().first() == cardinal(2)
                     sage: assert P.signature_pair().second() == cardinal(0)
+                    sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                    sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                    sage: Q = _owned_rationals()
+                    sage: a = Sets().Mor(NN, Q)(lambda n: Q(1) + Q(1)/Q(2)**int(n))
+                    sage: x = RR.of_cauchy(a)
+                    sage: C = Lattices(RR).Nondegenerate()([[x, 0], [0, -1]])
+                    sage: assert C.signature_pair().first() == cardinal(1)
+                    sage: assert C.signature_pair().second() == cardinal(1)
                     sage: E = Lattices(RR).Nondegenerate()(0)
                     sage: assert E.signature_pair().first() == cardinal(0)
                     sage: assert E.signature_pair().second() == cardinal(0)

@@ -40,6 +40,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_numeral,
     _engine_ring,
     _linear_algebra_ring,
+    _linear_algebra_element,
     _own_ring,
     _owned_ring,
     _owned_integers,
@@ -1131,7 +1132,7 @@ def _span_basis_elements(module, module_generating_set):
         coordinates = element.to_vector()
         engine_rows.append(
             [
-                _engine_element(
+                _linear_algebra_element(
                     ring,
                     coordinates(support_points[position]),
                 )

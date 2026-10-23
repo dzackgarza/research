@@ -6513,6 +6513,18 @@ def _linear_algebra_ring(ring):
     return engine
 
 
+def _linear_algebra_element(ring, element):
+    r"""Supply a scalar in the selected generic linear-algebra parent.
+
+    When generic arithmetic keeps the owned exact field, retain its
+    element rather than serializing it into an inexact symbolic ring.
+    Other selected computation parents keep their ordinary engine crossing.
+    """
+    if _linear_algebra_ring(ring) is ring:
+        return ring(element)
+    return _engine_element(ring, element)
+
+
 def _engine_quotient_cover_ideal(ring, engine_ideal):
     r"""Lift an ideal of a selected quotient engine to its cover ring.
 

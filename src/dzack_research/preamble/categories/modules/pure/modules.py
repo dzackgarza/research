@@ -67,6 +67,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
     _linear_algebra_ring,
+    _linear_algebra_element,
     _own_ring,
     _owned_ring,
     RingMor,
@@ -6082,12 +6083,12 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             ring = self.parent().base_ring()
             coordinates = target.to_vector()
             rhs = sage_vector(
-                _engine_ring(ring),
-                [_engine_element(ring, coordinates(label)) for label in self.parent().row_index_set()],
+                _linear_algebra_ring(ring),
+                [_linear_algebra_element(ring, coordinates(label)) for label in self.parent().row_index_set()],
             )
             solution = _engine_matrix(self).solve_right(rhs)
             return self.domain().linear_combination(
-                {label: _owned_engine_element(ring, solution[position]) for position, label in enumerate(self.parent().column_index_set()) if solution[position]}
+                {label: _owned_engine_element(ring, solution[position]) for position, label in enumerate(self.parent().column_index_set())}
             )
 
         def _kernel_spanning_family(self):
@@ -6489,10 +6490,10 @@ def _engine_matrix(morphism):
         for column_label in parent.column_index_set()
     )
     return sage_matrix(
-        _engine_ring(ring),
+        _linear_algebra_ring(ring),
         parent.nrows(),
         parent.ncols(),
-        [_engine_element(ring, entry) for row in zip(*columns, strict=True) for entry in row],
+        [_linear_algebra_element(ring, entry) for row in zip(*columns, strict=True) for entry in row],
     )
 
 

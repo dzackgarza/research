@@ -4,8 +4,9 @@ Sage's global ``RR`` is MPFR: an approximation field.  It cannot be the
 mathematical real field because its arithmetic is rounded; for example the
 MPFR image of ``sqrt(2)`` need not square to exactly ``2``.
 
-This module represents constructible exact real numbers by closed exact Sage
-symbolic expressions.  Algebraic subproblems are delegated to ``AA`` and
+This module represents exact real numbers by closed exact Sage symbolic
+expressions or regular rational Cauchy sequences with a supplied error modulus.
+Algebraic subproblems on symbolic expressions are delegated to ``AA`` and
 inequalities/non-equality can be certified by Arb balls without ever storing
 an approximation as the value.  Approximation is explicit through ``.n()``.
 
@@ -19,13 +20,14 @@ from __future__ import annotations
 import operator
 
 from sage.misc.latex import latex
+from sage.misc.cachefunc import cached_method
 from sage.misc.unknown import Unknown
 from sage.categories.rings import Rings as SageRings
 from sage.rings.integer_ring import ZZ
 from sage.rings.qqbar import AA, QQbar
 from sage.rings.rational_field import QQ
 from sage.rings.real_arb import RealBallField
-from sage.rings.real_lazy import CLF, RLF
+from sage.rings.real_lazy import CLF, RLF, LazyFieldElement, LazyUnop
 from sage.rings.real_mpfr import (
     RealField,
 )
@@ -39,9 +41,11 @@ from sage.symbolic.expression import Expression
 from sage.symbolic.ring import SR
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
+    OwnedOrderedRings,
     OwnedRings,
     _OwnedRingBootstrapParent,
     _engine_element,
@@ -50,7 +54,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_integers,
 )
 from dzack_research.preamble.categories.sets.cardinals import continuum
-from dzack_research.preamble.categories.sets.set_categories import UncountableSets
+from dzack_research.preamble.categories.sets.set_categories import NN, Sets, UncountableSets
 from dzack_research.preamble.logic import Predicate, Propositions, ask
 from dzack_research.preamble.refine import realize_owned_category
 
@@ -151,15 +155,20 @@ def _sign_from_algebraic(expression: Expression):
     return -1 if value < 0 else 1
 
 
-def _sign_from_ball(expression: Expression, precision: int):
+def _sign_from_ball(expression: Expression | LazyFieldElement, precision: int):
     r"""Certify the sign using an Arb enclosure, or return ``None``."""
     field = RealBallField(precision)
     # ``expression in RealBallField`` is False even for pi^2 and sqrt(2),
     # which the field encloses; a closed real expression is what it
     # converts (TRAPS.md).
-    if expression.variables() or not expression.is_real():
+    if isinstance(expression, LazyFieldElement):
+        ball = expression.eval(field)
+    else:
+        if expression.variables() or not expression.is_real():
+            return None
+        ball = field(expression)
+    if not ball.is_finite():
         return None
-    ball = field(expression)
     if ball == 0:
         return 0
     if ball.contains_zero():
@@ -186,8 +195,8 @@ def _relation_from_sign(sign: int, relation) -> bool:
 
 
 def _decide_relation(
-    left: Expression,
-    right: Expression,
+    left: Expression | LazyFieldElement,
+    right: Expression | LazyFieldElement,
     relation,
     *,
     precision: int | None,
@@ -199,6 +208,13 @@ def _decide_relation(
     reached only for a difference neither decides, and its result is then
     decided the same way.
     """
+    if left is right:
+        return _relation_from_sign(0, relation)
+    if isinstance(left, LazyFieldElement) or isinstance(right, LazyFieldElement):
+        if precision is None:
+            return None
+        sign = _sign_from_ball(RLF(left) - RLF(right), precision)
+        return None if sign is None else _relation_from_sign(sign, relation)
     for difference_of in (operator.sub, _simplified_difference):
         difference = difference_of(left, right)
         if difference.is_zero() is True:
@@ -235,8 +251,8 @@ class RealRelation(Predicate):
         precision = 128
         while precision <= max_prec:
             answer = _decide_relation(
-                self._left.expression(),
-                self._right.expression(),
+                self._left._expression,
+                self._right._expression,
                 self._relation,
                 precision=precision,
             )
@@ -261,29 +277,120 @@ class RealRelation(Predicate):
         return rf"{latex(self._left)} {symbol} {latex(self._right)}"
 
 
+class _CauchyRealComputation(LazyFieldElement):
+    r"""Private lazy evaluation of a regular rational Cauchy sequence.
+
+    The input is an owned map a: NN -> QQ satisfying
+    |a(m)-a(n)| <= 2^(-n) for m >= n. Passing to the limit gives
+    |lim a-a(n)| <= 2^(-n). Sage's lazy arithmetic composes evaluations
+    of this primitive in interval and ball fields; its comparisons are
+    never used to decide owned real relations.
+    """
+
+    def __init__(self, sequence: CategoricalArrow) -> None:
+        self._sequence = sequence
+        FieldElement.__init__(self, RLF)
+
+    def depth(self) -> int:
+        return 0
+
+    def eval(self, field):
+        if field.is_exact():
+            raise NotImplementedError(
+                "a general Cauchy limit has no supplied exact symbolic or algebraic expression"
+            )
+        exponent = int(field.precision()) + 4
+        rationals = self._sequence.codomain()
+        center = _engine_element(rationals, self._sequence(NN(exponent)))
+        radius = QQ(1) / ZZ(2)**exponent
+        enclosure = RealBallField(exponent)(center, rad=radius)
+        return field(enclosure)
+
+    def _repr_(self) -> str:
+        return f"Limit of {self._sequence}"
+
+    def __reduce__(self):
+        return (_CauchyRealComputation, (self._sequence,))
+
+
 class ExactRealNumber(FieldElement):
     r"""An exact, explicitly real number."""
 
     __hash__ = None
 
-    def __init__(self, parent: ExactRealField, expression: Expression) -> None:
+    def __init__(self, parent: ExactRealField, expression: Expression | LazyFieldElement) -> None:
         self._expression = expression
+        if isinstance(expression, LazyFieldElement):
+            self._cache_token = object()
         FieldElement.__init__(self, parent)
 
     def expression(self) -> Expression:
         r"""Return the exact symbolic expression representing this real."""
+        if not isinstance(self._expression, Expression):
+            raise NotImplementedError(
+                "this real is presented by a Cauchy computation, not a symbolic expression"
+            )
         return self._expression
 
-    def _cache_key(self) -> tuple[ExactRealField, Expression]:
-        r"""Supply Sage's cache key for this immutable expression presentation.
+    def _cache_key(self):
+        r"""Supply Sage's cache key for this immutable real presentation.
 
         Real equality remains partial, so this element stays unhashable.
         Sage's cached constructions can instead use the parent and the
-        exact stored expression. Distinct expressions denoting the same
-        real may occupy separate cache entries; a cache hit establishes
+        exact stored expression, or a retained identity token for a lazy
+        computation. Distinct presentations denoting the same real may
+        occupy separate cache entries; a cache hit establishes
         neither a new equality decision nor a normal form for real values.
         """
-        return self.parent(), self._expression
+        if isinstance(self._expression, Expression):
+            return self.parent(), "symbolic", self._expression
+        return self.parent(), "lazy", self._cache_token
+
+    def _from_computation(self, value):
+        r"""Raise an exact expression or an owned arithmetic lazy result."""
+        if isinstance(value, LazyFieldElement):
+            return self.parent().element_class(self.parent(), value)
+        return self.parent()(value)
+
+    def _arithmetic_values(self, other):
+        if isinstance(self._expression, LazyFieldElement) or isinstance(other._expression, LazyFieldElement):
+            return RLF(self._expression), RLF(other._expression)
+        return self._expression, other._expression
+
+    @cached_method
+    def cauchy_sequence(self) -> CategoricalArrow:
+        r"""Return a chosen regular rational Cauchy presentation of this value.
+
+        An originally supplied sequence is retained literally. Otherwise
+        Arb supplies rational midpoints with error at most 2^(-n-2).
+        For m >= n the triangle inequality gives a difference at most
+        2^(-m-2)+2^(-n-2) <= 2^(-n-1), hence the regularity bound used
+        by of_cauchy. Convergent enclosure evaluation is required.
+        The returned object is the actual map NN -> QQ; constructing
+        that map evaluates no term and decides no real equality.
+        """
+        if isinstance(self._expression, _CauchyRealComputation):
+            return self._expression._sequence
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+
+        rationals = _owned_rationals()
+
+        def approximation(index):
+            exponent = int(index)
+            diameter = QQ(1) / ZZ(2)**(exponent + 1)
+            precision = max(64, exponent + 4)
+            while True:
+                enclosure = self._arb_(RealBallField(precision))
+                precision *= 2
+                if not enclosure.is_finite():
+                    continue
+                lower, upper = enclosure.endpoints()
+                lower = lower.exact_rational()
+                upper = upper.exact_rational()
+                if upper - lower <= diameter:
+                    return _owned_engine_element(rationals, (lower + upper)/2)
+
+        return Sets().Mor(NN, rationals)(approximation)
 
     def is_real(self) -> bool:
         return True
@@ -298,10 +405,10 @@ class ExactRealNumber(FieldElement):
         return str(latex(self._expression))
 
     def _symbolic_(self, symbolic_ring):
-        return symbolic_ring(self._expression)
+        return symbolic_ring(self.expression())
 
     def _sympy_(self):
-        return self._expression._sympy_()
+        return self.expression()._sympy_()
 
     def _integer_(self, integer_ring):
         return integer_ring(self._rational_())
@@ -310,18 +417,20 @@ class ExactRealNumber(FieldElement):
         # The symbolic ring keeps distinct square roots apart, so
         # sqrt(6)*sqrt(3)*sqrt(2) is no numeric rational to it. AA decides an
         # algebraic value exactly, as the relations of this field already do.
-        if self._expression in AA:
+        if isinstance(self._expression, Expression) and self._expression in AA:
             return QQ(AA(self._expression))
-        return QQ(self._expression)
+        return QQ(self.expression())
 
     def _algebraic_(self, algebraic_field):
-        return algebraic_field(self._expression)
+        return algebraic_field(self.expression())
 
     def _mpfr_(self, field):
+        if isinstance(self._expression, LazyFieldElement):
+            return field(self._arb_(RealBallField(field.precision())).mid())
         return field(self._expression)
 
     def _arb_(self, field):
-        r"""Enclose this exact real using Arb's expression evaluation.
+        r"""Enclose this exact real through its expression or Cauchy computation.
 
         This is Sage's designated real-ball conversion protocol. The
         exact expression is evaluated directly with outward error bounds;
@@ -337,13 +446,21 @@ class ExactRealNumber(FieldElement):
             sage: assert (B(RR(2).sqrt())**2).contains(2)
             sage: assert B(RR.zero()).is_zero()
         """
+        if isinstance(self._expression, LazyFieldElement):
+            return self._expression.eval(field)
         return field(self._expression)
 
     def _real_double_(self, field):
+        if isinstance(self._expression, LazyFieldElement):
+            return field(self._arb_(RealBallField(53)).mid())
         return field(self._expression)
 
     def n(self, prec: int = 53, digits: int | None = None, **kwds):
         r"""Return an explicit floating-point approximation of ``self``."""
+        if isinstance(self._expression, LazyFieldElement):
+            if kwds:
+                raise TypeError("Cauchy real approximation accepts only prec and digits")
+            return self._mpfr_(RealField(prec if digits is None else 4*int(digits)))
         if digits is not None:
             return self._expression.n(digits=digits, **kwds)
         return RealField(prec)(self._expression)
@@ -354,13 +471,16 @@ class ExactRealNumber(FieldElement):
         return float(self.n())
 
     def _add_(self, other):
-        return self.parent()(self._expression + other._expression)
+        left, right = self._arithmetic_values(other)
+        return self._from_computation(left + right)
 
     def _sub_(self, other):
-        return self.parent()(self._expression - other._expression)
+        left, right = self._arithmetic_values(other)
+        return self._from_computation(left - right)
 
     def _mul_(self, other):
-        return self.parent()(self._expression * other._expression)
+        left, right = self._arithmetic_values(other)
+        return self._from_computation(left * right)
 
     def __mul__(self, other):
         r"""Use the exact scalar engine, or the action on an owned module.
@@ -394,10 +514,11 @@ class ExactRealNumber(FieldElement):
             raise ValueError(
                 f"cannot divide {self} by {other}: it is undecided whether {other} is zero"
             )
-        return self.parent()(self._expression / other._expression)
+        left, right = self._arithmetic_values(other)
+        return self._from_computation(left / right)
 
     def _neg_(self):
-        return self.parent()(-self._expression)
+        return self._from_computation(-self._expression)
 
     def __invert__(self):
         return self.parent().one() / self
@@ -412,45 +533,71 @@ class ExactRealNumber(FieldElement):
                 f"cannot compute {self}^{exponent} mod {modulus}: modular exponentiation is not defined "
                 "on the real numbers"
             )
-        return self.parent()(self._expression ** _closed_exact_real_expression(exponent))
+        exponent = self.parent()(exponent)
+        left, right = self._arithmetic_values(exponent)
+        if isinstance(left, LazyFieldElement):
+            integer_power = (
+                isinstance(exponent._expression, Expression)
+                and exponent._expression in ZZ
+            )
+            if integer_power:
+                if ZZ(exponent._expression) < 0 and ask(self != self.parent().zero()) is not True:
+                    raise ValueError("a negative real power needs a decided nonzero base")
+            elif ask(self > self.parent().zero()) is not True:
+                raise ValueError("this general real power needs a decided positive base")
+        return self._from_computation(left ** right)
 
     def __rpow__(self, base):
-        base_expression = _closed_exact_real_expression(base)
-        return self.parent()(base_expression**self._expression)
+        return self.parent()(base) ** self
 
     def sqrt(self):
-        return self.parent()(self._expression.sqrt())
+        if isinstance(self._expression, LazyFieldElement) and ask(self >= self.parent().zero()) is not True:
+            raise ValueError("the real square root needs a decided nonnegative input")
+        return self._from_computation(self._expression.sqrt())
 
     def exp(self):
-        return self.parent()(self._expression.exp())
+        return self._from_computation(self._expression.exp())
 
     def log(self, base=None):
+        if isinstance(self._expression, LazyFieldElement) and ask(self > self.parent().zero()) is not True:
+            raise ValueError("the real logarithm needs a decided positive input")
         if base is None:
-            return self.parent()(self._expression.log())
+            return self._from_computation(self._expression.log())
         base = self.parent()(base)
-        return self.parent()(self._expression.log() / base.expression().log())
+        if isinstance(self._expression, LazyFieldElement) or isinstance(base._expression, LazyFieldElement):
+            if (ask(self > self.parent().zero()) is not True
+                    or ask(base > self.parent().zero()) is not True
+                    or ask(base != self.parent().one()) is not True):
+                raise ValueError("a real logarithm base must be decided positive and different from one")
+        left, right = self._arithmetic_values(base)
+        return self._from_computation(left.log() / right.log())
 
     def sin(self):
-        return self.parent()(self._expression.sin())
+        return self._from_computation(self._expression.sin())
 
     def cos(self):
-        return self.parent()(self._expression.cos())
+        return self._from_computation(self._expression.cos())
 
     def tan(self):
-        return self.parent()(self._expression.tan())
+        if (isinstance(self._expression, LazyFieldElement)
+                and ask(self.cos() != self.parent().zero()) is not True):
+            raise ValueError("the real tangent needs a decided nonzero cosine")
+        return self._from_computation(self._expression.tan())
 
     def sinh(self):
-        return self.parent()(self._expression.sinh())
+        return self._from_computation(self._expression.sinh())
 
     def cosh(self):
-        return self.parent()(self._expression.cosh())
+        return self._from_computation(self._expression.cosh())
 
     def tanh(self):
-        return self.parent()(self._expression.tanh())
+        return self._from_computation(self._expression.tanh())
 
     def sech(self):
         from sage.functions.hyperbolic import sech
 
+        if isinstance(self._expression, LazyFieldElement):
+            return self._from_computation(LazyUnop(RLF, self._expression, sech))
         return self.parent()(sech(self._expression))
 
     def zeta(self):
@@ -458,6 +605,8 @@ class ExactRealNumber(FieldElement):
         from sage.functions.transcendental import zeta
 
         assert self > 1, f"zeta(s) is computed here only for real s > 1, but s = {self} is not > 1"
+        if isinstance(self._expression, LazyFieldElement):
+            return self._from_computation(LazyUnop(RLF, self._expression, zeta))
         return self.parent()(zeta(self._expression))
 
     def sgn(self):
@@ -472,7 +621,7 @@ class ExactRealNumber(FieldElement):
         return integers(1 if positive else -1)
 
     def __abs__(self):
-        return self.parent()(abs(self._expression))
+        return self._from_computation(abs(self._expression))
 
     def _coerce_for_relation(self, other):
         try:
@@ -559,7 +708,7 @@ RealNumber = ExactRealNumber
 
 
 class ExactRealField(UniqueRepresentation, Field):
-    r"""The exact field of real numbers represented by closed exact expressions."""
+    r"""The exact real field with symbolic and regular Cauchy presentations."""
 
     Element = ExactRealNumber
     _preamble_owned_ring_parent = True
@@ -580,6 +729,7 @@ class ExactRealField(UniqueRepresentation, Field):
             category=Cat().meet(
                 (
                     OwnedFields(),
+                    OwnedOrderedRings(),
                     UncountableSets(),
                     regular_algebra,
                     FinitelyGeneratedFreeModules(self),
@@ -608,23 +758,23 @@ class ExactRealField(UniqueRepresentation, Field):
         """
 
     def _selected_engine_ring(self):
-        r"""Return Sage's symbolic ring, the private model of exact real computation.
+        r"""Select SR for consumers that explicitly need symbolic serialization.
 
-        An element of ``RR`` is an exact symbolic expression, so Sage's
-        polynomial rings, matrices and schemes over ``RR`` compute over the
-        symbolic ring ``SR`` on those expressions.  Results cross back through
-        :meth:`_from_engine_element`, which admits only real values, and every
-        equality between them is decided by this field.
+        Generic linear algebra uses the shared exact scalar protocol
+        instead. A general Cauchy limit has no supplied SR expression and
+        refuses this serialization rather than substituting an approximation.
         """
         return SR
 
     def _engine_element(self, element):
-        r"""Lower an exact real number to its symbolic expression."""
+        r"""Serialize a real with an available exact symbolic expression."""
         return self(element).expression()
 
     def _from_engine_element(self, element) -> ExactRealNumber:
-        r"""Raise a symbolic value of a computation over ``SR`` into ``RR``."""
-        return self._from_engine_expression(element)
+        r"""Raise a result of generic exact real scalar computation."""
+        if isinstance(element, ExactRealNumber) and element.parent() is self:
+            return element
+        return self(element)
 
     def _repr_(self) -> str:
         return "Real Field"
@@ -645,6 +795,57 @@ class ExactRealField(UniqueRepresentation, Field):
     def _from_engine_expression(self, value) -> ExactRealNumber:
         r"""Cross a private exact expression; implementation endpoint for the protected dispatcher."""
         return self.element_class(self, _closed_exact_real_expression(value))
+
+    def of_cauchy(self, sequence: CategoricalArrow) -> ExactRealNumber:
+        r"""Return the real limit of a regular rational Cauchy sequence.
+
+        The supplied map a: NN -> QQ must satisfy
+        |a(m)-a(n)| <= 2^(-n) for every m >= n. This is a mathematical
+        hypothesis on the supplied infinite sequence, not a property
+        established by checking a finite prefix. It implies convergence
+        and |lim a-a(n)| <= 2^(-n). The owned map is retained, with its
+        actual source and rational-value target.
+
+        This is the real Cauchy-limit construction of Mathlib's
+        Real.ofCauchy, with the stated effective error modulus. The result
+        belongs to this same real field, not a new approximation field.
+        Arithmetic is lazy and exact; explicit ball conversion encloses
+        its value. Equality and order may remain propositions.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+            sage: Q = _owned_rationals()
+            sage: a = Sets().Mor(NN, Q)(lambda n: Q(1) + Q(1)/Q(2)**int(n))
+            sage: x = RR.of_cauchy(a)
+            sage: assert x.parent() is RR
+            sage: assert RR in OwnedOrderedRings()
+            sage: assert x.cauchy_sequence() is a
+            sage: assert ask(x > RR(0)) is True
+            sage: assert ask(x < RR(2)) is True
+            sage: from sage.rings.real_arb import RealBallField
+            sage: B = RealBallField(128)
+            sage: assert B(x).contains(1)
+            sage: assert B(x + RR(2)).contains(3)
+            sage: assert B(RR(2) * x).contains(2)
+            sage: assert B(x.sqrt()).contains(1)
+            sage: assert B(RR(3)/x).contains(3)
+            sage: assert B(x - x).contains(0)
+            sage: from dzack_research.preamble.categories.lattices import Lattices
+            sage: z = RR.of_cauchy(Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n)))
+            sage: Z = Lattices(RR)([[z]])
+            sage: assert isinstance(Z.is_nondegenerate(), Predicate)
+            sage: b = RR(2).sqrt().cauchy_sequence()
+            sage: assert b.domain() is NN and b.codomain() is Q
+            sage: assert abs(RR(b(NN(8))) - RR(2).sqrt()) < RR(1)/RR(2)**10
+        """
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+
+        assert sequence.domain() is NN and sequence.codomain() is _owned_rationals(), (
+            "a regular rational Cauchy presentation needs an owned map NN -> QQ"
+        )
+        sequence = Sets().Mor(NN, _owned_rationals())(sequence)
+        return self.element_class(self, _CauchyRealComputation(sequence))
 
     def __contains__(self, value) -> bool:
         r"""Return whether ``value`` canonically names an exact real number."""
@@ -675,8 +876,8 @@ class ExactRealField(UniqueRepresentation, Field):
         left = self(left)
         right = self(right)
         answer = _decide_relation(
-            left.expression(),
-            right.expression(),
+            left._expression,
+            right._expression,
             relation,
             precision=128,
         )
@@ -744,7 +945,9 @@ def _owned_real_from_engine_expression(value) -> ExactRealNumber:
     return RR._from_engine_expression(value)
 
 
-def _restore_exact_real(expression: Expression) -> ExactRealNumber:
+def _restore_exact_real(expression: Expression | LazyFieldElement) -> ExactRealNumber:
+    if isinstance(expression, LazyFieldElement):
+        return RR.element_class(RR, expression)
     return RR(expression)
 
 

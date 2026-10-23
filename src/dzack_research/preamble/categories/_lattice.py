@@ -233,8 +233,16 @@ def _gram_determinant(gram, ring):
     Computed by Sage's matrix determinant on the presentation's components
     (`OWN-06`) and raised into ``ring``.
     """
-    determinant = _gram_engine_matrix(gram).determinant()
-    return _owned_engine_element(ring, _engine_ring(ring)(determinant))
+    components = _gram_engine_matrix(gram)
+    from dzack_research.preamble.rings.real import RR
+
+    if ring is RR:
+        # Use Sage's small-rank formulas or division-free characteristic
+        # polynomial rather than a field algorithm choosing real pivots.
+        determinant = components.determinant(algorithm="df")
+    else:
+        determinant = components.determinant()
+    return _owned_engine_element(ring, determinant)
 
 
 def _regular_scalar(scalar, ring):
@@ -247,13 +255,14 @@ def _regular_scalar(scalar, ring):
     """
     from dzack_research.preamble.categories.rings.ring_foundation import IntegralDomains
 
-    if scalar.is_unit():
+    unit = scalar.is_unit()
+    if unit is True:
         return True
     if ring in IntegralDomains():
         return scalar != ring.zero()
     if ring in FiniteSets():
-        return False
-    if scalar == ring.zero():
+        return unit
+    if (scalar == ring.zero()) is True:
         return False
     return AtomicProposition("is_regular", scalar, ring)
 
@@ -282,7 +291,7 @@ def _gram_is_unimodular(gram, ring):
     """
     match _gram_rank(gram).is_finite():
         case True:
-            return bool(_gram_determinant(gram, ring).is_unit())
+            return _gram_determinant(gram, ring).is_unit()
         case False:
             return gram.is_unimodular()
 
@@ -308,13 +317,15 @@ def _gram_is_even(gram, ring):
     match ring in OwnedRings().Commutative():
         case False:
             return AtomicProposition("is_even", gram)
+    if ring(2).is_unit() is True:
+        return True
     twice = ring.ideal(ring(2))
     match rank.is_finite():
         case True:
             size = int(rank)
             components = gram._flat_components()
-            return all(
-                components[index * size + index] in twice
+            return conjunction(
+                twice.is_parent_of(components[index * size + index])
                 for index in range(size)
             )
         case False:

@@ -36,6 +36,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_ring,
     _linear_algebra_ring,
+    _linear_algebra_element,
     _enumerated_ring_elements,
     _owned_ring,
 )
@@ -131,7 +132,7 @@ def _integral_preimage_solver(morphism, ring):
             assert len(values) == backend.nrows(), (
                 "a linear-system target must have one coordinate per codomain basis vector"
             )
-            right_hand_side = vector(field, tuple(_engine_element(ring, value) for value in values))
+            right_hand_side = vector(field, tuple(_linear_algebra_element(ring, value) for value in values))
             if backend.augment(right_hand_side).rank() != rank:
                 return None
             solution = backend.solve_right(right_hand_side)

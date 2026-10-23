@@ -171,7 +171,7 @@ The zero-dimensional case returns $(0,0)$ directly.
    approximation and nonsingularity hypotheses, not a singular-input
    decision or a returned splitting basis.
 
-**Input presentation still required.** For a scalar $x\in\mathbb R$, the
+**Input presentations and error bounds.** For a scalar $x\in\mathbb R$, the
 corresponding data can be a chosen map $a:\mathbb N\to\mathbb Q$ with
 $|a(n)-x|\le2^{-n}$ and an effective evaluator for $a(n)$. Matrix data
 consist of these maps for the upper-triangular entries and the retained
@@ -180,13 +180,54 @@ presentations of real values, not a different field and not a claim of
 decidable equality. Mathlib already constructs the reals from Cauchy
 sequences; see
 [`Real.mk` and `Real.ofCauchy`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Basic/Real/Basic.html).
-The current Python `RR` constructor instead normalizes through
+The direct Python `RR` constructor normalizes through
 `_closed_exact_real_expression` and accepts only closed exact symbolic
-expressions. Its relation evaluator has a finite per-call precision budget; it supplies no
-general Cauchy-sequence input operation. Closed expressions admitting
-effective Arb enclosures are one possible input source for the test above;
-general program-supplied approximations need their own scalar presentation.
-The existing closed-expression route is now connected at
+expressions. The additional `RR.of_cauchy(a)` construction now admits an
+owned map $a:\mathbb N\to\mathbb Q$ under the explicit regularity
+hypothesis
+
+$$
+|a(m)-a(n)|\le 2^{-n}\qquad(m\ge n).
+$$
+
+This is a hypothesis on the supplied infinite map; checking a finite
+prefix cannot establish it. Construction retains that actual map and
+evaluates no term. A primitive limit returns the same map through
+`x.cauchy_sequence()`. Other represented values supply a chosen map by
+refining Arb enclosures to rational midpoints. The relation evaluator
+retains its finite per-call precision budget; no uniform equality
+decision is claimed.
+
+**Proof of the input and enclosure contract.**
+
+1. For $m,n\ge N$, interchange them if necessary. Regularity bounds
+   their difference by $2^{-\min(m,n)}\le2^{-N}$. Hence $a$ is Cauchy
+   in $\mathbb R$ and has a unique real limit $x$ by completeness.
+2. Fix $n$ and pass to the limit as $m\to\infty$ in the closed interval
+   $[a(n)-2^{-n},a(n)+2^{-n}]$. It follows that
+   $|x-a(n)|\le2^{-n}$, exactly the error bound used by evaluation.
+3. The regular input convention loses no computable-real inputs from
+   the earlier convention: if $|c(n)-x|\le2^{-n}$, then
+   $a(n)=c(n+1)$ satisfies the displayed regularity bound by the triangle
+   inequality. For a Cauchy modulus $\mu(n)$ giving tail differences
+   at most $2^{-n}$, set $k(n)=\max_{j\le n}\mu(j)$ and
+   $a(n)=c(k(n))$. Both $k(m)$ and $k(n)$ lie beyond $\mu(n)$ when
+   $m\ge n$, proving the same regularity bound.
+4. At requested precision $p$, the private primitive evaluates the
+   rational $a(p+4)$ and constructs an Arb ball centered there with
+   radius $2^{-(p+4)}$. Step 2 puts $x$ in that ball. Outward rounding
+   on conversion to the requested field preserves this containment.
+   The real value stores the sequence or its lazy arithmetic expression,
+   not the center or a floating-point approximation.
+5. For a nonprimitive presentation, `cauchy_sequence()` refines an
+   enclosure until its rational endpoint difference is at most
+   $2^{-(n+1)}$, then returns its rational midpoint $b(n)$.
+   Thus $|x-b(n)|\le2^{-(n+2)}$. For $m\ge n$, the difference of the
+   two midpoints is at most $2^{-(m+2)}+2^{-(n+2)}\le2^{-(n+1)}$,
+   so this returned map satisfies the regularity hypothesis too.
+   Its evaluation terminates when the value has convergent enclosures.
+
+Both input presentations connect at
 `BilinearFormModules(RR).Symmetric().signature_pair` for finite forms
 already placed in `FormModules(RR).Nondegenerate()`. Its private
 `_nonsingular_real_signature` computation converts the actual owned
@@ -205,20 +246,22 @@ uses Sage's rational inertia computation. The proof above applies with
 this measured error $e\to0$ instead of the prescribed $r2^{-n}$.
 Nonfinite intermediate enclosures are refined; unsupported expression
 evaluation errors propagate. Termination requires convergent enclosures
-for the supplied expressions, not merely their syntactic admission into
+for the supplied computations, not merely their syntactic admission into
 RR. No arbitrary fixed precision budget is imposed by this computation.
 
 The scalar conversion uses Sage's
 [`_arb_` protocol](https://github.com/sagemath/sage/blob/develop/src/sage/rings/real_arb.pyx).
-`ExactRealNumber._arb_` evaluates the stored exact expression in the
-requested ball field, retaining its outward error bounds. The signature
+`ExactRealNumber._arb_` evaluates the stored exact expression or Cauchy
+computation in the requested ball field, retaining its outward error bounds. The signature
 computation consumes that conversion instead of requiring symbolic
 serialization of every entry. It does not enclose an already-rounded
 MPFR value. Source specimens check the independent bounds $3<\pi<22/7$,
 containment of $2$ in the square of the enclosure of $\sqrt2$, and exact
-zero; they remain unexecuted under DEV-58. A future Cauchy presentation
-must supply the same scalar conversion from its rational approximations
-and error bounds; this hook does not itself admit those inputs.
+zero; they remain unexecuted under DEV-58. Cauchy specimens use
+$a(n)=1+2^{-n}$, whose limit is $1$, and check the retained sequence,
+enclosures of arithmetic, division and positive square roots, and
+signature $(1,1)$ for $\operatorname{diag}(x,-1)$ with $x$ supplied by
+that limit. These are written source specimens, not executed results.
 
 Unplaced or degenerate forms retain the existing congruence route; the
 approximation computation is never used to decide their singularity.
@@ -226,19 +269,21 @@ Written separating specimens include the off-diagonal pi form, the
 positive form with Gram matrix
 $\left(\begin{smallmatrix}1&\pi\\\pi&\pi^2+2^{-512}\end{smallmatrix}\right)$,
 the empty form and the singular diagonal form $\operatorname{diag}(1,0)$.
-They remain unexecuted under DEV-58. General program-supplied
-approximations are not yet admitted or connected to this computation.
+They remain unexecuted under DEV-58. General regular rational Cauchy
+maps are now admitted with their stated hypothesis; arbitrary programs
+without a convergence and error hypothesis are not real presentations.
 
 The backend search must also respect the actual documented contracts:
 [FLINT's real-matrix LDL routine](https://flintlib.org/doc/arb_mat.html)
 returns success for positive definiteness, while its real-matrix module
 directs eigenvalue computations to complex ball matrices. That success
 test alone is not a general indefinite-inertia decision. The rational
-inverse test avoids requiring an eigenvalue implementation. General
-approximation admission and a returned basis from that presentation remain
-open work. The computation uses maintained ball arithmetic and rational
-matrix operations; it adds neither a spectral routine nor a real-number
-representation.
+inverse test avoids requiring an eigenvalue implementation. A returned
+basis for every promised nonsingular Cauchy-presented form remains open
+work. The computation uses maintained ball arithmetic and rational
+matrix operations. The new private Cauchy input primitive is a
+presentation in the existing real field; it adds no new mathematical
+field or spectral routine.
 
 **Lazy-real backend boundary.** Sage's
 [`real_lazy` source](https://github.com/sagemath/sage/blob/develop/src/sage/rings/real_lazy.pyx)
@@ -254,8 +299,59 @@ by itself connect a rational approximation sequence and its error bounds
 to the existing owned real scalar. This source inspection identifies
 reusable evaluation machinery and a concrete comparison mismatch; it
 does not establish that all possible Sage realizations are unsuitable.
-General approximation admission and its arithmetic, relations and maps
-remain part of the open dependency assignment.
+The implementation now reuses this deferred arithmetic, with a private
+Cauchy-evaluation primitive. It implements owned real comparisons
+separately: a strictly signed enclosure decides a sign, while an enclosure
+containing zero supplies no equality decision. Lazy comparisons and
+hashes never supply those decisions. Division requires decided nonzero
+denominators; logarithms, roots and nonintegral powers retain their real
+domain requirements and refuse undecided applicability. Generic Sage
+computations now select the owned real field itself as their coefficient
+parent through `_linear_algebra_ring` and `_linear_algebra_element`,
+retaining this protocol before materializing a Gram matrix, module map,
+right-hand side or finite spanning family. The separate symbolic
+serialization contract still selects SR and refuses a general limit
+without a supplied expression. Explicit symbolic and algebraic conversions still
+require an available exact expression. General returned bases and their
+downstream maps remain part of the open dependency assignment.
+
+**Construction with undecided scalar predicates.** Gram nondegeneracy
+and unimodularity preserve the unit/nonzero propositions instead of
+converting them to Python booleans. Finite-rank evenness combines its
+actual diagonal ideal-membership propositions. For real Gram
+determinants, the source selects Sage's maintained
+[`determinant(algorithm="df")`](https://doc.sagemath.org/html/en/reference/matrices/sage/matrix/matrix2.html#sage.matrix.matrix2.Matrix.determinant).
+It uses direct formulas below rank four and otherwise reads
+$\det G=(-1)^r\det(tI-G)|_{t=0}$ from the division-free characteristic
+polynomial. This avoids pivot division. Other coefficient rings retain
+their existing determinant route. The written separating specimen
+constructs the rank-one Gram form from $a(n)=2^{-n}$ without forcing
+its still-undecided zero or nonzero proposition.
+RR now also retains its usual ordered-ring placement at construction.
+Its scalar order relations were already implemented, but its constructing
+category had omitted `OwnedOrderedRings()`, which the existing signature
+route requires. This supplies the chosen usual order as structure rather
+than inferring placement from a successful sign computation.
+Finite tensor presentations also implement Sage's recursive cache-key
+protocol, since their real coefficients remain unhashable. This lets
+the existing Gram computations use scalar presentation keys without
+inventing a mathematical hash or a real equality decision. A Cauchy
+presentation uses a retained identity token for that presentation; it
+does not use the lazy backend's numerical hash.
+
+One further source boundary remains at higher rank: Sage's division-free
+characteristic-polynomial routine constructs an intermediate polynomial
+from the coefficient list before adding its monic term. Dense-polynomial
+normalization can still ask whether a leading coefficient is zero.
+For example, the trace coefficient of
+$\operatorname{diag}(x,-x,1,-1)$ is zero, but that equality need not be
+decided for a general Cauchy presentation of $x$. Eliminating pivot
+division therefore does not establish construction coverage at all ranks.
+The source of
+[`_charpoly_df`](https://github.com/sagemath/sage/blob/develop/src/sage/matrix/matrix2.pyx)
+contains this intermediate polynomial construction. This normalization
+case remains with the dependency owner, alongside general returned bases;
+it has not been declared repaired or diagnosed by a Sage run.
 
 **Current represented-real route.** This computation takes elements of
 `RR` through their closed exact real expressions. The lattice operations

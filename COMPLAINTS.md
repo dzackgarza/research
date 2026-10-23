@@ -148,10 +148,11 @@ asserted missing. Pending definite, negative-definite, empty and rank-zero
 specimens are in the method docstring and owned by
 `hyperbolic-splitting-dependency-tools` in TODO.md. Execution remains under T.
 
-### Represented-real form computations still need execution and broader coverage
+### Computable-real forms still need general returned bases
 
-The owned exact `RR` field already supplies closed real expressions,
-arithmetic, positive square roots and exact relation decisions where known.
+The owned exact `RR` field supplies closed real expressions and now regular
+rational Cauchy presentations in the same real field, with arithmetic,
+positive square roots and exact relation decisions where known.
 The lattice Witt, norm-witness and field embedding routes previously rejected
 it at their AA-only dispatch despite using congruence/sign/root constructions
 that apply to this presentation too. Signature also lowered RR coefficients
@@ -163,9 +164,10 @@ real field. An undecided sign is refused, rather than coerced to a Python
 truth value. Norm/isotropic witnesses, signed lattice vectors, Witt
 index/decomposition and Emb/Isom retain the existing maps and inverses.
 The pi-coefficient specimens in the theory note remain unexecuted under
-DEV-58. This is conditional coverage of represented expressions; the distinct
-certified-approximation algorithm for all promised nonsingular computable
-inputs remains unimplemented. Arbitrary singular oracle inputs still admit
+DEV-58. Congruence remains conditional on decided pivots. The nonsingular
+enclosure-based signature computation has a separate source route, but a
+returned basis for every promised nonsingular Cauchy-presented form remains
+unimplemented. Arbitrary singular oracle inputs still admit
 no uniform zero decision.
 
 **Represented-real pivot coverage:** source inspection found that the
@@ -174,7 +176,7 @@ in RR. Both signature and retained diagonalization now use the same Sage
 algorithm with RR coefficients, so pivot equality and division refuse
 undecided owned relations. The nonalgebraic off-diagonal/radical specimen,
 form equation and both inverse composites remain unexecuted under DEV-58.
-This does not add a total arbitrary-real or certified-approximation route.
+This congruence computation alone is not a total arbitrary-real route.
 
 **Exact field preimages:** source tracing found another obstruction in
 `_integral_preimage_solver`: finite-free real preimages required Smith
@@ -198,26 +200,51 @@ and lifts, triangular inverse composites and empty inverse remain
 unexecuted under DEV-58. Private external-engine serialization retains
 its selected computation ring.
 
-**Approximation input and backend boundary:** the inspected RR constructor
-normalizes values through `_closed_exact_real_expression`; its current
-input surface supplies no general rational Cauchy-sequence presentation,
-and relation evaluation has a finite per-call precision budget. The theory
-note now specifies a chosen rational approximation map for each Gram
-entry with error at most 2^-n and its identification with that real value.
-Mathlib already has the Cauchy completion of QQ; the outstanding task is
-its computation/presentation integration, not replacing the real field.
-The note gives a complete rational inverse-norm stopping test and proof
-under nonsingularity, avoiding numerical eigenvalue multiplicity tests.
+**Approximation input and backend boundary:** direct RR ingress retains
+closed expressions. `RR.of_cauchy(a)` now additionally retains an owned
+map `a: NN -> QQ` under its stated regular Cauchy hypothesis, and
+`x.cauchy_sequence()` supplies the selected map. The primitive enclosure
+uses its rational center and the proved error radius. Mathlib's real
+Cauchy-limit construction supplies the mathematical meaning. Maintained
+Sage lazy arithmetic composes evaluations, while owned relations use
+Arb signs and preserve unresolved comparisons as propositions; lazy-real
+comparisons and hashes are not used to decide those relations. Generic
+computation chooses RR coefficients before materializing matrices and
+spans, rather than demanding symbolic serialization of a general limit.
+Finite tensors supply recursive presentation cache keys for their
+unhashable real coefficients; no real equality is inferred from caching.
+The separate symbolic serialization contract retains SR. Explicit symbolic/algebraic conversion
+still requires a supplied exact expression. The note gives the complete
+rational inverse-norm stopping test and proof under nonsingularity.
 FLINT documents its real LDL success test for positive definiteness, not
 general indefinite inertia. No general absence of other backends is
 asserted. Finite symmetric forms already placed as nondegenerate over RR
 now route signature through Arb enclosures, rational midpoint matrices,
 their exact row-sum error bound and the inverse-norm stopping test. This
 source construction requires convergent evaluation of the represented
-expressions; it does not supply general approximation admission or a basis
-from that presentation. The off-diagonal pi, near-singular positive,
-empty and singular-form separating specimens remain unexecuted under
-DEV-58. This does not close the promised computable-real case.
+computations. Regular Cauchy input admission is supplied; a general
+returned basis from that presentation remains open. The regular sequence
+`1+2^(-n)`, its actual map, arithmetic, roots, division and signature
+`diag(x,-1)` have written specimens, alongside the off-diagonal pi,
+near-singular positive, empty and singular forms. They remain unexecuted
+under DEV-58. This does not close the promised constructive basis case.
+
+**Scalar ingress into form construction:** the real field now retains
+its usual ordered-ring placement, previously absent from its constructing
+category despite the signature route requiring it. Real Gram determinants
+use Sage's small-rank formulas or division-free characteristic polynomial
+to avoid undecided pivots. The regularity and unimodularity predicates preserve undecided
+unit/nonzero propositions, and finite-rank evenness preserves actual
+ideal-membership propositions. A Cauchy presentation of zero supplies the
+written separating construction specimen. General returned bases remain
+an unresolved computation; these repairs are source findings and changes.
+There is also a higher-rank normalization boundary in Sage's inspected
+`_charpoly_df`: its intermediate coefficient polynomial can require a
+leading zero decision before the monic term is added. The trace coefficient
+of `diag(x,-x,1,-1)` with Cauchy-presented x is a separating example.
+This is source evidence of a remaining applicability question, not an
+executed failure or proof that all maintained determinant routes fail.
+It remains with `hyperbolic-splitting-dependency-tools` in TODO.md.
 
 **Fresh norm-fibre point selection:** the zero-norm fibre previously needed
 manual admission of zero before its set computation could select a point
@@ -225,7 +252,8 @@ over RR. The common formed-module constructor now retains that canonical
 point, and symmetric bilinear forms inherit the same construction. Source
 inspection also found unhashable exact-real arguments without Sage's
 required cache-key protocol at the existing cached square-fibre method.
-The real scalar now supplies a parent-and-expression presentation key;
+The real scalar now supplies a parent-and-expression presentation key,
+or a retained presentation-identity token for Cauchy computations;
 real equality stays partial and the scalar stays unhashable. The fresh
 zero-fibre point, inclusion, nonemptiness and repeated-construction
 specimens remain unexecuted under DEV-58.
