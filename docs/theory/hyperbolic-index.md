@@ -533,12 +533,33 @@ the explicit same-sign diagonal matching just proved. For equal dimensions
 the inequalities force equality of both indices, giving the isometry
 criterion. Each original nonsingular RR endpoint has its convergent
 signature computation. This route avoids constructing $T\perp(-S)$,
-whose current orthogonal-sum realization does not retain supplied
-nondegeneracy as a category refinement. It therefore needs no fresh
+whose earlier orthogonal-sum realization lost supplied nondegeneracy.
+The sum constructor now retains those placements too. The direct inertia
+decision needs no auxiliary form or fresh
 zero decision on that difference determinant. The rational route still
 uses the general Witt-index criterion. Source specimens compare Cauchy
 positive planes, a mixed-sign plane and scaled positive planes, covering
 both signs of the exclusion and equal-dimension existence.
+
+**Nondegeneracy retained by orthogonal sums.** For a finite family of
+bilinear forms $B_i$ with zero left and right radicals, put
+$B(x,y)=\sum_i B_i(x_i,y_i)$. If $x$ is in the left radical, test against
+the injection of an arbitrary $y_i$ into the $i$th summand. Then
+$B_i(x_i,y_i)=0$ for every $y_i$, so $x_i=0$ for every $i$ and hence
+$x=0$. The right-radical proof is identical with the arguments reversed.
+For the empty family the module is zero and both conclusions hold.
+This uses neither a field hypothesis nor surjectivity of the adjoint.
+The selected sum constructor now retains `FormModules(R).Nondegenerate()`
+when every actual summand already has that placement. It inspects no
+scalar equality and preserves the original family, injections and
+projections. Inputs without supplied placements retain the existing
+predicate computation; their absence is not treated as degeneracy.
+The upstream definitions are in
+`LeanCategories/Lattices/Valued/Constructions.lean`; the specific general
+nondegeneracy-preservation declaration remains a formalization audit item
+in COMPLAINTS.md. Its integral perfection-preservation theorems are
+stronger in conclusion but require stronger hypotheses and are not
+substitutes for this zero-radical statement.
 
 **Norm witnesses from the same diagonal basis.** For a nonsingular real
 form, suppose the requested scalar $a$ has decided zero status. If

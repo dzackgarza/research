@@ -2223,6 +2223,9 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             The empty family gives the zero lattice over this category's
             base ring and retains its empty summand family.
+            Supplied nondegenerate placements of all summands are retained
+            by the sum, including the empty family, without a new
+            determinant or scalar zero decision.
 
             EXAMPLES::
 
@@ -2237,6 +2240,17 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert all(into(v) == Z.zero() for v in U.module_generators())
                 sage: assert out(Z.zero()) == U.zero()
                 sage: assert Z.orthogonal_decomposition(()).codomain().module_rank() == cardinal(0)
+                sage: from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1) + QQ(1)/QQ(2)**int(n))
+                sage: x = RR.of_cauchy(a)
+                sage: P = Lattices(RR).Nondegenerate()([[x]])
+                sage: N = Lattices(RR).Nondegenerate()([[-x]])
+                sage: S = Lattices(RR).orthogonal_sum((P, N))
+                sage: assert S in FormModules(RR).Nondegenerate()
+                sage: assert S.is_nondegenerate() is True
+                sage: assert S.witt_index() == ZZ(1)
+                sage: assert Lattices(RR).orthogonal_sum(()) in FormModules(RR).Nondegenerate()
             """
             return _orthogonal_sum(summands, self.base_ring())
 

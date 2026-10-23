@@ -150,22 +150,24 @@ specimens are in the method docstring and owned by
 
 ### Generic computable-real linear algebra still has partial scalar decisions
 
-**Supplied nondegeneracy through orthogonal sums:** source inspection of
-`_lattice.py:_orthogonal_sum_on_family` found that the result receives
-`OrthogonalSumLattices` but does not retain the supplied nondegenerate
-placements of its summands. A finite orthogonal sum of nondegenerate
-forms is nondegenerate: its adjoint is the direct sum of the invertible
-adjoints. The affected dependency path was real embedding emptiness,
-which formed `T + S.twist(-1)` and requested its Witt index. For Cauchy
-coefficients a new determinant zero query can remain undecided despite
-the endpoint hypotheses. Real embedding emptiness now instead compares
-the original inertia indices directly. General preservation of the
-supplied property by orthogonal sums remains unresolved at the formed
-sum construction; it belongs to `hyperbolic-splitting-dependency-tools`
-in TODO.md. This is an observed source omission, not a claim that a
-particular executed specimen failed. The mathematical requirement is
-preservation of nondegeneracy by finite orthogonal sums; its upstream
-formal declaration still needs to be identified in the index-wide audit.
+**Formal nondegeneracy preservation for orthogonal sums:** the source
+constructor now retains supplied nondegenerate placements of every
+summand, including the empty sum, without a new determinant query.
+The coordinatewise radical argument is in the theory note. The remaining
+formalization request is preservation of both zero radicals by finite
+orthogonal sums at the bilinear-module owner. The inspected upstream
+`LeanCategories/Lattices/Valued/Constructions.lean` defines
+`orthogonalSumBilinMap`, `orthogonalSum` and `finiteFormOrthogonalSum`,
+and proves `isPerfect_orthogonalSum` and
+`isPerfect_indexedOrthogonalSum` for integral scalar-valued lattices.
+Those perfection results do not supply the general zero-radical statement:
+nondegeneracy requires injective adjoints, not invertible ones over ZZ.
+A matching nondegeneracy declaration was not identified by the source
+search. Retain its identification or formalization under
+`hyperbolic-splitting-dependency-tools` and terminal T. The affected
+consumers are Witt constructions on supplied orthogonal sums and generic
+formed-module operations; the real embedding decision separately uses
+the original inertia indices directly.
 
 The owned exact `RR` field supplies closed real expressions and now regular
 rational Cauchy presentations in the same real field, with arithmetic,

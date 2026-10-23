@@ -1280,6 +1280,7 @@ def _orthogonal_sum_on_family(summands, ring):
         OrthogonalSumLattices,
         Lattices,
     )
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
     blocks = tuple(summands)
     category = Lattices(ring)
@@ -1296,12 +1297,16 @@ def _orthogonal_sum_on_family(summands, ring):
     else:
         total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
 
+    extra_categories = [OrthogonalSumLattices(ring)]
+    nondegenerate = FormModules(ring).Nondegenerate()
+    if all(block in nondegenerate for block in blocks):
+        extra_categories.append(nondegenerate)
     module = ring.free_module(_generating_set_for(total, None, None))
     return _lattice_object(
         category,
         module,
         _BiproductGram(module, summands, offsets),
-        extra_categories=(OrthogonalSumLattices(ring),),
+        extra_categories=tuple(extra_categories),
         construction_data={"biproduct_factors": summands},
     )
 
