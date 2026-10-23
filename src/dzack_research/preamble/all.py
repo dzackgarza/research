@@ -301,6 +301,9 @@ from dzack_research.preamble.categories.cell_complexes import (  # noqa: F401
 from dzack_research.preamble.categories.triangulations import (  # noqa: F401
     ChosenTriangulations,
 )
+from dzack_research.preamble.categories.real_ck_manifolds import (  # noqa: F401
+    RealCkManifolds,
+)
 from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
