@@ -288,7 +288,6 @@ from dzack_research.preamble.categories.integral_affine_manifolds import (  # no
     IntegralAffineManifolds,
     IntegralAffineManifoldsWithBoundary,
     IntegralAffineManifoldsWithCorners,
-    IntegralAffineLocalIsomorphisms,
     SingularIntegralAffineLocalModels,
     SingularIntegralAffineSpaces,
 )

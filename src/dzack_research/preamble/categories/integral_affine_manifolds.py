@@ -9,6 +9,9 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     MorCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+    _FullSubcategoryOfArrows,
+)
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -76,6 +79,18 @@ class IntegralAffineManifoldMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = IntegralAffineManifoldMor
 
 
+class _LocalIntegralAffineIsomorphismArrows(_FullSubcategoryOfArrows):
+    r"""Affine arrows whose chartwise linear parts are lattice isomorphisms."""
+
+    def super_categories(self):
+        from dzack_research.preamble.categories.abstract_categories.products import FiniteOrdinalCategory
+
+        return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
+
+    def admits_arrow(self, arrow):
+        pass
+
+
 class _UnderlyingSmoothManifoldFunctor(Functor):
     r"""Forget the selected affine atlas, on objects and local affine maps."""
 
@@ -130,6 +145,11 @@ class IntegralAffineManifolds(OwnedCategory):
     def on(self, smooth_manifold, affine_atlas):
         r"""Equip the exact smooth manifold with a selected integral-affine atlas."""
         pass
+
+    @cached_method
+    def local_isomorphisms(self):
+        r"""The wide subcategory on local integral-affine isomorphisms."""
+        return self.WideSubcategory(_LocalIntegralAffineIsomorphismArrows(self))
 
     @cached_method
     def forget(self):
@@ -236,78 +256,6 @@ class IntegralAffineManifoldsOfDimension(OwnedParameterizedCategory):
     @cached_method
     def forget_space(self):
         return _UnderlyingAffineTopologicalSpaceFunctor(self)
-
-
-class IntegralAffineLocalIsomorphismMor(CategoricalMor):
-    r"""Local affine isomorphisms with invertible integral linear parts."""
-
-    class ElementMethods:
-        def __init__(self, parent, affine_morphism):
-            Morphism.__init__(self, parent)
-            self._affine_morphism = affine_morphism
-
-        def underlying_affine_morphism(self):
-            return self._affine_morphism
-
-        def underlying_smooth_morphism(self):
-            return self._affine_morphism.underlying_smooth_morphism()
-
-        def _call_(self, point):
-            return self._affine_morphism(point)
-
-        def __mul__(self, other):
-            pass
-
-    def _element_constructor_(self, affine_morphism):
-        pass
-
-    @object_level
-    def identity(self):
-        pass
-
-
-class IntegralAffineLocalIsomorphismMorCategoryConstruction(MorCategoryConstruction):
-    FixedCategoryClass = IntegralAffineLocalIsomorphismMor
-
-
-class _LocalIsomorphismInclusionFunctor(Functor):
-    r"""Include local affine isomorphisms among all integral-affine maps."""
-
-    def __init__(self):
-        super().__init__(IntegralAffineLocalIsomorphisms(), IntegralAffineManifolds())
-
-    def _apply_object(self, manifold):
-        pass
-
-    def _apply_morphism(self, morphism):
-        return morphism.underlying_affine_morphism()
-
-
-class IntegralAffineLocalIsomorphisms(OwnedCategory):
-    r"""The wide subcategory with local integral-affine isomorphisms as maps."""
-
-    _MorCategory = IntegralAffineLocalIsomorphismMorCategoryConstruction
-
-    def super_categories(self):
-        return [Objects()]
-
-    @classmethod
-    def _repr_object_names(cls):
-        return "integral-affine manifolds and local isomorphisms"
-
-    def an_object(self):
-        pass
-
-    def on(self, affine_manifold):
-        pass
-
-    @cached_method
-    def inclusion(self):
-        return _LocalIsomorphismInclusionFunctor()
-
-    class ParentMethods:
-        def underlying_integral_affine_manifold(self):
-            pass
 
 
 class _StratifiedIntegralAffineMapMethods:
