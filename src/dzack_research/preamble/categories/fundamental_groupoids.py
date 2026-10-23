@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
 
@@ -85,4 +86,17 @@ class FundamentalGroupoids(OwnedCategory):
         return [Cat()]
 
     def an_object(self):
+        pass
+
+
+class _FundamentalGroupoidFunctor(Functor):
+    r"""Send spaces and continuous maps to their fundamental groupoids."""
+
+    def __init__(self):
+        super().__init__(TopologicalSpaces(), FundamentalGroupoids())
+
+    def _apply_object(self, space):
+        return space.fundamental_groupoid()
+
+    def _apply_morphism(self, continuous_map):
         pass

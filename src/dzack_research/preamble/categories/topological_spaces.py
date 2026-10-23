@@ -614,6 +614,12 @@ class TopologicalSpaces(OwnedCategory):
         point = self.terminal_object()
         return self.CosliceUnder(point)(point.Mor(space)(lambda _: base_point))
 
+    @cached_method
+    def fundamental_groupoid_functor(self):
+        from dzack_research.preamble.categories.fundamental_groupoids import _FundamentalGroupoidFunctor
+
+        return _FundamentalGroupoidFunctor()
+
     def _call_(self, point_set, open_subsets):
         r"""Construct the exact finite topology ``open_subsets`` on ``point_set``.
 
