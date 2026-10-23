@@ -2301,6 +2301,22 @@ checks the rank-one kernel, its original-domain inclusion and the
 retained undecided first coordinate. This does not alter the maintained
 kernel solver or make general real rank decidable.
 
+The remaining coordinate path was inspected from `_engine_matrix` through
+the exact-field positional solver and the raising helper
+`_morphism_from_engine_matrix`. Matrix serialization reads each full
+column once and retains every entry over the selected exact coefficient
+ring. The field solver returns all solution coordinates; inverse-matrix
+raising passes all rows to the original matrix Mor with reversed
+endpoints. Rank-zero matrices retain their explicit row and column
+counts. No further coordinate truth filter occurs in these stages.
+The other inspected sparse filters in the module file apply to integral
+order coordinates or integer relation matrices, where equality is
+decidable; they do not need a real-predicate change. This completes the
+source reconciliation of coordinate transport in the selected kernel,
+preimage, finite-span and matrix-inverse routes. It does not establish
+the availability of their scalar rank/pivot decisions, prove the
+computations correct, or execute their mathematical specimens.
+
 For a linear map $f:V\to W$ between finite-dimensional vector spaces over
 an exact field, with coefficient matrix $A$ in the specified bases, a
 target $b$ is in its image exactly
