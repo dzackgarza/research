@@ -2144,12 +2144,23 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: assert S.Isom(U).is_empty() is True
             sage: assert S.Emb(U).is_empty() is False
         """
+        source = self.domain()
+        target = self.codomain()
+        if source.module_rank() == cardinal(0):
+            return False
+        if target.module_rank() == cardinal(0):
+            return True
+        if (
+            (source.base_ring() in OwnedFields() or source.base_ring() is _owned_integers())
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() > target.module_rank()
+        ):
+            return True
         if self._codomain_is_definite_over_integers():
             for _embedding in self:
                 return False
             return True
-        source = self.domain()
-        target = self.codomain()
         if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
             match source.Isom(target).is_empty():
                 case True if source.base_ring() in OwnedFields():
@@ -2177,6 +2188,11 @@ class LatticeEmbeddingMor(CategoricalMor):
         Isometries and primitive embeddings supply affirmative cases;
         their absence does not eliminate finite-index embeddings over ZZ.
         Even-overlattice inclusions retain those nonprimitive candidates.
+        Outside the classification routes, finite-rank nondegenerate-source
+        spaces over ZZ or QQ use their complete embedding iterator. That
+        search terminates when an embedding exists, but may run forever
+        when the space is empty. Use a justified finite candidate set when
+        exclusion by exhaustion is required.
 
         EXAMPLES::
 
@@ -2186,7 +2202,19 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: assert j.domain() is S and j.codomain() is U
             sage: assert U.gram_tensor().pullback(j) == S.gram_tensor()
             sage: assert j.index() == cardinal(2)
+            sage: T = Lattices(QQ)([[QQ(1)/4]])
+            sage: V = Lattices(QQ)([[1, 0], [0, 1]])
+            sage: j = T.Emb(V).an_element()
+            sage: assert V.gram_tensor().pullback(j) == T.gram_tensor()
+            sage: Z = Lattices(QQ)(0)
+            sage: assert Z.Emb(V).is_empty() is False
+            sage: assert Z.Emb(V).an_element().domain() is Z
+            sage: assert V.Emb(Z).is_empty() is True
         """
+        if self.domain().module_rank() == cardinal(0):
+            return self(())
+        if self.codomain().module_rank() == cardinal(0):
+            raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
         if self._codomain_is_definite_over_integers():
             for embedding in self:
                 return embedding
@@ -2226,11 +2254,21 @@ class LatticeEmbeddingMor(CategoricalMor):
                 f"lattice {self.codomain()}, but no even overlattice of {self.domain()} "
                 f"yielded a primitive embedding"
             )
+        if (
+            source.base_ring() in (_owned_integers(), _owned_rationals())
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+        ):
+            for embedding in self:
+                return embedding
+            raise ValueError(f"there is no lattice embedding of {source} into {target}")
         assert False, (
             f"cannot construct an embedding of {self.domain()} into {self.codomain()}: "
             f"embeddings are constructed only into definite targets over ZZ, isometric targets of equal "
             f"rank, finite-dimensional spaces of equal dimension over fields, indefinite targets OSCAR classifies, and even unimodular indefinite "
-            f"targets, and {self.codomain()} is none of these"
+            f"targets, or searched exhaustively in finite rank over ZZ and QQ with nondegenerate source; "
+            f"{self.domain()} -> {self.codomain()} meets none of these hypotheses"
         )
 
 
