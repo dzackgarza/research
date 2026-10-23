@@ -3061,6 +3061,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             The private computation reuses Sage's
             ``QuadraticForm.rational_diagonal_form(return_matrix=True)``
             with its documented law ``T.transpose()*G*T == D.matrix()``.
+            Over RR with supplied nondegeneracy it instead refines a
+            finite family of norm enclosures until a nonisotropic pivot
+            is found, then uses fraction-free orthogonal projection.
+            The inverse is retained through the elementary basis changes;
+            no arbitrary-real zero decision or later inversion is needed.
 
             EXAMPLES::
 
@@ -3082,6 +3087,27 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert W.signature_pair().second() == cardinal(1)
                 sage: assert all(phi(phi.inverse()(v)) == v for v in W.module_generators())
                 sage: assert all(phi.inverse()(phi(v)) == v for v in phi.domain().module_generators())
+                sage: H = Lattices(RR).Nondegenerate()([[0, 1], [1, 0]])
+                sage: rho = H.diagonalization()
+                sage: assert rho.codomain() is H
+                sage: assert H.gram_tensor().pullback(rho) == rho.domain().gram_tensor()
+                sage: assert all(rho(rho.inverse()(v)) == v for v in H.module_generators())
+                sage: assert all(rho.inverse()(rho(v)) == v for v in rho.domain().module_generators())
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1) + QQ(1)/QQ(2)**int(n))
+                sage: z = Sets().Mor(NN, QQ)(lambda n: QQ(1)/QQ(2)**int(n))
+                sage: x, t = RR.of_cauchy(a), RR.of_cauchy(z)
+                sage: C = Lattices(RR).Nondegenerate()([[t, x], [x, t]])
+                sage: eta = C.diagonalization()
+                sage: assert eta.codomain() is C
+                sage: assert eta.inverse().domain() is C
+                sage: assert eta.inverse().codomain() is eta.domain()
+                sage: assert eta.domain().signature_pair().first() == cardinal(1)
+                sage: assert eta.domain().signature_pair().second() == cardinal(1)
+                sage: Z = Lattices(RR).Nondegenerate()(0)
+                sage: empty = Z.diagonalization()
+                sage: assert empty(empty.domain().zero()) == Z.zero()
+                sage: assert empty.inverse()(Z.zero()) == empty.domain().zero()
             """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 
@@ -3115,12 +3141,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             as ``witt_index``. Its basis vectors are raised into this
             space and assembled through the existing hyperbolic-plane,
             subobject and orthogonal-decomposition constructions.
-            Over AA or represented exact RR, Sage congruence diagonalization
+            Over AA or represented exact RR, congruence diagonalization
             and decided scalar signs and positive square roots supply the
-            normalized hyperbolic pairs and a definite complement. This
-            RR computation uses closed real expressions and supplies no
-            arbitrary-real-oracle interface; an undecided comparison is
-            refused.
+            normalized hyperbolic pairs and a definite complement. RR
+            accepts closed expressions and regular Cauchy presentations;
+            downstream normalization and map assembly remain conditional
+            on their scalar decisions. An undecided comparison is refused.
 
             EXAMPLES::
 
@@ -7107,13 +7133,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 else "Lattice"
             )
             rank = self.module_rank()
-            _signature = _signature_pair_of_gram(self.gram_tensor())
-            if (
-                _engine_ring(self.base_ring().fraction_field()) is QQ
-                and _signature is not None
-            ):
-                pos, neg = _signature.first(), _signature.second()
-                return f"{kind} of rank {rank} and signature ({pos}, {neg})"
+            if _engine_ring(self.base_ring().fraction_field()) is QQ:
+                _signature = _signature_pair_of_gram(self.gram_tensor())
+                if _signature is not None:
+                    pos, neg = _signature.first(), _signature.second()
+                    return f"{kind} of rank {rank} and signature ({pos}, {neg})"
             return f"{kind} of rank {rank} over {self.base_ring()}"
 
         def _latex_(self):

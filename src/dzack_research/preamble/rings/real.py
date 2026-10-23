@@ -529,8 +529,7 @@ class ExactRealNumber(FieldElement):
             raise ValueError(
                 f"cannot divide {self} by {other}: it is undecided whether {other} is zero"
             )
-        left, right = self._arithmetic_values(other)
-        return self._from_computation(left / right)
+        return self.parent()._divide_by_nonzero(self, other)
 
     def _neg_(self):
         return self._from_computation(-self._expression)
@@ -790,6 +789,20 @@ class ExactRealField(UniqueRepresentation, Field):
         if isinstance(element, ExactRealNumber) and element.parent() is self:
             return element
         return self(element)
+
+    def _divide_by_nonzero(self, numerator, denominator) -> ExactRealNumber:
+        r"""Compute a quotient whose denominator is already known nonzero.
+
+        Protected arithmetic contract: callers are checked scalar division
+        and the nonsingular congruence computation after an Arb enclosure
+        excludes zero for that actual pivot. This performs no new zero
+        decision and does not turn an undecided predicate into a proof.
+        """
+        numerator, denominator = self(numerator), self(denominator)
+        left, right = numerator._arithmetic_values(denominator)
+        # Field closure under division by this known nonzero real supplies
+        # reality; a symbolic engine need not re-decide that hypothesis.
+        return self.element_class(self, left / right)
 
     def _matrix_determinant(self, components) -> ExactRealNumber:
         r"""Sage determinant protocol for the existing real presentations.

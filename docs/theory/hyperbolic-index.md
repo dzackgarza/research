@@ -278,9 +278,9 @@ The backend search must also respect the actual documented contracts:
 returns success for positive definiteness, while its real-matrix module
 directs eigenvalue computations to complex ball matrices. That success
 test alone is not a general indefinite-inertia decision. The rational
-inverse test avoids requiring an eigenvalue implementation. A returned
-basis for every promised nonsingular Cauchy-presented form remains open
-work. The computation uses maintained ball arithmetic and rational
+inverse test avoids requiring an eigenvalue implementation. The returned
+basis construction below supplies the independent congruence map under
+the same nonsingularity and enclosure hypotheses. The computation uses maintained ball arithmetic and rational
 matrix operations. The new private Cauchy input primitive is a
 presentation in the existing real field; it adds no new mathematical
 field or spectral routine.
@@ -312,8 +312,9 @@ retaining this protocol before materializing a Gram matrix, module map,
 right-hand side or finite spanning family. The separate symbolic
 serialization contract still selects SR and refuses a general limit
 without a supplied expression. Explicit symbolic and algebraic conversions still
-require an available exact expression. General returned bases and their
-downstream maps remain part of the open dependency assignment.
+require an available exact expression. The congruence construction below
+supplies a returned basis; complete downstream sign/root normalization
+and map assembly remain part of the open dependency assignment.
 
 **Construction with undecided scalar predicates.** Gram nondegeneracy
 and unimodularity preserve the unit/nonzero propositions instead of
@@ -388,21 +389,102 @@ diagonal form above, giving determinant $1$ and signature $(2,2)$, and
 $z=\lim_n2^{-n}$ in $\operatorname{diag}(z,1,1,1)$, giving determinant
 $0$ while its zero test may stay undecided. A closed-expression rank-four
 form preserves the exact symbolic result. These specimens remain
-unexecuted under DEV-58. General returned bases remain an open
-dependency; this determinant construction does not supply one.
+unexecuted under DEV-58. The independent basis construction follows.
 
-**Current represented-real route.** This computation takes elements of
-`RR` through their closed exact real expressions. The lattice operations
-now reuse Sage's
+**Returned diagonalizing isometry under a nonsingularity promise.**
+The input is a finite-dimensional real vector space $V$ with a supplied
+basis, a symmetric bilinear form $B$, and the hypothesis that $B$ is
+nondegenerate. Each scalar computation used below must have effective
+convergent enclosures. The output is an isometry from a diagonal form
+to $V$, with its actual inverse. The argument uses no real zero decision.
+
+The inspected
+[`Sage congruence routine`](https://github.com/sagemath/sage/blob/develop/src/sage/quadratic_forms/quadratic_form__local_field_invariants.py)
+tests diagonal and off-diagonal entries for equality to zero, while the
+documented
+[`Arb LDL routine`](https://github.com/flintlib/flint/blob/main/doc/source/arb_mat.rst)
+has a positive-definiteness success contract. Neither inspected route
+provides this promised nonsingular indefinite Cauchy-input computation.
+The implementation therefore composes existing owned norm evaluation,
+Arb enclosure evaluation and module inverse pairs with the elementary
+fraction-free construction below. It does not compute hyperbolic index
+or assemble a maximal hyperbolic splitting.
+
+**Construction and proof.**
+
+1. Suppose the remaining nonsingular space has basis $u_1,\ldots,u_s$,
+   where $s>0$. Form the finite family consisting of all $u_i$ and all
+   $u_i+u_j$ for $i<j$. At least one norm in this family is nonzero:
+   if they all vanished, polarization would give
+   $2B(u_i,u_j)=q(u_i+u_j)-q(u_i)-q(u_j)=0$, making the whole Gram
+   matrix zero and contradicting nonsingularity.
+2. Evaluate enclosures of every candidate norm at successively doubled
+   precision. Choose a candidate only when its finite enclosure excludes
+   zero. A genuinely nonzero norm eventually has such an enclosure, so
+   this finite-family search terminates. Zero candidates require neither
+   an equality proof nor a separate waiting search.
+3. Move the chosen vector $v$ to the first basis position. This needs a
+   swap and, for a pairwise sum, addition of one basis column to another.
+   Both changes are invertible. Put $d=q(v)\ne0$ and
+   $s_j=B(v,u_j)$ for each remaining basis vector. Replace
+   $$u_j\quad\text{by}\quad w_j=d u_j-s_jv.$$
+   Then $B(v,w_j)=d s_j-s_jd=0$. In the basis $(v,u_2,\ldots,u_s)$,
+   this column change has block matrix
+   $$E=\begin{pmatrix}1&-s^T\\0&dI\end{pmatrix},$$
+   whose determinant is $d^{s-1}\ne0$. The vectors $w_j$ are therefore
+   a basis of $v^\perp$. The orthogonal decomposition into the
+   nonsingular line $\mathbb Rv$ and its perpendicular shows that the
+   latter remains nonsingular.
+4. Repeat steps 1--3 on that smaller perpendicular. After exactly
+   $\dim V$ choices, the retained vectors $v_i$ form an orthogonal
+   basis with nonzero squares $d_i=q(v_i)$. Thus the map taking the
+   standard basis of $D=\langle d_1,\ldots,d_r\rangle$ to the actual
+   vectors $v_i$ is an isometry $D\to V$. Forward basis construction
+   uses only addition and multiplication of the original scalar data.
+   Consequently all its norm enclosures converge under the input
+   hypothesis.
+5. Retain the inverse basis matrix during these changes. Swapping two
+   forward columns swaps the corresponding inverse rows. Adding column
+   $b$ to column $a$ subtracts inverse row $a$ from inverse row $b$.
+   For step 3,
+   $$E^{-1}=\begin{pmatrix}1&s^T/d\\0&d^{-1}I\end{pmatrix}.$$
+   If $J$ is the old inverse, divide each remaining row $J_j$ by $d$,
+   obtaining $J'_j$, and replace its pivot row by
+   $J'_1=J_1+\sum_j s_jJ'_j$. These formulas give
+   $J'=E^{-1}J$ exactly. Every denominator is the actual nonzero pivot
+   already selected in step 2; no new nonzero search is needed.
+6. The real-field private quotient operation computes these divisions
+   under that supplied nonzero hypothesis. Public division retains its
+   existing refusal when applicability is undecided. Lazy evaluation of
+   each computed inverse coefficient converges because its finitely many
+   denominators are nonzero. The forward and backward module maps use
+   their original source and target generator labels and enter the
+   existing module core as an inverse pair. That pair supplies the
+   returned lattice isometry and inverse, without another rank test or
+   matrix-inversion algorithm. At rank zero the empty pair retains RR.
+
+This computation is now selected by `L.diagonalization()` for finite
+RR forms with supplied nondegeneracy. Other existing scalar and
+degenerate-input routes remain available. Written specimens include the
+ordinary real hyperbolic plane with exact form and both inverse laws,
+an off-diagonal Cauchy-presented plane whose diagonal zero tests stay
+undecided, and the empty space. They remain unexecuted under DEV-58.
+Normalization by signs and positive roots, and subsequent Witt and norm
+map assembly, are separate downstream obligations.
+
+**Sage congruence where scalar decisions are available.** The existing
+generic-congruence route works with owned RR coefficients when the
+required zero tests and divisions can be decided. It reuses Sage's
 [`rational_diagonal_form(return_matrix=True)`](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/quadratic_form.html#sage.quadratic_forms.quadratic_form.QuadraticForm.rational_diagonal_form)
-with `RR` coefficients in Sage's generic field arithmetic. Both retained
-diagonalization and signature use the same private congruence supplier.
+with `RR` coefficients in Sage's generic field arithmetic. Within this
+route, retained diagonalization and signature use the same private
+congruence supplier. The separate nonsingular signature and basis
+constructions above do not require those zero tests.
 This is necessary already at pivot selection: Sage's generic algorithm
 tests diagonal coefficients against zero and then off-diagonal coefficients
 against zero before dividing by a pivot. These tests now call the `RR`
 relation protocol instead of Python truth conversion of `SR` relations.
-An undecided pivot comparison is refused by that protocol. No second
-congruence algorithm is implemented; see
+An undecided pivot comparison is refused by that protocol; see
 [Sage's computation](https://github.com/sagemath/sage/blob/develop/src/sage/quadratic_forms/quadratic_form__local_field_invariants.py).
 
 Signature counts the resulting diagonal coefficients using that same
@@ -1391,7 +1473,7 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Indexed requirement | Current source owner and computation | Coverage still requiring evidence or further computation |
 | --- | --- | --- |
 | Anisotropy and nonzero isotropic witnesses | `form_modules.py`: `is_anisotropic`; `lattices.py`: `is_isotropic`, `isotropic_vector`; rational PARI decision and real congruence routes | Exact ZZ/QQ, AA and applicable represented RR cases have source routes; general real-oracle zero decisions are not supplied |
-| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Returned forms and inverse maps need terminal execution; represented-real nondegenerate signature has an enclosure route, while general approximation inputs and bases remain open |
+| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Regular Cauchy admission, nonsingular signature and returned congruence isometry have source routes; complete downstream sign/root normalization and map assembly remain open |
 | Norm fibres, including zero | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: `elements_of_norm`, `representation_vector` | Set inclusion and membership are separate from finding a nonzero point; definite, rank-zero and nonzero split binary integral fibres have finite source routes |
 | Scalar extension of objects and arrows | `FormBaseChanges`, `FormedModuleMorphism.base_change`, `LatticeIsometryMethods.base_change`, module scalar-extension functor | Scalar-valued forms have source routes with actual ring maps and both arrow components; arbitrary value-module extensions remain outside the current computation |
 | Embedding sets, decisions and witnesses | `lattice_morphisms.py`: embedding Mor, `_emptiness_decision`, `an_element`, integral-overlattice factorization and field Witt criterion | Nondegenerate finite ZZ/QQ/AA and applicable RR endpoints have source routes; backend coverage and witness transport remain unexecuted |

@@ -109,8 +109,12 @@ def _congruence_diagonalization(lattice):
     """
     from dzack_research.preamble.categories._lattice import _congruence_diagonal_form
     from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+    from dzack_research.preamble.rings.real import RR
 
     ring = lattice.base_ring()
+    if ring is RR and lattice in FormModules(RR).Nondegenerate():
+        return _nonsingular_real_diagonalization(lattice)
     diagonal, change = _congruence_diagonal_form(lattice.gram_tensor())
     gram = diagonal.matrix()
     normal = Lattices(ring)([
@@ -125,6 +129,85 @@ def _congruence_diagonalization(lattice):
         for column in change.columns()
     )
     return normal.Isom(lattice)(images)
+
+
+def _nonsingular_real_diagonalization(lattice):
+    r"""Diagonalize a promised finite nonsingular real form with inverse maps.
+
+    Basis directions and pairwise sums contain a nonisotropic direction
+    in every nonzero nonsingular symmetric space. Refine their enclosures
+    together until one norm excludes zero. Fraction-free projection keeps
+    a basis of the perpendicular, and elementary inverse-row updates retain
+    the inverse without asking for a real rank or zero decision.
+    See docs/theory/hyperbolic-index.md for termination and the map equations.
+    """
+    from sage.rings.real_arb import RealBallField
+    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.rings.real import RR
+
+    basis = list(lattice.module_generators())
+    size = len(basis)
+    inverse = [[RR(int(i == j)) for j in range(size)] for i in range(size)]
+    diagonal = []
+    for position in range(size):
+        indices = (
+            [(i, i) for i in range(position, size)]
+            + [(i, j) for i in range(position, size) for j in range(i + 1, size)]
+        )
+        vectors = [basis[i] if i == j else basis[i] + basis[j] for i, j in indices]
+        norms = [lattice.q(vector) for vector in vectors]
+        precision = 128
+        selected = None
+        while selected is None:
+            field = RealBallField(precision)
+            for index, norm in enumerate(norms):
+                enclosure = norm._arb_(field)
+                if enclosure.is_finite() and enclosure.is_nonzero():
+                    selected = index
+                    break
+            precision *= 2
+
+        first, second = indices[selected]
+        pivot, norm = vectors[selected], norms[selected]
+        basis[position], basis[first] = basis[first], basis[position]
+        inverse[position], inverse[first] = inverse[first], inverse[position]
+        if first != second:
+            # Adding column second to the pivot subtracts the pivot row
+            # from inverse row second; second > first >= position.
+            basis[position] = pivot
+            inverse[second] = [
+                inverse[second][j] - inverse[position][j] for j in range(size)
+            ]
+
+        pairings = [lattice.b(pivot, basis[j]) for j in range(position + 1, size)]
+        for index, target in enumerate(range(position + 1, size)):
+            basis[target] = norm * basis[target] - pairings[index] * pivot
+            inverse[target] = [RR._divide_by_nonzero(entry, norm) for entry in inverse[target]]
+        inverse[position] = [
+            inverse[position][j] + sum(
+                (pairing * inverse[target][j]
+                 for pairing, target in zip(pairings, range(position + 1, size), strict=True)),
+                RR.zero(),
+            )
+            for j in range(size)
+        ]
+        diagonal.append(norm)
+
+    normal = Lattices(RR).Nondegenerate()([
+        [diagonal[i] if i == j else RR.zero() for j in range(size)]
+        for i in range(size)
+    ]) if size else Lattices(RR).Nondegenerate()(0)
+    forward = normal.module_category().Mor(normal, lattice)(tuple(basis))
+    labels = tuple(normal.module_generating_set())
+    backward = lattice.module_category().Mor(lattice, normal)(tuple(
+        normal.linear_combination({label: inverse[i][j] for i, label in enumerate(labels)})
+        for j in range(size)
+    ))
+    module_isomorphism = normal.module_category().Core().Mor(normal, lattice)._from_known_inverse_pair(
+        forward, backward,
+    )
+    isometries = normal.Isom(lattice)
+    return isometries.element_class(isometries, module_isomorphism)
 
 
 def _real_representation_witness(lattice, value):

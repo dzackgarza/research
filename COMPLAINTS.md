@@ -148,7 +148,7 @@ asserted missing. Pending definite, negative-definite, empty and rank-zero
 specimens are in the method docstring and owned by
 `hyperbolic-splitting-dependency-tools` in TODO.md. Execution remains under T.
 
-### Computable-real forms still need general returned bases
+### Computable-real norm and Witt constructions still need complete normalization and map routing
 
 The owned exact `RR` field supplies closed real expressions and now regular
 rational Cauchy presentations in the same real field, with arithmetic,
@@ -164,17 +164,22 @@ real field. An undecided sign is refused, rather than coerced to a Python
 truth value. Norm/isotropic witnesses, signed lattice vectors, Witt
 index/decomposition and Emb/Isom retain the existing maps and inverses.
 The pi-coefficient specimens in the theory note remain unexecuted under
-DEV-58. Congruence remains conditional on decided pivots. The nonsingular
-enclosure-based signature computation has a separate source route, but a
-returned basis for every promised nonsingular Cauchy-presented form remains
-unimplemented. Arbitrary singular oracle inputs still admit
+DEV-58. Supplied nonsingular RR forms now have a returned diagonalizing
+isometry and inverse from finite nonzero-norm search and fraction-free
+projection, without scalar zero decisions. The existing downstream
+`_real_representation_witness` and `_real_witt_bases` still use scalar
+comparisons and positive roots whose applicability must be decided;
+complete normalization and map routing for Cauchy inputs remain open.
+Arbitrary singular oracle inputs still admit
 no uniform zero decision.
 
 **Represented-real pivot coverage:** source inspection found that the
 congruence algorithm selected pivots over SR before checking final signs
-in RR. Both signature and retained diagonalization now use the same Sage
-algorithm with RR coefficients, so pivot equality and division refuse
-undecided owned relations. The nonalgebraic off-diagonal/radical specimen,
+in RR. The retained Sage route now uses RR coefficients and refuses
+undecided pivot relations. The separate nonsingular construction searches
+basis directions and pairwise sums simultaneously for a norm enclosure
+excluding zero, then retains the inverse through elementary row updates.
+The nonalgebraic off-diagonal/radical specimen,
 form equation and both inverse composites remain unexecuted under DEV-58.
 This congruence computation alone is not a total arbitrary-real route.
 
@@ -222,12 +227,12 @@ asserted. Finite symmetric forms already placed as nondegenerate over RR
 now route signature through Arb enclosures, rational midpoint matrices,
 their exact row-sum error bound and the inverse-norm stopping test. This
 source construction requires convergent evaluation of the represented
-computations. Regular Cauchy input admission is supplied; a general
-returned basis from that presentation remains open. The regular sequence
+computations. Regular Cauchy input admission and the promised nonsingular
+returned-basis computation are supplied. The regular sequence
 `1+2^(-n)`, its actual map, arithmetic, roots, division and signature
 `diag(x,-1)` have written specimens, alongside the off-diagonal pi,
 near-singular positive, empty and singular forms. They remain unexecuted
-under DEV-58. This does not close the promised constructive basis case.
+under DEV-58. Downstream normalization and map assembly remain open.
 
 **Scalar ingress into form construction:** the real field now retains
 its usual ordered-ring placement, previously absent from its constructing
@@ -238,15 +243,19 @@ arithmetic with a regular Cauchy limit for general presentations. The
 regularity and unimodularity predicates preserve undecided
 unit/nonzero propositions, and finite-rank evenness preserves actual
 ideal-membership propositions. A Cauchy presentation of zero supplies the
-written separating construction specimen. General returned bases remain
-an unresolved computation; these repairs are source findings and changes.
+written separating construction specimen. These repairs are source
+findings and changes.
 The intermediate coefficient normalization of Sage's `_charpoly_df`
 now takes place over ball coefficients for Cauchy inputs. A ball containing
 zero survives that support test unless it is the exact zero ball, so no
 underlying real equality is decided there. The theory note proves the
 enclosure-to-Cauchy construction, and the trace-zero rank-four and singular
-specimens remain written but unexecuted. General returned bases and their
-maps remain with `hyperbolic-splitting-dependency-tools` in TODO.md.
+specimens remain written but unexecuted. The real plane, Cauchy plane with
+undecided diagonal zeros and empty space supply the new diagonalization
+specimens. Its actual inverse pair and proof are in the theory note.
+Lattice naming also no longer asks for a real signature that its displayed
+name does not use. Complete downstream normalization and map routing
+remain with `hyperbolic-splitting-dependency-tools` in TODO.md.
 
 **Fresh norm-fibre point selection:** the zero-norm fibre previously needed
 manual admission of zero before its set computation could select a point
