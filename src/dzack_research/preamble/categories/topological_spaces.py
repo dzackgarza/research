@@ -963,7 +963,7 @@ class TopologicalSpaces(OwnedCategory):
             assert False, f"the fundamental group pi_1({self}, {base_point}) is not known to this space"
 
         def fundamental_groupoid(self):
-            r"""Homotopy classes of paths between all points of this space."""
+            r"""A ``Cat`` object with this space's points and path-homotopy arrows."""
             pass
 
         def _whitehead_pairing(self, base_point, left_degree, right_degree):
