@@ -745,21 +745,15 @@ function target_primitive_embedding(source_gram_entries, target_gram_entries)
     source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
     target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
     exists, representatives = primitive_embeddings(
-        genus(target),
+        target,
         source;
         classification = :sub,
+        check = true,
     )
     if !exists
         return [1, 0]
     end
-    target_specific = filter(
-        record -> is_isometric_with_isometry(record[1], target; ambient_representation = false)[1],
-        representatives,
-    )
-    if isempty(target_specific)
-        return [1, 0]
-    end
-    target_prime, source_prime, _complement = first(target_specific)
+    target_prime, source_prime, _complement = first(representatives)
     inclusion = solve(
         basis_matrix(target_prime),
         basis_matrix(source_prime);
@@ -786,23 +780,16 @@ function target_primitive_embedding_classes(
     classification = Symbol(classification_name)
     @req classification in [:sub, :emb] "primitive embedding classes are :sub or :emb"
     exists, representatives = primitive_embeddings(
-        genus(target),
+        target,
         source;
         classification = classification,
+        check = true,
     )
     if !exists
         return [1, 0, []]
     end
     result = []
     for (target_prime, source_prime, _complement) in representatives
-        is_target, _target_witness = is_isometric_with_isometry(
-            target_prime,
-            target;
-            ambient_representation = false,
-        )
-        if !is_target
-            continue
-        end
         inclusion = solve(
             basis_matrix(target_prime),
             basis_matrix(source_prime);
@@ -816,9 +803,6 @@ function target_primitive_embedding_classes(
                 change_base_ring(ZZ, inclusion),
             ],
         )
-    end
-    if isempty(result)
-        return [1, 0, []]
     end
     return [1, 1, result]
 end
@@ -984,6 +968,14 @@ class _OscarLatticeAdapter:
         return target_gram, embedding
 
     def target_primitive_embedding(self, source_gram, target_gram):
+        r"""Use OSCAR's target-specific primitive embedding decision.
+
+        ``primitive_embeddings(target, source; check=true)`` filters the
+        genus representatives with ``is_isometric``, not the indefinite
+        isometry-witness routine. Only the Gram forms and inclusion are
+        returned here; the actual research Isom objects transport them
+        to the original endpoints when a witness is requested.
+        """
         result = self._bridge().call(
             "DzackResearchOscarLatticeAdapter.target_primitive_embedding",
             _integer_engine_matrix(source_gram),
@@ -1024,6 +1016,13 @@ class _OscarLatticeAdapter:
         target_gram,
         classification,
     ):
+        r"""Return the maintained classification filtered to the actual target.
+
+        The lattice overload with ``check=true`` retains the original
+        classification mode while excluding other classes in its genus.
+        Filtering decides isometry; it need not construct a target
+        isometry at this private engine boundary.
+        """
         result = self._bridge().call(
             "DzackResearchOscarLatticeAdapter.target_primitive_embedding_classes",
             _integer_engine_matrix(source_gram),

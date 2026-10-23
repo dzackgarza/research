@@ -2007,6 +2007,23 @@ class LatticeEmbeddingMor(CategoricalMor):
         ``classification='emb'`` retains the source marking and quotients only
         by the target discriminant action.  These are finite class
         representatives, not an enumeration of every embedding.
+
+        OSCAR's lattice overload with ``check=true`` filters the genus
+        representatives to the specified target using its isometry
+        decision. Transport to the original endpoints is then supplied
+        by the existing research Isom objects, rather than asking the
+        private engine for an indefinite isometry witness.
+
+        EXAMPLES::
+
+            sage: T = Lattices(ZZ)([[2]])
+            sage: L = Lattices(ZZ)("U") + T
+            sage: assert T.Emb(L).is_empty() is False
+            sage: classes = T.Emb(L).primitive_embedding_class_representatives()
+            sage: assert classes.is_empty() is False
+            sage: assert all(j.domain() is T and j.codomain() is L for j in classes)
+            sage: assert all(L.gram_tensor().pullback(j) == T.gram_tensor() for j in classes)
+            sage: assert all(j.is_primitive() is True for j in classes)
         """
         if classification not in ("sub", "emb"):
             raise ValueError(

@@ -821,6 +821,25 @@ chosen Gram presentations. This field route is also necessary for
 The field decision and both inverse-composite specimens in
 `LatticeIsometryMor.an_element` remain unexecuted under DEV-58.
 
+The maintained primitive-embedding classifier is a separate, applicable
+integral computation. Its target-specific calls now use
+`primitive_embeddings(target, source; check=true)`. The
+[OSCAR 1.8.2 lattice overload](https://github.com/oscar-system/Oscar.jl/blob/v1.8.2/src/NumberTheory/QuadFormAndIsom/embeddings.jl#L1632)
+filters genus representatives by the isometry decision `is_isometric`.
+The previous adapter instead asked for `is_isometric_with_isometry`
+during filtering, although that
+[Hecke 0.39.22 witness routine](https://github.com/thofma/Hecke.jl/blob/v0.39.22/src/QuadForm/Quad/ZLattices.jl#L595)
+rejects indefinite lattices. A decision suffices to filter; when a map is
+requested, the existing research `Isom` constructions transport the
+returned inclusion to the original source and target. The classification
+mode is preserved, and the finite representatives remain representatives
+of classes, not all embeddings. For example $\langle2\rangle$ embeds
+primitively into $U\perp\langle2\rangle$ by the displayed summand
+inclusion. Its decision, retained endpoints and form/primitivity specimens
+are recorded in the classifier docstring and remain unexecuted under
+DEV-58. Failure of primitive embedding still does not exclude a
+nonprimitive integral embedding.
+
 For $T=U$, the same set is the subset of $L\times L$ defined by
 $q(e)=q(f)=0$ and $B(e,f)=1$. For $U^{\perp r}$ it is the subset of the
 finite product indexed by the specified hyperbolic basis satisfying all
