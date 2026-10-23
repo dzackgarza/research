@@ -9,6 +9,123 @@ geometry engines privately. The relevant existing presentations are
 [`polytopes.py`](../../src/dzack_research/preamble/categories/schemes/polytopes.py),
 and the unfinished [`simplicial-and-cw-foundations`](../../TODO.md) node.
 
+## Category graph and declaration kinds
+
+The graph below enumerates the mathematical homes needed by the construction.
+It is a dependency graph, not a proposed Sage inheritance graph. `⊂` and
+`⊃` mean subcategory inclusion with the same parameters and stated morphisms. `→`
+means an explicit functor or construction, often with changed maps, base, or
+underlying object. A property following `.` is an axiom/refinement of its
+owning category. A chosen datum belongs to a structured category or to an
+existing slice, comma, functor, or Grothendieck construction. None of these
+nodes is a preamble declaration until `lean-categories` formalizes its objects,
+morphisms, data, and inclusions. This follows [`CAT-15`–`CAT-20` and
+`CAT-30`](../../CONTRIBUTING.md), especially the ban on a class for a mere
+property combination or a named datum already expressed by a standard
+categorical construction.
+
+```text
+TopologicalSpaces
+  ⊃ TopologicalManifolds
+       .DimensionAtMost(n)
+       .PureDimension(n); .PureDimension(2) = topological surfaces
+  ⊃ TopologicalManifoldsWithBoundary / WithCorners (specified local models)
+
+RealCkManifolds(k), k >= 1 → TopologicalManifolds
+  .PureDimension(n); .PureDimension(2) = real C^k surfaces
+  RealCkManifolds(j) → RealCkManifolds(k), j >= k
+  SmoothRealManifolds = RealCkManifolds(infinity)
+RealCkManifoldsWithBoundary / WithCorners → TopologicalSpaces
+
+ComplexManifolds(m) → SmoothRealManifolds(2m)   [realification]
+RR^n ∈ SmoothRealManifolds.PureDimension(n)
+CC^m ∈ ComplexManifolds(m)
+
+RealVectorSpaces(n) → RealAffineSpaces modelled on V
+  affine lattice Lambda ↪ V → (affine space A, Lambda)
+  (A, Lambda) → Aff_Lambda(A) = GL(Lambda) ⋉ V
+
+IntegralAffineManifolds(n) → SmoothRealManifolds(n)
+  .Oriented
+IntegralAffineManifoldsWithBoundary / WithCorners →
+  SmoothRealManifoldsWithBoundary / WithCorners
+  strict lattice-point atlas → ordinary integral-affine atlas
+
+(B, Sigma, atlas on B \ Sigma) = SingularIntegralAffineSpaces(n)
+  → (B, Sigma) in selected-subobject geometry
+  → IntegralAffineManifolds(n) on B \ Sigma
+  .FiniteSingularSet.PureDimension(2)
+       .Sphere = IAS^2; .Disk = IA disks; .RealProjectivePlane = IA RP^2
+  higher-dimensional IAS^n requires its own singular local models
+
+FiniteGradedPosets ⊃ AbstractPolytopes
+affine space A → ConvexPolytopesIn(A) → AbstractPolytopes [face poset]
+  .Dimension(2) = polygons
+  .IntegralVertices relative to (A, Lambda) = lattice polytopes
+EuclideanSpaces(E^n) → EuclideanPolytopesIn(E^n)
+SphericalSpaces(S^n) → SphericalGeodesicPolytopesIn(S^n)
+HyperbolicSpaces(H^n) → HyperbolicGeodesicPolytopesIn(H^n)
+  each realized polytope → AbstractPolytopes [face incidence]
+
+CellComplexes
+  .RegularCW / .PLManifold (properties with exact hypotheses)
+  PolytopalComplexes → CellComplexes
+  SimplicialComplexes → CellComplexes by realization
+  DeltaComplexes → CellComplexes by realization
+  SimplicialSets → Spaces by realization; .Kan is a horn-filling property
+
+(K, T, |T| → |K|) = chosen triangulation over K
+  .Integral relative to a selected affine lattice/atlas
+  .Unimodular relative to that lattice
+
+finite diagram of faces and face maps → colimit complex B
+  plus affine collar data → (B, Sigma, atlas on B \ Sigma)
+subobject Q ↪ P and boundary isomorphism dQ' → dQ → surgery pushout
+degeneration X_0 → dual complex Gamma(X_0) → CellComplexes
+
+GObjects(G, C) → C, for C = complexes, polytopes, or singular IA spaces
+Mor(C)(X, Y) holds an embedding/realization with exact endpoints
+```
+
+Several displayed labels name **objects or predicates**, not category classes.
+`RR^n`, `CC^m`, a chosen lattice, a particular triangulation, a gluing
+diagram, a surgery datum, an embedding, and `Gamma(X_0)` are each objects or
+arrows of their owners. `IAS^2` denotes the sphere property of an object
+with a selected singular affine structure; it does not require a separate
+class for each sphere topology and decoration. `GObjects(G,C)` is the existing
+category construction for a specified group action. Two commuting
+involutions amount to an action of `C_2 × C_2`, with its actual action map,
+when both generate that group.
+
+The following table fixes the owner of each requested operation and the data
+that its result must retain.
+
+| Requested object or operation | Mathematical owner | Retained data or map |
+| --- | --- | --- |
+| Real or complex affine coordinate space | Affine spaces over `RR` or `CC`, then the manifold chart construction | Space, coordinate chart, topology, dimension |
+| Smooth, `C^k`, complex manifold | Its atlas category | Underlying weaker manifold and chosen atlas; realification for complex manifolds |
+| Integral-affine manifold | Integral-affine atlas structure over a smooth real manifold | Exact smooth manifold, maximal affine atlas, tangent lattice, forgetful functor |
+| Singular integral-affine sphere | Singular integral-affine spaces with sphere property | `B`, inclusion `Sigma ↪ B`, atlas on `B \ Sigma`, monodromy |
+| Abstract automorphism group | Automorphisms of the face-poset object | Permutations preserving rank and incidence |
+| Integral-affine or metric symmetry | Automorphisms of the corresponding structured object | Explicit maps of the selected realization or atlas |
+| Polytope in `E^n`, `S^n`, or `H^n` | Convex/geodesic polytopes over the selected ambient geometry | Ambient space, inclusion, faces and incidence |
+| Lattice polytope | Integral-vertex refinement relative to `Lambda ↪ A` | Lattice inclusion and polytope placement |
+| Chosen integral triangulation | Triangulation object over a polytope or complex | Triangle family, face maps, `|T| → |K|`, lattice |
+| Stars, links, and subdivision | Cell/simplicial complex owner | Subcomplexes and their inclusions |
+| Edge identification or many-piece gluing | Diagram and colimit in the applicable complex category | Face isomorphisms and every piece-to-quotient map |
+| Corner or basis-triangle surgery | Subobject, boundary map, and pushout | Region inclusion, replacement, boundary identification, quotient maps |
+| Dual complex | Construction from a degeneration's boundary incidence data | Incidence complex and source-to-complex correspondence |
+| Embedding in `RR^3` or planar display | Morphism or display of the completed object | Explicit map, ambient space, edge-pair labels where applicable |
+
+The graph is deliberately not a diamond of named combinations. A chosen
+triangulation is not an `IntegralTriangulatedPolytope` class; it is an object
+over a polytope, refined by an integrality predicate relative to its lattice.
+Likewise, `IAS^2` with two involutions is a `G`-object in the category of
+singular integral-affine spaces satisfying the sphere condition. An abstract
+face-poset automorphism does not acquire a geometric realization merely from
+membership in that automorphism group. These distinctions are required by
+[`OWN-15`–`OWN-18` and `CAT-30`](../../CONTRIBUTING.md).
+
 ## Manifolds and the dimension filtration
 
 Fix Hausdorff and second-countable manifolds of finite dimension. A real
@@ -59,7 +176,7 @@ integral-affine structures may live over the same smooth manifold.
 There are two useful map categories. In `IAff_n`, morphisms are locally maps
 `x |-> A x + b` with `A(Lambda) <= Lambda'`; isomorphisms require
 `A(Lambda) = Lambda'`. These maps may have noninvertible or rectangular
-linear parts if dimensions vary. The subgroupoid of integral-affine local
+linear parts if dimensions vary. The category of integral-affine local
 isomorphisms uses `A in GL_n(ZZ)`. Both have a forgetful functor to smooth real
 manifolds. Over a fixed smooth `B`, the fibre records its possible selected
 integral-affine structures and maps over `id_B`. The functor does not make
