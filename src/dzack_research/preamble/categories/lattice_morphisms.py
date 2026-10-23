@@ -2623,11 +2623,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             raise ValueError(f"action={action!r} applies only to sublattices; {target} is not a sublattice of {lattice}, and a vector or a family is stabilized up to reindexing")
         if element_parent(target) is not lattice:
             return self._family_stabilizer(target)
-        return StabilizerSubgroups(self)(
+        stabilizer = StabilizerSubgroups(self)(
             target,
             self.natural_module_action_functor(),
             lambda automorphism: automorphism(target) == target,
             description=f"g fixes {target}",
+        )
+        return stabilizer.select_group_generators(
+            lambda: self.vector_stabilizer_generators(target)
         )
 
     @cached_method(key=lambda self, family: id(family))
@@ -2717,12 +2720,19 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         )
         source = embedding.domain()
         embedded = tuple(embedding(generator) for generator in source.module_generators())
-        return StabilizerSubgroups(self)(
+        stabilizer = StabilizerSubgroups(self)(
             embedding,
             self.natural_module_action_functor(),
             lambda automorphism: all(automorphism(vector) == vector for vector in embedded),
             description=f"g fixes {embedding} pointwise",
         )
+        if int(source.module_rank()) == 1:
+            category = CosliceCategory(lattice.lattice_category(), source)
+            marked = category.object(embedding)
+            stabilizer.select_group_generators(
+                lambda: self._marking_stabilizer_generators(category, marked, stabilizer)
+            )
+        return stabilizer
 
     def setwise_stabilizer(self, embedding):
         r"""Return \(\{g\in O(L): g(I)=I\}\) for \(\iota:I\hookrightarrow L\).
@@ -2748,11 +2758,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             inverse = automorphism.inverse()
             return all(embedding.is_in_image(automorphism(vector)) and embedding.is_in_image(inverse(vector)) for vector in embedded)
 
-        return StabilizerSubgroups(self)(
+        stabilizer = StabilizerSubgroups(self)(
             embedding,
             self.natural_module_action_functor(),
             preserves_image,
             description=f"g(im({embedding}))=im({embedding})",
+        )
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        category = Cat().Mor(FiniteOrdinalCategory(2), lattice.lattice_category())
+        marked = category.object(embedding)
+        return stabilizer.select_group_generators(
+            lambda: self._marking_stabilizer_generators(category, marked, stabilizer)
         )
 
     def _assert_definite_over_integers(self, operation: str) -> None:

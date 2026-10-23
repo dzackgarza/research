@@ -1633,8 +1633,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             for leg in legs:
                 _assert_monic_leg(self, marked, leg)
-            return orthogonal_group.intersection(
+            stabilizer = orthogonal_group.intersection(
                 *(orthogonal_group.setwise_stabilizer(leg) for leg in legs)
+            )
+            return stabilizer.select_group_generators(
+                lambda: orthogonal_group._marking_stabilizer_generators(self, marked, stabilizer)
             )
 
     @cached_method
