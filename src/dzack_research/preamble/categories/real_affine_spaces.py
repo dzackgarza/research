@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.rings.real import RR
 
 
@@ -122,7 +123,12 @@ class RealAffineSpaces(OwnedCategory):
         r"""Select a free transitive action of the model space on ``point_set``."""
         if model_vector_space not in VectorSpaces(RR):
             raise TypeError(f"{model_vector_space} is not a real vector space")
-        pass
+        return _object_of(
+            self,
+            model_vector_space=model_vector_space,
+            point_set=point_set,
+            translation_action=translation_action,
+        )
 
     @cached_method
     def forget(self):
@@ -133,14 +139,20 @@ class RealAffineSpaces(OwnedCategory):
         return _AffineModelVectorSpaceFunctor()
 
     class ParentMethods:
+        def __init__(self, model_vector_space, point_set, translation_action, **rest):
+            self._model_vector_space = model_vector_space
+            self._point_set = point_set
+            self._translation_action = translation_action
+            super().__init__(**rest)
+
         def point_set(self):
-            pass
+            return self._point_set
 
         def model_vector_space(self):
-            pass
+            return self._model_vector_space
 
         def translation_action(self):
-            pass
+            return self._translation_action
 
 
 class AffineSpaceWithLatticeMor(CategoricalMor):
@@ -218,7 +230,11 @@ class AffineSpacesWithLattice(OwnedCategory):
         r"""Select a full integral lattice in the model of ``affine_space``."""
         if affine_space not in RealAffineSpaces():
             raise TypeError(f"{affine_space} is not a real affine space")
-        pass
+        return _object_of(
+            self,
+            affine_space=affine_space,
+            lattice_inclusion=lattice_inclusion,
+        )
 
     @cached_method
     def forget(self):
@@ -229,14 +245,19 @@ class AffineSpacesWithLattice(OwnedCategory):
         return _AffineLatticeFunctor()
 
     class ParentMethods:
+        def __init__(self, affine_space, lattice_inclusion, **rest):
+            self._affine_space = affine_space
+            self._lattice_inclusion = lattice_inclusion
+            super().__init__(**rest)
+
         def underlying_affine_space(self):
-            pass
+            return self._affine_space
 
         def lattice_inclusion(self):
-            pass
+            return self._lattice_inclusion
 
         def affine_lattice(self):
-            pass
+            return self._lattice_inclusion.domain()
 
         def integral_affine_group(self):
             pass
