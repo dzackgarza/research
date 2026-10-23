@@ -6755,11 +6755,12 @@ class Lattices(OwnedCategoryOverBaseRing):
         def hyperbolic_partner_locus(self):
             r"""Restrict the square-zero locus to the pairing's affine fibre.
 
-            The module-map fibre first imposes ``b(self,w)=div(self)``.
+            The module-map fibre first imposes ``b(self,w)=div(self)``
+            over ZZ, or ``b(self,w)=1`` over a field.
             Its square-zero equalizer retains the quadratic constraint and
             the inclusion into that affine fibre. Composing with the fibre
             inclusion gives the lattice inclusion. The object contains every
-            integral partner, whether or not point finding is available.
+            partner, whether or not point finding is available.
 
             EXAMPLES::
 
@@ -6773,10 +6774,13 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             lattice = self.parent()
             ring = lattice.base_ring()
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
+
             pairing = lattice.left_curry()(self)
             regular = pairing.codomain()
+            scale = ring.one() if ring in OwnedFields() else self.div()
             prescribed = regular.scalar_multiple(
-                self.div(), regular.module_generators()[0]
+                scale, regular.module_generators()[0]
             )
             fibre = pairing.solution_fibre(prescribed)
             square = Sets().Mor(fibre, ring)(lambda vector: vector.q())
@@ -6784,9 +6788,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             return Sets().equalizer_construction(square, zero)
 
         def hyperbolic_partner(self) -> Lattices.ElementMethods:
-            r"""Return an integral isotropic partner with pairing ``self.div()``.
+            r"""Return an isotropic partner of the supplied isotropic vector.
 
-            The vector must be primitive, isotropic and outside the radical.
+            Over an exact field of characteristic different from two,
+            the pairing is one: solve ``b(self,v)=1`` and return
+            ``v-q(v)*self/2``. The vector must be outside the radical.
+            These equations give square zero and pairing one because
+            ``q(self)=0``. The solver operates on the actual module map.
+
+            Over ZZ the pairing is ``self.div()``, and the vector must be
+            primitive, isotropic and outside the radical.
             The Bezout correction is integral when ``2*div(self)`` divides
             the square of the selected Bezout partner. This includes every
             primitive isotropic vector of divisibility one in an even lattice.
@@ -6813,9 +6824,34 @@ class Lattices(OwnedCategoryOverBaseRing):
                 Traceback (most recent call last):
                 ...
                 ValueError: the integral hyperbolic partner locus is empty
+                sage: V = Lattices(QQ)("U")
+                sage: e = V.basis_vector(0) * QQ(2)
+                sage: f = e.hyperbolic_partner()
+                sage: assert f.parent() is V and V.q(f) == QQ(0) and V.b(e,f) == QQ(1)
+                sage: assert f in e.hyperbolic_partner_locus().object()
+                sage: W = Lattices(AA)([[1, 0], [0, -2]])
+                sage: e = W.linear_combination({0: AA(2).sqrt(), 1: AA(1)})
+                sage: f = e.hyperbolic_partner()
+                sage: assert W.q(f) == AA(0) and W.b(e,f) == AA(1)
             """
             lattice = self.parent()
             ring = lattice.base_ring()
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
+
+            if ring in OwnedFields():
+                assert ring.is_exact() and ring(2) != ring.zero(), (
+                    "exact hyperbolic partner construction requires an exact field of characteristic different from two"
+                )
+                assert self.q() == ring.zero(), (
+                    f"a hyperbolic partner requires an isotropic vector, not {self}"
+                )
+                pairing = lattice.left_curry()(self)
+                regular = pairing.codomain()
+                unit = regular.scalar_multiple(ring.one(), regular.module_generators()[0])
+                partner = pairing.preimage(unit)
+                candidate = partner - lattice.scalar_multiple(partner.q() / ring(2), self)
+                locus = self.hyperbolic_partner_locus().object()
+                return locus.inclusion()(locus(candidate))
             assert self.content() == ring.one() and self.q() == ring.zero(), (
                 f"an integral hyperbolic partner requires a primitive isotropic vector, not {self}"
             )
@@ -7992,7 +8028,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
 
         @cached_method
         def rational_witt_decomposition(self):
-            r"""Return the exact rational Witt decomposition for a rank-one isotropic line.
+            r"""Return a rational hyperbolic splitting adapted to an isotropic line.
 
             If ``e`` generates ``I`` and ``d=div(e)``, an exact Bezout
             combination of the selected lattice frame gives ``h in L`` with
@@ -8001,7 +8037,10 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             ``f = h/d - q(h)e/(2d^2)``.
 
             Then ``e^2=f^2=0`` and ``b(e,f)=1``.  The orthogonal complement of
-            ``<e,f>`` is the rational anisotropic/reduction summand.  The
+            ``<e,f>`` is the residual rational summand; it need not be
+            anisotropic. For example, splitting one plane out of 2U leaves
+            another hyperbolic plane. This relative splitting does not
+            compute the maximal Witt index. The
             integral line, perpendicular and quotient remain separately
             retained; no integral splitting is asserted.
             """
