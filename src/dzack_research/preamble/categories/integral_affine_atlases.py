@@ -65,8 +65,8 @@ class IntegralAffineAtlasMorCategoryConstruction(MorCategoryConstruction):
 class _AtlasUnderlyingManifoldFunctor(Functor):
     r"""Forget the atlas presentation on objects and maps."""
 
-    def __init__(self):
-        super().__init__(IntegralAffineAtlases(), SmoothManifolds())
+    def __init__(self, source):
+        super().__init__(source, SmoothManifolds())
 
     def _apply_object(self, atlas):
         return atlas.underlying_smooth_manifold()
@@ -91,8 +91,8 @@ class _AtlasMaximalizationFunctor(Functor):
 
 
 class _UnderlyingSmoothAtlasFunctor(Functor):
-    def __init__(self):
-        super().__init__(IntegralAffineAtlases(), RealCkAtlases(Infinity))
+    def __init__(self, source):
+        super().__init__(source, RealCkAtlases(Infinity))
 
     def _apply_object(self, atlas):
         return atlas.smooth_atlas()
@@ -149,7 +149,7 @@ class IntegralAffineAtlases(OwnedCategory):
 
     @cached_method
     def forget(self):
-        return _AtlasUnderlyingManifoldFunctor()
+        return _AtlasUnderlyingManifoldFunctor(self)
 
     @cached_method
     def maximalization(self):
@@ -157,7 +157,7 @@ class IntegralAffineAtlases(OwnedCategory):
 
     @cached_method
     def forget_affine_structure(self):
-        return _UnderlyingSmoothAtlasFunctor()
+        return _UnderlyingSmoothAtlasFunctor(self)
 
     class ParentMethods:
         def __init__(
