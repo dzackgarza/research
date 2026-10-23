@@ -236,8 +236,20 @@ class IntegralAffineCornerAtlases(OwnedCategory):
     class Oriented(CategoryWithAxiom):
         r"""Atlases with determinant-one integral linear changes."""
 
+        @cached_method
+        def maximalization(self):
+            return _StratifiedAffineAtlasMaximalizationFunctor(
+                self, IntegralAffineManifoldsWithCorners().Oriented()
+            )
+
     class StrictLatticePointAtlas(CategoryWithAxiom):
         r"""Atlases whose translations preserve selected lattice points."""
+
+        @cached_method
+        def maximalization(self):
+            return _StratifiedAffineAtlasMaximalizationFunctor(
+                self, IntegralAffineManifoldsWithCorners().StrictLatticePointAtlas()
+            )
 
 
 class IntegralAffineBoundaryAtlases(OwnedCategory):
@@ -301,5 +313,17 @@ class IntegralAffineBoundaryAtlases(OwnedCategory):
     class Oriented(CategoryWithAxiom):
         r"""Atlases with determinant-one integral linear changes."""
 
+        @cached_method
+        def maximalization(self):
+            return _StratifiedAffineAtlasMaximalizationFunctor(
+                self, IntegralAffineManifoldsWithBoundary().Oriented()
+            )
+
     class StrictLatticePointAtlas(CategoryWithAxiom):
         r"""Atlases whose translations preserve selected lattice points."""
+
+        @cached_method
+        def maximalization(self):
+            return _StratifiedAffineAtlasMaximalizationFunctor(
+                self, IntegralAffineManifoldsWithBoundary().StrictLatticePointAtlas()
+            )

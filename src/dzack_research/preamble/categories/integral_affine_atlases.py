@@ -78,8 +78,8 @@ class _AtlasUnderlyingManifoldFunctor(Functor):
 class _AtlasMaximalizationFunctor(Functor):
     r"""Pass from a compatible atlas to its selected maximal structure."""
 
-    def __init__(self):
-        super().__init__(IntegralAffineAtlases(), IntegralAffineManifolds())
+    def __init__(self, source, target):
+        super().__init__(source, target)
 
     def _apply_object(self, atlas):
         return atlas.integral_affine_manifold()
@@ -153,7 +153,7 @@ class IntegralAffineAtlases(OwnedCategory):
 
     @cached_method
     def maximalization(self):
-        return _AtlasMaximalizationFunctor()
+        return _AtlasMaximalizationFunctor(self, IntegralAffineManifolds())
 
     @cached_method
     def forget_affine_structure(self):
@@ -241,5 +241,15 @@ class IntegralAffineAtlases(OwnedCategory):
     class Oriented(CategoryWithAxiom):
         r"""Atlases with determinant-one integral linear transitions."""
 
+        @cached_method
+        def maximalization(self):
+            return _AtlasMaximalizationFunctor(self, IntegralAffineManifolds().Oriented())
+
     class StrictLatticePointAtlas(CategoryWithAxiom):
         r"""Atlases whose transitions preserve selected lattice points."""
+
+        @cached_method
+        def maximalization(self):
+            return _AtlasMaximalizationFunctor(
+                self, IntegralAffineManifolds().StrictLatticePointAtlas()
+            )

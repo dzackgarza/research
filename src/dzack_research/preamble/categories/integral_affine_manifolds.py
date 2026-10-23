@@ -469,6 +469,12 @@ class IntegralAffineManifoldsWithCorners(OwnedCategory):
         def depth_stratum(self, depth):
             return self._smooth_stratified_manifold.depth_stratum(depth)
 
+    class Oriented(CategoryWithAxiom):
+        r"""Corner atlases with orientation-preserving integral transitions."""
+
+    class StrictLatticePointAtlas(CategoryWithAxiom):
+        r"""Corner atlases whose transitions preserve selected lattice points."""
+
 
 class IntegralAffineManifoldsWithBoundary(OwnedCategory):
     r"""Smooth half-space manifolds with selected integral-affine charts."""
@@ -516,6 +522,12 @@ class IntegralAffineManifoldsWithBoundary(OwnedCategory):
 
         def boundary_inclusion(self):
             pass
+
+    class Oriented(CategoryWithAxiom):
+        r"""Boundary atlases with orientation-preserving integral transitions."""
+
+    class StrictLatticePointAtlas(CategoryWithAxiom):
+        r"""Boundary atlases whose transitions preserve selected lattice points."""
 
 
 class SingularIntegralAffineSpaceMor(CategoricalMor):
