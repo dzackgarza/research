@@ -198,10 +198,19 @@ class RealAffineSpaces(OwnedCategory):
         def __init__(self, model_vector_space, torsor, **rest):
             self._model_vector_space = model_vector_space
             self._torsor = torsor
-            super().__init__(**rest)
+            super().__init__(facade=torsor.point_set(), **rest)
 
         def point_set(self):
             return self._torsor.point_set()
+
+        def __contains__(self, point):
+            return point in self.point_set()
+
+        def _element_constructor_(self, point):
+            return self.point_set()(point)
+
+        def an_element(self):
+            return self.underlying_torsor().an_element()
 
         def model_vector_space(self):
             return self._model_vector_space
