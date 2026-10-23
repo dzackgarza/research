@@ -18,6 +18,7 @@ immediately is returned as a predicate and can be evaluated by ``ask(...)``.
 from __future__ import annotations
 
 import operator
+from collections.abc import Callable
 
 from sage.misc.latex import latex
 from sage.misc.cachefunc import cached_method
@@ -26,7 +27,7 @@ from sage.categories.rings import Rings as SageRings
 from sage.rings.integer_ring import ZZ
 from sage.rings.qqbar import AA, QQbar
 from sage.rings.rational_field import QQ
-from sage.rings.real_arb import RealBallField
+from sage.rings.real_arb import RealBall, RealBallField
 from sage.rings.real_lazy import CLF, RLF, LazyFieldElement, LazyUnop
 from sage.rings.real_mpfr import (
     RealField,
@@ -65,6 +66,37 @@ def RealApproximation(value):
 
     parent = _own_ring(backend.parent())
     return _owned_engine_element(parent, backend)
+
+
+def _cauchy_sequence_from_enclosures(enclose: Callable[[int], RealBall]) -> CategoricalArrow:
+    r"""Choose regular rational midpoints from convergent real enclosures.
+
+    The supplier encloses one fixed real value, with finite enclosures
+    whose diameters tend to zero as precision increases. For term n,
+    diameter <= 2^(-n-1) gives midpoint error <= 2^(-n-2).
+    The triangle inequality gives the regular Cauchy bound used by
+    RR.of_cauchy. Constructing the map evaluates no term.
+    """
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+
+    rationals = _owned_rationals()
+
+    def approximation(index):
+        exponent = int(index)
+        diameter = QQ(1) / ZZ(2)**(exponent + 1)
+        precision = max(64, exponent + 4)
+        while True:
+            enclosure = enclose(precision)
+            precision *= 2
+            if not enclosure.is_finite():
+                continue
+            lower, upper = enclosure.endpoints()
+            lower = lower.exact_rational()
+            upper = upper.exact_rational()
+            if upper - lower <= diameter:
+                return _owned_engine_element(rationals, (lower + upper)/2)
+
+    return Sets().Mor(NN, rationals)(approximation)
 
 
 _RELATION_SYMBOL = {
@@ -371,26 +403,9 @@ class ExactRealNumber(FieldElement):
         """
         if isinstance(self._expression, _CauchyRealComputation):
             return self._expression._sequence
-        from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
-
-        rationals = _owned_rationals()
-
-        def approximation(index):
-            exponent = int(index)
-            diameter = QQ(1) / ZZ(2)**(exponent + 1)
-            precision = max(64, exponent + 4)
-            while True:
-                enclosure = self._arb_(RealBallField(precision))
-                precision *= 2
-                if not enclosure.is_finite():
-                    continue
-                lower, upper = enclosure.endpoints()
-                lower = lower.exact_rational()
-                upper = upper.exact_rational()
-                if upper - lower <= diameter:
-                    return _owned_engine_element(rationals, (lower + upper)/2)
-
-        return Sets().Mor(NN, rationals)(approximation)
+        return _cauchy_sequence_from_enclosures(
+            lambda precision: self._arb_(RealBallField(precision))
+        )
 
     def is_real(self) -> bool:
         return True
@@ -775,6 +790,57 @@ class ExactRealField(UniqueRepresentation, Field):
         if isinstance(element, ExactRealNumber) and element.parent() is self:
             return element
         return self(element)
+
+    def _matrix_determinant(self, components) -> ExactRealNumber:
+        r"""Sage determinant protocol for the existing real presentations.
+
+        Closed expressions use symbolic division-free arithmetic. General
+        Cauchy coefficients use the same maintained division-free routine
+        over Arb balls and a regular rational Cauchy presentation of its
+        constant coefficient. The input scalars are snapshotted so later
+        matrix mutation cannot change the returned real value.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.categories.lattices import Lattices
+            sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+            sage: Q = _owned_rationals()
+            sage: a = Sets().Mor(NN, Q)(lambda n: Q(1) + Q(1)/Q(2)**int(n))
+            sage: x = RR.of_cauchy(a)
+            sage: L = Lattices(RR)([[x,0,0,0], [0,-x,0,0], [0,0,1,0], [0,0,0,-1]])
+            sage: d = L.determinant()
+            sage: assert RealBallField(128)(d).contains(1)
+            sage: assert ask(d > RR(1)/RR(2)) is True
+            sage: assert L.signature_pair().first().finite_value() == 2
+            sage: assert L.signature_pair().second().finite_value() == 2
+            sage: z = RR.of_cauchy(Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n)))
+            sage: S = Lattices(RR)([[z,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]])
+            sage: assert RealBallField(128)(S.determinant()).contains(0)
+            sage: assert isinstance(S.is_nondegenerate(), Predicate)
+            sage: C = Lattices(RR)([[1,0,0,0], [0,-1,0,0], [0,0,1,0], [0,0,0,-1]])
+            sage: assert C.determinant() == RR.one()
+        """
+        from sage.matrix.constructor import matrix
+        from sage.matrix.matrix2 import Matrix as SageMatrix
+
+        size = components.nrows()
+        assert components.ncols() == size, "a determinant requires a square matrix"
+        entries = tuple(
+            tuple(self(components[i, j]) for j in range(size))
+            for i in range(size)
+        )
+        if all(isinstance(entry._expression, Expression) for row in entries for entry in row):
+            symbolic = matrix(SR, size, size, [entry.expression() for row in entries for entry in row])
+            constant = SageMatrix.charpoly(symbolic, algorithm="df")[0]
+            return self(-constant if size % 2 else constant)
+
+        def enclose(precision: int) -> RealBall:
+            field = RealBallField(precision)
+            balls = matrix(field, size, size, [entry._arb_(field) for row in entries for entry in row])
+            constant = SageMatrix.charpoly(balls, algorithm="df")[0]
+            return -constant if size % 2 else constant
+
+        return self.of_cauchy(_cauchy_sequence_from_enclosures(enclose))
 
     def _repr_(self) -> str:
         return "Real Field"

@@ -234,14 +234,7 @@ def _gram_determinant(gram, ring):
     (`OWN-06`) and raised into ``ring``.
     """
     components = _gram_engine_matrix(gram)
-    from dzack_research.preamble.rings.real import RR
-
-    if ring is RR:
-        # Use Sage's small-rank formulas or division-free characteristic
-        # polynomial rather than a field algorithm choosing real pivots.
-        determinant = components.determinant(algorithm="df")
-    else:
-        determinant = components.determinant()
+    determinant = components.determinant()
     return _owned_engine_element(ring, determinant)
 
 

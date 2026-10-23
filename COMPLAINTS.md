@@ -232,19 +232,21 @@ under DEV-58. This does not close the promised constructive basis case.
 **Scalar ingress into form construction:** the real field now retains
 its usual ordered-ring placement, previously absent from its constructing
 category despite the signature route requiring it. Real Gram determinants
-use Sage's small-rank formulas or division-free characteristic polynomial
-to avoid undecided pivots. The regularity and unimodularity predicates preserve undecided
+now use the real field's Sage determinant protocol: symbolic division-free
+arithmetic for closed expressions, and ball-coefficient division-free
+arithmetic with a regular Cauchy limit for general presentations. The
+regularity and unimodularity predicates preserve undecided
 unit/nonzero propositions, and finite-rank evenness preserves actual
 ideal-membership propositions. A Cauchy presentation of zero supplies the
 written separating construction specimen. General returned bases remain
 an unresolved computation; these repairs are source findings and changes.
-There is also a higher-rank normalization boundary in Sage's inspected
-`_charpoly_df`: its intermediate coefficient polynomial can require a
-leading zero decision before the monic term is added. The trace coefficient
-of `diag(x,-x,1,-1)` with Cauchy-presented x is a separating example.
-This is source evidence of a remaining applicability question, not an
-executed failure or proof that all maintained determinant routes fail.
-It remains with `hyperbolic-splitting-dependency-tools` in TODO.md.
+The intermediate coefficient normalization of Sage's `_charpoly_df`
+now takes place over ball coefficients for Cauchy inputs. A ball containing
+zero survives that support test unless it is the exact zero ball, so no
+underlying real equality is decided there. The theory note proves the
+enclosure-to-Cauchy construction, and the trace-zero rank-four and singular
+specimens remain written but unexecuted. General returned bases and their
+maps remain with `hyperbolic-splitting-dependency-tools` in TODO.md.
 
 **Fresh norm-fibre point selection:** the zero-norm fibre previously needed
 manual admission of zero before its set computation could select a point

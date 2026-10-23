@@ -318,13 +318,10 @@ downstream maps remain part of the open dependency assignment.
 **Construction with undecided scalar predicates.** Gram nondegeneracy
 and unimodularity preserve the unit/nonzero propositions instead of
 converting them to Python booleans. Finite-rank evenness combines its
-actual diagonal ideal-membership propositions. For real Gram
-determinants, the source selects Sage's maintained
-[`determinant(algorithm="df")`](https://doc.sagemath.org/html/en/reference/matrices/sage/matrix/matrix2.html#sage.matrix.matrix2.Matrix.determinant).
-It uses direct formulas below rank four and otherwise reads
-$\det G=(-1)^r\det(tI-G)|_{t=0}$ from the division-free characteristic
-polynomial. This avoids pivot division. Other coefficient rings retain
-their existing determinant route. The written separating specimen
+actual diagonal ideal-membership propositions. Real Gram determinants
+now enter the real field's standard Sage `_matrix_determinant` protocol,
+described below. Other coefficient rings retain their existing
+determinant route. The written separating specimen
 constructs the rank-one Gram form from $a(n)=2^{-n}$ without forcing
 its still-undecided zero or nonzero proposition.
 RR now also retains its usual ordered-ring placement at construction.
@@ -339,19 +336,60 @@ inventing a mathematical hash or a real equality decision. A Cauchy
 presentation uses a retained identity token for that presentation; it
 does not use the lazy backend's numerical hash.
 
-One further source boundary remains at higher rank: Sage's division-free
-characteristic-polynomial routine constructs an intermediate polynomial
-from the coefficient list before adding its monic term. Dense-polynomial
-normalization can still ask whether a leading coefficient is zero.
-For example, the trace coefficient of
-$\operatorname{diag}(x,-x,1,-1)$ is zero, but that equality need not be
-decided for a general Cauchy presentation of $x$. Eliminating pivot
-division therefore does not establish construction coverage at all ranks.
-The source of
-[`_charpoly_df`](https://github.com/sagemath/sage/blob/develop/src/sage/matrix/matrix2.pyx)
-contains this intermediate polynomial construction. This normalization
-case remains with the dependency owner, alongside general returned bases;
-it has not been declared repaired or diagnosed by a Sage run.
+**Determinants without real coefficient normalization.** Sage's
+division-free characteristic-polynomial routine constructs an intermediate
+coefficient polynomial before adding its monic term. Normalizing that
+polynomial over owned exact reals can ask for a zero decision; the trace
+coefficient of $\operatorname{diag}(x,-x,1,-1)$ is a separating example.
+The real-field protocol now computes that polynomial in the appropriate
+private presentation: symbolic coefficients when every entry supplies a
+closed expression, and Arb ball coefficients for general Cauchy data.
+In both cases it delegates to Sage's maintained
+[`Matrix.charpoly(algorithm="df")`](https://doc.sagemath.org/html/en/reference/matrices/sage/matrix/matrix2.html#sage.matrix.matrix2.Matrix.charpoly),
+then reads $(-1)^r$ times its constant coefficient. No determinant
+algorithm is copied or reimplemented locally.
+
+For ball coefficients, the distinction between the exact zero ball and
+a ball containing zero is essential. Sage documents
+[`RealBall.__bool__`](https://doc.sagemath.org/html/en/reference/rings_numerical/sage/rings/real_arb.html#sage.rings.real_arb.RealBall.__bool__)
+as a polynomial-support test: a ball containing zero is retained unless
+it is exactly the zero ball. That test supplies no nonzero decision
+about the underlying real value. Thus uncertain intermediate trace
+coefficients survive normalization, while a coefficient removed as an
+exact zero ball has no error to lose.
+
+**Proof of the Cauchy determinant contract.**
+
+1. At precision $p$, each input ball contains its actual Gram entry.
+   The maintained division-free computation uses finitely many additions,
+   subtractions and multiplications. Induction over these operations
+   shows that every computed coefficient ball contains the corresponding
+   exact coefficient. Removing only exact zero balls preserves this
+   statement.
+2. For fixed finite rank, these are finite polynomial expressions in
+   the entries. If the entry enclosures converge, all input and
+   intermediate values are bounded near their limits. Continuity of
+   addition and multiplication, together with outward rounding errors
+   tending to zero, implies that the determinant enclosure's diameter
+   tends to zero. No nonsingularity hypothesis is needed.
+3. The shared midpoint construction refines until the rational endpoint
+   diameter is at most $2^{-(n+1)}$. Its rational midpoint therefore has
+   error at most $2^{-(n+2)}$. The earlier triangle-inequality proof
+   supplies a regular Cauchy map, and `RR.of_cauchy` returns its actual
+   real limit, namely $\det G$.
+4. The input entries are retained as an immutable finite snapshot.
+   Mutating a native matrix later cannot change this already-constructed
+   real value. Singular inputs still yield a determinant value; this
+   algorithm does not turn an enclosure containing zero into an equality
+   or nondegeneracy decision.
+
+The written rank-four specimens use $x=\lim_n(1+2^{-n})$ in the trace-zero
+diagonal form above, giving determinant $1$ and signature $(2,2)$, and
+$z=\lim_n2^{-n}$ in $\operatorname{diag}(z,1,1,1)$, giving determinant
+$0$ while its zero test may stay undecided. A closed-expression rank-four
+form preserves the exact symbolic result. These specimens remain
+unexecuted under DEV-58. General returned bases remain an open
+dependency; this determinant construction does not supply one.
 
 **Current represented-real route.** This computation takes elements of
 `RR` through their closed exact real expressions. The lattice operations
