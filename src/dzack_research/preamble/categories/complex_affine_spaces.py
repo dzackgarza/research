@@ -199,7 +199,7 @@ class ComplexAffineSpaces(OwnedCategory):
 
         def difference(self, left, right):
             r"""The model vector carrying ``right`` to ``left``."""
-            pass
+            return self.underlying_torsor().difference(left, right)
 
         def chart_at(self, origin):
             r"""The global holomorphic chart carrying ``origin`` to zero of the model space."""
