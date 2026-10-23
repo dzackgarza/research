@@ -1,0 +1,185 @@
+r"""Complex affine chart models over the exact complex field."""
+
+from sage.categories.category import Category
+from sage.categories.morphism import Morphism
+from sage.misc.cachefunc import cached_method
+
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.categories.sets.set_categories import Sets
+from dzack_research.preamble.owned_category import _object_of
+from dzack_research.preamble.rings.complex import CC
+
+
+class ComplexVectorSpaces(OwnedParameterizedCategory):
+    r"""Complex vector spaces of a fixed finite dimension."""
+
+    @staticmethod
+    def __classcall__(cls, dimension):
+        dimension = _owned_integers()(dimension)
+        if dimension < 0:
+            raise ValueError(f"a complex vector-space dimension must be nonnegative, not {dimension}")
+        return Category.__classcall__(cls, dimension)
+
+    def dimension(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [VectorSpaces(CC)]
+
+    def _repr_object_names(self):
+        return f"complex vector spaces of dimension {self.dimension()}"
+
+    def an_object(self):
+        pass
+
+    def __contains__(self, vector_space):
+        return vector_space in VectorSpaces(CC) and vector_space.dimension() == self.dimension()
+
+    def on(self, vector_space):
+        if vector_space not in self:
+            raise TypeError(f"{vector_space} is not a complex vector space of dimension {self.dimension()}")
+        return vector_space
+
+    @cached_method
+    def affinization(self):
+        return _ComplexAffinizationFunctor(self.dimension())
+
+
+class ComplexAffineSpaceMor(CategoricalMor):
+    r"""Affine maps with a complex-linear part and an equivariant point map."""
+
+    class ElementMethods:
+        def __init__(self, parent, linear_part, point_map):
+            Morphism.__init__(self, parent)
+            self._linear_part = linear_part
+            self._point_map = point_map
+
+        def linear_part(self):
+            return self._linear_part
+
+        def point_map(self):
+            return self._point_map
+
+        def _call_(self, point):
+            return self._point_map(point)
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, linear_part, point_map):
+        source = self.domain()
+        target = self.codomain()
+        if (
+            linear_part.domain() is not source.model_vector_space()
+            or linear_part.codomain() is not target.model_vector_space()
+        ):
+            raise ValueError("the linear part must join the selected model spaces")
+        if point_map.domain() is not source.point_set() or point_map.codomain() is not target.point_set():
+            raise ValueError("the point map must join the selected affine point sets")
+        return self.element_class(self, linear_part, point_map)
+
+    @object_level
+    def identity(self):
+        pass
+
+
+class ComplexAffineSpaceMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = ComplexAffineSpaceMor
+
+
+class _ComplexAffinizationFunctor(Functor):
+    def __init__(self, dimension):
+        super().__init__(ComplexVectorSpaces(dimension), ComplexAffineSpaces())
+
+    def _apply_object(self, vector_space):
+        pass
+
+    def _apply_morphism(self, linear_map):
+        pass
+
+
+class _ComplexAffineUnderlyingSetFunctor(Functor):
+    def __init__(self):
+        super().__init__(ComplexAffineSpaces(), Sets())
+
+    def _apply_object(self, affine_space):
+        return affine_space.point_set()
+
+    def _apply_morphism(self, morphism):
+        return morphism.point_map()
+
+
+class _ComplexAffineModelFunctor(Functor):
+    def __init__(self):
+        super().__init__(ComplexAffineSpaces(), VectorSpaces(CC))
+
+    def _apply_object(self, affine_space):
+        return affine_space.model_vector_space()
+
+    def _apply_morphism(self, morphism):
+        return morphism.linear_part()
+
+
+class ComplexAffineSpaces(OwnedCategory):
+    r"""Torsors for additive complex vector spaces, with affine maps."""
+
+    _MorCategory = ComplexAffineSpaceMorCategoryConstruction
+
+    def super_categories(self):
+        return [Objects()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "complex affine spaces"
+
+    def an_object(self):
+        pass
+
+    def on(self, model_vector_space, point_set, translation_action):
+        if model_vector_space not in VectorSpaces(CC):
+            raise TypeError(f"{model_vector_space} is not a complex vector space")
+        return _object_of(
+            self,
+            model_vector_space=model_vector_space,
+            point_set=point_set,
+            translation_action=translation_action,
+        )
+
+    @cached_method
+    def forget(self):
+        return _ComplexAffineUnderlyingSetFunctor()
+
+    @cached_method
+    def model_vector_space(self):
+        return _ComplexAffineModelFunctor()
+
+    class ParentMethods:
+        def __init__(self, model_vector_space, point_set, translation_action, **rest):
+            self._model_vector_space = model_vector_space
+            self._point_set = point_set
+            self._translation_action = translation_action
+            super().__init__(**rest)
+
+        def point_set(self):
+            return self._point_set
+
+        def model_vector_space(self):
+            return self._model_vector_space
+
+        def translation_action(self):
+            return self._translation_action
+
+        def holomorphic_manifold(self):
+            pass
