@@ -317,6 +317,10 @@ from dzack_research.preamble.categories.real_affine_spaces import (  # noqa: F40
     AffineSpacesWithLattice,
     RealAffineSpaces,
 )
+from dzack_research.preamble.categories.metric_affine_spaces import (  # noqa: F401
+    EuclideanSpaces,
+    SphericalSpaces,
+)
 from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
