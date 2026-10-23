@@ -19,7 +19,7 @@ from dzack_research.preamble.categories.topological_spaces import TopologicalSpa
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
-for _axiom in ("Oriented", "StrictLatticePointAtlas", "Sphere"):
+for _axiom in ("Oriented", "StrictLatticePointAtlas", "FiniteSingularSet", "Sphere"):
     if _axiom not in all_axioms:
         all_axioms.add(_axiom)
 
@@ -109,6 +109,55 @@ class IntegralAffineManifolds(OwnedCategory):
 
     class StrictLatticePointAtlas(CategoryWithAxiom):
         r"""Selected atlases whose translations preserve the lattice points."""
+
+
+class IntegralAffineLocalIsomorphismMor(CategoricalMor):
+    r"""Local affine isomorphisms with invertible integral linear parts."""
+
+    class ElementMethods:
+        def underlying_affine_morphism(self):
+            raise NotImplementedError("the local isomorphism must retain its affine arrow")
+
+        def underlying_smooth_morphism(self):
+            raise NotImplementedError("the local isomorphism must retain its smooth arrow")
+
+        def __mul__(self, other):
+            raise NotImplementedError("composition needs the local lattice isomorphisms")
+
+    def _element_constructor_(self, affine_morphism):
+        raise NotImplementedError(
+            "a local isomorphism needs locally invertible affine chart maps "
+            "whose linear parts identify the tangent lattices"
+        )
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a local isomorphism identity requires the same manifold")
+        raise NotImplementedError("the identity needs the selected affine atlas")
+
+
+class IntegralAffineLocalIsomorphismMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = IntegralAffineLocalIsomorphismMor
+
+
+class IntegralAffineLocalIsomorphisms(OwnedCategory):
+    r"""The wide subcategory with local integral-affine isomorphisms as maps."""
+
+    _MorCategory = IntegralAffineLocalIsomorphismMorCategoryConstruction
+
+    def super_categories(self):
+        return [IntegralAffineManifolds()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "integral-affine manifolds and local isomorphisms"
+
+    def an_object(self):
+        raise NotImplementedError("an integral-affine manifold needs its selected atlas")
+
+    def on(self, smooth_manifold, affine_atlas):
+        raise NotImplementedError("construction must retain the ordinary affine object and atlas")
 
 
 class _StratifiedIntegralAffineMapMethods:
@@ -335,6 +384,17 @@ class SingularIntegralAffineSpaces(OwnedCategory):
 
         def regular_locus(self):
             raise NotImplementedError("the constructor must retain the exact complement inclusion")
+
+        def regular_affine_manifold(self):
+            raise NotImplementedError("the constructor must retain the affine structure on the complement")
+
+        def local_monodromy(self, singular_point, loop, affine_frame):
+            raise NotImplementedError(
+                "local monodromy needs a specified punctured loop and affine frame"
+            )
+
+    class FiniteSingularSet(CategoryWithAxiom):
+        r"""Singular affine spaces whose selected singular locus is finite."""
 
     class Sphere(CategoryWithAxiom):
         r"""Singular integral-affine spaces whose underlying space is a sphere."""
