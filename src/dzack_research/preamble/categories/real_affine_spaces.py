@@ -7,7 +7,6 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
-    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -22,7 +21,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.rings.real import RR
 
 
@@ -94,37 +92,15 @@ class RealAffineSpaceMor(CategoricalMor):
             return self._point_map(point)
 
         def __mul__(self, other):
-            if not _precomposable(self, other):
-                return NotImplemented
-            return RealAffineSpaces().Mor(other.domain(), self.codomain())(
-                self.linear_part() * other.linear_part(),
-                self.point_map() * other.point_map(),
-            )
+            pass
 
     def _element_constructor_(self, linear_part, point_map):
-        source = self.domain()
-        target = self.codomain()
-        if (
-            linear_part.domain() is not source.model_vector_space()
-            or linear_part.codomain() is not target.model_vector_space()
-        ):
-            raise ValueError("the linear part must join the selected model spaces")
-        if point_map.domain() is not source.point_set() or point_map.codomain() is not target.point_set():
-            raise ValueError("the point map must join the selected affine point sets")
-        return self.element_class(self, linear_part, point_map)
+        pass
 
     @object_level
     @cached_method
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("an affine-space identity requires the same source and target")
-        space = self.domain()
-        model = space.model_vector_space()
-        points = space.point_set()
-        return self(
-            VectorSpaces(RR).Mor(model, model).identity(),
-            Sets().Mor(points, points).identity(),
-        )
+        pass
 
 
 class RealAffineSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -189,14 +165,7 @@ class RealAffineSpaces(OwnedCategory):
 
     def on(self, model_vector_space, point_set, translation_action):
         r"""Select a free transitive action of the model space on ``point_set``."""
-        if model_vector_space not in VectorSpaces(RR):
-            raise TypeError(f"{model_vector_space} is not a real vector space")
-        return _object_of(
-            self,
-            model_vector_space=model_vector_space,
-            point_set=point_set,
-            translation_action=translation_action,
-        )
+        pass
 
     @cached_method
     def forget(self):
@@ -255,40 +224,15 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
             return self._affine_map(point)
 
         def __mul__(self, other):
-            if not _precomposable(self, other):
-                return NotImplemented
-            return AffineSpacesWithLattice().Mor(other.domain(), self.codomain())(
-                self.affine_map() * other.affine_map(),
-                self.lattice_map() * other.lattice_map(),
-            )
+            pass
 
     def _element_constructor_(self, affine_map, lattice_map):
-        source = self.domain()
-        target = self.codomain()
-        if (
-            affine_map.domain() is not source.underlying_affine_space()
-            or affine_map.codomain() is not target.underlying_affine_space()
-        ):
-            raise ValueError("the affine map must join the selected affine spaces")
-        if (
-            lattice_map.domain() is not source.affine_lattice()
-            or lattice_map.codomain() is not target.affine_lattice()
-        ):
-            raise ValueError("the lattice map must join the selected lattices")
-        return self.element_class(self, affine_map, lattice_map)
+        pass
 
     @object_level
     @cached_method
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a lattice affine-space identity requires the same source and target")
-        space = self.domain()
-        affine = space.underlying_affine_space()
-        lattice = space.affine_lattice()
-        return self(
-            RealAffineSpaces().Mor(affine, affine).identity(),
-            FinitelyGeneratedFreeModules(_owned_integers()).Mor(lattice, lattice).identity(),
-        )
+        pass
 
 
 class AffineSpaceWithLatticeMorCategoryConstruction(MorCategoryConstruction):
@@ -338,15 +282,7 @@ class AffineSpacesWithLattice(OwnedCategory):
 
     def on(self, affine_space, lattice_inclusion):
         r"""Select a full integral lattice in the model of ``affine_space``."""
-        if affine_space not in RealAffineSpaces():
-            raise TypeError(f"{affine_space} is not a real affine space")
-        if lattice_inclusion.codomain() is not affine_space.model_vector_space():
-            raise ValueError("the lattice inclusion must land in the selected model space")
-        return _object_of(
-            self,
-            affine_space=affine_space,
-            lattice_inclusion=lattice_inclusion,
-        )
+        pass
 
     @cached_method
     def forget(self):

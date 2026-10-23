@@ -18,7 +18,6 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import Sets
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.rings.complex import CC
 
 
@@ -79,16 +78,7 @@ class ComplexAffineSpaceMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, linear_part, point_map):
-        source = self.domain()
-        target = self.codomain()
-        if (
-            linear_part.domain() is not source.model_vector_space()
-            or linear_part.codomain() is not target.model_vector_space()
-        ):
-            raise ValueError("the linear part must join the selected model spaces")
-        if point_map.domain() is not source.point_set() or point_map.codomain() is not target.point_set():
-            raise ValueError("the point map must join the selected affine point sets")
-        return self.element_class(self, linear_part, point_map)
+        pass
 
     @object_level
     def identity(self):
@@ -163,14 +153,7 @@ class ComplexAffineSpaces(OwnedCategory):
         pass
 
     def on(self, model_vector_space, point_set, translation_action):
-        if model_vector_space not in VectorSpaces(CC):
-            raise TypeError(f"{model_vector_space} is not a complex vector space")
-        return _object_of(
-            self,
-            model_vector_space=model_vector_space,
-            point_set=point_set,
-            translation_action=translation_action,
-        )
+        pass
 
     @cached_method
     def forget(self):
