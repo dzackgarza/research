@@ -1437,15 +1437,15 @@ def _nonsingular_real_signature(gram: Tensor):
     size = int(_gram_rank(gram))
     if size == 0:
         return signature_pair(0, 0)
-    expressions = {
-        (i, j): _engine_element(RR, gram[i, j])
+    entries = {
+        (i, j): RR(gram[i, j])
         for i in range(size) for j in range(i, size)
     }
     precision = 128
     while True:
         balls = {
-            indices: RealBallField(precision)(expression)
-            for indices, expression in expressions.items()
+            indices: RealBallField(precision)(entry)
+            for indices, entry in entries.items()
         }
         precision *= 2
         # A domain-sensitive expression may have an unbounded enclosure

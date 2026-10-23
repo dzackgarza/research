@@ -320,6 +320,25 @@ class ExactRealNumber(FieldElement):
     def _mpfr_(self, field):
         return field(self._expression)
 
+    def _arb_(self, field):
+        r"""Enclose this exact real using Arb's expression evaluation.
+
+        This is Sage's designated real-ball conversion protocol. The
+        exact expression is evaluated directly with outward error bounds;
+        an MPFR approximation must not stand in for that enclosure.
+
+        EXAMPLES::
+
+            sage: from sage.rings.real_arb import RealBallField
+            sage: B = RealBallField(128)
+            sage: ball = B(RR.pi())
+            sage: assert ball.lower().exact_rational() > 3
+            sage: assert ball.upper().exact_rational() < 22/7
+            sage: assert (B(RR(2).sqrt())**2).contains(2)
+            sage: assert B(RR.zero()).is_zero()
+        """
+        return field(self._expression)
+
     def _real_double_(self, field):
         return field(self._expression)
 

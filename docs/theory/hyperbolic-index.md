@@ -189,8 +189,8 @@ general program-supplied approximations need their own scalar presentation.
 The existing closed-expression route is now connected at
 `BilinearFormModules(RR).Symmetric().signature_pair` for finite forms
 already placed in `FormModules(RR).Nondegenerate()`. Its private
-`_nonsingular_real_signature` computation evaluates upper-triangular
-entries with Arb, reflects the same enclosures across the diagonal and
+`_nonsingular_real_signature` computation converts the actual owned
+upper-triangular entries to Arb balls, reflects the same enclosures across the diagonal and
 converts outward-rounded endpoints to their exact rational values.
 These are Sage's documented
 [`RealBall.endpoints`](https://doc.sagemath.org/html/en/reference/rings_numerical/sage/rings/real_arb.html#sage.rings.real_arb.RealBall.endpoints)
@@ -207,6 +207,18 @@ Nonfinite intermediate enclosures are refined; unsupported expression
 evaluation errors propagate. Termination requires convergent enclosures
 for the supplied expressions, not merely their syntactic admission into
 RR. No arbitrary fixed precision budget is imposed by this computation.
+
+The scalar conversion uses Sage's
+[`_arb_` protocol](https://github.com/sagemath/sage/blob/develop/src/sage/rings/real_arb.pyx).
+`ExactRealNumber._arb_` evaluates the stored exact expression in the
+requested ball field, retaining its outward error bounds. The signature
+computation consumes that conversion instead of requiring symbolic
+serialization of every entry. It does not enclose an already-rounded
+MPFR value. Source specimens check the independent bounds $3<\pi<22/7$,
+containment of $2$ in the square of the enclosure of $\sqrt2$, and exact
+zero; they remain unexecuted under DEV-58. A future Cauchy presentation
+must supply the same scalar conversion from its rational approximations
+and error bounds; this hook does not itself admit those inputs.
 
 Unplaced or degenerate forms retain the existing congruence route; the
 approximation computation is never used to decide their singularity.
