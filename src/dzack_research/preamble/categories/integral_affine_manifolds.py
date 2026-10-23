@@ -503,7 +503,12 @@ class SingularIntegralAffineSpaces(OwnedCategory):
 
     def on(self, topological_space, singular_locus_inclusion, regular_affine_manifold):
         r"""Select the singular subobject and affine structure on its exact complement."""
-        pass
+        return _object_of(
+            self,
+            topological_space=topological_space,
+            singular_locus_inclusion=singular_locus_inclusion,
+            regular_affine_manifold=regular_affine_manifold,
+        )
 
     def from_face_gluing(self, gluing_cocone, singular_locus_inclusion, affine_collars):
         r"""Select an affine structure from a complex quotient and collar data."""
@@ -522,14 +527,26 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         return _SingularLocusSubobjectFunctor(self)
 
     class ParentMethods:
+        def __init__(
+            self,
+            topological_space,
+            singular_locus_inclusion,
+            regular_affine_manifold,
+            **rest,
+        ):
+            self._topological_space = topological_space
+            self._singular_locus_inclusion = singular_locus_inclusion
+            self._regular_affine_manifold = regular_affine_manifold
+            super().__init__(**rest)
+
         def underlying_topological_space(self):
-            pass
+            return self._topological_space
 
         def singular_locus(self):
-            pass
+            return self.singular_locus_inclusion().domain()
 
         def singular_locus_inclusion(self):
-            pass
+            return self._singular_locus_inclusion
 
         def regular_locus(self):
             pass
@@ -538,7 +555,7 @@ class SingularIntegralAffineSpaces(OwnedCategory):
             pass
 
         def regular_affine_manifold(self):
-            pass
+            return self._regular_affine_manifold
 
         def gluing_cocone(self):
             pass
@@ -595,7 +612,13 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
         regular_affine_manifold,
         local_models=None,
     ):
-        pass
+        return _object_of(
+            self,
+            topological_space=topological_space,
+            singular_locus_inclusion=singular_locus_inclusion,
+            regular_affine_manifold=regular_affine_manifold,
+            local_models=local_models,
+        )
 
     def from_face_gluing(
         self,
@@ -619,8 +642,12 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
         return _SingularLocusSubobjectFunctor(self)
 
     class ParentMethods:
+        def __init__(self, local_models, **rest):
+            self._local_models = local_models
+            super().__init__(**rest)
+
         def local_models(self):
-            pass
+            return self._local_models
 
         def local_model_at(self, singular_point):
             pass
