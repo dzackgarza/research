@@ -121,6 +121,10 @@ class CellComplexes(OwnedCategory):
     def from_attaching_maps(self, cells, attaching_maps):
         pass
 
+    def colimit(self, diagram):
+        r"""Select a complex colimit with its universal cocone."""
+        pass
+
     def face_gluing_diagram(self, pieces, paired_faces, face_isomorphisms):
         r"""Present the finite face-pairing data as a diagram in this category."""
         pass
