@@ -2951,6 +2951,25 @@ class Lattices(OwnedCategoryOverBaseRing):
             the framing labels of \(L\).  Along the identity of \(R\) it is
             \(L\).  Along \(R\to\operatorname{Frac}(R)\) it is the quadratic
             space \(L_K=L\otimes_R K\) that :meth:`vector_space` returns.
+
+            In finite rank, supplied unimodularity survives every base
+            change. Supplied nondegeneracy survives known injective maps
+            between integral domains. Neither is inferred from an
+            arbitrary nonflat base change.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+                sage: L = Lattices(ZZ).Nondegenerate()([[2]])
+                sage: V = L.base_change(ZZ.fraction_field_map())
+                sage: assert V in FormModules(QQ).Nondegenerate()
+                sage: assert V.base_change_source() is L
+                sage: S = ZZ.quotient_ring(ZZ.ideal(2))
+                sage: reduced = L.base_change(S.quotient_map())
+                sage: assert reduced.gram_tensor()[0, 0] == S.zero()
+                sage: assert reduced not in FormModules(S).Nondegenerate()
+                sage: U = Lattices(ZZ).Unimodular()("U")
+                sage: assert U.base_change(S.quotient_map()) in FormModules(S).Unimodular()
             """
             from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
                 FormBaseChanges,

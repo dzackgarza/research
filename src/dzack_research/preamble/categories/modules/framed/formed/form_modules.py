@@ -1455,6 +1455,18 @@ def _formed_module_base_change(self, ring_map):
 
         categories = [FormBaseChanges(target_ring)]
         data = dict(base_change_source=source, base_change_ring_map=ring_map)
+        if _has_finite_framing(form.module()):
+            if source in FormModules(source.base_ring()).Unimodular():
+                # In a finite basis the determinant is a unit, and its
+                # image under every unital ring map remains a unit.
+                categories.append(FormModules(target_ring).Unimodular())
+            elif (source in FormModules(source.base_ring()).Nondegenerate()
+                    and source.base_ring() in OwnedIntegralDomains()
+                    and target_ring in OwnedIntegralDomains()
+                    and ring_map.is_injective() is True):
+                # The finite scalar-valued Gram determinant is nonzero;
+                # the supplied injectivity preserves that same fact.
+                categories.append(FormModules(target_ring).Nondegenerate())
         if source in BilinearFormModules(source.base_ring()).Symmetric():
             categories.append(BilinearFormModules(target_ring).Symmetric())
         if source in Lattices(source.base_ring()):

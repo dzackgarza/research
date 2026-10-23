@@ -2138,6 +2138,23 @@ rank one to the general module-morphism operation.
 
 #### Scalar extension of the maps, not only the forms
 
+**Preserved finite-free form hypotheses.** In a selected finite basis,
+scalar extension sends a Gram matrix $G$ to $\varphi(G)$ and sends its
+determinant to $\varphi(\det G)$, by the determinant's polynomial formula.
+If $\det G$ is a unit, its image is a unit under every unital ring map;
+thus supplied unimodularity is retained without a flatness hypothesis.
+For a finite scalar-valued form over an integral domain, nondegeneracy
+is equivalent to a nonzero determinant. An injective ring map between
+integral domains preserves that nonzero determinant, so the source's
+supplied nondegeneracy is retained when injectivity is known. Unknown
+injectivity supplies no such shortcut. These placements are now
+transported at `_formed_module_base_change`, along with the existing
+source and actual ring map. No claim is made for arbitrary infinite
+duals. Reduction of $\langle2\rangle$ modulo two gives the zero form
+and shows why nondegeneracy cannot be transported along every ring map;
+the unimodular plane $U$ remains unimodular under the same reduction.
+The rational extension and both reduction cases have source specimens.
+
 For scalar-valued formed modules over a commutative ring $R$, a morphism
 is a pair $(f,h)$ with $f:M\to N$ and $h:R\to R$ linear and
 $h(B_M(x,y))=B_N(fx,fy)$. A lattice morphism has $h=1_R$.
