@@ -1404,6 +1404,26 @@ The goal — a mathematically-semantic, Sage-compatible substrate for exact latt
 
 ## Execution order
 
+Rank work by its mathematical consequence before sorting dependencies. The
+priority is: shared wrong answers and failed constructions; reusable operations
+that unblock named computations; required mathematical capability; broad audits,
+interface normalization, typing and cleanup; then optional extensions. State the
+concrete consumer or repeated implementation avoided when promoting a refactor.
+An architectural label, scanner score, issue count or small task size is not a
+payoff. A historical report requires current-source confirmation at selection.
+
+Split a concrete correctness repair out of a whole-repository survey when the
+survey would delay it. Preserve both contracts and make the survey depend on
+the repair. Performance work moves forward only for a measured obstruction to
+a named computation. A constructor that cannot produce its mathematical object
+is a correctness failure, distinct from a general construction-cost survey.
+
+Global API freeze and aggregate acceptance do not supply mathematical inputs to
+independent feature computations. Keep the actual construction dependencies;
+retain every owner-local assertion and the full final acceptance obligations.
+The native order at issue #46 records the current payoff assessment. Milestone
+numbers identify scopes and do not impose a numerical execution order.
+
 Native sub-issue order is the execution priority. `itree next` selects the
 first ready work unit in depth-first order; it does not propagate a consumer's
 priority to its prerequisites. When adding or moving a task, place each open
@@ -1423,7 +1443,9 @@ Validate both the dependency graph and the native traversal order. A clean
 `itree doctor` establishes structural consistency, not agreement with these
 priorities. Check that every open blocker precedes its consumer, no ancestor
 blocks on its descendant, required tasks have no optional prerequisites, and
-each milestone acceptance reaches all of its required work.
+each acceptance issue reaches all work in its stated scope, including required
+tasks moved to another milestone for execution. An acceptance task can follow
+its inputs in a later milestone without losing any of those obligations.
 
 ## Milestone scope
 
