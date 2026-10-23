@@ -294,25 +294,11 @@ def _real_witt_bases(lattice):
     ``quadratic_form__local_field_invariants.rational_diagonal_form``.
     """
     from dzack_research.preamble.categories.sets.finite_families import finite_family
-    from dzack_research.preamble.rings.real import RR
 
     ring = lattice.base_ring()
-    diagonalization = lattice.diagonalization()
-    positive = []
-    negative = []
-    for generator in diagonalization.domain().module_generators():
-        vector = diagonalization(generator)
-        square = lattice.q(vector)
-        sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > 0 else -1)
-        if ring is RR:
-            root = ring._sqrt_of_positive(square if sign > 0 else -square)
-            normalized = vector * ring._divide_by_nonzero(ring.one(), root)
-        else:
-            normalized = vector * (ring.one() / (square if sign > 0 else -square).sqrt())
-        if sign > 0:
-            positive.append(normalized)
-        else:
-            negative.append(normalized)
+    _diagonalization, positive_data, negative_data = _real_normalized_diagonal_basis(lattice)
+    positive = [entry[2] for entry in positive_data]
+    negative = [entry[2] for entry in negative_data]
     index = min(len(positive), len(negative))
     hyperbolic = tuple(
         vector
@@ -321,6 +307,95 @@ def _real_witt_bases(lattice):
     )
     anisotropic = (*positive[index:], *negative[index:])
     return finite_family(anisotropic), finite_family(hyperbolic)
+
+
+def _real_normalized_diagonal_basis(lattice):
+    r"""Retain diagonal labels, positive root scales and normalized vectors."""
+    from dzack_research.preamble.rings.real import RR
+
+    ring = lattice.base_ring()
+    diagonalization = lattice.diagonalization()
+    positive, negative = [], []
+    for label in diagonalization.domain().module_generating_set():
+        vector = diagonalization(diagonalization.domain().module_generator(label))
+        square = lattice.q(vector)
+        sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > 0 else -1)
+        if ring is RR:
+            root = ring._sqrt_of_positive(square if sign > 0 else -square)
+            normalized = vector * ring._divide_by_nonzero(ring.one(), root)
+        else:
+            root = (square if sign > 0 else -square).sqrt()
+            normalized = vector * (ring.one() / root)
+        if sign > 0:
+            positive.append((label, root, normalized))
+        else:
+            negative.append((label, root, normalized))
+    return diagonalization, positive, negative
+
+
+def _real_witt_decomposition(lattice):
+    r"""Assemble the real Witt isometry with explicit inverse coordinates.
+
+    If x has diagonal coordinates c_i and v_i=r_i p_i, its normalized
+    coordinates are r_i c_i. For e=p+n, f=(p-n)/2, the coordinates become
+    ((a+b)/2, a-b). No span or inverse is rediscovered.
+    """
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    ring = lattice.base_ring()
+    diagonalization, positive, negative = _real_normalized_diagonal_basis(lattice)
+    index = min(len(positive), len(negative))
+    remaining = (*positive[index:], *negative[index:])
+    signs = [1] * (len(positive) - index) + [-1] * (len(negative) - index)
+    complement = Lattices(ring).Nondegenerate()([
+        [ring(signs[i]) if i == j else ring.zero() for j in range(len(signs))]
+        for i in range(len(signs))
+    ]) if signs else Lattices(ring).Nondegenerate()(0)
+    hyperbolic = Lattices(ring)("U") ** index
+    normal = Lattices(ring).orthogonal_sum((hyperbolic, complement))
+    half = ring.one() / ring(2)
+    images = tuple(
+        vector
+        for p, n in zip(positive[:index], negative[:index], strict=True)
+        for vector in (p[2] + n[2], (p[2] - n[2]) * half)
+    )
+    h_labels = tuple(hyperbolic.module_generating_set())
+    a_labels = tuple(complement.module_generating_set())
+    h_projection, a_projection = normal.projection(0), normal.projection(1)
+
+    def forward_image(label):
+        generator = normal.module_generator(label)
+        h, a = h_projection(generator), a_projection(generator)
+        return sum(
+            (image * h(key) for key, image in zip(h_labels, images, strict=True)),
+            lattice.zero(),
+        ) + sum(
+            (entry[2] * a(key) for key, entry in zip(a_labels, remaining, strict=True)),
+            lattice.zero(),
+        )
+
+    h_inclusion, a_inclusion = normal.injection(0), normal.injection(1)
+
+    def backward_image(label):
+        coordinates = diagonalization.inverse()(lattice.module_generator(label))
+        h_coefficients = []
+        for p, n in zip(positive[:index], negative[:index], strict=True):
+            a, b = p[1] * coordinates(p[0]), n[1] * coordinates(n[0])
+            h_coefficients.extend(((a + b) * half, a - b))
+        h = hyperbolic.linear_combination(dict(zip(h_labels, h_coefficients, strict=True)))
+        a = complement.linear_combination({
+            key: entry[1] * coordinates(entry[0])
+            for key, entry in zip(a_labels, remaining, strict=True)
+        })
+        return h_inclusion(h) + a_inclusion(a)
+
+    forward = normal.module_category().Mor(normal, lattice)(forward_image)
+    backward = lattice.module_category().Mor(lattice, normal)(backward_image)
+    module_isomorphism = normal.module_category().Core().Mor(normal, lattice)._from_known_inverse_pair(
+        forward, backward,
+    )
+    isometries = normal.Isom(lattice)
+    return isometries.element_class(isometries, module_isomorphism)
 
 
 def _raise_lattice_direction(lattice, coordinates):

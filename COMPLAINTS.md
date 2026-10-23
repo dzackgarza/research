@@ -148,7 +148,7 @@ asserted missing. Pending definite, negative-definite, empty and rank-zero
 specimens are in the method docstring and owned by
 `hyperbolic-splitting-dependency-tools` in TODO.md. Execution remains under T.
 
-### Computable-real norm and Witt constructions still need complete normalization and map routing
+### Generic computable-real linear algebra still has partial scalar decisions
 
 The owned exact `RR` field supplies closed real expressions and now regular
 rational Cauchy presentations in the same real field, with arithmetic,
@@ -172,10 +172,10 @@ and computes roots and quotients under the resulting positivity hypotheses.
 For nonsingular RR forms, `_real_representation_witness` now also refines
 signs and normalizes under established hypotheses, once the requested
 norm has decided zero status. Arbitrary requested-real zero status remains
-partial. Complete downstream map routing for Cauchy inputs remains open:
-`witt_decomposition` still feeds its known basis through `subobject_on`
-and `orthogonal_decomposition`, which normalize a span and compute an
-inverse again instead of retaining the explicit basis-coordinate changes.
+partial. The nonsingular RR `witt_decomposition` now retains explicit
+normalization and pair-coordinate changes, the diagonalization inverse,
+and the actual module biproduct maps. It no longer sends that basis through
+`subobject_on` or `orthogonal_decomposition` to rediscover its span/inverse.
 Arbitrary singular oracle inputs still admit
 no uniform zero decision.
 
@@ -238,7 +238,8 @@ returned-basis computation are supplied. The regular sequence
 `1+2^(-n)`, its actual map, arithmetic, roots, division and signature
 `diag(x,-1)` have written specimens, alongside the off-diagonal pi,
 near-singular positive, empty and singular forms. They remain unexecuted
-under DEV-58. Downstream normalization and map assembly remain open.
+under DEV-58. Nonsingular real normalization and explicit Witt inverse
+maps now have source implementations; the index-wide map audit remains open.
 
 **Scalar ingress into form construction:** the real field now retains
 its usual ordered-ring placement, previously absent from its constructing
@@ -260,8 +261,8 @@ specimens remain written but unexecuted. The real plane, Cauchy plane with
 undecided diagonal zeros and empty space supply the new diagonalization
 specimens. Its actual inverse pair and proof are in the theory note.
 Lattice naming also no longer asks for a real signature that its displayed
-name does not use. Complete downstream normalization and map routing
-remain with `hyperbolic-splitting-dependency-tools` in TODO.md.
+name does not use. The remaining index-wide map audit stays with
+`hyperbolic-splitting-dependency-tools` in TODO.md.
 
 **Fresh norm-fibre point selection:** the zero-norm fibre previously needed
 manual admission of zero before its set computation could select a point

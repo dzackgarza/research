@@ -315,8 +315,8 @@ without a supplied expression. Explicit symbolic and algebraic conversions still
 require an available exact expression. The congruence construction below
 supplies a returned basis. Its nonzero diagonal entries now also supply
 Witt-basis and norm-witness sign/root normalization (the latter with
-decided requested-norm zero status); complete downstream map assembly
-remains part of the open dependency assignment.
+decided requested-norm zero status). The real Witt decomposition now
+also retains its explicit forward and inverse coordinate maps.
 
 **Construction with undecided scalar predicates.** Gram nondegeneracy
 and unimodularity preserve the unit/nonzero propositions instead of
@@ -478,10 +478,33 @@ decision. Thus $p_i=v_i/r_i$ has square $s_i$. Orthogonality is preserved
 by scaling. Pairing a positive $p$ and a negative $n$ gives
 $e=p+n$, $f=(p-n)/2$, with $q(e)=q(f)=0$ and $b(e,f)=1$.
 All unpaired vectors have the same sign, so their span is anisotropic.
-This supplies the normalized basis used by `_real_witt_bases`; assembling
-the returned decomposition through all downstream maps remains an open
-source obligation. General real equality and arbitrary singular input
+This supplies the normalized basis used by `_real_witt_bases` and the
+explicit real decomposition below. General real equality and arbitrary singular input
 are not decided by this promised-nonzero computation.
+
+**The returned real Witt isometry and its inverse.** Write $v_i=r_i p_i$
+for the diagonal basis and its normalization. If the retained inverse
+diagonalization sends $x$ to coordinates $c_i$, then the coordinates of
+$x$ in the normalized basis are $r_i c_i$. For one positive/negative pair
+with those coordinates $a,b$, the change to $e=p+n$, $f=(p-n)/2$ is
+$$a p+b n=\frac{a+b}{2}e+(a-b)f.$$
+Conversely, $u e+v f=(u+v/2)p+(u-v/2)n$, so the two changes compose to
+the identity by direct substitution. Unpaired coordinates are unchanged
+after normalization. Their form is diagonal with entries all $+1$ or all
+$-1$, and its span $A$ is anisotropic. Construct the actual orthogonal sum
+$N=U^w\mathbin{\perp}A$ using the existing module biproduct datum.
+The forward map sends its selected generators to the displayed paired
+vectors and unpaired normalized vectors in $L$. The backward map applies
+the retained diagonalization inverse, the scalings $r_i$, the displayed
+two-coordinate changes and the actual injections into $N$. Both maps
+retain their original labels and endpoints. The coordinate identities
+prove both inverse laws, while orthogonality and the computed pair Gram
+prove preservation of the form. The existing module core retains this
+inverse pair and supplies the lattice isometry $N\to L$. No span
+normalization, rank decision or generic matrix inversion is required.
+Empty hyperbolic or anisotropic factors, including rank zero, retain the
+same scalar field and summand maps. This is the field Witt dependency,
+not an integral hyperbolic-summand algorithm.
 
 **Norm witnesses from the same diagonal basis.** For a nonsingular real
 form, suppose the requested scalar $a$ has decided zero status. If
@@ -1509,7 +1532,7 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Indexed requirement | Current source owner and computation | Coverage still requiring evidence or further computation |
 | --- | --- | --- |
 | Anisotropy and nonzero isotropic witnesses | `form_modules.py`: `is_anisotropic`; `lattices.py`: `is_isotropic`, `isotropic_vector`; rational PARI decision and real congruence routes | Exact ZZ/QQ, AA and applicable represented RR cases have source routes; general real-oracle zero decisions are not supplied |
-| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Regular Cauchy admission, nonsingular signature and returned congruence isometry have source routes; Witt-basis sign/root normalization has a source route; nonsingular norm-witness normalization has a source route with decided requested-norm zero status; downstream map assembly remains open |
+| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Regular Cauchy admission, nonsingular signature and returned congruence isometry have source routes; Witt-basis sign/root normalization has a source route; nonsingular norm-witness normalization has a source route with decided requested-norm zero status; real Witt decomposition retains explicit inverse coordinate maps and actual summand maps |
 | Norm fibres, including zero | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: `elements_of_norm`, `representation_vector` | Set inclusion and membership are separate from finding a nonzero point; definite, rank-zero and nonzero split binary integral fibres have finite source routes |
 | Scalar extension of objects and arrows | `FormBaseChanges`, `FormedModuleMorphism.base_change`, `LatticeIsometryMethods.base_change`, module scalar-extension functor | Scalar-valued forms have source routes with actual ring maps and both arrow components; arbitrary value-module extensions remain outside the current computation |
 | Embedding sets, decisions and witnesses | `lattice_morphisms.py`: embedding Mor, `_emptiness_decision`, `an_element`, integral-overlattice factorization and field Witt criterion | Nondegenerate finite ZZ/QQ/AA and applicable RR endpoints have source routes; backend coverage and witness transport remain unexecuted |

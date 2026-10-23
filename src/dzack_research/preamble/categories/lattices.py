@@ -3146,9 +3146,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             normalized hyperbolic pairs and a definite complement. RR
             accepts closed expressions and regular Cauchy presentations;
             nonsingular RR Witt-basis normalization refines signs under
-            known nonzero hypotheses. Downstream map assembly remains
-            conditional on its scalar decisions. An undecided comparison
-            is refused.
+            known nonzero hypotheses. Explicit normalization and pair
+            coordinate changes retain the inverse of the returned map,
+            without generic span reduction or another matrix inversion.
 
             EXAMPLES::
 
@@ -3171,6 +3171,20 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert phi.domain().biproduct_factor(0).module_rank() == 2
                 sage: assert phi.domain().biproduct_factor(1).is_anisotropic() is True
                 sage: assert all(phi(phi.inverse()(v)) == v for v in V.module_generators())
+                sage: Z = Lattices(RR).Nondegenerate()(0)
+                sage: empty = Z.witt_decomposition()
+                sage: assert empty.codomain() is Z
+                sage: assert empty.domain().biproduct_factor(0).module_rank() == 0
+                sage: assert empty.domain().biproduct_factor(1).module_rank() == 0
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1) + QQ(1)/QQ(2)**int(n))
+                sage: x = RR.of_cauchy(a)
+                sage: C = Lattices(RR).Nondegenerate()([[x, 0, 0], [0, -x, 0], [0, 0, x]])
+                sage: eta = C.witt_decomposition()
+                sage: assert eta.codomain() is C and eta.inverse().domain() is C
+                sage: assert eta.inverse().codomain() is eta.domain()
+                sage: assert eta.domain().biproduct_factor(0).module_rank() == 2
+                sage: assert eta.domain().biproduct_factor(1).module_rank() == 1
                 sage: assert Lattices(AA)(0).witt_decomposition().domain().module_rank() == 0
                 sage: V = Lattices(RR)([[RR.pi(), 0], [0, -1]])
                 sage: phi = V.witt_decomposition()
@@ -3198,7 +3212,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 anisotropic_basis, hyperbolic_basis = (
                     lattice_engines._oscar_lattices.rational_witt_bases(self)
                 )
-            elif field in (_owned_real_algebraic_numbers(), RR):
+            elif field is RR:
+                return lattice_engines._real_witt_decomposition(self)
+            elif field is _owned_real_algebraic_numbers():
                 anisotropic_basis, hyperbolic_basis = (
                     lattice_engines._real_witt_bases(self)
                 )
