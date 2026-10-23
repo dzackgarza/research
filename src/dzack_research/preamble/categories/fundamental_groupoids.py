@@ -1,6 +1,7 @@
 r"""Fundamental groupoids of owned topological spaces."""
 
 from sage.categories.morphism import Morphism
+from sage.structure.element import parent as element_parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -15,6 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.owned_category import _object_of
 
 
 class FundamentalPathMor(CategoricalMor):
@@ -68,7 +70,9 @@ class FundamentalGroupoid(OwnedParameterizedCategory):
 
     def point(self, value):
         r"""The object at a point of the selected topological space."""
-        pass
+        if element_parent(value) is not self.space():
+            raise TypeError("a groupoid point must belong to the selected space")
+        return _object_of(self, point=value)
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
