@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.sets.finite_graded_posets import FiniteGradedPosets
 from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
@@ -119,10 +118,10 @@ class _ComplexRealizationFunctor(Functor):
 
 
 class _ComplexFacePosetFunctor(Functor):
-    r"""Send a finite complex and its cellular maps to face posets."""
+    r"""Send a complex and its cellular maps to incidence posets."""
 
     def __init__(self, source_category):
-        super().__init__(source_category, FiniteGradedPosets())
+        super().__init__(source_category, PartiallyOrderedSets())
 
     def _apply_object(self, complex_):
         return complex_.face_poset()
