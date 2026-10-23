@@ -170,6 +170,12 @@ Let `V` be a real vector space of dimension `n` with a full lattice
 
 `Aff_Lambda(V) = GL(Lambda) semidirect V`.
 
+An affine space modelled on `V` is a nonempty torsor for the additive group
+of `V`. Its translation action and point-difference map satisfy
+`(p - q) + q = p` and `(v + p) - p = v`. The constructor takes a point as a
+witness of nonemptiness without selecting an origin of the affine space.
+These are the additive torsor laws in Mathlib's `Algebra/Torsor/Defs.lean`.
+
 An integral-affine atlas on a real `n`-manifold `B` consists of charts to open
 subsets of `V` whose changes of coordinates are restrictions of elements of
 `Aff_Lambda(V)`. Equivalently, it is a maximal atlas of that kind. A specified
