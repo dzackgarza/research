@@ -4,7 +4,7 @@ Implement issue work directly on `main`. Use a branch only when parallel work
 requires a separate worktree. The [delivery policy](CONTRIBUTING.md#delivery-workflow)
 overrides `itree next`'s generic instruction to open a PR.
 
-The live work programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Its first milestone is [resumed research and port delivery, #414](https://github.com/dzackgarza/research/issues/414), followed by the M1–M5 milestones.
+The live work programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Resumed repairs precede M1–M4 and the remaining required branches. Optional M5 follows required work. The [execution-order rule](AGENTS.md#execution-order) governs native sibling order and prerequisite placement.
 
 Task contracts, mathematical specimens, acceptance conditions, priority rules and completion state live in the issues. Native sub-issues record the ordered branches. Native blocked-by relations record unfinished prerequisites. This file maps the former source identifiers to their issue owners; it does not maintain a second status or dependency graph.
 
@@ -28,7 +28,6 @@ Task contracts, mathematical specimens, acceptance conditions, priority rules an
 | `port-rank-three-isotropic-traversal` | [#424](https://github.com/dzackgarza/research/issues/424) |
 | `port-nonscalar-component-centralizers` | [#425](https://github.com/dzackgarza/research/issues/425) |
 | `port-handoff-frozen-acceptance` | [#426](https://github.com/dzackgarza/research/issues/426) |
-| `resumed-handoff-delivery` | [#427](https://github.com/dzackgarza/research/issues/427) |
 
 ## M1 — Daily mathematical work
 
@@ -121,6 +120,9 @@ Task contracts, mathematical specimens, acceptance conditions, priority rules an
 | `triage-long-tail` | [#496](https://github.com/dzackgarza/research/issues/496) |
 | `suite-within-time-gates` | [#497](https://github.com/dzackgarza/research/issues/497) |
 | `terminal-session` | [#498](https://github.com/dzackgarza/research/issues/498) |
+| `resumed-handoff-delivery` | [#427](https://github.com/dzackgarza/research/issues/427) |
+| `sheaves-compute-sections-on-opens` | [#500](https://github.com/dzackgarza/research/issues/500) |
+| `geometry-stub-operations-compute` | [#501](https://github.com/dzackgarza/research/issues/501) |
 
 ## M4 — Required mathematical expansion
 
@@ -129,8 +131,6 @@ Task contracts, mathematical specimens, acceptance conditions, priority rules an
 | Source identifier | Issue |
 | --- | --- |
 | `nonaffine-structure-sheaf-coverage` | [#499](https://github.com/dzackgarza/research/issues/499) |
-| `sheaves-compute-sections-on-opens` | [#500](https://github.com/dzackgarza/research/issues/500) |
-| `geometry-stub-operations-compute` | [#501](https://github.com/dzackgarza/research/issues/501) |
 | `modular-form-spaces-with-character` | [#502](https://github.com/dzackgarza/research/issues/502) |
 | `theta-cusp-form-coordinates` | [#503](https://github.com/dzackgarza/research/issues/503) |
 | `definite-representation-exceptions` | [#504](https://github.com/dzackgarza/research/issues/504) |
@@ -180,6 +180,7 @@ Task contracts, mathematical specimens, acceptance conditions, priority rules an
 | `k3-sheaf-moduli-and-caldararu-classes` | [#548](https://github.com/dzackgarza/research/issues/548) |
 | `discriminant-lagrangian-elements-and-subsets` | [#549](https://github.com/dzackgarza/research/issues/549) |
 | `extended-mathematics-session` | [#550](https://github.com/dzackgarza/research/issues/550) |
+| `optional-manifold-tangent-bundles` (historical identifier; required by #520) | [#553](https://github.com/dzackgarza/research/issues/553) |
 
 ## M5 — Optional research extensions
 
@@ -189,7 +190,6 @@ Task contracts, mathematical specimens, acceptance conditions, priority rules an
 | --- | --- |
 | `optional-framed-manifolds` | [#551](https://github.com/dzackgarza/research/issues/551) |
 | `optional-brauer-manin-obstructions` | [#552](https://github.com/dzackgarza/research/issues/552) |
-| `optional-manifold-tangent-bundles` | [#553](https://github.com/dzackgarza/research/issues/553) |
 | `optional-random-lattices-of-given-invariants` | [#554](https://github.com/dzackgarza/research/issues/554) |
 | `optional-moduli-of-stable-curves` | [#555](https://github.com/dzackgarza/research/issues/555) |
 | `optional-sage-categories-property-layer` | [#556](https://github.com/dzackgarza/research/issues/556) |
