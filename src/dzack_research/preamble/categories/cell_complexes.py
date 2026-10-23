@@ -43,6 +43,12 @@ class _ComplexMapMethods:
     def face_poset_map(self):
         pass
 
+    def is_homotopic_to(self, other):
+        pass
+
+    def is_weak_equivalence(self):
+        pass
+
 
 class _ComplexMor(CategoricalMor):
     ElementMethods = _ComplexMapMethods
@@ -73,13 +79,6 @@ class DeltaComplexMor(_ComplexMor):
 
 class SimplicialSetMor(_ComplexMor):
     r"""Maps commuting with faces and degeneracies in every degree."""
-
-    class ElementMethods(_ComplexMapMethods):
-        def is_homotopic_to(self, other):
-            pass
-
-        def is_weak_equivalence(self):
-            pass
 
 
 class CellComplexMorCategoryConstruction(MorCategoryConstruction):
