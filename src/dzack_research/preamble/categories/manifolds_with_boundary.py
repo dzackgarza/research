@@ -13,6 +13,7 @@ from dzack_research.preamble.categories.manifolds import (
     SmoothManifolds,
     TopologicalManifolds,
 )
+from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
 
 class _StratifiedManifoldMapMethods:
@@ -96,6 +97,19 @@ class _UnderlyingTopologicalStrataFunctor(Functor):
         return morphism.underlying_topological_stratified_map()
 
 
+class _UnderlyingStratifiedSpaceFunctor(Functor):
+    r"""Forget the manifold atlas and strata, on spaces and maps."""
+
+    def __init__(self, source):
+        super().__init__(source, TopologicalSpaces())
+
+    def _apply_object(self, manifold):
+        return manifold.underlying_topological_space()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_continuous_map()
+
+
 class _StratifiedManifoldMethods:
     def dimension(self):
         pass
@@ -110,6 +124,9 @@ class _StratifiedManifoldMethods:
         pass
 
     def depth_stratum(self, depth):
+        pass
+
+    def underlying_topological_space(self):
         pass
 
 
@@ -134,6 +151,10 @@ class TopologicalManifoldsWithBoundary(OwnedCategory):
     @cached_method
     def interior(self):
         return _InteriorFunctor(self, TopologicalManifolds())
+
+    @cached_method
+    def forget(self):
+        return _UnderlyingStratifiedSpaceFunctor(self)
 
     class ParentMethods(_StratifiedManifoldMethods):
         def boundary(self):
@@ -166,6 +187,10 @@ class SmoothManifoldsWithBoundary(OwnedCategory):
     def forget_smoothness(self):
         return _UnderlyingTopologicalStrataFunctor(self, TopologicalManifoldsWithBoundary())
 
+    @cached_method
+    def forget(self):
+        return _UnderlyingStratifiedSpaceFunctor(self)
+
     class ParentMethods(_StratifiedManifoldMethods):
         def boundary(self):
             pass
@@ -196,6 +221,10 @@ class TopologicalManifoldsWithCorners(OwnedCategory):
     def interior(self):
         return _InteriorFunctor(self, TopologicalManifolds())
 
+    @cached_method
+    def forget(self):
+        return _UnderlyingStratifiedSpaceFunctor(self)
+
     class ParentMethods(_StratifiedManifoldMethods):
         pass
 
@@ -225,6 +254,10 @@ class SmoothManifoldsWithCorners(OwnedCategory):
     @cached_method
     def forget_smoothness(self):
         return _UnderlyingTopologicalStrataFunctor(self, TopologicalManifoldsWithCorners())
+
+    @cached_method
+    def forget(self):
+        return _UnderlyingStratifiedSpaceFunctor(self)
 
     class ParentMethods(_StratifiedManifoldMethods):
         def underlying_topological_stratified_manifold(self):
