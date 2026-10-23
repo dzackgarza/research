@@ -156,7 +156,7 @@ class _PlacedPolytopeFacePosetFunctor(Functor):
         super().__init__(source, AbstractPolytopes())
 
     def _apply_object(self, polytope):
-        return polytope.face_poset()
+        pass
 
     def _apply_morphism(self, morphism):
         return morphism.face_poset_map()
