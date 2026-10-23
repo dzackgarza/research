@@ -569,6 +569,13 @@ function rational_witt_index(gram_entries)
     return div(nrows(hyperbolic), 2)
 end
 
+function rational_witt_bases(gram_entries)
+    gram = _qq_matrix(gram_entries)
+    anisotropic, hyperbolic, radical = Oscar.Hecke._quadratic_form_decomposition(gram)
+    nrows(radical) == 0 || error("Witt decomposition requires a nondegenerate quadratic space")
+    return [anisotropic, hyperbolic]
+end
+
 function number_field_spinor_norm_class(defining_coefficients, gram_entries, isometry_entries)
     K, a = _number_field(defining_coefficients)
     gram = _number_field_matrix(K, a, gram_entries)
@@ -746,6 +753,40 @@ class _OscarLatticeAdapter:
         if not 0 <= 2 * index <= engine_gram.nrows():
             raise ArithmeticError(f"OSCAR computed Witt index {index} for the form {gram}, but a Witt index r satisfies 0 <= 2r <= the dimension")
         return index
+
+    def rational_witt_bases(self, lattice):
+        r"""Raise Hecke's two Witt-summand bases into the given QQ-lattice.
+
+        Private supplier to ``Lattices.witt_decomposition``. This extends
+        the same selected Hecke computation as ``rational_witt_index``;
+        it retains the computed basis instead of discarding it. In
+        Hecke ``src/QuadForm/Quad/Spaces.jl``,
+        ``_quadratic_form_decomposition`` returns the anisotropic,
+        hyperbolic and radical basis matrices; its
+        ``_find_hyperbolic_subspace`` normalizes each successive pair to
+        square zero and mutual pairing one. Each row is therefore an
+        actual summand-basis vector in the original quadratic space.
+        https://github.com/thofma/Hecke.jl/blob/master/src/QuadForm/Quad/Spaces.jl
+
+        No coordinate transpose or basis change is selected here. Rows
+        are only decoded as vectors in the supplied lattice. Empty
+        summands retain their empty finite basis family.
+        """
+        from dzack_research.preamble.categories.sets.finite_families import (
+            finite_family,
+        )
+
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.rational_witt_bases",
+            _rational_engine_matrix(lattice.gram_tensor()),
+        )
+        return tuple(
+            finite_family(
+                tuple(_raise_rational_lattice_vector(lattice, row) for row in basis.rows()),
+                name="Witt summand basis",
+            )
+            for basis in result
+        )
 
     def number_field_spinor_norm_class(self, field, gram, isometry):
         r"""Return an untwisted spinor-norm representative over the absolute number field ``field``."""

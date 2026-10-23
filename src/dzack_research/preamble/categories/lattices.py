@@ -2883,6 +2883,71 @@ class Lattices(OwnedCategoryOverBaseRing):
             integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(index))
 
+        @cached_method
+        def witt_decomposition(self):
+            r"""Return an isometry ``U^w orthogonal_sum A -> self`` over a field.
+
+            Here ``self`` is nondegenerate and finite-dimensional and
+            ``A`` is anisotropic. The returned domain retains the
+            hyperbolic summand at index zero and ``A`` at index one,
+            including their inclusions and projections. This is the
+            field-valued Witt decomposition of
+            ``LeanCategories/Lattices/Valued/Witt.lean``; the displayed
+            order and direction are fixed by this method's contract.
+            To decompose an integral lattice rationally, first extend
+            scalars along its fraction-field map.
+
+            The QQ computation uses the same maintained Hecke operation
+            as ``witt_index``. Its basis vectors are raised into this
+            space and assembled through the existing hyperbolic-plane,
+            subobject and orthogonal-decomposition constructions.
+
+            EXAMPLES::
+
+                sage: V = Lattices(QQ)("U") + Lattices(QQ)([[-2]])
+                sage: phi = V.witt_decomposition()
+                sage: assert phi.codomain() is V
+                sage: H = phi.domain().biproduct_factor(0)
+                sage: A = phi.domain().biproduct_factor(1)
+                sage: assert H.module_rank() == 2 and A.module_rank() == 1
+                sage: assert A.is_anisotropic() is True
+                sage: assert V.gram_tensor().pullback(phi) == phi.domain().gram_tensor()
+                sage: assert all(phi.inverse()(phi(v)) == v for v in phi.domain().module_generators())
+                sage: Z = Lattices(QQ)(0)
+                sage: assert Z.witt_decomposition().codomain() is Z
+                sage: W = Lattices(QQ)([[1, 0], [0, -2]])
+                sage: assert W.witt_decomposition().domain().biproduct_factor(0).module_rank() == 0
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                OwnedFields,
+                _owned_rationals,
+            )
+
+            field = self.base_ring()
+            assert field in OwnedFields(), (
+                f"a Witt decomposition is taken over a field, but {self} is over {field}; "
+                "extend scalars to the desired field first"
+            )
+            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
+                f"a Witt decomposition of {self} requires a nondegenerate finite-dimensional form"
+            )
+            assert field is _owned_rationals(), (
+                f"a Witt decomposition of {self} is computed here over QQ, not {field}"
+            )
+            anisotropic_basis, hyperbolic_basis = (
+                lattice_engines._oscar_lattices.rational_witt_bases(self)
+            )
+            complement = self.subobject_on(anisotropic_basis)
+            plane = Lattices(field)("U")
+            hyperbolic = plane ** (int(hyperbolic_basis.cardinality()) // 2)
+            labels = hyperbolic.module_generating_set()
+            inclusion = hyperbolic.Mono(self)(
+                lambda label: hyperbolic_basis.value(labels.ranking_map()(label))
+            )
+            return self.orthogonal_decomposition(
+                (inclusion, complement.inclusion())
+            ).inverse()
+
         def is_isotropic(self) -> bool:
             r"""Return whether $L_K$ contains a nonzero isotropic vector.
 
