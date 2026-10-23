@@ -96,6 +96,15 @@ class RealAffineSpaceMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, linear_part, point_map):
+        source = self.domain()
+        target = self.codomain()
+        if (
+            linear_part.domain() is not source.model_vector_space()
+            or linear_part.codomain() is not target.model_vector_space()
+        ):
+            raise ValueError("the linear part must join the selected model spaces")
+        if point_map.domain() is not source.point_set() or point_map.codomain() is not target.point_set():
+            raise ValueError("the point map must join the selected affine point sets")
         return self.element_class(self, linear_part, point_map)
 
     @object_level
@@ -209,6 +218,18 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, affine_map, lattice_map):
+        source = self.domain()
+        target = self.codomain()
+        if (
+            affine_map.domain() is not source.underlying_affine_space()
+            or affine_map.codomain() is not target.underlying_affine_space()
+        ):
+            raise ValueError("the affine map must join the selected affine spaces")
+        if (
+            lattice_map.domain() is not source.affine_lattice()
+            or lattice_map.codomain() is not target.affine_lattice()
+        ):
+            raise ValueError("the lattice map must join the selected lattices")
         return self.element_class(self, affine_map, lattice_map)
 
     @object_level
