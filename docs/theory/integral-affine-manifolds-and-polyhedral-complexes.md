@@ -619,6 +619,36 @@ answer.
 | Polygonal edge pairings, surgery, and displays | The polytope, triangulation, subobject, pushout, manifold, and complex owners above; [`GObjects`](../../src/dzack_research/preamble/categories/group/g_objects.py) for compatible actions. | [`sage-flatsurf`](https://flatsurf.github.io/sage-flatsurf/examples/tour) already supports polygon edge pairings and planar layouts. Its similarity and translation surfaces cover useful special cases, and a [global `GL(2,RR)` action](https://flatsurf.github.io/sage-flatsurf/geometry/morphism.html) does not itself supply chartwise integral shear. A basis-triangle or corner removal selects the affected faces and boundary maps, forms the stated complement or replacement, then uses the category-owned pushout. Drawing consumes the completed quotient and labels; it does not define them. |
 | Dual complexes, actions, and embeddings | A dual-complex construction must consume the degeneration's exact incidence maps; [`GObjects`](../../src/dzack_research/preamble/categories/group/g_objects.py) owns actions, stabilizers, and orbit projections; `Mor` owns embeddings. | Reuse the common complex face-poset and dual-incidence data, not an unrelated graph. Sage's [topology](https://doc.sagemath.org/html/en/reference/topology/index.html) and [graphics](https://doc.sagemath.org/html/en/reference/plotting/index.html), or polymake's complex visualization, can compute and display a placement. [GAP/GRAPE](https://docs.gap-system.org/pkg/grape/doc/manual.pdf) is an optional private automorphism engine if Sage's face-incidence route does not suffice. An embedding in `RR^3` is a selected map of the completed object; a planar net records edge identifications. |
 
+### The two residues after preamble reuse
+
+The table above lists sources. The following ledger separates **what is
+already owned**, **what the first residue can take from existing code**, and
+**what remains to be constructed**. “Construct” means compose existing
+mathematics with its defining maps, or supply a missing formal category; it
+does not mean write a competing computational engine. A candidate in the
+middle column is not an adopted dependency until its precise contract is
+checked against a concrete missing operation.
+
+| Branch | Already in the preamble | First residue: existing code to reuse | Second residue: required new work |
+| --- | --- | --- | --- |
+| Manifold filtration and standard spaces | Topological, differentiable, smooth and complex manifold owners; atlases and transitions. | SageManifolds has differentiability degrees, chart restrictions, standard `RR^n` and spheres. | Present exact dimension and `C^k` refinements, with the correct same-object forgetful functors; establish a constructor that equips an existing manifold when the current owner cannot. |
+| Integral-affine manifolds | Underlying manifold, chart arrows, affine spaces, lattices, and form/module morphisms. | SageManifolds differentiates transition maps and computes tangent data. | Specify the `GL(n,ZZ) ⋉ RR^n` transition predicate and cocycle on the **selected atlas**; connect its derivative to a rank-`n` lattice subsystem and define structure-preserving morphisms. The computation of derivatives is reused. |
+| Sheaves, local systems, marked loci and monodromy | Generic sheaf descent, subobjects, pointed fundamental groups, group-action functors, and a concrete Legendre local system. | Sage/GAP computes edge-path groups; SageManifolds computes bundle and connection data. Cellular-sheaf packages are candidates only for extra sheaf computations. | Make the general local-system construction over the exact open complement and identify its transport with the derivative of the selected atlas. A marked finite subset uses the existing subobject operation. A loop's monodromy is functor evaluation, not a new monodromy algorithm. |
+| Ambient geometries and polytopes | Affine spaces, lattices, formed modules, convex/lattice polytopes, hyperbolic spaces and polyhedra. | Sage Polyhedron/Normaliz compute rational and integral polytope data; Sage has Euclidean, spherical-manifold and hyperbolic models. | Place a polytope in its selected ambient space by an inclusion; retain inclusions of faces. A general spherical geodesic-polytope engine remains a capability question, so no implementation choice is asserted for it. |
+| Abstract incidence, automorphisms and actions | Posets, graphs, groups and `GObjects`; regular-polytope symmetry for its existing special case. | Sage's face lattice and combinatorial/affine automorphism methods; GAP graph algorithms if needed. | Raise the complete face-incidence object and its action as preamble objects and arrows. Test which abstract automorphisms preserve the selected lattice, metric, atlas, or gluing data by the corresponding morphism conditions. |
+| Triangulations and complexes | Cone ray-triangulation and generic colimits; the common cell-complex foundation is pending. | Sage `PointConfiguration`, `Polyhedron.triangulate`, `PolyhedralComplex`, `DeltaComplex`, and `SimplicialComplex`; polymake/Regina as capability-specific alternatives. | Define a chosen triangulation over its original polytope or complex with simplex inclusions and realization map; make integral and unimodular predicates relative to its selected lattice. Present the common complex category and its typed face maps. No triangulation engine is required here. |
+| Gluing, surgery and dual complexes | Pushout/colimit, subobjects, topological quotient, manifold owner and `GObjects`. | Sage `DeltaComplex` handles combinatorial face identifications; sage-flatsurf supplies polygonal translation/similarity gluings and layouts. | Build the typed finite gluing diagram and retain its cocone. Express each surgery as a region inclusion, replacement, boundary isomorphism and pushout; verify the resulting local manifold and affine-chart conditions. Define the dual-complex functor from the source degeneration's incidence maps. |
+| Embeddings and visualization | Morphisms, ambient spaces, group actions and completed quotient objects. | Sage graphics, sage-flatsurf layouts and polymake visualizations. | Store an actual embedding or planar unfolding with its source, target and edge labels; impose equivariance only when a selected action is supplied. Placement algorithms remain private. |
+
+Thus the identified second residue is **structural**: typed
+category refinements, face and chart arrows, lattice-preserving atlas
+conditions, selected triangulation and gluing diagrams, and the functors
+that connect these existing objects. Each item has an input and result in
+the category graph above. A search for a finished `IAS^2` package would not
+reduce this residue and is not an acceptance condition. An unverified
+external capability, such as general spherical geodesic polytopes, stays
+open rather than being counted as code that must be invented.
+
 The mathematical composition is already described by
 [Gross--Siebert's affine manifolds with polyhedral decompositions](https://arxiv.org/abs/math/0309070)
 and by [AEGS] below. Its implementation should assemble the listed
