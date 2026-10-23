@@ -301,6 +301,9 @@ from dzack_research.preamble.categories.cell_complexes import (  # noqa: F401
     SimplicialComplexes,
     SimplicialSets,
 )
+from dzack_research.preamble.categories.schemes.degeneration_central_fibers import (  # noqa: F401
+    DegenerationCentralFibers,
+)
 from dzack_research.preamble.categories.triangulations import (  # noqa: F401
     ChosenTriangulations,
 )

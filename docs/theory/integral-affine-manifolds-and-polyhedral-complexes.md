@@ -728,7 +728,7 @@ The missing paths remain open in
 | Cell, polytopal, simplicial, `Delta` and simplicial-set branches; realizations and `Kan` | [`simplicial-and-cw-foundations`](../../TODO.md) owns the preamble work. | Supply the common categories, face maps, realization functors, subcomplex maps and property refinements. |
 | Chosen triangulation over `K`, integrality and unimodularity | Existing cone triangulation is an algorithm on rays, not a selected triangulation over a placed target. | Retain `T`, its simplex inclusions and `|T| → |K|` with the selected lattice comparison. |
 | Face diagrams, colimit cocones and structured surgeries | [`Cat`](../../src/dzack_research/preamble/categories/abstract_categories/cat.py) presents generic diagrams, colimits and pushouts. | Construct the typed complex diagram, quotient cocone, boundary span and affine collar comparisons. |
-| Degeneration to dual complex | The dual-complex construction needs the incidence data of its source degeneration. | Define the source-to-complex correspondence and its induced incidence map. |
+| Degeneration to dual complex | [`DegenerationCentralFibers`](../../src/dzack_research/preamble/categories/schemes/degeneration_central_fibers.py) declares the exact central fibre, its component inclusions and intersection strata, plus the dual-complex functor. | Construct the source-to-complex correspondence and its induced incidence map. |
 | Actions, `Mor`, embeddings and displays | [`GObjects`](../../src/dzack_research/preamble/categories/group/g_objects.py) and generic `Mor` constructions exist. | Specialize them only after each target category and map class exists; retain action and embedding endpoints. |
 
 For **each** node, record its parameter object, defining objects and

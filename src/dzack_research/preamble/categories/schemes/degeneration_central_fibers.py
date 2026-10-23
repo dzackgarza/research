@@ -1,0 +1,119 @@
+r"""Central fibres with selected component and intersection incidence data."""
+
+from sage.misc.cachefunc import cached_method
+
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
+from dzack_research.preamble.categories.abstract_categories.objects import Objects
+from dzack_research.preamble.categories.cell_complexes import CellComplexes
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedCategoryOverBaseRing,
+)
+from dzack_research.preamble.categories.schemes.schemes import Schemes
+
+
+class DegenerationCentralFiberMor(CategoricalMor):
+    r"""Scheme maps with a compatible map of selected intersection strata."""
+
+    class ElementMethods:
+        def underlying_scheme_morphism(self):
+            pass
+
+        def incidence_map(self):
+            pass
+
+        def dual_complex_map(self):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, scheme_map, incidence_map):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a central-fibre identity requires the same source and target")
+        pass
+
+
+class DegenerationCentralFiberMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = DegenerationCentralFiberMor
+
+
+class _UnderlyingCentralFiberFunctor(Functor):
+    r"""Forget selected incidence data on central fibres and their maps."""
+
+    def __init__(self, source):
+        super().__init__(source, Schemes(source.base_ring()))
+
+    def _apply_object(self, central_fiber):
+        return central_fiber.underlying_scheme()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_scheme_morphism()
+
+
+class _DualComplexFunctor(Functor):
+    r"""Send selected intersection strata and their maps to cell complexes."""
+
+    def __init__(self, source):
+        super().__init__(source, CellComplexes())
+
+    def _apply_object(self, central_fiber):
+        return central_fiber.dual_complex()
+
+    def _apply_morphism(self, morphism):
+        return morphism.dual_complex_map()
+
+
+class DegenerationCentralFibers(OwnedCategoryOverBaseRing):
+    r"""Central fibres over one base with connected intersection strata."""
+
+    _MorCategory = DegenerationCentralFiberMorCategoryConstruction
+
+    def super_categories(self):
+        return [Objects()]
+
+    def _repr_object_names(self):
+        return f"central fibres with component incidence over {self.base_ring()}"
+
+    def an_object(self):
+        pass
+
+    def on(self, central_fiber, component_inclusions, intersection_strata):
+        r"""Select the exact scheme, its components, and connected intersection strata."""
+        pass
+
+    def from_family(self, family, central_point, component_inclusions, intersection_strata):
+        r"""Select the central fibre of a family with its intersection data."""
+        pass
+
+    @cached_method
+    def forget(self):
+        return _UnderlyingCentralFiberFunctor(self)
+
+    @cached_method
+    def dual_complexes(self):
+        return _DualComplexFunctor(self)
+
+    class ParentMethods:
+        def underlying_scheme(self):
+            pass
+
+        def component_inclusions(self):
+            pass
+
+        def intersection_strata(self):
+            pass
+
+        def dual_complex(self):
+            pass
+
+        def dual_cell_correspondence(self):
+            pass
