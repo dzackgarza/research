@@ -311,6 +311,10 @@ class AffineSpacesWithLattice(OwnedCategory):
         def affine_lattice(self):
             return self._lattice_inclusion.domain()
 
+        def chart_at(self, origin):
+            r"""The origin-based affine chart with its selected lattice embedding."""
+            pass
+
         def translation_group(self):
             return self.underlying_affine_space().model_vector_space().underlying_additive_group()
 
