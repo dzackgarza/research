@@ -1562,7 +1562,8 @@ index two. Every such embedding has index two, since its determinant
 satisfies $(\det j)^2=\det U(2)/\det U=4$, so none is primitive.
 The finite search distinguishes these two existence questions while
 retaining `box.inclusion()`, `bounded.inclusion()` and the original
-embedding maps. The source specimens remain unexecuted under DEV-58.
+embedding maps. The displayed bounded nonprimitive specimen has executed;
+the general bound's remaining specimens stay under terminal T.
 Large bounds can make this finite method impractical; the separate
 maintained classification computations remain available.
 
@@ -1584,8 +1585,8 @@ No general constrained emptiness computation is missing merely because
 the last two routes do not decide arbitrary noninvariant filters: the
 undecidability proof below excludes such a uniform requirement. A new
 specific constrained problem would require its own completeness argument.
-The finite empty, nonprimitive and rational-denominator specimens remain
-with their stated source-only status.
+The finite empty, nonprimitive and rational-denominator specimens have
+executed at their public owners.
 
 ## Examples separating the three base rings
 
@@ -1631,12 +1632,12 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; exact rational isotropy splitting and real congruence/sign/root computation | Regular Cauchy admission, nonsingular signature and returned congruence isometry have source routes; Witt-basis sign/root normalization has a source route; nonsingular norm-witness normalization has a source route with decided requested-norm zero status; real Witt decomposition retains explicit inverse coordinate maps and actual summand maps |
 | Norm fibres, including zero | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: `elements_of_norm`, `representation_vector`; subset-owner lazy choice | Original equalizer and inclusion; canonical zero; finite integral shells where proved finite; supplied finite nondegenerate ZZ/QQ/AA/RR fibres can select a fresh point through the existing solver without ambient enumeration. Unavailable scalar decisions and failed solvers propagate |
 | Scalar extension of objects and arrows | `FormBaseChanges`, `FormedModuleMorphism.base_change`, `LatticeIsometryMethods.base_change`, module scalar-extension functor | Original source, actual ring map and unit retained; both formed-arrow components and isometry inverse pairs retained. Finite unimodularity survives all unital maps; nondegeneracy survives known injective domain maps. Arbitrary value-module extensions remain outside the current computation |
-| Embedding sets, decisions and witnesses | `lattice_morphisms.py`: embedding Mor, `_emptiness_decision`, `an_element`, integral-overlattice factorization, rational Witt criterion and real inertia matching | Original endpoints retained. Real witnesses refine known nonzero signs; real isometries retain reciprocal-scale inverse matching. Rational and integral source routes retain their complete decision/witness distinction. Backend coverage and specimens remain unexecuted |
+| Embedding sets, decisions and witnesses | `lattice_morphisms.py`: embedding Mor, `_emptiness_decision`, `an_element`, integral-overlattice factorization, rational Witt criterion and real inertia matching | Original endpoints retained. Real witnesses refine known nonzero signs; real isometries retain reciprocal-scale inverse matching. Rational-denominator, finite-empty and AA witness specimens have executed; broader backend coverage remains under terminal T |
 | Complete countable enumeration | Finite free-module and embedding `__iter__` over ZZ/QQ | Each candidate must occur finitely far into the enumeration; asking for a next satisfying element need not terminate; no real enumeration is claimed |
 | Finite constrained search | `coordinate_subset`, `Emb.with_generator_images_in`, `condition_set` | Exact pairing equations and the additional predicate must be decidable; finite search alone excludes only its specified box |
 | Effective integral bounds | Definite inverse-Gram bound, representative/completion/isometry/embedding coefficient bounds, split binary factors and nonsplit binary norm orbits | The embedding bound meets every target-isometry orbit, hence covers decidable invariant constraints; arbitrary noninvariant constraints require an applicable argument and have no uniform solver below |
 | Sampling | `finite_ordered_sets.py`: `random_element` on the selected finite support | Uniform finite-support distribution; empty support is rejected; no infinite uniform distribution or completeness inference |
-| Exact solving, kernels and arithmetic predicates | Module morphism `preimage`, `kernel`, `cokernel`, `is_primitive`; `AffineModuleFibres.base_point`; lattice `div`, `bezout_partner`, `hyperbolic_partner` and its locus | Original-ring image solving and full kernel inclusions retained; affine points lift the combined equation and project to the original parameter module. Partner loci use lazy solver-backed choice under known hypotheses. General real elimination still needs decidable pivots; terminal specimens remain unexecuted |
+| Exact solving, kernels and arithmetic predicates | Module morphism `preimage`, `kernel`, `cokernel`, `is_primitive`; `AffineModuleFibres.base_point`; lattice `div`, `bezout_partner`, `hyperbolic_partner` and its locus | Original-ring image solving and full kernel inclusions retained; affine points lift the combined equation and project to the original parameter module. Partner loci use lazy solver-backed choice under known hypotheses. Selected integral and represented-real preimage/kernel specimens have executed; the rest remain under terminal T |
 | Perpendiculars and supplied decompositions | `orthogonal_complement`, `orthogonal_splitting`, `orthogonal_decomposition` | Retain the supplied first embedding and full kernel inclusion; direct-sum hypotheses remain essential |
 | Target hyperbolic index and maximal splitting | `lattices.py`: `hyperbolic_index`, `maximal_hyperbolic_index_splitting`; general `Emb` decision and witness; `orthogonal_splitting`; field `witt_decomposition` | The integral route tests actual embeddings of `U^r` in descending order and returns the isometry; field routes use the Witt decomposition. Focused zero, split, mixed, scaled and odd specimens have executed; the broader terminal suite remains open |
 
@@ -1656,10 +1657,15 @@ cover the general odd `r=1` case when the complementary discriminant
 length is `n-2`. No assertion about that case follows from this theorem.
 
 The legacy method now delegates to the constructive `hyperbolic_index`.
-For an even lattice, a primitive divisibility-one isotropic vector and
-its corrected Bezout partner first split off a visible `U`; repeating on
-the actual complement supplies a lower bound and an isometry. If this
-reaches the inertia bound, it is maximal. For every larger candidate `r`,
+A primitive divisibility-one isotropic vector with an integral hyperbolic
+partner splits off a visible `U`; repeating on the actual complement
+supplies a lower bound and an isometry. In an even lattice the partner
+correction is automatic; in an odd lattice the existing norm-congruence
+computation decides it. Every splitting `L ≅ U^r ⊥ M` also gives
+`A_L ≅ A_M`, hence `length(A_L) ≤ rank(M) = rank(L)-2r`; a full-rank
+splitting requires `L` even. These necessary bounds exclude candidate
+ranks before computation. If the constructed index reaches the resulting
+upper bound, it is maximal. For every remaining larger candidate `r`,
 `Emb(U^r,L).is_empty()` uses the finite integral-overlattice and
 primitive-embedding decision, and the first affirmative Mor supplies
 an actual embedding. As `U^r` is
@@ -1686,11 +1692,13 @@ route's hypotheses, returned maps, zero-rank behavior and limits.
 This reconciliation concerns implemented computations and their wiring.
 It does not assert that source inspection proves their correctness.
 The focused specimens for this hyperbolic plan have now executed:
-definite and split norm fibres, a fresh AA norm witness, QQ/AA/closed-RR
-Witt isometries and inverse laws, represented-RR coordinate solving and
-kernels, scalar extension of both formed-arrow components, finite
-constrained embeddings, and actual integral maximal splittings at indices
-zero, one and two. A regular-Cauchy RR specimen verifies decomposition
+definite and split norm fibres, fresh QQ/AA/RR norm witnesses and RR
+norm exclusion, QQ/AA/closed-RR Witt isometries and inverse laws,
+represented-RR coordinate solving and integral/real kernels, scalar
+extension of formed arrows and isometries, finite constrained embeddings
+including invariant primitivity exclusion, finite sampling, and actual
+integral maximal splittings at indices zero, one and two, including odd
+and mixed-parity complements. A regular-Cauchy RR specimen verifies decomposition
 endpoints and summand ranks; its symbolic Gram equality remains undecided.
 The rest of the dependency index remains with `terminal-session` in TODO.md.
 The general zero-radical preservation

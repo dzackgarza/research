@@ -70,7 +70,7 @@ The full hyperbolic dependency index is in
 [the theory note](docs/theory/hyperbolic-index.md#source-implementation-reconciliation).
 Its remaining mathematical specimens stay with `terminal-session`. Focused
 norm-fibre, Witt, scalar-extension, constrained-search, kernel,
-coordinate-retention and maximal-splitting specimens have been executed;
+coordinate-retention, finite-sampling and maximal-splitting specimens have been executed;
 this does not close the broader terminal gate.
 
 These are the research obligations in handoff ranks 1 and 2. The [boundary assignments](../gitclones/sage-indefinite-port/references/port-design.md#implementation-assignments) and `AGENTS.md`, *Concrete boundary with sage-indefinite-port*, govern the split. Inspect the current HEAD and dirty state of the worktrees named in HANDOFF.md before implementation; reconcile inherited source against each remaining contract before rewriting it. Source presence and earlier small runs do not close final-revision execution. Preserve the existing lift-torsor implementations. Priority changes selection, not mathematical dependency or the current `DEV-58` execution phase.
