@@ -73,7 +73,7 @@ class _WeakenDifferentiabilityFunctor(Functor):
     def _apply_object(self, manifold):
         if self.codomain() is TopologicalManifolds():
             return manifold.underlying_topological_manifold()
-        return manifold.weaken_to(self.codomain().degree())
+        pass
 
     def _apply_morphism(self, morphism):
         if self.codomain() is TopologicalManifolds():
