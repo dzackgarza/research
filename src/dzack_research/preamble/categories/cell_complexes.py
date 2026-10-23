@@ -229,6 +229,14 @@ class CellComplexes(OwnedCategory):
         r"""Select the dual complex of connected component intersections."""
         pass
 
+    def _categorical_coproduct_construction(self, factors):
+        r"""Select a disjoint complex with its cellwise inclusion cocone."""
+        pass
+
+    def _categorical_coequalizer_construction(self, left_morphism, right_morphism):
+        r"""Select the cellular quotient and its universal cocone."""
+        pass
+
     def colimit(self, diagram):
         r"""Select a complex colimit with its universal cocone."""
         pass
