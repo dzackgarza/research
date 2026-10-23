@@ -1593,7 +1593,7 @@ class ModuleMorphismMethods:
         return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
 
     def lift(self, element):
-        r"""Return the unique preimage of ``element``; an element outside the image is rejected with ``ValueError``.
+        r"""Return a selected preimage of ``element``; reject an element outside the image with ``ValueError``.
 
         Along the codomain's own framing ``F(S) ->> M`` -- the augmentation of
         its chosen resolution, the identity when ``M`` is its own framing
@@ -1612,7 +1612,7 @@ class ModuleMorphismMethods:
         return preimage
 
     def is_in_image(self, element) -> bool:
-        r"""Return whether ``element`` has a preimage under this injective map."""
+        r"""Return whether ``element`` has a preimage under this linear map."""
         return self._preimage_or_none(element) is not None
 
     def has_selected_lift(self) -> bool:
