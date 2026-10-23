@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.cell_complexes import SimplicialComplexes
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -39,12 +38,7 @@ class ChosenTriangulationMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, simplicial_map):
-        if (
-            simplicial_map.domain() is not self.domain().simplicial_complex()
-            or simplicial_map.codomain() is not self.codomain().simplicial_complex()
-        ):
-            raise ValueError("the simplicial map must join the selected triangulation sources")
-        return self.element_class(self, simplicial_map)
+        pass
 
     @object_level
     def identity(self):
@@ -88,17 +82,7 @@ class ChosenTriangulations(OwnedParameterizedCategory):
 
     def on(self, simplicial_complex, realization_map, simplex_inclusions):
         r"""Select ``T``, its simplex inclusions, and ``|T| -> K``."""
-        if simplicial_complex not in SimplicialComplexes():
-            raise TypeError(f"{simplicial_complex} is not a simplicial complex")
-        if realization_map.codomain() is not self.target():
-            raise ValueError("the realization map must land in the selected target")
-        return _object_of(
-            self,
-            target=self.target(),
-            simplicial_complex=simplicial_complex,
-            realization_map=realization_map,
-            simplex_inclusions=simplex_inclusions,
-        )
+        pass
 
     def target(self):
         return self.parameter()
