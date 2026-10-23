@@ -1,6 +1,7 @@
 r"""Real manifolds of one selected differentiability degree."""
 
 from sage.categories.category import Category
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.rings.infinity import Infinity
 
@@ -32,8 +33,19 @@ class RealCkManifoldMor(CategoricalMor):
     r"""Maps with the selected differentiability degree."""
 
     class ElementMethods:
+        def __init__(self, parent, topological_map, chart_maps):
+            Morphism.__init__(self, parent)
+            self._topological_map = topological_map
+            self._chart_maps = chart_maps
+
         def underlying_topological_morphism(self):
-            pass
+            return self._topological_map
+
+        def chart_maps(self):
+            return self._chart_maps
+
+        def _call_(self, point):
+            return self._topological_map(point)
 
         def weaken_to(self, degree):
             pass
@@ -41,8 +53,8 @@ class RealCkManifoldMor(CategoricalMor):
         def __mul__(self, other):
             pass
 
-    def _element_constructor_(self, chart_maps):
-        pass
+    def _element_constructor_(self, topological_map, chart_maps):
+        return self.element_class(self, topological_map, chart_maps)
 
     @object_level
     def identity(self):
