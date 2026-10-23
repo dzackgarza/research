@@ -426,6 +426,14 @@ class ContinuousMap:
         """
         pass
 
+    def is_homotopic_to(self, other):
+        r"""Decide homotopy between maps with the same exact endpoints."""
+        pass
+
+    def is_weak_equivalence(self):
+        r"""Decide whether this map is bijective on components and on pointed homotopy groups."""
+        pass
+
     @validator
     def validate_continuity(self) -> None:
         r"""Raise ``ValueError`` unless the preimage of each open set of ``Y`` is open in ``X`` (``OWN-22``)."""
