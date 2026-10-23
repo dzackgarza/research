@@ -148,6 +148,10 @@ class IntegralAffineManifolds(OwnedCategory):
         def affine_atlas(self):
             return self._affine_atlas
 
+        def integral_tangent_lattice_category(self):
+            r"""Local systems of finite free integral modules on this manifold."""
+            pass
+
         def integral_tangent_lattice(self):
             r"""The lattice local system transported along the fundamental groupoid."""
             pass

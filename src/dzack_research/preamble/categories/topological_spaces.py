@@ -983,6 +983,12 @@ class TopologicalSpaces(OwnedCategory):
 
             return FundamentalGroupoid(self)
 
+        def local_systems(self, fiber_category):
+            r"""Functors from this space's fundamental groupoid to the fiber category."""
+            from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+            return Cat().Mor(self.fundamental_groupoid(), fiber_category)
+
         def _whitehead_pairing(self, base_point, left_degree, right_degree):
             r"""The Whitehead product ``pi_p(X, x) x pi_q(X, x) -> pi_{p+q-1}(X, x)``, a bilinear map.
 
