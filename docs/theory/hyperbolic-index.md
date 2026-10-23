@@ -2257,6 +2257,21 @@ formed-morphism docstring remain unexecuted under DEV-58.
 
 #### Exact field preimages and affine solving
 
+**Retain the returned coordinates without new decisions.** After a
+linear solver has produced a coordinate vector, constructing its point
+requires no further nonzero test on each coordinate. The module
+preimage route now passes the entire labelled coordinate family to
+`linear_combination`, whose scalar storage discards only coefficients
+explicitly equal to zero. Previously a Python `if coefficient` could
+refuse an undecided real coefficient after solving had succeeded.
+For the invertible triangular map with columns $(1,0)$ and $(1,1)$,
+the target $(1+t,1)$ has preimage $(t,1)$. A Cauchy presentation
+$t=\lim 2^{-n}=0$ may have undecided zero status, which does not prevent
+retaining it as the first coordinate of that returned preimage. The
+source specimen checks this distinction and the original parent;
+execution remains deferred. The solver's own pivot applicability
+conditions remain unchanged.
+
 For a linear map $f:V\to W$ between finite-dimensional vector spaces over
 an exact field, with coefficient matrix $A$ in the specified bases, a
 target $b$ is in its image exactly

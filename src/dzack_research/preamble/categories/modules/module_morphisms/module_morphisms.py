@@ -1469,6 +1469,18 @@ class ModuleMorphismMethods:
             sage: twice = M.module_category().Mor(M, M)((2*u,))
             sage: assert twice.is_in_image(u) is False
             sage: assert twice.preimage(2*u) == u
+            sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+            sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+            sage: from dzack_research.preamble.logic import Predicate
+            sage: Q = _owned_rationals()
+            sage: a = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n))
+            sage: t = RR.of_cauchy(a)
+            sage: B = V.module_category().Mor(V, V)((e, e + f))
+            sage: lifted = B.preimage((RR.one() + t)*e + f)
+            sage: assert lifted.parent() is V
+            sage: labels = tuple(V.module_generating_set())
+            sage: assert isinstance(lifted.to_vector()(labels[0]) == RR.zero(), Predicate)
+            sage: assert lifted.to_vector()(labels[1]) == RR.one()
         """
         self._require_established_linearity("preimage computation")
         domain = self.domain()
@@ -1646,7 +1658,10 @@ class ModuleMorphismMethods:
         solution = _solve_preimage_integrally(coordinate_map, target, ring)
         if solution is None:
             return None
-        return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
+        return self.domain().linear_combination({
+            label: coefficient
+            for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True)
+        })
 
     def lift(self, element):
         r"""Return a selected preimage of ``element``; reject an element outside the image with ``ValueError``.
