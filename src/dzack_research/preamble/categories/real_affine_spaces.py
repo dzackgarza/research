@@ -201,6 +201,10 @@ class RealAffineSpaces(OwnedCategory):
         def translation_action(self):
             return self._translation_action
 
+        def identity_chart(self):
+            r"""The global affine chart on this exact affine space."""
+            pass
+
 
 class AffineSpaceWithLatticeMor(CategoricalMor):
     r"""Affine maps whose linear parts carry the selected lattice into the target lattice."""
