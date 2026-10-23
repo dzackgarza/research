@@ -217,6 +217,12 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
         def geometric_automorphisms(self):
             pass
 
+        def geometric_to_abstract_automorphisms(self):
+            pass
+
+        def geometric_lifts_of_face_automorphism(self, face_automorphism):
+            pass
+
         def boundary(self):
             pass
 
