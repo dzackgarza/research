@@ -100,6 +100,19 @@ class _AtlasUnderlyingTopologicalAtlasFunctor(Functor):
         return morphism.topological_atlas_morphism()
 
 
+class _WeakenAtlasDifferentiabilityFunctor(Functor):
+    r"""Forget higher atlas regularity on objects and chartwise maps."""
+
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, atlas):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class RealCkAtlases(OwnedParameterizedCategory):
     r"""Compatible ``C^k`` charts on a selected topological manifold."""
 
@@ -156,6 +169,13 @@ class RealCkAtlases(OwnedParameterizedCategory):
     @cached_method
     def forget_differentiability(self):
         return _AtlasUnderlyingTopologicalAtlasFunctor(self.degree())
+
+    @cached_method
+    def forget_to(self, degree):
+        degree = _real_ck_degree(degree)
+        if degree > self.degree():
+            raise ValueError(f"C^{self.degree()} can forget only to C^j with j <= {self.degree()}")
+        return _WeakenAtlasDifferentiabilityFunctor(self, RealCkAtlases(degree))
 
     class ParentMethods:
         def __init__(
