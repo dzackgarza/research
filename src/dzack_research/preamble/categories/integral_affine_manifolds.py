@@ -1012,5 +1012,9 @@ class SingularIntegralAffineLocalModels(OwnedParameterizedCategory):
         def link(self):
             pass
 
+        def link_inclusion(self):
+            r"""The selected link as a subspace of the local neighborhood."""
+            pass
+
         def monodromy(self, loop, affine_frame):
             pass
