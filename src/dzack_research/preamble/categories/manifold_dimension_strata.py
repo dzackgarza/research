@@ -12,6 +12,8 @@ from dzack_research.preamble.categories.manifolds import (
     _ComplexRealificationFunctor,
 )
 from dzack_research.preamble.categories.manifolds_with_boundary import (
+    RealCkManifoldsWithBoundary,
+    RealCkManifoldsWithCorners,
     SmoothManifoldsWithBoundary,
     SmoothManifoldsWithCorners,
     TopologicalManifoldsWithBoundary,
@@ -31,7 +33,10 @@ def _manifold_dimension_parameters(base_category, dimension):
         SmoothManifoldsWithBoundary(),
         TopologicalManifoldsWithCorners(),
         SmoothManifoldsWithCorners(),
-    ) and not isinstance(base_category, RealCkManifolds):
+    ) and not isinstance(
+        base_category,
+        (RealCkManifolds, RealCkManifoldsWithBoundary, RealCkManifoldsWithCorners),
+    ):
         raise TypeError(f"{base_category} is not a selected manifold category")
     dimension = _owned_integers()(dimension)
     if dimension < 0:
@@ -108,8 +113,6 @@ class PureDimensionalManifolds(OwnedCategory):
 
     def on(self, manifold):
         r"""Place the exact base manifold in its pure-dimension stratum."""
-        if manifold not in self.base_category():
-            raise TypeError(f"{manifold} is not in {self.base_category()}")
         pass
 
     @cached_method
