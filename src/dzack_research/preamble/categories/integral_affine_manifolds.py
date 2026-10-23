@@ -359,7 +359,11 @@ class IntegralAffineManifoldsWithCorners(OwnedCategory):
     def on(self, smooth_corner_manifold, affine_atlas):
         if smooth_corner_manifold not in SmoothManifoldsWithCorners():
             raise TypeError(f"{smooth_corner_manifold} is not a smooth corner manifold")
-        pass
+        return _object_of(
+            self,
+            smooth_stratified_manifold=smooth_corner_manifold,
+            affine_atlas=affine_atlas,
+        )
 
     @cached_method
     def forget(self):
@@ -370,7 +374,19 @@ class IntegralAffineManifoldsWithCorners(OwnedCategory):
         return _StratifiedAffineInteriorFunctor(self)
 
     class ParentMethods(_StratifiedAffineManifoldMethods):
-        pass
+        def __init__(self, smooth_stratified_manifold, affine_atlas, **rest):
+            self._smooth_stratified_manifold = smooth_stratified_manifold
+            self._affine_atlas = affine_atlas
+            super().__init__(**rest)
+
+        def underlying_smooth_stratified_manifold(self):
+            return self._smooth_stratified_manifold
+
+        def affine_atlas(self):
+            return self._affine_atlas
+
+        def depth_stratum(self, depth):
+            return self._smooth_stratified_manifold.depth_stratum(depth)
 
 
 class IntegralAffineManifoldsWithBoundary(OwnedCategory):
@@ -391,7 +407,11 @@ class IntegralAffineManifoldsWithBoundary(OwnedCategory):
     def on(self, smooth_boundary_manifold, affine_atlas):
         if smooth_boundary_manifold not in SmoothManifoldsWithBoundary():
             raise TypeError(f"{smooth_boundary_manifold} is not a smooth boundary manifold")
-        pass
+        return _object_of(
+            self,
+            smooth_stratified_manifold=smooth_boundary_manifold,
+            affine_atlas=affine_atlas,
+        )
 
     @cached_method
     def forget(self):
