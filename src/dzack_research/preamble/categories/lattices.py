@@ -3256,7 +3256,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             diagonalization supplies a radical vector or a normalized
             opposite-sign pair, without enumerating real points. The same
             construction applies to represented RR when its exact scalar
-            operations and comparisons are decided.
+            operations and comparisons are decided. With supplied
+            nondegeneracy, RR instead refines signs of nonzero diagonal
+            entries and normalizes under established positivity hypotheses.
 
             EXAMPLES::
 
@@ -3360,7 +3362,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return self.is_isotropic()
                 case _ if ring in (_owned_real_algebraic_numbers(), RR):
                     signature = self.signature_pair()
-                    index = signature.first() if value > ring.zero() else signature.second()
+                    sign = ring._sign_of_nonzero(value) if ring is RR else (1 if value > ring.zero() else -1)
+                    index = signature.first() if sign > 0 else signature.second()
                     return index != cardinal(0)
                 case _ if _engine_ring(ring) is SageQQ:
                     return (

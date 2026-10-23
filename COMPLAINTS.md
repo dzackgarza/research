@@ -169,9 +169,13 @@ isometry and inverse from finite nonzero-norm search and fraction-free
 projection, without scalar zero decisions. The existing downstream
 `_real_witt_bases` now refines signs of its known nonzero diagonal entries
 and computes roots and quotients under the resulting positivity hypotheses.
-The norm-witness route `_real_representation_witness` still uses bounded
-scalar decisions; its normalization and downstream map routing for Cauchy
-inputs remain open.
+For nonsingular RR forms, `_real_representation_witness` now also refines
+signs and normalizes under established hypotheses, once the requested
+norm has decided zero status. Arbitrary requested-real zero status remains
+partial. Complete downstream map routing for Cauchy inputs remains open:
+`witt_decomposition` still feeds its known basis through `subobject_on`
+and `orthogonal_decomposition`, which normalize a span and compute an
+inverse again instead of retaining the explicit basis-coordinate changes.
 Arbitrary singular oracle inputs still admit
 no uniform zero decision.
 

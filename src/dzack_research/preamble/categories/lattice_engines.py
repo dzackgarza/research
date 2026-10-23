@@ -219,7 +219,15 @@ def _real_representation_witness(lattice, value):
     represented nontrivially by a radical basis vector, or by the sum of
     opposite-sign basis vectors normalized to squares +1 and -1. If none
     of these cases applies, the diagonal form excludes a nonzero point.
+
+    For promised nonsingular RR input, diagonal squares are nonzero.
+    Their signs are found by enclosure refinement and root/quotient
+    arithmetic consumes those hypotheses. The requested value must still
+    have a decided zero status; arbitrary real equality is not decidable.
     """
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+    from dzack_research.preamble.rings.real import RR
+
     ring = lattice.base_ring()
     diagonalization = lattice.diagonalization()
     vectors = tuple(
@@ -228,6 +236,26 @@ def _real_representation_witness(lattice, value):
     )
     positive = None
     negative = None
+    if ring is RR and lattice in FormModules(RR).Nondegenerate():
+        zero_value = bool(value == ring.zero())
+        value_sign = 0 if zero_value else ring._sign_of_nonzero(value)
+        for vector in vectors:
+            square = lattice.q(vector)
+            sign = ring._sign_of_nonzero(square)
+            if not zero_value:
+                if sign == value_sign:
+                    ratio = ring._divide_by_nonzero(value, square)
+                    return vector * ring._sqrt_of_positive(ratio)
+            else:
+                root = ring._sqrt_of_positive(square if sign > 0 else -square)
+                normalized = vector * ring._divide_by_nonzero(ring.one(), root)
+                if sign > 0:
+                    positive = normalized
+                else:
+                    negative = normalized
+                if positive is not None and negative is not None:
+                    return positive + negative
+        return None
     for vector in vectors:
         square = lattice.q(vector)
         if value != ring.zero():
