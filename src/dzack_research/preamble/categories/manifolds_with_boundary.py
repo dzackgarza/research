@@ -25,7 +25,6 @@ from dzack_research.preamble.categories.real_ck_manifolds import (
     _real_ck_degree,
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.owned_category import _object_of
 
 
 def _dimension_at_most(category, dimension):
@@ -294,18 +293,7 @@ class TopologicalManifoldsWithCorners(OwnedCategory):
         return _pure_dimension(self, dimension)
 
     def on(self, space, atlas, depth_strata):
-        from dzack_research.preamble.categories.stratified_atlases import TopologicalCornerAtlases
-
-        if atlas not in TopologicalCornerAtlases():
-            raise TypeError(f"{atlas} is not a topological corner atlas")
-        if atlas.underlying_topological_space() is not space or atlas.depth_strata() is not depth_strata:
-            raise ValueError("the corner atlas must retain the selected space and depth strata")
-        return _object_of(
-            self,
-            underlying_space=space,
-            atlas=atlas,
-            depth_strata=depth_strata,
-        )
+        pass
 
     @cached_method
     def interior(self):
@@ -357,17 +345,7 @@ class SmoothManifoldsWithCorners(OwnedCategory):
         return _pure_dimension(self, dimension)
 
     def on(self, topological_corner_manifold, atlas):
-        from dzack_research.preamble.categories.stratified_atlases import RealCkCornerAtlases
-
-        if atlas not in RealCkCornerAtlases(Infinity):
-            raise TypeError(f"{atlas} is not a smooth corner atlas")
-        if atlas.underlying_topological_stratified_manifold() is not topological_corner_manifold:
-            raise ValueError("the smooth atlas must be on the selected corner manifold")
-        return _object_of(
-            self,
-            topological_corner_manifold=topological_corner_manifold,
-            atlas=atlas,
-        )
+        pass
 
     @cached_method
     def interior(self):
@@ -478,17 +456,7 @@ class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
         return _pure_dimension(self, dimension)
 
     def on(self, topological_corner_manifold, atlas):
-        from dzack_research.preamble.categories.stratified_atlases import RealCkCornerAtlases
-
-        if atlas not in RealCkCornerAtlases(self.degree()):
-            raise TypeError(f"{atlas} is not a C^{self.degree()} corner atlas")
-        if atlas.underlying_topological_stratified_manifold() is not topological_corner_manifold:
-            raise ValueError("the C^k atlas must be on the selected corner manifold")
-        return _object_of(
-            self,
-            topological_corner_manifold=topological_corner_manifold,
-            atlas=atlas,
-        )
+        pass
 
     @cached_method
     def interior(self):
@@ -559,17 +527,7 @@ class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
         return _pure_dimension(self, dimension)
 
     def on(self, topological_boundary_manifold, atlas):
-        from dzack_research.preamble.categories.stratified_atlases import RealCkBoundaryAtlases
-
-        if atlas not in RealCkBoundaryAtlases(self.degree()):
-            raise TypeError(f"{atlas} is not a C^{self.degree()} boundary atlas")
-        if atlas.underlying_topological_stratified_manifold() is not topological_boundary_manifold:
-            raise ValueError("the C^k atlas must be on the selected boundary manifold")
-        return _object_of(
-            self,
-            topological_corner_manifold=topological_boundary_manifold,
-            atlas=atlas,
-        )
+        pass
 
     @cached_method
     def interior(self):
