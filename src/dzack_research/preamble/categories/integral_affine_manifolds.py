@@ -860,12 +860,38 @@ class SingularIntegralAffineLocalModelMor(CategoricalMor):
             return self._pointed_map(point)
 
         def underlying_singular_affine_morphism(self):
-            pass
+            source = self.domain().underlying_singular_affine_space()
+            target = self.codomain().underlying_singular_affine_space()
+            return SingularIntegralAffineSpaces(self.parent().base_category().dimension()).Mor(
+                source,
+                target,
+            )(
+                self.underlying_pointed_map(),
+                self.singular_locus_morphism(),
+                self.regular_affine_morphism(),
+            )
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, pointed_map, singular_locus_map, regular_affine_map):
+        source = self.domain()
+        target = self.codomain()
+        if (
+            pointed_map.domain() is not source.topological_neighborhood()
+            or pointed_map.codomain() is not target.topological_neighborhood()
+        ):
+            raise ValueError("the pointed map must join the selected neighborhoods")
+        if (
+            singular_locus_map.domain() is not source.singular_locus_inclusion().domain()
+            or singular_locus_map.codomain() is not target.singular_locus_inclusion().domain()
+        ):
+            raise ValueError("the singular-locus map must join the selected local singular loci")
+        if (
+            regular_affine_map.domain() is not source.regular_affine_manifold()
+            or regular_affine_map.codomain() is not target.regular_affine_manifold()
+        ):
+            raise ValueError("the regular affine map must join the selected local regular loci")
         return self.element_class(
             self,
             pointed_map,
@@ -957,6 +983,9 @@ class SingularIntegralAffineLocalModels(OwnedParameterizedCategory):
 
         def singular_locus_inclusion(self):
             return self._singular_space.singular_locus_inclusion()
+
+        def regular_locus_inclusion(self):
+            return self._singular_space.regular_locus_inclusion()
 
         def regular_affine_manifold(self):
             return self._singular_space.regular_affine_manifold()
