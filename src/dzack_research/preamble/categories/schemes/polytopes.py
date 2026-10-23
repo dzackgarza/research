@@ -115,6 +115,9 @@ class PlacedPolytopeMor(CategoricalMor):
         def face_poset_map(self):
             return self._face_poset_map
 
+        def underlying_polytope_morphism(self):
+            pass
+
         def _call_(self, point):
             return self._ambient_map(point)
 
@@ -208,6 +211,9 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
 
         def ambient_inclusion(self):
             return self._ambient_inclusion
+
+        def underlying_polytope(self):
+            return self._ambient_inclusion.domain()
 
         def vertices(self):
             pass

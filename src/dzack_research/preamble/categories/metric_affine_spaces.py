@@ -114,6 +114,9 @@ class SphericalSpaceMor(CategoricalMor):
         def ambient_isometry(self):
             return self._ambient_isometry
 
+        def underlying_sphere_morphism(self):
+            pass
+
         def _call_(self, point):
             return self._ambient_isometry(point)
 
@@ -184,3 +187,6 @@ class SphericalSpaces(OwnedCategory):
 
         def inclusion(self):
             return self._inclusion
+
+        def underlying_sphere(self):
+            return self._inclusion.domain()
