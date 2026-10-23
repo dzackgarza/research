@@ -99,6 +99,36 @@ def _rational_positive_vector(gram):
     )
 
 
+def _congruence_diagonalization(lattice):
+    r"""Raise Sage's diagonal form and transformation as an isometry.
+
+    ``QuadraticForm.rational_diagonal_form(return_matrix=True)`` returns
+    ``(D,T)`` with ``T.transpose()*G*T == D.matrix()``. The columns of T
+    are the images of the new basis in the original space. No transpose
+    or change of scalar field is made while raising this datum.
+    """
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    ring = lattice.base_ring()
+    diagonal, change = QuadraticForm(
+        _engine_ring(ring), _engine_component_matrix(lattice.gram_tensor())
+    ).rational_diagonal_form(return_matrix=True)
+    gram = diagonal.matrix()
+    normal = Lattices(ring)([
+        [_owned_engine_element(ring, entry) for entry in row]
+        for row in gram.rows()
+    ]) if gram.nrows() else Lattices(ring)(0)
+    images = tuple(
+        lattice.linear_combination({
+            label: _owned_engine_element(ring, entry)
+            for label, entry in zip(lattice.module_generating_set(), column, strict=True)
+        })
+        for column in change.columns()
+    )
+    return normal.Isom(lattice)(images)
+
+
 def _real_algebraic_witt_bases(lattice):
     r"""Raise an AA Witt basis using Sage's congruence diagonalization.
 
@@ -116,20 +146,14 @@ def _real_algebraic_witt_bases(lattice):
     Sage documents the retained transformation in
     ``quadratic_form__local_field_invariants.rational_diagonal_form``.
     """
-    from sage.quadratic_forms.quadratic_form import QuadraticForm
     from dzack_research.preamble.categories.sets.finite_families import finite_family
 
     ring = lattice.base_ring()
-    _diagonal, change = QuadraticForm(
-        _engine_ring(ring), _engine_component_matrix(lattice.gram_tensor())
-    ).rational_diagonal_form(return_matrix=True)
+    diagonalization = lattice.diagonalization()
     positive = []
     negative = []
-    for column in change.columns():
-        vector = lattice.linear_combination({
-            label: _owned_engine_element(ring, entry)
-            for label, entry in zip(lattice.module_generating_set(), column, strict=True)
-        })
+    for generator in diagonalization.domain().module_generators():
+        vector = diagonalization(generator)
         square = lattice.q(vector)
         if square > 0:
             positive.append(vector * (ring.one() / square.sqrt()))

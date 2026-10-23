@@ -2904,6 +2904,50 @@ class Lattices(OwnedCategoryOverBaseRing):
             return _owned_engine_element(integers, SageZZ(index))
 
         @cached_method
+        def diagonalization(self):
+            r"""Return an isometry from a diagonal space to this space.
+
+            This is congruence diagonalization of a finite symmetric
+            bilinear space over an exact field of characteristic not two.
+            The space may be degenerate. The returned map retains the
+            diagonal space, its basis, evaluation in the original space
+            and its inverse. An integral lattice must first be extended
+            to its desired coefficient field: rational diagonalization
+            need not be an integral change of basis.
+
+            The private computation reuses Sage's
+            ``QuadraticForm.rational_diagonal_form(return_matrix=True)``
+            with its documented law ``T.transpose()*G*T == D.matrix()``.
+
+            EXAMPLES::
+
+                sage: V = Lattices(QQ)("U")
+                sage: phi = V.diagonalization()
+                sage: D = phi.domain()
+                sage: assert phi.codomain() is V
+                sage: assert all(D.b(x,y) == 0 for i,x in enumerate(D.module_generators()) for j,y in enumerate(D.module_generators()) if i != j)
+                sage: assert V.gram_tensor().pullback(phi) == D.gram_tensor()
+                sage: assert all(phi(phi.inverse()(v)) == v for v in V.module_generators())
+                sage: R = Lattices(AA)([[0, 1, 0], [1, 0, 0], [0, 0, 0]])
+                sage: psi = R.diagonalization()
+                sage: assert R.gram_tensor().pullback(psi) == psi.domain().gram_tensor()
+                sage: assert Lattices(QQ)(0).diagonalization().domain().module_rank() == 0
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
+
+            field = self.base_ring()
+            assert field in OwnedFields() and field.is_exact(), (
+                f"exact congruence diagonalization of {self} requires an exact coefficient field"
+            )
+            assert field(2) != field.zero(), (
+                f"congruence diagonalization of {self} requires characteristic different from two"
+            )
+            assert self.module_rank().is_finite(), (
+                f"congruence diagonalization of {self} requires a finite basis"
+            )
+            return lattice_engines._congruence_diagonalization(self)
+
+        @cached_method
         def witt_decomposition(self):
             r"""Return an isometry ``U^w orthogonal_sum A -> self`` over a field.
 
