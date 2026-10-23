@@ -634,6 +634,10 @@ class TopologicalSpaces(OwnedCategory):
         r"""The pushout ``X ∪_f (A × [0,1])`` for ``f: A -> X``, with its selected cocone."""
         pass
 
+    def subspace(self, subset_inclusion):
+        r"""Give the selected subset its induced topology and inclusion into its exact space."""
+        pass
+
     @cached_method
     def fundamental_groupoid_functor(self):
         from dzack_research.preamble.categories.fundamental_groupoids import _FundamentalGroupoidFunctor
