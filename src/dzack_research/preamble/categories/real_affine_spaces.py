@@ -276,6 +276,13 @@ class AffineSpacesWithLattice(OwnedCategory):
         def affine_lattice(self):
             return self._lattice_inclusion.domain()
 
+        def translation_group(self):
+            return self.underlying_affine_space().model_vector_space().underlying_additive_group()
+
+        def linear_extension_of_lattice_automorphisms(self):
+            r"""Return the action of ``GL(Lambda)`` on the real model space."""
+            pass
+
         def integral_affine_group(self):
             pass
 
