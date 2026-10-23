@@ -132,13 +132,13 @@ class _ComplexAffineModelFunctor(Functor):
         return morphism.linear_part()
 
 
-class _ComplexAffineHolomorphicManifoldFunctor(Functor):
-    r"""Equip a complex affine space and its affine maps with holomorphic charts."""
+class _ComplexAffineHolomorphicAtlasFunctor(Functor):
+    r"""Give a complex affine space its translation charts."""
 
     def __init__(self):
-        from dzack_research.preamble.categories.manifolds import ComplexManifolds
+        from dzack_research.preamble.categories.holomorphic_atlases import HolomorphicAtlases
 
-        super().__init__(ComplexAffineSpaces(), ComplexManifolds())
+        super().__init__(ComplexAffineSpaces(), HolomorphicAtlases())
 
     def _apply_object(self, affine_space):
         pass
@@ -181,8 +181,14 @@ class ComplexAffineSpaces(OwnedCategory):
         return _ComplexAffineModelFunctor()
 
     @cached_method
+    def holomorphic_atlas(self):
+        return _ComplexAffineHolomorphicAtlasFunctor()
+
+    @cached_method
     def holomorphic_manifold(self):
-        return _ComplexAffineHolomorphicManifoldFunctor()
+        from dzack_research.preamble.categories.holomorphic_atlases import HolomorphicAtlases
+
+        return self.holomorphic_atlas().then(HolomorphicAtlases().maximalization())
 
     class ParentMethods:
         def __init__(self, model_vector_space, point_set, translation_action, **rest):
