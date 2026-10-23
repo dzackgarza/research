@@ -154,6 +154,9 @@ class IntegralAffineAtlases(OwnedCategory):
         def affine_model(self):
             return self._affine_model
 
+        def affine_group_action(self):
+            return self.affine_model().integral_affine_group_action()
+
         def chart_domains(self):
             return self._chart_domains
 
