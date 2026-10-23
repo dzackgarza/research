@@ -661,6 +661,165 @@ a diagram of existing subobjects and face maps whose pushout has a selected
 cocone. Neither calls for a new polytope, fundamental-group, sheaf, chart,
 or quotient engine.
 
+## Dependency-ordered implementation phases
+
+Each phase has one mathematical output and an exit condition at the owner of
+that output. A phase may use a private engine only after its input category,
+result category, and retained arrows are fixed. The existing
+[`simplicial-and-cw-foundations`](../../TODO.md) node owns the common complex
+foundation and depends on `pullbacks-in-every-category`; these phases consume
+that node rather than create a second complex hierarchy. The existing
+[`the-real-line-is-a-smooth-manifold`](../../TODO.md) and
+[`optional-manifold-tangent-bundles`](../../TODO.md) nodes likewise own those
+foundational repairs. Phase labels describe dependency order, not separate
+repositories or acceptance by an AEGS consumer.
+
+### P1. Category subtree and complete typing
+
+Present the graph above in `lean-categories` and the preamble, starting with
+the already formalized nodes and their actual category constructions. Stub
+only the mathematically missing nodes and methods. This phase defines the
+public language; it does not select a data class, algorithm, renderer, or
+special-case AEGS constructor.
+
+The P1 ownership tree keeps existing owners in place. The three new
+surfaces below are **category stubs**, not replacement algorithms; their
+final filenames follow the formal owner chosen in `lean-categories` and
+the existing complex TODO node.
+
+```text
+src/dzack_research/preamble/categories/
+  abstract_categories/cat.py, presheaves.py  existing diagrams, colimits, sheaves
+  topological_spaces.py                      existing spaces, opens, quotients
+  manifolds.py                               existing C^k, smooth, complex atlases
+  schemes/schemes.py, polytopes.py           existing affine spaces, polytopes
+  lattices.py, polyhedral_cones.py           existing lattices, cones
+  hyperbolic_geometry.py                    existing hyperbolic owners
+  group/g_objects.py                        existing actions and quotients
+  [common complexes owner]                  P1 stub at the existing TODO owner
+  [integral-affine owner]                   P1 atlas and singular-space stubs
+  [chosen-triangulation owner]              P1 construction over its target
+```
+
+The brackets are unresolved *paths*, not unresolved mathematical owners.
+P1 closes them by following the formal category declarations and the
+current modules. A new file cannot provide another route to an operation
+already owned by one of the listed modules.
+
+| Subtree | Required P1 surface |
+| --- | --- |
+| Manifolds | Topological, fixed `C^k`, smooth, complex, boundary/corner and pure-dimension categories; `RR^n`/`CC^m` placements; chart and atlas objects; points as elements; map `Mor`; same-object weakening and complex realification functors. |
+| Affine geometry | Affine spaces over a selected vector space, lattices with embeddings, integral-affine manifolds and singular integral-affine spaces; atlas and singular-locus data; affine-map `Mor`; forgetful functors to smooth manifolds and spaces. |
+| Polytopes | Abstract face-incidence objects; placed affine, Euclidean, spherical and hyperbolic polytopes; lattice and polygon refinements; face inclusions; corresponding map, isomorphism and automorphism categories. |
+| Complexes | Existing finite diagram, simplicial, `Delta`, simplicial-set and CW constructions; polytopal complexes and realizations; cell/face morphisms, subcomplexes and realization functors. Consume the existing complex TODO owner. |
+| Constructions over objects | Chosen triangulations over their exact targets; gluing diagrams and cocones; subobject surgery spans; dual-complex construction from its degeneration; actions through `GObjects(G,C)`; embeddings as `Mor` with exact endpoints. |
+
+For **each** node, record its parameter object, defining objects and
+elements, `Mor` and identity/composition, `Hom(X,Y)`, `End(X)` and `Aut(X)`
+through the existing category constructions, true supercategory inclusions,
+non-inclusion functors on objects **and** morphisms, constructor chain, and
+forgetful image. Do not manufacture a separate `Hom`/`Aut` class when `Cat`
+already constructs it. A property such as `Sphere`, `Integral`, `Kan`, or
+`PureDimension(2)` is a refinement of its owner under its stated
+hypotheses. The P1 coverage register is the complete graph in this document:
+every node and arrow must resolve to an existing formal owner or to a
+specific new formal declaration before P1 closes. Sample chains include
+`RR -> SmoothRealManifolds(1) -> TopologicalSpaces`,
+`P -> faces(P) -> face_poset(P) -> Aut(face_poset(P))`, and
+`D -> colimit(D) -> underlying_space(colimit(D))`. Each chain must preserve
+the same source object and its actual arrows. A stub may raise for a missing
+computation; it may not fabricate an object, drop a map, or use an engine
+object as a public endpoint.
+
+### P2. Defining data and canonical constructors
+
+At each P1 owner, specify the minimum **mathematical** datum from which an
+object is determined, then make its constructor retain that datum and its
+source maps. A smooth manifold is the selected compatible atlas on the
+same topological manifold; an integral-affine manifold selects affine
+transitions on that smooth manifold; a singular one selects
+`Sigma -> B` and an atlas on the exact complement. A placed polytope keeps
+its ambient inclusion; a chosen triangulation keeps simplex inclusions and
+`|T| -> |P|`; a glued complex keeps the diagram and cocone. Morphism
+constructors check source, target and preservation of the selected data.
+
+The public object is a preamble parent or element in its mathematical
+category. A private `dataclass`, Pydantic model, or engine record is chosen
+only when concrete repeated internal use justifies it; none is the public
+definition. The exit condition is constructor chaining: direct data,
+restriction, functor image, and raised engine result establish the **same**
+defining datum and category placement. A diagram whose quotient has no
+cocone, or a polytope face without its inclusion, fails P2 even if its
+coordinates are correct.
+
+### P3. Finish the preamble reuse path
+
+Wire each P2 construction to the existing preamble operation before adding
+an external dependency. This includes manifold charts and transitions,
+open-subobject restrictions, `AffineSpaces`, `Lattices`, `Sheaves`, the
+Legendre local-system functor pattern, `ConvexPolytopes`,
+`RationalPolyhedralCones`, topological quotients, `Cat` colimits and
+pushouts, `GObjects`, and the hyperbolic construction. The named TODO
+foundations above supply the real-line placement, owned tangent bundle,
+and common complex owners when their dependencies are met. P3 also exposes
+the preamble operations' **structural output**: face inclusions, pointed
+group objects, selected cocones, and functor images, rather than returning
+only coordinates or invariants. Its exit condition is that every reusable
+preamble operation in the prior-art table has a single typed call path and
+no parallel construction in this subtree.
+
+### P4. Port available computations through private interfaces
+
+Prioritize the first residue before writing any new computational algorithm.
+SageManifolds supplies chart differentiation, tangent and connection
+calculations. Sage `Polyhedron`, its Normaliz backend, `PointConfiguration`,
+finite complexes and simplicial sets supply polyhedral, triangulation and
+quotient computations. For rational cone data, the existing cone owner
+supplies hemispherical spherical faces by `C ∩ S^n`. Use CGAL's spherical arrangement or mesh
+parameterization interface, OSCAR/polymake complex operations, GAP, Regina,
+or sage-flatsurf only for the precise operation their inspected contract
+adds. An adapter lowers a P2 datum, invokes the maintained implementation,
+and raises the result **at its P1 owner**, with all face, chart, quotient or
+action arrows. It never exports a foreign parent or makes the library's
+class graph the category graph. Its exit condition is a source-linked
+operation-to-engine map and a typed raise path for every adopted engine.
+
+### P5. Standard derived operations and mathematical assertions
+
+Expose category-owned faces, incidence posets, abstract and placed
+automorphisms, stars, links, subdivisions, integral points, chosen
+triangulations, local-system transport, colimits, and embeddings by
+composing P3 and P4. At each owner, verify true assertions with an
+independent source or oracle: a face inclusion preserves incidence;
+simplex images cover the target and intersect along common faces; a
+unimodular lattice triangle has normalized area one; `link_K(v)` is the
+specified subcomplex; the face-poset group acts by rank-preserving
+automorphisms; a finite quotient retains its universal cocone. Use Hatcher,
+Lee, Ziegler, AEGS, the cited software documentation, or an independent
+exact engine according to the assertion. The engine's own tests and claims
+do not establish public mathematical correctness. P5 closes when these
+standard operations return the full stated objects and maps, not just a
+number, picture or successful backend call.
+
+### P6. Construct the determined second residue
+
+Only after P1--P5, implement the structural operations for which the
+first-residue survey found no existing preamble presentation: the
+integral-affine transition predicate and atlas on the exact manifold;
+its integral tangent local system and comparison to derivatives; the
+singular-locus/complement object; affine collar extension after a
+polytope-diagram quotient; selected surgery spans and their structured
+pushouts; the dual-complex map from degeneration incidence; and lifting
+an abstract symmetry to a selected integral-affine action when its
+hypotheses hold. `IAS^2` is then the sphere refinement of that singular
+object. Each operation has the defining inputs and `Mor` endpoints in the
+API section above. Its assertions are the atlas cocycle, lattice
+preservation, correct local links, the stated monodromy of supplied loops,
+and the universal property or comparison map of each quotient. A new
+computational algorithm enters P6 only after an exact P4 capability gap
+and its mathematical route are recorded; an unresolved external
+capability is not silently promoted to an invention task.
+
 ## Dependency and acceptance boundary
 
 The mathematical dependency chain is: spaces and maps; manifolds and atlases;
