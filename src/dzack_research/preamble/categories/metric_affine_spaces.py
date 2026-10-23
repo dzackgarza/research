@@ -10,6 +10,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.real_affine_spaces import RealAffineSpaces
+from dzack_research.preamble.owned_category import _object_of
 
 
 class EuclideanSpaceMor(CategoricalMor):
@@ -65,21 +66,30 @@ class EuclideanSpaces(OwnedCategory):
     def on(self, affine_space, positive_definite_form):
         if affine_space not in RealAffineSpaces():
             raise TypeError(f"{affine_space} is not a real affine space")
-        pass
+        return _object_of(
+            self,
+            affine_space=affine_space,
+            positive_definite_form=positive_definite_form,
+        )
 
     @cached_method
     def forget_metric(self):
         return _ForgetEuclideanMetric()
 
     class ParentMethods:
+        def __init__(self, affine_space, positive_definite_form, **rest):
+            self._affine_space = affine_space
+            self._positive_definite_form = positive_definite_form
+            super().__init__(**rest)
+
         def underlying_affine_space(self):
-            pass
+            return self._affine_space
 
         def model_inner_product(self):
-            pass
+            return self._positive_definite_form
 
         def point_set(self):
-            pass
+            return self._affine_space.point_set()
 
 
 class SphericalSpaceMor(CategoricalMor):
@@ -121,20 +131,33 @@ class SphericalSpaces(OwnedCategory):
     def an_object(self):
         pass
 
-    def in_space(self, euclidean_space, center, radius):
+    def in_space(self, euclidean_space, center, radius, inclusion):
         if euclidean_space not in EuclideanSpaces():
             raise TypeError(f"{euclidean_space} is not a Euclidean space")
-        pass
+        return _object_of(
+            self,
+            euclidean_space=euclidean_space,
+            center=center,
+            radius=radius,
+            inclusion=inclusion,
+        )
 
     class ParentMethods:
+        def __init__(self, euclidean_space, center, radius, inclusion, **rest):
+            self._euclidean_space = euclidean_space
+            self._center = center
+            self._radius = radius
+            self._inclusion = inclusion
+            super().__init__(**rest)
+
         def euclidean_space(self):
-            pass
+            return self._euclidean_space
 
         def center(self):
-            pass
+            return self._center
 
         def radius(self):
-            pass
+            return self._radius
 
         def inclusion(self):
-            pass
+            return self._inclusion
