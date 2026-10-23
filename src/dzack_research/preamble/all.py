@@ -298,6 +298,9 @@ from dzack_research.preamble.categories.cell_complexes import (  # noqa: F401
     SimplicialComplexes,
     SimplicialSets,
 )
+from dzack_research.preamble.categories.triangulations import (  # noqa: F401
+    ChosenTriangulations,
+)
 from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
