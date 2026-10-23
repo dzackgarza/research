@@ -15,7 +15,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.schemes.schemes import Schemes
-from dzack_research.preamble.owned_category import _object_of
 
 
 class DegenerationCentralFiberMor(CategoricalMor):
@@ -93,12 +92,7 @@ class DegenerationCentralFibers(OwnedCategoryOverBaseRing):
 
     def on(self, central_fiber, component_inclusions, intersection_strata):
         r"""Select the exact scheme, its components, and connected intersection strata."""
-        return _object_of(
-            self,
-            central_fiber=central_fiber,
-            component_inclusions=component_inclusions,
-            intersection_strata=intersection_strata,
-        )
+        pass
 
     def from_family(self, family, central_point, component_inclusions, intersection_strata):
         r"""Select the central fibre of a family with its intersection data."""
