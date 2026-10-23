@@ -177,6 +177,14 @@ class CellComplexes(OwnedCategory):
         def face_inclusion(self, face, cell):
             pass
 
+        def subcomplex(self, cells):
+            r"""Select the subcomplex closed under attaching faces of ``cells``."""
+            pass
+
+        def subcomplex_inclusion(self, subcomplex):
+            r"""Return the cellular inclusion from ``subcomplex`` into ``self``."""
+            pass
+
         def face_gluing_diagram(self):
             pass
 
@@ -244,6 +252,13 @@ class PolytopalComplexes(OwnedCategory):
         def face_inclusion(self, face, cell):
             pass
 
+        def subcomplex(self, cells):
+            r"""Select the placed polytopes and all their incident faces."""
+            pass
+
+        def subcomplex_inclusion(self, subcomplex):
+            pass
+
         def cellular_realization(self):
             pass
 
@@ -292,6 +307,13 @@ class SimplicialComplexes(OwnedCategory):
         def simplex_inclusion(self, face, simplex):
             pass
 
+        def subcomplex(self, simplices):
+            r"""Select the simplices together with all their faces."""
+            pass
+
+        def subcomplex_inclusion(self, subcomplex):
+            pass
+
         def cellular_realization(self):
             pass
 
@@ -323,6 +345,13 @@ class DeltaComplexes(OwnedCategory):
             pass
 
         def face_poset(self):
+            pass
+
+        def subcomplex(self, simplices):
+            r"""Select simplices closed under the given face identifications."""
+            pass
+
+        def subcomplex_inclusion(self, subcomplex):
             pass
 
         def cellular_realization(self):
