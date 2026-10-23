@@ -7,6 +7,7 @@ from sage.misc.cachefunc import cached_method
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import (
@@ -93,7 +94,12 @@ class RealAffineSpaceMor(CategoricalMor):
             return self._point_map(point)
 
         def __mul__(self, other):
-            pass
+            if not _precomposable(self, other):
+                return NotImplemented
+            return RealAffineSpaces().Mor(other.domain(), self.codomain())(
+                self.linear_part() * other.linear_part(),
+                self.point_map() * other.point_map(),
+            )
 
     def _element_constructor_(self, linear_part, point_map):
         source = self.domain()
@@ -215,7 +221,12 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
             return self._affine_map(point)
 
         def __mul__(self, other):
-            pass
+            if not _precomposable(self, other):
+                return NotImplemented
+            return AffineSpacesWithLattice().Mor(other.domain(), self.codomain())(
+                self.affine_map() * other.affine_map(),
+                self.lattice_map() * other.lattice_map(),
+            )
 
     def _element_constructor_(self, affine_map, lattice_map):
         source = self.domain()
