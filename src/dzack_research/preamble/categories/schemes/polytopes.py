@@ -712,6 +712,18 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                 )
             )
 
+        def faces(self, dimension):
+            r"""The faces of the selected dimension, with their common ambient."""
+            pass
+
+        def face_inclusion(self, face):
+            r"""The selected face arrow from ``face`` into this polytope."""
+            pass
+
+        def face_poset(self):
+            r"""The graded poset of faces and their inclusion relations."""
+            pass
+
         def facet_inclusion(self, facet):
             r"""The selected face arrow from ``facet`` into this polytope."""
             pass
