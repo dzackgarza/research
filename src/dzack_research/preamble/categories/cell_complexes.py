@@ -39,9 +39,6 @@ class _ComplexMapMethods:
     def cellular_realization_map(self):
         pass
 
-    def face_poset_map(self):
-        pass
-
     def is_homotopic_to(self, other):
         pass
 
@@ -70,17 +67,33 @@ class CellComplexMor(_ComplexMor):
 class PolytopalComplexMor(_ComplexMor):
     r"""Cellular maps respecting selected polytope face placements."""
 
+    class ElementMethods(_ComplexMapMethods):
+        def face_poset_map(self):
+            pass
+
 
 class SimplicialComplexMor(_ComplexMor):
     r"""Simplicial maps respecting every face inclusion."""
+
+    class ElementMethods(_ComplexMapMethods):
+        def face_poset_map(self):
+            pass
 
 
 class DeltaComplexMor(_ComplexMor):
     r"""Maps commuting with the face identifications of a Delta-complex."""
 
+    class ElementMethods(_ComplexMapMethods):
+        def face_poset_map(self):
+            pass
+
 
 class SimplicialSetMor(_ComplexMor):
     r"""Maps commuting with faces and degeneracies in every degree."""
+
+    class ElementMethods(_ComplexMapMethods):
+        def face_poset_map(self):
+            pass
 
 
 class CellComplexMorCategoryConstruction(MorCategoryConstruction):
@@ -298,10 +311,6 @@ class CellComplexes(OwnedCategory):
 
     class RegularCW(CategoryWithAxiom):
         r"""Cell complexes with embedded closed cells."""
-
-        @cached_method
-        def face_posets(self):
-            return _ComplexFacePosetFunctor(self)
 
     class PLManifold(CategoryWithAxiom):
         r"""Cell complexes with the required PL sphere and ball links."""
