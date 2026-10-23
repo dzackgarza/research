@@ -879,6 +879,22 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     sage: assert K.inclusion().is_in_image(f) is True
                     sage: assert K.inclusion().is_in_image(g) is True
                     sage: assert all(a(K.inclusion()(v)) == W.zero() for v in K.module_generators())
+                    sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                    sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                    sage: from dzack_research.preamble.logic import Predicate
+                    sage: Q = _owned_rationals()
+                    sage: sequence = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n))
+                    sage: t = RR.of_cauchy(sequence)
+                    sage: P = RR ** 2
+                    sage: e, f = P.module_generators()
+                    sage: b = P.module_category().Mor(P, W)((w, t*w))
+                    sage: N = b.kernel()
+                    sage: assert N.inclusion().codomain() is P
+                    sage: assert N.module_rank() == cardinal(1)
+                    sage: image = N.inclusion()(N.module_generators()[0])
+                    sage: labels = tuple(P.module_generating_set())
+                    sage: assert isinstance(image.to_vector()(labels[0]) == RR.zero(), Predicate)
+                    sage: assert image.to_vector()(labels[1]) == RR.one()
                 """
                 if morphism.domain() is not self:
                     return NotImplemented
@@ -917,11 +933,10 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     coordinates = coordinate_vector.to_vector()
                     return self.linear_combination(
                         {
-                            source_label: coefficient
+                            source_label: coordinates(coordinate_label)
                             for source_label, coordinate_label in zip(
                                 source_labels, coordinate_labels, strict=True
                             )
-                            if (coefficient := coordinates(coordinate_label))
                         }
                     )
 

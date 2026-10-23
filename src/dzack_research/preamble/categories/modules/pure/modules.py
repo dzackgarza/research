@@ -6161,7 +6161,7 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             return finite_indexed_family(
                 positions,
                 lambda position: self.domain().linear_combination(
-                    {label: _owned_engine_element(ring, basis[int(position), column]) for column, label in enumerate(labels) if basis[int(position), column]}
+                    {label: _owned_engine_element(ring, basis[int(position), column]) for column, label in enumerate(labels)}
                 ),
                 name=f"Kernel spanning family of {self}",
             )
