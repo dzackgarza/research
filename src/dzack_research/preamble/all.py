@@ -295,6 +295,10 @@ from dzack_research.preamble.categories.integral_affine_manifolds import (  # no
 from dzack_research.preamble.categories.integral_affine_atlases import (  # noqa: F401
     IntegralAffineAtlases,
 )
+from dzack_research.preamble.categories.integral_affine_stratified_atlases import (  # noqa: F401
+    IntegralAffineBoundaryAtlases,
+    IntegralAffineCornerAtlases,
+)
 from dzack_research.preamble.categories.integral_affine_collars import (  # noqa: F401
     IntegralAffineCollars,
 )
