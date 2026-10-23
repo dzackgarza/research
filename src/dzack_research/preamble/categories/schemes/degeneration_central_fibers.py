@@ -40,7 +40,7 @@ class DegenerationCentralFiberMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, scheme_map, incidence_map):
-        return self.element_class(self, scheme_map, incidence_map)
+        pass
 
     @object_level
     def identity(self):
