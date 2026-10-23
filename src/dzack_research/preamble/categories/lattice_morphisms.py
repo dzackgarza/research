@@ -3368,6 +3368,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         citation of what established nonemptiness.  No isometry is
         constructed here; :meth:`an_element` constructs one on request.
 
+        The radical of a finite free ``ZZ``-lattice is saturated, so the
+        lattice splits as its nondegenerate quotient and a zero-form free
+        summand.  After comparing ranks and signatures, a degenerate pair
+        is therefore isometric exactly when its radical quotients are.
+
         After the invariant obstructions the decision compares the owned
         genera, ``L.genus() == M.genus()`` (equal signature and canonical
         ``ZZ_p``-symbols at every ``p | 2d``)
@@ -3414,6 +3419,13 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
             return (True, None)
         if not domain.is_nondegenerate():
+            quotient_empty = domain.radical_quotient().Isom(
+                codomain.radical_quotient()
+            ).is_empty()
+            if quotient_empty is True:
+                return (True, None)
+            if quotient_empty is False:
+                return (False, "isometric nondegenerate quotients and equal-rank split radicals")
             return (undecided, None)
         if domain.is_even() != codomain.is_even():
             return (True, None)
@@ -3495,7 +3507,9 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         if domain_gram == codomain_gram:
             return self._isometry_from_column_matrix(domain_gram.parent().one())
         signature = domain.signature_pair()
-        if signature.first() == 0 or signature.second() == 0 or int(domain.module_rank()) == 2:
+        if domain.is_nondegenerate() and (
+            signature.first() == 0 or signature.second() == 0 or int(domain.module_rank()) == 2
+        ):
             transformation = self._witness_matrix()
             assert transformation is not False, (
                 f"{domain} and {codomain} are isometric by {reason}, but the equivalence search found no isometry"
