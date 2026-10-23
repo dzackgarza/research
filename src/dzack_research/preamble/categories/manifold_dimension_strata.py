@@ -1,4 +1,4 @@
-r"""Pure-dimensional strata of the represented manifold categories."""
+r"""Dimension filtrations and pure strata of the represented manifold categories."""
 
 from sage.categories.category import Category
 
@@ -19,6 +19,57 @@ from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 
 
+def _manifold_dimension_parameters(base_category, dimension):
+    if base_category not in (
+        TopologicalManifolds(),
+        DifferentiableManifolds(),
+        SmoothManifolds(),
+        ComplexManifolds(),
+        TopologicalManifoldsWithBoundary(),
+        SmoothManifoldsWithBoundary(),
+        TopologicalManifoldsWithCorners(),
+        SmoothManifoldsWithCorners(),
+    ) and not isinstance(base_category, RealCkManifolds):
+        raise TypeError(f"{base_category} is not a selected manifold category")
+    dimension = _owned_integers()(dimension)
+    if dimension < 0:
+        raise ValueError(f"a manifold dimension must be nonnegative, not {dimension}")
+    return base_category, dimension
+
+
+class ManifoldsOfDimensionAtMost(OwnedCategory):
+    r"""The full subcategory whose component dimensions do not exceed ``n``."""
+
+    @staticmethod
+    def __classcall__(cls, base_category, dimension):
+        base_category, dimension = _manifold_dimension_parameters(base_category, dimension)
+        return Category.__classcall__(cls, base_category, dimension)
+
+    def __init__(self, base_category, dimension):
+        self._base_category = base_category
+        self._dimension_bound = dimension
+        super().__init__()
+
+    def base_category(self):
+        return self._base_category
+
+    def dimension_bound(self):
+        return self._dimension_bound
+
+    def super_categories(self):
+        return [self.base_category()]
+
+    def _repr_object_names(self):
+        return f"{self.base_category()} of dimension at most {self.dimension_bound()}"
+
+    def an_object(self):
+        pass
+
+    def on(self, manifold):
+        r"""Place the exact base manifold under the componentwise bound."""
+        pass
+
+
 class PureDimensionalManifolds(OwnedCategory):
     r"""The full subcategory of manifolds pure of dimension ``n``.
 
@@ -30,20 +81,7 @@ class PureDimensionalManifolds(OwnedCategory):
 
     @staticmethod
     def __classcall__(cls, base_category, dimension):
-        if base_category not in (
-            TopologicalManifolds(),
-            DifferentiableManifolds(),
-            SmoothManifolds(),
-            ComplexManifolds(),
-            TopologicalManifoldsWithBoundary(),
-            SmoothManifoldsWithBoundary(),
-            TopologicalManifoldsWithCorners(),
-            SmoothManifoldsWithCorners(),
-        ) and not isinstance(base_category, RealCkManifolds):
-            raise TypeError(f"{base_category} is not a selected manifold category")
-        dimension = _owned_integers()(dimension)
-        if dimension < 0:
-            raise ValueError(f"a manifold dimension must be nonnegative, not {dimension}")
+        base_category, dimension = _manifold_dimension_parameters(base_category, dimension)
         return Category.__classcall__(cls, base_category, dimension)
 
     def __init__(self, base_category, dimension):
@@ -58,7 +96,7 @@ class PureDimensionalManifolds(OwnedCategory):
         return self._dimension
 
     def super_categories(self):
-        return [self.base_category()]
+        return [ManifoldsOfDimensionAtMost(self.base_category(), self.dimension())]
 
     def _repr_object_names(self):
         return f"pure {self.dimension()}-dimensional {self.base_category()}"

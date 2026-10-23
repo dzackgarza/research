@@ -314,6 +314,7 @@ from dzack_research.preamble.categories.manifolds_with_boundary import (  # noqa
     TopologicalManifoldsWithCorners,
 )
 from dzack_research.preamble.categories.manifold_dimension_strata import (  # noqa: F401
+    ManifoldsOfDimensionAtMost,
     PureDimensionalManifolds,
 )
 from dzack_research.preamble.categories.real_affine_spaces import (  # noqa: F401
