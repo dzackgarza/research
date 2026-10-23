@@ -2115,6 +2115,28 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
             if (square == values.zero()) is True:
                 fibre.object()(self.zero())
+            else:
+                from dzack_research.preamble.categories.lattices import Lattices
+                from dzack_research.preamble.categories.rings.ring_foundation import (
+                    _owned_rationals, _owned_real_algebraic_numbers,
+                )
+                from dzack_research.preamble.rings.real import RR
+
+                ring = self.base_ring()
+                if (self in Lattices(ring) and values is ring
+                        and ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR)
+                        and self.module_rank().is_finite()
+                        and self in FormModules(ring).Nondegenerate()):
+                    locus = fibre.object()
+                    singleton = finite_ordered_set((0,))
+
+                    def point(_label):
+                        # The solver supplies a solution of this exact
+                        # equation; admission retains that actual point
+                        # without trying to decide its scalar equation again.
+                        return locus._retain_admitted_member(self.representation_vector(square))
+
+                    locus._retain_point_map(OwnedSets().Mor(singleton, locus)(point))
             return fibre
 
         def elements_of_norm(self, value):
@@ -2147,6 +2169,13 @@ class FormModules(OwnedCategoryOverBaseRing):
                 sage: point = F(V.representation_vector(RR.pi()))
                 sage: assert F.an_element() == point
                 sage: assert V.q(F.inclusion()(F.an_element())) == RR.pi()
+                sage: W = Lattices(RR).Nondegenerate()([[1]])
+                sage: fresh = W.elements_of_norm(RR(3))
+                sage: point = fresh.an_element()
+                sage: assert point.parent() is W
+                sage: assert W.q(fresh.inclusion()(point)) == RR(3)
+                sage: assert fresh.is_empty() is False
+                sage: assert fresh.an_element() is point
             """
             return self.square_fibre(value).object()
 

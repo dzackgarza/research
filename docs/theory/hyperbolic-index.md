@@ -1676,19 +1676,30 @@ form is singular or definite. This supplies a source specimen for locus
 construction with undecided inertia; it does not claim enumeration of
 all real points.
 
-**Remaining fresh-point route.** The general subset's choice computation
-currently returns an already admitted member or searches its selected
-ambient enumeration. Canonical zero is admitted by the zero-fibre
-construction, but a fresh nonzero real norm fibre does not yet invoke
-the existing norm-witness solver automatically. Calling
-`F(L.representation_vector(a))` and then `F.an_element()` demonstrates
-retained admission, not fresh point finding. The missing dependency is
-lazy composition of the equation solver with the existing fibre
-inclusion, at a general solution-fibre owner. It must leave construction
-of the locus independent of solving, preserve unknown or unavailable
-computations, and distinguish an empty fibre from an unfinished search.
-This remains assigned in TODO.md and COMPLAINTS.md; neither real
-enumeration nor an eager solver in the locus constructor supplies it.
+**Fresh norm-fibre point selection.** A predicate subset can now retain
+an actual map from a selected singleton into itself as its private lazy
+point computation. Retaining that map evaluates no point and makes no
+nonemptiness decision. Choice first returns an admitted point, then
+uses the selected map if present, and otherwise requests the existing
+ambient enumeration. Evaluation failures propagate; they are not caught
+and interpreted as emptiness.
+
+For a supplied finite nondegenerate lattice over QQ, AA or represented
+RR with scalar-valued form, the norm-fibre constructor now retains such
+a map. On evaluation it calls the existing `representation_vector(a)`
+and admits that actual solution in the original equalizer, without
+re-deciding the equation that the solver constructs. The map's actual
+codomain is the original fibre, so its ordinary set-map evaluation
+retains the inclusion and ambient endpoint. Once selected, the point is
+retained and subsequent choice requests reuse it. Canonical zero keeps
+its earlier immediate route. Other forms retain their prior search or
+unavailable computation. An arbitrary requested-real zero decision can
+still be unavailable, and no solver is inferred for arbitrary predicate
+subsets. This composes the existing norm solver with choice lazily; it
+neither solves while constructing the locus nor enumerates real points.
+The fresh positive real line specimen requests a norm-three point without
+manual admission. Its execution remains deferred with the other source
+specimens.
 
 **Element equations retain predicates.** For a supplied vector $v$,
 `v.is_isotropic()` denotes $q(v)=0$, `v.is_orthogonal_to(w)` denotes
