@@ -415,6 +415,9 @@ class ContinuousMap:
     def underlying_set_morphism(self):
         return self._set_morphism
 
+    def is_embedding(self):
+        pass
+
     @validator
     def validate_continuity(self) -> None:
         r"""Raise ``ValueError`` unless the preimage of each open set of ``Y`` is open in ``X`` (``OWN-22``)."""

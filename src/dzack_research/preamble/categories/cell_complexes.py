@@ -48,6 +48,9 @@ class _ComplexMapMethods:
     def is_weak_equivalence(self):
         pass
 
+    def is_embedding(self):
+        pass
+
 
 class _ComplexMor(CategoricalMor):
     ElementMethods = _ComplexMapMethods
