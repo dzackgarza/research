@@ -282,11 +282,23 @@ class IntegralAffineLocalIsomorphisms(OwnedCategory):
 
 
 class _StratifiedIntegralAffineMapMethods:
+    def __init__(self, parent, smooth_stratified_map, interior_affine_map, local_affine_maps):
+        Morphism.__init__(self, parent)
+        self._smooth_stratified_map = smooth_stratified_map
+        self._interior_affine_map = interior_affine_map
+        self._local_affine_maps = local_affine_maps
+
     def underlying_smooth_stratified_map(self):
-        pass
+        return self._smooth_stratified_map
 
     def interior_affine_map(self):
-        pass
+        return self._interior_affine_map
+
+    def local_affine_maps(self):
+        return self._local_affine_maps
+
+    def _call_(self, point):
+        return self._smooth_stratified_map(point)
 
     def __mul__(self, other):
         pass
@@ -295,8 +307,13 @@ class _StratifiedIntegralAffineMapMethods:
 class _StratifiedIntegralAffineMor(CategoricalMor):
     ElementMethods = _StratifiedIntegralAffineMapMethods
 
-    def _element_constructor_(self, smooth_stratified_map, local_affine_maps):
-        pass
+    def _element_constructor_(self, smooth_stratified_map, interior_affine_map, local_affine_maps):
+        return self.element_class(
+            self,
+            smooth_stratified_map,
+            interior_affine_map,
+            local_affine_maps,
+        )
 
     @object_level
     def identity(self):
