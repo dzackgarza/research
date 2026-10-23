@@ -189,6 +189,10 @@ class ComplexAffineSpaces(OwnedCategory):
         def translation_action(self):
             return self._translation_action
 
+        def underlying_torsor(self):
+            r"""The selected torsor under the model space's additive group."""
+            pass
+
         def chart_at(self, origin):
             r"""The global holomorphic chart carrying ``origin`` to zero of the model space."""
             pass
