@@ -288,6 +288,9 @@ from dzack_research.preamble.categories.integral_affine_manifolds import (  # no
     IntegralAffineManifolds,
     SingularIntegralAffineSpaces,
 )
+from dzack_research.preamble.categories.sets.finite_graded_posets import (  # noqa: F401
+    FiniteGradedPosets,
+)
 from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
