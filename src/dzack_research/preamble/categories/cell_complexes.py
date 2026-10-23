@@ -507,7 +507,7 @@ class SimplicialComplexes(OwnedCategory):
             return self._defining_simplices
 
         def simplices(self, dimension):
-            pass
+            return self._defining_simplices[dimension]
 
         def face_poset(self):
             pass
@@ -586,6 +586,9 @@ class DeltaComplexes(OwnedCategory):
 
         def defining_simplices(self):
             return self._defining_simplices
+
+        def simplices(self, dimension):
+            return self._defining_simplices[dimension]
 
         def face_maps(self):
             return self._face_maps
