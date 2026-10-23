@@ -121,6 +121,14 @@ class IntegralAffineManifolds(OwnedCategory):
         def integral_tangent_lattice(self):
             pass
 
+        def tangent_lattice_inclusion(self):
+            r"""Return the lattice local system's inclusion in the tangent bundle."""
+            pass
+
+        def transition_derivative_comparison(self, source_chart, target_chart):
+            r"""Compare the chart derivative with its integral lattice action."""
+            pass
+
         def regular_open(self, open_inclusion):
             pass
 
