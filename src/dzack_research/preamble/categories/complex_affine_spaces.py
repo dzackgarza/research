@@ -132,6 +132,21 @@ class _ComplexAffineModelFunctor(Functor):
         return morphism.linear_part()
 
 
+class _ComplexAffineHolomorphicManifoldFunctor(Functor):
+    r"""Equip a complex affine space and its affine maps with holomorphic charts."""
+
+    def __init__(self):
+        from dzack_research.preamble.categories.manifolds import ComplexManifolds
+
+        super().__init__(ComplexAffineSpaces(), ComplexManifolds())
+
+    def _apply_object(self, affine_space):
+        pass
+
+    def _apply_morphism(self, affine_map):
+        pass
+
+
 class ComplexAffineSpaces(OwnedCategory):
     r"""Torsors for additive complex vector spaces, with affine maps."""
 
@@ -165,6 +180,10 @@ class ComplexAffineSpaces(OwnedCategory):
     def model_vector_space(self):
         return _ComplexAffineModelFunctor()
 
+    @cached_method
+    def holomorphic_manifold(self):
+        return _ComplexAffineHolomorphicManifoldFunctor()
+
     class ParentMethods:
         def __init__(self, model_vector_space, point_set, translation_action, **rest):
             self._model_vector_space = model_vector_space
@@ -180,6 +199,3 @@ class ComplexAffineSpaces(OwnedCategory):
 
         def translation_action(self):
             return self._translation_action
-
-        def holomorphic_manifold(self):
-            pass
