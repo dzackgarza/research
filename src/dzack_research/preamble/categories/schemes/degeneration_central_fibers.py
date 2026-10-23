@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
 )
 from dzack_research.preamble.categories.schemes.schemes import Schemes
+from dzack_research.preamble.owned_category import _object_of
 
 
 class DegenerationCentralFiberMor(CategoricalMor):
@@ -88,7 +89,12 @@ class DegenerationCentralFibers(OwnedCategoryOverBaseRing):
 
     def on(self, central_fiber, component_inclusions, intersection_strata):
         r"""Select the exact scheme, its components, and connected intersection strata."""
-        pass
+        return _object_of(
+            self,
+            central_fiber=central_fiber,
+            component_inclusions=component_inclusions,
+            intersection_strata=intersection_strata,
+        )
 
     def from_family(self, family, central_point, component_inclusions, intersection_strata):
         r"""Select the central fibre of a family with its intersection data."""
@@ -103,14 +109,20 @@ class DegenerationCentralFibers(OwnedCategoryOverBaseRing):
         return _DualComplexFunctor(self)
 
     class ParentMethods:
+        def __init__(self, central_fiber, component_inclusions, intersection_strata, **rest):
+            self._central_fiber = central_fiber
+            self._component_inclusions = component_inclusions
+            self._intersection_strata = intersection_strata
+            super().__init__(**rest)
+
         def underlying_scheme(self):
-            pass
+            return self._central_fiber
 
         def component_inclusions(self):
-            pass
+            return self._component_inclusions
 
         def intersection_strata(self):
-            pass
+            return self._intersection_strata
 
         def dual_complex(self):
             pass
