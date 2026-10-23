@@ -713,6 +713,14 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         def triangulate(self):
             pass
 
+        def triangulation_preserving_automorphisms(self, triangulation):
+            r"""Affine automorphisms preserving the selected triangulation."""
+            pass
+
+        def action_on_face_poset(self, triangulation):
+            r"""Map triangulation-preserving affine automorphisms to face automorphisms."""
+            pass
+
         def lift_face_action(self, abstract_action, realization_map, affine_chart_maps):
             r"""Lift a face action through the selected realization to this affine space."""
             pass
