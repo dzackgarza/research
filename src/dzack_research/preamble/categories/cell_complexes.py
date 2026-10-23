@@ -13,7 +13,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -84,7 +83,7 @@ class CellComplexMor(_ComplexMor):
     ElementMethods = _CellwiseComplexMapMethods
 
     def _element_constructor_(self, cell_maps):
-        return self.element_class(self, cell_maps)
+        pass
 
 
 class PolytopalComplexMor(_ComplexMor):
@@ -95,7 +94,7 @@ class PolytopalComplexMor(_ComplexMor):
             pass
 
     def _element_constructor_(self, cell_maps):
-        return self.element_class(self, cell_maps)
+        pass
 
 
 class SimplicialComplexMor(_ComplexMor):
@@ -116,12 +115,7 @@ class SimplicialComplexMor(_ComplexMor):
             pass
 
     def _element_constructor_(self, vertex_map):
-        if (
-            vertex_map.domain() is not self.domain().vertices()
-            or vertex_map.codomain() is not self.codomain().vertices()
-        ):
-            raise ValueError("the vertex map must join the selected vertex sets")
-        return self.element_class(self, vertex_map)
+        pass
 
 
 class DeltaComplexMor(_ComplexMor):
@@ -132,7 +126,7 @@ class DeltaComplexMor(_ComplexMor):
             pass
 
     def _element_constructor_(self, degree_maps):
-        return self.element_class(self, degree_maps)
+        pass
 
 
 class SimplicialSetMor(_ComplexMor):
@@ -143,7 +137,7 @@ class SimplicialSetMor(_ComplexMor):
             pass
 
     def _element_constructor_(self, degree_maps):
-        return self.element_class(self, degree_maps)
+        pass
 
 
 class CellComplexMorCategoryConstruction(MorCategoryConstruction):
@@ -225,7 +219,7 @@ class CellComplexes(OwnedCategory):
         pass
 
     def from_attaching_maps(self, cells, attaching_maps):
-        return _object_of(self, cell_family=cells, attaching_maps=attaching_maps)
+        pass
 
     def regularization(self, complex_):
         r"""Replace nonembedded attaching maps by mapping cylinders."""
@@ -389,7 +383,7 @@ class PolytopalComplexes(OwnedCategory):
         pass
 
     def from_cells(self, polytopes, face_maps):
-        return _object_of(self, polytopes=polytopes, face_maps=face_maps)
+        pass
 
     @cached_method
     def face_posets(self):
@@ -480,7 +474,7 @@ class SimplicialComplexes(OwnedCategory):
         pass
 
     def from_simplices(self, vertices, simplices):
-        return _object_of(self, vertices=vertices, defining_simplices=simplices)
+        pass
 
     def order_complex(self, poset):
         r"""Construct the nerve of a poset from its chains."""
@@ -576,7 +570,7 @@ class DeltaComplexes(OwnedCategory):
         pass
 
     def from_faces(self, simplices, face_maps):
-        return _object_of(self, defining_simplices=simplices, face_maps=face_maps)
+        pass
 
     @cached_method
     def face_posets(self):
@@ -665,12 +659,7 @@ class SimplicialSets(OwnedCategory):
 
     def from_face_degeneracy_maps(self, simplices, faces, degeneracies):
         r"""Select graded ``simplices[n]`` and operators ``faces[n,i]``, ``degeneracies[n,i]``."""
-        return _object_of(
-            self,
-            defining_simplices=simplices,
-            defining_faces=faces,
-            defining_degeneracies=degeneracies,
-        )
+        pass
 
     def nerve(self, category):
         r"""Construct the simplicial nerve of a small category."""
