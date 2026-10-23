@@ -544,6 +544,24 @@ class DeltaComplexes(OwnedCategory):
         def subcomplex_inclusion(self, subcomplex):
             pass
 
+        def star(self, simplex):
+            pass
+
+        def star_inclusion(self, simplex):
+            pass
+
+        def link(self, simplex):
+            pass
+
+        def link_inclusion(self, simplex):
+            pass
+
+        def subdivision(self):
+            pass
+
+        def subdivision_comparison(self, subdivision):
+            pass
+
         def cellular_realization(self):
             pass
 
