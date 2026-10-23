@@ -2124,7 +2124,7 @@ class FormModules(OwnedCategoryOverBaseRing):
 
                 ring = self.base_ring()
                 if (self in Lattices(ring) and values is ring
-                        and ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR)
+                        and ring in (_owned_integers(), _owned_rationals(), _owned_real_algebraic_numbers(), RR)
                         and self.module_rank().is_finite()
                         and self in FormModules(ring).Nondegenerate()):
                     locus = fibre.object()
@@ -2181,6 +2181,19 @@ class FormModules(OwnedCategoryOverBaseRing):
                 ValueError: ... does not represent -1
                 sage: from dzack_research.preamble.logic import Predicate
                 sage: assert isinstance(excluded.is_empty(), Predicate)
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+                sage: ZZ = _owned_integers()
+                sage: P = Lattices(ZZ).Nondegenerate()([[1, 0], [0, -2]])
+                sage: shell = P.elements_of_norm(ZZ(4))
+                sage: v = shell.an_element()
+                sage: assert v.parent() is P and P.q(v) == ZZ(4)
+                sage: assert shell.inclusion()(v) == v
+                sage: assert shell.an_element() is v
+                sage: absent = P.elements_of_norm(ZZ(3))
+                sage: absent.an_element()  # doctest: +ELLIPSIS
+                Traceback (most recent call last):
+                ...
+                ValueError: ... does not represent 3
             """
             return self.square_fibre(value).object()
 

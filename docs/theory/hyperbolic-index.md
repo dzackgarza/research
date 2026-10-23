@@ -1686,7 +1686,7 @@ admitted point, then invokes the computation if present, and otherwise
 requests the existing ambient enumeration. Evaluation failures propagate;
 they are not interpreted as emptiness or as successful admission.
 
-For a supplied finite nondegenerate lattice over QQ, AA or represented
+For a supplied finite nondegenerate lattice over ZZ, QQ, AA or represented
 RR with scalar-valued form, the norm-fibre constructor retains a
 computation invoking the existing `representation_vector(a)`. On success,
 the subset owner admits that returned solution in the original equalizer,
@@ -1699,6 +1699,21 @@ for arbitrary predicate subsets. The fresh positive real line specimen
 requests norm three without manual admission; a negative norm exercises
 failure without retaining a point or changing the emptiness proposition.
 Their execution remains deferred with the other source specimens.
+
+The integral route uses the existing `representation_vector` computations,
+not exhaustion of an infinite norm fibre: finite definite shells, the
+binary norm-equation computation, or the integral-overlattice/embedding
+route in higher indefinite rank. For the nonsplit plane
+$q(x,y)=x^2-2y^2$, the norm-four fibre has $(2,0)$ as a point, which the
+lazy choice route can select without enumerating the whole fibre. The
+norm-three fibre is empty: if $y$ is even, $2y^2\equiv0\pmod8$ would
+force $x^2\equiv3\pmod8$; if $y$ is odd it would force
+$x^2\equiv5\pmod8$. Neither is a square residue. The source specimens
+request these two fibres afresh, retain the actual integral inclusion
+and selected point in the affirmative case, and propagate the existing
+solver's exclusion in the negative case. These are point-selection
+computations on norm fibres, not computations of a maximal hyperbolic
+summand.
 
 **Element equations retain predicates.** For a supplied vector $v$,
 `v.is_isotropic()` denotes $q(v)=0$, `v.is_orthogonal_to(w)` denotes
