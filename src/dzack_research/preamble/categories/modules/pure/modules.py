@@ -6153,6 +6153,34 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                     name=f"Localized kernel spanning family of {self}",
                 )
 
+            from dzack_research.preamble.rings.real import RR
+
+            if ring is RR:
+                labels = tuple(self.parent().column_index_set())
+                rows = tuple(
+                    tuple(self.matrix_entry(row, column) for column in labels)
+                    for row in self.parent().row_index_set()
+                )
+                reduced, pivots = _represented_real_rref(rows, len(labels), ring)
+                free = tuple(column for column in range(len(labels)) if column not in pivots)
+                positions = Sets.Δ[len(free) - 1]
+
+                def kernel_vector(position):
+                    values = [ring.zero()] * len(labels)
+                    column = free[int(position)]
+                    values[column] = ring.one()
+                    for row, pivot in enumerate(pivots):
+                        values[pivot] = -reduced[row][column]
+                    return self.domain().linear_combination(
+                        dict(zip(labels, values, strict=True))
+                    )
+
+                return finite_indexed_family(
+                    positions,
+                    kernel_vector,
+                    name=f"Kernel spanning family of {self}",
+                )
+
             basis = _engine_matrix(self).change_ring(
                 _linear_algebra_ring(ring)
             ).right_kernel().basis_matrix()
@@ -6466,6 +6494,39 @@ def _matrix_index(index_set, key):
     r"""Read a row or column key as a label of ``index_set``; a position is read through ``index_set[i]`` by the caller."""
     assert key in index_set, f"{key!r} is not a label of {index_set}: matrix entries are keyed by label"
     return index_set(key)
+
+
+def _represented_real_rref(coefficients, column_count, ring):
+    r"""Reduce owned real rows, refusing a pivot whose zero status is unknown."""
+    rows = [list(row) for row in coefficients]
+    pivots = []
+    for column in range(column_count):
+        candidates = tuple(
+            row for row in range(len(pivots), len(rows))
+            if (rows[row][column] == ring.zero()) is False
+        )
+        if not candidates:
+            assert all(
+                (rows[row][column] == ring.zero()) is True
+                for row in range(len(pivots), len(rows))
+            ), "the real linear-system pivot is undecided"
+            continue
+        pivot_row = len(pivots)
+        selected = candidates[0]
+        rows[pivot_row], rows[selected] = rows[selected], rows[pivot_row]
+        pivot = rows[pivot_row][column]
+        rows[pivot_row] = [ring._divide_by_nonzero(value, pivot) for value in rows[pivot_row]]
+        for row in range(len(rows)):
+            if row != pivot_row:
+                coefficient = rows[row][column]
+                rows[row] = [
+                    entry - coefficient * pivot_entry
+                    for entry, pivot_entry in zip(rows[row], rows[pivot_row], strict=True)
+                ]
+        pivots.append(column)
+        if len(pivots) == len(rows):
+            break
+    return tuple(tuple(row) for row in rows), tuple(pivots)
 
 
 def _engine_matrix(morphism):

@@ -198,6 +198,8 @@ def _represented_real_preimage_solver(morphism):
     consistency equation is a computational frontier, not nonmembership.
     """
     ring = morphism.domain().base_ring()
+    from dzack_research.preamble.categories.modules.pure.modules import _represented_real_rref
+
     source_labels = tuple(morphism.domain().module_generating_set())
     target_labels = tuple(morphism.codomain().module_generating_set())
     coefficients = tuple(
@@ -210,34 +212,11 @@ def _represented_real_preimage_solver(morphism):
         assert len(values) == len(target_labels), (
             "a linear-system target must have one coordinate per codomain basis vector"
         )
-        rows = [list(row) + [value] for row, value in zip(coefficients, values, strict=True)]
-        pivots = []
-        for column in range(len(source_labels)):
-            candidates = tuple(
-                row for row in range(len(pivots), len(target_labels))
-                if (rows[row][column] == ring.zero()) is False
-            )
-            if not candidates:
-                assert all(
-                    (rows[row][column] == ring.zero()) is True
-                    for row in range(len(pivots), len(target_labels))
-                ), "the real linear-system pivot is undecided"
-                continue
-            pivot_row = len(pivots)
-            selected = candidates[0]
-            rows[pivot_row], rows[selected] = rows[selected], rows[pivot_row]
-            pivot = rows[pivot_row][column]
-            rows[pivot_row] = [ring._divide_by_nonzero(value, pivot) for value in rows[pivot_row]]
-            for row in range(len(target_labels)):
-                if row != pivot_row:
-                    coefficient = rows[row][column]
-                    rows[row] = [
-                        entry - coefficient * pivot_entry
-                        for entry, pivot_entry in zip(rows[row], rows[pivot_row], strict=True)
-                    ]
-            pivots.append(column)
-            if len(pivots) == len(target_labels):
-                break
+        rows, pivots = _represented_real_rref(
+            tuple(tuple(row) + (value,) for row, value in zip(coefficients, values, strict=True)),
+            len(source_labels),
+            ring,
+        )
         for row in rows[len(pivots):]:
             status = row[-1] == ring.zero()
             assert status is True or status is False, (

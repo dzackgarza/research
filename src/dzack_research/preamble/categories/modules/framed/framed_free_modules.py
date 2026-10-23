@@ -27,6 +27,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
+    _represented_real_rref,
     _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
@@ -1145,7 +1146,7 @@ def _span_basis_elements(module, module_generating_set):
     if int(generators.cardinality()) == 1:
         generator = next(iter(generators))
         generator = generator if generator.parent() is module else module(generator)
-        if generator != module.zero():
+        if (generator != module.zero()) is True:
             # Over a PID, hence an integral domain, one nonzero vector is
             # automatically a basis of the cyclic submodule it generates.
             # Retain that mathematical basis instead of echelon-normalizing it;
@@ -1153,6 +1154,27 @@ def _span_basis_elements(module, module_generating_set):
             return finite_ordered_set((generator,))
     support_labels = _finite_support_labels(module, generators)
     support_points = tuple(support_labels)
+
+    from dzack_research.preamble.rings.real import RR
+
+    if ring is RR:
+        rows = tuple(
+            tuple(
+                (candidate if candidate.parent() is module else module(candidate))
+                .to_vector()(label)
+                for label in support_points
+            )
+            for candidate in generators
+        )
+        reduced, pivots = _represented_real_rref(rows, len(support_points), ring)
+        positions = Sets.Δ[len(pivots) - 1]
+        return FiniteOrderedSets().from_indexed(
+            positions,
+            lambda position: module.linear_combination(
+                dict(zip(support_points, reduced[int(position)], strict=True))
+            ),
+            name=f"Canonical span basis in {module}",
+        )
 
     # Private finite backend serialization.  Only the finite support window is
     # materialized; the ambient framing itself is never enumerated.
