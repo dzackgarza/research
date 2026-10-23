@@ -618,6 +618,10 @@ class SimplicialSets(OwnedCategory):
         def barycentric_subdivision(self):
             pass
 
+        def barycentric_subdivision_comparison(self, subdivision):
+            r"""Return the last-vertex map from a selected subdivision."""
+            pass
+
         def face_map(self, dimension, index):
             return self._defining_faces[dimension, index]
 
