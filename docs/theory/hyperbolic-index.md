@@ -1662,6 +1662,21 @@ Witt decomposition merely to terminate.
 
 ### Norm fibres and spaces of embeddings
 
+**Element equations retain predicates.** For a supplied vector $v$,
+`v.is_isotropic()` denotes $q(v)=0$, `v.is_orthogonal_to(w)` denotes
+$b(v,w)=0$, and `v.represents(a)` denotes $q(v)=a$. These are scalar
+equations, distinct from the existential representation predicate on a
+whole module. Their shared formed-module implementation now returns
+the scalar equations themselves: a decided equation gives a Boolean,
+while an undecided equation remains the original predicate. It does not
+coerce an undecided equation to a Python truth value. A rank-one real
+form whose Gram entry is the regular Cauchy presentation $2^{-n}\to0$
+supplies source specimens for all three undecided equations. When a
+lattice's nondegeneracy is undecided, its existential isotropy method
+now also uses the common nonzero norm-zero fibre proposition instead
+of falling through to `None`. The corresponding anisotropy predicate
+remains the logical negation at its shared owner.
+
 **Norm fibres.** For $a\in R$, `T.elements_of_norm(a)` denotes the set
 $q^{-1}(a)$, with its inclusion into the set of elements of $T$. It includes
 zero when $a=0$. The nonzero isotropic locus is

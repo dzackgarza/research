@@ -2197,16 +2197,35 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the represented quadratic/norm value of this element."""
             return self.parent().norm(self)
 
-        def is_isotropic(self) -> bool:
-            r"""Return whether this element has zero represented norm."""
-            return bool(self.q() == self.parent().value_module().zero())
+        def is_isotropic(self) -> bool | Predicate:
+            r"""Return the zero-norm equation, retaining undecided predicates.
 
-        def is_orthogonal_to(self, other) -> bool:
-            r"""Return whether the polar/bilinear value ``b(self, other)`` is zero."""
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                sage: from dzack_research.preamble.logic import Predicate
+                sage: QQ = _owned_rationals()
+                sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1)/QQ(2)**int(n))
+                sage: z = RR.of_cauchy(a)
+                sage: V = Lattices(RR)([[z]])
+                sage: v = V.module_generators()[0]
+                sage: assert isinstance(v.is_isotropic(), Predicate)
+                sage: assert isinstance(v.is_orthogonal_to(v), Predicate)
+                sage: assert isinstance(v.represents(RR.zero()), Predicate)
+                sage: U = Lattices(QQ)("U")
+                sage: assert U.module_generators()[0].is_isotropic() is True
+            """
+            return self.q() == self.parent().value_module().zero()
+
+        def is_orthogonal_to(self, other) -> bool | Predicate:
+            r"""Return the polar/bilinear zero equation, possibly undecided."""
             pairing = self.b(other)
-            return bool(pairing == pairing.parent().zero())
+            return pairing == pairing.parent().zero()
 
-        def represents(self, value) -> bool:
+        def represents(self, value) -> bool | Predicate:
             r"""Return whether this element has represented norm ``value``.
 
             This is the elementwise statement ``q(self)=value``.  It does not
@@ -2214,7 +2233,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             module represents a selected value.
             """
             parent = self.parent()
-            return bool(self.q() == parent.value_module()(value))
+            return self.q() == parent.value_module()(value)
 
     class SubcategoryMethods:
         def Nondegenerate(self):

@@ -172,6 +172,12 @@ the original inertia indices directly.
 The owned exact `RR` field supplies closed real expressions and now regular
 rational Cauchy presentations in the same real field, with arithmetic,
 positive square roots and exact relation decisions where known.
+The shared element isotropy, orthogonality and representation predicates
+previously forced scalar equations through `bool`. They now return the
+equations, preserving unknown real predicates. The lattice isotropy
+override also previously fell through to `None` when nondegeneracy was
+unknown; it now delegates that case to the common norm-zero fibre
+proposition. The Cauchy-zero vector specimens remain source-only.
 The rescaling source audit also found Python truth coercions of the
 scalar's unit and equality predicates in `FormValueScalings`. These are
 replaced by explicit-true checks, using nonzero status for field units.

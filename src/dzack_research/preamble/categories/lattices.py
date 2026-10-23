@@ -3247,7 +3247,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 (inclusion, complement.inclusion())
             ).inverse()
 
-        def is_isotropic(self) -> bool:
+        def is_isotropic(self) -> bool | Predicate:
             r"""Return whether $L_K$ contains a nonzero isotropic vector.
 
             Here $K=\operatorname{Frac}(R)$. A nonzero radical already gives
@@ -3258,6 +3258,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             obstruction (Hasse--Minkowski, Serre, *A Course in Arithmetic*,
             Ch. IV, 3.2, Thm. 8); ``TRAPS.md`` records why this route is not
             the Witt index.
+            If nondegeneracy itself is undecided, the common formed-module
+            zero-fibre construction retains the isotropy proposition.
+            An undecided hypothesis does not produce ``None``.
             """
             from sage.rings.rational_field import QQ as SageQQ
 
@@ -3276,6 +3279,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return lattice_engines._isotropic_vector_witness(self) is not None
                 case True:
                     return bool(self.witt_index() > 0)
+                case _:
+                    return super().is_isotropic()
 
         def isotropic_vector(self) -> Lattices.ElementMethods:
             r"""Return a nonzero isotropic vector; raise ``ValueError`` if none exists.
