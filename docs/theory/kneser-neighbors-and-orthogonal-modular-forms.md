@@ -1,5 +1,43 @@
 # Kneser neighbors and orthogonal modular forms
 
+## Cusps and positive-definite lattices
+
+Let $L=II_{n,2}$, with $n>2$, and let $\Gamma$ be its integral orthogonal
+or special orthogonal group. The arithmetic quotient
+
+$$
+X_\Gamma=\Gamma\backslash\operatorname{O}_{n,2}(\mathbb R)
+\big/\bigl(\operatorname{O}_n(\mathbb R)\times
+\operatorname{O}_2(\mathbb R)\bigr)
+$$
+
+is noncompact. Its Baily–Borel compactification adds finitely many boundary
+components of complex dimension zero or one. These cusps correspond to
+$\Gamma$-orbits of rational isotropic lines and planes, respectively.
+
+For a rational isotropic plane $U\subset L\otimes\mathbb Q$, put
+$I=U\cap L$. This is a primitive isotropic sublattice of rank two. The
+induced form on
+
+$$
+D_I=I^\perp/I
+$$
+
+is positive definite, even, and unimodular, of rank $n-2$. For the orthogonal
+group, the isometry classes in the genus $II_{n-2,0}$ parameterize the
+one-dimensional cusps. The genus here means the collection of classes,
+not a single positive-definite lattice. For the special orthogonal group,
+one retains proper isometry classes and the corresponding orientation data;
+this is the distinction represented by the oriented class space in the source.
+
+Thus positive-definite lattice classes index the boundary components on which
+an orthogonal modular form restricts to elliptic modular forms. The map $\Phi$
+collects those restrictions. This explains why its target combines elliptic
+modular forms with a vector space of lattice classes, and why Kneser-neighbor
+operators enter the boundary-value calculation.
+
+See Müller–Scheithauer, [Sections 1 and 5](https://arxiv.org/html/2610.26697v1).
+
 ## The eigenvalue identity
 
 Let $II_{n,2}$ be an even unimodular lattice of signature $(n,2)$, with
