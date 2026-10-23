@@ -99,6 +99,9 @@ class AbstractPolytopes(OwnedCategory):
         def face_poset(self):
             return self
 
+        def abstract_automorphisms(self):
+            return self.Aut()
+
 
 class PlacedPolytopeMor(CategoricalMor):
     r"""Ambient maps taking faces to faces and commuting with placements."""
@@ -485,6 +488,9 @@ class RegularPolytopes(OwnedCategory):
             pass
 
         def face_poset(self):
+            pass
+
+        def abstract_automorphisms(self):
             pass
 
         def _repr_(self):
