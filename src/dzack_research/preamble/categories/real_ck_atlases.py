@@ -35,8 +35,12 @@ class RealCkAtlasMor(CategoricalMor):
         def chart_maps(self):
             return self._chart_maps
 
-        def real_ck_morphism(self):
-            pass
+        def real_ck_morphism(self, source, target):
+            category = RealCkManifolds(self.domain().category().degree())
+            return category.Mor(source, target)(
+                self.underlying_topological_morphism(),
+                self.chart_maps(),
+            )
 
         def topological_atlas_morphism(self):
             pass
@@ -75,7 +79,9 @@ class _AtlasRealCkManifoldFunctor(Functor):
         return atlas.real_ck_manifold()
 
     def _apply_morphism(self, morphism):
-        return morphism.real_ck_morphism()
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        return morphism.real_ck_morphism(source, target)
 
 
 class _AtlasUnderlyingTopologicalAtlasFunctor(Functor):
@@ -193,8 +199,12 @@ class RealCkAtlases(OwnedParameterizedCategory):
         def maximal_atlas(self):
             pass
 
+        @cached_method
         def real_ck_manifold(self):
-            pass
+            return RealCkManifolds(self.category().degree()).on(
+                self.underlying_topological_manifold(),
+                self,
+            )
 
         def topological_atlas(self):
             pass
