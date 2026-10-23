@@ -370,6 +370,9 @@ class SingularIntegralAffineSpaceMor(CategoricalMor):
         def underlying_topological_morphism(self):
             pass
 
+        def singular_locus_morphism(self):
+            pass
+
         def regular_affine_morphism(self):
             pass
 
@@ -403,6 +406,19 @@ class _UnderlyingSingularTopologicalSpaceFunctor(Functor):
         return morphism.underlying_topological_morphism()
 
 
+class _RegularIntegralAffineLocusFunctor(Functor):
+    r"""Restrict a singular affine space and its maps to the regular loci."""
+
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, space):
+        return space.regular_affine_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.regular_affine_morphism()
+
+
 class SingularIntegralAffineSpaces(OwnedCategory):
     r"""Spaces with a selected singular locus and affine regular complement."""
 
@@ -432,11 +448,18 @@ class SingularIntegralAffineSpaces(OwnedCategory):
     def forget(self):
         return _UnderlyingSingularTopologicalSpaceFunctor(self, TopologicalSpaces())
 
+    @cached_method
+    def regular_locus(self):
+        return _RegularIntegralAffineLocusFunctor(self, IntegralAffineManifolds())
+
     class ParentMethods:
         def underlying_topological_space(self):
             pass
 
         def singular_locus(self):
+            pass
+
+        def singular_locus_inclusion(self):
             pass
 
         def regular_locus(self):
@@ -495,6 +518,10 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
     @cached_method
     def forget(self):
         return _UnderlyingSingularTopologicalSpaceFunctor(self, TopologicalSpaces())
+
+    @cached_method
+    def regular_locus(self):
+        return _RegularIntegralAffineLocusFunctor(self, IntegralAffineManifolds(self.dimension()))
 
     class ParentMethods:
         def local_models(self):
