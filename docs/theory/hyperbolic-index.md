@@ -1127,6 +1127,25 @@ the constructions. Method spellings are proposed notation for those contracts,
 not assertions that methods with these names are implemented. This is a
 dependency account, not an inventory of current code or formal declarations.
 
+The implementation correspondence below records the current source routes.
+It supplements the mathematical index; an inspected implementation is not
+runtime acceptance, and none of these rows closes terminal verification.
+
+| Indexed requirement | Current source owner and computation | Coverage still requiring evidence or further computation |
+| --- | --- | --- |
+| Anisotropy and nonzero isotropic witnesses | `form_modules.py`: `is_anisotropic`; `lattices.py`: `is_isotropic`, `isotropic_vector`; rational PARI decision and real congruence routes | Exact ZZ/QQ, AA and applicable represented RR cases have source routes; general real-oracle zero decisions are not supplied |
+| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Returned forms and inverse maps need terminal execution; the separate certified-approximation route remains unimplemented |
+| Norm fibres, including zero | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: `elements_of_norm`, `representation_vector` | Set inclusion and membership are separate from finding a nonzero point; definite, rank-zero and nonzero split binary integral fibres have finite source routes |
+| Scalar extension of objects and arrows | `FormBaseChanges`, `FormedModuleMorphism.base_change`, `LatticeIsometryMethods.base_change`, module scalar-extension functor | Scalar-valued forms have source routes with actual ring maps and both arrow components; arbitrary value-module extensions remain outside the current computation |
+| Embedding sets, decisions and witnesses | `lattice_morphisms.py`: embedding Mor, `_emptiness_decision`, `an_element`, integral-overlattice factorization and field Witt criterion | Nondegenerate finite ZZ/QQ/AA and applicable RR endpoints have source routes; backend coverage and witness transport remain unexecuted |
+| Complete countable enumeration | Finite free-module and embedding `__iter__` over ZZ/QQ | Each candidate must occur finitely far into the enumeration; asking for a next satisfying element need not terminate; no real enumeration is claimed |
+| Finite constrained search | `coordinate_subset`, `Emb.with_generator_images_in`, `condition_set` | Exact pairing equations and the additional predicate must be decidable; finite search alone excludes only its specified box |
+| Effective integral bounds | Definite inverse-Gram bound, representative/completion/isometry/embedding coefficient bounds, split binary factors and nonsplit binary norm orbits | The embedding bound meets every target-isometry orbit, hence covers decidable invariant constraints; arbitrary noninvariant constraints require an applicable argument and have no uniform solver below |
+| Sampling | `finite_ordered_sets.py`: `random_element` on the selected finite support | Uniform finite-support distribution; empty support is rejected; no infinite uniform distribution or completeness inference |
+| Exact solving, kernels and arithmetic predicates | Module morphism `preimage`, `kernel`, `cokernel`, `is_primitive`; lattice `div`, `bezout_partner`, `hyperbolic_partner` and its locus | PID/image-membership and finite integral congruence routes retain original-ring maps; terminal specimens remain unexecuted |
+| Perpendiculars and supplied decompositions | `orthogonal_complement`, `orthogonal_splitting`, `orthogonal_decomposition` | Retain the supplied first embedding and full kernel inclusion; direct-sum hypotheses remain essential |
+| Target hyperbolic index and maximal splitting | Mathematical contracts in this note | Their main computations remain explicitly deferred by the owner's dependency-only assignment |
+
 ### Invariants, predicates, and decomposition morphisms
 
 In this subsection $T$ is a nondegenerate symmetric bilinear module over
@@ -1439,6 +1458,14 @@ can also remain forever on one candidate; fair interleaving of the individual
 computations is then necessary to enumerate the affirmatively recognized
 elements. Neither procedure decides emptiness in general.
 
+Successful membership or point selection does establish nonemptiness.
+The predicate-subset owner retains its admitted points, and its
+`is_empty()` computation now returns `False` when one is present, without
+starting another search or asking for a cardinality. One failed membership
+test supplies no empty-set decision, and an undecided membership test
+supplies no member. The pending `NN` tail specimen checks this difference
+at the general set owner, independently of lattices.
+
 Searches in this note have explicit termination reasons: rational witness
 search starts only after existence is decided. Integral exclusion uses either
 a finite bound guaranteed to contain a solution or the finite integral-
@@ -1459,6 +1486,50 @@ parametrization of the desired locus is a different operation. For software
 over exact real presentations, the finitely describable outputs of a sampler
 also need not exhaust the mathematical real locus. None of the exact
 algorithms above requires a random sampler.
+
+#### Why arbitrary decidable embedding filters have no uniform emptiness solver
+
+The general subset operation accepts an arbitrary decidable predicate, not
+only polynomial equations or predicates invariant under a group. No algorithm
+can decide emptiness for every such subset, even with fixed nondegenerate
+integral source and target.
+
+**Proposition.** There is no total emptiness algorithm for arbitrary
+decidable predicate subsets of $\operatorname{Emb}_{\mathbb Z}(U,U\perp\langle2\rangle)$.
+
+**Proof.**
+
+1. Give $L=U\perp\langle2\rangle$ basis $e,f,a$, with
+   $B(e,f)=1$, $q(a)=2$ and other cross pairings zero. For each
+   integer $n\ge0$, the map
+   $$j_n(e)=e,\qquad j_n(f)=f+na-n^2e$$
+   is an isometric embedding: its two squares are zero and its cross
+   pairing is one. It is primitive, since its source is $U$ and (3)
+   supplies a splitting.
+2. Conversely, an embedding $j$ with $j(e)=e$ has
+   $j(f)=xe+f+na$ for integers $x,n$. The cross pairing forces the
+   coefficient of $f$ to be one; the zero square then gives $x=-n^2$.
+   Thus the embeddings with $j(e)=e$ and nonnegative $a$-coordinate
+   of $j(f)$ are exactly the distinct $j_n$.
+3. For a program $C$ on a fixed input, define $P_C(j)$ to require
+   those two coordinate conditions and that $C$ halt within $n$ steps.
+   This predicate is decidable on every supplied embedding: after the
+   coordinate tests, a simulation for a specified finite number of steps
+   always terminates.
+4. The subset defined by $P_C$ is nonempty exactly when $C$ eventually
+   halts. A uniform emptiness algorithm would therefore decide the
+   halting problem, contradicting Turing's undecidability theorem.
+   See [Turing, *On Computable Numbers, with an Application to the
+   Entscheidungsproblem*, §§8–9](https://londmathsoc.onlinelibrary.wiley.com/doi/10.1112/plms/s2-42.1.230).
+
+This is an obstruction to a uniform decision, not to the subset itself,
+its inclusion, exact membership, or complete countable enumeration.
+Finite boxes decide their own restrictions. The invariant-constraint
+theorem applies when its invariance hypothesis holds; the predicates
+$P_C$ need not satisfy it. A proposed solver for a particular noninvariant
+condition still needs its own mathematical hypotheses and termination
+argument. The dependency index does not require an impossible universal
+extension of `is_empty()` to every programmable predicate.
 
 ### Linear algebra, arithmetic, and retained maps
 
@@ -1547,7 +1618,7 @@ not replace the mathematical assertions or their pending execution.
 
 | Construction | Inspected source | Retained datum and boundary |
 | --- | --- | --- |
-| Norm fibre | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: finite integral `elements_of_norm`; `set_categories.py`: equalizer and finite-subset constructions | Inclusion into the original module; complete finite enumeration for definite integral and rank-zero integral fibres; zero remains in the zero fibre; general equalizers make no countability inference |
+| Norm fibre | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: finite integral `elements_of_norm`; `set_categories.py`: equalizer and finite-subset constructions | Inclusion into the original module; complete finite enumeration for definite integral, rank-zero integral and nonzero split binary integral fibres; zero remains in the zero fibre; general equalizers make no countability inference |
 | Form scalar extension | `form_modules.py`: `_formed_module_base_change`, `FormBaseChanges` | Original formed module, actual ring map and source-to-restriction unit; current computation is scalar-valued |
 | Formed morphism scalar extension | `form_modules.py`: `FormedModuleMorphism.base_change`; `scalar_change.py`: `_apply_morphism` | Both components of the form square; the module component retains its original morphism and extension functor; injectivity is not presumed |
 | Isometry scalar extension | `lattice_morphisms.py`: `LatticeIsometryMethods.base_change` | Forward and inverse maps over the same extended endpoints, combined in the module core |

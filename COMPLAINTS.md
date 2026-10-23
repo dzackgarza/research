@@ -74,10 +74,20 @@ the existing coordinate box and embedding subset. The new finite
 U(2)->U specimen distinguishes embedding existence from primitive absence
 and remains unexecuted under DEV-58.
 
+**Witnessed subset coverage:** source inspection found that predicate
+subsets retained admitted points but ignored them when deciding emptiness
+over an infinite universe. The general subset owner now returns nonempty
+from such a point, without starting another search. Failed membership and
+unfinished searches supply no negative existence conclusion. The NN tail
+and failed-membership specimens remain unexecuted under DEV-58.
+
 **Remaining coverage:** arbitrary noninvariant constraints outside the
 definite and split binary regimes still require an applicable bound or
 complete solver: a coordinate-dependent predicate need not survive a
-target isometry taking an embedding to a small representative. The sharper original Li–Margulis
+target isometry taking an embedding to a small representative. The theory
+note proves that a uniform emptiness solver for all decidable embedding
+filters is impossible, already for U -> U+<2>; particular additional
+conditions still need their own applicable route. The sharper original Li–Margulis
 formula is separate and unevaluated; it is not a prerequisite for the new
 alternative. The nonprimitive, definite shear and zero-source specimens,
 and the constant/normalization derivations, remain unverified under DEV-58.

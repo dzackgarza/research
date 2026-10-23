@@ -3706,8 +3706,10 @@ class _ConditionSetEngine:
         find a point. An exhausted finite enumeration raises
         ``StopIteration``; an infinite search with no satisfying point need
         not terminate. Neither case changes ``is_empty`` or supplies an
-        emptiness decision from an unfinished search. A universe without a
-        selected enumeration still refuses iteration.
+        emptiness decision from an unfinished search. A successfully found
+        point is retained by membership and subsequently decides
+        nonemptiness. A universe without a selected enumeration still
+        refuses iteration.
 
         EXAMPLES::
 
@@ -3716,6 +3718,14 @@ class _ConditionSetEngine:
             sage: assert tail.an_element() == NN(100)
             sage: assert tail.inclusion()(tail.an_element()) == NN(100)
             sage: assert tail.is_parent_of(NN(99)) is False
+            sage: assert tail.is_empty() is False
+
+        An unsuccessful membership test gives no emptiness decision::
+
+            sage: excluded = NN.condition_set(lambda n: False)
+            sage: assert excluded.is_parent_of(NN(0)) is False
+            sage: from dzack_research.preamble.logic import Predicate
+            sage: assert isinstance(excluded.is_empty(), Predicate)
         """
         return next(iter(self))
 
@@ -3726,6 +3736,20 @@ class _ConditionSetEngine:
     def predicate(self) -> Callable[[SourcePointT], bool | Predicate]:
         r"""The predicate \(P\) cutting this subset out of \(X\)."""
         return self._predicate
+
+    def _emptiness_decision(self) -> bool | None:
+        r"""A retained member proves nonemptiness without starting a search.
+
+        Successful admission and membership already retain the actual
+        point in this subset. Such a point excludes emptiness even if the
+        universe is infinite or has no selected enumeration. Failed or
+        undecided membership tests retain no member and supply no negative
+        existence conclusion. Other available decisions, including finite
+        exhaustion, remain with the inherited set operation.
+        """
+        if self._admitted_members:
+            return False
+        return super()._emptiness_decision()
 
     def _cardinality_decision(self):
         r"""Count a supplied finite enumeration only when every predicate is decided.
