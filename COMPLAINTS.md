@@ -54,11 +54,6 @@ None is evidence against the repaired actual-category or actual-functor construc
 
 `Lattices.vectors_of_square(n)` returns the square fibre for every form (DEV-51); the orbits of a nonsplit binary fibre are `binary_fixed_norm_representatives(n, acting_group)`, an orbit set with projection and `section()`. The port's `edgewalk.py:254,563` (and its iteration at `:1154`) must move to that operation through port #33. `RationalPolyhedralCones.vectors_of_square` is removed: the port's `lorentzian_cells.py:502` performs the fixed-norm enumeration itself (port #15) from `triangulation()`, `ray_span_saturation_index()` and `ConvexPolytopes(L).integral_points()`.
 
-### Rational polyhedral cones present no morphisms
-
-`RationalPolyhedralCones(L)` constructs cones (`from_rays`, `triangulation()`) but has no `Mor`: the inclusion of a simplicial subcone `S_t -> C` from `simplicial_subcone_inclusion` (`polyhedral_cones.py`) is only a map of underlying subsets of `L tensor QQ`. Missing: the category of rational polyhedral cones in `L tensor QQ` with linear maps carrying one cone into another (inclusions as the first specimens), presented as `C.Mor(D)`.
-Consumer: port `lorentzian_cells` (#15) composing subcone inclusions.
-
 ### Convex-polytope facets have no retained arrow into their polytope
 
 A face of a placed convex polytope `P ↪ A` is a subobject `F ↪ P`, and its composite with `P ↪ A` is the selected ambient placement of `F`. The face-incidence order and any face gluing need the first arrow, not only the two subsets of `A`.
