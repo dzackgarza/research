@@ -284,6 +284,10 @@ from dzack_research.preamble.categories.manifolds import (  # noqa: F401
     SmoothManifolds,
     TopologicalManifolds,
 )
+from dzack_research.preamble.categories.integral_affine_manifolds import (  # noqa: F401
+    IntegralAffineManifolds,
+    SingularIntegralAffineSpaces,
+)
 from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
