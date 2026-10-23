@@ -66,6 +66,9 @@ class ManifoldsOfDimensionAtMost(OwnedCategory):
     def super_categories(self):
         return [self.base_category()]
 
+    def __contains__(self, manifold):
+        return manifold in self.base_category() and manifold.dimension() <= self.dimension_bound()
+
     def _repr_object_names(self):
         return f"{self.base_category()} of dimension at most {self.dimension_bound()}"
 
@@ -74,7 +77,9 @@ class ManifoldsOfDimensionAtMost(OwnedCategory):
 
     def on(self, manifold):
         r"""Place the exact base manifold under the componentwise bound."""
-        pass
+        if manifold not in self:
+            raise TypeError(f"{manifold} does not have dimension at most {self.dimension_bound()}")
+        return manifold
 
 
 class PureDimensionalManifolds(OwnedCategory):
@@ -105,6 +110,9 @@ class PureDimensionalManifolds(OwnedCategory):
     def super_categories(self):
         return [ManifoldsOfDimensionAtMost(self.base_category(), self.dimension())]
 
+    def __contains__(self, manifold):
+        return manifold in self.base_category() and manifold.dimension() == self.dimension()
+
     def _repr_object_names(self):
         return f"pure {self.dimension()}-dimensional {self.base_category()}"
 
@@ -113,7 +121,9 @@ class PureDimensionalManifolds(OwnedCategory):
 
     def on(self, manifold):
         r"""Place the exact base manifold in its pure-dimension stratum."""
-        pass
+        if manifold not in self:
+            raise TypeError(f"{manifold} is not pure of dimension {self.dimension()}")
+        return manifold
 
     @cached_method
     def realification(self):
