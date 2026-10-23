@@ -51,6 +51,20 @@ existence statement; this still gives no bound on those columns. The remaining T
 constant requires evaluation of the estimates in Theorem 1's proof,
 including the matrix-coefficient constant in Lemma 3(2).
 
+For definite integral targets of finite rank, `square_coordinate_bound` now gives
+an exact bound containing every vector of a supplied square. The maximum
+source-generator bound, the existing finite coordinate subset and the
+finite embedding subset thus supply a complete constrained search for any
+decidable extra predicate. The original framing is retained, including
+large coordinates in sheared bases. The pre-existing optimized
+`definite_lattices._square_shell` still delegates to PARI `forqfvec`; its
+comment assumes small bounds, but the public square argument is unrestricted.
+The measured large-coefficient precision limitation in
+[TRAPS.md](TRAPS.md#pari-forqfvec-imposes-a-fixed-floating-point-bound)
+therefore remains relevant to that enumerator. The new rational-inverse
+bound does not call it; no repair of its provider selection is claimed.
+Keep that route and its execution with the dependency-tools TODO owner.
+
 **Dependency path:** formed modules and form-preserving maps -> embedding
 subset retaining its maps -> complete candidate enumeration -> an applicable
 finite bound or a separate existence decision -> integral maximal splitting.

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import cache
+from typing import TYPE_CHECKING
 
 from sage.libs.pari import pari
 from sage.matrix.constructor import matrix as engine_matrix
@@ -34,6 +35,10 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.rings.real import RR, _owned_real_from_engine_expression
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
+
+if TYPE_CHECKING:
+    from sage.structure.element import RingElement
+    from dzack_research.preamble.categories.lattices import Lattices
 
 
 def _definite_sign(lattice):
@@ -294,6 +299,23 @@ def _square_shell(positive_gram, target, reflective):
     source = Path(__file__).with_name("_square_shell.gp").read_text()
     shell = pari(source)(pari(form), int(target), int(reflective))
     return tuple(engine_vector(SageZZ, [int(entry) for entry in column]) for column in shell)
+
+
+def _square_coordinate_bound(
+    lattice: Lattices.ParentMethods, square: RingElement
+) -> RingElement:
+    r"""Evaluate the inverse-Gram Cauchy--Schwarz bound using exact rationals."""
+    ring = lattice.base_ring()
+    if lattice.module_rank() == 0:
+        return ring.zero()
+    sign, positive_gram = _positive_gram(lattice)
+    target = sign * square
+    if target <= ring.zero():
+        return ring.zero()
+    inverse = _engine_component_matrix(positive_gram).change_ring(SageQQ).inverse()
+    squared_bound = SageQQ(_engine_element(ring, target)) * max(inverse.diagonal())
+    bound = squared_bound.floor().isqrt()
+    return _owned_engine_element(ring, bound)
 
 
 def _vectors_of_square(lattice, square):

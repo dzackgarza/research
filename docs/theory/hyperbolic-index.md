@@ -265,6 +265,84 @@ or establish that an arbitrarily chosen sequence of splittings is maximal.
 
 ### Effective search bounds for embeddings
 
+#### Definite targets: a bound containing every embedding
+
+**Proposition (coordinate bound for a definite square fibre).** Let
+$G\in\operatorname{Sym}_n(\mathbb Z)$ be definite, $n>0$, and choose
+$\sigma\in\{1,-1\}$ such that $P=\sigma G$ is positive definite.
+For an integral square $a$, put $t=\sigma a$. If $t\ge0$, every
+$x\in\mathbb Z^n$ with $x^TGx=a$ satisfies
+
+$$
+|x_i|\le\left\lfloor\sqrt{t(P^{-1})_{ii}}\right\rfloor
+\le b_G(a):=
+\left\lfloor\sqrt{t\max_i(P^{-1})_{ii}}\right\rfloor.
+$$
+
+If $t<0$ the fibre is empty; set $b_G(a)=0$. For the rank-zero
+lattice set $b_G(a)=0$ for every $a$.
+
+**Proof.** Assume $n>0$ and $x^TGx=a$; prove the coordinate bound.
+
+1. **$t\ge0$.** Positive definiteness gives $x^TPx\ge0$, and
+   $x^TPx=\sigma a=t$. Thus a negative $t$ admits no such $x$.
+2. **$x_i=\langle P^{-1}e_i,x\rangle_P$.** Here
+   $\langle u,v\rangle_P=u^TPv$, so this equality follows from
+   symmetry of $P$ and $P^{-1}$.
+3. **$x_i^2\le t(P^{-1})_{ii}$.** Cauchy–Schwarz for the positive
+   inner product in step 2 gives
+   $x_i^2\le\langle P^{-1}e_i,P^{-1}e_i\rangle_P
+   \langle x,x\rangle_P=(P^{-1})_{ii}t$.
+4. **Q.E.D.** Take square roots in step 3 and use the integrality of
+   $x_i$. The maximum diagonal entry gives the uniform bound. In rank
+   zero the only coordinate family is empty, so the assertion is vacuous.
+
+`L.square_coordinate_bound(a)` evaluates this formula in the selected
+framing. Exact rational matrix inversion and
+$\operatorname{isqrt}(\lfloor t\max_i(P^{-1})_{ii}\rfloor)$ suffice;
+there is no approximate square-root rounding. The maintained operations
+are Sage's [rational matrix inverse](https://doc.sagemath.org/html/en/reference/matrices/sage/matrix/matrix_rational_dense.html)
+and [integer square root](https://doc.sagemath.org/html/en/reference/rings_standard/sage/rings/integer.html#sage.rings.integer.Integer.isqrt).
+This is the dual-norm Cauchy–Schwarz estimate for a definite form;
+compare the bounded-region argument in Cassels, Chapter 9, §1.
+
+For a source Gram matrix $A$ of rank $m>0$, let
+$b=\max_j b_G(A_{jj})$. Every integral embedding $X$ with
+$X^TGX=A$ has $|X_{ij}|\le b$, since each column has square $A_{jj}$.
+Consequently the finite coordinate box contains **every** embedding,
+including every embedding satisfying any extra predicate. A decidable
+predicate can therefore be excluded by finite exhaustion in this case.
+For a zero source the only embedding is the empty column family.
+
+For example the following exhausts a constrained embedding set, retaining
+the original source and target maps. These specimens remain unexecuted
+under DEV-58.
+
+```python
+L = Lattices(ZZ)([[2, 1], [1, 2]])
+T = Lattices(ZZ)([[2]])
+b = L.square_coordinate_bound(2)
+C = finite_ordered_set(ZZ(i) for i in range(-int(b), int(b) + 1))
+box = L.coordinate_subset(C)
+bounded = T.Emb(L).with_generator_images_in(box.domain())
+all_embeddings = bounded.domain()
+assert all_embeddings.cardinality() == cardinal(6)
+v = T.module_generators()[0]
+label = L.module_generating_set()[0]
+positive = all_embeddings.condition_set(lambda j: j(v).to_vector()(label) > 0)
+assert positive.cardinality() == cardinal(2)
+assert all(j.domain() is T and j.codomain() is L for j in positive)
+```
+
+For a sheared Gram matrix $G=\left(\begin{smallmatrix}1&N\\N&N^2+1\end{smallmatrix}\right)$,
+$b_G(1)=N$ for positive integral $N$: the vector $(-N,1)$ has square
+one. This shows why a bound in the original framing must depend on that
+framing. A small coefficient bound for an equivalent form cannot replace it.
+The same coordinate inequality over $\mathbb Q$ or $\mathbb R$ does
+not make the box finite; the finite search here uses integral coordinates.
+
+#### General indefinite targets
+
 Write $\|A\|_\infty=\max_{i,j}|A_{ij}|$.
 Li–Margulis, **Theorem 4**, gives a representation bound for nonsingular
 integral forms: if $A=T_0^TGT_0$, where $G$ has size $n\ge3$, then some

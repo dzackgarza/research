@@ -100,6 +100,7 @@ from dzack_research.preamble.categories.definite_lattices import (
     _roots,
     _roots_of_square,
     _shortest_vectors,
+    _square_coordinate_bound,
     _successive_minima,
     _theta_series,
     _vectors_of_square,
@@ -5669,6 +5670,48 @@ class Lattices(OwnedCategoryOverBaseRing):
         @cached_method
         def minimum(self):
             return _minimum(self)
+
+        def square_coordinate_bound(self, square: RingElement | int) -> RingElement:
+            r"""Bound every integral coordinate of every vector of this square.
+
+            For a definite ZZ-lattice of finite rank in its selected framing,
+            return an integer ``b >= 0`` such that every vector ``v``
+            with ``q(v) == square`` has all coordinates in ``[-b,b]``.
+            Both signs of definiteness are allowed. A square of the wrong
+            sign has no vectors and receives bound zero. The zero lattice
+            also receives bound zero. A bound of zero is not an emptiness
+            decision: the zero vector has square zero.
+
+            If ``P`` is the positive definite choice of ``G`` or ``-G``
+            and ``a`` the correspondingly signed square, Cauchy--Schwarz gives
+            ``v_i^2 <= a*(P.inverse())[i,i]``. Exact rational inversion,
+            flooring and integer square root evaluate the uniform bound.
+            No floating-point eigenvalue or square-root estimate is used.
+            The proof and the use for constrained embeddings are in
+            ``docs/theory/hyperbolic-index.md``, "Definite targets: a
+            bound containing every embedding".
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[2, 1], [1, 2]])
+                sage: assert L.square_coordinate_bound(2) == ZZ(1)
+                sage: assert L.square_coordinate_bound(-2) == ZZ(0)
+                sage: assert L.square_coordinate_bound(0) == ZZ(0)
+                sage: assert L.twist(ZZ(-1)).square_coordinate_bound(-2) == ZZ(1)
+                sage: assert Lattices(ZZ)(0).square_coordinate_bound(1) == ZZ(0)
+                sage: N = ZZ(10)^20
+                sage: S = Lattices(ZZ)([[1, N], [N, N*N + 1]])
+                sage: assert S.square_coordinate_bound(1) == N
+                sage: e, f = S.module_generators()
+                sage: assert S.q(f - N*e) == ZZ(1)
+            """
+            assert self.base_ring() is _owned_integers(), (
+                "this square-coordinate bound is computed for integral lattices over ZZ"
+            )
+            assert self.module_rank().is_finite(), (
+                "this square-coordinate bound requires a finite framing"
+            )
+            return _square_coordinate_bound(self, self.base_ring()(square))
 
         @cached_method
         def vectors_of_square(self, square):
