@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.real_ck_manifolds import (
     _real_ck_degree,
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.owned_category import _object_of
 
 
 class _StratifiedManifoldMapMethods:
@@ -224,7 +225,12 @@ class TopologicalManifoldsWithCorners(OwnedCategory):
         pass
 
     def on(self, space, atlas, depth_strata):
-        pass
+        return _object_of(
+            self,
+            underlying_space=space,
+            atlas=atlas,
+            depth_strata=depth_strata,
+        )
 
     @cached_method
     def interior(self):
@@ -235,7 +241,23 @@ class TopologicalManifoldsWithCorners(OwnedCategory):
         return _UnderlyingStratifiedSpaceFunctor(self)
 
     class ParentMethods(_StratifiedManifoldMethods):
-        pass
+        def __init__(self, underlying_space, atlas, depth_strata, **rest):
+            self._underlying_space = underlying_space
+            self._atlas = atlas
+            self._depth_strata = depth_strata
+            super().__init__(**rest)
+
+        def underlying_topological_space(self):
+            return self._underlying_space
+
+        def atlas(self):
+            return self._atlas
+
+        def depth_strata(self):
+            return self._depth_strata
+
+        def depth_stratum(self, depth):
+            return self._depth_strata[depth]
 
 
 class SmoothManifoldsWithCorners(OwnedCategory):
