@@ -119,6 +119,9 @@ class IntegralAffineAtlases(OwnedCategory):
         r"""Decide whether the transition preserves the model's selected lattice."""
         pass
 
+    def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
+        pass
+
     @cached_method
     def forget(self):
         return _AtlasUnderlyingManifoldFunctor()
@@ -188,6 +191,9 @@ class IntegralAffineAtlases(OwnedCategory):
 
         def transition_cocycle_holds(self):
             r"""Decide the affine cocycle condition on each triple overlap."""
+            pass
+
+        def restrict(self, open_inclusion):
             pass
 
         def maximal_atlas(self):
