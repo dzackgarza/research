@@ -38,6 +38,55 @@ operators enter the boundary-value calculation.
 
 See Müller–Scheithauer, [Sections 1 and 5](https://arxiv.org/html/2610.26697v1).
 
+## Genus classes in the preamble
+
+Distinguish the genus of the indefinite ambient lattice from the
+positive-definite genus that indexes its one-dimensional cusps. For
+$n>2$ and $n\equiv2\pmod8$, uniqueness of the indefinite even unimodular
+lattice gives
+
+$$
+\operatorname{Cl}(II_{n,2})=\{[II_{n,2}]\},\qquad
+\operatorname{cl}(II_{n,2})=1.
+$$
+
+Here $\operatorname{Cl}(L)$ means the isometry classes in the genus of $L$,
+and $\operatorname{cl}(L)$ is its cardinality. The uniqueness statement is
+recalled in [Section 5 of the source](https://arxiv.org/html/2610.26697v1).
+It does not imply that the positive-definite genus $II_{n-2,0}$ has one class.
+Distinct positive-definite complements can give the same indefinite lattice
+after adjoining two hyperbolic planes.
+
+The current [preamble implementation](../../src/dzack_research/preamble/categories/lattices.py)
+already uses the name `L.genus()` for the finite set of isometry classes,
+that is, for $\operatorname{Cl}(L)$ in this notation. Its interfaces are:
+
+| Mathematical datum | Preamble expression | Computation in the source |
+| --- | --- | --- |
+| Class set in the genus | `G = L.genus()` | Stores the representative lattice; enumeration is deferred |
+| A lattice from each class | `G.representatives()` | Calls `_genus_classes` |
+| Class number | `G.class_number()` or `L.genus_class_number()` | Counts the computed representatives |
+| Cardinality of the class set | `G.cardinality()` | Uses the same enumeration |
+
+For indefinite lattices of rank at least three, `_genus_classes` constructs
+one representative per improper spinor genus, using the equality of spinor
+genus and isometry class in this setting. Thus an indefinite computation route
+exists in the source; the class number is not implemented as a separate
+constant-time use of unimodular classification.
+
+For a positive-definite representative $D$ of $II_{n-2,0}$, the same interface
+uses neighbor enumeration and checks that the accumulated reciprocal
+automorphism orders equal the genus mass. The source imposes
+`max_classes=10**6` on each neighbor iteration and asserts mass equality before
+returning. This is an implemented enumeration route, not a claim of practical
+completion in every rank. Computing the class number follows that enumeration;
+the mass alone is a weighted sum, not the number of classes.
+
+These implementation statements describe the inspected source. No runtime
+computation of these expressions accompanies this note. The class number one
+for the indefinite family is a mathematical conclusion independent of that
+runtime status.
+
 ## The eigenvalue identity
 
 Let $II_{n,2}$ be an even unimodular lattice of signature $(n,2)$, with
