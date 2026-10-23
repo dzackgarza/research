@@ -670,6 +670,11 @@ function _number_field_matrix(K, a, entries)
     )
 end
 
+function definite_minimum(gram_entries)
+    lattice = integer_lattice(; gram=change_base_ring(QQ, _zz_matrix(gram_entries)))
+    return ZZ(Oscar.Hecke.minimum(lattice))
+end
+
 function square_shell(gram_entries, square)
     gram = _zz_matrix(gram_entries)
     lattice = integer_lattice(; gram=change_base_ring(QQ, gram))
@@ -841,6 +846,13 @@ class _OscarLatticeAdapter:
         if not module_loaded:
             julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
         return julia
+
+    def definite_minimum(self, gram):
+        r"""Return the positive minimum of a positive definite integral form."""
+        return SageZZ(self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.definite_minimum",
+            _integer_engine_matrix(gram),
+        ))
 
     def square_shell(self, gram, square):
         r"""Return one coordinate row per sign pair of nonzero square vectors."""

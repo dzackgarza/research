@@ -261,20 +261,13 @@ def _minimum(lattice):
         f"over ZZ, but {lattice} is over {lattice.base_ring()}"
     )
     sign, positive_gram = _positive_gram(lattice)
-    engine_gram = _engine_component_matrix(positive_gram)
-    lower = SageZZ.zero()
-    upper = min(engine_gram.diagonal())
-    pari_gram = engine_gram.__pari__()
-    while lower + 1 < upper:
-        bound = (lower + upper) // 2
-        count = SageZZ(pari_gram.qfminim(bound, 0)[0])
-        if count:
-            upper = bound
-        else:
-            lower = bound
+    if positive_gram.tensor_shape()[0] == 0:
+        raise ValueError("the zero lattice has no nonzero vector and no minimum")
+    from dzack_research.preamble.categories.lattice_engines import _oscar_lattices
+
     minimum_value = _owned_engine_element(
         lattice.base_ring(),
-        upper,
+        _oscar_lattices.definite_minimum(positive_gram),
     )
     return sign * minimum_value
 

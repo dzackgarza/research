@@ -66,7 +66,7 @@ large coordinates in sheared bases. The optimized square-shell route now delegat
 `short_vectors` enumeration, restores both signs, and filters reflective
 vectors by exact divisibility. It replaces the PARI `forqfvec` route whose
 measured large-coefficient precision limitation is recorded in TRAPS.md.
-The scaled A2 square-shell, sign, coordinate and empty-shell specimens in
+The definite minimum also delegates to the maintained rational shortest-vector route instead of PARI ball counts, retains the signed closest-to-zero convention and rejects rank zero. The scaled A2 square-shell, minimum, sign, coordinate and empty-shell specimens in
 the theory note remain unexecuted under DEV-58. Source inspection of the
 maintained rational enumeration is not runtime coverage evidence.
 

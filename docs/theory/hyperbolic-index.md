@@ -319,12 +319,27 @@ checking only the vectors returned. Zero and negative squares retain their
 separate definite-form cases. Reflective roots are filtered by the exact
 condition $a\mid 2(Gv)_i$ for every coordinate $i$.
 
+The nonzero minimum uses the same maintained rational enumeration through
+Hecke's [`minimum`](https://github.com/thofma/Hecke.jl/blob/v0.39.22/src/QuadForm/ShortVectors.jl#L134).
+For a positive definite integral Gram matrix $P$ of positive rank,
+$0<\mu\le\min_iP_{ii}$, since every basis vector is nonzero.
+There are finitely many integral vectors below this upper bound, by the
+coordinate estimate above, and the least nonzero square in this finite
+set is the global minimum. Hecke applies this argument after Gram LLL
+reduction; it does not decide the absence of vectors from floating-point
+PARI `qfminim` counts. For a negative definite form the existing public
+`minimum()` convention returns the negative of this positive minimum:
+it is the square closest to zero, not a lower bound for all squares.
+The zero lattice has no nonzero square and raises `ValueError`.
+
 A distinguishing pending specimen is $G=2^{34}
 \left(\begin{smallmatrix}2&-1\\-1&2\end{smallmatrix}\right)$,
 $a=2^{35}$: the shell consists of $\pm e_1$, $\pm e_2$ and
 $\pm(e_1+e_2)$. The original PARI route raises its recorded precision
 error on this input. Verify both signs, the original coordinates, the
-empty shell at $a=1$, and the corresponding negative definite form.
+empty shell at $a=1$, minimum $2^{35}$, and the corresponding negative
+definite form with returned square $-2^{35}$. Include the rank-zero
+minimum exception.
 These provider and shell specimens remain unexecuted under DEV-58.
 
 For a source Gram matrix $A$ of rank $m>0$, let

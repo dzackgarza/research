@@ -5688,6 +5688,25 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         @cached_method
         def minimum(self):
+            r"""Return the nonzero square closest to zero for a definite ZZ-lattice.
+
+            For a positive definite lattice this is its minimum. For a
+            negative definite lattice this is minus the minimum of the
+            negated form; the squares themselves have no lower bound.
+            The zero lattice has no nonzero vector and raises ValueError.
+
+            EXAMPLES::
+
+                sage: c = ZZ(2)**34
+                sage: L = Lattices(ZZ)([[2*c, -c], [-c, 2*c]])
+                sage: assert L.minimum() == 2*c
+                sage: N = Lattices(ZZ)([[-2*c, c], [c, -2*c]])
+                sage: assert N.minimum() == -2*c
+                sage: Lattices(ZZ)(0).minimum()
+                Traceback (most recent call last):
+                ...
+                ValueError: the zero lattice has no nonzero vector and no minimum
+            """
             return _minimum(self)
 
         def square_coordinate_bound(self, square: RingElement | int) -> RingElement:
