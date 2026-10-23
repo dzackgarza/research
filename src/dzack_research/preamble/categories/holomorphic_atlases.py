@@ -165,6 +165,14 @@ class HolomorphicAtlases(OwnedCategory):
         def transition_map(self, source_chart, target_chart):
             return self._transition_maps[source_chart, target_chart]
 
+        def chart_domains_cover(self):
+            r"""Decide whether the selected chart domains cover the manifold."""
+            pass
+
+        def transitions_are_holomorphic(self):
+            r"""Decide whether overlap maps are biholomorphic."""
+            pass
+
         def transition_cocycle_holds(self):
             pass
 

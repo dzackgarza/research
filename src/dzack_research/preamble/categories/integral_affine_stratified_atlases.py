@@ -150,6 +150,14 @@ class _IntegralAffineStratifiedAtlasMethods:
     def transition_map(self, source_chart, target_chart):
         return self._transition_maps[source_chart, target_chart]
 
+    def chart_domains_cover(self):
+        r"""Decide whether the selected chart domains cover the stratified manifold."""
+        pass
+
+    def transitions_are_integral_affine(self):
+        r"""Decide whether every overlap map preserves the selected lattice."""
+        pass
+
     def transition_cocycle_holds(self):
         pass
 

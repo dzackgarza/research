@@ -199,6 +199,14 @@ class IntegralAffineAtlases(OwnedCategory):
             r"""Return the transition's induced map of the selected lattice."""
             return self.transition_map(source_chart, target_chart).linear_part()
 
+        def chart_domains_cover(self):
+            r"""Decide whether the selected chart domains cover the manifold."""
+            pass
+
+        def transitions_are_integral_affine(self):
+            r"""Decide whether every overlap map preserves the selected lattice."""
+            pass
+
         def transition_cocycle_holds(self):
             r"""Decide the affine cocycle condition on each triple overlap."""
             pass

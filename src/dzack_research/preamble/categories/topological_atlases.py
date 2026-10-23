@@ -146,6 +146,14 @@ class TopologicalAtlases(OwnedCategory):
         def transition_map(self, source_chart, target_chart):
             return self._transition_maps[source_chart, target_chart]
 
+        def chart_domains_cover(self):
+            r"""Decide whether the selected chart domains cover the space."""
+            pass
+
+        def transitions_are_homeomorphisms(self):
+            r"""Decide whether every overlap map is a homeomorphism."""
+            pass
+
         def transition_cocycle_holds(self):
             pass
 
