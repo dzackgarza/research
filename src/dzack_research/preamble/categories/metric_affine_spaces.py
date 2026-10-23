@@ -155,6 +155,8 @@ class SphericalSpaces(OwnedCategory):
     def in_space(self, euclidean_space, center, radius, inclusion):
         if euclidean_space not in EuclideanSpaces():
             raise TypeError(f"{euclidean_space} is not a Euclidean space")
+        if inclusion.codomain() is not euclidean_space:
+            raise ValueError("the sphere inclusion must land in the selected Euclidean space")
         return _object_of(
             self,
             euclidean_space=euclidean_space,

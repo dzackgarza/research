@@ -286,6 +286,8 @@ class AffineSpacesWithLattice(OwnedCategory):
         r"""Select a full integral lattice in the model of ``affine_space``."""
         if affine_space not in RealAffineSpaces():
             raise TypeError(f"{affine_space} is not a real affine space")
+        if lattice_inclusion.codomain() is not affine_space.model_vector_space():
+            raise ValueError("the lattice inclusion must land in the selected model space")
         return _object_of(
             self,
             affine_space=affine_space,

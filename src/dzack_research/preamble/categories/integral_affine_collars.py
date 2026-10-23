@@ -76,6 +76,10 @@ class IntegralAffineCollars(OwnedCategory):
 
     def on(self, affine_piece, face_inclusion, neighborhood_inclusion, collar_chart):
         r"""Select a face, its neighborhood in the piece, and an affine collar chart."""
+        if face_inclusion.codomain() is not affine_piece:
+            raise ValueError("the face inclusion must land in the selected affine piece")
+        if neighborhood_inclusion.codomain() is not affine_piece:
+            raise ValueError("the neighborhood inclusion must land in the selected affine piece")
         return _object_of(
             self,
             affine_piece=affine_piece,
