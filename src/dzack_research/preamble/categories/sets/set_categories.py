@@ -3778,16 +3778,12 @@ class _ConditionSetEngine:
 
     def __iter__(self):
         universe = self.universe()
-        # A finite cardinality does not supply an enumeration. Only a
-        # selected iterator on the underlying representation can realize
-        # enumeration of the condition set.
-        if universe not in EnumeratedSets() and not isinstance(
-            universe, (_FiniteLiteralSet, _ImageSetEngine, _ConditionSetEngine)
-        ):
-            raise NotImplementedError(
-                f"cannot enumerate {self}: {universe} has no selected enumeration"
-            )
-        return self._points_satisfying(universe)
+        # Use an actual supplied iterator. A complete search iterator need
+        # not supply the ranking isomorphism required by EnumeratedSets
+        # (nor decide whether the next point exists). Conversely a finite
+        # cardinality alone supplies no iterator: iter(universe) still
+        # refuses when its construction has none.
+        return self._points_satisfying(iter(universe))
 
     def _points_satisfying(self, points):
         r"""The points of an enumeration of ``X`` at which ``P`` holds, in that order.

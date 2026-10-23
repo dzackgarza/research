@@ -2001,6 +2001,10 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: T = Lattices(QQ)([[QQ(1)/4]])
             sage: j = next(iter(T.Emb(Q)))
             sage: assert Q.q(j(T.module_generators()[0])) == QQ(1)/4
+            sage: v = T.module_generators()[0]
+            sage: positive = T.Emb(Q).condition_set(lambda f: f(v).to_vector()(Q.module_generating_set()[0]) > 0)
+            sage: j = positive.an_element()
+            sage: assert j(v) == Q.module_generators()[0] * (QQ(1)/2)
             sage: Z = Lattices(ZZ)(0)
             sage: assert len(tuple(Z.Emb(U))) == 1
         """
