@@ -14,11 +14,11 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
-### Complex-manifold realification is declared as a supercategory edge
+### Complex-manifold realification lacks object and morphism images
 
 For a complex analytic manifold of complex dimension `m`, realification gives a smooth real manifold of dimension `2m` and sends each holomorphic map to its underlying smooth map. It changes the object presentation and the morphism class: a smooth map between complex manifolds need not be holomorphic. It is a functor, not an inclusion with the same objects and hom sets.
 
-Source inspection of `categories/manifolds.py:ComplexManifolds.super_categories` found `SmoothManifolds()` in its declared supercategories. The direct complex constructor stores `manifold_dimension=m` and a complex Sage manifold, while the smooth constructor stores real dimension and a real Sage manifold. The existing `ComplexManifoldMor` selects holomorphic maps, so the supercategory edge supplies the wrong map inheritance and does not construct the real dimension-`2m` image. The plan's P1 manifold subtree requires the explicit object and morphism functor. The inspected slice is these constructors and category edges; no runtime acceptance claim is made. Repair belongs to `integral-affine-polyhedral-p1` in TODO.
+`ComplexManifolds.super_categories` retains the complex-orbifold inclusion. Its `realification()` functor has object and morphism paths, but `underlying_smooth_manifold()` and `underlying_smooth_morphism()` remain stubs. The direct complex constructor stores `manifold_dimension=m` and a complex Sage manifold; the realification image must be a real smooth manifold of dimension `2m` with the same underlying space and the corresponding smooth maps. The plan's P1 manifold subtree owns the typed path, and P2 owns its defining data. The inspected slice is these constructors, category edges and functor paths; no runtime acceptance claim is made. Repair belongs to `integral-affine-polyhedral-p1` and `integral-affine-polyhedral-p2` in TODO.
 
 ### Labelled graphs present no isomorphisms or automorphism groups
 

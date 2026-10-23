@@ -1578,7 +1578,7 @@ class ComplexManifolds(OwnedCategory):
     def super_categories(self):
         from dzack_research.preamble.categories.orbifolds import ComplexOrbifolds
 
-        return [SmoothManifolds(), ComplexOrbifolds()]
+        return [ComplexOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
