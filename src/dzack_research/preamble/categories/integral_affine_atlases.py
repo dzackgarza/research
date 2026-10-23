@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.integral_affine_manifolds import IntegralAffineManifolds
 from dzack_research.preamble.categories.manifolds import SmoothManifolds
 from dzack_research.preamble.categories.real_ck_atlases import RealCkAtlases
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -120,18 +119,7 @@ class IntegralAffineAtlases(OwnedCategory):
         transition_maps,
     ):
         r"""Select charts and affine transitions on the exact smooth manifold."""
-        if smooth_manifold not in SmoothManifolds():
-            raise TypeError(f"{smooth_manifold} is not a smooth manifold")
-        return _object_of(
-            self,
-            smooth_manifold=smooth_manifold,
-            affine_model=affine_model,
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            affine_charts=affine_charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def transition_is_integral_affine(self, affine_model, transition_map):
         r"""Decide whether the transition preserves the model's selected lattice."""

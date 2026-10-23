@@ -12,7 +12,6 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import TopologicalManifolds
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.owned_category import _object_of
 
 
 class TopologicalAtlasMor(CategoricalMor):
@@ -94,17 +93,7 @@ class TopologicalAtlases(OwnedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if topological_space not in TopologicalSpaces():
-            raise TypeError(f"{topological_space} is not a topological space")
-        return _object_of(
-            self,
-            topological_space=topological_space,
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            charts=charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
         pass

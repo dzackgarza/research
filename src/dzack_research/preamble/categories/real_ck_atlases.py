@@ -17,7 +17,6 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import TopologicalManifolds
 from dzack_research.preamble.categories.topological_atlases import TopologicalAtlases
 from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds, _real_ck_degree
-from dzack_research.preamble.owned_category import _object_of
 
 
 class RealCkAtlasMor(CategoricalMor):
@@ -132,17 +131,7 @@ class RealCkAtlases(OwnedParameterizedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if topological_manifold not in TopologicalManifolds():
-            raise TypeError(f"{topological_manifold} is not a topological manifold")
-        return _object_of(
-            self,
-            topological_manifold=topological_manifold,
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            charts=charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
         pass
