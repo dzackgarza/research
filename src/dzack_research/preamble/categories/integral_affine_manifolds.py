@@ -91,6 +91,19 @@ class _UnderlyingSmoothManifoldFunctor(Functor):
         return morphism.underlying_smooth_morphism()
 
 
+class _UnderlyingAffineTopologicalSpaceFunctor(Functor):
+    r"""Forget the affine and manifold structures on objects and maps."""
+
+    def __init__(self, source):
+        super().__init__(source, TopologicalSpaces())
+
+    def _apply_object(self, manifold):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class IntegralAffineManifolds(OwnedCategory):
     r"""Smooth real manifolds equipped with a selected integral-affine atlas.
 
@@ -129,6 +142,10 @@ class IntegralAffineManifolds(OwnedCategory):
     @cached_method
     def forget(self):
         return _UnderlyingSmoothManifoldFunctor(self, SmoothManifolds())
+
+    @cached_method
+    def forget_space(self):
+        return _UnderlyingAffineTopologicalSpaceFunctor(self)
 
     class ParentMethods:
         def __init__(self, smooth_manifold, affine_atlas, **rest):
@@ -225,6 +242,10 @@ class IntegralAffineManifoldsOfDimension(OwnedParameterizedCategory):
             self,
             PureDimensionalManifolds(SmoothManifolds(), self.dimension()),
         )
+
+    @cached_method
+    def forget_space(self):
+        return _UnderlyingAffineTopologicalSpaceFunctor(self)
 
 
 class IntegralAffineLocalIsomorphismMor(CategoricalMor):
