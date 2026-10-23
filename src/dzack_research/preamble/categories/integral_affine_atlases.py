@@ -1,6 +1,7 @@
 r"""Selected presentations of integral-affine atlases on smooth manifolds."""
 
 from sage.misc.cachefunc import cached_method
+from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -19,11 +20,19 @@ class IntegralAffineAtlasMor(CategoricalMor):
     r"""Smooth maps with compatible chartwise integral-affine maps."""
 
     class ElementMethods:
+        def __init__(self, parent, smooth_map, chartwise_affine_maps):
+            Morphism.__init__(self, parent)
+            self._smooth_map = smooth_map
+            self._chartwise_affine_maps = chartwise_affine_maps
+
         def underlying_smooth_morphism(self):
-            pass
+            return self._smooth_map
 
         def chartwise_affine_maps(self):
-            pass
+            return self._chartwise_affine_maps
+
+        def _call_(self, point):
+            return self._smooth_map(point)
 
         def integral_affine_morphism(self):
             pass
@@ -32,7 +41,7 @@ class IntegralAffineAtlasMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, smooth_map, chartwise_affine_maps):
-        pass
+        return self.element_class(self, smooth_map, chartwise_affine_maps)
 
     @object_level
     def identity(self):
