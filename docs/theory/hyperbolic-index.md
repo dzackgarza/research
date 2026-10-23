@@ -526,6 +526,20 @@ coefficients. The original endpoints are retained in both directions.
 The RR isometry-witness route invokes this construction directly; it
 does not first construct an embedding and then rediscover its inverse.
 
+The real embedding **decision** now also consumes the original endpoints
+directly: it tests $p_S\le p_T$ and $q_S\le q_T$. Necessity follows by
+restricting a form to the embedded subspace; sufficiency follows from
+the explicit same-sign diagonal matching just proved. For equal dimensions
+the inequalities force equality of both indices, giving the isometry
+criterion. Each original nonsingular RR endpoint has its convergent
+signature computation. This route avoids constructing $T\perp(-S)$,
+whose current orthogonal-sum realization does not retain supplied
+nondegeneracy as a category refinement. It therefore needs no fresh
+zero decision on that difference determinant. The rational route still
+uses the general Witt-index criterion. Source specimens compare Cauchy
+positive planes, a mixed-sign plane and scaled positive planes, covering
+both signs of the exclusion and equal-dimension existence.
+
 **Norm witnesses from the same diagonal basis.** For a nonsingular real
 form, suppose the requested scalar $a$ has decided zero status. If
 $a\ne0$, enclosure refinement determines its sign and those of the

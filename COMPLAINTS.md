@@ -150,6 +150,23 @@ specimens are in the method docstring and owned by
 
 ### Generic computable-real linear algebra still has partial scalar decisions
 
+**Supplied nondegeneracy through orthogonal sums:** source inspection of
+`_lattice.py:_orthogonal_sum_on_family` found that the result receives
+`OrthogonalSumLattices` but does not retain the supplied nondegenerate
+placements of its summands. A finite orthogonal sum of nondegenerate
+forms is nondegenerate: its adjoint is the direct sum of the invertible
+adjoints. The affected dependency path was real embedding emptiness,
+which formed `T + S.twist(-1)` and requested its Witt index. For Cauchy
+coefficients a new determinant zero query can remain undecided despite
+the endpoint hypotheses. Real embedding emptiness now instead compares
+the original inertia indices directly. General preservation of the
+supplied property by orthogonal sums remains unresolved at the formed
+sum construction; it belongs to `hyperbolic-splitting-dependency-tools`
+in TODO.md. This is an observed source omission, not a claim that a
+particular executed specimen failed. The mathematical requirement is
+preservation of nondegeneracy by finite orthogonal sums; its upstream
+formal declaration still needs to be identified in the index-wide audit.
+
 The owned exact `RR` field supplies closed real expressions and now regular
 rational Cauchy presentations in the same real field, with arithmetic,
 positive square roots and exact relation decisions where known.

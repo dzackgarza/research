@@ -2296,6 +2296,11 @@ class LatticeEmbeddingMor(CategoricalMor):
         with its remaining hyperbolic planes, gives a complement of
         dimension ``dim(T)-dim(S)``; Witt cancellation gives the isometry.
         This is an emptiness decision, independent of any witness search.
+        Over AA or represented RR, compute the equivalent criterion
+        directly: both source inertia indices must be at most the
+        corresponding target indices. This consumes the original endpoint
+        nondegeneracy hypotheses without constructing a difference form
+        and asking it to rediscover nondegeneracy.
 
         For finite-rank nondegenerate integral endpoints, the definite
         target uses finite shells; an indefinite target uses the finite
@@ -2318,6 +2323,16 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: assert W.Isom(V).is_empty() is True
             sage: assert W.Emb(V).is_empty() is False
             sage: assert Lattices(ZZ)([[1]]).Emb(V).is_empty() is True
+            sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+            sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1) + QQ(1)/QQ(2)**int(n))
+            sage: x = RR.of_cauchy(a)
+            sage: S = Lattices(RR).Nondegenerate()([[x, 0], [0, x]])
+            sage: H = Lattices(RR).Nondegenerate()([[x, 0], [0, -x]])
+            sage: assert S.Emb(H).is_empty() is True
+            sage: assert H.Emb(S).is_empty() is True
+            sage: T = Lattices(RR).Nondegenerate()([[4*x, 0], [0, 9*x]])
+            sage: assert S.Emb(T).is_empty() is False
+            sage: assert S.Isom(T).is_empty() is False
         """
         source = self.domain()
         target = self.codomain()
@@ -2342,6 +2357,13 @@ class LatticeEmbeddingMor(CategoricalMor):
             and source.is_nondegenerate()
             and target.is_nondegenerate()
         ):
+            if source.base_ring() in (_owned_real_algebraic_numbers(), RR):
+                source_signature = source.signature_pair()
+                target_signature = target.signature_pair()
+                return (
+                    source_signature.first() > target_signature.first()
+                    or source_signature.second() > target_signature.second()
+                )
             difference = target + source.twist(-source.base_ring().one())
             return difference.witt_index() < _owned_integers()(source.module_rank().finite_value())
         if self._codomain_is_definite_over_integers():
