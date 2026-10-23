@@ -324,6 +324,8 @@ from dzack_research.preamble.categories.real_ck_atlases import (  # noqa: F401
     RealCkAtlases,
 )
 from dzack_research.preamble.categories.stratified_atlases import (  # noqa: F401
+    RealCkBoundaryAtlases,
+    RealCkCornerAtlases,
     TopologicalBoundaryAtlases,
     TopologicalCornerAtlases,
 )

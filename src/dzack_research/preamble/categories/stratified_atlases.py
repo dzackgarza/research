@@ -1,5 +1,6 @@
 r"""Selected atlas presentations with boundary and corner local models."""
 
+from sage.categories.category import Category
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
@@ -8,12 +9,19 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds_with_boundary import (
+    RealCkManifoldsWithBoundary,
+    RealCkManifoldsWithCorners,
     TopologicalManifoldsWithBoundary,
     TopologicalManifoldsWithCorners,
 )
+from dzack_research.preamble.categories.real_ck_manifolds import _real_ck_degree
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 
@@ -263,3 +271,237 @@ class TopologicalCornerAtlases(OwnedCategory):
 
         def maximal_atlas(self):
             pass
+
+
+class RealCkStratifiedAtlasMor(CategoricalMor):
+    r"""Fixed-degree chart maps preserving selected boundary or corner strata."""
+
+    class ElementMethods:
+        def __init__(self, parent, topological_map, chart_maps, stratum_maps):
+            Morphism.__init__(self, parent)
+            self._topological_map = topological_map
+            self._chart_maps = chart_maps
+            self._stratum_maps = stratum_maps
+
+        def underlying_topological_stratified_morphism(self):
+            return self._topological_map
+
+        def chart_maps(self):
+            return self._chart_maps
+
+        def stratum_maps(self):
+            return self._stratum_maps
+
+        def real_ck_manifold_morphism(self):
+            pass
+
+        def topological_atlas_morphism(self):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, topological_map, chart_maps, stratum_maps):
+        if (
+            topological_map.domain() is not self.domain().underlying_topological_stratified_manifold()
+            or topological_map.codomain() is not self.codomain().underlying_topological_stratified_manifold()
+        ):
+            raise ValueError("the topological map must join the selected stratified manifolds")
+        return self.element_class(self, topological_map, chart_maps, stratum_maps)
+
+    @object_level
+    def identity(self):
+        pass
+
+
+class RealCkStratifiedAtlasMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = RealCkStratifiedAtlasMor
+
+
+class _RealCkStratifiedAtlasTopologyFunctor(Functor):
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, atlas):
+        return atlas.underlying_topological_stratified_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_topological_stratified_morphism()
+
+
+class _RealCkStratifiedAtlasMaximalizationFunctor(Functor):
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, atlas):
+        return atlas.real_ck_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.real_ck_manifold_morphism()
+
+
+class _RealCkStratifiedAtlasForgetDegreeFunctor(Functor):
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, atlas):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
+class _RealCkStratifiedAtlasDataMethods(_StratifiedAtlasDataMethods):
+    def __init__(self, topological_stratified_manifold, **rest):
+        self._topological_stratified_manifold = topological_stratified_manifold
+        super().__init__(**rest)
+
+    def underlying_topological_stratified_manifold(self):
+        return self._topological_stratified_manifold
+
+    def real_ck_manifold(self):
+        pass
+
+
+class RealCkCornerAtlases(OwnedParameterizedCategory):
+    r"""Selected C^k orthant charts over a topological corner manifold."""
+
+    _MorCategory = RealCkStratifiedAtlasMorCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, degree):
+        return Category.__classcall__(cls, _real_ck_degree(degree))
+
+    def degree(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def _repr_object_names(self):
+        return f"real C^{self.degree()} corner atlas presentations"
+
+    def an_object(self):
+        pass
+
+    def on(
+        self,
+        topological_corner_manifold,
+        chart_domains,
+        chart_domain_inclusions,
+        charts,
+        overlap_inclusions,
+        transition_maps,
+    ):
+        if topological_corner_manifold not in TopologicalManifoldsWithCorners():
+            raise TypeError(f"{topological_corner_manifold} is not a topological corner manifold")
+        return _object_of(
+            self,
+            topological_stratified_manifold=topological_corner_manifold,
+            topological_space=topological_corner_manifold.underlying_topological_space(),
+            chart_domains=chart_domains,
+            chart_domain_inclusions=chart_domain_inclusions,
+            charts=charts,
+            overlap_inclusions=overlap_inclusions,
+            transition_maps=transition_maps,
+        )
+
+    def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
+        pass
+
+    @cached_method
+    def forget(self):
+        return _RealCkStratifiedAtlasTopologyFunctor(self, TopologicalManifoldsWithCorners())
+
+    @cached_method
+    def maximalization(self):
+        return _RealCkStratifiedAtlasMaximalizationFunctor(
+            self, RealCkManifoldsWithCorners(self.degree())
+        )
+
+    @cached_method
+    def forget_differentiability(self):
+        return _RealCkStratifiedAtlasForgetDegreeFunctor(self, TopologicalCornerAtlases())
+
+    @cached_method
+    def forget_to(self, degree):
+        degree = _real_ck_degree(degree)
+        if degree > self.degree():
+            raise ValueError(f"C^{self.degree()} can forget only to C^j with j <= {self.degree()}")
+        return _RealCkStratifiedAtlasForgetDegreeFunctor(self, RealCkCornerAtlases(degree))
+
+    class ParentMethods(_RealCkStratifiedAtlasDataMethods):
+        def depth_strata(self):
+            return self.underlying_topological_stratified_manifold().depth_strata()
+
+
+class RealCkBoundaryAtlases(OwnedParameterizedCategory):
+    r"""Selected C^k half-space charts over a topological boundary manifold."""
+
+    _MorCategory = RealCkStratifiedAtlasMorCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, degree):
+        return Category.__classcall__(cls, _real_ck_degree(degree))
+
+    def degree(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [RealCkCornerAtlases(self.degree())]
+
+    def _repr_object_names(self):
+        return f"real C^{self.degree()} boundary atlas presentations"
+
+    def an_object(self):
+        pass
+
+    def on(
+        self,
+        topological_boundary_manifold,
+        chart_domains,
+        chart_domain_inclusions,
+        charts,
+        overlap_inclusions,
+        transition_maps,
+    ):
+        if topological_boundary_manifold not in TopologicalManifoldsWithBoundary():
+            raise TypeError(f"{topological_boundary_manifold} is not a topological boundary manifold")
+        return _object_of(
+            self,
+            topological_stratified_manifold=topological_boundary_manifold,
+            topological_space=topological_boundary_manifold.underlying_topological_space(),
+            chart_domains=chart_domains,
+            chart_domain_inclusions=chart_domain_inclusions,
+            charts=charts,
+            overlap_inclusions=overlap_inclusions,
+            transition_maps=transition_maps,
+        )
+
+    def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
+        pass
+
+    @cached_method
+    def forget(self):
+        return _RealCkStratifiedAtlasTopologyFunctor(self, TopologicalManifoldsWithBoundary())
+
+    @cached_method
+    def maximalization(self):
+        return _RealCkStratifiedAtlasMaximalizationFunctor(
+            self, RealCkManifoldsWithBoundary(self.degree())
+        )
+
+    @cached_method
+    def forget_differentiability(self):
+        return _RealCkStratifiedAtlasForgetDegreeFunctor(self, TopologicalBoundaryAtlases())
+
+    @cached_method
+    def forget_to(self, degree):
+        degree = _real_ck_degree(degree)
+        if degree > self.degree():
+            raise ValueError(f"C^{self.degree()} can forget only to C^j with j <= {self.degree()}")
+        return _RealCkStratifiedAtlasForgetDegreeFunctor(self, RealCkBoundaryAtlases(degree))
+
+    class ParentMethods(_RealCkStratifiedAtlasDataMethods):
+        def boundary_inclusion(self):
+            return self.underlying_topological_stratified_manifold().boundary_inclusion()
