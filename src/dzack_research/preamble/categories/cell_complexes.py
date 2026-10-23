@@ -23,13 +23,6 @@ for _axiom in ("RegularCW", "PLManifold", "Kan"):
 
 
 class _ComplexMapMethods:
-    def __init__(self, parent, cell_map):
-        Morphism.__init__(self, parent)
-        self._cell_map = cell_map
-
-    def underlying_map(self):
-        return self._cell_map
-
     def __mul__(self, other):
         pass
 
@@ -49,6 +42,21 @@ class _ComplexMapMethods:
         pass
 
 
+class _CellwiseComplexMapMethods(_ComplexMapMethods):
+    def __init__(self, parent, cell_maps):
+        Morphism.__init__(self, parent)
+        self._cell_maps = cell_maps
+
+    def underlying_map(self):
+        return self._cell_maps
+
+    def cell_maps(self):
+        return self._cell_maps
+
+    def cell_map(self, cell):
+        return self._cell_maps[cell]
+
+
 class _GradedComplexMapMethods(_ComplexMapMethods):
     def __init__(self, parent, degree_maps):
         Morphism.__init__(self, parent)
@@ -65,11 +73,6 @@ class _GradedComplexMapMethods(_ComplexMapMethods):
 
 
 class _ComplexMor(CategoricalMor):
-    ElementMethods = _ComplexMapMethods
-
-    def _element_constructor_(self, cell_map):
-        return self.element_class(self, cell_map)
-
     @object_level
     def identity(self):
         pass
@@ -78,21 +81,36 @@ class _ComplexMor(CategoricalMor):
 class CellComplexMor(_ComplexMor):
     r"""Cellular maps respecting characteristic and attaching maps."""
 
+    ElementMethods = _CellwiseComplexMapMethods
+
+    def _element_constructor_(self, cell_maps):
+        return self.element_class(self, cell_maps)
+
 
 class PolytopalComplexMor(_ComplexMor):
     r"""Cellular maps respecting selected polytope face placements."""
 
-    class ElementMethods(_ComplexMapMethods):
+    class ElementMethods(_CellwiseComplexMapMethods):
         def face_poset_map(self):
             pass
+
+    def _element_constructor_(self, cell_maps):
+        return self.element_class(self, cell_maps)
 
 
 class SimplicialComplexMor(_ComplexMor):
     r"""Simplicial maps respecting every face inclusion."""
 
     class ElementMethods(_ComplexMapMethods):
+        def __init__(self, parent, vertex_map):
+            Morphism.__init__(self, parent)
+            self._vertex_map = vertex_map
+
+        def underlying_map(self):
+            return self._vertex_map
+
         def vertex_map(self):
-            return self.underlying_map()
+            return self._vertex_map
 
         def face_poset_map(self):
             pass
