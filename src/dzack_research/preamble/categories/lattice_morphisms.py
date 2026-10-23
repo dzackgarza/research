@@ -62,6 +62,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
     _own_ring,
     _owned_engine_element,
     _owned_integers,
@@ -1850,7 +1851,11 @@ class LatticeEmbeddingMor(CategoricalMor):
 
     def _codomain_is_even_unimodular_indefinite(self) -> bool:
         target = self.codomain()
-        if not target.module_rank().is_finite() or not target.is_nondegenerate():
+        if (
+            target.base_ring() is not _owned_integers()
+            or not target.module_rank().is_finite()
+            or not target.is_nondegenerate()
+        ):
             return False
         _signature = target.signature_pair()
         positive, negative = _signature.first(), _signature.second()
@@ -1997,7 +2002,20 @@ class LatticeEmbeddingMor(CategoricalMor):
         yield from assign(())
 
     def _emptiness_decision(self) -> bool | None:
-        r"""``Emb(L, M) = ∅``, supplied to the ``Sets`` emptiness hook; ``None`` where no route decides it."""
+        r"""Decide emptiness of all embeddings, not just primitive ones.
+
+        Embeddings between finite-dimensional spaces of equal dimension
+        over a field are isometries. Over ZZ an
+        embedding can have nontrivial finite index, and absence of an
+        isometry or primitive embedding does not exclude such a map.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: S = U.twist(ZZ(2))
+            sage: assert S.Isom(U).is_empty() is True
+            sage: assert S.Mono(U).is_empty() is False
+        """
         if self._codomain_is_definite_over_integers():
             for _embedding in self:
                 return False
@@ -2006,16 +2024,14 @@ class LatticeEmbeddingMor(CategoricalMor):
         target = self.codomain()
         if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
             match source.Isom(target).is_empty():
-                case True:
+                case True if source.base_ring() in OwnedFields():
                     return True
                 case False:
                     return False
                 case _:
-                    return None
+                    pass
         target_embedding_data = self._target_primitive_embedding_data()
-        if target_embedding_data is False:
-            return True
-        if target_embedding_data is not None:
+        if target_embedding_data is not None and target_embedding_data is not False:
             return False
         if self._codomain_is_even_unimodular_indefinite():
             match source.is_even():
@@ -2028,17 +2044,40 @@ class LatticeEmbeddingMor(CategoricalMor):
         return None
 
     def an_element(self):
+        r"""Construct an embedding through an applicable complete route.
+
+        Isometries and primitive embeddings supply affirmative cases;
+        their absence does not eliminate finite-index embeddings over ZZ.
+        Even-overlattice inclusions retain those nonprimitive candidates.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: S = U.twist(ZZ(2))
+            sage: j = S.Mono(U).an_element()
+            sage: assert j.domain() is S and j.codomain() is U
+            sage: assert U.gram_tensor().pullback(j) == S.gram_tensor()
+            sage: assert j.index() == cardinal(2)
+        """
         if self._codomain_is_definite_over_integers():
             for embedding in self:
                 return embedding
             raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
         source = self.domain()
         target = self.codomain()
-        if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
+        if (
+            source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() == target.module_rank()
+            and (
+                source.base_ring() in OwnedFields()
+                or source.Isom(target).is_empty() is False
+            )
+        ):
             isometry = source.Isom(target).an_element()
             return self(tuple(isometry(source.module_generator(label)) for label in source.module_generating_set()))
         target_embedding_data = self._target_primitive_embedding_data()
-        if target_embedding_data is not None:
+        if target_embedding_data is not None and target_embedding_data is not False:
             return self._target_primitive_embedding()
         if self._codomain_is_even_unimodular_indefinite():
             if self.is_empty():
@@ -2061,8 +2100,8 @@ class LatticeEmbeddingMor(CategoricalMor):
             )
         assert False, (
             f"cannot construct an embedding of {self.domain()} into {self.codomain()}: "
-            f"embeddings are constructed only into definite targets over ZZ, targets of equal "
-            f"rank, indefinite targets OSCAR classifies, and even unimodular indefinite "
+            f"embeddings are constructed only into definite targets over ZZ, isometric targets of equal "
+            f"rank, finite-dimensional spaces of equal dimension over fields, indefinite targets OSCAR classifies, and even unimodular indefinite "
             f"targets, and {self.codomain()} is none of these"
         )
 

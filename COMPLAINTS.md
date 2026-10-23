@@ -14,6 +14,37 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### General embedding search must retain nonprimitive embeddings
+
+The hyperbolic-splitting dependency index requires the set of all isometric
+embeddings, with filtering and search, not only primitive embeddings or
+isometries. Equal-rank integral embeddings can have finite index: the map
+`U(2) -> U` sending its hyperbolic basis to `2e,f` preserves the form and
+has index two, although the determinants exclude integral isometry.
+
+Source inspection found `LatticeEmbeddingMor._emptiness_decision` treating
+an empty equal-rank `Isom` as an empty `Emb`, and treating a negative primitive
+embedding answer as an exclusion of every embedding. Its `an_element` used
+the same restrictions. The current repair retains affirmative isometry and
+primitive cases and lets the even-overlattice route handle nonprimitive
+integral images; the Nikulin route is restricted to integral targets.
+The remaining need is a complete general search or decision for the other
+nondefinite targets, with any additional predicates covered by their own
+effective bound. No claim that the existing primitive classifier supplies
+this complete search is justified.
+
+**Dependency path:** formed modules and form-preserving linear maps ->
+embedding subset with its actual maps -> optional primitive-image subset ->
+complete enumeration or an applicable bounded existence search -> maximal
+hyperbolic splitting. Existing definite integral enumeration and the
+even-overlattice construction are partial computational routes.
+**Coverage boundary:** the named source branches and the explicit `U(2)`
+example were inspected; no runtime result is asserted. The formal embedding
+and module-morphism owners already distinguish injectivity from invertibility;
+no absence of formalized mathematics is claimed here.
+Repair and the remaining index-wide obligations belong to
+`hyperbolic-splitting-dependency-tools` in [TODO.md](TODO.md).
+
 ### Labelled graphs present no isomorphisms or automorphism groups
 
 `LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group.
