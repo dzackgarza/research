@@ -6,6 +6,7 @@ from sage.categories.morphism import Morphism
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
@@ -32,9 +33,23 @@ class IntegralAffineCollarMor(CategoricalMor):
             return self._neighborhood_affine_map
 
         def __mul__(self, other):
-            pass
+            if not _precomposable(self, other):
+                return NotImplemented
+            return IntegralAffineCollars().Mor(other.domain(), self.codomain())(
+                self.face_map() * other.face_map(),
+                self.neighborhood_affine_map() * other.neighborhood_affine_map(),
+            )
 
     def _element_constructor_(self, face_map, neighborhood_affine_map):
+        source = self.domain()
+        target = self.codomain()
+        if face_map.domain() is not source.face() or face_map.codomain() is not target.face():
+            raise ValueError("the face map must join the selected collar faces")
+        if (
+            neighborhood_affine_map.domain() is not source.neighborhood_inclusion().domain()
+            or neighborhood_affine_map.codomain() is not target.neighborhood_inclusion().domain()
+        ):
+            raise ValueError("the affine map must join the selected collar neighborhoods")
         return self.element_class(self, face_map, neighborhood_affine_map)
 
     @object_level
@@ -90,15 +105,6 @@ class IntegralAffineCollars(OwnedCategory):
 
     def comparison(self, source_collar, target_collar, face_map, neighborhood_affine_map):
         r"""Select an affine extension of a specified face pairing."""
-        if face_map.domain() is not source_collar.face() or face_map.codomain() is not target_collar.face():
-            raise ValueError("the face map must join the selected collar faces")
-        source_neighborhood = source_collar.neighborhood_inclusion().domain()
-        target_neighborhood = target_collar.neighborhood_inclusion().domain()
-        if (
-            neighborhood_affine_map.domain() is not source_neighborhood
-            or neighborhood_affine_map.codomain() is not target_neighborhood
-        ):
-            raise ValueError("the affine map must join the selected collar neighborhoods")
         return self.Mor(source_collar, target_collar)(face_map, neighborhood_affine_map)
 
     @cached_method
