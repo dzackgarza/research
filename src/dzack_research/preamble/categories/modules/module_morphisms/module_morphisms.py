@@ -119,6 +119,10 @@ def _integral_preimage_solver(morphism, ring):
     assert morphism.parent() in MatrixSpaces(ring), f"cannot solve f(x) = t integrally for f = {morphism} over {ring}: f must be a map of finite free {ring}-modules with chosen bases, but it lies in {morphism.parent()}"
 
     if ring in OwnedFields() and ring.is_exact() is True:
+        from dzack_research.preamble.rings.real import RR
+
+        if ring is RR:
+            return _represented_real_preimage_solver(morphism)
         from sage.modules.free_module_element import vector
         from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 
@@ -182,6 +186,71 @@ def _integral_preimage_solver(morphism, ring):
             {label: solution[position] for position, label in enumerate(right.domain().module_generating_set()) if solution[position]}
         )
         return right(normalized_solution)
+
+    return solve
+
+
+def _represented_real_preimage_solver(morphism):
+    r"""Solve a finite real linear system with only decided nonzero pivots.
+
+    Row operations retain owned real coefficients, including an undecided
+    zero coefficient in the right-hand side. An unresolved pivot or
+    consistency equation is a computational frontier, not nonmembership.
+    """
+    ring = morphism.domain().base_ring()
+    source_labels = tuple(morphism.domain().module_generating_set())
+    target_labels = tuple(morphism.codomain().module_generating_set())
+    coefficients = tuple(
+        tuple(morphism.matrix_entry(row, column) for column in source_labels)
+        for row in target_labels
+    )
+
+    def solve(target):
+        values = tuple(ring(value) for value in target)
+        assert len(values) == len(target_labels), (
+            "a linear-system target must have one coordinate per codomain basis vector"
+        )
+        rows = [list(row) + [value] for row, value in zip(coefficients, values, strict=True)]
+        pivots = []
+        for column in range(len(source_labels)):
+            candidates = tuple(
+                row for row in range(len(pivots), len(target_labels))
+                if (rows[row][column] == ring.zero()) is False
+            )
+            if not candidates:
+                assert all(
+                    (rows[row][column] == ring.zero()) is True
+                    for row in range(len(pivots), len(target_labels))
+                ), "the real linear-system pivot is undecided"
+                continue
+            pivot_row = len(pivots)
+            selected = candidates[0]
+            rows[pivot_row], rows[selected] = rows[selected], rows[pivot_row]
+            pivot = rows[pivot_row][column]
+            rows[pivot_row] = [ring._divide_by_nonzero(value, pivot) for value in rows[pivot_row]]
+            for row in range(len(target_labels)):
+                if row != pivot_row:
+                    coefficient = rows[row][column]
+                    rows[row] = [
+                        entry - coefficient * pivot_entry
+                        for entry, pivot_entry in zip(rows[row], rows[pivot_row], strict=True)
+                    ]
+            pivots.append(column)
+            if len(pivots) == len(target_labels):
+                break
+        for row in rows[len(pivots):]:
+            status = row[-1] == ring.zero()
+            assert status is True or status is False, (
+                "the real linear-system consistency equation is undecided"
+            )
+            if status is False:
+                return None
+        solution = [ring.zero()] * len(source_labels)
+        for row, column in enumerate(pivots):
+            solution[column] = rows[row][-1]
+        return morphism.domain().linear_combination(
+            dict(zip(source_labels, solution, strict=True))
+        )
 
     return solve
 
