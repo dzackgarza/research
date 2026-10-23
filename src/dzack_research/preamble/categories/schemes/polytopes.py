@@ -166,18 +166,30 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
         pass
 
     def on(self, defining_data, ambient_inclusion):
-        pass
+        return _object_of(
+            self,
+            defining_data=defining_data,
+            ambient_inclusion=ambient_inclusion,
+        )
 
     @cached_method
     def face_posets(self):
         return _PlacedPolytopeFacePosetFunctor(self)
 
     class ParentMethods:
+        def __init__(self, defining_data, ambient_inclusion, **rest):
+            self._defining_data = defining_data
+            self._ambient_inclusion = ambient_inclusion
+            super().__init__(**rest)
+
+        def defining_data(self):
+            return self._defining_data
+
         def ambient_space(self):
-            pass
+            return self.category().ambient_space()
 
         def ambient_inclusion(self):
-            pass
+            return self._ambient_inclusion
 
         def vertices(self):
             pass
@@ -264,7 +276,7 @@ class LatticePolytopesIn(_PlacedPolytopeCategory):
 
     class ParentMethods(_PlacedPolytopeCategory.ParentMethods):
         def ambient_lattice_inclusion(self):
-            pass
+            return self.ambient_space().lattice_inclusion()
 
         def integral_points(self):
             pass
