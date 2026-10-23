@@ -1,5 +1,6 @@
 r"""Integral-affine structures on manifolds and on regular loci of spaces."""
 
+from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_method
 
@@ -8,14 +9,20 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
 from dzack_research.preamble.categories.manifolds import SmoothManifolds
 from dzack_research.preamble.categories.manifolds_with_boundary import (
     SmoothManifoldsWithBoundary,
     SmoothManifoldsWithCorners,
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -51,8 +58,8 @@ class IntegralAffineManifoldMorCategoryConstruction(MorCategoryConstruction):
 class _UnderlyingSmoothManifoldFunctor(Functor):
     r"""Forget the selected affine atlas, on objects and local affine maps."""
 
-    def __init__(self):
-        super().__init__(IntegralAffineManifolds(), SmoothManifolds())
+    def __init__(self, source, target):
+        super().__init__(source, target)
 
     def _apply_object(self, manifold):
         return manifold.underlying_smooth_manifold()
@@ -70,6 +77,12 @@ class IntegralAffineManifolds(OwnedCategory):
 
     _MorCategory = IntegralAffineManifoldMorCategoryConstruction
 
+    @staticmethod
+    def __classcall__(cls, dimension=None):
+        if dimension is not None:
+            return IntegralAffineManifoldsOfDimension(dimension)
+        return Category.__classcall__(cls)
+
     def super_categories(self):
         return [Objects()]
 
@@ -86,7 +99,7 @@ class IntegralAffineManifolds(OwnedCategory):
 
     @cached_method
     def forget(self):
-        return _UnderlyingSmoothManifoldFunctor()
+        return _UnderlyingSmoothManifoldFunctor(self, SmoothManifolds())
 
     class ParentMethods:
         def underlying_smooth_manifold(self):
@@ -103,6 +116,39 @@ class IntegralAffineManifolds(OwnedCategory):
 
     class StrictLatticePointAtlas(CategoryWithAxiom):
         r"""Selected atlases whose translations preserve the lattice points."""
+
+
+class IntegralAffineManifoldsOfDimension(OwnedParameterizedCategory):
+    r"""Full dimension-``n`` stratum of the general integral-affine category."""
+
+    @staticmethod
+    def __classcall__(cls, dimension):
+        dimension = _owned_integers()(dimension)
+        if dimension < 0:
+            raise ValueError(f"an integral-affine dimension must be nonnegative, not {dimension}")
+        return Category.__classcall__(cls, dimension)
+
+    def dimension(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [IntegralAffineManifolds()]
+
+    def _repr_object_names(self):
+        return f"integral-affine manifolds of dimension {self.dimension()}"
+
+    def an_object(self):
+        pass
+
+    def on(self, smooth_manifold, affine_atlas):
+        pass
+
+    @cached_method
+    def forget(self):
+        return _UnderlyingSmoothManifoldFunctor(
+            self,
+            PureDimensionalManifolds(SmoothManifolds(), self.dimension()),
+        )
 
 
 class IntegralAffineLocalIsomorphismMor(CategoricalMor):
@@ -325,8 +371,8 @@ class SingularIntegralAffineSpaceMorCategoryConstruction(MorCategoryConstruction
 class _UnderlyingSingularTopologicalSpaceFunctor(Functor):
     r"""Forget the singular affine structure, on objects and morphisms."""
 
-    def __init__(self):
-        super().__init__(SingularIntegralAffineSpaces(), TopologicalSpaces())
+    def __init__(self, source, target):
+        super().__init__(source, target)
 
     def _apply_object(self, space):
         return space.underlying_topological_space()
@@ -339,6 +385,12 @@ class SingularIntegralAffineSpaces(OwnedCategory):
     r"""Spaces with a selected singular locus and affine regular complement."""
 
     _MorCategory = SingularIntegralAffineSpaceMorCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, dimension=None):
+        if dimension is not None:
+            return SingularIntegralAffineSpacesOfDimension(dimension)
+        return Category.__classcall__(cls)
 
     def super_categories(self):
         return [Objects()]
@@ -356,7 +408,7 @@ class SingularIntegralAffineSpaces(OwnedCategory):
 
     @cached_method
     def forget(self):
-        return _UnderlyingSingularTopologicalSpaceFunctor()
+        return _UnderlyingSingularTopologicalSpaceFunctor(self, TopologicalSpaces())
 
     class ParentMethods:
         def underlying_topological_space(self):
@@ -379,3 +431,43 @@ class SingularIntegralAffineSpaces(OwnedCategory):
 
     class Sphere(CategoryWithAxiom):
         r"""Singular integral-affine spaces whose underlying space is a sphere."""
+
+
+class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
+    r"""Full dimension-``n`` stratum with specified singular local models."""
+
+    @staticmethod
+    def __classcall__(cls, dimension):
+        dimension = _owned_integers()(dimension)
+        if dimension < 1:
+            raise ValueError(f"a singular affine dimension must be positive, not {dimension}")
+        return Category.__classcall__(cls, dimension)
+
+    def dimension(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [SingularIntegralAffineSpaces()]
+
+    def _repr_object_names(self):
+        return f"singular integral-affine spaces of dimension {self.dimension()}"
+
+    def an_object(self):
+        pass
+
+    def on(
+        self,
+        topological_space,
+        singular_locus_inclusion,
+        regular_affine_manifold,
+        local_models=None,
+    ):
+        pass
+
+    @cached_method
+    def forget(self):
+        return _UnderlyingSingularTopologicalSpaceFunctor(self, TopologicalSpaces())
+
+    class ParentMethods:
+        def local_models(self):
+            pass
