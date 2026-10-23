@@ -2138,6 +2138,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 if (self in Lattices(ring) and values is ring
                         and ring in (_owned_integers(), _owned_rationals(), _owned_real_algebraic_numbers(), RR)
                         and self.module_rank().is_finite()
+                        and int(self.module_rank()) > 0
                         and self in FormModules(ring).Nondegenerate()):
                     locus = fibre.object()
                     def point():
@@ -2193,6 +2194,10 @@ class FormModules(OwnedCategoryOverBaseRing):
                 ValueError: ... does not represent -1
                 sage: from dzack_research.preamble.logic import Predicate
                 sage: assert isinstance(excluded.is_empty(), Predicate)
+                sage: Z = Lattices(RR).Nondegenerate()(0)
+                sage: empty = Z.square_fibre(RR.one()).object()
+                sage: assert empty.inclusion().codomain() is Z
+                sage: assert empty.is_parent_of(Z.zero()) is False
                 sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
                 sage: ZZ = _owned_integers()
                 sage: P = Lattices(ZZ).Nondegenerate()([[1, 0], [0, -2]])

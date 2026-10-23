@@ -1724,7 +1724,7 @@ admitted point, then invokes the computation if present, and otherwise
 requests the existing ambient enumeration. Evaluation failures propagate;
 they are not interpreted as emptiness or as successful admission.
 
-For a supplied finite nondegenerate lattice over ZZ, QQ, AA or represented
+For a supplied positive finite-rank nondegenerate lattice over ZZ, QQ, AA or represented
 RR with scalar-valued form, the norm-fibre constructor retains a
 computation invoking the existing `representation_vector(a)`. On success,
 the subset owner admits that returned solution in the original equalizer,
@@ -1737,6 +1737,17 @@ for arbitrary predicate subsets. The fresh positive real line specimen
 requests norm three without manual admission; a negative norm exercises
 failure without retaining a point or changing the emptiness proposition.
 Their execution remains deferred with the other source specimens.
+
+Rank-zero fibres retain their existing finite selection route. The
+condition-set constructor may realize a subset of a finite enumerated
+universe directly as an ordered finite set; that realization does not
+need the predicate engine's private point computation. Accordingly the
+norm solver hook is installed only in positive rank over the stated
+infinite scalar rings. Partner-locus solver hooks likewise require an
+infinite exact field (or the stated primitive integral case); finite
+fields retain their original finite search. The zero-space nonzero-norm
+specimen checks construction and exclusion of its sole ambient point
+without requiring the private predicate-engine interface.
 
 The integral route uses the existing `representation_vector` computations,
 not exhaustion of an infinite norm fibre: finite definite shells, the

@@ -7435,6 +7435,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             if (self.q() == ring.zero()) is True:
                 field_case = (
                     ring in OwnedFields() and ring.is_exact()
+                    and ring.is_finite() is False
+                    and lattice.module_rank() != cardinal(0)
                     and (ring(2) != ring.zero()) is True
                 )
                 integral_case = (
