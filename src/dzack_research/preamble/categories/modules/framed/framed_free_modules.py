@@ -1,5 +1,6 @@
 """Free modules with their canonical framing."""
 
+from itertools import product
 from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function, cached_method
@@ -645,6 +646,54 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return _kernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
+            def coordinate_subset(self, coefficients):
+                r"""Return the finite set subobject with coordinates in ``coefficients``.
+
+                The basis is this module's selected finite framing, and
+                ``coefficients`` is a finite enumerated set of scalars.
+                The result retains its inclusion into the underlying set
+                of this module. Its ``inclusion().domain()`` supports finite iteration
+                and predicate filtering, independently of definiteness or
+                countability of the scalar ring.
+
+                For an integral coordinate box take coefficients -b,...,b.
+                For rational-height exhaustion use the finite set of a/d
+                with |a|<=b and 1<=d<=b, identifying repeated scalars.
+                These choices exhaust their respective finite free modules
+                as b increases, but a bound for excluding a mathematical
+                representation problem requires a separate theorem.
+
+                EXAMPLES::
+
+                    sage: M = ZZ ** 2
+                    sage: C = finite_ordered_set((ZZ(-1), ZZ(0), ZZ(1)))
+                    sage: box = M.coordinate_subset(C)
+                    sage: assert box.domain().cardinality() == cardinal(9)
+                    sage: assert box.inclusion().codomain() is M
+                    sage: assert all(box.inclusion()(v) == v for v in box.domain())
+                    sage: V = Lattices(AA)("U")
+                    sage: box = V.coordinate_subset(finite_ordered_set((AA(0), AA(1))))
+                    sage: assert box.domain().cardinality() == cardinal(4)
+                    sage: assert len(tuple(box.domain().condition_set(lambda v: V.q(v) == 0))) == 3
+                """
+                assert coefficients in Sets() and coefficients.is_finite() is True, (
+                    f"a finite coordinate subset needs a finite scalar set, not {coefficients}"
+                )
+                assert coefficients in EnumeratedSets(), (
+                    f"constructing a coordinate subset requires an enumeration of {coefficients}"
+                )
+                labels = self.module_generating_set()
+                assert labels in EnumeratedSets(), (
+                    f"constructing a coordinate subset requires an enumeration of the finite basis {labels}"
+                )
+                basis_labels = tuple(labels)
+                ring = self.base_ring()
+                scalars = tuple(ring(value) for value in coefficients)
+                return self.power_set()(
+                    self.linear_combination(dict(zip(basis_labels, coordinates, strict=True)))
+                    for coordinates in product(scalars, repeat=len(basis_labels))
+                )
+
             def __iter__(self):
                 r"""Enumerate this finite free module over ZZ, QQ or a finite ring.
 
