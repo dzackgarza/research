@@ -532,6 +532,10 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
     def dimension(self):
         return self.parameter()
 
+    @cached_method
+    def local_model_category(self):
+        return SingularIntegralAffineLocalModels(self.dimension())
+
     def super_categories(self):
         return [SingularIntegralAffineSpaces()]
 
@@ -573,4 +577,113 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
 
     class ParentMethods:
         def local_models(self):
+            pass
+
+        def local_model_at(self, singular_point):
+            pass
+
+
+class SingularIntegralAffineLocalModelMor(CategoricalMor):
+    r"""Pointed local maps preserving the affine regular loci."""
+
+    class ElementMethods:
+        def underlying_pointed_map(self):
+            pass
+
+        def singular_locus_morphism(self):
+            pass
+
+        def regular_affine_morphism(self):
+            pass
+
+        def underlying_singular_affine_morphism(self):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, pointed_map, singular_locus_map, regular_affine_map):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a local-model identity requires the same source and target")
+        pass
+
+
+class SingularIntegralAffineLocalModelMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = SingularIntegralAffineLocalModelMor
+
+
+class _UnpointedSingularLocalModelFunctor(Functor):
+    r"""Forget the selected singular point on a local model and map."""
+
+    def __init__(self, source):
+        super().__init__(source, SingularIntegralAffineSpaces(source.dimension()))
+
+    def _apply_object(self, model):
+        return model.underlying_singular_affine_space()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_singular_affine_morphism()
+
+
+class SingularIntegralAffineLocalModels(OwnedParameterizedCategory):
+    r"""Pointed dimension-``n`` neighbourhoods with affine regular complements."""
+
+    _MorCategory = SingularIntegralAffineLocalModelMorCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, dimension):
+        dimension = _owned_integers()(dimension)
+        if dimension < 1:
+            raise ValueError(f"a singular affine local-model dimension must be positive, not {dimension}")
+        return Category.__classcall__(cls, dimension)
+
+    def dimension(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def _repr_object_names(self):
+        return f"singular integral-affine local models of dimension {self.dimension()}"
+
+    def an_object(self):
+        pass
+
+    def on(
+        self,
+        topological_neighborhood,
+        singular_locus_inclusion,
+        regular_affine_manifold,
+        singular_point,
+    ):
+        pass
+
+    @cached_method
+    def forget_point(self):
+        return _UnpointedSingularLocalModelFunctor(self)
+
+    class ParentMethods:
+        def underlying_singular_affine_space(self):
+            pass
+
+        def topological_neighborhood(self):
+            pass
+
+        def singular_locus_inclusion(self):
+            pass
+
+        def regular_affine_manifold(self):
+            pass
+
+        def singular_point(self):
+            pass
+
+        def link(self):
+            pass
+
+        def monodromy(self, loop, affine_frame):
             pass
