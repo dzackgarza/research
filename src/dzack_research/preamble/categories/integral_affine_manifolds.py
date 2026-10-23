@@ -461,6 +461,9 @@ class IntegralAffineManifoldsWithBoundary(OwnedCategory):
         def boundary(self):
             pass
 
+        def boundary_inclusion(self):
+            pass
+
 
 class SingularIntegralAffineSpaceMor(CategoricalMor):
     r"""Maps preserving the singular set and the affine regular structure."""

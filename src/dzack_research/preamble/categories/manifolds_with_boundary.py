@@ -181,6 +181,9 @@ class TopologicalManifoldsWithBoundary(OwnedCategory):
         def boundary(self):
             pass
 
+        def boundary_inclusion(self):
+            pass
+
 
 class SmoothManifoldsWithBoundary(OwnedCategory):
     r"""Smooth half-space manifolds with smooth boundary-preserving maps."""
@@ -214,6 +217,9 @@ class SmoothManifoldsWithBoundary(OwnedCategory):
 
     class ParentMethods(_StratifiedManifoldMethods):
         def boundary(self):
+            pass
+
+        def boundary_inclusion(self):
             pass
 
         def underlying_topological_stratified_manifold(self):
@@ -510,4 +516,7 @@ class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
             )
 
         def boundary(self):
+            pass
+
+        def boundary_inclusion(self):
             pass
