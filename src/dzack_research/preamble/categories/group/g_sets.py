@@ -1488,6 +1488,10 @@ class Torsors(OwnedParameterizedCategory):
             """
             return False
 
+        def difference(self, left, right):
+            r"""The unique group element carrying ``right`` to ``left``."""
+            pass
+
         def an_element(self):
             r"""Return the selected point trivializing this represented torsor.
 

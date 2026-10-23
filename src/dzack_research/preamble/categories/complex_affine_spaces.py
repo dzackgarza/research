@@ -194,6 +194,10 @@ class ComplexAffineSpaces(OwnedCategory):
             r"""The selected torsor under the model space's additive group."""
             pass
 
+        def difference(self, left, right):
+            r"""The model vector carrying ``right`` to ``left``."""
+            pass
+
         def chart_at(self, origin):
             r"""The global holomorphic chart carrying ``origin`` to zero of the model space."""
             pass
