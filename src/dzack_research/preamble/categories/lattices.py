@@ -4057,21 +4057,23 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         def integral_embedding_coefficient_bound(self, target: Lattices.ParentMethods) -> RingElement:
-            r"""Bound some embedding into target in the original selected framings.
+            r"""Bound representatives of every target-isometry orbit of embeddings.
 
             Both endpoints are nondegenerate integral lattices of finite
             rank. For a definite or rationally split binary target this
             bounds every embedding. For an indefinite target of rank at
-            least three it contains at least one whenever an embedding
-            exists, including nonprimitive
-            images. In that regime it need not bound every embedding,
-            and extra predicates need their own justification. This
-            scalar computation does not decide existence.
+            least three it meets every orbit under the target orthogonal
+            group, including nonprimitive images, in the original selected
+            framings. It need not contain every embedding. Decidable
+            predicates invariant under target isometries therefore admit
+            complete finite search within this bound; arbitrary further
+            predicates need their own justification. This scalar
+            computation does not decide existence.
             For a nonsplit indefinite binary target, the existing finite
             norm-orbit representatives bound a first image; its pairing
             and the source determinant then bound the second image.
-            This contains some embedding, with no assertion about extra
-            predicates that are not invariant under target isometries.
+            This also meets every target-isometry orbit, with no assertion
+            about predicates that are not invariant under those isometries.
 
             Combine the completion Gram bound, a Hermite basis of its
             finite-index overlattice, and the explicit integral isometry

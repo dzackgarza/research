@@ -65,10 +65,19 @@ some embedding whenever one exists. This retains nonprimitive candidates.
 The theory note gives the proof and PARI source contract; the positive,
 negative, imprimitive, empty and rank-two specimens remain unexecuted.
 
-**Remaining coverage:** arbitrary constraints outside the definite and
-split binary regimes still require an applicable bound or complete solver:
-an arbitrary extra predicate need not survive a target isometry taking
-an embedding to a small representative. The sharper original Li–Margulis
+**Invariant constraints:** the completed higher-rank proof identifies its
+bounded embedding as the original one postcomposed by an integral target
+isometry. Thus the computed bound meets every target-isometry orbit, as
+does the nonsplit binary norm-orbit construction. Decidable invariant
+conditions, including primitivity, admit complete finite exclusion using
+the existing coordinate box and embedding subset. The new finite
+U(2)->U specimen distinguishes embedding existence from primitive absence
+and remains unexecuted under DEV-58.
+
+**Remaining coverage:** arbitrary noninvariant constraints outside the
+definite and split binary regimes still require an applicable bound or
+complete solver: a coordinate-dependent predicate need not survive a
+target isometry taking an embedding to a small representative. The sharper original Li–Margulis
 formula is separate and unevaluated; it is not a prerequisite for the new
 alternative. The nonprimitive, definite shear and zero-source specimens,
 and the constant/normalization derivations, remain unverified under DEV-58.

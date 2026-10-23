@@ -744,8 +744,8 @@ Theorem 1 to Theorems 5 and 6 and Lemma 1. Theorem 5 still needs numerical
 constants for its injectivity-radius and bump-function estimates and for
 Lemma 3(2)'s matrix-coefficient estimate. The paper points to Shalom,
 Theorem 2.1, and Kontorovich–Oh, Proposition 3.2, for that last evaluation.
-The compactness constant above is therefore concrete progress on this
-chain, not completion of the integral embedding bound.
+The compactness constant above is therefore progress on this sharper
+Li–Margulis chain. The alternative evaluated embedding bound follows below.
 
 ### A fully evaluated alternative integral embedding bound
 
@@ -845,11 +845,11 @@ The rank restriction $n\ge3$ is essential to the cited polynomial bound.
 $A,G$ be nondegenerate integral Gram matrices of ranks $0<m\le n$,
 with $n\ge3$, and put $a=|\det A|$, $h=\|G\|_\infty$.
 Let $C$ be the preceding completion Gram bound if $m<n$, and
-$C=\|A\|_\infty$ if $m=n$. If $X^TGX=A$ has an integral solution,
-it has one with
+$C=\|A\|_\infty$ if $m=n$. For every integral solution $X$ of
+$X^TGX=A$, there is $g\in O(G,\mathbb Z)$ with
 
 $$
-\|X\|_\infty\le n a(n-1)! F_n(h,n^2C).                 \tag{7}
+\|gX\|_\infty\le n a(n-1)! F_n(h,n^2C).                 \tag{7}
 $$
 
 **Proof.**
@@ -873,7 +873,12 @@ $$
    $E$ select the first $m$ standard columns and set $X'=U\beta^{-1}E$.
    This is integral and $X'^TGX'=E^THE=A$. Matrix multiplication bounds
    its entries by $nF_n(h,n^2C)d(n-1)!$.
-5. **Q.E.D.** Use $d\le a$. No primitivity assumption entered the proof.
+5. **The bounded solution is in the original target orbit.** Put
+   $V=\gamma\beta\in\operatorname{GL}_n(\mathbb Z)$. Step 3 gives
+   $V^TGV=J=U^TGU$. Therefore $g=UV^{-1}$ is an integral target
+   isometry, and
+   $$gX=UV^{-1}\gamma E=U\beta^{-1}E=X'.$$
+6. **Q.E.D.** Use $d\le a$. No primitivity assumption entered the proof.
 
 `T.integral_embedding_coefficient_bound(L)` computes (7) for an indefinite
 target of rank at least three. For a definite integral target of any rank,
@@ -883,9 +888,11 @@ receives zero. Rationally split indefinite binary targets have the
 all-embedding bound proved below. Nonsplit indefinite binary targets use
 their finite norm-orbit representatives and the second-column bound below.
 
-The rank-at-least-three indefinite bound contains **some** embedding whenever one exists.
-It need not contain one satisfying an extra predicate. It therefore supplies
-an unrestricted finite exclusion search, not a universal constrained solver.
+The rank-at-least-three indefinite bound meets **every target-isometry
+orbit** of embeddings. It therefore supplies a complete finite exclusion
+search for any further decidable predicate invariant under target
+isometries, as well as for the unconstrained problem. An arbitrary extra
+predicate need not be invariant, so this is not a universal constrained solver.
 Neither bound constructs an embedding or implements maximal splitting.
 The nonprimitive, sheared-definite and zero-source specimens in its docstring
 remain unexecuted under DEV-58. The original sharper formula (6) remains
@@ -963,7 +970,7 @@ nonzero rational isotropic vector of $G$. Otherwise take the existing
 finite transversal $v_1,\ldots,v_r$ for the integral vectors of square
 $\alpha$ modulo $O(G,\mathbb Z)$ and put
 $V=\max_{k,i}|(v_k)_i|$, with $V=0$ for an empty transversal. Then the
-following integer bounds some embedding whenever one exists:
+following integer meets every target-isometry orbit of embeddings:
 
 $$
 B=\begin{cases}
@@ -1003,14 +1010,70 @@ and [Sage's wrapper](https://doc.sagemath.org/html/en/reference/quadratic_forms/
 No new Pell equation solver or embedding construction is introduced.
 
 This is an effective computation through finite norm-orbit representatives,
-not a closed formula in the two Gram heights. It bounds some embedding,
-including a nonprimitive one when needed, and supports a complete finite
-unconstrained search. Conditions invariant under target isometries are
+not a closed formula in the two Gram heights. It bounds a representative
+of each embedding orbit, including nonprimitive images, and supports a
+complete finite unconstrained search. Conditions invariant under target isometries are
 also preserved by step 1. Arbitrary coordinate conditions need a separate
 argument, because a target isometry may change them. Pending specimens
 use $\langle1,-2\rangle$, represented squares $1,-2,4$, the excluded
 square $3$, the identity embedding and the impossible embedding from $U$.
 They remain unexecuted under DEV-58.
+
+### Complete finite searches with invariant constraints
+
+For every nondegenerate finite-rank integral pair $(T,L)$, the implemented
+bound now meets every orbit of $O(L)$ on $\operatorname{Emb}(T,L)$.
+For definite and split binary targets it even contains every embedding.
+For nonsplit binary targets the proof normalizes the first column by a
+target isometry and bounds the second column of that same transformed
+embedding. For higher-rank indefinite targets, step 5 of the proof of
+(7) identifies the target isometry explicitly.
+
+**Proposition.** Let $P$ be a decidable predicate on embeddings with
+$P(g\circ j)=P(j)$ for all $g\in O(L)$ and $j\in\operatorname{Emb}(T,L)$.
+Then the subset of embeddings with $P$ is empty if and only if its
+intersection with the box given by
+`T.integral_embedding_coefficient_bound(L)` is empty.
+
+**Proof.** One implication is inclusion of the bounded subset. For the
+other, take an embedding satisfying $P$, move it into the box by the
+target isometry guaranteed above, and apply the invariance of $P$.
+The bounded subset is finite because its coordinates are integers.
+Its exact pairing equations and the hypothesis on $P$ make finite
+exhaustion a terminating decision.
+
+Primitivity is such a predicate. Postcomposition by $g$ identifies
+$L/j(T)$ with $L/(g\circ j)(T)$, so it preserves torsion-freeness of
+the cokernel. More generally it preserves the isomorphism class of that
+cokernel and the isometry class of the orthogonal complement. This
+invariance does not by itself provide an effective decision for every
+predicate defined from these objects; decidability remains a separate
+hypothesis. A requirement that a selected coordinate be positive, or a
+specified vector be fixed, need not be invariant under the full target
+orthogonal group.
+
+Use the existing finite subset and predicate constructions directly:
+
+```python
+T = Lattices(ZZ)("U").twist(ZZ(2))
+L = Lattices(ZZ)("U")
+B = T.integral_embedding_coefficient_bound(L)
+coefficients = finite_ordered_set(tuple(ZZ(a) for a in range(-int(B), int(B) + 1)))
+box = L.coordinate_subset(coefficients)
+bounded = T.Emb(L).with_generator_images_in(box.domain())
+primitive = bounded.domain().condition_set(lambda j: j.is_primitive())
+assert bounded.domain().is_empty() is False
+assert primitive.is_empty() is True
+```
+
+Here $B=2$. The map with images $2e,f$ embeds $U(2)$ into $U$ with
+index two. Every such embedding has index two, since its determinant
+satisfies $(\det j)^2=\det U(2)/\det U=4$, so none is primitive.
+The finite search distinguishes these two existence questions while
+retaining `box.inclusion()`, `bounded.inclusion()` and the original
+embedding maps. The source specimens remain unexecuted under DEV-58.
+Large bounds can make this finite method impractical; the separate
+maintained classification computations remain available.
 
 ## Examples separating the three base rings
 
@@ -1363,10 +1426,11 @@ search starts only after existence is decided. Integral exclusion uses either
 a finite bound guaranteed to contain a solution or the finite integral-
 overlattice and primitive-embedding reduction. A time
 budget expiring yields an unfinished search, not an empty set. An arbitrary
-extra predicate on embeddings need not preserve either termination guarantee:
-bound (6) guarantees a small representation of the form, not a small
-representation satisfying additional conditions. A constrained finite search
-needs a bound valid for those conditions or another complete solver.
+extra predicate on embeddings need not preserve either termination guarantee.
+The evaluated integral bound meets every target-isometry orbit, so it also
+preserves existence under any further decidable invariant predicate, such
+as primitivity. A noninvariant constrained search needs a bound valid for
+those conditions or another complete solver.
 
 Sampling must likewise state its distribution and its support. There is no
 uniform probability distribution on a countably infinite discrete set giving
@@ -1666,8 +1730,10 @@ For nondegenerate integral endpoints, it uses the finite-shell or integral-
 overlattice classification route. The effective constant in (6) remains
 needed for that particular sharper expression. The evaluated alternative
 (7) now gives a direct integer box bound in rank at least three, while the
-classification route supplies a separate unconstrained existence decision. Arbitrary extra
-predicates require their own termination argument.
+classification route supplies a separate unconstrained existence decision.
+The evaluated bound meets every target-isometry orbit, so decidable
+invariant predicates also admit complete finite exclusion. Other predicates
+require their own termination argument.
 
 The interfaces are defined at the [lattice owner](../../src/dzack_research/preamble/categories/lattices.py),
 [embedding-space owner](../../src/dzack_research/preamble/categories/lattice_morphisms.py),

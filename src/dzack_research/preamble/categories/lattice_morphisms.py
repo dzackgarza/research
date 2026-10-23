@@ -2133,6 +2133,21 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: empty = finite_ordered_set(())
             sage: assert Z.Emb(U).with_generator_images_in(empty).domain().cardinality() == cardinal(1)
             sage: assert U.Emb(U).with_generator_images_in(empty).domain().is_empty() is True
+
+        The integral coefficient bound meets every target-isometry orbit,
+        so a decidable invariant condition such as primitivity can be
+        excluded by this finite search. Here every embedding has index
+        two, and the primitive subset is empty::
+
+            sage: T = U.twist(ZZ(2))
+            sage: B = T.integral_embedding_coefficient_bound(U)
+            sage: C = finite_ordered_set(tuple(ZZ(a) for a in range(-int(B), int(B) + 1)))
+            sage: box = U.coordinate_subset(C)
+            sage: bounded = T.Emb(U).with_generator_images_in(box.domain())
+            sage: assert bounded.domain().is_empty() is False
+            sage: primitive = bounded.domain().condition_set(lambda j: j.is_primitive())
+            sage: assert primitive.is_empty() is True
+            sage: assert all(j.domain() is T and j.codomain() is U for j in bounded.domain())
         """
         source = self.domain()
         target = self.codomain()
