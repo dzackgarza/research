@@ -1887,6 +1887,41 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the selected quadratic/norm value of ``element``."""
             return self.norm(element)
 
+        def is_isotropic(self) -> bool | Predicate:
+            r"""Whether the selected norm vanishes at a nonzero element.
+
+            This is the negation of anisotropy in
+            ``LeanCategories/Modules/Bilinear/Valued/Witt.lean``,
+            ``BilinModuleCat.IsAnisotropic``, applied to the selected norm.
+            The nonzero zero-fibre defines the question without a framing,
+            a countability hypothesis, or an enumeration. A specialized
+            formed module may decide it; otherwise the set owner retains
+            the undecided emptiness proposition.
+            """
+            zero = self.zero()
+            null_vectors = self.elements_of_norm(self.value_module().zero())
+            return negation(
+                null_vectors.condition_set(lambda vector: vector != zero).is_empty()
+            )
+
+        def is_anisotropic(self) -> bool | Predicate:
+            r"""Whether zero is the only element of selected norm zero.
+
+            This complements the same isotropy question, including any
+            exact specialized decision, rather than interpreting a search
+            that has not found a vector as a proof of anisotropy. An
+            undecided isotropy proposition stays a proposition.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: assert U.is_anisotropic() is False
+                sage: A = Lattices(ZZ)([[1, 0], [0, -2]])
+                sage: assert A.is_anisotropic() is True
+                sage: assert (U + U).is_anisotropic() is False
+            """
+            return negation(self.is_isotropic())
+
         def vector_of_sign(self, sign):
             r"""Return a vector whose selected norm has sign ``-1`` or ``1``, or ``None``.
 
@@ -1999,6 +2034,28 @@ class FormModules(OwnedCategoryOverBaseRing):
                 OwnedSets().Mor(self, values)(lambda vector: self.norm(vector)),
                 OwnedSets().Mor(self, values)(lambda vector: square),
             )
+
+        def elements_of_norm(self, value):
+            r"""Return the full norm fibre as a set with its inclusion.
+
+            Unlike ``square_fibre``, which returns the selected equalizer
+            construction, this returns its object. The fibre includes zero
+            when ``value`` is zero and exists over uncountable rings as
+            well as countable ones. Its ability to enumerate points is
+            supplied by the underlying set construction, not inferred from
+            the norm equation. Values lie in ``value_module()``, including
+            quotient-valued forms.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: null_vectors = U.elements_of_norm(ZZ.zero())
+                sage: e, f = U.basis_vector(0), U.basis_vector(1)
+                sage: assert null_vectors.inclusion()(null_vectors(e)) == e
+                sage: assert U.zero() in null_vectors
+                sage: assert null_vectors.is_parent_of(e + f) is False
+            """
+            return self.square_fibre(value).object()
 
         def square_fibre_action(self, square, *, orbit_relation=None):
             r"""The identity-value isometry action on the complete norm fibre."""
