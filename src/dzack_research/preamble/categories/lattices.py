@@ -3108,7 +3108,9 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             PARI supplies the witness over QQ. Over ZZ the returned vector
             is integral and primitive. A nonzero radical also supplies a
-            witness; the zero lattice has none.
+            witness; the zero lattice has none. Over AA the retained
+            diagonalization supplies a radical vector or a normalized
+            opposite-sign pair, without enumerating real points.
 
             EXAMPLES::
 
@@ -3124,8 +3126,20 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: r = D.isotropic_vector()
                 sage: r != D.zero() and r.q() == ZZ(0)
                 True
+                sage: V = Lattices(AA)([[1, 0], [0, -2]])
+                sage: v = V.isotropic_vector()
+                sage: assert v.parent() is V and v != V.zero() and V.q(v) == AA(0)
+                sage: D = Lattices(AA)([[2, 0], [0, 0]])
+                sage: assert D.isotropic_vector() != D.zero()
             """
-            vector = lattice_engines._isotropic_vector_witness(self)
+            from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+
+            if self.base_ring() is _owned_real_algebraic_numbers():
+                vector = lattice_engines._real_algebraic_representation_witness(
+                    self, self.base_ring().zero()
+                )
+            else:
+                vector = lattice_engines._isotropic_vector_witness(self)
             if vector is None:
                 raise ValueError("the lattice has no nonzero isotropic vector")
             return vector
@@ -3138,7 +3152,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             ``b(x, x) = a`` has a nonzero point in ``L``.  The elementwise
             ``represents`` of a vector is the statement ``b(v, v) = a`` about
             that one vector.  The lattice is nondegenerate of finite rank over
-            ``QQ`` or ``ZZ``.
+            ``QQ``, ``AA`` or ``ZZ``.
 
             - ``a = 0``: isotropy, :meth:`is_isotropic`.  Over ``ZZ`` a
               rational isotropic vector clears to an integral one.
@@ -3161,6 +3175,9 @@ class Lattices(OwnedCategoryOverBaseRing):
               spinor genus of rank at least 3 is one proper class (Cassels,
               Ch. 11, Thm. 1.4), so ``L`` represents ``a``.  Otherwise ``a``
               can be a spinor exception, and the answer is the proposition.
+            - Over ``AA``, ``a != 0``: a positive value is represented exactly
+              when the positive index of inertia is nonzero, and likewise
+              for a negative value and the negative index.
 
             EXAMPLES::
 
@@ -3177,6 +3194,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 False
             """
             from sage.rings.rational_field import QQ as SageQQ
+            from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
 
             ring = self.base_ring()
             value = ring(value)
@@ -3187,6 +3205,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             match ring:
                 case _ if value == ring.zero():
                     return self.is_isotropic()
+                case _ if ring is _owned_real_algebraic_numbers():
+                    signature = self.signature_pair()
+                    index = signature.first() if value > ring.zero() else signature.second()
+                    return index != cardinal(0)
                 case _ if _engine_ring(ring) is SageQQ:
                     return (
                         lattice_engines._rational_representation_witness(self, value)
@@ -3194,7 +3216,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _ if _engine_ring(ring) is not SageZZ:
                     assert False, (
-                        f"representation of {value} by {self!r} is decided here over ZZ and QQ, not over {ring}"
+                        f"representation of {value} by {self!r} is decided here over ZZ, QQ and AA, not over {ring}"
                     )
                 case _ if self.is_definite():
                     return self.vectors_of_square(value).domain().cardinality() != 0
@@ -3217,6 +3239,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             - ``a = 0``: :meth:`isotropic_vector`, primitive over ``ZZ``.
             - Over ``QQ``: the zero of ``L perp <-a>`` that decides
               :meth:`represents`, rescaled.
+            - Over ``AA``: rescale a diagonal vector of the required sign
+              using the positive square root of the norm ratio.
             - Over ``ZZ``, definite: a vector of :meth:`vectors_of_square`.
             - Over ``ZZ``, indefinite of rank 2 with ``L tensor QQ``
               anisotropic: PARI's ``qfbsolve`` representatives.  With ``L
@@ -3241,8 +3265,15 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: C([[0, 2], [2, 2]]).representation_vector(6).q() == ZZ(6)
                 True
+                sage: V = Lattices(AA)([[1, 0], [0, -2]])
+                sage: assert V.represents(AA(3)) is True and V.represents(AA(-3)) is True
+                sage: assert V.q(V.representation_vector(AA(-3))) == AA(-3)
+                sage: D = Lattices(AA)([[2]])
+                sage: assert D.represents(AA(-1)) is False
+                sage: assert D.q(D.representation_vector(AA(3))) == AA(3)
             """
             from sage.rings.rational_field import QQ as SageQQ
+            from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
 
             ring = self.base_ring()
             value = ring(value)
@@ -3253,13 +3284,17 @@ class Lattices(OwnedCategoryOverBaseRing):
             match ring:
                 case _ if value == ring.zero():
                     return self.isotropic_vector()
+                case _ if ring is _owned_real_algebraic_numbers():
+                    found = lattice_engines._real_algebraic_representation_witness(
+                        self, value
+                    )
                 case _ if _engine_ring(ring) is SageQQ:
                     found = lattice_engines._rational_representation_witness(
                         self, value
                     )
                 case _ if _engine_ring(ring) is not SageZZ:
                     assert False, (
-                        f"a representation of {value} in {self!r} is constructed here over ZZ and QQ, not over {ring}"
+                        f"a representation of {value} in {self!r} is constructed here over ZZ, QQ and AA, not over {ring}"
                     )
                 case _ if self.is_definite():
                     found = next(iter(self.vectors_of_square(value)), None)

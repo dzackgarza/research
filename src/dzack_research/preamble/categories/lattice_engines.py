@@ -129,6 +129,40 @@ def _congruence_diagonalization(lattice):
     return normal.Isom(lattice)(images)
 
 
+def _real_algebraic_representation_witness(lattice, value):
+    r"""Find a nonzero AA vector of the requested norm, or return None.
+
+    Use the retained congruence-diagonalization isometry. A nonzero value
+    is represented exactly when a diagonal entry has the same sign; the
+    positive square root of their ratio supplies its scale. Zero is
+    represented nontrivially by a radical basis vector, or by the sum of
+    opposite-sign basis vectors normalized to squares +1 and -1. If none
+    of these cases applies, the diagonal form excludes a nonzero point.
+    """
+    ring = lattice.base_ring()
+    diagonalization = lattice.diagonalization()
+    vectors = tuple(
+        diagonalization(generator)
+        for generator in diagonalization.domain().module_generators()
+    )
+    positive = None
+    negative = None
+    for vector in vectors:
+        square = lattice.q(vector)
+        if value != ring.zero():
+            if value * square > ring.zero():
+                return vector * (value / square).sqrt()
+        elif square == ring.zero():
+            return vector
+        elif square > ring.zero():
+            positive = vector * (ring.one() / square.sqrt())
+        else:
+            negative = vector * (ring.one() / (-square).sqrt())
+    if value == ring.zero() and positive is not None and negative is not None:
+        return positive + negative
+    return None
+
+
 def _real_algebraic_witt_bases(lattice):
     r"""Raise an AA Witt basis using Sage's congruence diagonalization.
 
