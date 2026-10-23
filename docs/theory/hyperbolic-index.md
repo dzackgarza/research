@@ -2296,6 +2296,29 @@ The adapter raises those rows without a transpose, and the lattice owner
 assembles the actual summand embeddings. This is a source convention
 check, not evidence of mathematical correctness from the engine.
 
+The subsequent rational call path is `witt_decomposition` ->
+`subobject_on` -> `_span_basis_elements` ->
+`_lattice_subobject_on_basis` for the anisotropic factor. The span
+normalization can replace the solver's anisotropic basis, but retains
+the same subspace; the subobject constructor evaluates the original
+pairing on the resulting basis and retains its actual ambient inclusion.
+Hyperbolic vectors are raised directly, in the solver's successive pair
+order. `orthogonal_decomposition` assembles that hyperbolic embedding
+and the complementary inclusion into the original lattice. Its inverse
+uses the module's coefficient ring and the actual original endpoints.
+This supplies the required decomposition isometry, without requiring
+the complement to retain a particular coordinate matrix from the solver.
+
+For `j.orthogonal_splitting()`, the same assembly instead receives the
+original supplied embedding as its first leg and the full perpendicular
+inclusion as its second. Over ZZ, the perpendicular uses the full integer
+kernel of the pairing matrix. The generic inverse cannot replace an
+integral direct-sum hypothesis with rational invertibility: its matrix
+coefficients must raise into the original scalar ring. Thus the existing
+index-two example fails to give an integral splitting, whereas its QQ
+extension does split. These are inspected construction paths; their
+mathematical specimens keep their stated execution status.
+
 Rank zero now has a shared direct construction: the Witt index is zero,
 and the decomposition domain is the orthogonal sum of the empty
 hyperbolic space and the original zero space. The two empty generator
