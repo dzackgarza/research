@@ -1799,10 +1799,10 @@ class _ComplexRealificationFunctor(Functor):
         super().__init__(source, target)
 
     def _apply_object(self, manifold):
-        return manifold.underlying_smooth_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
-        return morphism.underlying_smooth_morphism()
+        pass
 
 
 class ComplexManifolds(OwnedCategory):
