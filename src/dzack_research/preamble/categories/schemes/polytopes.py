@@ -340,6 +340,10 @@ class SphericalGeodesicPolytopesIn(_PlacedPolytopeCategory):
     def parameter_category(self):
         return SphericalSpaces()
 
+    def from_cone(self, cone, ambient_linear_embedding):
+        r"""Select the spherical section of a cone in this sphere's ambient space."""
+        pass
+
     @classmethod
     def _repr_object_names(cls):
         return "placed spherical geodesic polytopes"
