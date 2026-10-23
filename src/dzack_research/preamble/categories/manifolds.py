@@ -764,10 +764,10 @@ class SmoothManifoldMor(CategoricalMor):
     r"""Chartwise smooth maps between selected smooth real manifolds."""
 
     class ElementMethods:
-        def underlying_differentiable_morphism(self):
+        def underlying_topological_morphism(self):
             pass
 
-        def underlying_topological_morphism(self):
+        def weaken_to(self, degree):
             pass
 
         def as_ck_morphism(self):
@@ -805,6 +805,34 @@ class _SmoothCkPresentationFunctor(Functor):
         return morphism.as_ck_morphism()
 
 
+class _DifferentiableTopologyFunctor(Functor):
+    r"""Forget differentiability on exact manifolds and maps."""
+
+    def __init__(self, source):
+        super().__init__(source, TopologicalManifolds())
+
+    def _apply_object(self, manifold):
+        return manifold.underlying_topological_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_topological_morphism()
+
+
+class _SmoothFiniteDegreeFunctor(Functor):
+    r"""Forget smoothness to a selected finite ``C^k`` degree."""
+
+    def __init__(self, source, degree):
+        from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds
+
+        super().__init__(source, RealCkManifolds(degree))
+
+    def _apply_object(self, manifold):
+        return manifold.weaken_to(self.codomain().degree())
+
+    def _apply_morphism(self, morphism):
+        return morphism.weaken_to(self.codomain().degree())
+
+
 class DifferentiableManifolds(OwnedCategory):
     r"""Owned real differentiable manifolds.
 
@@ -828,6 +856,14 @@ class DifferentiableManifolds(OwnedCategory):
     def on(self, topological_manifold, degree, atlas):
         r"""Place the exact topological manifold under a finite-degree real atlas."""
         pass
+
+    @cached_method
+    def forget_topology(self):
+        return _DifferentiableTopologyFunctor(self)
+
+    class ParentMethods:
+        def underlying_topological_manifold(self):
+            pass
 
     def _call_(self, dimension, name, differentiability_degree):
         dimension = int(dimension)
@@ -892,8 +928,27 @@ class SmoothManifolds(OwnedCategory):
     def as_ck(self):
         return _SmoothCkPresentationFunctor(self)
 
+    @cached_method
+    def forget_smoothness(self, degree):
+        from dzack_research.preamble.categories.real_ck_manifolds import _real_ck_degree
+
+        degree = _real_ck_degree(degree)
+        if degree == Infinity:
+            raise ValueError("forgetting smoothness requires a finite C^k degree")
+        return _SmoothFiniteDegreeFunctor(self, degree)
+
+    @cached_method
+    def forget_topology(self):
+        return _DifferentiableTopologyFunctor(self)
+
     class ParentMethods:
         def as_ck_manifold(self):
+            pass
+
+        def underlying_topological_manifold(self):
+            pass
+
+        def weaken_to(self, degree):
             pass
 
     def _call_(self, dimension, name):
