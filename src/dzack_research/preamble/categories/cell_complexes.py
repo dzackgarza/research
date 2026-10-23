@@ -167,6 +167,17 @@ class CellComplexes(OwnedCategory):
         def attaching_maps(self):
             return self._attaching_maps
 
+        def attaching_map(self, cell):
+            return self._attaching_maps[cell]
+
+        def characteristic_map(self, cell):
+            r"""Return the selected map from the closed cell to this complex."""
+            pass
+
+        def cell_inclusion(self, cell):
+            r"""Return the cell's inclusion with its exact source and target."""
+            pass
+
         def cells(self, dimension):
             pass
 
