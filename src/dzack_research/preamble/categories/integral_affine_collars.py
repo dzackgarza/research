@@ -86,6 +86,15 @@ class IntegralAffineCollars(OwnedCategory):
 
     def comparison(self, source_collar, target_collar, face_map, neighborhood_affine_map):
         r"""Select an affine extension of a specified face pairing."""
+        if face_map.domain() is not source_collar.face() or face_map.codomain() is not target_collar.face():
+            raise ValueError("the face map must join the selected collar faces")
+        source_neighborhood = source_collar.neighborhood_inclusion().domain()
+        target_neighborhood = target_collar.neighborhood_inclusion().domain()
+        if (
+            neighborhood_affine_map.domain() is not source_neighborhood
+            or neighborhood_affine_map.codomain() is not target_neighborhood
+        ):
+            raise ValueError("the affine map must join the selected collar neighborhoods")
         return self.Mor(source_collar, target_collar)(face_map, neighborhood_affine_map)
 
     @cached_method
