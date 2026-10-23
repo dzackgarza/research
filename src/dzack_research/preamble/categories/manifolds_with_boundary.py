@@ -367,7 +367,11 @@ class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
         pass
 
     def on(self, topological_corner_manifold, atlas):
-        pass
+        return _object_of(
+            self,
+            topological_corner_manifold=topological_corner_manifold,
+            atlas=atlas,
+        )
 
     @cached_method
     def interior(self):
@@ -389,8 +393,22 @@ class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
         return _WeakenStratifiedDifferentiabilityFunctor(self, RealCkManifoldsWithCorners(degree))
 
     class ParentMethods(_StratifiedManifoldMethods):
+        def __init__(self, topological_corner_manifold, atlas, **rest):
+            self._topological_corner_manifold = topological_corner_manifold
+            self._atlas = atlas
+            super().__init__(**rest)
+
         def underlying_topological_stratified_manifold(self):
-            pass
+            return self._topological_corner_manifold
+
+        def underlying_topological_space(self):
+            return self._topological_corner_manifold.underlying_topological_space()
+
+        def atlas(self):
+            return self._atlas
+
+        def depth_stratum(self, depth):
+            return self._topological_corner_manifold.depth_stratum(depth)
 
         def weaken_to(self, degree):
             pass
@@ -418,7 +436,11 @@ class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
         pass
 
     def on(self, topological_boundary_manifold, atlas):
-        pass
+        return _object_of(
+            self,
+            topological_corner_manifold=topological_boundary_manifold,
+            atlas=atlas,
+        )
 
     @cached_method
     def interior(self):
@@ -441,7 +463,7 @@ class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
 
     class ParentMethods(_StratifiedManifoldMethods):
         def underlying_topological_stratified_manifold(self):
-            pass
+            return self._topological_corner_manifold
 
         def weaken_to(self, degree):
             pass
