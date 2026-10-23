@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.integral_affine_manifolds import (
     IntegralAffineManifoldsWithBoundary,
     IntegralAffineManifoldsWithCorners,
 )
+from dzack_research.preamble.owned_category import _object_of
 
 
 class IntegralAffineCollarMor(CategoricalMor):
@@ -89,7 +90,17 @@ class IntegralAffineCollars(OwnedCategory):
 
     def on(self, affine_piece, face_inclusion, neighborhood_inclusion, collar_chart):
         r"""Select a face, its neighborhood in the piece, and an affine collar chart."""
-        pass
+        assert affine_piece in IntegralAffineManifoldsWithCorners()
+        assert face_inclusion.codomain() is affine_piece
+        assert neighborhood_inclusion.codomain() is affine_piece
+        assert collar_chart.domain() is neighborhood_inclusion.domain()
+        return _object_of(
+            self,
+            affine_piece=affine_piece,
+            face_inclusion=face_inclusion,
+            neighborhood_inclusion=neighborhood_inclusion,
+            collar_chart=collar_chart,
+        )
 
     def comparison(self, source_collar, target_collar, face_map, neighborhood_affine_map):
         r"""Select an affine extension of a specified face pairing."""
