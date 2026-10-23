@@ -562,15 +562,22 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         private polyhedral computation.
         """
         rationals = _owned_rationals()
+        defining_halfspaces = tuple(
+            (
+                _owned_rational(constant),
+                tuple(_owned_rational(coefficient) for coefficient in linear_part),
+            )
+            for constant, linear_part in halfspaces
+        )
         engine_rows = [
             [
-                _engine_element(rationals, _owned_rational(constant)),
+                _engine_element(rationals, constant),
                 *(
-                    _engine_element(rationals, _owned_rational(coefficient))
+                    _engine_element(rationals, coefficient)
                     for coefficient in linear_part
                 ),
             ]
-            for constant, linear_part in halfspaces
+            for constant, linear_part in defining_halfspaces
         ]
         polyhedron = Polyhedron(ieqs=engine_rows, base_ring=SageQQ)
         assert polyhedron.is_compact(), (
@@ -583,6 +590,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         return _convex_polytope(
             engine_polyhedron=polyhedron,
             lattice=self.ambient_lattice(),
+            defining_data=("halfspaces", defining_halfspaces),
         )
 
     @classmethod
@@ -612,16 +620,16 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             return self._with_axiom("Polygon")
 
     class ParentMethods:
-        def __init__(self, engine_polyhedron, ambient_lattice, **rest) -> None:
-            r"""A polytope is its exact polyhedron in the coordinates of ``ZZ^n``.
+        def __init__(self, engine_polyhedron, ambient_lattice, defining_data, **rest) -> None:
+            r"""Retain the selected presentation and its private exact polyhedron.
 
-            The polyhedron is the private computation object that
-            :func:`_convex_polytope` produced from the caller's vertices, from
-            an owned polytope, from a face, a dilation or a halfspace
-            description; the coordinate lattice is the owned ``ZZ^n``.
+            The presentation records vertices or halfspaces in the owned
+            coordinate space. The polyhedron computes with that datum over
+            the selected ``ZZ^n`` lattice.
             """
             self._polyhedron = engine_polyhedron
             self._ambient_lattice = ambient_lattice
+            self._defining_data = defining_data
             super().__init__(**rest)
 
         def _engine_polyhedron(self):
@@ -630,7 +638,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
         def defining_data(self):
             r"""Return the selected vertex or halfspace presentation in the ambient space."""
-            pass
+            return self._defining_data
 
         def threejs_html(self):
             r"""Return a local Three.js HTML view of a three-dimensional polytope.
@@ -1279,6 +1287,7 @@ def _convex_polytope(
     vertices=None,
     lattice=None,
     engine_polyhedron=None,
+    defining_data=None,
 ):
     r"""The polytope on its data, constructed once in the category it lies in.
 
@@ -1293,13 +1302,26 @@ def _convex_polytope(
     rationals = _owned_rationals()
     if engine_polyhedron is not None:
         polyhedron = engine_polyhedron
+        if defining_data is None:
+            defining_data = (
+                "vertices",
+                tuple(
+                    tuple(_owned_rational(coordinate) for coordinate in vertex)
+                    for vertex in polyhedron.vertices()
+                ),
+            )
     else:
+        owned_vertices = tuple(
+            tuple(_owned_rational(coordinate) for coordinate in vertex)
+            for vertex in vertices
+        )
+        defining_data = ("vertices", owned_vertices)
         engine_vertices = [
             tuple(
-                _engine_element(rationals, _owned_rational(coordinate))
+                _engine_element(rationals, coordinate)
                 for coordinate in vertex
             )
-            for vertex in vertices
+            for vertex in owned_vertices
         ]
         polyhedron = Polyhedron(vertices=engine_vertices, base_ring=SageQQ)
 
@@ -1339,6 +1361,7 @@ def _convex_polytope(
         construction_data={
             "engine_polyhedron": polyhedron,
             "ambient_lattice": lattice,
+            "defining_data": defining_data,
         },
     )
 

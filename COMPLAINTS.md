@@ -92,10 +92,6 @@ A face of a placed convex polytope `P ↪ A` is a subobject `F ↪ P`, and its c
 
 Source inspection of `categories/schemes/polytopes.py:ConvexPolytopes.ParentMethods.facets` found a finite family of owned face polytopes constructed from Sage facets. Each face has its own inclusion into the common ambient coordinate module through `_convex_polytope`, but the method returns no `F ↪ P` arrow. `Sets().Subobjects(A).Mor(F,P)` can express the required commuting triangle once the preamble polytope-map owner and the factor map are established. `TODO.md`'s integral-affine construction node owns the preamble repair. The inspected slice is this constructor and the generic set-subobject Mor; it does not classify other face consumers or external polytope packages.
 
-### Rational polytope construction drops its selected presentation
-
-A rational convex polytope is determined by a finite vertex family or by a finite bounded halfspace family in its selected affine space. The `ConvexPolytopes(L)` vertex and halfspace constructors both reach `_convex_polytope`, which retains only the private Sage polyhedron and the ambient lattice. The constructor no longer records which owned presentation supplied the object. Faces, triangulations and incidence maps need the exact selected presentation and placement as the P2 construction datum. The existing engine polyhedron computes vertices and facets but is not that retained datum. Remediation belongs to `integral-affine-polyhedral-p2`; the inspected slice is `schemes/polytopes.py` and the plan's P2 datum requirement. No missing formal definition was established by this source inspection.
-
 ### `lean-categories` does not formalize finiteness of binary fixed-norm orbits
 
 Two `lean-categories` requests, neither filed yet.
