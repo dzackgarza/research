@@ -647,6 +647,17 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         def local_monodromy(self, singular_point, loop, affine_frame):
             pass
 
+        def triangulations(self):
+            from dzack_research.preamble.categories.triangulations import ChosenTriangulations
+
+            return ChosenTriangulations(self)
+
+        def triangulation_is_compatible_with_singular_locus(self, triangulation):
+            pass
+
+        def triangulate(self):
+            pass
+
         def lift_face_action(self, abstract_action, realization_map, affine_chart_maps):
             r"""Lift a face action through the selected realization to this affine space."""
             pass
