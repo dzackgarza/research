@@ -286,6 +286,43 @@ class HyperbolicGeodesicPolytopesIn(_PlacedPolytopeCategory):
         return "placed hyperbolic geodesic polytopes"
 
 
+class RegularPolytopeMor(CategoricalMor):
+    r"""Maps of regular polytopes through their abstract face structures."""
+
+    class ElementMethods:
+        def abstract_polytope_map(self):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, abstract_polytope_map):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a regular-polytope identity requires the same source and target")
+        pass
+
+
+class RegularPolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = RegularPolytopeMor
+
+
+class _RegularAbstractPolytopeFunctor(Functor):
+    r"""Forget the regular presentation on objects and face maps."""
+
+    def __init__(self):
+        super().__init__(RegularPolytopes(), AbstractPolytopes())
+
+    def _apply_object(self, polytope):
+        return polytope.abstract_polytope()
+
+    def _apply_morphism(self, morphism):
+        return morphism.abstract_polytope_map()
+
+
 class RegularPolytopes(OwnedCategory):
     r"""Finite spherical regular abstract polytopes named by Schlaefli symbols.
 
@@ -294,9 +331,10 @@ class RegularPolytopes(OwnedCategory):
     owner records that abstract regular-polytope datum; it is distinct from the
     rational-coordinate convex-polytope owner below, since examples such as the
     dodecahedron require ``sqrt(5)`` coordinates in a Euclidean realization.
-    Its underlying combinatorial object is the graded face poset, hence the
-    immediate placement in ``PartiallyOrderedSets``.
+    Its underlying combinatorial object is the graded face poset.
     """
+
+    _MorCategory = RegularPolytopeMorCategoryConstruction
 
     def an_object(self):
         return self.from_schlafli_symbol((3, 3))
@@ -306,7 +344,11 @@ class RegularPolytopes(OwnedCategory):
         return "finite spherical regular polytopes"
 
     def super_categories(self):
-        return [PartiallyOrderedSets()]
+        return [Objects()]
+
+    @cached_method
+    def abstract_face_structure(self):
+        return _RegularAbstractPolytopeFunctor()
 
     def from_schlafli_symbol(self, symbol):
         r"""Return the finite regular abstract polytope with Schlaefli symbol ``symbol``."""
@@ -367,6 +409,12 @@ class RegularPolytopes(OwnedCategory):
 
         def symmetry_group(self):
             return self.symmetry_coxeter_diagram().coxeter_group()
+
+        def abstract_polytope(self):
+            pass
+
+        def face_poset(self):
+            pass
 
         def _repr_(self):
             symbol = ",".join(str(bond) for bond in self.schlafli_symbol())
