@@ -66,8 +66,8 @@ def validate_lattice_signature(data):
         )
 
 
-def _rational_signed_direction(gram, sign):
-    r"""Select a column of Sage's rational diagonalization with the requested sign.
+def _signed_diagonal_direction(gram, sign, engine_field):
+    r"""Select a column of exact congruence diagonalization with the requested sign.
 
     This is the shared diagonalization step of the port's positive-direction
     and negative-direction-in-span computations. A subspace supplies its own
@@ -77,8 +77,8 @@ def _rational_signed_direction(gram, sign):
 
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
-    engine_hessian = _engine_symmetrized_form_matrix(gram).change_ring(SageQQ)
-    diagonal, change = QuadraticForm(SageQQ, engine_hessian).rational_diagonal_form(return_matrix=True)
+    engine_hessian = _engine_symmetrized_form_matrix(gram).change_ring(engine_field)
+    diagonal, change = QuadraticForm(engine_field, engine_hessian).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
     index = next((
         index for index in range(diagonal_matrix.nrows())
@@ -89,7 +89,7 @@ def _rational_signed_direction(gram, sign):
 
 def _rational_positive_vector(gram):
     r"""Return one rational positive vector as a type-``(1,0)`` tensor."""
-    column = _rational_signed_direction(gram, 1)
+    column = _signed_diagonal_direction(gram, 1, SageQQ)
     if column is None:
         raise ValueError(f"the form with Gram tensor {gram} has no positive direction")
     rationals = gram.base_ring().fraction_field()
@@ -203,8 +203,8 @@ def _real_algebraic_witt_bases(lattice):
     return finite_family(anisotropic), finite_family(hyperbolic)
 
 
-def _raise_rational_lattice_vector(lattice, coordinates):
-    r"""Raise a rational direction, primitively over ZZ, in its given lattice."""
+def _raise_lattice_direction(lattice, coordinates):
+    r"""Raise a scalar-field direction, primitively over ZZ, in its given module."""
     ring = lattice.base_ring()
     engine_ring = _engine_ring(ring)
     if engine_ring is SageZZ:
@@ -229,26 +229,31 @@ def _signed_vector_witness(lattice, sign):
     The symmetric Hessian ``G + G.transpose()`` represents the diagonal
     function of any bilinear Gram ``G``. For a quadratic datum, its polar
     diagonal is twice its selected norm, so its symmetrization has four
-    times that norm. These positive factors preserve the sign over QQ.
-    Return None only if exact rational diagonalization excludes the sign.
+    times that norm. These positive factors preserve the sign over QQ and AA.
+    Return None only if exact diagonalization excludes the sign.
     """
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+
     ring = lattice.base_ring()
-    assert _engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ, (
-        f"signed vector witnesses are computed over ZZ or QQ, not {ring}"
+    assert (_engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ
+            or ring is _owned_real_algebraic_numbers()), (
+        f"signed vector witnesses are computed over ZZ, QQ or AA, not {ring}"
     )
     assert lattice.value_module() is ring, (
-        f"rational signed-vector computation needs values in the scalar ring {ring}, not {lattice.value_module()}"
+        f"signed-vector computation needs values in the scalar ring {ring}, not {lattice.value_module()}"
     )
     assert lattice in FramedFreeModules(ring), (
-        f"rational signed-vector computation needs a selected free framing on {lattice}"
+        f"signed-vector computation needs a selected free framing on {lattice}"
     )
     assert lattice.module_rank().is_finite(), (
-        f"rational diagonalization requires finite rank, not {lattice.module_rank()}"
+        f"diagonalization requires finite rank, not {lattice.module_rank()}"
     )
     if lattice.module_rank() == 0:
         return None
-    coordinates = _rational_signed_direction(lattice.gram_tensor(), sign)
-    return None if coordinates is None else _raise_rational_lattice_vector(lattice, coordinates)
+    coordinates = _signed_diagonal_direction(
+        lattice.gram_tensor(), sign, _engine_ring(ring.fraction_field())
+    )
+    return None if coordinates is None else _raise_lattice_direction(lattice, coordinates)
 
 
 def _isotropic_vector_witness(lattice):
@@ -276,7 +281,7 @@ def _isotropic_vector_witness(lattice):
         return None
     if isinstance(solution, Matrix):
         solution = solution.column(0)
-    return _raise_rational_lattice_vector(lattice, solution)
+    return _raise_lattice_direction(lattice, solution)
 
 
 def _unit_divisibility_isotropic_witness(lattice):
@@ -307,7 +312,7 @@ def _unit_divisibility_isotropic_witness(lattice):
             for pairing in pairings:
                 divisor = divisor.gcd(pairing)
             if divisor == 1:
-                return _raise_rational_lattice_vector(lattice, vector)
+                return _raise_lattice_direction(lattice, vector)
         height += 1
 
 
@@ -490,11 +495,11 @@ def _rational_representation_witness(lattice, value):
     last = solution[rank]
     isotropic = solution[:rank]
     if last:
-        return _raise_rational_lattice_vector(lattice, isotropic / last)
+        return _raise_lattice_direction(lattice, isotropic / last)
     partner = gram * isotropic
     pairing = isotropic * gram * partner
     shift = (SageQQ(_engine_element(lattice.base_ring(), value)) - partner * gram * partner) / (2 * pairing)
-    return _raise_rational_lattice_vector(lattice, partner + shift * isotropic)
+    return _raise_lattice_direction(lattice, partner + shift * isotropic)
 
 
 def _binary_special_orthogonal_representatives(lattice, square):
@@ -886,7 +891,7 @@ class _OscarLatticeAdapter:
         )
         return tuple(
             finite_family(
-                tuple(_raise_rational_lattice_vector(lattice, row) for row in basis.rows()),
+                tuple(_raise_lattice_direction(lattice, row) for row in basis.rows()),
                 name="Witt summand basis",
             )
             for basis in result

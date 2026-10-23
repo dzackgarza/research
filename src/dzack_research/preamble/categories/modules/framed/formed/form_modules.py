@@ -1926,14 +1926,22 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return a vector whose selected norm has sign ``-1`` or ``1``, or ``None``.
 
             The vector belongs to this formed module. For a represented
-            submodule its inclusion supplies the ambient vector. Rational
-            diagonalization supplies the computation over ``QQ`` and
-            ``ZZ`` with a finite framing and rational scalar form values;
+            submodule its inclusion supplies the ambient vector. Exact
+            diagonalization supplies the computation over ``QQ``, ``ZZ``
+            and ``AA`` with a finite framing and scalar form values;
             the integral result is primitive. A bilinear form uses its
             diagonal function, and a quadratic form retains its own norm.
 
             EXAMPLES::
 
+                sage: V = Lattices(AA)([[1, 0], [0, -2]])
+                sage: p, n = V.positive_vector(), V.negative_vector()
+                sage: p.parent() is V and n.parent() is V
+                True
+                sage: p.q() > AA(0) and n.q() < AA(0)
+                True
+                sage: Lattices(AA)([[1]]).negative_vector() is None
+                True
                 sage: U = Lattices(ZZ)("U")
                 sage: S = U.subobject_on((U.basis_vector(0) - U.basis_vector(1),))
                 sage: v = S.vector_of_sign(-1)
@@ -2628,9 +2636,9 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 r"""Return a vector of square sign ``-1`` or ``1``, or ``None``.
 
                 The vector belongs to this formed module. For a represented
-                submodule its inclusion supplies the ambient vector. Rational
-                diagonalization supplies the computation over ``QQ`` and
-                ``ZZ``; the integral result is primitive.
+                submodule its inclusion supplies the ambient vector. Exact
+                diagonalization supplies the computation over ``QQ``, ``ZZ``
+                and ``AA``; the integral result is primitive.
 
                 EXAMPLES::
 

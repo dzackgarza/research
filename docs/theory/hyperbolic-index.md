@@ -634,6 +634,32 @@ uncountable real base, the same fibre has membership and its inclusion
 without acquiring an exhaustive sequential iterator. A next-element request
 on an infinite filtered search may never return; it is not an emptiness test.
 
+Exact real algebraic point construction also has direct operations:
+
+```python
+V = Lattices(AA)([[1, 0], [0, -2]])
+e = V.isotropic_vector()
+f = e.hyperbolic_partner()
+v = V.representation_vector(AA(3))
+p, n = V.positive_vector(), V.negative_vector()
+```
+
+These vectors belong to the original space. The partner satisfies
+$B(e,f)=1$ and $B(f,f)=0$. For a scalar-valued symmetric bilinear form,
+`representation_vector(a)` uses the square convention $B(v,v)=a$ and
+requests a **nonzero** vector; at zero it is an isotropy request. In
+contrast, `elements_of_norm(0)` includes the zero vector. Exact congruence
+diagonalization gives a nonzero vector of square $a\ne0$ by choosing a
+same-sign diagonal entry $d$ and multiplying its basis vector by
+$\sqrt{a/d}$. A zero diagonal entry gives a radical isotropic vector;
+a positive and a negative diagonal entry give an isotropic vector after
+normalizing their squares to $1$ and $-1$. These square roots stay in `AA`.
+The positive/negative-vector operations also apply to scalar-valued formed
+modules with a finite framing, using the symmetric part for a bilinear
+form's diagonal function. They return `None` when the requested sign is
+excluded. This covers real algebraic coefficients, not arbitrary exact
+real presentations.
+
 For a terminating search within specified finite coordinates, retain the
 coordinate subset and its inclusion, then construct the finite subset of
 embedding maps:
