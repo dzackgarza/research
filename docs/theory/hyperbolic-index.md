@@ -2141,6 +2141,25 @@ extension of `is_empty()` to every programmable predicate.
 
 ### Linear algebra, arithmetic, and retained maps
 
+**Fresh choice in the hyperbolic-partner locus.** The partner locus is
+the norm-zero equalizer inside the affine pairing fibre. It now retains
+the existing `hyperbolic_partner` computation lazily when isotropy is
+explicitly known and the input is either over an exact field of
+characteristic different from two, or primitive over ZZ in finite rank.
+It evaluates no partner while constructing the locus. The field solver
+uses a preimage of one under the pairing and the exact quadratic
+correction; the integral solver uses the Bezout partner and, if needed,
+its complete finite kernel-residue computation. A successful returned
+point is retained by the subset owner with the original affine-fibre
+inclusion. Solver failure propagates without admitting a point or
+changing an emptiness proposition. Inputs without these known hypotheses
+keep their defining locus and existing selection capabilities. The
+solver does not call the locus's choice operation, so this composition
+does not recurse through choice. Integral and rational fresh-locus
+specimens request a point without manual admission; their execution
+remains deferred. This is point construction for a supplied vector,
+not a search for a maximal hyperbolic summand.
+
 | General construction or computation | Output needed by the splitting algorithm |
 | --- | --- |
 | Symmetric bilinear forms, evaluation and restriction | The actual form on each module and submodule, with the associated norm map |

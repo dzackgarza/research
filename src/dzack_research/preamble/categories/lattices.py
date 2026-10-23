@@ -7408,6 +7408,15 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: locus.object().inclusion()(locus.object()(f + a)) == f + a
                 True
+                sage: fresh = e.hyperbolic_partner_locus().object()
+                sage: w = fresh.an_element()
+                sage: assert w.parent() is L and w.q() == ZZ.zero()
+                sage: assert L.b(e, w) == ZZ(2)
+                sage: assert fresh.an_element() is w
+                sage: Q = Lattices(QQ)("U")
+                sage: x = Q.module_generators()[0]
+                sage: point = x.hyperbolic_partner_locus().object().an_element()
+                sage: assert Q.q(point) == QQ.zero() and Q.b(x, point) == QQ.one()
             """
             lattice = self.parent()
             ring = lattice.base_ring()
@@ -7422,7 +7431,20 @@ class Lattices(OwnedCategoryOverBaseRing):
             fibre = pairing.solution_fibre(prescribed)
             square = Sets().Mor(fibre, ring)(lambda vector: vector.q())
             zero = Sets().Mor(fibre, ring)(lambda vector: ring.zero())
-            return Sets().equalizer_construction(square, zero)
+            construction = Sets().equalizer_construction(square, zero)
+            if (self.q() == ring.zero()) is True:
+                field_case = (
+                    ring in OwnedFields() and ring.is_exact()
+                    and (ring(2) != ring.zero()) is True
+                )
+                integral_case = (
+                    ring is _owned_integers()
+                    and lattice.module_rank().is_finite()
+                    and self.is_primitive() is True
+                )
+                if field_case or integral_case:
+                    construction.object()._retain_point_computation(self.hyperbolic_partner)
+            return construction
 
         def hyperbolic_partner(self) -> Lattices.ElementMethods:
             r"""Return an isotropic partner of the supplied isotropic vector.
