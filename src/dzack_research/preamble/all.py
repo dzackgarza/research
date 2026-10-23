@@ -291,6 +291,13 @@ from dzack_research.preamble.categories.integral_affine_manifolds import (  # no
 from dzack_research.preamble.categories.sets.finite_graded_posets import (  # noqa: F401
     FiniteGradedPosets,
 )
+from dzack_research.preamble.categories.cell_complexes import (  # noqa: F401
+    CellComplexes,
+    DeltaComplexes,
+    PolytopalComplexes,
+    SimplicialComplexes,
+    SimplicialSets,
+)
 from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
