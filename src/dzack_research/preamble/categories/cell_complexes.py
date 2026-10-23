@@ -135,11 +135,23 @@ class CellComplexes(OwnedCategory):
         def star(self, cell):
             raise NotImplementedError("the star needs its selected cell inclusions")
 
+        def star_inclusion(self, cell):
+            raise NotImplementedError("the star construction must retain its inclusion into this complex")
+
         def link(self, cell):
             raise NotImplementedError("the link needs its selected cell inclusions")
 
+        def link_inclusion(self, cell):
+            raise NotImplementedError("the link construction must retain its inclusion into this complex")
+
         def subdivision(self):
             raise NotImplementedError("a subdivision needs its realization comparison map")
+
+        def subdivision_comparison(self, subdivision):
+            raise NotImplementedError("the subdivision must retain its realization map to this complex")
+
+        def face_inclusion(self, face, cell):
+            raise NotImplementedError("the face relation must retain its arrow into the selected cell")
 
         def realization(self):
             raise NotImplementedError("the constructor must retain characteristic maps")
@@ -180,6 +192,9 @@ class PolytopalComplexes(OwnedCategory):
         def face_maps(self):
             raise NotImplementedError("the constructor must retain the selected face arrows")
 
+        def face_inclusion(self, face, cell):
+            raise NotImplementedError("each placed face needs its arrow into the selected cell")
+
         def cellular_realization(self):
             raise NotImplementedError("the polytopal diagram must determine its cell complex")
 
@@ -213,8 +228,17 @@ class SimplicialComplexes(OwnedCategory):
         def link(self, simplex):
             raise NotImplementedError("the link needs its subcomplex inclusion")
 
+        def link_inclusion(self, simplex):
+            raise NotImplementedError("the link needs its exact subcomplex arrow")
+
         def star(self, simplex):
             raise NotImplementedError("the star needs its subcomplex inclusion")
+
+        def star_inclusion(self, simplex):
+            raise NotImplementedError("the star needs its exact subcomplex arrow")
+
+        def simplex_inclusion(self, face, simplex):
+            raise NotImplementedError("the simplex incidence must retain its face arrow")
 
         def cellular_realization(self):
             raise NotImplementedError("the simplex gluing must determine its cell complex")
