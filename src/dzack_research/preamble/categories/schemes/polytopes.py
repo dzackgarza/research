@@ -791,6 +791,10 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         def triangulate(self):
             pass
 
+        def _engine_point_configuration(self):
+            r"""Lower the owned vertices to a private Sage point configuration."""
+            pass
+
         def _engine_normal_fan(self):
             r"""Return the private normal-fan computation object."""
             return self._engine_polyhedron().normal_fan(direction="inner")

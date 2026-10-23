@@ -84,6 +84,10 @@ class ChosenTriangulations(OwnedParameterizedCategory):
         r"""Select ``T``, its simplex inclusions, and ``|T| -> K``."""
         pass
 
+    def _from_engine_triangulation(self, engine_triangulation, vertex_map):
+        r"""Raise a private point-configuration triangulation over the exact target."""
+        pass
+
     def target(self):
         return self.parameter()
 
