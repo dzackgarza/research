@@ -37,6 +37,11 @@ class TopologicalAtlasMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, continuous_map, chart_maps):
+        if (
+            continuous_map.domain() is not self.domain().underlying_topological_space()
+            or continuous_map.codomain() is not self.codomain().underlying_topological_space()
+        ):
+            raise ValueError("the continuous map must join the selected atlas spaces")
         return self.element_class(self, continuous_map, chart_maps)
 
     @object_level

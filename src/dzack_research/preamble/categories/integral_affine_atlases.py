@@ -49,6 +49,11 @@ class IntegralAffineAtlasMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, smooth_map, chartwise_affine_maps):
+        if (
+            smooth_map.domain() is not self.domain().underlying_smooth_manifold()
+            or smooth_map.codomain() is not self.codomain().underlying_smooth_manifold()
+        ):
+            raise ValueError("the smooth map must join the selected affine atlas manifolds")
         return self.element_class(self, smooth_map, chartwise_affine_maps)
 
     @object_level
