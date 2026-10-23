@@ -2921,6 +2921,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             as ``witt_index``. Its basis vectors are raised into this
             space and assembled through the existing hyperbolic-plane,
             subobject and orthogonal-decomposition constructions.
+            Over AA, Sage congruence diagonalization and exact positive
+            square roots supply the normalized hyperbolic pairs and a
+            definite complement.
 
             EXAMPLES::
 
@@ -2937,10 +2940,18 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert Z.witt_decomposition().codomain() is Z
                 sage: W = Lattices(QQ)([[1, 0], [0, -2]])
                 sage: assert W.witt_decomposition().domain().biproduct_factor(0).module_rank() == 0
+                sage: V = Lattices(AA)([[0, 1, 0], [1, 0, 0], [0, 0, -2]])
+                sage: phi = V.witt_decomposition()
+                sage: assert V.gram_tensor().pullback(phi) == phi.domain().gram_tensor()
+                sage: assert phi.domain().biproduct_factor(0).module_rank() == 2
+                sage: assert phi.domain().biproduct_factor(1).is_anisotropic() is True
+                sage: assert all(phi(phi.inverse()(v)) == v for v in V.module_generators())
+                sage: assert Lattices(AA)(0).witt_decomposition().domain().module_rank() == 0
             """
             from dzack_research.preamble.categories.rings.ring_foundation import (
                 OwnedFields,
                 _owned_rationals,
+                _owned_real_algebraic_numbers,
             )
 
             field = self.base_ring()
@@ -2951,12 +2962,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert self.module_rank().is_finite() and self.is_nondegenerate(), (
                 f"a Witt decomposition of {self} requires a nondegenerate finite-dimensional form"
             )
-            assert field is _owned_rationals(), (
-                f"a Witt decomposition of {self} is computed here over QQ, not {field}"
-            )
-            anisotropic_basis, hyperbolic_basis = (
-                lattice_engines._oscar_lattices.rational_witt_bases(self)
-            )
+            if field is _owned_rationals():
+                anisotropic_basis, hyperbolic_basis = (
+                    lattice_engines._oscar_lattices.rational_witt_bases(self)
+                )
+            elif field is _owned_real_algebraic_numbers():
+                anisotropic_basis, hyperbolic_basis = (
+                    lattice_engines._real_algebraic_witt_bases(self)
+                )
+            else:
+                raise NotImplementedError(
+                    f"a Witt decomposition of {self} is computed here over QQ and AA, not {field}"
+                )
             complement = self.subobject_on(anisotropic_basis)
             plane = Lattices(field)("U")
             hyperbolic = plane ** (int(hyperbolic_basis.cardinality()) // 2)

@@ -99,6 +99,52 @@ def _rational_positive_vector(gram):
     )
 
 
+def _real_algebraic_witt_bases(lattice):
+    r"""Raise an AA Witt basis using Sage's congruence diagonalization.
+
+    Private supplier to ``Lattices.witt_decomposition``. Sage's
+    ``QuadraticForm.rational_diagonal_form(return_matrix=True)`` returns
+    ``(D,T)`` with ``T.transpose()*G*T == D.matrix()``. Its columns are
+    therefore an orthogonal basis in the input space. Normalize each
+    positive or negative vector to square +1 or -1 using the positive
+    square root in AA. For an orthogonal pair p,n of these squares,
+    e=p+n and f=(p-n)/2 have Gram U. The unpaired vectors all have the
+    same sign, so their span is anisotropic.
+
+    The input is a finite nondegenerate symmetric space over AA; no
+    numerical sign, approximate root or exhaustive real iterator is used.
+    Sage documents the retained transformation in
+    ``quadratic_form__local_field_invariants.rational_diagonal_form``.
+    """
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
+    from dzack_research.preamble.categories.sets.finite_families import finite_family
+
+    ring = lattice.base_ring()
+    _diagonal, change = QuadraticForm(
+        _engine_ring(ring), _engine_component_matrix(lattice.gram_tensor())
+    ).rational_diagonal_form(return_matrix=True)
+    positive = []
+    negative = []
+    for column in change.columns():
+        vector = lattice.linear_combination({
+            label: _owned_engine_element(ring, entry)
+            for label, entry in zip(lattice.module_generating_set(), column, strict=True)
+        })
+        square = lattice.q(vector)
+        if square > 0:
+            positive.append(vector * (ring.one() / square.sqrt()))
+        else:
+            negative.append(vector * (ring.one() / (-square).sqrt()))
+    index = min(len(positive), len(negative))
+    hyperbolic = tuple(
+        vector
+        for p, n in zip(positive[:index], negative[:index], strict=True)
+        for vector in (p + n, (p - n) * (ring.one() / ring(2)))
+    )
+    anisotropic = (*positive[index:], *negative[index:])
+    return finite_family(anisotropic), finite_family(hyperbolic)
+
+
 def _raise_rational_lattice_vector(lattice, coordinates):
     r"""Raise a rational direction, primitively over ZZ, in its given lattice."""
     ring = lattice.base_ring()
