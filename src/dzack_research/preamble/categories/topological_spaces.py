@@ -962,6 +962,10 @@ class TopologicalSpaces(OwnedCategory):
             """
             assert False, f"the fundamental group pi_1({self}, {base_point}) is not known to this space"
 
+        def fundamental_groupoid(self):
+            r"""Homotopy classes of paths between all points of this space."""
+            pass
+
         def _whitehead_pairing(self, base_point, left_degree, right_degree):
             r"""The Whitehead product ``pi_p(X, x) x pi_q(X, x) -> pi_{p+q-1}(X, x)``, a bilinear map.
 
