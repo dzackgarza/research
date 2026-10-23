@@ -178,14 +178,14 @@ class RationalPolyhedralConeMor(CategoricalMor):
 
     ElementMethods = RationalPolyhedralConeMorphism
 
-    def _element_constructor_(self, linear_map):
+    def _element_constructor_(self, linear_map, *, check=False):
         if element_parent(linear_map) is self:
             return linear_map
         source = self.domain().ambient_space()
         target = self.codomain().ambient_space()
         linear = source.module_category().Mor(source, target)(linear_map)
         arrow = self.element_class(self, linear)
-        arrow.validate_cone_image(check=False)
+        arrow.validate_cone_image(check=check)
         return arrow
 
     @object_level
