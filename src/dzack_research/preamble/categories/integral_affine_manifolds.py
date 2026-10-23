@@ -108,7 +108,22 @@ class IntegralAffineManifolds(OwnedCategory):
         def affine_charts(self):
             pass
 
+        def affine_atlas(self):
+            pass
+
         def integral_tangent_lattice(self):
+            pass
+
+        def regular_open(self, open_inclusion):
+            pass
+
+        def regular_open_inclusion(self, open_affine_manifold):
+            pass
+
+        def holonomy(self, base_point, affine_frame):
+            pass
+
+        def holonomy_conjugacy_class(self, base_point):
             pass
 
     class Oriented(CategoryWithAxiom):
