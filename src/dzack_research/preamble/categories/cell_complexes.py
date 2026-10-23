@@ -200,6 +200,14 @@ class CellComplexes(OwnedCategory):
         def subdivision_comparison(self, subdivision):
             pass
 
+        def triangulations(self):
+            from dzack_research.preamble.categories.triangulations import ChosenTriangulations
+
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
+            pass
+
         def face_inclusion(self, face, cell):
             pass
 
