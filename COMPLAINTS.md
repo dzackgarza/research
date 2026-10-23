@@ -14,6 +14,10 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Integral-affine collar extensions lack their defining compatibility laws
+
+For a selected face inclusion `F -> P` and neighborhood inclusion `N -> P`, an integral-affine collar needs a chart on `N` compatible with the affine structure of `P` and the selected face. A comparison of two collars consists of a face map and an affine neighborhood map whose square with the inclusions commutes. This is the data required to extend a face pairing across a glued edge; see the collar construction in [the integral-affine plan](docs/theory/integral-affine-manifolds-and-polyhedral-complexes.md#face-gluings-and-surgeries). Source inspection of `categories/integral_affine_collars.py` found the object, `Mor` and comparison signatures, with `pass` bodies pending these laws. The neighborhood functor retains the selected neighborhood endpoints. Remediation belongs to `integral-affine-polyhedral-p2` for the collar datum and P6 for extension across a quotient. Runtime behavior and the formal-side declaration were not inspected.
+
 ### Riemannian local isometries lack their metric-preserving construction
 
 A morphism `(M,g) -> (N,h)` of Riemannian manifolds is a smooth map `f` with `f^*h = g`. Its source and target metrics determine the preservation condition, and forgetting them sends the arrow to the same smooth map. The dependency path is the selected metric on each manifold -> metric-preserving `Mor` -> smooth forgetful functor -> isometries of a hyperbolic ambient space -> metric-polytope maps. Helgason, *Differential Geometry, Lie Groups, and Symmetric Spaces*, Ch. I, §9 states the metric structure used by the existing `RiemannianManifolds` declaration.
