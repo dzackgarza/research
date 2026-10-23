@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import cache
+from itertools import product
 from typing import TYPE_CHECKING
 
 from sage.libs.pari import pari
@@ -275,6 +276,11 @@ def _minimum(lattice):
 def _square_shell(positive_gram, target, reflective):
     r"""All vectors of the positive definite integral square shell.
 
+    The inverse-Gram Cauchy--Schwarz bound gives a complete coordinate box.
+    Exhaust it directly when it has at most 10,000 candidates, avoiding a
+    Julia startup for small shells. Larger boxes use the maintained Hecke
+    enumeration below.
+
     Hecke's inclusive ``short_vectors(L, target, target)`` enumerates one
     vector per sign pair, using rational pseudo-Cholesky enumeration after
     Gram LLL reduction, and transports coordinates to the original basis.
@@ -282,9 +288,25 @@ def _square_shell(positive_gram, target, reflective):
     every entry of ``2 G v``. Zero and negative squares are handled by the
     caller before this nonzero shell computation.
     """
+    form = _engine_component_matrix(positive_gram).change_ring(SageZZ)
+    rank = form.nrows()
+    inverse = form.change_ring(SageQQ).inverse()
+    engine_target = SageZZ(_engine_element(target.parent(), target))
+    squared_bound = SageQQ(engine_target) * max(inverse.diagonal())
+    bound = int(squared_bound.floor().isqrt())
+    if (2 * bound + 1) ** rank <= 10000:
+        shell = []
+        for coordinates in product(range(-bound, bound + 1), repeat=rank):
+            vector = engine_vector(SageZZ, coordinates)
+            if vector * form * vector != engine_target:
+                continue
+            if reflective and any(entry % engine_target for entry in 2 * form * vector):
+                continue
+            shell.append(vector)
+        return tuple(shell)
+
     from dzack_research.preamble.categories.lattice_engines import _oscar_lattices
 
-    form = _engine_component_matrix(positive_gram).change_ring(SageZZ)
     representatives = _oscar_lattices.square_shell(positive_gram, target)
     shell = []
     for row in representatives.rows():
