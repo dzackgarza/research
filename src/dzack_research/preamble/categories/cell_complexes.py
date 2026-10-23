@@ -665,6 +665,10 @@ class SimplicialSets(OwnedCategory):
         r"""Construct the simplicial nerve of a small category."""
         pass
 
+    def standard_simplex(self, dimension):
+        r"""The representable simplicial set on the ordinal of this dimension."""
+        pass
+
     @cached_method
     def face_posets(self):
         return _ComplexFacePosetFunctor(self)
@@ -691,6 +695,10 @@ class SimplicialSets(OwnedCategory):
 
         def simplices(self, dimension):
             return self._defining_simplices[dimension]
+
+        def simplex_map(self, dimension, simplex):
+            r"""The simplicial map from the standard simplex selected by ``simplex``."""
+            pass
 
         def simplex_category(self):
             pass
