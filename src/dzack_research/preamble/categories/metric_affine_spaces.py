@@ -6,7 +6,6 @@ from sage.categories.morphism import Morphism
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
-    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
@@ -30,27 +29,15 @@ class EuclideanSpaceMor(CategoricalMor):
             return self._affine_map(point)
 
         def __mul__(self, other):
-            if not _precomposable(self, other):
-                return NotImplemented
-            return EuclideanSpaces().Mor(other.domain(), self.codomain())(
-                self.affine_map() * other.affine_map()
-            )
+            pass
 
     def _element_constructor_(self, affine_map):
-        if (
-            affine_map.domain() is not self.domain().underlying_affine_space()
-            or affine_map.codomain() is not self.codomain().underlying_affine_space()
-        ):
-            raise ValueError("the affine map must join the selected Euclidean affine spaces")
-        return self.element_class(self, affine_map)
+        pass
 
     @object_level
     @cached_method
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a Euclidean-space identity requires the same source and target")
-        affine = self.domain().underlying_affine_space()
-        return self(RealAffineSpaces().Mor(affine, affine).identity())
+        pass
 
 
 class EuclideanSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -130,27 +117,15 @@ class SphericalSpaceMor(CategoricalMor):
             return self._ambient_isometry(point)
 
         def __mul__(self, other):
-            if not _precomposable(self, other):
-                return NotImplemented
-            return SphericalSpaces().Mor(other.domain(), self.codomain())(
-                self.ambient_isometry() * other.ambient_isometry()
-            )
+            pass
 
     def _element_constructor_(self, ambient_isometry):
-        if (
-            ambient_isometry.domain() is not self.domain().euclidean_space()
-            or ambient_isometry.codomain() is not self.codomain().euclidean_space()
-        ):
-            raise ValueError("the isometry must join the selected Euclidean ambient spaces")
-        return self.element_class(self, ambient_isometry)
+        pass
 
     @object_level
     @cached_method
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a spherical-space identity requires the same source and target")
-        ambient = self.domain().euclidean_space()
-        return self(EuclideanSpaces().Mor(ambient, ambient).identity())
+        pass
 
 
 class SphericalSpaceMorCategoryConstruction(MorCategoryConstruction):
