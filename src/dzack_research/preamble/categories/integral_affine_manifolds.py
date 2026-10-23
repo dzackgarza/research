@@ -55,6 +55,9 @@ class IntegralAffineManifoldMor(CategoricalMor):
         def local_affine_maps(self):
             return self._local_affine_maps
 
+        def is_local_isomorphism(self):
+            pass
+
         def _call_(self, point):
             return self._smooth_map(point)
 
