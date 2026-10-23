@@ -90,6 +90,19 @@ class _StratifiedAtlasMaximalizationFunctor(Functor):
         return morphism.topological_manifold_morphism()
 
 
+class _BoundaryAtlasAsCornerFunctor(Functor):
+    r"""Retain boundary charts as corner charts with depth at most one."""
+
+    def __init__(self):
+        super().__init__(TopologicalBoundaryAtlases(), TopologicalCornerAtlases())
+
+    def _apply_object(self, atlas):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class _StratifiedAtlasDataMethods:
     def __init__(
         self,
@@ -190,6 +203,10 @@ class TopologicalBoundaryAtlases(OwnedCategory):
     @cached_method
     def maximalization(self):
         return _StratifiedAtlasMaximalizationFunctor(self, TopologicalManifoldsWithBoundary())
+
+    @cached_method
+    def as_corners(self):
+        return _BoundaryAtlasAsCornerFunctor()
 
     class ParentMethods(_StratifiedAtlasDataMethods):
         def __init__(self, boundary_inclusion, **rest):
