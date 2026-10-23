@@ -444,6 +444,10 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         r"""Select the singular subobject and affine structure on its exact complement."""
         pass
 
+    def from_face_gluing(self, gluing_cocone, singular_locus_inclusion, affine_collars):
+        r"""Select an affine structure from a complex quotient and collar data."""
+        pass
+
     @cached_method
     def forget(self):
         return _UnderlyingSingularTopologicalSpaceFunctor(self, TopologicalSpaces())
@@ -465,7 +469,16 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         def regular_locus(self):
             pass
 
+        def regular_locus_inclusion(self):
+            pass
+
         def regular_affine_manifold(self):
+            pass
+
+        def gluing_cocone(self):
+            pass
+
+        def affine_collars(self):
             pass
 
         def local_monodromy(self, singular_point, loop, affine_frame):
@@ -512,6 +525,15 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
         singular_locus_inclusion,
         regular_affine_manifold,
         local_models=None,
+    ):
+        pass
+
+    def from_face_gluing(
+        self,
+        gluing_cocone,
+        singular_locus_inclusion,
+        affine_collars,
+        local_models,
     ):
         pass
 
