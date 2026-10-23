@@ -94,10 +94,10 @@ class _StratifiedAffineAtlasMaximalizationFunctor(Functor):
         super().__init__(source, target)
 
     def _apply_object(self, atlas):
-        return atlas.integral_affine_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
-        return morphism.integral_affine_manifold_morphism()
+        pass
 
 
 class _StratifiedAffineAtlasSmoothFunctor(Functor):

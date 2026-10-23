@@ -82,12 +82,10 @@ class _AtlasMaximalizationFunctor(Functor):
         super().__init__(source, target)
 
     def _apply_object(self, atlas):
-        return atlas.integral_affine_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
-        source = self(morphism.domain())
-        target = self(morphism.codomain())
-        return morphism.integral_affine_morphism(source, target)
+        pass
 
 
 class _UnderlyingSmoothAtlasFunctor(Functor):

@@ -77,12 +77,10 @@ class _AtlasRealCkManifoldFunctor(Functor):
         super().__init__(RealCkAtlases(degree), RealCkManifolds(degree))
 
     def _apply_object(self, atlas):
-        return atlas.real_ck_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
-        source = self(morphism.domain())
-        target = self(morphism.codomain())
-        return morphism.real_ck_morphism(source, target)
+        pass
 
 
 class _AtlasUnderlyingTopologicalAtlasFunctor(Functor):

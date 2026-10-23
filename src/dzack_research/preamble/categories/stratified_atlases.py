@@ -87,7 +87,7 @@ class _StratifiedAtlasMaximalizationFunctor(Functor):
         pass
 
     def _apply_morphism(self, morphism):
-        return morphism.topological_manifold_morphism()
+        pass
 
 
 class _BoundaryAtlasAsCornerFunctor(Functor):
@@ -351,10 +351,10 @@ class _RealCkStratifiedAtlasMaximalizationFunctor(Functor):
         super().__init__(source, target)
 
     def _apply_object(self, atlas):
-        return atlas.real_ck_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
-        return morphism.real_ck_manifold_morphism()
+        pass
 
 
 class _RealCkStratifiedAtlasForgetDegreeFunctor(Functor):

@@ -69,10 +69,10 @@ class _AtlasTopologicalManifoldFunctor(Functor):
         super().__init__(TopologicalAtlases(), TopologicalManifolds())
 
     def _apply_object(self, atlas):
-        return atlas.topological_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
-        return morphism.topological_manifold_morphism()
+        pass
 
 
 class TopologicalAtlases(OwnedCategory):

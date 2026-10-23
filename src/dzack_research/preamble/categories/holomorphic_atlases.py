@@ -73,10 +73,10 @@ class _HolomorphicAtlasMaximalizationFunctor(Functor):
         super().__init__(HolomorphicAtlases(), ComplexManifolds())
 
     def _apply_object(self, atlas):
-        return atlas.complex_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
-        return morphism.complex_manifold_morphism()
+        pass
 
 
 class _HolomorphicAtlasRealificationFunctor(Functor):
