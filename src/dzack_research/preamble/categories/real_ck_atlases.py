@@ -125,6 +125,8 @@ class RealCkAtlases(OwnedParameterizedCategory):
         overlap_inclusions,
         transition_maps,
     ):
+        if topological_manifold not in TopologicalManifolds():
+            raise TypeError(f"{topological_manifold} is not a topological manifold")
         return _object_of(
             self,
             topological_manifold=topological_manifold,

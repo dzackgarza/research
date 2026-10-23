@@ -94,6 +94,8 @@ class TopologicalAtlases(OwnedCategory):
         overlap_inclusions,
         transition_maps,
     ):
+        if topological_space not in TopologicalSpaces():
+            raise TypeError(f"{topological_space} is not a topological space")
         return _object_of(
             self,
             topological_space=topological_space,

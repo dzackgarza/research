@@ -125,6 +125,8 @@ class IntegralAffineAtlases(OwnedCategory):
         transition_maps,
     ):
         r"""Select charts and affine transitions on the exact smooth manifold."""
+        if smooth_manifold not in SmoothManifolds():
+            raise TypeError(f"{smooth_manifold} is not a smooth manifold")
         return _object_of(
             self,
             smooth_manifold=smooth_manifold,
