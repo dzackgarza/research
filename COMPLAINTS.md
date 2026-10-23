@@ -150,41 +150,6 @@ specimens are in the method docstring and owned by
 
 ### Generic computable-real linear algebra still has partial scalar decisions
 
-**Existing integral-index genus-to-lattice justification:** the declaration
-audit found `lattices.py:integral_hyperbolic_index`, introduced at
-`57c8eb1cb06` and adapted at `e6ecd9d27a6`. Its implementation compares
-the original genus with possible genera `U^m + M`, whereas its docstring
-asserts the largest actual integral hyperbolic summand. The missing
-documentation is the precise global theorem, with hypotheses and source,
-that makes the affirmative genus test a splitting of the specified
-lattice. Genus equality is the observed computation; no counterexample
-to this particular criterion is asserted. The method is also consumed
-by the existing pointed lattice code's two-plane applicability test.
-This proof-coverage question belongs with the eventual main integral
-index work, not a new implementation inside the dependency-only task.
-Record the local-to-global declaration/source when that work is taken;
-the current dependency note identifies the existing method and keeps
-its returned integer distinct from a constructive maximal isometry.
-
-**Formal nondegeneracy preservation for orthogonal sums:** the source
-constructor now retains supplied nondegenerate placements of every
-summand, including the empty sum, without a new determinant query.
-The coordinatewise radical argument is in the theory note. The remaining
-formalization request is preservation of both zero radicals by finite
-orthogonal sums at the bilinear-module owner. The inspected upstream
-`LeanCategories/Lattices/Valued/Constructions.lean` defines
-`orthogonalSumBilinMap`, `orthogonalSum` and `finiteFormOrthogonalSum`,
-and proves `isPerfect_orthogonalSum` and
-`isPerfect_indexedOrthogonalSum` for integral scalar-valued lattices.
-Those perfection results do not supply the general zero-radical statement:
-nondegeneracy requires injective adjoints, not invertible ones over ZZ.
-A matching nondegeneracy declaration was not identified by the source
-search. Retain its identification or formalization under
-`terminal-session` and terminal T. The affected
-consumers are Witt constructions on supplied orthogonal sums and generic
-formed-module operations; the real embedding decision separately uses
-the original inertia indices directly.
-
 The owned exact `RR` field supplies closed real expressions and now regular
 rational Cauchy presentations in the same real field, with arithmetic,
 positive square roots and exact relation decisions where known.

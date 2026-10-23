@@ -74,8 +74,11 @@ hyperbolic splitting algorithm.
 The dependency-only source implementation is reconciled in
 [the theory note](docs/theory/hyperbolic-index.md#source-implementation-reconciliation).
 Its unexecuted mathematical specimens remain owned by `terminal-session`;
-no runtime gate is part of the completed source assignment. The new main
-hyperbolic-index and maximal-splitting computations remain deferred.
+no runtime gate is part of the completed source assignment. The main
+hyperbolic-index and maximal-splitting methods now have source routes
+through actual integral embeddings and their orthogonal splitting, or
+field Witt decomposition. Their source specimens and the full dependency
+index still require final-revision execution under `terminal-session`.
 
 These are the research obligations in handoff ranks 1 and 2. The [boundary assignments](../gitclones/sage-indefinite-port/references/port-design.md#implementation-assignments) and `AGENTS.md`, *Concrete boundary with sage-indefinite-port*, govern the split. Inspect the current HEAD and dirty state of the worktrees named in HANDOFF.md before implementation; reconcile inherited source against each remaining contract before rewriting it. Source presence and earlier small runs do not close final-revision execution. Preserve the existing lift-torsor implementations. Priority changes selection, not mathematical dependency or the current `DEV-58` execution phase.
 
@@ -1139,7 +1142,7 @@ Consolidate the suite around the frozen API, retaining distinct mathematical obl
   This is a prerequisite, not mathematical acceptance.
   Regenerate `docs/preamble-megadoc.md` and the graph through `just preamble-megadoc`; inspect their agreement with live categories, operations, domains and codomains.
   Preamble warnings and order-dependent imports require repair.
-  **Hyperbolic dependency specimens and formal request:** retain the full [dependency index and source reconciliation](docs/theory/hyperbolic-index.md#source-implementation-reconciliation), including norm-fibre choice and exclusions, anisotropy, Witt maps and inverse laws, changed-base formed arrows, complete constrained searches under their stated bounds, finite-support sampling, exact solving and kernel/span coordinate retention. The specimens are written at their operation owners and remain unexecuted. The general finite orthogonal-sum nondegeneracy declaration request remains at its COMPLAINTS.md owner; source preservation uses the documented two-radical argument. This terminal work is separate from the completed dependency-only source implementation and does not authorize the deferred main splitting algorithms.
+  **Hyperbolic dependency specimens:** retain the full [dependency index and source reconciliation](docs/theory/hyperbolic-index.md#source-implementation-reconciliation), including norm-fibre choice and exclusions, anisotropy, Witt maps and inverse laws, changed-base formed arrows, complete constrained searches under their stated bounds, finite-support sampling, exact solving and kernel/span coordinate retention. The specimens are written at their operation owners and require final-revision execution. The general finite orthogonal-sum nondegeneracy theorem is now at its bilinear-module owner in `lean-categories`, with the lattice constructor corollary. The main splitting methods consume the dependency constructions and require their own final-revision specimens.
   **Closure evidence:** execute all required banked construction specimens and the protected expectation/user-simulation obligations through the prescribed project recipes, classify actual failures at their owners and repair them without weakening expectations.
   Cover direct, convenience, functor, catalogue and engine-raised routes; free/nonfree, finite/infinite and changed-base regimes where claimed.
   A previous run certifies only the source it exercised.

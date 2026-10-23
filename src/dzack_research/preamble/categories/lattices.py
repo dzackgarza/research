@@ -4522,48 +4522,112 @@ class Lattices(OwnedCategoryOverBaseRing):
             return finite_family(numbers, name=f"Spinor-genus class numbers of {self}")
 
         def integral_hyperbolic_index(self):
-            r"""Return the largest ``n`` for which ``L`` is isometric to ``U^n + L'``."""
-            from sage.matrix.special import block_diagonal_matrix
-            from sage.quadratic_forms.genera.genus import Genus as SageGenus
-            from sage.quadratic_forms.genera.genus import genera
+            r"""Return the actual integral ``U``-summand index of this lattice.
+
+            The earlier genus comparison decided whether a genus contains
+            ``U^m + M``. Genus equality alone did not supply an isometry
+            from that sum to this specified lattice. The constructive
+            embedding decision used here decides the required stronger fact.
+            """
+            assert self.base_ring() is _owned_integers(), (
+                f"the integral hyperbolic index of {self} is computed over ZZ"
+            )
+            return self.hyperbolic_index()
+
+        @cached_method
+        def hyperbolic_index(self):
+            r"""Return the largest number of orthogonal hyperbolic planes in ``self``.
+
+            The integral index counts actual ``U`` summands of this lattice,
+            not summands of another lattice in its genus. For each candidate
+            rank, the general integral embedding Mor decides whether
+            ``U^r`` embeds. Every such embedding splits because ``U^r`` is
+            unimodular; descending from the rank bound proves maximality.
+            Over a supported exact field this is the Witt index.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: assert (U + U + Lattices(ZZ)([[2]])).hyperbolic_index() == ZZ(2)
+                sage: assert U.twist(ZZ(2)).hyperbolic_index() == ZZ(0)
+                sage: assert Lattices(ZZ)([[1, 0], [0, -1]]).hyperbolic_index() == ZZ(0)
+                sage: assert Lattices(QQ)([[1, 0], [0, -1]]).hyperbolic_index() == ZZ(1)
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _owned_real_algebraic_numbers,
+            )
+            from dzack_research.preamble.rings.real import RR
 
             ring = self.base_ring()
-            assert _engine_ring(ring) is SageZZ, (
-                f"the integral hyperbolic index here is implemented for ZZ-lattices, but {self} is over {ring}"
-            )
             assert self.module_rank().is_finite() and self.is_nondegenerate(), (
-                f"the integral hyperbolic index of {self} requires finite rank and a nondegenerate form"
+                f"the hyperbolic index of {self} requires finite rank and a nondegenerate form"
             )
-            gram = _engine_component_matrix(self.gram_tensor()).change_ring(SageZZ)
-            genus = SageGenus(gram)
-            positive, negative = genus.signature_pair()
-            plane = _engine_component_matrix(
-                Lattices(ring)("U").gram_tensor()
-            ).change_ring(SageZZ)
-            for index in range(min(positive, negative), 0, -1):
-                planes = SageGenus(block_diagonal_matrix([plane] * index))
-                match (positive, negative) == (index, index):
-                    case True:
-                        match genus == planes:
-                            case True:
-                                return ring(index)
-                            case False:
-                                continue
-                    case False:
-                        complements = genera(
-                            (positive - index, negative - index),
-                            (-1) ** index * gram.det(),
-                            even=genus.is_even(),
-                        )
-                        match any(
-                            complement.direct_sum(planes) == genus
-                            for complement in complements
-                        ):
-                            case True:
-                                return ring(index)
-                            case False:
-                                pass
+            if ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
+                return self.witt_index()
+            assert ring is _owned_integers(), (
+                f"the hyperbolic index of {self} is computed here over ZZ, QQ, AA and represented RR"
+            )
+            plane = Lattices(ring)("U")
+            signature = self.signature_pair()
+            upper_bound = min(int(signature.first()), int(signature.second()))
+            for index in range(upper_bound, 0, -1):
+                embeddings = (plane ** index).Emb(self)
+                empty = embeddings.is_empty()
+                assert empty is True or empty is False, (
+                    "the integral embedding decision must decide this finite nondegenerate pair"
+                )
+                if empty is False:
+                    return ring(index)
             return ring.zero()
+
+        @cached_method
+        def maximal_hyperbolic_index_splitting(self):
+            r"""Return an isometry ``U^m orthogonal_sum M -> self`` with maximal ``m``.
+
+            The first factor of the domain has rank ``2*m``. Its injection,
+            the complementary injection, and the inverse of the returned
+            isometry retain the embeddings and projections of the splitting.
+            An integral witness is selected from the complete embedding Mor
+            only after its nonemptiness has been decided by
+            :meth:`hyperbolic_index`; ``orthogonal_splitting`` constructs
+            the actual complement and an inverse over the original ring.
+            Field witnesses come from the existing Witt decomposition.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: L = U + Lattices(ZZ)([[2]])
+                sage: phi = L.maximal_hyperbolic_index_splitting()
+                sage: assert phi.codomain() is L
+                sage: assert phi.domain().biproduct_factor(0).module_rank() == 2
+                sage: assert L.gram_tensor().pullback(phi) == phi.domain().gram_tensor()
+                sage: assert all(phi.inverse()(phi(v)) == v for v in phi.domain().module_generators())
+                sage: assert all(phi(phi.inverse()(v)) == v for v in L.module_generators())
+                sage: Z = Lattices(ZZ)(0)
+                sage: eta = Z.maximal_hyperbolic_index_splitting()
+                sage: assert eta.domain().biproduct_factor(0).module_rank() == 0
+                sage: assert eta(eta.inverse()(Z.zero())) == Z.zero()
+            """
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _owned_real_algebraic_numbers,
+            )
+            from dzack_research.preamble.rings.real import RR
+
+            ring = self.base_ring()
+            if ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
+                return self.witt_decomposition()
+            assert ring is _owned_integers(), (
+                f"a maximal hyperbolic splitting of {self} is computed here over ZZ, QQ, AA and represented RR"
+            )
+            index = int(self.hyperbolic_index())
+            hyperbolic = Lattices(ring)("U") ** index
+            if index == 0:
+                inclusion = hyperbolic.Emb(self)(())
+                return self.orthogonal_decomposition(
+                    (inclusion, self.Aut().identity())
+                ).inverse()
+            embedding = hyperbolic.Emb(self).an_element()
+            return embedding.orthogonal_splitting()
 
         def hyperbolic_plane_power_if_even_unimodular(self):
             r"""Return ``n`` when this lattice is the even unimodular lattice of signature ``(n,n)``.

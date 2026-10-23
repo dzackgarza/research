@@ -1638,24 +1638,32 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Sampling | `finite_ordered_sets.py`: `random_element` on the selected finite support | Uniform finite-support distribution; empty support is rejected; no infinite uniform distribution or completeness inference |
 | Exact solving, kernels and arithmetic predicates | Module morphism `preimage`, `kernel`, `cokernel`, `is_primitive`; `AffineModuleFibres.base_point`; lattice `div`, `bezout_partner`, `hyperbolic_partner` and its locus | Original-ring image solving and full kernel inclusions retained; affine points lift the combined equation and project to the original parameter module. Partner loci use lazy solver-backed choice under known hypotheses. General real elimination still needs decidable pivots; terminal specimens remain unexecuted |
 | Perpendiculars and supplied decompositions | `orthogonal_complement`, `orthogonal_splitting`, `orthogonal_decomposition` | Retain the supplied first embedding and full kernel inclusion; direct-sum hypotheses remain essential |
-| Target hyperbolic index and maximal splitting | Mathematical contracts in this note | Their main computations remain explicitly deferred by the owner's dependency-only assignment |
+| Target hyperbolic index and maximal splitting | `lattices.py`: `hyperbolic_index`, `maximal_hyperbolic_index_splitting`; general `Emb` decision and witness; `orthogonal_splitting`; field `witt_decomposition` | The integral route tests actual embeddings of `U^r` in descending order and returns the isometry; field routes use the Witt decomposition. The source specimens require final-revision execution |
 
-**Existing integral-index method outside this assignment.** The repository
-already contains `Lattices.integral_hyperbolic_index`, introduced before
-this dependency work (source history `57c8eb1cb06`, with later genus
-adapter changes at `e6ecd9d27a6`). It searches from the inertia bound
-downward, comparing the genus of the input with genera of hyperbolic
-planes plus possible complementary genera. It returns an integer, not
-a decomposition map. Its short docstring claims the actual integral
-summand index but does not identify the global theorem converting the
-tested genus decomposition into a splitting of that specified lattice.
-That theorem/citation coverage question is recorded in COMPLAINTS.md;
-no counterexample or mathematical invalidity is claimed here. This
-pre-existing computation is distinct from the requested new contracts
-`hyperbolic_index` and `maximal_hyperbolic_index_splitting`, whose main
-implementation remains deferred. The dependency-only work neither
-changes that method's algorithm nor treats its existence as completion
-of the requested constructive splitting.
+**The old genus test and the specified lattice.** The historical
+`integral_hyperbolic_index` implementation compared the genus of `L`
+with that of `U^r + M`. This is necessary for a splitting, but equality
+of genera does not itself construct or identify an isometry of `L`.
+The applicable uniqueness theorem has hypotheses: Peters, *Primitive
+lattices*, [Theorem 2.3](https://www-fourier.ujf-grenoble.fr/~peters/Articles/PrimLats.pdf)
+(citing Nikulin and Kneser), states that an indefinite even lattice of
+rank `n` is alone in its genus if its discriminant group has at most
+`n-2` generators; for an odd lattice the bound is `n-3`. Since `U^r`
+is unimodular, `U^r + M` has discriminant length at most `rank(M)=n-2r`.
+Thus this theorem converts a positive genus comparison into a splitting
+for even lattices with `r>=1`, and odd lattices with `r>=2`. It does not
+cover the general odd `r=1` case when the complementary discriminant
+length is `n-2`. No assertion about that case follows from this theorem.
+
+The legacy method now delegates to the constructive `hyperbolic_index`.
+For each `r` from the inertia bound down, `Emb(U^r,L).is_empty()` uses
+the finite integral-overlattice and primitive-embedding decision, and
+the first affirmative Mor supplies an actual embedding. As `U^r` is
+unimodular, formula (3) makes that embedding a direct summand;
+`orthogonal_splitting()` returns its complement and the isometry over
+the original ring. The lower candidates are unnecessary after the first
+success, and every larger candidate has been excluded in the specified
+lattice. For index zero the isometry has domain `U^0 + L`.
 
 ### Source implementation reconciliation
 
@@ -1675,11 +1683,13 @@ This reconciliation concerns implemented computations and their wiring.
 It does not assert that source inspection proves their correctness or
 that the mathematical specimens have been executed. Their execution
 remains with `terminal-session` in TODO.md. No runtime gate is added to
-this dependency-only assignment. The outstanding upstream declaration
-request for general orthogonal-sum nondegeneracy is retained in
-COMPLAINTS.md under that formalization/acceptance owner. The separate
-citation question for the historical genus-based integral index belongs
-to eventual main-index work.
+this dependency-only assignment. The general zero-radical preservation
+theorem is now `isNondegenerate_of_indexedOrthogonalPairing` at the
+`lean-categories` bilinear-module owner, including the empty sum; its
+lattice corollary is `indexedOrthogonalSum_isNondegenerate`. The historical
+genus-based integral index question is resolved by the cited uniqueness
+theorem with its stated range and by using an actual embedding decision
+in the remaining range.
 
 The boundary is mathematical rather than an omitted promised solver:
 there is no exhaustive sequential enumeration of an uncountable real
@@ -1688,8 +1698,9 @@ solver for arbitrary programmable embedding filters. The source retains
 these sets and propositions. Effective search and exclusion use precisely
 the additional hypotheses proved here. Arbitrary value-module scalar
 extension lies beyond the scalar-valued lattice computations required by
-this index. The new `hyperbolic_index` and
-`maximal_hyperbolic_index_splitting` main computations remain deferred.
+this index. `hyperbolic_index` and
+`maximal_hyperbolic_index_splitting` now compose the listed constructions;
+their complete final-revision execution remains under terminal T.
 
 ### Invariants, predicates, and decomposition morphisms
 
@@ -2519,8 +2530,8 @@ are not correctness evidence on the formal side.
 The dependency interfaces below retain mathematical objects and maps. Their
 execution obligations remain open under the repository's source phase in
 [TODO.md](../../TODO.md); these examples do not certify an implementation.
-The target integral index and maximal-splitting computations are still separate
-from these reusable constructions.
+The target integral index and maximal-splitting computations consume these
+reusable constructions and return the actual isometry and its maps.
 
 Scalar extension takes a specified ring morphism. For an integral lattice,
 use its coefficient ring's fraction-field map:
