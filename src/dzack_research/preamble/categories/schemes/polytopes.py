@@ -96,6 +96,10 @@ class AbstractPolytopes(OwnedCategory):
         pass
 
     class ParentMethods:
+        def faces(self, dimension):
+            r"""Faces of the selected rank, as elements of this face poset."""
+            pass
+
         def face_poset(self):
             return self
 
