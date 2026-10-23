@@ -487,6 +487,10 @@ class SimplicialComplexes(OwnedCategory):
     def from_simplices(self, vertices, simplices):
         pass
 
+    def _from_engine_simplicial_complex(self, engine_complex, vertex_map):
+        r"""Raise Sage's simplicial complex with owned vertices and face maps."""
+        pass
+
     def order_complex(self, poset):
         r"""Construct the nerve of a poset from its chains."""
         pass
@@ -583,6 +587,10 @@ class DeltaComplexes(OwnedCategory):
     def from_faces(self, simplices, face_maps):
         pass
 
+    def _from_engine_delta_complex(self, engine_complex, simplex_map):
+        r"""Raise Sage's Delta-complex with owned simplices and face maps."""
+        pass
+
     @cached_method
     def face_posets(self):
         return _ComplexFacePosetFunctor(self)
@@ -670,6 +678,10 @@ class SimplicialSets(OwnedCategory):
 
     def from_face_degeneracy_maps(self, simplices, faces, degeneracies):
         r"""Select graded ``simplices[n]`` and operators ``faces[n,i]``, ``degeneracies[n,i]``."""
+        pass
+
+    def _from_engine_simplicial_set(self, engine_simplicial_set, simplex_map):
+        r"""Raise Sage's simplicial set with owned face and degeneracy maps."""
         pass
 
     def nerve(self, category):
