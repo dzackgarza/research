@@ -5756,6 +5756,11 @@ class _PosetOnOrderRelation:
         return f"Partial order on {self._underlying_set}"
 
 
+class PartiallyOrderedSetMorCategoryConstruction(MorCategoryConstruction):
+    def fixed_category_class(self):
+        return PartiallyOrderedSetMor
+
+
 class PartiallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a partial order (Mathlib ``PartOrd``, re-exported by ``lean-categories`` ``Orders.lean``).
 
@@ -5763,9 +5768,10 @@ class PartiallyOrderedSets(OwnedCategory):
     partial order.  The four element comparisons are derived from that one
     relation, rather than reimplemented by particular ordered sets.  The order
     is a chosen datum on the set, so this is a data category, not an axiom on
-    ``Sets()`` (``CAT-17``).  Its morphisms, the monotone maps, are not yet
-    presented (TODO ``partially-ordered-sets-have-monotone-maps``).
+    ``Sets()`` (``CAT-17``).  Morphisms are monotone maps.
     """
+
+    _MorCategory = PartiallyOrderedSetMorCategoryConstruction
 
     def an_object(self) -> ObjectOfCategory:
         r"""The natural numbers under their usual order."""
@@ -5788,8 +5794,13 @@ class PartiallyOrderedSets(OwnedCategory):
                     f"a partial order is a relation on a set, but {underlying_set} is not a set: "
                     f"it is in {underlying_set.category()}"
                 )
+                placement = (
+                    owned_category_join((self, FiniteSets()))
+                    if Sets().is_provably_finite(underlying_set)
+                    else self
+                )
                 return _object_of(
-                    self,
+                    placement,
                     _engine=(self, _PosetOnOrderRelation, None),
                     underlying_set=underlying_set,
                     order_relation=le,
@@ -5846,6 +5857,8 @@ class PartiallyOrderedSets(OwnedCategory):
 class TotallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a total order."""
 
+    _MorCategory = PartiallyOrderedSetMorCategoryConstruction
+
     def an_object(self) -> ObjectOfCategory:
         r"""The natural numbers, totally ordered."""
         return NN
@@ -5854,8 +5867,8 @@ class TotallyOrderedSets(OwnedCategory):
         return [PartiallyOrderedSets()]
 
 
-class WellOrderedSetMorphism:
-    r"""An order-preserving map between represented well-ordered sets."""
+class PartiallyOrderedSetMorphism:
+    r"""A monotone map between represented partially ordered sets."""
 
     def __init__(self, parent, set_morphism) -> None:
         if (
@@ -5878,16 +5891,16 @@ class WellOrderedSetMorphism:
 
         This is the optional diagnostic for the retained map (``OWN-22``).
         An unavailable comparison leaves the law undecided; it is not a
-        counterexample. The current arbitrary-map diagnostic requires a
-        finite enumerated source, while construction retains any represented
-        well-order map without performing this computation.
+        counterexample. The current arbitrary-map diagnostic iterates a
+        finite source; construction retains any represented monotone map
+        without performing this computation.
         """
         domain = self.domain()
         codomain = self.codomain()
         set_morphism = self.underlying_set_morphism()
-        assert Sets().is_provably_finite(domain) and domain in EnumeratedSets(), (
-            f"cannot decide whether {set_morphism} preserves the well-order: arbitrary order preservation is "
-            f"decided here only on finite enumerated domains, but {domain} lies in {domain.category()}"
+        assert Sets().is_provably_finite(domain), (
+            f"cannot decide whether {set_morphism} preserves the partial order: arbitrary monotonicity is "
+            f"decided here only on finite domains with supplied iteration, but {domain} lies in {domain.category()}"
         )
         undecided_pair = None
         for left in domain:
@@ -5902,12 +5915,12 @@ class WellOrderedSetMorphism:
                     continue
                 if source_order is True and target_order is False:
                     raise ValueError(
-                        f"{set_morphism} is not order-preserving: {left} <= {right} in {domain}, but "
+                        f"{set_morphism} is not monotone: {left} <= {right} in {domain}, but "
                         f"{left_image} is not <= {right_image} in {codomain}"
                     )
                 undecided_pair = (left, right)
         assert undecided_pair is None, (
-            f"cannot decide whether {set_morphism} preserves the well-order: the order implication "
+            f"cannot decide whether {set_morphism} is monotone: the order implication "
             f"at {undecided_pair} is undecided"
         )
 
@@ -5930,26 +5943,29 @@ class WellOrderedSetMorphism:
 
     def __mul__(self, other):
         match other:
-            case WellOrderedSetMorphism() if other.codomain() is self.domain():
+            case PartiallyOrderedSetMorphism() if (
+                other.codomain() is self.domain()
+                and other.parent().base_category() is self.parent().base_category()
+            ):
                 pass
             case _:
                 return NotImplemented
-        parent = WellOrderedSets().Mor(other.domain(), self.codomain())
+        parent = self.parent().base_category().Mor(other.domain(), self.codomain())
         return parent._from_order_preserving_set_map(
             self.underlying_set_morphism() * other.underlying_set_morphism()
         )
 
 
-class WellOrderedSetMor(CategoricalMor):
-    r"""Order-preserving maps between two represented well-orders.
+class PartiallyOrderedSetMor(CategoricalMor):
+    r"""Monotone maps between two represented partial orders.
 
     Construction retains the defining set map. Order preservation is checked
     only on request, through the arrow's validator; its current arbitrary-map
-    diagnostic uses a finite enumerated source. Identities and composites
+    diagnostic iterates a finite source. Identities and composites
     retain their existing construction-derived set maps.
     """
 
-    ElementMethods = WellOrderedSetMorphism
+    ElementMethods = PartiallyOrderedSetMorphism
 
     def _element_constructor_(self, datum, *, check=False):
         if element_parent(datum) is self:
@@ -5983,15 +5999,10 @@ class WellOrderedSetMor(CategoricalMor):
         )
 
 
-class WellOrderedSetMorCategoryConstruction(MorCategoryConstruction):
-    def fixed_category_class(self):
-        return WellOrderedSetMor
-
-
 class WellOrderedSets(OwnedCategory):
     r"""Well-ordered sets with order-preserving maps."""
 
-    _MorCategory = WellOrderedSetMorCategoryConstruction
+    _MorCategory = PartiallyOrderedSetMorCategoryConstruction
 
     def an_object(self) -> ObjectOfCategory:
         return finite_ordinal_set(3)
@@ -6044,6 +6055,8 @@ __all__ = [
     "NN",
     "ObjectSetsOfDiscreteCategories",
     "PartiallyOrderedSets",
+    "PartiallyOrderedSetMor",
+    "PartiallyOrderedSetMorphism",
     "PowerSets",
     "Set",
     "SetInjection",
@@ -6052,8 +6065,6 @@ __all__ = [
     "Sets",
     "TotallyOrderedSets",
     "UncountableSets",
-    "WellOrderedSetMor",
-    "WellOrderedSetMorphism",
     "WellOrderedSets",
     "finite_ordinal_set",
     "register_set_axioms",
