@@ -14,6 +14,10 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Smooth and finite-degree manifold maps lack a common owned route
+
+`RealCkManifolds(k)` declares `C^k` Mor and degree-weakening functors. The older `DifferentiableManifolds` and `SmoothManifolds` in `categories/manifolds.py` declare no own Mor family; their supercategory chain reaches `TopologicalManifolds` and `TopologicalSpaces`. Source inspection therefore does not establish that their `Mor(X,Y)` means `C^k` or smooth maps, or that weakening sends those maps to the correct weaker category. The plan requires `SmoothRealManifolds = RealCkManifolds(infinity)` and object-and-map weakening. The dependency path is the exact smooth atlas and its chartwise map condition -> smooth Mor -> finite-degree and topological forgetful functors -> integral-affine forgetful maps and complex realification. The inspected slice is these category declarations and `RealCkManifolds`; no runtime Mor claim is made. The `LeanCategories` source search for `SmoothManifold`, `DifferentiableManifold`, `CkManifold`, and `TopologicalManifold` found no declaration in the inspected tree; request the corresponding manifold categories and weakening functors there if the formal side needs this node. Remediation belongs to `integral-affine-polyhedral-p1` and its exact atlas construction to P2.
+
 ### Complex-manifold realification lacks object and morphism images
 
 For a complex analytic manifold of complex dimension `m`, realification gives a smooth real manifold of dimension `2m` and sends each holomorphic map to its underlying smooth map. It changes the object presentation and the morphism class: a smooth map between complex manifolds need not be holomorphic. It is a functor, not an inclusion with the same objects and hom sets.
