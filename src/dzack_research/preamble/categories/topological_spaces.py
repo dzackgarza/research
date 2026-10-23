@@ -614,6 +614,10 @@ class TopologicalSpaces(OwnedCategory):
         point = self.terminal_object()
         return self.CosliceUnder(point)(point.Mor(space)(lambda _: base_point))
 
+    def mapping_cylinder(self, morphism):
+        r"""The pushout ``X ∪_f (A × [0,1])`` for ``f: A -> X``, with its selected cocone."""
+        pass
+
     @cached_method
     def fundamental_groupoid_functor(self):
         from dzack_research.preamble.categories.fundamental_groupoids import _FundamentalGroupoidFunctor
