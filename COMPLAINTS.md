@@ -40,15 +40,6 @@ integral representation bound nor a general constrained exclusion procedure.
 Definite integral enumeration and the even-overlattice construction remain
 applicable partial routes, not complete coverage.
 
-**Observed reference-workflow blocker (2026-10-23):** the canonical
-`zotero-library/lib/zotero.py` client was retrieved from its repository
-(blob `5d0a3ca9ee84f6d1a0d9ff45fa73a75031ae90bf`). Its `health()` call to
-`http://127.0.0.1:23119/version` failed with connection refused. The required
-PDF workflow therefore cannot inspect the bound's proof on this host until
-the Zotero desktop and local API are available. This does not establish that
-the constant is ineffective or absent from the paper. No guessed constant
-or unbounded search replaces this unresolved computation.
-
 **Dependency path:** formed modules and form-preserving maps -> embedding
 subset retaining its maps -> complete candidate enumeration -> an applicable
 finite bound or a separate existence decision -> integral maximal splitting.
