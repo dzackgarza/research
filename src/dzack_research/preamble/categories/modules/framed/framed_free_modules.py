@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
+from sage.misc.mrange import cantor_product as _engine_cantor_product
 from sage.misc.repr import repr_lincomb
 from sage.modules.free_module import FreeModule as _SageFreeModule
 from sage.rings.integer import Integer
@@ -40,6 +41,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
     _owned_ring,
     _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -643,6 +645,49 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return _kernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
+            def __iter__(self):
+                r"""Enumerate this finite free module over ZZ, QQ or a finite ring.
+
+                Use Sage's fair Cartesian-product enumeration of scalar
+                coordinates in the retained finite basis. Every vector
+                occurs after finitely many predecessors; rational
+                denominators are included. This does not choose a ranking
+                isomorphism or decide exhaustion of a filtered subset.
+                A zero module has just its zero vector over any base.
+                No exhaustive iterator is supplied over a real field.
+
+                EXAMPLES::
+
+                    sage: from itertools import islice
+                    sage: M = ZZ ** 2
+                    sage: points = tuple(islice(M, 9))
+                    sage: assert len(set(points)) == 9
+                    sage: assert M.zero() in points
+                    sage: T = Lattices(QQ)([[1]])
+                    sage: v = next(iter(T.elements_of_norm(QQ(1)/4)))
+                    sage: assert T.q(v) == QQ(1)/4
+                    sage: assert tuple(Lattices(QQ)(0)) == (Lattices(QQ)(0).zero(),)
+                """
+                labels = self.module_generating_set()
+                if labels.cardinality() == cardinal(0):
+                    yield self.zero()
+                    return
+                ring = self.base_ring()
+                assert ring in (_owned_integers(), _owned_rationals()) or ring.is_finite() is True, (
+                    f"enumerating {self} by scalar coordinates requires ZZ, QQ or a finite ring, not {ring}"
+                )
+                assert labels in EnumeratedSets(), (
+                    f"enumerating {self} requires an enumeration of its finite basis labels {labels}"
+                )
+                basis_labels = tuple(labels)
+                for coordinates in _engine_cantor_product(
+                    _engine_ring(ring), repeat=len(basis_labels)
+                ):
+                    yield self({
+                        label: _owned_engine_element(ring, coefficient)
+                        for label, coefficient in zip(basis_labels, coordinates)
+                    })
+
             def determinant_line(self):
                 r"""The top exterior power of this finite free module."""
                 from dzack_research.preamble.categories.modules.hodge import _determinant_line
