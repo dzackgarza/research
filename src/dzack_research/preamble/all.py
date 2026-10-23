@@ -292,6 +292,9 @@ from dzack_research.preamble.categories.integral_affine_manifolds import (  # no
     SingularIntegralAffineLocalModels,
     SingularIntegralAffineSpaces,
 )
+from dzack_research.preamble.categories.integral_affine_atlases import (  # noqa: F401
+    IntegralAffineAtlases,
+)
 from dzack_research.preamble.categories.sets.finite_graded_posets import (  # noqa: F401
     FiniteGradedPosets,
 )
