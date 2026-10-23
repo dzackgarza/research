@@ -49,6 +49,21 @@ class _ComplexMapMethods:
         pass
 
 
+class _GradedComplexMapMethods(_ComplexMapMethods):
+    def __init__(self, parent, degree_maps):
+        Morphism.__init__(self, parent)
+        self._degree_maps = degree_maps
+
+    def underlying_map(self):
+        return self._degree_maps
+
+    def degree_maps(self):
+        return self._degree_maps
+
+    def degree_map(self, degree):
+        return self._degree_maps[degree]
+
+
 class _ComplexMor(CategoricalMor):
     ElementMethods = _ComplexMapMethods
 
@@ -76,35 +91,36 @@ class SimplicialComplexMor(_ComplexMor):
     r"""Simplicial maps respecting every face inclusion."""
 
     class ElementMethods(_ComplexMapMethods):
+        def vertex_map(self):
+            return self.underlying_map()
+
         def face_poset_map(self):
             pass
+
+    def _element_constructor_(self, vertex_map):
+        if (
+            vertex_map.domain() is not self.domain().vertices()
+            or vertex_map.codomain() is not self.codomain().vertices()
+        ):
+            raise ValueError("the vertex map must join the selected vertex sets")
+        return self.element_class(self, vertex_map)
 
 
 class DeltaComplexMor(_ComplexMor):
     r"""Maps commuting with the face identifications of a Delta-complex."""
 
-    class ElementMethods(_ComplexMapMethods):
+    class ElementMethods(_GradedComplexMapMethods):
         def face_poset_map(self):
             pass
+
+    def _element_constructor_(self, degree_maps):
+        return self.element_class(self, degree_maps)
 
 
 class SimplicialSetMor(_ComplexMor):
     r"""Maps commuting with faces and degeneracies in every degree."""
 
-    class ElementMethods(_ComplexMapMethods):
-        def __init__(self, parent, degree_maps):
-            Morphism.__init__(self, parent)
-            self._degree_maps = degree_maps
-
-        def underlying_map(self):
-            return self._degree_maps
-
-        def degree_maps(self):
-            return self._degree_maps
-
-        def degree_map(self, degree):
-            return self._degree_maps[degree]
-
+    class ElementMethods(_GradedComplexMapMethods):
         def face_poset_map(self):
             pass
 
