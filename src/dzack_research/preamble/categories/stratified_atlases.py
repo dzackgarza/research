@@ -52,12 +52,7 @@ class StratifiedTopologicalAtlasMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, continuous_map, chart_maps, stratum_maps):
-        if (
-            continuous_map.domain() is not self.domain().underlying_topological_space()
-            or continuous_map.codomain() is not self.codomain().underlying_topological_space()
-        ):
-            raise ValueError("the continuous map must join the selected atlas spaces")
-        return self.element_class(self, continuous_map, chart_maps, stratum_maps)
+        pass
 
     @object_level
     def identity(self):
@@ -319,12 +314,7 @@ class RealCkStratifiedAtlasMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, topological_map, chart_maps, stratum_maps):
-        if (
-            topological_map.domain() is not self.domain().underlying_topological_stratified_manifold()
-            or topological_map.codomain() is not self.codomain().underlying_topological_stratified_manifold()
-        ):
-            raise ValueError("the topological map must join the selected stratified manifolds")
-        return self.element_class(self, topological_map, chart_maps, stratum_maps)
+        pass
 
     @object_level
     def identity(self):

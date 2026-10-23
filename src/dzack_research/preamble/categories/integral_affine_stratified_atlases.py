@@ -62,12 +62,7 @@ class IntegralAffineStratifiedAtlasMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, smooth_stratified_map, chartwise_affine_maps, stratum_maps):
-        if (
-            smooth_stratified_map.domain() is not self.domain().underlying_smooth_stratified_manifold()
-            or smooth_stratified_map.codomain() is not self.codomain().underlying_smooth_stratified_manifold()
-        ):
-            raise ValueError("the smooth map must join the selected stratified manifolds")
-        return self.element_class(self, smooth_stratified_map, chartwise_affine_maps, stratum_maps)
+        pass
 
     @object_level
     def identity(self):
