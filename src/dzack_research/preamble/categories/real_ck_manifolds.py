@@ -2,6 +2,7 @@ r"""Real manifolds of one selected differentiability degree."""
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
+from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -17,8 +18,17 @@ from dzack_research.preamble.categories.manifolds import TopologicalManifolds
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 
 
+def _real_ck_degree(degree):
+    if degree == Infinity:
+        return Infinity
+    degree = _owned_integers()(degree)
+    if degree < 1:
+        raise ValueError(f"a C^k degree must be positive or infinity, not {degree}")
+    return degree
+
+
 class RealCkManifoldMor(CategoricalMor):
-    r"""Maps with the selected finite differentiability degree."""
+    r"""Maps with the selected differentiability degree."""
 
     class ElementMethods:
         def underlying_topological_morphism(self):
@@ -62,16 +72,13 @@ class _WeakenDifferentiabilityFunctor(Functor):
 
 
 class RealCkManifolds(OwnedParameterizedCategory):
-    r"""Real manifolds equipped with a selected compatible ``C^k`` atlas."""
+    r"""Real manifolds with a compatible ``C^k`` atlas, including ``k=∞``."""
 
     _MorCategory = RealCkManifoldMorCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, degree):
-        degree = _owned_integers()(degree)
-        if degree < 1:
-            raise ValueError(f"a finite C^k degree must be positive, but {degree} is not")
-        return Category.__classcall__(cls, degree)
+        return Category.__classcall__(cls, _real_ck_degree(degree))
 
     def degree(self):
         return self.parameter()
@@ -91,8 +98,8 @@ class RealCkManifolds(OwnedParameterizedCategory):
 
     @cached_method
     def forget_to(self, degree):
-        degree = _owned_integers()(degree)
-        if degree < 1 or degree > self.degree():
+        degree = _real_ck_degree(degree)
+        if degree > self.degree():
             raise ValueError(f"C^{self.degree()} can forget only to C^j with 1 <= j <= {self.degree()}")
         return _WeakenDifferentiabilityFunctor(self, RealCkManifolds(degree))
 

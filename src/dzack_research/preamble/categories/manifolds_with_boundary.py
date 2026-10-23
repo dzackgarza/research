@@ -18,8 +18,10 @@ from dzack_research.preamble.categories.manifolds import (
     SmoothManifolds,
     TopologicalManifolds,
 )
-from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.categories.real_ck_manifolds import (
+    RealCkManifolds,
+    _real_ck_degree,
+)
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
 
@@ -272,7 +274,7 @@ class SmoothManifoldsWithCorners(OwnedCategory):
 
 
 class RealCkStratifiedMor(CategoricalMor):
-    r"""Stratum-preserving maps of one selected finite differentiability degree."""
+    r"""Stratum-preserving maps of one selected differentiability degree."""
 
     class ElementMethods:
         def underlying_continuous_map(self):
@@ -322,16 +324,13 @@ class _WeakenStratifiedDifferentiabilityFunctor(Functor):
 
 
 class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
-    r"""Corner manifolds with a selected finite ``C^k`` atlas and maps."""
+    r"""Corner manifolds with a selected ``C^k`` atlas and maps, including ``k=∞``."""
 
     _MorCategory = RealCkCornerMorCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, degree):
-        degree = _owned_integers()(degree)
-        if degree < 1:
-            raise ValueError(f"a finite C^k degree must be positive, not {degree}")
-        return Category.__classcall__(cls, degree)
+        return Category.__classcall__(cls, _real_ck_degree(degree))
 
     def degree(self):
         return self.parameter()
@@ -362,8 +361,8 @@ class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
 
     @cached_method
     def forget_to(self, degree):
-        degree = _owned_integers()(degree)
-        if degree < 1 or degree > self.degree():
+        degree = _real_ck_degree(degree)
+        if degree > self.degree():
             raise ValueError(f"C^{self.degree()} can forget only to C^j with 1 <= j <= {self.degree()}")
         return _WeakenStratifiedDifferentiabilityFunctor(self, RealCkManifoldsWithCorners(degree))
 
@@ -376,16 +375,13 @@ class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
 
 
 class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
-    r"""Boundary manifolds with a selected finite ``C^k`` atlas and maps."""
+    r"""Boundary manifolds with a selected ``C^k`` atlas and maps, including ``k=∞``."""
 
     _MorCategory = RealCkBoundaryMorCategoryConstruction
 
     @staticmethod
     def __classcall__(cls, degree):
-        degree = _owned_integers()(degree)
-        if degree < 1:
-            raise ValueError(f"a finite C^k degree must be positive, not {degree}")
-        return Category.__classcall__(cls, degree)
+        return Category.__classcall__(cls, _real_ck_degree(degree))
 
     def degree(self):
         return self.parameter()
@@ -416,8 +412,8 @@ class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
 
     @cached_method
     def forget_to(self, degree):
-        degree = _owned_integers()(degree)
-        if degree < 1 or degree > self.degree():
+        degree = _real_ck_degree(degree)
+        if degree > self.degree():
             raise ValueError(f"C^{self.degree()} can forget only to C^j with 1 <= j <= {self.degree()}")
         return _WeakenStratifiedDifferentiabilityFunctor(self, RealCkManifoldsWithBoundary(degree))
 
