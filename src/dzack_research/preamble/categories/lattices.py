@@ -3041,6 +3041,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert self.module_rank().is_finite() and self.is_nondegenerate(), (
                 f"the Witt index is defined here for a nondegenerate quadratic space of finite dimension, and {self!r} is not one"
             )
+            if self.module_rank() == cardinal(0):
+                return _owned_integers().zero()
             from sage.rings.rational_field import QQ as SageQQ
             from dzack_research.preamble.categories.rings.ring_foundation import (
                 _owned_real_algebraic_numbers,
@@ -3196,6 +3198,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert all(phi.inverse()(phi(v)) == v for v in phi.domain().module_generators())
                 sage: Z = Lattices(QQ)(0)
                 sage: assert Z.witt_decomposition().codomain() is Z
+                sage: empty = Z.witt_decomposition()
+                sage: assert Z.witt_index() == ZZ.zero()
+                sage: assert empty.domain().biproduct_factor(1) is Z
+                sage: assert empty(empty.inverse()(Z.zero())) == Z.zero()
+                sage: assert empty.inverse()(empty(empty.domain().zero())) == empty.domain().zero()
                 sage: W = Lattices(QQ)([[1, 0], [0, -2]])
                 sage: assert W.witt_decomposition().domain().biproduct_factor(0).module_rank() == 0
                 sage: V = Lattices(AA)([[0, 1, 0], [1, 0, 0], [0, 0, -2]])
@@ -3241,6 +3248,16 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert self.module_rank().is_finite() and self.is_nondegenerate(), (
                 f"a Witt decomposition of {self} requires a nondegenerate finite-dimensional form"
             )
+            if self.module_rank() == cardinal(0):
+                hyperbolic = Lattices(field)("U") ** 0
+                normal = Lattices(field).orthogonal_sum((hyperbolic, self))
+                forward = normal.module_category().Mor(normal, self)(())
+                backward = self.module_category().Mor(self, normal)(())
+                module_isomorphism = normal.module_category().Core().Mor(normal, self)._from_known_inverse_pair(
+                    forward, backward,
+                )
+                isometries = normal.Isom(self)
+                return isometries.element_class(isometries, module_isomorphism)
             if field is _owned_rationals():
                 anisotropic_basis, hyperbolic_basis = (
                     lattice_engines._oscar_lattices.rational_witt_bases(self)

@@ -2288,6 +2288,22 @@ rank zero. These source specimens remain unexecuted under DEV-58.
 
 #### Maps retained by the inspected constructions
 
+The rational Witt adapter was also checked against the maintained
+[Hecke decomposition source](https://github.com/thofma/Hecke.jl/blob/master/src/QuadForm/Quad/Spaces.jl):
+its anisotropic and hyperbolic matrices use rows in the original space;
+successive hyperbolic pairs have zero squares and mutual pairing one.
+The adapter raises those rows without a transpose, and the lattice owner
+assembles the actual summand embeddings. This is a source convention
+check, not evidence of mathematical correctness from the engine.
+
+Rank zero now has a shared direct construction: the Witt index is zero,
+and the decomposition domain is the orthogonal sum of the empty
+hyperbolic space and the original zero space. The two empty generator
+maps are retained as an inverse pair at the module core. Both inverse
+laws hold because each space has only its zero point; the zero form is
+anisotropic vacuously. The construction preserves the scalar field and
+both factor maps, without invoking a rational decomposition engine.
+
 This table records the source-level map checks for the index. It does
 not replace the mathematical assertions or their pending execution.
 
