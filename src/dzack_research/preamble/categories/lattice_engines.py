@@ -107,13 +107,11 @@ def _congruence_diagonalization(lattice):
     are the images of the new basis in the original space. No transpose
     or change of scalar field is made while raising this datum.
     """
-    from sage.quadratic_forms.quadratic_form import QuadraticForm
+    from dzack_research.preamble.categories._lattice import _congruence_diagonal_form
     from dzack_research.preamble.categories.lattices import Lattices
 
     ring = lattice.base_ring()
-    diagonal, change = QuadraticForm(
-        _engine_ring(ring), _engine_component_matrix(lattice.gram_tensor())
-    ).rational_diagonal_form(return_matrix=True)
+    diagonal, change = _congruence_diagonal_form(lattice.gram_tensor())
     gram = diagonal.matrix()
     normal = Lattices(ring)([
         [_owned_engine_element(ring, entry) for entry in row]

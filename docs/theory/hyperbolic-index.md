@@ -138,9 +138,19 @@ pivots and represented by computable real expressions.
 `RR` through their closed exact real expressions. The lattice operations
 now reuse Sage's
 [`rational_diagonal_form(return_matrix=True)`](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/quadratic_form.html#sage.quadratic_forms.quadratic_form.QuadraticForm.rational_diagonal_form)
-on its private symbolic realization. Signature raises each resulting
-diagonal coefficient back into `RR` and uses that field's exact relation
-operation. An unresolved sign raises `NotImplementedError`; it contributes
+with `RR` coefficients in Sage's generic field arithmetic. Both retained
+diagonalization and signature use the same private congruence supplier.
+This is necessary already at pivot selection: Sage's generic algorithm
+tests diagonal coefficients against zero and then off-diagonal coefficients
+against zero before dividing by a pivot. These tests now call the `RR`
+relation protocol instead of Python truth conversion of `SR` relations.
+An undecided pivot comparison is refused by that protocol. No second
+congruence algorithm is implemented; see
+[Sage's computation](https://github.com/sagemath/sage/blob/develop/src/sage/quadratic_forms/quadratic_form__local_field_invariants.py).
+
+Signature counts the resulting diagonal coefficients using that same
+field's exact relation operation. An unresolved sign raises
+`NotImplementedError`; it contributes
 neither a positive, negative nor zero square. This avoids deriving an owned
 real sign from Python truth conversion of a symbolic comparison.
 
@@ -153,6 +163,14 @@ to succeed. It is not the certified-approximation algorithm of the preceding
 paragraph, and it is not a total algorithm on all computable real oracles.
 In particular, an unresolved equality needed by a pivot or a sign remains
 a computation boundary. No exhaustive real iterator is introduced.
+
+The pending off-diagonal specimen has Gram matrix
+$\left(\begin{smallmatrix}0&\pi&0\\\pi&0&0\\0&0&0\end{smallmatrix}\right)$.
+It forces the zero-diagonal pivot case and retains a radical line; its
+inertia is $(1,1)$, and the returned diagonalization must satisfy its form
+equation and both inverse composites in the original real space. This
+complements the diagonal nonalgebraic specimen below. Both remain
+unexecuted under DEV-58.
 
 The nonalgebraic specimen below and its inverse/form assertions remain
 unexecuted under DEV-58:

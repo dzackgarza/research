@@ -154,6 +154,14 @@ certified-approximation algorithm for all promised nonsingular computable
 inputs remains unimplemented. Arbitrary singular oracle inputs still admit
 no uniform zero decision.
 
+**Represented-real pivot coverage:** source inspection found that the
+congruence algorithm selected pivots over SR before checking final signs
+in RR. Both signature and retained diagonalization now use the same Sage
+algorithm with RR coefficients, so pivot equality and division refuse
+undecided owned relations. The nonalgebraic off-diagonal/radical specimen,
+form equation and both inverse composites remain unexecuted under DEV-58.
+This does not add a total arbitrary-real or certified-approximation route.
+
 **Dependency path:** exact real scalar arithmetic and relations -> congruence
 diagonalization with its map -> inertia and normalized vectors -> field
 Witt and embedding operations. No new mathematical definition is introduced;

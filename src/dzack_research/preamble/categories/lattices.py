@@ -3075,6 +3075,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: psi = R.diagonalization()
                 sage: assert R.gram_tensor().pullback(psi) == psi.domain().gram_tensor()
                 sage: assert Lattices(QQ)(0).diagonalization().domain().module_rank() == 0
+                sage: W = Lattices(RR)([[0, RR.pi(), 0], [RR.pi(), 0, 0], [0, 0, 0]])
+                sage: phi = W.diagonalization()
+                sage: assert W.gram_tensor().pullback(phi) == phi.domain().gram_tensor()
+                sage: assert W.signature_pair().first() == cardinal(1)
+                sage: assert W.signature_pair().second() == cardinal(1)
+                sage: assert all(phi(phi.inverse()(v)) == v for v in W.module_generators())
+                sage: assert all(phi.inverse()(phi(v)) == v for v in phi.domain().module_generators())
             """
             from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields
 

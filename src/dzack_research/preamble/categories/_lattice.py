@@ -1377,15 +1377,32 @@ def signature_pair(positive, negative):
     return signature_pairs().pair(cardinal(positive), cardinal(negative))
 
 
+def _congruence_diagonal_form(gram: Tensor):
+    r"""Compute Sage's diagonal form and change of basis with exact scalar tests.
+
+    For represented RR coefficients use RR itself as the coefficient
+    field of Sage's generic arithmetic. Its equality and division refuse
+    undecided predicates. Converting to SR before choosing pivots would
+    instead use symbolic truth conversion, even if the final diagonal
+    signs were later checked in RR. Other rings retain their selected
+    private engine computation.
+    """
+    from dzack_research.preamble.rings.real import RR
+
+    ring = gram.base_ring()
+    field = RR if ring is RR else _engine_ring(ring)
+    components = _engine_component_matrix(gram).change_ring(field)
+    return QuadraticForm(field, components).rational_diagonal_form(return_matrix=True)
+
+
 def _sylvester(gram: Tensor):
     r"""Return $(p,q)$ by Sylvester's law over the represented ordered fraction field."""
     field = _ordered_fraction_field(gram.base_ring())
-    engine_gram = _engine_component_matrix(gram).change_ring(field)
     from dzack_research.preamble.rings.real import RR
 
-    form = QuadraticForm(field, engine_gram)
     if gram.base_ring() is RR:
-        diagonal = form.rational_diagonal_form().matrix()
+        diagonal_form, _change = _congruence_diagonal_form(gram)
+        diagonal = diagonal_form.matrix()
         positive = negative = 0
         for entry in diagonal.diagonal():
             value = _owned_engine_element(RR, entry)
@@ -1398,6 +1415,8 @@ def _sylvester(gram: Tensor):
                     f"the sign of a real diagonal coefficient is undecided: {value}"
                 )
         return signature_pair(positive, negative)
+    engine_gram = _engine_component_matrix(gram).change_ring(field)
+    form = QuadraticForm(field, engine_gram)
     positive, negative, _radical = form.signature_vector()
     return signature_pair(int(positive), int(negative))
 
