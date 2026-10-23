@@ -1656,9 +1656,13 @@ cover the general odd `r=1` case when the complementary discriminant
 length is `n-2`. No assertion about that case follows from this theorem.
 
 The legacy method now delegates to the constructive `hyperbolic_index`.
-For each `r` from the inertia bound down, `Emb(U^r,L).is_empty()` uses
-the finite integral-overlattice and primitive-embedding decision, and
-the first affirmative Mor supplies an actual embedding. As `U^r` is
+For an even lattice, a primitive divisibility-one isotropic vector and
+its corrected Bezout partner first split off a visible `U`; repeating on
+the actual complement supplies a lower bound and an isometry. If this
+reaches the inertia bound, it is maximal. For every larger candidate `r`,
+`Emb(U^r,L).is_empty()` uses the finite integral-overlattice and
+primitive-embedding decision, and the first affirmative Mor supplies
+an actual embedding. As `U^r` is
 unimodular, formula (3) makes that embedding a direct summand;
 `orthogonal_splitting()` returns its complement and the isometry over
 the original ring. The lower candidates are unnecessary after the first

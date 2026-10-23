@@ -4538,14 +4538,57 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.hyperbolic_index()
 
         @cached_method
+        def _direct_even_hyperbolic_splitting(self):
+            r"""Split the planes found from primitive divisibility-one null vectors.
+
+            In an even lattice, a Bezout partner to such a vector has even
+            square, so its integral correction is a hyperbolic partner.
+            Repeat on the actual orthogonal complement. The result is a
+            lower bound with its isometry; only reaching the inertia bound
+            proves maximality without the complete embedding decision.
+            """
+            ring = self.base_ring()
+            assert ring is _owned_integers() and self.module_rank().is_finite()
+            plane = Lattices(ring)("U")
+            signature = self.signature_pair()
+            possible = min(int(signature.first()), int(signature.second()))
+            if possible and self.is_even() is True and self.is_isotropic() is True:
+                isotropic = self.isotropic_vector()
+                if isotropic.div() == ring.one():
+                    partner = isotropic.hyperbolic_partner()
+                    first = plane.Emb(self)((isotropic, partner)).orthogonal_splitting()
+                    complement = first.domain().biproduct_factor(1)
+                    lower_index, lower = complement._direct_even_hyperbolic_splitting()
+                    if lower_index == 0:
+                        return 1, first
+                    lower_plane = lower.domain().biproduct_factor(0)
+                    lower_inclusion = lower.domain().injection(0)
+                    complement_inclusion = first.domain().injection(1)
+                    images = (isotropic, partner) + tuple(
+                        first(complement_inclusion(lower(lower_inclusion(vector))))
+                        for vector in lower_plane.module_generators()
+                    )
+                    embedding = (plane ** (lower_index + 1)).Emb(self)(images)
+                    return lower_index + 1, embedding.orthogonal_splitting()
+            hyperbolic = plane ** 0
+            inclusion = hyperbolic.Emb(self)(())
+            zero = self.orthogonal_decomposition(
+                (inclusion, self.Aut().identity())
+            ).inverse()
+            return 0, zero
+
+        @cached_method
         def hyperbolic_index(self):
             r"""Return the largest number of orthogonal hyperbolic planes in ``self``.
 
             The integral index counts actual ``U`` summands of this lattice,
-            not summands of another lattice in its genus. For each candidate
-            rank, the general integral embedding Mor decides whether
-            ``U^r`` embeds. Every such embedding splits because ``U^r`` is
-            unimodular; descending from the rank bound proves maximality.
+            not summands of another lattice in its genus. In an even lattice,
+            primitive divisibility-one null vectors construct actual planes
+            and their complements directly. For larger candidate ranks, the
+            general integral embedding Mor decides whether ``U^r`` embeds.
+            Every such embedding splits because ``U^r`` is unimodular;
+            excluding all ranks above the constructed lower bound proves
+            maximality.
             Over a supported exact field this is the Witt index.
 
             EXAMPLES::
@@ -4573,7 +4616,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             plane = Lattices(ring)("U")
             signature = self.signature_pair()
             upper_bound = min(int(signature.first()), int(signature.second()))
-            for index in range(upper_bound, 0, -1):
+            direct_index, _direct_splitting = self._direct_even_hyperbolic_splitting()
+            for index in range(upper_bound, direct_index, -1):
                 embeddings = (plane ** index).Emb(self)
                 empty = embeddings.is_empty()
                 assert empty is True or empty is False, (
@@ -4581,7 +4625,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
                 if empty is False:
                     return ring(index)
-            return ring.zero()
+            return ring(direct_index)
 
         @cached_method
         def maximal_hyperbolic_index_splitting(self):
@@ -4590,9 +4634,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             The first factor of the domain has rank ``2*m``. Its injection,
             the complementary injection, and the inverse of the returned
             isometry retain the embeddings and projections of the splitting.
-            An integral witness is selected from the complete embedding Mor
-            only after its nonemptiness has been decided by
-            :meth:`hyperbolic_index`; ``orthogonal_splitting`` constructs
+            An integral witness comes from successive direct plane splits
+            when they attain the maximal index. Otherwise it is selected
+            from the complete embedding Mor after nonemptiness is decided
+            by :meth:`hyperbolic_index`. ``orthogonal_splitting`` constructs
             the actual complement and an inverse over the original ring.
             Field witnesses come from the existing Witt decomposition.
 
@@ -4623,12 +4668,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"a maximal hyperbolic splitting of {self} is computed here over ZZ, QQ, AA and represented RR"
             )
             index = int(self.hyperbolic_index())
+            direct_index, direct_splitting = self._direct_even_hyperbolic_splitting()
+            if index == direct_index:
+                return direct_splitting
             hyperbolic = Lattices(ring)("U") ** index
-            if index == 0:
-                inclusion = hyperbolic.Emb(self)(())
-                return self.orthogonal_decomposition(
-                    (inclusion, self.Aut().identity())
-                ).inverse()
             embedding = hyperbolic.Emb(self).an_element()
             return embedding.orthogonal_splitting()
 
