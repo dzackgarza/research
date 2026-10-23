@@ -360,6 +360,12 @@ class SimplicialComplexes(OwnedCategory):
         def star_inclusion(self, simplex):
             pass
 
+        def subdivision(self):
+            pass
+
+        def subdivision_comparison(self, subdivision):
+            pass
+
         def simplex_inclusion(self, face, simplex):
             pass
 
