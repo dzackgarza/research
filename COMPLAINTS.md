@@ -219,6 +219,17 @@ from that presentation. The off-diagonal pi, near-singular positive,
 empty and singular-form separating specimens remain unexecuted under
 DEV-58. This does not close the promised computable-real case.
 
+**Fresh norm-fibre point selection:** the zero-norm fibre previously needed
+manual admission of zero before its set computation could select a point
+over RR. The common formed-module constructor now retains that canonical
+point, and symmetric bilinear forms inherit the same construction. Source
+inspection also found unhashable exact-real arguments without Sage's
+required cache-key protocol at the existing cached square-fibre method.
+The real scalar now supplies a parent-and-expression presentation key;
+real equality stays partial and the scalar stays unhashable. The fresh
+zero-fibre point, inclusion, nonemptiness and repeated-construction
+specimens remain unexecuted under DEV-58.
+
 **Dependency path:** exact real scalar arithmetic and relations -> congruence
 diagonalization with its map -> inertia and normalized vectors -> field
 Witt and embedding operations. No new mathematical definition is introduced;

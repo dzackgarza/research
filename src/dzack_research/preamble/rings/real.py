@@ -274,6 +274,17 @@ class ExactRealNumber(FieldElement):
         r"""Return the exact symbolic expression representing this real."""
         return self._expression
 
+    def _cache_key(self) -> tuple[ExactRealField, Expression]:
+        r"""Supply Sage's cache key for this immutable expression presentation.
+
+        Real equality remains partial, so this element stays unhashable.
+        Sage's cached constructions can instead use the parent and the
+        exact stored expression. Distinct expressions denoting the same
+        real may occupy separate cache entries; a cache hit establishes
+        neither a new equality decision nor a normal form for real values.
+        """
+        return self.parent(), self._expression
+
     def is_real(self) -> bool:
         return True
 

@@ -2100,13 +2100,21 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def square_fibre(self, square):
-            r"""The fibre of the selected norm ``v |-> q(v)`` at ``square``."""
+            r"""The fibre of the selected norm ``v |-> q(v)`` at ``square``.
+
+            When the supplied value is decided zero, retain the module's
+            zero as a point of this fibre. The identity q(0)=0 provides
+            this point without searching or enumerating the module.
+            """
             values = self.value_module()
             square = values(square)
-            return OwnedSets().equalizer_construction(
+            fibre = OwnedSets().equalizer_construction(
                 OwnedSets().Mor(self, values)(lambda vector: self.norm(vector)),
                 OwnedSets().Mor(self, values)(lambda vector: square),
             )
+            if (square == values.zero()) is True:
+                fibre.object()(self.zero())
+            return fibre
 
         def elements_of_norm(self, value):
             r"""Return the full norm fibre as a set with its inclusion.
@@ -2130,9 +2138,10 @@ class FormModules(OwnedCategoryOverBaseRing):
                 sage: from dzack_research.preamble.rings.real import RR
                 sage: V = Lattices(RR)([[1]])
                 sage: null_vectors = V.elements_of_norm(RR.zero())
-                sage: point = null_vectors(V.zero())
-                sage: assert null_vectors.an_element() == point
+                sage: assert null_vectors.an_element() == V.zero()
                 sage: assert null_vectors.inclusion()(null_vectors.an_element()) == V.zero()
+                sage: assert null_vectors.is_empty() is False
+                sage: assert V.square_fibre(RR.zero()).object() is null_vectors
                 sage: F = V.elements_of_norm(RR.pi())
                 sage: point = F(V.representation_vector(RR.pi()))
                 sage: assert F.an_element() == point
@@ -2687,16 +2696,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             return BilinearFormModules(self.base_ring()).an_object()
 
         class ParentMethods:
-            @cached_method
-            def square_fibre(self, square):
-                r"""The fibre of ``v |-> b(v,v)``, retaining its defining maps."""
-                values = self.value_module()
-                square = values(square)
-                return OwnedSets().equalizer_construction(
-                    OwnedSets().Mor(self, values)(lambda vector: self.b(vector, vector)),
-                    OwnedSets().Mor(self, values)(lambda vector: square),
-                )
-
             def square_fibre_action(self, square, *, orbit_relation=None):
                 r"""The orthogonal action on the complete square fibre."""
                 from dzack_research.preamble.categories.group.g_objects import GObjects

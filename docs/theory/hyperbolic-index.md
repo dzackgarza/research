@@ -1228,7 +1228,7 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Indexed requirement | Current source owner and computation | Coverage still requiring evidence or further computation |
 | --- | --- | --- |
 | Anisotropy and nonzero isotropic witnesses | `form_modules.py`: `is_anisotropic`; `lattices.py`: `is_isotropic`, `isotropic_vector`; rational PARI decision and real congruence routes | Exact ZZ/QQ, AA and applicable represented RR cases have source routes; general real-oracle zero decisions are not supplied |
-| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Returned forms and inverse maps need terminal execution; the separate certified-approximation route remains unimplemented |
+| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Returned forms and inverse maps need terminal execution; represented-real nondegenerate signature has an enclosure route, while general approximation inputs and bases remain open |
 | Norm fibres, including zero | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: `elements_of_norm`, `representation_vector` | Set inclusion and membership are separate from finding a nonzero point; definite, rank-zero and nonzero split binary integral fibres have finite source routes |
 | Scalar extension of objects and arrows | `FormBaseChanges`, `FormedModuleMorphism.base_change`, `LatticeIsometryMethods.base_change`, module scalar-extension functor | Scalar-valued forms have source routes with actual ring maps and both arrow components; arbitrary value-module extensions remain outside the current computation |
 | Embedding sets, decisions and witnesses | `lattice_morphisms.py`: embedding Mor, `_emptiness_decision`, `an_element`, integral-overlattice factorization and field Witt criterion | Nondegenerate finite ZZ/QQ/AA and applicable RR endpoints have source routes; backend coverage and witness transport remain unexecuted |
@@ -1562,14 +1562,31 @@ at the general set owner, independently of lattices.
 
 The same retained member now supplies `an_element()` before any iterator
 is requested. Choosing an element of an inhabited subset needs no
-enumeration of its universe. For example, admit zero into
-`L.elements_of_norm(0)`, or a computed `L.representation_vector(a)` into
-`L.elements_of_norm(a)` for nonzero $a$. Subsequent point selection uses
+enumeration of its universe. At the common formed-module owner,
+`square_fibre(0)` now retains the canonical zero vector using $q(0)=0$.
+Consequently a fresh `L.elements_of_norm(0)` supplies zero and decides
+nonemptiness without manual admission or real-vector iteration. The
+symmetric-bilinear category inherits this same norm-fibre construction;
+it has no separate realization that loses the chosen zero.
+For nonzero $a$, one can admit a computed `L.representation_vector(a)`
+into `L.elements_of_norm(a)`. Subsequent point selection uses
 that actual admitted vector and the fibre inclusion, including over RR.
 This supplies no iterator, cardinality or sampling distribution. With no
 retained member the complete countable search still has its stated
 termination limits. Pending real positive-subset and norm-fibre specimens
-exercise this distinction without enumerating real points.
+exercise this distinction without enumerating real points. The zero-norm
+specimen requests a point directly from the fresh fibre, checks its
+inclusion and nonemptiness, and checks that `square_fibre(0)` retains the
+same equalizer object. It remains unexecuted under DEV-58.
+
+The real scalar's cache integration is a separate requirement of this
+existing cached construction. `ExactRealNumber` remains unhashable because
+its equality is partial. It now implements Sage's documented
+[`_cache_key` protocol](https://doc.sagemath.org/html/en/reference/misc/sage/misc/cachefunc.html)
+using its actual parent and stored exact expression. That key identifies
+the presentation used for a cached computation; it does not decide real
+equality, and two different expressions for the same real may use
+different entries. No new cache or equality algorithm is introduced.
 
 Searches in this note have explicit termination reasons: rational witness
 search starts only after existence is decided. Integral exclusion uses either
