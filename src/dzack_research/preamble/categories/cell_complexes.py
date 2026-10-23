@@ -429,6 +429,7 @@ class SimplicialSets(OwnedCategory):
         pass
 
     def from_face_degeneracy_maps(self, simplices, faces, degeneracies):
+        r"""Select graded ``simplices[n]`` and operators ``faces[n,i]``, ``degeneracies[n,i]``."""
         return _object_of(
             self,
             defining_simplices=simplices,
@@ -457,16 +458,16 @@ class SimplicialSets(OwnedCategory):
             return self._defining_degeneracies
 
         def simplices(self, dimension):
-            pass
+            return self._defining_simplices[dimension]
 
         def simplex_category(self):
             pass
 
         def face_map(self, dimension, index):
-            pass
+            return self._defining_faces[dimension, index]
 
         def degeneracy_map(self, dimension, index):
-            pass
+            return self._defining_degeneracies[dimension, index]
 
         def realization(self):
             pass
