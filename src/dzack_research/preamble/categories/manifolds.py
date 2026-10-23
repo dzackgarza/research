@@ -630,6 +630,12 @@ class TopologicalManifolds(OwnedCategory):
                 name=f"Atlas charts of {self}",
             )
 
+        def open_submanifold(self, open_inclusion):
+            pass
+
+        def open_submanifold_inclusion(self, open_manifold):
+            pass
+
         def transition_map(
             self,
             source_label,
@@ -1946,6 +1952,12 @@ class ComplexManifolds(OwnedCategory):
 
     class ParentMethods:
         def underlying_smooth_manifold(self):
+            pass
+
+        def open_submanifold(self, open_inclusion):
+            pass
+
+        def open_submanifold_inclusion(self, open_manifold):
             pass
 
         def complex_dimension(self):
