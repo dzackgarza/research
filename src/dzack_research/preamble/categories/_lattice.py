@@ -1420,6 +1420,56 @@ def _sylvester(gram: Tensor):
     return signature_pair(int(positive), int(negative))
 
 
+def _nonsingular_real_signature(gram: Tensor):
+    r"""Compute inertia from convergent Arb enclosures of a nonsingular Gram.
+
+    Protected computation for finite symmetric forms already placed as
+    nondegenerate over RR. Closed expressions must admit convergent Arb
+    evaluation. No singular-input decision or diagonalizing map is supplied.
+    See docs/theory/hyperbolic-index.md for the inverse-norm perturbation
+    proof. Sage supplies ball evaluation, rational inversion and inertia;
+    this routine composes those operations with the proved stopping test.
+    """
+    from sage.matrix.constructor import matrix
+    from sage.rings.real_arb import RealBallField
+    from dzack_research.preamble.rings.real import RR
+
+    size = int(_gram_rank(gram))
+    if size == 0:
+        return signature_pair(0, 0)
+    expressions = {
+        (i, j): _engine_element(RR, gram[i, j])
+        for i in range(size) for j in range(i, size)
+    }
+    precision = 128
+    while True:
+        balls = {
+            indices: RealBallField(precision)(expression)
+            for indices, expression in expressions.items()
+        }
+        precision *= 2
+        # A domain-sensitive expression may have an unbounded enclosure
+        # at low precision. Refine it; never interpret that as a sign.
+        if not all(ball.is_finite() for ball in balls.values()):
+            continue
+        approximate = matrix(QQ, size, size)
+        errors = matrix(QQ, size, size)
+        for (i, j), ball in balls.items():
+            lower, upper = ball.endpoints()
+            lower = lower.exact_rational()
+            upper = upper.exact_rational()
+            approximate[i, j] = approximate[j, i] = (lower + upper) / 2
+            errors[i, j] = errors[j, i] = (upper - lower) / 2
+        error = max(sum(row) for row in errors.rows())
+        if approximate.determinant() == 0:
+            continue
+        inverse = approximate.inverse()
+        inverse_norm = max(sum(abs(entry) for entry in row) for row in inverse.rows())
+        if inverse_norm * error < 1:
+            positive, negative, _radical = QuadraticForm(QQ, approximate).signature_vector()
+            return signature_pair(int(positive), int(negative))
+
+
 def _signature_pair_of_gram(gram: Tensor):
     r"""Return $(p,q)$ for a Gram presentation, or ``None`` when it does not determine it.
 

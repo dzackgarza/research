@@ -210,9 +210,14 @@ The note gives a complete rational inverse-norm stopping test and proof
 under nonsingularity, avoiding numerical eigenvalue multiplicity tests.
 FLINT documents its real LDL success test for positive definiteness, not
 general indefinite inertia. No general absence of other backends is
-asserted. Approximation admission, the signature computation and a basis
-from that presentation remain unimplemented; this source finding does
-not close the promised computable-real case.
+asserted. Finite symmetric forms already placed as nondegenerate over RR
+now route signature through Arb enclosures, rational midpoint matrices,
+their exact row-sum error bound and the inverse-norm stopping test. This
+source construction requires convergent evaluation of the represented
+expressions; it does not supply general approximation admission or a basis
+from that presentation. The off-diagonal pi, near-singular positive,
+empty and singular-form separating specimens remain unexecuted under
+DEV-58. This does not close the promised computable-real case.
 
 **Dependency path:** exact real scalar arithmetic and relations -> congruence
 diagonalization with its map -> inertia and normalized vectors -> field

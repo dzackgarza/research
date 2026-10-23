@@ -186,17 +186,47 @@ expressions. Its relation evaluator has a finite per-call precision budget; it s
 general Cauchy-sequence input operation. Closed expressions admitting
 effective Arb enclosures are one possible input source for the test above;
 general program-supplied approximations need their own scalar presentation.
-Neither input route is yet connected to this signature computation.
+The existing closed-expression route is now connected at
+`BilinearFormModules(RR).Symmetric().signature_pair` for finite forms
+already placed in `FormModules(RR).Nondegenerate()`. Its private
+`_nonsingular_real_signature` computation evaluates upper-triangular
+entries with Arb, reflects the same enclosures across the diagonal and
+converts outward-rounded endpoints to their exact rational values.
+These are Sage's documented
+[`RealBall.endpoints`](https://doc.sagemath.org/html/en/reference/rings_numerical/sage/rings/real_arb.html#sage.rings.real_arb.RealBall.endpoints)
+and
+[`RealNumber.exact_rational`](https://doc.sagemath.org/html/en/reference/rings_numerical/sage/rings/real_mpfr.html#sage.rings.real_mpfr.RealNumber.exact_rational)
+operations; converting the finite endpoints exactly retains their outward
+error bounds.
+The midpoint gives a symmetric rational matrix $A$; the maximum row sum
+of the half-widths gives $e\ge\|G-A\|_\infty$. It doubles working
+precision until $A$ is nonsingular and $\|A^{-1}\|_\infty e<1$, then
+uses Sage's rational inertia computation. The proof above applies with
+this measured error $e\to0$ instead of the prescribed $r2^{-n}$.
+Nonfinite intermediate enclosures are refined; unsupported expression
+evaluation errors propagate. Termination requires convergent enclosures
+for the supplied expressions, not merely their syntactic admission into
+RR. No arbitrary fixed precision budget is imposed by this computation.
+
+Unplaced or degenerate forms retain the existing congruence route; the
+approximation computation is never used to decide their singularity.
+Written separating specimens include the off-diagonal pi form, the
+positive form with Gram matrix
+$\left(\begin{smallmatrix}1&\pi\\\pi&\pi^2+2^{-512}\end{smallmatrix}\right)$,
+the empty form and the singular diagonal form $\operatorname{diag}(1,0)$.
+They remain unexecuted under DEV-58. General program-supplied
+approximations are not yet admitted or connected to this computation.
 
 The backend search must also respect the actual documented contracts:
 [FLINT's real-matrix LDL routine](https://flintlib.org/doc/arb_mat.html)
 returns success for positive definiteness, while its real-matrix module
 directs eigenvalue computations to complex ball matrices. That success
 test alone is not a general indefinite-inertia decision. The rational
-inverse test avoids requiring an eigenvalue implementation, but integrating
-the approximation data and returning a basis from that presentation remain
-open work. No new
-spectral routine or real-number representation is implemented by this note.
+inverse test avoids requiring an eigenvalue implementation. General
+approximation admission and a returned basis from that presentation remain
+open work. The computation uses maintained ball arithmetic and rational
+matrix operations; it adds neither a spectral routine nor a real-number
+representation.
 
 **Current represented-real route.** This computation takes elements of
 `RR` through their closed exact real expressions. The lattice operations

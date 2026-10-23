@@ -2750,7 +2750,29 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 return self.vector_of_sign(-1)
 
             def signature_pair(self):
-                r"""Return the Sylvester inertia pair of a finite symmetric form."""
+                r"""Return the Sylvester inertia pair of a finite symmetric form.
+
+                Nondegenerate represented-real forms use Arb enclosures and
+                an exact rational inverse-norm stopping test. This needs
+                convergent enclosures of the closed scalar expressions;
+                it does not decide singularity or return a basis.
+
+                EXAMPLES::
+
+                    sage: V = Lattices(RR).Nondegenerate()([[0, RR.pi()], [RR.pi(), 0]])
+                    sage: assert V.signature_pair().first() == cardinal(1)
+                    sage: assert V.signature_pair().second() == cardinal(1)
+                    sage: a = RR.pi()
+                    sage: P = Lattices(RR).Nondegenerate()([[1, a], [a, a*a + RR(2)**(-512)]])
+                    sage: assert P.signature_pair().first() == cardinal(2)
+                    sage: assert P.signature_pair().second() == cardinal(0)
+                    sage: E = Lattices(RR).Nondegenerate()(0)
+                    sage: assert E.signature_pair().first() == cardinal(0)
+                    sage: assert E.signature_pair().second() == cardinal(0)
+                    sage: S = Lattices(RR)([[1, 0], [0, 0]])
+                    sage: assert S.signature_pair().first() == cardinal(1)
+                    sage: assert S.signature_pair().second() == cardinal(0)
+                """
                 assert self.module_rank().is_finite(), (
                     f"the signature of {self} is computed here only at finite rank, "
                     f"but it has rank {self.module_rank()}"
@@ -2763,9 +2785,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     f"but its values lie in {self.value_module()}"
                 )
                 from dzack_research.preamble.categories._lattice import (
+                    _nonsingular_real_signature,
                     _signature_pair_of_gram,
                 )
+                from dzack_research.preamble.rings.real import RR
 
+                if (self.base_ring() is RR
+                        and self in FormModules(RR).Nondegenerate()):
+                    return _nonsingular_real_signature(numerical)
                 return _signature_pair_of_gram(numerical)
 
             def signature(self):
