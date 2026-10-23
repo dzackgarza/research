@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -119,7 +120,7 @@ class CellComplexes(OwnedCategory):
         pass
 
     def from_attaching_maps(self, cells, attaching_maps):
-        pass
+        return _object_of(self, cell_family=cells, attaching_maps=attaching_maps)
 
     def from_intersection_strata(self, component_inclusions, intersection_strata):
         r"""Select the dual complex of connected component intersections."""
@@ -150,6 +151,17 @@ class CellComplexes(OwnedCategory):
         return _ComplexRealizationFunctor(self, TopologicalSpaces())
 
     class ParentMethods:
+        def __init__(self, cell_family, attaching_maps, **rest):
+            self._cell_family = cell_family
+            self._attaching_maps = attaching_maps
+            super().__init__(**rest)
+
+        def cell_family(self):
+            return self._cell_family
+
+        def attaching_maps(self):
+            return self._attaching_maps
+
         def cells(self, dimension):
             pass
 
@@ -233,18 +245,26 @@ class PolytopalComplexes(OwnedCategory):
         pass
 
     def from_cells(self, polytopes, face_maps):
-        pass
+        return _object_of(self, polytopes=polytopes, face_maps=face_maps)
 
     @cached_method
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
 
     class ParentMethods:
+        def __init__(self, polytopes, face_maps, **rest):
+            self._polytopes = polytopes
+            self._face_maps = face_maps
+            super().__init__(**rest)
+
+        def placed_polytopes(self):
+            return self._polytopes
+
         def cells(self, dimension):
             pass
 
         def face_maps(self):
-            pass
+            return self._face_maps
 
         def face_poset(self):
             pass
@@ -279,13 +299,24 @@ class SimplicialComplexes(OwnedCategory):
         pass
 
     def from_simplices(self, vertices, simplices):
-        pass
+        return _object_of(self, vertices=vertices, defining_simplices=simplices)
 
     @cached_method
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
 
     class ParentMethods:
+        def __init__(self, vertices, defining_simplices, **rest):
+            self._vertices = vertices
+            self._defining_simplices = defining_simplices
+            super().__init__(**rest)
+
+        def vertices(self):
+            return self._vertices
+
+        def defining_simplices(self):
+            return self._defining_simplices
+
         def simplices(self, dimension):
             pass
 
@@ -334,15 +365,23 @@ class DeltaComplexes(OwnedCategory):
         pass
 
     def from_faces(self, simplices, face_maps):
-        pass
+        return _object_of(self, defining_simplices=simplices, face_maps=face_maps)
 
     @cached_method
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
 
     class ParentMethods:
+        def __init__(self, defining_simplices, face_maps, **rest):
+            self._defining_simplices = defining_simplices
+            self._face_maps = face_maps
+            super().__init__(**rest)
+
+        def defining_simplices(self):
+            return self._defining_simplices
+
         def face_maps(self):
-            pass
+            return self._face_maps
 
         def face_poset(self):
             pass
@@ -374,13 +413,33 @@ class SimplicialSets(OwnedCategory):
         pass
 
     def from_face_degeneracy_maps(self, simplices, faces, degeneracies):
-        pass
+        return _object_of(
+            self,
+            defining_simplices=simplices,
+            defining_faces=faces,
+            defining_degeneracies=degeneracies,
+        )
 
     @cached_method
     def realization(self):
         return _ComplexRealizationFunctor(self, TopologicalSpaces())
 
     class ParentMethods:
+        def __init__(self, defining_simplices, defining_faces, defining_degeneracies, **rest):
+            self._defining_simplices = defining_simplices
+            self._defining_faces = defining_faces
+            self._defining_degeneracies = defining_degeneracies
+            super().__init__(**rest)
+
+        def defining_simplices(self):
+            return self._defining_simplices
+
+        def defining_faces(self):
+            return self._defining_faces
+
+        def defining_degeneracies(self):
+            return self._defining_degeneracies
+
         def simplices(self, dimension):
             pass
 
