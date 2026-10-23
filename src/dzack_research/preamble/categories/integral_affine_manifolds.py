@@ -211,17 +211,24 @@ class IntegralAffineLocalIsomorphismMor(CategoricalMor):
     r"""Local affine isomorphisms with invertible integral linear parts."""
 
     class ElementMethods:
+        def __init__(self, parent, affine_morphism):
+            Morphism.__init__(self, parent)
+            self._affine_morphism = affine_morphism
+
         def underlying_affine_morphism(self):
-            pass
+            return self._affine_morphism
 
         def underlying_smooth_morphism(self):
-            pass
+            return self._affine_morphism.underlying_smooth_morphism()
+
+        def _call_(self, point):
+            return self._affine_morphism(point)
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, affine_morphism):
-        pass
+        return self.element_class(self, affine_morphism)
 
     @object_level
     def identity(self):
@@ -703,14 +710,23 @@ class SingularIntegralAffineLocalModelMor(CategoricalMor):
     r"""Pointed local maps preserving the affine regular loci."""
 
     class ElementMethods:
+        def __init__(self, parent, pointed_map, singular_locus_map, regular_affine_map):
+            Morphism.__init__(self, parent)
+            self._pointed_map = pointed_map
+            self._singular_locus_map = singular_locus_map
+            self._regular_affine_map = regular_affine_map
+
         def underlying_pointed_map(self):
-            pass
+            return self._pointed_map
 
         def singular_locus_morphism(self):
-            pass
+            return self._singular_locus_map
 
         def regular_affine_morphism(self):
-            pass
+            return self._regular_affine_map
+
+        def _call_(self, point):
+            return self._pointed_map(point)
 
         def underlying_singular_affine_morphism(self):
             pass
@@ -719,7 +735,12 @@ class SingularIntegralAffineLocalModelMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, pointed_map, singular_locus_map, regular_affine_map):
-        pass
+        return self.element_class(
+            self,
+            pointed_map,
+            singular_locus_map,
+            regular_affine_map,
+        )
 
     @object_level
     def identity(self):
