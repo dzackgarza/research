@@ -580,6 +580,19 @@ class _SingularLocusSubobjectFunctor(Functor):
         )
 
 
+class _RegularLocusSubobjectFunctor(Functor):
+    r"""Send each regular complement to its selected topological inclusion."""
+
+    def __init__(self, source):
+        super().__init__(source, TopologicalSpaces().MonomorphismArrowCategory())
+
+    def _apply_object(self, space):
+        return self.codomain().object(space.regular_locus_inclusion())
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class SingularIntegralAffineSpaces(OwnedCategory):
     r"""Spaces with a selected singular locus and affine regular complement."""
 
@@ -645,6 +658,10 @@ class SingularIntegralAffineSpaces(OwnedCategory):
     @cached_method
     def singular_locus_functor(self):
         return _SingularLocusSubobjectFunctor(self)
+
+    @cached_method
+    def regular_locus_inclusions(self):
+        return _RegularLocusSubobjectFunctor(self)
 
     class ParentMethods:
         def __init__(
@@ -793,6 +810,10 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
     @cached_method
     def singular_locus_functor(self):
         return _SingularLocusSubobjectFunctor(self)
+
+    @cached_method
+    def regular_locus_inclusions(self):
+        return _RegularLocusSubobjectFunctor(self)
 
     class ParentMethods:
         def __init__(self, local_models, **rest):
