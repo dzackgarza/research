@@ -450,6 +450,69 @@ class FormedModuleMorphism:
     def map_value(self, value):
         return _mapped_value(self.domain(), self.codomain(), self.value_morphism(), value)
 
+    def base_change(self, ring_map: Morphism | CategoricalArrow) -> "FormedModuleMorphism":
+        r"""Extend both the module map and the value map along ``R -> S``.
+
+        A formed morphism is a pair ``(f,h)`` satisfying the form square.
+        Tensoring that square extends both components, as in
+        ``Lattices/Valued/BaseChange.lean:baseChangeBilWForm``. The existing
+        object construction currently computes scalar-valued forms. For
+        these, the value map is multiplication by ``h(1)``, so its extension
+        is multiplication by the image of ``h(1)`` in S. The result retains
+        the literal scalar-extended endpoints and the module component's
+        original map and scalar-extension functor.
+
+        The result is a formed morphism. Tensoring need not preserve an
+        embedding: a nonflat scalar change can destroy injectivity. The
+        isometry specialization separately transports its inverse pair.
+        Value-module extensions outside the existing object computation
+        remain unsupported; they are not replaced by scalar values.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)([[1]])
+            sage: values = ZZ.regular_module()
+            sage: f = L.module_category().Mor(L, L)(lambda label: 2*L.module_generator(label))
+            sage: h = values.module_category().Mor(values, values)(lambda label: 4*values.module_generator(label))
+            sage: a = FormModules(ZZ).Mor(L, L)((f, h))
+            sage: scalar_map = ZZ.fraction_field_map()
+            sage: b = a.base_change(scalar_map)
+            sage: V = L.base_change(scalar_map)
+            sage: assert b.domain() is V and b.codomain() is V
+            sage: assert b.map_value(QQ(1)) == QQ(4)
+            sage: assert b.module_morphism().scalar_extension_of() is a.module_morphism()
+            sage: assert b.preserves_forms() is True
+            sage: assert (a*a).base_change(scalar_map) == b*b
+            sage: S = ZZ.quotient_ring(ZZ.ideal(2))
+            sage: T = Lattices(ZZ)([[4]])
+            sage: j = T.Emb(L)((2*L.module_generators()[0],))
+            sage: reduced = j.base_change(S.quotient_map())
+            sage: assert reduced.map_value(S.one()) == S.one()
+            sage: assert reduced.is_injective() is False
+            sage: assert reduced.preserves_forms() is True
+        """
+        source, target = self.domain(), self.codomain()
+        ring = source.base_ring()
+        if target.base_ring() is not ring or ring_map.domain() is not ring:
+            raise ValueError(
+                "a formed morphism is extended along a map out of its common scalar ring"
+            )
+        if ring_map.is_identity() is True:
+            return self
+        extension = Modules(ring).scalar_extension(ring_map)
+        changed_source, changed_target = extension(source), extension(target)
+        module_map = extension(self.module_morphism())
+        multiplier = _base_change_scalar(
+            ring_map, self.map_value(ring.one())
+        )
+        values = _represented_value_module(changed_source)
+        value_map = values.module_category().Mor(values, values)(
+            lambda label: values.scalar_multiple(multiplier, values.module_generator(label))
+        )
+        return FormModules(ring_map.codomain()).Mor(changed_source, changed_target)(
+            (module_map, value_map)
+        )
+
     def is_injective(self) -> bool:
         r"""Return injectivity of the retained underlying-module component."""
         return self.module_morphism().is_injective()

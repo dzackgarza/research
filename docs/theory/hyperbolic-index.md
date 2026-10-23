@@ -918,6 +918,66 @@ zero vector over $\mathbb Z$ or a field is not primitive. The vector's
 `is_primitive()` operation now delegates this map from the free module of
 rank one to the general module-morphism operation.
 
+#### Scalar extension of the maps, not only the forms
+
+For scalar-valued formed modules over a commutative ring $R$, a morphism
+is a pair $(f,h)$ with $f:M\to N$ and $h:R\to R$ linear and
+$h(B_M(x,y))=B_N(fx,fy)$. A lattice morphism has $h=1_R$.
+For a ring map $\varphi:R\to S$, scalar extension sends both maps to
+$f_S=1_S\otimes f$ and $h_S=1_S\otimes h$, using the canonical
+identification $S\otimes_RR\simeq S$ for the values. The formal
+operation is `baseChangeBilWForm` in
+`LeanCategories/Lattices/Valued/BaseChange.lean`; its two defining
+components are the scalar extensions of the module and value maps.
+
+**Proposition.** This pair preserves the extended bilinear forms.
+
+**Proof.** Assume the displayed form equation and $\varphi:R\to S$;
+prove $h_S(B_{M,S}(u,v))=B_{N,S}(f_Su,f_Sv)$.
+
+1. **$h(r)=r h(1)$ for every $r\in R$.** This is linearity on the
+   regular module $R$. Hence $h_S$ is multiplication by $\varphi(h(1))$.
+2. **The required equation holds on pure tensors.** For $s,t\in S$
+   and $x,y\in M$, its two sides respectively equal
+   $st\varphi(h(B_M(x,y)))$ and $st\varphi(B_N(fx,fy))$.
+   These are equal by the assumed form equation.
+3. **Q.E.D.** Pure tensors generate the scalar extension and both
+   sides are bilinear, so step 2 proves the equation on all pairs.
+
+`FormedModuleMorphism.base_change(phi)` now retains this pair. Its
+underlying map uses the existing module scalar-extension functor; its
+value map multiplies by the image of `map_value(R.one())`. For example,
+on $\langle1\rangle$ the pair $(x\mapsto2x,r\mapsto4r)$ extends
+with both components, rather than becoming only multiplication by two.
+The current object computation supports scalar-valued forms; unsupported
+value-module extensions remain a computation boundary.
+
+This operation returns a formed morphism, not an unconditional embedding.
+The embedding $\langle4\rangle\to\langle1\rangle$ defined by
+$v\mapsto2e$ becomes zero after scalar extension to $\mathbb F_2$.
+Its value map is still the identity, and its form equation still holds.
+Flatness supplies the usual sufficient hypothesis for preserving
+injectivity; an inverse pair is preserved along every scalar change.
+The existing isometry specialization retains that pair separately.
+The multiplier, composition and nonflat-injectivity specimens in the
+formed-morphism docstring remain unexecuted under DEV-58.
+
+#### Maps retained by the inspected constructions
+
+This table records the source-level map checks for the index. It does
+not replace the mathematical assertions or their pending execution.
+
+| Construction | Inspected source | Retained datum and boundary |
+| --- | --- | --- |
+| Norm fibre | `form_modules.py`: `square_fibre`, `elements_of_norm`; `set_categories.py`: equalizer construction | Equalizer inclusion into the original module; zero remains in the zero fibre; no countability inference |
+| Form scalar extension | `form_modules.py`: `_formed_module_base_change`, `FormBaseChanges` | Original formed module, actual ring map and source-to-restriction unit; current computation is scalar-valued |
+| Formed morphism scalar extension | `form_modules.py`: `FormedModuleMorphism.base_change`; `scalar_change.py`: `_apply_morphism` | Both components of the form square; the module component retains its original morphism and extension functor; injectivity is not presumed |
+| Isometry scalar extension | `lattice_morphisms.py`: `LatticeIsometryMethods.base_change` | Forward and inverse maps over the same extended endpoints, combined in the module core |
+| Finite coordinate subset and embedding filter | `framed_free_modules.py`: `coordinate_subset`; `lattice_morphisms.py`: `with_generator_images_in` | Inclusion into the original module and inclusion into the original embedding set; members retain evaluation and both endpoints |
+| Orthogonal complement | `lattice_morphisms.py`: `orthogonal_complement`; `form_modules.py`: general pairing-kernel route | Full integral kernel over ZZ, or the general module kernel, with inclusion and restricted form; no direct-sum conclusion is presumed |
+| Splitting of a supplied summand | `lattice_morphisms.py`: `orthogonal_splitting`; `lattices.py`: `orthogonal_decomposition` | Original first summand and its specified embedding, complement inclusion, and isometry with inverse over the original ring |
+| Field Witt decomposition and field isometry | `lattices.py`: `witt_decomposition`; `lattice_morphisms.py`: field `Isom` decision and witness | QQ/AA endpoints, form equation and inverse maps; the Witt domain retains both summands and their module inclusions and projections |
+
 ### Which tools each construction actually needs
 
 | Route | Required computation beyond the shared module, form and morphism constructions | Optional alternatives or accelerations |
