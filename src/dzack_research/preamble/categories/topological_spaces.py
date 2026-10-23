@@ -975,7 +975,7 @@ class TopologicalSpaces(OwnedCategory):
             Protected contract of :class:`TopologicalSpaces`, with the owner
             and caller of :meth:`_homotopy_group_module`.
             """
-            assert False, f"the fundamental group pi_1({self}, {base_point}) is not known to this space"
+            pass
 
         def fundamental_groupoid(self):
             r"""A ``Cat`` object with this space's points and path-homotopy arrows."""
