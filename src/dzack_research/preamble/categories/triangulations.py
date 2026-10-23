@@ -39,6 +39,11 @@ class ChosenTriangulationMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, simplicial_map):
+        if (
+            simplicial_map.domain() is not self.domain().simplicial_complex()
+            or simplicial_map.codomain() is not self.codomain().simplicial_complex()
+        ):
+            raise ValueError("the simplicial map must join the selected triangulation sources")
         return self.element_class(self, simplicial_map)
 
     @object_level
@@ -83,6 +88,10 @@ class ChosenTriangulations(OwnedParameterizedCategory):
 
     def on(self, simplicial_complex, realization_map, simplex_inclusions):
         r"""Select ``T``, its simplex inclusions, and ``|T| -> K``."""
+        if simplicial_complex not in SimplicialComplexes():
+            raise TypeError(f"{simplicial_complex} is not a simplicial complex")
+        if realization_map.codomain() is not self.target():
+            raise ValueError("the realization map must land in the selected target")
         return _object_of(
             self,
             target=self.target(),
