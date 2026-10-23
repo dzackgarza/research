@@ -25,6 +25,19 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.rings.real import RR
 
 
+class _CanonicalAffineSpaceFunctor(Functor):
+    r"""Use a real vector space as its canonically based affine space."""
+
+    def __init__(self, dimension):
+        super().__init__(RealVectorSpaces(dimension), RealAffineSpaces())
+
+    def _apply_object(self, vector_space):
+        pass
+
+    def _apply_morphism(self, linear_map):
+        pass
+
+
 class RealVectorSpaces(OwnedParameterizedCategory):
     r"""Full category of real vector spaces of one fixed finite dimension."""
 
@@ -50,6 +63,10 @@ class RealVectorSpaces(OwnedParameterizedCategory):
     def on(self, vector_space):
         r"""Place the exact real vector space in its dimension stratum."""
         pass
+
+    @cached_method
+    def affinization(self):
+        return _CanonicalAffineSpaceFunctor(self.dimension())
 
 
 class RealAffineSpaceMor(CategoricalMor):
