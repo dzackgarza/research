@@ -199,6 +199,12 @@ class CellComplexes(OwnedCategory):
         def is_regular(self):
             pass
 
+        def is_simplicial(self):
+            pass
+
+        def is_delta_complex(self):
+            pass
+
         def regularization(self):
             pass
 
