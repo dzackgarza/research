@@ -621,6 +621,24 @@ For example the first projection from `<1> orthogonal_sum <1>` kills the second
 vector of square one. Consequently this construction does not supply
 categorical lattice products or coproducts for form-preserving morphisms.
 
+A supplied orthogonal summand embedding `j: T -> L` gives a splitting
+without a search:
+
+```python
+phi = j.orthogonal_splitting()
+```
+
+The result is the isometry `T orthogonal_sum j.orthogonal_complement() -> L`.
+It is assembled from `j` and the complement's inclusion, so its first factor
+is the supplied source and its forward map on that factor is `j` itself.
+The underlying module projections of `phi.domain()`, composed with
+`phi.inverse()`, give the two projections from `L`. A nondegenerate source
+suffices over a field; a unimodular source suffices over `ZZ`. A primitive
+integral embedding alone does not suffice: the vector `(1,1)` in
+`diag(1,1)` and its perpendicular `(1,-1)` span an index-two sublattice.
+The inverse must exist over the original ring. Failure of integral
+invertibility is not repaired by silently extending scalars.
+
 Norm fibres are sets with their inclusions:
 
 ```python

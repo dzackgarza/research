@@ -519,6 +519,74 @@ class LatticeEmbeddingMethods:
         )
         return target.subobject_on(embedded_basis)
 
+    def orthogonal_splitting(self):
+        r"""Return ``S orthogonal_sum S_perp -> L`` for this summand embedding.
+
+        For ``j:S -> L``, form the kernel ``S_perp`` of the pairing
+        ``L -> S.dual_module()``. Assemble ``j`` and the retained kernel
+        inclusion using the ambient orthogonal-decomposition construction.
+        The first factor is the original ``S``, with its original embedding,
+        not an isometric replacement. The result supports inversion and
+        retains the module injections and projections of its domain.
+
+        The hypothesis is that these two embeddings give a direct sum over
+        the original scalar ring. Over a field, nondegeneracy of ``S``
+        suffices; integrally, a unimodular ``S`` suffices. Primitivity alone
+        does not suffice integrally. If the assembled module map is not
+        invertible over that ring, its inverse computation raises rather
+        than replacing the lattice by its rational span. This construction
+        neither searches for an embedding nor proves maximality.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: A = Lattices(ZZ)([[2]])
+            sage: L = U + A
+            sage: j = U.Emb(L)(L.module_generators()[:2])
+            sage: phi = j.orthogonal_splitting()
+            sage: S = phi.domain()
+            sage: assert phi.codomain() is L
+            sage: assert S.biproduct_factors()[0] is U
+            sage: i = S.injection(0)
+            sage: assert all(phi(i(v)) == j(v) for v in U.module_generators())
+            sage: assert all(phi(phi.inverse()(v)) == v for v in L.module_generators())
+
+        A primitive integral image can have a nontrivial gluing quotient:
+
+        .. MATH::
+
+            L=\langle1,1\rangle,\quad j(1)=(1,1),\quad
+            j(S)^\perp=\mathbb Z(1,-1).
+
+        Their sum has index two, so it is not an integral splitting.
+        The same two subspaces do split after base change to ``QQ``::
+
+            sage: P = Lattices(ZZ)([[1, 0], [0, 1]])
+            sage: T = Lattices(ZZ)([[2]])
+            sage: v = sum(P.module_generators(), P.zero())
+            sage: j = T.Emb(P)((v,))
+            sage: K = j.orthogonal_complement()
+            sage: D = T + K
+            sage: a = D.from_coproduct_cocone((j, K.inclusion()), codomain=P)
+            sage: assert a.is_surjective() is False
+            sage: Q = Lattices(QQ)([[1, 0], [0, 1]])
+            sage: S = Lattices(QQ)([[2]])
+            sage: jQ = S.Emb(Q)((sum(Q.module_generators(), Q.zero()),))
+            sage: psi = jQ.orthogonal_splitting()
+            sage: assert all(psi(psi.inverse()(v)) == v for v in Q.module_generators())
+
+        The zero source gives the decomposition ``0 orthogonal_sum L``::
+
+            sage: Z = Lattices(ZZ)(0)
+            sage: phi = Z.Emb(U)(()).orthogonal_splitting()
+            sage: assert phi.domain().biproduct_factors()[0] is Z
+            sage: assert phi.codomain() is U
+        """
+        complement = self.orthogonal_complement()
+        return self.codomain().orthogonal_decomposition(
+            (self, complement.inclusion())
+        ).inverse()
+
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.
 
