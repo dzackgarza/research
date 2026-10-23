@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.integral_affine_manifolds import IntegralAffineManifolds
 from dzack_research.preamble.categories.manifolds import SmoothManifolds
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -85,9 +86,27 @@ class IntegralAffineAtlases(OwnedCategory):
     def an_object(self):
         pass
 
-    def on(self, smooth_manifold, affine_model, chart_domains, affine_charts, transition_maps):
+    def on(
+        self,
+        smooth_manifold,
+        affine_model,
+        chart_domains,
+        chart_domain_inclusions,
+        affine_charts,
+        overlap_inclusions,
+        transition_maps,
+    ):
         r"""Select charts and affine transitions on the exact smooth manifold."""
-        pass
+        return _object_of(
+            self,
+            smooth_manifold=smooth_manifold,
+            affine_model=affine_model,
+            chart_domains=chart_domains,
+            chart_domain_inclusions=chart_domain_inclusions,
+            affine_charts=affine_charts,
+            overlap_inclusions=overlap_inclusions,
+            transition_maps=transition_maps,
+        )
 
     @cached_method
     def forget(self):
@@ -98,40 +117,60 @@ class IntegralAffineAtlases(OwnedCategory):
         return _AtlasMaximalizationFunctor()
 
     class ParentMethods:
+        def __init__(
+            self,
+            smooth_manifold,
+            affine_model,
+            chart_domains,
+            chart_domain_inclusions,
+            affine_charts,
+            overlap_inclusions,
+            transition_maps,
+            **rest,
+        ):
+            self._smooth_manifold = smooth_manifold
+            self._affine_model = affine_model
+            self._chart_domains = chart_domains
+            self._chart_domain_inclusions = chart_domain_inclusions
+            self._affine_charts = affine_charts
+            self._overlap_inclusions = overlap_inclusions
+            self._transition_maps = transition_maps
+            super().__init__(**rest)
+
         def underlying_smooth_manifold(self):
-            pass
+            return self._smooth_manifold
 
         def affine_model(self):
-            pass
+            return self._affine_model
 
         def chart_domains(self):
-            pass
+            return self._chart_domains
 
         def chart_domain_inclusion(self, chart):
             r"""Return the selected open inclusion of a chart domain."""
-            pass
+            return self._chart_domain_inclusions[chart]
 
         def affine_charts(self):
-            pass
+            return self._affine_charts
 
         def affine_chart(self, chart):
             r"""Return the affine map from its exact open domain to the model."""
-            pass
+            return self._affine_charts[chart]
 
         def transition_maps(self):
-            pass
+            return self._transition_maps
 
         def overlap_inclusion(self, source_chart, target_chart):
             r"""Return the overlap's inclusion into the source chart domain."""
-            pass
+            return self._overlap_inclusions[source_chart, target_chart]
 
         def transition_map(self, source_chart, target_chart):
             r"""Return the integral-affine map on the specified overlap."""
-            pass
+            return self._transition_maps[source_chart, target_chart]
 
         def transition_linear_part(self, source_chart, target_chart):
             r"""Return the transition's induced map of the selected lattice."""
-            pass
+            return self.transition_map(source_chart, target_chart).linear_part()
 
         def maximal_atlas(self):
             pass
