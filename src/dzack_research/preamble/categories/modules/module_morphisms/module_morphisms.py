@@ -32,6 +32,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     PrincipalIdealDomains,
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedRings,
     _engine_ring,
     _enumerated_ring_elements,
@@ -102,12 +103,46 @@ def _integral_preimage_solver(morphism, ring):
     when ``t`` is not in the image: the Smith form ``D = U f V`` reduces
     the equation to ``d_i y_i = (U t)_i``, solvable exactly when each
     ``d_i`` divides its right-hand side, and then ``x = V y``.
+
+    Over an exact field, use maintained matrix rank and linear solving
+    directly. Equality of the coefficient and augmented ranks decides
+    consistency. No solver exception is interpreted as inconsistency;
+    undecided exact scalar operations propagate. Represented RR uses RR
+    coefficients during elimination, retaining its equality protocol.
     """
 
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
     assert ring in OwnedRings(), f"cannot solve a linear system integrally over {ring}: the coefficients must lie in a ring, but {ring} is not a ring"
     assert morphism.parent() in MatrixSpaces(ring), f"cannot solve f(x) = t integrally for f = {morphism} over {ring}: f must be a map of finite free {ring}-modules with chosen bases, but it lies in {morphism.parent()}"
+
+    if ring in OwnedFields() and ring.is_exact() is True:
+        from sage.modules.free_module_element import vector
+        from sage.symbolic.ring import SR
+        from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+
+        backend = _engine_matrix(morphism)
+        if backend.base_ring() is SR:
+            backend = backend.change_ring(ring)
+        field = backend.base_ring()
+        rank = backend.rank()
+        source_labels = tuple(morphism.domain().module_generating_set())
+
+        def solve_field(target):
+            values = tuple(ring(value) for value in target)
+            assert len(values) == backend.nrows(), (
+                "a linear-system target must have one coordinate per codomain basis vector"
+            )
+            right_hand_side = vector(field, tuple(_engine_element(ring, value) for value in values))
+            if backend.augment(right_hand_side).rank() != rank:
+                return None
+            solution = backend.solve_right(right_hand_side)
+            return morphism.domain().linear_combination({
+                label: _owned_engine_element(ring, coefficient)
+                for label, coefficient in zip(source_labels, solution, strict=True)
+            })
+
+        return solve_field
 
     smith_data = morphism.smith_form()
     smith = smith_data["diagonal"]
@@ -1413,6 +1448,28 @@ class ModuleMorphismMethods:
         have the same labels or vectors as those generators.  The represented
         solver retains the domain coordinates, including when the codomain
         is a restriction of scalars from a fraction field.
+
+        Over exact fields this uses rank and linear solving directly,
+        retaining represented RR comparisons during elimination.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.rings.real import RR
+            sage: V = RR ** 2
+            sage: e, f = V.module_generators()
+            sage: A = V.module_category().Mor(V, V)((RR.pi()*e, V.zero()))
+            sage: x = A.preimage(e)
+            sage: assert x.parent() is V and A(x) == e
+            sage: assert A.is_in_image(f) is False
+            sage: Z = RR ** 0
+            sage: z = Z.module_category().Mor(Z, V)(())
+            sage: assert z.preimage(V.zero()) == Z.zero()
+            sage: assert z.is_in_image(f) is False
+            sage: M = ZZ ** 1
+            sage: u = M.module_generators()[0]
+            sage: twice = M.module_category().Mor(M, M)((2*u,))
+            sage: assert twice.is_in_image(u) is False
+            sage: assert twice.preimage(2*u) == u
         """
         self._require_established_linearity("preimage computation")
         domain = self.domain()

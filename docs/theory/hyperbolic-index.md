@@ -1611,6 +1611,36 @@ The existing isometry specialization retains that pair separately.
 The multiplier, composition and nonflat-injectivity specimens in the
 formed-morphism docstring remain unexecuted under DEV-58.
 
+#### Exact field preimages and affine solving
+
+For a linear map $f:V\to W$ between finite-dimensional vector spaces over
+an exact field, with coefficient matrix $A$ in the specified bases, a
+target $b$ is in its image exactly
+when $\operatorname{rank}[A\mid b]=\operatorname{rank}A$. Indeed the
+augmented column adds no dimension precisely when it lies in the span of
+the original columns. In the consistent case an exact linear solver
+returns the coordinates of an actual preimage in the original $V$.
+
+The finite-free module preimage computation now uses these maintained
+rank and solving operations directly over exact fields; see
+[Sage's linear-system interface](https://www.sagemath.org/doc/tutorial/tour_linalg.html).
+This repairs a source obstruction for represented RR: the former route
+required a PID Smith computation, whose presentation guard rejects SR
+as the selected PID engine. The new field route computes over RR itself,
+so elimination uses its exact scalar comparisons and divisions. It
+returns absence only after the augmented-rank test proves inconsistency.
+An unavailable scalar operation or solver error propagates, rather than
+being caught and interpreted as an empty affine fibre.
+
+The original module arrow supplies both bases and the returned point's
+parent. Existing selected lifts retain precedence. The PID Smith route
+continues to enforce divisibility for integral modules: multiplication by
+two on $\mathbb Z$ has no preimage of one. Pending owner-local specimens
+cover a rank-one map with coefficient $\pi$ over RR, a target outside its
+image, zero source and the integral divisibility distinction. These serve
+the affine pairing equations used by `hyperbolic_partner`; they remain
+unexecuted under DEV-58.
+
 #### Maps retained by the inspected constructions
 
 This table records the source-level map checks for the index. It does

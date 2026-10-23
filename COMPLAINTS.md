@@ -172,6 +172,18 @@ undecided owned relations. The nonalgebraic off-diagonal/radical specimen,
 form equation and both inverse composites remain unexecuted under DEV-58.
 This does not add a total arbitrary-real or certified-approximation route.
 
+**Exact field preimages:** source tracing found another obstruction in
+`_integral_preimage_solver`: finite-free real preimages required Smith
+normalization, but `_selected_presentation_smith_backend` rejects SR as
+a PID engine. The existing preimage owner now uses maintained rank and
+linear-system operations over exact fields, computing RR elimination
+with its own scalar protocol. An inconsistent augmented rank gives
+absence; unknown scalar or solver failures propagate. Original source
+coordinates and selected-lift precedence are retained. The pi, inconsistent
+right-hand side, zero-source and integral-divisibility specimens remain
+unexecuted under DEV-58. This supports affine pairing and partner equations
+without constructing any maximal hyperbolic splitting.
+
 **Dependency path:** exact real scalar arithmetic and relations -> congruence
 diagonalization with its map -> inertia and normalized vectors -> field
 Witt and embedding operations. No new mathematical definition is introduced;
