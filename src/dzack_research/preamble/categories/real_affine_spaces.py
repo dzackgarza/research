@@ -163,8 +163,8 @@ class RealAffineSpaces(OwnedCategory):
     def an_object(self):
         pass
 
-    def on(self, model_vector_space, point_set, translation_action):
-        r"""Select a free transitive action of the model space on ``point_set``."""
+    def on(self, model_vector_space, point_set, translation_action, difference, point):
+        r"""Select an affine torsor with its difference map and nonempty witness."""
         pass
 
     @cached_method
