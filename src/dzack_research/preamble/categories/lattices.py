@@ -3218,7 +3218,9 @@ class Lattices(OwnedCategoryOverBaseRing):
               spinor genus is then one isometry class, because an indefinite
               spinor genus of rank at least 3 is one proper class (Cassels,
               Ch. 11, Thm. 1.4), so ``L`` represents ``a``.  Otherwise ``a``
-              can be a spinor exception, and the answer is the proposition.
+              can be a spinor exception. In this remaining case, the finite
+              integral-overlattice and primitive-embedding decision for
+              ``<a> -> L`` decides representation, including the exceptions.
             - Over ``AA``, ``a != 0``: a positive value is represented exactly
               when the positive index of inertia is nonzero, and likewise
               for a negative value and the negative index.
@@ -3236,6 +3238,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 True
                 sage: C([[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 2, 0], [0, 0, 0, 2]]).represents(1)
                 False
+                sage: assert C(0).represents(0) is False and C(0).represents(1) is False
             """
             from sage.rings.rational_field import QQ as SageQQ
             from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
@@ -3247,6 +3250,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             rank = int(self.module_rank())
             match ring:
+                case _ if rank == 0:
+                    return False
                 case _ if value == ring.zero():
                     return self.is_isotropic()
                 case _ if ring is _owned_real_algebraic_numbers():
@@ -3273,7 +3278,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _ if rank >= 4 or self.spinor_genus_count() == ring.one():
                     return True
                 case _:
-                    return AtomicProposition("represents", self, value)
+                    line = Lattices(ring)([[value]])
+                    return negation(line.Emb(self).is_empty())
 
         def representation_vector(self, value) -> Lattices.ElementMethods:
             r"""Return a nonzero ``x`` in this lattice with ``b(x, x) = value``; raise ``ValueError`` if none exists.
@@ -3293,10 +3299,13 @@ class Lattices(OwnedCategoryOverBaseRing):
               because ``b(e, -)`` has kernel ``QQ e cap L = ZZ e``; so
               ``b(x e + y f, x e + y f) = y (2 d x + c y)`` with ``c = b(f, f)``,
               and every solution has ``y | a`` and ``2 d x = a / y - c y``.
-            - Over ``ZZ``, indefinite of rank at least 3 with ``a != 0``: no
-              cited construction of an integral point is available; the
-              ``TODO.md`` node ``higher-rank-integral-lattice-representation``
-              owns it.
+            - Over ``ZZ``, indefinite of rank at least 3 with ``a != 0``:
+              compose a finite integral overlattice inclusion of ``<a>``
+              with a primitive embedding into this lattice. The finite
+              discriminant bilinear form supplies the overlattices, OSCAR
+              supplies the primitive decision, and the existing integral
+              Isom objects supply target transport. This is a finite
+              classification route, not an unbounded vector search.
 
             EXAMPLES::
 
@@ -3315,6 +3324,15 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: D = Lattices(AA)([[2]])
                 sage: assert D.represents(AA(-1)) is False
                 sage: assert D.q(D.representation_vector(AA(3))) == AA(3)
+                sage: L = C("U") + C([[1]])
+                sage: x = L.representation_vector(3)
+                sage: assert x.parent() is L and x != L.zero() and L.q(x) == ZZ(3)
+                sage: M = C([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, -1]])
+                sage: assert M.q(M.representation_vector(5)) == ZZ(5)
+                sage: C(0).representation_vector(1)  # doctest: +ELLIPSIS
+                Traceback (most recent call last):
+                ...
+                ValueError: ... does not represent 1
             """
             from sage.rings.rational_field import QQ as SageQQ
             from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
@@ -3326,6 +3344,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             rank = int(self.module_rank())
             match ring:
+                case _ if rank == 0:
+                    found = None
                 case _ if value == ring.zero():
                     return self.isotropic_vector()
                 case _ if ring is _owned_real_algebraic_numbers():
@@ -3347,10 +3367,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 case _ if self.represents(value) is False:
                     found = None
                 case _:
-                    assert False, (
-                        f"{self!r} is indefinite of rank {rank}, and no cited construction of an integral vector of square {value} is "
-                        "available; the TODO.md node higher-rank-integral-lattice-representation owns it"
-                    )
+                    line = Lattices(ring)([[value]])
+                    embedding = line.Emb(self).an_element()
+                    found = embedding(line.module_generators()[0])
             if found is None:
                 raise ValueError(f"{self!r} does not represent {value}")
             return found

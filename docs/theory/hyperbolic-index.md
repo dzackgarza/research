@@ -434,7 +434,7 @@ search in the binary input size.
 A coefficient bound for an equivalent form is different from the embedding
 bound (5). The following bound is fully numeric and supplies the former.
 It is deliberately large. It neither bounds the integral change of basis
-nor supplies the still-required constant in (5).
+nor supplies the constant needed to evaluate the direct matrix bound (5).
 
 Let $G$ be a nonsingular symmetric integral matrix of size $n\ge1$, and put
 $D=|\det G|$. Define
@@ -840,6 +840,81 @@ are recorded in the classifier docstring and remain unexecuted under
 DEV-58. Failure of primitive embedding still does not exclude a
 nonprimitive integral embedding.
 
+#### General integral existence through integral overlattices
+
+**Proposition (saturation reduction).** For nondegenerate integral
+lattices $T,L$ of finite rank,
+
+$$
+\operatorname{Emb}_{\mathbb Z}(T,L)\ne\varnothing
+\quad\Longleftrightarrow\quad
+\text{some integral overlattice }T\subseteq T'\subseteq T^\vee
+\text{ admits a primitive embedding into }L.
+$$
+
+The family of integral overlattices is finite and includes $T$ itself.
+It is computed by `T.integral_overlattice_inclusions()`, through
+bilinear-isotropic subgroups of the discriminant bilinear form. This
+uses integrality, not evenness; an even source can have an odd integral
+overlattice. The correspondence and its inclusions are the constructions
+in `LeanCategories/Lattices/Valued/Gluing.lean`.
+
+**Proof.** Assume the stated finite-rank nondegeneracy hypotheses;
+prove the equivalence and finiteness.
+
+1. **Given $j:T\hookrightarrow L$, form the saturation
+   $P=j_{\mathbb Q}(T_{\mathbb Q})\cap L$.** This is a primitive
+   sublattice of $L$: if a nonzero integer multiple of $x\in L$
+   lies in the rational subspace, then $x$ lies there too.
+2. **Pull $P$ back along $j_{\mathbb Q}$ to an integral overlattice
+   $T'$ of $T$.** The form on $P$ is integral because $P\subseteq L$.
+   For $x\in T'$ and $t\in T$, $B_T(x,t)=B_L(j_{\mathbb Q}x,jt)$
+   is integral; hence $T'\subseteq T^\vee$. The restriction
+   $T'\to L$ has image $P$ and is therefore primitive by step 1.
+3. **Conversely, compose an overlattice inclusion with a primitive
+   embedding $T'\hookrightarrow L$.** Both are injective and preserve
+   the form, so their composite is an element of
+   $\operatorname{Emb}_{\mathbb Z}(T,L)$.
+4. **There are finitely many $T'$.** Nondegeneracy makes
+   $T^\vee/T$ finite. Each overlattice corresponds to a subgroup of
+   this finite group, with integrality equivalent to vanishing of the
+   discriminant bilinear pairing on that subgroup.
+5. **Q.E.D.** Steps 1–3 prove the equivalence and step 4 gives the
+   required finite family.
+
+The general integral embedding decision now composes these existing
+computations. For an indefinite target, it exhausts the integral
+overlattice inclusions, using the target-specific primitive decision
+when the source rank is smaller. In equal rank, a primitive embedding
+is an isometry, so it uses the integral `Isom` decision. The existence
+decision retains a successful inclusion and its nonempty map set;
+witness selection obtains the latter map and composes the actual
+underlying module maps. Definite targets keep their finite-shell route.
+Neither this reduction nor its implementation searches an unbounded
+sequence of vector boxes. Runtime execution and engine coverage remain
+unverified under DEV-58.
+
+For example $U(4)\hookrightarrow U(2)$ has index two, by
+$e\mapsto2e$, $f\mapsto f$. It is not an isometry and cannot be a
+primitive embedding in equal rank, but the finite reduction finds the
+intermediate overlattice. The odd lattice $\langle1\rangle$ does
+not embed in the even lattice $U(2)$. Both cases are specimens of the
+decision, and the first also checks witness endpoints, the form equation
+and index. Extra predicates on embeddings are not preserved by passing
+to a representative of an embedding class; their complete decision
+still requires additional work.
+
+For a nonzero integer $a$, $\langle a\rangle\hookrightarrow L$
+is equivalent to a nonzero integral vector of square $a$. Thus the same
+finite classification now supplies `L.representation_vector(a)` in
+indefinite rank at least three, by evaluating the returned embedding on
+the source generator. It also decides the remaining ternary
+`L.represents(a)` cases after the existing local and single-spinor-genus
+shortcuts. No local solvability assertion is used as a witness, and no
+unbounded vector search replaces the missing construction. The
+higher-rank norm and ternary distinguishing specimens remain pending
+under their TODO owner.
+
 For $T=U$, the same set is the subset of $L\times L$ defined by
 $q(e)=q(f)=0$ and $B(e,f)=1$. For $U^{\perp r}$ it is the subset of the
 finite product indexed by the specified hyperbolic basis satisfying all
@@ -883,8 +958,9 @@ computations is then necessary to enumerate the affirmatively recognized
 elements. Neither procedure decides emptiness in general.
 
 Searches in this note have explicit termination reasons: rational witness
-search starts only after existence is decided, and integral exclusion uses a
-finite bound guaranteed to contain a solution whenever one exists. A time
+search starts only after existence is decided. Integral exclusion uses either
+a finite bound guaranteed to contain a solution or the finite integral-
+overlattice and primitive-embedding reduction. A time
 budget expiring yields an unfinished search, not an empty set. An arbitrary
 extra predicate on embeddings need not preserve either termination guarantee:
 bound (6) guarantees a small representation of the form, not a small
@@ -1167,13 +1243,14 @@ nor sampling continuously in a real box.
 A coordinate box alone supplies no global exclusion theorem. To conclude
 that no embedding exists after exhausting it, its bound must be guaranteed
 to contain a representative whenever one exists, including any additional
-conditions. Without such a bound, `T.Emb(L)` iteration or `an_element()`
-provides an exhaustive witness search over `ZZ` or `QQ` under the stated
-finite-rank nondegeneracy hypotheses. For two nondegenerate rational
-endpoints, the preceding Witt-index decision rejects the empty case before
-`an_element()` starts its search. General integral exclusion still lacks
-such a termination guarantee. The effective constant in (6) remains a required
-computational dependency, not a caller-selected search limit.
+conditions. The complete `T.Emb(L)` iterator remains available over `ZZ`
+and `QQ`, but iteration alone is not an emptiness decision. For nondegenerate
+rational endpoints, witness selection uses the Witt-index decision first.
+For nondegenerate integral endpoints, it uses the finite-shell or integral-
+overlattice classification route. The effective constant in (6) remains
+needed to evaluate that particular direct box bound; the classification
+route supplies a separate unconstrained existence decision. Arbitrary extra
+predicates require their own termination argument.
 
 The interfaces are defined at the [lattice owner](../../src/dzack_research/preamble/categories/lattices.py),
 [embedding-space owner](../../src/dzack_research/preamble/categories/lattice_morphisms.py),

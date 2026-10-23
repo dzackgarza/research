@@ -1966,6 +1966,57 @@ class LatticeEmbeddingMor(CategoricalMor):
             raise ValueError(f"there is no primitive embedding of {self.domain()} into {self.codomain()}")
         return self._reconstruct_target_primitive_embedding(data)
 
+    @cached_method
+    def _integral_embedding_factorization(self) -> tuple[LatticeEmbeddingMethods, CategoricalMor] | bool:
+        r"""Find a finite overlattice factorization, or decide there is none.
+
+        For nondegenerate ZZ endpoints of finite rank and an indefinite target,
+        every embedding factors through an integral overlattice of its
+        source followed by a primitive embedding into the target. The
+        discriminant bilinear form supplies every such overlattice,
+        including odd ones and the identity extension. Exhaust this finite
+        family, using the existing target-specific primitive decision in
+        smaller rank and the integral Isom decision in equal rank.
+
+        Return the actual source inclusion and the nonempty embedding or
+        isometry set for its codomain, or ``False`` after finite exclusion.
+        This private computation belongs to this Mor owner; its callers
+        are the emptiness decision and witness selection below. It does
+        not construct the final target transport merely to decide existence.
+        See the saturation proof in ``docs/theory/hyperbolic-index.md``.
+        """
+        source, target = self.domain(), self.codomain()
+        assert (
+            source.base_ring() is _owned_integers()
+            and target.base_ring() is _owned_integers()
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+            and not target.is_definite()
+        ), "the finite integral embedding factorization needs nondegenerate ZZ endpoints and an indefinite target"
+        if source.module_rank() > target.module_rank():
+            return False
+        for inclusion in source.integral_overlattice_inclusions():
+            enlarged = inclusion.codomain()
+            if enlarged.module_rank() == target.module_rank():
+                isometries = enlarged.Isom(target)
+                empty = isometries.is_empty()
+                assert empty is True or empty is False, (
+                    "the integral Isom decision must decide this nondegenerate finite-rank pair"
+                )
+                if empty is False:
+                    return inclusion, isometries
+            else:
+                embeddings = enlarged.Emb(target)
+                data = embeddings._target_primitive_embedding_data()
+                assert data is not None, (
+                    "the primitive embedding decision must cover this smaller-rank integral overlattice"
+                )
+                if data is not False:
+                    return inclusion, embeddings
+        return False
+
     def _reconstruct_target_primitive_embedding(self, data):
         target_prime_gram, source_prime_gram, embedding_matrix = data
         from dzack_research.preamble.categories.lattices import Lattices
@@ -2231,6 +2282,11 @@ class LatticeEmbeddingMor(CategoricalMor):
         dimension ``dim(T)-dim(S)``; Witt cancellation gives the isometry.
         This is an emptiness decision, independent of any witness search.
 
+        For finite-rank nondegenerate integral endpoints, the definite
+        target uses finite shells; an indefinite target uses the finite
+        integral-overlattice factorization below. Primitive absence alone
+        is never used as general integral exclusion.
+
         EXAMPLES::
 
             sage: P = Lattices(QQ)([[1, 0], [0, 1]])
@@ -2242,6 +2298,11 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: S = U.twist(ZZ(2))
             sage: assert S.Isom(U).is_empty() is True
             sage: assert S.Emb(U).is_empty() is False
+            sage: V = U.twist(ZZ(2))
+            sage: W = U.twist(ZZ(4))
+            sage: assert W.Isom(V).is_empty() is True
+            sage: assert W.Emb(V).is_empty() is False
+            sage: assert Lattices(ZZ)([[1]]).Emb(V).is_empty() is True
         """
         source = self.domain()
         target = self.codomain()
@@ -2290,6 +2351,14 @@ class LatticeEmbeddingMor(CategoricalMor):
                     _signature = self.codomain().signature_pair()
                     positive, negative = _signature.first(), _signature.second()
                     return not any(inclusion.codomain().embeds_in_even_unimodular(positive, negative) for inclusion in self.even_overlattice_inclusions())
+        if (
+            source.base_ring() is _owned_integers()
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            return self._integral_embedding_factorization() is False
         return None
 
     def _real_algebraic_embedding(self):
@@ -2341,9 +2410,12 @@ class LatticeEmbeddingMor(CategoricalMor):
         spaces over ZZ or QQ use their complete embedding iterator. That
         search terminates when an embedding exists. For finite nondegenerate
         rational endpoints, the Witt-index emptiness decision first excludes
-        the empty case, so this route terminates. Over ZZ an empty search
-        may run forever. Use a justified finite candidate set when integral
-        exclusion by exhaustion is required.
+        the empty case, so this route terminates. Nondegenerate integral
+        endpoints now use finite integral overlattices followed by primitive
+        embeddings (or equal-rank isometries); the actual module maps are
+        composed to retain the original source and target. A remaining ZZ
+        search with degenerate target may run forever. Extra predicates
+        need their own complete search or valid bound.
 
         EXAMPLES::
 
@@ -2372,6 +2444,12 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: assert Z.Emb(V).is_empty() is False
             sage: assert Z.Emb(V).an_element().domain() is Z
             sage: assert V.Emb(Z).is_empty() is True
+            sage: P = U.twist(ZZ(2))
+            sage: S = U.twist(ZZ(4))
+            sage: j = S.Emb(P).an_element()
+            sage: assert j.domain() is S and j.codomain() is P
+            sage: assert P.gram_tensor().pullback(j) == S.gram_tensor()
+            sage: assert j.index() == cardinal(2)
         """
         if self.domain().module_rank() == cardinal(0):
             return self(())
@@ -2426,6 +2504,24 @@ class LatticeEmbeddingMor(CategoricalMor):
                 f"lattice {self.codomain()}, but no even overlattice of {self.domain()} "
                 f"yielded a primitive embedding"
             )
+        if (
+            source.base_ring() is _owned_integers()
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            factorization = self._integral_embedding_factorization()
+            if factorization is False:
+                raise ValueError(f"there is no lattice embedding of {source} into {target}")
+            inclusion, embeddings = factorization
+            primitive = embeddings.an_element()
+            composite = primitive.module_morphism() * inclusion.module_morphism()
+            embedding = self.element_class(self, composite)
+            embedding.validate_linearity(check=False)
+            embedding.validate_form_preservation(check=False)
+            embedding.validate_injectivity(check=False)
+            return embedding
         if (
             source.base_ring() in (_owned_integers(), _owned_rationals())
             and source.module_rank().is_finite()

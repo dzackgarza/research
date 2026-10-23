@@ -14,7 +14,7 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
-### General integral embedding search needs a complete exclusion route
+### Constrained integral embedding search still needs applicable exclusion routes
 
 The hyperbolic-splitting dependency index requires all isometric embeddings,
 including nonprimitive images, with actual source and target maps. For example,
@@ -30,15 +30,21 @@ nondegenerate endpoints have a terminating emptiness decision from
 `w(L orthogonal_sum -T) >= dim(T)`. Rational witness search first rejects the
 empty case; AA witnesses use exact diagonalization and matching signs.
 
-**Remaining computation:** complete exclusion for general integral embeddings,
-and for constrained subsets where required. Exhausting a finite coordinate
-box excludes only that box. The Li–Margulis representation bound in
+General nondegenerate integral embedding existence now has a finite source
+route: exhaust all integral overlattices of the source via the discriminant
+bilinear form, then decide primitive embedding into the target (or integral
+isometry in equal rank). The saturation proof and the actual map
+composition are in the theory note. Runtime and engine coverage remain
+unverified under DEV-58.
+
+**Remaining computation:** complete exclusion for constrained subsets where
+required. Exhausting a finite coordinate box excludes only that box. The Li–Margulis representation bound in
 [the theory note](docs/theory/hyperbolic-index.md#effective-search-bounds-for-embeddings)
 requires a usable dimension-dependent constant; extra conditions need their
 own valid bound or complete solver. The current source has neither a general
 integral representation bound nor a general constrained exclusion procedure.
-Definite integral enumeration and the even-overlattice construction remain
-applicable partial routes, not complete coverage. A numeric coefficient
+Definite integral enumeration and the full integral-overlattice reduction
+are alternative unconstrained routes; the latter includes odd overlattices. A numeric coefficient
 bound for some integrally equivalent Gram representative, linear in the
 absolute determinant at each fixed rank, is now computed
 from rank and determinant by `integral_representative_coefficient_bound`;
@@ -930,46 +936,26 @@ Tracked at [research #409](https://github.com/dzackgarza/research/issues/409) an
 The two stay separate classes until that resolution category exists; a group built by `FreeGroupQuotients()` from finite data is placed in both.
 **Consumers:** `FreeGroupQuotients()`, `CoxeterGroups()`, `quotient_by_relators`, `descend_homomorphism`.
 
-### Indefinite integral lattices of rank at least three have no exact represented-value witness backend
+### Integral norm classification still lacks its terminal distinguishing specimens
 
-For an integral lattice `L` and integer `n`, `representation_vector(n)` must return an integral vector `v in L` with `b(v, v) = n`, or establish that none exists.
-Rational solvability of `b(v, v) = n` is a different problem.
-`Lattices(ZZ)` answers `represents(n)` and `representation_vector(n)` for `n = 0` (PARI `qfsolve`, cleared to a primitive integral vector), for definite `L` (`vectors_of_square`, inside the region of Cassels, *Rational Quadratic Forms*, Ch. 9, §1, (1.2)--(1.3)) and for indefinite `L` of rank 2 (PARI `qfbsolve` when `L tensor QQ` is anisotropic, a divisor search in the basis of a primitive isotropic vector and its Bezout partner otherwise).
-For indefinite `L` of rank at least 3 and `n != 0`, `represents(n)` reads the local conditions from `Genus.local_representations`; it answers `True` in rank at least 4 (Cassels, Ch. 9, Thm.
-1.5) and in rank 3 when the genus has one spinor genus (Cassels, Ch. 9, Thm.
-1.3 and Ch. 11, Thm.
-1.4).
+The former source gap in higher-rank nonzero integral norm witnesses and
+ternary representation decisions now has a finite-classification route.
+`<n>.Emb(L)` exhausts the integral overlattices of `<n>` and uses the
+maintained primitive classifier or the integral Isom decision. Its witness
+composes the actual inclusion and target map, so evaluation on the source
+generator returns a vector of the original lattice. The saturation proof
+in [the theory note](docs/theory/hyperbolic-index.md#general-integral-existence-through-integral-overlattices)
+explains completeness; the procedure does not replace integral points by
+rational points or an unbounded witness search.
 
-Two operations remain without a route.
-`representation_vector(n)` has no integral witness in that regime and asserts.
-`represents(n)` in rank 3, when the genus has more than one spinor genus and the local conditions hold, returns the proposition `represents(L, n)`, since `n` can be a spinor exception.
-Installed Sage, Hecke and OSCAR source supplies rational quadratic-space isotropy, isometry-class representation and hyperbolic decomposition, but no integral witness for a prescribed norm, so `QuadraticForm.solve` and Hecke's `represents` cannot supply it.
-
-The sources in the Zotero library (searched 2026-10-09) state strong approximation as an existence theorem with no bound and no construction: O'Meara, *Introduction to Quadratic Forms*, 104:3 (vectors of a prescribed norm, dimension at least 4), 104:4 (rotations, dimension at least 3) and 104:5 (class equals proper spinor genus for indefinite dimension at least 3); Kneser--Scharlau, *Quadratische Formen*, (22.1), (24.1), (25.2) and (25.3). Cassels, Ch. 9, Lemma 6.1, puts the integral representations of `n != 0` in finitely many orbits of the integral proper orthogonal group; its proof completes a primitive representation `b` to a basis of `ZZ^n` in which the form becomes one of a finite set of forms `h`, so a witness is the first column of an integral isometry from `h` to the form of `L`. No installed engine constructs an integral isometry between indefinite lattices (Hecke 0.39.21 `is_isometric_with_isometry` has no indefinite method).
-Grunewald--Segal, "On the integer solutions of quadratic equations" (J. reine angew.
-Math.
-569, 2004), Thm.
-0.1 and §2, Step 3, Case 2, decide representability in every rank with a finite set containing a representative of each such orbit.
-That set is constructed in §5 of Grunewald--Segal, "How to solve a quadratic equation in integers" (Math.
-Proc.
-Cambridge Philos.
-Soc.
-89, 1981, 1--5), which is not in the library.
-Generators of the integral orthogonal group (Grunewald--Segal, Ann.
-Math.
-112, 1980, Algorithm B, in the library; Siegel, "Zur Theorie der quadratischen Formen", Nachr.
-Akad.
-Wiss.
-Göttingen 1972, Satz 9, not in the library) are needed only for congruence conditions, which `represents` does not impose.
-The spinor-exception papers of Schulze-Pillot and of Earnest--Hsia, and a theorem bounding a smallest integral solution of `b(x, x) = n`, are not in the library.
-Kneser, "Klassenzahlen indefiniter quadratischer Formen in drei oder mehr Veränderlichen" (1956), is in the library and was not read for this.
-
-**Dependency path:** local integral representability (delivered) -> a finite set of representatives of the integral proper orthogonal orbits on the vectors of norm `n` (Cassels, Ch. 9, Lemma 6.1; constructed in Grunewald--Segal 1981, §5) -> exact integral witness or exact nonrepresentation in every indefinite rank at least 3, the rank-3 spinor exceptions included.
-**Consumers:** `Lattices(ZZ).representation_vector(n)` and, in rank 3, `represents(n)`. The distinguishing specimens are `U + A_1 + A_1` at `n = 2`, `<1> + <1> + <-1> + <-1>` at `n = 5` and `U + <1>` at `n = 3`: each `represents` call answers `True` and each `representation_vector` call asserts.
-**Coverage boundary:** Sage's quadratic-form and binary-form sources, the installed Hecke/Oscar quadratic-form sources, the repository's lattice engine capability map and the four books above were inspected.
-No indefinite ternary genus with more than one spinor genus was found among the specimens tried (`A_2 + <-18>` and `-A_2 + <18>` each have one).
-The owner ruled on 2026-10-09 that the preamble owns the algorithm.
-Repair is the `higher-rank-integral-lattice-representation` node in [TODO.md](TODO.md).
+**Remaining evidence:** these computations have not run under DEV-58.
+`U + A_1 + A_1` at norm 2, `<1,1,-1,-1>` at norm 5 and `U + <1>` at norm 3
+remain required. No cited indefinite ternary genus with multiple spinor
+genera and a represented/spinor-exception pair has yet been supplied.
+The previous survey's two trial genera each had one spinor genus and
+therefore did not decide that question. Retain these specimens and engine
+coverage at `higher-rank-integral-lattice-representation` in [TODO.md](TODO.md).
+No source route or mathematical argument here counts as executed acceptance.
 
 ### Genera of integral lattices are formalized without finiteness, parity or classification
 
