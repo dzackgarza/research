@@ -396,6 +396,10 @@ class PolytopalComplexes(OwnedCategory):
     def from_cells(self, polytopes, face_maps):
         pass
 
+    def _from_engine_polyhedral_complex(self, engine_complex, cell_map, face_maps):
+        r"""Raise Sage's polyhedral complex with owned cells and face arrows."""
+        pass
+
     @cached_method
     def face_posets(self):
         return _ComplexFacePosetFunctor(self)
@@ -422,6 +426,10 @@ class PolytopalComplexes(OwnedCategory):
 
         def face_maps(self):
             return self._face_maps
+
+        def _engine_polyhedral_complex(self):
+            r"""Lower selected placed cells and face maps to Sage privately."""
+            pass
 
         def face_map(self, face, cell):
             return self._face_maps[face, cell]
