@@ -601,10 +601,16 @@ class _ArithmeticCuspEngine:
         action = ClassifyingFunctor(subgroup.inclusion()).then(
             subgroup.supergroup().natural_module_action_functor()
         )
-        return StabilizerSubgroups(self.subgroup())(
+        stabilizer = StabilizerSubgroups(self.subgroup())(
             self.representative().inclusion(),
             action,
             lambda element: element in parabolic,
+        )
+        intersection = subgroup.intersection(parabolic)
+        return stabilizer.select_group_generators(
+            lambda: finite_ordered_set(
+                tuple(stabilizer(generator) for generator in intersection.group_generators())
+            )
         )
 
     parabolic_subgroup = stabilizer

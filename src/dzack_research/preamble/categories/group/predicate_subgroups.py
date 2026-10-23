@@ -1060,6 +1060,30 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
                             ),
                         )
                         return
+                # An intersection of several character kernels/preimages is
+                # still a finite-index subgroup, even though it is no longer
+                # presented by one PreimageSubgroups object.  Restrict its
+                # complete character condition to the supplied generated
+                # subgroup and apply the same finite-index Schreier lemma.
+                for character_subgroup in intersected_subgroups:
+                    if (
+                        character_subgroup not in PredicateSubgroups(group)
+                        or not character_subgroup.contains_character_kernel()
+                    ):
+                        continue
+                    generated = next(
+                        other for other in intersected_subgroups if other is not character_subgroup
+                    )
+                    if generated.has_selected_group_resolution():
+                        _fix_selected_generating_morphism(
+                            self,
+                            lambda intersection, character_subgroup=character_subgroup, generated=generated: (
+                                intersection._restricted_character_generating_morphism(
+                                    character_subgroup, generated
+                                )
+                            ),
+                        )
+                        return
 
         def intersected_subgroups(self):
             return self._intersected_subgroups
@@ -1069,6 +1093,31 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             inclusion = generated.inclusion()
             restricted = (morphism * inclusion).preimage_subgroup(target)
             augmentation = restricted.schreier_generating_morphism()
+            return (inclusion * restricted.inclusion() * augmentation).factor_through(self.inclusion())
+
+        def _restricted_character_generating_morphism(self, character_subgroup, generated):
+            r"""Generate ``Gamma cap B`` by restricting a finite character condition to ``B``.
+
+            If ``Gamma = rho^-1(H)`` in ``G``, then
+            ``[B:B cap Gamma] <= [rho(G):H]``.  This exact finite bound
+            supplies the existing predicate-subgroup Schreier computation;
+            no membership or word algorithm for an arbitrary generated
+            subgroup of ``G`` is assumed.
+            """
+            quotient = character_subgroup.finite_character_quotient()
+            index_bound = (
+                int(quotient.image_keys().cardinality())
+                // int(quotient.subgroup_image_keys().cardinality())
+            )
+            inclusion = generated.inclusion()
+            restricted = generated.predicate_subgroup(
+                lambda element: inclusion(element) in character_subgroup,
+                f"the inclusion into {self.supergroup()} lies in {character_subgroup}",
+            )
+            augmentation = restricted.finite_index_schreier_generating_morphism(
+                index_bound=index_bound,
+                generators=generated.group_generators(),
+            )
             return (inclusion * restricted.inclusion() * augmentation).factor_through(self.inclusion())
 
 __all__ = [
