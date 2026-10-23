@@ -28,9 +28,11 @@ embedding answer as an exclusion of every embedding. Its `an_element` used
 the same restrictions. The current repair retains affirmative isometry and
 primitive cases and lets the even-overlattice route handle nonprimitive
 integral images; the Nikulin route is restricted to integral targets.
-The remaining need is a complete general search or decision for the other
-nondefinite targets, with any additional predicates covered by their own
-effective bound. No claim that the existing primitive classifier supplies
+Finite-rank nondegenerate-source embeddings over ZZ and QQ now have a
+complete scalar-product enumeration, and predicate subsets can filter that
+iterator without a ranking isomorphism. The remaining need is a terminating
+existence decision where required, with finite candidate subsets and any
+additional predicates covered by their own effective bound. No claim that the existing primitive classifier supplies
 this complete search is justified.
 
 **Dependency path:** formed modules and form-preserving linear maps ->
