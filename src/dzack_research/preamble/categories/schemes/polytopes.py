@@ -180,13 +180,7 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
         pass
 
     def on(self, defining_data, ambient_inclusion):
-        if ambient_inclusion.codomain() is not self.placement_space():
-            raise ValueError("the polytope inclusion must land in the selected ambient space")
-        return _object_of(
-            self,
-            defining_data=defining_data,
-            ambient_inclusion=ambient_inclusion,
-        )
+        pass
 
     @cached_method
     def face_posets(self):
