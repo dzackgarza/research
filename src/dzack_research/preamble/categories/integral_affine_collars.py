@@ -6,7 +6,6 @@ from sage.categories.morphism import Morphism
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
-    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
@@ -33,12 +32,7 @@ class IntegralAffineCollarMor(CategoricalMor):
             return self._neighborhood_affine_map
 
         def __mul__(self, other):
-            if not _precomposable(self, other):
-                return NotImplemented
-            return IntegralAffineCollars().Mor(other.domain(), self.codomain())(
-                self.face_map() * other.face_map(),
-                self.neighborhood_affine_map() * other.neighborhood_affine_map(),
-            )
+            pass
 
     def _element_constructor_(self, face_map, neighborhood_affine_map):
         source = self.domain()
