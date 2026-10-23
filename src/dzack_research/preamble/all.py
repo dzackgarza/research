@@ -445,6 +445,7 @@ _lazy_import(
         "ConvexPolytopes",
         "EuclideanPolytopesIn",
         "HyperbolicGeodesicPolytopesIn",
+        "LatticePolytopesIn",
         "CurveLocalDeltaContribution",
         "Curves",
         "CyclicCoverBaseChangeComparison",

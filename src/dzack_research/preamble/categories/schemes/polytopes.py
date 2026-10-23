@@ -26,7 +26,10 @@ from dzack_research.preamble.categories.metric_affine_spaces import (
     EuclideanSpaces,
     SphericalSpaces,
 )
-from dzack_research.preamble.categories.real_affine_spaces import RealAffineSpaces
+from dzack_research.preamble.categories.real_affine_spaces import (
+    AffineSpacesWithLattice,
+    RealAffineSpaces,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -173,8 +176,17 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
         def face_poset(self):
             pass
 
+        def abstract_automorphisms(self):
+            pass
+
+        def geometric_automorphisms(self):
+            pass
+
         def boundary(self):
             pass
+
+    class Polygon(CategoryWithAxiom):
+        r"""Placed polytopes of affine or geodesic dimension two."""
 
 
 class ConvexPolytopesIn(_PlacedPolytopeCategory):
@@ -186,6 +198,59 @@ class ConvexPolytopesIn(_PlacedPolytopeCategory):
     @classmethod
     def _repr_object_names(cls):
         return "placed convex affine polytopes"
+
+
+class LatticePolytopeMor(PlacedPolytopeMor):
+    r"""Face-preserving maps compatible with selected affine lattice embeddings."""
+
+    class ElementMethods(PlacedPolytopeMor.ElementMethods):
+        def underlying_affine_morphism(self):
+            pass
+
+    def _element_constructor_(self, ambient_lattice_map, face_poset_map):
+        pass
+
+
+class LatticePolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = LatticePolytopeMor
+
+
+class _LatticePolytopeForgetfulFunctor(Functor):
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, polytope):
+        return polytope.underlying_affine_polytope()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_affine_morphism()
+
+
+class LatticePolytopesIn(_PlacedPolytopeCategory):
+    r"""Placed convex polytopes with vertices in the selected affine lattice."""
+
+    _MorCategory = LatticePolytopeMorCategoryConstruction
+
+    def parameter_category(self):
+        return AffineSpacesWithLattice()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed lattice polytopes"
+
+    def forget_lattice(self):
+        r"""Forget the selected lattice on objects and face-preserving arrows."""
+        pass
+
+    class ParentMethods(_PlacedPolytopeCategory.ParentMethods):
+        def ambient_lattice_inclusion(self):
+            pass
+
+        def integral_points(self):
+            pass
+
+        def underlying_affine_polytope(self):
+            pass
 
 
 class EuclideanPolytopesIn(_PlacedPolytopeCategory):
@@ -1099,6 +1164,7 @@ __all__ = [
     "ConvexPolytopes",
     "EuclideanPolytopesIn",
     "HyperbolicGeodesicPolytopesIn",
+    "LatticePolytopesIn",
     "LatticePolygons",
     "LatticePolytopes",
     "RegularPolytopes",
