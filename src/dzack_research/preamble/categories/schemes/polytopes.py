@@ -172,6 +172,9 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
     def ambient_space(self):
         return self.parameter()
 
+    def placement_space(self):
+        return self.ambient_space()
+
     def super_categories(self):
         return [Objects()]
 
@@ -179,6 +182,8 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
         pass
 
     def on(self, defining_data, ambient_inclusion):
+        if ambient_inclusion.codomain() is not self.placement_space():
+            raise ValueError("the polytope inclusion must land in the selected ambient space")
         return _object_of(
             self,
             defining_data=defining_data,
@@ -291,6 +296,9 @@ class LatticePolytopesIn(_PlacedPolytopeCategory):
 
     def parameter_category(self):
         return AffineSpacesWithLattice()
+
+    def placement_space(self):
+        return self.ambient_space().underlying_affine_space()
 
     @classmethod
     def _repr_object_names(cls):
