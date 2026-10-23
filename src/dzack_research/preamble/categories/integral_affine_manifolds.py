@@ -23,6 +23,13 @@ for _axiom in ("Oriented", "StrictLatticePointAtlas", "Sphere"):
 class IntegralAffineManifoldMor(CategoricalMor):
     r"""Locally integral-affine maps between selected affine manifolds."""
 
+    class ElementMethods:
+        def underlying_smooth_morphism(self):
+            raise NotImplementedError("the affine-map constructor must retain its smooth map")
+
+        def __mul__(self, other):
+            raise NotImplementedError("affine-map composition needs the selected chart maps")
+
     def _element_constructor_(self, local_affine_map):
         raise NotImplementedError(
             "constructing an integral-affine map needs its chart maps, lattice actions, "
@@ -102,6 +109,16 @@ class IntegralAffineManifolds(OwnedCategory):
 
 class SingularIntegralAffineSpaceMor(CategoricalMor):
     r"""Maps preserving the singular set and the affine regular structure."""
+
+    class ElementMethods:
+        def underlying_topological_morphism(self):
+            raise NotImplementedError("the singular-map constructor must retain its topological map")
+
+        def regular_affine_morphism(self):
+            raise NotImplementedError("the singular-map constructor must retain its regular restriction")
+
+        def __mul__(self, other):
+            raise NotImplementedError("singular-map composition needs its regular-locus comparison")
 
     def _element_constructor_(self, regular_affine_map):
         raise NotImplementedError(
