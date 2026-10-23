@@ -69,6 +69,13 @@ class DeltaComplexMor(_ComplexMor):
 class SimplicialSetMor(_ComplexMor):
     r"""Maps commuting with faces and degeneracies in every degree."""
 
+    class ElementMethods(_ComplexMapMethods):
+        def is_homotopic_to(self, other):
+            pass
+
+        def is_weak_equivalence(self):
+            pass
+
 
 class CellComplexMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = CellComplexMor
@@ -125,6 +132,10 @@ class CellComplexes(OwnedCategory):
     def from_attaching_maps(self, cells, attaching_maps):
         return _object_of(self, cell_family=cells, attaching_maps=attaching_maps)
 
+    def regularization(self, complex_):
+        r"""Replace nonembedded attaching maps by mapping cylinders."""
+        pass
+
     def from_intersection_strata(self, component_inclusions, intersection_strata):
         r"""Select the dual complex of connected component intersections."""
         pass
@@ -167,6 +178,12 @@ class CellComplexes(OwnedCategory):
 
         def attaching_map(self, cell):
             return self._attaching_maps[cell]
+
+        def is_regular(self):
+            pass
+
+        def regularization(self):
+            pass
 
         def characteristic_map(self, cell):
             r"""Return the selected map from the closed cell to this complex."""
@@ -334,6 +351,10 @@ class SimplicialComplexes(OwnedCategory):
     def from_simplices(self, vertices, simplices):
         return _object_of(self, vertices=vertices, defining_simplices=simplices)
 
+    def order_complex(self, poset):
+        r"""Construct the nerve of a poset from its chains."""
+        pass
+
     @cached_method
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
@@ -479,6 +500,10 @@ class SimplicialSets(OwnedCategory):
             defining_degeneracies=degeneracies,
         )
 
+    def nerve(self, category):
+        r"""Construct the simplicial nerve of a small category."""
+        pass
+
     @cached_method
     def realization(self):
         return _ComplexRealizationFunctor(self, TopologicalSpaces())
@@ -503,6 +528,9 @@ class SimplicialSets(OwnedCategory):
             return self._defining_simplices[dimension]
 
         def simplex_category(self):
+            pass
+
+        def barycentric_subdivision(self):
             pass
 
         def face_map(self, dimension, index):
