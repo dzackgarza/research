@@ -42,37 +42,37 @@ book:
     # structure, so truncation precedes them.
     - part: category-theory/index.md
       chapters:
-        - category-theory/framework/Higher-Categories-and-Universes.md
-        - category-theory/framework/Categorical-Foundations.md
-        - category-theory/framework/Truncation-and-Classifiers.md
-        - category-theory/framework/Limits-and-Colimits.md
-        - category-theory/framework/Loops-and-Suspension.md
-        - category-theory/framework/Identification.md
-        - category-theory/framework/Equality.md
+        - category-theory/foundations/Higher-Categories-and-Universes.md
+        - category-theory/foundations/Categorical-Foundations.md
+        - category-theory/foundations/Truncation-and-Classifiers.md
+        - category-theory/constructions/Limits-and-Colimits.md
+        - category-theory/constructions/Loops-and-Suspension.md
+        - category-theory/foundations/Identification.md
+        - category-theory/foundations/Equality.md
     - part: Algebraic structure
       chapters:
-        - category-theory/framework/Mathematical-Framework.md
-        - category-theory/framework/Monoidal-Categories.md
-        - category-theory/framework/Modules-and-Forms.md
-        - category-theory/framework/Generators-and-Presentations.md
-        - category-theory/framework/Joins-Meets-and-Closure.md
-        - category-theory/framework/Distinguished-Functors.md
-        - category-theory/framework/Elements-and-Containment.md
-        - category-theory/framework/Generic-Elements.md
+        - category-theory/foundations/Mathematical-Framework.md
+        - category-theory/monoidal-stable/Monoidal-Categories.md
+        - category-theory/forms-quadratic/Modules-and-Forms.md
+        - category-theory/constructions/Generators-and-Presentations.md
+        - category-theory/constructions/Joins-Meets-and-Closure.md
+        - category-theory/foundations/Distinguished-Functors.md
+        - category-theory/foundations/Elements-and-Containment.md
+        - category-theory/foundations/Generic-Elements.md
     # One dependency chain, in its own order: forms, then Witt theory and the
     # stable/morphism constructions built on it. Lattice theory has its own part
     # below rather than being mixed into this categorical framework.
     - part: Forms and Witt theory
       chapters:
-        - category-theory/framework/Bilinear-and-Quadratic-Forms.md
-        - category-theory/framework/Bilinear-Forms-on-Algebra-Modules.md
-        - category-theory/framework/Hyperbolic-Forms-and-Witt-Classes.md
-        - category-theory/framework/Stable-Categories-of-Modules-with-Duality.md
-        - category-theory/framework/Morphisms-of-Form-Modules.md
-        - category-theory/framework/Chain-Complexes.md
+        - category-theory/forms-quadratic/Bilinear-and-Quadratic-Forms.md
+        - category-theory/forms-quadratic/Bilinear-Forms-on-Algebra-Modules.md
+        - category-theory/forms-quadratic/Hyperbolic-Forms-and-Witt-Classes.md
+        - category-theory/monoidal-stable/Stable-Categories-of-Modules-with-Duality.md
+        - category-theory/forms-quadratic/Morphisms-of-Form-Modules.md
+        - category-theory/algebraic-structures/Chain-Complexes.md
     - part: Reference
       chapters:
-        - category-theory/framework/Mathematical-Sources.md
+        - category-theory/references/Mathematical-Sources.md
     # Part 2. The geometry the paper starts from: the three surface classes, then
     # the K3 cover that carries every lattice-theoretic statement later.
     - part: coble/index.md
