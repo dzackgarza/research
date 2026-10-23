@@ -1444,6 +1444,10 @@ class Torsors(OwnedParameterizedCategory):
             permutation_representation=candidate.permutation_representation(),
         )
 
+    def from_action(self, acted_set):
+        r"""Select a free transitive action as a torsor under the exact group."""
+        pass
+
     def from_trivialization(self, trivialization, *, base_point=None):
         r"""Transport the regular torsor along a chosen set isomorphism ``G -> T``.
 
