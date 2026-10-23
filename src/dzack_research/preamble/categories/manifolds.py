@@ -1207,6 +1207,9 @@ class RiemannianManifoldMor(CategoricalMor):
         def underlying_smooth_morphism(self):
             return self._smooth_map
 
+        def _call_(self, point):
+            return self._smooth_map(point)
+
         def __mul__(self, other):
             pass
 
