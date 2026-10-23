@@ -404,6 +404,16 @@ class TopologicalManifolds(OwnedCategory):
     def an_object(self):
         return self(1, "M_top")
 
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
+
     def on(self, underlying_space, atlas):
         r"""Place the exact space under a compatible topological atlas."""
         pass
@@ -886,6 +896,16 @@ class DifferentiableManifolds(OwnedCategory):
     def an_object(self):
         return self(1, "M_C1", 1)
 
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
+
     def on(self, topological_manifold, degree, atlas):
         r"""Place the exact topological manifold under a finite-degree real atlas."""
         pass
@@ -952,6 +972,16 @@ class SmoothManifolds(OwnedCategory):
 
     def an_object(self):
         return self(1, "M_smooth")
+
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
 
     def on(self, topological_manifold, atlas):
         r"""Place the exact manifold under a compatible smooth atlas."""
@@ -1758,6 +1788,16 @@ class ComplexManifolds(OwnedCategory):
 
     def an_object(self):
         return self.affine_space(1, name="C")
+
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
 
     def on(self, topological_manifold, holomorphic_atlas):
         r"""Place the exact manifold under a compatible holomorphic atlas."""

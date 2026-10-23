@@ -108,6 +108,16 @@ class RealCkManifolds(OwnedParameterizedCategory):
     def an_object(self):
         pass
 
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
+
     def on(self, topological_manifold, atlas):
         r"""Select a compatible ``C^k`` atlas on the exact topological manifold."""
         return _object_of(

@@ -27,6 +27,18 @@ from dzack_research.preamble.categories.topological_spaces import TopologicalSpa
 from dzack_research.preamble.owned_category import _object_of
 
 
+def _dimension_at_most(category, dimension):
+    from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+    return ManifoldsOfDimensionAtMost(category, dimension)
+
+
+def _pure_dimension(category, dimension):
+    from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+    return PureDimensionalManifolds(category, dimension)
+
+
 class _StratifiedManifoldMapMethods:
     def __init__(self, parent, continuous_map, interior_map, stratum_maps):
         Morphism.__init__(self, parent)
@@ -166,6 +178,12 @@ class TopologicalManifoldsWithBoundary(OwnedCategory):
     def an_object(self):
         pass
 
+    def DimensionAtMost(self, dimension):
+        return _dimension_at_most(self, dimension)
+
+    def PureDimension(self, dimension):
+        return _pure_dimension(self, dimension)
+
     def on(self, space, atlas, boundary_inclusion):
         pass
 
@@ -199,6 +217,12 @@ class SmoothManifoldsWithBoundary(OwnedCategory):
 
     def an_object(self):
         pass
+
+    def DimensionAtMost(self, dimension):
+        return _dimension_at_most(self, dimension)
+
+    def PureDimension(self, dimension):
+        return _pure_dimension(self, dimension)
 
     def on(self, space, atlas, boundary_inclusion):
         pass
@@ -240,6 +264,12 @@ class TopologicalManifoldsWithCorners(OwnedCategory):
 
     def an_object(self):
         pass
+
+    def DimensionAtMost(self, dimension):
+        return _dimension_at_most(self, dimension)
+
+    def PureDimension(self, dimension):
+        return _pure_dimension(self, dimension)
 
     def on(self, space, atlas, depth_strata):
         return _object_of(
@@ -291,6 +321,12 @@ class SmoothManifoldsWithCorners(OwnedCategory):
 
     def an_object(self):
         pass
+
+    def DimensionAtMost(self, dimension):
+        return _dimension_at_most(self, dimension)
+
+    def PureDimension(self, dimension):
+        return _pure_dimension(self, dimension)
 
     def on(self, topological_corner_manifold, atlas):
         return _object_of(
@@ -399,6 +435,12 @@ class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
     def an_object(self):
         pass
 
+    def DimensionAtMost(self, dimension):
+        return _dimension_at_most(self, dimension)
+
+    def PureDimension(self, dimension):
+        return _pure_dimension(self, dimension)
+
     def on(self, topological_corner_manifold, atlas):
         return _object_of(
             self,
@@ -474,6 +516,12 @@ class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
 
     def an_object(self):
         pass
+
+    def DimensionAtMost(self, dimension):
+        return _dimension_at_most(self, dimension)
+
+    def PureDimension(self, dimension):
+        return _pure_dimension(self, dimension)
 
     def on(self, topological_boundary_manifold, atlas):
         return _object_of(
