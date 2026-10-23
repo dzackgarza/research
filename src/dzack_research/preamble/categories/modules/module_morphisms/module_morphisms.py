@@ -1549,6 +1549,20 @@ class ModuleMorphismMethods:
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""
         self._require_established_linearity("surjectivity")
+        ring = self.domain().base_ring()
+        if (
+            ring in OwnedFields()
+            and ring.is_exact() is True
+            and _has_finite_free_framing(self.domain())
+            and _has_finite_free_framing(self.codomain())
+        ):
+            # A linear map onto a finite free module is surjective exactly
+            # when every selected basis vector has a preimage. This uses the
+            # field's exact solver, including represented-real coefficients.
+            return all(
+                self._preimage_or_none(generator) is not None
+                for generator in self.codomain().module_generators()
+            )
         return self.cokernel().is_zero()
 
     def residue_morphism(self):
