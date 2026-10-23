@@ -561,6 +561,26 @@ in COMPLAINTS.md. Its integral perfection-preservation theorems are
 stronger in conclusion but require stronger hypotheses and are not
 substitutes for this zero-radical statement.
 
+**Value rescaling with undecided scalar predicates.** For every scalar
+$s$, the form $B_s(x,y)=sB(x,y)$ exists, regardless of whether $s=0$ or
+$s=1$ can be decided. The selected scaling construction therefore
+simplifies to the original form only when $s=1$ is explicitly true.
+It preserves symmetry without any scalar hypothesis. It retains
+unimodularity when $s$ is known to be a unit, and nondegeneracy when
+multiplication by $s$ is known injective on the value module: a unit
+suffices for every value module, while a nonzero scalar in an integral
+domain suffices for scalar-valued forms. Indeed $sB(x,y)=0$ then implies
+$B(x,y)=0$, for either radical. Over a field, the unit predicate is
+exactly $s\ne0$; the construction reads that predicate without coercing
+an unknown answer to a truth value. Unknown unit or zero status merely
+withholds these property-preservation shortcuts. It does not assert
+degeneracy and does not prevent construction of the actual scaled form,
+which retains its original module, unscaled form and scalar. A regular
+Cauchy presentation of zero supplies a source specimen with undecided
+zero status; its scaling must still be constructible. A known unit
+continues to preserve the stronger placements and unit scaling returns
+the original object.
+
 **Norm witnesses from the same diagonal basis.** For a nonsingular real
 form, suppose the requested scalar $a$ has decided zero status. If
 $a\ne0$, enclosure refinement determines its sign and those of the

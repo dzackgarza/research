@@ -172,6 +172,13 @@ the original inertia indices directly.
 The owned exact `RR` field supplies closed real expressions and now regular
 rational Cauchy presentations in the same real field, with arithmetic,
 positive square roots and exact relation decisions where known.
+The rescaling source audit also found Python truth coercions of the
+scalar's unit and equality predicates in `FormValueScalings`. These are
+replaced by explicit-true checks, using nonzero status for field units.
+Unknown status no longer blocks constructing the scaled form or becomes
+a degeneracy conclusion; property shortcuts require known hypotheses.
+The Cauchy-zero scaling specimen remains source-only, with the other
+terminal assertions.
 The lattice Witt, norm-witness and field embedding routes previously rejected
 it at their AA-only dispatch despite using congruence/sign/root constructions
 that apply to this presentation too. Signature also lowered RR coefficients

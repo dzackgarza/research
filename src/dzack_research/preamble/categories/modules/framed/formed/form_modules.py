@@ -88,6 +88,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedIntegralDomains,
     OwnedRings,
     _engine_element,
@@ -3661,7 +3662,28 @@ class FormBaseChanges(OwnedCategoryOverBaseRing):
 
 
 class FormValueScalings(OwnedCategoryOverBaseRing):
-    r"""Scalar changes of a form's values, normalized under composition."""
+    r"""Scalar changes of a form's values, normalized under composition.
+
+    Unit simplification and property preservation require explicit true
+    scalar decisions. An unknown equality or unit predicate does not
+    prevent forming the scaled bilinear or quadratic map.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.lattices import Lattices
+        sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+        sage: from dzack_research.preamble.rings.real import RR
+        sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+        sage: QQ = _owned_rationals()
+        sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1)/QQ(2)**int(n))
+        sage: z = RR.of_cauchy(a)
+        sage: U = Lattices(RR)("U")
+        sage: scaled = U.twist(z)
+        sage: assert scaled.unscaled_form_module() is U
+        sage: assert scaled.form_scale() is z
+        sage: assert scaled.base_ring() is RR
+        sage: assert U.twist(RR.one()) is U
+    """
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
@@ -3674,7 +3696,7 @@ class FormValueScalings(OwnedCategoryOverBaseRing):
         if source in self:
             scalar *= source.form_scale()
             source = source.unscaled_form_module()
-        if scalar == self.base_ring().one():
+        if (scalar == self.base_ring().one()) is True:
             return source
         return _scaled_form_module(source, scalar)
 
@@ -3732,17 +3754,19 @@ def _scaled_form_module(source, scalar):
         # (sb)(x,y) = s b(x,y) = s b(y,x) = (sb)(y,x): symmetry
         # transports through scalar change, without inspecting any entries.
         categories.append(BilinearFormModules(ring).Symmetric())
-    if scalar.is_unit() and source in FormModules(ring).Unimodular():
+    unit = (scalar != ring.zero()) if ring in OwnedFields() else scalar.is_unit()
+    known_unit = unit is True
+    if known_unit and source in FormModules(ring).Unimodular():
         # Multiplication by a unit is an isomorphism on the value module;
         # the correlation of sb is the correlation of b composed with it.
         categories.append(FormModules(ring).Unimodular())
     if source in FormModules(ring).Nondegenerate() and (
-        scalar.is_unit() or (ring in OwnedIntegralDomains() and scalar != ring.zero())
+        known_unit or (ring in OwnedIntegralDomains() and (scalar != ring.zero()) is True)
     ):
         # Multiplication by a unit is injective on every value module;
         # on an integral domain it is injective on this R-valued form.
         # Hence both radicals remain zero under the scalar change.
-        if scalar.is_unit() or form.codomain() in OwnedRings():
+        if known_unit or form.codomain() in OwnedRings():
             categories.append(FormModules(ring).Nondegenerate())
     data = dict(unscaled_form_module=source, form_scale=scalar)
     if source in Lattices(ring):
