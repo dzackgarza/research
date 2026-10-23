@@ -156,7 +156,13 @@ class IntegralAffineManifolds(OwnedCategory):
 
         def integral_tangent_lattice_category(self):
             r"""Local systems of finite free integral modules on this manifold."""
-            pass
+            from dzack_research.preamble.categories.modules.pure.modules import (
+                FinitelyGeneratedFreeModules,
+            )
+
+            return self.underlying_smooth_manifold().local_systems(
+                FinitelyGeneratedFreeModules(_owned_integers())
+            )
 
         def integral_tangent_lattice(self):
             r"""The lattice local system transported along the fundamental groupoid."""
