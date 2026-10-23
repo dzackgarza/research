@@ -175,24 +175,23 @@ class ComplexAffineSpaces(OwnedCategory):
         return self.holomorphic_atlas().then(HolomorphicAtlases().maximalization())
 
     class ParentMethods:
-        def __init__(self, model_vector_space, point_set, translation_action, **rest):
+        def __init__(self, model_vector_space, torsor, **rest):
             self._model_vector_space = model_vector_space
-            self._point_set = point_set
-            self._translation_action = translation_action
+            self._torsor = torsor
             super().__init__(**rest)
 
         def point_set(self):
-            return self._point_set
+            return self._torsor.point_set()
 
         def model_vector_space(self):
             return self._model_vector_space
 
         def translation_action(self):
-            return self._translation_action
+            return self._torsor.action()
 
         def underlying_torsor(self):
             r"""The selected torsor under the model space's additive group."""
-            pass
+            return self._torsor
 
         def difference(self, left, right):
             r"""The model vector carrying ``right`` to ``left``."""
