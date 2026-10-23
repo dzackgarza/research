@@ -751,6 +751,7 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
         regular_affine_manifold,
         local_models=None,
     ):
+        r"""Select the exact regular locus and, in higher dimension, local models."""
         pass
 
     def from_face_gluing(
