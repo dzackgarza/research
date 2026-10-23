@@ -730,27 +730,41 @@ class SingularIntegralAffineLocalModels(OwnedParameterizedCategory):
         regular_affine_manifold,
         singular_point,
     ):
-        pass
+        singular_space = SingularIntegralAffineSpaces(self.dimension()).on(
+            topological_neighborhood,
+            singular_locus_inclusion,
+            regular_affine_manifold,
+        )
+        return _object_of(
+            self,
+            singular_space=singular_space,
+            singular_point=singular_point,
+        )
 
     @cached_method
     def forget_point(self):
         return _UnpointedSingularLocalModelFunctor(self)
 
     class ParentMethods:
+        def __init__(self, singular_space, singular_point, **rest):
+            self._singular_space = singular_space
+            self._singular_point = singular_point
+            super().__init__(**rest)
+
         def underlying_singular_affine_space(self):
-            pass
+            return self._singular_space
 
         def topological_neighborhood(self):
-            pass
+            return self._singular_space.underlying_topological_space()
 
         def singular_locus_inclusion(self):
-            pass
+            return self._singular_space.singular_locus_inclusion()
 
         def regular_affine_manifold(self):
-            pass
+            return self._singular_space.regular_affine_manifold()
 
         def singular_point(self):
-            pass
+            return self._singular_point
 
         def link(self):
             pass
