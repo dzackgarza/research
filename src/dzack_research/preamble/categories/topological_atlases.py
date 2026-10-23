@@ -161,6 +161,9 @@ class TopologicalAtlases(OwnedCategory):
         def restrict(self, open_inclusion):
             pass
 
+        def restriction_morphism(self, restricted_atlas):
+            pass
+
         def maximal_atlas(self):
             pass
 
