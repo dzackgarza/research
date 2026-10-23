@@ -9,6 +9,7 @@ represented atlas transition.
 from itertools import combinations
 
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import Morphism
 from sage.combinat.root_system.coxeter_group import CoxeterGroup
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.matrix.constructor import matrix as _engine_matrix
@@ -737,8 +738,23 @@ class DifferentiableManifoldMor(CategoricalMor):
     r"""Chartwise differentiable maps at the degree admitted by their endpoints."""
 
     class ElementMethods:
+        def __init__(self, parent, topological_map, chart_maps, degree):
+            Morphism.__init__(self, parent)
+            self._topological_map = topological_map
+            self._chart_maps = chart_maps
+            self._degree = degree
+
         def underlying_topological_morphism(self):
-            pass
+            return self._topological_map
+
+        def chart_maps(self):
+            return self._chart_maps
+
+        def degree(self):
+            return self._degree
+
+        def _call_(self, point):
+            return self._topological_map(point)
 
         def weaken_to(self, degree):
             pass
@@ -746,8 +762,8 @@ class DifferentiableManifoldMor(CategoricalMor):
         def __mul__(self, other):
             pass
 
-    def _element_constructor_(self, chart_maps, degree):
-        pass
+    def _element_constructor_(self, topological_map, chart_maps, degree):
+        return self.element_class(self, topological_map, chart_maps, degree)
 
     @object_level
     def identity(self):
@@ -764,8 +780,19 @@ class SmoothManifoldMor(CategoricalMor):
     r"""Chartwise smooth maps between selected smooth real manifolds."""
 
     class ElementMethods:
+        def __init__(self, parent, topological_map, chart_maps):
+            Morphism.__init__(self, parent)
+            self._topological_map = topological_map
+            self._chart_maps = chart_maps
+
         def underlying_topological_morphism(self):
-            pass
+            return self._topological_map
+
+        def chart_maps(self):
+            return self._chart_maps
+
+        def _call_(self, point):
+            return self._topological_map(point)
 
         def weaken_to(self, degree):
             pass
@@ -776,8 +803,8 @@ class SmoothManifoldMor(CategoricalMor):
         def __mul__(self, other):
             pass
 
-    def _element_constructor_(self, chart_maps):
-        pass
+    def _element_constructor_(self, topological_map, chart_maps):
+        return self.element_class(self, topological_map, chart_maps)
 
     @object_level
     def identity(self):
