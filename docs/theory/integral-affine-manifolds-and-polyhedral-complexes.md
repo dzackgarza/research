@@ -326,6 +326,200 @@ explicit realization and an equivariant action. A planar polygon drawing
 with edge-pair labels and an embedding `B -> RR^3` are presentation maps;
 neither defines the abstract quotient or its integral-affine structure.
 
+## Public mathematical API and types
+
+The signatures in this section specify a proposed semantic language. They
+do not assert that the named methods exist today. Each signature identifies
+the mathematical owner, input, output, and retained structural arrows. Write
+`Mor(C)(X,Y)` for the hom object of a category `C`, `Sub_C(X)` for subobjects
+with inclusions into `X`, and `Fin(I,X)` for an `I`-indexed family. A finite
+family of points is a map `I -> U(X)`; an indexed family of objects of `C` is
+a functor from the discrete category on `I` to `C`. These are established
+constructions, not new category classes for each decorated family
+([`CAT-30`](../../CONTRIBUTING.md)). All mathematical components reachable
+from a public result, including family elements and morphism endpoints, remain
+preamble values ([`OWN-04`](../../CONTRIBUTING.md)).
+
+### Atlases and manifold maps
+
+For `k >= 1`, the construction
+
+`RealCkManifolds(k).on(B, atlas) -> M`
+
+takes a specified topological manifold `B` and compatible `C^k` chart data.
+It retains `B` as the underlying object. A chart is an isomorphism in the
+appropriate local-map category from an open submanifold `U ↪ M` to an open
+subobject of `RR^n`. An atlas retains its chart family, domain inclusions,
+overlaps, and transition maps; its maximal extension determines the same
+structure. The following operations have fixed owners and types:
+
+| Operation | Type and defining data |
+| --- | --- |
+| `M.dimension()` | Dimension or locally constant dimension function on components; for pure dimension, the common value in `ZZ_{>=0}`. |
+| `M.atlas()` | The established atlas and its open domains, charts, and transition morphisms. |
+| `M.open_submanifold(i: U ↪ M)` | Restricted manifold structure on the exact open subobject `U`, retaining `i`. |
+| `Mor(RealCkManifolds(k))(M,N)` | `C^k` maps with stated source and target; composition is the category's composition. |
+| `RealCkManifolds(j).forget_to(k)` | Functor on objects and morphisms for `j >= k`. |
+| `ComplexManifolds.realification()` | Functor on objects and holomorphic maps, with real dimension `2m` for complex dimension `m`. |
+
+`RR^n` and `CC^m` enter by their standard charts through these same
+constructions. The existing preamble already has chart, atlas, transition-map,
+dimension, and sphere operations in [`manifolds.py`](../../src/dzack_research/preamble/categories/manifolds.py);
+their current existence does not establish the entire signature above. Lee,
+*Introduction to Smooth Manifolds*, Chapters 1–2 supplies the atlas and
+smooth-map definitions.
+
+### Integral-affine atlases and singularities
+
+Let `M` be a specified smooth real `n`-manifold. The category-owned
+construction
+
+`IntegralAffineManifolds(n).on(M, A) -> X`
+
+takes an atlas `A` whose coordinate changes lie in
+`GL(Lambda) semidirect V` and retains the exact `M`, its chart domains, and
+their transition morphisms. `X.underlying_smooth_manifold()` exposes that
+retained object. `IntegralAffineManifolds(n).forget()` is the functor on both
+objects and affine maps; the accessor does not rebuild `M`.
+
+| Operation | Type and defining data |
+| --- | --- |
+| `X.integral_tangent_lattice()` | Locally constant lattice of integral tangent vectors on `X`, with transition action induced by the linear part of the atlas. |
+| `X.affine_charts()` | Chart family with exact domains, affine models, and transitions. |
+| `Mor(IntegralAffineManifolds)(X,Y)` | Maps locally of the form `x -> A x + b`, with the lattice condition on `A`; isomorphisms have invertible lattice maps. |
+| `X.holonomy(x,frame)` | A representation `pi_1(X,x) -> GL(Lambda) semidirect V` after base point and affine frame are supplied. Without a frame, retain its conjugacy class. |
+| `X.regular_open(i: U ↪ X)` | Restricted affine structure on an open subobject and its actual inclusion. |
+
+Holonomy requires its base point and frame. An engine's selected matrix is a
+coordinate representative, not the intrinsic representation without those
+choices. The stricter translation lattice and the oriented determinant-one
+condition are distinct refinements with the group stated at construction.
+
+For the AEGS sphere, the constructor is instead
+
+`SingularIntegralAffineSpaces(2).on(B, i: Sigma ↪ B, A_{B\Sigma}) -> X`.
+
+The open complement `j: B\Sigma ↪ B` and the integral-affine structure on
+its domain are defining data. `X.singular_locus()` returns `i`, and
+`X.regular_locus()` returns `j` and the restricted structured manifold.
+`X.local_monodromy(p, loop, frame)` takes `p in Sigma`, a loop in a
+punctured neighbourhood, and an affine frame; it returns the corresponding
+element of the affine group. A local singularity type requires the full stated
+equivalence relation, not only a matrix trace. The `Sphere` property is a
+condition on `B`; an involution or triangulation is an added datum. This is
+the structure in [AEGS, Introduction and §4] and [Foundations, Definition
+62.6].
+
+### Polytopes and chosen triangulations
+
+For an ambient affine or metric space `A`, `PolytopesIn(A)(data) -> P`
+establishes a polytope with its inclusion `P ↪ A`. The `data` parameter means
+the mathematical defining datum specified by that category, such as vertices
+or supporting halfspaces in the affine case; it is not an opaque engine
+handle. The constructor of a lattice polytope also receives and retains the
+selected lattice embedding `Lambda ↪ A`. Euclidean, spherical, and
+hyperbolic versions use their own geometric convexity conditions. The
+existing [`ConvexPolytopes(L)`](../../src/dzack_research/preamble/categories/schemes/polytopes.py)
+already exposes vertices, facets, integral points, and a normal fan for its
+presented rational affine case. Ziegler, *Lectures on Polytopes*, Chapters
+1–2 supplies the affine face-lattice definitions.
+
+| Operation | Type and defining data |
+| --- | --- |
+| `P.vertices()` | Finite set of points of the selected ambient space. |
+| `P.faces(d)` | Finite family of `d`-faces, each with its inclusion into `P` and incidence maps. |
+| `P.face_poset()` | Graded incidence poset derived from those faces and maps. |
+| `P.boundary()` | Boundary complex with its inclusion into `P`. |
+| `P.integral_points()` | Set of points of the selected affine lattice lying in `P`, when a lattice is given. |
+| `P.abstract_automorphisms()` | `Aut(P.face_poset())`, acting on the face poset. |
+| `P.geometric_automorphisms()` | Automorphisms preserving the specified placement and its stated affine or metric structure. |
+
+A chosen triangulation over `P` is `(T, r: |T| -> P)`, with simplex and face
+maps retained. The owner of `triangulations(P)` is the category of
+triangulations over `P`, rather than a new class for every adjective. An
+operation `P.triangulate()` may compute and return one such object. Its
+`T.simplices(d)`, `T.simplex_inclusion(sigma)`, and `T.realization_map()`
+have owned endpoints. `Integral` states that the chosen simplex vertices are
+integral in the relevant local charts; `Unimodular` states normalized volume
+one for each maximal simplex. Neither property supplies a hidden choice of
+triangulation.
+
+### Complexes, gluing, surgery, and dual complexes
+
+The cell-complex owner supplies `K.cells(d)`, `K.face_poset()`,
+`K.star(sigma)`, `K.link(sigma)`, and `K.subdivision()`. Stars and links are
+subcomplexes with inclusion maps. A subdivision returns the new complex and
+the comparison `|K'| -> |K|`. `K.realization()` retains each cell's
+characteristic map. In a simplicial complex, `link(sigma)` consists of the
+simplices disjoint from `sigma` whose joins with it lie in `K`. For a
+triangulated surface, vertex links determine the local surface condition.
+Hatcher, *Algebraic Topology*, §2.1 gives the `Delta`-complex gluing model;
+the existing [`simplicial-and-cw-foundations`](../../TODO.md) node owns the
+general complex foundation.
+
+The general gluing input is a finite diagram `D: I -> CellComplexes` of
+pieces, selected faces, and specified face maps. `CellComplexes.colimit(D)`
+returns the quotient `B` and its universal cocone `q_i: D(i) -> B`. Pairwise
+edge gluing and many-piece gluing use the same construction. When affine
+collar maps are supplied, the structured construction also returns the
+singular set, the atlas on its complement, and the maps from every original
+piece. It verifies the topological surface condition separately from the
+affine extension condition; a colimit in cell complexes alone does not imply
+a colimit in singular integral-affine spaces.
+
+Surgery takes `i: Q ↪ P`, replacement `Q'`, and an isomorphism
+`f: boundary(Q') -> boundary(Q)`. Its result is the pushout of the complement
+and replacement, with the old and new maps into that pushout. A basis-triangle
+specialization supplies `p, u, v`, with `(u,v)` a basis of the local tangent
+lattice; a corner specialization supplies its actual region and boundary map.
+The Symington operation supplies its cut, size, and affine reglueing datum
+as in [AEGS, §4]. Each specialization enters the same pushout construction.
+
+For a suitable degeneration `X_0`, `X_0.dual_complex()` returns the
+incidence complex `Gamma(X_0)` together with the correspondence between cells
+and intersections of boundary components. An affine atlas on that complex is
+constructed from additional degeneration data and hypotheses. The dual
+complex alone does not determine it [Foundations, Definition 62.6].
+
+### Actions, embeddings, and display
+
+For a category `C`, `GObjects(G,C)` owns actions `rho: G -> Aut_C(X)`.
+Two specified commuting involutions on `X` define an action of
+`C_2 × C_2`; faithfulness requires a further condition. `X.fixed_locus(g)`
+is a subobject with inclusion where the fixed-locus construction exists.
+There are separate actions on an abstract face poset, a realized polytope,
+and a singular integral-affine space. The maps between their automorphism
+groups are explicit restriction or forgetful homomorphisms, with hypotheses
+for a lift. A symmetry line in a drawing needs an equivariant realization.
+
+An embedding `e: B -> RR^3` is a morphism of the underlying topological or PL
+objects with the embedding property. A sphere cannot embed in `RR^2`; a
+planar picture presents polygon pieces and labelled edge-pairing arrows.
+The drawing and rendering operations consume these mathematical maps. Plot
+coordinates, a mesh, or an interactive view are display artifacts and cannot
+replace `B`, its gluing cocone, or its affine atlas.
+
+### Public/private execution boundary
+
+| Public mathematical contract | Private implementation at its named owner |
+| --- | --- |
+| Categories, `Mor`, subobjects, indexed families, diagrams, functors, and actions | Engine classes, Python containers, adjacency tables, handles, and dispatch state. |
+| Exact atlas, lattice, chart, face, inclusion, projection, and quotient maps | Coordinate arrays, polyhedron records, chart storage, and group-engine objects. |
+| Stars, links, colimits, surgery pushouts, groups, embeddings, and owned results | Incidence traversal, maintained polyhedral and group algorithms, layout, and rendering. |
+
+The selected mathematical operation and its hypotheses determine the private
+computation. The adapter may lower its defining data to a maintained engine,
+compute there, and raise the result through the same category constructor,
+retaining every structural map ([`OWN-02`–`OWN-09`](../../CONTRIBUTING.md)).
+Foreign result objects cannot cross the public boundary through accessors,
+iterators, morphisms, or lazy families. A public `from_raw`, `from_engine`,
+`unwrap`, backend selector, or dynamic forwarding path would create another
+mathematical language from implementation details. Computation that supplies
+only an invariant, such as a group order or polytope dimension, does not
+supply the richer object, action, or embedding whose construction was asked
+for. The general operation remains at its mathematical owner even when a
+particular computational case is unavailable.
+
 ## Dependency and acceptance boundary
 
 The mathematical dependency chain is: spaces and maps; manifolds and atlases;
