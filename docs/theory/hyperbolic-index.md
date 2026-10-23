@@ -134,6 +134,70 @@ signature computation under the promise; it gives no uniform precision bound
 near singularity. A diagonalizing basis can be computed with certified nonzero
 pivots and represented by computable real expressions.
 
+**A rational inverse test avoiding spectral approximation.** The same
+signature computation can use only exact rational determinants, inverses
+and row sums once approximations with error bounds are supplied. For a
+symmetric nonsingular real matrix $G$ of size $r>0$, suppose a chosen
+effective sequence of symmetric rational matrices $A_n$ satisfies
+$|(G-A_n)_{ij}|\le2^{-n}$. Put $e_n=r2^{-n}$. At each stage with
+$\det A_n\ne0$, compute the rational number
+
+$$
+K_n=\|A_n^{-1}\|_\infty
+   =\max_i\sum_j|(A_n^{-1})_{ij}|.
+$$
+
+Stop when $K_ne_n<1$ and return the exact rational inertia of $A_n$.
+The zero-dimensional case returns $(0,0)$ directly.
+
+**Proof of correctness and termination.**
+
+1. The maximum row-sum norm gives $\|G-A_n\|_\infty\le e_n$.
+   When $K_ne_n<1$, every matrix on the symmetric path
+   $A_n+t(G-A_n)$, $0\le t\le1$, is invertible: factor out $A_n$
+   and invert $I+tA_n^{-1}(G-A_n)$ by its convergent geometric series.
+2. Inertia is locally constant on nonsingular symmetric real matrices.
+   For example, after a real congruence to a nonsingular diagonal matrix,
+   sufficiently small perturbations preserve the signs of all leading
+   principal minors, and hence the diagonal signs in elimination.
+   The connected path in step 1 therefore has constant inertia.
+3. Put $K=\|G^{-1}\|_\infty$. For all sufficiently large $n$,
+   $Ke_n<1/2$. The same geometric-series argument, now factoring out
+   $G$, gives $\|A_n^{-1}\|_\infty\le2K$. Consequently
+   $K_ne_n\le2Ke_n\to0$, so the stopping test eventually succeeds.
+4. All stage tests are rational decisions. No real zero test, numerical
+   eigenvalue multiplicity test or advance precision bound is needed.
+   This proves a terminating signature computation under the supplied
+   approximation and nonsingularity hypotheses, not a singular-input
+   decision or a returned splitting basis.
+
+**Input presentation still required.** For a scalar $x\in\mathbb R$, the
+corresponding data can be a chosen map $a:\mathbb N\to\mathbb Q$ with
+$|a(n)-x|\le2^{-n}$ and an effective evaluator for $a(n)$. Matrix data
+consist of these maps for the upper-triangular entries and the retained
+identification of their limits with the entries of $G$. These are
+presentations of real values, not a different field and not a claim of
+decidable equality. Mathlib already constructs the reals from Cauchy
+sequences; see
+[`Real.mk` and `Real.ofCauchy`](https://leanprover-community.github.io/mathlib4_docs/Mathlib/Basic/Real/Basic.html).
+The current Python `RR` constructor instead normalizes through
+`_closed_exact_real_expression` and accepts only closed exact symbolic
+expressions. Its relation evaluator has a finite per-call precision budget; it supplies no
+general Cauchy-sequence input operation. Closed expressions admitting
+effective Arb enclosures are one possible input source for the test above;
+general program-supplied approximations need their own scalar presentation.
+Neither input route is yet connected to this signature computation.
+
+The backend search must also respect the actual documented contracts:
+[FLINT's real-matrix LDL routine](https://flintlib.org/doc/arb_mat.html)
+returns success for positive definiteness, while its real-matrix module
+directs eigenvalue computations to complex ball matrices. That success
+test alone is not a general indefinite-inertia decision. The rational
+inverse test avoids requiring an eigenvalue implementation, but integrating
+the approximation data and returning a basis from that presentation remain
+open work. No new
+spectral routine or real-number representation is implemented by this note.
+
 **Current represented-real route.** This computation takes elements of
 `RR` through their closed exact real expressions. The lattice operations
 now reuse Sage's

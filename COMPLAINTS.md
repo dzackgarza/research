@@ -198,6 +198,22 @@ and lifts, triangular inverse composites and empty inverse remain
 unexecuted under DEV-58. Private external-engine serialization retains
 its selected computation ring.
 
+**Approximation input and backend boundary:** the inspected RR constructor
+normalizes values through `_closed_exact_real_expression`; its current
+input surface supplies no general rational Cauchy-sequence presentation,
+and relation evaluation has a finite per-call precision budget. The theory
+note now specifies a chosen rational approximation map for each Gram
+entry with error at most 2^-n and its identification with that real value.
+Mathlib already has the Cauchy completion of QQ; the outstanding task is
+its computation/presentation integration, not replacing the real field.
+The note gives a complete rational inverse-norm stopping test and proof
+under nonsingularity, avoiding numerical eigenvalue multiplicity tests.
+FLINT documents its real LDL success test for positive definiteness, not
+general indefinite inertia. No general absence of other backends is
+asserted. Approximation admission, the signature computation and a basis
+from that presentation remain unimplemented; this source finding does
+not close the promised computable-real case.
+
 **Dependency path:** exact real scalar arithmetic and relations -> congruence
 diagonalization with its map -> inertia and normalized vectors -> field
 Witt and embedding operations. No new mathematical definition is introduced;
