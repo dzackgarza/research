@@ -666,6 +666,25 @@ integral embedding alone does not suffice: the vector `(1,1)` in
 The inverse must exist over the original ring. Failure of integral
 invertibility is not repaired by silently extending scalars.
 
+For finite nondegenerate `AA` endpoints, embedding witnesses are constructed
+directly:
+
+```python
+T = Lattices(AA)([[3, 1], [1, -2]])
+V = Lattices(AA)([[1, 0, 0], [0, 2, 0], [0, 0, -1]])
+j = T.Emb(V).an_element()
+```
+
+The existing diagonalization isometries give orthogonal bases of the two
+spaces. Match each source basis vector of square $a$ with an unused target
+basis vector of square $b$ of the same sign, and scale its image by
+$\sqrt{a/b}$. This preserves each square and all cross pairings. Transport
+back through the source diagonalization inverse to obtain the map on the
+original source. There are enough target basis vectors exactly when its
+positive and negative inertia dimensions dominate those of the source.
+Otherwise the construction raises an empty-space error. This finite route
+does not enumerate `AA` vectors and does not impose a coordinate bound.
+
 Norm fibres are sets with their inclusions:
 
 ```python

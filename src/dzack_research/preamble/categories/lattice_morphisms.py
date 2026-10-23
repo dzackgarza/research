@@ -2275,10 +2275,49 @@ class LatticeEmbeddingMor(CategoricalMor):
                     return not any(inclusion.codomain().embeds_in_even_unimodular(positive, negative) for inclusion in self.even_overlattice_inclusions())
         return None
 
+    def _real_algebraic_embedding(self):
+        r"""Construct an AA embedding by matching exact diagonal signs.
+
+        Both endpoints have finite nondegenerate forms. Their retained
+        diagonalization isometries give orthogonal bases. Send a source
+        basis vector of square ``a`` to an unused target basis vector of
+        square ``b`` with the same sign, scaled by ``sqrt(a/b)``. No such
+        vector exists exactly when the corresponding inertia inequality
+        fails. Transport along the source inverse and return a map with
+        the original source and target.
+        """
+        source = self.domain()
+        target = self.codomain()
+        ring = source.base_ring()
+        source_diagonalization = source.diagonalization()
+        target_diagonalization = target.diagonalization()
+        diagonal_source = source_diagonalization.domain()
+        available = {1: [], -1: []}
+        for generator in target_diagonalization.domain().module_generators():
+            vector = target_diagonalization(generator)
+            square = target.q(vector)
+            available[1 if square > ring.zero() else -1].append((vector, square))
+        images = []
+        for generator in diagonal_source.module_generators():
+            square = diagonal_source.q(generator)
+            sign = 1 if square > ring.zero() else -1
+            if not available[sign]:
+                raise ValueError(f"there is no lattice embedding of {source} into {target}")
+            vector, target_square = available[sign].pop()
+            images.append(vector * (square / target_square).sqrt())
+        diagonal_embedding = diagonal_source.module_category().Mor(diagonal_source, target)(tuple(images))
+        inverse = source_diagonalization.inverse()
+        return self(tuple(
+            diagonal_embedding(inverse(generator))
+            for generator in source.module_generators()
+        ))
+
     def an_element(self):
         r"""Construct an embedding through an applicable complete route.
 
-        Isometries and primitive embeddings supply affirmative cases;
+        Over AA, finite nondegenerate endpoints use exact diagonalization
+        and matching signs, retaining the original endpoints. Isometries
+        and primitive embeddings supply other affirmative cases;
         their absence does not eliminate finite-index embeddings over ZZ.
         Even-overlattice inclusions retain those nonprimitive candidates.
         Outside the classification routes, finite-rank nondegenerate-source
@@ -2301,6 +2340,17 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: V = Lattices(QQ)([[1, 0], [0, 1]])
             sage: j = T.Emb(V).an_element()
             sage: assert V.gram_tensor().pullback(j) == T.gram_tensor()
+            sage: A = Lattices(AA)([[3, 1], [1, -2]])
+            sage: B = Lattices(AA)([[1, 0, 0], [0, 2, 0], [0, 0, -1]])
+            sage: j = A.Emb(B).an_element()
+            sage: assert j.domain() is A and j.codomain() is B
+            sage: assert B.gram_tensor().pullback(j) == A.gram_tensor()
+            sage: P = Lattices(AA)([[1, 0], [0, 1]])
+            sage: H = Lattices(AA)([[1, 0], [0, -1]])
+            sage: P.Emb(H).an_element()  # doctest: +ELLIPSIS
+            Traceback (most recent call last):
+            ...
+            ValueError: there is no lattice embedding of ... into ...
             sage: Z = Lattices(QQ)(0)
             sage: assert Z.Emb(V).is_empty() is False
             sage: assert Z.Emb(V).an_element().domain() is Z
@@ -2316,6 +2366,16 @@ class LatticeEmbeddingMor(CategoricalMor):
             raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
         source = self.domain()
         target = self.codomain()
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+
+        if (
+            source.base_ring() is _owned_real_algebraic_numbers()
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            return self._real_algebraic_embedding()
         if (
             source.module_rank().is_finite()
             and target.module_rank().is_finite()
