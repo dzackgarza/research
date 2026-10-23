@@ -10,10 +10,23 @@ from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as engine_parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
     OwnedCategory,
     OwnedParameterizedCategory,
 )
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.hyperbolic_geometry import HyperbolicSpaces
+from dzack_research.preamble.categories.metric_affine_spaces import (
+    EuclideanSpaces,
+    SphericalSpaces,
+)
+from dzack_research.preamble.categories.real_affine_spaces import RealAffineSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
@@ -82,6 +95,138 @@ class AbstractPolytopes(OwnedCategory):
     class ParentMethods:
         def face_poset(self):
             return self
+
+
+class PlacedPolytopeMor(CategoricalMor):
+    r"""Ambient maps taking faces to faces and commuting with placements."""
+
+    class ElementMethods:
+        def ambient_map(self):
+            raise NotImplementedError("the polytope map must retain its ambient map")
+
+        def face_poset_map(self):
+            raise NotImplementedError("the polytope map must retain its rank-preserving face map")
+
+        def __mul__(self, other):
+            raise NotImplementedError("composition needs both ambient and face maps")
+
+    def _element_constructor_(self, ambient_map, face_poset_map):
+        raise NotImplementedError(
+            "a placed-polytope map needs its commuting ambient-inclusion square "
+            "and rank-preserving face map"
+        )
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a placed-polytope identity requires the same source and target")
+        raise NotImplementedError("the identity needs the ambient and face identities")
+
+
+class PlacedPolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = PlacedPolytopeMor
+
+
+class _PlacedPolytopeFacePosetFunctor(Functor):
+    def __init__(self, source):
+        super().__init__(source, AbstractPolytopes())
+
+    def _apply_object(self, polytope):
+        return polytope.face_poset()
+
+    def _apply_morphism(self, morphism):
+        return morphism.face_poset_map()
+
+
+class _PlacedPolytopeCategory(OwnedParameterizedCategory):
+    r"""Polytopes whose selected inclusion has one fixed geometric ambient."""
+
+    _MorCategory = PlacedPolytopeMorCategoryConstruction
+
+    def ambient_space(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        raise NotImplementedError("a placed polytope needs its ambient inclusion and faces")
+
+    def on(self, defining_data, ambient_inclusion):
+        raise NotImplementedError(
+            "construction needs a bounded convex or geodesically convex subset, "
+            "its exact ambient inclusion, and all face incidences"
+        )
+
+    @cached_method
+    def face_posets(self):
+        return _PlacedPolytopeFacePosetFunctor(self)
+
+    class ParentMethods:
+        def ambient_space(self):
+            raise NotImplementedError("the constructor must retain the selected ambient space")
+
+        def ambient_inclusion(self):
+            raise NotImplementedError("the constructor must retain the exact ambient inclusion")
+
+        def vertices(self):
+            raise NotImplementedError("the constructor must retain its ambient points")
+
+        def faces(self, dimension):
+            raise NotImplementedError("faces need their dimensions and incidence maps")
+
+        def face_inclusion(self, face):
+            raise NotImplementedError("each face needs its arrow to this polytope")
+
+        def face_poset(self):
+            raise NotImplementedError("the graded incidence poset needs the selected faces")
+
+        def boundary(self):
+            raise NotImplementedError("the boundary complex needs its inclusion")
+
+
+class ConvexPolytopesIn(_PlacedPolytopeCategory):
+    r"""Bounded convex subsets of one real affine space."""
+
+    def parameter_category(self):
+        return RealAffineSpaces()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed convex affine polytopes"
+
+
+class EuclideanPolytopesIn(_PlacedPolytopeCategory):
+    r"""Bounded convex polytopes in one selected Euclidean space."""
+
+    def parameter_category(self):
+        return EuclideanSpaces()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed Euclidean polytopes"
+
+
+class SphericalGeodesicPolytopesIn(_PlacedPolytopeCategory):
+    r"""Geodesically convex polytopes in one selected round sphere."""
+
+    def parameter_category(self):
+        return SphericalSpaces()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed spherical geodesic polytopes"
+
+
+class HyperbolicGeodesicPolytopesIn(_PlacedPolytopeCategory):
+    r"""Geodesically convex polytopes in one selected hyperbolic space."""
+
+    def parameter_category(self):
+        return HyperbolicSpaces(self.parameter().dimension())
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed hyperbolic geodesic polytopes"
 
 
 class RegularPolytopes(OwnedCategory):
@@ -956,9 +1101,14 @@ def _convex_polytope(
 
 
 __all__ = [
+    "AbstractPolytopes",
+    "ConvexPolytopesIn",
     "ConvexPolygons",
     "ConvexPolytopes",
+    "EuclideanPolytopesIn",
+    "HyperbolicGeodesicPolytopesIn",
     "LatticePolygons",
     "LatticePolytopes",
     "RegularPolytopes",
+    "SphericalGeodesicPolytopesIn",
 ]
