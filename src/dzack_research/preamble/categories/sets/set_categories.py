@@ -5857,8 +5857,6 @@ class PartiallyOrderedSets(OwnedCategory):
 class TotallyOrderedSets(OwnedCategory):
     r"""Sets equipped with a total order."""
 
-    _MorCategory = PartiallyOrderedSetMorCategoryConstruction
-
     def an_object(self) -> ObjectOfCategory:
         r"""The natural numbers, totally ordered."""
         return NN
@@ -6001,8 +5999,6 @@ class PartiallyOrderedSetMor(CategoricalMor):
 
 class WellOrderedSets(OwnedCategory):
     r"""Well-ordered sets with order-preserving maps."""
-
-    _MorCategory = PartiallyOrderedSetMorCategoryConstruction
 
     def an_object(self) -> ObjectOfCategory:
         return finite_ordinal_set(3)
