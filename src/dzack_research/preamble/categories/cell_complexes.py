@@ -221,6 +221,10 @@ class CellComplexes(OwnedCategory):
         def regularization(self):
             pass
 
+        def regularization_comparison(self, regularization):
+            r"""Map a selected mapping-cylinder regularization to this complex."""
+            pass
+
         def characteristic_map(self, cell):
             r"""Return the selected map from the closed cell to this complex."""
             pass
