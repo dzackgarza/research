@@ -3679,22 +3679,20 @@ class _ConditionSetEngine:
         self._universe = universe
         self._predicate = predicate
         self._admitted_members = {}
-        self._selected_point_map = None
+        self._selected_point_computation = None
         super().__init__(facade=True, **rest)
 
-    def _retain_point_map(self, point_map):
-        r"""Retain a lazy choice computation with its actual subset endpoint.
+    def _retain_point_computation(self, computation: Callable[[], SourcePointT]) -> None:
+        r"""Retain a private, possibly failing choice computation.
 
-        Protected realization contract: the map is from a selected
-        singleton to this subset. Its evaluation may fail computationally;
-        retaining it alone neither admits a point nor decides nonemptiness.
-        The norm-fibre realization supplies this map from its norm solver.
+        Protected realization contract: a successful computation returns
+        a member of this subset. It may raise for an empty subset or
+        unavailable computation. It is not a mathematical map from a
+        singleton, which would assert nonemptiness. Retaining it alone
+        neither admits a point nor decides nonemptiness. The norm-fibre
+        realization supplies its existing equation solver here.
         """
-        if point_map.codomain() is not self:
-            raise ValueError("a selected point map must end in this subset")
-        if point_map.domain().cardinality() != cardinal(1):
-            raise ValueError("a selected point map must start at a singleton")
-        self._selected_point_map = point_map
+        self._selected_point_computation = computation
 
     def _retain_admitted_member(self, element):
         r"""Retain an actual member whose membership was supplied by construction.
@@ -3702,7 +3700,7 @@ class _ConditionSetEngine:
         Protected ingress contract under OWN-05. Callers are successful
         predicate admission, an additive-submonoid constructor's admitted
         zero or generators, and a protected subset inclusion applied to an
-        admitted source point. The norm-fibre point map also supplies the
+        admitted source point. The norm-fibre choice computation also supplies the
         actual solution returned by its equation solver. This records
         that point, not a decision of
         the defining predicate and not a rule for admitting arbitrary data.
@@ -3721,7 +3719,7 @@ class _ConditionSetEngine:
         An already admitted point supplies the choice without an
         enumeration, including for a subset of an uncountable set.
         Otherwise ``__iter__`` owns the enumeration and requires each encountered
-        membership to be decided. A retained point map is evaluated before
+        membership to be decided. A retained point computation is evaluated before
         requesting an enumeration; its computational failure propagates.
         No cardinality computation is needed to
         find a point. An exhausted finite enumeration raises
@@ -3759,9 +3757,8 @@ class _ConditionSetEngine:
         """
         if self._admitted_members:
             return next(iter(self._admitted_members.values()))
-        if self._selected_point_map is not None:
-            point_map = self._selected_point_map
-            return point_map(point_map.domain().an_element())
+        if self._selected_point_computation is not None:
+            return self._retain_admitted_member(self._selected_point_computation())
         return next(iter(self))
 
     def universe(self) -> Sets().ObjectType:

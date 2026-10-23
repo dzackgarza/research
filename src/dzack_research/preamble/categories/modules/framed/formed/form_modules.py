@@ -2128,15 +2128,13 @@ class FormModules(OwnedCategoryOverBaseRing):
                         and self.module_rank().is_finite()
                         and self in FormModules(ring).Nondegenerate()):
                     locus = fibre.object()
-                    singleton = finite_ordered_set((0,))
-
-                    def point(_label):
+                    def point():
                         # The solver supplies a solution of this exact
                         # equation; admission retains that actual point
                         # without trying to decide its scalar equation again.
-                        return locus._retain_admitted_member(self.representation_vector(square))
+                        return self.representation_vector(square)
 
-                    locus._retain_point_map(OwnedSets().Mor(singleton, locus)(point))
+                    locus._retain_point_computation(point)
             return fibre
 
         def elements_of_norm(self, value):
@@ -2176,6 +2174,13 @@ class FormModules(OwnedCategoryOverBaseRing):
                 sage: assert W.q(fresh.inclusion()(point)) == RR(3)
                 sage: assert fresh.is_empty() is False
                 sage: assert fresh.an_element() is point
+                sage: excluded = W.elements_of_norm(RR(-1))
+                sage: excluded.an_element()  # doctest: +ELLIPSIS
+                Traceback (most recent call last):
+                ...
+                ValueError: ... does not represent -1
+                sage: from dzack_research.preamble.logic import Predicate
+                sage: assert isinstance(excluded.is_empty(), Predicate)
             """
             return self.square_fibre(value).object()
 

@@ -1676,30 +1676,29 @@ form is singular or definite. This supplies a source specimen for locus
 construction with undecided inertia; it does not claim enumeration of
 all real points.
 
-**Fresh norm-fibre point selection.** A predicate subset can now retain
-an actual map from a selected singleton into itself as its private lazy
-point computation. Retaining that map evaluates no point and makes no
-nonemptiness decision. Choice first returns an admitted point, then
-uses the selected map if present, and otherwise requests the existing
-ambient enumeration. Evaluation failures propagate; they are not caught
-and interpreted as emptiness.
+**Fresh norm-fibre point selection.** A predicate-subset realization can
+now retain a private, possibly failing point computation. This is
+computational data, not a mathematical map from a singleton into the
+subset: such a map would assert nonemptiness, which is not known merely
+because a solver is available. Retaining the computation evaluates no
+point and makes no nonemptiness decision. Choice first returns an
+admitted point, then invokes the computation if present, and otherwise
+requests the existing ambient enumeration. Evaluation failures propagate;
+they are not interpreted as emptiness or as successful admission.
 
 For a supplied finite nondegenerate lattice over QQ, AA or represented
-RR with scalar-valued form, the norm-fibre constructor now retains such
-a map. On evaluation it calls the existing `representation_vector(a)`
-and admits that actual solution in the original equalizer, without
-re-deciding the equation that the solver constructs. The map's actual
-codomain is the original fibre, so its ordinary set-map evaluation
-retains the inclusion and ambient endpoint. Once selected, the point is
-retained and subsequent choice requests reuse it. Canonical zero keeps
-its earlier immediate route. Other forms retain their prior search or
-unavailable computation. An arbitrary requested-real zero decision can
-still be unavailable, and no solver is inferred for arbitrary predicate
-subsets. This composes the existing norm solver with choice lazily; it
-neither solves while constructing the locus nor enumerates real points.
-The fresh positive real line specimen requests a norm-three point without
-manual admission. Its execution remains deferred with the other source
-specimens.
+RR with scalar-valued form, the norm-fibre constructor retains a
+computation invoking the existing `representation_vector(a)`. On success,
+the subset owner admits that returned solution in the original equalizer,
+without re-deciding the equation constructed by the solver. The original
+fibre and inclusion remain unchanged; later choice requests reuse the
+actual point. Canonical zero keeps its immediate route. Other forms
+retain their prior search or unavailable computation. Arbitrary requested
+real zero status can still be unavailable, and no solver is inferred
+for arbitrary predicate subsets. The fresh positive real line specimen
+requests norm three without manual admission; a negative norm exercises
+failure without retaining a point or changing the emptiness proposition.
+Their execution remains deferred with the other source specimens.
 
 **Element equations retain predicates.** For a supplied vector $v$,
 `v.is_isotropic()` denotes $q(v)=0$, `v.is_orthogonal_to(w)` denotes
