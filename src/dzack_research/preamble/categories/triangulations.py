@@ -121,6 +121,12 @@ class ChosenTriangulations(OwnedParameterizedCategory):
         def simplex_inclusion(self, simplex):
             return self._simplex_inclusions[simplex]
 
+        def covers_target(self):
+            pass
+
+        def intersections_are_common_faces(self):
+            pass
+
     class Integral(CategoryWithAxiom):
         r"""Chosen triangulations integral relative to the target's selected lattices."""
 
@@ -128,8 +134,15 @@ class ChosenTriangulations(OwnedParameterizedCategory):
             def lattice_comparison(self):
                 pass
 
+            def simplex_vertices_are_integral(self, simplex):
+                pass
+
     class Unimodular(CategoryWithAxiom):
         r"""Integral triangulations whose maximal simplices have normalized volume one."""
 
         def extra_super_categories(self):
             return [self.base_category().Integral()]
+
+        class ParentMethods:
+            def normalized_volume(self, simplex):
+                pass
