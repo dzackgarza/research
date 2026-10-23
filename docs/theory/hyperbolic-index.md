@@ -1640,6 +1640,23 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Perpendiculars and supplied decompositions | `orthogonal_complement`, `orthogonal_splitting`, `orthogonal_decomposition` | Retain the supplied first embedding and full kernel inclusion; direct-sum hypotheses remain essential |
 | Target hyperbolic index and maximal splitting | Mathematical contracts in this note | Their main computations remain explicitly deferred by the owner's dependency-only assignment |
 
+**Existing integral-index method outside this assignment.** The repository
+already contains `Lattices.integral_hyperbolic_index`, introduced before
+this dependency work (source history `57c8eb1cb06`, with later genus
+adapter changes at `e6ecd9d27a6`). It searches from the inertia bound
+downward, comparing the genus of the input with genera of hyperbolic
+planes plus possible complementary genera. It returns an integer, not
+a decomposition map. Its short docstring claims the actual integral
+summand index but does not identify the global theorem converting the
+tested genus decomposition into a splitting of that specified lattice.
+That theorem/citation coverage question is recorded in COMPLAINTS.md;
+no counterexample or mathematical invalidity is claimed here. This
+pre-existing computation is distinct from the requested new contracts
+`hyperbolic_index` and `maximal_hyperbolic_index_splitting`, whose main
+implementation remains deferred. The dependency-only work neither
+changes that method's algorithm nor treats its existence as completion
+of the requested constructive splitting.
+
 ### Invariants, predicates, and decomposition morphisms
 
 In this subsection $T$ is a nondegenerate symmetric bilinear module over

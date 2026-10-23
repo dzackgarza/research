@@ -150,6 +150,22 @@ specimens are in the method docstring and owned by
 
 ### Generic computable-real linear algebra still has partial scalar decisions
 
+**Existing integral-index genus-to-lattice justification:** the declaration
+audit found `lattices.py:integral_hyperbolic_index`, introduced at
+`57c8eb1cb06` and adapted at `e6ecd9d27a6`. Its implementation compares
+the original genus with possible genera `U^m + M`, whereas its docstring
+asserts the largest actual integral hyperbolic summand. The missing
+documentation is the precise global theorem, with hypotheses and source,
+that makes the affirmative genus test a splitting of the specified
+lattice. Genus equality is the observed computation; no counterexample
+to this particular criterion is asserted. The method is also consumed
+by the existing pointed lattice code's two-plane applicability test.
+This proof-coverage question belongs with the eventual main integral
+index work, not a new implementation inside the dependency-only task.
+Record the local-to-global declaration/source when that work is taken;
+the current dependency note identifies the existing method and keeps
+its returned integer distinct from a constructive maximal isometry.
+
 **Formal nondegeneracy preservation for orthogonal sums:** the source
 constructor now retains supplied nondegenerate placements of every
 summand, including the empty sum, without a new determinant query.
