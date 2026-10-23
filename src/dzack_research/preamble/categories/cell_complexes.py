@@ -125,6 +125,10 @@ class CellComplexes(OwnedCategory):
         r"""Present the finite face-pairing data as a diagram in this category."""
         pass
 
+    def from_face_gluing_diagram(self, diagram, colimit_cocone):
+        r"""Select the quotient complex with every piece-to-quotient arrow."""
+        pass
+
     def surgery(self, region_inclusion, replacement, boundary_isomorphism):
         r"""Select the pushout of a region complement and a boundary-matched replacement."""
         pass
@@ -159,6 +163,21 @@ class CellComplexes(OwnedCategory):
             pass
 
         def face_inclusion(self, face, cell):
+            pass
+
+        def face_gluing_diagram(self):
+            pass
+
+        def gluing_cocone(self):
+            pass
+
+        def piece_inclusion(self, piece):
+            pass
+
+        def surgery_span(self):
+            pass
+
+        def surgery_cocone(self):
             pass
 
         def realization(self):
