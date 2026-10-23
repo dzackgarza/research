@@ -282,6 +282,9 @@ class PolytopalComplexes(OwnedCategory):
         def face_maps(self):
             return self._face_maps
 
+        def face_map(self, face, cell):
+            return self._face_maps[face, cell]
+
         def face_poset(self):
             pass
 
@@ -398,6 +401,9 @@ class DeltaComplexes(OwnedCategory):
 
         def face_maps(self):
             return self._face_maps
+
+        def face_map(self, simplex, index):
+            return self._face_maps[simplex, index]
 
         def face_poset(self):
             pass
