@@ -189,6 +189,6 @@ class ComplexAffineSpaces(OwnedCategory):
         def translation_action(self):
             return self._translation_action
 
-        def identity_chart(self):
-            r"""The global holomorphic affine chart on this exact affine space."""
+        def chart_at(self, origin):
+            r"""The global holomorphic chart carrying ``origin`` to zero of the model space."""
             pass
