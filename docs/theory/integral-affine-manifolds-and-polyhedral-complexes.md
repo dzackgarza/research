@@ -2,8 +2,11 @@
 
 This document specifies the mathematical objects and maps needed to construct the
 integral-affine spheres of [AEGS, §4]. It is a category design, not a claim that
-the stated constructions have been implemented. The research preamble presents
-these objects and maps and may use maintained geometry engines privately. The
+the stated constructions have been implemented. Under [INTENT.md](../../INTENT.md),
+`lean-categories` owns their definitions, categories, constructors and functors.
+`lean-cas-dsl` consumes those declarations and owns the permanent mathematical
+acceptance assertions. The research preamble presents the declared objects
+and maps and may supply computations through private geometry engines. The
 relevant existing presentations are
 [`manifolds.py`](../../src/dzack_research/preamble/categories/manifolds.py),
 [`polytopes.py`](../../src/dzack_research/preamble/categories/schemes/polytopes.py),
@@ -601,8 +604,9 @@ surgery span, a finite gluing diagram, its topological colimit and cocone,
 the surface-link condition, the induced regular-locus affine atlas, the
 `IAS^2` sphere property, one group action, and an equivariant realization.
 Each construction consumes the exact objects and maps produced before it.
-The corresponding category, property, or functor is defined at its preamble
-owner ([category presentation procedure](../../CONTRIBUTING.md)).
+The corresponding category, property, or functor is defined in
+`lean-categories`; its preamble presentation follows that declaration
+([category presentation procedure](../../CONTRIBUTING.md)).
 
 ## External prior art and computational reuse
 
@@ -680,18 +684,28 @@ that node rather than create a second complex hierarchy. The existing
 foundational repairs. Phase labels describe dependency order, not separate
 repositories or acceptance by an AEGS consumer.
 
+Each phase preserves the authority split in [INTENT.md](../../INTENT.md).
+Formal definitions and laws belong to `lean-categories`. The language kernel
+derives the public operations from those declarations. Computational answers
+are checked by permanent assertions in `lean-cas-dsl`, with expected values
+from formal proofs, cited results or independent oracles. Those assertions
+use only mathematical objects and operations. They are fixed before the
+corresponding leaf implementation is written and remain fixed when it changes.
+The preamble paths below locate reusable presentations and computations;
+their declarations require comparison with the formal owners.
+
 ### P1. Category subtree and complete typing
 
-Present the graph above in the preamble, starting with
-the existing nodes and their actual category constructions. Stub
-only the mathematically missing nodes and methods. This phase defines the
-public language; it does not select a data class, algorithm, renderer, or
-special-case AEGS constructor.
+Resolve every node and arrow of the graph to its declaration in
+`lean-categories`, including parameter types, morphisms and functor laws.
+Request missing mathematics there with its defining data and sources.
+Present the declared graph through the existing category constructions and
+stub its unfinished presentation paths. The formal declarations determine
+the public language. This phase fixes the complete typing before selecting
+representations or algorithms.
 
-The P1 ownership tree keeps existing owners in place. The three new
-surfaces below are **category stubs**, not replacement algorithms; their
-final filenames follow the mathematical owner in the preamble and
-the existing complex TODO node.
+The P1 presentation tree locates the existing source declarations. The
+coverage register below states the unfinished construction paths.
 
 ```text
 src/dzack_research/preamble/categories/
@@ -702,15 +716,14 @@ src/dzack_research/preamble/categories/
   lattices.py, polyhedral_cones.py           existing lattices, cones
   hyperbolic_geometry.py                    existing hyperbolic owners
   group/g_objects.py                        existing actions and quotients
-  [common complexes owner]                  P1 stub at the existing TODO owner
-  [integral-affine owner]                   P1 atlas and singular-space stubs
-  [chosen-triangulation owner]              P1 construction over its target
+  cell_complexes.py                         common complex presentations
+  integral_affine_manifolds.py              affine and singular-space presentations
+  integral_affine_atlases.py                selected affine atlas presentations
+  triangulations.py                        chosen triangulation over its target
 ```
 
-The brackets are unresolved *paths*, not unresolved mathematical owners.
-P1 closes them by following the category definitions and the
-current modules. A new file cannot provide another route to an operation
-already owned by one of the listed modules.
+Each path presents the corresponding formal object, map or construction.
+Shared operations use their existing presentation owner.
 
 | Subtree | Required P1 surface |
 | --- | --- |
@@ -753,8 +766,11 @@ forgetful image. Do not manufacture a separate `Hom`/`Aut` class when `Cat`
 already constructs it. A property such as `Sphere`, `Integral`, `Kan`, or
 `PureDimension(2)` is a refinement of its owner under its stated
 hypotheses. The P1 coverage register is the complete graph in this document:
-every node and arrow must resolve to an existing preamble owner or a
-new declaration at the mathematical owner before P1 closes. Sample chains include
+every node and arrow must resolve to a formal declaration and its typed
+presentation path before P1 closes. Record the formal declaration name,
+source revision and exact parameter and map correspondence for each path.
+The source-level register above supplies the preamble half of this comparison.
+Sample chains include
 `RR -> SmoothRealManifolds(1) -> TopologicalSpaces`,
 `P -> faces(P) -> face_poset(P) -> Aut(face_poset(P))`, and
 `D -> colimit(D) -> underlying_space(colimit(D))`. Each chain must preserve
@@ -762,11 +778,33 @@ the same source object and its actual arrows. An unfinished stub has a `pass` bo
 it may not fabricate an object, drop a map, or use an engine
 object as a public endpoint.
 
+#### Formal correspondence established by source inspection
+
+The inspected `lean-categories` revision is
+[`afab74f345058839af07e11f2081f011995bf7d9`](https://github.com/dzackgarza/lean-categories/tree/afab74f345058839af07e11f2081f011995bf7d9).
+Its [`Orders/FiniteGradedPoset.lean`](https://github.com/dzackgarza/lean-categories/blob/afab74f345058839af07e11f2081f011995bf7d9/LeanCategories/Orders/FiniteGradedPoset.lean)
+defines the finite graded-poset branch as follows.
+
+| Formal declaration or datum | Preamble presentation | Correspondence |
+| --- | --- | --- |
+| `FiniteGradedPoset`: finite partial order with `GradeOrder ℤ` | `FiniteGradedPosets.on(poset, grade)` | Retains the selected finite partial order and its integer grading map. Mathlib `GradeOrder` requires strict monotonicity and preservation of covers. |
+| `FiniteGradedPoset.Hom` | `FiniteGradedPosetMor`, `FiniteGradedPosetMorphism` | Retains the monotone map and states preservation of the selected grade. |
+| The `Category FiniteGradedPoset` instance | `FiniteGradedPosetMor.identity`, `FiniteGradedPosetMorphism.__mul__` | Uses the identity and composition of the underlying order maps. |
+| `FiniteGradedPoset.forget : FiniteGradedPoset ⥤ PartOrd` | `FiniteGradedPosets.forget()` | Sends an object to its retained order and an arrow to its retained order map. |
+
+This comparison identifies the intended declarations and source paths.
+Constructor data, requested validation, functor laws and computational
+acceptance remain obligations of P2, P3 and P5. The abstract-polytope
+refinement still needs the diamond and strong flag-connectivity axioms at
+the formal owner; its observed gap is recorded in
+[COMPLAINTS.md](../../COMPLAINTS.md#abstract-polytope-axioms-lack-a-formal-owner-in-the-inspected-source).
+The remaining branches require the same declaration-level comparison.
+
 ### P2. Defining data and canonical constructors
 
-At each P1 owner, specify the minimum **mathematical** datum from which an
-object is determined, then make its constructor retain that datum and its
-source maps. A smooth manifold is the selected compatible atlas on the
+At each P1 owner, use the formal constructor's defining datum and hypotheses,
+then make its presentation retain that datum and its source maps.
+A smooth manifold is the selected compatible atlas on the
 same topological manifold; an integral-affine manifold selects affine
 transitions on that smooth manifold; a singular one selects
 `Sigma -> B` and an atlas on the exact complement. A placed polytope keeps
@@ -820,8 +858,9 @@ operation-to-engine map and a typed raise path for every adopted engine.
 Expose category-owned faces, incidence posets, abstract and placed
 automorphisms, stars, links, subdivisions, integral points, chosen
 triangulations, local-system transport, colimits, and embeddings by
-composing P3 and P4. At each owner, verify true assertions with an
-independent source or oracle: a face inclusion preserves incidence;
+composing P3 and P4. In the `lean-cas-dsl` acceptance suite, verify true
+assertions about each mathematical owner with an independent source or
+oracle: a face inclusion preserves incidence;
 simplex images cover the target and intersect along common faces; a
 unimodular lattice triangle has normalized area one; `link_K(v)` is the
 specified subcomplex; the face-poset group acts by rank-preserving
@@ -834,8 +873,11 @@ number, picture or successful backend call.
 
 ### P6. Construct the determined second residue
 
-Only after P1--P5, implement the structural operations for which the
-first-residue survey found no existing preamble presentation: the
+Only after P1--P5, construct the remaining structural operations from their
+formal definitions. Each missing definition or law is supplied by
+`lean-categories`, followed by its derived language operation and permanent
+`lean-cas-dsl` assertions, then its computational realization. The operations
+for which the first-residue survey found no existing preamble presentation are: the
 integral-affine transition predicate and atlas on the exact manifold;
 its integral tangent local system and comparison to derivatives; the
 singular-locus/complement object; affine collar extension after a
@@ -861,7 +903,7 @@ gluing diagram is a colimit, but an affine structure on that colimit requires
 the additional local extension argument above. No leaf computation or drawing
 is evidence for a mathematical assertion in this chain.
 
-Useful mathematical assertions at the owners include: the face maps of a
+Required mathematical assertions in `lean-cas-dsl` include: the face maps of a
 triangulation cover its polygon with the prescribed intersections; the
 boundary quotient of two disks is a sphere; every regular vertex link is a
 circle; the product of transition maps around a designated singular vertex
