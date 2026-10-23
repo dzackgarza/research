@@ -23,6 +23,7 @@ from dzack_research.preamble.categories.manifolds_with_boundary import (
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -102,21 +103,30 @@ class IntegralAffineManifolds(OwnedCategory):
 
     def on(self, smooth_manifold, affine_atlas):
         r"""Equip the exact smooth manifold with a selected integral-affine atlas."""
-        pass
+        return _object_of(
+            self,
+            smooth_manifold=smooth_manifold,
+            affine_atlas=affine_atlas,
+        )
 
     @cached_method
     def forget(self):
         return _UnderlyingSmoothManifoldFunctor(self, SmoothManifolds())
 
     class ParentMethods:
+        def __init__(self, smooth_manifold, affine_atlas, **rest):
+            self._smooth_manifold = smooth_manifold
+            self._affine_atlas = affine_atlas
+            super().__init__(**rest)
+
         def underlying_smooth_manifold(self):
-            pass
+            return self._smooth_manifold
 
         def affine_charts(self):
-            pass
+            return self.affine_atlas().affine_charts()
 
         def affine_atlas(self):
-            pass
+            return self._affine_atlas
 
         def integral_tangent_lattice(self):
             pass
@@ -171,7 +181,11 @@ class IntegralAffineManifoldsOfDimension(OwnedParameterizedCategory):
         pass
 
     def on(self, smooth_manifold, affine_atlas):
-        pass
+        return _object_of(
+            self,
+            smooth_manifold=smooth_manifold,
+            affine_atlas=affine_atlas,
+        )
 
     @cached_method
     def forget(self):
