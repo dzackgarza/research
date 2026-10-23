@@ -62,12 +62,7 @@ class IntegralAffineManifoldMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, smooth_map, local_affine_maps):
-        if (
-            smooth_map.domain() is not self.domain().underlying_smooth_manifold()
-            or smooth_map.codomain() is not self.codomain().underlying_smooth_manifold()
-        ):
-            raise ValueError("the smooth map must join the selected underlying manifolds")
-        return self.element_class(self, smooth_map, local_affine_maps)
+        pass
 
     @object_level
     def identity(self):
@@ -269,7 +264,7 @@ class IntegralAffineLocalIsomorphismMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, affine_morphism):
-        return self.element_class(self, affine_morphism)
+        pass
 
     @object_level
     def identity(self):
@@ -347,12 +342,7 @@ class _StratifiedIntegralAffineMor(CategoricalMor):
     ElementMethods = _StratifiedIntegralAffineMapMethods
 
     def _element_constructor_(self, smooth_stratified_map, interior_affine_map, local_affine_maps):
-        return self.element_class(
-            self,
-            smooth_stratified_map,
-            interior_affine_map,
-            local_affine_maps,
-        )
+        pass
 
     @object_level
     def identity(self):
@@ -556,29 +546,7 @@ class SingularIntegralAffineSpaceMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, topological_map, singular_locus_map, regular_affine_map):
-        source = self.domain()
-        target = self.codomain()
-        if (
-            topological_map.domain() is not source.underlying_topological_space()
-            or topological_map.codomain() is not target.underlying_topological_space()
-        ):
-            raise ValueError("the topological map must join the selected underlying spaces")
-        if (
-            singular_locus_map.domain() is not source.singular_locus()
-            or singular_locus_map.codomain() is not target.singular_locus()
-        ):
-            raise ValueError("the singular-locus map must join the selected singular loci")
-        if (
-            regular_affine_map.domain() is not source.regular_affine_manifold()
-            or regular_affine_map.codomain() is not target.regular_affine_manifold()
-        ):
-            raise ValueError("the regular affine map must join the selected regular loci")
-        return self.element_class(
-            self,
-            topological_map,
-            singular_locus_map,
-            regular_affine_map,
-        )
+        pass
 
     @object_level
     def identity(self):
@@ -913,44 +881,13 @@ class SingularIntegralAffineLocalModelMor(CategoricalMor):
             return self._pointed_map(point)
 
         def underlying_singular_affine_morphism(self):
-            source = self.domain().underlying_singular_affine_space()
-            target = self.codomain().underlying_singular_affine_space()
-            return SingularIntegralAffineSpaces(self.parent().base_category().dimension()).Mor(
-                source,
-                target,
-            )(
-                self.underlying_pointed_map(),
-                self.singular_locus_morphism(),
-                self.regular_affine_morphism(),
-            )
+            pass
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, pointed_map, singular_locus_map, regular_affine_map):
-        source = self.domain()
-        target = self.codomain()
-        if (
-            pointed_map.domain() is not source.topological_neighborhood()
-            or pointed_map.codomain() is not target.topological_neighborhood()
-        ):
-            raise ValueError("the pointed map must join the selected neighborhoods")
-        if (
-            singular_locus_map.domain() is not source.singular_locus_inclusion().domain()
-            or singular_locus_map.codomain() is not target.singular_locus_inclusion().domain()
-        ):
-            raise ValueError("the singular-locus map must join the selected local singular loci")
-        if (
-            regular_affine_map.domain() is not source.regular_affine_manifold()
-            or regular_affine_map.codomain() is not target.regular_affine_manifold()
-        ):
-            raise ValueError("the regular affine map must join the selected local regular loci")
-        return self.element_class(
-            self,
-            pointed_map,
-            singular_locus_map,
-            regular_affine_map,
-        )
+        pass
 
     @object_level
     def identity(self):
