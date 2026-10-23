@@ -1,5 +1,6 @@
-r"""Chosen triangulations over an exact cell-complex target."""
+r"""Chosen triangulations over an exact geometric or complex target."""
 
+from sage.categories.category_with_axiom import all_axioms
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -11,8 +12,14 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedParameterizedCategory,
 )
-from dzack_research.preamble.categories.cell_complexes import CellComplexes, SimplicialComplexes
+from dzack_research.preamble.categories.cell_complexes import SimplicialComplexes
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
+
+
+for _axiom in ("Integral", "Unimodular"):
+    if _axiom not in all_axioms:
+        all_axioms.add(_axiom)
 
 
 class ChosenTriangulationMor(CategoricalMor):
@@ -53,12 +60,12 @@ class _TriangulationSourceFunctor(Functor):
 
 
 class ChosenTriangulations(OwnedParameterizedCategory):
-    r"""Pairs ``(T, |T| -> K)`` for one selected cell complex ``K``."""
+    r"""Pairs ``(T, |T| -> K)`` over one exact represented target ``K``."""
 
     _MorCategory = ChosenTriangulationMorCategoryConstruction
 
     def parameter_category(self):
-        return CellComplexes()
+        return Objects()
 
     def super_categories(self):
         return [Objects()]
@@ -93,3 +100,16 @@ class ChosenTriangulations(OwnedParameterizedCategory):
 
         def simplex_inclusion(self, simplex):
             pass
+
+    class Integral(CategoryWithAxiom):
+        r"""Chosen triangulations integral relative to the target's selected lattices."""
+
+        class ParentMethods:
+            def lattice_comparison(self):
+                pass
+
+    class Unimodular(CategoryWithAxiom):
+        r"""Integral triangulations whose maximal simplices have normalized volume one."""
+
+        def extra_super_categories(self):
+            return [self.base_category().Integral()]
