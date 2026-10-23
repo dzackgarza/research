@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.sets.finite_graded_posets import FiniteGradedPosets
+from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
@@ -129,6 +130,19 @@ class _ComplexFacePosetFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         return morphism.face_poset_map()
+
+
+class _OrderComplexFunctor(Functor):
+    r"""Take chains of a poset and map them along monotone maps."""
+
+    def __init__(self):
+        super().__init__(PartiallyOrderedSets(), SimplicialComplexes())
+
+    def _apply_object(self, poset):
+        return self.codomain().order_complex(poset)
+
+    def _apply_morphism(self, morphism):
+        pass
 
 
 class CellComplexes(OwnedCategory):
@@ -381,6 +395,10 @@ class SimplicialComplexes(OwnedCategory):
     def order_complex(self, poset):
         r"""Construct the nerve of a poset from its chains."""
         pass
+
+    @cached_method
+    def order_complex_functor(self):
+        return _OrderComplexFunctor()
 
     @cached_method
     def face_posets(self):
