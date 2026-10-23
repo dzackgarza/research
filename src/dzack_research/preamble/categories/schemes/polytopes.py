@@ -4,6 +4,7 @@ from math import atan2, factorial
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import Morphism
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -102,17 +103,25 @@ class PlacedPolytopeMor(CategoricalMor):
     r"""Ambient maps taking faces to faces and commuting with placements."""
 
     class ElementMethods:
+        def __init__(self, parent, ambient_map, face_poset_map):
+            Morphism.__init__(self, parent)
+            self._ambient_map = ambient_map
+            self._face_poset_map = face_poset_map
+
         def ambient_map(self):
-            pass
+            return self._ambient_map
 
         def face_poset_map(self):
-            pass
+            return self._face_poset_map
+
+        def _call_(self, point):
+            return self._ambient_map(point)
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, ambient_map, face_poset_map):
-        pass
+        return self.element_class(self, ambient_map, face_poset_map)
 
     @object_level
     def identity(self):
@@ -130,10 +139,10 @@ class MetricPolytopeMor(PlacedPolytopeMor):
 
     class ElementMethods(PlacedPolytopeMor.ElementMethods):
         def ambient_isometric_embedding(self):
-            pass
+            return self.ambient_map()
 
     def _element_constructor_(self, ambient_isometric_embedding, face_poset_map):
-        pass
+        return self.element_class(self, ambient_isometric_embedding, face_poset_map)
 
 
 class MetricPolytopeMorCategoryConstruction(MorCategoryConstruction):
@@ -234,11 +243,14 @@ class LatticePolytopeMor(PlacedPolytopeMor):
     r"""Face-preserving maps compatible with selected affine lattice embeddings."""
 
     class ElementMethods(PlacedPolytopeMor.ElementMethods):
+        def ambient_lattice_map(self):
+            return self.ambient_map()
+
         def underlying_affine_morphism(self):
             pass
 
     def _element_constructor_(self, ambient_lattice_map, face_poset_map):
-        pass
+        return self.element_class(self, ambient_lattice_map, face_poset_map)
 
 
 class LatticePolytopeMorCategoryConstruction(MorCategoryConstruction):
@@ -328,14 +340,18 @@ class RegularPolytopeMor(CategoricalMor):
     r"""Maps of regular polytopes through their abstract face structures."""
 
     class ElementMethods:
+        def __init__(self, parent, abstract_polytope_map):
+            Morphism.__init__(self, parent)
+            self._abstract_polytope_map = abstract_polytope_map
+
         def abstract_polytope_map(self):
-            pass
+            return self._abstract_polytope_map
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, abstract_polytope_map):
-        pass
+        return self.element_class(self, abstract_polytope_map)
 
     @object_level
     def identity(self):
