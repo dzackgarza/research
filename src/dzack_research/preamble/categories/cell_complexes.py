@@ -399,6 +399,10 @@ class PolytopalComplexes(OwnedCategory):
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
 
+    @cached_method
+    def realization(self):
+        return self.cellular_realization().then(CellComplexes().realization())
+
     class ParentMethods:
         def __init__(self, polytopes, face_maps, **rest):
             self._polytopes = polytopes
@@ -494,6 +498,10 @@ class SimplicialComplexes(OwnedCategory):
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
 
+    @cached_method
+    def realization(self):
+        return self.cellular_realization().then(CellComplexes().realization())
+
     class ParentMethods:
         def __init__(self, vertices, defining_simplices, **rest):
             self._vertices = vertices
@@ -577,6 +585,10 @@ class DeltaComplexes(OwnedCategory):
     @cached_method
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
+
+    @cached_method
+    def realization(self):
+        return self.cellular_realization().then(CellComplexes().realization())
 
     class ParentMethods:
         def __init__(self, defining_simplices, face_maps, **rest):
