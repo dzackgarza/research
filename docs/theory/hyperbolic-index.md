@@ -451,6 +451,8 @@ The theorem leaves dimension-dependent constants in its displayed statement.
 A numerical implementation of this bound must extract a valid effective
 constant from the proof or use another explicit effective representation
 bound. Choosing a convenient value for $C_n$ would not implement this algorithm.
+The fully evaluated alternative (7) below now supplies such a bound, using
+Calderón's later equivalence estimates and the completion construction.
 
 **Algorithm for $n\ge3$.**
 
@@ -744,6 +746,150 @@ Lemma 3(2)'s matrix-coefficient estimate. The paper points to Shalom,
 Theorem 2.1, and Kontorovich–Oh, Proposition 3.2, for that last evaluation.
 The compactness constant above is therefore concrete progress on this
 chain, not completion of the integral embedding bound.
+
+### A fully evaluated alternative integral embedding bound
+
+The sharper Li–Margulis bound (6) is not the only possible finite bound.
+[Irving Calderón, *S-integral quadratic forms and homogeneous dynamics*,
+arXiv:2202.10257v2](https://arxiv.org/abs/2202.10257v2), Theorem 4.1 and
+Appendix F, give an alternative equivalence bound. The following estimates
+evaluate the two factors left implicit in that chain. Norms below are
+maximum absolute matrix entries, in the supplied framings.
+
+**Lemma (spherical-function factor).** Calderón's Appendix A constant
+$\mathcal D_1$ may be replaced by $9$, and its mixing factor by $15$.
+
+**Proof.** In the integral for $\Xi_\infty(a_t)$, symmetry gives
+
+$$
+\Xi_\infty(a_t)=\frac2\pi\int_0^{\pi/2}
+(e^t\sin^2\theta+e^{-t}\cos^2\theta)^{-1/2}\,d\theta.
+$$
+
+1. On $[0,e^{-t}]$, $\cos\theta\ge1/2$, so the integrand is at most
+   $2e^{t/2}$. On $[e^{-t},\pi/2]$, use
+   $\sin\theta\ge2\theta/\pi$.
+2. Integration gives
+   $\Xi_\infty(a_t)\le e^{-t/2}(4/\pi+t+\log(\pi/2))
+   \le(t+3)e^{-t/2}$, using $3<\pi<4$.
+3. The function $(t+3)e^{-t/6}$ has maximum at $t=3$, with value
+   $6e^{-1/2}<9$. Thus $\Xi_\infty(a_t)\le9e^{-t/3}$.
+   Appendix F then permits $\mathcal D=5\sqrt9=15$.
+
+**Lemma (volume factor).** In the Haar normalization of Calderón's
+Appendix B, $\operatorname{vol}X^1_{n,\infty}\le2^{2n^3+1}$ for $n\ge3$.
+
+**Proof.**
+
+1. The Siegel set $KAN$ with $a_i/a_{i+1}\le2/\sqrt3$,
+   $|u_{ij}|\le1/2$ and $\prod a_i=1$ covers the quotient
+   (Calderón, Proposition 5.6).
+2. Normalize the compact measure by the tangent basis $E_{ij}-E_{ji}$,
+   the diagonal measure by $E_{ii}-E_{nn}$, and the unipotent measure by
+   $E_{ij}$, $i<j$. Their combined determinant relative to Appendix B's
+   Lie basis has absolute value one. The Iwasawa density is
+   $\prod_{i<j}a_i/a_j$.
+3. Put $b_i=a_i/a_{i+1}$. The diagonal Jacobian is $1/n$, and the
+   integral over $A$ is
+   $n^{-1}\prod_{i=1}^{n-1}(2/\sqrt3)^{i(n-i)}/[i(n-i)]
+   \le2^{n^3}$. The unipotent box has volume one.
+4. The orthogonal-group volume is
+   $2\prod_{j=2}^n\operatorname{vol}S^{j-1}$. This follows successively
+   from the Riemannian submersions $SO(j)\to S^{j-1}$ in the tangent
+   normalization of step 2. Since
+   $\operatorname{vol}S^{j-1}=2\pi^{j/2}/\Gamma(j/2)\le4^j$,
+   its volume is at most $2^{n(n+1)+1}$. Here
+   $\Gamma(j/2)\ge1/2$ follows directly from the integer and
+   half-integer gamma values and their recurrence.
+5. Multiply steps 3–4 and use $n(n+1)\le n^3$. A covering set bounds
+   the quotient volume from above, proving the assertion.
+
+For $n\ge3$, define the following **integers**:
+
+$$
+\begin{aligned}
+r_n&=n(n+1)/2-1,\\
+\overline M_n&=10^{n^2}n^{\lceil(n+2)^2/4\rceil},\\
+\overline N_n&=3(3n^2n!)^{\lceil n(n-1)/4+1\rceil}\overline M_n,\\
+\overline C_n&=12\,2^{3n^2(n-1)}n^2\,15^6\overline N_n^{12},\\
+\overline V_n&=2^{2n^3+1},\\
+\overline W_n&=2^{2n^6}
+ (2^{2n^3+5}3^{4n^4}n^{6n^3+1})^{r_n}\overline V_n,\\
+K_n&=2^{6n^3}n^{4n^3}(n!)^{2n^2+1}
+      \overline C_n\overline W_n^6,\\
+F_n(h,k)&=K_n(4hk)^{2n^3}.
+\end{aligned}
+$$
+
+**Proposition (equivalence bound).** If two nondegenerate integral
+symmetric $n$-ary matrices $G,J$ are integrally isometric and have heights
+at most $h,k$, some unimodular $U$ satisfies
+$U^TGU=J$ and $\|U\|_\infty\le F_n(h,k)$.
+
+**Proof.** For indefinite forms, substitute the two lemmas into
+Calderón's Appendix F constants and its Theorem 4.1 proof with
+$S=\{\infty\}$. We retain the additional $2^{2n^6}$ factor in the
+closed-orbit volume proposition in $\overline W_n$, without relying on
+its absorption into the theorem's stated constant. Rounding the positive
+fractional exponents upward enlarges the bounds. The polynomial coefficient
+height is at most twice the matrix height, explaining $4hk$.
+For definite forms, negate both if necessary. Each isometry column has
+square at most $k$, and the inverse-Gram estimate gives coordinate square
+at most $k(n-1)!h^{n-1}$. This is smaller than $F_n(h,k)^2$.
+
+`Lattices(ZZ).integral_isometry_coefficient_bound(n,h,k)` evaluates
+$F_n(h,k)$; it neither decides equivalence nor constructs an isometry.
+The rank restriction $n\ge3$ is essential to the cited polynomial bound.
+
+**Proposition (embedding bound, including nonprimitive images).** Let
+$A,G$ be nondegenerate integral Gram matrices of ranks $0<m\le n$,
+with $n\ge3$, and put $a=|\det A|$, $h=\|G\|_\infty$.
+Let $C$ be the preceding completion Gram bound if $m<n$, and
+$C=\|A\|_\infty$ if $m=n$. If $X^TGX=A$ has an integral solution,
+it has one with
+
+$$
+\|X\|_\infty\le n a(n-1)! F_n(h,n^2C).                 \tag{7}
+$$
+
+**Proof.**
+
+1. Complete an existing solution to an integral matrix $\gamma$, preserving
+   its first $m$ columns, with $H=\gamma^TG\gamma$ of height at most $C$.
+   Its determinant $d=|\det\gamma|$ is the saturation index and
+   $d\le a$. For $m=n$ take $\gamma=X$ and $H=A$.
+2. The module $P=\gamma^{-1}\mathbb Z^n$ contains $\mathbb Z^n$ with
+   index $d$, and $dP\subseteq\mathbb Z^n$. Choose a column Hermite basis
+   $B$ of $dP$. Because $dP$ contains $d\mathbb Z^n$, its diagonal
+   entries divide $d$ and its reduced off-diagonal entries have absolute
+   value at most $d$. Thus $\beta=B/d$ is a basis of $P$ with
+   $\|\beta\|_\infty\le1$ and $|\det\beta|=1/d$.
+3. The matrix $\gamma\beta$ is integral unimodular, so
+   $J=\beta^TH\beta$ is integrally isometric to $G$ and
+   $\|J\|_\infty\le n^2C$. Moreover $\beta^{-1}$ is integral, because
+   $\mathbb Z^n\subseteq P$, and its adjugate formula bounds its entries
+   by $d(n-1)!$.
+4. Choose $U$ with $U^TGU=J$ from the equivalence proposition. Let
+   $E$ select the first $m$ standard columns and set $X'=U\beta^{-1}E$.
+   This is integral and $X'^TGX'=E^THE=A$. Matrix multiplication bounds
+   its entries by $nF_n(h,n^2C)d(n-1)!$.
+5. **Q.E.D.** Use $d\le a$. No primitivity assumption entered the proof.
+
+`T.integral_embedding_coefficient_bound(L)` computes (7) for an indefinite
+target of rank at least three. For a definite integral target of any rank,
+it instead takes the maximum of the source-generator square-coordinate
+bounds, containing **every** embedding. A zero source or a rank obstruction
+receives zero. The indefinite binary case has no bound computation here;
+its separate existing exact representation/isometry routes are unchanged.
+
+The indefinite bound contains **some** embedding whenever one exists.
+It need not contain one satisfying an extra predicate. It therefore supplies
+an unrestricted finite exclusion search, not a universal constrained solver.
+Neither bound constructs an embedding or implements maximal splitting.
+The nonprimitive, sheared-definite and zero-source specimens in its docstring
+remain unexecuted under DEV-58. The original sharper formula (6) remains
+unevaluated, but is no longer the only available direct bound in rank at
+least three.
 
 ## Examples separating the three base rings
 
@@ -1397,8 +1543,9 @@ and `QQ`, but iteration alone is not an emptiness decision. For nondegenerate
 rational endpoints, witness selection uses the Witt-index decision first.
 For nondegenerate integral endpoints, it uses the finite-shell or integral-
 overlattice classification route. The effective constant in (6) remains
-needed to evaluate that particular direct box bound; the classification
-route supplies a separate unconstrained existence decision. Arbitrary extra
+needed for that particular sharper expression. The evaluated alternative
+(7) now gives a direct integer box bound in rank at least three, while the
+classification route supplies a separate unconstrained existence decision. Arbitrary extra
 predicates require their own termination argument.
 
 The interfaces are defined at the [lattice owner](../../src/dzack_research/preamble/categories/lattices.py),
@@ -1443,6 +1590,12 @@ retains the original lattice and scalar map.
   [Author's preprint on arXiv](https://arxiv.org/abs/math/0204158).
   Theorem 1.3 states the upper inequality of Minkowski's second theorem
   used in the explicit coefficient-bound derivation.
+- **Irving Calderón, *S-integral quadratic forms and homogeneous dynamics*,
+  arXiv:2202.10257v2, 27 April 2023.**
+  [Author's manuscript](https://arxiv.org/abs/2202.10257v2).
+  Theorem 4.1, the closed-orbit volume proposition, and Appendices A, B
+  and F give the equivalence estimate and its normalization. The spherical
+  and quotient-volume majorants used here are proved above.
 - **Mikhail Borovoi, *On representations of integers by indefinite ternary
   quadratic forms*, Journal of Number Theory 90 (2001), 281–293.**
   [Author's arXiv preprint](https://arxiv.org/abs/math/0006141),

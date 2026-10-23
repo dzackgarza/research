@@ -40,22 +40,28 @@ unverified under DEV-58.
 **Remaining computation:** complete exclusion for constrained subsets where
 required. Exhausting a finite coordinate box excludes only that box. The Li–Margulis representation bound in
 [the theory note](docs/theory/hyperbolic-index.md#effective-search-bounds-for-embeddings)
-requires a usable dimension-dependent constant; extra conditions need their
-own valid bound or complete solver. The current source has neither a general
-integral representation bound nor a general constrained exclusion procedure.
-Definite integral enumeration and the full integral-overlattice reduction
-are alternative unconstrained routes; the latter includes odd overlattices. A numeric coefficient
-bound for some integrally equivalent Gram representative, linear in the
-absolute determinant at each fixed rank, is now computed
-from rank and determinant by `integral_representative_coefficient_bound`;
-the theory note proves it using the explicit compactness parameter in
-Li–Margulis's Appendix and an elementary basis estimate. This does not
-bound an embedding or change-of-basis matrix. Lemma 20 now has an explicit
-completion Gram bound through `integral_completion_coefficient_bound`,
-retaining nonprimitive embeddings and their original columns in its
-existence statement; this still gives no bound on those columns. The remaining Theorem 4
-constant requires evaluation of the estimates in Theorem 1's proof,
-including the matrix-coefficient constant in Lemma 3(2).
+still has an unevaluated dimension-dependent constant. The source now has
+an explicit alternative for nondegenerate integral sources and indefinite
+targets of rank at least three: `integral_embedding_coefficient_bound`
+combines the completion bound with a Hermite basis of its finite-index
+overlattice and a fully evaluated Calderon equivalence bound. The theory
+note proves the spherical-function and Haar-volume majorants used to make
+that chain numerical, including the separate archimedean volume factor.
+It includes nonprimitive images and depends on the original target framing.
+The scalar isometry bound is also exposed at `Lattices(ZZ)` from rank and
+two Gram heights alone. These computations require neither an embedding nor
+an isometry as input and construct neither.
+
+**Remaining coverage:** indefinite binary targets have no coefficient-bound
+computation here. An arbitrary extra predicate is not preserved by selecting
+a small representative, so constrained indefinite exclusion still needs its
+own applicable bound or complete solver. The sharper original Li–Margulis
+formula is separate and unevaluated; it is not a prerequisite for the new
+alternative. The nonprimitive, definite shear and zero-source specimens,
+and the constant/normalization derivations, remain unverified under DEV-58.
+Definite enumeration and the integral-overlattice classification remain
+alternative existence routes. The representative and completion coefficient
+bounds remain distinct from the new embedding and isometry bounds.
 
 For definite integral targets of finite rank, `square_coordinate_bound` now gives
 an exact bound containing every vector of a supplied square. The maximum

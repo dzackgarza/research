@@ -2496,6 +2496,53 @@ class Lattices(OwnedCategoryOverBaseRing):
         indefinite_bound = size * basis_length**2 * determinant
         return max(definite_bound, indefinite_bound)
 
+    def integral_isometry_coefficient_bound(
+        self, rank: Cardinal | int, first_height: RingElement | int,
+        second_height: RingElement | int,
+    ) -> RingElement:
+        r"""Bound some integral isometry from dimension and Gram heights.
+
+        For nondegenerate symmetric integral matrices A,B of common rank
+        n >= 3 and maximum absolute entries at most first_height and
+        second_height, integral equivalence implies the existence of a
+        unimodular U with U.transpose()*A*U == B and every entry bounded
+        by this integer. This computes neither existence nor U.
+
+        Calderon, arXiv:2202.10257v2, Theorem 4.1 and Appendix F supply
+        the indefinite estimate. The theory note makes its remaining
+        spherical-function and Haar-volume factors explicit and includes
+        the separate S={infinity} volume factor. In the definite case
+        inverse-Gram Cauchy--Schwarz gives a smaller bound. All powers
+        here are integers; fractional exponents are rounded upward.
+        """
+        from math import factorial
+
+        integers = _owned_integers()
+        assert self.base_ring() is integers, "integral isometry bounds require ZZ"
+        dimension = cardinal(rank)
+        assert dimension.is_finite(), "an integral isometry bound needs finite rank"
+        n = int(dimension)
+        assert n >= 3, "this uniform integral isometry bound requires rank at least three"
+        first_height, second_height = integers(first_height), integers(second_height)
+        assert first_height > 0 and second_height > 0, "Gram heights must be positive"
+        size, two, three = integers(n), integers(2), integers(3)
+        fact = integers(factorial(n))
+        bump = integers(10)**(n*n) * size**(((n + 2)**2 + 3)//4)
+        smooth = three * (three * size**2 * fact)**((n*(n - 1) + 7)//4) * bump
+        dynamics = integers(12) * two**(3*n*n*(n - 1)) * size**2 * integers(15)**6 * smooth**12
+        transverse_dimension = n*(n + 1)//2 - 1
+        lattice_volume = two**(2*n**3 + 1)
+        orbit_volume = (
+            two**(2*n**6)
+            * (two**(2*n**3 + 5) * three**(4*n**4) * size**(6*n**3 + 1))**transverse_dimension
+            * lattice_volume
+        )
+        coefficient = (
+            two**(6*n**3) * size**(4*n**3) * fact**(2*n*n + 1)
+            * dynamics * orbit_volume**6
+        )
+        return coefficient * (integers(4) * first_height * second_height)**(2*n**3)
+
     class ParentMethods:
         r"""Operations generic to every lattice.
 
@@ -4008,6 +4055,67 @@ class Lattices(OwnedCategoryOverBaseRing):
                 coefficient * source_determinant**k * determinant
                 + integers(m + 1)**2 * source_size
             )
+
+        def integral_embedding_coefficient_bound(self, target: Lattices.ParentMethods) -> RingElement:
+            r"""Bound some embedding into target in the original selected framings.
+
+            Both endpoints are nondegenerate integral lattices of finite
+            rank. For a definite target this bounds every embedding. For
+            an indefinite target of rank at least three it contains at
+            least one whenever an embedding exists, including nonprimitive
+            images. It does not decide existence or bound every indefinite
+            embedding, and extra predicates need their own justification.
+            The indefinite binary case has no bound computation here.
+
+            Combine the completion Gram bound, a Hermite basis of its
+            finite-index overlattice, and the explicit integral isometry
+            bound. See the full proof in docs/theory/hyperbolic-index.md.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: T = U.twist(ZZ(4))
+                sage: L = U.twist(ZZ(2)) + Lattices(ZZ)([[2]])
+                sage: bound = T.integral_embedding_coefficient_bound(L)
+                sage: e, f, a = L.module_generators()
+                sage: j = T.Emb(L)((2*e, f))
+                sage: assert L.gram_tensor().pullback(j) == T.gram_tensor()
+                sage: assert bound >= ZZ(2)
+                sage: N = ZZ(10)**20
+                sage: D = Lattices(ZZ)([[1, N], [N, N*N + 1]])
+                sage: assert Lattices(ZZ)([[1]]).integral_embedding_coefficient_bound(D) == N
+                sage: assert Lattices(ZZ)(0).integral_embedding_coefficient_bound(L) == ZZ(0)
+            """
+            from math import factorial
+
+            integers = _owned_integers()
+            assert self.base_ring() is integers and target.base_ring() is integers, (
+                "integral embedding bounds require ZZ endpoints"
+            )
+            assert self.module_rank().is_finite() and target.module_rank().is_finite(), (
+                "integral embedding bounds require finite ranks"
+            )
+            assert self.is_nondegenerate() and target.is_nondegenerate(), (
+                "integral embedding bounds require nondegenerate endpoints"
+            )
+            m, n = int(self.module_rank()), int(target.module_rank())
+            if m == 0 or m > n:
+                return integers.zero()
+            source_gram = self.gram_tensor()
+            if target.is_definite():
+                return max(target.square_coordinate_bound(source_gram[i, i]) for i in range(m))
+            if n < 3:
+                raise NotImplementedError("the indefinite binary embedding bound is not computed here")
+            completion_height = (
+                max(abs(source_gram[i, j]) for i in range(m) for j in range(m))
+                if m == n else self.integral_completion_coefficient_bound(n, target.determinant())
+            )
+            target_gram = target.gram_tensor()
+            target_height = max(abs(target_gram[i, j]) for i in range(n) for j in range(n))
+            isometry_bound = self.lattice_category().integral_isometry_coefficient_bound(
+                n, target_height, integers(n*n) * completion_height,
+            )
+            return integers(n * factorial(n - 1)) * abs(self.determinant()) * isometry_bound
 
         def is_even(self) -> bool | Predicate:
             r"""Return whether ``b(x,x)`` lies in ``2R`` for every lattice vector.
