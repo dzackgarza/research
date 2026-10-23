@@ -74,6 +74,10 @@ class FundamentalGroupoid(OwnedParameterizedCategory):
             raise TypeError("a groupoid point must belong to the selected space")
         return _object_of(self, point=value)
 
+    def from_path(self, continuous_path):
+        r"""The endpoint-fixed homotopy class of a selected continuous path."""
+        pass
+
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
             raise TypeError("a path-class arrow needs two points of the selected space")
