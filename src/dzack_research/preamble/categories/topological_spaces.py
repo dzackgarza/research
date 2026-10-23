@@ -973,7 +973,9 @@ class TopologicalSpaces(OwnedCategory):
 
         def fundamental_groupoid(self):
             r"""A ``Cat`` object with this space's points and path-homotopy arrows."""
-            pass
+            from dzack_research.preamble.categories.fundamental_groupoids import FundamentalGroupoid
+
+            return FundamentalGroupoid(self)
 
         def _whitehead_pairing(self, base_point, left_degree, right_degree):
             r"""The Whitehead product ``pi_p(X, x) x pi_q(X, x) -> pi_{p+q-1}(X, x)``, a bilinear map.

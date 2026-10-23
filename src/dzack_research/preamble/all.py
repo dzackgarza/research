@@ -603,6 +603,10 @@ from dzack_research.preamble.categories.topological_spaces import (  # noqa: F40
     TopologicalSpaceMor,
     TopologicalSpaces,
 )
+from dzack_research.preamble.categories.fundamental_groupoids import (  # noqa: F401
+    FundamentalGroupoid,
+    FundamentalGroupoids,
+)
 from dzack_research.preamble.categories.pointed_topological_spaces import (  # noqa: F401
     TopologicalSpaceCoslices,
 )
