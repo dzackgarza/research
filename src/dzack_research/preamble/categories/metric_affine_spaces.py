@@ -45,8 +45,12 @@ class EuclideanSpaceMor(CategoricalMor):
         return self.element_class(self, affine_map)
 
     @object_level
+    @cached_method
     def identity(self):
-        pass
+        if self.domain() is not self.codomain():
+            raise ValueError("a Euclidean-space identity requires the same source and target")
+        affine = self.domain().underlying_affine_space()
+        return self(RealAffineSpaces().Mor(affine, affine).identity())
 
 
 class EuclideanSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -141,8 +145,12 @@ class SphericalSpaceMor(CategoricalMor):
         return self.element_class(self, ambient_isometry)
 
     @object_level
+    @cached_method
     def identity(self):
-        pass
+        if self.domain() is not self.codomain():
+            raise ValueError("a spherical-space identity requires the same source and target")
+        ambient = self.domain().euclidean_space()
+        return self(EuclideanSpaces().Mor(ambient, ambient).identity())
 
 
 class SphericalSpaceMorCategoryConstruction(MorCategoryConstruction):

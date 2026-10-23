@@ -114,8 +114,17 @@ class RealAffineSpaceMor(CategoricalMor):
         return self.element_class(self, linear_part, point_map)
 
     @object_level
+    @cached_method
     def identity(self):
-        pass
+        if self.domain() is not self.codomain():
+            raise ValueError("an affine-space identity requires the same source and target")
+        space = self.domain()
+        model = space.model_vector_space()
+        points = space.point_set()
+        return self(
+            VectorSpaces(RR).Mor(model, model).identity(),
+            Sets().Mor(points, points).identity(),
+        )
 
 
 class RealAffineSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -244,8 +253,17 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
         return self.element_class(self, affine_map, lattice_map)
 
     @object_level
+    @cached_method
     def identity(self):
-        pass
+        if self.domain() is not self.codomain():
+            raise ValueError("a lattice affine-space identity requires the same source and target")
+        space = self.domain()
+        affine = space.underlying_affine_space()
+        lattice = space.affine_lattice()
+        return self(
+            RealAffineSpaces().Mor(affine, affine).identity(),
+            FinitelyGeneratedFreeModules(_owned_integers()).Mor(lattice, lattice).identity(),
+        )
 
 
 class AffineSpaceWithLatticeMorCategoryConstruction(MorCategoryConstruction):
