@@ -62,6 +62,11 @@ class IntegralAffineManifoldMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, smooth_map, local_affine_maps):
+        if (
+            smooth_map.domain() is not self.domain().underlying_smooth_manifold()
+            or smooth_map.codomain() is not self.codomain().underlying_smooth_manifold()
+        ):
+            raise ValueError("the smooth map must join the selected underlying manifolds")
         return self.element_class(self, smooth_map, local_affine_maps)
 
     @object_level
@@ -492,6 +497,23 @@ class SingularIntegralAffineSpaceMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, topological_map, singular_locus_map, regular_affine_map):
+        source = self.domain()
+        target = self.codomain()
+        if (
+            topological_map.domain() is not source.underlying_topological_space()
+            or topological_map.codomain() is not target.underlying_topological_space()
+        ):
+            raise ValueError("the topological map must join the selected underlying spaces")
+        if (
+            singular_locus_map.domain() is not source.singular_locus()
+            or singular_locus_map.codomain() is not target.singular_locus()
+        ):
+            raise ValueError("the singular-locus map must join the selected singular loci")
+        if (
+            regular_affine_map.domain() is not source.regular_affine_manifold()
+            or regular_affine_map.codomain() is not target.regular_affine_manifold()
+        ):
+            raise ValueError("the regular affine map must join the selected regular loci")
         return self.element_class(
             self,
             topological_map,
