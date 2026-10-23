@@ -1391,7 +1391,7 @@ class ModuleMorphismMethods:
         computations instead use this explicit realization, retaining the
         original linear arrow as the construction premise. The selected
         source and target framings, hence the comparison, are fixed.
-        Callers are integral preimages, the module owner's engine-matrix
+        Callers are finite-free kernels, integral preimages, the module owner's engine-matrix
         lowering, and the tensor owner's coordinate, pullback and private
         row-action adapters.
         """

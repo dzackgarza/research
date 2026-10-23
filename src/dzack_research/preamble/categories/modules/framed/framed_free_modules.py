@@ -829,6 +829,25 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 return ring.ideal(ring.one() if int(index) >= rank else ring.zero())
 
             def _represented_kernel_of_morphism(self, morphism):
+                r"""Compute a kernel through the selected coordinate realization.
+
+                A stronger linear arrow keeps its own parent when read in
+                the module Mor. Its coordinate realization, rather than
+                Mor admission, supplies the matrix computation.
+
+                EXAMPLES::
+
+                    sage: L = Lattices(ZZ)([[4, 0], [0, 0]])
+                    sage: W = Lattices(ZZ)([[1]])
+                    sage: e, r = L.module_generators()
+                    sage: w = W.module_generators()[0]
+                    sage: f = L.Mor(W)((2*w, W.zero()))
+                    sage: K = f.kernel()
+                    sage: assert K.module_rank() == cardinal(1)
+                    sage: assert K.inclusion().codomain() is L
+                    sage: assert K.inclusion().is_in_image(r) is True
+                    sage: assert all(f(K.inclusion()(v)) == W.zero() for v in K.module_generators())
+                """
                 if morphism.domain() is not self:
                     return NotImplemented
                 codomain_is_zero = morphism.codomain().is_zero()
@@ -843,13 +862,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     # Retain its finite presentation and inclusion through
                     # the common presentation owner, not a PID span basis.
                     return _selected_presentation_kernel(morphism)
-                coordinate_matrix = self.module_category().Mor(
+                coordinate_mor = self.module_category().Mor(
                     self, morphism.codomain()
-                )(morphism)
+                )
                 from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
-                if coordinate_matrix.parent() not in MatrixSpaces(self.base_ring()):
+                if coordinate_mor not in MatrixSpaces(self.base_ring()):
                     return NotImplemented
+                coordinate_matrix = morphism._framed_coordinate_morphism()
                 coordinate_generators = coordinate_matrix._kernel_spanning_family()
 
                 source_labels = tuple(self.module_generating_set())
