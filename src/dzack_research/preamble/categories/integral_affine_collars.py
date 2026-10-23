@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.integral_affine_manifolds import (
     IntegralAffineManifoldsWithBoundary,
 )
+from dzack_research.preamble.owned_category import _object_of
 
 
 class IntegralAffineCollarMor(CategoricalMor):
@@ -71,7 +72,13 @@ class IntegralAffineCollars(OwnedCategory):
 
     def on(self, affine_piece, face_inclusion, neighborhood_inclusion, collar_chart):
         r"""Select a face, its neighborhood in the piece, and an affine collar chart."""
-        pass
+        return _object_of(
+            self,
+            affine_piece=affine_piece,
+            face_inclusion=face_inclusion,
+            neighborhood_inclusion=neighborhood_inclusion,
+            collar_chart=collar_chart,
+        )
 
     def comparison(self, source_collar, target_collar, face_map, neighborhood_affine_map):
         r"""Select an affine extension of a specified face pairing."""
@@ -82,20 +89,34 @@ class IntegralAffineCollars(OwnedCategory):
         return _CollarNeighborhoodFunctor()
 
     class ParentMethods:
+        def __init__(
+            self,
+            affine_piece,
+            face_inclusion,
+            neighborhood_inclusion,
+            collar_chart,
+            **rest,
+        ):
+            self._affine_piece = affine_piece
+            self._face_inclusion = face_inclusion
+            self._neighborhood_inclusion = neighborhood_inclusion
+            self._collar_chart = collar_chart
+            super().__init__(**rest)
+
         def underlying_affine_manifold(self):
-            pass
+            return self._affine_piece
 
         def face_inclusion(self):
-            pass
+            return self._face_inclusion
 
         def neighborhood_inclusion(self):
-            pass
+            return self._neighborhood_inclusion
 
         def collar_chart(self):
-            pass
+            return self._collar_chart
 
         def face(self):
-            pass
+            return self._face_inclusion.domain()
 
         def affine_piece(self):
-            pass
+            return self._affine_piece
