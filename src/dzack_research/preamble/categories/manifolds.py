@@ -403,6 +403,10 @@ class TopologicalManifolds(OwnedCategory):
     def an_object(self):
         return self(1, "M_top")
 
+    def on(self, underlying_space, atlas):
+        r"""Place the exact space under a compatible topological atlas."""
+        pass
+
     def _call_(self, dimension, name):
         dimension = int(dimension)
         if dimension <= 0:
@@ -747,6 +751,10 @@ class DifferentiableManifolds(OwnedCategory):
     def an_object(self):
         return self(1, "M_C1", 1)
 
+    def on(self, topological_manifold, degree, atlas):
+        r"""Place the exact topological manifold under a finite-degree real atlas."""
+        pass
+
     def _call_(self, dimension, name, differentiability_degree):
         dimension = int(dimension)
         degree = int(differentiability_degree)
@@ -799,6 +807,10 @@ class SmoothManifolds(OwnedCategory):
 
     def an_object(self):
         return self(1, "M_smooth")
+
+    def on(self, topological_manifold, atlas):
+        r"""Place the exact manifold under a compatible smooth atlas."""
+        pass
 
     def _call_(self, dimension, name):
         dimension = int(dimension)
@@ -1574,6 +1586,10 @@ class ComplexManifolds(OwnedCategory):
 
     def an_object(self):
         return self.affine_space(1, name="C")
+
+    def on(self, topological_manifold, holomorphic_atlas):
+        r"""Place the exact manifold under a compatible holomorphic atlas."""
+        pass
 
     @cached_method
     def realification(self):
