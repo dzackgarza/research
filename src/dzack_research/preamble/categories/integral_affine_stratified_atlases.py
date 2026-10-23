@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.stratified_atlases import (
     RealCkBoundaryAtlases,
     RealCkCornerAtlases,
 )
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -195,18 +194,7 @@ class IntegralAffineCornerAtlases(OwnedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if smooth_corner_manifold not in SmoothManifoldsWithCorners():
-            raise TypeError(f"{smooth_corner_manifold} is not a smooth corner manifold")
-        return _object_of(
-            self,
-            smooth_stratified_manifold=smooth_corner_manifold,
-            affine_model=affine_model,
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            affine_charts=affine_charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def transition_is_integral_affine(self, affine_model, transition_map):
         pass
@@ -272,18 +260,7 @@ class IntegralAffineBoundaryAtlases(OwnedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if smooth_boundary_manifold not in SmoothManifoldsWithBoundary():
-            raise TypeError(f"{smooth_boundary_manifold} is not a smooth boundary manifold")
-        return _object_of(
-            self,
-            smooth_stratified_manifold=smooth_boundary_manifold,
-            affine_model=affine_model,
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            affine_charts=affine_charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def transition_is_integral_affine(self, affine_model, transition_map):
         pass

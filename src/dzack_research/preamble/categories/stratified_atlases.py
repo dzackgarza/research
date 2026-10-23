@@ -23,7 +23,6 @@ from dzack_research.preamble.categories.manifolds_with_boundary import (
 )
 from dzack_research.preamble.categories.real_ck_manifolds import _real_ck_degree
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
-from dzack_research.preamble.owned_category import _object_of
 
 
 class StratifiedTopologicalAtlasMor(CategoricalMor):
@@ -173,20 +172,7 @@ class TopologicalBoundaryAtlases(OwnedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if topological_space not in TopologicalSpaces():
-            raise TypeError(f"{topological_space} is not a topological space")
-        if boundary_inclusion.codomain() is not topological_space:
-            raise ValueError("the boundary inclusion must land in the selected space")
-        return _object_of(
-            self,
-            topological_space=topological_space,
-            boundary_inclusion=boundary_inclusion,
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            charts=charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
         pass
@@ -243,18 +229,7 @@ class TopologicalCornerAtlases(OwnedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if topological_space not in TopologicalSpaces():
-            raise TypeError(f"{topological_space} is not a topological space")
-        return _object_of(
-            self,
-            topological_space=topological_space,
-            depth_strata=depth_strata,
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            charts=charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
         pass
@@ -400,18 +375,7 @@ class RealCkCornerAtlases(OwnedParameterizedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if topological_corner_manifold not in TopologicalManifoldsWithCorners():
-            raise TypeError(f"{topological_corner_manifold} is not a topological corner manifold")
-        return _object_of(
-            self,
-            topological_stratified_manifold=topological_corner_manifold,
-            topological_space=topological_corner_manifold.underlying_topological_space(),
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            charts=charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
         pass
@@ -472,18 +436,7 @@ class RealCkBoundaryAtlases(OwnedParameterizedCategory):
         overlap_inclusions,
         transition_maps,
     ):
-        if topological_boundary_manifold not in TopologicalManifoldsWithBoundary():
-            raise TypeError(f"{topological_boundary_manifold} is not a topological boundary manifold")
-        return _object_of(
-            self,
-            topological_stratified_manifold=topological_boundary_manifold,
-            topological_space=topological_boundary_manifold.underlying_topological_space(),
-            chart_domains=chart_domains,
-            chart_domain_inclusions=chart_domain_inclusions,
-            charts=charts,
-            overlap_inclusions=overlap_inclusions,
-            transition_maps=transition_maps,
-        )
+        pass
 
     def refinement(self, finer_atlas, coarser_atlas, chartwise_maps):
         pass
