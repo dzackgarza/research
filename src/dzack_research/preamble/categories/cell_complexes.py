@@ -121,6 +121,10 @@ class CellComplexes(OwnedCategory):
     def from_attaching_maps(self, cells, attaching_maps):
         pass
 
+    def surgery(self, region_inclusion, replacement, boundary_isomorphism):
+        r"""Select the pushout of a region complement and a boundary-matched replacement."""
+        pass
+
     @cached_method
     def realization(self):
         return _ComplexRealizationFunctor(self, TopologicalSpaces())
@@ -192,6 +196,9 @@ class PolytopalComplexes(OwnedCategory):
         def face_maps(self):
             pass
 
+        def face_poset(self):
+            pass
+
         def face_inclusion(self, face, cell):
             pass
 
@@ -223,6 +230,9 @@ class SimplicialComplexes(OwnedCategory):
 
     class ParentMethods:
         def simplices(self, dimension):
+            pass
+
+        def face_poset(self):
             pass
 
         def link(self, simplex):
@@ -270,6 +280,9 @@ class DeltaComplexes(OwnedCategory):
         def face_maps(self):
             pass
 
+        def face_poset(self):
+            pass
+
         def cellular_realization(self):
             pass
 
@@ -298,6 +311,9 @@ class SimplicialSets(OwnedCategory):
 
     class ParentMethods:
         def simplices(self, dimension):
+            pass
+
+        def simplex_category(self):
             pass
 
         def face_map(self, dimension, index):
