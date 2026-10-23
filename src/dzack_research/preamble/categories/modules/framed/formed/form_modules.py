@@ -3613,7 +3613,23 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             matrix is the Gram tensor, and the correlation is invertible
             exactly when the Gram determinant is a unit.  No correlation
             morphism or dual-module presentation needs constructing.
+            A supplied unimodular placement is used before asking the
+            determinant computation, as at the general form owner.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                sage: Q = _owned_rationals()
+                sage: a = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**8192 + Q(1)/Q(2)**int(n))
+                sage: x = RR.of_cauchy(a)
+                sage: L = Lattices(RR).Unimodular()([[x]])
+                sage: assert L.is_unimodular() is True
             """
+            if self.category().is_subcategory(FormModules(self.base_ring()).Unimodular()):
+                return True
             return self._unimodularity_decision()
 
         @cached_method

@@ -1739,6 +1739,14 @@ unit predicate of its determinant without forcing a Boolean. The
 rank-one Cauchy-zero Gram specimen retains an undecided unimodularity
 proposition. This also lets the existing regular-scalar computation read
 the unit predicate safely before its integral-domain nonzero criterion.
+The free-form specialization also honors a supplied unimodular placement
+before requesting its determinant. This matters even in rank one:
+the regular sequence $2^{-8192}+2^{-n}$ presents the positive real
+$2^{-8192}$, hence a unit, while the ordinary bounded zero decision may
+not resolve that fact. A form supplied as unimodular already has the
+required hypothesis; the predicate returns true without re-solving it.
+This is separate from its private certifying predicate, which still
+computes from the actual form when explicitly requested.
 
 **Norm fibres.** For $a\in R$, `T.elements_of_norm(a)` denotes the set
 $q^{-1}(a)$, with its inclusion into the set of elements of $T$. It includes
