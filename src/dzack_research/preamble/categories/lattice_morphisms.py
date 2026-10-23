@@ -9,6 +9,7 @@ from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.mrange import cantor_product as _engine_cantor_product
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -1966,23 +1967,84 @@ class LatticeEmbeddingMor(CategoricalMor):
         return finite_ordered_set(tuple(self._reconstruct_target_primitive_embedding(record) for record in data))
 
     def __iter__(self):
-        r"""Enumerate all embeddings when the target lattice is definite.
+        r"""Enumerate isometric embeddings over ZZ or QQ in finite rank.
 
-        Each source generator must land in the finite shell of target vectors
-        having the same square.  A depth-first placement is pruned by the
+        The source is nondegenerate. For a definite integral target,
+        enumerate its finite square shells. Otherwise use Sage's fair
+        ``cantor_product`` of scalar enumerations for all generator images
+        and retain precisely the form-preserving maps. Every candidate
+        occurs after finitely many predecessors, including candidates with
+        rational denominators or nonprimitive integral image. No ordering
+        by geometric length is asserted for the indefinite case.
+
+        This is an enumeration, not an emptiness decision: requesting the
+        next embedding can run forever. In particular it is not a finite
+        exclusion search for an extra predicate on the embeddings.
+
+        In the definite integral case each source generator lands in the
+        finite shell of target vectors having the same square.
+        A depth-first placement is pruned by the
         pairings with generators already placed, so a complete placement
         preserves the form.  A form-preserving map into a definite lattice
         sends each vector \(x\) of the radical of the source to a vector with
         \(q=0\), which is zero; so every complete placement is injective when
         the source form is nondegenerate, and none is when it is degenerate.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: S = U.twist(ZZ(2))
+            sage: j = next(iter(S.Emb(U)))
+            sage: assert U.gram_tensor().pullback(j) == S.gram_tensor()
+            sage: assert j.index() == cardinal(2)
+            sage: Q = Lattices(QQ)([[1]])
+            sage: T = Lattices(QQ)([[QQ(1)/4]])
+            sage: j = next(iter(T.Emb(Q)))
+            sage: assert Q.q(j(T.module_generators()[0])) == QQ(1)/4
+            sage: Z = Lattices(ZZ)(0)
+            sage: assert len(tuple(Z.Emb(U))) == 1
         """
         source = self.domain()
         target = self.codomain()
-        assert target.base_ring() is _owned_integers() and target.module_rank().is_finite() and target.is_definite(), (
-            f"the embeddings of {source} into {target} are enumerated only when {target} is a definite lattice of "
-            f"finite rank over ZZ, whose square shells are finite; {target} is over {target.base_ring()}"
+        assert source.module_rank().is_finite() and target.module_rank().is_finite(), (
+            f"enumerating embeddings {source} -> {target} requires finite ranks"
         )
-        assert source.module_rank().is_finite(), f"the embeddings of {source} into {target} are enumerated only when {source} has finite rank"
+        if source.module_rank() == cardinal(0):
+            yield self(())
+            return
+        if source.module_rank() > target.module_rank():
+            return
+        if not self._codomain_is_definite_over_integers():
+            assert target.base_ring() in (_owned_integers(), _owned_rationals()), (
+                f"enumerating embeddings {source} -> {target} requires ZZ or QQ scalars"
+            )
+            assert source.is_nondegenerate(), (
+                f"enumerating embeddings {source} -> {target} by pairing equations requires a nondegenerate source"
+            )
+            source_generators = tuple(source.module_generators())
+            target_generators = tuple(target.module_generators())
+            ring = target.base_ring()
+            engine = _engine_ring(ring)
+            width = len(target_generators)
+            source_gram = source.gram_tensor()
+            for coordinates in _engine_cantor_product(
+                *([engine] * (len(source_generators) * width))
+            ):
+                images = tuple(
+                    sum(
+                        (vector * _owned_engine_element(ring, coordinates[position * width + index])
+                         for index, vector in enumerate(target_generators)),
+                        target.zero(),
+                    )
+                    for position in range(len(source_generators))
+                )
+                if all(
+                    target.b(images[row], images[column]) == source_gram[row, column]
+                    for row in range(len(images))
+                    for column in range(row, len(images))
+                ):
+                    yield self(images)
+            return
         match source.is_nondegenerate():
             case False:
                 return
