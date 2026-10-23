@@ -1231,7 +1231,7 @@ def _diagonal_gram(module, exceptions, default=1):
     return _DiagonalGram(resolved, stored, resolved.base_ring()(default))
 
 
-def _orthogonal_sum(summands):
+def _orthogonal_sum(summands, base_ring=None):
     r"""\(\bigoplus_{i\in I} L_i\), in the concatenated basis.
 
     The sum is taken over the family's index set, so three summands are
@@ -1244,8 +1244,9 @@ def _orthogonal_sum(summands):
     and a trailing infinite summand.  Two infinite summands are not this
     concatenation, and are not constructed.
 
-    The sum of \(R\)-lattices is an \(R\)-lattice, so the base ring is read
-    off the summands rather than supplied.  The result is placed in
+    The sum of \(R\)-lattices is an \(R\)-lattice. The ambient category
+    supplies its base ring, or a nonempty family's first summand supplies
+    it. An empty family requires the ambient base ring. The result is placed in
     ``BiproductLattices(R)`` with the summand family as its datum.
     """
     from dzack_research.preamble.categories.abstract_categories.products import (
@@ -1253,13 +1254,17 @@ def _orthogonal_sum(summands):
     )
 
     summands = _finite_factor_family(summands, name="Orthogonal summands")
-    return _orthogonal_sum_on_family(summands)
+    if base_ring is None:
+        blocks = tuple(summands)
+        assert blocks, "an empty orthogonal sum requires the ambient base ring"
+        base_ring = blocks[0].base_ring()
+    return _orthogonal_sum_on_family(summands, base_ring)
 
 
-@cached_function(key=lambda summands: (
-    id(summands.index_set()), tuple(id(summand) for summand in summands),
+@cached_function(key=lambda summands, ring: (
+    id(ring), id(summands.index_set()), tuple(id(summand) for summand in summands),
 ))
-def _orthogonal_sum_on_family(summands):
+def _orthogonal_sum_on_family(summands, ring):
     r"""The selected biproduct on this finite indexed family of actual lattices.
 
     Retain the index set and every component object, so the direct-sum
@@ -1272,18 +1277,19 @@ def _orthogonal_sum_on_family(summands):
     )
 
     blocks = tuple(summands)
-    assert blocks, f"cannot form the orthogonal sum of {summands}: the family of summands is empty"
-    ring = blocks[0].base_ring()
     category = Lattices(ring)
     assert all(block in category for block in blocks), (
-        f"cannot form the orthogonal sum of {summands}: every summand must be a lattice over {ring}, the base ring of the first summand {blocks[0]}"
+        f"cannot form the orthogonal sum of {summands}: every summand must be a lattice over {ring}"
     )
     ranks = tuple(cardinal(block.module_rank()) for block in blocks)
     assert all(rank.is_finite() for rank in ranks[:-1]), (
         f"cannot form the orthogonal sum of {summands} with ranks {ranks}: only the last summand may have infinite rank, because the bases are concatenated in order"
     )
     offsets = _block_offsets(ranks)
-    total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
+    if not ranks:
+        total = cardinal(0)
+    else:
+        total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
 
     module = ring.free_module(_generating_set_for(total, None, None))
     return _lattice_object(

@@ -2219,8 +2219,25 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             ``L + M`` is the two-index case, and ``L ** n`` the constant
             family over an $n$-element index set.
+
+            The empty family gives the zero lattice over this category's
+            base ring and retains its empty summand family.
+
+            EXAMPLES::
+
+                sage: Z = Lattices(ZZ).biproduct(())
+                sage: assert Z.base_ring() is ZZ and Z.module_rank() == cardinal(0)
+                sage: assert Z.biproduct_factors().cardinality() == cardinal(0)
+                sage: W = Lattices(QQ).biproduct(())
+                sage: assert W.base_ring() is QQ and W is not Z
+                sage: U = Lattices(ZZ)("U")
+                sage: into = Z.from_product_cone((), domain=U)
+                sage: out = Z.from_coproduct_cocone((), codomain=U)
+                sage: assert all(into(v) == Z.zero() for v in U.module_generators())
+                sage: assert out(Z.zero()) == U.zero()
+                sage: assert Z.orthogonal_decomposition(()).codomain().module_rank() == cardinal(0)
             """
-            return _orthogonal_sum(summands)
+            return _orthogonal_sum(summands, self.base_ring())
 
         def _categorical_biproduct(self, left, right):
             return self.biproduct((left, right))
@@ -2587,9 +2604,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return ``self -> direct_sum(S_i)`` for chosen orthogonal embeddings.
 
             The embeddings must have codomain ``self`` and assemble to an
-            isometry from their orthogonal biproduct. The isomorphism
-            constructor enforces both the form equation and invertibility;
-            an orthogonal finite-index sublattice is not a decomposition.
+            isometry from their orthogonal biproduct. Form preservation is
+            a hypothesis on these data; the inverse computation requires
+            invertibility, so an orthogonal finite-index sublattice is not
+            a decomposition.
             The result retains all summands, injections and projections.
             """
             embeddings = tuple(embeddings)
@@ -2600,7 +2618,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             normal = Lattices(self.base_ring()).biproduct(
                 tuple(embedding.domain() for embedding in embeddings)
             )
-            assembled = normal.from_coproduct_cocone(embeddings)
+            assembled = normal.from_coproduct_cocone(embeddings, codomain=self)
             return normal.Isom(self)(
                 lambda label: assembled(normal.module_generator(label))
             ).inverse()
@@ -7060,8 +7078,12 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
 
             return self.module_category().Mor(self, summand)(image)
 
-        def from_coproduct_cocone(self, legs):
-            r"""Return the unique map out of this biproduct with the stated legs."""
+        def from_coproduct_cocone(self, legs, *, codomain=None):
+            r"""Return the underlying module map with these legs and apex.
+
+            ``codomain`` supplies the apex for an empty family; a nonempty
+            family can determine it from its first leg.
+            """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 _finite_factor_family,
             )
@@ -7071,8 +7093,12 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
             assert legs.index_set() == factors.index_set(), (
                 f"the cocone {legs!r} under {self!r} does not have one leg per factor: legs are indexed by {legs.index_set()!r}, factors by {factors.index_set()!r}"
             )
-            first = factors.index_set().ranking_map().inverse()(0)
-            target = legs[first].codomain()
+            target = codomain
+            if target is None:
+                if factors.index_set().cardinality() == cardinal(0):
+                    raise ValueError("an empty coproduct cocone needs its codomain")
+                first = factors.index_set().ranking_map().inverse()(0)
+                target = legs[first].codomain()
             assert all(leg.codomain() is target for leg in legs), (
                 f"the legs of the cocone {legs!r} under {self!r} do not all have the codomain {target!r}, so they have no common apex"
             )
@@ -7097,8 +7123,12 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
 
             return self.module_category().Mor(self, target)(image)
 
-        def from_product_cone(self, legs):
-            r"""Return the unique map into this biproduct with the stated legs."""
+        def from_product_cone(self, legs, *, domain=None):
+            r"""Return the underlying module map with these legs and apex.
+
+            ``domain`` supplies the apex for an empty family; a nonempty
+            family can determine it from its first leg.
+            """
             from dzack_research.preamble.categories.abstract_categories.products import (
                 _finite_factor_family,
             )
@@ -7108,8 +7138,12 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
             assert legs.index_set() == factors.index_set(), (
                 f"the cone {legs!r} over {self!r} does not have one leg per factor: legs are indexed by {legs.index_set()!r}, factors by {factors.index_set()!r}"
             )
-            first = factors.index_set().ranking_map().inverse()(0)
-            source = legs[first].domain()
+            source = domain
+            if source is None:
+                if factors.index_set().cardinality() == cardinal(0):
+                    raise ValueError("an empty product cone needs its domain")
+                first = factors.index_set().ranking_map().inverse()(0)
+                source = legs[first].domain()
             assert all(leg.domain() is source for leg in legs), (
                 f"the legs of the cone {legs!r} over {self!r} do not all have the domain {source!r}, so they have no common apex"
             )

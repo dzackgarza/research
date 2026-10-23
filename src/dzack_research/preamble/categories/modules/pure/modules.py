@@ -5607,7 +5607,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             _left, right = self._binary_biproduct_labels()
             return self.projection(right)
 
-        def from_coproduct_cocone(self, legs):
+        def from_coproduct_cocone(self, legs, *, codomain=None):
             r"""The unique map \(\bigoplus_i M_i \to X\) with the stated legs.
 
             A cocone under the biproduct is the family of legs
@@ -5615,6 +5615,9 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             the datum this takes.  A generator of the biproduct lies in one
             factor and remembers which, so its image is the value of that
             index's leg.
+
+            Supply ``codomain`` for an empty family, whose legs alone do
+            not determine its apex.
             """
             factors = self.biproduct_factors()
             legs = _finite_factor_family(legs, name="Coproduct cocone legs")
@@ -5622,7 +5625,11 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 f"a map out of the direct sum {self} needs one map for each summand, but the maps are indexed "
                 f"by {legs.index_set()} and the summands by {factors.index_set()}"
             )
-            target = legs[factors.index_set().ranking_map().inverse()(0)].codomain()
+            target = codomain
+            if target is None:
+                if factors.index_set().cardinality() == cardinal(0):
+                    raise ValueError("an empty coproduct cocone needs its codomain")
+                target = legs[factors.index_set().ranking_map().inverse()(0)].codomain()
             assert all(leg.codomain() is target for leg in legs), (
                 f"a map out of the direct sum {self} needs maps into one module, but the maps {legs} "
                 f"do not all have codomain {target}"
@@ -5641,13 +5648,16 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def from_product_cone(self, legs):
+        def from_product_cone(self, legs, *, domain=None):
             r"""The unique map \(X \to \prod_i M_i\) with the stated legs.
 
             A cone over the biproduct is the family of legs
             \(f_i : X \to M_i\), indexed the way the factors are.  The image
             of a generator of the apex is the sum over the index set of the
             coordinates of its images, each placed at its own index.
+
+            Supply ``domain`` for an empty family, whose legs alone do
+            not determine its apex.
             """
             factors = self.biproduct_factors()
             legs = _finite_factor_family(legs, name="Product cone legs")
@@ -5655,7 +5665,11 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 f"a map into the direct sum {self} needs one map for each summand, but the maps are indexed "
                 f"by {legs.index_set()} and the summands by {factors.index_set()}"
             )
-            source = legs[factors.index_set().ranking_map().inverse()(0)].domain()
+            source = domain
+            if source is None:
+                if factors.index_set().cardinality() == cardinal(0):
+                    raise ValueError("an empty product cone needs its domain")
+                source = legs[factors.index_set().ranking_map().inverse()(0)].domain()
             assert all(leg.domain() is source for leg in legs), (
                 f"a map into the direct sum {self} needs maps from one module, but the maps {legs} "
                 f"do not all have domain {source}"
