@@ -728,6 +728,30 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             r"""The selected face arrow from ``facet`` into this polytope."""
             pass
 
+        def boundary(self):
+            pass
+
+        def boundary_inclusion(self):
+            pass
+
+        def abstract_automorphisms(self):
+            pass
+
+        def geometric_automorphisms(self):
+            pass
+
+        def geometric_to_abstract_automorphisms(self):
+            pass
+
+        def geometric_lifts_of_face_automorphism(self, face_automorphism):
+            pass
+
+        def triangulations(self):
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
+            pass
+
         def _engine_normal_fan(self):
             r"""Return the private normal-fan computation object."""
             return self._engine_polyhedron().normal_fan(direction="inner")
