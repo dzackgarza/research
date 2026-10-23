@@ -1,6 +1,7 @@
 r"""Dimension filtrations and pure strata of the represented manifold categories."""
 
 from sage.categories.category import Category
+from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
 from dzack_research.preamble.categories.manifolds import (
@@ -8,6 +9,7 @@ from dzack_research.preamble.categories.manifolds import (
     DifferentiableManifolds,
     SmoothManifolds,
     TopologicalManifolds,
+    _ComplexRealificationFunctor,
 )
 from dzack_research.preamble.categories.manifolds_with_boundary import (
     SmoothManifoldsWithBoundary,
@@ -109,3 +111,11 @@ class PureDimensionalManifolds(OwnedCategory):
         if manifold not in self.base_category():
             raise TypeError(f"{manifold} is not in {self.base_category()}")
         pass
+
+    @cached_method
+    def realification(self):
+        r"""Realify a complex ``m``-manifold into real dimension ``2m``."""
+        if self.base_category() is not ComplexManifolds():
+            raise TypeError("realification requires the pure complex-manifold stratum")
+        target = PureDimensionalManifolds(SmoothManifolds(), 2 * self.dimension())
+        return _ComplexRealificationFunctor(self, target)

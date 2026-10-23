@@ -1548,8 +1548,8 @@ class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
 class _ComplexRealificationFunctor(Functor):
     r"""Send complex manifolds and holomorphic maps to their real smooth images."""
 
-    def __init__(self):
-        super().__init__(ComplexManifolds(), SmoothManifolds())
+    def __init__(self, source, target):
+        super().__init__(source, target)
 
     def _apply_object(self, manifold):
         return manifold.underlying_smooth_manifold()
@@ -1593,7 +1593,7 @@ class ComplexManifolds(OwnedCategory):
 
     @cached_method
     def realification(self):
-        return _ComplexRealificationFunctor()
+        return _ComplexRealificationFunctor(self, SmoothManifolds())
 
     def _call_(self, dimension, name):
         dimension = int(dimension)
