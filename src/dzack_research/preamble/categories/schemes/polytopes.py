@@ -125,8 +125,6 @@ class PlacedPolytopeMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a placed-polytope identity requires the same source and target")
         pass
 
 
@@ -355,8 +353,6 @@ class RegularPolytopeMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a regular-polytope identity requires the same source and target")
         pass
 
 

@@ -61,8 +61,6 @@ class _StratifiedManifoldMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a stratified identity requires the same source and target")
         pass
 
 
@@ -344,8 +342,6 @@ class RealCkStratifiedMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a stratified C^k identity requires the same source and target")
         pass
 
 

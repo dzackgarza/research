@@ -58,8 +58,6 @@ class RealCkManifoldMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a C^k identity requires the same source and target")
         pass
 
 

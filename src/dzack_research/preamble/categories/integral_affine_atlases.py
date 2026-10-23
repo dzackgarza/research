@@ -45,8 +45,6 @@ class IntegralAffineAtlasMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("an atlas identity requires the same source and target")
         pass
 
 

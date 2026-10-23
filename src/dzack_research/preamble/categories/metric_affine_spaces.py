@@ -36,8 +36,6 @@ class EuclideanSpaceMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a Euclidean identity requires the same space")
         pass
 
 
@@ -122,8 +120,6 @@ class SphericalSpaceMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a spherical identity requires the same sphere")
         pass
 
 

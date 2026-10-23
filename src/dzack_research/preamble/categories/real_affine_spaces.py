@@ -78,8 +78,6 @@ class RealAffineSpaceMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("an affine identity requires the same source and target")
         pass
 
 
@@ -193,8 +191,6 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a lattice-affine identity requires the same source and target")
         pass
 
 

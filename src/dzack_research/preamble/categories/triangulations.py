@@ -43,8 +43,6 @@ class ChosenTriangulationMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a triangulation identity requires the same source and target")
         pass
 
 

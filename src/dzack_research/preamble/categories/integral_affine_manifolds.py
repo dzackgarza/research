@@ -66,8 +66,6 @@ class IntegralAffineManifoldMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("an identity requires the same integral-affine manifold")
         pass
 
 
@@ -232,8 +230,6 @@ class IntegralAffineLocalIsomorphismMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a local isomorphism identity requires the same manifold")
         pass
 
 
@@ -317,8 +313,6 @@ class _StratifiedIntegralAffineMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("an affine identity requires the same source and target")
         pass
 
 
@@ -497,8 +491,6 @@ class SingularIntegralAffineSpaceMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("an identity requires the same singular integral-affine space")
         pass
 
 
@@ -765,8 +757,6 @@ class SingularIntegralAffineLocalModelMor(CategoricalMor):
 
     @object_level
     def identity(self):
-        if self.domain() is not self.codomain():
-            raise ValueError("a local-model identity requires the same source and target")
         pass
 
 
