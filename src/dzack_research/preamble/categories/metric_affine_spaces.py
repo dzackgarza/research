@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.real_affine_spaces import RealAffineSpaces
-from dzack_research.preamble.owned_category import _object_of
 
 
 class EuclideanSpaceMor(CategoricalMor):
@@ -71,13 +70,7 @@ class EuclideanSpaces(OwnedCategory):
         pass
 
     def on(self, affine_space, positive_definite_form):
-        if affine_space not in RealAffineSpaces():
-            raise TypeError(f"{affine_space} is not a real affine space")
-        return _object_of(
-            self,
-            affine_space=affine_space,
-            positive_definite_form=positive_definite_form,
-        )
+        pass
 
     @cached_method
     def forget_metric(self):
@@ -148,17 +141,7 @@ class SphericalSpaces(OwnedCategory):
         pass
 
     def in_space(self, euclidean_space, center, radius, inclusion):
-        if euclidean_space not in EuclideanSpaces():
-            raise TypeError(f"{euclidean_space} is not a Euclidean space")
-        if inclusion.codomain() is not euclidean_space:
-            raise ValueError("the sphere inclusion must land in the selected Euclidean space")
-        return _object_of(
-            self,
-            euclidean_space=euclidean_space,
-            center=center,
-            radius=radius,
-            inclusion=inclusion,
-        )
+        pass
 
     class ParentMethods:
         def __init__(self, euclidean_space, center, radius, inclusion, **rest):
