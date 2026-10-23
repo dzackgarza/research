@@ -377,6 +377,198 @@ is exactly one: if it were two, rank four would imply integral isometry
 to $H_2$, but $\det G=4$ whereas $\det H_2=1$.
 The rational and real indices are both two.
 
+## Dependency index: mathematical operations and effective search
+
+The algorithms use general operations on forms, modules, morphisms and sets.
+The following index records their mathematical contracts and where they enter
+the constructions. Method spellings are proposed notation for those contracts,
+not assertions that methods with these names are implemented. This is a
+dependency account, not an inventory of current code or formal declarations.
+
+### Invariants, predicates, and decomposition morphisms
+
+In this subsection $T$ is a nondegenerate symmetric bilinear module over
+$R\in\{\mathbb Z,\mathbb Q,\mathbb R\}$; $V$ denotes a space over a field
+$F\in\{\mathbb Q,\mathbb R\}$.
+
+| Proposed operation | Mathematical result | Role in these algorithms |
+| --- | --- | --- |
+| `T.is_anisotropic()` | The truth value of $q(x)=0\Rightarrow x=0$ for every $x\in T$ | Exact stopping decision in rational Witt splitting; distinct from finding no zero in a partial search |
+| `T.hyperbolic_index()` | $h_R(T)\in\mathbb Z_{\ge0}$ in the stated base ring | The requested invariant; integrally this is the $U$-summand index, with the special meaning fixed in this note |
+| `T.maximal_hyperbolic_index_splitting()` | An isometry $\phi:U_R^{\perp m}\perp M\xrightarrow{\sim}T$, where $m=h_R(T)$ | The constructive result; its domain exposes $m$, $M$, and the two orthogonal summands |
+| `V.witt_index()` | The maximal dimension of a totally isotropic subspace, equal to $h_F(V)$ | Field invariant; an upper bound for integral splitting after base change |
+| `V.witt_decomposition()` | An isometry $\phi:U_F^{\perp w}\perp A\xrightarrow{\sim}V$ with $A$ anisotropic | Field construction; supplies the index and the complete basis change together |
+| `T.base_change(S)` | The scalar extension $T_S=T\otimes_R S$ with its extended form, for a specified ring map $R\to S$ | Passes from integral to rational or real questions without identifying their answers |
+| Real signature | $(p,q)$ for the chosen ordered real field | Computes the real index and the signs needed to construct the pairs |
+| Nondegeneracy, evenness and unimodularity predicates | Respectively $\det G\ne0$, $q(T)\subseteq2\mathbb Z$, and $\det G\in\{1,-1\}$ in the applicable setting | Applicability, integral partner construction, and the binary case |
+
+An isometry returned by either splitting operation must have its stated
+source and target and support evaluation, inversion and composition. If
+$\iota_U$ and $\iota_M$ are the inclusions into its domain, then
+$\phi\iota_U$ and $\phi\iota_M$ are the actual embeddings into $T$.
+The summand projections composed with $\phi^{-1}$ give the projections
+from $T$. Thus the result includes the maps needed for subsequent mathematics;
+a number, a Gram matrix, or an isomorphism class of $M$ alone is insufficient.
+
+Over a field the two decomposition contracts above agree by Witt theory.
+Over $\mathbb Z$ the complement of a maximal hyperbolic splitting can still
+be isotropic. For integral forms, anisotropy of $T$ is equivalent to
+anisotropy of $T\otimes\mathbb Q$: a rational zero can be multiplied by a
+common denominator, and an integral zero remains a rational zero. It is
+therefore strictly stronger than $h_{\mathbb Z}(T)=0$, as the examples
+$2H$ and $\operatorname{diag}(1,-1)$ show.
+
+The index and decomposition operations are outputs or reusable subcomputations,
+not prerequisites that may call one another cyclically. A Witt decomposition
+can supply its Witt index. The rational construction in this note instead
+starts from isotropy decision and witness construction. The integral search
+can use the rational index to prune candidates, but can also start at
+$\lfloor\operatorname{rank}(T)/2\rfloor$; it does not require a rational
+Witt decomposition merely to terminate.
+
+### Norm fibres and spaces of embeddings
+
+**Norm fibres.** For $a\in R$, `T.elements_of_norm(a)` denotes the set
+$q^{-1}(a)$, with its inclusion into the set of elements of $T$. It includes
+zero when $a=0$. The nonzero isotropic locus is
+$q^{-1}(0)\setminus\{0\}$; selecting its elements must use this additional
+condition. The norm fibre is meaningful over every stated base ring,
+regardless of countability. Its set structure does not require a selected
+enumeration or a decision procedure for every membership query.
+
+**Isometric embeddings.** For a second nondegenerate formed module $L$ over
+the same base ring, write
+
+$$
+\operatorname{Emb}_R(T,L)=
+\{j:T\to L\text{ linear and injective}:
+ B_L(jx,jy)=B_T(x,y)\text{ for all }x,y\in T\}.
+$$
+
+This is the subset of the set of linear maps defined by injectivity and
+preservation of the form. With chosen bases, it is represented by
+$X^TG_LX=G_T$. Under the present nondegeneracy hypotheses, this equation
+already implies injectivity: $Xx=0$ implies $G_Tx=0$ over a field, or over
+$\mathbb Q$ after extending an integral equation. A general integral
+isometric embedding need not have primitive image. The special source
+$T=U^{\perp r}$ makes primitivity and splitting automatic by (3).
+
+An element is the map $j$ itself, not its image alone or its equivalence
+class under an orthogonal-group action. Thus constructing and filtering
+$\operatorname{Emb}_R(T,L)$ retains source, target and evaluation. Conditions
+may specify images of given vectors, orthogonality to a given submodule,
+integral image after rational base change, or primitive image. Fixed images
+are fibres of evaluation maps; simultaneous conditions are intersections
+of subsets. A quotient by a group action is a separate construction and
+is not needed by the bounded search in this note.
+
+For $T=U$, the same set is the subset of $L\times L$ defined by
+$q(e)=q(f)=0$ and $B(e,f)=1$. For $U^{\perp r}$ it is the subset of the
+finite product indexed by the specified hyperbolic basis satisfying all
+pairing equations. This supplies the embedding-space interpretation of the
+matrix search without making matrices the public mathematical result.
+
+### Sets, enumeration, sampling, and search
+
+These capabilities belong to general sets, maps and subsets, and can then be
+used for norm fibres and embedding sets. Sage's distinction between
+[sets](https://doc.sagemath.org/html/en/reference/categories/sage/categories/sets_cat.html),
+[enumerated sets](https://doc.sagemath.org/html/en/reference/categories/sage/categories/enumerated_sets.html)
+and [subsets defined by predicates](https://doc.sagemath.org/html/en/reference/sets/sage/sets/condition_set.html)
+provides existing software terminology for this separation.
+
+| General tool | Required mathematical or computational hypothesis | Use here |
+| --- | --- | --- |
+| Products, fibres, intersections and predicate-defined subsets | The input sets and defining maps or predicates | Norm fibres, affine solution sets and constrained embeddings |
+| Exact membership or predicate decision | A terminating decision procedure on the supplied input presentation | Filters for norm, pairings, integrality, parity and bounded coordinates |
+| Complete enumeration of a countable set | An effective enumeration that eventually reaches every element; abstract countability alone does not supply one | Searches over integer vectors, rational vectors or integral linear maps |
+| Finite exhaustion by computable subsets | Finite enumerable subsets whose union is the whole set | Increasing coordinate boxes or rational-height bounds, each exhausted before advancing |
+| Enumeration of a bounded finite subset | Specified bounds relative to a chosen basis or presentation | The finite integral embedding search, and the finite local congruence searches |
+| A search for one satisfying element | A complete candidate procedure and decidable conditions, or a solver for the stated equations | Rational isotropic vectors and integral hyperbolic embeddings |
+| Decision of emptiness | A terminating mathematical decision, not merely an element search | Rational anisotropy and rejection of each integral candidate rank |
+| Sampling | A specified probability distribution and an effective sampling procedure | Optional acceleration for finding candidates, with no exclusion conclusion from failure |
+
+Exhaustive sequential iteration cannot cover an uncountable set. For example,
+the real norm-zero locus in $U_{\mathbb R}$ contains the whole line
+$\mathbb R e$. Its norm fibre remains a set even though it has no exhaustive
+iterator. A family parametrized by an uncountable set can describe all its
+points; such a family is not an enumeration by successive natural-number
+indices. Finite-dimensional real linear algebra supplies the pairs directly
+and does not need to iterate over all real vectors.
+
+For a countable candidate set with a decidable predicate, filtering a complete
+enumeration eventually produces every satisfying element. However, asking for
+the next element may never return when there are no further solutions.
+If predicate evaluation is only a semidecision procedure, a sequential filter
+can also remain forever on one candidate; fair interleaving of the individual
+computations is then necessary to enumerate the affirmatively recognized
+elements. Neither procedure decides emptiness in general.
+
+Searches in this note have explicit termination reasons: rational witness
+search starts only after existence is decided, and integral exclusion uses a
+finite bound guaranteed to contain a solution whenever one exists. A time
+budget expiring yields an unfinished search, not an empty set. An arbitrary
+extra predicate on embeddings need not preserve either termination guarantee:
+bound (6) guarantees a small representation of the form, not a small
+representation satisfying additional conditions. A constrained finite search
+needs a bound valid for those conditions or another complete solver.
+
+Sampling must likewise state its distribution and its support. There is no
+uniform probability distribution on a countably infinite discrete set giving
+every point the same mass. Sampling vectors in a real box with a density
+relative to area is also unsuitable for exact isotropy even in $U_{\mathbb R}$:
+its zero locus is the union of two axes, each of area zero. Sampling on a
+parametrization of the desired locus is a different operation. For software
+over exact real presentations, the finitely describable outputs of a sampler
+also need not exhaust the mathematical real locus. None of the exact
+algorithms above requires a random sampler.
+
+### Linear algebra, arithmetic, and retained maps
+
+| General construction or computation | Output needed by the splitting algorithm |
+| --- | --- |
+| Symmetric bilinear forms, evaluation and restriction | The actual form on each module and submodule, with the associated norm map |
+| Scalar extension along a specified ring map | Extended modules, forms and maps; the original integral lattice remains specified when testing integral image |
+| Finite orthogonal sums and hyperbolic planes | The formed sum with its summand inclusions and projections; the rank-zero case is included |
+| Linear maps and their composition, inversion and evaluation | Embeddings, isometries and composed changes of basis in the original module |
+| Kernels, images, preimages and restrictions of linear maps | The submodule with its inclusion; its induced form, rather than just its dimension |
+| Orthogonal complement of a specified embedding or submodule | The kernel of the pairing map to its module dual, with inclusion and restricted form |
+| Orthogonal splitting of a supplied hyperbolic embedding | The isometry obtained from its inclusion and the complementary inclusion, whose inverse is $x\mapsto(x-\pi_M(x),\pi_M(x))$ with $\pi_M$ given by (3) |
+| Exact linear solving, including affine solution sets | A solution of $B(e,v)=1$, or all solutions $v_0+\ker B(e,-)$ with their inclusion in the module |
+| Congruence diagonalization retaining its isometry | Diagonal form and transport maps, for the real and rational routes |
+| Integer kernel and linear-equation solving | A full integral kernel basis and Bézout solutions; Smith or Hermite computations retain their transformations |
+| Divisibility, primitivity and parity | The ideal $B(e,L)$; primitivity of a submodule via torsion-freeness of the quotient; norm modulo $2$ |
+| Exact scalar arithmetic, equality, sign and positive square roots where applicable | Valid pivots, normalization and equation comparisons in the chosen exact presentation |
+| Rank and determinant | Dimension bounds and the determinant input to the integral representation bound |
+| Integer factorization, valuations and rational-square decision | Bad primes, local precision, and binary rational isotropy |
+| Finite residue rings, finite products and modular arithmetic | Complete finite local isotropy tests with primitive residue vectors |
+| Effective representation bounds | A usable integer bound for the relevant form representation problem, with its hypotheses; (6) is the integral instance |
+| Constructive integral equivalence and bounded representatives | The alternative complement-enumeration route only; a successful comparison returns the isometry |
+
+For clarity, the orthogonal-complement row uses the map
+$L\to S^\vee$, $x\mapsto(s\mapsto B(x,s))$, where $S\hookrightarrow L$
+is the specified submodule and $S^\vee$ its module dual. Its kernel is
+$S^\perp$. This construction exists even when $S$ is degenerate; the
+direct-sum conclusion needs the additional hypotheses used in (3).
+Over $\mathbb Z$, a primitive image means that the quotient module is
+torsion-free, not just that one selected vector has coprime coordinates.
+
+### Which tools each construction actually needs
+
+| Route | Required computation beyond the shared module, form and morphism constructions | Optional alternatives or accelerations |
+| --- | --- | --- |
+| Real splitting | Congruence diagonalization, sign and positive square-root operations, or certified real computations under the nonsingularity promise | Signature can be read from the diagonalization; no norm-fibre iterator is needed |
+| Rational splitting | Exact isotropy decision and construction of one nonzero isotropic vector, rational affine solving and kernels | Local finite tests plus exhaustive witness search as proved here, or a maintained rational quadratic-equation solver |
+| Integral bounded embedding search | A valid effective representation bound, finite candidate enumeration, exact pairing comparisons and full integer kernels | Rational Witt index for pruning; a maintained embedding solver with a complete existence decision can replace the box search |
+| Integral splitting from a supplied isotropic vector | Divisibility and affine integral solving, parity on the kernel, hyperbolic-pair completion | Useful when such a vector is already known; does not on its own prove maximality |
+| Integral complement enumeration | Bounded form representatives and constructive integral equivalence | An alternative to the direct embedding search, not an additional mandatory dependency |
+
+Thus the reusable mathematical surface includes anisotropy, norm fibres,
+embedding subsets and decomposition isometries, while each computation selects
+the search or solver capabilities its hypotheses justify. No route requires
+every set to be enumerable, and no predicate-defined set becomes decidable or
+searchable solely because its defining mathematical expression exists.
+
 ## Mathematical identities and evidence boundaries
 
 The constructive output obeys (1), with $\det P=\pm1$ integrally.
