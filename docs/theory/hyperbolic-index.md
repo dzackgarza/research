@@ -1566,6 +1566,27 @@ embedding maps. The source specimens remain unexecuted under DEV-58.
 Large bounds can make this finite method impractical; the separate
 maintained classification computations remain available.
 
+**Source reconciliation of the constrained-search route.** The following
+checks identify the actual composed computations; they are engineering
+source observations, not correctness evidence from an implementation.
+
+| Stage | Inspected call path and boundary |
+| --- | --- |
+| Finite coordinate candidates | `FramedFreeModules.FinitelyGenerated.ParentMethods.coordinate_subset` enumerates the finite Cartesian power of the supplied scalar set in the selected basis and returns the subset with its original module inclusion. |
+| Finite embedding candidates | `LatticeEmbeddingMor.with_generator_images_in` enumerates every tuple of target candidates, tests every upper-triangular Gram equation, and constructs maps in the original `Emb(T,L)`. Symmetry supplies the other equations; nondegeneracy of T implies injectivity. Unknown equations are refused, not counted false. |
+| Additional conditions | The returned finite subset's domain accepts the ordinary `condition_set` operation. Decidable predicates therefore exhaust a finite set. The defining condition remains available when a decision is unavailable; it is not silently replaced by its currently known members. |
+| Definite integral targets | `integral_embedding_coefficient_bound` takes the maximum `square_coordinate_bound` of source generator norms. The inverse-Gram argument bounds every generator image, hence every embedding and every further decidable constraint. |
+| Split indefinite binary integral targets | The discriminant-square branch of `integral_embedding_coefficient_bound` evaluates the all-embedding bound proved above. Its full coordinate box therefore also supports arbitrary decidable constraints. |
+| Other nondegenerate indefinite integral targets | The nonsplit-binary norm-orbit branch and the higher-rank completion/isometry branch meet every target-isometry orbit. They justify exclusion only for decidable invariant predicates. The source code does not apply a general noninvariant-filter exclusion theorem. |
+| Complete unbounded enumeration | The ZZ/QQ embedding iterator uses finite definite shells or the fair Cartesian product of all scalar coordinates. Filtering it preserves eventual discovery of each satisfying embedding, but an empty infinite filtered search need not terminate. |
+
+No general constrained emptiness computation is missing merely because
+the last two routes do not decide arbitrary noninvariant filters: the
+undecidability proof below excludes such a uniform requirement. A new
+specific constrained problem would require its own completeness argument.
+The finite empty, nonprimitive and rational-denominator specimens remain
+with their stated source-only status.
+
 ## Examples separating the three base rings
 
 **Example (a rational obstruction).** For
