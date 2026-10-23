@@ -1248,17 +1248,16 @@ class RiemannianManifolds(OwnedCategory):
     definite on every tangent space ``T_p M`` (Helgason, *Differential
     Geometry, Lie Groups, and Symmetric Spaces*, Ch. I, §9; Mathlib
     ``Mathlib/Topology/VectorBundle/Riemannian.lean``, ``RiemannianBundle``).
-    A smooth manifold admits many metrics, so the metric is chosen data and
-    this is a data subcategory of ``SmoothManifolds()``, its immediate
-    supercategory: forgetting ``g`` returns the smooth manifold ``M``.
+    A smooth manifold admits many metrics, so the metric is chosen data.
+    ``forget_metric()`` sends the structured object to its selected smooth
+    manifold ``M``.
 
     A morphism ``(M, g) -> (N, h)`` is a smooth map ``f`` with ``f^* h = g``,
     a local isometry.  ``isometry_group()`` is the automorphism group of
     ``(M, g)`` in this map category.
 
     A Riemannian manifold is the Riemannian orbifold whose charts have
-    trivial group, so ``RiemannianOrbifolds()`` is its second immediate
-    supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
+    trivial group, so ``RiemannianOrbifolds()`` is its supercategory.
     """
 
     _MorCategory = RiemannianManifoldMorCategoryConstruction
@@ -1266,7 +1265,7 @@ class RiemannianManifolds(OwnedCategory):
     def super_categories(self):
         from dzack_research.preamble.categories.orbifolds import RiemannianOrbifolds
 
-        return [SmoothManifolds(), RiemannianOrbifolds()]
+        return [RiemannianOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
