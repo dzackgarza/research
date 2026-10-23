@@ -277,7 +277,7 @@ class _LocalIsomorphismInclusionFunctor(Functor):
         super().__init__(IntegralAffineLocalIsomorphisms(), IntegralAffineManifolds())
 
     def _apply_object(self, manifold):
-        return manifold.underlying_integral_affine_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
         return morphism.underlying_affine_morphism()
