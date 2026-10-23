@@ -1,5 +1,9 @@
 # Preamble work issues
 
+Implement issue work directly on `main`. Use a branch only when parallel work
+requires a separate worktree. The [delivery policy](CONTRIBUTING.md#delivery-workflow)
+overrides `itree next`'s generic instruction to open a PR.
+
 The live work programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Its first milestone is [resumed research and port delivery, #414](https://github.com/dzackgarza/research/issues/414), followed by the M1–M5 milestones.
 
 Task contracts, mathematical specimens, acceptance conditions, priority rules and completion state live in the issues. Native sub-issues record the ordered branches. Native blocked-by relations record unfinished prerequisites. This file maps the former source identifiers to their issue owners; it does not maintain a second status or dependency graph.

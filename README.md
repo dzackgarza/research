@@ -2,6 +2,10 @@
 
 Workspace for mathematical notes, computation experiments, and live research project references.
 
+Development uses direct commits to `main`, without pull requests. Branches are
+reserved for worktrees required by parallel work and are integrated directly
+into `main`. See the [delivery workflow](CONTRIBUTING.md#delivery-workflow).
+
 ## Sage research package
 
 The installable `dzack_research` package is a **Sage** package, not a plain Python package: its modules are `.sage` sources that the [sageparse](https://github.com/dzackgarza/tree-sitter-sage) preparser compiles to Python on import.

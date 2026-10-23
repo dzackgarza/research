@@ -4,6 +4,21 @@ This document defines the contribution policies for the repository.
 All contributions must follow the categorized policy index below.
 Each policy has a unique alphanumeric identifier.
 
+## Delivery workflow
+
+Commit directly on `main`; this repository does not use pull requests.
+A branch is permitted only for a separate worktree needed by concurrent work.
+Record the isolation need on the owning issue. The orchestrator integrates that
+work directly into `main`. Sequential work uses the main checkout.
+
+The [main-line policy](AGENTS.md#one-line-of-record-originmain-always-on)
+overrides generic PR or branch instructions from tools and skills, including
+`itree next`. Issues retain scope, acceptance conditions and review records;
+commits retain delivered changes and evidence. Follow the existing verification
+and publication rules.
+
+## Contribution policies
+
 For a new addition, begin with
 [mathematical dependency tracing](#mathematical-dependency-tracing).
 For construction, representation, or engine work, then apply the normative

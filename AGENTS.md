@@ -289,6 +289,18 @@ capture.
 
 ## One line of record: `origin/main` (always-on)
 
+This repository does not use pull requests. Commit work directly on `main`.
+Create a branch only when concurrent work genuinely requires an isolated
+worktree. Record that need in the owning issue before creating the worktree;
+ordinary sequential work stays in the main checkout. The orchestrator integrates
+worktree commits into `main` directly, without a pull request.
+
+This rule overrides generic skill, template and tool instructions to create a
+branch or open a draft PR, including the instruction printed by `itree next`.
+Keep scope, acceptance conditions and review dispositions on the owning issue;
+record delivered changes and evidence in commits. Existing verification and
+publication rules still apply.
+
 There is one line of work, `origin/main`, one DAG, and one `TODO.md`.  This
 repository is cloned on more than one host (this workstation and `rack`),
 and each clone's local `main` is only a copy.  So:
@@ -1403,12 +1415,12 @@ Ideas are not all issues yet.
 An agent that searches only the issue tree will miss live thinking and re-derive it badly.
 
 - **GitHub Discussions** hold ideas still **in flux**: competing framings, pasted prompt responses to be reconciled, designs whose scope has not settled.
-  A discussion is a thinking surface, not a decision — nothing in one is authoritative, and no PR may claim work from a discussion alone.
+  A discussion is a thinking surface, not a decision — nothing in one is authoritative, and implementation requires a scoped issue.
   Live example: #217 (*Bridging Lean to computational backends*, Ideas category).
 
-- **Issues** hold ideas that have a scope, carrying the label that names their state: `draft` (the scope itself is provisional; expect the body to change), `research` (empirical research or evaluation required before implementation), `needs-research` (parked — above), `needs-planning` (scope known; decomposition or an executable plan required before any PR claim).
+- **Issues** hold ideas that have a scope, carrying the label that names their state: `draft` (the scope itself is provisional; expect the body to change), `research` (empirical research or evaluation required before implementation), `needs-research` (parked — above), `needs-planning` (scope known; decomposition or an executable plan required before implementation).
 
-The pipeline is one-directional: **a discussion is crystallized into an issue once its scope stops moving**, and everything downstream — implementation research, decomposition into work units, proof obligations, PR claims — is carried out on the issue tree, never in the discussion.
+The pipeline is one-directional: **a discussion is crystallized into an issue once its scope stops moving**, and everything downstream — implementation research, decomposition into work units, proof obligations, completion claims — is carried out on the issue tree, never in the discussion.
 Link the discussion from the issue and leave it in place as the rationale trail; the development of an idea, including its retractions, is the record of why the scope is what it is.
 Do not delete it or summarize it away.
 
@@ -1547,7 +1559,7 @@ Do not resolve an accepted review comment until the code/proof remediation is co
 Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed.
 A thread cannot be resolved on intent or future work.
 
-Rejected and modified feedback must be collected in a top-level PR comment titled `Review feedback disposition ledger` so resolved threads do not hide the audit trail.
+Record rejected and modified feedback on the owning issue under `Review feedback disposition ledger`. Cite the source evidence and any resulting commit.
 
 Review comments are not implementation specs.
 The worker must translate accepted feedback into first-principles remediation requirements before assigning implementation.
