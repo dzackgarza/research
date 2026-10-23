@@ -733,6 +733,78 @@ class TopologicalManifolds(OwnedCategory):
             )
 
 
+class DifferentiableManifoldMor(CategoricalMor):
+    r"""Chartwise differentiable maps at the degree admitted by their endpoints."""
+
+    class ElementMethods:
+        def underlying_topological_morphism(self):
+            pass
+
+        def weaken_to(self, degree):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, chart_maps, degree):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a differentiable identity requires the same source and target")
+        pass
+
+
+class DifferentiableManifoldMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = DifferentiableManifoldMor
+
+
+class SmoothManifoldMor(CategoricalMor):
+    r"""Chartwise smooth maps between selected smooth real manifolds."""
+
+    class ElementMethods:
+        def underlying_differentiable_morphism(self):
+            pass
+
+        def underlying_topological_morphism(self):
+            pass
+
+        def as_ck_morphism(self):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, chart_maps):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a smooth identity requires the same source and target")
+        pass
+
+
+class SmoothManifoldMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = SmoothManifoldMor
+
+
+class _SmoothCkPresentationFunctor(Functor):
+    r"""Place legacy smooth objects and maps in the ``C^∞`` category."""
+
+    def __init__(self, source):
+        from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds
+
+        super().__init__(source, RealCkManifolds(Infinity))
+
+    def _apply_object(self, manifold):
+        return manifold.as_ck_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.as_ck_morphism()
+
+
 class DifferentiableManifolds(OwnedCategory):
     r"""Owned real differentiable manifolds.
 
@@ -740,6 +812,8 @@ class DifferentiableManifolds(OwnedCategory):
     manifolds form the represented subcategory below and therefore belong here
     as well.
     """
+
+    _MorCategory = DifferentiableManifoldMorCategoryConstruction
 
     def super_categories(self):
         return [TopologicalManifolds()]
@@ -796,6 +870,8 @@ class SmoothManifolds(OwnedCategory):
     to the same underlying topological space.
     """
 
+    _MorCategory = SmoothManifoldMorCategoryConstruction
+
     def super_categories(self):
         from dzack_research.preamble.categories.orbifolds import Orbifolds
 
@@ -811,6 +887,14 @@ class SmoothManifolds(OwnedCategory):
     def on(self, topological_manifold, atlas):
         r"""Place the exact manifold under a compatible smooth atlas."""
         pass
+
+    @cached_method
+    def as_ck(self):
+        return _SmoothCkPresentationFunctor(self)
+
+    class ParentMethods:
+        def as_ck_manifold(self):
+            pass
 
     def _call_(self, dimension, name):
         dimension = int(dimension)
