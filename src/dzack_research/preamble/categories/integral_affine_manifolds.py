@@ -26,7 +26,14 @@ from dzack_research.preamble.categories.rings.ring_foundation import _owned_inte
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
-for _axiom in ("Oriented", "StrictLatticePointAtlas", "FiniteSingularSet", "Sphere"):
+for _axiom in (
+    "Oriented",
+    "StrictLatticePointAtlas",
+    "FiniteSingularSet",
+    "Sphere",
+    "Disk",
+    "RealProjectivePlane",
+):
     if _axiom not in all_axioms:
         all_axioms.add(_axiom)
 
@@ -446,6 +453,12 @@ class SingularIntegralAffineSpaces(OwnedCategory):
 
     class Sphere(CategoryWithAxiom):
         r"""Singular integral-affine spaces whose underlying space is a sphere."""
+
+    class Disk(CategoryWithAxiom):
+        r"""Singular integral-affine spaces whose underlying space is a closed ball."""
+
+    class RealProjectivePlane(CategoryWithAxiom):
+        r"""Dimension-two singular affine spaces with underlying real projective plane."""
 
 
 class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
