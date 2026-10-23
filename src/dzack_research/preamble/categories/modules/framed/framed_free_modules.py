@@ -39,6 +39,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_numeral,
     _engine_ring,
+    _linear_algebra_ring,
     _own_ring,
     _owned_ring,
     _owned_integers,
@@ -847,6 +848,18 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     sage: assert K.inclusion().codomain() is L
                     sage: assert K.inclusion().is_in_image(r) is True
                     sage: assert all(f(K.inclusion()(v)) == W.zero() for v in K.module_generators())
+                    sage: from dzack_research.preamble.rings.real import RR
+                    sage: V = RR ** 3
+                    sage: W = RR ** 1
+                    sage: e, f, g = V.module_generators()
+                    sage: w = W.module_generators()[0]
+                    sage: a = V.module_category().Mor(V, W)((RR.pi()*w, W.zero(), W.zero()))
+                    sage: K = a.kernel()
+                    sage: assert K.module_rank() == cardinal(2)
+                    sage: assert K.inclusion().codomain() is V
+                    sage: assert K.inclusion().is_in_image(f) is True
+                    sage: assert K.inclusion().is_in_image(g) is True
+                    sage: assert all(a(K.inclusion()(v)) == W.zero() for v in K.module_generators())
                 """
                 if morphism.domain() is not self:
                     return NotImplemented
@@ -1109,7 +1122,7 @@ def _span_basis_elements(module, module_generating_set):
 
     # Private finite backend serialization.  Only the finite support window is
     # materialized; the ambient framing itself is never enumerated.
-    engine = _engine_ring(ring)
+    engine = _linear_algebra_ring(ring)
     support_count = len(support_points)
     free = _SageFreeModule(engine, support_count)
     engine_rows = []

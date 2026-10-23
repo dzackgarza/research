@@ -1626,7 +1626,9 @@ rank and solving operations directly over exact fields; see
 [Sage's linear-system interface](https://www.sagemath.org/doc/tutorial/tour_linalg.html).
 This repairs a source obstruction for represented RR: the former route
 required a PID Smith computation, whose presentation guard rejects SR
-as the selected PID engine. The new field route computes over RR itself,
+because `SR.is_exact()` is `False`. Sage documents this explicitly in its
+[symbolic-ring reference](https://doc.sagemath.org/html/en/reference/calculus/sage/symbolic/ring.html#sage.symbolic.ring.SymbolicRing.is_exact).
+The new field route computes over RR itself,
 so elimination uses its exact scalar comparisons and divisions. It
 returns absence only after the augmented-rank test proves inconsistency.
 An unavailable scalar operation or solver error propagates, rather than
@@ -1640,6 +1642,24 @@ cover a rank-one map with coefficient $\pi$ over RR, a target outside its
 image, zero source and the integral divisibility distinction. These serve
 the affine pairing equations used by `hyperbolic_partner`; they remain
 unexecuted under DEV-58.
+
+The same scalar choice now governs generic kernel, inverse-matrix and
+finite-span computations. `_linear_algebra_ring` uses the exact owned
+field when its selected symbolic computation ring reports inexactness;
+otherwise it uses the selected computation ring. This retains the field's
+partial equality and exact division through all elimination stages,
+including the normalization of the computed kernel's spanning family.
+Private serialization into other engines keeps its existing selected-ring
+contract.
+
+The source kernel construction still returns its submodule and original
+inclusion, and the inverse construction reverses the actual arrow's
+endpoints. The pending rank-one map $\mathbb R^3\to\mathbb R$ with
+matrix $(\pi,0,0)$ has kernel spanned by the last two basis vectors;
+its two-dimensional kernel exercises finite-span normalization as well
+as the nullspace computation. A triangular matrix with coefficient $\pi$
+supplies both inverse-composite assertions, and the empty matrix checks
+rank zero. These source specimens remain unexecuted under DEV-58.
 
 #### Maps retained by the inspected constructions
 

@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
     OwnedRings,
     _engine_ring,
+    _linear_algebra_ring,
     _enumerated_ring_elements,
     _owned_ring,
 )
@@ -118,12 +119,9 @@ def _integral_preimage_solver(morphism, ring):
 
     if ring in OwnedFields() and ring.is_exact() is True:
         from sage.modules.free_module_element import vector
-        from sage.symbolic.ring import SR
         from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
 
-        backend = _engine_matrix(morphism)
-        if backend.base_ring() is SR:
-            backend = backend.change_ring(ring)
+        backend = _engine_matrix(morphism).change_ring(_linear_algebra_ring(ring))
         field = backend.base_ring()
         rank = backend.rank()
         source_labels = tuple(morphism.domain().module_generating_set())

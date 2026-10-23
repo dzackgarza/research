@@ -66,6 +66,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _OwnedRingParent,
     _engine_element,
     _engine_ring,
+    _linear_algebra_ring,
     _own_ring,
     _owned_ring,
     RingMor,
@@ -6151,7 +6152,9 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                     name=f"Localized kernel spanning family of {self}",
                 )
 
-            basis = _engine_matrix(self).right_kernel().basis_matrix()
+            basis = _engine_matrix(self).change_ring(
+                _linear_algebra_ring(ring)
+            ).right_kernel().basis_matrix()
             labels = self.parent().column_index_set()
             positions = Sets.Δ[int(basis.nrows()) - 1]
             return finite_indexed_family(
@@ -6223,14 +6226,32 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         T = transpose
 
         def inverse(self):
-            r"""Return the inverse matrix morphism with reversed endpoints."""
+            r"""Return the inverse matrix morphism with reversed endpoints.
+
+            Exact scalar comparisons and division are retained through
+            the generic computation when a symbolic model is inexact.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: V = RR ** 2
+                sage: A = V.module_category().Mor(V, V).from_rows(((RR.pi(), 1), (0, 1)))
+                sage: B = A.inverse()
+                sage: assert B.domain() is V and B.codomain() is V
+                sage: assert all(A(B(v)) == v and B(A(v)) == v for v in V.module_generators())
+                sage: Z = RR ** 0
+                sage: z = Z.module_category().Mor(Z, Z).from_rows(())
+                sage: assert z.inverse()(Z.zero()) == Z.zero()
+            """
             if self.parent().nrows() != self.parent().ncols():
                 raise ValueError(
                     f"{self} has no inverse: the matrix has shape {self.parent().matrix_shape()}, not square"
                 )
 
-            backend = _engine_matrix(self).inverse()
             ring = self.parent().base_ring()
+            backend = _engine_matrix(self).change_ring(
+                _linear_algebra_ring(ring)
+            ).inverse()
             source = self.codomain()
             codomain = self.domain()
             target = _require_matrix_mor(source.module_category().Mor(source, codomain))

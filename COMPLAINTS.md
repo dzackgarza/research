@@ -174,8 +174,8 @@ This does not add a total arbitrary-real or certified-approximation route.
 
 **Exact field preimages:** source tracing found another obstruction in
 `_integral_preimage_solver`: finite-free real preimages required Smith
-normalization, but `_selected_presentation_smith_backend` rejects SR as
-a PID engine. The existing preimage owner now uses maintained rank and
+normalization, but `_selected_presentation_smith_backend` rejects SR
+because `SR.is_exact()` is `False`, as Sage documents. The existing preimage owner now uses maintained rank and
 linear-system operations over exact fields, computing RR elimination
 with its own scalar protocol. An inconsistent augmented rank gives
 absence; unknown scalar or solver failures propagate. Original source
@@ -183,6 +183,16 @@ coordinates and selected-lift precedence are retained. The pi, inconsistent
 right-hand side, zero-source and integral-divisibility specimens remain
 unexecuted under DEV-58. This supports affine pairing and partner equations
 without constructing any maximal hyperbolic splitting.
+
+**Kernel, inverse and span coverage:** their generic linear-algebra
+computations now use the same coefficient-ring choice as field preimages
+and congruence. An exact owned field with an inexact symbolic realization
+keeps its own scalar comparisons and division during elimination and
+kernel-span normalization. The actual kernel inclusion and inverse-map
+endpoints are retained. The rank-two kernel of (pi,0,0), its inclusion
+and lifts, triangular inverse composites and empty inverse remain
+unexecuted under DEV-58. Private external-engine serialization retains
+its selected computation ring.
 
 **Dependency path:** exact real scalar arithmetic and relations -> congruence
 diagonalization with its map -> inertia and normalized vectors -> field

@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_ring,
+    _linear_algebra_ring,
     _own_ring,
     _owned_integers,
 )
@@ -1384,13 +1385,11 @@ def _congruence_diagonal_form(gram: Tensor):
     field of Sage's generic arithmetic. Its equality and division refuse
     undecided predicates. Converting to SR before choosing pivots would
     instead use symbolic truth conversion, even if the final diagonal
-    signs were later checked in RR. Other rings retain their selected
-    private engine computation.
+    signs were later checked in RR. Selected exact computation fields
+    remain available through the shared linear-algebra scalar choice.
     """
-    from dzack_research.preamble.rings.real import RR
-
     ring = gram.base_ring()
-    field = RR if ring is RR else _engine_ring(ring)
+    field = _linear_algebra_ring(ring)
     components = _engine_component_matrix(gram).change_ring(field)
     return QuadraticForm(field, components).rational_diagonal_form(return_matrix=True)
 
