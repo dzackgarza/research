@@ -3144,8 +3144,25 @@ class PowerSets(OwnedCategory):
             return self.from_predicate(lambda member: characteristic_morphism(member) == truth)
 
         def _from_finite_members(self, members):
-            r"""The finite subset on the stated members, as a finite ordered set with its inclusion."""
+            r"""The finite subset on the stated members, with its original inclusion.
+
+            The domain is an ordered subset of the original set, rather
+            than a detached ordered list of the same points. Its own
+            inclusion and the returned subobject have the same map.
+
+            EXAMPLES::
+
+                sage: X = finite_ordered_set((1, 2, 3))
+                sage: A = X.power_set()((1, 3))
+                sage: assert tuple(A.domain()) == (1, 3)
+                sage: assert A.domain().universe() is X
+                sage: assert A.domain().inclusion().codomain() is X
+                sage: assert A.domain().inclusion() is A.inclusion()
+                sage: assert A.domain().is_parent_of(2) is False
+            """
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                FiniteOrderedSets,
+                _FilteredOrderedSetEngine,
                 finite_ordered_set,
             )
 
@@ -3159,8 +3176,18 @@ class PowerSets(OwnedCategory):
                 normalized.append(base(member))
             # ``finite_ordered_set`` identifies equal points; identifying them
             # here as well compared every pair twice.
-            subset = finite_ordered_set(tuple(normalized))
-            return Sets().Subobjects(base)(Sets().Mono(subset, base)._from_subset_inclusion())
+            points = finite_ordered_set(tuple(normalized))
+            subset = _object_of(
+                FiniteOrderedSets(),
+                _engine=(FiniteOrderedSets(), _FilteredOrderedSetEngine, None),
+                universe=base,
+                predicate=points.is_parent_of,
+                index_set=points.index_set(),
+                element_at=points.enumeration(),
+                index_of=points.enumeration_inverse(),
+                contains=points.is_parent_of,
+            )
+            return Sets().Subobjects(base)(subset.inclusion())
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""

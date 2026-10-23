@@ -1100,7 +1100,7 @@ not replace the mathematical assertions or their pending execution.
 
 | Construction | Inspected source | Retained datum and boundary |
 | --- | --- | --- |
-| Norm fibre | `form_modules.py`: `square_fibre`, `elements_of_norm`; `set_categories.py`: equalizer construction | Equalizer inclusion into the original module; zero remains in the zero fibre; no countability inference |
+| Norm fibre | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: finite integral `elements_of_norm`; `set_categories.py`: equalizer and finite-subset constructions | Inclusion into the original module; complete finite enumeration for definite integral and rank-zero integral fibres; zero remains in the zero fibre; general equalizers make no countability inference |
 | Form scalar extension | `form_modules.py`: `_formed_module_base_change`, `FormBaseChanges` | Original formed module, actual ring map and source-to-restriction unit; current computation is scalar-valued |
 | Formed morphism scalar extension | `form_modules.py`: `FormedModuleMorphism.base_change`; `scalar_change.py`: `_apply_morphism` | Both components of the form square; the module component retains its original morphism and extension functor; injectivity is not presumed |
 | Isometry scalar extension | `lattice_morphisms.py`: `LatticeIsometryMethods.base_change` | Forward and inverse maps over the same extended endpoints, combined in the module core |
@@ -1220,6 +1220,20 @@ Norm fibres are sets with their inclusions:
 null_vectors = L.elements_of_norm(ZZ(0))
 nonzero_null_vectors = null_vectors.condition_set(lambda v: v != L.zero())
 ```
+
+For finite-rank definite integral lattices, `elements_of_norm(a)` now
+uses the complete finite `vectors_of_square(a)` computation. Thus the
+zero fibre is a singleton whose enumeration terminates; a wrong-sign or
+unrepresented square gives an empty finite set. Nonzero fibres of split
+nondegenerate binary integral forms likewise retain their finite divisor
+enumeration; the zero fibre of a hyperbolic plane remains infinite. The rank-zero integral
+case is also finite: it contains zero exactly at square zero. The
+finite-subset construction retains its original universe on the domain
+set, so `F.inclusion(): F -> L` is available as well as the inclusion
+on the subobject returned by `vectors_of_square`. This reuses the
+ordered-subset construction; it does not create another norm-fibre type.
+The definite, negative definite, empty and rank-zero examples in the
+method docstring remain unexecuted under DEV-58.
 
 They include zero before the extra filter. In finite rank over `ZZ` or `QQ`,
 the ambient coordinate iterator permits complete filtered searches. Over an

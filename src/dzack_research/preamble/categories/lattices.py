@@ -5751,6 +5751,53 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             return _square_coordinate_bound(self, self.base_ring()(square))
 
+        def elements_of_norm(self, value):
+            r"""Return the full norm fibre, retaining finite integral enumeration.
+
+            For definite integral lattices the existing finite square-shell
+            computation supplies every point, so exhausting this fibre
+            terminates, including at norm zero. Nonzero fibres of split
+            nondegenerate binary integral forms also retain their complete
+            finite divisor enumeration. Its inclusion still lands
+            in this lattice. Other fibres use the general equalizer locus;
+            no enumeration is inferred over an uncountable coefficient ring.
+
+            EXAMPLES::
+
+                sage: L = Lattices(ZZ)([[2, -1], [-1, 2]])
+                sage: F = L.elements_of_norm(ZZ(0))
+                sage: assert tuple(F) == (L.zero(),)
+                sage: assert F.inclusion().codomain() is L
+                sage: assert F.inclusion()(F.an_element()) == L.zero()
+                sage: assert L.elements_of_norm(ZZ(2)).cardinality() == cardinal(6)
+                sage: assert L.elements_of_norm(ZZ(1)).is_empty() is True
+                sage: N = L.twist(ZZ(-1))
+                sage: assert N.elements_of_norm(ZZ(-2)).cardinality() == cardinal(6)
+                sage: assert N.elements_of_norm(ZZ(2)).is_empty() is True
+                sage: U = Lattices(ZZ)("U")
+                sage: assert U.elements_of_norm(ZZ(2)).cardinality() == cardinal(2)
+                sage: assert U.elements_of_norm(ZZ(2)).inclusion().codomain() is U
+                sage: Z = Lattices(ZZ)(0)
+                sage: assert tuple(Z.elements_of_norm(ZZ(0))) == (Z.zero(),)
+                sage: assert Z.elements_of_norm(ZZ(1)).is_empty() is True
+            """
+            value = self.value_module()(value)
+            if (
+                self.base_ring() is _owned_integers()
+                and self.module_rank().is_finite()
+                and (self.module_rank() == 0 or self.is_definite())
+            ):
+                return self.vectors_of_square(value).domain()
+            if (
+                self.base_ring() is _owned_integers()
+                and self.module_rank() == 2
+                and value != self.base_ring().zero()
+            ):
+                discriminant = lattice_engines._binary_form_discriminant(self)
+                if discriminant > 0 and discriminant.is_square():
+                    return self.vectors_of_square(value).domain()
+            return self.square_fibre(value).object()
+
         @cached_method
         def vectors_of_square(self, square):
             r"""Return the complete square fibre with its lattice inclusion.
@@ -5764,6 +5811,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             and it is not the finite shell of the integral span.
             """
             square = self.base_ring()(square)
+            if self.base_ring() is _owned_integers() and self.module_rank() == 0:
+                from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+                return self.finite_subsets()(
+                    finite_ordered_set((self.zero(),) if square == self.base_ring().zero() else ())
+                )
             if not self.module_rank().is_finite():
                 return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
