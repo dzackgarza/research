@@ -555,6 +555,14 @@ class SimplicialComplexes(OwnedCategory):
         def subdivision_comparison(self, subdivision):
             pass
 
+        def barycentric_subdivision(self):
+            r"""The order complex of this complex's face poset."""
+            pass
+
+        def barycentric_subdivision_comparison(self, subdivision):
+            r"""The realization map from the barycentric subdivision to this complex."""
+            pass
+
         def simplex_inclusion(self, face, simplex):
             pass
 
