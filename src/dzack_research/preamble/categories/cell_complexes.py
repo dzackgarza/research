@@ -11,6 +11,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.sets.finite_graded_posets import FiniteGradedPosets
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
@@ -36,6 +37,9 @@ class _ComplexMapMethods:
         pass
 
     def cellular_realization_map(self):
+        pass
+
+    def face_poset_map(self):
         pass
 
 
@@ -112,6 +116,19 @@ class _ComplexRealizationFunctor(Functor):
         if self.codomain() is CellComplexes():
             return morphism.cellular_realization_map()
         return morphism.realization_map()
+
+
+class _ComplexFacePosetFunctor(Functor):
+    r"""Send a finite complex and its cellular maps to face posets."""
+
+    def __init__(self, source_category):
+        super().__init__(source_category, FiniteGradedPosets())
+
+    def _apply_object(self, complex_):
+        return complex_.face_poset()
+
+    def _apply_morphism(self, morphism):
+        return morphism.face_poset_map()
 
 
 class CellComplexes(OwnedCategory):
@@ -287,6 +304,10 @@ class PolytopalComplexes(OwnedCategory):
         return _object_of(self, polytopes=polytopes, face_maps=face_maps)
 
     @cached_method
+    def face_posets(self):
+        return _ComplexFacePosetFunctor(self)
+
+    @cached_method
     def cellular_realization(self):
         return _ComplexRealizationFunctor(self, CellComplexes())
 
@@ -354,6 +375,10 @@ class SimplicialComplexes(OwnedCategory):
     def order_complex(self, poset):
         r"""Construct the nerve of a poset from its chains."""
         pass
+
+    @cached_method
+    def face_posets(self):
+        return _ComplexFacePosetFunctor(self)
 
     @cached_method
     def cellular_realization(self):
@@ -434,6 +459,10 @@ class DeltaComplexes(OwnedCategory):
 
     def from_faces(self, simplices, face_maps):
         return _object_of(self, defining_simplices=simplices, face_maps=face_maps)
+
+    @cached_method
+    def face_posets(self):
+        return _ComplexFacePosetFunctor(self)
 
     @cached_method
     def cellular_realization(self):
