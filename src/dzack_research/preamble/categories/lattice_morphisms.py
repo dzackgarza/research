@@ -2,6 +2,7 @@ r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
 from __future__ import annotations
 
+from itertools import product
 from typing import TYPE_CHECKING
 
 from sage.categories.map import Map
@@ -76,8 +77,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     OrderedEnumeratedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, NN, Sets
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
     _engine_binary_form_pullback,
@@ -1965,6 +1966,67 @@ class LatticeEmbeddingMor(CategoricalMor):
         )
         assert data is not None, f"OSCAR returned no classification of primitive embeddings of {source} into {target}"
         return finite_ordered_set(tuple(self._reconstruct_target_primitive_embedding(record) for record in data))
+
+    def with_generator_images_in(self, candidates):
+        r"""Return the finite subset whose basis images lie in ``candidates``.
+
+        The source has a finite basis and is nondegenerate; candidates
+        form a finite enumerated subset of the target with decidable
+        pairing comparisons. Exhaust the finite product of candidate
+        images and retain the maps satisfying the Gram equations.
+        Nondegeneracy makes these maps injective. The returned set
+        subobject retains its inclusion into this embedding space.
+
+        Further decidable conditions can filter its finite enumerated
+        ``domain()`` and decide emptiness by exhaustion. This decides
+        only the supplied finite search. Excluding every embedding needs
+        a bound guaranteed to contain one whenever it exists, including
+        any extra conditions. No definiteness or countability of the
+        target is needed for this finite construction.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: C = finite_ordered_set((ZZ(-1), ZZ(0), ZZ(1)))
+            sage: box = U.coordinate_subset(C)
+            sage: bounded = U.Emb(U).with_generator_images_in(box.domain())
+            sage: assert bounded.domain().cardinality() == cardinal(4)
+            sage: assert bounded.inclusion().codomain() is U.Emb(U)
+            sage: assert all(U.gram_tensor().pullback(j) == U.gram_tensor() for j in bounded.domain())
+            sage: Z = Lattices(ZZ)(0)
+            sage: empty = finite_ordered_set(())
+            sage: assert Z.Emb(U).with_generator_images_in(empty).domain().cardinality() == cardinal(1)
+            sage: assert U.Emb(U).with_generator_images_in(empty).domain().is_empty() is True
+        """
+        source = self.domain()
+        target = self.codomain()
+        assert source.module_rank().is_finite() and source.is_nondegenerate(), (
+            f"finite generator-image search in {self} requires a finite nondegenerate source"
+        )
+        assert candidates in EnumeratedSets() and candidates.is_finite() is True, (
+            f"finite generator-image search in {self} requires a finite enumerated candidate set"
+        )
+        points = tuple(candidates)
+        assert all(target.is_parent_of(point) is True for point in points), (
+            f"generator images for {self} must be elements of its target {target}"
+        )
+        gram = source.gram_tensor()
+        rank = len(tuple(source.module_generators()))
+
+        def embeddings():
+            for images in product(points, repeat=rank):
+                preserves = conjunction(
+                    target.b(images[row], images[column]) == gram[row, column]
+                    for row in range(rank)
+                    for column in range(row, rank)
+                )
+                assert preserves is True or preserves is False, (
+                    f"finite enumeration in {self} requires decidable pairing equations for {images}"
+                )
+                if preserves is True:
+                    yield self(images)
+
+        return self.power_set()(embeddings())
 
     def __iter__(self):
         r"""Enumerate isometric embeddings over ZZ or QQ in finite rank.
