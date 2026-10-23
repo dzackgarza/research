@@ -790,6 +790,34 @@ class ExactRealField(UniqueRepresentation, Field):
             return element
         return self(element)
 
+    def _sign_of_nonzero(self, value) -> int:
+        r"""Determine the sign under a supplied nonzero hypothesis.
+
+        Convergent enclosures eventually lie on one side of zero. This
+        protected computation is not a decision procedure for arbitrary
+        real inputs: a zero input violates its hypothesis.
+        """
+        value = self(value)
+        precision = 128
+        while True:
+            enclosure = value._arb_(RealBallField(precision))
+            if enclosure.is_finite():
+                if enclosure > enclosure.parent().zero():
+                    return 1
+                if enclosure < enclosure.parent().zero():
+                    return -1
+            precision *= 2
+
+    def _sqrt_of_positive(self, value) -> ExactRealNumber:
+        r"""Compute the positive root under an established positivity hypothesis.
+
+        The maintained symbolic or lazy real arithmetic supplies the root.
+        Its reality follows from the caller's hypothesis, without another
+        bounded predicate query.
+        """
+        value = self(value)
+        return self.element_class(self, value._expression.sqrt())
+
     def _divide_by_nonzero(self, numerator, denominator) -> ExactRealNumber:
         r"""Compute a quotient whose denominator is already known nonzero.
 

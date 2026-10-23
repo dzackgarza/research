@@ -257,13 +257,16 @@ def _real_witt_bases(lattice):
     same sign, so their span is anisotropic.
 
     The input is a finite nondegenerate symmetric space over AA or the
-    represented exact RR field. Real comparisons must be decided; a
-    proposition has no Python truth value. No approximate root or
+    represented exact RR field. Each diagonal square is nonzero; over RR
+    convergent enclosures therefore determine its sign by refinement.
+    Positive roots and quotients use these established hypotheses rather
+    than new bounded predicate queries. No approximate root or
     exhaustive real iterator is used.
     Sage documents the retained transformation in
     ``quadratic_form__local_field_invariants.rational_diagonal_form``.
     """
     from dzack_research.preamble.categories.sets.finite_families import finite_family
+    from dzack_research.preamble.rings.real import RR
 
     ring = lattice.base_ring()
     diagonalization = lattice.diagonalization()
@@ -272,10 +275,16 @@ def _real_witt_bases(lattice):
     for generator in diagonalization.domain().module_generators():
         vector = diagonalization(generator)
         square = lattice.q(vector)
-        if square > 0:
-            positive.append(vector * (ring.one() / square.sqrt()))
+        sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > 0 else -1)
+        if ring is RR:
+            root = ring._sqrt_of_positive(square if sign > 0 else -square)
+            normalized = vector * ring._divide_by_nonzero(ring.one(), root)
         else:
-            negative.append(vector * (ring.one() / (-square).sqrt()))
+            normalized = vector * (ring.one() / (square if sign > 0 else -square).sqrt())
+        if sign > 0:
+            positive.append(normalized)
+        else:
+            negative.append(normalized)
     index = min(len(positive), len(negative))
     hyperbolic = tuple(
         vector

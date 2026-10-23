@@ -313,8 +313,9 @@ right-hand side or finite spanning family. The separate symbolic
 serialization contract still selects SR and refuses a general limit
 without a supplied expression. Explicit symbolic and algebraic conversions still
 require an available exact expression. The congruence construction below
-supplies a returned basis; complete downstream sign/root normalization
-and map assembly remain part of the open dependency assignment.
+supplies a returned basis. Its nonzero diagonal entries now also supply
+Witt-basis sign/root normalization; norm-witness routing and complete
+downstream map assembly remain part of the open dependency assignment.
 
 **Construction with undecided scalar predicates.** Gram nondegeneracy
 and unimodularity preserve the unit/nonzero propositions instead of
@@ -462,6 +463,24 @@ or assemble a maximal hyperbolic splitting.
    existing module core as an inverse pair. That pair supplies the
    returned lattice isometry and inverse, without another rank test or
    matrix-inversion algorithm. At rank zero the empty pair retains RR.
+
+**Normalization of the nonsingular real Witt basis.** Each returned
+diagonal entry $d_i$ is nonzero. Refine its convergent Arb enclosures until
+the entire enclosure lies strictly above or below zero. This terminates:
+an enclosure containing $d_i$ with diameter less than $|d_i|$ cannot contain
+zero. Sage's [real-ball comparison contract](https://raw.githubusercontent.com/sagemath/sage/develop/src/sage/rings/real_arb.pyx)
+uses precisely this strict separation. Set $s_i=\operatorname{sign}(d_i)$
+and $r_i=\sqrt{s_i d_i}>0$. The private positive-root and nonzero-quotient
+operations retain the maintained symbolic/lazy arithmetic and consume
+these established hypotheses; neither requests another bounded predicate
+decision. Thus $p_i=v_i/r_i$ has square $s_i$. Orthogonality is preserved
+by scaling. Pairing a positive $p$ and a negative $n$ gives
+$e=p+n$, $f=(p-n)/2$, with $q(e)=q(f)=0$ and $b(e,f)=1$.
+All unpaired vectors have the same sign, so their span is anisotropic.
+This supplies the normalized basis used by `_real_witt_bases`; assembling
+the returned decomposition through all downstream maps remains an open
+source obligation. General real equality and arbitrary singular input
+are not decided by this promised-nonzero computation.
 
 This computation is now selected by `L.diagonalization()` for finite
 RR forms with supplied nondegeneracy. Other existing scalar and
@@ -1473,7 +1492,7 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Indexed requirement | Current source owner and computation | Coverage still requiring evidence or further computation |
 | --- | --- | --- |
 | Anisotropy and nonzero isotropic witnesses | `form_modules.py`: `is_anisotropic`; `lattices.py`: `is_isotropic`, `isotropic_vector`; rational PARI decision and real congruence routes | Exact ZZ/QQ, AA and applicable represented RR cases have source routes; general real-oracle zero decisions are not supplied |
-| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Regular Cauchy admission, nonsingular signature and returned congruence isometry have source routes; complete downstream sign/root normalization and map assembly remain open |
+| Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; private Hecke rational computation and real congruence/sign/root computation | Regular Cauchy admission, nonsingular signature and returned congruence isometry have source routes; Witt-basis sign/root normalization has a source route; norm-witness normalization and downstream map assembly remain open |
 | Norm fibres, including zero | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: `elements_of_norm`, `representation_vector` | Set inclusion and membership are separate from finding a nonzero point; definite, rank-zero and nonzero split binary integral fibres have finite source routes |
 | Scalar extension of objects and arrows | `FormBaseChanges`, `FormedModuleMorphism.base_change`, `LatticeIsometryMethods.base_change`, module scalar-extension functor | Scalar-valued forms have source routes with actual ring maps and both arrow components; arbitrary value-module extensions remain outside the current computation |
 | Embedding sets, decisions and witnesses | `lattice_morphisms.py`: embedding Mor, `_emptiness_decision`, `an_element`, integral-overlattice factorization and field Witt criterion | Nondegenerate finite ZZ/QQ/AA and applicable RR endpoints have source routes; backend coverage and witness transport remain unexecuted |

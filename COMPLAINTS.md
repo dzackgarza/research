@@ -167,9 +167,11 @@ The pi-coefficient specimens in the theory note remain unexecuted under
 DEV-58. Supplied nonsingular RR forms now have a returned diagonalizing
 isometry and inverse from finite nonzero-norm search and fraction-free
 projection, without scalar zero decisions. The existing downstream
-`_real_representation_witness` and `_real_witt_bases` still use scalar
-comparisons and positive roots whose applicability must be decided;
-complete normalization and map routing for Cauchy inputs remain open.
+`_real_witt_bases` now refines signs of its known nonzero diagonal entries
+and computes roots and quotients under the resulting positivity hypotheses.
+The norm-witness route `_real_representation_witness` still uses bounded
+scalar decisions; its normalization and downstream map routing for Cauchy
+inputs remain open.
 Arbitrary singular oracle inputs still admit
 no uniform zero decision.
 

@@ -3145,8 +3145,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             and decided scalar signs and positive square roots supply the
             normalized hyperbolic pairs and a definite complement. RR
             accepts closed expressions and regular Cauchy presentations;
-            downstream normalization and map assembly remain conditional
-            on their scalar decisions. An undecided comparison is refused.
+            nonsingular RR Witt-basis normalization refines signs under
+            known nonzero hypotheses. Downstream map assembly remains
+            conditional on its scalar decisions. An undecided comparison
+            is refused.
 
             EXAMPLES::
 
