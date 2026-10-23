@@ -14,39 +14,50 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
-### General embedding search must retain nonprimitive embeddings
+### General integral embedding search needs a complete exclusion route
 
-The hyperbolic-splitting dependency index requires the set of all isometric
-embeddings, with filtering and search, not only primitive embeddings or
-isometries. Equal-rank integral embeddings can have finite index: the map
-`U(2) -> U` sending its hyperbolic basis to `2e,f` preserves the form and
-has index two, although the determinants exclude integral isometry.
+The hyperbolic-splitting dependency index requires all isometric embeddings,
+including nonprimitive images, with actual source and target maps. For example,
+`U(2) -> U`, sending its basis to `2e,f`, is an index-two integral embedding
+although the two lattices are not integrally isometric. A negative isometry
+or primitive-embedding answer cannot exclude it.
 
-Source inspection found `LatticeEmbeddingMor._emptiness_decision` treating
-an empty equal-rank `Isom` as an empty `Emb`, and treating a negative primitive
-embedding answer as an exclusion of every embedding. Its `an_element` used
-the same restrictions. The current repair retains affirmative isometry and
-primitive cases and lets the even-overlattice route handle nonprimitive
-integral images; the Nikulin route is restricted to integral targets.
-Finite-rank nondegenerate-source embeddings over ZZ and QQ now have a
-complete scalar-product enumeration, and predicate subsets can filter that
-iterator without a ranking isomorphism. The remaining need is a terminating
-existence decision where required. Finite coordinate subsets and bounded
-generator-image searches retain their inclusions and can be exhausted, but
-the bound guaranteeing a representative, including any additional
-predicates, remains to be supplied. No claim that the existing primitive
-classifier supplies this complete decision is justified.
+The existing source now retains this distinction. Finite-rank embeddings with
+nondegenerate source over ZZ and QQ have complete enumeration, finite
+coordinate subsets and finite generator-image searches retain their inclusions,
+and predicate subsets can filter them. Over QQ and AA, two finite
+nondegenerate endpoints have a terminating emptiness decision from
+`w(L orthogonal_sum -T) >= dim(T)`. Rational witness search first rejects the
+empty case; AA witnesses use exact diagonalization and matching signs.
 
-**Dependency path:** formed modules and form-preserving linear maps ->
-embedding subset with its actual maps -> optional primitive-image subset ->
-complete enumeration or an applicable bounded existence search -> maximal
-hyperbolic splitting. Existing definite integral enumeration and the
-even-overlattice construction are partial computational routes.
-**Coverage boundary:** the named source branches and the explicit `U(2)`
-example were inspected; no runtime result is asserted. The formal embedding
-and module-morphism owners already distinguish injectivity from invertibility;
-no absence of formalized mathematics is claimed here.
-Repair and the remaining index-wide obligations belong to
+**Remaining computation:** complete exclusion for general integral embeddings,
+and for constrained subsets where required. Exhausting a finite coordinate
+box excludes only that box. The Li–Margulis representation bound in
+[the theory note](docs/theory/hyperbolic-index.md#effective-search-bounds-for-embeddings)
+requires a usable dimension-dependent constant; extra conditions need their
+own valid bound or complete solver. The current source has neither a general
+integral representation bound nor a general constrained exclusion procedure.
+Definite integral enumeration and the even-overlattice construction remain
+applicable partial routes, not complete coverage.
+
+**Observed reference-workflow blocker (2026-10-23):** the canonical
+`zotero-library/lib/zotero.py` client was retrieved from its repository
+(blob `5d0a3ca9ee84f6d1a0d9ff45fa73a75031ae90bf`). Its `health()` call to
+`http://127.0.0.1:23119/version` failed with connection refused. The required
+PDF workflow therefore cannot inspect the bound's proof on this host until
+the Zotero desktop and local API are available. This does not establish that
+the constant is ineffective or absent from the paper. No guessed constant
+or unbounded search replaces this unresolved computation.
+
+**Dependency path:** formed modules and form-preserving maps -> embedding
+subset retaining its maps -> complete candidate enumeration -> an applicable
+finite bound or a separate existence decision -> integral maximal splitting.
+For constrained embeddings the predicate enters before the exclusion theorem,
+not after it. **Coverage boundary:** source inspection and the concrete API
+health failure above; mathematical specimens remain unexecuted under DEV-58.
+The formal embedding and module-morphism owners already distinguish
+injectivity from invertibility; no missing formal foundation is asserted.
+The remaining index-wide work belongs to
 `hyperbolic-splitting-dependency-tools` in [TODO.md](TODO.md).
 
 ### Labelled graphs present no isomorphisms or automorphism groups
