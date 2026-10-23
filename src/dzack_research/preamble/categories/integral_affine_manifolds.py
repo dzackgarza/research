@@ -25,6 +25,7 @@ from dzack_research.preamble.categories.manifolds_with_boundary import (
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -129,7 +130,16 @@ class IntegralAffineManifolds(OwnedCategory):
 
     def on(self, smooth_manifold, affine_atlas):
         r"""Equip the exact smooth manifold with a selected integral-affine atlas."""
-        pass
+        from dzack_research.preamble.categories.integral_affine_atlases import IntegralAffineAtlases
+
+        assert smooth_manifold in SmoothManifolds()
+        assert affine_atlas in IntegralAffineAtlases()
+        assert affine_atlas.underlying_smooth_manifold() is smooth_manifold
+        return _object_of(
+            self,
+            smooth_manifold=smooth_manifold,
+            affine_atlas=affine_atlas,
+        )
 
     @cached_method
     def forget(self):
