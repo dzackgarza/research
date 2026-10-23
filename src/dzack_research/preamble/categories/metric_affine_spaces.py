@@ -32,6 +32,11 @@ class EuclideanSpaceMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, affine_map):
+        if (
+            affine_map.domain() is not self.domain().underlying_affine_space()
+            or affine_map.codomain() is not self.codomain().underlying_affine_space()
+        ):
+            raise ValueError("the affine map must join the selected Euclidean affine spaces")
         return self.element_class(self, affine_map)
 
     @object_level
@@ -116,6 +121,11 @@ class SphericalSpaceMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, ambient_isometry):
+        if (
+            ambient_isometry.domain() is not self.domain().euclidean_space()
+            or ambient_isometry.codomain() is not self.codomain().euclidean_space()
+        ):
+            raise ValueError("the isometry must join the selected Euclidean ambient spaces")
         return self.element_class(self, ambient_isometry)
 
     @object_level
