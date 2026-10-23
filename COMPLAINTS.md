@@ -62,14 +62,13 @@ an exact bound containing every vector of a supplied square. The maximum
 source-generator bound, the existing finite coordinate subset and the
 finite embedding subset thus supply a complete constrained search for any
 decidable extra predicate. The original framing is retained, including
-large coordinates in sheared bases. The pre-existing optimized
-`definite_lattices._square_shell` still delegates to PARI `forqfvec`; its
-comment assumes small bounds, but the public square argument is unrestricted.
-The measured large-coefficient precision limitation in
-[TRAPS.md](TRAPS.md#pari-forqfvec-imposes-a-fixed-floating-point-bound)
-therefore remains relevant to that enumerator. The new rational-inverse
-bound does not call it; no repair of its provider selection is claimed.
-Keep that route and its execution with the dependency-tools TODO owner.
+large coordinates in sheared bases. The optimized square-shell route now delegates to Hecke's inclusive
+`short_vectors` enumeration, restores both signs, and filters reflective
+vectors by exact divisibility. It replaces the PARI `forqfvec` route whose
+measured large-coefficient precision limitation is recorded in TRAPS.md.
+The scaled A2 square-shell, sign, coordinate and empty-shell specimens in
+the theory note remain unexecuted under DEV-58. Source inspection of the
+maintained rational enumeration is not runtime coverage evidence.
 
 **Dependency path:** formed modules and form-preserving maps -> embedding
 subset retaining its maps -> complete candidate enumeration -> an applicable

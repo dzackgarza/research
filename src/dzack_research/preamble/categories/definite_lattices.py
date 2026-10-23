@@ -280,25 +280,26 @@ def _minimum(lattice):
 
 
 def _square_shell(positive_gram, target, reflective):
-    r"""The coordinate vectors ``v`` with ``v^T G v = target``, optionally only the reflective ones.
+    r"""All vectors of the positive definite integral square shell.
 
-    ``G`` is the positive definite Gram tensor.  PARI's ``forqfvec`` runs the
-    Fincke--Pohst enumeration of ``v^T G v <= target`` (User's Guide to PARI/GP,
-    ``forqfvec``) and ``_square_shell.gp`` retains ``v`` and ``-v`` for each
-    vector of the shell, so the order is that of ``qfminim``.  When
-    ``reflective`` is true it retains only the vectors whose reflection
-    ``w - 2 b(v,w)/b(v,v) v`` is integral, which holds exactly when ``target``
-    divides every entry of ``2 G v``.  Only the retained vectors are stored,
-    never the whole ball that ``qfminim`` returns.  The bound is a small
-    norm, far below the floating-point limit that TRAPS.md, "PARI forqfvec
-    imposes a fixed floating-point bound", records.
+    Hecke's inclusive ``short_vectors(L, target, target)`` enumerates one
+    vector per sign pair, using rational pseudo-Cholesky enumeration after
+    Gram LLL reduction, and transports coordinates to the original basis.
+    Restore both signs here. For a reflective vector, ``target`` divides
+    every entry of ``2 G v``. Zero and negative squares are handled by the
+    caller before this nonzero shell computation.
     """
-    from pathlib import Path
+    from dzack_research.preamble.categories.lattice_engines import _oscar_lattices
 
     form = _engine_component_matrix(positive_gram).change_ring(SageZZ)
-    source = Path(__file__).with_name("_square_shell.gp").read_text()
-    shell = pari(source)(pari(form), int(target), int(reflective))
-    return tuple(engine_vector(SageZZ, [int(entry) for entry in column]) for column in shell)
+    representatives = _oscar_lattices.square_shell(positive_gram, target)
+    shell = []
+    for row in representatives.rows():
+        vector = engine_vector(SageZZ, row)
+        if reflective and any(entry % target for entry in 2 * form * vector):
+            continue
+        shell.extend((vector, -vector))
+    return tuple(shell)
 
 
 def _square_coordinate_bound(

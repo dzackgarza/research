@@ -482,6 +482,14 @@ Measured 2026-10-20, PARI 2.17.1 through Sage's `sage.libs.pari`, counting `forq
 The former annular root search (`_ROOTS_IN_ANNULUS`), which doubled its radius until the roots spanned `L`, raised it on `U(2)` (lattice-db card `0013`, certify run 39460366651), where `ZPhi(L)` has index 2 and the radius grows without end; the error ended the whole certification worker.
 Reproduce with `sage-docker-python -c 'from sage.libs.pari import pari; f = pari("(m,b)->my(c=0); forqfvec(v,m,b,c++); c"); print(f(pari("[2^34,-2^33;-2^33,2^34]"), 2^35))'`. Route chosen: `_roots_generating_lattice` in `src/dzack_research/preamble/categories/lattice_engines.py` runs `_root_generators.gp`, which enumerates `ZZ^n` with exact `forvec(v = vector(n), ...)` in increasing L1 degree and keeps a root when `matinverseimage` shows it outside the integral span held by `mathnf`; on `U(2)` it runs until the job ends, as a semi-decision may.
 
+The definite fixed-square enumerator now uses Hecke 0.39.22
+`short_vectors(L, a, a)` through the shared OSCAR adapter instead of
+`forqfvec`. The maintained route uses rational pseudo-Cholesky enumeration
+and transports vectors back from the Gram LLL basis; the adapter restores
+both signs. This is a source repair, with the scaled A2 and empty-shell
+runtime specimens still pending under DEV-58. It does not change the
+unbounded root-generation semi-decision described above.
+
 ### Two distinct symbolic variables take about 0.3 ms to compare, so a lattice basis label comparison is a symbolic decision
 
 The basis labels of a preamble lattice are the symbolic variables `e_i = SR.var("e_i")` (`_formal_symbol` in `src/dzack_research/preamble/categories/_lattice.py`). `bool(e_0 == e_1)` decides a symbolic relation, and for two distinct symbols Sage runs its numerical test with random interval values before it returns `False`; `bool(e_0 == SR.var("e_0"))` returns at once.

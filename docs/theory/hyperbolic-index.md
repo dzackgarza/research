@@ -306,6 +306,27 @@ and [integer square root](https://doc.sagemath.org/html/en/reference/rings_stand
 This is the dual-norm Cauchy–Schwarz estimate for a definite form;
 compare the bounded-region argument in Cassels, Chapter 9, §1.
 
+The optimized definite square-shell computation delegates to Hecke's
+[`short_vectors(L, a, a)`](https://github.com/thofma/Hecke.jl/blob/v0.39.22/src/QuadForm/ShortVectors.jl#L61).
+Its bounds are inclusive and it returns nonzero vectors up to sign, in the
+original lattice coordinates. The adapter restores both signs. The
+[enumeration implementation](https://github.com/thofma/Hecke.jl/blob/v0.39.22/src/QuadForm/Enumeration.jl#L769)
+uses rational pseudo-Cholesky arithmetic after Gram LLL reduction and
+transports the resulting vectors back through the retained basis matrix.
+This replaces the fixed-precision PARI `forqfvec` square-shell route;
+it does not increase floating-point precision or infer completeness from
+checking only the vectors returned. Zero and negative squares retain their
+separate definite-form cases. Reflective roots are filtered by the exact
+condition $a\mid 2(Gv)_i$ for every coordinate $i$.
+
+A distinguishing pending specimen is $G=2^{34}
+\left(\begin{smallmatrix}2&-1\\-1&2\end{smallmatrix}\right)$,
+$a=2^{35}$: the shell consists of $\pm e_1$, $\pm e_2$ and
+$\pm(e_1+e_2)$. The original PARI route raises its recorded precision
+error on this input. Verify both signs, the original coordinates, the
+empty shell at $a=1$, and the corresponding negative definite form.
+These provider and shell specimens remain unexecuted under DEV-58.
+
 For a source Gram matrix $A$ of rank $m>0$, let
 $b=\max_j b_G(A_{jj})$. Every integral embedding $X$ with
 $X^TGX=A$ has $|X_{ij}|\le b$, since each column has square $A_{jj}$.
