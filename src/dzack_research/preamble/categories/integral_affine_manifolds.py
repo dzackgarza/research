@@ -628,6 +628,22 @@ class SingularIntegralAffineSpaces(OwnedCategory):
     ):
         pass
 
+    def symington_surgery(self, cut_inclusion, size, affine_regluing, affine_collars):
+        r"""Select a cut, size, and affine regluing through the surgery construction."""
+        pass
+
+    def basis_triangle_surgery(
+        self,
+        source_space,
+        point,
+        tangent_lattice_basis,
+        replacement,
+        boundary_isomorphism,
+        affine_collars,
+    ):
+        r"""Select the unimodular triangle at a point and its boundary gluing."""
+        pass
+
     @cached_method
     def forget(self):
         return _UnderlyingSingularTopologicalSpaceFunctor(self, TopologicalSpaces())
