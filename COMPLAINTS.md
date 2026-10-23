@@ -58,10 +58,17 @@ in its original framing. The theory note proves the explicit bound, including
 null source basis vectors controlled by their nonzero cross pairing. Thus
 finite boxes cover all additional decidable constraints in this regime.
 
-**Remaining coverage:** nonsplit indefinite binary targets have no
-coefficient-bound computation here. An arbitrary extra predicate is not preserved by selecting
-a small representative, so constrained indefinite exclusion outside the split binary regime still
-needs its own applicable bound or complete solver. The sharper original Li–Margulis
+**Nonsplit binary coverage:** the existing complete finite norm-orbit
+transversal now bounds a first basis image. The prescribed pairing and
+source determinant bound the second after that target isometry, supplying
+some embedding whenever one exists. This retains nonprimitive candidates.
+The theory note gives the proof and PARI source contract; the positive,
+negative, imprimitive, empty and rank-two specimens remain unexecuted.
+
+**Remaining coverage:** arbitrary constraints outside the definite and
+split binary regimes still require an applicable bound or complete solver:
+an arbitrary extra predicate need not survive a target isometry taking
+an embedding to a small representative. The sharper original Li–Margulis
 formula is separate and unevaluated; it is not a prerequisite for the new
 alternative. The nonprimitive, definite shear and zero-source specimens,
 and the constant/normalization derivations, remain unverified under DEV-58.

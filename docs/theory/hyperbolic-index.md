@@ -880,9 +880,8 @@ target of rank at least three. For a definite integral target of any rank,
 it instead takes the maximum of the source-generator square-coordinate
 bounds, containing **every** embedding. A zero source or a rank obstruction
 receives zero. Rationally split indefinite binary targets have the
-all-embedding bound proved below. The nonsplit indefinite binary case has
-no bound computation here; its existing exact representation/isometry
-routes are unchanged.
+all-embedding bound proved below. Nonsplit indefinite binary targets use
+their finite norm-orbit representatives and the second-column bound below.
 
 The rank-at-least-three indefinite bound contains **some** embedding whenever one exists.
 It need not contain one satisfying an extra predicate. It therefore supplies
@@ -951,6 +950,67 @@ the multiples of either isotropic basis vector of $U$ are unbounded.
 Pending docstring specimens cover $U(4)\to U$, a target with nonzero
 diagonal and square discriminant, and a sheared split target with large
 coefficients. Runtime verification remains under DEV-58.
+
+### A bound from nonsplit binary norm orbits
+
+Let $G$ be a nondegenerate indefinite integral binary Gram matrix with
+nonsquare discriminant. It is anisotropic over $\mathbb Q$. Let $A$ be a
+nondegenerate integral source Gram matrix of rank $m\in\{1,2\}$. Write
+$\alpha=A_{11}$, and let $h=\max_{i,j}|G_{ij}|$.
+
+If $\alpha=0$, no embedding exists: its first basis vector would give a
+nonzero rational isotropic vector of $G$. Otherwise take the existing
+finite transversal $v_1,\ldots,v_r$ for the integral vectors of square
+$\alpha$ modulo $O(G,\mathbb Z)$ and put
+$V=\max_{k,i}|(v_k)_i|$, with $V=0$ for an empty transversal. Then the
+following integer bounds some embedding whenever one exists:
+
+$$
+B=\begin{cases}
+V,&m=1,\\
+(|A_{12}|+2h|\det A|)V,&m=2.
+\end{cases}
+$$
+
+**Proof.**
+
+1. Postcompose any embedding by an integral target isometry carrying its
+   first column to one of the $v_k$. The new first column $v$ has
+   coordinates bounded by $V$. For rank one this proves the assertion.
+   An empty transversal excludes an embedding.
+2. In rank two put $\beta=A_{12}$, $\gamma=A_{22}$, $p=Gv$, and
+   $z=(-p_2,p_1)^T$. Direct multiplication gives
+   $v^TGz=0$ and $z^TGz=(\det G)\alpha$. Since $\alpha\ne0$,
+   every second column $w$ with $v^TGw=\beta$ has the form
+   $$w=(\beta/\alpha)v+t z,\qquad t\in\mathbb Q.$$
+3. The prescribed square of $w$ gives
+   $$t^2=\frac{\alpha\gamma-\beta^2}{(\det G)\alpha^2}
+       =\frac{\det A}{(\det G)\alpha^2}.$$
+   Thus, whenever a second column exists,
+   $|t|=\sqrt{|\det A|/|\det G|}/|\alpha|\le|\det A|$,
+   using the nonzero integer determinants and $|\alpha|\ge1$.
+   Also $\|z\|_\infty\le2hV$. These inequalities bound $w$ by $B$.
+4. **Q.E.D.** The rank-two factor in $B$ is at least one, so it also
+   bounds the first column. The argument makes no primitivity assumption.
+
+The computation reuses `binary_fixed_norm_representatives`, its orbit
+section and the selected target coordinates. Its private arithmetic
+routine delegates to PARI's `qfbsolve` with flag 3, which returns all
+solution classes modulo the special orthogonal group, including
+imprimitive solutions; passing to orthogonal orbits can only merge them.
+See the [PARI function contract](https://pari.math.u-bordeaux.fr/dochtml/html/Quadratic_number_fields_and_binary_quadratic_forms.html#qfbsolve)
+and [Sage's wrapper](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/binary_qf.html#sage.quadratic_forms.binary_qf.BinaryQF.solve_integer).
+No new Pell equation solver or embedding construction is introduced.
+
+This is an effective computation through finite norm-orbit representatives,
+not a closed formula in the two Gram heights. It bounds some embedding,
+including a nonprimitive one when needed, and supports a complete finite
+unconstrained search. Conditions invariant under target isometries are
+also preserved by step 1. Arbitrary coordinate conditions need a separate
+argument, because a target isometry may change them. Pending specimens
+use $\langle1,-2\rangle$, represented squares $1,-2,4$, the excluded
+square $3$, the identity embedding and the impossible embedding from $U$.
+They remain unexecuted under DEV-58.
 
 ## Examples separating the three base rings
 
@@ -1337,7 +1397,7 @@ algorithms above requires a random sampler.
 | Rank and determinant | Dimension bounds and the determinant input to the integral representation bound |
 | Integer factorization, valuations and rational-square decision | Bad primes, local precision, and binary rational isotropy |
 | Finite residue rings, finite products and modular arithmetic | Complete finite local isotropy tests with primitive residue vectors |
-| Effective representation bounds | A usable integer bound for the relevant form representation problem, with its hypotheses; (6) is the integral instance |
+| Effective representation bounds | A usable integer bound for the relevant form representation problem, with its hypotheses; (7), the definite inverse-Gram bound and the two binary bounds are evaluated integral instances; (6) retains its unevaluated sharper constant |
 | Constructive integral equivalence and bounded representatives | The alternative complement-enumeration route only; a successful comparison returns the isometry |
 
 For clarity, the orthogonal-complement row uses the map
