@@ -1232,10 +1232,10 @@ class _RiemannianSmoothFunctor(Functor):
         super().__init__(RiemannianManifolds(), SmoothManifolds())
 
     def _apply_object(self, manifold):
-        pass
+        return manifold.underlying_smooth_manifold()
 
     def _apply_morphism(self, morphism):
-        pass
+        return morphism.underlying_smooth_morphism()
 
 
 class RiemannianManifolds(OwnedCategory):
