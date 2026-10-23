@@ -60,9 +60,14 @@ class RealVectorSpaces(OwnedParameterizedCategory):
     def an_object(self):
         pass
 
+    def __contains__(self, vector_space):
+        return vector_space in VectorSpaces(RR) and vector_space.dimension() == self.dimension()
+
     def on(self, vector_space):
         r"""Place the exact real vector space in its dimension stratum."""
-        pass
+        if vector_space not in self:
+            raise TypeError(f"{vector_space} is not a real vector space of dimension {self.dimension()}")
+        return vector_space
 
     @cached_method
     def affinization(self):
