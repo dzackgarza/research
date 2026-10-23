@@ -57,13 +57,13 @@ class IntegralAffineCollarMorCategoryConstruction(MorCategoryConstruction):
 
 
 class _CollarNeighborhoodFunctor(Functor):
-    r"""Forget the selected face and collar chart on objects and maps."""
+    r"""Take the selected neighborhood and its affine comparison map."""
 
     def __init__(self):
         super().__init__(IntegralAffineCollars(), IntegralAffineManifoldsWithBoundary())
 
     def _apply_object(self, collar):
-        return collar.underlying_affine_manifold()
+        return collar.neighborhood_inclusion().domain()
 
     def _apply_morphism(self, morphism):
         return morphism.neighborhood_affine_map()
@@ -116,7 +116,7 @@ class IntegralAffineCollars(OwnedCategory):
         return self.Mor(source_collar, target_collar)(face_map, neighborhood_affine_map)
 
     @cached_method
-    def forget_face(self):
+    def neighborhoods(self):
         return _CollarNeighborhoodFunctor()
 
     @cached_method
