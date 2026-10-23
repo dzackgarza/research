@@ -1695,26 +1695,6 @@ Properties determined by the fan, such as smoothness and (for complete toric sur
 **Coverage boundary:** `_SchemeBaseChangeFunctor._apply_object` and `_glued_object`, and the toric construction in `_toric_variety`, were inspected as source.
 No runtime execution was performed under the current M1 execution suspension, and no claim is made here about other specialized affine-gluing families that may also need structure-preserving base change.
 
-### The documented Sage executable is absent on this workstation
-
-Running the targeted mathematical specimens should use an available Sage
-environment. The current `.envrc` defaults `SAGE_BIN` to
-`/home/dzack/gitclones/sage-dev-allopts/sage`, and `HANDOFF.md` directs
-specimens to that checkout's `.venv/bin/python`; that Python executable
-is absent on this workstation (2026-10-23). The available `sage` instead
-resolves to `/home/dzack/ai-review-ci/scripts/sage-docker`. Read-only Docker
-inspection confirms that its existing `sage-dev-develop` container is running.
-The launcher already invokes its group helper through Bash when the caller
-lacks the Docker group; the helper's executable bit is therefore unnecessary.
-
-The owning repair is to reconcile this repository's environment defaults and
-targeted-execution instructions with its supported Sage installation. This
-finding covers executable paths and launcher source, not a Sage run, package
-availability, or the pending mathematical assertions. Terminal execution of the
-hyperbolic-splitting dependencies remains with
-`hyperbolic-splitting-dependency-tools` in TODO.md under DEV-58. No container or
-shared worker was changed.
-
 ### Book recipes still target the former writing directory
 
 The book source and Quarto project are at `research/` and `research/.book/`. The root `justfile` recipes `docs-assets`, `docs-check`, and `docs-lint` still target `writing/`, as does `scripts/docs_check.py`. That directory is absent in this checkout.

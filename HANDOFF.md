@@ -150,8 +150,15 @@ next work). Its obligations live in TODO.md's `## Resumed handoff delivery`
 section; the TODO references to "HANDOFF.md" in that section read that Git
 source.
 
-For targeted specimens, use
-env PYTHONPATH=/home/dzack/research/src /home/dzack/gitclones/sage-dev-allopts/.venv/bin/python.
-For a worktree, select its src directory and verify dzack_research.__file__.
-The Sage launcher here does not accept -python. Follow the repository rules
-for targeted tests and its existing time budgets.
+For targeted specimens, use the Sage driver selected by `.envrc`:
+
+```bash
+direnv exec /home/dzack/research bash -c \
+  'exec "$SAGE_BIN" -python "$@"' sage-specimen <specimen.py>
+```
+
+The installed launcher accepts `-python` and runs in the existing Sage
+container with the repository environment and working directory. For a
+worktree, insert `env PYTHONPATH=<worktree>/src` before `bash` and verify
+`dzack_research.__file__` in the specimen. Follow the repository rules
+for the current execution phase, targeted tests and existing time budgets.
