@@ -16,6 +16,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import TopologicalManifolds
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _real_ck_degree(degree):
@@ -94,7 +95,11 @@ class RealCkManifolds(OwnedParameterizedCategory):
 
     def on(self, topological_manifold, atlas):
         r"""Select a compatible ``C^k`` atlas on the exact topological manifold."""
-        pass
+        return _object_of(
+            self,
+            topological_manifold=topological_manifold,
+            atlas=atlas,
+        )
 
     @cached_method
     def forget_to(self, degree):
@@ -108,11 +113,16 @@ class RealCkManifolds(OwnedParameterizedCategory):
         return _WeakenDifferentiabilityFunctor(self, TopologicalManifolds())
 
     class ParentMethods:
+        def __init__(self, topological_manifold, atlas, **rest):
+            self._topological_manifold = topological_manifold
+            self._atlas = atlas
+            super().__init__(**rest)
+
         def underlying_topological_manifold(self):
-            pass
+            return self._topological_manifold
 
         def atlas(self):
-            pass
+            return self._atlas
 
         def weaken_to(self, degree):
             pass
