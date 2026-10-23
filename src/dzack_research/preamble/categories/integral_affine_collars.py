@@ -12,6 +12,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.integral_affine_manifolds import (
     IntegralAffineManifoldsWithBoundary,
+    IntegralAffineManifoldsWithCorners,
 )
 from dzack_research.preamble.owned_category import _object_of
 
@@ -72,7 +73,7 @@ class _CollarFaceFunctor(Functor):
     r"""Send a collar and its comparison to the selected face and face map."""
 
     def __init__(self):
-        super().__init__(IntegralAffineCollars(), IntegralAffineManifoldsWithBoundary())
+        super().__init__(IntegralAffineCollars(), IntegralAffineManifoldsWithCorners())
 
     def _apply_object(self, collar):
         pass
