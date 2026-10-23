@@ -598,6 +598,37 @@ in `lean-categories`; missing mathematics is requested there, rather than
 defined a second time in the preamble ([category presentation
 procedure](../../CONTRIBUTING.md)).
 
+## External prior art and computational reuse
+
+The following survey concerns algorithms and data structures, not the
+mathematical authority for the public categories. An engine result is raised
+to the selected preamble object with its defining maps and hypotheses. The
+first candidate for a computation already available through Sage is Sage's
+own interface; a second backend needs a concrete missing operation or a
+measured limitation.
+
+| Requested operation | Located prior art | Reuse and remaining mathematical work |
+| --- | --- | --- |
+| Convex and lattice polytopes, face incidence, general abstract automorphisms | Sage [`Polyhedron` quick reference](https://doc.sagemath.org/html/en/thematic_tutorials/geometry/polyhedra_quickref.html) and [`base4` methods](https://doc.sagemath.org/html/en/reference/discrete_geometry/sage/geometry/polyhedron/base4.html): `face_lattice()`, `combinatorial_automorphism_group()`, `restricted_automorphism_group()`, `triangulate()`. | Use these privately behind `ConvexPolytopes(L)`. The default combinatorial group is isomorphic to the **face-lattice** automorphism group; the vertex-graph option can give a different group. `restricted_automorphism_group(output='matrix')` supplies affine transformations, but integral-affine membership still requires checking the selected lattice and translation. Retain face inclusions and the resulting action as public arrows. |
+| Chosen integral triangulation | Sage [`PointConfiguration`](https://doc.sagemath.org/html/en/reference/discrete_geometry/sage/geometry/triangulation/point_configuration.html) and polytope `triangulate()`; TOPCOM is an available underlying triangulation engine. [Macaulay2 `Polyhedra`](https://www.macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/Polyhedra/html/index.html) also has polyhedral complexes and triangulations, including a TOPCOM route. | Feed the exact chosen lattice-point configuration to Sage. Store a triangulation as simplex inclusions and a realization map. Check that each vertex is integral and, when requested, that each maximal simplex is unimodular. “Regular” and “unimodular” are different predicates. Macaulay2 is a fallback for an identified capability gap, not a parallel public polytope type. |
+| Embedded cell complexes and abstract edge identifications | Sage [`PolyhedralComplex`](https://doc.sagemath.org/html/en/reference/discrete_geometry/sage/geometry/polyhedral_complex.html) computes faces and a face poset for polyhedra in one ambient space. Sage [`DeltaComplex`](https://doc.sagemath.org/html/en/reference/topology/sage/topology/delta_complex.html) records simplices and face maps and realizes their quotient; [`SimplicialComplex`](https://doc.sagemath.org/html/en/reference/topology/sage/topology/simplicial_complex.html) supplies ordinary simplicial topology. | Use `PolyhedralComplex` for embedded subdivisions and `DeltaComplex` for identified polygon edges, including repeated identifications. The public complex still carries the original face maps and gluing diagram, since one global embedding need not exist. A quotient's surface-link and affine-collar conditions are additional mathematics. |
+| Stars, links, topology and alternative combinatorial engines | Sage's [topology library](https://doc.sagemath.org/html/en/reference/topology/index.html) is the first route. [`polymake` topaz](https://polymake.org/release_docs/2.12/topaz.html) documents `star` and `link_complex`; [OSCAR/Polymake.jl](https://oscar-system.github.io/Polymake.jl/) exposes polymake in Julia. [Regina](https://regina-normal.github.io/7.1/engine-docs/classregina_1_1Triangulation_3_012_01_4.html) supports explicit two-dimensional simplex gluings. | Select an algorithm only after the common complex construction fixes what the cell and face maps mean. These systems can calculate combinatorial topology; none of the cited operations defines integral-affine transition functions or monodromy. |
+| Polygonal surfaces, edge pairings and drawings | [`sage-flatsurf`](https://flatsurf.github.io/sage-flatsurf/examples/tour) constructs surfaces from polygon edge gluings and draws their layouts; its [Sage categories](https://flatsurf.github.io/sage-flatsurf/geometry/categories.html) distinguish similarity, translation and related surfaces. [`libflatsurf`](https://github.com/flatsurf/flatsurf) provides lower-level flat-surface computation. | Reuse its polygon-gluing and plotting methods for the translation or similarity subcases when the defining arrows can be preserved. General integral-affine holonomy has linear part in `GL(n,ZZ)`, including shears, so the cited similarity-surface interface does not by itself model every integral-affine sphere. The gluing diagram and affine atlas remain owned by the proposed categories. |
+| Exact cone and lattice arithmetic; group actions | Sage's [Normaliz backend](https://doc.sagemath.org/html/en/reference/discrete_geometry/sage/geometry/polyhedron/backend_normaliz.html), upstream [Normaliz](https://github.com/Normaliz/Normaliz), and [GAP/GRAPE](https://docs.gap-system.org/pkg/grape/doc/manual.pdf) for graph automorphisms are available. [OSCAR](https://oscar-system.github.io/oscar-website/about/) connects polymake, GAP and Singular through Julia; [Singular](https://www.singular.uni-kl.de/) specializes in polynomial and commutative-algebra computation. | Reach Normaliz and group algorithms through the existing Sage/preamble paths where they already suffice. Use an incidence graph with face-rank colours if a separate graph-automorphism computation is needed. Singular has no identified role in polygon surgery itself; it is relevant when a subsequent algebraic construction demands polynomial calculations. |
+
+The surveyed sources give concrete algorithms for polytopes, triangulations,
+cell incidence, surface gluings, topology, groups and pictures. The residue is
+the **semantic composite**: a selected integral-affine atlas on the regular
+locus of the quotient, a compatible tangent-lattice local system, specified
+singular monodromy, surgery arrows with their cocones, and descent/lifting of
+symmetries through that data. A triangulated quotient and a drawing do not
+establish those structures. Gross and Siebert's
+[affine-manifold and polyhedral-decomposition framework](https://arxiv.org/abs/math/0309070)
+and the AEGS construction give mathematical prior art for this composite;
+the searched software documentation did not identify a ready-made engine for
+the full AEGS `IAS^2` construction. This is a bounded survey result, not a
+claim that such software does not exist.
+
 ## Dependency and acceptance boundary
 
 The mathematical dependency chain is: spaces and maps; manifolds and atlases;
