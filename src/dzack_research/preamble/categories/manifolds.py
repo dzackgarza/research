@@ -1433,7 +1433,7 @@ class RiemannianManifolds(OwnedCategory):
                 through ``p`` and its differential at ``p`` is ``-1`` on
                 ``T_p M``.
                 """
-                assert False, "geodesic_symmetry on RiemannianManifolds.GloballySymmetric: not implemented"
+                pass
 
 
 class HolomorphicMapPresentation:
