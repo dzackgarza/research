@@ -506,6 +506,26 @@ Empty hyperbolic or anisotropic factors, including rank zero, retain the
 same scalar field and summand maps. This is the field Witt dependency,
 not an integral hyperbolic-summand algorithm.
 
+**Real embeddings and isometries.** The embedding witness also uses
+nonzero diagonal signs by refinement. For a source diagonal basis vector
+$v_i$ of square $a_i$, choose a distinct target diagonal basis vector
+$w_{\sigma(i)}$ of square $b_{\sigma(i)}$ with the same sign and send
+$v_i$ to $s_iw_{\sigma(i)}$, where
+$s_i=\sqrt{a_i/b_{\sigma(i)}}>0$. The ratio is positive and its denominator
+nonzero, so the protected arithmetic consumes established hypotheses.
+Orthogonality and $s_i^2b_{\sigma(i)}=a_i$ prove form preservation;
+distinct target basis vectors prove injectivity. Failure to find a
+matching sign is precisely failure of the corresponding inertia
+inequality. For isometries, equal dimensions and matching signatures
+make $\sigma$ bijective. Retain the reverse map
+$w_{\sigma(i)}\mapsto s_i^{-1}v_i$ and transport it through the retained
+target diagonalization inverse. The source and target coordinate maps
+then compose to the identity on each basis vector. The module core
+retains this inverse pair, without generic inversion of Cauchy-real
+coefficients. The original endpoints are retained in both directions.
+The RR isometry-witness route invokes this construction directly; it
+does not first construct an embedding and then rediscover its inverse.
+
 **Norm witnesses from the same diagonal basis.** For a nonsingular real
 form, suppose the requested scalar $a$ has decided zero status. If
 $a\ne0$, enclosure refinement determines its sign and those of the

@@ -2386,33 +2386,63 @@ class LatticeEmbeddingMor(CategoricalMor):
         square ``b`` with the same sign, scaled by ``sqrt(a/b)``. No such
         vector exists exactly when the corresponding inertia inequality
         fails. Transport along the source inverse and return a map with
-        the original source and target.
+        the original source and target. RR signs are refined under the
+        nonzero diagonal hypotheses. Isometries retain inverse matching
+        and reciprocal scales instead of another matrix inversion.
         """
+        from dzack_research.preamble.rings.real import RR
+
         source = self.domain()
         target = self.codomain()
         ring = source.base_ring()
+        if isinstance(self, LatticeIsometryMor) and source.module_rank() != target.module_rank():
+            raise ValueError(f"there is no isometry from {source} to {target}: the dimensions differ")
         source_diagonalization = source.diagonalization()
         target_diagonalization = target.diagonalization()
         diagonal_source = source_diagonalization.domain()
         available = {1: [], -1: []}
-        for generator in target_diagonalization.domain().module_generators():
-            vector = target_diagonalization(generator)
+        diagonal_target = target_diagonalization.domain()
+        for label in diagonal_target.module_generating_set():
+            vector = target_diagonalization(diagonal_target.module_generator(label))
             square = target.q(vector)
-            available[1 if square > ring.zero() else -1].append((vector, square))
+            sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > ring.zero() else -1)
+            available[sign].append((label, vector, square))
         images = []
+        inverse_images = {}
         for generator in diagonal_source.module_generators():
             square = diagonal_source.q(generator)
-            sign = 1 if square > ring.zero() else -1
+            sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > ring.zero() else -1)
             if not available[sign]:
                 raise ValueError(f"there is no lattice embedding of {source} into {target}")
-            vector, target_square = available[sign].pop()
-            images.append(vector * (square / target_square).sqrt())
+            label, vector, target_square = available[sign].pop()
+            if ring is RR:
+                ratio = ring._divide_by_nonzero(square, target_square)
+                scale = ring._sqrt_of_positive(ratio)
+            else:
+                scale = (square / target_square).sqrt()
+            images.append(vector * scale)
+            if isinstance(self, LatticeIsometryMor):
+                reciprocal = ring._divide_by_nonzero(ring.one(), scale) if ring is RR else ring.one() / scale
+                inverse_images[label] = source_diagonalization(generator) * reciprocal
         diagonal_embedding = diagonal_source.module_category().Mor(diagonal_source, target)(tuple(images))
         inverse = source_diagonalization.inverse()
-        return self(tuple(
+        forward_images = tuple(
             diagonal_embedding(inverse(generator))
             for generator in source.module_generators()
-        ))
+        )
+        if isinstance(self, LatticeIsometryMor):
+            diagonal_inverse = diagonal_target.module_category().Mor(diagonal_target, source)(inverse_images)
+            target_inverse = target_diagonalization.inverse()
+            forward = source.module_category().Mor(source, target)(forward_images)
+            backward = target.module_category().Mor(target, source)(tuple(
+                diagonal_inverse(target_inverse(generator))
+                for generator in target.module_generators()
+            ))
+            module_isomorphism = source.module_category().Core().Mor(source, target)._from_known_inverse_pair(
+                forward, backward,
+            )
+            return self.element_class(self, module_isomorphism)
+        return self(forward_images)
 
     def an_element(self):
         r"""Construct an embedding through an applicable complete route.
@@ -3912,10 +3942,10 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         form-square validator checks it under strict checking (OWN-22).
 
         Over QQ, after deciding existence, the complete rational embedding
-        iterator finds a witness. Over AA, the existing diagonal-sign
-        construction finds one directly. Equal finite dimensions make
-        either embedding invertible; retain its underlying module map
-        together with its inverse in the module core. No integral Gram
+        iterator finds a witness. Over AA and represented RR, matching
+        diagonal signs gives the map and its reciprocal-scale inverse
+        directly. Equal finite dimensions make the matching bijective;
+        retain both module maps in the module core. No integral Gram
         conversion or rational-point enumeration over AA is involved.
 
         EXAMPLES::
@@ -3937,6 +3967,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             sage: assert all(psi.inverse()(psi(v)) == v for v in A.module_generators())
             sage: assert all(psi(psi.inverse()(v)) == v for v in B.module_generators())
             sage: assert Lattices(AA)([[-1]]).Isom(B).is_empty() is True
+            sage: A = Lattices(RR).Nondegenerate()([[RR.pi()]])
+            sage: B = Lattices(RR).Nondegenerate()([[4*RR.pi()]])
+            sage: rho = A.Isom(B).an_element()
+            sage: assert rho.domain() is A and rho.codomain() is B
+            sage: assert all(rho.inverse()(rho(v)) == v for v in A.module_generators())
+            sage: assert all(rho(rho.inverse()(v)) == v for v in B.module_generators())
         """
         empty, reason = self._isometry_decision()
         assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
@@ -3949,13 +3985,11 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
         from dzack_research.preamble.rings.real import RR
 
-        if domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
+        if domain.base_ring() in (_owned_real_algebraic_numbers(), RR):
+            return self._real_embedding()
+        if domain.base_ring() is _owned_rationals():
             embeddings = domain.Emb(codomain)
-            embedding = (
-                next(iter(embeddings))
-                if domain.base_ring() is _owned_rationals()
-                else embeddings.an_element()
-            )
+            embedding = next(iter(embeddings))
             forward = embedding.module_morphism()
             inverse = forward.inverse()
             module_isomorphism = domain.module_category().Core().Mor(domain, codomain)(
