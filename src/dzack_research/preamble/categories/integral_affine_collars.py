@@ -68,6 +68,19 @@ class _CollarNeighborhoodFunctor(Functor):
         return morphism.neighborhood_affine_map()
 
 
+class _CollarFaceFunctor(Functor):
+    r"""Send a collar and its comparison to the selected face and face map."""
+
+    def __init__(self):
+        super().__init__(IntegralAffineCollars(), IntegralAffineManifoldsWithBoundary())
+
+    def _apply_object(self, collar):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class IntegralAffineCollars(OwnedCategory):
     r"""Affine neighborhood collars with a specified face inclusion."""
 
@@ -104,6 +117,10 @@ class IntegralAffineCollars(OwnedCategory):
     @cached_method
     def forget_face(self):
         return _CollarNeighborhoodFunctor()
+
+    @cached_method
+    def faces(self):
+        return _CollarFaceFunctor()
 
     class ParentMethods:
         def __init__(
