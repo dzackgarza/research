@@ -81,7 +81,12 @@ class _WeakenDifferentiabilityFunctor(Functor):
     def _apply_morphism(self, morphism):
         if self.codomain() is TopologicalManifolds():
             return morphism.underlying_topological_morphism()
-        return morphism.weaken_to(self.codomain().degree())
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        return self.codomain().Mor(source, target)(
+            morphism.underlying_topological_morphism(),
+            morphism.chart_maps(),
+        )
 
 
 class RealCkManifolds(OwnedParameterizedCategory):
@@ -137,4 +142,11 @@ class RealCkManifolds(OwnedParameterizedCategory):
             return self._atlas
 
         def weaken_to(self, degree):
-            pass
+            degree = _real_ck_degree(degree)
+            source_degree = self.category().degree()
+            if degree > source_degree:
+                raise ValueError(f"C^{source_degree} can forget only to C^j with j <= {source_degree}")
+            return RealCkManifolds(degree).on(
+                self.underlying_topological_manifold(),
+                self.atlas(),
+            )
