@@ -297,6 +297,10 @@ class CellComplexes(OwnedCategory):
     class RegularCW(CategoryWithAxiom):
         r"""Cell complexes with embedded closed cells."""
 
+        @cached_method
+        def face_posets(self):
+            return _ComplexFacePosetFunctor(self)
+
     class PLManifold(CategoryWithAxiom):
         r"""Cell complexes with the required PL sphere and ball links."""
 
