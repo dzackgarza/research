@@ -779,7 +779,7 @@ class DifferentiableManifoldMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, topological_map, chart_maps, degree):
-        return self.element_class(self, topological_map, chart_maps, degree)
+        pass
 
     @object_level
     def identity(self):
@@ -820,7 +820,7 @@ class SmoothManifoldMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, topological_map, chart_maps):
-        return self.element_class(self, topological_map, chart_maps)
+        pass
 
     @object_level
     def identity(self):

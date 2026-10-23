@@ -54,12 +54,7 @@ class RealCkManifoldMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, topological_map, chart_maps):
-        if (
-            topological_map.domain() is not self.domain().underlying_topological_manifold()
-            or topological_map.codomain() is not self.codomain().underlying_topological_manifold()
-        ):
-            raise ValueError("the topological map must join the selected C^k manifolds")
-        return self.element_class(self, topological_map, chart_maps)
+        pass
 
     @object_level
     def identity(self):

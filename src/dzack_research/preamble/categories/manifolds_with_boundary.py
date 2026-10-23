@@ -70,7 +70,7 @@ class _StratifiedManifoldMor(CategoricalMor):
     ElementMethods = _StratifiedManifoldMapMethods
 
     def _element_constructor_(self, continuous_map, interior_map, stratum_maps):
-        return self.element_class(self, continuous_map, interior_map, stratum_maps)
+        pass
 
     @object_level
     def identity(self):
@@ -422,7 +422,7 @@ class RealCkStratifiedMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, continuous_map, interior_map, stratum_maps):
-        return self.element_class(self, continuous_map, interior_map, stratum_maps)
+        pass
 
     @object_level
     def identity(self):
