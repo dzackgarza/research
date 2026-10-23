@@ -121,6 +121,10 @@ class CellComplexes(OwnedCategory):
     def from_attaching_maps(self, cells, attaching_maps):
         pass
 
+    def face_gluing_diagram(self, pieces, paired_faces, face_isomorphisms):
+        r"""Present the finite face-pairing data as a diagram in this category."""
+        pass
+
     def surgery(self, region_inclusion, replacement, boundary_isomorphism):
         r"""Select the pushout of a region complement and a boundary-matched replacement."""
         pass
