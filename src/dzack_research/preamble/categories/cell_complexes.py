@@ -358,6 +358,24 @@ class PolytopalComplexes(OwnedCategory):
         def face_inclusion(self, face, cell):
             pass
 
+        def star(self, cell):
+            pass
+
+        def star_inclusion(self, cell):
+            pass
+
+        def link(self, cell):
+            pass
+
+        def link_inclusion(self, cell):
+            pass
+
+        def subdivision(self):
+            pass
+
+        def subdivision_comparison(self, subdivision):
+            pass
+
         def subcomplex(self, cells):
             r"""Select the placed polytopes and all their incident faces."""
             pass
