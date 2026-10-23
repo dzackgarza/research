@@ -29,7 +29,8 @@ TopologicalSpaces
   ⊃ TopologicalManifolds
        .DimensionAtMost(n)
        .PureDimension(n); .PureDimension(2) = topological surfaces
-  ⊃ TopologicalManifoldsWithBoundary / WithCorners (specified local models)
+TopologicalManifoldsWithBoundary / WithCorners → TopologicalSpaces
+  [forget selected strata and local models]
 
 RealCkManifolds(k), k >= 1 → TopologicalManifolds
   .PureDimension(n); .PureDimension(2) = real C^k surfaces
