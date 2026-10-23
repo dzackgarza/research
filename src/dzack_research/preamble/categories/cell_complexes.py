@@ -582,6 +582,10 @@ class SimplicialSets(OwnedCategory):
         pass
 
     @cached_method
+    def face_posets(self):
+        return _ComplexFacePosetFunctor(self)
+
+    @cached_method
     def realization(self):
         return _ComplexRealizationFunctor(self, TopologicalSpaces())
 
@@ -605,6 +609,10 @@ class SimplicialSets(OwnedCategory):
             return self._defining_simplices[dimension]
 
         def simplex_category(self):
+            pass
+
+        def face_poset(self):
+            r"""Order nondegenerate simplices by the face relation."""
             pass
 
         def barycentric_subdivision(self):
