@@ -376,7 +376,7 @@ class _StratifiedAffineInteriorFunctor(Functor):
         super().__init__(source, IntegralAffineManifolds())
 
     def _apply_object(self, manifold):
-        return manifold.interior_affine_manifold()
+        pass
 
     def _apply_morphism(self, morphism):
         return morphism.interior_affine_map()
@@ -438,7 +438,7 @@ class IntegralAffineManifoldsWithCorners(OwnedCategory):
             return self._affine_atlas
 
         def depth_stratum(self, depth):
-            return self._smooth_stratified_manifold.depth_stratum(depth)
+            pass
 
     class Oriented(CategoryWithAxiom):
         r"""Corner atlases with orientation-preserving integral transitions."""
