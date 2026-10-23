@@ -852,7 +852,8 @@ class ExactRealField(UniqueRepresentation, Field):
     def _matrix_determinant(self, components) -> ExactRealNumber:
         r"""Sage determinant protocol for the existing real presentations.
 
-        Closed expressions use symbolic division-free arithmetic. General
+        Accept a Sage matrix or nested scalar rows. Closed expressions use
+        symbolic division-free arithmetic. General
         Cauchy coefficients use the same maintained division-free routine
         over Arb balls and a regular rational Cauchy presentation of its
         constant coefficient. The input scalars are snapshotted so later
@@ -881,12 +882,17 @@ class ExactRealField(UniqueRepresentation, Field):
         from sage.matrix.constructor import matrix
         from sage.matrix.matrix2 import Matrix as SageMatrix
 
-        size = components.nrows()
-        assert components.ncols() == size, "a determinant requires a square matrix"
-        entries = tuple(
-            tuple(self(components[i, j]) for j in range(size))
-            for i in range(size)
-        )
+        if isinstance(components, (tuple, list)):
+            size = len(components)
+            assert all(len(row) == size for row in components), "a determinant requires a square matrix"
+            entries = tuple(tuple(self(value) for value in row) for row in components)
+        else:
+            size = components.nrows()
+            assert components.ncols() == size, "a determinant requires a square matrix"
+            entries = tuple(
+                tuple(self(components[i, j]) for j in range(size))
+                for i in range(size)
+            )
         if all(isinstance(entry._expression, Expression) for row in entries for entry in row):
             symbolic = matrix(SR, size, size, [entry.expression() for row in entries for entry in row])
             constant = SageMatrix.charpoly(symbolic, algorithm="df")[0]

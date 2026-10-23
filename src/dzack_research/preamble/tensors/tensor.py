@@ -1013,7 +1013,9 @@ class Tensor:
         # The ubiquitous bilinear case is exactly A_1^t G A_2.  Use the
         # selected exact matrix backend only inside this boundary and cross
         # every entry back before constructing the owned tensor.
-        if q == 2:
+        from dzack_research.preamble.rings.real import RR
+
+        if q == 2 and ring is not RR:
             left, right = (
                 _engine_module_matrix(matrix).change_ring(_engine_ring(ring))
                 for matrix in matrices

@@ -231,8 +231,16 @@ def _gram_determinant(gram, ring):
     r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration.
 
     Computed by Sage's matrix determinant on the presentation's components
-    (`OWN-06`) and raised into ``ring``.
+    (`OWN-06`) and raised into ``ring``. Represented exact reals use their
+    owned determinant computation because Sage matrix spaces reject RR.
     """
+    from dzack_research.preamble.rings.real import RR
+
+    if ring is RR:
+        size = int(_gram_rank(gram))
+        return RR._matrix_determinant(
+            tuple(tuple(gram[i, j] for j in range(size)) for i in range(size))
+        )
     components = _gram_engine_matrix(gram)
     determinant = components.determinant()
     return _owned_engine_element(ring, determinant)
@@ -1409,20 +1417,11 @@ def _sylvester(gram: Tensor):
     from dzack_research.preamble.rings.real import RR
 
     if gram.base_ring() is RR:
-        diagonal_form, _change = _congruence_diagonal_form(gram)
-        diagonal = diagonal_form.matrix()
-        positive = negative = 0
-        for entry in diagonal.diagonal():
-            value = _owned_engine_element(RR, entry)
-            if (value > RR.zero()) is True:
-                positive += 1
-            elif (value < RR.zero()) is True:
-                negative += 1
-            elif (value == RR.zero()) is not True:
-                raise NotImplementedError(
-                    f"the sign of a real diagonal coefficient is undecided: {value}"
-                )
-        return signature_pair(positive, negative)
+        if _gram_is_nondegenerate(gram, RR) is not True:
+            raise NotImplementedError(
+                "represented-real inertia requires a known nonsingular Gram presentation"
+            )
+        return _nonsingular_real_signature(gram)
     engine_gram = _engine_component_matrix(gram).change_ring(field)
     form = QuadraticForm(field, engine_gram)
     positive, negative, _radical = form.signature_vector()

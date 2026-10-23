@@ -209,7 +209,7 @@ def _exact_real_diagonalization(lattice):
         ]
         diagonal.append(norm)
 
-    category = Lattices(RR).Nondegenerate() if ring is RR else Lattices(ring)
+    category = Lattices(ring)
     normal = category([
         [diagonal[i] if i == j else ring.zero() for j in range(size)]
         for i in range(size)
@@ -364,10 +364,10 @@ def _real_witt_decomposition(lattice):
     index = min(len(positive), len(negative))
     remaining = (*positive[index:], *negative[index:])
     signs = [1] * (len(positive) - index) + [-1] * (len(negative) - index)
-    complement = Lattices(ring).Nondegenerate()([
+    complement = Lattices(ring)([
         [ring(signs[i]) if i == j else ring.zero() for j in range(len(signs))]
         for i in range(len(signs))
-    ]) if signs else Lattices(ring).Nondegenerate()(0)
+    ]) if signs else Lattices(ring)(0)
     hyperbolic = Lattices(ring)("U") ** index
     normal = Lattices(ring).orthogonal_sum((hyperbolic, complement))
     half = ring.one() / ring(2)

@@ -6043,6 +6043,13 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"the determinant of {self} is not defined: the matrix has shape {self.parent().matrix_shape()}, not square"
                 )
+            from dzack_research.preamble.rings.real import RR
+
+            if self.parent().base_ring() is RR:
+                return RR._matrix_determinant(tuple(
+                    tuple(self.matrix_entry(row, column) for column in self.parent().column_index_set())
+                    for row in self.parent().row_index_set()
+                ))
             backend = _engine_matrix(self)
             return _owned_engine_element(self.parent().base_ring(), backend.det())
 
