@@ -459,6 +459,39 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 )
             return OrthogonalCharacterQuotient(self)
 
+        def has_finite_coset_space(self) -> bool:
+            r"""Whether complete finite characters realize ``G/self`` as a finite ``G``-set."""
+            return (
+                self.contains_character_kernel()
+                and self.supergroup().has_selected_group_resolution()
+            )
+
+        def coset_space(self, *, generators=None):
+            r"""Realize the cosets of a complete finite-character subgroup.
+
+            Complete character data states ``self = rho^-1(H)`` for a
+            finite image, so the orbit of the identity coset is finite.
+            The ordinary pointed-orbit construction retains its lifts and
+            Schreier morphism, including when several character conditions
+            were intersected and no single preimage presentation remains.
+            """
+            from dzack_research.preamble.categories.group.g_sets import (
+                FiniteGSets,
+                _LeftCosetPointSet,
+            )
+
+            assert self.contains_character_kernel(), (
+                f"{self} has no complete finite-character condition realizing its coset space"
+            )
+            group = self.supergroup()
+            points = _LeftCosetPointSet(group, self)
+            return FiniteGSets(group).pointed_orbit(
+                self,
+                points(group.one()),
+                lambda element, coset: points(element * coset.representative()),
+                _free_cover(group, generators),
+            )
+
         def vector_orbit_representatives(self, square):
 
             return _subgroup_vector_orbit_representatives(self, square)
