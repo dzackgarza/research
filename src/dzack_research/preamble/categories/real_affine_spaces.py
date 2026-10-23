@@ -167,6 +167,10 @@ class RealAffineSpaces(OwnedCategory):
         r"""Select an affine torsor with its difference map and nonempty witness."""
         pass
 
+    def from_torsor(self, model_vector_space, torsor):
+        r"""Place the selected torsor under the model space's additive group."""
+        pass
+
     @cached_method
     def forget(self):
         return _AffineUnderlyingSetFunctor()
