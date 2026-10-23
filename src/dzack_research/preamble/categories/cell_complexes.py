@@ -276,6 +276,14 @@ class CellComplexes(OwnedCategory):
         def attaching_map(self, cell):
             return self._attaching_maps[cell]
 
+        def skeleton(self, dimension):
+            r"""The subcomplex formed by cells of dimension at most the bound."""
+            pass
+
+        def skeleton_inclusion(self, dimension):
+            r"""The selected inclusion of that skeleton into this complex."""
+            pass
+
         def is_regular(self):
             pass
 
