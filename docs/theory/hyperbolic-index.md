@@ -1657,6 +1657,40 @@ implementation remains deferred. The dependency-only work neither
 changes that method's algorithm nor treats its existence as completion
 of the requested constructive splitting.
 
+### Source implementation reconciliation
+
+The dependency-only source assignment is reconciled against the public
+call paths listed above. The implemented surface includes anisotropy and
+isotropic witnesses; scalar extension of objects and both formed-arrow
+components; field Witt indices and decomposition isometries; norm fibres
+with original inclusions and applicable fresh point selection; embedding
+sets, complete decisions and witnesses in the stated regimes; constrained
+finite subsets; fair ZZ/QQ enumeration; evaluated integral bounds; uniform
+sampling on a selected finite support; exact linear solving, kernels,
+perpendiculars and splitting maps for supplied summands. The preceding
+proofs, source-convention checks and owner-local specimens state each
+route's hypotheses, returned maps, zero-rank behavior and limits.
+
+This reconciliation concerns implemented computations and their wiring.
+It does not assert that source inspection proves their correctness or
+that the mathematical specimens have been executed. Their execution
+remains with `terminal-session` in TODO.md. No runtime gate is added to
+this dependency-only assignment. The outstanding upstream declaration
+request for general orthogonal-sum nondegeneracy is retained in
+COMPLAINTS.md under that formalization/acceptance owner. The separate
+citation question for the historical genus-based integral index belongs
+to eventual main-index work.
+
+The boundary is mathematical rather than an omitted promised solver:
+there is no exhaustive sequential enumeration of an uncountable real
+locus, no uniform arbitrary-real zero decision, and no uniform emptiness
+solver for arbitrary programmable embedding filters. The source retains
+these sets and propositions. Effective search and exclusion use precisely
+the additional hypotheses proved here. Arbitrary value-module scalar
+extension lies beyond the scalar-valued lattice computations required by
+this index. The new `hyperbolic_index` and
+`maximal_hyperbolic_index_splitting` main computations remain deferred.
+
 ### Invariants, predicates, and decomposition morphisms
 
 In this subsection $T$ is a nondegenerate symmetric bilinear module over

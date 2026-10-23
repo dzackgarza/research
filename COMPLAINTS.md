@@ -120,8 +120,8 @@ not after it. **Coverage boundary:** source inspection and the cited mathematica
 proofs; mathematical specimens remain unexecuted under DEV-58.
 The formal embedding and module-morphism owners already distinguish
 injectivity from invertibility; no missing formal foundation is asserted.
-The remaining index-wide work belongs to
-`hyperbolic-splitting-dependency-tools` in [TODO.md](TODO.md).
+The remaining mathematical specimen execution belongs to
+`terminal-session` in [TODO.md](TODO.md).
 
 ### Finite norm-fibre enumeration and subset-domain inclusions await execution
 
@@ -146,7 +146,7 @@ finite-subset construction supplies the maps; the lattice specialization
 supplies the valid finiteness argument. No new mathematical foundation is
 asserted missing. Pending definite, negative-definite, empty and rank-zero
 specimens are in the method docstring and owned by
-`hyperbolic-splitting-dependency-tools` in TODO.md. Execution remains under T.
+`terminal-session` in TODO.md. Execution remains under T.
 
 ### Generic computable-real linear algebra still has partial scalar decisions
 
@@ -180,7 +180,7 @@ Those perfection results do not supply the general zero-radical statement:
 nondegeneracy requires injective adjoints, not invertible ones over ZZ.
 A matching nondegeneracy declaration was not identified by the source
 search. Retain its identification or formalization under
-`hyperbolic-splitting-dependency-tools` and terminal T. The affected
+`terminal-session` and terminal T. The affected
 consumers are Witt constructions on supplied orthogonal sums and generic
 formed-module operations; the real embedding decision separately uses
 the original inertia indices directly.
@@ -314,8 +314,8 @@ specimens remain written but unexecuted. The real plane, Cauchy plane with
 undecided diagonal zeros and empty space supply the new diagonalization
 specimens. Its actual inverse pair and proof are in the theory note.
 Lattice naming also no longer asks for a real signature that its displayed
-name does not use. The remaining index-wide map audit stays with
-`hyperbolic-splitting-dependency-tools` in TODO.md.
+name does not use. The source map audit is recorded in the theory note;
+remaining mathematical specimen execution stays with `terminal-session` in TODO.md.
 
 **Fresh norm-fibre point selection:** the zero-norm fibre previously needed
 manual admission of zero before its set computation could select a point
@@ -333,8 +333,8 @@ specimens remain unexecuted under DEV-58.
 diagonalization with its map -> inertia and normalized vectors -> field
 Witt and embedding operations. No new mathematical definition is introduced;
 the formal bilinear-form and Witt owners already supply these notions.
-The remaining computation and execution belong to
-`hyperbolic-splitting-dependency-tools` in TODO.md.
+The source routes and map audit are recorded in the theory note. Remaining
+mathematical specimen execution belongs to `terminal-session` in TODO.md.
 
 ### Labelled graphs present no isomorphisms or automorphism groups
 
