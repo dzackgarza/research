@@ -14,7 +14,10 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.functors.core import Functor
-from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
+from dzack_research.preamble.categories.modules.pure.modules import (
+    FinitelyGeneratedFreeModules,
+    VectorSpaces,
+)
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.real import RR
@@ -147,6 +150,12 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
         def affine_map(self):
             pass
 
+        def linear_part(self):
+            pass
+
+        def lattice_map(self):
+            pass
+
         def __mul__(self, other):
             pass
 
@@ -177,6 +186,19 @@ class _UnderlyingAffineSpaceFunctor(Functor):
         return morphism.affine_map()
 
 
+class _AffineLatticeFunctor(Functor):
+    r"""Take the selected integral lattice and induced linear lattice map."""
+
+    def __init__(self):
+        super().__init__(AffineSpacesWithLattice(), FinitelyGeneratedFreeModules(_owned_integers()))
+
+    def _apply_object(self, space):
+        return space.affine_lattice()
+
+    def _apply_morphism(self, morphism):
+        return morphism.lattice_map()
+
+
 class AffineSpacesWithLattice(OwnedCategory):
     r"""Real affine spaces with a selected full lattice in their model space."""
 
@@ -202,6 +224,10 @@ class AffineSpacesWithLattice(OwnedCategory):
     def forget(self):
         return _UnderlyingAffineSpaceFunctor()
 
+    @cached_method
+    def lattice(self):
+        return _AffineLatticeFunctor()
+
     class ParentMethods:
         def underlying_affine_space(self):
             pass
@@ -209,5 +235,11 @@ class AffineSpacesWithLattice(OwnedCategory):
         def lattice_inclusion(self):
             pass
 
+        def affine_lattice(self):
+            pass
+
         def integral_affine_group(self):
+            pass
+
+        def integral_affine_group_action(self):
             pass
