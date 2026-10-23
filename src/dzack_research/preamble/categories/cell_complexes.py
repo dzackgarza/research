@@ -476,6 +476,10 @@ class PolytopalComplexes(OwnedCategory):
         def cellular_realization(self):
             pass
 
+        def realization(self):
+            r"""Realize the selected polytopal cells as a topological space."""
+            pass
+
         def triangulations(self):
             from dzack_research.preamble.categories.triangulations import ChosenTriangulations
 
@@ -588,6 +592,10 @@ class SimplicialComplexes(OwnedCategory):
         def cellular_realization(self):
             pass
 
+        def realization(self):
+            r"""Realize the selected simplices as a topological space."""
+            pass
+
         def triangulations(self):
             from dzack_research.preamble.categories.triangulations import ChosenTriangulations
 
@@ -682,6 +690,10 @@ class DeltaComplexes(OwnedCategory):
             pass
 
         def cellular_realization(self):
+            pass
+
+        def realization(self):
+            r"""Realize the selected face identifications as a topological space."""
             pass
 
         def triangulations(self):
