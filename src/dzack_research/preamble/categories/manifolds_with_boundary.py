@@ -144,6 +144,19 @@ class _UnderlyingStratifiedSpaceFunctor(Functor):
         return morphism.underlying_continuous_map()
 
 
+class _SmoothStratifiedCkPresentationFunctor(Functor):
+    r"""Place smooth boundary or corner data in its C^infinity category."""
+
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, manifold):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class _StratifiedManifoldMethods:
     def dimension(self):
         pass
@@ -235,6 +248,14 @@ class SmoothManifoldsWithBoundary(OwnedCategory):
     @cached_method
     def forget_smoothness(self):
         return _UnderlyingTopologicalStrataFunctor(self, TopologicalManifoldsWithBoundary())
+
+    @cached_method
+    def as_ck(self):
+        return _SmoothStratifiedCkPresentationFunctor(self, RealCkManifoldsWithBoundary(Infinity))
+
+    @cached_method
+    def forget_to(self, degree):
+        return self.as_ck().then(RealCkManifoldsWithBoundary(Infinity).forget_to(degree))
 
     @cached_method
     def forget(self):
@@ -355,6 +376,14 @@ class SmoothManifoldsWithCorners(OwnedCategory):
     @cached_method
     def forget_smoothness(self):
         return _UnderlyingTopologicalStrataFunctor(self, TopologicalManifoldsWithCorners())
+
+    @cached_method
+    def as_ck(self):
+        return _SmoothStratifiedCkPresentationFunctor(self, RealCkManifoldsWithCorners(Infinity))
+
+    @cached_method
+    def forget_to(self, degree):
+        return self.as_ck().then(RealCkManifoldsWithCorners(Infinity).forget_to(degree))
 
     @cached_method
     def forget(self):
