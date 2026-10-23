@@ -150,6 +150,28 @@ specimens are in the method docstring and owned by
 
 ### Generic computable-real linear algebra still has partial scalar decisions
 
+**Fresh nonzero norm-fibre point selection:** `FormModules.square_fibre`
+constructs the actual equalizer and admits canonical zero for a decided
+zero value. `_ConditionSetEngine._an_element_` returns an admitted member
+or requests ambient iteration. Thus a fresh `L.elements_of_norm(a)` for
+nonzero real `a` has no automatic point route through the existing
+`L.representation_vector(a)`, even for a finite nonsingular positive
+line and positive `a`. The current example explicitly constructs and
+admits that vector first; it does not cover fresh selection. The
+dependency path is norm fibre -> choice of member -> solution of the
+norm equation. Existing partial capability is the actual solver and
+original equalizer inclusion. Missing is their lazy composition at the
+appropriate general solution-fibre owner, preserving failure/undecided
+status and without making locus construction solve the equation or
+claim that a real set is enumerable. Source evidence is
+`form_modules.py:square_fibre` and
+`set_categories.py:_ConditionSetEngine._an_element_`; no runtime failure
+is asserted. `hyperbolic-splitting-dependency-tools` owns this remaining
+point-construction route. The upstream semantic construction to locate
+is choice of a point in an equation fibre from a supplied solution
+computation, with the original inclusion; generic predicate subsets
+must not acquire a uniform satisfiability solver.
+
 **Formal nondegeneracy preservation for orthogonal sums:** the source
 constructor now retains supplied nondegenerate placements of every
 summand, including the empty sum, without a new determinant query.

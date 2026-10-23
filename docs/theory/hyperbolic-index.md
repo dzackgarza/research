@@ -1676,6 +1676,20 @@ form is singular or definite. This supplies a source specimen for locus
 construction with undecided inertia; it does not claim enumeration of
 all real points.
 
+**Remaining fresh-point route.** The general subset's choice computation
+currently returns an already admitted member or searches its selected
+ambient enumeration. Canonical zero is admitted by the zero-fibre
+construction, but a fresh nonzero real norm fibre does not yet invoke
+the existing norm-witness solver automatically. Calling
+`F(L.representation_vector(a))` and then `F.an_element()` demonstrates
+retained admission, not fresh point finding. The missing dependency is
+lazy composition of the equation solver with the existing fibre
+inclusion, at a general solution-fibre owner. It must leave construction
+of the locus independent of solving, preserve unknown or unavailable
+computations, and distinguish an empty fibre from an unfinished search.
+This remains assigned in TODO.md and COMPLAINTS.md; neither real
+enumeration nor an eager solver in the locus constructor supplies it.
+
 **Element equations retain predicates.** For a supplied vector $v$,
 `v.is_isotropic()` denotes $q(v)=0$, `v.is_orthogonal_to(w)` denotes
 $b(v,w)=0$, and `v.represents(a)` denotes $q(v)=a$. These are scalar
