@@ -1474,11 +1474,11 @@ def _formed_module_base_change(self, ring_map):
                 # image under every unital ring map remains a unit.
                 categories.append(FormModules(target_ring).Unimodular())
             elif (source in FormModules(source.base_ring()).Nondegenerate()
-                    and source.base_ring() in OwnedIntegralDomains()
                     and target_ring in OwnedIntegralDomains()
-                    and ring_map.is_injective() is True):
-                # The finite scalar-valued Gram determinant is nonzero;
-                # the supplied injectivity preserves that same fact.
+                    and _base_change_scalar(ring_map, source.determinant())
+                    != target_ring.zero()):
+                # Over a domain, the nonzero image of this finite Gram
+                # determinant is the exact target nondegeneracy witness.
                 categories.append(FormModules(target_ring).Nondegenerate())
         if source in BilinearFormModules(source.base_ring()).Symmetric():
             categories.append(BilinearFormModules(target_ring).Symmetric())
