@@ -11,6 +11,10 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import SmoothManifolds
+from dzack_research.preamble.categories.manifolds_with_boundary import (
+    SmoothManifoldsWithBoundary,
+    SmoothManifoldsWithCorners,
+)
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -105,6 +109,152 @@ class IntegralAffineManifolds(OwnedCategory):
 
     class StrictLatticePointAtlas(CategoryWithAxiom):
         r"""Selected atlases whose translations preserve the lattice points."""
+
+
+class _StratifiedIntegralAffineMapMethods:
+    def underlying_smooth_stratified_map(self):
+        raise NotImplementedError("the affine map must retain its smooth stratum map")
+
+    def interior_affine_map(self):
+        raise NotImplementedError("the affine map must retain its interior restriction")
+
+    def __mul__(self, other):
+        raise NotImplementedError("composition needs affine charts and the stratum maps")
+
+
+class _StratifiedIntegralAffineMor(CategoricalMor):
+    ElementMethods = _StratifiedIntegralAffineMapMethods
+
+    def _element_constructor_(self, smooth_stratified_map, local_affine_maps):
+        raise NotImplementedError(
+            "the map needs compatible integral-affine chart maps on every depth stratum"
+        )
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("an affine identity requires the same source and target")
+        raise NotImplementedError("the identity needs the selected atlas and stratum inclusions")
+
+
+class IntegralAffineBoundaryMor(_StratifiedIntegralAffineMor):
+    r"""Local integral-affine maps preserving the specified boundary."""
+
+
+class IntegralAffineCornerMor(_StratifiedIntegralAffineMor):
+    r"""Local integral-affine maps preserving every corner-depth stratum."""
+
+
+class IntegralAffineBoundaryMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = IntegralAffineBoundaryMor
+
+
+class IntegralAffineCornerMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = IntegralAffineCornerMor
+
+
+class _StratifiedAffineForgetfulFunctor(Functor):
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, manifold):
+        return manifold.underlying_smooth_stratified_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_smooth_stratified_map()
+
+
+class _StratifiedAffineInteriorFunctor(Functor):
+    def __init__(self, source):
+        super().__init__(source, IntegralAffineManifolds())
+
+    def _apply_object(self, manifold):
+        return manifold.interior_affine_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.interior_affine_map()
+
+
+class _StratifiedAffineManifoldMethods:
+    def underlying_smooth_stratified_manifold(self):
+        raise NotImplementedError("the constructor must retain the exact smooth stratified manifold")
+
+    def affine_atlas(self):
+        raise NotImplementedError("the constructor must retain its compatible affine charts")
+
+    def depth_stratum(self, depth):
+        raise NotImplementedError("the constructor must retain each depth stratum inclusion")
+
+    def interior_affine_manifold(self):
+        raise NotImplementedError("the constructor must retain its integral-affine interior")
+
+    def interior_inclusion(self):
+        raise NotImplementedError("the constructor must retain the exact open interior arrow")
+
+
+class IntegralAffineManifoldsWithCorners(OwnedCategory):
+    r"""Smooth corner manifolds with selected compatible integral-affine charts."""
+
+    _MorCategory = IntegralAffineCornerMorCategoryConstruction
+
+    def super_categories(self):
+        return [Objects()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "integral-affine manifolds with corners"
+
+    def an_object(self):
+        raise NotImplementedError("a corner integral-affine manifold needs orthant affine charts")
+
+    def on(self, smooth_corner_manifold, affine_atlas):
+        if smooth_corner_manifold not in SmoothManifoldsWithCorners():
+            raise TypeError(f"{smooth_corner_manifold} is not a smooth corner manifold")
+        raise NotImplementedError("construction needs affine charts compatible on every depth stratum")
+
+    @cached_method
+    def forget(self):
+        return _StratifiedAffineForgetfulFunctor(self, SmoothManifoldsWithCorners())
+
+    @cached_method
+    def interior(self):
+        return _StratifiedAffineInteriorFunctor(self)
+
+    class ParentMethods(_StratifiedAffineManifoldMethods):
+        pass
+
+
+class IntegralAffineManifoldsWithBoundary(OwnedCategory):
+    r"""Smooth half-space manifolds with selected integral-affine charts."""
+
+    _MorCategory = IntegralAffineBoundaryMorCategoryConstruction
+
+    def super_categories(self):
+        return [IntegralAffineManifoldsWithCorners()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "integral-affine manifolds with boundary"
+
+    def an_object(self):
+        raise NotImplementedError("a boundary integral-affine manifold needs half-space affine charts")
+
+    def on(self, smooth_boundary_manifold, affine_atlas):
+        if smooth_boundary_manifold not in SmoothManifoldsWithBoundary():
+            raise TypeError(f"{smooth_boundary_manifold} is not a smooth boundary manifold")
+        raise NotImplementedError("construction needs affine half-space charts and their transitions")
+
+    @cached_method
+    def forget(self):
+        return _StratifiedAffineForgetfulFunctor(self, SmoothManifoldsWithBoundary())
+
+    @cached_method
+    def interior(self):
+        return _StratifiedAffineInteriorFunctor(self)
+
+    class ParentMethods(_StratifiedAffineManifoldMethods):
+        def boundary(self):
+            raise NotImplementedError("the boundary needs its exact inclusion and restricted atlas")
 
 
 class SingularIntegralAffineSpaceMor(CategoricalMor):
