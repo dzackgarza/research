@@ -38,7 +38,14 @@ requires a usable dimension-dependent constant; extra conditions need their
 own valid bound or complete solver. The current source has neither a general
 integral representation bound nor a general constrained exclusion procedure.
 Definite integral enumeration and the even-overlattice construction remain
-applicable partial routes, not complete coverage.
+applicable partial routes, not complete coverage. A numeric coefficient
+bound for some integrally equivalent Gram representative is now computed
+from rank and determinant by `integral_representative_coefficient_bound`;
+the theory note proves it using the explicit compactness parameter in
+Li–Margulis's Appendix and an elementary basis estimate. This does not
+bound an embedding or change-of-basis matrix. The remaining Theorem 4
+constant requires evaluation of the estimates in Theorem 1's proof,
+including the matrix-coefficient constant in Lemma 3(2).
 
 **Dependency path:** formed modules and form-preserving maps -> embedding
 subset retaining its maps -> complete candidate enumeration -> an applicable

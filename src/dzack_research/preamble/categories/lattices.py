@@ -182,7 +182,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_integers,
     _owned_rationals,
 )
-from dzack_research.preamble.categories.sets.cardinals import cardinal
+from dzack_research.preamble.categories.sets.cardinals import Cardinal, cardinal
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -2452,6 +2452,49 @@ class Lattices(OwnedCategoryOverBaseRing):
         _name, tex = _ring_notation(self.base_ring())
         return rf"\mathrm{{Lattices}}({tex}) \in \mathrm{{Cat}}"
 
+    def integral_representative_coefficient_bound(
+        self, rank: Cardinal | int, determinant: RingElement | int
+    ) -> RingElement:
+        r"""Bound representative coefficients from the rank and determinant alone.
+
+        Every nondegenerate integral form with these invariants has an
+        integral basis with all absolute Gram coefficients at most the
+        returned integer. The rank is finite and the determinant is
+        nonzero. In rank zero the empty form has coefficient bound zero.
+        This computes a bound, not a representative or a basis change.
+
+        Using the invariants alone is essential when enumerating possible
+        complementary forms: no complement need already be constructed.
+        See the corresponding lattice method and the full proof in
+        ``docs/theory/hyperbolic-index.md``.
+        """
+        integers = _owned_integers()
+        assert self.base_ring() is integers, (
+            f"integral representative coefficient bounds require Lattices(ZZ), not {self}"
+        )
+        dimension = cardinal(rank)
+        assert dimension.is_finite(), (
+            f"an integral representative coefficient bound requires finite rank, not {dimension}"
+        )
+        n = int(dimension)
+        determinant = abs(integers(determinant))
+        assert determinant > integers.zero(), (
+            "an integral representative coefficient bound requires a nonzero determinant"
+        )
+        if n == 0:
+            return integers.zero()
+        if n == 1:
+            return determinant
+        size = integers(n)
+        definite_bound = (integers(2) * size**n * determinant)**(2*n*n + 2)
+        if n == 2:
+            return definite_bound
+        epsilon_inverse = (integers(4) * size**3 * integers(6)**n)**(n*n) * (size**3 + size)
+        independent_length = integers(2) * size**n * epsilon_inverse**(n - 1)
+        basis_length = independent_length**(n*n + 1) + integers.one()
+        indefinite_bound = size * basis_length**2 * determinant
+        return max(definite_bound, indefinite_bound)
+
     class ParentMethods:
         r"""Operations generic to every lattice.
 
@@ -3796,6 +3839,47 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             )
             return matrix.determinant()
+
+        def integral_representative_coefficient_bound(self) -> RingElement:
+            r"""Bound the Gram coefficients of some integrally isometric representative.
+
+            For a finite nondegenerate ZZ-lattice return an integer ``B``
+            such that a basis exists with every absolute Gram coefficient
+            at most ``B``. This does not bound the basis-change matrix or
+            an embedding matrix, and does not construct the representative.
+            No signature decision or unspecified constant is required.
+
+            Write ``n=rank(L)`` and ``D=abs(det(L))``. A definite form has
+            the bound ``(2*n^n*D)^(2*n^2+2)``. For indefinite forms of rank
+            at least three, Li--Margulis, Appendix and Lemmas 13--14,
+            supply a compact subset meeting the associated closed orbit.
+            An elementary basis estimate makes its representative bound
+            explicit. The full derivation, including indefinite binary
+            forms and the distinction from embedding bounds, is in
+            ``docs/theory/hyperbolic-index.md``, "An explicit coefficient
+            bound for integral form representatives".
+
+            EXAMPLES::
+
+                sage: assert Lattices(ZZ)(0).integral_representative_coefficient_bound() == ZZ(0)
+                sage: assert Lattices(ZZ)([[-7]]).integral_representative_coefficient_bound() == ZZ(7)
+                sage: N = ZZ(10)^20
+                sage: L = Lattices(ZZ)([[1, N], [N, N*N + 1]])
+                sage: bound = L.integral_representative_coefficient_bound()
+                sage: e, f = L.module_generators()
+                sage: assert L.q(f) > bound
+                sage: basis = (e, f - N*e)
+                sage: assert all(abs(L.b(v, w)) <= bound for v in basis for w in basis)
+                sage: U = Lattices(ZZ)([[0, 1], [1, 2*N]])
+                sage: e, f = U.module_generators()
+                sage: bound = U.integral_representative_coefficient_bound()
+                sage: assert U.q(f) > bound
+                sage: basis = (e, f - N*e)
+                sage: assert all(abs(U.b(v, w)) <= bound for v in basis for w in basis)
+            """
+            return self.lattice_category().integral_representative_coefficient_bound(
+                self.module_rank(), self.determinant()
+            )
 
         def is_even(self) -> bool | Predicate:
             r"""Return whether ``b(x,x)`` lies in ``2R`` for every lattice vector.

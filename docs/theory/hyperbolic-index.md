@@ -351,6 +351,146 @@ do not establish a practical implementation or polynomial bit complexity:
 even a bound polynomial in coefficient magnitude can entail an enormous
 search in the binary input size.
 
+### An explicit coefficient bound for integral form representatives
+
+A coefficient bound for an equivalent form is different from the embedding
+bound (5). The following bound is fully numeric and supplies the former.
+It is deliberately large. It neither bounds the integral change of basis
+nor supplies the still-required constant in (5).
+
+Let $G$ be a nonsingular symmetric integral matrix of size $n\ge1$, and put
+$D=|\det G|$. Define
+
+$$
+F(n,D)=(2n^nD)^{2n^2+2}.
+$$
+
+For $n\ge3$ also define the integers
+
+$$
+\begin{aligned}
+E_n&=(4n^3 6^n)^{n^2}(n^3+n),\\
+L_n&=2n^nE_n^{n-1},\\
+R_n&=L_n^{n^2+1}+1,\\
+I(n,D)&=nR_n^2D.
+\end{aligned}
+$$
+
+**Proposition.** Some $P\in\operatorname{GL}_n(\mathbb Z)$ satisfies
+$\|P^TGP\|_\infty\le B(n,D)$, where
+
+$$
+B(n,D)=
+\begin{cases}
+D,&n=1,\\
+F(2,D),&n=2,\\
+\max\{F(n,D),I(n,D)\},&n\ge3.
+\end{cases}
+$$
+
+For rank zero take the coefficient bound to be zero. The public computation
+`Lattices(ZZ).integral_representative_coefficient_bound(n, D)` needs only
+the invariants, so it can bound candidate complements before one has been
+constructed. `L.integral_representative_coefficient_bound()` supplies the
+invariants of an existing lattice. Both return an integer, not a
+representative or an isometry. Its proof uses the upper inequality
+in Minkowski's second theorem (Henk, Theorem 1.3, in the references) and
+Li–Margulis's explicit compact subset in the Appendix, together with their
+§2.3 and Lemma 13. No estimate from their matrix-coefficient or mixing
+arguments is needed for this proposition.
+
+**Basis estimate.** Suppose a Euclidean lattice $\Lambda$ of rank $n\ge1$
+has covolume at least one and contains $n$ independent vectors of lengths
+at most a real number $L\ge1$. Then it has a basis whose lengths are at
+most $L^{n^2+1}$.
+
+1. The given vectors generate a sublattice of index $d$. Hadamard's
+   determinant inequality gives
+   $d\le L^n/\operatorname{covol}(\Lambda)\le L^n$.
+2. If their span is not all of $\Lambda$, choose a point in a nonzero coset
+   of its quotient in $\Lambda$. Reducing its coefficients modulo integers
+   gives a lattice vector $w=\sum c_iv_i$ with $|c_i|\le1/2$, not all zero.
+3. Replace a $v_j$ with $c_j\ne0$ by $w$. The new vectors remain independent
+   and their index is $|c_j|d\le d/2$. If their previous maximum length was
+   $M$, their new maximum length is at most $nM$, by the triangle inequality.
+4. The positive integer index can halve at most $k\le\log_2d$ times.
+   Since $n\le2^n$, the final basis has lengths at most
+   $Ln^k\le Ld^n\le L^{n^2+1}$.
+
+To obtain independent vectors, write $v_n$ for the volume of the Euclidean
+unit ball and $\lambda_i$ for the successive minima. Minkowski's second
+theorem gives
+
+$$
+\prod_{i=1}^n\lambda_i\le
+\frac{2^n}{v_n}\operatorname{covol}(\Lambda)
+\le n^{n/2}\operatorname{covol}(\Lambda).
+$$
+
+The last inequality follows from the cube
+$[-1/\sqrt n,1/\sqrt n]^n$ lying in the unit ball. If every nonzero lattice
+vector has length at least $a>0$, then
+$\lambda_n\le n^{n/2}\operatorname{covol}(\Lambda)a^{-(n-1)}$.
+The successive minima are attained, so this bounds the lengths of $n$
+independent lattice vectors.
+
+**Definite forms.** Replace $G$ by $-G$ if necessary. Regard $\mathbb Z^n$
+as a Euclidean lattice with squared norm $x^TGx$. Its covolume is $\sqrt D$,
+and every nonzero vector has length at least one because its square is a
+positive integer. Thus $n$ independent vectors have lengths at most
+$n^{n/2}\sqrt D\le 2n^nD$. The basis estimate gives a basis of lengths at
+most $(2n^nD)^{n^2+1}$. Cauchy–Schwarz bounds every absolute Gram coefficient
+by the square of that number, namely $F(n,D)$.
+
+**Indefinite forms of rank at least three.** Li–Margulis's Appendix gives
+$\epsilon_n=E_n^{-1}$ and a compact subset of the unimodular lattice space
+consisting of lattices whose nonzero vectors have length at least
+$\epsilon_n$. Lemma 13 ensures that it meets every closed orbit under the
+relevant real orthogonal identity component. Their §2.3 associates such a
+closed orbit to each integral indefinite form. A change of overall sign
+allows the signature convention of their §2.2.
+
+Normalize the form as $G=D^{1/n}g^TJg$, where $g\in\operatorname{SL}_n(\mathbb R)$
+and $J$ is diagonal with entries $1$ and $-1$. At a point of the orbit in
+the compact subset, the associated Euclidean lattice is unimodular and
+has minimum length at least $E_n^{-1}$. The preceding minima inequality
+supplies independent vectors of lengths at most
+$n^{n/2}E_n^{n-1}<L_n$. The basis estimate, with a column sign reversed if
+needed to give determinant one, supplies a representative matrix $g_1$
+with $\|g_1\|_\infty<R_n$. Its lattice lies at the same orbit point, so
+$D^{1/n}g_1^TJg_1$ is integrally equivalent to $G$. Each of its entries has
+absolute value less than $nR_n^2D^{1/n}\le I(n,D)$, as required.
+
+**Indefinite binary forms.** A sharper bound $D$ suffices. If the form is
+isotropic, choose a primitive isotropic vector and complete it to a basis.
+The Gram matrix is $\left(\begin{smallmatrix}0&b\\b&c\end{smallmatrix}\right)$.
+Replacing the second basis vector by itself plus an integer multiple of
+the first makes $|c|\le|b|$; since $D=b^2$, all entries have absolute value
+at most $D$.
+
+Otherwise choose a nonzero vector minimizing the positive integer $|q(v)|$.
+It is primitive: dividing a nonprimitive vector by its content would
+strictly lower that value. Complete it to a basis with Gram matrix
+$\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$ and shift the
+second vector so that $|b|\le|a|/2$. Minimality gives $|c|\ge|a|>0$.
+The equality $ac=b^2-D$ and the bound on $b$ force $ac<0$; otherwise
+$b^2\ge a^2+D$ would contradict $b^2\le a^2/4$.
+Consequently $a^2\le|ac|=D-b^2\le D$, and
+$|c|=(D-b^2)/|a|\le D$. All entries are bounded by $D\le F(2,D)$.
+Rank one has the original coefficient of absolute value $D$. This proves
+the proposition in every stated rank.
+
+**Remaining embedding-bound computation.** Li–Margulis §1.7 explicitly
+states that its multiplicative constants are computable. Their §8.5 reduces
+Theorem 4 to Theorem 1 and Lemma 20; the latter uses coefficient bounds for
+an equivalent complement form. For indefinite forms their §6 reduces
+Theorem 1 to Theorems 5 and 6 and Lemma 1. Theorem 5 still needs numerical
+constants for its injectivity-radius and bump-function estimates and for
+Lemma 3(2)'s matrix-coefficient estimate. The paper points to Shalom,
+Theorem 2.1, and Kontorovich–Oh, Proposition 3.2, for that last evaluation.
+The compactness constant above is therefore concrete progress on this
+chain, not completion of the integral embedding bound.
+
 ## Examples separating the three base rings
 
 **Example (a rational obstruction).** For
@@ -797,6 +937,10 @@ retains the original lattice and scalar map.
   §1.1 and Theorem 1 for constructive integral equivalence bounds.
   The integral decomposition algorithm here is a deduction from those
   bounds and Proposition (3), not a claim that the paper implements it.
+- **Martin Henk, *Successive Minima and Lattice Points*.**
+  [Author's preprint on arXiv](https://arxiv.org/abs/math/0204158).
+  Theorem 1.3 states the upper inequality of Minkowski's second theorem
+  used in the explicit coefficient-bound derivation.
 - **SageMath reference manual, *Solving quadratic equations*.**
   [Official documentation](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/qfsolve.html).
   The `qfsolve` interface to PARI's Simon implementation.
