@@ -512,7 +512,25 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return self.module_category().Mor(self, codomain)
 
         def subobject_on(self, module_generating_set):
-            r"""Return the submodule spanned by the specified elements."""
+            r"""Return the submodule spanned by the specified elements.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                sage: from dzack_research.preamble.logic import Predicate
+                sage: Q = _owned_rationals()
+                sage: a = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n))
+                sage: t = RR.of_cauchy(a)
+                sage: V = RR ** 2
+                sage: e, f = V.module_generators()
+                sage: S = V.subobject_on((e + t*f,))
+                sage: assert S.inclusion().codomain() is V
+                sage: image = S.inclusion()(S.module_generators()[0])
+                sage: label = tuple(V.module_generating_set())[1]
+                sage: assert isinstance(image.to_vector()(label) == RR.zero(), Predicate)
+            """
 
             return _module_subobject_on(self, module_generating_set)
 
@@ -1313,7 +1331,6 @@ def _module_subobject_constructor_data(module, basis):
                         for support_module_label, support_point in zip(
                             support_module_labels, support_points, strict=True
                         )
-                        if coordinates(support_point)
                     }
                 )
                 for coordinates in (
@@ -1330,10 +1347,22 @@ def _module_subobject_constructor_data(module, basis):
         nonlocal coordinate_solver
         element = element if element.parent() is module else module(element)
         coordinates = element.to_vector()
-        if any(label not in support_labels for label in coordinates.support().domain()):
+        retained = coordinates.parent()._selected_module_coefficients(coordinates)
+        outside_zero = conjunction(
+            coefficient == ring.zero()
+            for label, coefficient in retained.items() if label not in support_labels
+        )
+        if outside_zero is False:
             return None
+        if outside_zero is not True:
+            raise ValueError("cannot decide whether coordinates outside the finite span window vanish")
         if source_rank == 0:
-            return None if coordinates else source.zero()
+            zero = conjunction(coefficient == ring.zero() for coefficient in retained.values())
+            if zero is True:
+                return source.zero()
+            if zero is False:
+                return None
+            raise ValueError("cannot decide membership in the zero submodule")
         if coordinate_solver is None:
             coordinate_solver = _integral_preimage_positional_solver(
                 coordinate_matrix,
@@ -1351,7 +1380,6 @@ def _module_subobject_constructor_data(module, basis):
             {
                 labels[i]: coefficient
                 for i, coefficient in enumerate(solution)
-                if coefficient
             }
         )
 

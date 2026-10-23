@@ -3788,7 +3788,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                     (
                         codomain.scalar_multiple(_owned_engine_element(ring, coefficient), generator)
                         for coefficient, generator in zip(column, codomain_generators, strict=True)
-                        if coefficient
                     ),
                     codomain.zero(),
                 )
@@ -3806,7 +3805,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                         for coefficient, generator in zip(
                             column, domain_generators, strict=True
                         )
-                        if coefficient
                     ),
                     domain.zero(),
                 )

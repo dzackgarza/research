@@ -2272,6 +2272,23 @@ source specimen checks this distinction and the original parent;
 execution remains deferred. The solver's own pivot applicability
 conditions remain unchanged.
 
+The finite-span constructor now follows the same rule when it builds
+its coordinate map and raises a solved lift: all coefficients are passed
+to the existing module constructor. To check whether a candidate lies
+outside its finite coordinate window, it reads the finite retained
+coefficient family rather than enumerating the exact support. Known
+nonzero outside coordinates exclude membership; unknown outside zero
+equations report an unavailable decision. Membership in the zero span
+likewise distinguishes true, false and undecided equations. For a finite
+ambient framing the coordinate window is the whole framing, so no exact
+support decision is needed. The cyclic span of $(1,t)$, for a
+Cauchy-presented zero $t$, has an inclusion retaining that coefficient;
+its source specimen checks construction and the original endpoint.
+The lattice column-matrix transport similarly retains all forward and
+inverse coefficients after inversion. These changes add no rank or
+zero decision procedure and do not turn undecided span membership into
+absence.
+
 For a linear map $f:V\to W$ between finite-dimensional vector spaces over
 an exact field, with coefficient matrix $A$ in the specified bases, a
 target $b$ is in its image exactly
