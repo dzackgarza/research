@@ -879,10 +879,12 @@ $$
 target of rank at least three. For a definite integral target of any rank,
 it instead takes the maximum of the source-generator square-coordinate
 bounds, containing **every** embedding. A zero source or a rank obstruction
-receives zero. The indefinite binary case has no bound computation here;
-its separate existing exact representation/isometry routes are unchanged.
+receives zero. Rationally split indefinite binary targets have the
+all-embedding bound proved below. The nonsplit indefinite binary case has
+no bound computation here; its existing exact representation/isometry
+routes are unchanged.
 
-The indefinite bound contains **some** embedding whenever one exists.
+The rank-at-least-three indefinite bound contains **some** embedding whenever one exists.
 It need not contain one satisfying an extra predicate. It therefore supplies
 an unrestricted finite exclusion search, not a universal constrained solver.
 Neither bound constructs an embedding or implements maximal splitting.
@@ -890,6 +892,65 @@ The nonprimitive, sheared-definite and zero-source specimens in its docstring
 remain unexecuted under DEV-58. The original sharper formula (6) remains
 unevaluated, but is no longer the only available direct bound in rank at
 least three.
+
+### Every embedding into a rationally split integral binary target
+
+Let $G=\left(\begin{smallmatrix}a&b\\b&c\end{smallmatrix}\right)$
+be integral, nondegenerate and indefinite, with $b^2-ac=s^2$ for an
+integer $s>0$. Let $A$ be a nondegenerate integral source Gram matrix of
+rank $1$ or $2$, and set $H=\max_{i,j}|A_{ij}|$. Then every integral
+matrix $X$ satisfying $X^TGX=A$ has entries bounded by the following
+explicit integer:
+
+$$
+B=\begin{cases}
+H,&a=c=0,\\
+2H\max(|a|,|b|,s),&a\ne0.
+\end{cases}
+$$
+
+When $a=0\ne c$, interchange the two target basis vectors before applying
+the second case; interchanging coordinates preserves their maximum
+absolute value. This elementary factorization proof supplies the bound
+without a reduction algorithm or an embedding as input.
+
+**Proof.**
+
+1. Suppose $a\ne0$. For each column $(x_i,y_i)$ of $X$, put
+   $u_i=ax_i+(b+s)y_i$ and $v_i=ax_i+(b-s)y_i$. These are integers and
+   satisfy
+   $$u_iv_i=aA_{ii},\qquad
+   u_iv_j+v_iu_j=2aA_{ij}.$$
+2. If $A_{ii}\ne0$, both factors are nonzero integers, so
+   $|u_i|,|v_i|\le |a|H$. If $A_{ii}=0$, nondegeneracy of $A$ implies
+   rank two and $A_{ij}\ne0$ for the other column. Exactly one of
+   $u_i,v_i$ is nonzero: both zero would make that row of $A$ zero.
+   The pairing equation bounds its absolute value by $2|a|H$, since
+   its partner in the other column is a nonzero integer. Thus every
+   transformed coordinate is bounded by $K=2|a|H$.
+3. Inverting these linear factors gives
+   $$y_i=\frac{u_i-v_i}{2s},\qquad
+   x_i=\frac{(b+s)v_i-(b-s)u_i}{2as}.$$
+   Consequently $|y_i|\le 2|a|H/s$ and
+   $|x_i|\le 2H\max(|b|,s)/s$, using
+   $|b+s|+|b-s|=2\max(|b|,s)$. Since $s\ge1$, both are at most $B$.
+4. If $a=c=0$, then $b\ne0$ and the equations are
+   $2b x_i y_i=A_{ii}$ and
+   $b(x_i y_j+y_i x_j)=A_{ij}$. A nonzero diagonal entry bounds both
+   coordinates by $H/(2|b|)$. A zero diagonal entry has exactly one
+   nonzero coordinate, bounded by $H/|b|$ through the nonzero pairing
+   with the other column, as in step 2. Thus all coordinates are at most
+   $H$, proving the assertion in every case.
+
+Unlike (7), this bound contains **every** embedding. The finite box
+constructed with `coordinate_subset` and `Emb.with_generator_images_in`
+therefore gives complete exclusion for any further decidable predicate
+in this split binary regime. It does not bound a zero-norm fibre by
+itself: the nondegenerate source hypothesis is essential. For example,
+the multiples of either isotropic basis vector of $U$ are unbounded.
+Pending docstring specimens cover $U(4)\to U$, a target with nonzero
+diagonal and square discriminant, and a sheared split target with large
+coefficients. Runtime verification remains under DEV-58.
 
 ## Examples separating the three base rings
 

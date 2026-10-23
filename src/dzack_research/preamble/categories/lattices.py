@@ -4060,12 +4060,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Bound some embedding into target in the original selected framings.
 
             Both endpoints are nondegenerate integral lattices of finite
-            rank. For a definite target this bounds every embedding. For
-            an indefinite target of rank at least three it contains at
+            rank. For a definite or rationally split binary target this
+            bounds every embedding. For an indefinite target of rank at
+            least three it contains at
             least one whenever an embedding exists, including nonprimitive
-            images. It does not decide existence or bound every indefinite
-            embedding, and extra predicates need their own justification.
-            The indefinite binary case has no bound computation here.
+            images. In that regime it need not bound every embedding,
+            and extra predicates need their own justification. This
+            scalar computation does not decide existence.
+            The nonsplit indefinite binary case has no bound computation here.
 
             Combine the completion Gram bound, a Hermite basis of its
             finite-index overlattice, and the explicit integral isometry
@@ -4085,6 +4087,14 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: D = Lattices(ZZ)([[1, N], [N, N*N + 1]])
                 sage: assert Lattices(ZZ)([[1]]).integral_embedding_coefficient_bound(D) == N
                 sage: assert Lattices(ZZ)(0).integral_embedding_coefficient_bound(L) == ZZ(0)
+                sage: assert T.integral_embedding_coefficient_bound(U) == ZZ(4)
+                sage: S = Lattices(ZZ)([[1, 2], [2, 0]])
+                sage: assert Lattices(ZZ)([[1]]).integral_embedding_coefficient_bound(S) == ZZ(4)
+                sage: S = Lattices(ZZ)([[0, 2], [2, 1]])
+                sage: assert Lattices(ZZ)([[1]]).integral_embedding_coefficient_bound(S) == ZZ(4)
+                sage: N = ZZ(100)
+                sage: S = Lattices(ZZ)([[N*N, N], [N, 0]])
+                sage: assert Lattices(ZZ)([[N*N]]).integral_embedding_coefficient_bound(S) == ZZ(2)*N**4
             """
             from math import factorial
 
@@ -4104,8 +4114,19 @@ class Lattices(OwnedCategoryOverBaseRing):
             source_gram = self.gram_tensor()
             if target.is_definite():
                 return max(target.square_coordinate_bound(source_gram[i, i]) for i in range(m))
+            if n == 2:
+                gram = target.gram_tensor()
+                a, b, c = gram[0, 0], gram[0, 1], gram[1, 1]
+                discriminant = b*b - a*c
+                if discriminant.is_square():
+                    height = max(abs(source_gram[i, j]) for i in range(m) for j in range(m))
+                    if a == 0 and c == 0:
+                        return height
+                    if a == 0:
+                        a = c
+                    return integers(2) * height * max(abs(a), abs(b), discriminant.sqrt())
             if n < 3:
-                raise NotImplementedError("the indefinite binary embedding bound is not computed here")
+                raise NotImplementedError("the nonsplit indefinite binary embedding bound is not computed here")
             completion_height = (
                 max(abs(source_gram[i, j]) for i in range(m) for j in range(m))
                 if m == n else self.integral_completion_coefficient_bound(n, target.determinant())

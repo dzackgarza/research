@@ -52,10 +52,16 @@ The scalar isometry bound is also exposed at `Lattices(ZZ)` from rank and
 two Gram heights alone. These computations require neither an embedding nor
 an isometry as input and construct neither.
 
-**Remaining coverage:** indefinite binary targets have no coefficient-bound
-computation here. An arbitrary extra predicate is not preserved by selecting
-a small representative, so constrained indefinite exclusion still needs its
-own applicable bound or complete solver. The sharper original Li–Margulis
+**Split binary coverage:** the integral linear factorization of a rationally
+split binary target now bounds every embedding from a nondegenerate source
+in its original framing. The theory note proves the explicit bound, including
+null source basis vectors controlled by their nonzero cross pairing. Thus
+finite boxes cover all additional decidable constraints in this regime.
+
+**Remaining coverage:** nonsplit indefinite binary targets have no
+coefficient-bound computation here. An arbitrary extra predicate is not preserved by selecting
+a small representative, so constrained indefinite exclusion outside the split binary regime still
+needs its own applicable bound or complete solver. The sharper original Li–Margulis
 formula is separate and unevaluated; it is not a prerequisite for the new
 alternative. The nonprimitive, definite shear and zero-source specimens,
 and the constant/normalization derivations, remain unverified under DEV-58.
