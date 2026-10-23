@@ -353,6 +353,9 @@ class CellComplexes(OwnedCategory):
         def realization(self):
             pass
 
+        def underlying_space(self):
+            return self.realization()
+
     class RegularCW(CategoryWithAxiom):
         r"""Cell complexes with embedded closed cells."""
 
