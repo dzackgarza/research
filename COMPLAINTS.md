@@ -14,6 +14,37 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Orthogonal lattice sums must distinguish their module universal property
+
+The dependency index needs orthogonal sums with their actual summand maps.
+For symmetric formed modules with form-preserving morphisms, the orthogonal
+sum is not in general a categorical product or coproduct. For example the
+underlying first projection from `<1> orthogonal_sum <1>` kills the second
+basis vector of square one, so it does not preserve the form. The zero
+lattice likewise has no form-preserving map from `<1>`.
+
+**Observed source:** `BiproductLattices.super_categories` places these
+objects in `DirectSumObjects(Lattices(R))`, while its `projection`,
+`from_product_cone` and `from_coproduct_cocone` return ordinary module
+morphisms. `Lattices.SubcategoryMethods.product` and `coproduct` return the
+same orthogonal-sum construction. The empty orthogonal sum and the
+underlying module cone/cocone maps now retain the base ring and apex;
+that construction does not establish a universal property for
+form-preserving morphisms.
+
+**Dependency path:** modules and their finite biproducts -> symmetric
+bilinear forms and form-preserving maps -> orthogonal sum with restricted
+summand inclusions and underlying module projections -> decomposition
+isometry. Preserve the existing `orthogonalSum` mathematics in
+`lean-categories/LeanCategories/Lattices/Valued/Constructions.lean`; no
+absence of that formal construction is asserted. Reconcile the selected
+universal-construction placement and its consumers with the actual formal
+morphism category, rather than treating module projections as lattice
+morphisms. The source inspection above is the coverage boundary; no runtime
+result or completed formal-side audit is claimed. This reached retained-map
+obligation remains with `hyperbolic-splitting-dependency-tools` in
+[TODO.md](TODO.md).
+
 ### General embedding search must retain nonprimitive embeddings
 
 The hyperbolic-splitting dependency index requires the set of all isometric
