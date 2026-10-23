@@ -18,7 +18,7 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 For a complex analytic manifold of complex dimension `m`, realification gives a smooth real manifold of dimension `2m` and sends each holomorphic map to its underlying smooth map. It changes the object presentation and the morphism class: a smooth map between complex manifolds need not be holomorphic. It is a functor, not an inclusion with the same objects and hom sets.
 
-Source inspection of `categories/manifolds.py:ComplexManifolds.super_categories` found `SmoothManifolds()` in its declared supercategories. The direct complex constructor stores `manifold_dimension=m` and a complex Sage manifold, while the smooth constructor stores real dimension and a real Sage manifold. The existing `ComplexManifoldMor` selects holomorphic maps, so the supercategory edge supplies the wrong map inheritance and does not construct the real dimension-`2m` image. The plan's P1 manifold subtree requires the explicit object and morphism functor. The inspected slice is these constructors and category edges; no runtime acceptance claim is made. Repair belongs to `integral-affine-polyhedral-p1` in TODO after the formal realification owner is established.
+Source inspection of `categories/manifolds.py:ComplexManifolds.super_categories` found `SmoothManifolds()` in its declared supercategories. The direct complex constructor stores `manifold_dimension=m` and a complex Sage manifold, while the smooth constructor stores real dimension and a real Sage manifold. The existing `ComplexManifoldMor` selects holomorphic maps, so the supercategory edge supplies the wrong map inheritance and does not construct the real dimension-`2m` image. The plan's P1 manifold subtree requires the explicit object and morphism functor. The inspected slice is these constructors and category edges; no runtime acceptance claim is made. Repair belongs to `integral-affine-polyhedral-p1` in TODO.
 
 ### Labelled graphs present no isomorphisms or automorphism groups
 
@@ -56,14 +56,14 @@ None is evidence against the repaired actual-category or actual-functor construc
 
 ### Rational polyhedral cones present no morphisms
 
-`RationalPolyhedralCones(L)` constructs cones (`from_rays`, `triangulation()`) but has no `Mor`: the inclusion of a simplicial subcone `S_t -> C` from `simplicial_subcone_inclusion` (`polyhedral_cones.py`) is only a map of underlying subsets of `L tensor QQ`. Missing: the category of rational polyhedral cones in `L tensor QQ` with linear maps carrying one cone into another (inclusions as the first specimens), presented as `C.Mor(D)`; request from `lean-categories` if it lacks the category.
+`RationalPolyhedralCones(L)` constructs cones (`from_rays`, `triangulation()`) but has no `Mor`: the inclusion of a simplicial subcone `S_t -> C` from `simplicial_subcone_inclusion` (`polyhedral_cones.py`) is only a map of underlying subsets of `L tensor QQ`. Missing: the category of rational polyhedral cones in `L tensor QQ` with linear maps carrying one cone into another (inclusions as the first specimens), presented as `C.Mor(D)`.
 Consumer: port `lorentzian_cells` (#15) composing subcone inclusions.
 
 ### Convex-polytope facets have no retained arrow into their polytope
 
 A face of a placed convex polytope `P ↪ A` is a subobject `F ↪ P`, and its composite with `P ↪ A` is the selected ambient placement of `F`. The face-incidence order and any face gluing need the first arrow, not only the two subsets of `A`.
 
-Source inspection of `categories/schemes/polytopes.py:ConvexPolytopes.ParentMethods.facets` found a finite family of owned face polytopes constructed from Sage facets. Each face has its own inclusion into the common ambient coordinate module through `_convex_polytope`, but the method returns no `F ↪ P` arrow. `Sets().Subobjects(A).Mor(F,P)` can express the required commuting triangle once the mathematical polytope-map owner and the factor map are established. The current `lean-categories` request, *Placed convex polytopes need their face inclusions and map category*, owns those types; `TODO.md`'s integral-affine construction node owns the preamble repair. The inspected slice is this constructor and the generic set-subobject Mor; it does not classify other face consumers or external polytope packages.
+Source inspection of `categories/schemes/polytopes.py:ConvexPolytopes.ParentMethods.facets` found a finite family of owned face polytopes constructed from Sage facets. Each face has its own inclusion into the common ambient coordinate module through `_convex_polytope`, but the method returns no `F ↪ P` arrow. `Sets().Subobjects(A).Mor(F,P)` can express the required commuting triangle once the preamble polytope-map owner and the factor map are established. `TODO.md`'s integral-affine construction node owns the preamble repair. The inspected slice is this constructor and the generic set-subobject Mor; it does not classify other face consumers or external polytope packages.
 
 ### `lean-categories` does not formalize finiteness of binary fixed-norm orbits
 
