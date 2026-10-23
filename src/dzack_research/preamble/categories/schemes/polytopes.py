@@ -217,7 +217,7 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
             pass
 
         def abstract_automorphisms(self):
-            return self.face_poset().Aut()
+            pass
 
         def geometric_automorphisms(self):
             return self.Aut()
