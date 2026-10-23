@@ -4618,7 +4618,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             construct actual planes and their complements directly. In even
             lattices such a partner is automatic; in odd lattices its norm
             congruence is decided. For larger candidate ranks, the
-            general integral embedding Mor decides whether ``U^r`` embeds.
+            discriminant length bounds the complementary rank, and a
+            full-rank hyperbolic sum must be even. The general integral
+            embedding Mor decides the remaining cases.
             Every such embedding splits because ``U^r`` is unimodular;
             excluding all ranks above the constructed lower bound proves
             maximality.
@@ -4650,6 +4652,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             signature = self.signature_pair()
             upper_bound = min(int(signature.first()), int(signature.second()))
             direct_index, _direct_splitting = self._direct_hyperbolic_splitting()
+            rank = int(self.module_rank())
+            length = int(self.discriminant_length())
+            upper_bound = min(upper_bound, (rank - length) // 2)
+            if 2 * upper_bound == rank and self.is_even() is False:
+                upper_bound -= 1
+            assert direct_index <= upper_bound, (
+                "a constructed unimodular summand must respect the discriminant and parity bounds"
+            )
             for index in range(upper_bound, direct_index, -1):
                 embeddings = (plane ** index).Emb(self)
                 empty = embeddings.is_empty()
