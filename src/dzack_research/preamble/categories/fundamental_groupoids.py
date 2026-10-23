@@ -70,10 +70,19 @@ class FundamentalGroupoid(OwnedParameterizedCategory):
         r"""The object at a point of the selected topological space."""
         pass
 
+    def Mor(self, domain, codomain):
+        if domain not in self or codomain not in self:
+            raise TypeError("a path-class arrow needs two points of the selected space")
+        return self.MorCategory().Of(domain, codomain)
+
     class ParentMethods:
         def __init__(self, point, **rest):
             self._point = point
             super().__init__(**rest)
+
+        @object_level
+        def Mor(self, codomain):
+            return self.category().Mor(self, codomain)
 
         def point(self):
             return self._point
