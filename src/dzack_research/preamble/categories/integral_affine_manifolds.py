@@ -405,8 +405,16 @@ class IntegralAffineManifoldsWithCorners(OwnedCategory):
         pass
 
     def on(self, smooth_corner_manifold, affine_atlas):
+        from dzack_research.preamble.categories.integral_affine_stratified_atlases import (
+            IntegralAffineCornerAtlases,
+        )
+
         if smooth_corner_manifold not in SmoothManifoldsWithCorners():
             raise TypeError(f"{smooth_corner_manifold} is not a smooth corner manifold")
+        if affine_atlas not in IntegralAffineCornerAtlases():
+            raise TypeError(f"{affine_atlas} is not an integral-affine corner atlas")
+        if affine_atlas.underlying_smooth_stratified_manifold() is not smooth_corner_manifold:
+            raise ValueError("the affine atlas must be on the selected smooth corner manifold")
         return _object_of(
             self,
             smooth_stratified_manifold=smooth_corner_manifold,
@@ -453,8 +461,16 @@ class IntegralAffineManifoldsWithBoundary(OwnedCategory):
         pass
 
     def on(self, smooth_boundary_manifold, affine_atlas):
+        from dzack_research.preamble.categories.integral_affine_stratified_atlases import (
+            IntegralAffineBoundaryAtlases,
+        )
+
         if smooth_boundary_manifold not in SmoothManifoldsWithBoundary():
             raise TypeError(f"{smooth_boundary_manifold} is not a smooth boundary manifold")
+        if affine_atlas not in IntegralAffineBoundaryAtlases():
+            raise TypeError(f"{affine_atlas} is not an integral-affine boundary atlas")
+        if affine_atlas.underlying_smooth_stratified_manifold() is not smooth_boundary_manifold:
+            raise ValueError("the affine atlas must be on the selected smooth boundary manifold")
         return _object_of(
             self,
             smooth_stratified_manifold=smooth_boundary_manifold,
