@@ -1638,7 +1638,7 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Sampling | `finite_ordered_sets.py`: `random_element` on the selected finite support | Uniform finite-support distribution; empty support is rejected; no infinite uniform distribution or completeness inference |
 | Exact solving, kernels and arithmetic predicates | Module morphism `preimage`, `kernel`, `cokernel`, `is_primitive`; `AffineModuleFibres.base_point`; lattice `div`, `bezout_partner`, `hyperbolic_partner` and its locus | Original-ring image solving and full kernel inclusions retained; affine points lift the combined equation and project to the original parameter module. Partner loci use lazy solver-backed choice under known hypotheses. General real elimination still needs decidable pivots; terminal specimens remain unexecuted |
 | Perpendiculars and supplied decompositions | `orthogonal_complement`, `orthogonal_splitting`, `orthogonal_decomposition` | Retain the supplied first embedding and full kernel inclusion; direct-sum hypotheses remain essential |
-| Target hyperbolic index and maximal splitting | `lattices.py`: `hyperbolic_index`, `maximal_hyperbolic_index_splitting`; general `Emb` decision and witness; `orthogonal_splitting`; field `witt_decomposition` | The integral route tests actual embeddings of `U^r` in descending order and returns the isometry; field routes use the Witt decomposition. The source specimens require final-revision execution |
+| Target hyperbolic index and maximal splitting | `lattices.py`: `hyperbolic_index`, `maximal_hyperbolic_index_splitting`; general `Emb` decision and witness; `orthogonal_splitting`; field `witt_decomposition` | The integral route tests actual embeddings of `U^r` in descending order and returns the isometry; field routes use the Witt decomposition. Focused zero, split, mixed, scaled and odd specimens have executed; the broader terminal suite remains open |
 
 **The old genus test and the specified lattice.** The historical
 `integral_hyperbolic_index` implementation compared the genus of `L`
@@ -1684,10 +1684,16 @@ proofs, source-convention checks and owner-local specimens state each
 route's hypotheses, returned maps, zero-rank behavior and limits.
 
 This reconciliation concerns implemented computations and their wiring.
-It does not assert that source inspection proves their correctness or
-that the mathematical specimens have been executed. Their execution
-remains with `terminal-session` in TODO.md. No runtime gate is added to
-this dependency-only assignment. The general zero-radical preservation
+It does not assert that source inspection proves their correctness.
+The focused specimens for this hyperbolic plan have now executed:
+definite and split norm fibres, a fresh AA norm witness, QQ/AA/closed-RR
+Witt isometries and inverse laws, represented-RR coordinate solving and
+kernels, scalar extension of both formed-arrow components, finite
+constrained embeddings, and actual integral maximal splittings at indices
+zero, one and two. A regular-Cauchy RR specimen verifies decomposition
+endpoints and summand ranks; its symbolic Gram equality remains undecided.
+The rest of the dependency index remains with `terminal-session` in TODO.md.
+The general zero-radical preservation
 theorem is now `isNondegenerate_of_indexedOrthogonalPairing` at the
 `lean-categories` bilinear-module owner, including the empty sum; its
 lattice corollary is `indexedOrthogonalSum_isNondegenerate`. The historical
@@ -1704,7 +1710,7 @@ the additional hypotheses proved here. Arbitrary value-module scalar
 extension lies beyond the scalar-valued lattice computations required by
 this index. `hyperbolic_index` and
 `maximal_hyperbolic_index_splitting` now compose the listed constructions;
-their complete final-revision execution remains under terminal T.
+the focused execution above does not close terminal T.
 
 ### Invariants, predicates, and decomposition morphisms
 

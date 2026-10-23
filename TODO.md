@@ -66,19 +66,12 @@ This repository has one worker, so selection has no claim or reservation layer.
 
 ## Immediate priority repairs
 
-The owner's current hyperbolic-splitting prerequisite assignment is the full
-dependency index in `docs/theory/hyperbolic-index.md`, implemented at the
-existing general owners. It does not request the target maximal integral
-hyperbolic splitting algorithm.
-
-The dependency-only source implementation is reconciled in
+The full hyperbolic dependency index is in
 [the theory note](docs/theory/hyperbolic-index.md#source-implementation-reconciliation).
-Its unexecuted mathematical specimens remain owned by `terminal-session`;
-no runtime gate is part of the completed source assignment. The main
-hyperbolic-index and maximal-splitting methods now have source routes
-through actual integral embeddings and their orthogonal splitting, or
-field Witt decomposition. Their source specimens and the full dependency
-index still require final-revision execution under `terminal-session`.
+Its remaining mathematical specimens stay with `terminal-session`. Focused
+norm-fibre, Witt, scalar-extension, constrained-search, kernel,
+coordinate-retention and maximal-splitting specimens have been executed;
+this does not close the broader terminal gate.
 
 These are the research obligations in handoff ranks 1 and 2. The [boundary assignments](../gitclones/sage-indefinite-port/references/port-design.md#implementation-assignments) and `AGENTS.md`, *Concrete boundary with sage-indefinite-port*, govern the split. Inspect the current HEAD and dirty state of the worktrees named in HANDOFF.md before implementation; reconcile inherited source against each remaining contract before rewriting it. Source presence and earlier small runs do not close final-revision execution. Preserve the existing lift-torsor implementations. Priority changes selection, not mathematical dependency or the current `DEV-58` execution phase.
 

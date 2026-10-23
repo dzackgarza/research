@@ -633,7 +633,7 @@ Depends on this: `integral.anisotropic_primes` and `integral.local_representatio
 
 ### Isotropy through the Witt index starts Julia; PARI's `qfsolve` decides it in hundredths of a second
 
-Over `QQ` the preamble's `witt_index()` calls OSCAR's `rational_witt_index` through `sage-julia-bridge`. A nonzero rational isotropic vector exists exactly when the Witt index is positive, so `is_isotropic()` routed through `witt_index()` paid the Julia start-up on its first call.
+At the time of this measurement, `witt_index()` over `QQ` called OSCAR's `rational_witt_index` through `sage-julia-bridge`. A nonzero rational isotropic vector exists exactly when the Witt index is positive, so `is_isotropic()` routed through `witt_index()` paid the Julia start-up on its first call. The current QQ Witt decomposition splits planes recursively using the exact rational isotropy decision and witness.
 In a fresh process after the session import, `(Lattices(ZZ)("U") + Lattices(ZZ)("U")).represents(0)` on that route took 48.59 s and 45.19 s in two runs, and a later isotropy call in the same process took 2.58 s. PARI's `qfsolve`, which the preamble already calls for an isotropic vector (`_isotropic_vector_witness` in `lattice_engines.py`), returns a zero or an obstruction and decides the same question (Serre, *A Course in Arithmetic*, Ch. IV, 3.2, Thm.
 8). `is_isotropic()` on that route, one run each, 2026-10-09:
 

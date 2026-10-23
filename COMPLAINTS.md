@@ -104,11 +104,12 @@ an exact bound containing every vector of a supplied square. The maximum
 source-generator bound, the existing finite coordinate subset and the
 finite embedding subset thus supply a complete constrained search for any
 decidable extra predicate. The original framing is retained, including
-large coordinates in sheared bases. The optimized square-shell route now delegates to Hecke's inclusive
-`short_vectors` enumeration, restores both signs, and filters reflective
+large coordinates in sheared bases. Small proved coordinate boxes now use
+exact finite enumeration; larger square shells delegate to Hecke's inclusive
+`short_vectors` enumeration, restore both signs, and filter reflective
 vectors by exact divisibility. It replaces the PARI `forqfvec` route whose
 measured large-coefficient precision limitation is recorded in TRAPS.md.
-The definite minimum also delegates to the maintained rational shortest-vector route instead of PARI ball counts, retains the signed closest-to-zero convention and rejects rank zero. The scaled A2 square-shell, minimum, sign, coordinate and empty-shell specimens in
+The definite minimum also delegates to the maintained rational shortest-vector route instead of PARI ball counts, retains the signed closest-to-zero convention and rejects rank zero. The scaled A2 square-shell specimen has run through the exact small-box route. Its minimum, sign, coordinate and empty-shell specimens in
 the theory note remain unexecuted under DEV-58. Source inspection of the
 maintained rational enumeration is not runtime coverage evidence.
 
@@ -122,31 +123,6 @@ The formal embedding and module-morphism owners already distinguish
 injectivity from invertibility; no missing formal foundation is asserted.
 The remaining mathematical specimen execution belongs to
 `terminal-session` in [TODO.md](TODO.md).
-
-### Finite norm-fibre enumeration and subset-domain inclusions await execution
-
-The complete definite integral norm fibre is finite. Previously
-`elements_of_norm(a)` always returned the general equalizer filtered from
-all lattice coordinates, even when `vectors_of_square(a)` already supplied
-a complete finite enumeration. In particular, exhausting the zero fibre of
-positive definite A2 could keep filtering the infinite coordinate set after
-its sole zero vector. This is source evidence, not an observed timed run.
-
-The finite-subset constructor also previously retained its map only on the
-subobject arrow: its domain was a plain finite ordered set without the
-original universe or an `inclusion()` operation. The constructor now uses
-the existing ordered-subset realization with the actual original universe,
-finite enumeration and membership predicate. Definite, rank-zero and nonzero split binary integral
-`elements_of_norm` reuse the resulting finite square-fibre domain and its
-inclusion into the original lattice. General norm equalizers remain unchanged.
-
-**Dependency path:** norm map -> fibre subset -> finite point enumeration
-and original inclusion -> finite constrained embedding search. The general
-finite-subset construction supplies the maps; the lattice specialization
-supplies the valid finiteness argument. No new mathematical foundation is
-asserted missing. Pending definite, negative-definite, empty and rank-zero
-specimens are in the method docstring and owned by
-`terminal-session` in TODO.md. Execution remains under T.
 
 ### Generic computable-real linear algebra still has partial scalar decisions
 
