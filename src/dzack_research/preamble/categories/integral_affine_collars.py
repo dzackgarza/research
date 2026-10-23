@@ -86,7 +86,7 @@ class IntegralAffineCollars(OwnedCategory):
 
     def comparison(self, source_collar, target_collar, face_map, neighborhood_affine_map):
         r"""Select an affine extension of a specified face pairing."""
-        pass
+        return self.Mor(source_collar, target_collar)(face_map, neighborhood_affine_map)
 
     @cached_method
     def forget_face(self):
