@@ -193,9 +193,9 @@ def _form_of_gram(module, gram):
 
     At finite rank \(b(e_i,e_j)\) is the component of ``gram`` at \((i,j)\),
     the positions of the framing's enumeration.  At infinite rank \(b\) is the
-    pairing rule of the presentation evaluated on finite supports.  Either way
-    the result is an element of ``module.bilinear_forms(R)``, the Mor out of
-    the tensor square.
+    pairing rule of the presentation evaluated on finite supports. The Mor
+    out of the tensor square takes values in ``R`` when it is an ``R``-module,
+    and otherwise in its canonical regular-module realization.
     """
     ring = module.base_ring()
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
