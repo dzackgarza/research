@@ -2274,6 +2274,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                 sage: assert isinstance(v.is_isotropic(), Predicate)
                 sage: assert isinstance(v.is_orthogonal_to(v), Predicate)
                 sage: assert isinstance(v.represents(RR.zero()), Predicate)
+                sage: assert isinstance(V.is_unimodular(), Predicate)
                 sage: U = Lattices(QQ)("U")
                 sage: assert U.module_generators()[0].is_isotropic() is True
             """
@@ -3605,7 +3606,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             return _algebraic_correlation_morphism(self, injective=injective)
 
-        def is_unimodular(self) -> bool:
+        def is_unimodular(self) -> bool | Predicate:
             r"""Return whether the algebraic correlation is an isomorphism.
 
             On a finite free module over a commutative ring, its selected
@@ -3623,7 +3624,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 and self.value_module() is ring
                 and ring in OwnedRings().Commutative()
             ):
-                return bool(self.determinant().is_unit())
+                return self.determinant().is_unit()
             correlation = _algebraic_correlation_morphism(
                 self, injective=False
             )

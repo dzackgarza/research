@@ -410,6 +410,23 @@ class ExactRealNumber(FieldElement):
     def is_real(self) -> bool:
         return True
 
+    def is_unit(self) -> bool | Predicate:
+        r"""Return the field's nonzero predicate, without forcing a decision.
+
+        EXAMPLES::
+
+            sage: assert RR.one().is_unit() is True
+            sage: assert RR.zero().is_unit() is False
+            sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+            sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+            sage: from dzack_research.preamble.logic import Predicate
+            sage: Q = _owned_rationals()
+            sage: a = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n))
+            sage: z = RR.of_cauchy(a)
+            sage: assert isinstance(z.is_unit(), Predicate)
+        """
+        return self != self.parent().zero()
+
     def _repr_(self) -> str:
         return repr(self._expression)
 
