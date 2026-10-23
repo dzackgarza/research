@@ -9,6 +9,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     CategoricalMor,
     MorCategoryConstruction,
 )
+from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
@@ -602,6 +603,9 @@ class SingularIntegralAffineSpaces(OwnedCategory):
     def an_object(self):
         pass
 
+    def PureDimension(self, dimension):
+        return SingularIntegralAffineSpacesOfDimension(dimension)
+
     def on(
         self,
         topological_space,
@@ -700,6 +704,9 @@ class SingularIntegralAffineSpaces(OwnedCategory):
 
     class FiniteSingularSet(CategoryWithAxiom):
         r"""Singular affine spaces whose selected singular locus is finite."""
+
+        def PureDimension(self, dimension):
+            return Cat().meet((self, SingularIntegralAffineSpacesOfDimension(dimension)))
 
     class Sphere(CategoryWithAxiom):
         r"""Singular integral-affine spaces whose underlying space is a sphere."""
