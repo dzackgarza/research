@@ -1,6 +1,7 @@
 r"""Euclidean affine spaces and their spherical unit subspaces."""
 
 from sage.misc.cachefunc import cached_method
+from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -17,14 +18,21 @@ class EuclideanSpaceMor(CategoricalMor):
     r"""Affine isometries between selected Euclidean spaces."""
 
     class ElementMethods:
+        def __init__(self, parent, affine_map):
+            Morphism.__init__(self, parent)
+            self._affine_map = affine_map
+
         def affine_map(self):
-            pass
+            return self._affine_map
+
+        def _call_(self, point):
+            return self._affine_map(point)
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, affine_map):
-        pass
+        return self.element_class(self, affine_map)
 
     @object_level
     def identity(self):
@@ -96,14 +104,21 @@ class SphericalSpaceMor(CategoricalMor):
     r"""Isometries of selected round spheres."""
 
     class ElementMethods:
+        def __init__(self, parent, ambient_isometry):
+            Morphism.__init__(self, parent)
+            self._ambient_isometry = ambient_isometry
+
         def ambient_isometry(self):
-            pass
+            return self._ambient_isometry
+
+        def _call_(self, point):
+            return self._ambient_isometry(point)
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, ambient_isometry):
-        pass
+        return self.element_class(self, ambient_isometry)
 
     @object_level
     def identity(self):
