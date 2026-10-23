@@ -2848,6 +2848,17 @@ class Lattices(OwnedCategoryOverBaseRing):
             Over number fields the private OSCAR/Hecke realization decomposes
             the quadratic space into its anisotropic and hyperbolic summands; half
             the dimension of the latter is the Witt index.
+            Over the exact real algebraic numbers, Sylvester's law gives
+            ``min(p,q)`` from the existing exact signature computation.
+
+            EXAMPLES::
+
+                sage: V = Lattices(AA)([[1, 0], [0, -2]])
+                sage: assert V.witt_index() == ZZ(1)
+                sage: assert V.is_anisotropic() is False
+                sage: D = Lattices(AA)([[2]])
+                sage: assert D.witt_index() == ZZ(0)
+                sage: assert D.is_anisotropic() is True
             """
             space = self.vector_space()
             if space is not self:
@@ -2857,6 +2868,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"the Witt index is defined here for a nondegenerate quadratic space of finite dimension, and {self!r} is not one"
             )
             from sage.rings.rational_field import QQ as SageQQ
+            from dzack_research.preamble.categories.rings.ring_foundation import (
+                _owned_real_algebraic_numbers,
+            )
 
             from dzack_research.preamble.categories.rings.number_fields import (
                 NumberFieldsWithChosenPrimitiveElement,
@@ -2864,6 +2878,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
             match field:
+                case _ if field is _owned_real_algebraic_numbers():
+                    signature = self.signature_pair()
+                    index = min(
+                        signature.first().finite_value(),
+                        signature.second().finite_value(),
+                    )
                 case _ if _engine_ring(field) is SageQQ:
                     index = lattice_engines._oscar_lattices.rational_witt_index(
                         self.gram_tensor()
@@ -2878,7 +2898,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _:
                     assert False, (
-                        f"the Witt index of {self!r} is computed here over represented absolute number fields, but {self!r} is over {field}"
+                        f"the Witt index of {self!r} is computed here over AA and represented absolute number fields, but {self!r} is over {field}"
                     )
             integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(index))
