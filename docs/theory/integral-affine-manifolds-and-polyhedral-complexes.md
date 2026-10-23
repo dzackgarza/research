@@ -744,8 +744,8 @@ new declaration at the mathematical owner before P1 closes. Sample chains includ
 `RR -> SmoothRealManifolds(1) -> TopologicalSpaces`,
 `P -> faces(P) -> face_poset(P) -> Aut(face_poset(P))`, and
 `D -> colimit(D) -> underlying_space(colimit(D))`. Each chain must preserve
-the same source object and its actual arrows. A stub may raise for a missing
-computation; it may not fabricate an object, drop a map, or use an engine
+the same source object and its actual arrows. An unfinished stub has a `pass` body;
+it may not fabricate an object, drop a map, or use an engine
 object as a public endpoint.
 
 ### P2. Defining data and canonical constructors
