@@ -110,11 +110,14 @@ def _congruence_diagonalization(lattice):
     from dzack_research.preamble.categories._lattice import _congruence_diagonal_form
     from dzack_research.preamble.categories.lattices import Lattices
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
     from dzack_research.preamble.rings.real import RR
 
     ring = lattice.base_ring()
-    if ring is RR and lattice in FormModules(RR).Nondegenerate():
-        return _nonsingular_real_diagonalization(lattice)
+    if ring is _owned_real_algebraic_numbers() or (
+        ring is RR and lattice in FormModules(RR).Nondegenerate()
+    ):
+        return _exact_real_diagonalization(lattice)
     diagonal, change = _congruence_diagonal_form(lattice.gram_tensor())
     gram = diagonal.matrix()
     normal = Lattices(ring)([
@@ -131,23 +134,27 @@ def _congruence_diagonalization(lattice):
     return normal.Isom(lattice)(images)
 
 
-def _nonsingular_real_diagonalization(lattice):
-    r"""Diagonalize a promised finite nonsingular real form with inverse maps.
+def _exact_real_diagonalization(lattice):
+    r"""Diagonalize a finite exact real form with inverse maps.
 
     Basis directions and pairwise sums contain a nonisotropic direction
-    in every nonzero nonsingular symmetric space. Refine their enclosures
-    together until one norm excludes zero. Fraction-free projection keeps
-    a basis of the perpendicular, and elementary inverse-row updates retain
-    the inverse without asking for a real rank or zero decision.
+    outside the radical. Over AA, exact zero decisions also identify a
+    remaining radical. For promised nonsingular RR input, refine all norm
+    enclosures together until one excludes zero. Fraction-free projection
+    and elementary inverse-row updates retain both maps. ``TRAPS.md``
+    records why AA does not use Sage's rational diagonal form here.
     See docs/theory/hyperbolic-index.md for termination and the map equations.
     """
     from sage.rings.real_arb import RealBallField
     from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
     from dzack_research.preamble.rings.real import RR
 
+    ring = lattice.base_ring()
+    assert ring in (_owned_real_algebraic_numbers(), RR)
     basis = list(lattice.module_generators())
     size = len(basis)
-    inverse = [[RR(int(i == j)) for j in range(size)] for i in range(size)]
+    inverse = [[ring(int(i == j)) for j in range(size)] for i in range(size)]
     diagonal = []
     for position in range(size):
         indices = (
@@ -156,16 +163,22 @@ def _nonsingular_real_diagonalization(lattice):
         )
         vectors = [basis[i] if i == j else basis[i] + basis[j] for i, j in indices]
         norms = [lattice.q(vector) for vector in vectors]
-        precision = 128
-        selected = None
-        while selected is None:
-            field = RealBallField(precision)
-            for index, norm in enumerate(norms):
-                enclosure = norm._arb_(field)
-                if enclosure.is_finite() and enclosure.is_nonzero():
-                    selected = index
-                    break
-            precision *= 2
+        if ring is RR:
+            precision = 128
+            selected = None
+            while selected is None:
+                field = RealBallField(precision)
+                for index, norm in enumerate(norms):
+                    enclosure = norm._arb_(field)
+                    if enclosure.is_finite() and enclosure.is_nonzero():
+                        selected = index
+                        break
+                precision *= 2
+        else:
+            selected = next((i for i, norm in enumerate(norms) if norm != ring.zero()), None)
+            if selected is None:
+                diagonal.extend([ring.zero()] * (size - position))
+                break
 
         first, second = indices[selected]
         pivot, norm = vectors[selected], norms[selected]
@@ -182,21 +195,25 @@ def _nonsingular_real_diagonalization(lattice):
         pairings = [lattice.b(pivot, basis[j]) for j in range(position + 1, size)]
         for index, target in enumerate(range(position + 1, size)):
             basis[target] = norm * basis[target] - pairings[index] * pivot
-            inverse[target] = [RR._divide_by_nonzero(entry, norm) for entry in inverse[target]]
+            inverse[target] = [
+                RR._divide_by_nonzero(entry, norm) if ring is RR else entry / norm
+                for entry in inverse[target]
+            ]
         inverse[position] = [
             inverse[position][j] + sum(
                 (pairing * inverse[target][j]
                  for pairing, target in zip(pairings, range(position + 1, size), strict=True)),
-                RR.zero(),
+                ring.zero(),
             )
             for j in range(size)
         ]
         diagonal.append(norm)
 
-    normal = Lattices(RR).Nondegenerate()([
-        [diagonal[i] if i == j else RR.zero() for j in range(size)]
+    category = Lattices(RR).Nondegenerate() if ring is RR else Lattices(ring)
+    normal = category([
+        [diagonal[i] if i == j else ring.zero() for j in range(size)]
         for i in range(size)
-    ]) if size else Lattices(RR).Nondegenerate()(0)
+    ]) if size else category(0)
     forward = normal.module_category().Mor(normal, lattice)(tuple(basis))
     labels = tuple(normal.module_generating_set())
     backward = lattice.module_category().Mor(lattice, normal)(tuple(

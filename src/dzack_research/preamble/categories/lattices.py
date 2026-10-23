@@ -3056,7 +3056,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.rings.real import RR
 
             match field:
-                case _ if field in (_owned_real_algebraic_numbers(), RR):
+                case _ if field is _owned_real_algebraic_numbers():
+                    _anisotropic, hyperbolic = lattice_engines._real_witt_bases(self)
+                    index = int(hyperbolic.cardinality()) // 2
+                case _ if field is RR:
                     signature = self.signature_pair()
                     index = min(
                         signature.first().finite_value(),
