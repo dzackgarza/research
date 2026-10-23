@@ -1,10 +1,10 @@
 # Preamble work issues
 
-The live work programme is [the preamble roadmap, #414](https://github.com/dzackgarza/research/issues/414), under [the research issue tree, #46](https://github.com/dzackgarza/research/issues/46).
+The live work programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Its first milestone is [resumed research and port delivery, #414](https://github.com/dzackgarza/research/issues/414), followed by the M1–M5 milestones.
 
 Task contracts, mathematical specimens, acceptance conditions, priority rules and completion state live in the issues. Native sub-issues record the ordered branches. Native blocked-by relations record unfinished prerequisites. This file maps the former source identifiers to their issue owners; it does not maintain a second status or dependency graph.
 
-[INTENT.md](INTENT.md), [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) govern implementation. The roadmap retains the shared execution contract and the source-history reconciliation. Pending execution of completed source work remains in the acceptance issues, including [terminal-session, #498](https://github.com/dzackgarza/research/issues/498) and its continuation comments.
+[INTENT.md](INTENT.md), [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) govern implementation. Issue #414 retains the shared execution contract and the source-history reconciliation. Pending execution of completed source work remains in the acceptance issues, including [terminal-session, #498](https://github.com/dzackgarza/research/issues/498) and its continuation comments.
 
 ## Immediate priority repairs
 
