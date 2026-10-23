@@ -1,6 +1,7 @@
 r"""Central fibres with selected component and intersection incidence data."""
 
 from sage.misc.cachefunc import cached_method
+from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -21,11 +22,16 @@ class DegenerationCentralFiberMor(CategoricalMor):
     r"""Scheme maps with a compatible map of selected intersection strata."""
 
     class ElementMethods:
+        def __init__(self, parent, scheme_map, incidence_map):
+            Morphism.__init__(self, parent)
+            self._scheme_map = scheme_map
+            self._incidence_map = incidence_map
+
         def underlying_scheme_morphism(self):
-            pass
+            return self._scheme_map
 
         def incidence_map(self):
-            pass
+            return self._incidence_map
 
         def dual_complex_map(self):
             pass
@@ -34,7 +40,7 @@ class DegenerationCentralFiberMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, scheme_map, incidence_map):
-        pass
+        return self.element_class(self, scheme_map, incidence_map)
 
     @object_level
     def identity(self):

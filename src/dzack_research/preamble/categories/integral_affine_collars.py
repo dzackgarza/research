@@ -1,6 +1,7 @@
 r"""Selected integral-affine collars along faces of affine pieces."""
 
 from sage.misc.cachefunc import cached_method
+from sage.categories.morphism import Morphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -19,17 +20,22 @@ class IntegralAffineCollarMor(CategoricalMor):
     r"""Affine maps of collar neighborhoods compatible with the selected faces."""
 
     class ElementMethods:
+        def __init__(self, parent, face_map, neighborhood_affine_map):
+            Morphism.__init__(self, parent)
+            self._face_map = face_map
+            self._neighborhood_affine_map = neighborhood_affine_map
+
         def face_map(self):
-            pass
+            return self._face_map
 
         def neighborhood_affine_map(self):
-            pass
+            return self._neighborhood_affine_map
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, face_map, neighborhood_affine_map):
-        pass
+        return self.element_class(self, face_map, neighborhood_affine_map)
 
     @object_level
     def identity(self):
