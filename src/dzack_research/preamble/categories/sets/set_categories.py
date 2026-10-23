@@ -3672,21 +3672,24 @@ class _ConditionSetEngine:
         return point
 
     def _an_element_(self):
-        r"""Sage's element-selection protocol: the first point of a decided finite enumeration.
+        r"""Search the selected enumeration for the first satisfying point.
 
-        Emptiness and the count are asked of the owned cardinality
-        (``_cardinality_decision``); a subset whose count is not decided has no
-        selected point here.
+        ``__iter__`` owns the enumeration and requires each encountered
+        membership to be decided. No cardinality computation is needed to
+        find a point. An exhausted finite enumeration raises
+        ``StopIteration``; an infinite search with no satisfying point need
+        not terminate. Neither case changes ``is_empty`` or supplies an
+        emptiness decision from an unfinished search. A universe without a
+        selected enumeration still refuses iteration.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.categories.sets.set_categories import NN
+            sage: tail = NN.condition_set(lambda n: n >= NN(100))
+            sage: assert tail.an_element() == NN(100)
+            sage: assert tail.inclusion()(tail.an_element()) == NN(100)
+            sage: assert tail.is_parent_of(NN(99)) is False
         """
-        count = self._cardinality_decision()
-        assert count is not None, (
-            f"cannot select a point of {self}: its membership predicate {self.predicate()} "
-            f"is not decided on an enumerated universe"
-        )
-        assert cardinal(count) != cardinal(0), (
-            f"{self} has no point to select: it is the empty subset of {self.universe()} "
-            f"cut out by {self.predicate()}"
-        )
         return next(iter(self))
 
     def universe(self) -> Sets().ObjectType:
