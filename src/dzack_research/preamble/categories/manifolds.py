@@ -30,6 +30,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -1335,6 +1336,11 @@ class HolomorphicMap:
     def _engine_holomorphic_map(self):
         return self.presentation()._engine_map_crossing()
 
+    def underlying_smooth_morphism(self):
+        raise NotImplementedError(
+            "realification must retain the real dimension-2m chart map of this holomorphic arrow"
+        )
+
     def _evaluate_point(self, point):
         r"""Evaluate a coordinate representation whose domain contains the owned source point.
 
@@ -1529,6 +1535,19 @@ class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
         return ComplexManifoldMor
 
 
+class _ComplexRealificationFunctor(Functor):
+    r"""Send complex manifolds and holomorphic maps to their real smooth images."""
+
+    def __init__(self):
+        super().__init__(ComplexManifolds(), SmoothManifolds())
+
+    def _apply_object(self, manifold):
+        return manifold.underlying_smooth_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_smooth_morphism()
+
+
 class ComplexManifolds(OwnedCategory):
     r"""Finite-dimensional complex analytic manifolds with holomorphic atlases.
 
@@ -1557,6 +1576,10 @@ class ComplexManifolds(OwnedCategory):
 
     def an_object(self):
         return self.affine_space(1, name="C")
+
+    @cached_method
+    def realification(self):
+        return _ComplexRealificationFunctor()
 
     def _call_(self, dimension, name):
         dimension = int(dimension)
@@ -1742,6 +1765,11 @@ class ComplexManifolds(OwnedCategory):
         )
 
     class ParentMethods:
+        def underlying_smooth_manifold(self):
+            raise NotImplementedError(
+                "realification must construct the real dimension-2m atlas on the exact complex manifold"
+            )
+
         def complex_dimension(self):
             return self.dimension()
 
