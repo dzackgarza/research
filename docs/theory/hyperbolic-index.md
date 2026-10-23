@@ -228,6 +228,23 @@ open work. The computation uses maintained ball arithmetic and rational
 matrix operations; it adds neither a spectral routine nor a real-number
 representation.
 
+**Lazy-real backend boundary.** Sage's
+[`real_lazy` source](https://github.com/sagemath/sage/blob/develop/src/sage/rings/real_lazy.pyx)
+provides deferred arithmetic: `LazyBinop.eval(R)` evaluates its operands
+in the selected target ring before applying the operation. This is a
+possible reusable component for approximation presentations. Its
+`LazyFieldElement._richcmp_`, however, falls back to comparing interval
+endpoints and explicitly permits false negatives. Those comparison
+answers cannot implement the exact-real relation interface, where an
+unresolved equality or order must remain a proposition. `LazyWrapper`
+wraps another value and converts it to the requested ring; it does not
+by itself connect a rational approximation sequence and its error bounds
+to the existing owned real scalar. This source inspection identifies
+reusable evaluation machinery and a concrete comparison mismatch; it
+does not establish that all possible Sage realizations are unsuitable.
+General approximation admission and its arithmetic, relations and maps
+remain part of the open dependency assignment.
+
 **Current represented-real route.** This computation takes elements of
 `RR` through their closed exact real expressions. The lattice operations
 now reuse Sage's
