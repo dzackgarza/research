@@ -320,6 +320,7 @@ from dzack_research.preamble.categories.manifold_dimension_strata import (  # no
 from dzack_research.preamble.categories.real_affine_spaces import (  # noqa: F401
     AffineSpacesWithLattice,
     RealAffineSpaces,
+    RealVectorSpaces,
 )
 from dzack_research.preamble.categories.metric_affine_spaces import (  # noqa: F401
     EuclideanSpaces,

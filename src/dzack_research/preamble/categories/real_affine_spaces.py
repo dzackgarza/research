@@ -1,5 +1,6 @@
 r"""Real affine spaces as torsors over a selected real vector space."""
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -10,11 +11,40 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     Objects,
     OwnedCategory,
+    OwnedParameterizedCategory,
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.real import RR
+
+
+class RealVectorSpaces(OwnedParameterizedCategory):
+    r"""Full category of real vector spaces of one fixed finite dimension."""
+
+    @staticmethod
+    def __classcall__(cls, dimension):
+        dimension = _owned_integers()(dimension)
+        if dimension < 0:
+            raise ValueError(f"a real vector-space dimension must be nonnegative, not {dimension}")
+        return Category.__classcall__(cls, dimension)
+
+    def dimension(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [VectorSpaces(RR)]
+
+    def _repr_object_names(self):
+        return f"real vector spaces of dimension {self.dimension()}"
+
+    def an_object(self):
+        pass
+
+    def on(self, vector_space):
+        r"""Place the exact real vector space in its dimension stratum."""
+        pass
 
 
 class RealAffineSpaceMor(CategoricalMor):
