@@ -3647,7 +3647,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         citation of what established nonemptiness.  No isometry is
         constructed here; :meth:`an_element` constructs one on request.
 
-        After the invariant obstructions the decision compares the owned
+        Over ZZ, after the invariant obstructions the decision compares the owned
         genera, ``L.genus() == M.genus()`` (equal signature and canonical
         ``ZZ_p``-symbols at every ``p | 2d``)
         [CS99, Ch. 15, §7, Thms 9-10; extraction
@@ -3669,6 +3669,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
           l.13-16] equals ``1/|O(L)|`` is the one class of ``L``; otherwise
           the exact equivalence search of :meth:`_witness_matrix` decides
           [CS99, Ch. 15, §10-§11, l.12775, l.12905].
+
+        Over QQ and AA, finite-dimensional nondegenerate endpoints of equal dimension
+        are isometric exactly when one embeds into the other. The embedding
+        decision uses Witt cancellation, as stated in
+        :meth:`LatticeEmbeddingMor._emptiness_decision`, independently of
+        integral genera and without constructing an isometry.
         """
         domain = self.domain()
         codomain = self.codomain()
@@ -3681,6 +3687,18 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             return (True, None)
         if domain.signature_pair() != codomain.signature_pair():
             return (True, None)
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+
+        if (
+            domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers())
+            and domain.is_nondegenerate()
+            and codomain.is_nondegenerate()
+        ):
+            empty = domain.Emb(codomain).is_empty()
+            assert empty is True or empty is False, (
+                "Witt cancellation must decide isometry for these finite-dimensional nondegenerate field endpoints"
+            )
+            return (empty, None if empty else "Witt cancellation for nondegenerate spaces of equal dimension")
         if _engine_ring(domain.base_ring()) is not SageZZ or _engine_ring(codomain.base_ring()) is not SageZZ:
             return (undecided, None)
 
@@ -3761,6 +3779,33 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
 
         The engine's matrix is an untrusted answer; the isometry's own
         form-square validator checks it under strict checking (OWN-22).
+
+        Over QQ, after deciding existence, the complete rational embedding
+        iterator finds a witness. Over AA, the existing diagonal-sign
+        construction finds one directly. Equal finite dimensions make
+        either embedding invertible; retain its underlying module map
+        together with its inverse in the module core. No integral Gram
+        conversion or rational-point enumeration over AA is involved.
+
+        EXAMPLES::
+
+            sage: T = Lattices(QQ)([[QQ(1)/4]])
+            sage: L = Lattices(QQ)([[1]])
+            sage: phi = T.Isom(L).an_element()
+            sage: assert phi.domain() is T and phi.codomain() is L
+            sage: assert L.gram_tensor().pullback(phi) == T.gram_tensor()
+            sage: assert all(phi.inverse()(phi(v)) == v for v in T.module_generators())
+            sage: assert all(phi(phi.inverse()(v)) == v for v in L.module_generators())
+            sage: assert Lattices(QQ)([[3]]).Isom(L).is_empty() is True
+            sage: j = T.Emb(L).an_element()
+            sage: assert L.gram_tensor().pullback(j) == T.gram_tensor()
+            sage: A = Lattices(AA)([[3]])
+            sage: B = Lattices(AA)([[1]])
+            sage: psi = A.Isom(B).an_element()
+            sage: assert B.gram_tensor().pullback(psi) == A.gram_tensor()
+            sage: assert all(psi.inverse()(psi(v)) == v for v in A.module_generators())
+            sage: assert all(psi(psi.inverse()(v)) == v for v in B.module_generators())
+            sage: assert Lattices(AA)([[-1]]).Isom(B).is_empty() is True
         """
         empty, reason = self._isometry_decision()
         assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
@@ -3770,6 +3815,21 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         codomain = self.codomain()
         if domain is codomain:
             return self.identity()
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+
+        if domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers()):
+            embeddings = domain.Emb(codomain)
+            embedding = (
+                next(iter(embeddings))
+                if domain.base_ring() is _owned_rationals()
+                else embeddings.an_element()
+            )
+            forward = embedding.module_morphism()
+            inverse = forward.inverse()
+            module_isomorphism = domain.module_category().Core().Mor(domain, codomain)(
+                forward, inverse,
+            )
+            return self.element_class(self, module_isomorphism)
         domain_gram, codomain_gram = self._engine_grams()
         if domain_gram == codomain_gram:
             return self._isometry_from_column_matrix(domain_gram.parent().one())

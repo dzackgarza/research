@@ -800,6 +800,27 @@ represent `3` over `QQ`, while it represents both over `AA`. The obstruction
 at `3` for rational sums of two squares distinguishes the two fields despite
 their identical real signatures.
 
+For equal finite dimensions, an injective linear map over a field is
+bijective. Thus the same decision also decides `T.Isom(L).is_empty()`
+for finite nondegenerate endpoints over `QQ` and `AA`. Its witness
+construction now retains the embedding's underlying module map and its
+inverse as a module isomorphism, then returns the form-preserving
+isomorphism with the original endpoints. Over `QQ` it takes a point of
+the complete rational embedding iterator after deciding nonemptiness;
+over `AA` it uses the diagonal-sign construction. In particular it
+neither converts rational Gram coefficients to integers nor asks for an
+enumeration of algebraic real points.
+
+For example $\langle1/4\rangle\simeq\langle1\rangle$ over
+$\mathbb Q$ by $v\mapsto e/2$, with inverse $e\mapsto2v$.
+The forms $\langle3\rangle$ and $\langle1\rangle$ are isometric
+over `AA`, by scaling by $\sqrt3$, but not over `QQ`.
+These distinguish a field isometry from integral equivalence of the
+chosen Gram presentations. This field route is also necessary for
+`T.Emb(L).an_element()` in equal rank, which selects an isometry there.
+The field decision and both inverse-composite specimens in
+`LatticeIsometryMor.an_element` remain unexecuted under DEV-58.
+
 For $T=U$, the same set is the subset of $L\times L$ defined by
 $q(e)=q(f)=0$ and $B(e,f)=1$. For $U^{\perp r}$ it is the subset of the
 finite product indexed by the specified hyperbolic basis satisfying all
