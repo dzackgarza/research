@@ -2486,7 +2486,7 @@ class Lattices(OwnedCategoryOverBaseRing):
         if n == 1:
             return determinant
         size = integers(n)
-        definite_bound = (integers(2) * size**n * determinant)**(2*n*n + 2)
+        definite_bound = integers(2)**(n*(n - 1)//2) * determinant
         if n == 2:
             return definite_bound
         epsilon_inverse = (integers(4) * size**3 * integers(6)**n)**(n*n) * (size**3 + size)
@@ -3850,8 +3850,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             No signature decision or unspecified constant is required.
 
             Write ``n=rank(L)`` and ``D=abs(det(L))``. A definite form has
-            the bound ``(2*n^n*D)^(2*n^2+2)``. For indefinite forms of rank
-            at least three, Li--Margulis, Appendix and Lemmas 13--14,
+            the bound ``2^(n*(n-1)/2)*D`` by the LLL basis inequalities.
+            For indefinite forms of rank at least three, Li--Margulis,
+            Appendix and Lemmas 13--14,
             supply a compact subset meeting the associated closed orbit.
             An elementary basis estimate makes its representative bound
             explicit. The full derivation, including indefinite binary

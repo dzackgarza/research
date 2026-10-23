@@ -362,7 +362,7 @@ Let $G$ be a nonsingular symmetric integral matrix of size $n\ge1$, and put
 $D=|\det G|$. Define
 
 $$
-F(n,D)=(2n^nD)^{2n^2+2}.
+F(n,D)=2^{n(n-1)/2}D.
 $$
 
 For $n\ge3$ also define the integers
@@ -393,8 +393,9 @@ For rank zero take the coefficient bound to be zero. The public computation
 the invariants, so it can bound candidate complements before one has been
 constructed. `L.integral_representative_coefficient_bound()` supplies the
 invariants of an existing lattice. Both return an integer, not a
-representative or an isometry. Its proof uses the upper inequality
-in Minkowski's second theorem (Henk, Theorem 1.3, in the references) and
+representative or an isometry. The bound is linear in $D$ for every fixed
+rank. Its proof uses the upper inequality in Minkowski's second theorem
+(Henk, Theorem 1.3, in the references) and
 Li–Margulis's explicit compact subset in the Appendix, together with their
 §2.3 and Lemma 13. No estimate from their matrix-coefficient or mixing
 arguments is needed for this proposition.
@@ -434,13 +435,22 @@ $\lambda_n\le n^{n/2}\operatorname{covol}(\Lambda)a^{-(n-1)}$.
 The successive minima are attained, so this bounds the lengths of $n$
 independent lattice vectors.
 
-**Definite forms.** Replace $G$ by $-G$ if necessary. Regard $\mathbb Z^n$
-as a Euclidean lattice with squared norm $x^TGx$. Its covolume is $\sqrt D$,
-and every nonzero vector has length at least one because its square is a
-positive integer. Thus $n$ independent vectors have lengths at most
-$n^{n/2}\sqrt D\le 2n^nD$. The basis estimate gives a basis of lengths at
-most $(2n^nD)^{n^2+1}$. Cauchy–Schwarz bounds every absolute Gram coefficient
-by the square of that number, namely $F(n,D)$.
+**Definite forms.** Replace $G$ by $-G$ if necessary and choose an
+LLL-reduced integral basis with parameter $3/4$. The reduced-basis
+inequalities in Lenstra–Lenstra–Lovász, §1, imply
+
+$$
+\|b_i\|^2\le2^{i-1}\|b_i^*\|^2,\qquad
+\prod_{i=1}^n\|b_i\|^2\le2^{n(n-1)/2}D.
+$$
+
+Here $b_i^*$ are the Gram–Schmidt vectors, whose squared lengths have
+product $D$. Each $\|b_i\|^2$ is a positive integer, so it is at least one.
+Every individual squared basis length is therefore at most the product
+in the second inequality. Cauchy–Schwarz bounds every absolute Gram
+coefficient by $F(n,D)$. This argument uses the standard reduced-basis
+conditions (1.4)–(1.5) and Proposition 1.6 of that paper; no change-of-basis
+bound is inferred from the length bound.
 
 **Indefinite forms of rank at least three.** Li–Margulis's Appendix gives
 $\epsilon_n=E_n^{-1}$ and a compact subset of the unimodular lattice space
@@ -937,6 +947,11 @@ retains the original lattice and scalar map.
   §1.1 and Theorem 1 for constructive integral equivalence bounds.
   The integral decomposition algorithm here is a deduction from those
   bounds and Proposition (3), not a claim that the paper implements it.
+- **A. K. Lenstra, H. W. Lenstra, Jr., and L. Lovász, *Factoring Polynomials
+  with Rational Coefficients*, Math. Ann. 261 (1982), 515–534.**
+  [Original paper, institutional copy](https://www.math.ucdavis.edu/~deloera/MISC/LA-BIBLIO/trunk/Lovasz/LovaszLenstraLenstrafactor.pdf).
+  Section 1, conditions (1.4)–(1.5) and Proposition 1.6, for the reduced-basis
+  inequalities used in the definite coefficient bound.
 - **Martin Henk, *Successive Minima and Lattice Points*.**
   [Author's preprint on arXiv](https://arxiv.org/abs/math/0204158).
   Theorem 1.3 states the upper inequality of Minkowski's second theorem
