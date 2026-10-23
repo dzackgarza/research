@@ -520,6 +520,84 @@ supply the richer object, action, or embedding whose construction was asked
 for. The general operation remains at its mathematical owner even when a
 particular computational case is unavailable.
 
+## Existing constructions and precise reuse paths
+
+The following inventory is based on the inspected preamble source. It does
+not assert that a proposed category has been formalized in `lean-categories`
+or implemented in the preamble. A new `super_categories()` edge is admitted
+only for an inclusion with the same parameters that `lean-categories` states;
+a change of structure, ambient space, or morphisms uses a functor
+([`CAT-15`–`CAT-16`](../../CONTRIBUTING.md)).
+
+| Existing owner | Supplied mathematics | Wiring into the proposed constructions | Exact gap |
+| --- | --- | --- | --- |
+| [`TopologicalSpaces`](../../src/dzack_research/preamble/categories/topological_spaces.py) | Continuous `Mor`, open subsets, coproducts, coequalizers, and final-topology quotients. | Build the polygon gluing as a finite diagram of underlying spaces. Retain its quotient and every piece-to-quotient map as the underlying object of a singular-affine space. | A topological quotient still needs surface links and affine collar charts. General openness for predicate subsets is limited by the [finite-atlas complaint](../../COMPLAINTS.md). |
+| [`TopologicalManifolds`, `DifferentiableManifolds`, `SmoothManifolds`, `ComplexManifolds`](../../src/dzack_research/preamble/categories/manifolds.py) | Dimensions, chart families, transitions, a stereographic smooth sphere, and a complex-to-smooth route. | Add the integral-affine atlas to the **same** smooth manifold; restrict it to the exact open complement of the singular set. Use the existing realification route for complex manifolds. | Direct constructors currently allocate a manifold from a dimension and name; they do not equip a supplied manifold. [`RR` manifold placement](../../TODO.md) remains unfinished. The transition constructor trusts supplied inverses, so the affine layer needs its own transition and cocycle conditions. |
+| [`Cat`](../../src/dzack_research/preamble/categories/abstract_categories/cat.py) | `Mor`, slices, subobjects, finite-diagram colimits, and `pushout_construction` with a selected cocone. | Treat each face inclusion as a subobject arrow, each edge pairing as a diagram arrow, and each surgery as a pushout. Retain the cocone and universal factor map. | The applicable complex and affine morphism categories must be supplied. A generic colimit does not establish surface or affine structure. The [pushout complaint](../../COMPLAINTS.md) records an object-only route that loses the selected cocone. |
+| [`ConvexPolytopes(L)`](../../src/dzack_research/preamble/categories/schemes/polytopes.py) | Rational affine polytopes from vertices or halfspaces; owned vertices, facets, integral points and normal fans; `Integral` and `Polygon` refinements. | AEGS lattice polygons enter `ConvexPolytopes(L).Integral().Polygon()` when they satisfy its coordinate contract. Their faces feed the common complex and triangulation constructions. | `facets()` returns face polytopes without their inclusions into the original polytope. No selected polygon triangulation or polygon-gluing construction is supplied by this owner. |
+| [`RegularPolytopes`](../../src/dzack_research/preamble/categories/schemes/polytopes.py), [`PartiallyOrderedSets`](../../src/dzack_research/preamble/categories/sets/set_categories.py), and [`Graphs`](../../src/dzack_research/preamble/categories/graph_categories.py) | A Schläfli/Coxeter symmetry group for regular examples, an order category, and graphs. | Construct a general polytope's face poset with its order, then its abstract automorphism group. The one-skeleton is a graph image of the retained complex. | The regular group is not a general automorphism algorithm. The current regular-polytope order placement and monotone-map surface are unresolved in [`TODO.md`](../../TODO.md). A graph alone loses two-cells and attaching maps. |
+| [`RationalPolyhedralCones(L)`](../../src/dzack_research/preamble/categories/polyhedral_cones.py) | Ray triangulation, simplicial subcones, ray-span saturation indices, and private Sage `PointConfiguration` computation. | Reuse its triangulation for cone-valued operations. Relate a cone and a polygon only through an actual section, homogenization, or projectivization map. Both feed the same chosen-triangulation concept when it is formalized. | `simplicial_subcone_inclusion()` is only a set map because cone `Mor` is missing ([`COMPLAINTS.md`](../../COMPLAINTS.md)). A cone-ray triangulation is not a polygon triangulation. |
+| [`HyperbolicSpaces` and `HyperbolicPolyhedra`](../../src/dzack_research/preamble/categories/hyperbolic_geometry.py) | A selected hyperbolic space, projectivized rational cone, ordinary and ideal vertices, and wall data. | Keep this space and cone as the source for the supported hyperbolic-polytope specialization. Map its face incidence to the common abstract complex owner. | It does not supply every hyperbolic polytope, a spherical polytope, or a Euclidean ambient space. The proposed general categories require their own formal definitions. |
+| [`GObjects(G,C)`](../../src/dzack_research/preamble/categories/group/g_objects.py) | An action functor `BG -> C`, equivariant maps, supported orbit sets and spaces, quotient projections, and stabilizers. | Construct the two AEGS involutions as one `C_2 × C_2` action on the singular-affine sphere. Forget it to compatible actions on its topological space and cell complex. Use its orbit projection for quotients. | `orbits()` computes only for `G`-sets in the inspected method; `orbit_space()` forms a topological quotient, which may be an orbifold. A cell permutation alone does not establish an integral-affine action. |
+| [`RiemannianManifolds`](../../src/dzack_research/preamble/categories/manifolds.py) | A metric as extra structure on a smooth manifold. | Select `b_std` or another metric on an ambient Euclidean realization only when metric lengths or isometries are requested; compare its symmetry action to affine automorphisms by an explicit map. | An integral-affine lattice or a drawing does not select a Riemannian metric. |
+
+### Where duplication would break the construction
+
+**Atlases and lattices.** The affine structure is built on the exact manifold
+whose topology and charts the manifold owner established. Its integral
+tangent lattice is the local system given by the linear parts of those
+selected transitions. Making a fresh Sage manifold for `IAS^2`, copying each
+chart into an independent coordinate table, or deriving a new lattice from
+each polygon's vertices would split the authority for overlaps. The
+construction must retain the original manifold, open-domain inclusions and
+affine transition maps ([`OWN-15`–`OWN-16`](../../CONTRIBUTING.md)).
+
+**Gluing and surgery.** The existing finite-diagram colimit and pushout own
+the quotient. A polygon-specific loop that merges vertex identifiers would
+discard face arrows, piece maps and the universal cocone. Supply the face
+inclusions and pairings as `Mor`, take the selected colimit in the underlying
+category, then establish surface links and affine collar extension before
+placing the quotient in the stronger category. Forgetfulness alone does not
+prove preservation of that colimit ([`OWN-09`](../../CONTRIBUTING.md)).
+
+**Triangulations and complexes.** A cone triangulation, polygon triangulation
+and subdivision of a glued surface have the shared mathematical form
+`(T, |T| -> X)` with indexed simplex inclusions. Their private algorithms
+may differ. The cone owner already delegates ray triangulation to Sage's
+`PointConfiguration`; applying that procedure directly to polygon vertices
+would conflate rays with affine points. The common complex owner should
+supply stars, links, face posets and subdivisions. A one-skeleton graph
+cannot replace its two-cells, and a bare face poset cannot recover every
+nonregular attaching map. The unfinished
+[`simplicial-and-cw-foundations`](../../TODO.md) node owns this shared layer.
+
+**Symmetries and quotients.** `RegularPolytopes.symmetry_group()` is specific
+to the Schläfli/Coxeter construction. A general polytope's abstract
+automorphism group acts on its actual face incidence object. Whether such an
+automorphism lifts to an integral-affine or metric symmetry is a separate
+map-lifting question with the selected placement as input. The AEGS
+involutions are one `GObjects(C_2 × C_2,C)` action; separate callbacks in a
+renderer, polygon gluer and quotient routine would yield unrelated actions.
+The orbit-space projection is reused, while its smooth or affine structure
+requires its own descent hypotheses. Faithfulness of the action is a further
+property, not part of the statement that the involutions commute.
+
+**Realization.** A planar unfolding consumes the edge-pairing arrows; an
+embedding into `RR^3` consumes the completed topological or PL object and
+an equivariant symmetry map. Mesh coordinates and rendering algorithms are
+private display data. They do not redefine the abstract quotient, atlas,
+singularities or group action ([`OWN-21`](../../CONTRIBUTING.md)).
+
+The integrated path is a lattice polygon, then a chosen triangulation, a
+surgery span, a finite gluing diagram, its topological colimit and cocone,
+the surface-link condition, the induced regular-locus affine atlas, the
+`IAS^2` sphere property, one group action, and an equivariant realization.
+Each construction consumes the exact objects and maps produced before it.
+The corresponding formal category, property or functor must first be found
+in `lean-categories`; missing mathematics is requested there, rather than
+defined a second time in the preamble ([category presentation
+procedure](../../CONTRIBUTING.md)).
+
 ## Dependency and acceptance boundary
 
 The mathematical dependency chain is: spaces and maps; manifolds and atlases;
