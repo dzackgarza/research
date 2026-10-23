@@ -113,7 +113,7 @@ class _InteriorFunctor(Functor):
         super().__init__(source, target)
 
     def _apply_object(self, manifold):
-        return manifold.interior()
+        pass
 
     def _apply_morphism(self, morphism):
         return morphism.interior_map()
@@ -422,7 +422,7 @@ class _WeakenStratifiedDifferentiabilityFunctor(Functor):
         super().__init__(source, target)
 
     def _apply_object(self, manifold):
-        return manifold.weaken_to(self.codomain().degree())
+        pass
 
     def _apply_morphism(self, morphism):
         pass
