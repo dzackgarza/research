@@ -3582,7 +3582,7 @@ def _scaled_form_module(source, scalar):
     Thus the unit action returns the original object, including a double
     sign twist. No cancellation by a nonunit is used.
     """
-    from dzack_research.preamble.categories.lattices import BiproductLattices, Lattices
+    from dzack_research.preamble.categories.lattices import OrthogonalSumLattices, Lattices
 
     # Scaling changes the selected form on its original module, not the
     # form re-expressed on the already-formed parent.  The latter constructs
@@ -3652,8 +3652,8 @@ def _scaled_form_module(source, scalar):
         # scalar, including zero and nonunits.
         if source.module_rank().is_finite() and int(source.module_rank()) == 0:
             categories.extend((Lattices(ring).Nondegenerate(), Lattices(ring).Unimodular()))
-        if source in BiproductLattices(ring):
-            categories.append(BiproductLattices(ring))
+        if source in OrthogonalSumLattices(ring):
+            categories.append(OrthogonalSumLattices(ring))
             data["biproduct_factors"] = source.biproduct_factors().map(
                 lambda factor: FormValueScalings(ring)(factor, scalar),
                 name=f"Orthogonal summands scaled by {scalar}",

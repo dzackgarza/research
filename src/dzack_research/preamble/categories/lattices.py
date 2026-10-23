@@ -1912,9 +1912,9 @@ class Lattices(OwnedCategoryOverBaseRing):
         )
         carried_categories = []
         carried_data = {}
-        match lattice in BiproductLattices(ring):
+        match lattice in OrthogonalSumLattices(ring):
             case True:
-                carried_categories.append(BiproductLattices(ring))
+                carried_categories.append(OrthogonalSumLattices(ring))
                 carried_data["biproduct_factors"] = lattice.biproduct_factors()
         match lattice in TensorProductModules(ring):
             case True:
@@ -2208,10 +2208,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         def _categorical_tensor_product(self, left, right):
             return self.tensor_product((left, right))
 
-        def biproduct(self, summands):
-            r"""Return $\bigoplus_{i \in I} L_i$, the orthogonal sum of a family.
+        def orthogonal_sum(self, summands):
+            r"""Return the orthogonal sum, retaining its module biproduct.
 
-            A lattice is a module with a form, so the biproduct of lattices is
+            A lattice is a module with a form, so their orthogonal sum is
             the biproduct of the underlying modules carrying the orthogonal
             sum of the forms.  It is taken over the index set: the summand at
             each index has its own block of coordinates, so three summands are
@@ -2225,10 +2225,10 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             EXAMPLES::
 
-                sage: Z = Lattices(ZZ).biproduct(())
+                sage: Z = Lattices(ZZ).orthogonal_sum(())
                 sage: assert Z.base_ring() is ZZ and Z.module_rank() == cardinal(0)
                 sage: assert Z.biproduct_factors().cardinality() == cardinal(0)
-                sage: W = Lattices(QQ).biproduct(())
+                sage: W = Lattices(QQ).orthogonal_sum(())
                 sage: assert W.base_ring() is QQ and W is not Z
                 sage: U = Lattices(ZZ)("U")
                 sage: into = Z.from_product_cone((), domain=U)
@@ -2239,16 +2239,42 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             return _orthogonal_sum(summands, self.base_ring())
 
+        def biproduct(self, summands):
+            r"""Request a categorical biproduct for form-preserving maps."""
+            raise NotImplementedError(
+                "orthogonal sums do not supply categorical biproducts for form-preserving maps"
+            )
+
         def _categorical_biproduct(self, left, right):
-            return self.biproduct((left, right))
+            raise NotImplementedError(
+                "orthogonal sums do not supply categorical biproducts for form-preserving maps"
+            )
 
         def product(self, summands):
-            r"""Return $\prod_{i \in I} L_i$, which over a finite index set is the biproduct."""
-            return self.biproduct(summands)
+            r"""Request a categorical product for form-preserving maps."""
+            return self.product_construction(summands).object()
 
         def coproduct(self, summands):
-            r"""Return $\coprod_{i \in I} L_i$, which over a finite index set is the biproduct."""
-            return self.biproduct(summands)
+            r"""Request a categorical coproduct for form-preserving maps."""
+            return self.coproduct_construction(summands).object()
+
+        def _categorical_product(self, left, right):
+            return self.product((left, right))
+
+        def _categorical_coproduct(self, left, right):
+            return self.coproduct((left, right))
+
+        def _categorical_product_construction(self, factors):
+            r"""Do not use module-product projections as form-preserving maps."""
+            raise NotImplementedError(
+                "a categorical lattice product is not supplied by the orthogonal-sum construction"
+            )
+
+        def _categorical_coproduct_construction(self, factors):
+            r"""Do not use module-coproduct maps as form-preserving maps."""
+            raise NotImplementedError(
+                "a categorical lattice coproduct is not supplied by the orthogonal-sum construction"
+            )
 
         def coordinate_diagonal_embeddings(self, lattices):
             r"""Return the diagonal embeddings among a finite family of framed lattices.
@@ -2615,7 +2641,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     "orthogonal summand embeddings must end in the ambient lattice"
                 )
-            normal = Lattices(self.base_ring()).biproduct(
+            normal = Lattices(self.base_ring()).orthogonal_sum(
                 tuple(embedding.domain() for embedding in embeddings)
             )
             assembled = normal.from_coproduct_cocone(embeddings, codomain=self)
@@ -3451,12 +3477,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the represented direct-sum decomposition, or ``None`` when this lattice was not built as one.
 
             A lattice built as an orthogonal sum is an object of
-            ``BiproductLattices(R)``, whose datum is its family of summands.
+            ``OrthogonalSumLattices(R)``, whose datum is its family of summands.
             """
-            match self in BiproductLattices(self.base_ring()):
+            match self in OrthogonalSumLattices(self.base_ring()):
                 case True:
                     return DirectSumObjects(
-                        self.lattice_category()
+                        Modules(self.base_ring())
                     ).verify_decomposition(self, self.biproduct_factors())
                 case False:
                     return None
@@ -5152,7 +5178,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             second_sum = second_splitting.codomain()
             first_plane = first_sum.biproduct_factor(0)
             second_plane = second_sum.biproduct_factor(0)
-            normal = Lattices(self.base_ring()).biproduct(
+            normal = Lattices(self.base_ring()).orthogonal_sum(
                 (first_plane, second_plane, second_reduction)
             )
             first_assembly = first_splitting.inverse()
@@ -6487,11 +6513,11 @@ class Lattices(OwnedCategoryOverBaseRing):
         def __add__(self, other):
             r"""Return the orthogonal direct sum of the two summands.
 
-            The two-index case of ``Lattices(R).biproduct``, in the
+            The two-index case of ``Lattices(R).orthogonal_sum``, in the
             concatenated basis.  Being binary, ``L + M + N`` is a
             two-summand sum whose first summand is a sum; the sum of three
             summands over a three-element index set is
-            ``Lattices(R).biproduct([L, M, N])``.  Infinite \(\oplus\)
+            ``Lattices(R).orthogonal_sum([L, M, N])``.  Infinite \(\oplus\)
             infinite is not constructed.  ``sum([...])`` uses ``0 + L``.
 
             EXAMPLES::
@@ -6505,7 +6531,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             category = Lattices(self.base_ring())
             assert other in category
-            return category.biproduct((self, other))
+            return category.orthogonal_sum((self, other))
 
         def __radd__(self, other):
             if other == 0:
@@ -6532,7 +6558,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             category = Lattices(self.base_ring())
             if count == 0:
                 return category(0)
-            return category.biproduct(
+            return category.orthogonal_sum(
                 indexed_family(
                     Sets.Δ[count - 1],
                     lambda _position: self,
@@ -7002,15 +7028,36 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
 
-class BiproductLattices(OwnedCategoryOverBaseRing):
-    r"""Lattice biproducts in their concatenated lattice framing."""
+class OrthogonalSumLattices(OwnedCategoryOverBaseRing):
+    r"""Orthogonal lattice sums with their underlying module biproducts.
+
+    The selected projections are module maps. For example, projecting
+    ``<1> orthogonal_sum <1>`` onto its first summand kills a vector of
+    square one, so it does not preserve the form. The direct-sum datum
+    therefore belongs to Modules(R); the orthogonal form additionally
+    places this object in Lattices(R).
+
+    EXAMPLES::
+
+        sage: A = Lattices(ZZ)([[1]])
+        sage: X = Lattices(ZZ).orthogonal_sum((A, A))
+        sage: assert X in DirectSumObjects(Modules(ZZ))
+        sage: assert X not in DirectSumObjects(Lattices(ZZ))
+        sage: assert X.decomposition() is X
+        sage: v = X.injection(1)(A.module_generators()[0])
+        sage: assert X.q(v) == ZZ(1) and A.q(X.projection(0)(v)) == ZZ(0)
+        sage: Lattices(ZZ).product((A, A))
+        Traceback (most recent call last):
+        ...
+        NotImplementedError: a categorical lattice product is not supplied by the orthogonal-sum construction
+    """
 
     def an_object(self):
         lattice = Lattices(self.base_ring()).an_object()
-        return Lattices(self.base_ring()).biproduct((lattice, lattice))
+        return Lattices(self.base_ring()).orthogonal_sum((lattice, lattice))
 
     def _repr_object_names(self):
-        return f"chosen lattice biproducts over {self.base_ring()}"
+        return f"chosen orthogonal lattice sums over {self.base_ring()}"
 
     def super_categories(self):
         from dzack_research.preamble.categories.modules.pure.modules import (
@@ -7018,7 +7065,7 @@ class BiproductLattices(OwnedCategoryOverBaseRing):
         )
 
         return [
-            DirectSumObjects(Lattices(self.base_ring())),
+            Lattices(self.base_ring()),
             BiproductModules(self.base_ring()),
         ]
 

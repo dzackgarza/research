@@ -1247,7 +1247,7 @@ def _orthogonal_sum(summands, base_ring=None):
     The sum of \(R\)-lattices is an \(R\)-lattice. The ambient category
     supplies its base ring, or a nonempty family's first summand supplies
     it. An empty family requires the ambient base ring. The result is placed in
-    ``BiproductLattices(R)`` with the summand family as its datum.
+    ``OrthogonalSumLattices(R)`` with the summand family as its datum.
     """
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
@@ -1272,7 +1272,7 @@ def _orthogonal_sum_on_family(summands, ring):
     same endpoints. Distinct index sets or component objects stay distinct.
     """
     from dzack_research.preamble.categories.lattices import (
-        BiproductLattices,
+        OrthogonalSumLattices,
         Lattices,
     )
 
@@ -1296,7 +1296,7 @@ def _orthogonal_sum_on_family(summands, ring):
         category,
         module,
         _BiproductGram(module, summands, offsets),
-        extra_categories=(BiproductLattices(ring),),
+        extra_categories=(OrthogonalSumLattices(ring),),
         construction_data={"biproduct_factors": summands},
     )
 
