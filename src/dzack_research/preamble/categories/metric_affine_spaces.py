@@ -6,6 +6,7 @@ from sage.categories.morphism import Morphism
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
     MorCategoryConstruction,
+    _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
@@ -29,7 +30,11 @@ class EuclideanSpaceMor(CategoricalMor):
             return self._affine_map(point)
 
         def __mul__(self, other):
-            pass
+            if not _precomposable(self, other):
+                return NotImplemented
+            return EuclideanSpaces().Mor(other.domain(), self.codomain())(
+                self.affine_map() * other.affine_map()
+            )
 
     def _element_constructor_(self, affine_map):
         if (
@@ -121,7 +126,11 @@ class SphericalSpaceMor(CategoricalMor):
             return self._ambient_isometry(point)
 
         def __mul__(self, other):
-            pass
+            if not _precomposable(self, other):
+                return NotImplemented
+            return SphericalSpaces().Mor(other.domain(), self.codomain())(
+                self.ambient_isometry() * other.ambient_isometry()
+            )
 
     def _element_constructor_(self, ambient_isometry):
         if (
