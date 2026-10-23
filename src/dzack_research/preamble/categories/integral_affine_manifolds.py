@@ -590,7 +590,17 @@ class _RegularLocusSubobjectFunctor(Functor):
         return self.codomain().object(space.regular_locus_inclusion())
 
     def _apply_morphism(self, morphism):
-        pass
+        source = self(morphism.domain())
+        target = self(morphism.codomain())
+        regular_topological_map = (
+            morphism.regular_affine_morphism()
+            .underlying_smooth_morphism()
+            .underlying_topological_morphism()
+        )
+        return self.codomain().Mor(source, target)(
+            regular_topological_map,
+            morphism.underlying_topological_morphism(),
+        )
 
 
 class SingularIntegralAffineSpaces(OwnedCategory):
