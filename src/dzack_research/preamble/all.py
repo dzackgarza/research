@@ -320,6 +320,9 @@ from dzack_research.preamble.categories.real_ck_manifolds import (  # noqa: F401
 from dzack_research.preamble.categories.real_ck_atlases import (  # noqa: F401
     RealCkAtlases,
 )
+from dzack_research.preamble.categories.holomorphic_atlases import (  # noqa: F401
+    HolomorphicAtlases,
+)
 from dzack_research.preamble.categories.manifolds_with_boundary import (  # noqa: F401
     RealCkManifoldsWithBoundary,
     RealCkManifoldsWithCorners,
