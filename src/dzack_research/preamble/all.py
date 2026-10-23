@@ -401,6 +401,7 @@ _lazy_import(
         "AffineInvariantQuotientBaseChangeComparison",
         "AffineSchemes",
         "AffineSpaces",
+        "AbstractPolytopes",
         "AnalyticDiscFamily",
         "Blowups",
         "ClosedEmbeddings",

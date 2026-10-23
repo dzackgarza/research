@@ -31,6 +31,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.finite_graded_posets import FiniteGradedPosets
 from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets, Sets
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
@@ -52,6 +53,35 @@ def _owned_rational(coordinate):
     if engine_parent(coordinate) in (SageZZ, SageQQ):
         return _owned_engine_element(SageQQ, SageQQ(coordinate))
     return _owned_rationals()(coordinate)
+
+
+class AbstractPolytopes(OwnedCategory):
+    r"""Finite graded face posets satisfying the abstract-polytope axioms.
+
+    Morphisms inherit the rank-preserving monotone maps of finite graded
+    posets. Isomorphisms and automorphisms are the category's generic ``Isom``
+    and ``Aut`` constructions; a geometric placement is further structure.
+    """
+
+    def super_categories(self):
+        return [FiniteGradedPosets()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "abstract polytopes"
+
+    def an_object(self):
+        raise NotImplementedError("the abstract-polytope constructor needs its face-poset axioms")
+
+    def from_face_poset(self, face_poset):
+        r"""Construct from the exact finite graded poset of faces."""
+        raise NotImplementedError(
+            "constructing an abstract polytope needs its face-incidence axioms"
+        )
+
+    class ParentMethods:
+        def face_poset(self):
+            return self
 
 
 class RegularPolytopes(OwnedCategory):

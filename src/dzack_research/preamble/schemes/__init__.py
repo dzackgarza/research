@@ -88,6 +88,7 @@ from dzack_research.preamble.categories.schemes.curve_genus import (
 )
 
 from dzack_research.preamble.categories.schemes.polytopes import (
+    AbstractPolytopes,
     ConvexPolygons,
     ConvexPolytopes,
     LatticePolygons,
@@ -151,6 +152,7 @@ __all__ = [
     'AffineGroupSchemes',
     'AffineGroupSchemeActions',
     'AffineSpaces',
+    'AbstractPolytopes',
     'ClosedEmbeddings',
     'ClosedSubschemes',
     'ConvexPolygons',
