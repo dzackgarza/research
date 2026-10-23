@@ -120,6 +120,12 @@ class RealCkManifolds(OwnedParameterizedCategory):
 
     def on(self, topological_manifold, atlas):
         r"""Select a compatible ``C^k`` atlas on the exact topological manifold."""
+        from dzack_research.preamble.categories.real_ck_atlases import RealCkAtlases
+
+        if atlas.underlying_topological_manifold() is not topological_manifold:
+            raise ValueError("the C^k atlas must be on the selected topological manifold")
+        if atlas not in RealCkAtlases(self.degree()):
+            raise ValueError("the C^k atlas must have the selected differentiability degree")
         return _object_of(
             self,
             topological_manifold=topological_manifold,

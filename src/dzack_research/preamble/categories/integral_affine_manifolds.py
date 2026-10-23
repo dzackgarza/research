@@ -118,6 +118,8 @@ class IntegralAffineManifolds(OwnedCategory):
 
     def on(self, smooth_manifold, affine_atlas):
         r"""Equip the exact smooth manifold with a selected integral-affine atlas."""
+        if affine_atlas.underlying_smooth_manifold() is not smooth_manifold:
+            raise ValueError("the affine atlas must be on the selected smooth manifold")
         return _object_of(
             self,
             smooth_manifold=smooth_manifold,
@@ -203,6 +205,10 @@ class IntegralAffineManifoldsOfDimension(OwnedParameterizedCategory):
         pass
 
     def on(self, smooth_manifold, affine_atlas):
+        if affine_atlas.underlying_smooth_manifold() is not smooth_manifold:
+            raise ValueError("the affine atlas must be on the selected smooth manifold")
+        if smooth_manifold.dimension() != self.dimension():
+            raise ValueError("the smooth manifold must have the selected affine dimension")
         return _object_of(
             self,
             smooth_manifold=smooth_manifold,
