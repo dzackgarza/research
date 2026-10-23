@@ -1011,6 +1011,9 @@ class SmoothManifolds(OwnedCategory):
         def underlying_topological_manifold(self):
             pass
 
+        def tangent_bundle(self):
+            pass
+
         def weaken_to(self, degree):
             pass
 
