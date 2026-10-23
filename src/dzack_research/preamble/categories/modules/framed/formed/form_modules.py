@@ -2127,6 +2127,16 @@ class FormModules(OwnedCategoryOverBaseRing):
                 sage: assert null_vectors.inclusion()(null_vectors(e)) == e
                 sage: assert U.zero() in null_vectors
                 sage: assert null_vectors.is_parent_of(e + f) is False
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: V = Lattices(RR)([[1]])
+                sage: null_vectors = V.elements_of_norm(RR.zero())
+                sage: point = null_vectors(V.zero())
+                sage: assert null_vectors.an_element() == point
+                sage: assert null_vectors.inclusion()(null_vectors.an_element()) == V.zero()
+                sage: F = V.elements_of_norm(RR.pi())
+                sage: point = F(V.representation_vector(RR.pi()))
+                sage: assert F.an_element() == point
+                sage: assert V.q(F.inclusion()(F.an_element())) == RR.pi()
             """
             return self.square_fibre(value).object()
 

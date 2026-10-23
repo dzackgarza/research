@@ -1466,6 +1466,17 @@ test supplies no empty-set decision, and an undecided membership test
 supplies no member. The pending `NN` tail specimen checks this difference
 at the general set owner, independently of lattices.
 
+The same retained member now supplies `an_element()` before any iterator
+is requested. Choosing an element of an inhabited subset needs no
+enumeration of its universe. For example, admit zero into
+`L.elements_of_norm(0)`, or a computed `L.representation_vector(a)` into
+`L.elements_of_norm(a)` for nonzero $a$. Subsequent point selection uses
+that actual admitted vector and the fibre inclusion, including over RR.
+This supplies no iterator, cardinality or sampling distribution. With no
+retained member the complete countable search still has its stated
+termination limits. Pending real positive-subset and norm-fibre specimens
+exercise this distinction without enumerating real points.
+
 Searches in this note have explicit termination reasons: rational witness
 search starts only after existence is decided. Integral exclusion uses either
 a finite bound guaranteed to contain a solution or the finite integral-

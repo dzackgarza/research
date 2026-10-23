@@ -77,7 +77,11 @@ and remains unexecuted under DEV-58.
 **Witnessed subset coverage:** source inspection found that predicate
 subsets retained admitted points but ignored them when deciding emptiness
 over an infinite universe. The general subset owner now returns nonempty
-from such a point, without starting another search. Failed membership and
+from such a point, without starting another search. Its point selector now
+also uses an admitted member before requesting iteration, which permits
+point selection in real predicate subsets and norm fibres once zero or
+a computed representation witness has been admitted. These real-subset
+and fibre-inclusion specimens remain unexecuted. Failed membership and
 unfinished searches supply no negative existence conclusion. The NN tail
 and failed-membership specimens remain unexecuted under DEV-58.
 

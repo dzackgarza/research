@@ -3699,9 +3699,11 @@ class _ConditionSetEngine:
         return point
 
     def _an_element_(self):
-        r"""Search the selected enumeration for the first satisfying point.
+        r"""Return a retained member, or search the selected enumeration.
 
-        ``__iter__`` owns the enumeration and requires each encountered
+        An already admitted point supplies the choice without an
+        enumeration, including for a subset of an uncountable set.
+        Otherwise ``__iter__`` owns the enumeration and requires each encountered
         membership to be decided. No cardinality computation is needed to
         find a point. An exhausted finite enumeration raises
         ``StopIteration``; an infinite search with no satisfying point need
@@ -3726,7 +3728,18 @@ class _ConditionSetEngine:
             sage: assert excluded.is_parent_of(NN(0)) is False
             sage: from dzack_research.preamble.logic import Predicate
             sage: assert isinstance(excluded.is_empty(), Predicate)
+
+        A point already admitted over RR needs no exhaustive real iterator::
+
+            sage: from dzack_research.preamble.rings.real import RR
+            sage: positive = RR.condition_set(lambda x: x > RR.zero())
+            sage: point = positive(RR.pi())
+            sage: assert positive.an_element() == point
+            sage: assert positive.inclusion()(positive.an_element()) == RR.pi()
+            sage: assert positive.is_empty() is False
         """
+        if self._admitted_members:
+            return next(iter(self._admitted_members.values()))
         return next(iter(self))
 
     def universe(self) -> Sets().ObjectType:
