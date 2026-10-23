@@ -44,7 +44,10 @@ absolute determinant at each fixed rank, is now computed
 from rank and determinant by `integral_representative_coefficient_bound`;
 the theory note proves it using the explicit compactness parameter in
 Li–Margulis's Appendix and an elementary basis estimate. This does not
-bound an embedding or change-of-basis matrix. The remaining Theorem 4
+bound an embedding or change-of-basis matrix. Lemma 20 now has an explicit
+completion Gram bound through `integral_completion_coefficient_bound`,
+retaining nonprimitive embeddings and their original columns in its
+existence statement; this still gives no bound on those columns. The remaining Theorem 4
 constant requires evaluation of the estimates in Theorem 1's proof,
 including the matrix-coefficient constant in Lemma 3(2).
 
@@ -52,8 +55,8 @@ including the matrix-coefficient constant in Lemma 3(2).
 subset retaining its maps -> complete candidate enumeration -> an applicable
 finite bound or a separate existence decision -> integral maximal splitting.
 For constrained embeddings the predicate enters before the exclusion theorem,
-not after it. **Coverage boundary:** source inspection and the concrete API
-health failure above; mathematical specimens remain unexecuted under DEV-58.
+not after it. **Coverage boundary:** source inspection and the cited mathematical
+proofs; mathematical specimens remain unexecuted under DEV-58.
 The formal embedding and module-morphism owners already distinguish
 injectivity from invertibility; no missing formal foundation is asserted.
 The remaining index-wide work belongs to

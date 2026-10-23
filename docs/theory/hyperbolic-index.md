@@ -490,10 +490,93 @@ $|c|=(D-b^2)/|a|\le D$. All entries are bounded by $D\le F(2,D)$.
 Rank one has the original coefficient of absolute value $D$. This proves
 the proposition in every stated rank.
 
+### An explicit coefficient bound for integral completions
+
+The following evaluates the constant in Li–Margulis, Lemma 20. It fixes
+the columns of a supplied embedding, including a nonprimitive embedding.
+Write $\|C\|_\infty=\max_{i,j}|C_{ij}|$ and let $K(k)=B(k,1)$,
+where $B$ is the representative bound proved in the preceding section.
+Thus $B(k,D)=K(k)D$ for $k\ge1$ and positive integral $D$.
+
+**Proposition (completion bound).** Let $A\in\operatorname{Sym}_m(\mathbb Z)$
+and $G\in\operatorname{Sym}_n(\mathbb Z)$ be nonsingular, with $0<m<n$.
+Put $k=n-m$, $a=|\det A|$ and $D=|\det G|$. For every
+$\tau\in\mathbb Z^{n\times m}$ with $\tau^TG\tau=A$, there is
+$\gamma=(\tau\mid\tau_1)\in\mathbb Z^{n\times n}$ such that
+
+$$
+|\det\gamma|=d,\qquad
+\|\gamma^TG\gamma\|_\infty
+\le K(k)a^kD+(m+1)^2\|A\|_\infty,
+$$
+
+where $d>0$ is the gcd of the maximal minors of $\tau$.
+In particular $\gamma$ is unimodular exactly when the image of $\tau$
+is primitive. For $m=0<n$, use $B(n,D)$ and a unimodular $\gamma$.
+
+**Proof.** Assume the stated nonsingularity and representation equation;
+prove the existence of the stated completion.
+
+1. **Choose a completion $\gamma_0=(\tau\mid\tau')$ with
+   $|\det\gamma_0|=d$ and $d\le a$.** The representation equation
+   gives rank $m$ to $\tau$. Hermite normal form completes its image
+   to a full-rank submodule of index $d$ (Li–Margulis, Lemma 19).
+   Cauchy–Binet applied to $(\tau^TG)\tau$ shows that $d$ divides
+   $\det A$, proving the inequality.
+
+2. **The Schur complement has an integral multiple with controlled
+   determinant.** Write
+   $\gamma_0^TG\gamma_0=\left(\begin{smallmatrix}A&c^T\\c&C\end{smallmatrix}\right)$,
+   $\lambda=\det A$, and $E=C-cA^{-1}c^T$.
+   The adjugate formula shows $\lambda E$ is integral; it is symmetric
+   and nonsingular. The block determinant identity gives
+   $|\det E|=d^2D/a$, hence
+   $|\det(\lambda E)|=a^{k-1}d^2D\le a^{k+1}D$.
+   Integrality is asserted for $\lambda E$, not for $E$.
+
+3. **Choose $T\in\operatorname{GL}_k(\mathbb Z)$ with
+   $\|T^TET\|_\infty\le K(k)a^kD$.** Apply the preceding
+   representative proposition to the integral form $\lambda E$ and
+   divide its coefficient bound by $a$. This uses the linear dependence
+   of $B(k,D)$ on $D$, together with step 2.
+
+4. **Choose $r\in\mathbb Z^{k\times m}$ so that
+   $s=r+T^TcA^{-1}$ has every entry of absolute value at most $1/2$.**
+   Round each entry of $-T^TcA^{-1}$ to a nearest integer. Define
+   $\gamma=\gamma_0\left(\begin{smallmatrix}I_m&r^T\\0&T\end{smallmatrix}\right)$.
+   Its first $m$ columns are exactly $\tau$ and its determinant has
+   absolute value $d$, because the second factor is unimodular.
+
+5. **Bound the transformed Gram matrix.** Block multiplication gives
+
+   $$
+   \gamma^TG\gamma=
+   \begin{pmatrix}A&As^T\\sA&T^TET+sAs^T\end{pmatrix}.
+   $$
+
+   Each cross coefficient is bounded by $m\|A\|_\infty/2$.
+   Each coefficient of $sAs^T$ is bounded by
+   $m^2\|A\|_\infty/4$. Step 3 bounds the remaining lower block.
+   Since $(m+1)^2\ge\max(1,m/2,m^2/4)$, the proposed bound
+   controls every block.
+
+6. **Q.E.D.** Steps 1–5 give the required completion for $m>0$.
+   For $m=0$, the preceding representative proposition gives a
+   unimodular completion of the empty column family and bound $B(n,D)$.
+
+The computation `T.integral_completion_coefficient_bound(n, det_G)`
+uses the source's selected Gram matrix and only the target invariants.
+It does not require constructing an embedding first. Neither this scalar
+bound nor the proposition bounds the entries of $\tau$ or $\gamma$.
+For example, the embedding $\tau=(2,0)^T$ from $A=(4)$ into $G=I_2$
+has $d=2$; $\gamma=\operatorname{diag}(2,1)$ is a completion, but
+no unimodular completion preserves that first column. The computed
+coefficient bound is $1\cdot4\cdot1+4\cdot4=20$.
+
 **Remaining embedding-bound computation.** Li–Margulis §1.7 explicitly
 states that its multiplicative constants are computable. Their §8.5 reduces
-Theorem 4 to Theorem 1 and Lemma 20; the latter uses coefficient bounds for
-an equivalent complement form. For indefinite forms their §6 reduces
+Theorem 4 to Theorem 1 and Lemma 20; the latter now has the explicit
+completion coefficient bound above. For indefinite forms their §6 reduces
 Theorem 1 to Theorems 5 and 6 and Lemma 1. Theorem 5 still needs numerical
 constants for its injectivity-radius and bump-function estimates and for
 Lemma 3(2)'s matrix-coefficient estimate. The paper points to Shalom,

@@ -3882,6 +3882,80 @@ class Lattices(OwnedCategoryOverBaseRing):
                 self.module_rank(), self.determinant()
             )
 
+        def integral_completion_coefficient_bound(
+            self, target_rank: Cardinal | int, target_determinant: RingElement | int
+        ) -> RingElement:
+            r"""Bound Gram coefficients of a completion of any integral embedding.
+
+            Let this lattice have nonsingular Gram matrix ``A`` of rank
+            ``m``, and let ``B`` be any nonsingular integral Gram matrix
+            of the supplied rank ``n > m`` and determinant. For every
+            integral ``tau`` with ``tau.transpose()*B*tau == A``, there
+            is an integral completion ``gamma = (tau | tau1)`` whose
+            determinant has absolute value the gcd of the maximal minors
+            of ``tau``, and whose transformed Gram coefficients are
+            bounded by the returned integer.
+
+            The original columns ``tau`` are fixed. The completion is
+            unimodular precisely when the embedding is primitive. This
+            bounds neither ``gamma`` nor ``tau`` and constructs neither.
+            It does not assert that an embedding exists. Only target
+            invariants are needed, so a target or embedding need not
+            already be constructed.
+
+            This evaluates a constant in Li--Margulis, Lemma 20, using
+            ``integral_representative_coefficient_bound``. See the full
+            proof in ``docs/theory/hyperbolic-index.md``, "An explicit
+            coefficient bound for integral completions".
+
+            EXAMPLES::
+
+                sage: T = Lattices(ZZ)([[4]])
+                sage: assert T.integral_completion_coefficient_bound(2, 1) == ZZ(20)
+                sage: # tau=(2,0)^t in the identity form has content two.
+                sage: # gamma=diag(2,1) completes it with Gram diag(4,1).
+                sage: L = Lattices(ZZ)([[1, 0], [0, 1]])
+                sage: e, f = L.module_generators()
+                sage: assert L.q(2*e) == ZZ(4) and L.b(2*e, f) == ZZ(0)
+                sage: bound = T.integral_completion_coefficient_bound(2, L.determinant())
+                sage: assert all(abs(L.b(v, w)) <= bound for v in (2*e, f) for w in (2*e, f))
+                sage: Z = Lattices(ZZ)(0)
+                sage: assert Z.integral_completion_coefficient_bound(2, -1) == ZZ(2)
+            """
+            integers = _owned_integers()
+            assert self.base_ring() is integers, (
+                "integral completion coefficient bounds require base ring ZZ"
+            )
+            source_rank = self.module_rank()
+            assert source_rank.is_finite(), (
+                "an integral completion coefficient bound requires finite source rank"
+            )
+            dimension = cardinal(target_rank)
+            assert dimension.is_finite(), (
+                "an integral completion coefficient bound requires finite target rank"
+            )
+            m, n = int(source_rank), int(dimension)
+            assert n > m, "an integral completion requires strictly larger target rank"
+            determinant = abs(integers(target_determinant))
+            assert determinant > integers.zero(), (
+                "an integral completion coefficient bound requires nonzero target determinant"
+            )
+            source_determinant = abs(self.determinant())
+            assert source_determinant > integers.zero(), (
+                "an integral completion coefficient bound requires a nondegenerate source"
+            )
+            category = self.lattice_category()
+            if m == 0:
+                return category.integral_representative_coefficient_bound(n, determinant)
+            gram = self.gram_tensor()
+            source_size = max(abs(gram[i, j]) for i in range(m) for j in range(m))
+            k = n - m
+            coefficient = category.integral_representative_coefficient_bound(k, integers.one())
+            return (
+                coefficient * source_determinant**k * determinant
+                + integers(m + 1)**2 * source_size
+            )
+
         def is_even(self) -> bool | Predicate:
             r"""Return whether ``b(x,x)`` lies in ``2R`` for every lattice vector.
 
