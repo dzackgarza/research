@@ -119,13 +119,15 @@ class FiniteGradedPosets(OwnedCategory):
         poset = PartiallyOrderedSets()(points, lambda left, right: left <= right)
         return self.on(poset, lambda point: point)
 
-    def on(self, poset, grade):
+    def on(self, poset, grade, *, check=False):
         r"""Select an integer grading on the exact finite partial order ``poset``."""
         if poset not in PartiallyOrderedSets() or poset not in FiniteSets():
             raise TypeError(f"{poset} is not a finite partially ordered set")
         integers = _owned_integers()
         grade_map = Sets().Mor(poset, integers)(grade)
-        return _object_of(self, underlying_poset=poset, grading_map=grade_map)
+        graded = _object_of(self, underlying_poset=poset, grading_map=grade_map)
+        graded.validate_grading(check=check)
+        return graded
 
     @cached_method
     def forget(self):
@@ -145,6 +147,29 @@ class FiniteGradedPosets(OwnedCategory):
 
         def grade(self, point):
             return self.grading_map()(self.underlying_poset()(point))
+
+        @validator
+        def validate_grading(self):
+            r"""Check ``GradeOrder`` in Mathlib ``Order/Grade.lean``: strict monotonicity and cover preservation."""
+            poset = self.underlying_poset()
+            points = tuple(poset)
+            for lower in points:
+                for upper in points:
+                    if lower == upper or not poset.le(lower, upper):
+                        continue
+                    lower_grade = self.grade(lower)
+                    upper_grade = self.grade(upper)
+                    if lower_grade >= upper_grade:
+                        raise ValueError(f"the grade of {lower} must be below the grade of {upper}")
+                    covered = not any(
+                        middle != lower
+                        and middle != upper
+                        and poset.le(lower, middle)
+                        and poset.le(middle, upper)
+                        for middle in points
+                    )
+                    if covered and upper_grade != lower_grade + 1:
+                        raise ValueError(f"a cover {lower} < {upper} must raise the grade by one")
 
         def __iter__(self):
             return iter(self.underlying_poset())
