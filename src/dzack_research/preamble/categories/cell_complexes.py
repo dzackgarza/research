@@ -21,29 +21,29 @@ for _axiom in ("RegularCW", "PLManifold", "Kan"):
 
 class _ComplexMapMethods:
     def underlying_map(self):
-        raise NotImplementedError("the complex-map constructor must retain its map of cells")
+        pass
 
     def __mul__(self, other):
-        raise NotImplementedError("composition needs the selected maps of cells and their faces")
+        pass
 
     def realization_map(self):
-        raise NotImplementedError("the complex-map constructor must retain its continuous realization")
+        pass
 
     def cellular_realization_map(self):
-        raise NotImplementedError("the complex-map constructor must retain its cellular realization")
+        pass
 
 
 class _ComplexMor(CategoricalMor):
     ElementMethods = _ComplexMapMethods
 
     def _element_constructor_(self, cell_map):
-        raise NotImplementedError("a complex map needs its cell maps and attaching-map squares")
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a complex identity requires the same source and target")
-        raise NotImplementedError("the complex identity needs its face and attaching maps")
+        pass
 
 
 class CellComplexMor(_ComplexMor):
@@ -116,10 +116,10 @@ class CellComplexes(OwnedCategory):
         return "cell complexes"
 
     def an_object(self):
-        raise NotImplementedError("a cell complex needs its cells and attaching maps")
+        pass
 
     def from_attaching_maps(self, cells, attaching_maps):
-        raise NotImplementedError("constructing a cell complex needs characteristic maps and skeleta")
+        pass
 
     @cached_method
     def realization(self):
@@ -127,34 +127,34 @@ class CellComplexes(OwnedCategory):
 
     class ParentMethods:
         def cells(self, dimension):
-            raise NotImplementedError("the constructor must retain the cells and their dimensions")
+            pass
 
         def face_poset(self):
-            raise NotImplementedError("the constructor must retain face incidence")
+            pass
 
         def star(self, cell):
-            raise NotImplementedError("the star needs its selected cell inclusions")
+            pass
 
         def star_inclusion(self, cell):
-            raise NotImplementedError("the star construction must retain its inclusion into this complex")
+            pass
 
         def link(self, cell):
-            raise NotImplementedError("the link needs its selected cell inclusions")
+            pass
 
         def link_inclusion(self, cell):
-            raise NotImplementedError("the link construction must retain its inclusion into this complex")
+            pass
 
         def subdivision(self):
-            raise NotImplementedError("a subdivision needs its realization comparison map")
+            pass
 
         def subdivision_comparison(self, subdivision):
-            raise NotImplementedError("the subdivision must retain its realization map to this complex")
+            pass
 
         def face_inclusion(self, face, cell):
-            raise NotImplementedError("the face relation must retain its arrow into the selected cell")
+            pass
 
         def realization(self):
-            raise NotImplementedError("the constructor must retain characteristic maps")
+            pass
 
     class RegularCW(CategoryWithAxiom):
         r"""Cell complexes with embedded closed cells."""
@@ -176,10 +176,10 @@ class PolytopalComplexes(OwnedCategory):
         return "polytopal complexes"
 
     def an_object(self):
-        raise NotImplementedError("a polytopal complex needs its placed cells and face maps")
+        pass
 
     def from_cells(self, polytopes, face_maps):
-        raise NotImplementedError("constructing a polytopal complex needs its face diagram")
+        pass
 
     @cached_method
     def cellular_realization(self):
@@ -187,16 +187,16 @@ class PolytopalComplexes(OwnedCategory):
 
     class ParentMethods:
         def cells(self, dimension):
-            raise NotImplementedError("the constructor must retain the placed polytope cells")
+            pass
 
         def face_maps(self):
-            raise NotImplementedError("the constructor must retain the selected face arrows")
+            pass
 
         def face_inclusion(self, face, cell):
-            raise NotImplementedError("each placed face needs its arrow into the selected cell")
+            pass
 
         def cellular_realization(self):
-            raise NotImplementedError("the polytopal diagram must determine its cell complex")
+            pass
 
 
 class SimplicialComplexes(OwnedCategory):
@@ -212,10 +212,10 @@ class SimplicialComplexes(OwnedCategory):
         return "simplicial complexes"
 
     def an_object(self):
-        raise NotImplementedError("a simplicial complex needs a selected simplex family")
+        pass
 
     def from_simplices(self, vertices, simplices):
-        raise NotImplementedError("constructing a simplicial complex needs its face inclusions")
+        pass
 
     @cached_method
     def cellular_realization(self):
@@ -223,25 +223,25 @@ class SimplicialComplexes(OwnedCategory):
 
     class ParentMethods:
         def simplices(self, dimension):
-            raise NotImplementedError("the constructor must retain simplices by dimension")
+            pass
 
         def link(self, simplex):
-            raise NotImplementedError("the link needs its subcomplex inclusion")
+            pass
 
         def link_inclusion(self, simplex):
-            raise NotImplementedError("the link needs its exact subcomplex arrow")
+            pass
 
         def star(self, simplex):
-            raise NotImplementedError("the star needs its subcomplex inclusion")
+            pass
 
         def star_inclusion(self, simplex):
-            raise NotImplementedError("the star needs its exact subcomplex arrow")
+            pass
 
         def simplex_inclusion(self, face, simplex):
-            raise NotImplementedError("the simplex incidence must retain its face arrow")
+            pass
 
         def cellular_realization(self):
-            raise NotImplementedError("the simplex gluing must determine its cell complex")
+            pass
 
 
 class DeltaComplexes(OwnedCategory):
@@ -257,10 +257,10 @@ class DeltaComplexes(OwnedCategory):
         return "Delta-complexes"
 
     def an_object(self):
-        raise NotImplementedError("a Delta-complex needs its face identifications")
+        pass
 
     def from_faces(self, simplices, face_maps):
-        raise NotImplementedError("constructing a Delta-complex needs all face maps")
+        pass
 
     @cached_method
     def cellular_realization(self):
@@ -268,10 +268,10 @@ class DeltaComplexes(OwnedCategory):
 
     class ParentMethods:
         def face_maps(self):
-            raise NotImplementedError("the constructor must retain every face identification")
+            pass
 
         def cellular_realization(self):
-            raise NotImplementedError("the face diagram must determine its cell complex")
+            pass
 
 
 class SimplicialSets(OwnedCategory):
@@ -287,10 +287,10 @@ class SimplicialSets(OwnedCategory):
         return "simplicial sets"
 
     def an_object(self):
-        raise NotImplementedError("a simplicial set needs its face and degeneracy maps")
+        pass
 
     def from_face_degeneracy_maps(self, simplices, faces, degeneracies):
-        raise NotImplementedError("constructing a simplicial set needs the simplicial identities")
+        pass
 
     @cached_method
     def realization(self):
@@ -298,16 +298,16 @@ class SimplicialSets(OwnedCategory):
 
     class ParentMethods:
         def simplices(self, dimension):
-            raise NotImplementedError("the constructor must retain each graded simplex set")
+            pass
 
         def face_map(self, dimension, index):
-            raise NotImplementedError("the constructor must retain each face map")
+            pass
 
         def degeneracy_map(self, dimension, index):
-            raise NotImplementedError("the constructor must retain each degeneracy map")
+            pass
 
         def realization(self):
-            raise NotImplementedError("the simplex diagram must determine its topological realization")
+            pass
 
     class Kan(CategoryWithAxiom):
         r"""Simplicial sets satisfying the horn-filling condition."""

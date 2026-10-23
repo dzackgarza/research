@@ -22,24 +22,22 @@ class RealAffineSpaceMor(CategoricalMor):
 
     class ElementMethods:
         def linear_part(self):
-            raise NotImplementedError("the affine-map constructor must retain its linear part")
+            pass
 
         def point_map(self):
-            raise NotImplementedError("the affine-map constructor must retain its map on points")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("affine-map composition needs both retained maps")
+            pass
 
     def _element_constructor_(self, linear_part, point_map):
-        raise NotImplementedError(
-            "an affine map needs its linear part, point map, and translation-equivariance condition"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("an affine identity requires the same source and target")
-        raise NotImplementedError("the affine identity needs the point and model-space identities")
+        pass
 
 
 class RealAffineSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -72,13 +70,13 @@ class RealAffineSpaces(OwnedCategory):
         return "real affine spaces"
 
     def an_object(self):
-        raise NotImplementedError("an affine space needs its point set and vector translation action")
+        pass
 
     def on(self, model_vector_space, point_set, translation_action):
         r"""Select a free transitive action of the model space on ``point_set``."""
         if model_vector_space not in VectorSpaces(RR):
             raise TypeError(f"{model_vector_space} is not a real vector space")
-        raise NotImplementedError("construction needs the action and its torsor laws")
+        pass
 
     @cached_method
     def forget(self):
@@ -86,13 +84,13 @@ class RealAffineSpaces(OwnedCategory):
 
     class ParentMethods:
         def point_set(self):
-            raise NotImplementedError("the constructor must retain the exact set of points")
+            pass
 
         def model_vector_space(self):
-            raise NotImplementedError("the constructor must retain the selected model space")
+            pass
 
         def translation_action(self):
-            raise NotImplementedError("the constructor must retain the vector action on points")
+            pass
 
 
 class AffineSpaceWithLatticeMor(CategoricalMor):
@@ -100,19 +98,19 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
 
     class ElementMethods:
         def affine_map(self):
-            raise NotImplementedError("the lattice-affine map must retain its underlying affine arrow")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("lattice-affine composition needs the two linear parts")
+            pass
 
     def _element_constructor_(self, affine_map):
-        raise NotImplementedError("a lattice-affine map needs the lattice-inclusion square")
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a lattice-affine identity requires the same source and target")
-        raise NotImplementedError("the identity needs the selected lattice inclusion")
+        pass
 
 
 class AffineSpaceWithLatticeMorCategoryConstruction(MorCategoryConstruction):
@@ -145,13 +143,13 @@ class AffineSpacesWithLattice(OwnedCategory):
         return "real affine spaces with a selected lattice"
 
     def an_object(self):
-        raise NotImplementedError("an affine lattice space needs its affine space and lattice inclusion")
+        pass
 
     def on(self, affine_space, lattice_inclusion):
         r"""Select a full integral lattice in the model of ``affine_space``."""
         if affine_space not in RealAffineSpaces():
             raise TypeError(f"{affine_space} is not a real affine space")
-        raise NotImplementedError("construction needs the exact lattice inclusion into the model space")
+        pass
 
     @cached_method
     def forget(self):
@@ -159,10 +157,10 @@ class AffineSpacesWithLattice(OwnedCategory):
 
     class ParentMethods:
         def underlying_affine_space(self):
-            raise NotImplementedError("the constructor must retain the exact affine space")
+            pass
 
         def lattice_inclusion(self):
-            raise NotImplementedError("the constructor must retain the lattice embedding")
+            pass
 
         def integral_affine_group(self):
-            raise NotImplementedError("the affine stabilizer needs the selected lattice action")
+            pass

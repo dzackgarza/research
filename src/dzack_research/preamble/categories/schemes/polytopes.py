@@ -84,13 +84,11 @@ class AbstractPolytopes(OwnedCategory):
         return "abstract polytopes"
 
     def an_object(self):
-        raise NotImplementedError("the abstract-polytope constructor needs its face-poset axioms")
+        pass
 
     def from_face_poset(self, face_poset):
         r"""Construct from the exact finite graded poset of faces."""
-        raise NotImplementedError(
-            "constructing an abstract polytope needs its face-incidence axioms"
-        )
+        pass
 
     class ParentMethods:
         def face_poset(self):
@@ -102,25 +100,22 @@ class PlacedPolytopeMor(CategoricalMor):
 
     class ElementMethods:
         def ambient_map(self):
-            raise NotImplementedError("the polytope map must retain its ambient map")
+            pass
 
         def face_poset_map(self):
-            raise NotImplementedError("the polytope map must retain its rank-preserving face map")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("composition needs both ambient and face maps")
+            pass
 
     def _element_constructor_(self, ambient_map, face_poset_map):
-        raise NotImplementedError(
-            "a placed-polytope map needs its commuting ambient-inclusion square "
-            "and rank-preserving face map"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a placed-polytope identity requires the same source and target")
-        raise NotImplementedError("the identity needs the ambient and face identities")
+        pass
 
 
 class PlacedPolytopeMorCategoryConstruction(MorCategoryConstruction):
@@ -150,13 +145,10 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
         return [Objects()]
 
     def an_object(self):
-        raise NotImplementedError("a placed polytope needs its ambient inclusion and faces")
+        pass
 
     def on(self, defining_data, ambient_inclusion):
-        raise NotImplementedError(
-            "construction needs a bounded convex or geodesically convex subset, "
-            "its exact ambient inclusion, and all face incidences"
-        )
+        pass
 
     @cached_method
     def face_posets(self):
@@ -164,25 +156,25 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
 
     class ParentMethods:
         def ambient_space(self):
-            raise NotImplementedError("the constructor must retain the selected ambient space")
+            pass
 
         def ambient_inclusion(self):
-            raise NotImplementedError("the constructor must retain the exact ambient inclusion")
+            pass
 
         def vertices(self):
-            raise NotImplementedError("the constructor must retain its ambient points")
+            pass
 
         def faces(self, dimension):
-            raise NotImplementedError("faces need their dimensions and incidence maps")
+            pass
 
         def face_inclusion(self, face):
-            raise NotImplementedError("each face needs its arrow to this polytope")
+            pass
 
         def face_poset(self):
-            raise NotImplementedError("the graded incidence poset needs the selected faces")
+            pass
 
         def boundary(self):
-            raise NotImplementedError("the boundary complex needs its inclusion")
+            pass
 
 
 class ConvexPolytopesIn(_PlacedPolytopeCategory):

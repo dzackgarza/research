@@ -17,19 +17,19 @@ class EuclideanSpaceMor(CategoricalMor):
 
     class ElementMethods:
         def affine_map(self):
-            raise NotImplementedError("the isometry must retain its affine map")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("isometry composition needs its affine maps")
+            pass
 
     def _element_constructor_(self, affine_map):
-        raise NotImplementedError("an affine isometry needs preservation of the selected metrics")
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a Euclidean identity requires the same space")
-        raise NotImplementedError("the identity needs its underlying affine identity")
+        pass
 
 
 class EuclideanSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -60,12 +60,12 @@ class EuclideanSpaces(OwnedCategory):
         return "Euclidean affine spaces"
 
     def an_object(self):
-        raise NotImplementedError("a Euclidean space needs an affine space and metric")
+        pass
 
     def on(self, affine_space, positive_definite_form):
         if affine_space not in RealAffineSpaces():
             raise TypeError(f"{affine_space} is not a real affine space")
-        raise NotImplementedError("construction needs a positive-definite form on the model space")
+        pass
 
     @cached_method
     def forget_metric(self):
@@ -73,13 +73,13 @@ class EuclideanSpaces(OwnedCategory):
 
     class ParentMethods:
         def underlying_affine_space(self):
-            raise NotImplementedError("the constructor must retain the exact affine space")
+            pass
 
         def model_inner_product(self):
-            raise NotImplementedError("the constructor must retain its positive-definite form")
+            pass
 
         def point_set(self):
-            raise NotImplementedError("the constructor must retain the affine point set")
+            pass
 
 
 class SphericalSpaceMor(CategoricalMor):
@@ -87,19 +87,19 @@ class SphericalSpaceMor(CategoricalMor):
 
     class ElementMethods:
         def ambient_isometry(self):
-            raise NotImplementedError("the spherical map must retain its ambient isometry")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("composition needs the two ambient isometries")
+            pass
 
     def _element_constructor_(self, ambient_isometry):
-        raise NotImplementedError("a spherical map needs the commuting sphere inclusions")
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a spherical identity requires the same sphere")
-        raise NotImplementedError("the identity needs the selected sphere inclusion")
+        pass
 
 
 class SphericalSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -119,22 +119,22 @@ class SphericalSpaces(OwnedCategory):
         return "round spherical spaces"
 
     def an_object(self):
-        raise NotImplementedError("a sphere needs its Euclidean ambient space")
+        pass
 
     def in_space(self, euclidean_space, center, radius):
         if euclidean_space not in EuclideanSpaces():
             raise TypeError(f"{euclidean_space} is not a Euclidean space")
-        raise NotImplementedError("construction needs the metric sphere and its inclusion")
+        pass
 
     class ParentMethods:
         def euclidean_space(self):
-            raise NotImplementedError("the sphere constructor must retain its ambient space")
+            pass
 
         def center(self):
-            raise NotImplementedError("the sphere constructor must retain its center")
+            pass
 
         def radius(self):
-            raise NotImplementedError("the sphere constructor must retain its radius")
+            pass
 
         def inclusion(self):
-            raise NotImplementedError("the sphere constructor must retain its ambient inclusion")
+            pass

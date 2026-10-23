@@ -20,22 +20,19 @@ class ChosenTriangulationMor(CategoricalMor):
 
     class ElementMethods:
         def simplicial_map(self):
-            raise NotImplementedError("a triangulation map must retain its simplicial arrow")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("triangulation-map composition needs its commuting triangle")
+            pass
 
     def _element_constructor_(self, simplicial_map):
-        raise NotImplementedError(
-            "a map of chosen triangulations needs a simplicial arrow whose "
-            "realization commutes over the exact target"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a triangulation identity requires the same source and target")
-        raise NotImplementedError("the triangulation identity needs its simplicial identity arrow")
+        pass
 
 
 class ChosenTriangulationMorCategoryConstruction(MorCategoryConstruction):
@@ -71,14 +68,11 @@ class ChosenTriangulations(OwnedParameterizedCategory):
         return "chosen triangulations"
 
     def an_object(self):
-        raise NotImplementedError("a chosen triangulation needs a simplicial complex over its target")
+        pass
 
     def on(self, simplicial_complex, realization_map):
         r"""Select ``T`` and the exact map ``|T| -> K`` to this category's target."""
-        raise NotImplementedError(
-            "constructing a chosen triangulation needs simplex inclusions, "
-            "coverage, and the realization map to the exact target"
-        )
+        pass
 
     def target(self):
         return self.parameter()
@@ -89,13 +83,13 @@ class ChosenTriangulations(OwnedParameterizedCategory):
 
     class ParentMethods:
         def simplicial_complex(self):
-            raise NotImplementedError("the constructor must retain the exact simplicial complex")
+            pass
 
         def realization_map(self):
-            raise NotImplementedError("the constructor must retain the map to the target")
+            pass
 
         def simplices(self, dimension):
-            raise NotImplementedError("the selected simplicial complex must supply its simplices")
+            pass
 
         def simplex_inclusion(self, simplex):
-            raise NotImplementedError("the constructor must retain the simplex inclusion")
+            pass

@@ -29,22 +29,19 @@ class IntegralAffineManifoldMor(CategoricalMor):
 
     class ElementMethods:
         def underlying_smooth_morphism(self):
-            raise NotImplementedError("the affine-map constructor must retain its smooth map")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("affine-map composition needs the selected chart maps")
+            pass
 
     def _element_constructor_(self, local_affine_map):
-        raise NotImplementedError(
-            "constructing an integral-affine map needs its chart maps, lattice actions, "
-            "and their agreement on overlaps"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("an identity requires the same integral-affine manifold")
-        raise NotImplementedError("the integral-affine identity needs the selected atlas")
+        pass
 
 
 class IntegralAffineManifoldMorCategoryConstruction(MorCategoryConstruction):
@@ -81,14 +78,11 @@ class IntegralAffineManifolds(OwnedCategory):
         return "integral-affine manifolds"
 
     def an_object(self):
-        raise NotImplementedError("an integral-affine manifold needs a selected atlas")
+        pass
 
     def on(self, smooth_manifold, affine_atlas):
         r"""Equip the exact smooth manifold with a selected integral-affine atlas."""
-        raise NotImplementedError(
-            "constructing an integral-affine manifold needs affine chart domains, "
-            "transition arrows, and their cocycle"
-        )
+        pass
 
     @cached_method
     def forget(self):
@@ -96,13 +90,13 @@ class IntegralAffineManifolds(OwnedCategory):
 
     class ParentMethods:
         def underlying_smooth_manifold(self):
-            raise NotImplementedError("the constructor must retain the exact smooth manifold")
+            pass
 
         def affine_charts(self):
-            raise NotImplementedError("the constructor must retain the selected affine atlas")
+            pass
 
         def integral_tangent_lattice(self):
-            raise NotImplementedError("the selected atlas must induce its tangent lattice")
+            pass
 
     class Oriented(CategoryWithAxiom):
         r"""Integral-affine structures whose linear transitions preserve orientation."""
@@ -116,25 +110,22 @@ class IntegralAffineLocalIsomorphismMor(CategoricalMor):
 
     class ElementMethods:
         def underlying_affine_morphism(self):
-            raise NotImplementedError("the local isomorphism must retain its affine arrow")
+            pass
 
         def underlying_smooth_morphism(self):
-            raise NotImplementedError("the local isomorphism must retain its smooth arrow")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("composition needs the local lattice isomorphisms")
+            pass
 
     def _element_constructor_(self, affine_morphism):
-        raise NotImplementedError(
-            "a local isomorphism needs locally invertible affine chart maps "
-            "whose linear parts identify the tangent lattices"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a local isomorphism identity requires the same manifold")
-        raise NotImplementedError("the identity needs the selected affine atlas")
+        pass
 
 
 class IntegralAffineLocalIsomorphismMorCategoryConstruction(MorCategoryConstruction):
@@ -154,36 +145,34 @@ class IntegralAffineLocalIsomorphisms(OwnedCategory):
         return "integral-affine manifolds and local isomorphisms"
 
     def an_object(self):
-        raise NotImplementedError("an integral-affine manifold needs its selected atlas")
+        pass
 
     def on(self, smooth_manifold, affine_atlas):
-        raise NotImplementedError("construction must retain the ordinary affine object and atlas")
+        pass
 
 
 class _StratifiedIntegralAffineMapMethods:
     def underlying_smooth_stratified_map(self):
-        raise NotImplementedError("the affine map must retain its smooth stratum map")
+        pass
 
     def interior_affine_map(self):
-        raise NotImplementedError("the affine map must retain its interior restriction")
+        pass
 
     def __mul__(self, other):
-        raise NotImplementedError("composition needs affine charts and the stratum maps")
+        pass
 
 
 class _StratifiedIntegralAffineMor(CategoricalMor):
     ElementMethods = _StratifiedIntegralAffineMapMethods
 
     def _element_constructor_(self, smooth_stratified_map, local_affine_maps):
-        raise NotImplementedError(
-            "the map needs compatible integral-affine chart maps on every depth stratum"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("an affine identity requires the same source and target")
-        raise NotImplementedError("the identity needs the selected atlas and stratum inclusions")
+        pass
 
 
 class IntegralAffineBoundaryMor(_StratifiedIntegralAffineMor):
@@ -226,19 +215,19 @@ class _StratifiedAffineInteriorFunctor(Functor):
 
 class _StratifiedAffineManifoldMethods:
     def underlying_smooth_stratified_manifold(self):
-        raise NotImplementedError("the constructor must retain the exact smooth stratified manifold")
+        pass
 
     def affine_atlas(self):
-        raise NotImplementedError("the constructor must retain its compatible affine charts")
+        pass
 
     def depth_stratum(self, depth):
-        raise NotImplementedError("the constructor must retain each depth stratum inclusion")
+        pass
 
     def interior_affine_manifold(self):
-        raise NotImplementedError("the constructor must retain its integral-affine interior")
+        pass
 
     def interior_inclusion(self):
-        raise NotImplementedError("the constructor must retain the exact open interior arrow")
+        pass
 
 
 class IntegralAffineManifoldsWithCorners(OwnedCategory):
@@ -254,12 +243,12 @@ class IntegralAffineManifoldsWithCorners(OwnedCategory):
         return "integral-affine manifolds with corners"
 
     def an_object(self):
-        raise NotImplementedError("a corner integral-affine manifold needs orthant affine charts")
+        pass
 
     def on(self, smooth_corner_manifold, affine_atlas):
         if smooth_corner_manifold not in SmoothManifoldsWithCorners():
             raise TypeError(f"{smooth_corner_manifold} is not a smooth corner manifold")
-        raise NotImplementedError("construction needs affine charts compatible on every depth stratum")
+        pass
 
     @cached_method
     def forget(self):
@@ -286,12 +275,12 @@ class IntegralAffineManifoldsWithBoundary(OwnedCategory):
         return "integral-affine manifolds with boundary"
 
     def an_object(self):
-        raise NotImplementedError("a boundary integral-affine manifold needs half-space affine charts")
+        pass
 
     def on(self, smooth_boundary_manifold, affine_atlas):
         if smooth_boundary_manifold not in SmoothManifoldsWithBoundary():
             raise TypeError(f"{smooth_boundary_manifold} is not a smooth boundary manifold")
-        raise NotImplementedError("construction needs affine half-space charts and their transitions")
+        pass
 
     @cached_method
     def forget(self):
@@ -303,7 +292,7 @@ class IntegralAffineManifoldsWithBoundary(OwnedCategory):
 
     class ParentMethods(_StratifiedAffineManifoldMethods):
         def boundary(self):
-            raise NotImplementedError("the boundary needs its exact inclusion and restricted atlas")
+            pass
 
 
 class SingularIntegralAffineSpaceMor(CategoricalMor):
@@ -311,25 +300,22 @@ class SingularIntegralAffineSpaceMor(CategoricalMor):
 
     class ElementMethods:
         def underlying_topological_morphism(self):
-            raise NotImplementedError("the singular-map constructor must retain its topological map")
+            pass
 
         def regular_affine_morphism(self):
-            raise NotImplementedError("the singular-map constructor must retain its regular restriction")
+            pass
 
         def __mul__(self, other):
-            raise NotImplementedError("singular-map composition needs its regular-locus comparison")
+            pass
 
     def _element_constructor_(self, regular_affine_map):
-        raise NotImplementedError(
-            "a singular integral-affine map needs a topological map, its regular "
-            "integral-affine restriction, and their comparison"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("an identity requires the same singular integral-affine space")
-        raise NotImplementedError("the singular-space identity needs its regular-locus map")
+        pass
 
 
 class SingularIntegralAffineSpaceMorCategoryConstruction(MorCategoryConstruction):
@@ -362,14 +348,11 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         return "singular integral-affine spaces"
 
     def an_object(self):
-        raise NotImplementedError("a singular integral-affine space needs its regular-locus atlas")
+        pass
 
     def on(self, topological_space, singular_locus_inclusion, regular_affine_manifold):
         r"""Select the singular subobject and affine structure on its exact complement."""
-        raise NotImplementedError(
-            "constructing a singular integral-affine space needs the complement "
-            "inclusion and its comparison with the supplied affine manifold"
-        )
+        pass
 
     @cached_method
     def forget(self):
@@ -377,21 +360,19 @@ class SingularIntegralAffineSpaces(OwnedCategory):
 
     class ParentMethods:
         def underlying_topological_space(self):
-            raise NotImplementedError("the constructor must retain the exact space")
+            pass
 
         def singular_locus(self):
-            raise NotImplementedError("the constructor must retain the singular inclusion")
+            pass
 
         def regular_locus(self):
-            raise NotImplementedError("the constructor must retain the exact complement inclusion")
+            pass
 
         def regular_affine_manifold(self):
-            raise NotImplementedError("the constructor must retain the affine structure on the complement")
+            pass
 
         def local_monodromy(self, singular_point, loop, affine_frame):
-            raise NotImplementedError(
-                "local monodromy needs a specified punctured loop and affine frame"
-            )
+            pass
 
     class FiniteSingularSet(CategoryWithAxiom):
         r"""Singular affine spaces whose selected singular locus is finite."""

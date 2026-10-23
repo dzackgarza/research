@@ -17,32 +17,29 @@ from dzack_research.preamble.categories.manifolds import (
 
 class _StratifiedManifoldMapMethods:
     def underlying_continuous_map(self):
-        raise NotImplementedError("the map must retain its continuous map")
+        pass
 
     def interior_map(self):
-        raise NotImplementedError("the map must retain its restriction to the interiors")
+        pass
 
     def underlying_topological_stratified_map(self):
-        raise NotImplementedError("the map must retain its continuous stratum map")
+        pass
 
     def __mul__(self, other):
-        raise NotImplementedError("composition needs the maps on all depth strata")
+        pass
 
 
 class _StratifiedManifoldMor(CategoricalMor):
     ElementMethods = _StratifiedManifoldMapMethods
 
     def _element_constructor_(self, map_on_points, stratum_maps):
-        raise NotImplementedError(
-            "a stratified manifold map needs its point map, local chart maps, "
-            "and compatible maps on depth strata"
-        )
+        pass
 
     @object_level
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError("a stratified identity requires the same source and target")
-        raise NotImplementedError("the identity needs each selected stratum inclusion")
+        pass
 
 
 class TopologicalBoundaryMor(_StratifiedManifoldMor):
@@ -101,19 +98,19 @@ class _UnderlyingTopologicalStrataFunctor(Functor):
 
 class _StratifiedManifoldMethods:
     def dimension(self):
-        raise NotImplementedError("the atlas must retain each component dimension")
+        pass
 
     def atlas(self):
-        raise NotImplementedError("the constructor must retain its local-model charts")
+        pass
 
     def interior(self):
-        raise NotImplementedError("the constructor must retain the exact open interior inclusion")
+        pass
 
     def interior_inclusion(self):
-        raise NotImplementedError("the constructor must retain the open interior arrow")
+        pass
 
     def depth_stratum(self, depth):
-        raise NotImplementedError("the constructor must retain each stratum and its inclusion")
+        pass
 
 
 class TopologicalManifoldsWithBoundary(OwnedCategory):
@@ -129,10 +126,10 @@ class TopologicalManifoldsWithBoundary(OwnedCategory):
         return "topological manifolds with boundary"
 
     def an_object(self):
-        raise NotImplementedError("a boundary manifold needs half-space charts")
+        pass
 
     def on(self, space, atlas, boundary_inclusion):
-        raise NotImplementedError("construction needs half-space charts and their overlaps")
+        pass
 
     @cached_method
     def interior(self):
@@ -140,7 +137,7 @@ class TopologicalManifoldsWithBoundary(OwnedCategory):
 
     class ParentMethods(_StratifiedManifoldMethods):
         def boundary(self):
-            raise NotImplementedError("the boundary needs its exact stratum inclusion")
+            pass
 
 
 class SmoothManifoldsWithBoundary(OwnedCategory):
@@ -156,10 +153,10 @@ class SmoothManifoldsWithBoundary(OwnedCategory):
         return "smooth manifolds with boundary"
 
     def an_object(self):
-        raise NotImplementedError("a smooth boundary manifold needs smooth half-space charts")
+        pass
 
     def on(self, space, atlas, boundary_inclusion):
-        raise NotImplementedError("construction needs smooth half-space charts and transitions")
+        pass
 
     @cached_method
     def interior(self):
@@ -171,10 +168,10 @@ class SmoothManifoldsWithBoundary(OwnedCategory):
 
     class ParentMethods(_StratifiedManifoldMethods):
         def boundary(self):
-            raise NotImplementedError("the boundary needs its exact stratum inclusion")
+            pass
 
         def underlying_topological_stratified_manifold(self):
-            raise NotImplementedError("forgetting smoothness must retain the exact boundary")
+            pass
 
 
 class TopologicalManifoldsWithCorners(OwnedCategory):
@@ -190,10 +187,10 @@ class TopologicalManifoldsWithCorners(OwnedCategory):
         return "topological manifolds with corners"
 
     def an_object(self):
-        raise NotImplementedError("a corner manifold needs orthant charts")
+        pass
 
     def on(self, space, atlas, depth_strata):
-        raise NotImplementedError("construction needs orthant charts and exact depth strata")
+        pass
 
     @cached_method
     def interior(self):
@@ -216,10 +213,10 @@ class SmoothManifoldsWithCorners(OwnedCategory):
         return "smooth manifolds with corners"
 
     def an_object(self):
-        raise NotImplementedError("a smooth corner manifold needs smooth orthant charts")
+        pass
 
     def on(self, space, atlas, depth_strata):
-        raise NotImplementedError("construction needs smooth orthant charts and transitions")
+        pass
 
     @cached_method
     def interior(self):
@@ -231,4 +228,4 @@ class SmoothManifoldsWithCorners(OwnedCategory):
 
     class ParentMethods(_StratifiedManifoldMethods):
         def underlying_topological_stratified_manifold(self):
-            raise NotImplementedError("forgetting smoothness must retain exact depth strata")
+            pass

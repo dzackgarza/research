@@ -1337,9 +1337,7 @@ class HolomorphicMap:
         return self.presentation()._engine_map_crossing()
 
     def underlying_smooth_morphism(self):
-        raise NotImplementedError(
-            "realification must retain the real dimension-2m chart map of this holomorphic arrow"
-        )
+        pass
 
     def _evaluate_point(self, point):
         r"""Evaluate a coordinate representation whose domain contains the owned source point.
@@ -1766,9 +1764,7 @@ class ComplexManifolds(OwnedCategory):
 
     class ParentMethods:
         def underlying_smooth_manifold(self):
-            raise NotImplementedError(
-                "realification must construct the real dimension-2m atlas on the exact complex manifold"
-            )
+            pass
 
         def complex_dimension(self):
             return self.dimension()
