@@ -66,10 +66,10 @@ class _CollarFaceFunctor(Functor):
         super().__init__(IntegralAffineCollars(), IntegralAffineManifoldsWithCorners())
 
     def _apply_object(self, collar):
-        pass
+        return collar.face()
 
     def _apply_morphism(self, morphism):
-        pass
+        return morphism.face_map()
 
 
 class IntegralAffineCollars(OwnedCategory):
