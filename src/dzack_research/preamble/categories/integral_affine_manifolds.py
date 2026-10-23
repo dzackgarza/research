@@ -586,6 +586,15 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         r"""Select an affine structure from a complex quotient and collar data."""
         pass
 
+    def surgery(
+        self,
+        region_inclusion,
+        replacement,
+        boundary_isomorphism,
+        affine_collars,
+    ):
+        pass
+
     @cached_method
     def forget(self):
         return _UnderlyingSingularTopologicalSpaceFunctor(self, TopologicalSpaces())
@@ -700,6 +709,16 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
         self,
         gluing_cocone,
         singular_locus_inclusion,
+        affine_collars,
+        local_models,
+    ):
+        pass
+
+    def surgery(
+        self,
+        region_inclusion,
+        replacement,
+        boundary_isomorphism,
         affine_collars,
         local_models,
     ):
