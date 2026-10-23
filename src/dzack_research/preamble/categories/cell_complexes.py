@@ -92,8 +92,24 @@ class SimplicialSetMor(_ComplexMor):
     r"""Maps commuting with faces and degeneracies in every degree."""
 
     class ElementMethods(_ComplexMapMethods):
+        def __init__(self, parent, degree_maps):
+            Morphism.__init__(self, parent)
+            self._degree_maps = degree_maps
+
+        def underlying_map(self):
+            return self._degree_maps
+
+        def degree_maps(self):
+            return self._degree_maps
+
+        def degree_map(self, degree):
+            return self._degree_maps[degree]
+
         def face_poset_map(self):
             pass
+
+    def _element_constructor_(self, degree_maps):
+        return self.element_class(self, degree_maps)
 
 
 class CellComplexMorCategoryConstruction(MorCategoryConstruction):
