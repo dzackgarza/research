@@ -307,6 +307,14 @@ class PolytopalComplexes(OwnedCategory):
         def cellular_realization(self):
             pass
 
+        def triangulations(self):
+            from dzack_research.preamble.categories.triangulations import ChosenTriangulations
+
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
+            pass
+
 
 class SimplicialComplexes(OwnedCategory):
     r"""Complexes of simplices closed under faces, with simplicial maps."""
@@ -379,6 +387,14 @@ class SimplicialComplexes(OwnedCategory):
         def cellular_realization(self):
             pass
 
+        def triangulations(self):
+            from dzack_research.preamble.categories.triangulations import ChosenTriangulations
+
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
+            pass
+
 
 class DeltaComplexes(OwnedCategory):
     r"""Delta-complexes with selected face identifications."""
@@ -428,6 +444,14 @@ class DeltaComplexes(OwnedCategory):
             pass
 
         def cellular_realization(self):
+            pass
+
+        def triangulations(self):
+            from dzack_research.preamble.categories.triangulations import ChosenTriangulations
+
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
             pass
 
 
