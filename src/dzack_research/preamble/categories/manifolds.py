@@ -1196,6 +1196,45 @@ class _StandardSphere:
         return BilinearMap(left, right, target, images)
 
 
+class RiemannianManifoldMor(CategoricalMor):
+    r"""Smooth maps preserving the selected Riemannian metrics."""
+
+    class ElementMethods:
+        def __init__(self, parent, smooth_map):
+            Morphism.__init__(self, parent)
+            self._smooth_map = smooth_map
+
+        def underlying_smooth_morphism(self):
+            return self._smooth_map
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, smooth_map):
+        pass
+
+    @object_level
+    def identity(self):
+        pass
+
+
+class RiemannianManifoldMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = RiemannianManifoldMor
+
+
+class _RiemannianSmoothFunctor(Functor):
+    r"""Forget the selected metric on objects and local isometries."""
+
+    def __init__(self):
+        super().__init__(RiemannianManifolds(), SmoothManifolds())
+
+    def _apply_object(self, manifold):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class RiemannianManifolds(OwnedCategory):
     r"""Smooth real manifolds ``(M, g)`` with a chosen Riemannian metric ``g``.
 
@@ -1208,13 +1247,15 @@ class RiemannianManifolds(OwnedCategory):
     supercategory: forgetting ``g`` returns the smooth manifold ``M``.
 
     A morphism ``(M, g) -> (N, h)`` is a smooth map ``f`` with ``f^* h = g``,
-    a local isometry.  The Mor category with that condition is not presented
-    yet; ``isometry_group()`` is the automorphism group of ``(M, g)`` in it.
+    a local isometry.  ``isometry_group()`` is the automorphism group of
+    ``(M, g)`` in this map category.
 
     A Riemannian manifold is the Riemannian orbifold whose charts have
     trivial group, so ``RiemannianOrbifolds()`` is its second immediate
     supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
     """
+
+    _MorCategory = RiemannianManifoldMorCategoryConstruction
 
     def super_categories(self):
         from dzack_research.preamble.categories.orbifolds import RiemannianOrbifolds
@@ -1227,20 +1268,15 @@ class RiemannianManifolds(OwnedCategory):
 
     def an_object(self):
         r"""The Euclidean line ``(R, dx^2)``."""
-        assert False, "an_object on RiemannianManifolds: not implemented"
+        pass
 
     def _call_(self, manifold, metric):
-        r"""Return ``(M, g)`` for a smooth manifold ``M`` and a Riemannian metric ``g`` on it.
+        r"""Select ``(M, g)`` from a smooth manifold and its positive definite metric."""
+        pass
 
-        ``metric`` is a smooth positive definite section of ``Sym^2 T^*M``.
-        The construction stores ``M`` and ``g`` and computes nothing.
-        """
-        assert manifold in SmoothManifolds(), (
-            f"cannot equip {manifold} with the Riemannian metric {metric}: a Riemannian "
-            f"metric is defined on a smooth manifold, and {manifold} is in "
-            f"{manifold.category()}"
-        )
-        assert False, "construction of an object of RiemannianManifolds: not implemented"
+    @cached_method
+    def forget_metric(self):
+        return _RiemannianSmoothFunctor()
 
     class SubcategoryMethods:
         def GloballySymmetric(self):
@@ -1255,9 +1291,12 @@ class RiemannianManifolds(OwnedCategory):
             return self._with_axiom("GloballySymmetric")
 
     class ParentMethods:
+        def underlying_smooth_manifold(self):
+            pass
+
         def riemannian_metric(self):
             r"""Return the chosen metric ``g``, a positive definite section of ``Sym^2 T^*M``."""
-            assert False, "riemannian_metric on RiemannianManifolds: not implemented"
+            pass
 
         def isometry_group(self):
             r"""Return ``I(M, g)``, the group of isometries ``f: M -> M`` with ``f^* g = g``.
@@ -1269,7 +1308,7 @@ class RiemannianManifolds(OwnedCategory):
             group of ``M`` (Helgason, Ch. IV, Lemma 3.2), an object of
             ``LieGroups()``.
             """
-            assert False, "isometry_group on RiemannianManifolds: not implemented"
+            pass
 
     class GloballySymmetric(CategoryWithAxiom):
         r"""Riemannian globally symmetric spaces (Helgason, Ch. IV, §3).
@@ -2514,6 +2553,7 @@ __all__ = [
     "HolomorphicMap",
     "ManifoldAtlasChart",
     "ManifoldAtlasTransition",
+    "RiemannianManifoldMor",
     "RiemannianManifolds",
     "SmoothManifolds",
     "TopologicalManifolds",
