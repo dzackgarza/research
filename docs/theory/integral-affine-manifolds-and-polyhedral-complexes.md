@@ -31,12 +31,15 @@ TopologicalSpaces
        .PureDimension(n); .PureDimension(2) = topological surfaces
 TopologicalManifoldsWithBoundary / WithCorners → TopologicalSpaces
   [forget selected strata and local models]
+TopologicalManifoldsWithBoundary ⊂ TopologicalManifoldsWithCorners
 
 RealCkManifolds(k), k >= 1 → TopologicalManifolds
   .PureDimension(n); .PureDimension(2) = real C^k surfaces
   RealCkManifolds(j) → RealCkManifolds(k), j >= k
   SmoothRealManifolds = RealCkManifolds(infinity)
 RealCkManifoldsWithBoundary / WithCorners → TopologicalSpaces
+RealCkManifoldsWithBoundary(k) ⊂ RealCkManifoldsWithCorners(k)
+SmoothRealManifoldsWithBoundary ⊂ SmoothRealManifoldsWithCorners
 
 ComplexManifolds(m) → SmoothRealManifolds(2m)   [realification]
 RR^n ∈ SmoothRealManifolds.PureDimension(n)
@@ -50,6 +53,7 @@ IntegralAffineManifolds(n) → SmoothRealManifolds(n)
   .Oriented
 IntegralAffineManifoldsWithBoundary / WithCorners →
   SmoothRealManifoldsWithBoundary / WithCorners
+IntegralAffineManifoldsWithBoundary ⊂ IntegralAffineManifoldsWithCorners
   strict lattice-point atlas → ordinary integral-affine atlas
 
 (B, Sigma, atlas on B \ Sigma) = SingularIntegralAffineSpaces(n)
