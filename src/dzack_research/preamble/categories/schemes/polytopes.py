@@ -238,9 +238,11 @@ class LatticePolytopesIn(_PlacedPolytopeCategory):
     def _repr_object_names(cls):
         return "placed lattice polytopes"
 
+    @cached_method
     def forget_lattice(self):
         r"""Forget the selected lattice on objects and face-preserving arrows."""
-        pass
+        affine_ambient = self.ambient_space().underlying_affine_space()
+        return _LatticePolytopeForgetfulFunctor(self, ConvexPolytopesIn(affine_ambient))
 
     class ParentMethods(_PlacedPolytopeCategory.ParentMethods):
         def ambient_lattice_inclusion(self):
