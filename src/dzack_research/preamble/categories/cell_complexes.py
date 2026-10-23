@@ -121,6 +121,10 @@ class CellComplexes(OwnedCategory):
     def from_attaching_maps(self, cells, attaching_maps):
         pass
 
+    def from_intersection_strata(self, component_inclusions, intersection_strata):
+        r"""Select the dual complex of connected component intersections."""
+        pass
+
     def colimit(self, diagram):
         r"""Select a complex colimit with its universal cocone."""
         pass
