@@ -31,9 +31,11 @@ integral images; the Nikulin route is restricted to integral targets.
 Finite-rank nondegenerate-source embeddings over ZZ and QQ now have a
 complete scalar-product enumeration, and predicate subsets can filter that
 iterator without a ranking isomorphism. The remaining need is a terminating
-existence decision where required, with finite candidate subsets and any
-additional predicates covered by their own effective bound. No claim that the existing primitive classifier supplies
-this complete search is justified.
+existence decision where required. Finite coordinate subsets and bounded
+generator-image searches retain their inclusions and can be exhausted, but
+the bound guaranteeing a representative, including any additional
+predicates, remains to be supplied. No claim that the existing primitive
+classifier supplies this complete decision is justified.
 
 **Dependency path:** formed modules and form-preserving linear maps ->
 embedding subset with its actual maps -> optional primitive-image subset ->
