@@ -653,17 +653,7 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         regular_affine_manifold,
     ):
         r"""Select the singular subobject and affine structure on its exact complement."""
-        if singular_locus_inclusion.codomain() is not topological_space:
-            raise ValueError("the singular-locus inclusion must land in the selected space")
-        if regular_locus_inclusion.codomain() is not topological_space:
-            raise ValueError("the regular-locus inclusion must land in the selected space")
-        return _object_of(
-            self,
-            topological_space=topological_space,
-            singular_locus_inclusion=singular_locus_inclusion,
-            regular_locus_inclusion=regular_locus_inclusion,
-            regular_affine_manifold=regular_affine_manifold,
-        )
+        pass
 
     def from_face_gluing(self, gluing_cocone, singular_locus_inclusion, affine_collars):
         r"""Select an affine structure from a complex quotient and collar data."""
@@ -798,18 +788,7 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
         regular_affine_manifold,
         local_models=None,
     ):
-        if singular_locus_inclusion.codomain() is not topological_space:
-            raise ValueError("the singular-locus inclusion must land in the selected space")
-        if regular_locus_inclusion.codomain() is not topological_space:
-            raise ValueError("the regular-locus inclusion must land in the selected space")
-        return _object_of(
-            self,
-            topological_space=topological_space,
-            singular_locus_inclusion=singular_locus_inclusion,
-            regular_locus_inclusion=regular_locus_inclusion,
-            regular_affine_manifold=regular_affine_manifold,
-            local_models=local_models,
-        )
+        pass
 
     def from_face_gluing(
         self,
@@ -943,17 +922,7 @@ class SingularIntegralAffineLocalModels(OwnedParameterizedCategory):
         regular_affine_manifold,
         singular_point,
     ):
-        singular_space = SingularIntegralAffineSpaces(self.dimension()).on(
-            topological_neighborhood,
-            singular_locus_inclusion,
-            regular_locus_inclusion,
-            regular_affine_manifold,
-        )
-        return _object_of(
-            self,
-            singular_space=singular_space,
-            singular_point=singular_point,
-        )
+        pass
 
     @cached_method
     def forget_point(self):
