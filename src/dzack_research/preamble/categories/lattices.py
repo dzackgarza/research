@@ -4573,28 +4573,34 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.hyperbolic_index()
 
         @cached_method
-        def _direct_even_hyperbolic_splitting(self):
-            r"""Split the planes found from primitive divisibility-one null vectors.
+        def _direct_hyperbolic_splitting(self):
+            r"""Split planes found from primitive divisibility-one null vectors.
 
-            In an even lattice, a Bezout partner to such a vector has even
-            square, so its integral correction is a hyperbolic partner.
-            Repeat on the actual orthogonal complement. The result is a
-            lower bound with its isometry; only reaching the inertia bound
-            proves maximality without the complete embedding decision.
+            In an even lattice a Bezout partner automatically admits its
+            integral correction. In an odd lattice the existing partner
+            construction decides the norm congruence. Repeat on the actual
+            orthogonal complement. This gives a lower bound and an isometry;
+            only reaching the inertia bound proves maximality without the
+            complete embedding decision.
             """
             ring = self.base_ring()
             assert ring is _owned_integers() and self.module_rank().is_finite()
             plane = Lattices(ring)("U")
             signature = self.signature_pair()
             possible = min(int(signature.first()), int(signature.second()))
-            if possible and self.is_even() is True and self.is_isotropic() is True:
+            if possible and self.is_isotropic() is True:
                 isotropic = self.isotropic_vector()
                 if isotropic.div() == ring.one():
-                    partner = isotropic.hyperbolic_partner()
-                    first = plane.Emb(self)((isotropic, partner)).orthogonal_splitting()
-                    complement = first.domain().biproduct_factor(1)
-                    lower_index, lower = complement._direct_even_hyperbolic_splitting()
-                    return lower_index + 1, self._extend_hyperbolic_splitting(first, lower)
+                    try:
+                        partner = isotropic.hyperbolic_partner()
+                    except ValueError as error:
+                        if str(error) != "the integral hyperbolic partner locus is empty":
+                            raise
+                    else:
+                        first = plane.Emb(self)((isotropic, partner)).orthogonal_splitting()
+                        complement = first.domain().biproduct_factor(1)
+                        lower_index, lower = complement._direct_hyperbolic_splitting()
+                        return lower_index + 1, self._extend_hyperbolic_splitting(first, lower)
             hyperbolic = plane ** 0
             inclusion = hyperbolic.Emb(self)(())
             zero = self.orthogonal_decomposition(
@@ -4607,9 +4613,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return the largest number of orthogonal hyperbolic planes in ``self``.
 
             The integral index counts actual ``U`` summands of this lattice,
-            not summands of another lattice in its genus. In an even lattice,
-            primitive divisibility-one null vectors construct actual planes
-            and their complements directly. For larger candidate ranks, the
+            not summands of another lattice in its genus. Primitive
+            divisibility-one null vectors with integral hyperbolic partners
+            construct actual planes and their complements directly. In even
+            lattices such a partner is automatic; in odd lattices its norm
+            congruence is decided. For larger candidate ranks, the
             general integral embedding Mor decides whether ``U^r`` embeds.
             Every such embedding splits because ``U^r`` is unimodular;
             excluding all ranks above the constructed lower bound proves
@@ -4641,7 +4649,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             plane = Lattices(ring)("U")
             signature = self.signature_pair()
             upper_bound = min(int(signature.first()), int(signature.second()))
-            direct_index, _direct_splitting = self._direct_even_hyperbolic_splitting()
+            direct_index, _direct_splitting = self._direct_hyperbolic_splitting()
             for index in range(upper_bound, direct_index, -1):
                 embeddings = (plane ** index).Emb(self)
                 empty = embeddings.is_empty()
@@ -4693,7 +4701,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 f"a maximal hyperbolic splitting of {self} is computed here over ZZ, QQ, AA and represented RR"
             )
             index = int(self.hyperbolic_index())
-            direct_index, direct_splitting = self._direct_even_hyperbolic_splitting()
+            direct_index, direct_splitting = self._direct_hyperbolic_splitting()
             if index == direct_index:
                 return direct_splitting
             hyperbolic = Lattices(ring)("U") ** index
