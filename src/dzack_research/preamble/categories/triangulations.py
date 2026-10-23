@@ -1,6 +1,7 @@
 r"""Chosen triangulations over an exact geometric or complex target."""
 
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -27,14 +28,18 @@ class ChosenTriangulationMor(CategoricalMor):
     r"""Simplicial maps commuting with the two realization maps to the target."""
 
     class ElementMethods:
+        def __init__(self, parent, simplicial_map):
+            Morphism.__init__(self, parent)
+            self._simplicial_map = simplicial_map
+
         def simplicial_map(self):
-            pass
+            return self._simplicial_map
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, simplicial_map):
-        pass
+        return self.element_class(self, simplicial_map)
 
     @object_level
     def identity(self):

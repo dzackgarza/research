@@ -1,6 +1,7 @@
 r"""Cell, polytopal, simplicial, Delta, and simplicial-set categories."""
 
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -21,8 +22,12 @@ for _axiom in ("RegularCW", "PLManifold", "Kan"):
 
 
 class _ComplexMapMethods:
+    def __init__(self, parent, cell_map):
+        Morphism.__init__(self, parent)
+        self._cell_map = cell_map
+
     def underlying_map(self):
-        pass
+        return self._cell_map
 
     def __mul__(self, other):
         pass
@@ -38,7 +43,7 @@ class _ComplexMor(CategoricalMor):
     ElementMethods = _ComplexMapMethods
 
     def _element_constructor_(self, cell_map):
-        pass
+        return self.element_class(self, cell_map)
 
     @object_level
     def identity(self):
