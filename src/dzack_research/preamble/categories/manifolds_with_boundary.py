@@ -1,5 +1,6 @@
 r"""Manifolds with half-space and quadrant local models."""
 
+from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -7,12 +8,18 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     MorCategoryConstruction,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
-from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
+from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
+    OwnedCategory,
+    OwnedParameterizedCategory,
+)
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import (
     SmoothManifolds,
     TopologicalManifolds,
 )
+from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds
+from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 
 
@@ -261,4 +268,165 @@ class SmoothManifoldsWithCorners(OwnedCategory):
 
     class ParentMethods(_StratifiedManifoldMethods):
         def underlying_topological_stratified_manifold(self):
+            pass
+
+
+class RealCkStratifiedMor(CategoricalMor):
+    r"""Stratum-preserving maps of one selected finite differentiability degree."""
+
+    class ElementMethods:
+        def underlying_continuous_map(self):
+            pass
+
+        def underlying_topological_stratified_map(self):
+            pass
+
+        def interior_map(self):
+            pass
+
+        def weaken_to(self, degree):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, stratum_maps):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a stratified C^k identity requires the same source and target")
+        pass
+
+
+class RealCkBoundaryMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = RealCkStratifiedMor
+
+
+class RealCkCornerMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = RealCkStratifiedMor
+
+
+class _WeakenStratifiedDifferentiabilityFunctor(Functor):
+    r"""Forget higher regularity while retaining boundary or corner strata."""
+
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, manifold):
+        return manifold.weaken_to(self.codomain().degree())
+
+    def _apply_morphism(self, morphism):
+        return morphism.weaken_to(self.codomain().degree())
+
+
+class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
+    r"""Corner manifolds with a selected finite ``C^k`` atlas and maps."""
+
+    _MorCategory = RealCkCornerMorCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, degree):
+        degree = _owned_integers()(degree)
+        if degree < 1:
+            raise ValueError(f"a finite C^k degree must be positive, not {degree}")
+        return Category.__classcall__(cls, degree)
+
+    def degree(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def _repr_object_names(self):
+        return f"real C^{self.degree()} manifolds with corners"
+
+    def an_object(self):
+        pass
+
+    def on(self, topological_corner_manifold, atlas):
+        pass
+
+    @cached_method
+    def interior(self):
+        return _InteriorFunctor(self, RealCkManifolds(self.degree()))
+
+    @cached_method
+    def forget_topology(self):
+        return _UnderlyingTopologicalStrataFunctor(self, TopologicalManifoldsWithCorners())
+
+    @cached_method
+    def forget(self):
+        return _UnderlyingStratifiedSpaceFunctor(self)
+
+    @cached_method
+    def forget_to(self, degree):
+        degree = _owned_integers()(degree)
+        if degree < 1 or degree > self.degree():
+            raise ValueError(f"C^{self.degree()} can forget only to C^j with 1 <= j <= {self.degree()}")
+        return _WeakenStratifiedDifferentiabilityFunctor(self, RealCkManifoldsWithCorners(degree))
+
+    class ParentMethods(_StratifiedManifoldMethods):
+        def underlying_topological_stratified_manifold(self):
+            pass
+
+        def weaken_to(self, degree):
+            pass
+
+
+class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
+    r"""Boundary manifolds with a selected finite ``C^k`` atlas and maps."""
+
+    _MorCategory = RealCkBoundaryMorCategoryConstruction
+
+    @staticmethod
+    def __classcall__(cls, degree):
+        degree = _owned_integers()(degree)
+        if degree < 1:
+            raise ValueError(f"a finite C^k degree must be positive, not {degree}")
+        return Category.__classcall__(cls, degree)
+
+    def degree(self):
+        return self.parameter()
+
+    def super_categories(self):
+        return [RealCkManifoldsWithCorners(self.degree())]
+
+    def _repr_object_names(self):
+        return f"real C^{self.degree()} manifolds with boundary"
+
+    def an_object(self):
+        pass
+
+    def on(self, topological_boundary_manifold, atlas):
+        pass
+
+    @cached_method
+    def interior(self):
+        return _InteriorFunctor(self, RealCkManifolds(self.degree()))
+
+    @cached_method
+    def forget_topology(self):
+        return _UnderlyingTopologicalStrataFunctor(self, TopologicalManifoldsWithBoundary())
+
+    @cached_method
+    def forget(self):
+        return _UnderlyingStratifiedSpaceFunctor(self)
+
+    @cached_method
+    def forget_to(self, degree):
+        degree = _owned_integers()(degree)
+        if degree < 1 or degree > self.degree():
+            raise ValueError(f"C^{self.degree()} can forget only to C^j with 1 <= j <= {self.degree()}")
+        return _WeakenStratifiedDifferentiabilityFunctor(self, RealCkManifoldsWithBoundary(degree))
+
+    class ParentMethods(_StratifiedManifoldMethods):
+        def underlying_topological_stratified_manifold(self):
+            pass
+
+        def weaken_to(self, degree):
+            pass
+
+        def boundary(self):
             pass

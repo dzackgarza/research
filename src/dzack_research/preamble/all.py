@@ -318,6 +318,8 @@ from dzack_research.preamble.categories.real_ck_manifolds import (  # noqa: F401
     RealCkManifolds,
 )
 from dzack_research.preamble.categories.manifolds_with_boundary import (  # noqa: F401
+    RealCkManifoldsWithBoundary,
+    RealCkManifoldsWithCorners,
     SmoothManifoldsWithBoundary,
     SmoothManifoldsWithCorners,
     TopologicalManifoldsWithBoundary,
