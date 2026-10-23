@@ -826,6 +826,12 @@ class TopologicalSpaces(OwnedCategory):
 
         topology = open_subsets
 
+        def open_complement(self, closed_inclusion):
+            pass
+
+        def open_complement_inclusion(self, closed_inclusion):
+            pass
+
         @cached_method
         def open_subsets_site(self):
             r"""``Open(X)``, the poset category of the open subsets of ``X`` ordered by inclusion.
