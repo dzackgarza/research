@@ -752,6 +752,10 @@ class SimplicialSets(OwnedCategory):
             r"""Lower selected face and degeneracy operators to Sage privately."""
             pass
 
+        def _engine_kenzo_simplicial_set(self):
+            r"""Lower a finite selected simplicial set through Sage's ``KFiniteSimplicialSet``."""
+            pass
+
         def simplices(self, dimension):
             return self._defining_simplices[dimension]
 

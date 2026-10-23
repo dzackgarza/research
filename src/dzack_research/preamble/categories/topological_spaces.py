@@ -418,6 +418,14 @@ class ContinuousMap:
     def is_embedding(self):
         pass
 
+    def simplicial_approximation(self, source_triangulation, target_triangulation):
+        r"""Select a simplicial map after source subdivision and a homotopy to this map.
+
+        The supplied triangulations lie over this map's exact domain and
+        codomain. The comparison uses their selected realization arrows.
+        """
+        pass
+
     @validator
     def validate_continuity(self) -> None:
         r"""Raise ``ValueError`` unless the preimage of each open set of ``Y`` is open in ``X`` (``OWN-22``)."""
