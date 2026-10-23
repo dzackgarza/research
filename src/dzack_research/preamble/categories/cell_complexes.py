@@ -141,6 +141,10 @@ class CellComplexes(OwnedCategory):
         r"""Select the pushout of a region complement and a boundary-matched replacement."""
         pass
 
+    def boundary_surgery_span(self, region_inclusion, replacement, boundary_isomorphism):
+        r"""Select the boundary-matched span of the complement and replacement."""
+        pass
+
     @cached_method
     def realization(self):
         return _ComplexRealizationFunctor(self, TopologicalSpaces())
@@ -196,6 +200,13 @@ class CellComplexes(OwnedCategory):
 
     class PLManifold(CategoryWithAxiom):
         r"""Cell complexes with the required PL sphere and ball links."""
+
+        class ParentMethods:
+            def boundary(self):
+                pass
+
+            def boundary_inclusion(self):
+                pass
 
 
 class PolytopalComplexes(OwnedCategory):
