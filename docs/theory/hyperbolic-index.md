@@ -585,6 +585,94 @@ API or a claim of completed formalization. In the architecture of
 `lean-cas-dsl`. A computation's own assertions or account of its search
 are not correctness evidence on the formal side.
 
+## Using the reusable constructions
+
+The dependency interfaces below retain mathematical objects and maps. Their
+execution obligations remain open under the repository's source phase in
+[TODO.md](../../TODO.md); these examples do not certify an implementation.
+The target integral index and maximal-splitting computations are still separate
+from these reusable constructions.
+
+Scalar extension takes a specified ring morphism. For an integral lattice,
+use its coefficient ring's fraction-field map:
+
+```python
+L = Lattices(ZZ)("U")
+i = ZZ.fraction_field_map()
+V = L.base_change(i)
+phi = V.witt_decomposition()       # U_QQ^w orthogonal_sum A -> V
+unit = V.base_change_unit()       # L -> restriction of V to ZZ
+```
+
+`V.base_change_source()` retains `L`, and `V.base_change_ring_map()` retains
+`i`. The unit is a map of `ZZ`-modules into the restriction of scalars of
+`V`; its values expose their original `V` elements by `underlying_element()`.
+It must not be treated as an isometry between objects over one coefficient
+ring. `phi` is an isometry over `QQ`, with evaluation and inverse. Over `AA`,
+`witt_decomposition()` uses exact congruence diagonalization and positive
+square roots; `diagonalization()` itself returns an isometry from the diagonal
+space to the original space and also allows a degenerate form.
+
+A finite orthogonal sum is constructed by
+`Lattices(R).orthogonal_sum(factors)`. It carries the biproduct of the
+underlying modules and the orthogonal form. Its injections and projections
+retain that module decomposition; the projections need not preserve the form.
+For example the first projection from `<1> orthogonal_sum <1>` kills the second
+vector of square one. Consequently this construction does not supply
+categorical lattice products or coproducts for form-preserving morphisms.
+
+Norm fibres are sets with their inclusions:
+
+```python
+null_vectors = L.elements_of_norm(ZZ(0))
+nonzero_null_vectors = null_vectors.condition_set(lambda v: v != L.zero())
+```
+
+They include zero before the extra filter. In finite rank over `ZZ` or `QQ`,
+the ambient coordinate iterator permits complete filtered searches. Over an
+uncountable real base, the same fibre has membership and its inclusion
+without acquiring an exhaustive sequential iterator. A next-element request
+on an infinite filtered search may never return; it is not an emptiness test.
+
+For a terminating search within specified finite coordinates, retain the
+coordinate subset and its inclusion, then construct the finite subset of
+embedding maps:
+
+```python
+T = L.twist(ZZ(2))
+coefficients = finite_ordered_set(tuple(ZZ(a) for a in range(-2, 3)))
+box = L.coordinate_subset(coefficients)
+bounded = T.Emb(L).with_generator_images_in(box.domain())
+embeddings = bounded.domain()
+j = embeddings.random_element()
+```
+
+Here the candidate box contains `2e,f`, so this particular finite embedding
+set is nonempty. `box.inclusion()` maps its finite domain into `L`, while
+`bounded.inclusion()` maps its finite domain into `T.Emb(L)`. Each member is
+an actual form-preserving embedding, including a nonprimitive image such as
+`U(2) -> U`. `embeddings.condition_set(predicate)` filters these maps; when
+the predicate is decidable, the finite result can be exhausted. The selected
+`random_element()` distribution is uniform on this finite set. An empty
+support is rejected. This is neither uniform sampling on the whole lattice
+nor sampling continuously in a real box.
+
+A coordinate box alone supplies no global exclusion theorem. To conclude
+that no embedding exists after exhausting it, its bound must be guaranteed
+to contain a representative whenever one exists, including any additional
+conditions. Without such a bound, `T.Emb(L)` iteration or `an_element()`
+provides an exhaustive witness search over `ZZ` or `QQ` under the stated
+finite-rank nondegeneracy hypotheses, with no general termination guarantee
+in the empty case. The effective constant in (6) remains a required
+computational dependency, not a caller-selected search limit.
+
+The interfaces are defined at the [lattice owner](../../src/dzack_research/preamble/categories/lattices.py),
+[embedding-space owner](../../src/dzack_research/preamble/categories/lattice_morphisms.py),
+[finite free-module owner](../../src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py)
+and [finite enumerated-set owner](../../src/dzack_research/preamble/categories/sets/finite_ordered_sets.py).
+The [formed scalar-extension construction](../../src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py)
+retains the original lattice and scalar map.
+
 ## References
 
 - **Keith Conrad, *Bilinear forms*.**
