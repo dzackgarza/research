@@ -19,7 +19,6 @@ from dzack_research.preamble.categories.modules.pure.modules import VectorSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
 from dzack_research.preamble.categories.sets.set_categories import Sets
 from dzack_research.preamble.rings.complex import CC
-from dzack_research.preamble.owned_category import _object_of
 
 
 class ComplexVectorSpaces(OwnedParameterizedCategory):
@@ -159,11 +158,7 @@ class ComplexAffineSpaces(OwnedCategory):
 
     def from_torsor(self, model_vector_space, torsor):
         r"""Place the selected torsor under the model space's additive group."""
-        from dzack_research.preamble.categories.group.g_sets import Torsors
-
-        assert model_vector_space in VectorSpaces(CC)
-        assert torsor in Torsors(model_vector_space.underlying_additive_group())
-        return _object_of(self, model_vector_space=model_vector_space, torsor=torsor)
+        pass
 
     @cached_method
     def forget(self):
