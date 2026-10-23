@@ -2205,8 +2205,22 @@ class LatticeEmbeddingMor(CategoricalMor):
         embedding can have nontrivial finite index, and absence of an
         isometry or primitive embedding does not exclude such a map.
 
+        For finite nondegenerate spaces over QQ or AA, Witt cancellation
+        gives ``Emb(S,T) != empty`` exactly when
+        ``witt_index(T orthogonal_sum (-S)) >= dim(S)``. Indeed an embedding
+        splits off ``S`` and ``S orthogonal_sum (-S)`` is hyperbolic. In
+        the reverse direction, the anisotropic part of ``T - S``, together
+        with its remaining hyperbolic planes, gives a complement of
+        dimension ``dim(T)-dim(S)``; Witt cancellation gives the isometry.
+        This is an emptiness decision, independent of any witness search.
+
         EXAMPLES::
 
+            sage: P = Lattices(QQ)([[1, 0], [0, 1]])
+            sage: assert Lattices(QQ)([[2]]).Emb(P).is_empty() is False
+            sage: assert Lattices(QQ)([[3]]).Emb(P).is_empty() is True
+            sage: assert Lattices(AA)([[3]]).Emb(Lattices(AA)([[1, 0], [0, 1]])).is_empty() is False
+            sage: assert Lattices(AA)([[-1]]).Emb(Lattices(AA)([[1, 0], [0, 1]])).is_empty() is True
             sage: U = Lattices(ZZ)("U")
             sage: S = U.twist(ZZ(2))
             sage: assert S.Isom(U).is_empty() is True
@@ -2225,6 +2239,17 @@ class LatticeEmbeddingMor(CategoricalMor):
             and source.module_rank() > target.module_rank()
         ):
             return True
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+
+        if (
+            source.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers())
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            difference = target + source.twist(-source.base_ring().one())
+            return difference.witt_index() < _owned_integers()(source.module_rank().finite_value())
         if self._codomain_is_definite_over_integers():
             for _embedding in self:
                 return False
@@ -2258,8 +2283,10 @@ class LatticeEmbeddingMor(CategoricalMor):
         Even-overlattice inclusions retain those nonprimitive candidates.
         Outside the classification routes, finite-rank nondegenerate-source
         spaces over ZZ or QQ use their complete embedding iterator. That
-        search terminates when an embedding exists, but may run forever
-        when the space is empty. Use a justified finite candidate set when
+        search terminates when an embedding exists. For finite nondegenerate
+        rational endpoints, the Witt-index emptiness decision first excludes
+        the empty case, so this route terminates. Over ZZ an empty search
+        may run forever. Use a justified finite candidate set when integral
         exclusion by exhaustion is required.
 
         EXAMPLES::
@@ -2328,6 +2355,8 @@ class LatticeEmbeddingMor(CategoricalMor):
             and target.module_rank().is_finite()
             and source.is_nondegenerate()
         ):
+            if source.base_ring() is _owned_rationals() and self._emptiness_decision() is True:
+                raise ValueError(f"there is no lattice embedding of {source} into {target}")
             for embedding in self:
                 return embedding
             raise ValueError(f"there is no lattice embedding of {source} into {target}")

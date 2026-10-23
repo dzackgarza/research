@@ -462,6 +462,33 @@ are fibres of evaluation maps; simultaneous conditions are intersections
 of subsets. A quotient by a group action is a separate construction and
 is not needed by the bounded search in this note.
 
+For finite-dimensional nondegenerate spaces over a field of characteristic
+different from two, there is also an emptiness criterion:
+
+$$
+\operatorname{Emb}_F(T,L)\ne\varnothing
+\quad\Longleftrightarrow\quad
+w(L\perp(-T))\ge\dim T.
+$$
+
+Here $-T$ means the same space with the negative form. To prove the forward
+implication, split off the nondegenerate image of $T$. Then
+$L\perp(-T)\simeq M\perp T\perp(-T)\simeq M\perp H^{\dim T}$.
+Conversely write $L\perp(-T)\simeq A\perp H^w$ by Witt decomposition,
+and put $r=\dim T$. If $w\ge r$, let $M=A\perp H^{w-r}$. Since
+$T\perp(-T)\simeq H^r$, cancellation of $-T$ gives
+$L\simeq M\perp T$, hence an embedding. These are consequences of
+Witt decomposition and cancellation; see Knebusch, §2, in the references.
+No assertion about integral embeddings follows from this field criterion.
+
+The existing `Emb.is_empty()` computation now uses this criterion over
+`QQ` and `AA`. For nondegenerate rational endpoints, an affirmative existence
+decision followed by the complete rational iterator gives a terminating
+witness construction. For example `diag(1,1)` represents `2` but does not
+represent `3` over `QQ`, while it represents both over `AA`. The obstruction
+at `3` for rational sums of two squares distinguishes the two fields despite
+their identical real signatures.
+
 For $T=U$, the same set is the subset of $L\times L$ defined by
 $q(e)=q(f)=0$ and $B(e,f)=1$. For $U^{\perp r}$ it is the subset of the
 finite product indexed by the specified hyperbolic basis satisfying all
@@ -706,8 +733,10 @@ that no embedding exists after exhausting it, its bound must be guaranteed
 to contain a representative whenever one exists, including any additional
 conditions. Without such a bound, `T.Emb(L)` iteration or `an_element()`
 provides an exhaustive witness search over `ZZ` or `QQ` under the stated
-finite-rank nondegeneracy hypotheses, with no general termination guarantee
-in the empty case. The effective constant in (6) remains a required
+finite-rank nondegeneracy hypotheses. For two nondegenerate rational
+endpoints, the preceding Witt-index decision rejects the empty case before
+`an_element()` starts its search. General integral exclusion still lacks
+such a termination guarantee. The effective constant in (6) remains a required
 computational dependency, not a caller-selected search limit.
 
 The interfaces are defined at the [lattice owner](../../src/dzack_research/preamble/categories/lattices.py),
