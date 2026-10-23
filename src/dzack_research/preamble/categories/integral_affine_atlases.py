@@ -2,6 +2,7 @@ r"""Selected presentations of integral-affine atlases on smooth manifolds."""
 
 from sage.misc.cachefunc import cached_method
 from sage.categories.morphism import Morphism
+from sage.rings.infinity import Infinity
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -12,6 +13,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import Objec
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.integral_affine_manifolds import IntegralAffineManifolds
 from dzack_research.preamble.categories.manifolds import SmoothManifolds
+from dzack_research.preamble.categories.real_ck_atlases import RealCkAtlases
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -35,6 +37,9 @@ class IntegralAffineAtlasMor(CategoricalMor):
             return self._smooth_map(point)
 
         def integral_affine_morphism(self):
+            pass
+
+        def smooth_atlas_morphism(self):
             pass
 
         def __mul__(self, other):
@@ -76,6 +81,17 @@ class _AtlasMaximalizationFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         return morphism.integral_affine_morphism()
+
+
+class _UnderlyingSmoothAtlasFunctor(Functor):
+    def __init__(self):
+        super().__init__(IntegralAffineAtlases(), RealCkAtlases(Infinity))
+
+    def _apply_object(self, atlas):
+        return atlas.smooth_atlas()
+
+    def _apply_morphism(self, morphism):
+        return morphism.smooth_atlas_morphism()
 
 
 class IntegralAffineAtlases(OwnedCategory):
@@ -129,6 +145,10 @@ class IntegralAffineAtlases(OwnedCategory):
     @cached_method
     def maximalization(self):
         return _AtlasMaximalizationFunctor()
+
+    @cached_method
+    def forget_affine_structure(self):
+        return _UnderlyingSmoothAtlasFunctor()
 
     class ParentMethods:
         def __init__(
@@ -197,6 +217,9 @@ class IntegralAffineAtlases(OwnedCategory):
             pass
 
         def maximal_atlas(self):
+            pass
+
+        def smooth_atlas(self):
             pass
 
         def integral_affine_manifold(self):
