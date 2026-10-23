@@ -122,7 +122,7 @@ class TopologicalManifoldsWithBoundary(OwnedCategory):
     _MorCategory = TopologicalBoundaryMorCategoryConstruction
 
     def super_categories(self):
-        return [Objects()]
+        return [TopologicalManifoldsWithCorners()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -149,7 +149,7 @@ class SmoothManifoldsWithBoundary(OwnedCategory):
     _MorCategory = SmoothBoundaryMorCategoryConstruction
 
     def super_categories(self):
-        return [Objects()]
+        return [SmoothManifoldsWithCorners()]
 
     @classmethod
     def _repr_object_names(cls):
