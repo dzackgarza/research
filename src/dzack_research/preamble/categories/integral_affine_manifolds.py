@@ -247,6 +247,11 @@ class IntegralAffineManifoldsOfDimension(OwnedParameterizedCategory):
         pass
 
     @cached_method
+    def local_isomorphisms(self):
+        r"""The wide local-isomorphism subcategory in this fixed dimension."""
+        return self.WideSubcategory(_LocalIntegralAffineIsomorphismArrows(self))
+
+    @cached_method
     def forget(self):
         return _UnderlyingSmoothManifoldFunctor(
             self,
