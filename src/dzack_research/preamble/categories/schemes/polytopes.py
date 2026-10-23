@@ -492,6 +492,19 @@ class RegularPolytopes(OwnedCategory):
             return f"Regular polytope {{{symbol}}}"
 
 
+class _RationalPolytopeFacePosetFunctor(Functor):
+    r"""Send a rational polytope and its maps to face-incidence objects."""
+
+    def __init__(self, source):
+        super().__init__(source, AbstractPolytopes())
+
+    def _apply_object(self, polytope):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class ConvexPolytopes(OwnedParameterizedCategory):
     r"""Rational convex polytopes in a chosen coordinate lattice.
 
@@ -572,6 +585,10 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
     def super_categories(self):
         return [Sets().Subobjects(self.ambient_space())]
+
+    @cached_method
+    def face_posets(self):
+        return _RationalPolytopeFacePosetFunctor(self)
 
     class SubcategoryMethods:
         def ambient_lattice(self):
