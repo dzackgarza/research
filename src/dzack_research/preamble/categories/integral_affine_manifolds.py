@@ -93,10 +93,10 @@ class _UnderlyingAffineTopologicalSpaceFunctor(Functor):
         super().__init__(source, TopologicalSpaces())
 
     def _apply_object(self, manifold):
-        pass
+        return manifold.underlying_smooth_manifold().underlying_topological_manifold()
 
     def _apply_morphism(self, morphism):
-        pass
+        return morphism.underlying_smooth_morphism().underlying_topological_morphism()
 
 
 class IntegralAffineManifolds(OwnedCategory):
