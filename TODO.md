@@ -1658,6 +1658,30 @@ These remain required constructions with their original generality, maps, specim
     Theory and leads: `docs/theory/coxeter-groups-complexes-and-cell-structures.md`. **Closure specimens:** the boundary of the 3-simplex realizes `S^2`, and the Δ-complex with one vertex and one edge realizes `S^1`. The CW structure on `RP^2` with one cell in each dimension is not regular, and its regularization is.
     The order complex of the face poset of a simplicial complex is its barycentric subdivision.
 
+- [ ] **`integral-affine-polyhedral-p1`**. **Needs:** `the-real-line-is-a-smooth-manifold`, `simplicial-and-cw-foundations`.
+  **Owner and delta:** execute P1 of [`docs/theory/integral-affine-manifolds-and-polyhedral-complexes.md`](docs/theory/integral-affine-manifolds-and-polyhedral-complexes.md#p1-category-subtree-and-complete-typing). The formal authority first fixes the placed-polytope/face-map, common-complex/triangulation, and integral-affine/singular-space categories requested in `lean-categories/COMPLAINTS.md`; the preamble presents the complete category graph, including every object, `Mor`, constructor and functor path. Audit each graph node and arrow against its formal owner and its actual preamble endpoint. A pending formal declaration remains a dependency, not a local substitute.
+  **Closure:** the plan's P1 coverage register has no unowned node or arrow, and its three representative chains retain exact source objects and maps.
+
+- [ ] **`integral-affine-polyhedral-p2`**. **Needs:** `integral-affine-polyhedral-p1`.
+  **Owner and delta:** execute the plan's P2: canonical constructors retain each defining atlas, ambient placement, singular-locus inclusion, face inclusion, triangulation map, and gluing cocone. Direct data, restriction, functor image and raised result converge on the same construction.
+  **Closure:** each required object and map has its defining datum at its category owner; no face, quotient or selected structure loses its source arrow.
+
+- [ ] **`integral-affine-polyhedral-p3`**. **Needs:** `integral-affine-polyhedral-p2`, `optional-manifold-tangent-bundles`.
+  **Owner and delta:** execute the plan's P3 by wiring these constructors to the existing manifold, affine, lattice, sheaf, polytope, cone, quotient, colimit, action and hyperbolic owners. Preserve the structural output of each call.
+  **Closure:** each reusable preamble operation has one typed path into the construction and returns its stated objects and maps.
+
+- [ ] **`integral-affine-polyhedral-p4`**. **Needs:** `integral-affine-polyhedral-p3`.
+  **Owner and delta:** execute the plan's P4: map each adopted exact operation to a maintained private engine, then lower and raise through its P1 owner with all structural arrows. Record precise capability gaps before selecting another engine.
+  **Closure:** every adopted operation has a source-linked engine contract and a typed raise path.
+
+- [ ] **`integral-affine-polyhedral-p5`**. **Needs:** `integral-affine-polyhedral-p4`.
+  **Owner and delta:** execute the plan's P5: expose faces, incidence, automorphisms, stars, links, subdivisions, integral points, selected triangulations, transport, colimits and embeddings at their mathematical owners. Verify the plan's true assertions from independent mathematics.
+  **Closure:** each standard result retains the specified maps and satisfies its owner-local mathematical assertions.
+
+- [ ] **`integral-affine-polyhedral-p6`**. **Needs:** `integral-affine-polyhedral-p5`.
+  **Owner and delta:** execute the plan's P6: construct the remaining integral-affine atlas, tangent lattice system, singular complement, affine collars, structured surgery, degeneration dual complex and symmetry lifts after reuse. `IAS^2` is the sphere refinement of the singular object.
+  **Closure:** the atlas, monodromy, link, action and universal-property assertions in the plan hold at their owners; the complete six-phase construction is available through preamble objects.
+
 - [ ] **`coxeter-complexes-and-buildings`**. **Needs:** `coxeter-group-structure`, `simplicial-and-cw-foundations`. **Owner and delta:**
 
   - The poset of parabolic subgroups `W_J`.

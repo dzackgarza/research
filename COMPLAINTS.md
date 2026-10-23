@@ -53,6 +53,12 @@ None is evidence against the repaired actual-category or actual-functor construc
 `RationalPolyhedralCones(L)` constructs cones (`from_rays`, `triangulation()`) but has no `Mor`: the inclusion of a simplicial subcone `S_t -> C` from `simplicial_subcone_inclusion` (`polyhedral_cones.py`) is only a map of underlying subsets of `L tensor QQ`. Missing: the category of rational polyhedral cones in `L tensor QQ` with linear maps carrying one cone into another (inclusions as the first specimens), presented as `C.Mor(D)`; request from `lean-categories` if it lacks the category.
 Consumer: port `lorentzian_cells` (#15) composing subcone inclusions.
 
+### Convex-polytope facets have no retained arrow into their polytope
+
+A face of a placed convex polytope `P ↪ A` is a subobject `F ↪ P`, and its composite with `P ↪ A` is the selected ambient placement of `F`. The face-incidence order and any face gluing need the first arrow, not only the two subsets of `A`.
+
+Source inspection of `categories/schemes/polytopes.py:ConvexPolytopes.ParentMethods.facets` found a finite family of owned face polytopes constructed from Sage facets. Each face has its own inclusion into the common ambient coordinate module through `_convex_polytope`, but the method returns no `F ↪ P` arrow. `Sets().Subobjects(A).Mor(F,P)` can express the required commuting triangle once the mathematical polytope-map owner and the factor map are established. The current `lean-categories` request, *Placed convex polytopes need their face inclusions and map category*, owns those types; `TODO.md`'s integral-affine construction node owns the preamble repair. The inspected slice is this constructor and the generic set-subobject Mor; it does not classify other face consumers or external polytope packages.
+
 ### `lean-categories` does not formalize finiteness of binary fixed-norm orbits
 
 Two `lean-categories` requests, neither filed yet.
