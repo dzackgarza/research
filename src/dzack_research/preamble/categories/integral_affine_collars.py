@@ -14,7 +14,6 @@ from dzack_research.preamble.categories.integral_affine_manifolds import (
     IntegralAffineManifoldsWithBoundary,
     IntegralAffineManifoldsWithCorners,
 )
-from dzack_research.preamble.owned_category import _object_of
 
 
 class IntegralAffineCollarMor(CategoricalMor):
@@ -36,16 +35,7 @@ class IntegralAffineCollarMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, face_map, neighborhood_affine_map):
-        source = self.domain()
-        target = self.codomain()
-        if face_map.domain() is not source.face() or face_map.codomain() is not target.face():
-            raise ValueError("the face map must join the selected collar faces")
-        if (
-            neighborhood_affine_map.domain() is not source.neighborhood_inclusion().domain()
-            or neighborhood_affine_map.codomain() is not target.neighborhood_inclusion().domain()
-        ):
-            raise ValueError("the affine map must join the selected collar neighborhoods")
-        return self.element_class(self, face_map, neighborhood_affine_map)
+        pass
 
     @object_level
     def identity(self):
@@ -99,21 +89,11 @@ class IntegralAffineCollars(OwnedCategory):
 
     def on(self, affine_piece, face_inclusion, neighborhood_inclusion, collar_chart):
         r"""Select a face, its neighborhood in the piece, and an affine collar chart."""
-        if face_inclusion.codomain() is not affine_piece:
-            raise ValueError("the face inclusion must land in the selected affine piece")
-        if neighborhood_inclusion.codomain() is not affine_piece:
-            raise ValueError("the neighborhood inclusion must land in the selected affine piece")
-        return _object_of(
-            self,
-            affine_piece=affine_piece,
-            face_inclusion=face_inclusion,
-            neighborhood_inclusion=neighborhood_inclusion,
-            collar_chart=collar_chart,
-        )
+        pass
 
     def comparison(self, source_collar, target_collar, face_map, neighborhood_affine_map):
         r"""Select an affine extension of a specified face pairing."""
-        return self.Mor(source_collar, target_collar)(face_map, neighborhood_affine_map)
+        pass
 
     @cached_method
     def neighborhoods(self):
