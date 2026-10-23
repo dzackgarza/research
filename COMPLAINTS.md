@@ -14,6 +14,12 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Complex-manifold realification is declared as a supercategory edge
+
+For a complex analytic manifold of complex dimension `m`, realification gives a smooth real manifold of dimension `2m` and sends each holomorphic map to its underlying smooth map. It changes the object presentation and the morphism class: a smooth map between complex manifolds need not be holomorphic. It is a functor, not an inclusion with the same objects and hom sets.
+
+Source inspection of `categories/manifolds.py:ComplexManifolds.super_categories` found `SmoothManifolds()` in its declared supercategories. The direct complex constructor stores `manifold_dimension=m` and a complex Sage manifold, while the smooth constructor stores real dimension and a real Sage manifold. The existing `ComplexManifoldMor` selects holomorphic maps, so the supercategory edge supplies the wrong map inheritance and does not construct the real dimension-`2m` image. The plan's P1 manifold subtree requires the explicit object and morphism functor. The inspected slice is these constructors and category edges; no runtime acceptance claim is made. Repair belongs to `integral-affine-polyhedral-p1` in TODO after the formal realification owner is established.
+
 ### Labelled graphs present no isomorphisms or automorphism groups
 
 `LabelledGraphs`/`LabelledDigraphs` (`categories/graph_categories.py`) present label-preserving `Mor` but no computed isomorphism set or automorphism group.
