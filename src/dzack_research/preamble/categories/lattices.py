@@ -3013,9 +3013,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             \(V=H_1\perp\cdots\perp H_r\perp V_0\) with \(V_0\) zero or
             anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
             A lattice answers through its quadratic space :meth:`vector_space`.
-            Over number fields the private OSCAR/Hecke realization decomposes
-            the quadratic space into its anisotropic and hyperbolic summands; half
-            the dimension of the latter is the Witt index.
+            Over QQ, repeated exact rational isotropy decisions and orthogonal
+            plane splittings give the hyperbolic summand; half its dimension is
+            the Witt index. Other supported number fields use the private
+            OSCAR/Hecke realization.
             Over AA and represented exact RR, Sylvester's law gives
             ``min(p,q)`` from exact signature. For RR, congruence and the
             owned scalar sign decisions must succeed; undecided signs
@@ -3066,9 +3067,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                         signature.second().finite_value(),
                     )
                 case _ if _engine_ring(field) is SageQQ:
-                    index = lattice_engines._oscar_lattices.rational_witt_index(
-                        self.gram_tensor()
-                    )
+                    hyperbolic = self.witt_decomposition().domain().biproduct_factor(0)
+                    index = int(hyperbolic.module_rank()) // 2
                 case _ if (
                     field in OwnedNumberFields()
                     and field in NumberFieldsWithChosenPrimitiveElement()
@@ -3175,10 +3175,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             To decompose an integral lattice rationally, first extend
             scalars along its fraction-field map.
 
-            The QQ computation uses the same maintained Hecke operation
-            as ``witt_index``. Its basis vectors are raised into this
-            space and assembled through the existing hyperbolic-plane,
-            subobject and orthogonal-decomposition constructions.
+            The QQ computation repeatedly uses the exact rational
+            isotropy decision and witness, then splits the plane given
+            by its hyperbolic partner. The terminal complement is
+            anisotropic by the same decision.
             Over AA or represented exact RR, congruence diagonalization
             and decided scalar signs and positive square roots supply the
             normalized hyperbolic pairs and a definite complement. RR
@@ -3262,12 +3262,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 isometries = normal.Isom(self)
                 return isometries.element_class(isometries, module_isomorphism)
             if field is _owned_rationals():
-                anisotropic_basis, hyperbolic_basis = (
-                    lattice_engines._oscar_lattices.rational_witt_bases(self)
-                )
-            elif field is RR:
+                return self._rational_witt_decomposition()
+            if field is RR:
                 return lattice_engines._real_witt_decomposition(self)
-            elif field is _owned_real_algebraic_numbers():
+            if field is _owned_real_algebraic_numbers():
                 anisotropic_basis, hyperbolic_basis = (
                     lattice_engines._real_witt_bases(self)
                 )
@@ -3285,6 +3283,43 @@ class Lattices(OwnedCategoryOverBaseRing):
             return self.orthogonal_decomposition(
                 (inclusion, complement.inclusion())
             ).inverse()
+
+        @cached_method
+        def _rational_witt_decomposition(self):
+            r"""Split rational hyperbolic planes until the complement is anisotropic."""
+            ring = self.base_ring()
+            assert ring is _owned_rationals() and self.is_nondegenerate()
+            plane = Lattices(ring)("U")
+            if self.is_isotropic() is True:
+                isotropic = self.isotropic_vector()
+                partner = isotropic.hyperbolic_partner()
+                first = plane.Emb(self)((isotropic, partner)).orthogonal_splitting()
+                complement = first.domain().biproduct_factor(1)
+                lower = complement._rational_witt_decomposition()
+                return self._extend_hyperbolic_splitting(first, lower)
+            hyperbolic = plane ** 0
+            inclusion = hyperbolic.Emb(self)(())
+            return self.orthogonal_decomposition(
+                (inclusion, self.Aut().identity())
+            ).inverse()
+
+        def _extend_hyperbolic_splitting(self, first, lower):
+            r"""Combine a chosen plane and the splitting of its complement."""
+            lower_plane = lower.domain().biproduct_factor(0)
+            lower_index = int(lower_plane.module_rank()) // 2
+            if lower_index == 0:
+                return first
+            lower_inclusion = lower.domain().injection(0)
+            complement_inclusion = first.domain().injection(1)
+            images = tuple(
+                first(first.domain().injection(0)(vector))
+                for vector in first.domain().biproduct_factor(0).module_generators()
+            ) + tuple(
+                first(complement_inclusion(lower(lower_inclusion(vector))))
+                for vector in lower_plane.module_generators()
+            )
+            hyperbolic = Lattices(self.base_ring())("U") ** (lower_index + 1)
+            return hyperbolic.Emb(self)(images).orthogonal_splitting()
 
         def is_isotropic(self) -> bool | Predicate:
             r"""Return whether $L_K$ contains a nonzero isotropic vector.
@@ -4559,17 +4594,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     first = plane.Emb(self)((isotropic, partner)).orthogonal_splitting()
                     complement = first.domain().biproduct_factor(1)
                     lower_index, lower = complement._direct_even_hyperbolic_splitting()
-                    if lower_index == 0:
-                        return 1, first
-                    lower_plane = lower.domain().biproduct_factor(0)
-                    lower_inclusion = lower.domain().injection(0)
-                    complement_inclusion = first.domain().injection(1)
-                    images = (isotropic, partner) + tuple(
-                        first(complement_inclusion(lower(lower_inclusion(vector))))
-                        for vector in lower_plane.module_generators()
-                    )
-                    embedding = (plane ** (lower_index + 1)).Emb(self)(images)
-                    return lower_index + 1, embedding.orthogonal_splitting()
+                    return lower_index + 1, self._extend_hyperbolic_splitting(first, lower)
             hyperbolic = plane ** 0
             inclusion = hyperbolic.Emb(self)(())
             zero = self.orthogonal_decomposition(
