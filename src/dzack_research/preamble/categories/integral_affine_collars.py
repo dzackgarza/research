@@ -11,7 +11,6 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 from dzack_research.preamble.categories.abstract_categories.objects import Objects, OwnedCategory
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.integral_affine_manifolds import (
-    IntegralAffineManifoldsWithBoundary,
     IntegralAffineManifoldsWithCorners,
 )
 from dzack_research.preamble.owned_category import _object_of
@@ -51,7 +50,7 @@ class _CollarNeighborhoodFunctor(Functor):
     r"""Take the selected neighborhood and its affine comparison map."""
 
     def __init__(self):
-        super().__init__(IntegralAffineCollars(), IntegralAffineManifoldsWithBoundary())
+        super().__init__(IntegralAffineCollars(), IntegralAffineManifoldsWithCorners())
 
     def _apply_object(self, collar):
         return collar.neighborhood_inclusion().domain()
@@ -91,7 +90,9 @@ class IntegralAffineCollars(OwnedCategory):
     def on(self, affine_piece, face_inclusion, neighborhood_inclusion, collar_chart):
         r"""Select a face, its neighborhood in the piece, and an affine collar chart."""
         assert affine_piece in IntegralAffineManifoldsWithCorners()
+        assert face_inclusion.domain() in IntegralAffineManifoldsWithCorners()
         assert face_inclusion.codomain() is affine_piece
+        assert neighborhood_inclusion.domain() in IntegralAffineManifoldsWithCorners()
         assert neighborhood_inclusion.codomain() is affine_piece
         assert collar_chart.domain() is neighborhood_inclusion.domain()
         return _object_of(
