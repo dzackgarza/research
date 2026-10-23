@@ -14,6 +14,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.cell_complexes import SimplicialComplexes
 from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -77,9 +78,15 @@ class ChosenTriangulations(OwnedParameterizedCategory):
     def an_object(self):
         pass
 
-    def on(self, simplicial_complex, realization_map):
-        r"""Select ``T`` and the exact map ``|T| -> K`` to this category's target."""
-        pass
+    def on(self, simplicial_complex, realization_map, simplex_inclusions):
+        r"""Select ``T``, its simplex inclusions, and ``|T| -> K``."""
+        return _object_of(
+            self,
+            target=self.target(),
+            simplicial_complex=simplicial_complex,
+            realization_map=realization_map,
+            simplex_inclusions=simplex_inclusions,
+        )
 
     def target(self):
         return self.parameter()
@@ -89,17 +96,27 @@ class ChosenTriangulations(OwnedParameterizedCategory):
         return _TriangulationSourceFunctor(self.target())
 
     class ParentMethods:
+        def __init__(self, target, simplicial_complex, realization_map, simplex_inclusions, **rest):
+            self._target = target
+            self._simplicial_complex = simplicial_complex
+            self._realization_map = realization_map
+            self._simplex_inclusions = simplex_inclusions
+            super().__init__(**rest)
+
+        def target(self):
+            return self._target
+
         def simplicial_complex(self):
-            pass
+            return self._simplicial_complex
 
         def realization_map(self):
-            pass
+            return self._realization_map
 
         def simplices(self, dimension):
-            pass
+            return self.simplicial_complex().simplices(dimension)
 
         def simplex_inclusion(self, simplex):
-            pass
+            return self._simplex_inclusions[simplex]
 
     class Integral(CategoryWithAxiom):
         r"""Chosen triangulations integral relative to the target's selected lattices."""
