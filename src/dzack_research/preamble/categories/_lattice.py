@@ -198,16 +198,30 @@ def _form_of_gram(module, gram):
     the tensor square.
     """
     ring = module.base_ring()
-    forms = module.bilinear_forms(ring)
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        _as_module_element,
+        _represented_module,
+    )
+
+    values = _represented_module(ring, ring)
+    forms = module.bilinear_forms(values)
     rank = module.module_rank()
     match rank.is_finite():
         case True:
-            # The selected covariant tensor *is* the finite form's defining
-            # data.  Its universal Hom retains that exact tensor rather than
-            # lowering it to rows and recovering it from generator images.
-            return forms(gram)
+            # When the ring is already its own module, the selected tensor is
+            # the form's defining datum. Otherwise its scalar entries enter
+            # the ring's canonical regular-module realization.
+            if values is ring:
+                return forms(gram)
+            size = int(rank)
+            return forms([
+                [_as_module_element(ring, ring, gram[i, j]) for j in range(size)]
+                for i in range(size)
+            ])
         case False:
-            form = forms(lambda left, right: gram(left, right))
+            form = forms(
+                lambda left, right: _as_module_element(ring, ring, gram(left, right))
+            )
             # This is the supplied exact infinite Gram construction, including
             # its justified invariants, not a finite observation of the form.
             form.gram_tensor.set_cache(gram)

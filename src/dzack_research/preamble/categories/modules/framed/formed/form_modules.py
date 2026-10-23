@@ -1436,6 +1436,19 @@ class PairedModules(OwnedParameterizedCategory):
             )
 
 
+def _base_changed_scalar_gram(source, ring_map):
+    r"""Map a finite scalar Gram along the selected map, including noncanonical maps."""
+    rank = int(source.module_rank())
+    gram = source.gram_tensor()
+    return tensor(
+        ring_map.codomain(), (), (rank, rank),
+        (
+            _base_change_scalar(ring_map, gram[i, j])
+            for i in range(rank) for j in range(rank)
+        ),
+    )
+
+
 @cached_function(key=lambda source, ring_map: (id(source), id(ring_map)))
 def _formed_module_base_change(self, ring_map):
     r"""Base-change a scalar-valued finite free form along ``R -> S``."""
@@ -1472,19 +1485,24 @@ def _formed_module_base_change(self, ring_map):
         if source in Lattices(source.base_ring()):
             categories.append(Lattices(target_ring))
             data["gram_tensor"] = (
-                changed_form.gram_tensor() if source.module_rank().is_finite()
+                _base_changed_scalar_gram(source, ring_map)
+                if source.module_rank().is_finite()
                 else _BaseChangedGram(changed, source.gram_tensor(), ring_map, changed_form)
             )
         return _form_module(changed_form, _extra_categories=categories, _extra_construction_data=data)
 
     if _is_bilinear_form(form):
+        target_values = _represented_module(target_ring, target_ring)
         if _has_finite_framing(form.module()):
             changed_values = form.coordinate_values().map(
-                lambda value: _base_change_scalar(ring_map, value),
+                lambda value: _as_module_element(
+                    target_ring, target_ring,
+                    _base_change_scalar(ring_map, _value_from_module_element(source, value)),
+                ),
                 name="Base-changed bilinear coordinate values",
             )
             return equip(
-                changed.bilinear_forms(target_ring)(changed_values)
+                changed.bilinear_forms(target_values)(changed_values)
             )
 
         def changed_bilinear_value(left, right):
@@ -1500,13 +1518,15 @@ def _formed_module_base_change(self, ring_map):
                         * right_coordinates(right_label)
                         * _base_change_scalar(
                             ring_map,
-                            form(source_left, source_right),
+                            _value_from_module_element(
+                                source, form(source_left, source_right)
+                            ),
                         )
                     )
-            return result
+            return _as_module_element(target_ring, target_ring, result)
 
         return equip(
-            changed.bilinear_forms(target_ring)(changed_bilinear_value)
+            changed.bilinear_forms(target_values)(changed_bilinear_value)
         )
 
     if not _is_quadratic_form(form):
@@ -1516,13 +1536,17 @@ def _formed_module_base_change(self, ring_map):
         )
 
     source_form = self.form()
+    target_values = _represented_module(target_ring, target_ring)
     if source_form.has_selected_bilinear_lift():
         changed_lift_values = source_form.lift_coordinate_values().map(
-            lambda value: _base_change_scalar(ring_map, value),
+            lambda value: _as_module_element(
+                target_ring, target_ring,
+                _base_change_scalar(ring_map, _value_from_module_element(source, value)),
+            ),
             name="Base-changed quadratic-lift coordinate values",
         )
         return equip(
-            changed.quadratic_forms(target_ring)(changed_lift_values)
+            changed.quadratic_forms(target_values)(changed_lift_values)
         )
 
     def changed_quadratic_value(element):
@@ -1532,7 +1556,9 @@ def _formed_module_base_change(self, ring_map):
             source_left = form.module().module_generator(left_label)
             result += (
                 coordinates(left_label)**2
-                * _base_change_scalar(ring_map, form(source_left))
+                * _base_change_scalar(
+                    ring_map, _value_from_module_element(source, form(source_left))
+                )
             )
             left_rank = source_labels.ranking_map()(left_label)
             for right_label in coordinates.support().domain():
@@ -1544,13 +1570,15 @@ def _formed_module_base_change(self, ring_map):
                     * coordinates(right_label)
                     * _base_change_scalar(
                         ring_map,
-                        form.b(source_left, source_right),
+                        _value_from_module_element(
+                            source, form.b(source_left, source_right)
+                        ),
                     )
                 )
-        return target_ring(result)
+        return _as_module_element(target_ring, target_ring, result)
 
     return equip(
-        changed.quadratic_map(target_ring, changed_quadratic_value)
+        changed.quadratic_map(target_values, changed_quadratic_value)
     )
 
 
@@ -1820,7 +1848,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     self.value_module(),
                     lambda element: form(module(element)),
                 )
-            return self.bilinear_forms(self.value_module())(
+            return self.bilinear_forms(form.codomain())(
                 lambda left, right: form(module(left), module(right))
             )
 
@@ -3748,6 +3776,21 @@ class FormBaseChanges(OwnedCategoryOverBaseRing):
             self._base_change_source = base_change_source
             self._base_change_ring_map = base_change_ring_map
             super().__init__(**rest)
+
+        def _pairing_value_module(self):
+            return self.base_ring()
+
+        def b(self, left, right):
+            return _value_from_module_element(self, super().b(left, right))
+
+        def norm(self, element):
+            return _value_from_module_element(self, super().norm(element))
+
+        def gram_tensor(self):
+            source = self.base_change_source()
+            if source.module_rank().is_finite() and _is_bilinear_form(self.form()):
+                return _base_changed_scalar_gram(source, self.base_change_ring_map())
+            return super().gram_tensor()
 
         def base_change_source(self):
             return self._base_change_source

@@ -2566,6 +2566,10 @@ class Lattices(OwnedCategoryOverBaseRing):
         construction computes from the presentation.
         """
 
+        def _pairing_value_module(self):
+            r"""The lattice pairing has scalar values, independent of their module realization."""
+            return self.base_ring()
+
         if TYPE_CHECKING:
 
             def linear_combination(
