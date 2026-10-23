@@ -117,6 +117,10 @@ class IntegralAffineAtlases(OwnedCategory):
             transition_maps=transition_maps,
         )
 
+    def transition_is_integral_affine(self, affine_model, transition_map):
+        r"""Decide whether the transition preserves the model's selected lattice."""
+        pass
+
     @cached_method
     def forget(self):
         return _AtlasUnderlyingManifoldFunctor()
@@ -180,6 +184,10 @@ class IntegralAffineAtlases(OwnedCategory):
         def transition_linear_part(self, source_chart, target_chart):
             r"""Return the transition's induced map of the selected lattice."""
             return self.transition_map(source_chart, target_chart).linear_part()
+
+        def transition_cocycle_holds(self):
+            r"""Decide the affine cocycle condition on each triple overlap."""
+            pass
 
         def maximal_atlas(self):
             pass

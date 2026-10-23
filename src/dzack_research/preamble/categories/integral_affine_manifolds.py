@@ -636,6 +636,10 @@ class SingularIntegralAffineSpaces(OwnedCategory):
         def local_monodromy(self, singular_point, loop, affine_frame):
             pass
 
+        def lift_face_action(self, abstract_action, realization_map, affine_chart_maps):
+            r"""Lift a face action through the selected realization to this affine space."""
+            pass
+
     class FiniteSingularSet(CategoryWithAxiom):
         r"""Singular affine spaces whose selected singular locus is finite."""
 
