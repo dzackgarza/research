@@ -122,6 +122,11 @@ class PlacedPolytopeMor(CategoricalMor):
             pass
 
     def _element_constructor_(self, ambient_map, face_poset_map):
+        if (
+            ambient_map.domain() is not self.domain().ambient_space()
+            or ambient_map.codomain() is not self.codomain().ambient_space()
+        ):
+            raise ValueError("the ambient map must join the selected polytope ambient spaces")
         return self.element_class(self, ambient_map, face_poset_map)
 
     @object_level
@@ -141,7 +146,7 @@ class MetricPolytopeMor(PlacedPolytopeMor):
             return self.ambient_map()
 
     def _element_constructor_(self, ambient_isometric_embedding, face_poset_map):
-        return self.element_class(self, ambient_isometric_embedding, face_poset_map)
+        return super()._element_constructor_(ambient_isometric_embedding, face_poset_map)
 
 
 class MetricPolytopeMorCategoryConstruction(MorCategoryConstruction):
@@ -261,7 +266,7 @@ class LatticePolytopeMor(PlacedPolytopeMor):
             pass
 
     def _element_constructor_(self, ambient_lattice_map, face_poset_map):
-        return self.element_class(self, ambient_lattice_map, face_poset_map)
+        return super()._element_constructor_(ambient_lattice_map, face_poset_map)
 
 
 class LatticePolytopeMorCategoryConstruction(MorCategoryConstruction):
