@@ -2014,7 +2014,7 @@ class LatticeEmbeddingMor(CategoricalMor):
             sage: U = Lattices(ZZ)("U")
             sage: S = U.twist(ZZ(2))
             sage: assert S.Isom(U).is_empty() is True
-            sage: assert S.Mono(U).is_empty() is False
+            sage: assert S.Emb(U).is_empty() is False
         """
         if self._codomain_is_definite_over_integers():
             for _embedding in self:
@@ -2054,7 +2054,7 @@ class LatticeEmbeddingMor(CategoricalMor):
 
             sage: U = Lattices(ZZ)("U")
             sage: S = U.twist(ZZ(2))
-            sage: j = S.Mono(U).an_element()
+            sage: j = S.Emb(U).an_element()
             sage: assert j.domain() is S and j.codomain() is U
             sage: assert U.gram_tensor().pullback(j) == S.gram_tensor()
             sage: assert j.index() == cardinal(2)

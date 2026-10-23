@@ -2941,7 +2941,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             plane = Lattices(field)("U")
             hyperbolic = plane ** (int(hyperbolic_basis.cardinality()) // 2)
             labels = hyperbolic.module_generating_set()
-            inclusion = hyperbolic.Mono(self)(
+            inclusion = hyperbolic.Emb(self)(
                 lambda label: hyperbolic_basis.value(labels.ranking_map()(label))
             )
             return self.orthogonal_decomposition(
