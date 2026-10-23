@@ -107,10 +107,30 @@ class IntegralAffineAtlases(OwnedCategory):
         def chart_domains(self):
             pass
 
+        def chart_domain_inclusion(self, chart):
+            r"""Return the selected open inclusion of a chart domain."""
+            pass
+
         def affine_charts(self):
             pass
 
+        def affine_chart(self, chart):
+            r"""Return the affine map from its exact open domain to the model."""
+            pass
+
         def transition_maps(self):
+            pass
+
+        def overlap_inclusion(self, source_chart, target_chart):
+            r"""Return the overlap's inclusion into the source chart domain."""
+            pass
+
+        def transition_map(self, source_chart, target_chart):
+            r"""Return the integral-affine map on the specified overlap."""
+            pass
+
+        def transition_linear_part(self, source_chart, target_chart):
+            r"""Return the transition's induced map of the selected lattice."""
             pass
 
         def maximal_atlas(self):
