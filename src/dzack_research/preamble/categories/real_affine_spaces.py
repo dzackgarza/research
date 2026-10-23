@@ -87,6 +87,19 @@ class _AffineUnderlyingSetFunctor(Functor):
         return morphism.point_map()
 
 
+class _AffineModelVectorSpaceFunctor(Functor):
+    r"""Take the translation space and linear part of an affine map."""
+
+    def __init__(self):
+        super().__init__(RealAffineSpaces(), VectorSpaces(RR))
+
+    def _apply_object(self, affine_space):
+        return affine_space.model_vector_space()
+
+    def _apply_morphism(self, morphism):
+        return morphism.linear_part()
+
+
 class RealAffineSpaces(OwnedCategory):
     r"""Torsors for additive real vector spaces, with affine maps."""
 
@@ -111,6 +124,10 @@ class RealAffineSpaces(OwnedCategory):
     @cached_method
     def forget(self):
         return _AffineUnderlyingSetFunctor()
+
+    @cached_method
+    def model_vector_space(self):
+        return _AffineModelVectorSpaceFunctor()
 
     class ParentMethods:
         def point_set(self):
