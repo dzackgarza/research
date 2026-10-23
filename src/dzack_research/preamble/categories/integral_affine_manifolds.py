@@ -24,7 +24,6 @@ from dzack_research.preamble.categories.manifolds_with_boundary import (
 )
 from dzack_research.preamble.categories.topological_spaces import TopologicalSpaces
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
-from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
 
@@ -126,13 +125,7 @@ class IntegralAffineManifolds(OwnedCategory):
 
     def on(self, smooth_manifold, affine_atlas):
         r"""Equip the exact smooth manifold with a selected integral-affine atlas."""
-        if affine_atlas.underlying_smooth_manifold() is not smooth_manifold:
-            raise ValueError("the affine atlas must be on the selected smooth manifold")
-        return _object_of(
-            self,
-            smooth_manifold=smooth_manifold,
-            affine_atlas=affine_atlas,
-        )
+        pass
 
     @cached_method
     def forget(self):
@@ -221,15 +214,7 @@ class IntegralAffineManifoldsOfDimension(OwnedParameterizedCategory):
         pass
 
     def on(self, smooth_manifold, affine_atlas):
-        if affine_atlas.underlying_smooth_manifold() is not smooth_manifold:
-            raise ValueError("the affine atlas must be on the selected smooth manifold")
-        if smooth_manifold.dimension() != self.dimension():
-            raise ValueError("the smooth manifold must have the selected affine dimension")
-        return _object_of(
-            self,
-            smooth_manifold=smooth_manifold,
-            affine_atlas=affine_atlas,
-        )
+        pass
 
     @cached_method
     def forget(self):
@@ -420,21 +405,7 @@ class IntegralAffineManifoldsWithCorners(OwnedCategory):
         pass
 
     def on(self, smooth_corner_manifold, affine_atlas):
-        from dzack_research.preamble.categories.integral_affine_stratified_atlases import (
-            IntegralAffineCornerAtlases,
-        )
-
-        if smooth_corner_manifold not in SmoothManifoldsWithCorners():
-            raise TypeError(f"{smooth_corner_manifold} is not a smooth corner manifold")
-        if affine_atlas not in IntegralAffineCornerAtlases():
-            raise TypeError(f"{affine_atlas} is not an integral-affine corner atlas")
-        if affine_atlas.underlying_smooth_stratified_manifold() is not smooth_corner_manifold:
-            raise ValueError("the affine atlas must be on the selected smooth corner manifold")
-        return _object_of(
-            self,
-            smooth_stratified_manifold=smooth_corner_manifold,
-            affine_atlas=affine_atlas,
-        )
+        pass
 
     @cached_method
     def forget(self):
@@ -482,21 +453,7 @@ class IntegralAffineManifoldsWithBoundary(OwnedCategory):
         pass
 
     def on(self, smooth_boundary_manifold, affine_atlas):
-        from dzack_research.preamble.categories.integral_affine_stratified_atlases import (
-            IntegralAffineBoundaryAtlases,
-        )
-
-        if smooth_boundary_manifold not in SmoothManifoldsWithBoundary():
-            raise TypeError(f"{smooth_boundary_manifold} is not a smooth boundary manifold")
-        if affine_atlas not in IntegralAffineBoundaryAtlases():
-            raise TypeError(f"{affine_atlas} is not an integral-affine boundary atlas")
-        if affine_atlas.underlying_smooth_stratified_manifold() is not smooth_boundary_manifold:
-            raise ValueError("the affine atlas must be on the selected smooth boundary manifold")
-        return _object_of(
-            self,
-            smooth_stratified_manifold=smooth_boundary_manifold,
-            affine_atlas=affine_atlas,
-        )
+        pass
 
     @cached_method
     def forget(self):
