@@ -17,6 +17,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import TopologicalManifolds
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.owned_category import _object_of
 
 
 def _real_ck_degree(degree):
@@ -114,7 +115,12 @@ class RealCkManifolds(OwnedParameterizedCategory):
 
     def on(self, topological_manifold, atlas):
         r"""Select a compatible ``C^k`` atlas on the exact topological manifold."""
-        pass
+        from dzack_research.preamble.categories.real_ck_atlases import RealCkAtlases
+
+        assert topological_manifold in TopologicalManifolds()
+        assert atlas in RealCkAtlases(self.degree())
+        assert atlas.underlying_topological_manifold() is topological_manifold
+        return _object_of(self, topological_manifold=topological_manifold, atlas=atlas)
 
     @cached_method
     def forget_to(self, degree):
