@@ -397,7 +397,7 @@ condition are distinct refinements with the group stated at construction.
 
 For the AEGS sphere, the constructor is instead
 
-`SingularIntegralAffineSpaces(2).on(B, i: Sigma ↪ B, A_{B\Sigma}) -> X`.
+`SingularIntegralAffineSpaces(2).on(B, i: Sigma ↪ B, j: B\Sigma ↪ B, A_{B\Sigma}) -> X`.
 
 The open complement `j: B\Sigma ↪ B` and the integral-affine structure on
 its domain are defining data. `X.singular_locus()` returns `i`, and

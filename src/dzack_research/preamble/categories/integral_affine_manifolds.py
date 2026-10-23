@@ -601,12 +601,23 @@ class SingularIntegralAffineSpaces(OwnedCategory):
     def an_object(self):
         pass
 
-    def on(self, topological_space, singular_locus_inclusion, regular_affine_manifold):
+    def on(
+        self,
+        topological_space,
+        singular_locus_inclusion,
+        regular_locus_inclusion,
+        regular_affine_manifold,
+    ):
         r"""Select the singular subobject and affine structure on its exact complement."""
+        if singular_locus_inclusion.codomain() is not topological_space:
+            raise ValueError("the singular-locus inclusion must land in the selected space")
+        if regular_locus_inclusion.codomain() is not topological_space:
+            raise ValueError("the regular-locus inclusion must land in the selected space")
         return _object_of(
             self,
             topological_space=topological_space,
             singular_locus_inclusion=singular_locus_inclusion,
+            regular_locus_inclusion=regular_locus_inclusion,
             regular_affine_manifold=regular_affine_manifold,
         )
 
@@ -640,11 +651,13 @@ class SingularIntegralAffineSpaces(OwnedCategory):
             self,
             topological_space,
             singular_locus_inclusion,
+            regular_locus_inclusion,
             regular_affine_manifold,
             **rest,
         ):
             self._topological_space = topological_space
             self._singular_locus_inclusion = singular_locus_inclusion
+            self._regular_locus_inclusion = regular_locus_inclusion
             self._regular_affine_manifold = regular_affine_manifold
             super().__init__(**rest)
 
@@ -658,10 +671,10 @@ class SingularIntegralAffineSpaces(OwnedCategory):
             return self._singular_locus_inclusion
 
         def regular_locus(self):
-            pass
+            return self.regular_locus_inclusion(), self.regular_affine_manifold()
 
         def regular_locus_inclusion(self):
-            pass
+            return self._regular_locus_inclusion
 
         def regular_affine_manifold(self):
             return self._regular_affine_manifold
@@ -733,13 +746,19 @@ class SingularIntegralAffineSpacesOfDimension(OwnedParameterizedCategory):
         self,
         topological_space,
         singular_locus_inclusion,
+        regular_locus_inclusion,
         regular_affine_manifold,
         local_models=None,
     ):
+        if singular_locus_inclusion.codomain() is not topological_space:
+            raise ValueError("the singular-locus inclusion must land in the selected space")
+        if regular_locus_inclusion.codomain() is not topological_space:
+            raise ValueError("the regular-locus inclusion must land in the selected space")
         return _object_of(
             self,
             topological_space=topological_space,
             singular_locus_inclusion=singular_locus_inclusion,
+            regular_locus_inclusion=regular_locus_inclusion,
             regular_affine_manifold=regular_affine_manifold,
             local_models=local_models,
         )
@@ -873,12 +892,14 @@ class SingularIntegralAffineLocalModels(OwnedParameterizedCategory):
         self,
         topological_neighborhood,
         singular_locus_inclusion,
+        regular_locus_inclusion,
         regular_affine_manifold,
         singular_point,
     ):
         singular_space = SingularIntegralAffineSpaces(self.dimension()).on(
             topological_neighborhood,
             singular_locus_inclusion,
+            regular_locus_inclusion,
             regular_affine_manifold,
         )
         return _object_of(
