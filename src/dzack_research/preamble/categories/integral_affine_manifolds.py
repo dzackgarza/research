@@ -200,13 +200,26 @@ class IntegralAffineLocalIsomorphismMorCategoryConstruction(MorCategoryConstruct
     FixedCategoryClass = IntegralAffineLocalIsomorphismMor
 
 
+class _LocalIsomorphismInclusionFunctor(Functor):
+    r"""Include local affine isomorphisms among all integral-affine maps."""
+
+    def __init__(self):
+        super().__init__(IntegralAffineLocalIsomorphisms(), IntegralAffineManifolds())
+
+    def _apply_object(self, manifold):
+        return manifold.underlying_integral_affine_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_affine_morphism()
+
+
 class IntegralAffineLocalIsomorphisms(OwnedCategory):
     r"""The wide subcategory with local integral-affine isomorphisms as maps."""
 
     _MorCategory = IntegralAffineLocalIsomorphismMorCategoryConstruction
 
     def super_categories(self):
-        return [IntegralAffineManifolds()]
+        return [Objects()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -215,8 +228,16 @@ class IntegralAffineLocalIsomorphisms(OwnedCategory):
     def an_object(self):
         pass
 
-    def on(self, smooth_manifold, affine_atlas):
+    def on(self, affine_manifold):
         pass
+
+    @cached_method
+    def inclusion(self):
+        return _LocalIsomorphismInclusionFunctor()
+
+    class ParentMethods:
+        def underlying_integral_affine_manifold(self):
+            pass
 
 
 class _StratifiedIntegralAffineMapMethods:
