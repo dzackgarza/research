@@ -185,6 +185,11 @@ Unknown status no longer blocks constructing the scaled form or becomes
 a degeneracy conclusion; property shortcuts require known hypotheses.
 The Cauchy-zero scaling specimen remains source-only, with the other
 terminal assertions.
+`vectors_of_square` also queried definiteness before selecting the
+general fibre over nonintegral bases. It now returns the existing
+equalizer first in those cases, so an undecided signature cannot block
+norm-locus construction. The rank-one Cauchy-zero specimen retains the
+original inclusion and canonical zero point, with source-only status.
 The lattice Witt, norm-witness and field embedding routes previously rejected
 it at their AA-only dispatch despite using congruence/sign/root constructions
 that apply to this presentation too. Signature also lowered RR coefficients

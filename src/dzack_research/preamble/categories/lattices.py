@@ -6070,8 +6070,24 @@ class Lattices(OwnedCategoryOverBaseRing):
             fibre over another base ring is one of these (``STY-129``): over
             ``QQ`` the fibre of ``x^2 + y^2`` at ``1`` contains ``(3/5, 4/5)``,
             and it is not the finite shell of the integral span.
+            Nonintegral bases return the general norm fibre directly;
+            constructing that locus requires no definiteness decision.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1)/QQ(2)**int(n))
+                sage: z = RR.of_cauchy(a)
+                sage: V = Lattices(RR)([[z]])
+                sage: F = V.vectors_of_square(RR.zero())
+                sage: assert F is V.elements_of_norm(RR.zero())
+                sage: assert F.inclusion().codomain() is V
+                sage: assert F.is_empty() is False
+                sage: assert F.an_element() == V.zero()
             """
             square = self.base_ring()(square)
+            if self.base_ring() is not _owned_integers():
+                return self.square_fibre(square).object()
             if self.base_ring() is _owned_integers() and self.module_rank() == 0:
                 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
@@ -6081,8 +6097,6 @@ class Lattices(OwnedCategoryOverBaseRing):
             if not self.module_rank().is_finite():
                 return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
-                if self.base_ring() is not _owned_integers():
-                    return self.square_fibre(square).object()
                 return self.finite_subsets()(_vectors_of_square(self, square))
             if (
                 self.module_rank() == 2

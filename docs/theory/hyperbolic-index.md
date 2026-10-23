@@ -1662,6 +1662,20 @@ Witt decomposition merely to terminate.
 
 ### Norm fibres and spaces of embeddings
 
+**Construct the locus before selecting an enumeration.** The general
+norm fibre is the equalizer of $q:L\to R$ and the constant map with
+value $a$. Its defining equation and inclusion require no decision of
+the signature or radical of $L$. The `vectors_of_square` entrypoint now
+returns this existing locus immediately over nonintegral bases, before
+asking about definiteness. Its special finite shell computations remain
+integral computations. In particular, a rank-one RR form with an
+undecided Cauchy-zero Gram entry still has a norm-zero fibre, its original
+inclusion, and the canonical zero point. Its fibre is the same object
+returned by `elements_of_norm(0)`, without requiring a decision that the
+form is singular or definite. This supplies a source specimen for locus
+construction with undecided inertia; it does not claim enumeration of
+all real points.
+
 **Element equations retain predicates.** For a supplied vector $v$,
 `v.is_isotropic()` denotes $q(v)=0$, `v.is_orthogonal_to(w)` denotes
 $b(v,w)=0$, and `v.represents(a)` denotes $q(v)=a$. These are scalar
