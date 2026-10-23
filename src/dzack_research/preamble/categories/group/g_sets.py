@@ -1444,8 +1444,15 @@ class Torsors(OwnedParameterizedCategory):
             permutation_representation=candidate.permutation_representation(),
         )
 
-    def from_action(self, acted_set):
-        r"""Select a free transitive action as a torsor under the exact group."""
+    def from_action(self, acted_set, difference, point):
+        r"""Select an action with a difference map and a nonempty witness.
+
+        The difference satisfies ``difference(p, q) · q = p`` and
+        ``difference(g · p, p) = g``. The point witnesses that the acted set
+        is nonempty; it is not a chosen origin of the torsor.
+        These are the fields of Mathlib's ``Torsor`` in
+        ``Mathlib/Algebra/Torsor/Defs.lean``.
+        """
         pass
 
     def from_trivialization(self, trivialization, *, base_point=None):
