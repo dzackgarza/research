@@ -628,6 +628,10 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             r"""Return the private exact polyhedral computation object."""
             return self._polyhedron
 
+        def defining_data(self):
+            r"""Return the selected vertex or halfspace presentation in the ambient space."""
+            pass
+
         def threejs_html(self):
             r"""Return a local Three.js HTML view of a three-dimensional polytope.
 
