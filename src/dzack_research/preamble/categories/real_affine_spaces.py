@@ -1,6 +1,7 @@
 r"""Real affine spaces as torsors over a selected real vector space."""
 
 from sage.categories.category import Category
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -55,17 +56,25 @@ class RealAffineSpaceMor(CategoricalMor):
     r"""Affine maps with a linear part and an equivariant point map."""
 
     class ElementMethods:
+        def __init__(self, parent, linear_part, point_map):
+            Morphism.__init__(self, parent)
+            self._linear_part = linear_part
+            self._point_map = point_map
+
         def linear_part(self):
-            pass
+            return self._linear_part
 
         def point_map(self):
-            pass
+            return self._point_map
+
+        def _call_(self, point):
+            return self._point_map(point)
 
         def __mul__(self, other):
             pass
 
     def _element_constructor_(self, linear_part, point_map):
-        pass
+        return self.element_class(self, linear_part, point_map)
 
     @object_level
     def identity(self):
@@ -159,20 +168,28 @@ class AffineSpaceWithLatticeMor(CategoricalMor):
     r"""Affine maps whose linear parts carry the selected lattice into the target lattice."""
 
     class ElementMethods:
+        def __init__(self, parent, affine_map, lattice_map):
+            Morphism.__init__(self, parent)
+            self._affine_map = affine_map
+            self._lattice_map = lattice_map
+
         def affine_map(self):
-            pass
+            return self._affine_map
 
         def linear_part(self):
-            pass
+            return self._affine_map.linear_part()
 
         def lattice_map(self):
-            pass
+            return self._lattice_map
+
+        def _call_(self, point):
+            return self._affine_map(point)
 
         def __mul__(self, other):
             pass
 
-    def _element_constructor_(self, affine_map):
-        pass
+    def _element_constructor_(self, affine_map, lattice_map):
+        return self.element_class(self, affine_map, lattice_map)
 
     @object_level
     def identity(self):
