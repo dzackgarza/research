@@ -132,6 +132,9 @@ class IntegralAffineManifolds(OwnedCategory):
         def underlying_smooth_manifold(self):
             return self._smooth_manifold
 
+        def dimension(self):
+            return self.underlying_smooth_manifold().dimension()
+
         def affine_charts(self):
             return self.affine_atlas().affine_charts()
 
@@ -153,6 +156,9 @@ class IntegralAffineManifolds(OwnedCategory):
             pass
 
         def regular_open_inclusion(self, open_affine_manifold):
+            pass
+
+        def product(self, other):
             pass
 
         def holonomy(self, base_point, affine_frame):

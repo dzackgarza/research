@@ -139,6 +139,15 @@ class RealCkManifolds(OwnedParameterizedCategory):
         def atlas(self):
             return self._atlas
 
+        def dimension(self):
+            return self.underlying_topological_manifold().dimension()
+
+        def open_submanifold(self, open_inclusion):
+            pass
+
+        def open_submanifold_inclusion(self, open_manifold):
+            pass
+
         def weaken_to(self, degree):
             degree = _real_ck_degree(degree)
             source_degree = self.category().degree()
