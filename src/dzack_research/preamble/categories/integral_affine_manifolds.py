@@ -2,6 +2,7 @@ r"""Integral-affine structures on manifolds and on regular loci of spaces."""
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -43,14 +44,25 @@ class IntegralAffineManifoldMor(CategoricalMor):
     r"""Locally integral-affine maps between selected affine manifolds."""
 
     class ElementMethods:
+        def __init__(self, parent, smooth_map, local_affine_maps):
+            Morphism.__init__(self, parent)
+            self._smooth_map = smooth_map
+            self._local_affine_maps = local_affine_maps
+
         def underlying_smooth_morphism(self):
-            pass
+            return self._smooth_map
+
+        def local_affine_maps(self):
+            return self._local_affine_maps
+
+        def _call_(self, point):
+            return self._smooth_map(point)
 
         def __mul__(self, other):
             pass
 
-    def _element_constructor_(self, local_affine_map):
-        pass
+    def _element_constructor_(self, smooth_map, local_affine_maps):
+        return self.element_class(self, smooth_map, local_affine_maps)
 
     @object_level
     def identity(self):
@@ -430,20 +442,34 @@ class SingularIntegralAffineSpaceMor(CategoricalMor):
     r"""Maps preserving the singular set and the affine regular structure."""
 
     class ElementMethods:
+        def __init__(self, parent, topological_map, singular_locus_map, regular_affine_map):
+            Morphism.__init__(self, parent)
+            self._topological_map = topological_map
+            self._singular_locus_map = singular_locus_map
+            self._regular_affine_map = regular_affine_map
+
         def underlying_topological_morphism(self):
-            pass
+            return self._topological_map
 
         def singular_locus_morphism(self):
-            pass
+            return self._singular_locus_map
 
         def regular_affine_morphism(self):
-            pass
+            return self._regular_affine_map
+
+        def _call_(self, point):
+            return self._topological_map(point)
 
         def __mul__(self, other):
             pass
 
-    def _element_constructor_(self, regular_affine_map):
-        pass
+    def _element_constructor_(self, topological_map, singular_locus_map, regular_affine_map):
+        return self.element_class(
+            self,
+            topological_map,
+            singular_locus_map,
+            regular_affine_map,
+        )
 
     @object_level
     def identity(self):
