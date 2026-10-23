@@ -80,7 +80,9 @@ class _ComplexMor(CategoricalMor):
 class CellComplexMor(_ComplexMor):
     r"""Cellular maps respecting characteristic and attaching maps."""
 
-    ElementMethods = _CellwiseComplexMapMethods
+    class ElementMethods(_CellwiseComplexMapMethods):
+        def face_poset_map(self):
+            pass
 
     def _element_constructor_(self, cell_maps):
         pass
@@ -248,6 +250,10 @@ class CellComplexes(OwnedCategory):
     def boundary_surgery_span(self, region_inclusion, replacement, boundary_isomorphism):
         r"""Select the boundary-matched span of the complement and replacement."""
         pass
+
+    @cached_method
+    def face_posets(self):
+        return _ComplexFacePosetFunctor(self)
 
     @cached_method
     def realization(self):
