@@ -15,6 +15,7 @@ from dzack_research.preamble.categories.abstract_categories.objects import (
 )
 from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.manifolds import TopologicalManifolds
+from dzack_research.preamble.categories.topological_atlases import TopologicalAtlases
 from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds, _real_ck_degree
 from dzack_research.preamble.owned_category import _object_of
 
@@ -35,6 +36,9 @@ class RealCkAtlasMor(CategoricalMor):
             return self._chart_maps
 
         def real_ck_morphism(self):
+            pass
+
+        def topological_atlas_morphism(self):
             pass
 
         def __mul__(self, other):
@@ -72,6 +76,17 @@ class _AtlasRealCkManifoldFunctor(Functor):
 
     def _apply_morphism(self, morphism):
         return morphism.real_ck_morphism()
+
+
+class _AtlasUnderlyingTopologicalAtlasFunctor(Functor):
+    def __init__(self, degree):
+        super().__init__(RealCkAtlases(degree), TopologicalAtlases())
+
+    def _apply_object(self, atlas):
+        return atlas.topological_atlas()
+
+    def _apply_morphism(self, morphism):
+        return morphism.topological_atlas_morphism()
 
 
 class RealCkAtlases(OwnedParameterizedCategory):
@@ -125,6 +140,10 @@ class RealCkAtlases(OwnedParameterizedCategory):
     def maximalization(self):
         return _AtlasRealCkManifoldFunctor(self.degree())
 
+    @cached_method
+    def forget_differentiability(self):
+        return _AtlasUnderlyingTopologicalAtlasFunctor(self.degree())
+
     class ParentMethods:
         def __init__(
             self,
@@ -175,4 +194,7 @@ class RealCkAtlases(OwnedParameterizedCategory):
             pass
 
         def real_ck_manifold(self):
+            pass
+
+        def topological_atlas(self):
             pass
