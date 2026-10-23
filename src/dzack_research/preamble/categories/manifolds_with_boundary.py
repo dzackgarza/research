@@ -405,13 +405,7 @@ class _WeakenStratifiedDifferentiabilityFunctor(Functor):
         return manifold.weaken_to(self.codomain().degree())
 
     def _apply_morphism(self, morphism):
-        source = self(morphism.domain())
-        target = self(morphism.codomain())
-        return self.codomain().Mor(source, target)(
-            morphism.underlying_continuous_map(),
-            morphism.interior_map(),
-            morphism.stratum_maps(),
-        )
+        pass
 
 
 class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
@@ -486,14 +480,7 @@ class RealCkManifoldsWithCorners(OwnedParameterizedCategory):
             return self._topological_corner_manifold.depth_stratum(depth)
 
         def weaken_to(self, degree):
-            degree = _real_ck_degree(degree)
-            source_degree = self.category().degree()
-            if degree > source_degree:
-                raise ValueError(f"C^{source_degree} can forget only to C^j with j <= {source_degree}")
-            return RealCkManifoldsWithCorners(degree).on(
-                self.underlying_topological_stratified_manifold(),
-                self.atlas(),
-            )
+            pass
 
 
 class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
@@ -554,14 +541,7 @@ class RealCkManifoldsWithBoundary(OwnedParameterizedCategory):
             return self._topological_corner_manifold
 
         def weaken_to(self, degree):
-            degree = _real_ck_degree(degree)
-            source_degree = self.category().degree()
-            if degree > source_degree:
-                raise ValueError(f"C^{source_degree} can forget only to C^j with j <= {source_degree}")
-            return RealCkManifoldsWithBoundary(degree).on(
-                self.underlying_topological_stratified_manifold(),
-                self.atlas(),
-            )
+            pass
 
         def boundary(self):
             pass
