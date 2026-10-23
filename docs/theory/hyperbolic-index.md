@@ -957,6 +957,57 @@ finite product indexed by the specified hyperbolic basis satisfying all
 pairing equations. This supplies the embedding-space interpretation of the
 matrix search without making matrices the public mathematical result.
 
+#### A ternary local–global obstruction
+
+[Borovoi, *On representations of integers by indefinite ternary quadratic
+forms*, §2 and Example 0.1.1](https://arxiv.org/abs/math/0006141)
+gives
+
+$$
+G=\begin{pmatrix}-9&1&0\\1&7&0\\0&0&2\end{pmatrix},
+\qquad q(x,y,z)=-9x^2+2xy+7y^2+2z^2.
+$$
+
+**Proposition.** This lattice represents $1$ over every completion but
+not over $\mathbb Z$; it represents $2$ integrally.
+
+**Proof.**
+
+1. **Away from $2$.** The rational vector $(-1/2,1/2,1)$ has square
+   one and is integral at every odd prime.
+2. **At $2$.** For $F(Z)=q(4,1,Z)-1$, $F(1)=-128$ and
+   $F'(1)=4$. Hensel's inequality $7>2\cdot2$ gives a root in
+   $\mathbb Z_2$.
+3. **Integral exclusion.** Suppose $q(x,y,z)=1$. Put $u=x-y$,
+   $v=x+y$. Then $2z^2-1=u(u+8v)$. Both $u,v$ are odd;
+   reduction modulo $8$ makes $z$ odd, and modulo $16$ gives
+   $u^2\equiv9$, hence $u\equiv\pm3\pmod8$.
+4. **Contradiction.** Some odd prime divisor $p$ of $u$ is
+   $\pm3\pmod8$. But $2z^2\equiv1\pmod p$ makes $2$ a square,
+   forcing $p\equiv\pm1\pmod8$.
+5. **Q.E.D.** Finally $q(0,0,1)=2$.
+
+Borovoi also places $G$ and $\operatorname{diag}(-1,64,2)$ in the same
+genus. The latter represents $1$ at $(1,0,1)$. They are therefore
+inequivalent; Eichler's theorem for indefinite lattices of rank at least
+three implies that this genus has more than one spinor genus
+(Conway–Sloane, Chapter 15). This supplies the missing distinguishing
+specimen, without asserting an exact count from a backend.
+
+```python
+L = Lattices(ZZ)([[-9, 1, 0], [1, 7, 0], [0, 0, 2]])
+assert L.spinor_genus_count() > ZZ(1)
+assert L.represents(ZZ(1)) is False
+assert Lattices(ZZ)([[1]]).Emb(L).is_empty() is True
+assert L.represents(ZZ(2)) is True
+v = L.representation_vector(ZZ(2))
+assert v.parent() is L and L.q(v) == ZZ(2)
+```
+
+These assertions remain unexecuted under DEV-58. They distinguish the
+integral exclusion from a local-solvability shortcut and exercise witness
+construction in a genus with multiple spinor genera.
+
 ### Sets, enumeration, sampling, and search
 
 These capabilities belong to general sets, maps and subsets, and can then be
@@ -1344,6 +1395,15 @@ retains the original lattice and scalar map.
   [Author's preprint on arXiv](https://arxiv.org/abs/math/0204158).
   Theorem 1.3 states the upper inequality of Minkowski's second theorem
   used in the explicit coefficient-bound derivation.
+- **Mikhail Borovoi, *On representations of integers by indefinite ternary
+  quadratic forms*, Journal of Number Theory 90 (2001), 281–293.**
+  [Author's arXiv preprint](https://arxiv.org/abs/math/0006141),
+  [published version](https://doi.org/10.1006/jnth.2001.2662).
+  Section 2 proves the local–global obstruction for the displayed ternary
+  form; Example 0.1.1 supplies the same-genus comparison.
+- **J. H. Conway and N. J. A. Sloane, *Sphere Packings, Lattices and Groups*,
+  third edition, Springer, 1999, Chapter 15.**
+  Sections 3.5 and 6 for indefinite spinor genera and the displayed genus.
 - **SageMath reference manual, *Solving quadratic equations*.**
   [Official documentation](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/qfsolve.html).
   The `qfsolve` interface to PARI's Simon implementation.

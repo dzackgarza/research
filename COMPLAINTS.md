@@ -960,7 +960,7 @@ Tracked at [research #409](https://github.com/dzackgarza/research/issues/409) an
 The two stay separate classes until that resolution category exists; a group built by `FreeGroupQuotients()` from finite data is placed in both.
 **Consumers:** `FreeGroupQuotients()`, `CoxeterGroups()`, `quotient_by_relators`, `descend_homomorphism`.
 
-### Integral norm classification still lacks its terminal distinguishing specimens
+### Integral norm classification still needs terminal verification
 
 The former source gap in higher-rank nonzero integral norm witnesses and
 ternary representation decisions now has a finite-classification route.
@@ -974,10 +974,13 @@ rational points or an unbounded witness search.
 
 **Remaining evidence:** these computations have not run under DEV-58.
 `U + A_1 + A_1` at norm 2, `<1,1,-1,-1>` at norm 5 and `U + <1>` at norm 3
-remain required. No cited indefinite ternary genus with multiple spinor
-genera and a represented/spinor-exception pair has yet been supplied.
-The previous survey's two trial genera each had one spinor genus and
-therefore did not decide that question. Retain these specimens and engine
+remain required. The theory note now supplies the distinguishing Borovoi
+example with Gram [[-9,1,0],[1,7,0],[0,0,2]]: square 1 is represented
+everywhere locally but not integrally, whereas square 2 is represented
+integrally. The cited elementary exclusion proof and same-genus comparison
+establish the expected answers and multiple-spinor-genus hypothesis;
+these assertions and the positive witness remain unexecuted. The earlier
+two single-spinor-genus trial examples do not replace this specimen. Retain these specimens and engine
 coverage at `higher-rank-integral-lattice-representation` in [TODO.md](TODO.md).
 No source route or mathematical argument here counts as executed acceptance.
 

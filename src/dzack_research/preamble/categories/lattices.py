@@ -3329,6 +3329,16 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: assert x.parent() is L and x != L.zero() and L.q(x) == ZZ(3)
                 sage: M = C([[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, -1, 0], [0, 0, 0, -1]])
                 sage: assert M.q(M.representation_vector(5)) == ZZ(5)
+                sage: B = C([[-9, 1, 0], [1, 7, 0], [0, 0, 2]])
+                sage: assert B.spinor_genus_count() > ZZ(1)
+                sage: assert B.represents(ZZ(1)) is False
+                sage: assert B.represents(ZZ(2)) is True
+                sage: v = B.representation_vector(ZZ(2))
+                sage: assert v.parent() is B and B.q(v) == ZZ(2)
+                sage: B.representation_vector(ZZ(1))  # doctest: +ELLIPSIS
+                Traceback (most recent call last):
+                ...
+                ValueError: ... does not represent 1
                 sage: C(0).representation_vector(1)  # doctest: +ELLIPSIS
                 Traceback (most recent call last):
                 ...
