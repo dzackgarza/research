@@ -50,6 +50,7 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
 )
 from dzack_research.preamble.categories.sets.finite_graded_posets import FiniteGradedPosets
 from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets, Sets
+from dzack_research.preamble.categories.triangulations import ChosenTriangulations
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -220,6 +221,12 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
             pass
 
         def boundary_inclusion(self):
+            pass
+
+        def triangulations(self):
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
             pass
 
     class Polygon(CategoryWithAxiom):
