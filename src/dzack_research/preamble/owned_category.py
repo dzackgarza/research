@@ -63,13 +63,16 @@ import copyreg
 import hashlib
 from abc import ABCMeta
 from _abc import _abc_init
+from collections import Counter
 from collections.abc import Hashable
 from dataclasses import dataclass
+from functools import cache, wraps
 from inspect import Parameter, isclass, ismethod, signature
 from typing import TYPE_CHECKING
 
 from sage.categories.category import Category, CategoryWithParameters, JoinCategory
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.misc.constant_function import ConstantFunction
 from sage.misc.lazy_attribute import lazy_attribute
 from sage.structure.category_object import CategoryObject
@@ -102,11 +105,14 @@ def _c3_merge(sequences: list[list[type]]) -> list[type]:
     ``type.mro`` implements.
     """
     sequences = [list(sequence) for sequence in sequences if sequence]
+    tail_occurrences = Counter(
+        entry for sequence in sequences for entry in sequence[1:]
+    )
     merged: list[type] = []
     while sequences:
         for sequence in sequences:
             head = sequence[0]
-            if not any(head in other[1:] for other in sequences):
+            if tail_occurrences[head] == 0:
                 break
         else:
             raise TypeError(
@@ -114,13 +120,17 @@ def _c3_merge(sequences: list[list[type]]) -> list[type]:
                 + ", ".join(sequence[0].__name__ for sequence in sequences)
             )
         merged.append(head)
-        sequences = [
-            (sequence[1:] if sequence[0] is head else sequence) for sequence in sequences
-        ]
+        for sequence in sequences:
+            if sequence[0] is not head:
+                continue
+            sequence.pop(0)
+            if sequence:
+                tail_occurrences[sequence[0]] -= 1
         sequences = [sequence for sequence in sequences if sequence]
     return merged
 
 
+@cache
 def _owned_providers(cls: type) -> tuple[type, ...]:
     r"""The authored method classes a generated category class declares as its own bases."""
     return vars(cls).get("_owned_providers", ())
@@ -272,8 +282,14 @@ def _category_graph_signature(category: Category, memo=None):
     Sage's ``_cmp_key``.  Parameter values that induce the same category graph
     therefore share a signature, matching ``CategoryWithParameters``' named-
     class optimization; parameter regimes with different supercategory graphs
-    do not.
+    do not. Once this signature has been incorporated into the category's
+    persistent comparison key, that same signature is retained on the category
+    for the overlapping supergraphs of later comparison keys. Before then only
+    the call-local ``memo`` is used.
     """
+    persistent = category.__dict__.get("_owned_graph_signature")
+    if persistent is not None:
+        return persistent
     if memo is None:
         memo = {}
     identity = id(category)
@@ -301,7 +317,15 @@ def _category_graph_signature(category: Category, memo=None):
 
 
 def _category_graph_depth(category: Category, memo=None) -> int:
-    r"""Return the depth of ``category`` in the immediate-supercategory DAG."""
+    r"""Return the depth of ``category`` in the immediate-supercategory DAG.
+
+    As for the graph signature, a depth already fixed into the persistent
+    comparison key is reusable by later keys; an unfixed graph stays local to
+    this traversal.
+    """
+    persistent = category.__dict__.get("_owned_graph_depth")
+    if persistent is not None:
+        return persistent
     if memo is None:
         memo = {}
     identity = id(category)
@@ -330,7 +354,12 @@ def _category_parameter_signature(category: Category):
     runtime class and base category without being the same category.  Categories
     over scalars expose ``base``.  Record those parameters structurally without
     using object identity or ``repr``.
+    Once this signature is stored in the category's persistent comparison key,
+    later parameter chains reuse that same value.
     """
+    persistent = category.__dict__.get("_owned_parameter_signature")
+    if persistent is not None:
+        return persistent
     mor_family = getattr(category, "mor_family", None)
     if callable(mor_family):
         try:
@@ -353,10 +382,16 @@ def _category_parameter_signature(category: Category):
             continue
         if parameter is category:
             continue
-        if isinstance(parameter, Category):
-            return (accessor, _category_graph_signature(parameter))
         parameter_type = type(parameter)
         signature = (accessor, parameter_type.__module__, parameter_type.__qualname__)
+        # A fixed Mor is both a Category and a Sage Parent.  As a parameter it
+        # is the parent object, just like any other ambient group or module;
+        # its runtime type supplies the structural part and Sage's retained
+        # session counter separates distinct instances.  Traversing its whole
+        # semantic Mor graph here would compute derived arrow structure merely
+        # to construct a category parameterized by that parent.
+        if isinstance(parameter, Category) and not isinstance(parameter, SageParent):
+            return (accessor, _category_graph_signature(parameter))
         engine = getattr(parameter, "_engine", None)
         if engine is not None:
             engine_type = type(engine)
@@ -406,10 +441,25 @@ class _OwnedCategoryComparisonKey:
         # immediately replaces that value with the owned structural key.
         native_descriptor = Category.__dict__["_cmp_key"]
         flags, session_counter = native_descriptor.__get__(category, type(category))
+        # The comparison key is stored permanently on this category below.
+        # Retain the graph inputs at exactly that boundary: caching them before
+        # the key is fixed would freeze a category whose construction has not
+        # yet finished, while recomputing them afterward cannot change the key.
         depth = _category_graph_depth(category)
+        graph_signature = _category_graph_signature(category)
+        category._owned_graph_depth = depth
+        category._owned_graph_signature = graph_signature
+        direct_graph = getattr(category, "_owned_direct_supercategories", None)
+        category._owned_graph_supercategories = (
+            tuple(category.super_categories())
+            if direct_graph is None
+            else direct_graph()
+        )
+        parameter_signature = _category_parameter_signature(category)
+        category._owned_parameter_signature = parameter_signature
         signature = (
-            _category_graph_signature(category),
-            _category_parameter_signature(category),
+            graph_signature,
+            parameter_signature,
         )
         structural = (
             self._OWNED_FLOOR
@@ -548,6 +598,7 @@ class CatConstructionsMixin:
         return result
 
 
+@cache
 def declared_implementation_types(
     declaring_class: type,
     provider_names: tuple[str, ...],
@@ -725,6 +776,40 @@ class OwnedCategoryMixin(CatConstructionsMixin):
     # ``owned_category_bases.py`` and intentionally does not affect Sage-native
     # categories.
     _cmp_key = _OwnedCategoryComparisonKey()
+
+    def __init_subclass__(cls, **options) -> None:
+        r"""Retain the defining call of each owned category constructor.
+
+        A category can itself receive chosen structure: an object of
+        ``Cat/C`` is a category together with a selected functor to ``C``.
+        Reconstructing that structured object must therefore use the same
+        category constructor and its exact defining arguments.  The outermost
+        constructor records those arguments after its cooperative chain has
+        completed; inherited constructors record the concrete runtime
+        declaration, so axiom and parameterized category subclasses retain
+        their own category kind rather than the base implementation class.
+
+        This is construction data of the category owner (``OWN-16``), not a
+        public serialization format.  It is consumed only by
+        :class:`OwnedCategoryObject` when another category level is added.
+        """
+        super().__init_subclass__(**options)
+        initializer = vars(cls).get("__init__")
+        if initializer is None or getattr(initializer, "_retains_owned_category_call", False):
+            return
+
+        @wraps(initializer)
+        def retaining_initializer(self, *args, **keywords):
+            initializer(self, *args, **keywords)
+            declared = _declared_category_class(self)
+            self._owned_category_construction = (
+                declared,
+                tuple(args),
+                dict(keywords),
+            )
+
+        retaining_initializer._retains_owned_category_call = True
+        cls.__init__ = retaining_initializer
 
     def is_subcategory(self, category):
         r"""Compare owned categories through their declared mathematical graph.
@@ -940,6 +1025,10 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
     dictionaries; :class:`OwnedCategoryMixin` therefore linearizes the
     immediate branch implementations directly.
     """
+
+    def category(self) -> Category:
+        r"""The category constructed as this intersection is an object of Cat."""
+        return _cat()
 
     def is_subcategory(self, category):
         r"""Compare this intersection through its mathematical branches.
@@ -1673,6 +1762,51 @@ class OwnedCategoryObject:
 
     base_ring = _BaseRingOfACategoryOverABase()
 
+    def _with_structure(
+        self,
+        categories: tuple[Category, ...],
+        construction_data: dict[str, ConstructionData],
+        *,
+        engine: type | None = None,
+    ) -> Category:
+        r"""Construct this actual category with further chosen structure.
+
+        Protected construction contract (``OWN-05``, ``OWN-16``), parallel
+        to ``Objects.ParentMethods._with_structure`` for ordinary objects.
+        The category owner reconstructs its exact declaration from the
+        defining constructor call retained at initialization.  The added
+        category levels consume their own data cooperatively; the resulting
+        object remains an actual instance of the original category class, so
+        its objects, arrows, identity and composition are those of that
+        category rather than operations on a category wrapper.
+        """
+        construction = getattr(self, "_owned_category_construction", None)
+        assert construction is not None, (
+            f"cannot construct the category {self} with the further structure of {categories}: "
+            "its owner did not retain the category's defining constructor call"
+        )
+        added_categories, added_data = self._added_structure(construction_data)
+        target = owned_category_join((*added_categories, *categories))
+        declared, _, _ = construction
+        realization = _category_structure_realization(declared, engine)
+
+        from dzack_research.preamble.refine import owned_parent_class
+
+        implementation = owned_parent_class(realization, target)
+        return typecall(
+            implementation,
+            _received_category=self,
+            _structured_category=target,
+            **added_data,
+        )
+
+    def _added_structure(
+        self,
+        construction_data: dict[str, ConstructionData],
+    ) -> tuple[tuple[Category, ...], dict[str, ConstructionData]]:
+        r"""Return category levels already added above this category owner."""
+        return (), dict(construction_data)
+
     def _init_cat_object(self) -> None:
         r"""Initialize the parent shell without a second class rewrite.
 
@@ -1689,4 +1823,83 @@ class OwnedCategoryObject:
         CategoryObject._init_category_(self, _cat())
 
     def category(self) -> Category:
-        return _cat()
+        return getattr(
+            self,
+            "_structured_category",
+            getattr(self, "_category", _cat()),
+        )
+
+
+@cached_function
+def _category_structure_realization(
+    declared: type,
+    engine: type | None,
+) -> type:
+    r"""The private realization of ``declared`` with added category levels.
+
+    Added ``ParentMethods`` precede this boundary and consume their own
+    construction data.  The boundary then invokes the original category
+    declaration with the exact call retained by the received category.  It
+    finally records the structured placement selected before construction.
+    No public category or functor wrapper is introduced: instances remain
+    instances of ``declared``.
+    """
+
+    def initialize(
+        structured,
+        *,
+        _received_category: Category,
+        _structured_category: Category,
+        **remaining,
+    ) -> None:
+        assert not remaining, (
+            f"the category levels added to {_received_category} did not consume "
+            f"their construction data {sorted(remaining)}"
+        )
+        constructor, args, keywords = _received_category._owned_category_construction
+        assert constructor is declared, (
+            f"the retained constructor of {_received_category} changed from "
+            f"{declared.__name__} to {constructor.__name__} during reconstruction"
+        )
+        constructor.__init__(structured, *args, **keywords)
+        structured._owned_category_construction = (
+            constructor,
+            args,
+            dict(keywords),
+        )
+        structured._structured_category = _structured_category
+        CategoryObject._init_category_(structured, _structured_category)
+
+    initialize._retains_owned_category_call = True
+
+    boundary_bases = (declared,)
+    name = f"{declared.__name__}WithChosenStructure"
+    boundary = _abc_metaclass_for(boundary_bases)(
+        f"{name}OwnerBoundary",
+        boundary_bases,
+        {
+            "__init__": initialize,
+            "__module__": declared.__module__,
+            "__doc__": declared.__doc__,
+        },
+    )
+    _abc_init(boundary)
+    if engine is None:
+        return boundary
+
+    # The private engine owns construction data at this realization level.
+    # Put it before the owner boundary so its cooperative initializer consumes
+    # that datum, then let the boundary reconstruct the original category from
+    # the retained defining call.
+    bases = (engine, boundary)
+    realization = _abc_metaclass_for(bases)(
+        name,
+        bases,
+        {
+            "__module__": declared.__module__,
+            "__doc__": declared.__doc__,
+        },
+    )
+    _abc_init(realization)
+    return realization
+

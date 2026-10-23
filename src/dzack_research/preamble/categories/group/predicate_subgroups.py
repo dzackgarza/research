@@ -133,6 +133,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
         character_data=None,
         character_data_complete=None,
         generating_morphism=None,
+        cardinality_decision=None,
+        enumeration=None,
     ):
         r"""Construct the predicate subgroup of this category's ambient group.
 
@@ -150,6 +152,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data=character_data,
             character_data_complete=character_data_complete,
             generating_morphism=generating_morphism,
+            cardinality_decision=cardinality_decision,
+            enumeration=enumeration,
         )
 
     class ParentMethods:
@@ -161,6 +165,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             character_data=None,
             character_data_complete=None,
             generating_morphism=None,
+            cardinality_decision=None,
+            enumeration=None,
             **rest,
         ) -> None:
             self._predicate = predicate
@@ -172,6 +178,8 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 if character_data_complete is None
                 else bool(character_data_complete)
             )
+            self._specified_cardinality_decision = cardinality_decision
+            self._specified_enumeration = enumeration
             super().__init__(supergroup=supergroup, **rest)
             # A generating morphism E -> G supplied by the constructing owner,
             # with image this subgroup, is a selected datum; its corestriction
@@ -180,9 +188,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             if generating_morphism is not None:
                 _fix_selected_generating_morphism(
                     self,
-                    lambda subgroup: generating_morphism.domain().Mor(subgroup).elementwise(
-                        generating_morphism
-                    ),
+                    lambda subgroup: generating_morphism._corestrict_to_subgroup(subgroup),
                 )
 
         def defining_predicate(self):
@@ -214,6 +220,10 @@ class PredicateSubgroups(OwnedParameterizedCategory):
             enumeration of ``G``.
             """
             group = self.supergroup()
+            if self._specified_enumeration is not None:
+                selected = self._specified_enumeration()
+                if selected is not None:
+                    return iter(selected)
             match group:
                 case _ if group in OwnedFiniteGroups():
                     return self._points_satisfying(group)
@@ -360,14 +370,21 @@ class PredicateSubgroups(OwnedParameterizedCategory):
 
             With complete finite-character data ``H`` is the preimage of a
             subgroup of a finite quotient, so ``|H| = |G| |image of H| /
-            |image of G|``.  In a finite ``G``, a selected generating family
-            of ``H`` (its constructing owner's claim, trusted under
-            ``OWN-22``) gives ``|H|`` as the order of the engine subgroup it
-            generates.  Otherwise, in a finite ``G``, ``H`` is the set of
+            |image of G|``. A selected finite generating family of ``H``
+            gives its order through its own generated engine subgroup,
+            independently of the ambient group's order. Otherwise, in a
+            finite ``G``, ``H`` is the set of
             elements satisfying the predicate, counted exactly in one pass over
             ``G``, at a cost linear in ``|G|``: the predicate is a Python
             function, which GAP's subgroup search by a property cannot evaluate.
             """
+            if self._specified_cardinality_decision is not None:
+                return self._specified_cardinality_decision()
+            if _retains_group_resolution(self) and not self.contains_character_kernel():
+                generated = self.supergroup()._engine_subgroup_from_generators(
+                    tuple(self.group_generators())
+                )
+                return cardinal(generated.order())
             supergroup_cardinality = self.supergroup().cardinality()
             if self.contains_character_kernel():
                 quotient = self.finite_character_quotient()
@@ -383,23 +400,19 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 f"{self.supergroup()} has order {supergroup_cardinality}, which is not finite, "
                 f"and the subgroup is not known as the preimage of a subgroup of a finite quotient"
             )
-            if _retains_group_resolution(self):
-                generated = self.supergroup()._engine_subgroup_from_generators(
-                    tuple(self.group_generators())
-                )
-                return cardinal(int(generated.order()))
             return cardinal(sum(1 for _element in self))
 
         @cached_method
         def _engine_group(self):
-            r"""The engine subgroup on the elements of this subgroup of a finite group.
+            r"""The engine subgroup on this subgroup's selected determining family.
 
             Engine contract (``OWN-05``), declared in ``groups.py``.  The
-            engine cannot evaluate the predicate, so the subgroup it cuts out
-            is realized as the engine subgroup generated by its elements,
-            listed in one pass over the finite supergroup.
+            retained generating morphism supplies generators when present.
+            A bare predicate instead supplies only its members, enumerated
+            by the existing finite-supergroup rule.
             """
-            return self.supergroup()._engine_subgroup_from_generators(self)
+            generators = tuple(self.group_generators()) if _retains_group_resolution(self) else self
+            return self.supergroup()._engine_subgroup_from_generators(generators)
 
         def _to_engine(self, element):
             assert element in self, f"{element} is not an element of the subgroup {self}"
@@ -585,7 +598,7 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
             _ambient=OwnedGroups(),
             supergroup=group,
             predicate=lambda element: morphism(element) == identity,
-            description=f"{morphism}(g)=1",
+            description="elements mapped to the identity by the defining morphism",
             kernel_morphism=morphism,
         )
 
@@ -640,6 +653,8 @@ class KernelSubgroups(_PredicateSubgroupConstruction):
 
         def _cardinality_decision(self):
             r"""Return the exact kernel order when the ambient group is finite."""
+            if self.kernel_morphism().is_injective() is True:
+                return cardinal(1)
             if self.supergroup().is_finite() is True:
                 return _finite_group_morphism_kernel_cardinality(
                     self.kernel_morphism()
@@ -689,6 +704,10 @@ class PreimageSubgroups(_PredicateSubgroupConstruction):
             raise ValueError(
                 f"cannot take the preimage of {subgroup} along {morphism} as a subgroup of "
                 f"{group}: the domain of {morphism} is {morphism.domain()}, not {group}"
+            )
+        if subgroup is morphism.codomain():
+            subgroup = PredicateSubgroups(subgroup)(
+                lambda _element: True, "the whole codomain"
             )
         if subgroup not in Subgroups(morphism.codomain()):
             raise ValueError(
@@ -1050,9 +1069,7 @@ class IntersectionSubgroups(_PredicateSubgroupConstruction):
             inclusion = generated.inclusion()
             restricted = (morphism * inclusion).preimage_subgroup(target)
             augmentation = restricted.schreier_generating_morphism()
-            return augmentation.domain().Mor(self).elementwise(
-                inclusion * restricted.inclusion() * augmentation
-            )
+            return (inclusion * restricted.inclusion() * augmentation).factor_through(self.inclusion())
 
 __all__ = [
     "CentralizerSubgroups",

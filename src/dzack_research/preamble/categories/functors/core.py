@@ -19,13 +19,60 @@ from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.abstract_method import abstract_method
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.parent import Parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.lexicon.category_theory import ObjectOfCategory
 
 if TYPE_CHECKING:
     from dzack_research.preamble.logic import Predicate
+
+
+@cached_function
+def _structured_functor_realization(
+    implementation: type,
+    category: Category,
+    engine: type | None,
+) -> type:
+    r"""Realize added category data on an already constructed functor."""
+    from _abc import _abc_init
+
+    from dzack_research.preamble.owned_category import _abc_metaclass_for
+    from dzack_research.preamble.refine import owned_parent_class
+
+    def finish(structured, *, _structured_category: Category, **remaining) -> None:
+        assert not remaining, (
+            f"the category levels added to {structured} did not consume "
+            f"their construction data {sorted(remaining)}"
+        )
+        structured._structured_category = _structured_category
+
+    boundary_bases = (implementation,)
+    boundary = _abc_metaclass_for(boundary_bases)(
+        f"{implementation.__name__}WithChosenStructureBoundary",
+        boundary_bases,
+        {
+            "__init__": finish,
+            "__module__": implementation.__module__,
+            "__doc__": implementation.__doc__,
+        },
+    )
+    _abc_init(boundary)
+    if engine is None:
+        staged = boundary
+    else:
+        bases = (engine, boundary)
+        staged = _abc_metaclass_for(bases)(
+            f"{implementation.__name__}WithChosenStructure",
+            bases,
+            {
+                "__module__": implementation.__module__,
+                "__doc__": implementation.__doc__,
+            },
+        )
+        _abc_init(staged)
+    return owned_parent_class(staged, category)
 
 
 def _functor_factor_family(factors):
@@ -44,13 +91,10 @@ def _functor_factor_family(factors):
     )
 
 
-class Functor:
-    r"""Construction data for a functor with explicit object and arrow actions.
+class Functor(CategoricalArrow):
+    r"""A functor with explicit object and arrow actions.
 
-    The mathematical object is ``self.object()`` in the existing functor
-    category ``[C,D]``.  This class is the retained action engine used by that
-    object and by the corresponding arrow of ``Cat``; it is not a second
-    uncategorized functor object.
+    The functor itself is an arrow of ``Cat`` and an object of ``[C,D]``.
 
     Unverified specimen: a proposed identity on underlying sets is not a
     functor to the category of injections when applied to a noninjective map::
@@ -82,10 +126,16 @@ class Functor:
     def __init__(self, domain: Category, codomain: Category) -> None:
         self._domain = domain
         self._codomain = codomain
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        CategoricalArrow.__init__(self, Cat().functor_mor(domain, codomain))
         # Cache the forward action by source identity.  A codomain object does
         # not determine a preimage; chosen preimages belong to ImageOfFunctor.
         self._object_images: dict[int, tuple[ObjectOfCategory, ObjectOfCategory]] = {}
         self._morphism_images: dict[int, tuple[Map, Map]] = {}
+        from dzack_research.preamble.refine import owned_parent_class
+
+        self.__class__ = owned_parent_class(type(self), self.functor_category())
 
     def _cache_key(self) -> int:
         r"""Functors have identity semantics as parameters of categorical constructions."""
@@ -96,6 +146,29 @@ class Functor:
 
     def codomain(self) -> Category:
         return self._codomain
+
+    def category(self):
+        return getattr(self, "_structured_category", self.functor_category())
+
+    def _with_structure(
+        self,
+        categories: tuple[Category, ...],
+        construction_data: dict[str, object],
+        *,
+        engine: type | None = None,
+    ) -> Functor:
+        r"""Retain this actual functor while adding chosen category data."""
+        from dzack_research.preamble.owned_category import owned_category_join
+
+        target = owned_category_join((*categories, self.functor_category()))
+        implementation = _structured_functor_realization(type(self), target, engine)
+        self.__class__ = implementation
+        implementation.__init__(
+            self,
+            _structured_category=target,
+            **construction_data,
+        )
+        return self
 
     @abstract_method
     def _apply_object(self, obj: ObjectOfCategory) -> ObjectOfCategory:
@@ -212,6 +285,24 @@ class Functor:
     def on_morphism(self, morphism: Map) -> Map:
         return self.morphism_image(morphism)
 
+    def map_isomorphism(self, isomorphism):
+        r"""The isomorphism F(f), with inverse F(f^{-1}) (Mathlib Functor.mapIso)."""
+        from dzack_research.preamble.categories.abstract_categories.arrow_categories import _core_mor
+        from dzack_research.preamble.categories.abstract_categories.mor_categories import _category_accepts_morphism
+
+        assert _category_accepts_morphism(
+            self.domain().Core(), isomorphism.domain(), isomorphism.codomain(), isomorphism
+        ), f"{isomorphism} is not an isomorphism of {self.domain()}"
+        target = _core_mor(
+            self.object_image(isomorphism.domain()),
+            self.object_image(isomorphism.codomain()),
+            base_category=self.codomain(),
+        )
+        return target._from_inverse_computation(
+            self.morphism_image(isomorphism.forward()),
+            lambda: self.morphism_image(isomorphism.inverse().forward()),
+        )
+
     @overload
     def __call__(self, value: ObjectOfCategory) -> ObjectOfCategory: ...
 
@@ -320,17 +411,25 @@ class Functor:
         r"""Return the represented functor category containing this functor."""
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-        return Cat().Mor(self.domain(), self.codomain())
+        return Cat().functor_mor(self.domain(), self.codomain())
 
     def object(self):
-        r"""Return this datum as the object of its functor category ``[C,D]``."""
-        return self.functor_category().object(self)
+        return self
+
+    def functor(self):
+        return self
+
+    def Mor(self, target):
+        return self.natural_transformations_to(target)
 
     def arrow(self):
         r"""Return this same functor as the corresponding morphism in ``Cat``."""
-        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+        return self
 
-        return Cat().arrow(self)
+    def __mul__(self, other):
+        if not isinstance(other, Functor) or other.codomain() is not self.domain():
+            return NotImplemented
+        return other.then(self)
 
     def natural_transformations_to(self, target: Functor):
         r"""Return the Mor of natural transformations ``self ⇒ target``."""

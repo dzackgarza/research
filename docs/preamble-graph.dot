@@ -54,6 +54,7 @@ digraph preamble {
     "CochainComplexes" [label="CochainComplexes(R)", fillcolor="#fae8ff"];
     "CohomologyModules" [label="CohomologyModules(R)", fillcolor="#fae8ff"];
     "DerivedCategories" [label="DerivedCategories(R)", fillcolor="#fae8ff"];
+    "DerivedCategory" [label="DerivedCategory(R)", fillcolor="#fae8ff"];
     "DiscriminantBilinearModules" [label="DiscriminantBilinearModules(R)", fillcolor="#fae8ff"];
     "DiscriminantModules" [label="DiscriminantModules(R)", fillcolor="#fae8ff"];
     "DiscriminantQuadraticModules" [label="DiscriminantQuadraticModules(R)", fillcolor="#fae8ff"];
@@ -231,6 +232,7 @@ digraph preamble {
     "HomogeneousPolynomialSectionSpaces" [label="HomogeneousPolynomialSectionSpaces(R)", fillcolor="#ede9fe"];
     "ImposedMultiplicityLinearSystems" [label="ImposedMultiplicityLinearSystems(R)", fillcolor="#ede9fe"];
     "LineBundleCohomologySpaces" [label="LineBundleCohomologySpaces(R)", fillcolor="#ede9fe"];
+    "PicardGroups" [label="PicardGroups", fillcolor="#ede9fe"];
     "ProjectiveJetSpaces" [label="ProjectiveJetSpaces(R)", fillcolor="#ede9fe"];
     "ProjectiveLinearSystems" [label="ProjectiveLinearSystems(R)", fillcolor="#ede9fe"];
     "SectionRings" [label="SectionRings(R)", fillcolor="#ede9fe"];
@@ -340,7 +342,8 @@ digraph preamble {
   "DefiniteLattices" -> "BilinearFormModules.FinitelyPresented";
   "DefiniteLattices" -> "FreeFormModules.FinitelyGenerated";
   "DefiniteLattices" -> "Lattices";
-  "DerivedCategories" -> "Objects";
+  "DerivedCategories" -> "TriangulatedCategories";
+  "DerivedCategory" -> "Objects";
   "DifferentiableManifolds" -> "TopologicalManifolds";
   "DifferentialGradedAlgebras" -> "CochainComplexes";
   "Digraphs" -> "Sets.Finite";
@@ -522,6 +525,7 @@ digraph preamble {
   "PairingObjects" -> "Modules";
   "PartiallyOrderedSets" -> "Sets";
   "PermutationGroups" -> "OwnedGroups";
+  "PicardGroups" -> "Modules";
   "PowerSets" -> "Sets";
   "PredicateSubrings" -> "OwnedRings";
   "PrimeSpectra" -> "PartiallyOrderedSets";

@@ -27,6 +27,7 @@ from sage.categories.rings import Rings as SageRings
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.element import parent as element_parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -253,7 +254,7 @@ class MultiplicativeAlgebraMorphism:
         factors. In particular, a unit-preserving left factor cannot add
         unit preservation to a right factor admitted only in the root Mor.
         """
-        if not isinstance(other, Morphism) or other.codomain() is not self.domain():
+        if not isinstance(other, (Morphism, CategoricalArrow)) or other.codomain() is not self.domain():
             return NotImplemented
         other_parent = element_parent(other)
         if not isinstance(other_parent, CategoricalMor):
@@ -266,10 +267,30 @@ class MultiplicativeAlgebraMorphism:
             and right_category.is_subcategory(algebras)
         ):
             return NotImplemented
+        if getattr(self, "_preamble_is_identity", False):
+            return other
+        if getattr(other, "_preamble_is_identity", False):
+            return self
         source = other.domain()
         forget = algebras.underlying_module()
         category = Cat().join((left_category, right_category))
-        return category.Mor(source, self.codomain())(forget(self) * forget(other))
+        mor = category.Mor(source, self.codomain())
+        left_linear = forget(self)
+        right_linear = forget(other)
+        if isinstance(mor, UnitalMultiplicativeAlgebraMor):
+            equations = [self.is_multiplicative(), other.is_multiplicative()]
+            if hasattr(self, "preserves_unit") and hasattr(other, "preserves_unit"):
+                equations.extend((self.preserves_unit(), other.preserves_unit()))
+            return mor._from_constructed_element_map(
+                lambda element: self(other(element)),
+                linearity_premises=(left_linear, right_linear),
+                equations=equations,
+            )
+        # The root algebra Mor has no unital construction supplier.  Its
+        # defining datum is the already-composed linear map; enter it at the
+        # algebra arrow type rather than redispatching that whole module arrow
+        # through the public constructor boundary.
+        return mor.element_class(mor, left_linear * right_linear)
 
 
 class MultiplicativeAlgebraMor(CategoricalMor):
@@ -292,12 +313,8 @@ class MultiplicativeAlgebraMor(CategoricalMor):
         )
         algebra = self.domain()
         identity = self.element_class(self, algebra.module_category().Mor(algebra, algebra).identity())
-        from dzack_research.preamble.categories.rings.ring_foundation import RingMorphism
-
-        if isinstance(identity, RingMorphism):
-            # The retained module identity proves the function is the identity;
-            # preserve the existing ring supplier's datum when it is present.
-            identity._preamble_is_identity = True
+        # The retained module identity proves the function is the identity.
+        identity._preamble_is_identity = True
         return identity
 
     def _repr_(self):
@@ -457,13 +474,15 @@ class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
                 f"a morphism {self.domain()} -> {self.codomain()} needs a map on elements, "
                 f"but {evaluator!r} is not callable"
             )
-        represented = SetMorphism(
-            Sets().Mor(self.domain(), self.codomain()),
-            lambda element: self.codomain()(evaluator(self.domain()(element))),
+        linearity_premises = tuple(linearity_premises)
+        linear = self.domain().module_category().Mor(
+            self.domain(), self.codomain()
+        )._from_constructed_element_map(
+            evaluator, premises=linearity_premises
         )
         return self.element_class(
-            self, represented,
-            _construction_premises=(tuple(linearity_premises), tuple(equations)),
+            self, linear,
+            _construction_premises=(linearity_premises, tuple(equations)),
             _transported_morphism=transported_morphism,
         )
 
@@ -1818,8 +1837,8 @@ class Algebras(OwnedCategoryOverBaseRing):
 
 
 
-        @cached_method
         @RealizationHook
+        @cached_method
         def _center_construction(self):
             r"""Supply the inherited magma centre and its algebra inclusion.
 
@@ -4212,9 +4231,12 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraM
             )
         domain = self.domain()
         if domain.is_framed_algebra():
-            return self(lambda label: domain.algebra_generator(label))
-        engine = _engine_ring(domain)
-        return self._from_engine_morphism(engine.hom(engine))
+            identity = self(lambda label: domain.algebra_generator(label))
+        else:
+            engine = _engine_ring(domain)
+            identity = self._from_engine_morphism(engine.hom(engine))
+        identity._preamble_is_identity = True
+        return identity
 
 
 class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
@@ -4243,7 +4265,9 @@ class AlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraMor):
                 f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
             )
         algebra = self.domain()
-        return self._from_constructed_element_map(lambda element: element)
+        identity = self._from_constructed_element_map(lambda element: element)
+        identity._preamble_is_identity = True
+        return identity
 
     def _repr_(self):
         return f"Mor_Alg({self.domain()}, {self.codomain()})"

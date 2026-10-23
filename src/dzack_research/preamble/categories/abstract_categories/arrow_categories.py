@@ -32,7 +32,6 @@ from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.cat import (
     Cat,
-    CategoryFunctorMorphism,
     NaturalTransformationMor,
     NaturalTransformationMorphism,
     _FunctorCategory,
@@ -47,6 +46,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
     _category_accepts_morphism,
     _category_mor_parent,
     _declared_construction,
+    _is_selected_identity_in,
     _precomposable,
 )
 from dzack_research.preamble.categories.abstract_categories.objects import OwnedCategory
@@ -83,9 +83,9 @@ class _ArrowAsFunctor(Functor):
     def _apply_object(self, obj: Parent) -> ObjectOfCategory:
         match obj.position():
             case 0:
-                return self.arrow().domain()
+                return self._arrow.domain()
             case 1:
-                return self.arrow().codomain()
+                return self._arrow.codomain()
             case _:
                 raise ValueError(
                     f"the walking arrow 0 -> 1 has only the objects 0 and 1, but got {obj}"
@@ -95,10 +95,10 @@ class _ArrowAsFunctor(Functor):
         left = morphism.domain().position()
         right = morphism.codomain().position()
         if left == right:
-            endpoint = self.arrow().domain() if left == 0 else self.arrow().codomain()
+            endpoint = self._arrow.domain() if left == 0 else self._arrow.codomain()
             return _category_mor_parent(self.codomain(), endpoint, endpoint).identity()
         if left == 0 and right == 1:
-            return self.arrow()
+            return self._arrow
         raise ValueError(f"the walking arrow 0 -> 1 has no morphism {left} -> {right}")
 
 
@@ -438,12 +438,12 @@ class _WalkingArrowFunctorCategory(_FunctorCategory):
         """
         match value:
             case Functor():
-                return super().object(value)
+                return super().__call__(value)
         if not self.admits_arrow(value):
             raise TypeError(
                 f"{value} is not an object of {self}: it is not an arrow of the base category"
             )
-        return super().object(_walking_arrow_functor(self.codomain_category(), value))
+        return super().__call__(_walking_arrow_functor(self.codomain_category(), value))
 
     __call__ = object
 
@@ -498,6 +498,13 @@ class _SubcategoryOfArrows(OwnedCategory):
             and _category_accepts_morphism(base, arrow.domain(), arrow.codomain(), arrow)
         )
 
+    def __contains__(self, candidate):
+        match candidate:
+            case Functor():
+                return candidate in self.base_category().ArrowCategory() and self.admits_arrow(candidate.arrow())
+            case _:
+                return super().__contains__(candidate)
+
     def an_object(self):
         r"""The identity of an object of ``C``, as an arrow."""
         base = self.base_category()
@@ -515,7 +522,7 @@ class _SubcategoryOfArrows(OwnedCategory):
 
     @cached_method(key=lambda self, functor: id(functor))
     def _object_on(self, functor: Functor):
-        return _object_of(self, functor=functor, fixed_mor_category=self)
+        return self.base_category().ArrowCategory()(functor)
 
     def Mor(self, source: Parent, target: Parent) -> ArrowMor:
         if source not in self or target not in self:
@@ -992,6 +999,28 @@ class SliceCategory(_SubcategoryOfArrows):
             r"""The chosen arrow, when this object was constructed in one slice or coslice only."""
             return _chosen_arrow(self)
 
+        def _underlying_slice_object(self):
+            r"""Return A from the retained arrow p: A -> X."""
+            return self.arrow().domain()
+
+        def _cardinality_decision(self):
+            r"""The slice object has the cardinality of its underlying object."""
+            return self._underlying_slice_object().cardinality()
+
+        def _finiteness_decision(self):
+            r"""The slice object is finite exactly when its underlying object is finite."""
+            return self._underlying_slice_object().is_finite()
+
+        def __iter__(self):
+            r"""Enumerate the points of the underlying object when it is enumerated."""
+            return iter(self._underlying_slice_object())
+
+        def __contains__(self, element):
+            r"""Membership in a slice object is membership in its underlying object."""
+            return element in self._underlying_slice_object()
+
+        is_parent_of = __contains__
+
         def _slice_arrow_in(self, category: Category) -> Morphism:
             r"""The arrow of this object as an object of the slice ``category``.
 
@@ -1324,8 +1353,9 @@ class _IsoArrowCategory(_FullSubcategoryOfArrows):
         return [Cat().Mor(FiniteOrdinalCategory(2), self.base_category())]
 
     def admits_arrow(self, arrow: Morphism) -> bool:
-        return super().admits_arrow(arrow) and arrow in self.base_category().Core().Mor(
-            arrow.domain(), arrow.codomain()
+        return super().admits_arrow(arrow) and (
+            _is_selected_identity_in(self.base_category(), arrow)
+            or arrow in self.base_category().Core().Mor(arrow.domain(), arrow.codomain())
         )
 
     def _repr_(self) -> str:

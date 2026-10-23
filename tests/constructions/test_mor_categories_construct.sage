@@ -15,12 +15,12 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 def _singleton_end_category():
     point = Sets.Δ[0]
-    return point, point.End()
+    return point, Sets().End(point)
 
 
 def _identity_object():
     point, end = _singleton_end_category()
-    identity = point.Mor(point).identity()
+    identity = end.identity()
     return point, end, identity, end(identity)
 
 
@@ -32,10 +32,10 @@ def test_fixed_mor_category_retains_family_endpoints_and_underlying_mor() -> Non
     assert end.base_category() is Sets()
     assert end.domain_object() is point
     assert end.codomain_object() is point
-    assert end.arrow_set() is point.Mor(point)
-    assert end.underlying_mor() is point.Mor(point)
+    assert end.arrow_set() is Sets().Mor(point, point)
+    assert end.underlying_mor() is Sets().Mor(point, point)
     assert end.accepts(identity)
-    assert end.object(identity) is arrow
+    assert end(identity) is arrow
     assert end.object_set() is end.arrow_set()
     assert end.objects().value(identity) is arrow
     assert end.arrows().cardinality() == cardinal(1)
@@ -119,7 +119,7 @@ def test_fixed_mor_limit_and_colimit_categories_and_functors_fix_the_only_object
     _point, end, _identity, arrow = _identity_object()
     diagrams = Cat().Mor(end, end)
     diagram = diagrams.constant_functor(arrow)
-    diagram_object = diagrams.object(diagram)
+    diagram_object = diagrams(diagram)
     limits = end.Limits(end)
     colimits = end.Colimits(end)
     products = end.Products(end)
@@ -217,7 +217,7 @@ def test_restricted_fixed_mor_object_set_is_the_admitted_arrow_subobject() -> No
 def test_functor_category_keeps_natural_transformations_as_two_morphisms() -> None:
     functor_category = Cat().Mor(Sets(), Sets())
     identity = Sets().identity_functor()
-    identity_object = functor_category.object(identity)
+    identity_object = functor_category(identity)
     transformations = identity.natural_transformations_to(identity)
     three = Sets.Δ[2]
 
@@ -250,7 +250,8 @@ def test_fixed_mor_arrow_subcategories_all_contain_the_unique_two_identity() -> 
     assert two_arrow in end.AutomorphismArrowCategory()
     assert two_arrow in end.MonomorphismArrowCategory()
     assert two_arrow in end.EpimorphismArrowCategory()
-    assert two_arrow in wide
+    assert arrow in wide
+    assert identity_2 in wide.Mor(arrow, arrow)
 
 
 def test_fixed_mor_slice_like_categories_retain_the_only_base_object() -> None:

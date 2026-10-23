@@ -1457,9 +1457,6 @@ class _FiniteAffineAtlasEngine:
         self._gluing_presentation = gluing_presentation
         super().__init__(**rest)
 
-    def presentation(self):
-        return self._gluing_presentation
-
     def _ordered_pair(self, left_index, right_index):
         return self.presentation()._ordered_pair(left_index, right_index)
 
@@ -2343,6 +2340,10 @@ class FiniteAffineAtlases(OwnedParameterizedCategory):
         return [ZariskiCoveringFamilies(self.scheme())]
 
     class ParentMethods:
+        def presentation(self):
+            r"""Return the finite gluing presentation defining this atlas."""
+            return self._gluing_presentation
+
         def coverage(self):
             r"""The Zariski coverage of ``Sch_R/X`` containing this atlas."""
             return self.category().coverage()

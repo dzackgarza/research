@@ -21,8 +21,6 @@ from dzack_research.preamble import language_runtime as _language_runtime
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
     Cat,
     CategoricalIsomorphism,
-    CategoryFunctorMorphism,
-    CategoryObject,
     CommutativeSquare,
     Coverage,
     CoveringFamilies,
@@ -32,6 +30,7 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     DescentEqualizerComparison,
     DirectedSystem,
     DirectSumObjects,
+    FiniteOrdinalCategory,
     MorCategories,
     InverseSystem,
     NaturalTransformationMorphism,

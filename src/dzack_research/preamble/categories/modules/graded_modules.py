@@ -355,8 +355,7 @@ class GradedModuleMor(_ModuleMorCommonMethods, CategoricalMor):
                 return images
             raise TypeError(f"{images} belongs to another Mor; apply the functor between the categories")
         morphism = super()._element_constructor_(images, check=check)
-        if isinstance(morphism, GradedModuleMorphismMethods):
-            morphism.validate_degree_preservation(check=check)
+        morphism.validate_degree_preservation(check=check)
         return morphism
 
     def _from_constructed_graded_map(self, function, *, premises=()):

@@ -66,6 +66,9 @@ from dzack_research.static_types import ProductOfNaturalNumbers
 
 _Rings = OwnedRings()
 _SageRings = SageRings()
+# Every tensor type is a point of this one fixed codomain.  Construct it once
+# with the tensor vocabulary, rather than at the first tensor operation.
+_TENSOR_TYPES = NN**2
 
 
 def index_rank_family(ranks):
@@ -240,12 +243,6 @@ def _tensor_space_session_and_latex(
         _otimes_session(session_factors, ring_name),
         _otimes_latex(tex_factors, ring_tex),
     )
-
-
-@cached_function
-def _bidegrees() -> Parent:
-    r"""The set $\mathbb N^2$ of tensor types $(p, q)$, the product built once."""
-    return NN**2
 
 
 class Tensor:
@@ -603,15 +600,25 @@ class Tensor:
                     f"covariant tensor contraction takes, in a slot of rank {rank}, "
                     f"a vector of {slot_module}"
                 )
-        # The ubiquitous pairing G(x, y) = x^t G y is one product in the
-        # selected exact matrix backend, crossed back into the owned ring.
+        # The ubiquitous pairing G(x, y) = x^t G y is evaluated here, at the
+        # tensor owner.  Reading its exact components directly avoids loading
+        # a numerical array stack merely to contract a small exact tensor.
         if len(vectors) == 2:
             left, right = vectors
-            return _owned_engine_element(
-                self.base_ring(),
-                _engine_component_vector(left)
-                * _engine_component_matrix(self)
-                * _engine_component_vector(right),
+            left_rank, right_rank = self._lower_index_ranks()
+            if Infinity in (left_rank, right_rank):
+                raise ValueError(
+                    f"cannot contract a type-{self.tensor_valence()} tensor with an infinite-rank index by finite component enumeration"
+                )
+            return sum(
+                (
+                    left[left_index]
+                    * self[left_index, right_index]
+                    * right[right_index]
+                    for left_index in range(left_rank)
+                    for right_index in range(right_rank)
+                ),
+                start=self.base_ring().zero(),
             )
         from itertools import product as cartesian_product
 
@@ -895,7 +902,7 @@ class Tensor:
         """
         valence = self.tensor_valence()
         first_rank, second_rank = self._index_ranks()
-        if valence in {_bidegrees()((0, 2)), _bidegrees()((2, 0))}:
+        if valence in {_TENSOR_TYPES((0, 2)), _TENSOR_TYPES((2, 0))}:
             if first_rank != second_rank:
                 raise ValueError(
                     f"cannot dualize this type-{valence} tensor with index ranks "
@@ -908,7 +915,7 @@ class Tensor:
                 tuple(_owned_engine_element(ring, entry) for entry in row)
                 for row in inverse.rows()
             ]
-            if valence == _bidegrees()((0, 2)):
+            if valence == _TENSOR_TYPES((0, 2)):
                 return tensor(ring, (first_rank, second_rank), (), components)
             return tensor(ring, (), (first_rank, second_rank), components)
         raise TypeError(
@@ -926,7 +933,7 @@ class Tensor:
         is again type ``(0,2)``.
         """
         valence = self.tensor_valence()
-        match valence == _bidegrees()((0, 2)):
+        match valence == _TENSOR_TYPES((0, 2)):
             case False:
                 raise TypeError(
                     f"cannot form the dual pairing of a type-{valence} tensor: "
@@ -1027,9 +1034,7 @@ class Tensor:
                 f"map f: V -> W between free modules of finite rank with chosen bases, "
                 f"not a tensor"
             )
-        matrix = morphism.domain().module_category().Mor(
-            morphism.domain(), morphism.codomain()
-        )(morphism)
+        matrix = morphism._framed_coordinate_morphism()
         if matrix.parent() not in MatrixSpaces(matrix.parent().base_ring()):
             raise TypeError(
                 f"cannot pull back a tensor along {morphism}: its domain and codomain must be "
@@ -1053,7 +1058,7 @@ def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):
         case True:
             pass
     valence = value.tensor_valence()
-    match valence == _bidegrees()((0, 2)):
+    match valence == _TENSOR_TYPES((0, 2)):
         case False:
             raise TypeError(
                 f"a bilinear form is a covariant 2-tensor of type (0, 2), "
@@ -1093,6 +1098,7 @@ def _covariant_bilinear_coordinate_rows(value, left_rank, right_rank):
 
 
 
+@cached_function
 def _engine_component_matrix(value):
     r"""Private engine adapter (`OWN-06`): the Sage matrix of a two-index tensor.
 
@@ -1188,9 +1194,7 @@ def _engine_row_action_matrix(morphism):
     this lowering converts the convention once, by one transpose.  Row ``i`` of
     the result is the coordinate row of ``f(e_i)``; raising reads it so.
     """
-    matrix = morphism.domain().module_category().Mor(
-        morphism.domain(), morphism.codomain()
-    )(morphism)
+    matrix = morphism._framed_coordinate_morphism()
     assert matrix.parent() in MatrixSpaces(matrix.parent().base_ring()), (
         f"{morphism} has no matrix: its domain {morphism.domain()} and codomain "
         f"{morphism.codomain()} must be free modules of finite rank with a chosen basis, "
@@ -1399,22 +1403,6 @@ def _engine_dual_row_family(row_family):
     return row_family.inverse().transpose()
 
 
-def _engine_inverse_form_pullback(form, isomorphism):
-    r"""Private engine adapter (``OWN-24``): pull a form back along an inverse map.
-
-    ``isomorphism`` uses coordinate columns: it sends the standard basis
-    to its columns.  The returned Gram matrix represents
-    ``(isomorphism^{-1})^* form``.  The inverse, transpose and action
-    conventions are confined to this tensor boundary.
-
-    For the rational diagonalization ``T^t (2G) T = D``, pullback of
-    ``|D|`` along ``T^{-1}`` gives the positive-definite majorant
-    ``M`` with ``|2G(x,x)| <= M(x,x)``. Thus the engine does not choose
-    between row and column conjugation when constructing its search bound.
-    """
-    return _engine_row_family_gram(form, _engine_dual_row_family(isomorphism))
-
-
 def _engine_modular_pairing_pullback(form, row_family, modulus, *, diagonal_only=False):
     r"""Private engine adapter (``OWN-24``): a finite-family pairing contraction.
 
@@ -1528,6 +1516,110 @@ def _engine_row_action_from_images(source_rows, target_rows):
     a family's images determine a row action.
     """
     return source_rows.solve_right(target_rows)
+
+
+def _engine_coisotropic_witt_extension(partial, source_inclusion, target_inclusion):
+    r"""An exact row action extending a coisotropic partial rational isometry.
+
+    Protected caller: ``LatticeIsometryMethods.witt_extension``.  Return
+    ``None`` when the ambient forms are degenerate or the specified spaces
+    are not coisotropic; those hypotheses belong to this computation, not
+    to the general extension locus.
+
+    For bases S_1,S_2 of the specified spaces, choose the Euclidean
+    nullspace complement C_1 of S_1 in its selected framing.  Solve the
+    pairing equations for C_2, then correct C_2 by X N_2, where N_2 is the
+    form-perpendicular of S_2.  Since N_2 is isotropic, the remaining
+    equations are linear: B = X A + A^t X^t.  Finally project the affine
+    solution along its saturated integral homogeneous module; this removes
+    precisely the denominators that a homogeneous correction can remove.
+
+    This is the exact finite computation of Lorentzian.g:115-249 and
+    Fundamental.g:509-516,751-794 in Indefinite.jl at 374a5ebb.  Sage's
+    rational solve and Smith form implement its linear solves, saturation
+    and unimodular completion.  The Euclidean complement selects vectors;
+    every isometry and orthogonality equation uses the supplied forms.
+    """
+    from sage.rings.integer_ring import ZZ as SageZZ
+    from sage.rings.rational_field import QQ as SageQQ
+
+    source = source_inclusion.codomain()
+    target = target_inclusion.codomain()
+    left_form = _engine_component_matrix(source.gram_tensor()).change_ring(SageQQ)
+    right_form = _engine_component_matrix(target.gram_tensor()).change_ring(SageQQ)
+    left = _engine_row_action_matrix(source_inclusion).change_ring(SageQQ)
+    right = (
+        _engine_row_action_matrix(partial)
+        * _engine_row_action_matrix(target_inclusion)
+    ).change_ring(SageQQ)
+    size = left_form.nrows()
+    if right_form.nrows() != size:
+        raise ValueError("isometric ambient spaces must have equal dimensions")
+    rank = left.nrows()
+    if right.nrows() != rank or left.rank() != rank or right.rank() != rank:
+        raise ValueError("a partial isometry must be given by injective inclusions")
+    if left * left_form * left.transpose() != right * right_form * right.transpose():
+        raise ValueError("the prescribed images do not preserve the restricted form")
+    if rank == size:
+        return left.solve_right(right)
+    if left_form.rank() != size or right_form.rank() != size:
+        return None
+    left_pairing = left * left_form
+    right_pairing = right * right_form
+    left_normal = left_pairing.right_kernel_matrix()
+    right_normal = right_pairing.right_kernel_matrix()
+    if not (
+        (left_normal * left_form * left_normal.transpose()).is_zero()
+        and (right_normal * right_form * right_normal.transpose()).is_zero()
+    ):
+        return None
+
+    complement = left.right_kernel_matrix()
+    dimension = complement.nrows()
+    source_basis = left.stack(complement)
+    source_inverse = source_basis.inverse()
+    candidate = right_pairing.solve_right(left_pairing * complement.transpose()).transpose()
+    difference = complement * left_form * complement.transpose() - candidate * right_form * candidate.transpose()
+    pairing = right_normal * right_form * candidate.transpose()
+
+    # SpecialEquationSolving: X is flattened by rows, and each equation
+    # (i,j) reads (X A + A^t X^t)[i,j].
+    equation = _sage_matrix(SageQQ, dimension * dimension, dimension * dimension)
+    for i in range(dimension):
+        for j in range(dimension):
+            row = i * dimension + j
+            for k in range(dimension):
+                equation[row, i * dimension + k] += pairing[k, j]
+                equation[row, j * dimension + k] += pairing[k, i]
+    solution = equation.solve_right(_sage_vector(SageQQ, difference.list()))
+    correction = _sage_matrix(SageQQ, dimension, dimension, solution)
+    extension = source_inverse * right.stack(candidate + correction * right_normal)
+
+    homogeneous = equation.right_kernel_matrix()
+    if homogeneous.nrows():
+        zero_rows = _sage_matrix(SageQQ, rank, size)
+        directions = _sage_matrix(SageQQ, [
+            (source_inverse * zero_rows.stack(
+                _sage_matrix(SageQQ, dimension, dimension, row) * right_normal
+            )).list()
+            for row in homogeneous.rows()
+        ])
+        # A W B = D gives a unimodular coordinate change B taking the
+        # rational homogeneous space to its first rank(W) coordinate axes.
+        # Their inverse images form the complete saturated integral module;
+        # the remaining axes give an integral complement, as in the source's
+        # IntegralSpaceSaturation/SubspaceCompletionInt construction.
+        integral_directions = (directions.denominator() * directions).change_ring(SageZZ)
+        diagonal, _row_change, column_change = integral_directions.smith_form()
+        dimension_homogeneous = diagonal.rank()
+        coordinates = _sage_vector(SageQQ, extension.list()) * column_change
+        for position in range(dimension_homogeneous):
+            coordinates[position] = 0
+        extension = _sage_matrix(SageQQ, size, size, coordinates * column_change.inverse())
+
+    if extension * right_form * extension.transpose() != left_form or left * extension != right:
+        raise ArithmeticError("the coisotropic Witt extension failed its form or restriction equation")
+    return extension
 
 
 def _engine_binary_form_pullback(form, linear_map):
@@ -1938,7 +2030,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
         other_valence = other.tensor_valence()
         from itertools import product as cartesian_product
 
-        if len(upper) >= 2 and not lower and other_valence == _bidegrees()((0, 1)):
+        if len(upper) >= 2 and not lower and other_valence == _TENSOR_TYPES((0, 1)):
             if upper[-1] != other._lower_index_ranks()[0]:
                 raise ValueError(
                     f"cannot multiply a type-{valence} tensor by a covector of rank "
@@ -1956,7 +2048,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 for position in positions
             )
             return tensor(ring, output_upper, (), _nested(entries, output_upper))
-        if other_valence == _bidegrees()((1, 0)):
+        if other_valence == _TENSOR_TYPES((1, 0)):
             if not lower:
                 raise TypeError(
                     f"a type-{valence} tensor has no covariant index, so it cannot be "
@@ -1990,7 +2082,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
             if not output_shape:
                 return entries[0]
             return tensor(ring, output_upper, output_lower, _nested(entries, output_shape))
-        if valence == _bidegrees()((1, 1)) and other_valence == _bidegrees()((1, 1)):
+        if valence == _TENSOR_TYPES((1, 1)) and other_valence == _TENSOR_TYPES((1, 1)):
             if lower != other._upper_index_ranks():
                 raise ValueError(
                     f"cannot compose type-(1, 1) tensors with index ranks "
@@ -2010,7 +2102,7 @@ class _CoordinateTensor(ModuleElement, Tensor):
                 for j in range(columns)
             )
             return tensor(ring, (rows,), (columns,), _nested(entries, (rows, columns)))
-        if valence == _bidegrees()((0, 1)) and other_valence == _bidegrees()((1, 1)):
+        if valence == _TENSOR_TYPES((0, 1)) and other_valence == _TENSOR_TYPES((1, 1)):
             # In V* tensor V tensor W*, evaluate the adjacent V*, V pair.
             if lower != other._upper_index_ranks():
                 raise ValueError(
@@ -2121,7 +2213,7 @@ class _CoordinateTensorModule:
     @cached_method
     def tensor_type(self) -> ProductOfNaturalNumbers:
         r"""Return the type $(p, q)$ as a point of $\mathbb N^2$ (`CON-15`)."""
-        return _bidegrees()((len(self._upper_ranks), len(self._lower_ranks)))
+        return _TENSOR_TYPES((len(self._upper_ranks), len(self._lower_ranks)))
 
     def tensor_valence(self) -> ProductOfNaturalNumbers:
         return self.tensor_type()
@@ -2289,7 +2381,7 @@ def _tensor_module_on(base_ring, upper_ranks, lower_ranks):
 
 def _mixed_tensor_valence(valence) -> ProductOfNaturalNumbers:
     r"""Normalize one bidegree ``(p,q)`` of the mixed tensor algebra."""
-    return _bidegrees()(valence)
+    return _TENSOR_TYPES(valence)
 
 
 class MixedTensorAlgebraElement(GradedDirectSumElement):
@@ -2404,7 +2496,7 @@ def _mixed_tensor_algebra(module):
     )
     ring = _own_ring(module.base_ring())
     size = int(rank)
-    bigrades = _bidegrees()
+    bigrades = _TENSOR_TYPES
     pieces = indexed_family(
         bigrades,
         lambda valence: TensorModule(
@@ -2552,9 +2644,7 @@ class _TensorConstructor:
 
         The ordinary module Mor of the endpoints must itself be a matrix Mor.
         """
-        matrix = morphism.domain().module_category().Mor(
-            morphism.domain(), morphism.codomain()
-        )(morphism)
+        matrix = morphism._framed_coordinate_morphism()
         return self.from_matrix(matrix)
 
     def __call__(

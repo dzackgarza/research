@@ -48,7 +48,7 @@ class OwnedMor(SageHomset):
         return arrow.parent() is self
 
     def __call__(self, *args, **kwargs) -> Morphism:
-        if len(args) == 1 and isinstance(args[0], Map):
+        if len(args) == 1 and isinstance(args[0], (Map, CategoricalArrow)):
             arrow = args[0]
             if self._already_parented_arrow(arrow):
                 if not kwargs:
@@ -66,6 +66,31 @@ class OwnedMor(SageHomset):
                 f"the identity of {obj} is not in Mor({self.domain()}, {self.codomain()})"
             )
         return self.identity()
+
+
+class CategoricalArrow(Element):
+    r"""An arrow with its actual categorical endpoints.
+
+    Sage's ``Map`` stores endpoints as ``Parent`` instances. Objects of a
+    category need not be parents: in particular an arrow is an object of a
+    Mor category. This realization stores only the Mor parent and reads its
+    endpoints without replacing them by auxiliary objects.
+    """
+
+    def domain(self):
+        return self.parent().domain()
+
+    def codomain(self):
+        return self.parent().codomain()
+
+    def Mor(self, codomain):
+        return self.parent().two_mor(self, codomain)
+
+    def __call__(self, value):
+        return self._call_(value)
+
+    def _repr_(self):
+        return f"Morphism from {self.domain()} to {self.codomain()}"
 
 
 def _refuse_foreign_arrow(mor: Parent, arrow: Morphism, functor: str) -> None:
@@ -104,7 +129,7 @@ class UnderlyingSetMor(OwnedMor):
         SageHomset.__init__(self, domain, codomain, category=SageSets())
 
     def _element_constructor_(self, datum):
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             if datum.domain() is not self.domain() or datum.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot view {datum} as a map {self.domain()} -> {self.codomain()}: it is a map "
@@ -112,7 +137,7 @@ class UnderlyingSetMor(OwnedMor):
                 )
             if datum.parent() is self:
                 return datum
-        if isinstance(datum, Map):
+        if isinstance(datum, (Map, CategoricalArrow)):
             _refuse_foreign_arrow(
                 self, datum, "the underlying map of an arrow of a structured category is its image under that "
                 "category's forgetful functor to sets"
@@ -170,7 +195,7 @@ def _has_category_packet_surface(category: Category) -> bool:
             return False
 
 
-class CategoryPacketMethods:
+class _CategoryPacketOperations:
     r"""The coordinated ``C/Hom_C/End_C/Iso_C/Aut_C`` construction surface.
 
     Sited here, below the packet itself, so that the owned category bases can
@@ -325,7 +350,7 @@ def _asked_of_the_category(owner: Parent, objects: tuple) -> bool:
 
 def _category_level_operations() -> dict:
     r"""The category-level operation of each name of the Mor packet, at its one owner."""
-    packet = CategoryPacketMethods.__dict__
+    packet = _CategoryPacketOperations.__dict__
     return {
         "Mor": packet["Mor"],
         "End": packet["End"],
@@ -360,15 +385,17 @@ class ObjectLevelOperation:
     def __init__(self, reading) -> None:
         self._reading = reading
         update_wrapper(self, reading)
+        self._category_reading = _category_level_operations()[self.__name__]
+        self._category_arity = self._category_reading.__code__.co_argcount - 1
 
     def __get__(self, instance, owner=None):
         if instance is None:
             return self._reading.__get__(None, owner)
         reading = self._reading.__get__(instance, owner)
-        category_level = _category_level_operations()[self.__name__]
+        category_level = self._category_reading
 
         def operation(*objects, **options):
-            if not options and _asked_of_the_category(instance, objects):
+            if not options and len(objects) == self._category_arity and _asked_of_the_category(instance, objects):
                 return category_level(instance, *objects)
             return reading(*objects, **options)
 
@@ -382,3 +409,44 @@ class ObjectLevelOperation:
 
 
 object_level = ObjectLevelOperation
+
+
+class CategoryPacketMethods(_CategoryPacketOperations):
+    r"""The category packet, with both readings on categories that are objects of Cat."""
+
+    @object_level
+    def Mor(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().functor_mor(self, codomain)
+
+    @object_level
+    def End(self):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().End(self)
+
+    @object_level
+    def Mono(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Mono(self, codomain)
+
+    @object_level
+    def Epi(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Epi(self, codomain)
+
+    @object_level
+    def Iso(self, codomain):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Iso(self, codomain)
+
+    @object_level
+    def Aut(self):
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        return Cat().Aut(self)
+

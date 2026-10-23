@@ -12,7 +12,7 @@ r"""The subgroup of ``H <= O(M)`` that extends along a finite-index ``M -> L``.
 - ``H = <-1>``.  ``-1`` preserves ``U`` and extends to ``-1`` on ``U``, so
   the extended subgroup has order two.
 
-Source-level specimens; execution is retained under terminal T.
+These specimens passed final-runtime execution on 2026-10-19.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
@@ -38,7 +38,7 @@ def test_the_swap_of_U2_does_not_extend_to_U() -> None:
     e_prime, f_prime = scaled.module_generators()[0], scaled.module_generators()[1]
     swap = scaled.Aut()({0: f_prime, 1: e_prime})
     assert inclusion.isometry_extends(swap) is False
-    swaps = scaled.O().subgroup(finite_ordered_set((swap,)))
+    swaps = scaled.O().subgroup(Set((swap,)))
     assert inclusion.extended_subgroup(swaps).cardinality() == 1
 
 
@@ -49,5 +49,5 @@ def test_minus_one_on_U2_extends_to_minus_one_on_U() -> None:
     assert inclusion.isometry_extends(negation) is True
     extension = inclusion.isometry_extension(negation)
     assert extension(e) == -e and extension(f) == -f
-    signs = scaled.O().subgroup(finite_ordered_set((negation,)))
+    signs = scaled.O().subgroup(Set((negation,)))
     assert inclusion.extended_subgroup(signs).cardinality() == 2

@@ -17,3 +17,4 @@ jobs:
       tier: ambient
       profile: 'sage'
       infra_ref: 'main'
+      setup_recipe: '_ci-tensor-tools'

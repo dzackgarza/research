@@ -276,6 +276,10 @@ class _SparseFreeModuleParent:
         assert label in labels, f"{label!r} is not a basis label of {self}; the basis is indexed by {labels}"
         return self.element_class(self, {labels(label): self.base_ring().one()})
 
+    def _linear_combination_from_generator_coefficients(self, coefficients):
+        r"""Evaluate in the retained free basis through its coordinate constructor."""
+        return self(dict(coefficients))
+
     def __call__(self, value):
         r"""Construct a free-module element through the owned coordinate syntax."""
         return self._element_constructor_(value)

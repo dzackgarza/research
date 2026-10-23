@@ -23,6 +23,7 @@ from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CategoricalIsomorphism,
+    CoreMor,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -223,9 +224,60 @@ class TorsionFormIsometry(CategoricalIsomorphism):
     def is_quadratic(self) -> bool:
         return self._quadratic
 
+    def is_isomorphism(self) -> bool:
+        r"""Return ``True``: membership in this Core Mor carries the inverse pair."""
+        return True
+
     def inverse_morphism(self):
         r"""Return the underlying inverse module morphism."""
         return self._inverse_morphism()
+
+    def inverse(self):
+        r"""Return the inverse in the same specialized torsion-form Iso family."""
+        reverse = self.parent().mor_family().Of(self.codomain(), self.domain())
+        return reverse._from_known_inverse_pair(
+            self.inverse_morphism(), self.forward()
+        )
+
+
+class TorsionFormIsometryMor(CoreMor):
+    r"""The Core Mor of isometries between two finite torsion forms."""
+
+    Element = TorsionFormIsometry
+
+    def __init__(self, family, domain, codomain) -> None:
+        self._quadratic = bool(family.quadratic)
+        super().__init__(family, domain, codomain)
+
+    def _element_constructor_(self, forward, inverse=None, *, check=False):
+        if isinstance(forward, TorsionFormIsometry) and inverse is None:
+            if forward.parent() is self:
+                return forward
+            raise TypeError(
+                f"{forward} belongs to another Mor; apply the functor between the categories"
+            )
+        if inverse is None:
+            forward, inverse = forward
+        self._require_base_morphisms(forward, inverse)
+        return self.element_class(
+            self,
+            forward,
+            inverse,
+            quadratic=self._quadratic,
+            check=check,
+        )
+
+    def _from_known_inverse_pair(self, forward, inverse):
+        self._require_base_morphisms(forward, inverse)
+        return self.element_class(
+            self,
+            forward,
+            inverse,
+            quadratic=self._quadratic,
+        )
+
+    def _from_inverse_computation(self, forward, inverse_computation):
+        return self._from_known_inverse_pair(forward, inverse_computation())
 
 
 def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
@@ -244,22 +296,31 @@ def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
     inverse_component = inverse.module_morphism() if isinstance(inverse, FormedModuleMorphism) else inverse
     formed_forward = category.Mor(source, target)((forward_component, value_identity))
     formed_inverse = category.Mor(target, source)((inverse_component, value_identity))
-    return category.Core().Mor(source, target)((formed_forward, formed_inverse))
+    return category.Core().Mor(source, target)._from_known_inverse_pair(
+        formed_forward,
+        formed_inverse,
+    )
 
 
 def _representative_gram(form, *, quadratic: bool):
     r"""Return owned rational representatives as a type-``(0,2)`` tensor."""
-    values = (
-        form.form().lift_coordinate_values()
-        if quadratic
-        else form.form().coordinate_values()
-    )
+    values = form.form().lift_coordinate_values() if quadratic else None
     value_module = form.value_module()
     rationals = value_module.fraction_field()
     labels = form.module_generating_set()
     rank = int(labels.cardinality())
 
     def representative(i, j):
+        if not quadratic:
+            # The tensor product underlying a bilinear form may have a
+            # smaller presentation than the formed module (in particular,
+            # no generators when that module is zero).  Evaluate on the
+            # module's actual generators instead of identifying the two
+            # unrelated framing index sets.
+            return value_module.lift(form.b(
+                form.module_generator(labels[i]),
+                form.module_generator(labels[j]),
+            ))
         pair = values.index_set()(
             lambda index: labels[i] if int(index) == 0 else labels[j]
         )
@@ -1295,6 +1356,10 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
         source = category.Core().Mor(self.domain(), self.domain())
         return OwnedGroups().Mor(source, self)(self._normalized_form_automorphism)
 
+    def normalization_homomorphism(self):
+        r"""Return the group homomorphism from the form Core to this finite realization."""
+        return self._normalization_homomorphism()
+
     def from_morphism(self, morphism):
         r"""Apply the normalization homomorphism to an automorphism of the formed-module core."""
         homomorphism = self._normalization_homomorphism()
@@ -1498,6 +1563,9 @@ class _TorsionFormIsoCategoryConstruction(IsoCategoryConstruction):
     r"""Finite torsion-form isometries with maintained orthogonal groups on the diagonal."""
 
     quadratic = False
+
+    def fixed_category_class(self):
+        return TorsionFormIsometryMor
 
     def Of(self, domain, codomain=None):
         if codomain is None:

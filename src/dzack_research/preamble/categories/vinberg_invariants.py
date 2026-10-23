@@ -327,11 +327,11 @@ class VinbergInvariantMatrices(OwnedCategory):
               \(\pi/2\);
             - signature \((n-1, 1, 0)\).
 
-            The signature is the Sylvester pair \((p, q)\) of the symmetric
+            The signature is the pair \((p, q)\) of positive and negative indices of inertia of the symmetric
             form \(G\) on \(R^n\); \(p + q = n\) is the statement that the
             radical is zero, so the form is nondegenerate.
             """
-            from dzack_research.preamble.categories.modules.framed.formed.form_modules import BilinearFormModules
+            from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
             gram = self.root_gram_tensor()
             ring = gram.base_ring()
@@ -345,8 +345,8 @@ class VinbergInvariantMatrices(OwnedCategory):
             if any(gram[i, j] > 0 for i, j in combinations(positions, 2)):
                 return False
             module = ring.free_module(self.index_set())
-            normals = BilinearFormModules(ring).Symmetric()(
-                module.bilinear_forms(ring)(gram)
+            normals = FormModules(ring)(
+                module.bilinear_hom_space(ring)(gram)
             )
             signature = normals.signature_pair()
             return (

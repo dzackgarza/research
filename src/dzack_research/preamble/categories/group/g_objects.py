@@ -30,8 +30,10 @@ data are only a realization of the categorical action.
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
 from sage.categories.morphism import Morphism
-from sage.misc.cachefunc import cached_method
+from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.classcall_metaclass import typecall
 from sage.misc.unknown import Unknown
+from sage.structure.dynamic_class import DynamicMetaclass
 from sage.structure.sage_object import SageObject
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -49,7 +51,7 @@ from dzack_research.preamble.categories.group.groups import (
     _owned_group,
 )
 from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, FiniteSets, Sets
-from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction
+from dzack_research.preamble.logic import AtomicProposition, Predicate, conjunction, negation
 from dzack_research.preamble.owned_category import _object_of, owned_category_join
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
@@ -58,6 +60,12 @@ from dzack_research.preamble.categories.abstract_categories.mor_foundation impor
 
 if "ProperlyDiscontinuous" not in all_axioms:
     all_axioms.add("ProperlyDiscontinuous")
+
+
+@cached_function(key=lambda cls, group, category: (cls, id(group), id(category)))
+def _g_objects_category(cls, group, category):
+    r"""Construct the category selected by these exact mathematical parameters."""
+    return typecall(cls, group, category)
 
 def _verify_relators(action, group, endomorphisms) -> None:
     r"""Check the represented action law without manufacturing presentation data.
@@ -861,7 +869,9 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     @staticmethod
     def __classcall__(cls, group, category):
-        return Category.__classcall__(cls, _owned_group(group), category)
+        if isinstance(cls, DynamicMetaclass):
+            cls = cls.__base__
+        return _g_objects_category(cls, _owned_group(group), category)
 
     def __init__(self, group, category) -> None:
         self._group = group
@@ -895,7 +905,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     def functor_category(self):
         r"""Return the represented functor category ``[BG,C]``."""
-        return Cat().Mor(
+        return Cat().functor_mor(
             self.acting_group().classifying_category(),
             self.underlying_category(),
         )
@@ -907,7 +917,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
 
     def _call_(self, action_functor):
         r"""Construct a ``G``-object from an actual functor ``BG -> C``."""
-        return self.functor_category().object(action_functor)
+        return self.functor_category()(action_functor)
 
     def on_set(self, points, action, *, orbit_relation=None):
         r"""Present a set action through its retained functor ``BG -> Sets``.
@@ -991,7 +1001,7 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
         functors = self.functor_category()
         if source in functors and target in functors:
             return functors.Mor(source, target)
-        return CategoryPacketMethods.Mor(self, source, target)
+        return self.MorCategory().Of(source, target)
 
     def forgetful_functor(self):
         r"""Evaluation at the unique object, ``GObjects(G,C) -> C``."""
@@ -1458,6 +1468,11 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             assert source in self, f"{source} is not a point of {self}"
             assert target in self, f"{target} is not a point of {self}"
             decision = self._orbit_relation_decision(source, target)
+            if decision is Unknown and self.acting_group() in OwnedFiniteGroups():
+                return negation(conjunction(
+                    negation(self.act(element, source) == target)
+                    for element in self.acting_group()
+                ))
             match decision:
                 case _ if decision is Unknown:
                     return AtomicProposition("in_same_orbit", self, source, target)

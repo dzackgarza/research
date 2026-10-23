@@ -1,3 +1,5 @@
+import pytest
+
 from dzack_research.preamble.all import *
 
 
@@ -58,13 +60,9 @@ def test_the_subsets_of_a_given_size() -> None:
 
 def test_subset_cardinality_must_be_a_natural_number() -> None:
     points = three()
-    for invalid in (-1, 1.5):
-        try:
+    for invalid in (-1, QQ(3) / QQ(2)):
+        with pytest.raises(ValueError):
             points.subsets_of_size(invalid)
-        except ValueError:
-            pass
-        else:
-            raise AssertionError(f"accepted invalid subset cardinality {invalid!r}")
 
 
 def test_the_power_set_has_one_endomorphism_category() -> None:
@@ -83,6 +81,9 @@ def test_empty_codomain_exponential_needs_known_nonempty_domain() -> None:
     unknown = Sets().condition_set(NN, lambda point: True)
     assert unknown not in Sets().Finite()
     assert unknown not in Sets().Infinite()
-    from dzack_research.preamble.categories.sets.set_categories import _cardinalities
-
-    assert _cardinalities().set_power_category(empty, unknown) is Sets()
+    undecided = empty.exponential(unknown)
+    assert undecided in Sets()
+    assert undecided in Sets().Finite()
+    assert undecided not in Sets().Infinite()
+    with pytest.raises(AssertionError):
+        undecided.cardinality()

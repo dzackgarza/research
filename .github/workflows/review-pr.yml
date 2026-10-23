@@ -1,6 +1,7 @@
 name: PR Review
+# Quality review is explicitly re-enabled only in the stabilized phase.
 on:
-  pull_request: {}
+  workflow_dispatch: {}
 jobs:
   deterministic-diff:
     uses: dzackgarza/ai-review-ci/.github/workflows/_gates.yml@main

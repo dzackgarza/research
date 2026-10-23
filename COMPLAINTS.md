@@ -24,15 +24,25 @@ Source inspection only.
 ### A realization's class method is unreachable behind a category operation of the same name
 
 The owned runtime puts a category's method classes before the realization class (`refine.RealizationHook`, `_rebuild_parent_class`), so a class method named like a category operation that is not a `RealizationHook` or an abstract contract is never called.
-Observed (executed, 2026-10-15): `LatticeIsometryMor.centralizer`, which selects the generators of `Z_{O(L)}(f)` glued from cyclotomic summands (`lattice_centralizers.arithmetic_centralizer`), was shadowed by `OwnedGroups.ParentMethods.centralizer`; `L.O().centralizer(-1)` was the bare predicate subgroup, whose generators were the canonical cover `F(U(Z)) ->> Z`, and reading them on `D4` passed over all 1152 elements of `O(D4)` (more than 60 s, profiled). The centralizer now reaches the realization through the hook `_centralizer_construction`, as the normalizer does through `_normalizer_construction`.
-Population tell, executed 2026-10-15 (`.tmp/shadow_probe.py`, MRO walk of the realized class, worktree `port-gaps3-shadow`) on `O(A2)`, `O(U)`, `Isom(diag(1,14), diag(2,7))`, `Mono(A1, U)`, `LatticeMor(A2, A2)`, a marked-lattice `Core().Mor` in `Lattices(ZZ).CosliceUnder(<2>)`, `Sets().Core().Mor` at `(Δ1, Δ1)` and `(Δ1, Δ2)`, `Sets().End(Δ0)`, `ZZ^2.Mor(ZZ)`, `Modules(ZZ).Aut(ZZ^2)`, `Mono(diag(2,2), itself)`, `ZZ`, `QQ[x]`, `GF(5)`, `S3`, `C4`. Preamble realization methods losing to a category `ParentMethods`, and their disposition:
-- `CoreMor.cardinality` (the bijections of finite sets, `m!` or `0`) lost to `Sets.ParentMethods.cardinality` on every vertex group: `Sets().Core().Mor(Δ1, Δ1).cardinality()` reached the group default. Repaired: the count is `CoreMor._cardinality_decision`, and any other vertex group goes to the group owner's `_group_cardinality`, because a realization of a hook replaces the category's default body and has no way to fall through to it. On distinct endpoints `CoreMor.cardinality` stays the operation and reads the same hook, which also gives `Isom(U, I_{1,1}).cardinality() == 0` (formerly a `TypeError`).
-- `ModuleAutomorphismGroup.identity`, `one`, `identity_automorphism` and `ModuleMor.linear_combination` were copies of `ModuleAutomorphismGroups.ParentMethods` and `Modules.ParentMethods`, which every such object is placed in. Deleted.
-- `LatticeIsometryMor.is_empty`, `LatticeEmbeddingMor.is_empty`, `CoreMor.is_empty` and `CoreMor.cardinality` lost to `Sets.ParentMethods` on every fixed Mor, which `CategoricalMor.__init__` places in the owned `Sets()`; repaired: they are the realizations' `_emptiness_decision` (and `_cardinality_decision`) hooks.
-- `_ModuleMorCommonMethods.base_ring` equals `LinearMorModules.ParentMethods.base_ring` and is read during construction, before the placement exists. `CoreMor.identity` and `one` are the generic arrows that `ModuleAutomorphismGroups` specializes.
+Observed (executed, 2026-10-15): `LatticeIsometryMor.centralizer`, which selects the generators of `Z_{O(L)}(f)` glued from cyclotomic summands (`lattice_centralizers.arithmetic_centralizer`), was shadowed by `OwnedGroups.ParentMethods.centralizer`; `L.O().centralizer(-1)` was the bare predicate subgroup, whose generators were the canonical cover `F(U(Z)) ->> Z`, and reading them on `D4` passed over all 1152 elements of `O(D4)` (more than 60 s, profiled).
+The centralizer now reaches the realization through the hook `_centralizer_construction`, as the normalizer does through `_normalizer_construction`. Population tell, executed 2026-10-15 (`.tmp/shadow_probe.py`, MRO walk of the realized class, worktree `port-gaps3-shadow`) on `O(A2)`, `O(U)`, `Isom(diag(1,14), diag(2,7))`, `Mono(A1, U)`, `LatticeMor(A2, A2)`, a marked-lattice `Core().Mor` in `Lattices(ZZ).CosliceUnder(<2>)`, `Sets().Core().Mor` at `(Δ1, Δ1)` and `(Δ1, Δ2)`, `Sets().End(Δ0)`, `ZZ^2.Mor(ZZ)`, `Modules(ZZ).Aut(ZZ^2)`, `Mono(diag(2,2), itself)`, `ZZ`, `QQ[x]`, `GF(5)`, `S3`, `C4`. Preamble realization methods losing to a category `ParentMethods`, and their disposition:
 
-Residue. The two readings of `Mor`, `End`, `Aut`, `Mono` and `identity` on an object that is also a category (owner ruling 2026-10-16, `ARC-07`) are routed by `mor_foundation.ObjectLevelOperation`; `__call__` keeps only its element reading on a fixed Mor, so `End(X)(f)` is `f` and not the arrow object `End(X).object(f)` that the protected `test_mor_categories_construct.sage` asks for.
-Repair: `realization-methods-reach-their-category-operations` in [TODO.md](TODO.md).
+- `CoreMor.cardinality` (the bijections of finite sets, `m!` or `0`) lost to `Sets.ParentMethods.cardinality` on every vertex group: `Sets().Core().Mor(Δ1, Δ1).cardinality()` reached the group default.
+  Repaired: the count is `CoreMor._cardinality_decision`, and any other vertex group goes to the group owner's `_group_cardinality`, because a realization of a hook replaces the category's default body and has no way to fall through to it.
+  On distinct endpoints `CoreMor.cardinality` stays the operation and reads the same hook, which also gives `Isom(U, I_{1,1}).cardinality() == 0` (formerly a `TypeError`).
+
+- `ModuleAutomorphismGroup.identity`, `one`, `identity_automorphism` and `ModuleMor.linear_combination` were copies of `ModuleAutomorphismGroups.ParentMethods` and `Modules.ParentMethods`, which every such object is placed in.
+  Deleted.
+
+- `LatticeIsometryMor.is_empty`, `LatticeEmbeddingMor.is_empty`, `CoreMor.is_empty` and `CoreMor.cardinality` lost to `Sets.ParentMethods` on every fixed Mor, which `CategoricalMor.__init__` places in the owned `Sets()`; repaired: they are the realizations' `_emptiness_decision` (and `_cardinality_decision`) hooks.
+
+- `_ModuleMorCommonMethods.base_ring` equals `LinearMorModules.ParentMethods.base_ring` and is read during construction, before the placement exists.
+  `CoreMor.identity` and `one` are the generic arrows that `ModuleAutomorphismGroups` specializes.
+
+Current residue (executed 2026-10-18): the projective linearization population reaches three independent owner defects after its section-action assertion passes.
+Prime-spectrum membership calls `category()` on a runtime class rather than the represented object; equal closed subschemes with the same equation compare unequal; and the represented coefficient module of group cohomology has no `invariants()` operation.
+The first belongs to `membership-replaces-dynamic-peeking`, and the coefficient-module failure to `modules-over-a-group-algebra-keep-the-module-axioms`. The closed-subscheme equality requires its own owner reconciliation there when `ClosedSubschemes` is unfolded.
+None is evidence against the repaired actual-category or actual-functor construction.
 
 ### Port consumers of binary fibres and cone marks must move (port #33, #15)
 
@@ -61,7 +71,9 @@ Its orbit relation is decided by the rank-one perpendicular extension (`definite
    `binary_fixed_norm_representatives` therefore keeps the orbit relation, which is correct without the theorem.
    It does not route through an enumeration of `O(L)`.
 
-**Observed cost (executed 2026-10-15, worktree at `acff01b7d1`):** on `diag(2,-2)` at `n = 2`, whose fibre has two points, `binary_fixed_norm_representatives` took 16.0 s under `O(L)` and 8.2 s under `SO(L)` in one fresh process, after a 20.2 s session import; one size only, so no growth curve, and the cost was not profiled. The split request of item 2 overlaps [lean-categories#87](https://github.com/dzackgarza/lean-categories/issues/87) (O'Sullivan, arXiv:2408.14405v3, Cor. 8.2), recorded below under *Finiteness of O(L) for split binary lattices is not formalized*.
+**Observed cost (executed 2026-10-15, worktree at `acff01b7d1`):** on `diag(2,-2)` at `n = 2`, whose fibre has two points, `binary_fixed_norm_representatives` took 16.0 s under `O(L)` and 8.2 s under `SO(L)` in one fresh process, after a 20.2 s session import; one size only, so no growth curve, and the cost was not profiled.
+The split request of item 2 overlaps [lean-categories#87](https://github.com/dzackgarza/lean-categories/issues/87) (O'Sullivan, arXiv:2408.14405v3, Cor.
+8.2), recorded below under *Finiteness of O(L) for split binary lattices is not formalized*.
 
 ### `lean-categories` defines integral reflection vectors but not roots of a lattice
 
@@ -149,9 +161,7 @@ These choices should be a section `U(I) -> U(G)` of the underlying-set surjectio
 The table is private computation data.
 An existing section operation at `group/g_sets.py:1054` returns an actual set morphism.
 
-The stabilizer defining-action source repair now retains the actual action functor and embedded subobject data, with execution still owed at terminal T.
-Its `restricted_stabilizer_action()` composes the selected subgroup inclusion `H -> G` with the original action `BG -> C`.
-The restricted conjugation and orthogonal lattice actions are source-level separating specimens, not a second stabilizer or action computation.
+The stabilizer defining-action source repair now retains the actual action functor and embedded subobject data, with execution still owed at terminal T. Its `restricted_stabilizer_action()` composes the selected subgroup inclusion `H -> G` with the original action `BG -> C`. The restricted conjugation and orthogonal lattice actions are source-level separating specimens, not a second stabilizer or action computation.
 
 **Subsequent source delivery, 2026-10-14:** group morphism images are constructed from selected finite generating families without requiring a GAP homomorphism, and a noninjective map now factors through the inclusion of its represented image subgroup.
 That image is selected once per morphism, so the literal endpoints agree.
@@ -190,8 +200,7 @@ For group morphisms `a: G -> Q` and `b: H -> Q`, the pullback has elements `(g,h
 The `pullbacks-in-every-category` node owns this construction.
 
 **Observed source boundary, 2026-10-11:** `Cat.fiber_product` (`categories/abstract_categories/cat.py:840`) composes products and equalizers but returns the equalizer result rather than a selected pullback cone.
-`OwnedGroups._categorical_product_construction` realizes products of arbitrary finite families (2026-10-16).
-No equalizer realization was found in the inspected group owner files.
+`OwnedGroups._categorical_product_construction` realizes products of arbitrary finite families (2026-10-16). No equalizer realization was found in the inspected group owner files.
 Selected products and equalizers at the general category owner, predicate inverse images and finite-index Schreier generators are existing partial capabilities.
 
 **Dependency path:** group morphisms -> product -> equalizer -> pullback cone -> generating description where computable.
@@ -204,25 +213,9 @@ The [expressive-power assessment](docs/preamble-expressive-power.md) records the
 
 ### The product in Grp and its factor inclusions are not formalized in `lean-categories`
 
-`OwnedGroups().product_construction` realizes the product of an arbitrary finite family of groups on families of components, with projections and the universal factorization `h |-> (f_i(h))` (`_componentwise_product_construction`, `categories/group/groups.py`); `L.orthogonal_sum_map(product)` gives `prod_i G_i -> O(L)` for `G_i <= O(L_i)` on a lattice biproduct. Mathlib states the product monoid with `MonoidHom.fst`, `MonoidHom.inl` (`x |-> (x, 1)`) and `MonoidHom.prod` (`Mathlib/Algebra/Group/Prod.lean`); `lean-categories` has no product in its group category (searched `LeanCategories/` and FOUNDATIONS.md for `Grp` products, 2026-10-16).
-**Request:** [lean-categories#91](https://github.com/dzackgarza/lean-categories/issues/91): the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2). It runs beside the delivered computation and parks nothing.
+`OwnedGroups().product_construction` realizes the product of an arbitrary finite family of groups on families of components, with projections and the universal factorization `h |-> (f_i(h))` (`_componentwise_product_construction`, `categories/group/groups.py`); `L.orthogonal_sum_map(product)` gives `prod_i G_i -> O(L)` for `G_i <= O(L_i)` on a lattice biproduct.
+Mathlib states the product monoid with `MonoidHom.fst`, `MonoidHom.inl` (`x |-> (x, 1)`) and `MonoidHom.prod` (`Mathlib/Algebra/Group/Prod.lean`); `lean-categories` has no product in its group category (searched `LeanCategories/` and FOUNDATIONS.md for `Grp` products, 2026-10-16). **Request:** [lean-categories#91](https://github.com/dzackgarza/lean-categories/issues/91): the categorical product in Grp with its projections, the factor inclusions as group morphisms, and the injectivity of the orthogonal-sum map O(L1) x O(L2) -> O(L1 + L2). It runs beside the delivered computation and parks nothing.
 Products over infinite index sets remain unrepresented: the group product hook takes finitely many factors (`_finite_factor_family`).
-
-### `gluing_subgroup` names two different subgroups
-
-`LEX-11` asks that one name be one operation in one codomain. `gluing_subgroup()` of a finite-index embedding `j: M -> L` (`LatticeEmbeddingMethods`, `categories/lattice_morphisms.py`) and of `CyclotomicDecomposition` (which delegates to it) is `L/M` inside `A_M = M^#/M`. `IsometryPrimitiveExtension.gluing_subgroup()` (`categories/lattice_centralizers.py`) is `H_+ = L/(L^f + (L^f)^perp)` inside `A_{L^f}`, the projection of that glue to one summand's discriminant group: a different subgroup of a different group. Observed by source reading 2026-10-16; neither name was changed. The owner of the lexicon decides which operation keeps the name; no TODO node yet.
-
-### Glued centralizer generators repeatedly reconstruct integral-lift comparisons
-
-For a finite-index inclusion `j: M -> L`, lifting a point of `j(M)` should reuse the integral linear-system comparison attached to that same morphism. Cyclotomic centralizer assembly repeatedly applies this lift while extending a component isometry to the orthogonal sum. The exact source, target, chosen framings and Smith comparison must be retained; a rational preimage is not an integral solution.
-
-**Measured (2026-10-16, source `16e7f896f1`):** on `L = U + U`, with `sw` exchanging its hyperbolic planes, a 20-second `cProfile` of `L.O().centralizer(sw).group_generators()` stopped during block-isometry construction. There were 26 integral-preimage solver constructions and 26 `smith_form()` calls (14.058 s cumulative), and 18 `_orthogonal_sum_image` calls (10.086 s cumulative). Command: `direnv exec /home/dzack/research env PYTHONPATH=/home/dzack/research/.tmp/wt-cyclo/src sage -python /home/dzack/research/.tmp/wt-cyclo/.tmp/profile_centralizer.py`. The scratch probe enables `cProfile` only after constructing the swap and interrupts after 20 s; those figures include profiler overhead and describe one rank-four specimen, not a growth curve or an engine-only measurement.
-
-**Source:** `CyclotomicDecomposition._orthogonal_sum_image` (`categories/lattice_centralizers.py`) calls `orthogonal_sum_inclusion().lift` for each vector. `ModuleMorphismMethods._preimage_or_none` calls `_solve_preimage_integrally`; the latter constructs `_integral_preimage_positional_solver` anew, and `_integral_preimage_solver` calls `morphism.smith_form()` each time. Existing invariant-factor normalization and its change-of-presentation maps already supply the mathematical comparison. `OWN-22` requires computed data to be cached and reused; `DEV-12` requires the existing shared memoization mechanisms, not a new consumer-local cache.
-
-**Separate unresolved observation from the handoff:** the unprofiled full generator request exceeds 60 s, with the later traceback in `_divided_square -> _presented_degree_power -> _divided_relations -> ranking_map()(label) ->` membership in `NN`. The bounded profile stops earlier and does not establish the cause of that later stall. Diagnose it at the reached shared owner; no missing mathematical foundation has been established by these observations.
-
-**Consumer and repair:** `arithmetic-centralizers-from-component-gluing` in [TODO.md](TODO.md). Its complete mathematical specimens and component-generator obligations remain required. The label/divisor defect is discharged separately; it does not establish the glued centralizer result.
 
 ### Group colimits do not compose chosen finite presentations
 
@@ -1006,6 +999,10 @@ Repair requires the two reflection-engine ruling nodes in [TODO.md](TODO.md).
 
 ### `lean-categories` does not formalize the Vinberg invariant or the PID description of P^1(R)
 
+The wall-Gram recognition contract also needs to retain the radical when there are more walls than the dimension plus one.
+Source inspection on 2026-10-20 found that `VinbergInvariantMatrices.is_acute_angled_hyperbolic_polytope_gram` requires a nondegenerate wall Gram tensor: its positive and negative indices must sum to the number of walls.
+For a hyperbolic polytope of dimension `d` with `n` walls the Gram signature is `(d, 1, n-d-1)`, so this condition excludes the cases `n > d+1`. The source of the signature statement is Bogachev, [Thin hyperbolic reflection groups](https://londmathsoc.onlinelibrary.wiley.com/doi/full/10.1112/blms.70108). This is an unresolved mathematical contract defect in that recognizer, separate from its repaired formed-module construction; no degenerate wall-Gram specimen was executed for this finding.
+
 The invariant of two mirrors with normals `r, s` of a nondegenerate formed module is the point `[4 b(r,s)^2 : b(r,r) b(s,s)]` of `P^1`, an `R`-point `Spec R -> P^1_R`; for normals of positive norm it dehomogenizes to `4 g^2`, `g` the Gram entry of the unit normals.
 The preamble presents it (`VinbergInvariantMatrices.vinberg_invariant`, `categories/vinberg_invariants.py`) through `point_morphism` on a pair generating `R`. **Searched (2026-10-14):** `~/gitclones/lean-categories` at `e1d422eb` (`rg -i 'vinberg|coxeter|ProjectiveSpace'`): `Schemes/Varieties.lean:50` defines `ProjectiveSpace k n` as `Proj` of the graded polynomial ring, with its structure morphism to `Spec` of the degree-zero part (`:54`); no Vinberg invariant, no statement describing `P^1(R)` by pairs.
 Mathlib (corpus API): `AlgebraicGeometry/ValuativeCriterion.lean`, `ProjectiveSpectrum/Proper.lean` (`IsProper (Proj.toSpecZero 𝒜)`). **Requests (not yet filed):**
@@ -1304,108 +1301,87 @@ Source inspection, 2026-10-15: the engine `CartanType` stays private in `definit
 ### Category stubs presented ahead of `lean-categories` (2026-10-16)
 
 On 2026-10-16 the owner directed that these categories be stubbed with their placements and functorial constructions, ahead of formalization: varieties over a ring, curves, surfaces, K3 and del Pezzo surfaces, hypersurfaces, families as slice objects and their analytic fibres, primitive cohomology, Lefschetz operators, residues and logarithmic differentials, graded Lie algebras, pointed spaces and `pi_*` with the Whitehead product and the rational homotopy Lie algebra, categories of elements, `Pic` as a functor, polarized varieties, filtered modules, mixed and pure Hodge structures, polarizations, the Gauss–Manin connection, `HH`, `Gamma \ HH`, `HH^n`, `H_g`, `G/K` by Satake type, Hermitian symmetric domains, derived categories, Riemannian manifolds, Lie groups and the orbit space of a group action on a space.
-**Request (not filed):** `lean-categories` formalizes each notion with its source; the presentations run beside the request. Every citation locator written in these stubs was recalled, not opened, and needs checking against the source: Hatcher Thm 3.11, Félix–Halperin–Thomas §21, Whitehead 1941, Hartshorne II.6 and II.7.6, Voisin §6.2 and §7.1, Deligne *Hodge II*, Mac Lane II.6, Riehl 2.4.1, Dolgachev 2012 Rem 8.1.19, Hidaka–Watanabe 1981, Huybrechts Def 1.1.
+**Request (not filed):** `lean-categories` formalizes each notion with its source; the presentations run beside the request.
+Every citation locator written in these stubs was recalled, not opened, and needs checking against the source: Hatcher Thm 3.11, Félix–Halperin–Thomas §21, Whitehead 1941, Hartshorne II.6 and II.7.6, Voisin §6.2 and §7.1, Deligne *Hodge II*, Mac Lane II.6, Riehl 2.4.1, Dolgachev 2012 Rem 8.1.19, Hidaka–Watanabe 1981, Huybrechts Def 1.1.
 
 ### Abelian groups and `ZZ`-modules are two categories with no equivalence
 
-`Pic(X)` is an abelian group, so the Picard functor `Varieties(k).Projective().picard_functor()` should land in the category of abelian groups. The tree presents `AdditiveGroups().AdditiveCommutative()` (`group/magmas.py:744`) and `Modules(ZZ)`, and no equivalence `Ab ≃ Mod_ZZ` between them, so the functor lands in `Modules(ZZ)`. **Dependency path:** abelian groups -> the `ZZ`-module structure that each abelian group determines (Mathlib `AddCommGroup.toIntModule`, `ModuleCat` over `ℤ`) -> the equivalence as a functor pair with unit and counit -> `Pic` valued in abelian groups. **Request:** `lean-categories` states the equivalence.
+`Pic(X)` is an abelian group, so the Picard functor `Varieties(k).Projective().picard_functor()` should land in the category of abelian groups.
+The tree presents `AdditiveGroups().AdditiveCommutative()` (`group/magmas.py:744`) and `Modules(ZZ)`, and no equivalence `Ab ≃ Mod_ZZ` between them, so the functor lands in `Modules(ZZ)`. **Dependency path:** abelian groups -> the `ZZ`-module structure that each abelian group determines (Mathlib `AddCommGroup.toIntModule`, `ModuleCat` over `ℤ`) -> the equivalence as a functor pair with unit and counit -> `Pic` valued in abelian groups.
+**Request:** `lean-categories` states the equivalence.
 
 ### `integral_singular_cohomology` names two spaces on schemes
 
-A scheme `X` is an object of `TopologicalSpaces()` through its Zariski space, so the inherited `singular_cohomology` and `integral_singular_cohomology` are those of the Zariski space. On toric varieties, complete intersections and projective spaces (`schemes.py`, `ProjectiveSpaces.ParentMethods.integral_singular_cohomology`) the same name answers `H^*(X(CC); ZZ)` of the complex points. One name thus means two different spaces according to the subcategory, and a scheme without the override reaches the `TopologicalSpaces` stub for its Zariski space. **Repair:** singular cohomology of the complex points is the composite of the analytification `X -> X(CC)` along an embedding `sigma: k -> CC` with singular cohomology on `TopologicalSpaces`, a method that takes `sigma`; the Zariski-space name stays with `TopologicalSpaces`.
+A scheme `X` is an object of `TopologicalSpaces()` through its Zariski space, so the inherited `singular_cohomology` and `integral_singular_cohomology` are those of the Zariski space.
+On toric varieties, complete intersections and projective spaces (`schemes.py`, `ProjectiveSpaces.ParentMethods.integral_singular_cohomology`) the same name answers `H^*(X(CC); ZZ)` of the complex points.
+One name thus means two different spaces according to the subcategory, and a scheme without the override reaches the `TopologicalSpaces` stub for its Zariski space.
+**Repair:** singular cohomology of the complex points is the composite of the analytification `X -> X(CC)` along an embedding `sigma: k -> CC` with singular cohomology on `TopologicalSpaces`, a method that takes `sigma`; the Zariski-space name stays with `TopologicalSpaces`.
 
 ### Families need base restriction and fibre products
 
-The fibre product of schemes is constructed for affine bases, for glued schemes over an affine base, for the scalar base change of `P^n`, and for a closed subscheme of a product of projective spaces over a rational point of one factor (`_multiprojective_closed_fibre`, `schemes.py`). It is not constructed over a projective or glued base in general: a family `X -> P^m` that is not presented as a projection out of `prod P^{n_i}`, or a point with a residue field larger than the base ring, has no fibre. **Repair:** a point of a glued base factors through one chart, and the fibre is computed on the preimage of that chart. A Horikawa family is the universal double cover of `P^1 x P^1 x A^13 -> A^13`. A general fibre of a slice of `ComplexManifolds()` needs the fibre product of complex manifolds along a submersion. `HesseBertiniFamily` is a free function that constructs an object (AGENTS §3).
+The fibre product of schemes is constructed for affine bases, for glued schemes over an affine base, for the scalar base change of `P^n`, and for a closed subscheme of a product of projective spaces over a rational point of one factor (`_multiprojective_closed_fibre`, `schemes.py`). It is not constructed over a projective or glued base in general: a family `X -> P^m` that is not presented as a projection out of `prod P^{n_i}`, or a point with a residue field larger than the base ring, has no fibre.
+**Repair:** a point of a glued base factors through one chart, and the fibre is computed on the preimage of that chart.
+A Horikawa family is the universal double cover of `P^1 x P^1 x A^13 -> A^13`. A general fibre of a slice of `ComplexManifolds()` needs the fibre product of complex manifolds along a submersion.
+`HesseBertiniFamily` is a free function that constructs an object (AGENTS §3).
 
 ### Sheaves on a space are built on bases, not on `Open(X)`
 
-The affine structure, associated-module and descended-algebra constructors now
-retain open-site sections functors. Whole-space and distinguished-open values
-come from the coordinate ring, module localization and algebra localization.
+The affine structure, associated-module and descended-algebra constructors now retain open-site sections functors.
+Whole-space and distinguished-open values come from the coordinate ring, module localization and algebra localization.
 Their mathematical execution remains pending under the source-phase rule.
 The unresolved extension and finite-atlas obligations below retain this owner.
 
-A sheaf on a topological space `X` with values in `D` is an object of
-`Sh(Open(X), D)`, the full subcategory of `[Open(X)^op, D]` satisfying descent
-(Mathlib `TopCat.Sheaf`). `PresheafObjects(X)` declares the Grothendieck
-construction with fibres `with_values(D)`, but has no supercategory presenting
-that construction. General extension from a basis remains stubbed as
-`Sheaves.extension_from_basis(X)` (`abstract_categories/presheaves.py`).
-**Dependency path:** `Open(X)` -> `OpenCoveringFamilies(X)` -> extension from
-a basis -> sections on arbitrary opens. The represented affine functors compute
-the whole space and distinguished opens; general opens still raise an explicit
-assertion. The basis comparison theorem and its hypotheses need a checked source
-locator before implementation.
+A sheaf on a topological space `X` with values in `D` is an object of `Sh(Open(X), D)`, the full subcategory of `[Open(X)^op, D]` satisfying descent (Mathlib `TopCat.Sheaf`). `PresheafObjects(X)` declares the Grothendieck construction with fibres `with_values(D)`, but has no supercategory presenting that construction.
+General extension from a basis remains stubbed as `Sheaves.extension_from_basis(X)` (`abstract_categories/presheaves.py`). **Dependency path:** `Open(X)` -> `OpenCoveringFamilies(X)` -> extension from a basis -> sections on arbitrary opens.
+The represented affine functors compute the whole space and distinguished opens; general opens still raise an explicit assertion.
+The basis comparison theorem and its hypotheses need a checked source locator before implementation.
 
-Finite-atlas sections still need comparisons between atlases and sections on
-general opens from their chart traces. `chart_open_subset` retains a chart or
-distinguished open within it, with its actual image in the scheme's point
-space. Ring and module restrictions use the retained overlap transitions and
-localization maps. A chart of another atlas still needs its point-space
-comparison with the construction-selected atlas.
-The topological colimit's general openness criterion asks for preimages whose
-basis presentations are not retained by arbitrary predicate subsets.
+Finite-atlas sections still need comparisons between atlases and sections on general opens from their chart traces.
+`chart_open_subset` retains a chart or distinguished open within it, with its actual image in the scheme's point space.
+Ring and module restrictions use the retained overlap transitions and localization maps.
+A chart of another atlas still needs its point-space comparison with the construction-selected atlas.
+The topological colimit's general openness criterion asks for preimages whose basis presentations are not retained by arbitrary predicate subsets.
 
-Finite-atlas algebra descent also needs its global-sections and sheaf
-construction. The inspected `_FiniteAtlasAlgebraGluingDatumEngine` supplies
-local algebras, semilinear transitions, cocycles and relative spectrum, but no
-compatible-section algebra or sections functor. Its polynomial-algebra
-specimen has infinite underlying modules. The module-descent constructor's
-`_finite_framing` requirement therefore prevents direct use of that adapter.
-An algebra section is a compatible family with componentwise multiplication
-and unit; its fixed scalar ring and all restriction maps must be retained.
-The repair belongs to `sheaves-compute-sections-on-opens`, with general
-algebra limits or descent of their actual underlying modules as the shared
-prerequisite. This is an implementation gap in the inspected preamble owners,
-not a claim that the formal sheaf mathematics is missing.
+Finite-atlas algebra descent also needs its global-sections and sheaf construction.
+The inspected `_FiniteAtlasAlgebraGluingDatumEngine` supplies local algebras, semilinear transitions, cocycles and relative spectrum, but no compatible-section algebra or sections functor.
+Its polynomial-algebra specimen has infinite underlying modules.
+The module-descent constructor's `_finite_framing` requirement therefore prevents direct use of that adapter.
+An algebra section is a compatible family with componentwise multiplication and unit; its fixed scalar ring and all restriction maps must be retained.
+The repair belongs to `sheaves-compute-sections-on-opens`, with general algebra limits or descent of their actual underlying modules as the shared prerequisite.
+This is an implementation gap in the inspected preamble owners, not a claim that the formal sheaf mathematics is missing.
 
-General chosen global-section realizations of a finite-atlas line bundle
-still need their chart-component comparisons. The constructor accepts
-`section_space`, but that module alone supplies no map to the chart modules.
-Projective and multiprojective twists supply those maps by dehomogenization;
-the general framed case must retain its actual comparison with descent
-sections. Restricted projective line bundles constructed through
-`_invertible_sheaf_object` also retain the generic unpresented sections route.
+General chosen global-section realizations of a finite-atlas line bundle still need their chart-component comparisons.
+The constructor accepts `section_space`, but that module alone supplies no map to the chart modules.
+Projective and multiprojective twists supply those maps by dehomogenization; the general framed case must retain its actual comparison with descent sections.
+Restricted projective line bundles constructed through `_invertible_sheaf_object` also retain the generic unpresented sections route.
 Both obligations remain with `sheaves-compute-sections-on-opens`.
 
-Chart embeddings and chart-image inclusions map prime points into the retained
-topological coequalizer. The scheme accepts its quotient points. Equality of
-classes of the general infinite relation remains a proposition in the set
-coequalizer realization. The gluing cocycle gives a stronger decision route:
-two chart representatives agree exactly when they lie in the corresponding
-overlaps and the transition identifies them (Mathlib.Topology.Gluing,
-`TopCat.GlueData.ι_eq_iff_rel`). That computation remains required for decidable
-point comparisons across charts. The chart-section assertions remain
-unexecuted under the source-phase rule.
-`RingMorphism.contraction_of_ideal` has algorithms for canonical quotient and
-localization maps, and for retained Sage ring maps with exact ideal realizations.
-Its general preimage is the ideal defined by membership after the ring
-map, with primality inherited from the target prime. Finite generators are a
-computational presentation, not defining data for that preimage. This shares
-the ideal-representation prerequisite of `general-minimal-prime-locus` in
-`TODO.md`. The formal spectrum and contravariant functor are exported by
-`lean-categories/LeanCategories/Schemes/Spectra.lean`; no new formal definition
-is requested for them. The chart coequalizer retains the supplied transition
-isomorphisms through their coordinate-ring inverse pairs and spectrum maps.
-The inspected sheafed-space ancestors also lack a morphism datum at their
-owner. `SheafedSpaces` and `RingedSpaces` declare no fixed Mor; their topological
-ancestor supplies continuous maps alone. A morphism of ringed spaces needs
-both a continuous map `f` and a ring-sheaf map `O_Y -> f_* O_X`.
-`LocallyRingedMorCategoryConstruction` chooses a domain-specific realization,
-and the affine scheme realization retains its coordinate pullback, but these
-do not supply the general sheafed-space morphism or its forgetful functor.
-The ancestor and Mor-graph obligations belong to `placement-audit` in
-`TODO.md`. The formal scheme declarations are imported through
-`lean-categories/LeanCategories/Schemes.lean`; the inspected gap concerns their
-preamble presentation. This does not add a prerequisite to affine ring-map
-contraction, which has its own mathematical owner.
-The existing `sheaves-compute-sections-on-opens` owner in [TODO.md](TODO.md)
-retains those obligations. The inspected boundary is the topology, open-cover,
-affine-scheme and finite-atlas constructors named here; no absence of the
-corresponding mathematics in `lean-categories` is asserted.
+Chart embeddings and chart-image inclusions map prime points into the retained topological coequalizer.
+The scheme accepts its quotient points.
+Equality of classes of the general infinite relation remains a proposition in the set coequalizer realization.
+The gluing cocycle gives a stronger decision route: two chart representatives agree exactly when they lie in the corresponding overlaps and the transition identifies them (Mathlib.Topology.Gluing, `TopCat.GlueData.ι_eq_iff_rel`). That computation remains required for decidable point comparisons across charts.
+The chart-section assertions remain unexecuted under the source-phase rule.
+`RingMorphism.contraction_of_ideal` has algorithms for canonical quotient and localization maps, and for retained Sage ring maps with exact ideal realizations.
+Its general preimage is the ideal defined by membership after the ring map, with primality inherited from the target prime.
+Finite generators are a computational presentation, not defining data for that preimage.
+This shares the ideal-representation prerequisite of `general-minimal-prime-locus` in `TODO.md`. The formal spectrum and contravariant functor are exported by `lean-categories/LeanCategories/Schemes/Spectra.lean`; no new formal definition is requested for them.
+The chart coequalizer retains the supplied transition isomorphisms through their coordinate-ring inverse pairs and spectrum maps.
+The inspected sheafed-space ancestors also lack a morphism datum at their owner.
+`SheafedSpaces` and `RingedSpaces` declare no fixed Mor; their topological ancestor supplies continuous maps alone.
+A morphism of ringed spaces needs both a continuous map `f` and a ring-sheaf map `O_Y -> f_* O_X`. `LocallyRingedMorCategoryConstruction` chooses a domain-specific realization, and the affine scheme realization retains its coordinate pullback, but these do not supply the general sheafed-space morphism or its forgetful functor.
+The ancestor and Mor-graph obligations belong to `placement-audit` in `TODO.md`. The formal scheme declarations are imported through `lean-categories/LeanCategories/Schemes.lean`; the inspected gap concerns their preamble presentation.
+This does not add a prerequisite to affine ring-map contraction, which has its own mathematical owner.
+The existing `sheaves-compute-sections-on-opens` owner in [TODO.md](TODO.md) retains those obligations.
+The inspected boundary is the topology, open-cover, affine-scheme and finite-atlas constructors named here; no absence of the corresponding mathematics in `lean-categories` is asserted.
 
 ## Workflow Papercuts
+
+### The live TODO has dependency edges to absent nodes
+
+A source scan on 2026-10-16 found ten Needs edges whose target has no open node: `normalization-extensions-retain-coefficients`, `bounded-rational-group-integral-structures`, `pointwise-perpendicular-kernel`, `lattice-algorithm-dispatch`, `finite-index-subgroup-generators`, and `images-of-subgroups-and-predicate-subsets` (the latter two have several consumers).
+This prevents the affected milestone and downstream nodes from becoming ready under the documented DAG rule.
+Their mathematical acceptance banks still exist; deleting an edge without checking the target's completion would discard an obligation.
+Reconcile the removal commits and retain unexecuted assertions at their actual owner under `triage-long-tail`. This observation does not reopen a completed construction or authorize replacing the DAG.
 
 ### The required reading does not fit a worker context
 
@@ -1421,11 +1397,13 @@ AGENTS.md requires every subagent to read `INTENT.md`, `CONTRIBUTING.md` in full
 | `COMPLAINTS.md` | 190 KB |
 | `schemes/schemes.py` | 311 KB |
 
-Three workers overflowed their context before or after their first edit. **Repair:** an index that names the sections each kind of edit must read.
+Three workers overflowed their context before or after their first edit.
+**Repair:** an index that names the sections each kind of edit must read.
 
 ### Expectation files use names that AGENTS §5 calls aliases
 
-`ProjectiveCurves`, `ProperSurfaces`, `ProjectiveSurfaces`, `DelPezzoSurfaces` and `SmoothQuarticK3CompleteIntersections` are called by protected expectation files (`test_surfaces_construct.sage:15-21`, `test_toric_schemes_construct.sage:13-23`, `test_projective_complete_intersection_methods_construct.sage:48`, `..._integral_cohomology_construct.sage:11`, `..._del_pezzo_construct.sage:12-20`, `test_projective_point_blowup_del_pezzo_construct.sage:10-15`, `test_toric_fixed_point_blowups_construct.sage:16-24`). Each name is a second spelling of an axiom category such as `Surfaces(k).Projective()`, which AGENTS §5 bans, and the expectation files may not be edited. **For the owner to rule.**
+`ProjectiveCurves`, `ProperSurfaces`, `ProjectiveSurfaces`, `DelPezzoSurfaces` and `SmoothQuarticK3CompleteIntersections` are called by protected expectation files (`test_surfaces_construct.sage:15-21`, `test_toric_schemes_construct.sage:13-23`, `test_projective_complete_intersection_methods_construct.sage:48`, `..._integral_cohomology_construct.sage:11`, `..._del_pezzo_construct.sage:12-20`, `test_projective_point_blowup_del_pezzo_construct.sage:10-15`, `test_toric_fixed_point_blowups_construct.sage:16-24`). Each name is a second spelling of an axiom category such as `Surfaces(k).Projective()`, which AGENTS §5 bans, and the expectation files may not be edited.
+**For the owner to rule.**
 
 ### TODO dependencies contain an unresolved ID and a prose prerequisite
 
@@ -1497,17 +1475,6 @@ The graph either represents their parameters sufficiently to retain the strict r
 **Coverage boundary:** the failing slice command and the declaration at `categories/schemes/ringed_spaces.py::DistinguishedAffineCovers.super_categories` were inspected.
 No claim is made here about other same-class parameterized relations.
 
-### A slice object does not answer the set invariants of its underlying object
-
-**Missing general mathematics:** an object `(A, p: A -> X)` of `C/X` has the underlying object `U(A, p) = A` under the projection `U: C/X -> C`, so its underlying set, its cardinality and its finiteness are those of `A`. A subset of `X` is the case `C = Set` with `p` monic.
-**Dependency path:** `Sets().Subobjects(X)` and `X.power_set()` construct a subset as an object of `Set/X` through `SliceCategory._construct_on` and `Objects.ParentMethods._with_structure`; `Sets().ParentMethods.cardinality` answers only from placement in a cardinality category or from a formula.
-**Evidence (2026-10-09):** with `points = Sets.Δ[2]` and `pair = points.power_set()((points(0), points(1)))`, `pair.category()` is the join of the facade sets and `Sets/{0,...,2}`; `pair.domain() in FiniteSets()` is `True`; `pair.cardinality()` and `points.power_set().top().cardinality()` raise `AssertionError: cannot compute the cardinality ... it is not known to be finite or countably infinite`. The protected expectation `tests/objects/test_power_set_of_a_three_element_set.sage::test_the_boolean_operations` asks `pair.cardinality() == 2`. `Lattices(ZZ).vectors_of_square` returns such a subset, so `represents` reads `.domain().cardinality()` in its place.
-**How it entered:** `520ffee4d8` (2026-10-08) applied the owner's ruling that an object of `C/X` lies in `C/X` and its supercategories only, and removed `FiniteSets` with the other categories of `A`. Its specimen asserted that the slice object is not in `FiniteSets`; no specimen asked a slice object for a set invariant.
-`SetSubobjectCategory`'s docstring states that the points, membership and cardinality of `(A, i)` are those of `A`; no level supplies them.
-**Existing partial capability:** the arrow's domain answers every set question; `SetSubobjectCategory` supplies the subobject lattice only.
-**Affected consumers:** every subset of a set (`power_set`, `finite_subsets`, `Subobjects`, `subsets_of_size`), every slice object over a set, and `represents`. **Coverage boundary:** `set_categories.py` power sets, `arrow_categories.py` `SliceCategory` and `SetSubobjectCategory`, and `objects.py` `_with_structure` were inspected; the module and algebra `_with_structure` routes were not probed.
-**Repair:** `TODO.md` `slice-objects-answer-the-set-invariants-of-their-underlying-object`.
-
 ### Toric scalar base change drops the toric construction data
 
 Scalar base change of a toric scheme should retain the fan that defines the toric variety.
@@ -1542,6 +1509,13 @@ The existing finite-sequence functor and the line-in-plane cokernel's free trivi
 
 The hyperbolic owner admits both signatures (1,n) and (n,1), but its new literal-lattice edgewalk call passed the former convention to a specialization requiring the latter.
 Negating the form preserves the reflection geometry; returning its result requires transport to the original lattice, with reversed wall-root signs, rather than dropping the admitted sign convention.
+
+Executed on 2026-10-18, the marked primitive-vector dispatcher also has no route for spacelike vectors.
+The primitive embeddings of A1 into U + A1 are exactly the primitive vectors of square -2 modulo the target orthogonal group when the source marking is retained.
+Calling `primitive_marking_classes` for that coslice reaches `MarkedCellOrbitAlgorithm` and raises `NoLocalMarkTheoremError` because the vectors lie outside its closed positive cone.
+Negating the form produces signature (2,1) and square 2, but the same sign-normalized cone test rejects that presentation too.
+The existing OSCAR primitive-embedding classifier does cover this general computation, although loading OSCAR currently exceeds the per-test limit on this host.
+The missing specialized computation remains the port's primitive-marking obligation; research should dispatch once the port supplies it and must not implement another indefinite orbit algorithm.
 
 **Owning repair:** the existing `lattice-algorithm-dispatch` node, including the reached canonical diagram and finite/countable representative-set inputs.
 The public primitive-locus entry must also retain the binary finite subset: its inclusion gives the ambient lattice, while the former `universe()` check assumed only a condition-set representation.
@@ -1591,7 +1565,8 @@ Not executed (DEV-58).
 
 **Formal corpus.** Formalization corpus API (2026-10-14 and 2026-10-16): generation `Matrix.SpecialLinearGroup.SL2Z_generators` (mathlib4, `Mathlib/LinearAlgebra/Matrix/FixedDetMatrices.lean`), `T_mul_S_pow_three` (TauCeti, `TauCeti/NumberTheory/Modular/Relations.lean`), `PresentedGroup` (TauCeti); no isomorphism of SL_2(ZZ) or GL_2(ZZ) with a `PresentedGroup` (queries `PresentedGroup` with SL, `amalgam`, `GeneralLinearGroup (Fin 2) ℤ`, `ZMod 4.*ZMod 6`). Not covered: Loogle, LeanSearch, the forum.
 
-**Request to `lean-categories`**, filed as [lean-categories#89](https://github.com/dzackgarza/lean-categories/issues/89): SL_2(ZZ) ≅ the amalgam Z/4 *_{Z/2} Z/6 and GL_2(ZZ) as its extension by diag(1,-1), from Serre, *Trees*, and the opened statements above. It runs beside the computation and parks no node.
+**Request to `lean-categories`**, filed as [lean-categories#89](https://github.com/dzackgarza/lean-categories/issues/89): SL_2(ZZ) ≅ the amalgam Z/4 *_{Z/2} Z/6 and GL_2(ZZ) as its extension by diag(1,-1), from Serre, *Trees*, and the opened statements above.
+It runs beside the computation and parks no node.
 
 ## Finiteness of O(L) for split binary lattices is not formalized
 
@@ -1621,29 +1596,15 @@ Not covered: Loogle, LeanSearch, the forum.
 
 ## `lean-categories` does not state that O(V) is infinite for a definite rational space
 
-**Desired mathematics.** For a definite quadratic space V over QQ of dimension at least 2, O(V) is infinite and countable: O(x^2 + y^2) contains the rotation with matrix ((3/5, -4/5), (4/5, 3/5)), of infinite order (its eigenvalues (3 ± 4i)/5 are not roots of unity, since (3 + 4i)/5 is not an algebraic integer), and O(V) lies in the countable GL_n(QQ).
-In dimension 1, O(<a>) = {±1}.
-Finiteness of O(L) for definite L is a statement about ZZ-lattices (`orthogonalGroup_finite`, `LeanCategories/Lattices/Valued/Mass.lean:41`, positive definite, `FiniteProjectiveLatticeCat ℤ ℤ`).
+**Desired mathematics.** For a definite quadratic space V over QQ of dimension at least 2, O(V) is infinite and countable: O(x^2 + y^2) contains the rotation with matrix ((3/5, -4/5), (4/5, 3/5)), of infinite order (its eigenvalues (3 ± 4i)/5 are not roots of unity, since (3 + 4i)/5 is not an algebraic integer), and O(V) lies in the countable GL_n(QQ). In dimension 1, O(<a>) = {±1}. Finiteness of O(L) for definite L is a statement about ZZ-lattices (`orthogonalGroup_finite`, `LeanCategories/Lattices/Valued/Mass.lean:41`, positive definite, `FiniteProjectiveLatticeCat ℤ ℤ`).
 
-**Present state (source).** Every route of `LatticeIsometryMor` that computes O(L) as a finite group (`_engine_group`, `cardinality`, `__iter__`, `group_generators`, `structure_description`, the vector equivalence, stabilizer and orbit routes), `equivariant_isometry_to`, the shell enumeration of `LatticeEmbeddingMor` and `orthogonal_quotients._finite_supergroup_elements` now assert the hypothesis "definite of finite rank over ZZ"; a definite QQ-lattice reaches that `CAT-01` frontier instead of the finite group of its integral span. `vectors_of_square` enumerates only over ZZ; over QQ it returns the complete fibre as a condition set (`STY-129`).
-`cardinality()` of O(V) therefore asserts rather than answering `aleph_0`: that answer needs the theorem above, which `lean-categories` does not state (searched 2026-10-15: `rg` over `LeanCategories/` at `e1d422eb` for infinite orthogonal groups; one corpus query; Loogle, LeanSearch and the forum not searched).
+**Present state (source).** Every route of `LatticeIsometryMor` that computes O(L) as a finite group (`_engine_group`, `cardinality`, `__iter__`, `group_generators`, `structure_description`, the vector equivalence, stabilizer and orbit routes), `equivariant_isometry_to`, the shell enumeration of `LatticeEmbeddingMor` and `orthogonal_quotients._finite_supergroup_elements` now assert the hypothesis "definite of finite rank over ZZ"; a definite QQ-lattice of rank at least two reaches that `CAT-01` frontier instead of the finite group of its integral span.
+Rational rank one supplies its exact finite group through the roots of its defining scalar isometry equation, used by cardinality and generator computation; the other routes retain their stated integer-lattice hypotheses.
+`vectors_of_square` enumerates only over ZZ; over QQ it returns the complete fibre as a condition set (`STY-129`). `cardinality()` of O(V) therefore asserts rather than answering `aleph_0`: that answer needs the theorem above, which `lean-categories` does not state (searched 2026-10-15: `rg` over `LeanCategories/` at `e1d422eb` for infinite orthogonal groups; one corpus query; Loogle, LeanSearch and the forum not searched).
 
-**Request (not yet filed).** `lean-categories` states: for a nondegenerate (in particular definite) quadratic space V over QQ with dim V >= 2, O(V) is infinite and countable. No source has been opened; open one before filing (`FSA-06`). When it is released, `_cardinality_decision` can route `aleph_0` on it.
+**Request (not yet filed).** `lean-categories` states: for a nondegenerate (in particular definite) quadratic space V over QQ with dim V >= 2, O(V) is infinite and countable.
+No source has been opened; open one before filing (`FSA-06`). When it is released, `_cardinality_decision` can route `aleph_0` on it.
 Specimens: `tests/lattices/test_rational_definite_orthogonal_groups.sage`, unexecuted under T.
-
-## The minimum of a definite QQ-lattice is computed on its integral span
-
-For a definite lattice L of finite rank over ZZ, min{q(v) : v != 0} is attained and its shell is finite. Over QQ the space V = <1> + <1> has q((1/n) e_0) = 1/n^2, so the infimum over nonzero vectors is 0 and is not attained.
-`definite_lattices._minimum` (read by `minimum()`) hands the Gram matrix to Sage's `IntegralLattice(...).minimum()` for any definite lattice, so for `Lattices(QQ)(2)` it answers 1, the minimum of the integral span of the chosen basis (source reading, not executed).
-`shortest_vectors()` (`vectors_of_square(minimum())`) therefore returns, over QQ, the complete fibre at the wrong value 1, which is not a set of shortest vectors (there are none), and `is_voronoi_perfect` reads `shortest_vectors()`.
-Same false belief as the entry above ("definite implies the integral-span computation is the answer, whatever the base ring").
-**Node.** `rational-definite-minima-are-not-integral-minima`.
-
-## Indefinite QQ-lattices reach the port's integral orthogonal-group algorithm
-
-`LatticeIsometryMor._computed_group_generators` and `_cardinality_decision` send every indefinite lattice of finite rank, whatever its base ring, to `sage_indefinite_port.indefinite.marked_lattices.automorphism_group_generators(Lattices(R), L)`. The port's assigned algorithm is the recursive indefinite O(L) of an integral lattice (`AGENTS.md`, *Concrete boundary with sage-indefinite-port*). For a QQ-lattice the group is O(V) of the quadratic space: O(U tensor QQ) contains diag(2, 1/2), which preserves no integral span of the chosen basis.
-Evidence: source routing only (`lattice_morphisms.py`, `_computed_group_generators`, the `else` branch); what the port does on a QQ-lattice was not run.
-**Node.** `rational-indefinite-orthogonal-groups-are-not-the-port-integral-group`.
 
 ## The dual lattice of a unimodular lattice has integer norms without the field-element interface
 
@@ -1670,7 +1631,3 @@ Not repaired.
 `_FiniteIntegralRepresentation` (`categories/rational_integral_stabilizers.py`) registers the residue orbit of a lattice by submodules of `M/dM` and needs to look a submodule up among those found.
 Subobjects compare by identity, so the lookup goes through the owner's private `_GeneralPresentedModule._submodule_key` (the Hermite normal form of the preimage in the cover, over ZZ) instead of `{submodule: position}`. Desired (STY-132, STY-167): `_richcmp_` and a matching `__hash__` on module subobjects, realized there for finitely presented modules over ZZ, so that equal subobjects are equal keys.
 Not done: it changes equality for every subobject consumer.
-
-## The post-commit hook invokes a missing host hook
-
-Observed while banking the Mor-constructor repair: `.githooks/post-commit` line 4 executes `/home/dzack/.config/git/hooks/post-commit`, which does not exist on this host. Git still creates the commit, but prints `exec: .../post-commit: not found`; the hook's intended post-commit operation does not run. This is a workflow papercut, not a mathematical capability gap. The source hook and its host installation own the repair; terminal workflow verification in [`terminal-session`](TODO.md) must keep this failure distinct from mathematical acceptance. No hook was changed by the constructor repair.

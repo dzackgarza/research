@@ -24,7 +24,7 @@ isomorphism -- the restriction morphisms ``O(L,f) -> O(L^f)`` and
 the cyclotomic summands ``ker Phi_d(f)`` of a finite-order isometry.
 """
 
-from sage.arith.misc import divisors
+from sage.arith.misc import divisors, euler_phi
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.structure.sage_object import SageObject
 
@@ -690,6 +690,99 @@ class CyclotomicDecomposition(SageObject):
         blocks = orthogonal_sum.O().subgroup(block_generators)
         return self.orthogonal_sum_inclusion().extended_subgroup(blocks).group_generators()
 
+    @cached_method
+    def glued_centralizer_discriminant_image(self):
+        r"""Glue the component finite images to ``rho_L(Z_{O(L)}(f))``.
+
+        Write ``M = direct_sum_d L_d`` and ``H = L/M <= A_M``.  The image
+        of the product of component centralizers is the block product of
+        their images in ``O(A_{L_d})``.  Its setwise stabilizer of ``H``
+        is exactly the image of the compatible arithmetic tuples: any
+        chosen arithmetic lifts preserve ``L`` precisely when their finite
+        action preserves ``H``.  Descending that stabilizer to
+        ``H^perp/H = A_L`` therefore gives the required image.
+
+        This is the finite compatibility calculation of OSCAR's pinned
+        ``_glue_stabilizers`` (``embeddings.jl:3085-3196``, ``d135b70b``).
+        The finite setwise stabilizer includes both restriction kernels
+        and the matching actions on the glue, without requiring generators
+        of an indefinite component's full arithmetic centralizer.
+        """
+        from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
+            _torsion_form_isometry,
+        )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+        divisors = self.nonzero_divisors()
+        orthogonal_sum = self.orthogonal_sum()
+        form = orthogonal_sum.discriminant_group()
+        group = form.orthogonal_group()
+
+        def discriminant_inclusion(divisor):
+            summand = self.summand(divisor)
+            inclusion = summand.Emb(orthogonal_sum)(
+                lambda label: self._orthogonal_sum_image(
+                    divisor, summand.module_generator(label)
+                )
+            )
+            return inclusion.discriminant_inclusion()
+
+        inclusions = finite_indexed_family(divisors, discriminant_inclusion)
+        factors = finite_indexed_family(
+            divisors, lambda divisor: inclusions[divisor].domain()
+        )
+        product = Modules(orthogonal_sum.base_ring()).biproduct(factors)
+        merge = product.from_coproduct_cocone(finite_indexed_family(
+            divisors, lambda divisor: inclusions[divisor].module_morphism()
+        ))
+        split = merge.inverse()
+
+        def block_isometry(divisor, component):
+            inclusion = inclusions[divisor]
+            factor = inclusion.domain()
+            projection = product.projection(divisor) * split
+
+            def image(label, action):
+                element = form.module_generator(label)
+                coordinate = projection(element)
+                # An even summand inside an odd M is represented here by
+                # its bilinear discriminant form.  Both readings retain
+                # the same underlying presented module.
+                component_class = action.domain()(factor.unformed_module()(coordinate))
+                moved = factor(action(component_class))
+                return element + inclusion(moved - coordinate)
+
+            morphisms = form.module_category().Mor(form, form)
+            inverse = ~component
+            return group.from_morphism(_torsion_form_isometry(
+                morphisms(lambda label: image(label, component)),
+                morphisms(lambda label: image(label, inverse)),
+                quadratic=orthogonal_sum.is_even(),
+            ))
+
+        restrictions = self.component_isometries()
+        block_generators = tuple(
+            block_isometry(divisor, generator)
+            for divisor in divisors
+            for generator in restrictions[divisor].centralizer_discriminant_image().group_generators()
+        )
+        blocks = group.subgroup_on(block_generators)
+        points = form.elements()
+        action = FiniteGSets(blocks)(
+            points, lambda automorphism, element: blocks.inclusion()(automorphism)(element)
+        )
+        glue = self.gluing_subgroup().inclusion()
+        subset = points.power_set()(tuple(
+            glue(element) for element in glue.domain().elements()
+        ))
+        compatible = action.setwise_stabilizer(subset)
+        into_form_group = blocks.inclusion() * compatible.inclusion()
+        extension = self.orthogonal_sum_inclusion()
+        return self.lattice().discriminant_group().orthogonal_group().subgroup_on(tuple(
+            extension.discriminant_isometry_extension(into_form_group(generator))
+            for generator in compatible.group_generators()
+        ))
+
 
 class PolarizedEquivariantLattice(SageObject):
     r"""An equivariant lattice ``(L,f)`` with an invariant polarization ``h``.
@@ -805,7 +898,7 @@ class IsometryPrimitiveExtension:
         r"""Return the Nikulin anti-isometry ``H_+ -> H_-(-1)`` of this extension."""
         return self.lattice.glue_map(self.invariant, self.orthogonal_complement)
 
-    def gluing_subgroup(self):
+    def invariant_gluing_subgroup(self):
         r"""Return ``H_+ = L/(L^f + (L^f)^perp)`` seen inside ``A_{L^f}``."""
         return self.glue().domain()
 
@@ -1219,9 +1312,12 @@ def _arithmetic_centralizer_group_generators(centralizer):
     - Two or more summands: ``Z`` is glued from the component centralizers
       ``Z_{O(L_d)}(f_d)`` by
       :meth:`CyclotomicDecomposition.glued_centralizer_generators`.
-    - One summand with ``d > 2`` in an indefinite ``L``: ``L`` is a hermitian
-      lattice over ``ZZ[zeta_d]`` with ``f`` acting by ``zeta_d``, and no
-      route computes the generators of its unitary group (port #18,
+    - One summand of rank ``phi(d)`` with ``d > 2`` over ``ZZ``: the hermitian
+      rank is one, and ``Z`` is generated by ``f`` and ``-id``.  This is the
+      rank-one branch of OSCAR ``image_centralizer_in_Oq`` at the pinned
+      commit ``d135b70b``, ``lattices_with_isometry.jl:1737-1744``.
+    - One summand with ``d > 2`` of larger hermitian rank in an indefinite
+      ``L``: no route computes generators of its unitary group (port #18,
       2026-10-15).  That frontier asserts.
     """
     from sage.rings.infinity import Infinity
@@ -1233,7 +1329,12 @@ def _arithmetic_centralizer_group_generators(centralizer):
     group = centralizer.supergroup()
     isometry = centralizer.centralizing_element()
     lattice = group.lattice()
-    order = lattice.module_category().Mor(lattice, lattice)(isometry).multiplicative_order()
+    framing = tuple(lattice.module_generators())
+    if all(isometry(generator) == generator for generator in framing) or all(
+        isometry(generator) == -generator for generator in framing
+    ):
+        return finite_ordered_set(tuple(group.group_generators()))
+    order = isometry.module_morphism().multiplicative_order()
     assert order != Infinity, (
         f"the centralizer of {isometry} in {group} has group generators computed here only "
         f"for an isometry of finite order, through the cyclotomic summands ker Phi_d(f); "
@@ -1248,6 +1349,19 @@ def _arithmetic_centralizer_group_generators(centralizer):
             generators = _finite_group_centralizer_generators(group, isometry)
         case (_, _, *_):
             generators = decomposition.glued_centralizer_generators()
+        case (divisor,) if (
+            lattice.base_ring() is _owned_integers()
+            and int(lattice.module_rank()) == int(euler_phi(divisor))
+            and lattice.is_nondegenerate()
+        ):
+            # On the one-dimensional Q(zeta_d)-space, a commuting isometry
+            # is multiplication by a with a * conjugate(a) = 1.  Its action
+            # on L makes a an algebraic integer; every conjugate has absolute
+            # value one, so Kronecker's theorem makes it a root of unity.
+            # All roots of unity of Q(zeta_d) are generated by -1 and zeta_d,
+            # and both act integrally as -id and f on this very lattice.
+            negation = group(lambda label: -lattice.module_generator(label))
+            generators = (isometry, negation)
         case (divisor,):
             assert False, (
                 f"the centralizer of {isometry} in {group} is the unitary group of {lattice} "

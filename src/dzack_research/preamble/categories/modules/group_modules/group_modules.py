@@ -18,6 +18,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
+from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
@@ -60,7 +61,6 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     FinitelyGeneratedFreeModules,
     LinearEndCategoryConstruction,
     LinearMorModules,
-    ModuleMorCategoryConstruction,
     Modules,
     ModulesWithChosenFinitePresentation,
 )
@@ -150,6 +150,13 @@ class ModulesOverGroupAlgebra(Modules):
 
     _MorCategory = GroupModuleMorCategoryConstruction
     _EndCategory = LinearEndCategoryConstruction
+
+    class ElementMethods:
+        r"""An acted-module element on the data of its coefficient-module element."""
+
+        def __hash__(self):
+            r"""Retain the hash of the coefficient-module element on the same data."""
+            return hash(self.parent()._element_of_unformed_module(self))
 
     def an_object(self):
         r"""The trivial action on the free module of rank one."""
@@ -921,7 +928,14 @@ def _coefficient_morphism_from_images(
         )
 
     if isinstance(images, dict):
-        return mor({label: target(value) for label, value in images.items()})
+        return mor({
+            (
+                parent.domain()._element_of_unformed_module(label)
+                if element_parent(label) is parent.domain()
+                else label
+            ): target(value)
+            for label, value in images.items()
+        })
     if isinstance(images, (tuple, list)):
         return mor(tuple(target(value) for value in images))
     if callable(images):
@@ -929,12 +943,16 @@ def _coefficient_morphism_from_images(
     return mor(images)
 
 
-class GroupModuleMorphismMethods:
+class GroupModuleMorphismMethods(ModuleMorphismMethods):
     r"""An ``R``-linear map commuting with the chosen ``G``-actions."""
 
     def _initialize_lower_arrow(self, parent):
         r"""Initialize the actual equivariant Mor, not a scalar-extension map."""
         Morphism.__init__(self, parent)
+
+    def __call__(self, element):
+        r"""Evaluate through the retained coefficient-module morphism."""
+        return self._call_(element)
 
     def __init__(
         self,
@@ -1192,8 +1210,14 @@ class GroupModuleMor(_ModuleMorCommonMethods, CategoricalMor):
             sage: f.domain() is A and f.codomain() is A and f * f == f
             True
         """
-        generic_modules = GeneralModules(self.domain().base_ring())
-        ordinary = ModuleMorCategoryConstruction(generic_modules).Of(
+        from dzack_research.preamble.categories.rings.ring_foundation import (
+            OwnedCategoryOverBaseRing,
+        )
+
+        ordinary_modules = OwnedCategoryOverBaseRing.__classcall__(
+            Modules, self.domain().base_ring()
+        )
+        ordinary = ordinary_modules.Mor(
             self.domain(),
             self.codomain(),
         )

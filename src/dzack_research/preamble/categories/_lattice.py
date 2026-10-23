@@ -213,18 +213,26 @@ def _form_of_gram(module, gram):
             return form
 
 
+@cached_function
 def _gram_rank(gram):
     r"""The rank of the module a Gram presentation is stated on, as a cardinal."""
     return cardinal(gram.tensor_shape()[0])
 
 
+@cached_function
+def _gram_engine_matrix(gram):
+    r"""The finite Gram presentation lowered once for private engine computations."""
+    return _engine_component_matrix(gram)
+
+
+@cached_function
 def _gram_determinant(gram, ring):
     r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration.
 
     Computed by Sage's matrix determinant on the presentation's components
     (`OWN-06`) and raised into ``ring``.
     """
-    determinant = _engine_component_matrix(gram).determinant()
+    determinant = _gram_engine_matrix(gram).determinant()
     return _owned_engine_element(ring, _engine_ring(ring)(determinant))
 
 
@@ -278,6 +286,7 @@ def _gram_is_unimodular(gram, ring):
             return gram.is_unimodular()
 
 
+@cached_function
 def _gram_is_even(gram, ring):
     r"""Whether \(b(x,x)\in 2R\) for every \(x\) of the presented symmetric form.
 
@@ -287,14 +296,26 @@ def _gram_is_even(gram, ring):
     ideal is asked of a commutative base ring; over any other ring the answer
     is the proposition that the form is even.
     """
+    rank = _gram_rank(gram)
+    if _engine_ring(ring) is SageZZ and rank.is_finite():
+        size = int(rank)
+        components = _gram_engine_matrix(gram)
+        return all(
+            components[index, index].is_even()
+            for index in range(size)
+        )
     match ring in OwnedRings().Commutative():
         case False:
             return AtomicProposition("is_even", gram)
     twice = ring.ideal(ring(2))
-    match _gram_rank(gram).is_finite():
+    match rank.is_finite():
         case True:
-            size = int(_gram_rank(gram))
-            return all(ring(gram[index, index]) in twice for index in range(size))
+            size = int(rank)
+            components = gram._flat_components()
+            return all(
+                components[index * size + index] in twice
+                for index in range(size)
+            )
         case False:
             return gram.is_even_in(twice)
 
@@ -307,20 +328,20 @@ def _gram_axiom_categories(lattices, gram):
     decides that it holds, so an undecided property places nothing.
     """
     ring = lattices.base_ring()
-    axioms = []
+    placement = lattices
     match _gram_rank(gram).is_finite():
         case True:
-            axioms.append(lattices.FinitelyGenerated())
+            placement = placement.FinitelyGenerated()
     match _gram_is_nondegenerate(gram, ring):
         case True:
-            axioms.append(lattices.Nondegenerate())
+            placement = placement.Nondegenerate()
             match _gram_is_unimodular(gram, ring):
                 case True:
-                    axioms.append(lattices.Unimodular())
+                    placement = placement.Unimodular()
     match _gram_is_even(gram, ring):
         case True:
-            axioms.append(lattices.Even())
-    return tuple(axioms)
+            placement = placement.Even()
+    return () if placement is lattices else (placement,)
 
 
 def _lattice_object(
@@ -330,6 +351,7 @@ def _lattice_object(
     *,
     names=None,
     extra_categories=(),
+    axiom_categories=None,
     construction_data=None,
     subobject_construction=None,
 ):
@@ -349,7 +371,7 @@ def _lattice_object(
     """
     from dzack_research.preamble.categories.lattices import Lattices
     from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
-        FormModules,
+        _form_module_from_bilinear_computation,
     )
 
     ring = module.base_ring()
@@ -373,11 +395,16 @@ def _lattice_object(
                 "_subobject_lift": subobject_construction.selected_lift(),
                 "_subobject_inclusion_factory": subobject_construction.inclusion_factory(),
             }
-    return FormModules(ring)(
-        _form_of_gram(module, gram),
+    return _form_module_from_bilinear_computation(
+        module,
+        lambda: _form_of_gram(module, gram),
         _extra_categories=(
             lattices,
-            *_gram_axiom_categories(lattices, gram),
+            *(
+                _gram_axiom_categories(lattices, gram)
+                if axiom_categories is None
+                else tuple(axiom_categories)
+            ),
             *tuple(extra_categories),
         ),
         _extra_construction_data=data,
@@ -385,8 +412,19 @@ def _lattice_object(
     )
 
 
-@cached_function
-def _lattice_on_gram(category, module, gram, names, root_system_type_name):
+@cached_function(
+    key=lambda category, module, gram, names, root_system_type_name, axiom_categories=None: (
+        id(category),
+        id(module),
+        gram,
+        names,
+        root_system_type_name,
+        None if axiom_categories is None else tuple(id(axiom) for axiom in axiom_categories),
+    )
+)
+def _lattice_on_gram(
+    category, module, gram, names, root_system_type_name, axiom_categories=None
+):
     r"""The lattice on ``module`` with Gram presentation ``gram``.
 
     A lattice is its module together with its form, so two constructions
@@ -397,7 +435,13 @@ def _lattice_on_gram(category, module, gram, names, root_system_type_name):
     """
     match root_system_type_name:
         case None:
-            return _lattice_object(category, module, gram, names=names)
+            return _lattice_object(
+                category,
+                module,
+                gram,
+                names=names,
+                axiom_categories=axiom_categories,
+            )
         case _:
             from dzack_research.preamble.categories.lattices import RootLattices
 
@@ -407,6 +451,7 @@ def _lattice_on_gram(category, module, gram, names, root_system_type_name):
                 gram,
                 names=names,
                 extra_categories=(RootLattices(),),
+                axiom_categories=axiom_categories,
                 construction_data={"root_system_type_name": root_system_type_name},
             )
 
@@ -1206,12 +1251,26 @@ def _orthogonal_sum(summands):
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
     )
+
+    summands = _finite_factor_family(summands, name="Orthogonal summands")
+    return _orthogonal_sum_on_family(summands)
+
+
+@cached_function(key=lambda summands: (
+    id(summands.index_set()), tuple(id(summand) for summand in summands),
+))
+def _orthogonal_sum_on_family(summands):
+    r"""The selected biproduct on this finite indexed family of actual lattices.
+
+    Retain the index set and every component object, so the direct-sum
+    functor and a decomposition made through the same constructor have the
+    same endpoints. Distinct index sets or component objects stay distinct.
+    """
     from dzack_research.preamble.categories.lattices import (
         BiproductLattices,
         Lattices,
     )
 
-    summands = _finite_factor_family(summands, name="Orthogonal summands")
     blocks = tuple(summands)
     assert blocks, f"cannot form the orthogonal sum of {summands}: the family of summands is empty"
     ring = blocks[0].base_ring()
@@ -1468,18 +1527,47 @@ def _root_cartan_gram_tensor(ring, cartan_type) -> Tensor:
     negative-definite root lattices, hence ``-D A``.  In the simply-laced
     case ``D=1`` and this is the existing ``-A`` construction.
     """
-    cartan = cartan_type.cartan_matrix()
-    symmetrizer = cartan_type.symmetrizer()
-    assert symmetrizer is not None, f"{cartan_type} has no integral Cartan symmetrizer"
-    indices = tuple(cartan_type.index_set())
     rank = int(cartan_type.rank())
-    components = [
-        tuple(
-            -_owned_engine_element(ring, symmetrizer[indices[i]] * cartan[i, j])
-            for j in range(rank)
+    kind = cartan_type.type()
+    if cartan_type.is_irreducible() and kind in ("A", "D", "E"):
+        zero = ring.zero()
+        one = ring.one()
+        minus_two = ring(-2)
+        components = [[zero for _ in range(rank)] for _ in range(rank)]
+        for index in range(rank):
+            components[index][index] = minus_two
+        if kind == "A":
+            edges = tuple((index, index + 1) for index in range(rank - 1))
+        elif kind == "D":
+            edges = (
+                *tuple((index, index + 1) for index in range(rank - 3)),
+                (rank - 3, rank - 2),
+                (rank - 3, rank - 1),
+            )
+        else:
+            edges = (
+                *tuple((index, index + 1) for index in range(rank - 2)),
+                (2, rank - 1),
+            )
+        for left, right in edges:
+            components[left][right] = one
+            components[right][left] = one
+    else:
+        cartan = cartan_type.cartan_matrix()
+        indices = tuple(cartan_type.index_set())
+        symmetrizer = cartan_type.symmetrizer()
+        assert symmetrizer is not None, (
+            f"{cartan_type} has no integral Cartan symmetrizer"
         )
-        for i in range(rank)
-    ]
+        components = [
+            tuple(
+                -_owned_engine_element(
+                    ring, symmetrizer[indices[i]] * cartan[i, j]
+                )
+                for j in range(rank)
+            )
+            for i in range(rank)
+        ]
     gram_tensor = tensor(ring, (), (rank, rank), components)
     assert gram_tensor.tensor_valence() == (NN**2)((0, 2))
     return gram_tensor
@@ -1503,6 +1591,7 @@ def _lattice_from_gram_tensor(
     module_generators,
     category,
     root_system_type_name=None,
+    axiom_categories=None,
 ):
     r"""The lattice with Gram presentation ``gram_tensor``.
 
@@ -1525,6 +1614,7 @@ def _lattice_from_gram_tensor(
                 gram_tensor,
                 _normalized_lattice_names(names, rank),
                 None,
+                axiom_categories,
             )
     selected_names = _normalized_lattice_names(names, rank)
     generating_set = _generating_set_for(rank, module_generators, selected_names)
@@ -1534,7 +1624,14 @@ def _lattice_from_gram_tensor(
         else ring._fresh_free_module_on(generating_set)
     )
     root_label = root_system_type_name if ring is _owned_integers() else None
-    return _lattice_on_gram(category, module, gram_tensor, selected_names, root_label)
+    return _lattice_on_gram(
+        category,
+        module,
+        gram_tensor,
+        selected_names,
+        root_label,
+        axiom_categories,
+    )
 
 
 def _basis_keys(module):
@@ -1575,6 +1672,13 @@ def _identity_lattice(data, ring, names, module_generators, category):
 
 def _root_lattice(cartan_type, ring, names, module_generators, category):
     r"""The root lattice of a finite crystallographic Cartan type, in its simple-root framing."""
+    placement = category.FinitelyGenerated().Nondegenerate().Even()
+    if (
+        cartan_type.is_irreducible()
+        and cartan_type.type() == "E"
+        and int(cartan_type.rank()) == 8
+    ):
+        placement = placement.Unimodular()
     return _lattice_from_gram_tensor(
         _root_cartan_gram_tensor(ring, cartan_type),
         ring,
@@ -1582,6 +1686,7 @@ def _root_lattice(cartan_type, ring, names, module_generators, category):
         module_generators,
         category,
         root_system_type_name=_root_system_type_name(cartan_type),
+        axiom_categories=(placement,),
     )
 
 

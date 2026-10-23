@@ -12,6 +12,7 @@ from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function
 from sage.structure.element import Element
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedParameterizedCategory,
 )
@@ -68,7 +69,7 @@ class CharacterSets(OwnedParameterizedCategory):
         def _element_constructor_(self, class_function):
             if class_function in self:
                 return class_function
-            if not isinstance(class_function, Morphism):
+            if not isinstance(class_function, (Morphism, CategoricalArrow)):
                 raise TypeError(
                     f"{class_function} is not a character of {self.group()}: a character is a "
                     f"class function on a finite group, and {class_function} is not a map"
@@ -99,7 +100,7 @@ class CharacterSets(OwnedParameterizedCategory):
 
         def _from_known_character(self, class_function):
             r"""Construct a character whose genuineness was proved by its supplying construction."""
-            if not isinstance(class_function, Morphism) or class_function.domain() is not self.group():
+            if not isinstance(class_function, (Morphism, CategoricalArrow)) or class_function.domain() is not self.group():
                 raise TypeError(
                     f"a known character of {self.group()} must be represented by a map with domain {self.group()}, "
                     f"but got {class_function}"

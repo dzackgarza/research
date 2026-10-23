@@ -470,6 +470,28 @@ class _CuspEngine:
         r"""Return the selected representative of this orbit."""
         return self._representative
 
+    def __eq__(self, other) -> bool:
+        r"""Compare orbits in the same lattice, independently of representatives."""
+        if self is other:
+            return True
+        if not (
+            isinstance(other, _CuspEngine)
+            and other.lattice() is self.lattice()
+            and other.module_rank() == self.module_rank()
+        ):
+            return False
+        if _same_subobject(self.representative(), other.representative()):
+            return True
+        return self.transporter_witness(other.representative()) is not None
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        # Representatives are not canonical.  Every orbit in this universe
+        # therefore shares a hash, while exact equality distinguishes them.
+        return hash((_CuspEngine, id(self.lattice()), int(self.module_rank())))
+
     def parabolic_subgroup(self):
         r"""Return ``Gamma = Stab_{O(L)}(I)`` of the representative."""
         return self._representative.parabolic_subgroup()
@@ -543,6 +565,28 @@ class _ArithmeticCuspEngine:
 
     def representative(self):
         return self._representative
+
+    def __eq__(self, other) -> bool:
+        r"""Compare orbits of this subgroup using its exact transporter."""
+        if self is other:
+            return True
+        if not (
+            isinstance(other, _ArithmeticCuspEngine)
+            and other.subgroup() is self.subgroup()
+            and other.module_rank() == self.module_rank()
+        ):
+            return False
+        if _same_subobject(self.representative(), other.representative()):
+            return True
+        return self.transporter_witness(other.representative()) is not None
+
+    def __ne__(self, other) -> bool:
+        return not self == other
+
+    def __hash__(self) -> int:
+        return hash(
+            (_ArithmeticCuspEngine, id(self.subgroup()), int(self.module_rank()))
+        )
 
     def stabilizer(self):
         r"""Return ``Gamma cap P_I`` for the chosen representative ``I``."""
@@ -834,7 +878,7 @@ def _marked_isotropic_object(obj, *, flag):
                 )
             line, plane = terms
             line_into_plane = line.inclusion().factor_through(plane.inclusion())
-            return _marked_isotropic_category(obj.lattice(), flag=True).object(
+            return _marked_isotropic_category(obj.lattice(), flag=True)(
                 (line_into_plane, plane.inclusion())
             )
 

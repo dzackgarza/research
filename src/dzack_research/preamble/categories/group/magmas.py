@@ -247,8 +247,8 @@ class Magmas(CategoryPacketMethods, OwnedCategory):
             r"""Evaluate this magma's selected binary law on two elements."""
             return self(left) * self(right)
 
-        @cached_method
         @RealizationHook
+        @cached_method
         def _center_construction(self):
             r"""Supply the centre and its exact inclusion as a retained pair.
 

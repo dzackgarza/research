@@ -133,7 +133,7 @@ class SemilinearModuleMorphism:
         # An evaluator carries no proof of semilinearity, so the linearity of
         # its restricted map is decided where decidable and otherwise is the
         # proposition ``is_linear(f)``.
-        return linear_mor.elementwise(lambda element: restricted.wrap(self(element)))
+        return linear_mor.elementwise(lambda element: restricted(self(element)))
 
     @cached_method
     def additive_map(self):
@@ -203,7 +203,7 @@ class SemilinearModuleMorphism:
         restricted = mor.restricted_codomain(scalar_map)
         linear_mor = Modules(source.base_ring()).Mor(source, restricted)
         composite = linear_mor._from_constructed_element_map(
-            lambda element: restricted.wrap(self(other(element))),
+            lambda element: restricted(self(other(element))),
             premises=(self.restricted_morphism(), other.restricted_morphism()),
         )
         return mor(scalar_map, composite)
@@ -225,12 +225,12 @@ class SemilinearModuleMorphism:
             )
         morphism = Modules(source.base_ring()).Mor(source, target)(morphism)
         mor = ModulesOverCommutativeRings().Mor(source, target)
-        scalar_map = source.base_ring().Mor(source.base_ring(), category=OwnedRings()).identity()
+        scalar_map = source.base_ring().Mor(source.base_ring()).identity()
         restricted = mor.restricted_codomain(scalar_map)
         compatible = Modules(source.base_ring()).Mor(
             source, restricted
         )._from_constructed_element_map(
-            lambda element: restricted.wrap(morphism(element)),
+            lambda element: restricted(morphism(element)),
             premises=(morphism,),
         )
         return mor(scalar_map, compatible)
@@ -304,10 +304,10 @@ class SemilinearModuleMor(CategoricalMor):
             )
         module = self.domain()
         ring = module.base_ring()
-        scalar_map = CommutativeRings().Mor(ring, ring).identity()
+        scalar_map = ring.Mor(ring).identity()
         restricted = self.restricted_codomain(scalar_map)
         compatible = Modules(ring).Mor(module, restricted)._from_constructed_element_map(
-            lambda element: restricted.wrap(module(element)),
+            lambda element: restricted(module(element)),
         )
         return self(scalar_map, compatible)
 

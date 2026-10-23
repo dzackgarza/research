@@ -4,6 +4,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import CategoricalArrow
 from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
     CommutativeSquare, SliceCategory, SliceMorCategoryConstruction,
 )
@@ -70,7 +71,7 @@ class _AugmentedAlgebraMorphism:
         # defining square needs the existing C implementation, so enter its
         # actual constructor on the retained whole-map datum. This prevents
         # an augmented edge from recursively composing its own square.
-        if isinstance(datum, Morphism) and datum.parent() is underlying:
+        if isinstance(datum, (Morphism, CategoricalArrow)) and datum.parent() is underlying:
             arrow = datum
         elif (
             isinstance(underlying, UnitalMultiplicativeAlgebraMor)

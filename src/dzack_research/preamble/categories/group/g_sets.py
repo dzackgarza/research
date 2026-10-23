@@ -8,12 +8,10 @@ standard finite free/cofree constructions.
 """
 
 from sage.categories.category import Category
-from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
-from sage.structure.element import parent as element_parent
+from sage.structure.element import Element, parent as element_parent
 from sage.structure.parent import Parent
-from sage.structure.sage_object import SageObject
 from sage.structure.richcmp import op_EQ, op_NE
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -27,14 +25,11 @@ from dzack_research.preamble.categories.group.g_objects import GObjectMor, GObje
 from dzack_research.preamble.categories.group.groups import (
     OwnedFiniteGroups,
     OwnedGroups,
+    SymmetricGroups,
     _GroupMorRealizationMixin,
-    _engine_cosets,
     _engine_group,
     _engine_point,
-    _integer_engine_point,
-    _own_group,
     _owned_group,
-    _owned_point,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _own_ring,
@@ -126,34 +121,42 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
     def _repr_object_names(self):
         return f"finite {self.group()}-sets"
 
-    def _call_(self, point_set, action):
+    def _call_(self, point_set, action, *, injectivity_decision=None):
         r"""The finite ``G``-set on ``point_set`` with the action ``action(g, x)``."""
-        return _finite_g_set_from_action(self.group(), point_set, action)
+        return _finite_g_set_from_action(
+            self.group(),
+            point_set,
+            action,
+            injectivity_decision=injectivity_decision,
+        )
 
     def trivial(self, point_set):
         r"""Equip ``point_set`` with the trivial action of this category's group."""
         return self(point_set, lambda _group_element, point: point)
 
-    def _orbit_words(self, seeds, action, augmentation):
+    def _orbit_words(self, seeds, action, augmentation, *, point_key=None):
         r"""The one orbit search: the union of the orbits of ``seeds``, each point with a word.
 
         ``augmentation`` is a free cover ``pi: F ->> G``.  Breadth-first search
         over the free generators reaches each new point ``s.y`` by the word
         ``s t_y``.  Points are recorded by rank in a dictionary keyed by the
-        point, so each membership test is constant time.  The caller supplies
-        an effective action and the hypothesis that these orbits are finite.
+        point, or by its supplied injective rank key when the points are
+        unhashable. The caller supplies an effective action and the
+        hypothesis that these orbits are finite.
         """
         free = augmentation.domain()
         steps = tuple((word, augmentation(word)) for word in free.group_generators())
         points = list(finite_ordered_set(tuple(seeds)))
-        rank = {point: position for position, point in enumerate(points)}
+        key = (lambda point: point) if point_key is None else point_key
+        rank = {key(point): position for position, point in enumerate(points)}
         words = [free.one() for _point in points]
         position = 0
         while position < len(points):
             for word, element in steps:
                 image = action(element, points[position])
-                if image not in rank:
-                    rank[image] = len(points)
+                image_key = key(image)
+                if image_key not in rank:
+                    rank[image_key] = len(points)
                     points.append(image)
                     words.append(word * words[position])
             position += 1
@@ -244,7 +247,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             {"acting_group", "action", "underlying_category"}
         )
 
-        def __init__(self, point_set, permutation_representation, **rest) -> None:
+        def __init__(self, point_set, permutation_representation, point_action=None, **rest) -> None:
             assert point_set in FiniteSets(), (
                 f"cannot form a finite G-set on {point_set}: it is not a finite set, only "
                 f"known to be in {point_set.category()}"
@@ -252,6 +255,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             group = permutation_representation.domain()
             self._point_set = point_set
             self._permutation_representation = permutation_representation
+            self._point_action = point_action
             super().__init__(
                 acting_group=group,
                 action=self.action_of,
@@ -288,7 +292,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             for group_generator in determining:
                 permutation = permutations(representation(group_generator))
                 for point in self.point_set():
-                    image = _owned_point(permutation(_integer_engine_point(point)))
+                    image = permutation(point)
                     if image not in self.point_set():
                         raise ValueError(
                             f"{representation} is not an action of {group} on "
@@ -299,6 +303,7 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             r"""Return the chosen action as the group morphism ``G -> Sym(X)``."""
             return self._permutation_representation
 
+        @cached_method
         def action_of(self, group_element):
             r"""Evaluate the retained group map to obtain the permutation of ``X``.
 
@@ -307,9 +312,13 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             its element is represented in the containing group; evaluating the
             action does not ask the subgroup's membership problem again.
             """
+            if self._point_action is not None:
+                return Sets().Mor(self, self)(
+                    lambda point: self._point_action(group_element, point)
+                )
             permutation = self.permutation_representation()(group_element)
             return Sets().Mor(self, self)(
-                lambda point: _owned_point(permutation(_integer_engine_point(point)))
+                lambda point: permutation(point)
             )
 
         def point_set(self):
@@ -364,8 +373,8 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
             labels = {}
             for point in self:
                 ranks = tuple(
-                    int(ranking(_owned_point(image)))
-                    for image in image_engine.orbit(_engine_point(image_engine, point))
+                    int(image) - 1
+                    for image in image_engine.orbit(int(ranking(point)) + 1)
                 )
                 labels[int(ranking(point))] = min(ranks)
             return labels
@@ -430,12 +439,75 @@ class FiniteGSets(CategoryPacketMethods, OwnedParameterizedCategory):
                 augmentation=augmentation,
             )
 
+        def setwise_stabilizer(self, subset):
+            r"""Return ``{g : g.S = S}`` by the finite orbit of ``S``.
+
+            Direct image gives the action on the power set
+            (Mathlib ``Set.mulActionSet``). Its point stabilizer is the
+            setwise stabilizer. Reuse finite-orbit enumeration and Schreier
+            generators; do not enumerate the entire power set. Subsets are
+            owned subobjects, interned here by their finite rank sets so
+            their presentation identity cannot split one orbit point.
+            """
+            points = self.point_set()
+            power = points.power_set()
+            subset = power(subset)
+            ranking = points.ranking_map()
+            selected = {}
+
+            def point(members):
+                ranks = frozenset(int(ranking(member)) for member in members)
+                if ranks not in selected:
+                    selected[ranks] = power(tuple(points[rank] for rank in sorted(ranks)))
+                return selected[ranks]
+
+            def members(subobject):
+                inclusion = subobject.inclusion()
+                return (inclusion(member) for member in inclusion.domain())
+
+            start = point(members(subset))
+
+            def action(element, subobject):
+                return point(self.act(element, member) for member in members(subobject))
+
+            def subset_ranks(subobject):
+                return frozenset(int(ranking(member)) for member in members(subobject))
+
+            category = FiniteGSets(self.acting_group())
+            augmentation = self.acting_group().selected_group_resolution().augmentation()
+            orbit_points, words = category._orbit_words(
+                (start,), action, augmentation, point_key=subset_ranks,
+            )
+            orbit = category(finite_ordered_set(tuple(orbit_points)), action)
+            orbit_ranking = orbit.ranking_map()
+            word_section = Sets().Mor(orbit, augmentation.domain())(
+                lambda image: words[int(orbit_ranking(image))]
+            )
+            generating_morphism = _orbit_schreier_morphism(
+                orbit,
+                word_section,
+                augmentation,
+            )
+            from dzack_research.preamble.categories.group.predicate_subgroups import (
+                StabilizerSubgroups,
+            )
+
+            return StabilizerSubgroups(self.acting_group())(
+                start,
+                orbit.action_functor(),
+                lambda group_element: orbit.act(group_element, start) == start,
+                description=f"setwise stabilizer of {subset} in {self.acting_group()}",
+                generating_morphism=generating_morphism,
+            )
+
         @cached_method(key=lambda self, point: self.ranking_map()(point))
         def _orbit_of(self, point):
             r"""The single orbit datum of ``point``: its orbit ``G``-set and its words, by the selected cover."""
             augmentation = self.acting_group().selected_group_resolution().augmentation()
             category = FiniteGSets(self.acting_group())
-            points, words = category._orbit_words((point,), self.act, augmentation)
+            points, words = category._orbit_words(
+                (point,), self.act, augmentation, point_key=self.ranking_map(),
+            )
             return category(finite_ordered_set(tuple(points)), self.act), words, augmentation
 
         def orbit_schreier_morphism(self, point):
@@ -1146,7 +1218,8 @@ def _permutation_from_point_map(permutation_group, point_set, mapping):
     # A permutation is a bijection of the backend point domain. Let the
     # permutation engine check that property instead of searching all pairs
     # of points for preimage counts at this owned/engine boundary.
-    images = [_integer_engine_point(mapping(point)) for point in point_set]
+    ranking = point_set.ranking_map()
+    images = [int(ranking(mapping(point))) + 1 for point in point_set]
     try:
         return permutation_group(images)
     except (TypeError, ValueError) as error:
@@ -1181,6 +1254,7 @@ def _finite_g_set_from_action(
     point_set,
     action,
     *,
+    injectivity_decision=None,
     category=None,
     construction_data=None,
 ):
@@ -1199,16 +1273,16 @@ def _finite_g_set_from_action(
         f"known to be in {point_set.category()}"
     )
     group = _owned_group(group)
-    # Private finite backend serialization: Sage's SymmetricGroup constructor
-    # requires a sliceable concrete domain of engine points, while the
-    # mathematical point set remains the owned set above.
-    backend_points = [_integer_engine_point(point) for point in point_set]
-    permutations = _own_group(SymmetricGroup(backend_points))
+    # The symmetric-group owner retains X and its ranking while its private
+    # engine acts on 1,...,|X|. Arbitrary owned points never become engine
+    # domain labels.
+    permutations = SymmetricGroups()(point_set)
     mor = group.Mor(permutations)
     permutation_representation = mor.elementwise(
         lambda group_element: _permutation_from_point_map(
             permutations, point_set, lambda point: action(group_element, point),
-        )
+        ),
+        injectivity_decision=injectivity_decision,
     )
     selected_category = (
         FiniteGSets(permutation_representation.domain())
@@ -1219,22 +1293,23 @@ def _finite_g_set_from_action(
         selected_category,
         point_set=point_set,
         permutation_representation=permutation_representation,
+        point_action=action,
         **dict(construction_data or {}),
     )
 
 
-class _LeftCosetPoint(SageObject):
+class _LeftCosetPoint(Element):
     r"""An equivalence class ``gH`` represented by ``g``; no coset enumeration."""
 
     def __init__(self, parent, representative):
-        self._parent = parent
+        Element.__init__(self, parent)
         self._representative = representative
-
-    def parent(self):
-        return self._parent
 
     def representative(self):
         return self._representative
+
+    def __contains__(self, element):
+        return self.representative().inverse() * element in self.parent().subgroup()
 
     def __eq__(self, other):
         return (isinstance(other, _LeftCosetPoint) and other.parent() is self.parent()
@@ -1306,25 +1381,11 @@ def _left_coset_g_set(group, subgroup):
             facade=points,
             coset_subgroup=subgroup,
         )
-    cosets = _engine_cosets(group, subgroup, "left")
-
-    def coset_of(element):
-        element = group(element)
-        for coset in cosets:
-            if element in coset:
-                return coset
-        raise ArithmeticError(
-            f"{element} belongs to no represented left coset of {subgroup} in {group}"
-        )
-
-    return _finite_g_set_from_action(
-        group,
-        cosets,
-        lambda group_element, coset: coset_of(
-            group_element * next(iter(coset))
-        ),
-        category=LeftCosetGSets(subgroup),
-        construction_data={"coset_subgroup": subgroup},
+    points = _LeftCosetPointSet(group, subgroup)
+    return FiniteGSets(group).pointed_orbit(
+        subgroup,
+        points(group.one()),
+        lambda element, coset: points(element * coset.representative()),
     )
 
 

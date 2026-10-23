@@ -29,7 +29,6 @@ if TYPE_CHECKING:
 from sage.arith.misc import gcd
 from sage.misc.abstract_method import abstract_method
 from sage.combinat.root_system.cartan_type import CartanType
-from sage.combinat.root_system.root_system import RootSystem
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
 from sage.misc.repr import repr_lincomb
@@ -48,6 +47,7 @@ from dzack_research.preamble.categories._lattice import (
     _gram_is_even,
     _IdentityGram,
     _lattice,
+    _lattice_from_gram_tensor,
     _lattice_latex,
     _lattice_object,
     _nested_gram_tensor,
@@ -226,6 +226,38 @@ _Rings = OwnedRings()
 _INDECOMPOSABLE_NAMES = {}
 
 
+# This fixed integral presentation was published in Sage's named-lattice
+# catalogue (poeschko/sage@3014850b7c, special_lattices.py, Leech entry). Hecke's
+# `leech_lattice()` remains the independent maintained oracle: it constructs
+# the same lattice by the Conway--Sloane holy construction.
+_LEECH_GRAM_ROWS = (
+    (8, 4, 4, 4, 4, 4, 4, 2, 4, 4, 4, 2, 4, 2, 2, 2, 4, 2, 2, 2, 0, 0, 0, -3),
+    (4, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 1, 1, 2, 1, 0, 0, -1),
+    (4, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 1, 2, 2, 1, 1, 1, 0, 0, -1),
+    (4, 2, 2, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2, 2, 1, 2, 1, 1, 0, 0, -1),
+    (4, 2, 2, 2, 4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 1, 0, 0, -1),
+    (4, 2, 2, 2, 2, 4, 2, 2, 2, 2, 2, 1, 2, 2, 1, 1, 2, 1, 2, 1, 0, 0, 0, -1),
+    (4, 2, 2, 2, 2, 2, 4, 2, 2, 2, 2, 1, 2, 1, 2, 1, 2, 1, 1, 2, 0, 0, 0, -1),
+    (2, 2, 2, 2, 2, 2, 2, 4, 1, 1, 1, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 0, 0, 1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 4, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, -1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 4, 2, 2, 2, 2, 1, 1, 2, 2, 1, 1, 0, 1, 0, -1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 4, 2, 2, 1, 2, 1, 2, 1, 2, 1, 0, 0, 1, -1),
+    (2, 2, 2, 2, 1, 1, 1, 2, 2, 2, 2, 4, 1, 2, 2, 2, 1, 2, 2, 2, 2, 1, 1, 1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 4, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, -1),
+    (2, 2, 1, 1, 2, 2, 1, 2, 2, 2, 1, 2, 2, 4, 2, 2, 1, 2, 2, 2, 2, 2, 1, 1),
+    (2, 1, 2, 1, 2, 1, 2, 2, 2, 1, 2, 2, 2, 2, 4, 2, 1, 2, 2, 2, 2, 1, 2, 1),
+    (2, 1, 1, 2, 2, 1, 1, 2, 2, 1, 1, 2, 2, 2, 2, 4, 1, 2, 2, 2, 2, 1, 1, 1),
+    (4, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 1, 2, 1, 1, 1, 4, 2, 2, 2, 1, 1, 1, -1),
+    (2, 1, 2, 1, 2, 1, 1, 2, 2, 2, 1, 2, 1, 2, 2, 2, 2, 4, 2, 2, 2, 2, 1, 1),
+    (2, 1, 1, 2, 2, 2, 1, 2, 2, 1, 2, 2, 1, 2, 2, 2, 2, 2, 4, 2, 2, 1, 2, 1),
+    (2, 2, 1, 1, 2, 1, 2, 2, 2, 1, 1, 2, 1, 2, 2, 2, 2, 2, 2, 4, 2, 1, 1, 1),
+    (0, 1, 1, 1, 1, 0, 0, 2, 1, 0, 0, 2, 1, 2, 2, 2, 1, 2, 2, 2, 4, 2, 2, 2),
+    (0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 2, 1, 1, 1, 2, 1, 1, 2, 4, 2, 2),
+    (0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 2, 4, 2),
+    (-3, -1, -1, -1, -1, -1, -1, 1, -1, -1, -1, 1, -1, 1, 1, 1, -1, 1, 1, 1, 2, 2, 2, 4),
+)
+
+
 class LatticeMorCategoryConstruction(MorCategoryConstruction):
     r"""The strict form-preserving Mor categories of lattices."""
 
@@ -250,13 +282,21 @@ class LatticeIsoCategoryConstruction(IsoCategoryConstruction):
 def _gram_key(gram):
     rank = int(gram.tensor_shape()[0])
     return tuple(
-        tuple(gram[row, column] for column in range(rank)) for row in range(rank)
+        tuple(int(gram[row, column]) for column in range(rank)) for row in range(rank)
     )
 
 
 def _register_indecomposable_gram(name, gram):
     r"""Register an exact Gram matrix under its indecomposable display name."""
     _INDECOMPOSABLE_NAMES.setdefault(_gram_key(gram), str(name))
+
+
+def _register_indecomposable_gram_rows(name, rows):
+    r"""Register integral Gram rows without constructing the lattice or its tensor."""
+    _INDECOMPOSABLE_NAMES.setdefault(
+        tuple(tuple(int(entry) for entry in row) for row in rows),
+        str(name),
+    )
 
 
 def _register_indecomposable(name, lattice):
@@ -784,7 +824,10 @@ class _Genus(Sets().ObjectType):
         coefficient = (
             hauptsatz_factor * real_density * generic_density * exceptional_density
         )
-        return _owned_engine_element(rationals, SageQQ(coefficient))
+        # The product is an exact real; reading it in QQ decides that it is rational.
+        from dzack_research.preamble.rings.real import RR
+
+        return rationals(RR(SR(coefficient)))
 
     def siegel_eisenstein_series(self, precision=20, variable="q"):
         r"""Return ``1 + sum_{0 < m < precision} a_E(m) q^m`` for this definite genus.
@@ -925,6 +968,16 @@ class _Genus(Sets().ObjectType):
 
     def __iter__(self):
         return iter(self.representatives())
+
+    def _cardinality_decision(self):
+        r"""Supply the cardinality through the computed finite class representatives.
+
+        The genus is the fibre of ``isometryClassToGenus`` in
+        ``Lattices/Valued/LocalGlobal.lean``. Its chosen representatives give
+        a bijection with that fibre, so Sets' cardinality owner reads the
+        cardinality of this finite enumeration.
+        """
+        return self.representatives().cardinality()
 
     def class_number(self):
         r"""Return the number of isometry classes in this genus [PS24, Def. 1.10.5]."""
@@ -1558,7 +1611,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             postcomposing it postcomposes each leg.
             """
             transitions = tuple(marked.arrows())
-            return self.object((*transitions[:-1], _postcomposed(automorphism, transitions[-1])))
+            return self((*transitions[:-1], _postcomposed(automorphism, transitions[-1])))
 
         def apex_stabilizer(self, marked):
             r"""``{g in O(L) : g(F(j -> top)(F(j))) = F(j -> top)(F(j)) for every j}``, for a chain of monomorphisms.
@@ -1757,9 +1810,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             sage: Lattices(ZZ)(L) is L
             True
         """
-        lattice = super().__call__(data, *args, **options)
-        assert lattice in self, f"{lattice!r} is not a lattice in {self}"
-        return lattice
+        return super().__call__(data, *args, **options)
 
     def _call_(  # type: ignore[override]  # the stub promises a SageObject; the object type of this category is its provider class
         self,
@@ -2091,10 +2142,38 @@ class Lattices(OwnedCategoryOverBaseRing):
     @staticmethod
     @cached_function
     def leech_lattice():
-        r"""Return the negative-definite Leech lattice through Hecke's maintained construction."""
+        r"""Return the negative-definite Leech lattice in its fixed integral presentation.
+
+        The named object has no input-dependent computation.  Its Gram
+        presentation is retained locally so constructing it does not cold-load
+        OSCAR; Hecke's ``leech_lattice()`` is the independent oracle from which
+        this presentation is checked.
+        """
         integers = _owned_integers()
-        positive = Lattices(integers)(lattice_engines._oscar_lattices.leech_gram_rows())
-        return positive.twist(-integers.one())
+        entries = {entry for row in _LEECH_GRAM_ROWS for entry in row}
+        coefficients = {entry: integers(-entry) for entry in entries}
+        rows = tuple(
+            tuple(coefficients[entry] for entry in row)
+            for row in _LEECH_GRAM_ROWS
+        )
+        category = Lattices(integers)
+        leech = _lattice_from_gram_tensor(
+            _nested_gram_tensor(rows, integers),
+            integers,
+            None,
+            None,
+            category,
+            axiom_categories=(
+                category.FinitelyGenerated(),
+                category.Nondegenerate(),
+                category.Unimodular(),
+                category.Even(),
+            ),
+        )
+        lattice_engines.validate_even_unimodular_gram(
+            leech.gram_tensor(), check=False
+        )
+        return leech
 
     @cached_method
     def super_categories(self):
@@ -2690,11 +2769,24 @@ class Lattices(OwnedCategoryOverBaseRing):
         def special_orthogonal_group(self):
             r"""Return ``SO(L)=ker(det:O(L)->{+-1})`` as a predicate subgroup."""
 
-            return self.Aut().predicate_subgroup(
+            orthogonal = self.Aut()
+            special = orthogonal.predicate_subgroup(
                 lambda automorphism: automorphism.determinant() == 1,
                 "det(g)=1",
                 character_data={"determinant_kernel": True},
             )
+
+            def generators():
+                from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+                signs = Groups.C(2)
+                determinant = orthogonal.Mor(signs).elementwise(
+                    lambda isometry: signs.one() if isometry.determinant() == 1 else signs.group_generators()[0]
+                )
+                return finite_ordered_set(tuple(determinant.kernel().group_generators()))
+
+            special.select_group_generators(generators)
+            return special
 
         def SO(self, *args, **kwargs):
             return self.special_orthogonal_group(*args, **kwargs)
@@ -2753,7 +2845,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             \(V=H_1\perp\cdots\perp H_r\perp V_0\) with \(V_0\) zero or
             anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
             A lattice answers through its quadratic space :meth:`vector_space`.
-            Over number fields the private OSCAR/Hecke realization decomposes
+            Over QQ, PARI supplies an exact isotropic vector or an anisotropy
+            obstruction at each step of rational hyperbolic splitting.
+            Over other number fields the private OSCAR/Hecke realization decomposes
             the quadratic space into its anisotropic and hyperbolic summands; half
             the dimension of the latter is the Witt index.
             """
@@ -2773,9 +2867,7 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             match field:
                 case _ if _engine_ring(field) is SageQQ:
-                    index = lattice_engines._oscar_lattices.rational_witt_index(
-                        self.gram_tensor()
-                    )
+                    index = lattice_engines._rational_witt_index(self)
                 case _ if (
                     field in OwnedNumberFields()
                     and field in NumberFieldsWithChosenPrimitiveElement()
@@ -3348,6 +3440,44 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
             return self._preamble_gram_tensor
 
+        def _evaluate_gram(self, left, right):
+            r"""Contract the retained finite Gram with two lattice vectors."""
+            labels = tuple(self.module_generating_set())
+            left_coordinates = left.to_vector()
+            right_coordinates = right.to_vector()
+            gram = self.gram_tensor()
+            ring = self.base_ring()
+            return sum(
+                (
+                    left_coordinates(left_label)
+                    * gram[left_position, right_position]
+                    * right_coordinates(right_label)
+                    for left_position, left_label in enumerate(labels)
+                    for right_position, right_label in enumerate(labels)
+                ),
+                ring.zero(),
+            )
+
+        def b(self, left, right):
+            r"""Evaluate the finite lattice pairing from its retained Gram."""
+            if left not in self or right not in self:
+                raise TypeError(
+                    f"the pairing on {self} takes two of its vectors, but {left} or {right} is not in {self}"
+                )
+            if not self.module_rank().is_finite():
+                return super().b(left, right)
+            return self._evaluate_gram(left, right)
+
+        def norm(self, element):
+            r"""Return the finite Gram contraction ``b(element, element)``."""
+            if element not in self:
+                raise TypeError(
+                    f"the norm on {self} is defined on its vectors, but {element} is not in {self}"
+                )
+            if not self.module_rank().is_finite():
+                return super().norm(element)
+            return self._evaluate_gram(element, element)
+
         def gram_matrix(self, basis=None):
             r"""Return the finite coordinate matrix of the selected form.
 
@@ -3388,13 +3518,14 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert self.module_rank().is_finite(), (
                 f"{self!r} has rank {self.module_rank()}, so it has no Gram matrix on a basis; a Gram matrix needs finite rank. Pass a finite family of vectors to take their Gram matrix"
             )
-            correlation = self.algebraic_correlation_morphism()
-            linear = (
-                correlation.domain()
-                .module_category()
-                .Mor(correlation.domain(), correlation.codomain())(correlation)
+            gram = self.gram_tensor()
+            size = int(self.module_rank())
+            return self.base_ring().matrix_space(size, size).from_rows(
+                tuple(
+                    tuple(gram[row, column] for column in range(size))
+                    for row in range(size)
+                )
             )
-            return linear.matrix()
 
         def basis_vector(self, position):
             r"""Return the selected lattice basis vector at integer ``position``.
@@ -3955,6 +4086,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             linear_dual = self.linear_dual()
 
             def coordinate_functional(label):
+                if self.module_rank().is_finite():
+                    # Finite free form modules retain their algebraic dual
+                    # on this selected dual basis, rather than as a Mor
+                    # parent accepting a callable functional.
+                    return linear_dual.module_generator(label)
+
                 def value(source_label):
                     match source_label == label:
                         case True:
@@ -4410,6 +4547,25 @@ class Lattices(OwnedCategoryOverBaseRing):
 
         def embed_in_even_unimodular(self, positive, negative):
             r"""Return one primitive embedding into an even unimodular lattice."""
+            positive = int(positive)
+            negative = int(negative)
+            if self.module_rank() == 1 and (positive == 0 or negative == 0):
+                category = Lattices(self.base_ring())
+                e8 = category("E8")
+                block = e8.twist(-1) if positive else e8
+                target = _orthogonal_sum(
+                    tuple(block for _ in range((positive + negative) // 8))
+                )
+                (source_generator,) = self.module_generators()
+                source_square = self.b(source_generator, source_generator)
+                for target_generator in target.module_generators():
+                    if target.b(target_generator, target_generator) != source_square:
+                        continue
+                    return self.Emb(target)((target_generator,))
+                for embedding in self.Emb(target):
+                    if embedding.is_primitive():
+                        return embedding
+
             if not self.embeds_in_even_unimodular(positive, negative):
                 raise ValueError(
                     f"{self!r} has no primitive embedding into II_{{{positive},{negative}}}: by Nikulin's criterion no even lattice of the complementary signature has discriminant form -q_L"
@@ -4436,14 +4592,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 for column in range(int(self.module_rank()))
             )
             embedding = self.Emb(target)(images)
-            if not embedding.is_primitive():
-                raise ArithmeticError(
-                    f"the embedding of {self!r} into II_{{{positive},{negative}}} computed by OSCAR is not primitive: its cokernel has torsion"
-                )
-            if target.signature_pair() != signature_pair(positive, negative):
-                raise ArithmeticError(
-                    f"the target lattice {target!r} computed by OSCAR for a primitive embedding of {self!r} has signature {target.signature_pair()}, not ({positive}, {negative})"
-                )
+            embedding.validate_primitivity(check=False)
+            lattice_engines.validate_lattice_signature(
+                (target, signature_pair(positive, negative)), check=False
+            )
             return embedding
 
         def glue_map(self, first, second):
@@ -5153,6 +5305,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             and it is not the finite shell of the integral span.
             """
             square = self.base_ring()(square)
+            if self.module_rank() == 0:
+                points = (self.zero(),) if square == self.base_ring().zero() else ()
+                return self.finite_subsets()(finite_ordered_set(points))
             if not self.module_rank().is_finite():
                 return self.square_fibre(square).object()
             if self.definiteness() in ("positive_definite", "negative_definite"):
@@ -5167,9 +5322,53 @@ class Lattices(OwnedCategoryOverBaseRing):
                 discriminant = lattice_engines._binary_form_discriminant(self)
                 if discriminant > 0 and discriminant.is_square():
                     return self.finite_subsets()(
-                        lattice_engines._split_binary_vectors_of_square(self, square)
+                        self._split_binary_square_fibre(square)
                     )
             return self.square_fibre(square).object()
+
+        @cached_method
+        def _split_binary_square_fibre(self, square):
+            r"""Return the complete finite nonzero fibre of a split binary form."""
+            from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+
+            return finite_ordered_set(
+                lattice_engines._split_binary_vectors_of_square(self, square)
+            )
+
+        @cached_method
+        def _split_binary_square_fibre_action(self, square, special=False):
+            r"""Return the O(L)- or SO(L)-action on a complete split binary fibre."""
+            from dzack_research.preamble.categories.group.g_objects import GObjects
+            from dzack_research.preamble.categories.sets.set_categories import Sets
+
+            orthogonal = self.orthogonal_group()
+            acting_group = self.special_orthogonal_group() if special else orthogonal
+            reversing_data = None
+            reversing = None
+
+            def reversing_isometry():
+                nonlocal reversing_data, reversing
+                if reversing_data is None:
+                    reversing_data = lattice_engines._split_binary_orthogonal_group_generators(self)
+                if reversing is None and len(reversing_data) == 2:
+                    reversing = orthogonal(reversing_data[1])
+                return reversing
+
+            def same_orbit(left, right):
+                if right == left or right == -left:
+                    return True
+                if special:
+                    return False
+                reflection = reversing_isometry()
+                return reflection is not None and (
+                    right == reflection(left) or right == -reflection(left)
+                )
+
+            return GObjects(acting_group, Sets()).on_set(
+                self._split_binary_square_fibre(square),
+                lambda isometry, vector: isometry(vector),
+                orbit_relation=same_orbit,
+            )
 
         @cached_method
         def vectors_of_square_and_divisibility(self, square, divisibility):
@@ -5209,8 +5408,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return a set of roots of \(L\) that generates \(L\) as a module.
 
             A semi-decision for \(L=\mathbb Z\Phi(L)\) on a lattice of any
-            signature: the roots are searched in balls of growing radius for a
-            positive definite majorant of \(b\), so the search returns exactly
+            signature: PARI enumerates integer coordinates in increasing L1
+            degree, so the search returns exactly
             when \(\Phi(L)\) generates \(L\) and runs without end otherwise.
             """
             from dzack_research.preamble.categories.lattice_engines import (
@@ -5402,8 +5601,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             orthogonal = self.orthogonal_group()
             special = self.special_orthogonal_group()
             group = orthogonal if acting_group is None else acting_group
-            restricted = group == special
-            assert restricted or group == orthogonal, (
+            restricted = group is special
+            assert restricted or group is orthogonal, (
                 f"the orbits of the square fibre of {self} are computed under O(L) or SO(L), "
                 f"but {group} is neither"
             )
@@ -5421,7 +5620,27 @@ class Lattices(OwnedCategoryOverBaseRing):
                     "the split zero-square fibre has infinitely many orthogonal orbits"
                 )
             else:
+                if discriminant > 0:
+                    candidates = self._split_binary_square_fibre(square)
+                    # For a split binary lattice, SO(L) = {+-1} and O(L) is
+                    # generated by negation and, when it exists, one reversing
+                    # isometry.  Use that theorem as the exact orbit decision;
+                    # ``vectors_of_square`` is the complete finite fibre here,
+                    # so its domain is the action's actual point set.  Building
+                    # a second equalizer presentation of that same fibre would
+                    # eagerly reconstruct the form and its value module.
+                    action = self._split_binary_square_fibre_action(
+                        square,
+                        special=restricted,
+                    )
+                    return action.orbits_presented_by(candidates)
+
+                # Definite fibres use their actual finite group action.
+                from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
                 candidates = self.vectors_of_square(square)
+                action = FiniteGSets(group)(candidates.domain(), lambda isometry, point: isometry(point))
+                return action.orbits_presented_by(candidates.domain())
 
             def same_orbit(left, right, *, special_only):
                 if left == right:
@@ -6237,10 +6456,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             ranking = self.parent().module_generating_set().ranking_map()
             coordinates = self.to_vector()
             return sorted(
-                (
-                    (label, coordinates(label))
-                    for label in coordinates.support().domain()
-                ),
+                coordinates.parent()._selected_module_coefficients(coordinates).items(),
                 key=lambda term: int(ranking(term[0])),
             )
 
@@ -7955,7 +8171,8 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
         def _levi_image_contains(self, isometry):
             r"""Whether ``isometry`` lies in the image of :meth:`levi_action`: some fibre of :meth:`_levi_fibres` has an integral member."""
             return any(
-                fibre.integral_members().is_empty() is False for fibre in self._levi_fibres(isometry)
+                fibre._integral_base_point_or_none() is not None
+                for fibre in self._levi_fibres(isometry)
             )
 
         def _levi_section(self, isometry):
@@ -7970,7 +8187,7 @@ class IsotropicReductions(OwnedCategoryOverBaseRing):
             fibre = next(
                 fibre
                 for fibre in self._levi_fibres(isometry)
-                if fibre.integral_members().is_empty() is False
+                if fibre._integral_base_point_or_none() is not None
             )
             return self.parabolic_subgroup()(lattice.integral_isometry(fibre.integral_base_point()))
 
@@ -8347,6 +8564,8 @@ class RootLattices(OwnedCategory):
             basis vectors go to the simple roots, of the coefficient vector of
             the highest root in the basis of simple roots.
             """
+            from sage.combinat.root_system.root_system import RootSystem
+
             cartan_type = self._engine_cartan_type()
             if not cartan_type.is_irreducible():
                 raise ValueError(

@@ -94,10 +94,17 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
         source_witt, source_section, source_split = _rational_splitting(source, plane)
         target_witt, target_section, target_split = _rational_splitting(target, plane)
         source_sum, target_sum = source_split.codomain(), target_split.codomain()
-        diagonal = source_sum.Isom(target_sum)(source_sum.from_summands(
-            target_sum.injection(0),
-            target_sum.injection(1) * reduction_isometry,
-        ))
+        direct_sum = Lattices(field_map.codomain()).orthogonal_direct_sum_bifunctor()
+        product = direct_sum.domain()
+        source_pair = product(plane, reduction_isometry.domain())
+        target_pair = product(plane, reduction_isometry.codomain())
+        plane_identity = plane.O().one()
+        forward = product.Mor(source_pair, target_pair)(plane_identity, reduction_isometry)
+        inverse = product.Mor(target_pair, source_pair)(plane_identity, ~reduction_isometry)
+        diagonal = direct_sum.map_isomorphism(product.Core().Mor(source_pair, target_pair)(forward, inverse))
+        assert diagonal.domain() is source_sum and diagonal.codomain() is target_sum, (
+            "the orthogonal direct-sum functor must retain the Witt splitting's summands"
+        )
         base = target_split.inverse() * diagonal * source_split
         source_ambient, target_ambient = base.domain(), base.codomain()
         source_e = source_witt.isotropic_vector()
@@ -368,15 +375,35 @@ class IsotropicReductionLiftTorsors(OwnedCategoryOverBaseRing):
                 lift = self.parameterization()(parameter)
                 return lift.integral_restriction(source, target) is not None
 
-            return quotient.codomain().condition_set(integral)
+            return quotient.codomain().elements().condition_set(integral)
 
         @cached_method
-        def integral_base_point(self):
-            r"""Select an integral lift, or raise when the integral lift locus is empty."""
+        def _integral_base_point_or_none(self):
+            r"""Decide existence and retain one integral lift, or ``None``.
+
+            Private witness contract used by the selected Levi section and
+            its image predicate. An integral rational base point proves
+            nonemptiness immediately. A nonintegral base point proves
+            nothing; only exhaustion of the complete residue locus proves
+            emptiness.
+            """
+            source = self.source_reduction().isotropic_embedding().codomain()
+            target = self.target_reduction().isotropic_embedding().codomain()
+            base = self.base_point()
+            if base.integral_restriction(source, target) is not None:
+                return base
             quotient = self.integral_parameter_quotient()
             for residue in self.integral_parameter_classes():
                 parameter = quotient.domain().inclusion()(quotient.preimage(residue)).underlying_element()
                 return self.parameterization()(parameter)
+            return None
+
+        @cached_method
+        def integral_base_point(self):
+            r"""Select an integral lift, or raise when the integral lift locus is empty."""
+            point = self._integral_base_point_or_none()
+            if point is not None:
+                return point
             raise ValueError("the integral reduction-lift locus is empty")
 
         @cached_method

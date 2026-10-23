@@ -42,8 +42,6 @@ from sage.structure.unique_representation import UniqueRepresentation
 from sage.symbolic.expression import Expression
 from sage.symbolic.operators import add_vararg, mul_vararg
 from sage.symbolic.ring import SR
-from sage_julia_bridge import julia
-
 from dzack_research.preamble.categories.abstract_categories.cat import Cat
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
@@ -63,13 +61,21 @@ from dzack_research.preamble.rings.real import RR, ExactRealNumber, _contains_ap
 
 
 @cache
+def _julia():
+    r"""The Julia bridge, loaded only when exact complex arithmetic needs it."""
+    from sage_julia_bridge import julia as bridge
+
+    return bridge
+
+
+@cache
 def _calcium_field():
     r"""Nemo's exact complex field, through the repository's Julia bridge.
 
     Nemo's ``CalciumField`` represents the mathematical complex field:
     https://nemocas.github.io/Nemo.jl/stable/exact/
     """
-    julia.eval("""using Oscar
+    _julia().eval("""using Oscar
 PreambleExactCC = Oscar.Nemo.CalciumField()
 function preamble_cc_equal(a, b)
     try
@@ -81,7 +87,7 @@ function preamble_cc_equal(a, b)
         rethrow()
     end
 end""")
-    julia.eval("""function preamble_cc_algebraic(coefficients, rl, ru, il, iu, precision)
+    _julia().eval("""function preamble_cc_algebraic(coefficients, rl, ru, il, iu, precision)
     Qbar = Oscar.Nemo.algebraic_closure(Oscar.QQ)
     polynomial_parent, variable = Oscar.polynomial_ring(Oscar.QQ, "x")
     polynomial = sum(Oscar.QQ(coefficients[j]) * variable^(j-1) for j in eachindex(coefficients))
@@ -93,7 +99,7 @@ end""")
     matching = [root for root in Oscar.roots(Qbar, polynomial) if Oscar.Nemo.overlaps(balls(root), target)]
     return length(matching) == 1 ? PreambleExactCC(only(matching)) : nothing
 end""")
-    return julia.sage("PreambleExactCC")
+    return _julia().sage("PreambleExactCC")
 
 
 def _qqbar_to_calcium(value):
@@ -105,7 +111,7 @@ def _qqbar_to_calcium(value):
         enclosure = value.interval(ComplexIntervalField(precision))
         real = enclosure.real()
         imaginary = enclosure.imag()
-        native = julia.call(
+        native = _julia().call(
             "preamble_cc_algebraic",
             coefficients,
             QQ(real.lower()),
@@ -123,23 +129,23 @@ def _calcium_value(expression):
     r"""Interpret a closed Sage expression in Nemo's exact complex field."""
     _calcium_field()
     if expression in QQbar and expression in QQ:
-        return julia.call("PreambleExactCC", QQ(expression))
+        return _julia().call("PreambleExactCC", QQ(expression))
     if expression == SR.I():
-        return julia.sage("PreambleExactCC(1im)")
+        return _julia().sage("PreambleExactCC(1im)")
     if expression == SR.pi():
-        return julia.sage("PreambleExactCC(pi)")
+        return _julia().sage("PreambleExactCC(pi)")
     operation = expression.operator()
     if operation is None and expression in QQbar:
         return _qqbar_to_calcium(QQbar(expression))
     arguments = tuple(_calcium_value(argument) for argument in expression.operands())
     if operation is add_vararg:
-        return julia.call("+", *arguments)
+        return _julia().call("+", *arguments)
     if operation is mul_vararg:
-        return julia.call("*", *arguments)
+        return _julia().call("*", *arguments)
     if operation is operator.pow:
-        return julia.call("^", *arguments)
+        return _julia().call("^", *arguments)
     if operation is not None and operation.__name__ in {"exp", "log", "sin", "cos", "tan", "sinh", "cosh", "tanh"}:
-        return julia.call(operation.__name__, *arguments)
+        return _julia().call(operation.__name__, *arguments)
     raise TypeError(f"Nemo cannot construct the exact complex expression {expression}")
 
 
@@ -219,7 +225,7 @@ class ComplexRelation(Predicate):
         return self._relation
 
     def _ask_(self, *, max_prec: int = 4096):
-        equal = julia.call("preamble_cc_equal", self._left._calcium_(), self._right._calcium_())
+        equal = _julia().call("preamble_cc_equal", self._left._calcium_(), self._right._calcium_())
         return Unknown if equal is None else _relation_answer(equal, self._relation)
 
     def _repr_(self) -> str:
@@ -312,19 +318,19 @@ class ExactComplexNumber(FieldElement):
     def _add_(self, other):
         return self.parent().element_class(
             self.parent(), self._expression + other._expression,
-            julia.call("+", self._calcium_(), other._calcium_()),
+            _julia().call("+", self._calcium_(), other._calcium_()),
         )
 
     def _sub_(self, other):
         return self.parent().element_class(
             self.parent(), self._expression - other._expression,
-            julia.call("-", self._calcium_(), other._calcium_()),
+            _julia().call("-", self._calcium_(), other._calcium_()),
         )
 
     def _mul_(self, other):
         return self.parent().element_class(
             self.parent(), self._expression * other._expression,
-            julia.call("*", self._calcium_(), other._calcium_()),
+            _julia().call("*", self._calcium_(), other._calcium_()),
         )
 
     def __mul__(self, other):
@@ -357,11 +363,11 @@ class ExactComplexNumber(FieldElement):
             )
         return self.parent().element_class(
             self.parent(), self._expression / other._expression,
-            julia.call("/", self._calcium_(), other._calcium_()),
+            _julia().call("/", self._calcium_(), other._calcium_()),
         )
 
     def _neg_(self):
-        return self.parent().element_class(self.parent(), -self._expression, julia.call("-", self._calcium_()))
+        return self.parent().element_class(self.parent(), -self._expression, _julia().call("-", self._calcium_()))
 
     def __invert__(self):
         return self.parent().one() / self
@@ -580,7 +586,7 @@ class ExactComplexField(UniqueRepresentation, Field):
         r"""Return a decided Boolean or an exact complex relation predicate."""
         left = self(left)
         right = self(right)
-        equal = julia.call("preamble_cc_equal", left._calcium_(), right._calcium_())
+        equal = _julia().call("preamble_cc_equal", left._calcium_(), right._calcium_())
         if equal is not None:
             return _relation_answer(equal, relation)
         return ComplexRelation(left, right, relation)

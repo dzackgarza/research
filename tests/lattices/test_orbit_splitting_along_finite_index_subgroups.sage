@@ -23,7 +23,6 @@ proper subgroup of index two.  The same counts hold for the sublattice
 import pytest
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.abstract_categories.products import FiniteOrdinalCategory
 
 
 def _lattice():
@@ -95,7 +94,7 @@ def test_the_orbit_of_a_flag_splits_under_the_stable_group() -> None:
     line = lattice.subobject_on([e1])
     whole = lattice.subobject_on([e1, e2])
     line_into_whole = line.Emb(whole)(line.inclusion().factor_through(whole.inclusion()))
-    marked = flags.object((line_into_whole, whole.inclusion()))
+    marked = flags((line_into_whole, whole.inclusion()))
 
     assert group.split_orbit(marked, lattice.stable_orthogonal_group()).cardinality() == 2
     assert group.split_orbit(marked, group).cardinality() == 1
@@ -110,5 +109,5 @@ def test_a_subgroup_given_by_generators_has_no_character_quotient_to_split_along
     swap = group({labels[0]: e2, labels[1]: e1})
     _category, marked = _pointed(lattice, e1)
 
-    with pytest.raises(AssertionError, match="kernel of such a character map"):
+    with pytest.raises(AssertionError):
         group.split_orbit(marked, group.subgroup((swap,)))

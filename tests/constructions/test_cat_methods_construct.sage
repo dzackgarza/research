@@ -128,7 +128,7 @@ def test_cat_limit_and_colimit_functors_send_a_constant_two_point_diagram_to_fou
     sets = Sets()
     diagrams = Cat().Mor(shape, sets)
     diagram = diagrams.constant_functor(Sets.Δ[1])
-    diagram_object = diagrams.object(diagram)
+    diagram_object = diagrams(diagram)
     limit = sets.limit_functor(shape)
     colimit = sets.colimit_functor(shape)
 

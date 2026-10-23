@@ -52,6 +52,7 @@ from sage.structure.element import Element
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.functors.core import Adjunction, Functor
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import ObjectLevelOperation
 from dzack_research.utilities.source_inventory import source_fingerprint
 
 
@@ -68,7 +69,7 @@ class WrapsAFunction(Protocol):
 
 # What a class dictionary holds: a plain function, or one of the descriptors
 # Sage wraps one in.  The survey reads these to report a category's operations.
-type ClassMember = Callable[..., object] | CachedMethod | AbstractMethod | property
+type ClassMember = Callable[..., object] | CachedMethod | AbstractMethod | property | ObjectLevelOperation
 
 # Anything `inspect` can locate source for, and anything it can sign.
 type Inspectable = type | Callable[..., object]
@@ -686,6 +687,11 @@ class Survey:
         is how a reference ends up documenting ``CachedMethod`` 372 times.
         """
 
+        if isinstance(value, ObjectLevelOperation):
+            reading = value.__get__(None, klass)
+            if isinstance(reading, WrapsAFunction):
+                return reading.f, "object-level, cached"
+            return reading, "object-level"
         if isinstance(value, CachedMethod):
             caller = value.__get__(None, klass)
             return caller.f, "cached"
@@ -703,7 +709,7 @@ class Survey:
         for name, value in sorted(vars(klass).items()):
             if name.startswith("_"):
                 continue
-            if not (callable(value) or isinstance(value, (CachedMethod, AbstractMethod, property))):
+            if not (callable(value) or isinstance(value, (CachedMethod, AbstractMethod, property, ObjectLevelOperation))):
                 continue
             target, mark = cls.unwrap(klass, value)
             found.append(

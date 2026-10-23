@@ -5,6 +5,8 @@ the fields.  An order embedding is represented by the ring map of fraction
 fields that it extends to.
 """
 
+from sage.misc.cachefunc import cached_method
+
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
 )
@@ -42,7 +44,17 @@ class OrderEmbedding:
                     f"it sends the basis element {basis_element} to {image}, which is not in {codomain}"
                 )
         self._field_embedding = field_embedding
-        super().__init__(parent, self._evaluate_field_embedding)
+        domain = parent.domain()
+        codomain = parent.codomain()
+
+        def evaluate(element):
+            source_owned = source_field(domain(element))
+            return codomain(field_embedding(source_owned))
+
+        linear = domain.module_category().Mor(domain, codomain).elementwise(
+            evaluate
+        )
+        super().__init__(parent, linear)
 
     def field_embedding(self) -> RingMorphism:
         return self._field_embedding
@@ -74,13 +86,16 @@ class OrderMor(CategoricalMor):
         return self.element_class(self, source_field.Mor(target_field)(field_embedding))
 
     @object_level
+    @cached_method
     def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
         field = self.domain().fraction_field()
-        return self(field.Mor(field).identity())
+        identity = self(field.Mor(field).identity())
+        identity._preamble_is_identity = True
+        return identity
 
     def _repr_(self):
         return f"Emb({self.domain()}, {self.codomain()})"

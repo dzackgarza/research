@@ -60,9 +60,31 @@ def test_approximate_generating_family_uses_exact_two_u_perpendicular_frames() -
     model = Lattices(ZZ)("A2").two_u_eichler_model()
     lattice = model.lattice()
     family = model.approximate_generating_family()
+    isometries = tuple(family)
+    linear_generators = tuple(model.special_linear_group().group_generators())
+    e, f, e_prime, f_prime = model.hyperbolic_basis()
+    complement = model.orthogonal_complement()
+    inclusion = model.complement_inclusion()
+    embedded = tuple(inclusion(point) for point in complement.module_generators())
+    perpendicular_frames = (
+        (e, e_prime, f_prime),
+        (f, e_prime, f_prime),
+        (e, f, e_prime),
+        (e, f, f_prime),
+    )
 
-    assert family.cardinality() == 4 + 4 * (int(lattice.module_rank()) - 1)
-    assert all(family[label] in lattice.O() for label in family.index_set())
+    assert all(model.left_action(generator) in isometries for generator in linear_generators)
+    assert all(model.right_action(generator) in isometries for generator in linear_generators)
+    assert all(
+        model.eichler_transvection(isotropic, orthogonal) in isometries
+        for isotropic, frame in zip(
+            model.hyperbolic_basis(),
+            perpendicular_frames,
+            strict=True,
+        )
+        for orthogonal in (*frame, *embedded)
+    )
+    assert all(isometry in lattice.O() for isometry in isometries)
 
 
 def test_base_changed_eichler_generators_are_scalar_extensions() -> None:
@@ -158,9 +180,9 @@ def test_O_of_2U_plus_A2_surjects_onto_O_of_its_discriminant_form() -> None:
     target = lattice.discriminant_group().O()
     lifts = lattice.O().discriminant_orthogonal_group_generator_lifts()
 
-    generators = target.group_generators()
-    assert lifts.index_set() == generators.index_set()
+    group_generators = target.group_generators()
+    assert lifts.index_set() == group_generators.index_set()
     for label in lifts.index_set():
         witness = lifts.value(label)
         assert witness in lattice.O()
-        assert witness.discriminant_morphism() == generators.value(label)
+        assert witness.discriminant_morphism() == group_generators.value(label)

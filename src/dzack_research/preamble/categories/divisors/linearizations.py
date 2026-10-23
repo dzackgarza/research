@@ -36,27 +36,29 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 
 
-class _ProjectiveActionEngine:
+class _ProjectiveActionFunctor(GroupActionFunctor):
     r"""Private realization data for one represented projective ``G``-action."""
 
     def __init__(
         self,
         acting_group,
+        category,
+        obj,
+        action,
         *,
         coordinate_weights=None,
         local_automorphisms=None,
-        **rest,
     ) -> None:
         self._acting_group = acting_group
         self._coordinate_weights = coordinate_weights
         self._local_automorphisms = local_automorphisms
-        super().__init__(**rest)
+        super().__init__(acting_group, category, obj, action)
 
     def acting_group(self):
         return self._acting_group
 
     def action_functor(self):
-        return self.functor()
+        return self
 
     def coordinate_weights(self):
         assert self._coordinate_weights is not None, (
@@ -74,26 +76,6 @@ class _ProjectiveActionEngine:
 
     def local_automorphism(self, chart_index):
         return self.local_automorphisms()[chart_index]
-
-
-def _projective_action_object(
-    functor,
-    group,
-    *,
-    coordinate_weights=None,
-    local_automorphisms=None,
-):
-    r"""Place a concrete ``BG -> Sch`` action in its actual functor category."""
-    category = functor.functor_category()
-    return category.object(
-        functor,
-        _engine=_ProjectiveActionEngine,
-        construction_data={
-            "acting_group": group,
-            "coordinate_weights": coordinate_weights,
-            "local_automorphisms": local_automorphisms,
-        },
-    )
 
 
 def _line_bundle_scalar_morphism(line_bundle, scalar):
@@ -168,26 +150,7 @@ def _line_bundle_linearization(line_bundle, scheme_action, character):
                 "only on projective spaces and products of projective spaces"
             )
 
-    sheaves = QuasiCoherentSheaves(scheme)
-
-    def lift(group_element):
-        scalar = base(character(group(group_element)))
-        assert scalar.is_unit(), (
-            f"the character does not take values in the units of {base}: it sends "
-            f"{group_element} to {scalar}"
-        )
-        return _line_bundle_scalar_morphism(line_bundle, scalar)
-
-    action = GroupActionFunctor(group, sheaves, line_bundle, lift)
-    return GObjects(group, sheaves).functor_category().object(
-        action,
-        _engine=engine,
-        construction_data={
-            "line_bundle": line_bundle,
-            "scheme_action": scheme_action,
-            "character": character,
-        },
-    )
+    return engine(line_bundle, scheme_action, character)
 
 
 class _ProjectiveLineBundleLinearizationIsomorphism:
@@ -256,7 +219,7 @@ class _EigensectionDivisorEngine:
         return self._eigensection_character
 
 
-class _ProjectiveLineBundleLinearization:
+class _ProjectiveLineBundleLinearization(GroupActionFunctor):
     r"""A character-twisted linearization of ``O(d)`` under a projective action."""
 
     def __init__(self, line_bundle, scheme_action, character, **rest) -> None:
@@ -282,7 +245,15 @@ class _ProjectiveLineBundleLinearization:
         self._group = group
         self._character = character
         self._validate_character()
-        super().__init__(**rest)
+        def lift(group_element):
+            scalar = base(character(group(group_element)))
+            assert scalar.is_unit(), (
+                f"the character does not take values in the units of {base}: it sends "
+                f"{group_element} to {scalar}"
+            )
+            return _line_bundle_scalar_morphism(line_bundle, scalar)
+
+        super().__init__(group, QuasiCoherentSheaves(scheme), line_bundle, lift)
 
     def line_bundle(self):
         return self._line_bundle
@@ -757,15 +728,11 @@ def _c2_diagonal_product_projective_action(projective_product, group=None):
         )
 
     identity = projective_product.categorical_identity_morphism()
-    action = GroupActionFunctor(
+    return _ProjectiveActionFunctor(
         group,
         Schemes(base),
         projective_product,
         lambda element: identity if element == group.one() else nontrivial,
-    )
-    return _projective_action_object(
-        action,
-        group,
         coordinate_weights=weights,
         local_automorphisms=finite_indexed_family(
             atlas.chart_index_set(),
@@ -808,14 +775,11 @@ def _projective_line_coordinate_swap_action(projective_line, group=None):
         projective_line,
         (right, left),
     )
-    return _projective_action_object(
-        GroupActionFunctor(
-            group,
-            Schemes(base),
-            projective_line,
-            lambda group_element: identity if group_element == group.one() else swap,
-        ),
+    return _ProjectiveActionFunctor(
         group,
+        Schemes(base),
+        projective_line,
+        lambda group_element: identity if group_element == group.one() else swap,
     )
 
 

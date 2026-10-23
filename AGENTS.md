@@ -889,8 +889,8 @@ linked in. Edit the real file under `writing/`; the symlink is only how Quarto r
 - **Local site** — http://lattice-research.localhost/, served by nginx from
   `/var/www/static-sites/lattice-research`, which is a symlink straight at
   `writing/.book/_site`. `just docs-deploy` rebuilds it: the gate runs first, so a book
-  with a broken citation or a dangling reference never reaches the served copy. A push
-  that touches `writing/` deploys through this repo's `test-push`. The dashboard picks
+  with a broken citation or a dangling reference never reaches the served copy. Local site updates use an explicit docs-deploy; the push gate does not render
+  or deploy. GitHub Pages has a separate push-triggered docs workflow. The dashboard picks
   the site up on its own — it lists every directory under `/var/www/static-sites` that
   has an `index.html`, and takes the card's name from that page's `<title>`.
 
@@ -1418,13 +1418,23 @@ When a discussion is still moving, do not manufacture an issue to make it look t
 
 # QC integration
 
-**Hooks check the code you are checking in.  A commit that stages no code is committed with `--no-verify` — always, with no adjudication and no asking.**
+The local Git hooks use the shared ai-review-ci development tier. A commit
+checks staged Python, JSON and TOML syntax; a push checks outgoing committed
+source, not the working tree. Neither gate installs tools, runs a test suite,
+checks typing or style, performs a full-tree scan, or deploys the documentation.
+Prose-only changes use the ordinary commit path; bypassing hooks is unnecessary.
 
-`git diff --cached --name-only` is the entire test.  If that list holds no `.py`, `.sage`, or other executable source, then ruff, mypy, vulture and pytest have nothing to say about the commit, and the gate's verdict — pass or fail — carries no information about it.  Documentation, `writing/` book pages, policy files, TODOs, plans, READMEs, and every other prose-only change commit this way.
+The full Sage suite and independent debt checks belong to CI. The
+tensor-boundary scanner remains intact, but the project CI and scheduled
+ambient recipes run it as an independent check inside the central diagnostic
+collector, retaining its result, source locations, log, and debt burndown.
+Developers can invoke just tensor-boundary staged for targeted source review.
+A finding is not a command to interrupt unrelated feature implementation.
 
-The gate is whole-repo, so one red tree freezes every commit in every worktree.  Prose never waits for someone else's refactor to go green.
-
-This repo delegates all test/QC to the global QC in `~/ai-review-ci` (`dzackgarza/ai-review-ci`). The root justfile's three gates delegate directly to the Sage tier: `test-commit`/`test-push`/`test-ci` → `just -f ~/ai-review-ci/justfiles/sage.just -d . <gate>` (pre-commit runs `test-commit`, pre-push `test-push`). The Sage tier preparses `.sage` sources into a tempdir via the sageparse lowering (never `sage --preparse` artifacts in-tree) and runs mypy on the lowered Python in an ephemeral CPython 3.14 with the project installed editable — `sage.*` types come from the `sage-stubs` package declared in this repo's `[dependency-groups] dev`, which the QC recipes pass `--with` into the mypy environment. Sage's venv is used only for lowering and for running tests. `computations/experiments/*` justfiles are NOT run by the root gates; each is invoked on its own.
+The Sage CI profile preparses .sage sources into a temporary directory and
+runs the Sage-specific suite and analyses there; generated preparser artifacts
+must not be committed. Experiments under computations/experiments have their
+own entrypoints and are not invoked by root commit/push gates.
 
 ## Adding a new spike
 

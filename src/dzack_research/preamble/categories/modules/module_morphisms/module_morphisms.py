@@ -9,6 +9,7 @@ from sage.categories.map import Map
 from sage.categories.morphism import Morphism, SetMorphism
 
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import (
+    CategoricalArrow,
     _refuse_foreign_arrow,
 )
 from sage.misc.cachefunc import cached_method
@@ -309,7 +310,7 @@ class ModuleMorphismMethods:
                 # A linear map is its generator images: keep them rather than
                 # re-evaluating the map on every element (``OWN-22``).
                 images = images.module_generator_morphism()
-            case Morphism() if images.domain() is domain and images.codomain() is codomain:
+            case Morphism() | CategoricalArrow() if images.domain() is domain and images.codomain() is codomain:
                 source_morphism = images
                 if isinstance(source_morphism, ModuleMorphismMethods):
                     self._source_module_morphism = source_morphism
@@ -326,7 +327,7 @@ class ModuleMorphismMethods:
             return
         labels = self.domain().module_generating_set()
         set_mor = Sets().Mor(labels, self.codomain())
-        if isinstance(images, SetMorphism):
+        if isinstance(images, (SetMorphism, CategoricalArrow)):
             if images.domain() is not labels or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot define a linear map {domain} -> {codomain} from the generator images {images}: they must be a map {labels} -> {codomain}, but they are a map {images.domain()} -> {images.codomain()}")
             self._generator_images = indexed_family(
@@ -885,7 +886,7 @@ class ModuleMorphismMethods:
         # not scalar multiplication.  Delegate to the left morphism so the
         # ordinary endpoint check and composition constructor remain the one
         # owner of the operation.
-        if isinstance(actor, Morphism) and _precomposable(actor, self):
+        if isinstance(actor, (Morphism, CategoricalArrow)) and _precomposable(actor, self):
             return actor.__mul__(self)
         # A scalar can itself be a morphism when the retained coefficient
         # ring is an endomorphism ring. Noncomposable map-valued scalars
@@ -1382,6 +1383,28 @@ class ModuleMorphismMethods:
             offset = linear.codomain()(offset)
         return AffineModuleFibres(ring)(linear, target_inclusion, offset)
 
+    @cached_method
+    def _framed_coordinate_morphism(self):
+        r"""Realize this linear arrow in the matrix Mor of its selected framings.
+
+        A stronger arrow keeps its own parent under Mor admission. Matrix
+        computations instead use this explicit realization, retaining the
+        original linear arrow as the construction premise. The selected
+        source and target framings, hence the comparison, are fixed.
+        Callers are integral preimages, the module owner's engine-matrix
+        lowering, and the tensor owner's coordinate, pullback and private
+        row-action adapters.
+        """
+        from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+        source, target = self.domain(), self.codomain()
+        mor = source.module_category().Mor(source, target)
+        if mor not in MatrixSpaces(source.base_ring()):
+            raise TypeError(f"coordinates of {self} require finite free modules with selected framings")
+        if self.parent() is mor:
+            return self
+        return mor._from_constructed_element_map(self, premises=(self,))
+
     def preimage(self, element):
         r"""Return one preimage of ``element`` when it lies in the represented image.
 
@@ -1563,9 +1586,7 @@ class ModuleMorphismMethods:
         codomain_labels = tuple(self.codomain().module_generating_set())
         coordinates = element.to_vector()
         target = [coordinates(label) for label in codomain_labels]
-        coordinate_map = self.domain().module_category().Mor(
-            self.domain(), self.codomain()
-        )(self)
+        coordinate_map = self._framed_coordinate_morphism()
         solution = _solve_preimage_integrally(coordinate_map, target, ring)
         if solution is None:
             return None
@@ -1791,17 +1812,40 @@ class ModuleMorphismMethods:
         if element.parent() is not codomain:
             element = codomain(element)
 
+        extension_framing, scale, cleared_span = self._integral_extension_coordinate_span()
+        target_coordinates = extension_framing.lift(element.underlying_element())
+        coefficients = {
+            label: scale * coefficient
+            for label, coefficient in target_coordinates.parent()._selected_module_coefficients(target_coordinates).items()
+        }
+        if any(coefficient not in ring for coefficient in coefficients.values()):
+            return None
+        target = cleared_span.codomain().linear_combination({
+            label: ring(coefficient) for label, coefficient in coefficients.items()
+        })
+        return cleared_span._preimage_or_none(target)
+
+    @cached_method
+    def _integral_extension_coordinate_span(self):
+        r"""Retain the integral coordinate span used by extension-framing preimages.
+
+        The module morphism owns this private workspace. Its fixed generator
+        images determine one denominator and one integral linear system; a
+        queried target changes only the right-hand side.
+        """
+        domain, codomain = self.domain(), self.codomain()
+        ring = domain.base_ring()
+        extension = codomain.module_over_extension()
         extension_framing = extension.framing_morphism()
         image_coordinates = {
             label: extension_framing.lift(self(domain.module_generator(label)).underlying_element())
             for label in domain.module_generating_set()
         }
-        target_coordinates = extension_framing.lift(element.underlying_element())
         denominator = reduce(
             lambda current, coefficient: current.lcm(coefficient.denominator()),
             tuple(
                 coefficient
-                for coordinates in (*image_coordinates.values(), target_coordinates)
+                for coordinates in image_coordinates.values()
                 for coefficient in coordinates.parent()._selected_module_coefficients(coordinates).values()
             ),
             ring.one(),
@@ -1816,7 +1860,7 @@ class ModuleMorphismMethods:
             })
 
         cleared_span = domain.module_category().Mor(domain, cleared_module)({label: cleared(coordinates) for label, coordinates in image_coordinates.items()})
-        return cleared_span._preimage_or_none(cleared(target_coordinates))
+        return extension_framing, scale, cleared_span
 
     def orthogonal_complement(self):
         r"""Return ``im(self)^perp`` when the codomain carries a scalar-valued pairing."""
@@ -2332,12 +2376,12 @@ class ModuleEmbeddingMor(CategoricalMor):
     def _element_constructor_(self, images, *, lift=None, check=False):
         r"""Construct the monomorphism with these images; ``check=True`` runs its validators (``OWN-22``)."""
         generator_map = (
-            isinstance(images, SetMorphism)
+            isinstance(images, (SetMorphism, CategoricalArrow))
             and self.domain().has_selected_module_resolution()
             and images.domain() is self.domain().module_generating_set()
             and images.codomain() is self.codomain()
         )
-        if isinstance(images, Map) and not generator_map:
+        if isinstance(images, (Map, CategoricalArrow)) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as an injective linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             if self._already_parented_arrow(images):
@@ -2620,7 +2664,7 @@ class _ModuleMorCommonMethods:
         ):
             return self.from_rows(images)
         generator_map = (
-            isinstance(images, SetMorphism)
+            isinstance(images, (SetMorphism, CategoricalArrow))
             and self.domain().has_selected_module_resolution()
             and images.domain() is self.domain().module_generating_set()
             and images.codomain() is self.codomain()
@@ -2633,7 +2677,7 @@ class _ModuleMorCommonMethods:
             _refuse_foreign_arrow(
                 self, images, "apply the functor changing the module category, or supply the defining generator images"
             )
-        elif isinstance(images, Map) and not generator_map:
+        elif isinstance(images, (Map, CategoricalArrow)) and not generator_map:
             if images.domain() is not self.domain() or images.codomain() is not self.codomain():
                 raise ValueError(f"cannot regard {images.domain()} -> {images.codomain()} as a linear map {self.domain()} -> {self.codomain()}: the domains and codomains differ")
             # A set map, group map or other non-linear arrow of these
@@ -2761,15 +2805,23 @@ class _ModuleMorCommonMethods:
         generator-assignment constructor when possible: its linear extension
         is linear by construction and presentation relations are checked.
         """
-        if isinstance(function, Map):
+        if isinstance(function, (Map, CategoricalArrow)):
             return self(function)
         if not callable(function):
             raise TypeError(f"cannot define a linear map {self.domain()} -> {self.codomain()} elementwise from {function!r}: it must be a function on elements")
-        return self.element_class(
+        morphism = self.element_class(
             self,
             function,
             elementwise=True,
         )
+        # ``elementwise`` explicitly claims that this callable is a map on
+        # arbitrary module elements.  Run the available decision procedure at
+        # that boundary so a witnessed law failure is refused immediately.
+        # An undecidable law remains the proposition ``is_linear(f)`` carried
+        # by the arrow; it is not promoted to a proof or rejected merely for
+        # lacking a finite decision procedure.
+        morphism.linearity_decision()
+        return morphism
 
     def _product_projection(self, underlying_projection):
         r"""The projection of a product whose module operations are componentwise, linear by that construction."""
@@ -2969,6 +3021,8 @@ class TensorProductModuleMorphismMethods:
 
     _bilinear_evaluation = None
     _defining_pairing_tensor = None
+    _pullback_form = None
+    _pullback_morphism = None
     _defining_pairing_values = None
 
     def __init__(
@@ -3002,12 +3056,15 @@ class TensorProductModuleMorphismMethods:
             case _:
                 return AtomicProposition("is_linear", self)
 
+    @cached_method
     def left_module(self):
         return self.domain().tensor_factor(0)
 
+    @cached_method
     def right_module(self):
         return self.domain().tensor_factor(1)
 
+    @cached_method
     def module(self):
         if self.left_module() is not self.right_module():
             raise TypeError(f"the pairing {self.left_module()} x {self.right_module()} -> {self.codomain()} is not a bilinear form on one module: its two arguments lie in different modules")
@@ -3095,6 +3152,17 @@ class TensorProductModuleMorphismMethods:
         from dzack_research.preamble.tensors.tensor import tensor
 
         n, m = int(left_size.finite_value()), int(right_size.finite_value())
+        if self._pullback_form is not None:
+            from dzack_research.preamble.tensors.tensor import Tensor
+            from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
+
+            original = self._pullback_form._as_numerical_tensor()
+            morphism = self._pullback_morphism
+            ordinary = morphism.domain().module_category().Mor(morphism.domain(), morphism.codomain())
+            if isinstance(original, Tensor) and ordinary in MatrixSpaces(left.base_ring()):
+                if morphism.parent() is not ordinary:
+                    morphism = ordinary._from_constructed_element_map(morphism, premises=(morphism,))
+                return original.pullback(morphism)
         if self.codomain() not in OwnedRings():
             from dzack_research.preamble.categories.modules.pure.modules import RestrictedScalarsModules
 
@@ -3202,9 +3270,14 @@ class TensorProductModuleMorphismMethods:
         # framing e_i tensor e_j of the source tensor square; constructing it
         # from them makes it an element of that Mor, where a composite whose
         # parent is already that Mor would be returned as a bare composite.
-        return source.module_category().Mor(source, self.codomain())(
+        result = source.module_category().Mor(source, self.codomain())(
             lambda pair: self(induced(source.module_generator(pair)))
         )
+        # Retain the defining pullback. A later scalar-coordinate request
+        # transports the original tensor instead of expanding nested pure tensors.
+        result._pullback_form = self
+        result._pullback_morphism = morphism
+        return result
 
     def polar_form(self):
         if self.left_module() is not self.right_module():
@@ -3227,7 +3300,8 @@ class ModuleAutomorphismMethods:
     def __init__(self, parent, forward, inverse_computation) -> None:
         module = parent.domain()
         self._inverse_computation = inverse_computation
-        super().__init__(parent, module.module_category().Mor(module, module)(forward))
+        self._forward_module_morphism = module.module_category().Mor(module, module)(forward)
+        super().__init__(parent, self._forward_module_morphism)
 
     @cached_method
     def _inverse_morphism(self):
@@ -3236,17 +3310,14 @@ class ModuleAutomorphismMethods:
         return module.module_category().Mor(module, module)(self._inverse_computation())
 
     def forward(self):
-        module = self.domain()
-        return module.module_category().Mor(module, module)(self)
+        return self._forward_module_morphism
 
     def as_morphism(self):
         return self.forward()
 
     def order(self):
         forward = self.forward()
-        linear = forward.domain().module_category().Mor(
-            forward.domain(), forward.codomain()
-        )(forward)
+        linear = forward._framed_coordinate_morphism()
         from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
         assert linear.parent() in MatrixSpaces(linear.parent().base_ring()), (
@@ -3331,8 +3402,7 @@ def _flag_stabilizer_engine_data(automorphisms, terms):
         )
         for adapted in rows
     )
-    endomorphisms = module.module_category().Mor(module, module)
-    change = automorphisms(endomorphisms(dict(zip(labels, vectors, strict=True))))
+    change = automorphisms(dict(zip(labels, vectors, strict=True)))
     block_generators = tuple(
         automorphisms._from_backend_row_action(action)
         for action in _engine_block_general_linear_row_actions(sizes, engine_ring)
@@ -3438,15 +3508,25 @@ class ModuleAutomorphismGroup(CoreMor):
         if isinstance(datum, ModuleAutomorphismMethods):
             if datum.parent() is self:
                 return datum
-        if isinstance(datum, Morphism):
+        module = self.domain()
+        module_endomorphisms = module.module_category().Mor(module, module)
+        if (
+            isinstance(datum, ModuleMorphismMethods)
+            and datum.parent() is module_endomorphisms
+        ):
+            # The forward module map is the immediate defining component of
+            # an automorphism.  It is admitted only from this exact module
+            # endomorphism Mor; arbitrary arrows with the same endpoints do
+            # not acquire invertibility by crossing the constructor boundary.
+            return self._from_inverse_computation(datum, datum.inverse)
+        if isinstance(datum, (Morphism, CategoricalArrow)):
             # An endomorphism of End_R(M), or any other arrow, is not an
             # automorphism: almost none is invertible (``CON-17``).
             _refuse_foreign_arrow(
                 self, datum, "an automorphism is given by its generator images, or by the pair (forward, inverse)"
             )
-        if isinstance(datum, tuple) and len(datum) == 2 and all(isinstance(part, Morphism) for part in datum):
+        if isinstance(datum, tuple) and len(datum) == 2 and all(isinstance(part, (Morphism, CategoricalArrow)) for part in datum):
             return self._from_known_inverse_pair(*datum)
-        module = self.domain()
         forward = module.module_category().Mor(module, module)(datum)
         return self._from_inverse_computation(forward, forward.inverse)
 
@@ -3571,13 +3651,12 @@ class ModuleAutomorphismGroup(CoreMor):
         )
         change, sizes, block_generators = _flag_stabilizer_engine_data(self, terms)
         labels = module.module_generating_set()
-        endomorphisms = module.module_category().Mor(module, module)
         block_of = dict(zip(labels, (index for index, size in enumerate(sizes) for _ in range(size)), strict=True))
         elementary = tuple(
-            self(endomorphisms({
+            self({
                 label: module.module_generator(label) + (module.module_generator(j_label) if label == k_label else module.zero())
                 for label in labels
-            }))
+            })
             for k_label in labels
             for j_label in labels
             if block_of[j_label] < block_of[k_label]

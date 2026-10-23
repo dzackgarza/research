@@ -788,12 +788,40 @@ class CoxeterDiagrams(OwnedCategory):
             \(n_0\) is part of the answer.  This is not a signature *pair*.
             """
 
-            eigenvalues = _engine_component_matrix(self.schlafli_tensor()).eigenvalues()
-            positive = sum(1 for value in eigenvalues if value > 0)
-            negative = sum(1 for value in eigenvalues if value < 0)
-            # The three indices sum to the rank of the Schlaefli form, which is
-            # the number of vertices of the diagram.
-            zero = int(self.cardinality()) - positive - negative
+            # Symmetric congruence elimination computes inertia without
+            # factoring the characteristic polynomial over algebraic numbers.
+            matrix = _engine_component_matrix(self.schlafli_tensor())
+            entries = [[matrix[i, j] for j in range(matrix.ncols())]
+                       for i in range(matrix.nrows())]
+            positive = negative = zero = 0
+            while entries:
+                n = len(entries)
+                pivot = next((i for i in range(n) if entries[i][i] != 0), None)
+                if pivot is None:
+                    off = next(((i, j) for i in range(n)
+                                for j in range(i + 1, n) if entries[i][j] != 0), None)
+                    if off is None:
+                        zero += n
+                        break
+                    i, j = off
+                    # A nonzero off-diagonal pairing gives a nonisotropic
+                    # vector e_i+e_j; change basis by replacing e_i.
+                    for k in range(n):
+                        entries[i][k] += entries[j][k]
+                    for k in range(n):
+                        entries[k][i] += entries[k][j]
+                    pivot = i
+                if pivot:
+                    entries[0], entries[pivot] = entries[pivot], entries[0]
+                    for row in entries:
+                        row[0], row[pivot] = row[pivot], row[0]
+                d = entries[0][0]
+                if d > 0:
+                    positive += 1
+                else:
+                    negative += 1
+                entries = [[entries[i][j] - entries[i][0] * entries[0][j] / d
+                            for j in range(1, n)] for i in range(1, n)]
             return cardinal(positive), cardinal(negative), cardinal(zero)
 
         def positive_inertia_index(self):
@@ -1414,21 +1442,35 @@ def _root_basis_diagram(roots, names=None, positions=None, type_label=None):
         f"the roots {roots} do not all lie in one lattice: the first lies in "
         f"{realization}, and a Coxeter diagram of roots needs a single lattice"
     )
-    ring = realization.base_ring()
+    # A root lattice may have a pairing valued in a scalar extension, such
+    # as QQ restricted to ZZ. Evaluate its scalar Gram tensor in that ring;
+    # the values of the restricted module are not elements of the base ring.
+    form_gram = realization.gram_tensor()
+    ring = form_gram.base_ring()
+    framing = realization.framing_morphism()
+    coordinates = {
+        index: tensor.vector(ring, tuple(framing.lift(roots.value(index))))
+        for index in mirrors
+    }
+    pairings = {
+        (left, right): form_gram.contract(coordinates[left], coordinates[right])
+        for left in mirrors
+        for right in mirrors
+    }
     gram = tensor(
         ring,
         (),
         (mirrors.cardinality(), mirrors.cardinality()),
-        [[roots.value(left).b(roots.value(right)) for right in mirrors] for left in mirrors],
+        [[pairings[left, right] for right in mirrors] for left in mirrors],
     )
     entries = {
         (left, right): cardinal(1)
         if left == right
         else _coxeter_entry(
             ring,
-            roots.value(left).q(),
-            roots.value(right).q(),
-            roots.value(left).b(roots.value(right)),
+            pairings[left, left],
+            pairings[right, right],
+            pairings[left, right],
         )
         for left in mirrors
         for right in mirrors

@@ -43,15 +43,35 @@ image ``G``, and ``O(L)_[v] = G cap GL(L)`` is the stabilizer of the
 integral structure ``L`` under ``G``, computed by
 :class:`IntegralStructureAction` with the ``G``-stable bound ``K/e`` (``K``
 the span of the vectors, ``e`` the exponent of ``L/K``).  The graph group is
-never enumerated.  Spanning, nondegeneracy and the base ring ``ZZ`` are the
-current computational frontier, asserted where they are used.
+never enumerated.  A family spanning an isotropic hyperplane of a
+nondegenerate rational space also determines a unique ambient isometry.
+For this case the graph additionally records the linear relations among the
+vectors, and its isometries are extended by the codimension-one Witt
+construction (polyhedral_common@1592b246, fund_domain_vertices.h,
+``GetInitialComputation`` and ``MappingPermutationGenerators``).  Exact
+lattice orbits impose integrality without requiring the family to have
+finite index in the ambient lattice.  Other proper subspaces have a
+nontrivial pointwise orthogonal stabilizer and remain outside this finite
+configuration computation.
 """
 
+from itertools import permutations
+from math import factorial, gcd
+
 from sage.graphs.graph import Graph
+from sage.groups.perm_gps.permgroup_named import SymmetricGroup
+from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.rings.integer_ring import ZZ as SageZZ
+from sage.rings.rational_field import QQ as SageQQ
 
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    _engine_element,
+    _owned_engine_element,
+    _owned_integers,
+)
+from dzack_research.preamble.categories.sets.cardinals import cardinal
 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
@@ -66,17 +86,19 @@ class _LabelledPairingGraph:
 
     Data: an owned finite ordered set of indices, the owned Gram tensor on
     the free module on those indices, and the owned colouring map of the
-    indices.  The tensor is lowered once (``_engine_component_matrix``);
+    indices.  For a degenerate span the owned family morphism is also
+    retained, to record its linear relations.  The tensor is lowered once (``_engine_component_matrix``);
     the indices are lowered by their ``ranking_map``.  Leaving the adapter:
     an owned subgroup of the symmetric group on the indices, the induced
     permutations of the indices as set maps, and isomorphisms as set maps of
     indices.
     """
 
-    def __init__(self, positions, gram, colouring):
+    def __init__(self, positions, gram, colouring, family=None):
         self._positions = positions
         self._gram = gram
         self._colouring = colouring
+        self._family = family
 
     def _size(self):
         return int(self._positions.cardinality())
@@ -88,42 +110,139 @@ class _LabelledPairingGraph:
         return self._positions.ranking_map().inverse()(int(vertex))
 
     @cached_method
-    def _graph(self):
+    def _pairings(self):
         from dzack_research.preamble.tensors.tensor import _engine_component_matrix
 
-        pairings = _engine_component_matrix(self._gram)
+        return _engine_component_matrix(self._gram)
+
+    def rank(self):
+        r"""The rank of the family pairing matrix, used only inside this engine adapter."""
+        return self._pairings().rank()
+
+    @cached_method
+    def _pairing_tables(self):
+        r"""Pairings and, when necessary, the canonical relation pairing.
+
+        If ``F`` is the row family and ``C`` consists of independent columns,
+        ``C (C^t C)^-1 C^t`` is the orthogonal projection onto the column
+        space of ``F``.  A permutation preserves this matrix exactly when
+        it preserves all linear relations among the rows.  This is the
+        pairing induced by ``GetQmatrix_NotFullRank`` in the pinned
+        ``PolytopeEquiStab.h``; it is independent of the selected columns.
+        The original Gram matrix alone loses relations in a degenerate span.
+        """
+        if self._family is None:
+            return (self._pairings(),)
+        from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+
+        family = _engine_matrix(self._family).transpose().change_ring(SageQQ)
+        columns = family.matrix_from_columns(family.pivots())
+        relations = columns * (columns.transpose() * columns).inverse() * columns.transpose()
+        return self._pairings(), relations
+
+    @cached_method
+    def _graph(self):
+        tables = self._pairing_tables()
         size = self._size()
         graph = Graph(loops=True, multiedges=False)
         graph.add_vertices(range(size))
         for left in range(size):
             colour = self._colouring(self._position(left))
-            graph.add_edge(left, left, ("vertex", colour, pairings[left, left]))
+            graph.add_edge(left, left, ("vertex", colour, tuple(table[left, left] for table in tables)))
             for right in range(left):
-                if pairings[left, right]:
-                    graph.add_edge(left, right, ("pairing", pairings[left, right]))
+                pairings = tuple(table[left, right] for table in tables)
+                if any(pairings):
+                    graph.add_edge(left, right, ("pairing", pairings))
         return graph
 
     @cached_method
     def _symmetric_group(self):
-        from dzack_research.preamble.categories.group.groups import Groups
+        from dzack_research.preamble.categories.group.groups import SymmetricGroups
 
-        return Groups.S(self._size())
+        return SymmetricGroups()(self._positions)
+
+    @cached_method
+    def _small_automorphisms(self):
+        r"""All exact table automorphisms when the family has at most eight positions."""
+        size = self._size()
+        if size > 8:
+            return None
+        tables = self._pairing_tables()
+        colours = tuple(self._colouring(self._position(vertex)) for vertex in range(size))
+        return tuple(
+            permutation
+            for permutation in permutations(range(size))
+            if all(colours[vertex] == colours[permutation[vertex]] for vertex in range(size))
+            and all(
+                table[left, right]
+                == table[permutation[left], permutation[right]]
+                for table in tables
+                for left in range(size)
+                for right in range(size)
+            )
+        )
+
+    @cached_method
+    def engine_automorphism_group(self):
+        r"""The exact engine permutation group of the labelled pairing table."""
+        automorphisms = self._small_automorphisms()
+        if automorphisms is None:
+            return self._graph().automorphism_group(edge_labels=True)
+        symmetric = SymmetricGroup(self._size())
+        return symmetric.subgroup(
+            tuple(symmetric([image + 1 for image in permutation]) for permutation in automorphisms)
+        )
+
+    def engine_permutation(self, element):
+        r"""The zero-based tuple represented by an engine automorphism."""
+        if self._small_automorphisms() is None:
+            return tuple(int(element(vertex)) for vertex in range(self._size()))
+        return tuple(int(element(vertex + 1)) - 1 for vertex in range(self._size()))
 
     @cached_method
     def automorphism_group(self):
         r"""``Aut(Gamma)``: the subgroup of ``S_m`` generated by the engine's automorphisms."""
         symmetric = self._symmetric_group()
         size = self._size()
-        engine = self._graph().automorphism_group(edge_labels=True)
+        automorphisms = self._small_automorphisms()
+        if automorphisms is not None:
+            return symmetric.subgroup(
+                tuple(
+                    symmetric([permutation[vertex] + 1 for vertex in range(size)])
+                    for permutation in automorphisms
+                ),
+                cardinality_decision=lambda: cardinal(len(automorphisms)),
+            )
+        engine = self.engine_automorphism_group()
         return symmetric.subgroup(tuple(
-            symmetric([int(generator(vertex)) + 1 for vertex in range(size)])
+            symmetric([image + 1 for image in self.engine_permutation(generator)])
             for generator in engine.gens()
         ))
+
+    @cached_method
+    def automorphism_order(self):
+        r"""The order of the labelled pairing-table automorphism group."""
+        automorphisms = self._small_automorphisms()
+        if automorphisms is not None:
+            return cardinal(len(automorphisms))
+        return cardinal(int(self.engine_automorphism_group().order()))
+
+    @cached_method
+    def automorphism_permutations(self):
+        r"""All labelled pairing-table automorphisms as zero-based tuples."""
+        small = self._small_automorphisms()
+        if small is not None:
+            return small
+        engine = self.engine_automorphism_group()
+        return tuple(
+            self.engine_permutation(automorphism)
+            for automorphism in engine
+        )
 
     def position_permutation(self, automorphism):
         r"""The permutation of the indices induced by an element of ``Aut(Gamma)``."""
         return Sets().Mor(self._positions, self._positions)(
-            lambda position: self._position(int(automorphism(self._vertex(position) + 1)) - 1)
+            automorphism
         )
 
     def isomorphism(self, other):
@@ -200,7 +319,7 @@ class _ColouredFamilyRealization:
         r"""The sublattice ``K`` spanned by the family, with its inclusion into ``L``."""
         return self._lattice.subobject_on(tuple(self.vector(index) for index in self._indices))
 
-    def assert_spanning_nondegenerate(self):
+    def assert_unique_rational_extension(self):
         lattice = self._lattice
         assert lattice.base_ring() is _owned_integers(), (
             f"stabilizers and transporters of coloured families of vectors are computed for lattices over ZZ, "
@@ -210,17 +329,40 @@ class _ColouredFamilyRealization:
             f"the pairing permutation action of a family in {lattice} is faithful only when the lattice is "
             f"nondegenerate, and {lattice} is not known to be"
         )
-        assert self.span().module_rank() == lattice.rank(), (
-            f"the vectors of {self._family} span a sublattice of rank {self.span().module_rank()} of {lattice}, "
-            f"of rank {lattice.rank()}: the pairings of a non-spanning family do not determine an isometry, and "
-            f"its stabilizer contains the pointwise stabilizer of its span, which is not computed here"
+        family_rank = self._family_coordinate_matrix().rank()
+        ambient_rank = int(lattice.module_rank())
+        pairing_rank = self.pairing_graph().rank()
+        assert family_rank == ambient_rank or (
+            family_rank == ambient_rank - 1 and pairing_rank == ambient_rank - 2
+        ), (
+            f"the vectors of {self._family} span a rational subspace of rank {family_rank} of {lattice}, "
+            f"of rank {ambient_rank}, with pairing rank {pairing_rank}: this computation requires the full "
+            f"space or an isotropic hyperplane, whose pointwise orthogonal stabilizer is trivial"
         )
 
     @cached_method
+    def spans_rational_space(self):
+        return self._family_coordinate_matrix().rank() == int(self._lattice.module_rank())
+
+    @cached_method
+    def pairing_tensor(self):
+        r"""The Gram tensor of the indexed family."""
+        generators = self._lattice.module_generating_set()
+        if self._indices is generators and all(
+            self.vector(index) == self._lattice.module_generator(index)
+            for index in self._indices
+        ):
+            # The family morphism is the selected framing identity, so its
+            # pullback is literally the Gram tensor already retained by L.
+            return self._lattice.gram_tensor()
+        return self._lattice.gram_tensor().pullback(self.family_morphism())
+
+    @cached_method
     def pairing_graph(self):
-        self.assert_spanning_nondegenerate()
-        gram = self._lattice.gram_tensor().pullback(self.family_morphism())
-        return _LabelledPairingGraph(self._indices, gram, self.colouring())
+        return _LabelledPairingGraph(
+            self._indices, self.pairing_tensor(), self.colouring(),
+            None if self.spans_rational_space() else self.family_morphism(),
+        )
 
     def rationalization(self):
         r"""The lattice in its rational space, ``L -> Res(L tensor Q)``."""
@@ -231,13 +373,21 @@ class _ColouredFamilyRealization:
 
     @cached_method
     def rational_family(self):
-        r"""The family as the rational module morphism ``F_Q(I) -> L tensor Q``, surjective by spanning."""
+        r"""The family as the rational module morphism ``F_Q(I) -> L tensor Q``."""
         rational = self.rational_space()
         rationalization = self.rationalization()
         positions = rational.base_ring().free_module(self._indices)
         return Modules(rational.base_ring()).Mor(positions, rational)(
             lambda index: rationalization(self.vector(index)).underlying_element()
         )
+
+    @cached_method
+    def rational_span(self):
+        rational = self.rational_space()
+        family = self.rational_family()
+        return rational.subobject_on(tuple(
+            family(family.domain().module_generator(index)) for index in self.indices()
+        ))
 
     @cached_method
     def family_section(self):
@@ -253,13 +403,13 @@ class _ColouredFamilyRealization:
         r"""The rational isometry ``T_sigma`` with ``T_sigma(v_i) = w_sigma(i)``.
 
         ``sigma`` is a set map of this family's indices onto ``target``'s.  For
-        a colour- and pairing-preserving bijection of nondegenerate spanning
-        families ``T_sigma`` exists and is unique: a vector is lifted along the
-        surjective family morphism, its coefficients are moved by ``sigma``,
-        and the target family morphism is applied.
+        a colour-, relation- and pairing-preserving bijection, the induced
+        map of the spans is computed by lifting coefficients along the
+        source family.  For an isotropic hyperplane its unique Witt
+        extension supplies the ambient isometry.
         """
-        self.assert_spanning_nondegenerate()
-        target.assert_spanning_nondegenerate()
+        self.assert_unique_rational_extension()
+        target.assert_unique_rational_extension()
         target_family = target.rational_family()
         source_positions = self.rational_family().domain()
         target_positions = target_family.domain()
@@ -267,30 +417,314 @@ class _ColouredFamilyRealization:
             lambda index: target_positions.module_generator(sigma(index))
         )
         rational_target = target.rational_space()
-        section = self.family_section()
         rational_source = self.rational_space()
+        if not self.spans_rational_space():
+            source_span, target_span = self.rational_span(), target.rational_span()
+            source_inclusion, target_inclusion = source_span.inclusion(), target_span.inclusion()
+            family = self.rational_family()
+            partial = source_span.Isom(target_span)(
+                lambda label: target_inclusion.lift(target_family(relabel(family.lift(
+                    source_inclusion(source_span.module_generator(label))
+                ))))
+            )
+            return partial.witt_extension(source_inclusion, target_inclusion)
+        section = self.family_section()
         return rational_source.Isom(rational_target)(
             lambda label: target_family(relabel(section(rational_source.module_generator(label))))
+        )
+
+    @cached_method
+    def configuration_isometry(self, generator):
+        r"""The rational isometry induced by a pairing-graph automorphism."""
+        graph = self.pairing_graph()
+        rational = self.rational_space()
+        isometry = self.rational_transformation(self, graph.position_permutation(generator))
+        return rational.O()({
+            label: isometry(rational.module_generator(label))
+            for label in rational.module_generating_set()
+        })
+
+    @cached_method
+    def configuration_generators(self):
+        r"""Images in ``O(L tensor Q)`` of generators of ``Aut(Gamma)``.
+
+        These generate ``rho(Aut(Gamma))`` directly.  Retaining them avoids
+        reconstructing that image as an engine subgroup when a consumer needs
+        only supplied generators.
+        """
+        graph = self.pairing_graph()
+        self.assert_unique_rational_extension()
+        automorphisms = graph.automorphism_group()
+        return finite_ordered_set(tuple(
+            self.configuration_isometry(generator)
+            for generator in automorphisms.group_generators()
+        ))
+
+    @cached_method
+    def stabilizer_cardinality(self):
+        r"""``|Aut(Gamma)| / |K_v|``, the order of the family stabilizer.
+
+        The kernel ``K_v`` consists exactly of the independent permutations
+        of indices carrying the same vector and colour.
+        """
+        automorphism_order = int(self.pairing_graph().automorphism_order())
+        return cardinal(automorphism_order // self.permutation_kernel_order())
+
+    @cached_method
+    def permutation_kernel_order(self):
+        r"""The order of the permutations preserving every coloured vector."""
+        classes = []
+        for index in self.indices():
+            value = self.vector(index)
+            colour = self.colour(index)
+            for position, (representative, representative_colour, multiplicity) in enumerate(classes):
+                if representative == value and representative_colour == colour:
+                    classes[position] = (representative, representative_colour, multiplicity + 1)
+                    break
+            else:
+                classes.append((value, colour, 1))
+        kernel_order = 1
+        for _value, _colour, multiplicity in classes:
+            kernel_order *= factorial(multiplicity)
+        return kernel_order
+
+    @cached_method
+    def spans_lattice(self):
+        r"""Whether the family generates the whole integral lattice."""
+        invariants = self._family_coordinate_matrix().elementary_divisors()
+        rank = int(self._lattice.module_rank())
+        return len(invariants) >= rank and all(abs(invariant) == 1 for invariant in invariants[:rank])
+
+    @cached_method
+    def _family_coordinate_matrix(self):
+        r"""Rows of family vectors in the lattice framing, at the private engine boundary."""
+        labels = tuple(self._lattice.module_generating_set())
+        ring = self._lattice.base_ring()
+        return engine_matrix(
+            SageZZ,
+            tuple(
+                tuple(
+                    _engine_element(ring, self.vector(index).to_vector()(label))
+                    for label in labels
+                )
+                for index in self.indices()
+            ),
+        )
+
+    @cached_method
+    def _coordinate_basis_data(self):
+        r"""The selected family basis rows, adjugate and determinant, computed once."""
+        family = self._family_coordinate_matrix()
+        from dzack_research.preamble.tensors.tensor import _engine_row_basis_positions
+
+        basis_rows = tuple(_engine_row_basis_positions(family))
+        basis = family.matrix_from_rows(basis_rows)
+        return basis_rows, basis.adjugate(), basis.det()
+
+    def _integral_coordinate_automorphism(self, permutation):
+        r"""The induced integral matrix, or ``None`` when the rational symmetry does not preserve the lattice."""
+        transformation = self._coordinate_automorphism(permutation)
+        if any(not entry.is_integer() for entry in transformation.list()):
+            return None
+        return transformation.change_ring(SageZZ)
+
+    def _coordinate_automorphism(self, permutation):
+        r"""The rational matrix induced on the lattice framing by a family permutation."""
+        if not self.spans_rational_space():
+            graph = self.pairing_graph()
+            sigma = Sets().Mor(self.indices(), self.indices())(
+                lambda index: graph._position(permutation[graph._vertex(index)])
+            )
+            return self._rational_transformation_matrix(self.rational_transformation(self, sigma))
+        family = self._family_coordinate_matrix()
+        basis_rows, adjugate, determinant = self._coordinate_basis_data()
+        target = engine_matrix(
+            SageZZ,
+            tuple(family.row(permutation[index]) for index in basis_rows),
+        )
+        numerator = adjugate * target
+        return numerator.change_ring(SageQQ) / determinant
+
+    @staticmethod
+    def _rational_transformation_matrix(isometry):
+        r"""Lower an owned rational isometry to row coordinates at this private boundary."""
+        from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+
+        source, target = isometry.domain(), isometry.codomain()
+        linear = Modules(source.base_ring()).Mor(source, target)(isometry)
+        return _engine_matrix(linear).transpose()
+
+    @staticmethod
+    def _rational_lattice_key(transformation):
+        r"""Canonical row-Hermite data for the image of the standard integral lattice."""
+        denominator = transformation.denominator()
+        hermite = (denominator * transformation).change_ring(SageZZ).hermite_form()
+        common = abs(int(denominator))
+        for entry in hermite.list():
+            common = gcd(common, abs(int(entry)))
+        return (
+            int(denominator) // common,
+            tuple(int(entry) // common for entry in hermite.list()),
+        )
+
+    @cached_method
+    def _integral_configuration_group_data(self):
+        r"""Order and generators of pairing symmetries preserving the ambient lattice.
+
+        ``Aut(Gamma)`` acts on the finite orbit of ``L`` among rational
+        lattices.  Its stabilizer is computed from orbit representatives by
+        Schreier's lemma.  Thus a finite-index family does not enumerate the
+        graph group merely to test every element for integrality.
+        """
+        self.assert_unique_rational_extension()
+        graph = self.pairing_graph()
+        engine = graph.engine_automorphism_group()
+        generators = tuple(engine.gens())
+        generators += tuple(
+            inverse for inverse in (generator**-1 for generator in generators)
+            if inverse not in generators
+        )
+        identity = engine.one()
+
+        def lattice_key(element):
+            return self._rational_lattice_key(
+                self._coordinate_automorphism(graph.engine_permutation(element))
+            )
+
+        representatives = [identity]
+        indices = {lattice_key(identity): 0}
+        schreier = []
+        cursor = 0
+        while cursor < len(representatives):
+            representative = representatives[cursor]
+            for generator in generators:
+                candidate = representative * generator
+                key = lattice_key(candidate)
+                target = indices.get(key)
+                if target is None:
+                    target = len(representatives)
+                    indices[key] = target
+                    representatives.append(candidate)
+                stabilizer_generator = candidate * representatives[target] ** -1
+                permutation = graph.engine_permutation(stabilizer_generator)
+                if permutation != tuple(range(len(permutation))) and permutation not in schreier:
+                    assert self._integral_coordinate_automorphism(permutation) is not None
+                    schreier.append(permutation)
+            cursor += 1
+        order, remainder = divmod(int(engine.order()), len(representatives))
+        assert remainder == 0
+        return order, tuple(schreier)
+
+    def integral_configuration_transporter(self, target, equivalence):
+        r"""An integral map in the rational configuration coset, or ``None``.
+
+        The target graph group is finite, and uniqueness of extension makes
+        its rational isometries a group.  Therefore its orbit on the lattice
+        ``equivalence(L)`` is finite even when the family spans a hyperplane.
+        Traversing that lattice orbit is the integral transporter
+        computation in ``fund_domain_vertices.h:FindIntegralEquivalence``;
+        no finite-index bound for the span is needed.
+        """
+        self.assert_unique_rational_extension()
+        target.assert_unique_rational_extension()
+        graph = target.pairing_graph()
+        generators = tuple(
+            target._coordinate_automorphism(graph.engine_permutation(generator))
+            for generator in graph.engine_automorphism_group().gens()
+        )
+        rational_source, rational_target = self.rational_space(), target.rational_space()
+        identity_key = self._rational_lattice_key(
+            self._rational_transformation_matrix(rational_target.Isom(rational_target).identity())
+        )
+        first = self._rational_transformation_matrix(equivalence)
+        representatives = [first]
+        seen = {self._rational_lattice_key(first)}
+        cursor = 0
+        while cursor < len(representatives):
+            representative = representatives[cursor]
+            if self._rational_lattice_key(representative) == identity_key:
+                source_labels = tuple(rational_source.module_generating_set())
+                target_labels = tuple(rational_target.module_generating_set())
+                ring = rational_target.base_ring()
+                isometry = rational_source.Isom(rational_target)({
+                    label: rational_target.linear_combination({
+                        target_label: _owned_engine_element(ring, representative[row, column])
+                        for column, target_label in enumerate(target_labels)
+                        if representative[row, column]
+                    })
+                    for row, label in enumerate(source_labels)
+                })
+                restricted = isometry.integral_restriction(self._lattice, target._lattice)
+                assert restricted is not None
+                return restricted
+            for generator in generators:
+                candidate = representative * generator
+                key = self._rational_lattice_key(candidate)
+                if key not in seen:
+                    seen.add(key)
+                    representatives.append(candidate)
+            cursor += 1
+        return None
+
+    @cached_method
+    def integral_stabilizer_cardinality(self):
+        r"""The number of distinct integral isometries induced by the configuration."""
+        order, _generators = self._integral_configuration_group_data()
+        return cardinal(order // self.permutation_kernel_order())
+
+    @cached_method
+    def integral_configuration_generator_images(self):
+        r"""Images of lattice basis vectors for generators of the integral configuration subgroup."""
+        _order, permutations = self._integral_configuration_group_data()
+        return self._integral_configuration_images(permutations)
+
+    def _integral_configuration_images(self, permutations):
+        r"""Lattice-framing images of the selected integral family permutations."""
+        labels = tuple(self._lattice.module_generating_set())
+        ring = self._lattice.base_ring()
+        images = []
+        for permutation in permutations:
+            transformation = self._integral_coordinate_automorphism(permutation)
+            assert transformation is not None
+            images.append(
+                {
+                    label: self._lattice.linear_combination(
+                        {
+                            target: ring(int(transformation[row, column]))
+                            for column, target in enumerate(labels)
+                            if transformation[row, column]
+                        }
+                    )
+                    for row, label in enumerate(labels)
+                }
+            )
+        return tuple(images)
+
+    @cached_method
+    def integral_configuration_element_images(self):
+        r"""All integral isometries induced by the finite pairing symmetries.
+
+        When the family spans the lattice, every permutation preserving its
+        pairing and colours preserves the integral span.  The small pairing
+        table therefore supplies the complete stabilizer enumeration without
+        enumerating the ambient orthogonal group.
+        """
+        assert self.spans_lattice(), (
+            "the full pairing-symmetry enumeration is integral only when the "
+            "family spans the lattice"
+        )
+        return self._integral_configuration_images(
+            self.pairing_graph().automorphism_permutations()
         )
 
     @cached_method
     def configuration_group(self):
         r"""``G = rho(Aut(Gamma))`` for the group morphism ``rho: Aut(Gamma) -> O(L tensor Q)``."""
         graph = self.pairing_graph()
-        rational = self.rational_space()
+        self.assert_unique_rational_extension()
         automorphisms = graph.automorphism_group()
-        orthogonal = rational.O()
-
-        def realization(generator):
-            isometry = self.rational_transformation(self, graph.position_permutation(generator))
-            return orthogonal({
-                label: isometry(rational.module_generator(label))
-                for label in rational.module_generating_set()
-            })
-
-        rho = automorphisms.Mor(orthogonal)({
-            generator: realization(generator) for generator in automorphisms.group_generators()
-        })
+        orthogonal = self.rational_space().O()
+        rho = automorphisms.Mor(orthogonal)(self.configuration_isometry)
         return rho.image()
 
     @cached_method
@@ -364,11 +798,16 @@ def _stabilizer_generators(orthogonal_group, family):
 
     lattice = orthogonal_group.lattice()
     realization = _realization(lattice, family)
-    rational_group = realization.configuration_group()
-    generators = rational_group.group_generators()
+    if not realization.spans_lattice():
+        return tuple(
+            orthogonal_group(images)
+            for images in realization.integral_configuration_generator_images()
+        )
+    generators = realization.configuration_generators()
     if all(generator.integral_restriction(lattice, lattice) is not None for generator in generators):
         integral = generators
     else:
+        rational_group = realization.configuration_group()
         _exponent, containing = realization.containing_bound()
         integral = IntegralStructureAction(rational_group, realization.rationalization()).with_stable_containing_bound(
             containing
@@ -406,6 +845,9 @@ def _transporter(homset, source_family, target_family):
     restricted = equivalence.integral_restriction(source_lattice, target_lattice)
     if restricted is not None:
         return _homset_element(homset, restricted)
+    if not source.spans_rational_space():
+        restricted = source.integral_configuration_transporter(target, equivalence)
+        return None if restricted is None else _homset_element(homset, restricted)
     source_exponent, _source_containing = source.containing_bound()
     target_exponent, containing = target.containing_bound()
     if source_exponent != target_exponent:

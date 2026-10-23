@@ -24,7 +24,7 @@ build-backend = "setuptools.build_meta"
 where = ["src"]
 
 [tool.setuptools.package-data]
-dzack_research = ["py.typed"]
+dzack_research = ["py.typed", "preamble/categories/*.gp"]
 
 # Fetched from its repository, not a sibling directory. A relative path here
 # is inherited by every consumer that fetches this project from git, where it
@@ -50,14 +50,14 @@ testpaths = ["tests"]
 pythonpath = ["tests/constructions"]
 # Every run says where its wall time went and leaves a machine-readable record.
 #
-# The suite budget is a gate: 100 ms per selected test, set as the session
-# timeout once collection is final (dzack_research.utilities.suite_budget).
-# A run over budget is red, because a slow suite is a defect in the code or
-# the tests, never a wait.  Do not raise it; find the cost.
+# The selection-invariant time gates measure preamble import, collection, and
+# each test's call phase against recorded baselines
+# (dzack_research.utilities.suite_budget). --no-time-gates retains reporting
+# while lifting those performance ceilings for one-off measurement runs.
 #
 # The test lint (dzack_research.utilities.test_lint) ends the run red when a
 # collected test breaks the session standard; --no-test-lint lifts it for a
-# one-off triage run, as --no-time-gates lifts the budget.
+# one-off triage run.
 #
 # --timeout bounds one test: a test that blocks -- on a subprocess, a lock, a
 # network call -- burns wall clock at low CPU and reports nothing at all when

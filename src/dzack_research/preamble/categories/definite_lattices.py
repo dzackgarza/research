@@ -8,8 +8,6 @@ from functools import cache
 from sage.libs.pari import pari
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.modules.free_module_element import vector as engine_vector
-from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
-from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as element_parent
@@ -253,32 +251,68 @@ def _hkz_reduction(lattice):
 
 
 def _minimum(lattice):
+    assert _engine_ring(lattice.base_ring()) is SageZZ, (
+        f"the minimum of {lattice} is computed here only for integral lattices "
+        f"over ZZ, but {lattice} is over {lattice.base_ring()}"
+    )
     sign, positive_gram = _positive_gram(lattice)
-    backend = IntegralLattice(_engine_component_matrix(positive_gram))
-    minimum_value = _owned_engine_element(lattice.base_ring(),
-        SageZZ(backend.minimum())
+    engine_gram = _engine_component_matrix(positive_gram)
+    lower = SageZZ.zero()
+    upper = min(engine_gram.diagonal())
+    pari_gram = engine_gram.__pari__()
+    while lower + 1 < upper:
+        bound = (lower + upper) // 2
+        count = SageZZ(pari_gram.qfminim(bound, 0)[0])
+        if count:
+            upper = bound
+        else:
+            lower = bound
+    minimum_value = _owned_engine_element(
+        lattice.base_ring(),
+        upper,
     )
     return sign * minimum_value
+
+
+def _square_shell(positive_gram, target, reflective):
+    r"""The coordinate vectors ``v`` with ``v^T G v = target``, optionally only the reflective ones.
+
+    ``G`` is the positive definite Gram tensor.  PARI's ``forqfvec`` runs the
+    Fincke--Pohst enumeration of ``v^T G v <= target`` (User's Guide to PARI/GP,
+    ``forqfvec``) and ``_square_shell.gp`` retains ``v`` and ``-v`` for each
+    vector of the shell, so the order is that of ``qfminim``.  When
+    ``reflective`` is true it retains only the vectors whose reflection
+    ``w - 2 b(v,w)/b(v,v) v`` is integral, which holds exactly when ``target``
+    divides every entry of ``2 G v``.  Only the retained vectors are stored,
+    never the whole ball that ``qfminim`` returns.  The bound is a small
+    norm, far below the floating-point limit that TRAPS.md, "PARI forqfvec
+    imposes a fixed floating-point bound", records.
+    """
+    from pathlib import Path
+
+    form = _engine_component_matrix(positive_gram).change_ring(SageZZ)
+    source = Path(__file__).with_name("_square_shell.gp").read_text()
+    shell = pari(source)(pari(form), int(target), int(reflective))
+    return tuple(engine_vector(SageZZ, [int(entry) for entry in column]) for column in shell)
 
 
 def _vectors_of_square(lattice, square):
     r"""The finite shell ``{v in L : b(v, v) = square}`` of a definite lattice over ``ZZ``.
 
-    Sage's ``IntegralLattice.short_vectors`` enumerates integral coordinate
-    vectors; over ``QQ`` that is only the shell of the integral span of the
-    chosen basis, not the rational fibre.  Its one caller,
-    ``Lattices.ParentMethods.vectors_of_square``, asserts that hypothesis.
+    The enumeration is of integral coordinate vectors; over ``QQ`` that is
+    only the shell of the integral span of the chosen basis, not the rational
+    fibre.  Its one caller, ``Lattices.ParentMethods.vectors_of_square``,
+    asserts that hypothesis.
     """
     sign, positive_gram = _positive_gram(lattice)
     square = lattice.base_ring()(square)
     target = sign * square
     if target < 0:
         return finite_ordered_set(())
-    backend = IntegralLattice(_engine_component_matrix(positive_gram))
-    lists = backend.short_vectors(int(target) + 1)
-    if int(target) >= len(lists):
-        return finite_ordered_set(())
-    return _shell(lattice, square, tuple(lists[int(target)]))
+    if target == 0:
+        rank = _engine_component_matrix(positive_gram).nrows()
+        return _shell(lattice, square, (engine_vector(SageZZ, [0] * rank),))
+    return _shell(lattice, square, _square_shell(positive_gram, target, False))
 
 
 def _roots(lattice):
@@ -287,29 +321,15 @@ def _roots(lattice):
 
 
 def _roots_of_square(lattice, square):
-    r"""Return the vectors ``v`` with ``b(v,v) = square`` whose reflection is integral.
-
-    The reflection ``w - 2 b(v,w)/b(v,v) v`` is integral exactly when
-    ``b(v,v)`` divides ``2 b(v,w)`` for every basis vector ``w``.  The
-    pairings of the whole shell against the basis are one product with the
-    symmetric Gram tensor, so only the roots are raised into the lattice.
-    """
+    r"""Return the vectors ``v`` with ``b(v,v) = square`` whose reflection is integral."""
     square = lattice.base_ring()(square)
+    if lattice.module_rank() == 0:
+        return finite_ordered_set(())
     sign, positive_gram = _positive_gram(lattice)
     target = int(sign * square)
     if target <= 0:
         return finite_ordered_set(())
-    gram = _engine_component_matrix(positive_gram)
-    shells = IntegralLattice(gram).short_vectors(target + 1)
-    if target >= len(shells) or not shells[target]:
-        return finite_ordered_set(())
-    shell = engine_matrix(SageZZ, shells[target])
-    pairings = shell * gram
-    return _shell(lattice, square, tuple(
-        coordinates
-        for coordinates, row in zip(shell.rows(), pairings.rows(), strict=True)
-        if all((2 * pairing) % target == 0 for pairing in row)
-    ))
+    return _shell(lattice, square, _square_shell(positive_gram, target, True))
 
 
 def _root_sublattice(lattice):
@@ -661,7 +681,7 @@ class _ExactCVPEngine:
             lambda vector: by_coordinates[
                 _coordinate_tuple(self.lattice, vector)
             ],
-            name=f"Vectors of {self.lattice} close to {target}",
+            name="Close lattice vectors",
         )
 
 
@@ -1081,6 +1101,7 @@ def _packing_density(lattice):
 
 
 def _theta_series(lattice, precision=20, variable="q"):
+    from sage.quadratic_forms.quadratic_form import QuadraticForm
 
     _sign, positive_gram = _positive_gram(lattice)
     quadratic_form = QuadraticForm(

@@ -282,29 +282,31 @@ sage-rebuild:
 _lock:
     uv lock
 
-# Run commit-tier SageMath QC through the central implementation
-test-commit: tensor-boundary
+# Development commits inspect staged source syntax only. The repository-owned
+# coordinate-ownership scan is retained as an independent CI diagnostic.
+test-commit:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
 
-# Run push-tier SageMath QC through the central implementation
+# No full-tree scan, test suite, or site deployment on the publication path.
 test-push:
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
+
+# Run CI suites and the repository-owned tensor-ownership detector independently,
+# retaining both in one nonblocking findings/burndown report.
+test-ci:
+    @python3 ~/ai-review-ci/scripts/ci-triage.py sage --caller-check research-tensor-boundary tensor-boundary
+
+# The scheduled whole-tree audit includes the tensor-ownership detector.
+ambient:
+    @python3 ~/ai-review-ci/scripts/ci-triage.py sage --tier ambient --caller-check research-tensor-boundary tensor-boundary
+
+# CI-only provision for the repository-specific scanner, not a local hook.
+_ci-tensor-tools:
     #!/usr/bin/env bash
     set -euo pipefail
-    just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
-    # A push that changes the book refreshes what lattice-research.localhost serves.
-    # The push gate itself is machine-wide and owns none of this; the deploy belongs
-    # to the repo that owns the book, which is why it hangs off this recipe.
-    if ! git diff --quiet "@{upstream}" -- writing 2>/dev/null; then
-        just docs-deploy
-    fi
-
-# Run CI acceptance QC through the central implementation
-test-ci:
-    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
-
-# Run the scheduled whole-tree audit (semgrep and debt scans) through the central implementation.
-ambient:
-    @just -f ~/ai-review-ci/justfiles/sage.just -d . ambient
+    prefix="$RUNNER_TEMP/research-tensor-tools"
+    npm install --prefix "$prefix" --no-audit --no-fund @ast-grep/cli@0.41.0
+    printf '%s\n' "$prefix/node_modules/.bin" >> "$GITHUB_PATH"
 
 # The suite runs in parallel, one Sage process per worker, and records which
 # test ran each line; only lines a passing test ran count as covered.
@@ -379,8 +381,9 @@ coverage-report *include:
 # The specification subtrees are red until the preamble meets them, so a
 # failing suite still yields its coverage; the caller reports the exit status.
 # No per-test timeout: its SIGALRM inside Cython ends the whole run (TRAPS.md),
-# and coverage's tracing makes the time gates meaningless.  One-line
-# tracebacks keep failure reports from computing owned reprs.
+# and coverage tracing changes runtime materially. The measurement-only flag
+# keeps timing output without applying baselines gathered without tracing.
+# One-line tracebacks keep failure reports from computing owned reprs.
 [positional-arguments]
 _coverage-pytest data log *args:
     #!/usr/bin/env bash
@@ -452,11 +455,21 @@ test-universe:
 # AST provenance, not identical source-line text, exempts the typed Mor
 # transpose. Encoding Smith coordinates as ordinal indices is not a pairing.
 # The scan is necessary but not sufficient: semantic ownership needs review.
-tensor-boundary:
+# scope=staged is an optional focused check; scope=all is the CI diagnostic.
+tensor-boundary scope="all":
     #!/usr/bin/env bash
     set -uo pipefail
-    files=$(git ls-files 'src/dzack_research/preamble/*.py' \
-        | grep -v '^src/dzack_research/preamble/tensors/') || exit 1
+    case "{{scope}}" in
+        all) files=$(git ls-files 'src/dzack_research/preamble/*.py' \
+            | grep -v '^src/dzack_research/preamble/tensors/') || exit 1 ;;
+        staged) files=$(git diff --cached --name-only --diff-filter=ACMR -- 'src/dzack_research/preamble/*.py' \
+            | grep -v '^src/dzack_research/preamble/tensors/')
+            if [ -z "$files" ]; then
+                echo "tensor-boundary: no staged preamble Python files."
+                exit 0
+            fi ;;
+        *) echo "tensor-boundary scope must be all or staged, not {{scope}}" >&2; exit 2 ;;
+    esac
     total=0
     for pattern in '$X.transpose()' '$X.T' '$X.matrix_action_right($$$A)' '$X.matrix_action_left($$$A)' '$X.einsum($$$A)' 'einsum($$$A)' '$X.matmul($$$A)' 'matmul($$$A)' '$X.dot($$$A)' '$X @ $Y'; do
         matches=$(ast-grep run --lang python --pattern "$pattern" --json $files)
