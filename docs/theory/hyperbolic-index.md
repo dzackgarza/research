@@ -1,0 +1,428 @@
+# Hyperbolic index and constructive hyperbolic splitting
+
+This note gives exact algorithms for computing the largest orthogonal sum of
+hyperbolic planes in a nondegenerate symmetric bilinear space over
+$\mathbb R$ or $\mathbb Q$, or an integral lattice over $\mathbb Z$.
+The output includes the complementary form and an explicit isometry.
+The integral construction applies to both even and odd lattices.
+
+## Conventions and the mathematical output
+
+Let $R\in\{\mathbb R,\mathbb Q,\mathbb Z\}$, let $L$ be a finite free
+$R$-module, and let $B:L\times L\to R$ be symmetric and nondegenerate.
+For $R=\mathbb Z$, nondegenerate means that a Gram matrix has nonzero
+determinant; unimodularity is not assumed. Write $q(x)=B(x,x)$, so that
+$q(x+y)=q(x)+2B(x,y)+q(y)$.
+These are the symmetric-bilinear-form conventions of [Conrad, §2 and §6](#references).
+
+**Definition.** The hyperbolic plane $U_R$ has basis $e,f$ with
+$B(e,e)=B(f,f)=0$ and $B(e,f)=1$. Its Gram matrix is
+$H=\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$.
+Define
+
+$$
+h_R(L)=\max\{r\in\mathbb Z_{\ge0}: U_R^{\perp r}\perp M\simeq L
+\text{ for some symmetric bilinear }R\text{-module }M\}.
+$$
+
+This fixes the meaning of **hyperbolic index** in this note. Over fields of
+characteristic different from $2$, it is the Witt index
+([Knebusch, §2, Theorem 1](#references)). Over $\mathbb Z$, the requirement
+is an integral orthogonal direct summand isometric to $U_{\mathbb Z}$,
+not merely a rational hyperbolic subspace or an isotropic sublattice.
+
+Given a basis with Gram matrix $G$, the constructive problem is to return
+$m=h_R(L)$, a symmetric matrix $G_M$, and $P\in\mathrm{GL}_n(R)$ with
+
+$$
+P^TGP=H_m\oplus G_M,\qquad H_m=H^{\oplus m}.                 \tag{1}
+$$
+
+The columns of $P$ define the isometry $U_R^{\perp m}\perp M\to L$.
+Over $\mathbb Z$, $\det P=\pm1$ is essential: an invertible rational
+matrix with integer columns would only specify a finite-index sublattice.
+For a fixed integral $L$, base extension gives
+
+$$
+h_{\mathbb Z}(L)\le h_{\mathbb Q}(L\otimes\mathbb Q)
+\le h_{\mathbb R}(L\otimes\mathbb R).                       \tag{2}
+$$
+
+Both inequalities follow by extending a splitting. The zero module has
+index $0$, an empty change-of-basis matrix, and determinant $1$ by convention.
+All remaining statements assume nondegeneracy. A degenerate form requires
+a separate treatment of its radical.
+
+## Splitting a given hyperbolic summand
+
+The following calculation is valid over each of the three base rings.
+
+**Proposition.** Suppose $e_1,f_1,\ldots,e_r,f_r\in L$ satisfy
+$B(e_i,e_j)=B(f_i,f_j)=0$ and $B(e_i,f_j)=\delta_{ij}$.
+Let $S$ be their span and $M=S^\perp$. Then the addition map
+$S\perp M\to L$ is an isometry, with projection onto $M$ given by
+
+$$
+\pi_M(x)=x-\sum_{i=1}^r\bigl(B(x,f_i)e_i+B(x,e_i)f_i\bigr). \tag{3}
+$$
+
+**Proof.**
+
+1. Pairing (3) with $e_j$ or $f_j$ gives zero, so $\pi_M(x)\in M$.
+2. The difference $x-\pi_M(x)$ belongs to $S$, proving $L=S+M$.
+3. If $s=\sum_i(a_i e_i+b_i f_i)\in M$, pairing with $f_j,e_j$
+   gives $a_j=b_j=0$. Hence $S\cap M=0$.
+4. The sum is orthogonal by the definition of $M$, proving the assertion.
+
+In particular, every isometric embedding $U_{\mathbb Z}^{\perp r}\to L$
+automatically has primitive image and splits. No independent primitivity
+test is needed for this particular source lattice.
+
+**Matrix construction.** Let $X$ have columns $e_1,f_1,\ldots,e_r,f_r$,
+so $X^TGX=H_r$. Compute a basis matrix $Y$ for
+
+$$
+M=\ker_R(X^TG),\qquad P=(X\mid Y),\qquad G_M=Y^TGY.        \tag{4}
+$$
+
+Over a field, use exact linear algebra. Over $\mathbb Z$, use an integer
+kernel computation, for example Smith normal form with transformations.
+If $A=X^TG$ and $WAV=D$ is a Smith decomposition with unimodular $W,V$, the columns
+of $V\in\mathrm{GL}_n(\mathbb Z)$ corresponding to zero columns of $D$
+give a basis of the integer kernel. Arbitrarily clearing denominators in
+a rational kernel basis need not give this full kernel. Proposition (3)
+proves that the matrix $P$ in (4) is unimodular.
+
+## Real forms: signature and an explicit basis
+
+**Theorem.** If $L$ has signature $(p,q)$, with $p$ positive and $q$ negative
+squares, then $h_{\mathbb R}(L)=\min(p,q)$.
+This follows from Sylvester's law of inertia
+([Conrad, Theorem 6.19 and Corollary 6.20](#references)).
+
+**Construction and proof of maximality.**
+
+1. Diagonalize by congruence, retaining the basis change:
+   $S^TGS=\operatorname{diag}(d_1,\ldots,d_n)$ with every $d_i\ne0$.
+   This is congruence, not similarity. A nonzero diagonal pivot eliminates
+   its row and column. If all remaining diagonal entries vanish, a nonzero
+   off-diagonal entry $B(u,v)$ gives $q(u+v)=2B(u,v)\ne0$ and hence a pivot.
+2. Divide each diagonal basis vector by $\sqrt{|d_i|}$. This produces
+   mutually orthogonal positive unit vectors $a_1,\ldots,a_p$ and
+   negative unit vectors $b_1,\ldots,b_q$.
+3. For $1\le i\le m=\min(p,q)$, set
+   $e_i=(a_i+b_i)/\sqrt2$ and $f_i=(a_i-b_i)/\sqrt2$.
+   Direct expansion gives $q(e_i)=q(f_i)=0$ and $B(e_i,f_i)=1$.
+   Different pairs are orthogonal. Unpaired unit vectors form a basis of $M$.
+4. Every hyperbolic plane contributes one positive and one negative square.
+   Inertia therefore bounds the number by both $p$ and $q$. Step 3 attains
+   this bound, proving maximality and (1).
+
+**Exact real input.** Rational and real-algebraic coefficients support exact
+arithmetic and sign decisions; positive square roots can be represented
+algebraically. An exact ordered-field computation may similarly use sign
+decisions and return the required real square-root extensions.
+
+For computable real coefficients supplied with certified approximations and
+the promise $\det G\ne0$, signature is also computable. To see this, refine
+a rational symmetric approximation $A$ and an operator-norm error bound
+$\|G-A\|\le\varepsilon$ until a certified lower bound for the absolute
+values of all eigenvalues of $A$ exceeds $\varepsilon$. Such a stage exists
+because $G$ is nonsingular. The straight path from $A$ to $G$ then remains
+nonsingular, so its inertia is constant. This argument supplies a terminating
+signature computation under the promise; it gives no uniform precision bound
+near singularity. A diagonalizing basis can be computed with certified nonzero
+pivots and represented by computable real expressions.
+
+If singular computable inputs are allowed, a uniform index algorithm would
+decide whether a computable $a\ge0$ is zero: the form
+$\operatorname{diag}(a,-1)$ has index $0$ when $a=0$ and $1$ when $a>0$.
+Such a zero decision is not generally computable. Fixed-precision `RR` data
+also require an interpretation: stored binary numbers can be treated exactly
+as dyadic rationals, but this does not establish the signature of unknown
+real numbers they were intended to approximate.
+
+## Rational forms: isotropy, construction, and maximality
+
+**Theorem.** Rational isotropy decision and rational linear algebra compute
+an explicit splitting (1) with $m=h_{\mathbb Q}(L)$.
+
+**Algorithm.** Start with the whole space as the remaining complement.
+
+1. Decide whether its form has a nonzero rational isotropic vector.
+   If it is anisotropic, stop. Dimension zero or one is a stopping case.
+2. Find such a vector $e$. Solve $B(e,v)=1$ by rational linear algebra;
+   a solution exists by nondegeneracy. Set
+
+   $$
+   f=v-\frac{q(v)}2e.
+   $$
+
+   Then $B(e,f)=1$ and
+   $q(f)=q(v)-q(v)B(v,e)+(q(v)^2/4)q(e)=0$.
+3. Apply (4) to split off this plane. Repeat on its nondegenerate
+   complement, composing the basis changes so the output remains expressed
+   in the original basis of $L$.
+
+**Proof of termination and maximality.**
+
+1. Each successful iteration lowers dimension by two, so only finitely many
+   iterations occur.
+2. The final complement $M$ is anisotropic by the stopping decision.
+3. The Witt decomposition theorem makes the dimension of the anisotropic
+   part and the number of hyperbolic planes invariants of the original
+   space. Thus the constructed number is maximal
+   ([Knebusch, §2, Theorem 1](#references)).
+
+### A terminating isotropy decision, including the local tests
+
+Hasse–Minkowski states that a rational form is isotropic precisely when it is
+isotropic over $\mathbb R$ and every $\mathbb Q_\ell$
+([Conrad, *The local–global principle*, Theorem 3.3](#references)).
+Here is a finite implementation in principle, independent of a particular CAS.
+
+First diagonalize rationally. In dimension two, a diagonal form
+$a x^2+b y^2$ is isotropic precisely when $-b/a$ is a rational square;
+factor numerators and denominators to decide this. In dimension at least
+three, clear a common denominator to obtain a nonsingular integral Gram
+matrix $A$. The real test is indefiniteness. Only primes dividing
+$2\det A$ need further examination: at every other prime, a nondegenerate
+form in at least three variables has a nonzero zero over the residue field,
+and this lifts by Hensel's lemma.
+
+**Lemma (finite local test).** Fix a prime $\ell$, put
+$c=v_\ell(\det A)+v_\ell(2)$ and $N=2c+1$.
+The form $x^TAx$ is isotropic over $\mathbb Q_\ell$ if and only if there
+exists $x\in(\mathbb Z/\ell^N\mathbb Z)^n$ with at least one coordinate
+nonzero modulo $\ell$ and $x^TAx\equiv0\pmod{\ell^N}$.
+
+**Proof.**
+
+1. A nonzero $\ell$-adic isotropic vector can be scaled to a primitive
+   vector in $\mathbb Z_\ell^n$. Its reduction gives the stated solution.
+2. Conversely lift such a residue vector to an integer vector $x$.
+   At least one entry of $Ax$ has valuation at most $v_\ell(\det A)$:
+   otherwise $\operatorname{adj}(A)Ax=(\det A)x$ contradicts primitivity.
+3. Choose an index $j$ at which the derivative
+   $2(Ax)_j$ has valuation $s\le c$. Hold all other coordinates fixed
+   and view $x^TAx$ as a polynomial in coordinate $j$. Its value has
+   valuation at least $N>2s$.
+4. The strong form of Hensel's lemma produces a zero differing in that
+   coordinate by an element of valuation greater than $s$, hence divisible
+   by $\ell$. The vector remains primitive and is therefore nonzero.
+   This proves sufficiency. See [Conrad, *Hensel's lemma*, §4](#references).
+
+The local searches are finite. If all tests succeed, Hasse–Minkowski
+guarantees a rational isotropic vector. Enumerating nonzero integer vectors
+by increasing maximum coordinate magnitude then finds one, since denominators
+of a rational zero can be cleared. This is a terminating construction after
+the affirmative decision, although it is not a competitive practical algorithm.
+
+### Existing constructive software
+
+[Sage's `qfsolve` documentation](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/qfsolve.html)
+describes its interface to PARI's implementation of Denis Simon's code for
+rational quadratic equations. Its output distinguishes a solution from an
+obstruction; a vector or a totally isotropic subspace still requires the
+hyperbolic-pair completion and complement construction above.
+
+[Magma's `IsotropicSubspace` documentation](https://docs.magma-maths.org/LatticesQuadraticForms/QuadraticForms/isotropic.html)
+attributes its algorithm to Simon and states qualifications on maximality.
+The dimension of an arbitrary returned isotropic subspace must therefore not
+be substituted for an exact Witt-index computation without checking the
+documented guarantee or proving the remaining complement anisotropic.
+These are software references, not claims that this repository implements
+either decomposition algorithm.
+
+## Integral forms: a bounded constructive search
+
+Integral splitting involves arithmetic beyond rational isotropy. There is,
+nevertheless, a terminating exact algorithm returning both the maximal number
+of planes and an integral basis. Effective representation bounds give a direct
+construction without an integral cancellation assumption.
+
+### Integral pairs and parity
+
+For $e\in L$, its divisibility is the nonnegative generator of the ideal
+$B(e,L)\subseteq\mathbb Z$; in coordinates it is the gcd of the entries
+of $Ge$. If $q(e)=0$ and this divisibility is $1$, Bézout gives $v\in L$
+with $B(e,v)=1$. The correction $f=v-q(v)e/2$ is integral whenever $q(v)$
+is even. Thus, for an **even lattice**, finding an isotropic vector of
+divisibility $1$ is equivalent to finding a copy of $U$ with that vector
+as its first basis vector.
+
+For a general integral lattice, the exact condition for a fixed isotropic
+$e$ is the existence of an **even-norm** $v$ with $B(e,v)=1$.
+This condition is necessary because a hyperbolic partner itself has norm zero,
+and sufficient by the correction formula. Given one solution $v_0$, every
+solution is $v_0+k$ with $k\in\ker B(e,-)$. Since
+$q(v_0+k)\equiv q(v_0)+q(k)\pmod2$ and $q$ modulo $2$ is additive,
+one can decide the condition using an integer kernel basis: either $q(v_0)$
+is even, or some kernel basis vector has odd norm and can be added to it.
+
+This constructs a pair for a supplied $e$. It does not bound a search for $e$
+or establish that an arbitrarily chosen sequence of splittings is maximal.
+
+### Effective search bounds for embeddings
+
+Write $\|A\|_\infty=\max_{i,j}|A_{ij}|$.
+Li–Margulis, **Theorem 4**, gives a representation bound for nonsingular
+integral forms: if $A=T_0^TGT_0$, where $G$ has size $n\ge3$, then some
+integral representation $A=T^TGT$ satisfies
+
+$$
+\|T\|_\infty<
+C_n|\det A|^{n^4}|\det G|^{n^3}
+\|A\|_\infty^{n^3}\|G\|_\infty^{n^3}.                    \tag{5}
+$$
+
+Here $C_n$ depends only on $n$; the theorem also treats primitive
+representations. The paper's effective search bounds and their derivation,
+not an unspecified numerical search limit, are the basis for termination.
+For $A=H_r$, its determinant has absolute value $1$ and its maximum entry
+magnitude is $1$, so (5) reduces to
+
+$$
+\|X\|_\infty< C_n|\det G|^{n^3}\|G\|_\infty^{n^3}.       \tag{6}
+$$
+
+The theorem leaves dimension-dependent constants in its displayed statement.
+A numerical implementation of this bound must extract a valid effective
+constant from the proof or use another explicit effective representation
+bound. Choosing a convenient value for $C_n$ would not implement this algorithm.
+
+**Algorithm for $n\ge3$.**
+
+1. Compute $w=h_{\mathbb Q}(L\otimes\mathbb Q)$, an upper bound by (2).
+   If $w=0$, return $m=0$, $M=L$, and $P=I_n$.
+2. Obtain an effective integer bound $F(G)$ at least as large as the
+   right-hand side of (6).
+3. For $r=w,w-1,\ldots,1$, enumerate all
+   $X\in\operatorname{Mat}_{n\times2r}(\mathbb Z)$ with
+   $\|X\|_\infty\le F(G)$. Test the exact equation $X^TGX=H_r$.
+4. At the first success, construct $Y$, $P$, and $G_M$ by (4), and return
+   $m=r$ and the isometry (1). If every search fails, return the index-zero
+   decomposition.
+
+**Proof of termination, correctness, and maximality.**
+
+1. Each matrix search has at most $(2F(G)+1)^{2rn}$ candidates, and there
+   are at most $\lfloor n/2\rfloor$ searches. All comparisons are integer
+   arithmetic. Thus the searches terminate.
+2. A successful equation gives a hyperbolic embedding, which splits by
+   Proposition (3). Formula (4) consequently returns a full integral basis.
+3. Conversely, any splitting with $r$ planes supplies a representation
+   of $H_r$. Bound (6) guarantees that the search finds a representation
+   whenever one exists, even if the original embedding has large entries.
+4. Every larger $r$ has been excluded before the first success, and $w$
+   excludes all still larger values. Hence the returned $r$ is maximal.
+   Complete failure proves $h_{\mathbb Z}(L)=0$.
+
+The resulting $M$ need not be rationally anisotropic. Maximal integral
+splitting says precisely that no larger integral splitting of the original
+$L$ exists. The proof searches each $r$ in $L$ itself and does not appeal
+to cancellation of integral summands.
+
+**Ranks below three.** Rank zero or one has index zero. In rank two, the
+index is one precisely when $G$ is even and $\det G=-1$.
+Necessity follows from integral isometry to $H$.
+For sufficiency, the negative determinant gives signature $(1,1)$, and
+$-\det G=1$ makes the binary form rationally isotropic. Find a rational
+zero, clear denominators, and divide by the coordinate gcd to get a primitive
+integral isotropic $e$. Unimodularity makes $Ge$ primitive, hence gives
+divisibility one. Evenness then gives an integral partner by the preceding
+construction. The pair spans the whole rank-two lattice by Proposition (3).
+
+### An alternative using possible complements
+
+One may instead enumerate bounded representatives of possible complement
+forms $K$ of rank $n-2r$, determinant $(-1)^r\det G$, and signature
+$(p-r,q-r)$, and decide integral equivalence of $G$ with $H_r\oplus K$.
+Li–Margulis **Corollary 1** gives a dimension-dependent bound on the entries
+of an equivalent nonsingular integral form, and **§1.1** discusses effective
+equivalence searches for all ranks at least two. Rank-one complements are
+specified by their determinant; the rank-zero complement is the empty form.
+The equivalence search must return the unimodular matrix, not just an
+affirmative answer. The direct representation search avoids this intermediate
+enumeration and its low-rank cases.
+
+These exhaustive algorithms establish effective computability. Their bounds
+do not establish a practical implementation or polynomial bit complexity:
+even a bound polynomial in coefficient magnitude can entail an enormous
+search in the binary input size.
+
+## Examples separating the three base rings
+
+**Example (a rational obstruction).** For
+$G=\operatorname{diag}(1,-2)$, the real index is one. The equation
+$x^2=2y^2$ has no nonzero rational solution, so both rational and integral
+indices are zero.
+
+**Example (divisibility).** For $G=2H$, the vectors
+$e=(1,0)^T$ and $f=(0,1/2)^T$ form a rational hyperbolic pair. Thus the
+rational and real indices are one. Every integral pairing is even, so
+no integral pair has pairing one: the integral index is zero.
+
+**Example (odd parity).** For $G=\operatorname{diag}(1,-1)$,
+$e=(1,1)^T$ and $f=(1/2,-1/2)^T$ give a rational hyperbolic pair.
+The primitive isotropic $e$ has divisibility one. But the lattice is odd,
+whereas $U_{\mathbb Z}$ is even; their rank-two integral forms cannot be
+isometric. The indices are again $(0,1,1)$ over
+$(\mathbb Z,\mathbb Q,\mathbb R)$. In particular an integral complement
+with index zero may still be rationally isotropic.
+
+**Example (a maximal integral decomposition).** For
+$G=H\oplus(2H)$, split off the displayed first plane. The integral index
+is exactly one: if it were two, rank four would imply integral isometry
+to $H_2$, but $\det G=4$ whereas $\det H_2=1$.
+The rational and real indices are both two.
+
+## Mathematical identities and evidence boundaries
+
+The constructive output obeys (1), with $\det P=\pm1$ integrally.
+Its hyperbolic columns obey $X^TGX=H_m$, and its complementary columns
+obey $X^TGY=0$. These identities establish a splitting, not its maximality.
+Maximality follows from inertia over $\mathbb R$, anisotropy and Witt
+decomposition over $\mathbb Q$, or the exhaustive effective exclusions
+over $\mathbb Z$ proved here.
+
+This note is mathematical exposition, not a declaration of a new runtime
+API or a claim of completed formalization. In the architecture of
+[INTENT.md](../../INTENT.md), definitions and theorems belong to
+`lean-categories`; permanent mathematical acceptance assertions belong to
+`lean-cas-dsl`. A computation's own assertions or account of its search
+are not correctness evidence on the formal side.
+
+## References
+
+- **Keith Conrad, *Bilinear forms*.**
+  [Author's notes](https://kconrad.math.uconn.edu/blurbs/linmultialg/bilinearform.pdf).
+  Sections 2 and 6 for symmetric bilinear forms and associated quadratic
+  forms; Theorem 6.19 and Corollary 6.20 for real classification and inertia.
+- **Manfred Knebusch, *Specialization of Quadratic and Symmetric Bilinear
+  Forms*, translated by Thomas Unger, preliminary version, 22 November 2009.**
+  [Author-hosted text](https://homepages.uni-regensburg.de/~knm22087/book.pdf).
+  Section 2, Theorem 1: Witt decomposition and uniqueness of the anisotropic
+  part; characteristic different from two identifies its plane blocks with $H$.
+- **Keith Conrad, *The local–global principle*.**
+  [Author's notes](https://kconrad.math.uconn.edu/blurbs/gradnumthy/localglobal.pdf).
+  Theorem 3.3 and its discussion: Hasse–Minkowski and finite local reduction.
+  The finite local precision bound in this note is derived explicitly above.
+- **Keith Conrad, *Hensel's lemma*.**
+  [Author's notes](https://kconrad.math.uconn.edu/blurbs/gradnumthy/hensel.pdf).
+  Section 4: the strong lifting criterion used for the finite local test.
+- **Han Li and Gregory A. Margulis, *Effective estimates on integral
+  quadratic forms: Masser's conjecture, generators of orthogonal groups,
+  and bounds in reduction theory*.**
+  [Author-hosted manuscript](https://li-han.weebly.com/uploads/5/1/3/3/51338781/equivalence.pdf).
+  Theorem 4 for (5); Corollary 1 for bounded form representatives;
+  §1.1 and Theorem 1 for constructive integral equivalence bounds.
+  The integral decomposition algorithm here is a deduction from those
+  bounds and Proposition (3), not a claim that the paper implements it.
+- **SageMath reference manual, *Solving quadratic equations*.**
+  [Official documentation](https://doc.sagemath.org/html/en/reference/quadratic_forms/sage/quadratic_forms/qfsolve.html).
+  The `qfsolve` interface to PARI's Simon implementation.
+- **Magma handbook, *Isotropic subspaces*.**
+  [Official documentation](https://docs.magma-maths.org/LatticesQuadraticForms/QuadraticForms/isotropic.html).
+  Algorithm attribution and the qualifications on maximality of returned
+  isotropic subspaces. Software documentation consulted 23 October 2026.
