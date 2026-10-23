@@ -125,6 +125,21 @@ class PlacedPolytopeMorCategoryConstruction(MorCategoryConstruction):
     FixedCategoryClass = PlacedPolytopeMor
 
 
+class MetricPolytopeMor(PlacedPolytopeMor):
+    r"""Face-preserving arrows induced by ambient isometric embeddings."""
+
+    class ElementMethods(PlacedPolytopeMor.ElementMethods):
+        def ambient_isometric_embedding(self):
+            pass
+
+    def _element_constructor_(self, ambient_isometric_embedding, face_poset_map):
+        pass
+
+
+class MetricPolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = MetricPolytopeMor
+
+
 class _PlacedPolytopeFacePosetFunctor(Functor):
     def __init__(self, source):
         super().__init__(source, AbstractPolytopes())
@@ -183,6 +198,9 @@ class _PlacedPolytopeCategory(OwnedParameterizedCategory):
             pass
 
         def boundary(self):
+            pass
+
+        def boundary_inclusion(self):
             pass
 
     class Polygon(CategoryWithAxiom):
@@ -258,6 +276,8 @@ class LatticePolytopesIn(_PlacedPolytopeCategory):
 class EuclideanPolytopesIn(_PlacedPolytopeCategory):
     r"""Bounded convex polytopes in one selected Euclidean space."""
 
+    _MorCategory = MetricPolytopeMorCategoryConstruction
+
     def parameter_category(self):
         return EuclideanSpaces()
 
@@ -269,6 +289,8 @@ class EuclideanPolytopesIn(_PlacedPolytopeCategory):
 class SphericalGeodesicPolytopesIn(_PlacedPolytopeCategory):
     r"""Geodesically convex polytopes in one selected round sphere."""
 
+    _MorCategory = MetricPolytopeMorCategoryConstruction
+
     def parameter_category(self):
         return SphericalSpaces()
 
@@ -279,6 +301,8 @@ class SphericalGeodesicPolytopesIn(_PlacedPolytopeCategory):
 
 class HyperbolicGeodesicPolytopesIn(_PlacedPolytopeCategory):
     r"""Geodesically convex polytopes in one selected hyperbolic space."""
+
+    _MorCategory = MetricPolytopeMorCategoryConstruction
 
     def parameter_category(self):
         return HyperbolicSpaces(self.parameter().dimension())
