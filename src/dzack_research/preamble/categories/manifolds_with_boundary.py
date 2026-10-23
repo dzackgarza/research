@@ -1,6 +1,7 @@
 r"""Manifolds with half-space and quadrant local models."""
 
 from sage.categories.category import Category
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -27,11 +28,23 @@ from dzack_research.preamble.owned_category import _object_of
 
 
 class _StratifiedManifoldMapMethods:
+    def __init__(self, parent, continuous_map, interior_map, stratum_maps):
+        Morphism.__init__(self, parent)
+        self._continuous_map = continuous_map
+        self._interior_map = interior_map
+        self._stratum_maps = stratum_maps
+
     def underlying_continuous_map(self):
-        pass
+        return self._continuous_map
 
     def interior_map(self):
-        pass
+        return self._interior_map
+
+    def stratum_maps(self):
+        return self._stratum_maps
+
+    def _call_(self, point):
+        return self._continuous_map(point)
 
     def underlying_topological_stratified_map(self):
         pass
@@ -43,8 +56,8 @@ class _StratifiedManifoldMapMethods:
 class _StratifiedManifoldMor(CategoricalMor):
     ElementMethods = _StratifiedManifoldMapMethods
 
-    def _element_constructor_(self, map_on_points, stratum_maps):
-        pass
+    def _element_constructor_(self, continuous_map, interior_map, stratum_maps):
+        return self.element_class(self, continuous_map, interior_map, stratum_maps)
 
     @object_level
     def identity(self):
@@ -316,14 +329,8 @@ class SmoothManifoldsWithCorners(OwnedCategory):
 class RealCkStratifiedMor(CategoricalMor):
     r"""Stratum-preserving maps of one selected differentiability degree."""
 
-    class ElementMethods:
-        def underlying_continuous_map(self):
-            pass
-
+    class ElementMethods(_StratifiedManifoldMapMethods):
         def underlying_topological_stratified_map(self):
-            pass
-
-        def interior_map(self):
             pass
 
         def weaken_to(self, degree):
@@ -332,8 +339,8 @@ class RealCkStratifiedMor(CategoricalMor):
         def __mul__(self, other):
             pass
 
-    def _element_constructor_(self, stratum_maps):
-        pass
+    def _element_constructor_(self, continuous_map, interior_map, stratum_maps):
+        return self.element_class(self, continuous_map, interior_map, stratum_maps)
 
     @object_level
     def identity(self):
