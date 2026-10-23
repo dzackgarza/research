@@ -539,6 +539,10 @@ class SimplicialComplexes(OwnedCategory):
         def defining_simplices(self):
             return self._defining_simplices
 
+        def _engine_simplicial_complex(self):
+            r"""Lower selected vertices and simplices to Sage privately."""
+            pass
+
         def simplices(self, dimension):
             pass
 
@@ -642,6 +646,10 @@ class DeltaComplexes(OwnedCategory):
         def face_maps(self):
             return self._face_maps
 
+        def _engine_delta_complex(self):
+            r"""Lower selected simplices and face maps to Sage privately."""
+            pass
+
         def face_map(self, simplex, index):
             return self._face_maps[simplex, index]
 
@@ -739,6 +747,10 @@ class SimplicialSets(OwnedCategory):
 
         def defining_degeneracies(self):
             return self._defining_degeneracies
+
+        def _engine_simplicial_set(self):
+            r"""Lower selected face and degeneracy operators to Sage privately."""
+            pass
 
         def simplices(self, dimension):
             return self._defining_simplices[dimension]
