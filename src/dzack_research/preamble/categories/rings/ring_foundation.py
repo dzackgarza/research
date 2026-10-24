@@ -5847,6 +5847,10 @@ def _engine_finiteness_decision(engine):
             # infinite and non-Noetherian rings.  Do not ask the generic
             # quotient engine for an is_finite method it does not supply.
             return True
+        case QuotientRing_generic() if engine.cover_ring().is_finite():
+            # The quotient map is surjective, so a quotient of a finite
+            # ring is finite regardless of its ideal presentation.
+            return True
         case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and bool(
             engine.cover_ring().base_ring().is_field()
         ):
