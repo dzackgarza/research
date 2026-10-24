@@ -4149,7 +4149,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                     labels = self.algebra_generating_set()
                     if not labels.cardinality().is_finite():
                         return AtomicProposition("is_central", self, element)
-                    return all(
+                    return conjunction(
                         element * self.algebra_generator(label)
                         == self.algebra_generator(label) * element
                         for label in labels
