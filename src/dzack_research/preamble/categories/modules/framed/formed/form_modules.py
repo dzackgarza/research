@@ -3784,11 +3784,11 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             def radical_quotient_projection(self):
                 r"""Return the canonical formed-module map to ``radical_quotient()``.
 
-                When the cokernel is re-presented on a field basis, compose its
-                canonical cokernel projection with the inverse of that basis
-                isomorphism. The selected maps are retained as construction
-                data of the returned quotient, so this arrow has that exact
-                object as codomain.
+                The quotient retains the canonical map from the unformed
+                module to its cokernel. When that cokernel is re-presented on
+                a field basis, compose this map with the inverse of the basis
+                isomorphism. The resulting arrow has the exact returned
+                formed module as codomain.
                 """
                 quotient = self.radical_quotient()
                 projection = quotient._preamble_radical_quotient_projection
