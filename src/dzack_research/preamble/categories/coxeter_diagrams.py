@@ -1535,7 +1535,7 @@ class RootedCoxeterDiagrams(OwnedCategory):
     The roots are a chosen datum on the diagram, so this is a data category,
     not an axiom (``CAT-17``, ``CAT-29``); its objects are constructed with
     their roots.  ``lean-categories`` does not yet formalize rooted diagrams;
-    the request is recorded in ``COMPLAINTS.md``.
+    the request is recorded in research issue #439.
     """
 
     def super_categories(self):

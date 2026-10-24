@@ -6,6 +6,12 @@ Development uses direct commits to `main`, without pull requests. Branches are
 reserved for worktrees required by parallel work and are integrated directly
 into `main`. See the [delivery workflow](CONTRIBUTING.md#delivery-workflow).
 
+Work and defects live in the [native issue tree](https://github.com/dzackgarza/research/issues/46).
+Use `itree next dzackgarza/research` to select ready work. Each issue carries its
+evidence and acceptance criteria; native sibling order sets priority and
+blocked-by relations record prerequisites. Check the tree with
+`itree doctor dzackgarza/research --strict`.
+
 ## Sage research package
 
 The installable `dzack_research` package is a **Sage** package, not a plain Python package: its modules are `.sage` sources that the [sageparse](https://github.com/dzackgarza/tree-sitter-sage) preparser compiles to Python on import.

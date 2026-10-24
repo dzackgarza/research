@@ -1740,7 +1740,7 @@ at \(m=\infty\) the roots tell parallel mirrors from divergent ones.
 The roots are a chosen datum on the diagram, so this is a data category,
 not an axiom (``CAT-17``, ``CAT-29``); its objects are constructed with
 their roots.  ``lean-categories`` does not yet formalize rooted diagrams;
-the request is recorded in ``COMPLAINTS.md``.
+the request is recorded in research issue #439.
 ```
 
 - **not exported**: reachable only as a supercategory
@@ -13943,7 +13943,7 @@ whichever route builds it, with the groups as its ambient category.  When ``F`` 
 and ``R`` is finite the presentation is a chosen finite presentation, and
 the group is also placed in :class:`GroupsWithChosenFinitePresentation`;
 how the two relate to the resolution category of ``CAT-29`` is recorded
-in ``COMPLAINTS.md``.
+in research issue #409.
 ```
 
 - **defined at** `src/dzack_research/preamble/categories/group/groups.py:7156`
@@ -13994,7 +13994,7 @@ each ``n`` the construction is a functor from rings to groups (Mathlib
 category, asked of it explicitly: ``GeneralLinearGroups().Mor(A, B)``.
 ``GL_n(R)`` is one object whichever route builds it, with the groups as
 its ambient category.  ``lean-categories`` does not formalize ``GL_n``; the request is in
-``COMPLAINTS.md``.
+research issue #432.
 ```
 
 - **defined at** `src/dzack_research/preamble/categories/group/groups.py:6953`
@@ -14256,7 +14256,7 @@ matrix ``m: V x V -> Card``, built by ``CoxeterGroups()(m)`` and
 retaining ``m`` (``lean-categories`` FOUNDATIONS.md Def. 60.4).  It is
 constructed through :class:`FreeGroupQuotients` with that presentation.
 Its ambient category is the groups.  Arrows of Coxeter data are not
-formalized in ``lean-categories`` (request in ``COMPLAINTS.md``), so this
+formalized in ``lean-categories`` (request in research issue #439), so this
 category presents its objects and states no arrows of its own; the maps
 of presentations are ``FreeGroupQuotients().Mor(W, W')``.
 ```
@@ -14428,7 +14428,7 @@ arrows of the category, asked of it explicitly:
 route builds it, and its ambient category is the groups, so ``A.Mor(B)``
 is all group homomorphisms (``OWN-02``, ``ARC-07``).  ``lean-categories``
 does not formalize symmetric groups; the
-request is in ``COMPLAINTS.md``.  Every symmetric group is a permutation
+request is in research issue #432.  Every symmetric group is a permutation
 group, by its action on ``Omega``.
 ```
 

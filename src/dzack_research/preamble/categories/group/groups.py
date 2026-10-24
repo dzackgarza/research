@@ -6972,7 +6972,7 @@ class SymmetricGroups(OwnedCategory):
     route builds it, and its ambient category is the groups, so ``A.Mor(B)``
     is all group homomorphisms (``OWN-02``, ``ARC-07``).  ``lean-categories``
     does not formalize symmetric groups; the
-    request is in ``COMPLAINTS.md``.  Every symmetric group is a permutation
+    request is in research issue #432.  Every symmetric group is a permutation
     group, by its action on ``Omega``.
     """
 
@@ -7119,7 +7119,7 @@ class GeneralLinearGroups(OwnedCategory):
     category, asked of it explicitly: ``GeneralLinearGroups().Mor(A, B)``.
     ``GL_n(R)`` is one object whichever route builds it, with the groups as
     its ambient category.  ``lean-categories`` does not formalize ``GL_n``; the request is in
-    ``COMPLAINTS.md``.
+    research issue #432.
     """
 
     _MorCategory = GeneralLinearGroupMorCategoryConstruction
@@ -7160,7 +7160,7 @@ class CoxeterGroups(OwnedCategory):
     retaining ``m`` (``lean-categories`` FOUNDATIONS.md Def. 60.4).  It is
     constructed through :class:`FreeGroupQuotients` with that presentation.
     Its ambient category is the groups.  Arrows of Coxeter data are not
-    formalized in ``lean-categories`` (request in ``COMPLAINTS.md``), so this
+    formalized in ``lean-categories`` (request in research issue #439), so this
     category presents its objects and states no arrows of its own; the maps
     of presentations are ``FreeGroupQuotients().Mor(W, W')``.
     """
@@ -7323,7 +7323,7 @@ class FreeGroupQuotients(OwnedCategory):
     and ``R`` is finite the presentation is a chosen finite presentation, and
     the group is also placed in :class:`GroupsWithChosenFinitePresentation`;
     how the two relate to the resolution category of ``CAT-29`` is recorded
-    in ``COMPLAINTS.md``.
+    in research issue #409.
     """
 
     _MorCategory = FreeGroupQuotientMorCategoryConstruction
@@ -7666,7 +7666,7 @@ class Subgroups(OwnedParameterizedCategory):
             ``Mathlib/NumberTheory/ModularForms/ArithmeticSubgroups.lean:102``,
             states it for subgroups of ``GL_2(RR)`` against the image of
             ``SL_2(ZZ)``).  ``lean-categories`` does not define it; the
-            request is in ``COMPLAINTS.md``.  A subgroup constructed as the
+            request is in research issue #412.  A subgroup constructed as the
             integral points ``G(ZZ)`` of its ambient is arithmetic by that
             construction (it is commensurable with itself; Mathlib
             ``instance : IsArithmetic 𝒮ℒ``); any other subgroup answers the

@@ -574,7 +574,7 @@ predicate computation; their absence is not treated as degeneracy.
 The upstream definitions are in
 `LeanCategories/Lattices/Valued/Constructions.lean`; the specific general
 nondegeneracy-preservation declaration remains a formalization audit item
-in COMPLAINTS.md. Its integral perfection-preservation theorems are
+in [#498](https://github.com/dzackgarza/research/issues/498). Its integral perfection-preservation theorems are
 stronger in conclusion but require stronger hypotheses and are not
 substitutes for this zero-radical statement.
 

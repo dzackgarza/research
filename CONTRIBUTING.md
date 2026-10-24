@@ -24,7 +24,7 @@ For a new addition, begin with
 For construction, representation, or engine work, then apply the normative
 [preamble architecture specification](#preamble-architecture-specification).
 Its `OWN-*` policies specify the intended architecture, not implementation status.
-Record observed foundational gaps and papercuts in GitHub issues indexed by [COMPLAINTS.md](COMPLAINTS.md)
+Record observed foundational gaps and papercuts in the [native issue tree](https://github.com/dzackgarza/research/issues/46)
 under [DEV-59](#dev-59-record-observed-foundational-gaps-and-papercuts).
 
 Use the [task complexity guide](COMPLEXITY.md) to score work and select a model and reasoning effort.
@@ -213,8 +213,8 @@ absent from the preamble calls for integration, not reinvention. An API may also
 present the correct object while a requested decision procedure is unavailable
 or undecidable. Do not confuse that with nonexistence of the object.
 
-When this comparison exposes an actual gap, record it in an issue linked from
-[COMPLAINTS.md](COMPLAINTS.md) under `DEV-59`. Explain the missing mathematics
+When this comparison exposes an actual gap, record it in the
+[native issue tree](https://github.com/dzackgarza/research/issues/46) under `DEV-59`. Explain the missing mathematics
 and the dependency path that exposed it, not only the failing method. Search
 broadly enough to distinguish absent machinery from undiscovered machinery;
 record the inspected boundary and unresolved questions honestly. For missing
@@ -590,7 +590,7 @@ former.
   construction and the maintained computation; satisfying only one half is
   insufficient. Missing mathematics is a formalization request to
   `lean-categories`. Record it, missing presentations, and observed workflow
-  friction in issues indexed by `COMPLAINTS.md` under `DEV-59`, even when found outside the selected
+  friction in the native issue tree under `DEV-59`, even when found outside the selected
   implementation task. The complaint states the need; it does not authorize a
   bespoke replacement or a change of scope.
 - **Rationale:** A private Sage call can bypass the presented localization just as
@@ -1071,7 +1071,7 @@ limit and empty colimit, a directed index with incomparable elements, an inverse
 system with non-surjective transitions, and a direct system with non-injective
 transitions. Select specimens for the contract being delivered, preserve broader
 unfinished cases in TODO, and follow terminal T for execution (`DEV-58`). Record
-observed missing foundations in issues indexed by COMPLAINTS, with the `lean-categories` request
+observed missing foundations in the native issue tree, with the `lean-categories` request
 for missing mathematics, not invented failures inferred merely from the breadth
 of this specification.
 
@@ -1812,7 +1812,7 @@ aggregate, which is why the instrument runs on every declaration change.
 11. **When the honest parent is not in the tree, stop and say so.**  Present it
     if `lean-categories` formalizes it; otherwise request it there, leave
     `super_categories` abstract so the category refuses to construct, and record
-    the missing category in an issue indexed by `COMPLAINTS.md`, with its
+    the missing category in the native issue tree, with its
     dependency path and the consumer's native blocked-by relation. Never a
     placeholder, never a local definition, never a mechanism that makes the
     construction proceed (`DEV-65`).
@@ -7230,8 +7230,8 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-59`: Record Observed Foundational Gaps and Papercuts
 
-- **Rule**: GitHub issues are the canonical records of observed problems;
-  [COMPLAINTS.md](COMPLAINTS.md) is their navigation index. These include missing foundational
+- **Rule**: The [native issue tree](https://github.com/dzackgarza/research/issues/46)
+  owns observed problems, including missing foundational
   mathematics and missing structural relationships, and also actual papercuts
   in research use or contribution workflows. Record a finding when it arises
   during mathematical tracing, source reading, implementation, review, notebook
@@ -7262,7 +7262,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   invent a defect from a possible future inconvenience, and do not inflate a
   local ergonomic issue into a missing theory without a mathematical trace.
 
-  Search existing issues, complaint headings, and the related TODO index before filing.
+  Search the native issue tree before filing.
   Extend the existing mathematical issue when a new consumer exposes
   the same missing foundation; retain genuinely different hypotheses or gaps.
   One general complaint can link several consumers. Its title and links should
@@ -7272,10 +7272,15 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   missing piece of it is a formalization request there; CONTRIBUTING and the
   preamble's declarations specify the enduring engineering design. The research
   issue owns the unmet need, evidence, remaining requirements, acceptance, and
-  links to upstream requests. `COMPLAINTS.md` and `TODO.md` index those issues.
+  links to upstream requests. Use itree to navigate and select the work.
   Native sub-issues under #46 give the work order; native blocked-by relations
   record actual prerequisites. Rank by correctness, reusable capability, and
   reduction of later work, before optimizations, cleanups, or style work.
+  Attach each new complaint to its owning native parent, assign the delivery
+  milestone, and state concrete acceptance criteria in the issue body. Place
+  its open prerequisites before it and add blocked-by relations only for actual
+  prerequisites. Use `itree next dzackgarza/research` for selection and
+  `itree doctor dzackgarza/research --strict` to check the tree after changes.
   Use the existing remediation issue when it already owns the complaint. If the current
   task requires the fix, update that issue with the actual remaining delta and
   continue it. An independent finding can remain recorded without starting a new
@@ -7284,13 +7289,13 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   obligation to present the result. Filing or recording a complaint never
   completes its repair.
 
-  **Maintenance:** follow `DEV-61` for issues and their local indexes. Reread
+  **Maintenance:** follow `DEV-61` for issue changes. Reread
   before editing and preserve other changes. Keep the full complaint evidence
   in the owning issue body or a linked comment. On delivery, compare the fix
   with the full mathematical requirement and its affected paths, record the
   resolution evidence, and close the issue only when its obligations are discharged.
   Partial delivery updates the remaining requirements and leaves the issue open.
-  Index links remain useful after closure; do not duplicate live status locally.
+  Preserve evidence comments after closure and use the issue's native state.
   Preserve enduring engineering decisions at their declaration.
   Source-based remediation does not certify runtime
   behavior; required execution remains in terminal T under `DEV-58`. An observed
@@ -7343,7 +7348,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   and deliver its remaining delta. Reconcile its requirements, complaint evidence,
   and native dependencies with the implementation commit. Selection, claiming
   and release do not merit separate commits.
-  Before changing an issue, TODO, or COMPLAINTS, reread the live record and preserve edits
+  Before changing an issue or work-selection guidance, reread the live record and preserve edits
   not made in the current task. A clean `HEAD` is the target's checkpoint;
   conflicting uncommitted work must be resolved with its owner.
 
@@ -7361,7 +7366,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-62`: An Empirical Claim About an Engine Has Its Measurement or Is Written as a Hypothesis
 
-- **Rule**: A statement about what Sage or another engine does, costs, supports, or demands of its input is one of two things.  Either it is a finding, and it travels with the probe that produced it: the command, the specimen and its size parameter, the version, and the result.  Or it is a hypothesis, and it is written in words that cannot be read as a finding ("untested: `longest_path` may be the cost").  A causal sentence in the grammatical register of a finding, with no measurement behind it, is fabrication.  It is banned in code comments, docstrings, commit bodies, `TRAPS.md`, `COMPLAINTS.md`, reports, and conversation alike.  This extends the always-on performance-claims rule (wall time as a function of size, never counts) from how a cost is reported to whether the sentence may be written at all.
+- **Rule**: A statement about what Sage or another engine does, costs, supports, or demands of its input is one of two things.  Either it is a finding, and it travels with the probe that produced it: the command, the specimen and its size parameter, the version, and the result.  Or it is a hypothesis, and it is written in words that cannot be read as a finding ("untested: `longest_path` may be the cost").  A causal sentence in the grammatical register of a finding, with no measurement behind it, is fabrication.  It is banned in code comments, docstrings, commit bodies, `TRAPS.md`, issues, reports, and conversation alike.  This extends the always-on performance-claims rule (wall time as a function of size, never counts) from how a cost is reported to whether the sentence may be written at all.
 
 - **Rationale**: Such a sentence does four things.  It terminates the search: a named cause closes the question, and the story then stands between the reader and the measurement.  It borrows authority from plausibility: reciting a mechanism that would explain the observation feels, from the inside, identical to having found it, and the reader cannot tell the difference.  It counterfeits the project's currency: the product here is empirical knowledge of Sage (`ENG-07`), so an unmeasured engine claim is forged coin in the one denomination that matters, and it is trusted permanently because nobody re-derives a recorded fact.  And it is lazy in the literal sense: the measurement usually costs a second.  A false row in `TRAPS.md` is more expensive than an empty file for exactly the reason a true row is valuable.
 
@@ -7373,11 +7378,11 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-63`: Measured Engine Facts Have One Durable Owner
 
-- **Rule**: [TRAPS.md](TRAPS.md) at the repository root is the ledger of measured facts about the engines this repository delegates to: a route's cost as a curve, an input it rejects, an output convention, a default that is wrong or slow, and the alternate spelling that answers.  Write the row in the same turn as the measurement, before the tool or construction that exposed it moves on.  A row records the operation, the Sage spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, the route chosen, and the site that depends on it.  The issue indexed by `COMPLAINTS.md` keeps the unmet need and resolution evidence under `DEV-59`; `TRAPS.md` keeps the fact, which delivery uses and never resolves.  The owned name's docstring cites the row; it does not restate it.
+- **Rule**: [TRAPS.md](TRAPS.md) at the repository root is the ledger of measured facts about the engines this repository delegates to: a route's cost as a curve, an input it rejects, an output convention, a default that is wrong or slow, and the alternate spelling that answers.  Write the row in the same turn as the measurement, before the tool or construction that exposed it moves on.  A row records the operation, the Sage spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, the route chosen, and the site that depends on it.  The owning issue keeps the unmet need and resolution evidence under `DEV-59`; `TRAPS.md` keeps the fact, which delivery uses and never resolves.  The owned name's docstring cites the row; it does not restate it.
 
 - **Rationale**: The fact is the product (`ENG-07`) and it has no other home.  A commit body is found only by someone who already suspects the commit; a conversation is gone; a docstring at one site is invisible to the next site that meets the same engine.  One ledger, read before any engine route is chosen, is what turns one measurement into every later rediscovery avoided.
 
-- **Violation Example**: a measurement quoted in a reply and nowhere else; a workaround committed with the engine fact only in the commit body; a cost recorded as a `COMPLAINTS.md` gap and deleted when the consumer was delivered, taking the fact with it.
+- **Violation Example**: a measurement quoted in a reply and nowhere else; a workaround committed with the engine fact only in the commit body; a cost recorded only as an issue and deleted when the consumer was delivered, taking the fact with it.
 
 - **Correct Example**: the interpreter-startup row in `TRAPS.md`: what was timed, three runs, the version, the command, and the consequence for per-invocation tooling.
 
@@ -7399,7 +7404,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `def super_categories(self): return [Schemes(self.base_ring())]` on every scheme axiom; `_owned_integers` refining ZZ into a category whose declaration needs ZZ; `RepresentedToricSchemes -> LocallyRingedSpaces` because no base-free scheme category exists.
 
-- **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in an issue indexed by `COMPLAINTS.md` and scheduled by native dependencies.
+- **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in the native issue tree and scheduled by native dependencies.
 
 #### `DEV-66`: Keep Bulk Scratch Repository-Local
 

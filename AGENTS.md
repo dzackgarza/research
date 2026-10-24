@@ -196,7 +196,7 @@ the first edit, and requires the report to list the files that were read:
 
 - `INTENT.md` and this file;
 - `CONTRIBUTING.md` in full, including the preamble architecture specification;
-- `TODO.md` and `COMPLAINTS.md`;
+- `TODO.md` and the relevant issues in the [native issue tree](https://github.com/dzackgarza/research/issues/46);
 - `docs/preamble-megadoc.md`;
 - the `AGENTS.md` and `README.md` of the subtree that the work edits.
 
@@ -250,9 +250,9 @@ this reading.
 Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
 before changing preamble construction, representation, or engine integration.
 It owns the intended architecture; the TODO owns only the unfinished work.
-Read [COMPLAINTS.md](COMPLAINTS.md) and its linked issues for observed foundational
-gaps and papercuts relevant to the construction. The issues own the unmet needs
-and evidence; the file is their navigation index.
+Read the relevant issues in the [native issue tree](https://github.com/dzackgarza/research/issues/46)
+for observed foundational gaps and papercuts. Each issue owns its requirements,
+evidence, acceptance, dependencies, and closure.
 
 When the owner calls an engineering move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external (for mathematics the standard is `lean-categories`): look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
 
@@ -429,7 +429,7 @@ not permission to rewrite foundations or create another tracking framework.
 
 **Record actual issues whenever they are discovered.** Apply
 [`DEV-59`](CONTRIBUTING.md#dev-59-record-observed-foundational-gaps-and-papercuts)
-in GitHub issues indexed by [COMPLAINTS.md](COMPLAINTS.md), including findings outside the selected task.
+in the [native issue tree](https://github.com/dzackgarza/research/issues/46), including findings outside the selected task.
 Give the missing general mathematics, the dependency path, observed evidence,
 existing partial capability, affected consumers, an honest coverage boundary,
 and the `lean-categories` request for mathematics it lacks.
@@ -442,8 +442,8 @@ Place new issues in the native tree under #46, ordered by correctness, reusable
 capability, and reduction of later work. Native blocked-by relations record real
 prerequisites. Filing does not repair a defect or authorize unrelated implementation.
 Close an issue only with evidence for its full requirements; preserve remaining
-proof work under terminal T. COMPLAINTS and TODO remain indexes, with status owned
-by the issues. Apply `DEV-61` to issue and index edits; the current single-worker
+proof work under terminal T. Read and update the issues through itree and GitHub.
+Apply `DEV-61` to issue edits; the current single-worker
 workflow has no claim ledger or coordination mutex.
 The detailed capture and maintenance contract lives in `DEV-59`.
 
@@ -1728,8 +1728,8 @@ If the answer is none, the foundation was observed and not acted on.
 
 The issue records *why* the work is owed, with its dependency path and evidence,
 under `DEV-59`. Native tree order and blocked-by relations schedule it.
-`COMPLAINTS.md` and `TODO.md` index that record. Recording evidence alone does
-not establish the prerequisite relation.
+Read that record through itree. Recording evidence alone does not establish
+the prerequisite relation.
 
 **Scope is a real question, and it is answered by the DAG, not by scoping the
 mathematics down.** The prerequisite chain terminates at what exists, so a
@@ -1809,7 +1809,7 @@ category belongs.
 **A false declaration is never an admissible state, and recording it elsewhere
 does not make it one.** Filing the gap while the wrong supercategory stays in
 the source leaves every reader and every object inheriting the false statement;
-the note in `COMPLAINTS.md` is read by nobody executing the code. There is no
+the issue text is read by nobody executing the code. There is no
 ranking here in which the wrong claim is the better of two states.
 
 When the honest supercategory is not presented in the tree, there are two
@@ -1828,7 +1828,7 @@ moves and nothing else:
   construct is a working signal; one that constructs into the wrong place is a
   silent wrong answer that propagates through everything it touches.
 
-Record the gap in an issue indexed by `COMPLAINTS.md` under `DEV-59`, with its dependency
+Record the gap in the native issue tree under `DEV-59`, with its dependency
 path and the consumer it blocks. That is the record of *why* the node is
 missing -- never a licence to keep a substitute in the source while it stands.
 

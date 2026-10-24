@@ -7933,7 +7933,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Return whether this vector lies in ``R(L) = {v : v primitive, s_v in O(L)}``.
 
             A root is a primitive integral reflection vector (owner ruling,
-            #406; requested from ``lean-categories``, see ``COMPLAINTS.md``).
+            #406; requested from ``lean-categories``, see research issue #406).
             ``s_{2r} = s_r``, so integrality alone admits non-primitive
             multiples; :meth:`is_integral_reflection_vector` is that weaker
             predicate.
