@@ -139,8 +139,8 @@ def test_a_newcomer_does_linear_algebra_over_a_pid(rank) -> None:
     assert N.module_rank() == cardinal(2)
     assert (M / N).torsion_subgroup().order() == 2
     assert M.tensor_product(Q).order() == Q.order() ** rank
-    assert Hom(M, ZZ).module_rank() == cardinal(rank)
-    assert Hom(Q, ZZ).order() == 1
+    assert M.Mor(ZZ).module_rank() == cardinal(rank)
+    assert Q.Mor(ZZ).order() == 1
     assert Q.ext(ZZ, 1).order() == Q.order()
     assert Q.tor(Q, 1).order() == Q.order()
     L = IntegralLattice(A + A.transpose())
