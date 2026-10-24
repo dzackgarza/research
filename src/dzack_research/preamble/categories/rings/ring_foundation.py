@@ -5540,7 +5540,8 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         return self._engine.is_integral_domain()
 
     def _finiteness_decision(self):
-        return _engine_finiteness_decision(self._engine)
+        decision = _engine_finiteness_decision(self._engine)
+        return AtomicProposition("is_finite", self) if decision is None else decision
 
     def _preamble_is_number_field_order(self):
         r"""Whether the selected ring datum is ZZ or a number-field order."""
