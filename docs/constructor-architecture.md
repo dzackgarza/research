@@ -1,110 +1,44 @@
-# Constructor architecture on sage-categories
+# Constructor architecture
 
-The target is a preamble of mathematical leaves over the public `sage-categories` core. Constructor inheritance, implementation registration, initialization order and collision handling belong to that core. The current research runtime supplies evidence for the rewrite and must keep working until replaced; it is not the owner of a new permanent constructor framework.
+A public constructor denotes an object or morphism in the `lean-categories` catalogue. `lean-cas-dsl` reads that declaration, its typed input and its structural route; a leaf can only answer a registered computation on an input form. Research presents the resulting language in experiments and notebooks and may supply opaque computational implementations. It does not define a second category, constructor identity, property classifier or operation surface. This is the architecture of [INTENT.md](../INTENT.md) and the replacement map in `lean-cas-dsl/specs/computational-core.md` §3.
 
-This specifies the integration design, not runtime delivery. The research construction contracts remain in CONTRIBUTING. The core sources inspected on `dzack@rack`, `/home/dzack/gitclones/sage-categories`, were at `5867543fc990b017caabdb03d6d82cdf9cc7e5eb`. Its local `main` was ahead of its recorded `origin/main`, `60fc9581477591259ef4fe33ae64eb2de374ecf5`. These observations do not establish publication. A consumer dependency needs an owner-published full SHA under that repository's README; this design does not change a dependency pin or publish its local history.
+## Construction ownership
 
-## Target construction mechanisms
-
-| Mathematical situation | Core mechanism | Preamble leaf responsibility |
+| Mathematical input | Formal owner and datum | Kernel and leaf boundary |
 | --- | --- | --- |
-| A new structure on existing mathematics | A leaf `Category` with local `ObjectType`, `ElementType`, `MorphismType` and selected `structure_functors()` | State the new datum and immediate object/morphism actions; the kernel initializes inherited target structure from those actions |
-| A property of an existing structure | `Axiom`, property categories and `construction_owner()` | State the proposition and its computational handlers; inherit the original constructor, including through nested restrictions |
-| An implementation of an existing categorical construction | Select `End_Cat(x).one()` first in `structure_functors()`, then `Cat().implement(LeafCategory)` | Add the local mathematics on the exact retained category `x`; do not construct a second category or repeat its constructor |
-| A specialized realization of a universal construction | The selected functor's lifting interface, such as `with_limit_lifting` | Supply the new mathematical structure on the retained apex and the corresponding map constructor; reuse the cone and universal map |
-| A decision procedure for an existing proposition | The core predicate/query handler interfaces | Add an exact computational case at its predicate owner; do not write another predicate dispatcher in the preamble |
+| A named set such as `Fin n` | `lean-categories/LeanCategories/Catalogue/Semantics/Foundation/Objects.lean`: `obj.sets.fin` denotes `Fin n`, with `n : ℕ` | The kernel reads the registered object at its typed parameter. A leaf may implement an operation on a declared input form. |
+| A property of an existing object | A catalogue classifier and its predicate, for example `clf.sets.finite` in `Foundation/Finiteness.lean` | The kernel uses the classifier to form the refined type. A leaf does not decide which objects have the property. |
+| Cardinality | `Foundation/Cardinality.lean`: `card : Core(Sets) ⥤ Discrete Cardinal`, registered once as `fun.sets.cardinality` and presented as `cardinality` on `Sets` | The kernel composes registered structural routes to this functor; a leaf returns an answer in the declared result form. Cardinal comparison morphisms belong to the distinct preorder category on `Cardinal`. |
+| A product, coproduct, pullback or other universal construction | The formal cone, cocone, legs and mediator, registered at the relevant category and diagram shape | The kernel retains those maps in its typed result. A leaf's apex alone cannot supply or certify them. |
+| A selected module, form, algebra or subgroup construction | The catalogue's dependent input, actual maps, category and structural functors | The kernel retains the selected construction and resolves operations along the registered functors. A leaf may compute an answer to a resulting request. |
 
-The source owners are `sage_categories/cat/category.py`, `cat/properties.py`, `cat/predicates.py` and the kernel compiler. The consumer contracts are `specs/leaves.md`, `specs/functor.md`, `specs/property-refinement.md` and the pointed-set and poset-product templates on rack.
+`lean-cas-dsl/specs/computational-core.md` §3 assigns the old `sage-categories` dynamic-class construction, initializer threading, target-state grafting and MRO ordering no Lean replacement. A selected functor acts as the explicit term `F(X)`. Registered comparison cells resolve distinct routes; Python inheritance order does not. `sage-categories` remains a source of requirements and possibly private implementations, not a second public constructor runtime.
 
-`03f6a1fd` is directly relevant to constructor loss: `NarrowedProperty.__call__` now constructs through `self.construction_owner()` instead of its immediate ambient category. Module, bimodule, monoid, semiring and ring constructors identify themselves as their construction owner. Nested roots with incompatible owners are rejected. `e13cfa1d` adds the corresponding narrowed-property consumer. Source was inspected here; that consumer was not executed in this research task.
+A construction states its defining data and laws at the formal owner. It does not establish a leaf's correctness. The permanent `lean-cas-dsl` acceptance assertions, whose expected values are independent of leaves, are the only evidence about computations. A local research specimen can expose a wiring defect, but it cannot alter the formal meaning or count as leaf acceptance.
 
-The core's pointed-set template is the model for avoiding repeated constructors. It identifies pointed sets with `Sets().CosliceUnder(Sets().Terminal())`, selects that category's identity and its retained projection composed with evaluation at the codomain, and writes no constructor. Its poset-product template supplies componentwise order through `with_limit_lifting`; the core supplies the cone, projections and universal morphism. These are the extension mechanisms the preamble should consume before adding registration machinery.
+## Research migration
 
-## Consequences for the preamble rewrite
+`src/dzack_research/preamble/owned_category.py` still supplies `_owned_implementation_bases`, `ConstructionContract`, `_construction_contract`, `_mor_construction_contract` and `_object_of`. The first orders Python providers; the contracts inspect implementation signatures; `_object_of` instantiates a selected `ObjectType`. These are transitional implementation facts, not a semantic source. `Algebras(R)._call_(module, multiplication)` and `FormModules(R)._call_(form)` state mathematical inputs; their Python initializer chains are a different concern. A migration compares the actual retained modules, forms, maps and universal data against the formal declarations before removing a caller of the old route.
 
-For modules, use the core module owner and its action-morphism input. A ring-endomorphism presentation is a named input adapter to that construction, not a competing module implementation. For algebras, supply the multiplication and any chosen unit through the core's structured-object construction. For a bilinear module, supply the selected bilinear form on the actual module and the immediate projections that retain that module and form. For lattices, add the lattice-specific datum and backend computation on those owners. Property restrictions inherit these constructors.
+The first complete layer is `Sets` under [research #606](https://github.com/dzackgarza/research/issues/606), including finite and countable sets, orders, powersets, cardinality, ordinals and the stated limits and colimits. Later layers and deletion of shared transitional machinery remain with [#384](https://github.com/dzackgarza/research/issues/384). A published `sage-categories` finite-set example is a useful source specimen, but does not replace the set layer. The published dependency pin is not evidence that a research constructor has moved.
 
-The kernel runs a selected functor's object action after the leaf's own data is initialized. The action returns the public target value; the kernel uses its construction to initialize the inherited target implementation on the source. A lattice projection that uses its underlying module therefore follows that module projection in the selected functor order. This replaces the preamble's `_derived_construction_parameters` and cooperative `super().__init__` engineering; leaves do not translate those fields into another local initialization registry.
+For each construction, record its formal category and declaration, typed input and hypotheses, actual selected structure functors, retained object and arrow data, kernel request and result form, and the research callers to migrate. When the formal input is absent, keep the precise mathematical requirement at its upstream owner. Preserve the existing mathematical specimens; terminal execution follows `DEV-58`.
 
-For subgroups, use the generic group subobject construction and its retained monomorphism. Its underlying-set image comes from the selected group-to-set functor on that same morphism. A subgroup of `O(L)` specializes that route with its generators or predicate. The object, inclusion and underlying-set map must be followed through the core APIs before declaring the leaf complete; a `Subgroups -> Groups -> Sets` graph path alone does not establish them.
+A module retains its scalar action and selected base ring; a formed module retains the underlying module, form and associated maps; an algebra retains its module, multiplication and chosen unit when one is part of the input. A subgroup retains its ambient group and monomorphism, whose image under the group-to-set functor is the underlying set inclusion. For a limit, retain the diagram, cone and mediator; an apex with the expected size does not determine them. These are the data to compare in `Algebras(R)`, `FormModules(R)`, `Subgroups` and the set constructions before replacing their research consumers.
 
-Construction states the defining laws; computations of those laws are separate proposition queries under the core contract. Do not insert constructor-time `ask(...)` gates or new certified/unchecked entrypoints. Engine adapters stay private under the research ownership contract: the core template's `from_sage` example does not by itself authorize a raw-engine public preamble entrypoint.
+The historical changes below identify data that a migration must preserve:
 
-## Registry and discovery ownership
-
-Use `Cat().implement(...)` for implementation registration against mathematical category identities. It already reads the identity-functor declaration and installs the implementation on the retained category. A preamble string registry mapping category names to classes would compete with it. Predicate handlers likewise use the existing core interface. A small exact-name catalogue, such as lattice names, remains leaf data; it does not own category or constructor inheritance.
-
-A constructor-discovery decorator is optional metadata, not the wiring mechanism. First derive default constructors from `construction_owner()`, public call signatures and implementation declarations. A marker is useful only for named alternative presentations that cannot otherwise be distinguished from ordinary methods. If a shared marker or constructor-introspection protocol is required, define it in `sage-categories` and have research consume it. Do not freeze a research-specific decorator or provider registry before establishing this boundary.
-
-Extend the research megadoc, placement and source-survey tools to report both the current runtime and the target core evidence. The target record includes the selected category, its constructor owner, implementation declaration, role definitions, signature, immediate selected functors and their source locations. Show inherited constructor availability after property narrowing, and compare declarations with runtime bindings. Source-only inspection labels unresolved binding as unobserved.
-
-Keep the structure-functor graph distinct from a property-inclusion poset. Preserve multiple functors with the same endpoints, their chosen actions, and the property that permits implementation inheritance. Up-set/down-set queries apply to the selected inclusion relation; forgetting a form or an action is not merely another subclass edge. This is necessary for auditing retained mathematical data and maps during the rewrite.
-
-Constructor alignment is part of the current discovery and API-freeze work; the full core replacement remains the separately scheduled integration node. Before freezing constructors, trace a module, a formed module and a subgroup through the core's actual APIs, recording any missing public core operation at its owner. A missing operation is core work, not permission to add a second preamble framework. Preserve mathematical specimens across the rewrite and compare retained data and map equations, not old class identities.
-
-## What the history requires
-
-| Inspected change | Concrete lesson for this design |
+| Inspected change | Required mathematical distinction |
 | --- | --- |
-| `7bbf7e60c` added a `BiproductLattices.ParentMethods.__init__` that forwarded `summands` and `biproduct_factors`; `d59eb8ef0` removed it and ordered providers by `_derived_construction_parameters` in `_owned_implementation_bases` | A leaf forwarding constructor duplicated a dependency that belonged in the shared construction chain. Discover and display the existing producer/consumer order rather than registering another forwarding route. |
-| `70104eaf6` changed localized-module construction from `Category.join(placement)` to `owned_category_join(placement)` | Having all constructor names was insufficient: the selected implementation had to preserve the provider order. Current `_object_of` normalizes joins through `_owned_realization_of_join`; retain that common entry. |
-| `144ba1883` removed the explicit `ModuleMorphism` base, stored lower arrow and repeated methods from `MultiplicativeAlgebraMorphism`, then declared it through `ElementMethods` | Arrow inheritance belongs to the Mor category graph. A constructor decorator must not manufacture a parallel Python inheritance graph or register a concrete arrow class as the public constructor. |
-| `09215fd7e` separated algebra framing from module framing; `e8866fb1f` repaired resolution-refactor losses involving selected lifts, bilinear pullbacks and framed-module queries | Similar names and category membership cannot identify the selected datum. Inspection must follow actual retained modules, forms, resolutions and maps. A registry entry cannot certify this. |
+| `7bbf7e60c` added a `BiproductLattices.ParentMethods.__init__` forwarding `summands` and `biproduct_factors`; `d59eb8ef0` removed it and ordered providers by `_derived_construction_parameters` | The biproduct has selected summands and factors. The formal construction and kernel result must retain them without a leaf forwarding constructor. |
+| `70104eaf6` changed localized-module construction from `Category.join(placement)` to `owned_category_join(placement)` | A category join and a selected construction route are different data. Retain the localization map and its module structure, not the provider order that happened to initialize them. |
+| `144ba1883` removed the explicit `ModuleMorphism` base and stored lower arrow from `MultiplicativeAlgebraMorphism` | Arrow structure comes from its Mor category and selected functors. A Python class base does not establish the corresponding formal morphism. |
+| `09215fd7e` separated algebra framing from module framing; `e8866fb1f` repaired losses involving selected lifts, bilinear pullbacks and framed-module queries | Similar names or common endpoints do not identify selected modules, forms, resolutions or maps. Follow each retained datum and arrow. |
 
-These are statements about inspected diffs. Several commits explicitly leave execution pending; their messages are not evidence of a passing current session.
+Those diffs are source evidence about the old implementation. They do not establish a passing current session or prove that a formal replacement is complete.
 
-## Evidence from the current research runtime
+## Exact-name lattice input
 
-In `src/dzack_research/preamble/owned_category.py`:
+`categories/_lattice.py::_lattice` accepts forms, tensors, free modules, named input, ranks and row data; these are different mathematical input forms. Its exact-name branch currently recognizes `U` and `H` through `_hyperbolic_plane_gram_tensor` and `_lattice_from_gram_tensor`. Keep that branch distinct from the finite crystallographic Cartan-type parser. An exact-name registration must reject duplicate names and any name already accepted by that parser, so it cannot silently change the meaning of `A2` or another descriptor. `CartanType_abstract` input retains its own route.
 
-- `_owned_implementation_bases` computes the provider order, including declared derived-data dependencies.
-- `ConstructionContract` records parameter names, declaring providers, defaults, variadic and opaque boundaries, and refinement hooks.
-- `_construction_contract(C)` reads `C.ObjectType`'s MRO. `_mor_construction_contract(C, A, B)` separately describes the fixed Mor parent.
-- `_object_of(C, **data)` normalizes the category, selects its implementation, validates the discovered contract and constructs it.
-
-Expose these facts through the existing megadoc and graph JSON while this runtime remains in use. Do not reconstruct their values from a manually maintained constructor registry. In particular, `required_names()` subtracts declared derived names, and `validate()` accepts additional names at an open variadic boundary. Reports must retain those facts; a successful parameter check does not establish that the data were produced or correctly threaded.
-
-The public input signature and the cooperative initializer contract are different. `Algebras(R)._call_(module, multiplication)` and `FormModules(R)._call_(form)` describe mathematical inputs. The provider initializers describe how their data reach implementation levels. Show both, with the calls connecting them. The megadoc currently reads `type(instance).__call__`; constructor reporting must also resolve the effective `_call_` and its declaring class, rather than displaying only the runtime's generic call signature.
-
-## Discovery decorator: metadata, without method installation
-
-If named-constructor discovery requires a marker, use the shared core metadata protocol on named mathematical construction methods. Treat the current category `_call_` hook as an implicit constructor declaration. Such a marker returns the original callable unchanged. It does not wrap calls, copy functions, use `setattr` on category classes, or accept a second declaration of the owner.
-
-Derive the owner and receiver kind from the declaration: category method, `ParentMethods`, `ElementMethods`, or Mor provider. Preserve the existing category runtime's binding. Thus a marked ring `localization` remains a method of a ring, while a marked category construction remains a method of that category. A list of constructors on `Sets` may provide navigation to stronger owners; it must not install every stronger constructor on every set.
-
-Extend `megadoc.Survey.describe` and its existing declared-method survey to collect these markers. Extend `refactor_survey` to read the same marker syntactically without import. The JSON record needs the declaration source, receiver kind, public signature, effective binding, and direct call expressions. For live category construction add the existing `ConstructionContract` and ordered providers. For source-only results mark runtime binding and provider order as unobserved. Keep parameterized categories parameterized; a sample over `ZZ` does not describe every `R`.
-
-The immediate useful output for `Algebras(R)` is:
-
-```text
-public input: _call_(module, multiplication)
-declaration: categories/algebras/algebras.py: Algebras._call_
-direct realization call: _algebra_on_module(module, multiplication, ...)
-retained datum to inspect: unformed_module(), multiplication()
-implementation: sampled ObjectType MRO and ConstructionContract
-```
-
-The retained-data line is a mathematical review question, not inferred proof. Construction expressions cannot establish identity of the retained module.
-
-## Registry: a specific extension point in lattice input
-
-`categories/_lattice.py::_lattice` already separates forms, tensors, free modules, named input, ranks and row data. Those branches have different mathematics. Preserve that classification.
-
-Extract only its exact-name branch into an owner-local named-lattice registry. The initial entries are `U` and `H`, currently one branch leading to `_hyperbolic_plane_gram_tensor` and `_lattice_from_gram_tensor`. A provider accepts the selected lattice category and the existing `names` and `module_generators` parameters, then returns the owned lattice through that same construction. Registration adds a new exact name without editing `_lattice`.
-
-String parsing has an explicit grammar: reserved exact names first; otherwise the existing finite crystallographic Cartan-type parser. Reject duplicate exact names. Reject a new exact name that the Cartan parser already accepts, so registration cannot silently change the meaning of `A2` or another established Cartan descriptor. That check belongs to the owner of named input, not a generic registry utility. `CartanType_abstract` input keeps its current route.
-
-Declare the initial `U` and `H` provider beside `_hyperbolic_plane_gram_tensor` in `_lattice.py`, which the public `lattices.py` already imports. Additional provider modules register with that owner and are loaded explicitly by the session composition root, `preamble/all.py`, after its lattice imports. Direct category imports expose the built-ins; a separately imported provider extends them explicitly. Expose registered names and source locations, including the loaded-module scope. Source inventory can also show declared providers whose modules have not loaded. Do not use subclass discovery: lattice implementation classes are not named input forms.
-
-This applies the [keyed registry pattern](https://www.kdnuggets.com/stop-using-if-else-chains-use-the-registry-pattern-in-python-instead) to an actual discrete branch. Do not turn all tensor/category predicates into a list of registered predicates with first-match dispatch. A general category-aware algorithm dispatcher is a separate design problem and is not justified by this named-input case.
-
-## Concrete inspection against the historical failures
-
-Extend the existing tools with these views, rather than introducing gates:
-
-1. **Declared versus bound constructors:** compare marked source declarations with effective live methods. Report shadowed declarations, same-name incomparable owners, and unloaded providers separately.
-2. **Construction-data flow:** display each initializer's consumed parameters, declared derived parameters and final provider order. Link each declaration to source. Use the lattice biproduct and localized-module histories as review slices; do not infer correct value transport from matching parameter names.
-3. **Realization call sites:** index calls to `_object_of`, `_algebra_on_module`, `_form_module` and `_lattice_object`, along with direct `ObjectType`/`parent_class` calls. Preserve unresolved receiver expressions. Review which callers use the shared construction and which allocate through another route.
-4. **Subgroup structure:** inspect `groups.py::Subgroups.ParentMethods.__init__`, its retained `supergroup`, and `_canonical_subgroup_inclusion`; compare that inclusion's underlying set map with the set-subobject construction. `Subgroups.super_categories()` currently names `OwnedGroups`. Neither adding a registry entry nor adding a set-subobject category edge establishes the missing map comparison.
-
-The next constructor design unit maps the existing module, formed-module and subgroup routes to the core consumer contracts. Discovery tools expose both sides of that mapping. The exact-name lattice registry is a separate bounded leaf extension, not a prerequisite for core integration.
+The named input may remain a private research input adapter while its consumers use the transitional preamble. When presented in the final language, the name must resolve to an upstream declared object or construction on its exact mathematical data. A string registry can select a local computational presentation; it cannot register a new category, constructor law or accepted result. Its source and loaded-module scope are useful diagnostics, not semantic evidence.
