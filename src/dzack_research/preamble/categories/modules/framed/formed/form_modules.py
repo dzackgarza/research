@@ -3798,9 +3798,19 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                         projection = basis_map.inverse() * projection
                 else:
                     # Lattices retain their specialized isotropic-reduction
-                    # construction, whose own projection has the exact
-                    # quotient endpoints and representation data.
-                    projection = quotient.projection()
+                    # construction. Its projection starts at the represented
+                    # perpendicular subobject, so lift the ambient generators
+                    # through that subobject's retained inclusion first.
+                    perpendicular = quotient.orthogonal_complement()
+                    inclusion = perpendicular.inclusion()
+                    reduction_projection = quotient.projection()
+                    source_module = self.unformed_module()
+                    to_perpendicular = source_module.module_category().Mor(
+                        source_module, perpendicular
+                    )(
+                        lambda label: inclusion.lift(source_module.module_generator(label))
+                    )
+                    projection = reduction_projection * to_perpendicular
                 values = self.value_module()
                 value_identity = values.module_category().Mor(values, values).identity()
                 return FormModules(self.base_ring()).Mor(self, quotient)(
