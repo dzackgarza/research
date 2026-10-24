@@ -5738,15 +5738,15 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Correct Example**: `FormModules` with the parent-level `q(v) = b(v, v)` moved onto `BilinearFormModules`; `LieAlgebras` as the name of `Algebras.Lie`; `CountablyInfiniteSets` as the name of the join of `Countable` and `Infinite`.
 
-#### `CAT-23`: Membership Is Placement, Never a Predicate Computed at Runtime
+#### `CAT-23`: Placement and Asked Property Membership Have Different Effects
 
-- **Rule**: `x in C` is decided by the category `x` was placed in at construction and by the declared graph.  A `__contains__` that walks a ring's base tower, probes an attribute, or evaluates a property of the candidate is banned: it answers a membership question the graph does not state, and it answers it differently from inheritance.  Where a wider membership is true (a QQ-scheme is a ZZ-scheme), it is reached through the functor of `CAT-16`, not by a predicate.
+- **Rule**: The category in which an object is *placed* is fixed by its construction and the declared graph; only that placement supplies operations. A `__contains__` that walks a ring's base tower or probes an attribute to invent a category relation is banned. Where a wider category relationship is true (a QQ-scheme viewed over ZZ), it is reached through the functor of `CAT-16`. The later owner ruling in `CON-07` also permits asking whether an already constructed object satisfies a property subcategory: `I in Ideals(R).Maximal()` asks the corresponding `Predicate` whether `R/I` is a field. That answer goes only to the caller. It never changes the object's placement, class, operations, or identity.
 
-- **Rationale**: a predicate membership makes `x in C` true while `x` has none of `C`'s operations, so the two meanings of membership diverge exactly where a consumer relies on them agreeing.
+- **Rationale**: an asked proposition and construction-time placement answer different questions. Treating a successful predicate answer as placement would give the object operations its constructor did not install; forbidding the question altogether would contradict `CON-07`'s explicit property-membership rule.
 
 - **Violation Example**: `Schemes.__contains__` answering lower-base membership by the candidate ring's base tower; `RepresentedToricSchemes.__contains__` probing `getattr(candidate, "scheme_base_ring", None)`; `QuasiCoherentSheaves.__contains__` duck-typing for want of a placement.
 
-- **Correct Example**: `x in Schemes(R)` true because `x` was constructed in `Schemes(R)` or a declared subcategory; a candidate over a lower base admitted through `base_change_functor`.
+- **Correct Example**: `x in Schemes(R)` follows construction or a declared subcategory; a candidate over a lower base is viewed through `base_change_functor`. For an unplaced ideal `I`, `I in Ideals(R).Maximal()` asks the maximality predicate without refining `I` or installing maximal-ideal operations.
 
 #### `CAT-24`: Every Declaration Is an Expression the Reader Can Resolve
 
