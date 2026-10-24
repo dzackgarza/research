@@ -31,9 +31,7 @@ A primitive Python container is private computation data. A public result
 containing preamble elements in such a container still lacks the mathematical
 family or morphism that the operation promises.
 
-Mathematical ownership and acceptance follow [INTENT.md](../INTENT.md):
-`lean-categories` owns meaning; `lean-cas-dsl` owns the permanent
-mathematical acceptance assertions. Source tracing below establishes what
+Source tracing below establishes what
 the constructors retain and return. It does not certify their answers.
 
 ## Image objects, presentations and category placement
@@ -367,7 +365,7 @@ The formal class set already exists in `lean-categories`:
 `GenusClass` and `classNumber`. The presentation gap is at the quotient
 and genus owners; a list of representative lattices does not supply the
 formal class-set maps. The existing
-`genera-present-their-formalization` node owns the genus presentation.
+`genus-finiteness-parity-and-classification` node owns the genus presentation.
 
 ## Module images and arithmetic constructions
 

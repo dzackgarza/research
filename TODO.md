@@ -108,7 +108,7 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 | `hodge-lattice-isometries` | [#538](https://github.com/dzackgarza/research/issues/538) |
 | `hodge-isometry-subgroup-computation` | [#539](https://github.com/dzackgarza/research/issues/539) |
 | `k3-surfaces-and-cohomology` | [#540](https://github.com/dzackgarza/research/issues/540) |
-| `genera-present-their-formalization` | [#531](https://github.com/dzackgarza/research/issues/531) |
+| `genus-finiteness-parity-and-classification` | [#531](https://github.com/dzackgarza/research/issues/531) |
 | `pontryagin-duality` | [#512](https://github.com/dzackgarza/research/issues/512) |
 | `group-exact-sequences-and-homology` | [#513](https://github.com/dzackgarza/research/issues/513) |
 | `signed-discriminant-lifting-obstructions` | [#542](https://github.com/dzackgarza/research/issues/542) |
