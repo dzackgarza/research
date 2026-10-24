@@ -4,7 +4,7 @@ Implement issue work directly on `main`. Use a branch only when parallel work
 requires a separate worktree. The [delivery policy](CONTRIBUTING.md#delivery-workflow)
 overrides `itree next`'s generic instruction to open a PR.
 
-The live programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Its priority is shared correctness and construction, reusable mathematical operations, required capability, then broad reviews and final acceptance. Performance work precedes a consumer only when a measured obstruction justifies it. Optional work follows required work.
+The live programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Order minimizes the work needed to complete the required programme, including rework. Shared correctness and construction, reusable mathematical operations, and required capability normally precede broad reviews and final acceptance. Advance a shared change when it removes or shortens named later repairs; reassess those repairs against their full acceptance after delivery. Performance and workflow repairs move earlier for observed costs on required work. Optional work follows required work.
 
 [AGENTS.md](AGENTS.md#execution-order) states the payoff and dependency rules. Milestone numbers retain their identities; native sibling order determines execution. Task contracts, hypotheses, specimens, acceptance and dependencies live in the issues. This file maps the former source identifiers to their current owners.
 

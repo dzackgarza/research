@@ -1412,13 +1412,28 @@ The goal — a mathematically-semantic, Sage-compatible substrate for exact latt
 
 ## Execution order
 
-Rank work by its mathematical consequence before sorting dependencies. The
+Minimize the work needed to complete the full required programme, including
+implementation, verification and rework. Rank work by its mathematical consequence
+and the later work it removes before sorting dependencies. The default
 priority is: shared wrong answers and failed constructions; reusable operations
 that unblock named computations; required mathematical capability; broad audits,
 interface normalization, typing and cleanup; then optional extensions. State the
 concrete consumer or repeated implementation avoided when promoting a refactor.
 An architectural label, scanner score, issue count or small task size is not a
 payoff. A historical report requires current-source confirmation at selection.
+
+Before selecting a repair, inspect the scheduled changes to its owner and callers.
+If a later construction or refactor replaces that code or changes the required
+interface, advance that shared change and its prerequisites. Implement the repair
+on the resulting owner. Record the affected issue numbers, source paths and work
+saved in the owning issue. A smaller immediate patch earns priority only when it
+is needed to perform the shared change or has an independent result that survives it.
+
+After a shared change, compare each affected issue's full requirements with the
+delivered result. Work already discharged becomes a closure check; retain and
+schedule any remaining requirements. Preserve the original acceptance obligations.
+Reassess this order when source or dependencies change. Observed workflow costs
+that recur across required tasks can justify early repair on the same basis.
 
 Split a concrete correctness repair out of a whole-repository survey when the
 survey would delay it. Preserve both contracts and make the survey depend on
