@@ -196,7 +196,7 @@ the first edit, and requires the report to list the files that were read:
 
 - `INTENT.md` and this file;
 - `CONTRIBUTING.md` in full, including the preamble architecture specification;
-- `TODO.md` and `COMPLAINTS.md`;
+- `TODO.md` and the relevant issues in the [native issue tree](https://github.com/dzackgarza/research/issues/46);
 - `docs/preamble-megadoc.md`;
 - the `AGENTS.md` and `README.md` of the subtree that the work edits.
 
@@ -250,9 +250,9 @@ this reading.
 Read the normative [preamble architecture specification](CONTRIBUTING.md#preamble-architecture-specification)
 before changing preamble construction, representation, or engine integration.
 It owns the intended architecture; the TODO owns only the unfinished work.
-Read [COMPLAINTS.md](COMPLAINTS.md) for observed foundational gaps and papercuts
-relevant to the construction. It records unmet needs, not completed work or a
-substitute architecture.
+Read the relevant issues in the [native issue tree](https://github.com/dzackgarza/research/issues/46)
+for observed foundational gaps and papercuts. Each issue owns its requirements,
+evidence, acceptance, dependencies, and closure.
 
 When the owner calls an engineering move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external (for mathematics the standard is `lean-categories`): look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
 
@@ -288,6 +288,18 @@ same applies to log captures that run to megabytes: keep the finding, not the
 capture.
 
 ## One line of record: `origin/main` (always-on)
+
+This repository does not use pull requests. Commit work directly on `main`.
+Create a branch only when concurrent work genuinely requires an isolated
+worktree. Record that need in the owning issue before creating the worktree;
+ordinary sequential work stays in the main checkout. The orchestrator integrates
+worktree commits into `main` directly, without a pull request.
+
+This rule overrides generic skill, template and tool instructions to create a
+branch or open a draft PR, including the instruction printed by `itree next`.
+Keep scope, acceptance conditions and review dispositions on the owning issue;
+record delivered changes and evidence in commits. Existing verification and
+publication rules still apply.
 
 There is one line of work, `origin/main`, one DAG, and one `TODO.md`.
 This repository is cloned on more than one host. Identify the current host
@@ -417,18 +429,22 @@ not permission to rewrite foundations or create another tracking framework.
 
 **Record actual issues whenever they are discovered.** Apply
 [`DEV-59`](CONTRIBUTING.md#dev-59-record-observed-foundational-gaps-and-papercuts)
-in [COMPLAINTS.md](COMPLAINTS.md), including findings outside the selected task.
+in the [native issue tree](https://github.com/dzackgarza/research/issues/46), including findings outside the selected task.
 Give the missing general mathematics, the dependency path, observed evidence,
 existing partial capability, affected consumers, an honest coverage boundary,
 and the `lean-categories` request for mathematics it lacks.
 Also record concrete workflow papercuts. A guessed absence or hypothetical future
 friction is not an observed defect; unresolved capability questions stay labeled.
 
-Link an existing complaint for the same foundation rather than duplicating it
-under each leaf. Link remediation to its TODO item; recording it does not repair
-it or authorize unrelated implementation. Keep only unresolved complaints, remove
-delivered ones with evidence in the commit, and preserve remaining proof work
-under terminal T. Apply `DEV-61` to TODO and complaint edits; the current single-worker workflow has no claim ledger or coordination mutex.
+Extend an existing issue for the same foundation rather than duplicating it
+under each leaf. Keep full complaint evidence in its body or a linked comment.
+Place new issues in the native tree under #46, ordered by correctness, reusable
+capability, and reduction of later work. Native blocked-by relations record real
+prerequisites. Filing does not repair a defect or authorize unrelated implementation.
+Close an issue only with evidence for its full requirements; preserve remaining
+proof work under terminal T. Read and update the issues through itree and GitHub.
+Apply `DEV-61` to issue edits; the current single-worker
+workflow has no claim ledger or coordination mutex.
 The detailed capture and maintenance contract lives in `DEV-59`.
 
 ## Construction and engine boundaries (always-on)
@@ -1394,6 +1410,68 @@ The goal — a mathematically-semantic, Sage-compatible substrate for exact latt
 
 # Issue-tree and milestone policy (research repo)
 
+## Execution order
+
+Minimize the work needed to complete the full required programme, including
+implementation, verification and rework. Rank work by its mathematical consequence
+and the later work it removes before sorting dependencies. The default
+priority is: shared wrong answers and failed constructions; reusable operations
+that unblock named computations; required mathematical capability; broad audits,
+interface normalization, typing and cleanup; then optional extensions. State the
+concrete consumer or repeated implementation avoided when promoting a refactor.
+An architectural label, scanner score, issue count or small task size is not a
+payoff. A historical report requires current-source confirmation at selection.
+
+Before selecting a repair, inspect the scheduled changes to its owner and callers.
+If a later construction or refactor replaces that code or changes the required
+interface, advance that shared change and its prerequisites. Implement the repair
+on the resulting owner. Record the affected issue numbers, source paths and work
+saved in the owning issue. A smaller immediate patch earns priority only when it
+is needed to perform the shared change or has an independent result that survives it.
+
+After a shared change, compare each affected issue's full requirements with the
+delivered result. Work already discharged becomes a closure check; retain and
+schedule any remaining requirements. Preserve the original acceptance obligations.
+Reassess this order when source or dependencies change. Observed workflow costs
+that recur across required tasks can justify early repair on the same basis.
+
+Split a concrete correctness repair out of a whole-repository survey when the
+survey would delay it. Preserve both contracts and make the survey depend on
+the repair. Performance work moves forward only for a measured obstruction to
+a named computation. A constructor that cannot produce its mathematical object
+is a correctness failure, distinct from a general construction-cost survey.
+
+Global API freeze and aggregate acceptance do not supply mathematical inputs to
+independent feature computations. Keep the actual construction dependencies;
+retain every owner-local assertion and the full final acceptance obligations.
+The native order at issue #46 records the current payoff assessment. Milestone
+numbers identify scopes and do not impose a numerical execution order.
+
+Native sub-issue order is the execution priority. `itree next` selects the
+first ready work unit in depth-first order; it does not propagate a consumer's
+priority to its prerequisites. When adding or moving a task, place each open
+prerequisite before its consumer. For a grouping issue, place its prerequisites
+before the whole subtree. A grouping issue must never block on a descendant.
+Move a prerequisite branch earlier when necessary; do not add dependency edges
+merely to express priority.
+
+Required repairs precede optional extensions. A construction consumed by required
+work is required too: preserve its full contract and place it in the required
+milestone. Acceptance issues depend on all required branches they claim to
+accept. Construction and loading defects precede the acceptance that exercises
+them. Shared primitives retain their own acceptance; a port consumer does not
+gate their closure.
+
+Validate both the dependency graph and the native traversal order. A clean
+`itree doctor` establishes structural consistency, not agreement with these
+priorities. Check that every open blocker precedes its consumer, no ancestor
+blocks on its descendant, required tasks have no optional prerequisites, and
+each acceptance issue reaches all work in its stated scope, including required
+tasks moved to another milestone for execution. An acceptance task can follow
+its inputs in a later milestone without losing any of those obligations.
+
+## Milestone scope
+
 This is a research repository with a much longer work horizon, more detailed planning, and more human check-ins than a typical software project.
 Naive software-geared structural rules (e.g. itree's W040 native-milestone mirror) are less applicable here: treat such findings as a flag to investigate whether *some* consolidation is warranted, never as a mandate — and never collapse the tree or milestones by an order of magnitude to satisfy one.
 The itree issue tree is authoritative; native GitHub milestones are capability-level human-review checkpoints created just-in-time (user ruling 2026-07-11; W040 = 46 is accepted as-is).
@@ -1407,12 +1485,12 @@ Ideas are not all issues yet.
 An agent that searches only the issue tree will miss live thinking and re-derive it badly.
 
 - **GitHub Discussions** hold ideas still **in flux**: competing framings, pasted prompt responses to be reconciled, designs whose scope has not settled.
-  A discussion is a thinking surface, not a decision — nothing in one is authoritative, and no PR may claim work from a discussion alone.
+  A discussion is a thinking surface, not a decision — nothing in one is authoritative, and implementation requires a scoped issue.
   Live example: #217 (*Bridging Lean to computational backends*, Ideas category).
 
-- **Issues** hold ideas that have a scope, carrying the label that names their state: `draft` (the scope itself is provisional; expect the body to change), `research` (empirical research or evaluation required before implementation), `needs-research` (parked — above), `needs-planning` (scope known; decomposition or an executable plan required before any PR claim).
+- **Issues** hold ideas that have a scope, carrying the label that names their state: `draft` (the scope itself is provisional; expect the body to change), `research` (empirical research or evaluation required before implementation), `needs-research` (parked — above), `needs-planning` (scope known; decomposition or an executable plan required before implementation).
 
-The pipeline is one-directional: **a discussion is crystallized into an issue once its scope stops moving**, and everything downstream — implementation research, decomposition into work units, proof obligations, PR claims — is carried out on the issue tree, never in the discussion.
+The pipeline is one-directional: **a discussion is crystallized into an issue once its scope stops moving**, and everything downstream — implementation research, decomposition into work units, proof obligations, completion claims — is carried out on the issue tree, never in the discussion.
 Link the discussion from the issue and leave it in place as the rationale trail; the development of an idea, including its retractions, is the record of why the scope is what it is.
 Do not delete it or summarize it away.
 
@@ -1551,7 +1629,7 @@ Do not resolve an accepted review comment until the code/proof remediation is co
 Never reply “accepted,” “aligned,” “fixed,” “addressed,” or “will address” to a review thread unless the remediation is already committed.
 A thread cannot be resolved on intent or future work.
 
-Rejected and modified feedback must be collected in a top-level PR comment titled `Review feedback disposition ledger` so resolved threads do not hide the audit trail.
+Record rejected and modified feedback on the owning issue under `Review feedback disposition ledger`. Cite the source evidence and any resulting commit.
 
 Review comments are not implementation specs.
 The worker must translate accepted feedback into first-principles remediation requirements before assigning implementation.
@@ -1648,7 +1726,7 @@ work is genuinely blocked, and the blockage is a discovery about the shape of
 the problem rather than an obstacle to route around.
 
 **The failure this prevents has a specific shape: recording the gap and
-continuing.** Filing the deficiency in `COMPLAINTS.md` and leaving the work
+continuing.** Filing the deficiency in an issue and leaving the work
 queue untouched produces a document that describes the hole and a queue that
 still schedules work over it. It feels like diligence -- the observation was
 real, it was written down carefully, and the note is true. What makes it a
@@ -1659,13 +1737,14 @@ queue and walks into the same hole.
 So the test, applied before continuing past anything you have just called
 missing:
 
-> **Which node's `Needs` list changed?**
+> **Which issue's native blocked-by relation changed?**
 
 If the answer is none, the foundation was observed and not acted on.
 
-`COMPLAINTS.md` records *why* the node is owed, with its dependency path and
-evidence, under `DEV-59`. `TODO.md` schedules it. The two are not substitutes,
-and the complaint is never the whole response.
+The issue records *why* the work is owed, with its dependency path and evidence,
+under `DEV-59`. Native tree order and blocked-by relations schedule it.
+Read that record through itree. Recording evidence alone does not establish
+the prerequisite relation.
 
 **Scope is a real question, and it is answered by the DAG, not by scoping the
 mathematics down.** The prerequisite chain terminates at what exists, so a
@@ -1745,7 +1824,7 @@ category belongs.
 **A false declaration is never an admissible state, and recording it elsewhere
 does not make it one.** Filing the gap while the wrong supercategory stays in
 the source leaves every reader and every object inheriting the false statement;
-the note in `COMPLAINTS.md` is read by nobody executing the code. There is no
+the issue text is read by nobody executing the code. There is no
 ranking here in which the wrong claim is the better of two states.
 
 When the honest supercategory is not presented in the tree, there are two
@@ -1764,7 +1843,7 @@ moves and nothing else:
   construct is a working signal; one that constructs into the wrong place is a
   silent wrong answer that propagates through everything it touches.
 
-Record the gap in `COMPLAINTS.md` under `DEV-59` as well, with its dependency
+Record the gap in the native issue tree under `DEV-59`, with its dependency
 path and the consumer it blocks. That is the record of *why* the node is
 missing -- never a licence to keep a substitute in the source while it stands.
 

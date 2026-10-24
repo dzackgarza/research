@@ -88,11 +88,17 @@ from dzack_research.preamble.categories.schemes.curve_genus import (
 )
 
 from dzack_research.preamble.categories.schemes.polytopes import (
+    AbstractPolytopes,
+    ConvexPolytopesIn,
     ConvexPolygons,
     ConvexPolytopes,
+    EuclideanPolytopesIn,
+    HyperbolicGeodesicPolytopesIn,
+    LatticePolytopesIn,
     LatticePolygons,
     LatticePolytopes,
     RegularPolytopes,
+    SphericalGeodesicPolytopesIn,
 )
 
 from dzack_research.preamble.categories.schemes.ade_surfaces import (
@@ -151,10 +157,15 @@ __all__ = [
     'AffineGroupSchemes',
     'AffineGroupSchemeActions',
     'AffineSpaces',
+    'AbstractPolytopes',
+    'ConvexPolytopesIn',
     'ClosedEmbeddings',
     'ClosedSubschemes',
     'ConvexPolygons',
     'ConvexPolytopes',
+    'EuclideanPolytopesIn',
+    'HyperbolicGeodesicPolytopesIn',
+    'LatticePolytopesIn',
     'DistinguishedAffineCoverRefinement',
     'DistinguishedAffineCovers',
     'distinguished_affine_coverage',
@@ -169,6 +180,7 @@ __all__ = [
     'LatticePolygons',
     'LatticePolytopes',
     'RegularPolytopes',
+    'SphericalGeodesicPolytopesIn',
     'LocallyRingedSpaces',
     'ModuleSheaves',
     'LogPairs',

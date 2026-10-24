@@ -4,15 +4,32 @@ from math import atan2, factorial
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import Morphism
 from sage.geometry.polyhedron.constructor import Polyhedron
 from sage.misc.cachefunc import cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ
 from sage.structure.element import parent as engine_parent
 
+from dzack_research.preamble.categories.abstract_categories.mor_categories import (
+    CategoricalMor,
+    MorCategoryConstruction,
+)
+from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 from dzack_research.preamble.categories.abstract_categories.objects import (
+    Objects,
     OwnedCategory,
     OwnedParameterizedCategory,
+)
+from dzack_research.preamble.categories.functors.core import Functor
+from dzack_research.preamble.categories.hyperbolic_geometry import HyperbolicSpaces
+from dzack_research.preamble.categories.metric_affine_spaces import (
+    EuclideanSpaces,
+    SphericalSpaces,
+)
+from dzack_research.preamble.categories.real_affine_spaces import (
+    AffineSpacesWithLattice,
+    RealAffineSpaces,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
@@ -31,7 +48,9 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
     finite_ordered_set,
 )
+from dzack_research.preamble.categories.sets.finite_graded_posets import FiniteGradedPosets
 from dzack_research.preamble.categories.sets.set_categories import PartiallyOrderedSets, Sets
+from dzack_research.preamble.categories.triangulations import ChosenTriangulations
 from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 
@@ -54,6 +73,338 @@ def _owned_rational(coordinate):
     return _owned_rationals()(coordinate)
 
 
+class AbstractPolytopes(OwnedCategory):
+    r"""Finite graded face posets satisfying the abstract-polytope axioms.
+
+    Morphisms inherit the rank-preserving monotone maps of finite graded
+    posets. Isomorphisms and automorphisms are the category's generic ``Isom``
+    and ``Aut`` constructions; a geometric placement is further structure.
+    """
+
+    def super_categories(self):
+        return [FiniteGradedPosets()]
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "abstract polytopes"
+
+    def an_object(self):
+        pass
+
+    def from_face_poset(self, face_poset):
+        r"""Construct from the exact finite graded poset of faces."""
+        pass
+
+    class ParentMethods:
+        def faces(self, dimension):
+            r"""Faces of the selected rank, as elements of this face poset."""
+            pass
+
+        def face_poset(self):
+            return self
+
+        def abstract_automorphisms(self):
+            return self.Aut()
+
+
+class PlacedPolytopeMor(CategoricalMor):
+    r"""Ambient maps taking faces to faces and commuting with placements."""
+
+    class ElementMethods:
+        def __init__(self, parent, ambient_map, face_poset_map):
+            Morphism.__init__(self, parent)
+            self._ambient_map = ambient_map
+            self._face_poset_map = face_poset_map
+
+        def ambient_map(self):
+            return self._ambient_map
+
+        def face_poset_map(self):
+            return self._face_poset_map
+
+        def underlying_polytope_morphism(self):
+            pass
+
+        def _call_(self, point):
+            return self._ambient_map(point)
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, ambient_map, face_poset_map):
+        pass
+
+    @object_level
+    def identity(self):
+        pass
+
+
+class PlacedPolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = PlacedPolytopeMor
+
+
+class MetricPolytopeMor(PlacedPolytopeMor):
+    r"""Face-preserving arrows induced by ambient isometric embeddings."""
+
+    class ElementMethods(PlacedPolytopeMor.ElementMethods):
+        def ambient_isometric_embedding(self):
+            return self.ambient_map()
+
+    def _element_constructor_(self, ambient_isometric_embedding, face_poset_map):
+        pass
+
+
+class MetricPolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = MetricPolytopeMor
+
+
+class _PlacedPolytopeFacePosetFunctor(Functor):
+    def __init__(self, source):
+        super().__init__(source, AbstractPolytopes())
+
+    def _apply_object(self, polytope):
+        pass
+
+    def _apply_morphism(self, morphism):
+        return morphism.face_poset_map()
+
+
+class _PlacedPolytopeCategory(OwnedParameterizedCategory):
+    r"""Polytopes whose selected inclusion has one fixed geometric ambient."""
+
+    _MorCategory = PlacedPolytopeMorCategoryConstruction
+
+    def ambient_space(self):
+        return self.parameter()
+
+    def placement_space(self):
+        return self.ambient_space()
+
+    def super_categories(self):
+        return [Objects()]
+
+    def an_object(self):
+        pass
+
+    def on(self, defining_data, ambient_inclusion):
+        pass
+
+    @cached_method
+    def face_posets(self):
+        return _PlacedPolytopeFacePosetFunctor(self)
+
+    class ParentMethods:
+        def __init__(self, defining_data, ambient_inclusion, **rest):
+            self._defining_data = defining_data
+            self._ambient_inclusion = ambient_inclusion
+            super().__init__(**rest)
+
+        def defining_data(self):
+            return self._defining_data
+
+        def ambient_space(self):
+            return self.category().ambient_space()
+
+        def ambient_inclusion(self):
+            return self._ambient_inclusion
+
+        def underlying_polytope(self):
+            return self._ambient_inclusion.domain()
+
+        def vertices(self):
+            pass
+
+        def faces(self, dimension):
+            pass
+
+        def face_inclusion(self, face):
+            pass
+
+        def face_poset(self):
+            pass
+
+        def abstract_automorphisms(self):
+            pass
+
+        def geometric_automorphisms(self):
+            return self.Aut()
+
+        def geometric_to_abstract_automorphisms(self):
+            pass
+
+        def geometric_lifts_of_face_automorphism(self, face_automorphism):
+            pass
+
+        def boundary(self):
+            pass
+
+        def boundary_inclusion(self):
+            pass
+
+        def triangulations(self):
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
+            pass
+
+    class Polygon(CategoryWithAxiom):
+        r"""Placed polytopes of affine or geodesic dimension two."""
+
+
+class ConvexPolytopesIn(_PlacedPolytopeCategory):
+    r"""Bounded convex subsets of one real affine space."""
+
+    def parameter_category(self):
+        return RealAffineSpaces()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed convex affine polytopes"
+
+
+class LatticePolytopeMor(PlacedPolytopeMor):
+    r"""Face-preserving maps compatible with selected affine lattice embeddings."""
+
+    class ElementMethods(PlacedPolytopeMor.ElementMethods):
+        def ambient_lattice_map(self):
+            return self.ambient_map()
+
+        def underlying_affine_morphism(self):
+            pass
+
+    def _element_constructor_(self, ambient_lattice_map, face_poset_map):
+        pass
+
+
+class LatticePolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = LatticePolytopeMor
+
+
+class _LatticePolytopeForgetfulFunctor(Functor):
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, polytope):
+        return polytope.underlying_affine_polytope()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_affine_morphism()
+
+
+class LatticePolytopesIn(_PlacedPolytopeCategory):
+    r"""Placed convex polytopes with vertices in the selected affine lattice."""
+
+    _MorCategory = LatticePolytopeMorCategoryConstruction
+
+    def parameter_category(self):
+        return AffineSpacesWithLattice()
+
+    def placement_space(self):
+        return self.ambient_space().underlying_affine_space()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed lattice polytopes"
+
+    @cached_method
+    def forget_lattice(self):
+        r"""Forget the selected lattice on objects and face-preserving arrows."""
+        affine_ambient = self.ambient_space().underlying_affine_space()
+        return _LatticePolytopeForgetfulFunctor(self, ConvexPolytopesIn(affine_ambient))
+
+    class ParentMethods(_PlacedPolytopeCategory.ParentMethods):
+        def ambient_lattice_inclusion(self):
+            return self.ambient_space().lattice_inclusion()
+
+        def integral_points(self):
+            pass
+
+        def underlying_affine_polytope(self):
+            pass
+
+
+class EuclideanPolytopesIn(_PlacedPolytopeCategory):
+    r"""Bounded convex polytopes in one selected Euclidean space."""
+
+    _MorCategory = MetricPolytopeMorCategoryConstruction
+
+    def parameter_category(self):
+        return EuclideanSpaces()
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed Euclidean polytopes"
+
+
+class SphericalGeodesicPolytopesIn(_PlacedPolytopeCategory):
+    r"""Geodesically convex polytopes in one selected round sphere."""
+
+    _MorCategory = MetricPolytopeMorCategoryConstruction
+
+    def parameter_category(self):
+        return SphericalSpaces()
+
+    def from_cone(self, cone, ambient_linear_embedding):
+        r"""Select the spherical section of a cone in this sphere's ambient space."""
+        pass
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed spherical geodesic polytopes"
+
+
+class HyperbolicGeodesicPolytopesIn(_PlacedPolytopeCategory):
+    r"""Geodesically convex polytopes in one selected hyperbolic space."""
+
+    _MorCategory = MetricPolytopeMorCategoryConstruction
+
+    def parameter_category(self):
+        return HyperbolicSpaces(self.parameter().dimension())
+
+    @classmethod
+    def _repr_object_names(cls):
+        return "placed hyperbolic geodesic polytopes"
+
+
+class RegularPolytopeMor(CategoricalMor):
+    r"""Maps of regular polytopes through their abstract face structures."""
+
+    class ElementMethods:
+        def __init__(self, parent, abstract_polytope_map):
+            Morphism.__init__(self, parent)
+            self._abstract_polytope_map = abstract_polytope_map
+
+        def abstract_polytope_map(self):
+            return self._abstract_polytope_map
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, abstract_polytope_map):
+        pass
+
+    @object_level
+    def identity(self):
+        pass
+
+
+class RegularPolytopeMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = RegularPolytopeMor
+
+
+class _RegularAbstractPolytopeFunctor(Functor):
+    r"""Forget the regular presentation on objects and face maps."""
+
+    def __init__(self):
+        super().__init__(RegularPolytopes(), AbstractPolytopes())
+
+    def _apply_object(self, polytope):
+        return polytope.abstract_polytope()
+
+    def _apply_morphism(self, morphism):
+        return morphism.abstract_polytope_map()
+
+
 class RegularPolytopes(OwnedCategory):
     r"""Finite spherical regular abstract polytopes named by Schlaefli symbols.
 
@@ -62,9 +413,10 @@ class RegularPolytopes(OwnedCategory):
     owner records that abstract regular-polytope datum; it is distinct from the
     rational-coordinate convex-polytope owner below, since examples such as the
     dodecahedron require ``sqrt(5)`` coordinates in a Euclidean realization.
-    Its underlying combinatorial object is the graded face poset, hence the
-    immediate placement in ``PartiallyOrderedSets``.
+    Its underlying combinatorial object is the graded face poset.
     """
+
+    _MorCategory = RegularPolytopeMorCategoryConstruction
 
     def an_object(self):
         return self.from_schlafli_symbol((3, 3))
@@ -74,7 +426,11 @@ class RegularPolytopes(OwnedCategory):
         return "finite spherical regular polytopes"
 
     def super_categories(self):
-        return [PartiallyOrderedSets()]
+        return [Objects()]
+
+    @cached_method
+    def abstract_face_structure(self):
+        return _RegularAbstractPolytopeFunctor()
 
     def from_schlafli_symbol(self, symbol):
         r"""Return the finite regular abstract polytope with Schlaefli symbol ``symbol``."""
@@ -136,9 +492,31 @@ class RegularPolytopes(OwnedCategory):
         def symmetry_group(self):
             return self.symmetry_coxeter_diagram().coxeter_group()
 
+        def abstract_polytope(self):
+            pass
+
+        def face_poset(self):
+            pass
+
+        def abstract_automorphisms(self):
+            pass
+
         def _repr_(self):
             symbol = ",".join(str(bond) for bond in self.schlafli_symbol())
             return f"Regular polytope {{{symbol}}}"
+
+
+class _RationalPolytopeFacePosetFunctor(Functor):
+    r"""Send a rational polytope and its maps to face-incidence objects."""
+
+    def __init__(self, source):
+        super().__init__(source, AbstractPolytopes())
+
+    def _apply_object(self, polytope):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
 
 
 class ConvexPolytopes(OwnedParameterizedCategory):
@@ -192,15 +570,22 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         private polyhedral computation.
         """
         rationals = _owned_rationals()
+        defining_halfspaces = tuple(
+            (
+                _owned_rational(constant),
+                tuple(_owned_rational(coefficient) for coefficient in linear_part),
+            )
+            for constant, linear_part in halfspaces
+        )
         engine_rows = [
             [
-                _engine_element(rationals, _owned_rational(constant)),
+                _engine_element(rationals, constant),
                 *(
-                    _engine_element(rationals, _owned_rational(coefficient))
+                    _engine_element(rationals, coefficient)
                     for coefficient in linear_part
                 ),
             ]
-            for constant, linear_part in halfspaces
+            for constant, linear_part in defining_halfspaces
         ]
         polyhedron = Polyhedron(ieqs=engine_rows, base_ring=SageQQ)
         assert polyhedron.is_compact(), (
@@ -213,6 +598,7 @@ class ConvexPolytopes(OwnedParameterizedCategory):
         return _convex_polytope(
             engine_polyhedron=polyhedron,
             lattice=self.ambient_lattice(),
+            defining_data=("halfspaces", defining_halfspaces),
         )
 
     @classmethod
@@ -221,6 +607,10 @@ class ConvexPolytopes(OwnedParameterizedCategory):
 
     def super_categories(self):
         return [Sets().Subobjects(self.ambient_space())]
+
+    @cached_method
+    def face_posets(self):
+        return _RationalPolytopeFacePosetFunctor(self)
 
     class SubcategoryMethods:
         def ambient_lattice(self):
@@ -238,21 +628,25 @@ class ConvexPolytopes(OwnedParameterizedCategory):
             return self._with_axiom("Polygon")
 
     class ParentMethods:
-        def __init__(self, engine_polyhedron, ambient_lattice, **rest) -> None:
-            r"""A polytope is its exact polyhedron in the coordinates of ``ZZ^n``.
+        def __init__(self, engine_polyhedron, ambient_lattice, defining_data, **rest) -> None:
+            r"""Retain the selected presentation and its private exact polyhedron.
 
-            The polyhedron is the private computation object that
-            :func:`_convex_polytope` produced from the caller's vertices, from
-            an owned polytope, from a face, a dilation or a halfspace
-            description; the coordinate lattice is the owned ``ZZ^n``.
+            The presentation records vertices or halfspaces in the owned
+            coordinate space. The polyhedron computes with that datum over
+            the selected ``ZZ^n`` lattice.
             """
             self._polyhedron = engine_polyhedron
             self._ambient_lattice = ambient_lattice
+            self._defining_data = defining_data
             super().__init__(**rest)
 
         def _engine_polyhedron(self):
             r"""Return the private exact polyhedral computation object."""
             return self._polyhedron
+
+        def defining_data(self):
+            r"""Return the selected vertex or halfspace presentation in the ambient space."""
+            return self._defining_data
 
         def threejs_html(self):
             r"""Return a local Three.js HTML view of a three-dimensional polytope.
@@ -360,6 +754,50 @@ class ConvexPolytopes(OwnedParameterizedCategory):
                     for facet in self._engine_polyhedron().facets()
                 )
             )
+
+        def faces(self, dimension):
+            r"""The faces of the selected dimension, with their common ambient."""
+            pass
+
+        def face_inclusion(self, face):
+            r"""The selected face arrow from ``face`` into this polytope."""
+            pass
+
+        def face_poset(self):
+            r"""The graded poset of faces and their inclusion relations."""
+            pass
+
+        def facet_inclusion(self, facet):
+            r"""The selected face arrow from ``facet`` into this polytope."""
+            pass
+
+        def boundary(self):
+            pass
+
+        def boundary_inclusion(self):
+            pass
+
+        def abstract_automorphisms(self):
+            pass
+
+        def geometric_automorphisms(self):
+            pass
+
+        def geometric_to_abstract_automorphisms(self):
+            pass
+
+        def geometric_lifts_of_face_automorphism(self, face_automorphism):
+            pass
+
+        def triangulations(self):
+            return ChosenTriangulations(self)
+
+        def triangulate(self):
+            pass
+
+        def _engine_point_configuration(self):
+            r"""Lower the owned vertices to a private Sage point configuration."""
+            pass
 
         def _engine_normal_fan(self):
             r"""Return the private normal-fan computation object."""
@@ -861,6 +1299,7 @@ def _convex_polytope(
     vertices=None,
     lattice=None,
     engine_polyhedron=None,
+    defining_data=None,
 ):
     r"""The polytope on its data, constructed once in the category it lies in.
 
@@ -875,13 +1314,26 @@ def _convex_polytope(
     rationals = _owned_rationals()
     if engine_polyhedron is not None:
         polyhedron = engine_polyhedron
+        if defining_data is None:
+            defining_data = (
+                "vertices",
+                tuple(
+                    tuple(_owned_rational(coordinate) for coordinate in vertex)
+                    for vertex in polyhedron.vertices()
+                ),
+            )
     else:
+        owned_vertices = tuple(
+            tuple(_owned_rational(coordinate) for coordinate in vertex)
+            for vertex in vertices
+        )
+        defining_data = ("vertices", owned_vertices)
         engine_vertices = [
             tuple(
-                _engine_element(rationals, _owned_rational(coordinate))
+                _engine_element(rationals, coordinate)
                 for coordinate in vertex
             )
-            for vertex in vertices
+            for vertex in owned_vertices
         ]
         polyhedron = Polyhedron(vertices=engine_vertices, base_ring=SageQQ)
 
@@ -921,14 +1373,21 @@ def _convex_polytope(
         construction_data={
             "engine_polyhedron": polyhedron,
             "ambient_lattice": lattice,
+            "defining_data": defining_data,
         },
     )
 
 
 __all__ = [
+    "AbstractPolytopes",
+    "ConvexPolytopesIn",
     "ConvexPolygons",
     "ConvexPolytopes",
+    "EuclideanPolytopesIn",
+    "HyperbolicGeodesicPolytopesIn",
+    "LatticePolytopesIn",
     "LatticePolygons",
     "LatticePolytopes",
     "RegularPolytopes",
+    "SphericalGeodesicPolytopesIn",
 ]

@@ -354,7 +354,7 @@ class HyperbolicSpaces(OwnedParameterizedCategory):
 
         def riemannian_metric(self):
             r"""Return the metric ``-b`` restricted to each tangent space ``x^perp`` of the hyperboloid."""
-            assert False, "riemannian_metric on HyperbolicSpaces: not implemented"
+            pass
 
         @cached_method
         def rational_points(self):

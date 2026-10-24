@@ -415,6 +415,25 @@ class ContinuousMap:
     def underlying_set_morphism(self):
         return self._set_morphism
 
+    def is_embedding(self):
+        pass
+
+    def simplicial_approximation(self, source_triangulation, target_triangulation):
+        r"""Select a simplicial map after source subdivision and a homotopy to this map.
+
+        The supplied triangulations lie over this map's exact domain and
+        codomain. The comparison uses their selected realization arrows.
+        """
+        pass
+
+    def is_homotopic_to(self, other):
+        r"""Decide homotopy between maps with the same exact endpoints."""
+        pass
+
+    def is_weak_equivalence(self):
+        r"""Decide whether this map is bijective on components and on pointed homotopy groups."""
+        pass
+
     @validator
     def validate_continuity(self) -> None:
         r"""Raise ``ValueError`` unless the preimage of each open set of ``Y`` is open in ``X`` (``OWN-22``)."""
@@ -610,6 +629,20 @@ class TopologicalSpaces(OwnedCategory):
         r"""``(B, b)`` as an object of ``*/Top``: the coslice object on the map ``* -> B``, ``* -> b``."""
         point = self.terminal_object()
         return self.CosliceUnder(point)(point.Mor(space)(lambda _: base_point))
+
+    def mapping_cylinder(self, morphism):
+        r"""The pushout ``X ∪_f (A × [0,1])`` for ``f: A -> X``, with its selected cocone."""
+        pass
+
+    def subspace(self, subset_inclusion):
+        r"""Give the selected subset its induced topology and inclusion into its exact space."""
+        pass
+
+    @cached_method
+    def fundamental_groupoid_functor(self):
+        from dzack_research.preamble.categories.fundamental_groupoids import _FundamentalGroupoidFunctor
+
+        return _FundamentalGroupoidFunctor()
 
     def _call_(self, point_set, open_subsets):
         r"""Construct the exact finite topology ``open_subsets`` on ``point_set``.
@@ -826,6 +859,12 @@ class TopologicalSpaces(OwnedCategory):
 
         topology = open_subsets
 
+        def open_complement(self, closed_inclusion):
+            pass
+
+        def open_complement_inclusion(self, closed_inclusion):
+            pass
+
         @cached_method
         def open_subsets_site(self):
             r"""``Open(X)``, the poset category of the open subsets of ``X`` ordered by inclusion.
@@ -960,7 +999,19 @@ class TopologicalSpaces(OwnedCategory):
             Protected contract of :class:`TopologicalSpaces`, with the owner
             and caller of :meth:`_homotopy_group_module`.
             """
-            assert False, f"the fundamental group pi_1({self}, {base_point}) is not known to this space"
+            pass
+
+        def fundamental_groupoid(self):
+            r"""A ``Cat`` object with this space's points and path-homotopy arrows."""
+            from dzack_research.preamble.categories.fundamental_groupoids import FundamentalGroupoid
+
+            return FundamentalGroupoid(self)
+
+        def local_systems(self, fiber_category):
+            r"""Functors from this space's fundamental groupoid to the fiber category."""
+            from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+            return Cat().Mor(self.fundamental_groupoid(), fiber_category)
 
         def _whitehead_pairing(self, base_point, left_degree, right_degree):
             r"""The Whitehead product ``pi_p(X, x) x pi_q(X, x) -> pi_{p+q-1}(X, x)``, a bilinear map.

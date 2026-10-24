@@ -284,6 +284,82 @@ from dzack_research.preamble.categories.manifolds import (  # noqa: F401
     SmoothManifolds,
     TopologicalManifolds,
 )
+from dzack_research.preamble.categories.integral_affine_manifolds import (  # noqa: F401
+    IntegralAffineManifolds,
+    IntegralAffineManifoldsWithBoundary,
+    IntegralAffineManifoldsWithCorners,
+    SingularIntegralAffineLocalModels,
+    SingularIntegralAffineSpaces,
+)
+from dzack_research.preamble.categories.integral_affine_atlases import (  # noqa: F401
+    IntegralAffineAtlases,
+)
+from dzack_research.preamble.categories.integral_affine_stratified_atlases import (  # noqa: F401
+    IntegralAffineBoundaryAtlases,
+    IntegralAffineCornerAtlases,
+)
+from dzack_research.preamble.categories.integral_affine_collars import (  # noqa: F401
+    IntegralAffineCollars,
+)
+from dzack_research.preamble.categories.sets.finite_graded_posets import (  # noqa: F401
+    FiniteGradedPosets,
+)
+from dzack_research.preamble.categories.cell_complexes import (  # noqa: F401
+    CellComplexes,
+    DeltaComplexes,
+    PolytopalComplexes,
+    SimplicialComplexes,
+    SimplicialSets,
+)
+from dzack_research.preamble.categories.schemes.degeneration_central_fibers import (  # noqa: F401
+    DegenerationCentralFibers,
+)
+from dzack_research.preamble.categories.triangulations import (  # noqa: F401
+    ChosenTriangulations,
+)
+from dzack_research.preamble.categories.real_ck_manifolds import (  # noqa: F401
+    RealCkManifolds,
+)
+from dzack_research.preamble.categories.topological_atlases import (  # noqa: F401
+    TopologicalAtlases,
+)
+from dzack_research.preamble.categories.real_ck_atlases import (  # noqa: F401
+    RealCkAtlases,
+)
+from dzack_research.preamble.categories.stratified_atlases import (  # noqa: F401
+    RealCkBoundaryAtlases,
+    RealCkCornerAtlases,
+    TopologicalBoundaryAtlases,
+    TopologicalCornerAtlases,
+)
+from dzack_research.preamble.categories.holomorphic_atlases import (  # noqa: F401
+    HolomorphicAtlases,
+)
+from dzack_research.preamble.categories.manifolds_with_boundary import (  # noqa: F401
+    RealCkManifoldsWithBoundary,
+    RealCkManifoldsWithCorners,
+    SmoothManifoldsWithBoundary,
+    SmoothManifoldsWithCorners,
+    TopologicalManifoldsWithBoundary,
+    TopologicalManifoldsWithCorners,
+)
+from dzack_research.preamble.categories.manifold_dimension_strata import (  # noqa: F401
+    ManifoldsOfDimensionAtMost,
+    PureDimensionalManifolds,
+)
+from dzack_research.preamble.categories.real_affine_spaces import (  # noqa: F401
+    AffineSpacesWithLattice,
+    RealAffineSpaces,
+    RealVectorSpaces,
+)
+from dzack_research.preamble.categories.complex_affine_spaces import (  # noqa: F401
+    ComplexAffineSpaces,
+    ComplexVectorSpaces,
+)
+from dzack_research.preamble.categories.metric_affine_spaces import (  # noqa: F401
+    EuclideanSpaces,
+    SphericalSpaces,
+)
 from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
@@ -394,12 +470,17 @@ _lazy_import(
         "AffineInvariantQuotientBaseChangeComparison",
         "AffineSchemes",
         "AffineSpaces",
+        "AbstractPolytopes",
+        "ConvexPolytopesIn",
         "AnalyticDiscFamily",
         "Blowups",
         "ClosedEmbeddings",
         "ClosedSubschemes",
         "ConvexPolygons",
         "ConvexPolytopes",
+        "EuclideanPolytopesIn",
+        "HyperbolicGeodesicPolytopesIn",
+        "LatticePolytopesIn",
         "CurveLocalDeltaContribution",
         "Curves",
         "CyclicCoverBaseChangeComparison",
@@ -438,6 +519,7 @@ _lazy_import(
         "QuasiCoherentSheaves",
         "RationalPolyhedralFans",
         "RegularPolytopes",
+        "SphericalGeodesicPolytopesIn",
         "RelativeCyclicCoverLift",
         "RelativeProjectivizations",
         "RingedSpaces",
@@ -519,6 +601,10 @@ from dzack_research.preamble.categories.topological_spaces import (  # noqa: F40
     ContinuousMap,
     TopologicalSpaceMor,
     TopologicalSpaces,
+)
+from dzack_research.preamble.categories.fundamental_groupoids import (  # noqa: F401
+    FundamentalGroupoid,
+    FundamentalGroupoids,
 )
 from dzack_research.preamble.categories.pointed_topological_spaces import (  # noqa: F401
     TopologicalSpaceCoslices,

@@ -1439,6 +1439,13 @@ class GObjects(CategoryPacketMethods, OwnedCategory):
             assert group_element in self.acting_group(), f"{group_element} is not an element of {self.acting_group()}"
             return self.action()(group_element)
 
+        def fixed_locus(self, group_element):
+            r"""Equalizer of the selected action and identity in the underlying category."""
+            pass
+
+        def fixed_locus_inclusion(self, group_element):
+            pass
+
         def act(self, group_element, element):
             r"""Return ``group_element . element``."""
             assert element in self, f"{element} is not an element of {self}"

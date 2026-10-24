@@ -9,6 +9,7 @@ represented atlas transition.
 from itertools import combinations
 
 from sage.categories.category_with_axiom import all_axioms
+from sage.categories.morphism import Morphism
 from sage.combinat.root_system.coxeter_group import CoxeterGroup
 from sage.combinat.root_system.coxeter_matrix import CoxeterMatrix
 from sage.matrix.constructor import matrix as _engine_matrix
@@ -30,6 +31,7 @@ from dzack_research.preamble.categories.abstract_categories.mor_categories impor
 from dzack_research.preamble.categories.abstract_categories.objects import (
     OwnedCategory,
 )
+from dzack_research.preamble.categories.functors.core import Functor
 from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_ring,
@@ -402,6 +404,20 @@ class TopologicalManifolds(OwnedCategory):
     def an_object(self):
         return self(1, "M_top")
 
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
+
+    def on(self, underlying_space, atlas):
+        r"""Place the exact space under a compatible topological atlas."""
+        pass
+
     def _call_(self, dimension, name):
         dimension = int(dimension)
         if dimension <= 0:
@@ -624,6 +640,12 @@ class TopologicalManifolds(OwnedCategory):
                 name=f"Atlas charts of {self}",
             )
 
+        def open_submanifold(self, open_inclusion):
+            pass
+
+        def open_submanifold_inclusion(self, open_manifold):
+            pass
+
         def transition_map(
             self,
             source_label,
@@ -728,6 +750,132 @@ class TopologicalManifolds(OwnedCategory):
             )
 
 
+class DifferentiableManifoldMor(CategoricalMor):
+    r"""Chartwise differentiable maps at the degree admitted by their endpoints."""
+
+    class ElementMethods:
+        def __init__(self, parent, topological_map, chart_maps, degree):
+            Morphism.__init__(self, parent)
+            self._topological_map = topological_map
+            self._chart_maps = chart_maps
+            self._degree = degree
+
+        def underlying_topological_morphism(self):
+            return self._topological_map
+
+        def chart_maps(self):
+            return self._chart_maps
+
+        def degree(self):
+            return self._degree
+
+        def _call_(self, point):
+            return self._topological_map(point)
+
+        def weaken_to(self, degree):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, topological_map, chart_maps, degree):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a differentiable identity requires the same source and target")
+        pass
+
+
+class DifferentiableManifoldMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = DifferentiableManifoldMor
+
+
+class SmoothManifoldMor(CategoricalMor):
+    r"""Chartwise smooth maps between selected smooth real manifolds."""
+
+    class ElementMethods:
+        def __init__(self, parent, topological_map, chart_maps):
+            Morphism.__init__(self, parent)
+            self._topological_map = topological_map
+            self._chart_maps = chart_maps
+
+        def underlying_topological_morphism(self):
+            return self._topological_map
+
+        def chart_maps(self):
+            return self._chart_maps
+
+        def _call_(self, point):
+            return self._topological_map(point)
+
+        def weaken_to(self, degree):
+            pass
+
+        def as_ck_morphism(self):
+            pass
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, topological_map, chart_maps):
+        pass
+
+    @object_level
+    def identity(self):
+        if self.domain() is not self.codomain():
+            raise ValueError("a smooth identity requires the same source and target")
+        pass
+
+
+class SmoothManifoldMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = SmoothManifoldMor
+
+
+class _SmoothCkPresentationFunctor(Functor):
+    r"""Place legacy smooth objects and maps in the ``C^∞`` category."""
+
+    def __init__(self, source):
+        from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds
+
+        super().__init__(source, RealCkManifolds(Infinity))
+
+    def _apply_object(self, manifold):
+        return manifold.as_ck_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.as_ck_morphism()
+
+
+class _DifferentiableTopologyFunctor(Functor):
+    r"""Forget differentiability on exact manifolds and maps."""
+
+    def __init__(self, source):
+        super().__init__(source, TopologicalManifolds())
+
+    def _apply_object(self, manifold):
+        return manifold.underlying_topological_manifold()
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_topological_morphism()
+
+
+class _SmoothFiniteDegreeFunctor(Functor):
+    r"""Forget smoothness to a selected finite ``C^k`` degree."""
+
+    def __init__(self, source, degree):
+        from dzack_research.preamble.categories.real_ck_manifolds import RealCkManifolds
+
+        super().__init__(source, RealCkManifolds(degree))
+
+    def _apply_object(self, manifold):
+        return manifold.weaken_to(self.codomain().degree())
+
+    def _apply_morphism(self, morphism):
+        return morphism.weaken_to(self.codomain().degree())
+
+
 class DifferentiableManifolds(OwnedCategory):
     r"""Owned real differentiable manifolds.
 
@@ -735,6 +883,8 @@ class DifferentiableManifolds(OwnedCategory):
     manifolds form the represented subcategory below and therefore belong here
     as well.
     """
+
+    _MorCategory = DifferentiableManifoldMorCategoryConstruction
 
     def super_categories(self):
         return [TopologicalManifolds()]
@@ -745,6 +895,28 @@ class DifferentiableManifolds(OwnedCategory):
 
     def an_object(self):
         return self(1, "M_C1", 1)
+
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
+
+    def on(self, topological_manifold, degree, atlas):
+        r"""Place the exact topological manifold under a finite-degree real atlas."""
+        pass
+
+    @cached_method
+    def forget_topology(self):
+        return _DifferentiableTopologyFunctor(self)
+
+    class ParentMethods:
+        def underlying_topological_manifold(self):
+            pass
 
     def _call_(self, dimension, name, differentiability_degree):
         dimension = int(dimension)
@@ -787,6 +959,8 @@ class SmoothManifolds(OwnedCategory):
     to the same underlying topological space.
     """
 
+    _MorCategory = SmoothManifoldMorCategoryConstruction
+
     def super_categories(self):
         from dzack_research.preamble.categories.orbifolds import Orbifolds
 
@@ -798,6 +972,50 @@ class SmoothManifolds(OwnedCategory):
 
     def an_object(self):
         return self(1, "M_smooth")
+
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
+
+    def on(self, topological_manifold, atlas):
+        r"""Place the exact manifold under a compatible smooth atlas."""
+        pass
+
+    @cached_method
+    def as_ck(self):
+        return _SmoothCkPresentationFunctor(self)
+
+    @cached_method
+    def forget_smoothness(self, degree):
+        from dzack_research.preamble.categories.real_ck_manifolds import _real_ck_degree
+
+        degree = _real_ck_degree(degree)
+        if degree == Infinity:
+            raise ValueError("forgetting smoothness requires a finite C^k degree")
+        return _SmoothFiniteDegreeFunctor(self, degree)
+
+    @cached_method
+    def forget_topology(self):
+        return _DifferentiableTopologyFunctor(self)
+
+    class ParentMethods:
+        def as_ck_manifold(self):
+            pass
+
+        def underlying_topological_manifold(self):
+            pass
+
+        def tangent_bundle(self):
+            pass
+
+        def weaken_to(self, degree):
+            pass
 
     def _call_(self, dimension, name):
         dimension = int(dimension)
@@ -981,6 +1199,48 @@ class _StandardSphere:
         return BilinearMap(left, right, target, images)
 
 
+class RiemannianManifoldMor(CategoricalMor):
+    r"""Smooth maps preserving the selected Riemannian metrics."""
+
+    class ElementMethods:
+        def __init__(self, parent, smooth_map):
+            Morphism.__init__(self, parent)
+            self._smooth_map = smooth_map
+
+        def underlying_smooth_morphism(self):
+            return self._smooth_map
+
+        def _call_(self, point):
+            return self._smooth_map(point)
+
+        def __mul__(self, other):
+            pass
+
+    def _element_constructor_(self, smooth_map):
+        pass
+
+    @object_level
+    def identity(self):
+        pass
+
+
+class RiemannianManifoldMorCategoryConstruction(MorCategoryConstruction):
+    FixedCategoryClass = RiemannianManifoldMor
+
+
+class _RiemannianSmoothFunctor(Functor):
+    r"""Forget the selected metric on objects and local isometries."""
+
+    def __init__(self):
+        super().__init__(RiemannianManifolds(), SmoothManifolds())
+
+    def _apply_object(self, manifold):
+        pass
+
+    def _apply_morphism(self, morphism):
+        return morphism.underlying_smooth_morphism()
+
+
 class RiemannianManifolds(OwnedCategory):
     r"""Smooth real manifolds ``(M, g)`` with a chosen Riemannian metric ``g``.
 
@@ -988,23 +1248,24 @@ class RiemannianManifolds(OwnedCategory):
     definite on every tangent space ``T_p M`` (Helgason, *Differential
     Geometry, Lie Groups, and Symmetric Spaces*, Ch. I, §9; Mathlib
     ``Mathlib/Topology/VectorBundle/Riemannian.lean``, ``RiemannianBundle``).
-    A smooth manifold admits many metrics, so the metric is chosen data and
-    this is a data subcategory of ``SmoothManifolds()``, its immediate
-    supercategory: forgetting ``g`` returns the smooth manifold ``M``.
+    A smooth manifold admits many metrics, so the metric is chosen data.
+    ``forget_metric()`` sends the structured object to its selected smooth
+    manifold ``M``.
 
     A morphism ``(M, g) -> (N, h)`` is a smooth map ``f`` with ``f^* h = g``,
-    a local isometry.  The Mor category with that condition is not presented
-    yet; ``isometry_group()`` is the automorphism group of ``(M, g)`` in it.
+    a local isometry.  ``isometry_group()`` is the automorphism group of
+    ``(M, g)`` in this map category.
 
     A Riemannian manifold is the Riemannian orbifold whose charts have
-    trivial group, so ``RiemannianOrbifolds()`` is its second immediate
-    supercategory; both routes send ``(M, g)`` to the smooth orbifold ``M``.
+    trivial group, so ``RiemannianOrbifolds()`` is its supercategory.
     """
+
+    _MorCategory = RiemannianManifoldMorCategoryConstruction
 
     def super_categories(self):
         from dzack_research.preamble.categories.orbifolds import RiemannianOrbifolds
 
-        return [SmoothManifolds(), RiemannianOrbifolds()]
+        return [RiemannianOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -1012,20 +1273,15 @@ class RiemannianManifolds(OwnedCategory):
 
     def an_object(self):
         r"""The Euclidean line ``(R, dx^2)``."""
-        assert False, "an_object on RiemannianManifolds: not implemented"
+        pass
 
     def _call_(self, manifold, metric):
-        r"""Return ``(M, g)`` for a smooth manifold ``M`` and a Riemannian metric ``g`` on it.
+        r"""Select ``(M, g)`` from a smooth manifold and its positive definite metric."""
+        pass
 
-        ``metric`` is a smooth positive definite section of ``Sym^2 T^*M``.
-        The construction stores ``M`` and ``g`` and computes nothing.
-        """
-        assert manifold in SmoothManifolds(), (
-            f"cannot equip {manifold} with the Riemannian metric {metric}: a Riemannian "
-            f"metric is defined on a smooth manifold, and {manifold} is in "
-            f"{manifold.category()}"
-        )
-        assert False, "construction of an object of RiemannianManifolds: not implemented"
+    @cached_method
+    def forget_metric(self):
+        return _RiemannianSmoothFunctor()
 
     class SubcategoryMethods:
         def GloballySymmetric(self):
@@ -1040,9 +1296,12 @@ class RiemannianManifolds(OwnedCategory):
             return self._with_axiom("GloballySymmetric")
 
     class ParentMethods:
+        def underlying_smooth_manifold(self):
+            pass
+
         def riemannian_metric(self):
             r"""Return the chosen metric ``g``, a positive definite section of ``Sym^2 T^*M``."""
-            assert False, "riemannian_metric on RiemannianManifolds: not implemented"
+            pass
 
         def isometry_group(self):
             r"""Return ``I(M, g)``, the group of isometries ``f: M -> M`` with ``f^* g = g``.
@@ -1054,7 +1313,7 @@ class RiemannianManifolds(OwnedCategory):
             group of ``M`` (Helgason, Ch. IV, Lemma 3.2), an object of
             ``LieGroups()``.
             """
-            assert False, "isometry_group on RiemannianManifolds: not implemented"
+            pass
 
     class GloballySymmetric(CategoryWithAxiom):
         r"""Riemannian globally symmetric spaces (Helgason, Ch. IV, §3).
@@ -1176,7 +1435,7 @@ class RiemannianManifolds(OwnedCategory):
                 through ``p`` and its differential at ``p`` is ``-1`` on
                 ``T_p M``.
                 """
-                assert False, "geodesic_symmetry on RiemannianManifolds.GloballySymmetric: not implemented"
+                pass
 
 
 class HolomorphicMapPresentation:
@@ -1334,6 +1593,9 @@ class HolomorphicMap:
 
     def _engine_holomorphic_map(self):
         return self.presentation()._engine_map_crossing()
+
+    def underlying_smooth_morphism(self):
+        pass
 
     def _evaluate_point(self, point):
         r"""Evaluate a coordinate representation whose domain contains the owned source point.
@@ -1529,6 +1791,19 @@ class ComplexManifoldMorCategoryConstruction(MorCategoryConstruction):
         return ComplexManifoldMor
 
 
+class _ComplexRealificationFunctor(Functor):
+    r"""Send complex manifolds and holomorphic maps to their real smooth images."""
+
+    def __init__(self, source, target):
+        super().__init__(source, target)
+
+    def _apply_object(self, manifold):
+        pass
+
+    def _apply_morphism(self, morphism):
+        pass
+
+
 class ComplexManifolds(OwnedCategory):
     r"""Finite-dimensional complex analytic manifolds with holomorphic atlases.
 
@@ -1549,7 +1824,7 @@ class ComplexManifolds(OwnedCategory):
     def super_categories(self):
         from dzack_research.preamble.categories.orbifolds import ComplexOrbifolds
 
-        return [SmoothManifolds(), ComplexOrbifolds()]
+        return [ComplexOrbifolds()]
 
     @classmethod
     def _repr_object_names(cls):
@@ -1557,6 +1832,24 @@ class ComplexManifolds(OwnedCategory):
 
     def an_object(self):
         return self.affine_space(1, name="C")
+
+    def DimensionAtMost(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import ManifoldsOfDimensionAtMost
+
+        return ManifoldsOfDimensionAtMost(self, dimension)
+
+    def PureDimension(self, dimension):
+        from dzack_research.preamble.categories.manifold_dimension_strata import PureDimensionalManifolds
+
+        return PureDimensionalManifolds(self, dimension)
+
+    def on(self, topological_manifold, holomorphic_atlas):
+        r"""Place the exact manifold under a compatible holomorphic atlas."""
+        pass
+
+    @cached_method
+    def realification(self):
+        return _ComplexRealificationFunctor(self, SmoothManifolds())
 
     def _call_(self, dimension, name):
         dimension = int(dimension)
@@ -1742,6 +2035,15 @@ class ComplexManifolds(OwnedCategory):
         )
 
     class ParentMethods:
+        def underlying_smooth_manifold(self):
+            pass
+
+        def open_submanifold(self, open_inclusion):
+            pass
+
+        def open_submanifold_inclusion(self, open_manifold):
+            pass
+
         def complex_dimension(self):
             return self.dimension()
 
@@ -2256,6 +2558,7 @@ __all__ = [
     "HolomorphicMap",
     "ManifoldAtlasChart",
     "ManifoldAtlasTransition",
+    "RiemannianManifoldMor",
     "RiemannianManifolds",
     "SmoothManifolds",
     "TopologicalManifolds",

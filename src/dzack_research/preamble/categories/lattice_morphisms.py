@@ -2747,7 +2747,7 @@ def _orthogonal_group_is_finite_by_theorem(lattice) -> bool:
       ``O(L) -> {1, -1}`` is a group morphism with kernel ``SO(L)``, so
       ``[O(L) : SO(L)] <= 2`` and ``O(L)`` has order at most 4; for the
       hyperbolic plane ``U``, ``O(U) = {1, -1, swap, -swap}``.  The
-      ``lean-categories`` statement is requested (COMPLAINTS.md, *Finiteness
+      ``lean-categories`` statement is requested (research issue #584, *Finiteness
       of O(L) for split binary lattices is not formalized*).
 
     Definite lattices over ``QQ`` are not routed: ``O(x^2 + y^2)`` over ``QQ``

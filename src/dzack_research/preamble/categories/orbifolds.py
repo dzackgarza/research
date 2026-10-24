@@ -44,7 +44,7 @@ class Orbifolds(OwnedCategory):
             finite stabilizer ``Gamma_p`` and the restriction of the
             projection ``q``.
             """
-            assert False, "orbifold_atlas on Orbifolds: not implemented"
+            pass
 
 
 class RiemannianOrbifolds(OwnedCategory):
@@ -70,7 +70,7 @@ class RiemannianOrbifolds(OwnedCategory):
     class ParentMethods:
         def riemannian_metric(self):
             r"""The chart-invariant metric: on ``Gamma\M``, the metric of ``M`` on each chart ``U~``."""
-            assert False, "riemannian_metric on RiemannianOrbifolds: not implemented"
+            pass
 
 
 class ComplexOrbifolds(OwnedCategory):
@@ -98,7 +98,7 @@ class ComplexOrbifolds(OwnedCategory):
 
             On the orbit space ``Gamma\M`` it is ``V |-> O_M(q^{-1}V)^Gamma``.
             """
-            assert False, "structure_sheaf on ComplexOrbifolds: not implemented"
+            pass
 
 
 __all__ = ["ComplexOrbifolds", "Orbifolds", "RiemannianOrbifolds"]

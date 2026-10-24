@@ -3764,7 +3764,7 @@ class ModuleAutomorphismGroup(CoreMor):
         by the block ``GL(n_i, R)`` (Sage's generators) and the elementary
         automorphisms ``b_k |-> b_k + b_j`` for ``j`` in an earlier block
         than ``k`` (Levi decomposition ``B = L U``; unverified: no source was
-        opened, recorded in COMPLAINTS.md, *Generators of parabolic subgroups
+        opened, recorded in research issue #398, *Generators of parabolic subgroups
         of GL(M) over a PID*; untrusted computation).  The result is the
         stabilizer subgroup of the flag under the natural module action,
         with that generating morphism.

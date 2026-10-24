@@ -208,6 +208,18 @@ class Cat(CategoryPacketMethods, Category):
 
         return SliceCategory(self, base_object)
 
+    def fiber(self, functor: Functor, target_object: ObjectOfCategory) -> Category:
+        r"""Objects over ``target_object`` and arrows mapping to its identity.
+
+        This is ``Functor.Fiber`` in Mathlib's
+        ``CategoryTheory/FiberedCategory/Fiber.lean``.
+        """
+        pass
+
+    def fiber_inclusion(self, functor: Functor, target_object: ObjectOfCategory) -> Functor:
+        r"""Include the strict fiber of ``functor`` in its domain category."""
+        pass
+
     class ParentMethods:
         r"""What a category can do, as an object of ``Cat``.
 

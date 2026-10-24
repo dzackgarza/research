@@ -3,7 +3,7 @@
 Measured facts about the engines this repository delegates to, kept because each one is the product of the work and costs an afternoon to rediscover (`CONTRIBUTING.md`: *The artifacts are instruments; the product is a map of Sage*; `DEV-63` owns this file).
 A row is a finding, never a hypothesis: it records the operation, the spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, and the route chosen.
 A cost is a curve in the size parameter, or it is a single data point and says so.
-`COMPLAINTS.md` holds the unresolved need; this file holds the fact, which delivery uses and never resolves.
+The [native issue tree](https://github.com/dzackgarza/research/issues/46) holds unresolved needs; this file holds measured facts.
 
 Read this file before choosing any engine route.
 Write to it in the turn the measurement is made.
@@ -46,7 +46,7 @@ Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:devel
 
 Observed 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`). Contract (`sage/categories/category.py`, `Category._sort`, and `sage/misc/c3_controlled.pyx`, `_cmp_key`): a join's factors are sorted by decreasing `_cmp_key`, which is the category's flags and a counter fixed when the key is first computed, and the parent class is the C3 merge in that order; the order of two factors unrelated in the declared graph therefore follows construction history, not inheritance.
 Specimen: the discriminant bilinear module of the odd lattice ((-1,-3,-1),(-3,14,8),(-1,8,11)) and the discriminant quadratic module of ((2,1),(1,-4)). Probe (sage-indefinite-port `.tmp/probe/mro3.py GRAM`, lists methods of `_SelectedFinitePresentationModules.ParentMethods` repeated by a later formed `ParentMethods` in `type(A_L).__mro__`): before, `invariant_factor_form` (FormModules.FinitelyPresented.Torsion) and `base_change` (FormModules.FinitelyPresented, FormModules) were shadowed for both specimens, and for the odd one `invariant_factor_form()` returned an isomorphism to an unformed module (`O(A_L).from_morphism` -> `_engine_module` -> `_representative_gram`: `AttributeError: ... object has no attribute 'form'`). Route chosen: the two operations live on `ModulesWithChosenFinitePresentation`, the data they consume; after the move the probe lists nothing.
-The formed levels still win only by the join order (COMPLAINTS.md, "Formed module categories are not below the chosen-presentation category").
+The formed levels still win only by the join order ([#565](https://github.com/dzackgarza/research/issues/565)).
 
 ### Sage's `GroupOfIsometries` cannot be formed on an empty generating family
 
@@ -139,7 +139,7 @@ It does **not** replace the owned discriminant module with Sage's normalized fin
 Reproduce native measurements with `direnv exec /home/dzack/research python3` in `/home/dzack/research`, reading the `gram_tensor:` rows of `/home/dzack/gitclones/lattice-database/lattices/029K.md` using `ast.literal_eval`, making `sage.all.matrix(ZZ, rows)` and `sage.modules.free_quadratic_module_integer_symmetric.IntegralLattice(G)`, then timing `discriminant_group()`. Reproduce the owned measurements in a separate process on the same **nested list** rows (`Lattices(ZZ)(rows)`, since Sage matrices have tensor type `(1,1)`), timing `L.correlation_morphism()` and `L.discriminant_module()` with `time.perf_counter()`. The rank-28 row is deliberately one data point per route, not an inferred asymptotic cost curve.
 
 Depends on this: discriminant modules and forms, `L.is_p_elementary(p)`, and through them lattice-db `delta` and other discriminant-dependent certifications.
-The separate missing-`delta()` category-join regression is recorded in `COMPLAINTS.md`.
+The separate missing-`delta()` category-join regression is recorded in [#573](https://github.com/dzackgarza/research/issues/573).
 
 ### Lazy Taylor series do not implement `is_field()`
 

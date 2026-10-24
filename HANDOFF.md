@@ -131,7 +131,8 @@ belong to TODO.md and their owning artifacts.
 
 ### Working references
 
-Read INTENT.md, AGENTS.md, CONTRIBUTING.md, TODO.md, COMPLAINTS.md and the
+Read INTENT.md, AGENTS.md, CONTRIBUTING.md, TODO.md, the relevant issues in
+the [native issue tree](https://github.com/dzackgarza/research/issues/46), and the
 relevant entries of docs/preamble-megadoc.md before changing the affected
 owners. Resolve mathematical placement from the governing architecture.
 
