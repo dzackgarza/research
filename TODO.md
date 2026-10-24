@@ -18,10 +18,12 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 
 | Source identifier | Issue |
 | --- | --- |
+| `mor-hom-expectation-ruling` | [#492](https://github.com/dzackgarza/research/issues/492) |
 | `division-algebras-are-placed-by-construction` | [#451](https://github.com/dzackgarza/research/issues/451) |
 | `ring-sizes-follow-construction` | [#450](https://github.com/dzackgarza/research/issues/450) |
 | `effective-categorical-constructions` | [#428](https://github.com/dzackgarza/research/issues/428) |
 | `pullbacks-in-every-category` | [#514](https://github.com/dzackgarza/research/issues/514) |
+| `named-notions-unfolded-population` | [#485](https://github.com/dzackgarza/research/issues/485) |
 | `modules-over-a-group-algebra-keep-the-module-axioms` | [#443](https://github.com/dzackgarza/research/issues/443) |
 | `modules-call-on-a-set-is-the-free-module` | [#461](https://github.com/dzackgarza/research/issues/461) |
 | `cat-declares-the-owned-objects` | [#470](https://github.com/dzackgarza/research/issues/470) |
@@ -153,7 +155,6 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 | Source identifier | Issue |
 | --- | --- |
 | `resolution-truncations-in-the-session` | [#465](https://github.com/dzackgarza/research/issues/465) |
-| `named-notions-unfolded-population` | [#485](https://github.com/dzackgarza/research/issues/485) |
 | `placement-audit` | [#429](https://github.com/dzackgarza/research/issues/429) |
 | `engine-wiring-audit` | [#431](https://github.com/dzackgarza/research/issues/431) |
 | `membership-replaces-dynamic-peeking` | [#436](https://github.com/dzackgarza/research/issues/436) |
@@ -164,7 +165,6 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 | `architecture-remediation` | [#486](https://github.com/dzackgarza/research/issues/486) |
 | `core-usability-session` | [#487](https://github.com/dzackgarza/research/issues/487) |
 | `constructor-discovery` | [#491](https://github.com/dzackgarza/research/issues/491) |
-| `mor-hom-expectation-ruling` | [#492](https://github.com/dzackgarza/research/issues/492) |
 | `refactor-audit` | [#488](https://github.com/dzackgarza/research/issues/488) |
 | `type-paydown` | [#489](https://github.com/dzackgarza/research/issues/489) |
 | `bloat-audit-loop` | [#490](https://github.com/dzackgarza/research/issues/490) |
