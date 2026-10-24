@@ -29,3 +29,17 @@ def test_nondegenerate_hyperbolic_plane_has_zero_radical() -> None:
 
     assert u.radical().module_rank() == 0
     assert u.radical_quotient().is_isometric_to(u)
+
+
+def test_rational_radical_quotient_retains_its_projection() -> None:
+    r"""The quotient of the rank-three form with a one-dimensional radical has rank two."""
+    lattice = Lattices(QQ)([[0, 0, 0], [0, 0, 1], [0, 1, 0]])
+    quotient = lattice.radical_quotient()
+    projection = lattice.radical_quotient_projection()
+
+    assert lattice.radical().module_rank() == 1
+    assert quotient.module_rank() == 2
+    assert projection.domain() is lattice
+    assert projection.codomain() is quotient
+    assert projection.preserves_forms() is True
+    assert projection(lattice.module_generator(1)) == quotient.module_generator(1)
