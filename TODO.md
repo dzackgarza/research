@@ -16,9 +16,12 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 
 [Issue #417](https://github.com/dzackgarza/research/issues/417)
 
+The required [core migration #384](https://github.com/dzackgarza/research/issues/384) and [property/constructor integration #556](https://github.com/dzackgarza/research/issues/556) precede repairs to the runtime they replace. Each migrated layer retains the affected issues' full mathematical contracts; those issues then own only unmet requirements on the final construction. The native tree also places shared finite-action and formed-module computations before their decorated-family consumers.
+
 | Source identifier | Issue |
 | --- | --- |
 | `mor-hom-expectation-ruling` | [#492](https://github.com/dzackgarza/research/issues/492) |
+| `core-property-construction` | [#556](https://github.com/dzackgarza/research/issues/556) |
 | `division-algebras-are-placed-by-construction` | [#451](https://github.com/dzackgarza/research/issues/451) |
 | `ring-sizes-follow-construction` | [#450](https://github.com/dzackgarza/research/issues/450) |
 | `effective-categorical-constructions` | [#428](https://github.com/dzackgarza/research/issues/428) |
@@ -194,7 +197,6 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 | `optional-brauer-manin-obstructions` | [#552](https://github.com/dzackgarza/research/issues/552) |
 | `optional-random-lattices-of-given-invariants` | [#554](https://github.com/dzackgarza/research/issues/554) |
 | `optional-moduli-of-stable-curves` | [#555](https://github.com/dzackgarza/research/issues/555) |
-| `optional-sage-categories-property-layer` | [#556](https://github.com/dzackgarza/research/issues/556) |
 | `optional-database` | [#557](https://github.com/dzackgarza/research/issues/557) |
 | `optional-engine` | [#558](https://github.com/dzackgarza/research/issues/558) |
 
