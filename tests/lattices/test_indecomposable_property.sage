@@ -104,12 +104,20 @@ def test_indecomposability_does_not_depend_on_a_selected_sum_presentation() -> N
 def test_unbounded_construction_enumeration_is_fair_and_keeps_gluing_maps() -> None:
     C = Lattices(ZZ)
     line = C([[2]])
-    built = _first_n(C.construction_enumeration((line,)), 30)
+    built = _first_n(C.construction_enumeration((line,)), 7)
 
+    assert all(
+        item.lattice.form_content() >= 2 * item.factors[0].lattice.form_content()
+        for item in built if item.operation == "twist"
+    )
+    assert all(item.witness.index() > 1 for item in built if item.operation == "overlattice")
     assert any(item.operation == "twist" and item.lattice.determinant() == 4 for item in built)
     assert any(item.operation == "orthogonal_sum" and item.lattice.module_rank() == 2 for item in built)
     assert any(item.operation == "tensor_product" and item.lattice.determinant() == 4 for item in built)
-    assert any(item.operation == "overlattice" and item.witness.domain() is line for item in built)
+    proper_line = C([[4]])
+    seed, proper = _first_n(C.construction_enumeration((proper_line,)), 2)
+    assert seed.lattice is proper_line
+    assert proper.operation == "overlattice" and proper.witness.index() == 2
     assert tuple(L.gram_tensor() for L in _first_n(C.object_enumeration((line,)), 2)) == tuple(item.lattice.gram_tensor() for item in built[:2])
 
 

@@ -233,7 +233,7 @@ for _lattice_property_axiom in ("Indecomposable", "Twisted", "Untwisted"):
 
 @dataclass(frozen=True)
 class LatticeConstruction:
-    r"""One expression in a bounded lattice construction family.
+    r"""One expression in an unbounded lattice construction enumeration.
 
     ``factors`` identify the input expressions and ``witness`` retains the
     inclusion for an overlattice. Equal lattices may occur by different paths.
@@ -2359,8 +2359,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             r"""Enumerate integral-lattice construction expressions fairly.
 
             The seed at position ``i`` has weight ``i + 1``, so even a
-            supplied infinite sequence is visited fairly. An overlattice adds one, a twist by
-            ``n`` adds ``1 + abs(n)``, and a binary operation adds one to the
+            supplied infinite sequence is visited fairly. A proper overlattice adds
+            one, a twist by a nonunit integer ``n`` adds ``1 + abs(n)``, and a
+            binary operation adds one to the
             sum of its inputs' weights. Every finite expression over the
             supplied seeds therefore occurs at a finite weight. Distinct
             expressions remain distinct even when their lattices are isometric.
@@ -2401,12 +2402,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                         lattice = source.lattice
                         if lattice.is_nondegenerate() is True:
                             for inclusion in lattice.integral_overlattice_inclusions():
+                                if inclusion.index() == 1:
+                                    continue
                                 current.append(LatticeConstruction(inclusion.codomain(), "overlattice", (source,), inclusion))
-                for source_weight in range(1, weight):
+                for source_weight in range(1, weight - 2):
                     magnitude = weight - source_weight - 1
-                    scalars = (0,) if magnitude == 0 else (magnitude, -magnitude)
                     for source in levels[source_weight]:
-                        for scalar in scalars:
+                        for scalar in (magnitude, -magnitude):
                             current.append(LatticeConstruction(
                                 source.lattice.twist(self.base_ring()(scalar)), "twist", (source,),
                             ))
