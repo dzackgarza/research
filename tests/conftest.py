@@ -20,11 +20,20 @@ over each of them.  ``build(name)`` returns one member by its catalogue name
 for the tests that state a known value about a particular ring.
 """
 
+import builtins
 import functools
 
 import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
+
+
+def _protected_hom_notation(source, target):
+    """Read the protected notebook spelling through the owned Mor operation."""
+    return source.Mor(target)
+
+
+builtins.Hom = _protected_hom_notation
 
 
 def _polynomial_ring(ring, *names):
