@@ -1660,13 +1660,22 @@ class FormModules(OwnedCategoryOverBaseRing):
     _MonoCategory = FormedModuleMonoCategoryConstruction
 
     class ParentMethods:
-        def __init__(self, source_form, source_form_computation=None, **rest) -> None:
+        def __init__(
+            self,
+            source_form,
+            source_form_computation=None,
+            radical_quotient_cokernel_projection=None,
+            radical_quotient_basis_map=None,
+            **rest,
+        ) -> None:
             r"""Retain the selected form, or its defining-data computation."""
             assert (source_form is None) != (source_form_computation is None), (
                 "a formed module needs exactly one selected form or form computation"
             )
             self._preamble_form = source_form
             self._preamble_form_computation = source_form_computation
+            self._preamble_radical_quotient_cokernel_projection = radical_quotient_cokernel_projection
+            self._preamble_radical_quotient_basis_map = radical_quotient_basis_map
             super().__init__(**rest)
 
         def _added_structure(self, construction_data: "dict[str, ConstructionData]") -> "tuple[tuple[Category, ...], dict[str, ConstructionData]]":
@@ -3745,6 +3754,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 descended = self._formed_form().descend_along(inclusion, value_identity)
                 quotient = inclusion.cokernel()
                 ring = quotient.base_ring()
+                basis_map = None
                 # Over a field, a finite presentation is not itself a free
                 # presentation: its selected generators can outnumber its
                 # vector-space dimension.  Re-present the quotient on an
@@ -3757,7 +3767,33 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                         lambda label: quotient.module_generator(label)
                     )
                     descended = descended.pullback(basis_map)
-                return FormModules(ring)(descended)
+                return FormModules(ring)(
+                    descended,
+                    _extra_construction_data={
+                        "radical_quotient_cokernel_projection": inclusion.cokernel_projection(),
+                        "radical_quotient_basis_map": basis_map,
+                    },
+                )
+
+            def radical_quotient_projection(self):
+                r"""Return the canonical formed-module map to ``radical_quotient()``.
+
+                When the cokernel is re-presented on a field basis, compose its
+                canonical cokernel projection with the inverse of that basis
+                isomorphism. The selected maps are retained as construction
+                data of the returned quotient, so this arrow has that exact
+                object as codomain.
+                """
+                quotient = self.radical_quotient()
+                projection = quotient._preamble_radical_quotient_cokernel_projection
+                basis_map = quotient._preamble_radical_quotient_basis_map
+                if basis_map is not None:
+                    projection = basis_map.inverse() * projection
+                values = self.value_module()
+                value_identity = values.module_category().Mor(values, values).identity()
+                return FormModules(self.base_ring()).Mor(self, quotient)(
+                    (projection, value_identity)
+                )
 
             def determinant(self):
                 r"""Return the Gram determinant of a form with values in a ring containing ``R``."""
