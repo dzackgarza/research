@@ -184,24 +184,19 @@ Select subsequent work from the current `TODO.md` dependency graph and its prior
 Recurrence of an older scheduled pause does not supersede this resume; only a later
 explicit owner instruction stops the repository again.
 
-## Every subagent reads the contributing guidelines before it touches code (always-on)
+## Edit-specific reading before code changes (always-on)
 
-No agent edits code in this repository, or in the `dzackgarza/lattice-database` repository, until it has read
-the contributing guidelines in full. This applies to every subagent, worker and
-delegate, whatever its task size. A brief that cites rule codes, or that summarizes
-the rules, does not satisfy it.
-
-A brief that dispatches code work names these files as required reading before
-the first edit, and requires the report to list the files that were read:
-
-- `INTENT.md` and this file;
-- `CONTRIBUTING.md` in full, including the preamble architecture specification;
-- `TODO.md` and the relevant issues in the [native issue tree](https://github.com/dzackgarza/research/issues/46);
-- `docs/preamble-megadoc.md`;
-- the `AGENTS.md` and `README.md` of the subtree that the work edits.
-
-An agent that has edited code before reading them checks every such edit against
-the guidelines before it continues.
+Every agent, subagent, worker and delegate reads the [reading index](docs/edit-reading-index.md)
+and its common required sections before the first edit in this repository or
+`dzackgarza/lattice-database`. The index routes each kind of edit to the relevant
+sections of `INTENT.md`, this file, `CONTRIBUTING.md`, `TODO.md`, the native issue
+tree, the generated megadoc, and subtree instructions. Read the applicable
+sections themselves; a brief or rule-code list is not a substitute. Follow
+cross-references when a section makes another rule applicable. A brief names
+the edit type and required sections, and the worker's report lists the sections
+actually read. If an edit changes kind or reveals a new owner, read that route
+before continuing. An agent that edited code without this reading checks each
+such edit against the applicable sections before continuing.
 
 ## Subagents commit; only the orchestrator accepts and pushes (always-on)
 
@@ -262,7 +257,7 @@ Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasonin
 The [TODO workstream table](TODO.md#workstreams) records the DAG task scores and their reasons.
 Apply the guide to the responsibility actually assigned, including any shared contract design or orchestration it requires.
 
-Also read the generated preamble megadoc output at `docs/preamble-megadoc.md` before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. When execution is authorized, regenerate a stale megadoc with `just preamble-megadoc` and read the result. While `DEV-58` suspends execution, read the existing megadoc as an index, inspect live source for the affected owners, and retain regeneration under terminal T. The prerequisite never overrides the execution phase.
+Read the megadoc's usage guide and the affected entries as routed by the [reading index](docs/edit-reading-index.md#generated-reference-lookup) before writing code. Reading `src/dzack_research/utilities/megadoc.py`, the generator script, does **not** satisfy this requirement. When execution is authorized, regenerate a stale megadoc with `just preamble-megadoc` and read the affected entries. While `DEV-58` suspends execution, use the existing megadoc as an index, inspect live source for the affected owners, and retain regeneration under terminal T. The prerequisite never overrides the execution phase.
 
 `just preamble-megadoc` surveys a live session, so it also writes `docs/preamble-graph.json` — every category with its supercategories, subcategories, ancestry and the operations it introduces, plus every functor's domain and codomain — and `docs/preamble-graph.dot` with the rendered `docs/preamble-graph.html`. Query the JSON with `jq` for the questions the prose cannot index, such as which category owns a given operation.
 

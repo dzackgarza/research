@@ -7927,17 +7927,19 @@ questions under the house rule for open problems.
 
 - **Mathematical lexicon**: [`.agents/references/mathematical-lexicon.md`](.agents/references/mathematical-lexicon.md)
 
-## `COMMIT-01`: Read the contributing policies before every commit
+## `COMMIT-01`: Read applicable contributing policies before every commit
 
-Read all contributing policies in this document before committing. Check the
-work in the commit against them. Include this code anywhere in the commit message:
+Read the common and edit-specific sections routed by the
+[reading index](docs/edit-reading-index.md) before committing. Check the work
+in the commit against the applicable policies, following their cross-references.
+Include this code anywhere in the commit message:
 
 ```text
 c2291c7ab917bf86978a564337f00d5f
 ```
 
 The hook checks whether the commit message contains the code. It does not check
-whether the policies were read or followed.
+whether the applicable policies were read or followed.
 
 This requirement applies to authored commits, including amendments, checkpoints,
 and commits made with `--no-verify`. Merge commits use Git's generated message.
