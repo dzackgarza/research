@@ -5841,6 +5841,11 @@ def _engine_finiteness_decision(engine):
     dimension zero (Atiyah--Macdonald, Ch. 8 and Cor. 5.24 (Zariski)).
     """
     match engine:
+        case QuotientRing_generic() if engine.defining_ideal().is_one():
+            # R/R has one element for every coefficient ring, including
+            # infinite and non-Noetherian rings.  Do not ask the generic
+            # quotient engine for an is_finite method it does not supply.
+            return True
         case QuotientRing_generic() if isinstance(engine.cover_ring(), MPolynomialRing_base) and bool(
             engine.cover_ring().base_ring().is_field()
         ):
