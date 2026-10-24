@@ -4146,10 +4146,13 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 case _ if self in OwnedRings().Commutative():
                     return True
                 case _ if self in Algebras(self.base_ring()) and self.is_framed_algebra():
+                    labels = self.algebra_generating_set()
+                    if not labels.cardinality().is_finite():
+                        return AtomicProposition("is_central", self, element)
                     return all(
                         element * self.algebra_generator(label)
                         == self.algebra_generator(label) * element
-                        for label in self.algebra_generating_set()
+                        for label in labels
                     )
                 case _:
                     from dzack_research.preamble.categories.group.additive_mors import (
