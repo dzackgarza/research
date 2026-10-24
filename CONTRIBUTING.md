@@ -7274,9 +7274,15 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   A protected expectation that uses an older spelling is evidence to reconcile,
   not a second authority that automatically creates an owner choice. If the
   authority already fixes the result, write the remaining source delta and
-  acceptance directly. If a genuine choice remains, name the incompatible
-  governing prescriptions or the exact `ENG-06` scope choice and keep the
-  evidence-gathering task distinct from implementation acceptance. Migration
+  acceptance directly. First check whether a test-side `conftest.py` can
+  translate the spelling to the owned operation without changing the
+  expectation or adding a public alias; the existing category abbreviations
+  are an example. Account for a name exported by the session, which takes
+  precedence over a builtin bridge. A bridge must still exercise the owned
+  operation and preserve the mathematical assertion. If a genuine choice
+  remains, name the incompatible governing prescriptions or the exact
+  `ENG-06` scope choice and keep the evidence-gathering task distinct from
+  implementation acceptance. Migration
   preserves complaint evidence but does not ratify its old decision status.
 
   **Division of responsibility:** `lean-categories` owns the mathematics, and a

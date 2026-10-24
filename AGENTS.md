@@ -684,6 +684,8 @@ it does not authorize deferring, dropping, or weakening unfinished requirements.
 
 The only edit these subtrees admit is one that changes the mathematics an expectation states, because the mathematics was wrong, recorded as such in its commit. Everything else about them, including that they are written blind, take every name from the session's star import, and are never run in order to shape them, is in `tests/constructions/CONTRIBUTING.md`.
 
+When a protected expectation uses an older or notebook spelling for mathematics whose owned operation is already fixed, bridge that spelling in its test-side `conftest.py` to the owned operation. Do this before proposing an exception to edit the expectation or adding a duplicate public session name. Keep the bridge a direct translation of the same mathematical construction, never a fallback, canned answer, or substitute computation; an absent owned operation remains a visible failure. `tests/constructions/conftest.py` already installs category-expression abbreviations this way. Bare `Hom(A, B)` can bridge to `A.Mor(B)`; a Sage-style `matrix(R, n, m, entry)` can bridge to `R.matrix_space(n, m).from_rows(...)` once the conflicting free session export is removed. A star-imported session name takes precedence over a builtin binding, so check resolution before claiming that a bridge works. Preserve every protected mathematical assertion.
+
 ## A doc naming what does not exist is a requirement, not an error (always-on)
 
 Every doc in this repository — this file, `CLAUDE.md`, `CONTRIBUTING.md`, the
