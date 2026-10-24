@@ -7268,6 +7268,17 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   One general complaint can link several consumers. Its title and links should
   remain useful when those consumers move between files.
 
+  Before admitting or migrating a work unit, reconcile its proposed decision
+  with current `AGENTS.md`, this policy index, `lean-categories`, and later
+  owner rulings. Apply `DEV-69` to its cited violation and source evidence.
+  A protected expectation that uses an older spelling is evidence to reconcile,
+  not a second authority that automatically creates an owner choice. If the
+  authority already fixes the result, write the remaining source delta and
+  acceptance directly. If a genuine choice remains, name the incompatible
+  governing prescriptions or the exact `ENG-06` scope choice and keep the
+  evidence-gathering task distinct from implementation acceptance. Migration
+  preserves complaint evidence but does not ratify its old decision status.
+
   **Division of responsibility:** `lean-categories` owns the mathematics, and a
   missing piece of it is a formalization request there; CONTRIBUTING and the
   preamble's declarations specify the enduring engineering design. The research

@@ -1776,9 +1776,14 @@ siblings. Before the slice is repaired, four things are established and filed:
    it fails; an engine class appears only as the file it lives in. Each population becomes
    a DAG node with one loop body.
 4. **Which rule would have prevented it.** If the rule exists and was violated, the node
-   cites it. If two rules conflict, the conflict is recorded for the owner to rule on. If
-   no rule exists, it is written at its owner -- `CONTRIBUTING` for construction and
-   naming, this file for always-on doctrine -- in the same commit that files the nodes.
+   cites it. Check later owner rulings, the mathematical authority, and the applicable
+   protected-test policy before calling two rules conflicting. An old expectation or
+   migrated complaint does not reopen a choice already settled there. If two governing
+   rules still conflict after that check, record their exact incompatible prescriptions
+   for the owner to rule on; do not place an undecided implementation choice in the
+   executable queue. If no rule exists, write it at its owner -- `CONTRIBUTING` for
+   construction and naming, this file for always-on doctrine -- in the same commit
+   that files the nodes.
 
 A correction that reframes a finding never deletes it. When the owner corrects the
 account of a misstep, the observation stays and is refiled in the corrected terms;
