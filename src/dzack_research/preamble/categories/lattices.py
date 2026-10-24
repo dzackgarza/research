@@ -17,6 +17,7 @@ from __future__ import annotations
 
 from collections import Counter
 from collections.abc import Hashable, Mapping, Sequence
+from dataclasses import dataclass
 from functools import cache
 from typing import TYPE_CHECKING, overload
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
@@ -27,6 +28,7 @@ if TYPE_CHECKING:
     from dzack_research.preamble.owned_category import ConstructionData
 
 from sage.arith.misc import gcd
+from sage.categories.category_with_axiom import all_axioms
 from sage.misc.abstract_method import abstract_method
 from sage.combinat.root_system.cartan_type import CartanType
 from sage.misc.cachefunc import cached_function, cached_method
@@ -207,6 +209,7 @@ from dzack_research.preamble.categories.vector_orbits import (
     _stable_complement_root_reflections,
 )
 from dzack_research.preamble.logic import AtomicProposition, Predicate, negation
+from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import refine
 from dzack_research.preamble.tensors.tensor import (
     Tensor,
@@ -222,6 +225,23 @@ def nikulin_invariants(rank, discriminant_length, delta):
 
 
 _Rings = OwnedRings()
+
+if "Indecomposable" not in all_axioms:
+    all_axioms.add("Indecomposable")
+
+
+@dataclass(frozen=True)
+class LatticeConstruction:
+    r"""One expression in a bounded lattice construction family.
+
+    ``factors`` identify the input expressions and ``witness`` retains the
+    inclusion for an overlattice. Equal lattices may occur by different paths.
+    """
+
+    lattice: object
+    operation: str
+    factors: tuple["LatticeConstruction", ...] = ()
+    witness: object | None = None
 
 
 _INDECOMPOSABLE_NAMES = {}
@@ -1980,6 +2000,42 @@ class Lattices(OwnedCategoryOverBaseRing):
         r"""The hyperbolic plane U."""
         return self("U")
 
+    def standard_objects(self):
+        r"""Iterate familiar integral lattices through the ordinary constructors.
+
+        This is a selected catalogue, not an enumeration of all lattices.
+        Non-simply-laced root types use their integral symmetrized Cartan
+        forms as supplied by :meth:`root_lattice`.
+        """
+        if self.base_ring() is not _owned_integers():
+            raise NotImplementedError("standard specimens are currently integral")
+        rank = 1
+        while True:
+            if rank == 1:
+                yield self([[1]])
+                yield self([[-1]])
+            if rank == 2:
+                yield self("U")
+            for kind in ("A", "B", "C", "D", "E", "F", "G"):
+                valid = (
+                    kind == "A"
+                    or kind in {"B", "C"} and rank >= 2
+                    or kind == "D" and rank >= 4
+                    or kind == "E" and rank in (6, 7, 8)
+                    or kind == "F" and rank == 4
+                    or kind == "G" and rank == 2
+                )
+                if valid:
+                    yield self.root_lattice(kind, rank)
+            for positive in range(rank + 1):
+                negative = rank - positive
+                yield self.IPQ(positive, negative)
+                if positive > 0 and negative > 0 and (positive - negative) % 8 == 0:
+                    yield self.IIPQ(positive, negative)
+            if rank == 24:
+                yield self.leech_lattice()
+            rank += 1
+
     @staticmethod
     def root_lattice(kind, rank, names=None):
         r"""Return the exact negative-definite root lattice of the selected finite type."""
@@ -2204,7 +2260,130 @@ class Lattices(OwnedCategoryOverBaseRing):
     _MonoCategory = LatticeMonoCategoryConstruction
     _IsoCategory = LatticeIsoCategoryConstruction
 
+    class Indecomposable(CategoryWithAxiom):
+        r"""Full property subcategory of lattices with no nontrivial orthogonal sum.
+
+        ``known_objects`` offers examples; it does not enumerate this category.
+        """
+
+        _certifying_predicate = "is_indecomposable"
+
+        def __contains__(self, lattice):
+            if lattice not in Lattices(self.base_ring()):
+                return False
+            answer = lattice.is_indecomposable()
+            if isinstance(answer, bool):
+                return answer
+            if super().__contains__(lattice):
+                return True
+            raise NotImplementedError(
+                f"orthogonal indecomposability of {lattice!r} is not decided"
+            )
+
+        def an_object(self):
+            return Lattices(self.base_ring())("U")
+
+        def known_objects(self, max_rank=None):
+            r"""Return a finite selection of certified examples up to ``max_rank``."""
+            if self.base_ring() is not _owned_integers():
+                raise NotImplementedError("known indecomposable specimens are currently integral")
+            bound = 8 if max_rank is None else max_rank
+            if bound < 0:
+                raise ValueError("max_rank must be nonnegative")
+            known = []
+            for lattice in Lattices(self.base_ring()).standard_objects():
+                if int(lattice.module_rank()) > bound:
+                    break
+                if lattice.is_indecomposable() is True:
+                    known.append(lattice)
+            return finite_family(
+                known,
+                name="Known orthogonally indecomposable lattices",
+            )
+
     class SubcategoryMethods:
+        def Indecomposable(self):
+            r"""The full subcategory of orthogonally indecomposable lattices."""
+            return self._with_axiom("Indecomposable")
+
+        def construction_enumeration(self, seeds):
+            r"""Enumerate integral-lattice construction expressions fairly.
+
+            The seed at position ``i`` has weight ``i + 1``, so even a
+            supplied infinite sequence is visited fairly. An overlattice adds one, a twist by
+            ``n`` adds ``1 + abs(n)``, and a binary operation adds one to the
+            sum of its inputs' weights. Every finite expression over the
+            supplied seeds therefore occurs at a finite weight. Distinct
+            expressions remain distinct even when their lattices are isometric.
+            The supplied set is sorted by its displayed Gram data; other
+            iterables retain their given order. The enumeration has no bound.
+            """
+            if self.base_ring() is not _owned_integers():
+                raise NotImplementedError("integer twist enumeration requires integral lattices")
+            if isinstance(seeds, (set, frozenset)):
+                seeds = sorted(
+                    seeds,
+                    key=lambda lattice: (
+                        int(lattice.module_rank()),
+                        tuple(str(lattice.gram_tensor()[i, j])
+                              for i in range(int(lattice.module_rank()))
+                              for j in range(int(lattice.module_rank()))),
+                    ),
+                )
+            seed_iterator = iter(seeds)
+            levels = {}
+            exhausted = False
+            weight = 1
+            while True:
+                current = []
+                if not exhausted:
+                    try:
+                        lattice = next(seed_iterator)
+                    except StopIteration:
+                        exhausted = True
+                    else:
+                        if lattice not in self:
+                            raise TypeError(f"{lattice!r} is not an object of {self!r}")
+                        if not lattice.module_rank().is_finite():
+                            raise ValueError("construction enumeration requires finite-rank seeds")
+                        current.append(LatticeConstruction(lattice, "seed"))
+                if weight > 1:
+                    for source in levels[weight - 1]:
+                        lattice = source.lattice
+                        if lattice.is_nondegenerate() is True:
+                            for inclusion in lattice.integral_overlattice_inclusions():
+                                current.append(LatticeConstruction(inclusion.codomain(), "overlattice", (source,), inclusion))
+                for source_weight in range(1, weight):
+                    magnitude = weight - source_weight - 1
+                    scalars = (0,) if magnitude == 0 else (magnitude, -magnitude)
+                    for source in levels[source_weight]:
+                        for scalar in scalars:
+                            current.append(LatticeConstruction(
+                                source.lattice.twist(self.base_ring()(scalar)), "twist", (source,),
+                            ))
+                for left_weight in range(1, weight - 1):
+                    right_weight = weight - left_weight - 1
+                    for left in levels[left_weight]:
+                        for right in levels[right_weight]:
+                            current.append(LatticeConstruction(
+                                self.orthogonal_sum((left.lattice, right.lattice)),
+                                "orthogonal_sum", (left, right),
+                            ))
+                            current.append(LatticeConstruction(
+                                self.tensor_product((left.lattice, right.lattice)),
+                                "tensor_product", (left, right),
+                            ))
+                levels[weight] = tuple(current)
+                yield from levels[weight]
+                if exhausted and not any(levels.values()):
+                    return
+                weight += 1
+
+        def object_enumeration(self, seeds):
+            r"""Yield the lattices of :meth:`construction_enumeration` in order."""
+            for construction in self.construction_enumeration(seeds):
+                yield construction.lattice
+
         def tensor_product(self, factors):
             r"""Return the tensor product lattice with the product pairing."""
             return _tensor_product_lattice(factors)
@@ -3818,7 +3997,89 @@ class Lattices(OwnedCategoryOverBaseRing):
                     return None
 
         def is_decomposable(self):
-            return self.decomposition() is not None
+            r"""Whether this lattice has a nontrivial integral orthogonal sum.
+
+            An exhibited sum or an orthogonal partition of the displayed basis
+            proves decomposability.  Rank one and the rank-two determinant
+            obstruction decide some negative cases.  Otherwise the property
+            remains a proposition; a connected displayed Gram is not a proof.
+            """
+            rank = self.module_rank()
+            if not rank.is_finite():
+                return AtomicProposition("orthogonally decomposable", self)
+            n = int(rank)
+            if n <= 1:
+                return False
+            if self.decomposition() is not None and sum(
+                int(factor.module_rank()) > 0 for factor in self.biproduct_factors()
+            ) > 1:
+                return True
+            gram = self.gram_tensor()
+            reached = {0}
+            frontier = [0]
+            while frontier:
+                row = frontier.pop()
+                for column in range(n):
+                    if column not in reached and gram[row, column] != self.base_ring().zero():
+                        reached.add(column)
+                        frontier.append(column)
+            if len(reached) < n:
+                return True
+            if n == 2 and self.base_ring() is _owned_integers():
+                binary = self._binary_orthogonal_split()
+                if binary is not None:
+                    return True
+                if self.is_positive_definite() is True or self.is_negative_definite() is True:
+                    return False
+            if self in RootLattices():
+                root_type = str(self.root_system_type_name())
+                if root_type[:1] in {"A", "D", "E"} and root_type[1:].isdigit():
+                    # A root of square -2 in an orthogonal sum lies wholly in
+                    # one factor. Connected finite ADE roots span their lattice.
+                    return False
+            if n == 2 and self.base_ring() is _owned_integers() and self.is_even() is True:
+                if self.determinant() % 4 != 0:
+                    return False
+            return AtomicProposition("orthogonally decomposable", self)
+
+        def _binary_orthogonal_split(self):
+            r"""Return a unimodular orthogonal basis for a definite binary form, if one exists.
+
+            If a rank-two form splits, a primitive summand generator has
+            nonzero norm ``a`` dividing the determinant. The inverse Gram
+            bounds its coordinates by the square roots of the opposite
+            diagonal entries after choosing the definite sign.
+            """
+            if int(self.module_rank()) != 2 or self.base_ring() is not _owned_integers():
+                return None
+            if not (self.is_positive_definite() is True or self.is_negative_definite() is True):
+                return None
+            from math import isqrt
+
+            gram = self.gram_tensor()
+            sign = 1 if self.is_positive_definite() is True else -1
+            bound_x = isqrt(int(sign * gram[1, 1]))
+            bound_y = isqrt(int(sign * gram[0, 0]))
+            determinant = self.determinant()
+            for x in range(-bound_x, bound_x + 1):
+                for y in range(-bound_y, bound_y + 1):
+                    if gcd(x, y) != 1:
+                        continue
+                    first = gram[0, 0] * x + gram[0, 1] * y
+                    second = gram[1, 0] * x + gram[1, 1] * y
+                    norm = x * first + y * second
+                    if norm == 0 or determinant % norm or gcd(first, second) != abs(norm):
+                        continue
+                    complement = (second // norm, -first // norm)
+                    return (norm, determinant // norm, (x, y), complement)
+            return None
+
+        def is_indecomposable(self):
+            r"""Whether no nontrivial integral orthogonal sum exists."""
+            if self.module_rank().is_finite() and int(self.module_rank()) == 0:
+                return False
+            answer = self.is_decomposable()
+            return not answer if isinstance(answer, bool) else negation(answer)
 
         def indecomposable_name(self):
             return _indecomposable_name(self)
@@ -3833,6 +4094,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             """
 
             if self.decomposition() is None:
+                split = self._binary_orthogonal_split() if self.module_rank().is_finite() and int(self.module_rank()) == 2 else None
+                if split is not None:
+                    first, second, _, _ = split
+                    category = Lattices(self.base_ring())
+                    return finite_family((category([[first]]), category([[second]])), name="Indecomposable summands")
                 return finite_family((self,), name="Indecomposable summands")
             summands = []
             for factor in self.biproduct_factors():
