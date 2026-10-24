@@ -1115,7 +1115,11 @@ class QuotientRings(OwnedCategory):
             if self._is_zero_ring() is True:
                 return True
             if self._preamble_engine_ring is not None:
-                return bool(self._preamble_engine_ring.is_finite())
+                from dzack_research.preamble.categories.rings.ring_foundation import (
+                    _engine_finiteness_decision,
+                )
+
+                return _engine_finiteness_decision(self._preamble_engine_ring)
             source = self.quotient_source()
             if source in LocalizationRings():
                 # The canonical contracted quotient embeds into this
