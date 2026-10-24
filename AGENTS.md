@@ -1099,6 +1099,8 @@ recurring shapes (memory: `relay-translation-not-forwarding`, 2026-08-09):
   arrows like "A1^8 -> E8", row nicknames, bare count fractions) means
   nothing outside the context that minted it. Re-ground every reference
   before it crosses to the user.
+- **Do not invent shorthand.** Use the established names of mathematical
+  objects and operations in code, documentation, errors and user messages.
 - **"I don't understand" names a dangling referent, not a knowledge gap.**
   The repair is to restore the missing reference, never to explain the
   underlying mathematics — this is the user's own research program; an
