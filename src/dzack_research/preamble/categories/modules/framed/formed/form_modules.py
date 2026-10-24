@@ -1664,7 +1664,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             self,
             source_form,
             source_form_computation=None,
-            radical_quotient_cokernel_projection=None,
+            radical_quotient_projection=None,
             radical_quotient_basis_map=None,
             **rest,
         ) -> None:
@@ -1674,7 +1674,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
             self._preamble_form = source_form
             self._preamble_form_computation = source_form_computation
-            self._preamble_radical_quotient_cokernel_projection = radical_quotient_cokernel_projection
+            self._preamble_radical_quotient_projection = radical_quotient_projection
             self._preamble_radical_quotient_basis_map = radical_quotient_basis_map
             super().__init__(**rest)
 
@@ -3754,6 +3754,12 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 descended = self._formed_form().descend_along(inclusion, value_identity)
                 quotient = inclusion.cokernel()
                 ring = quotient.base_ring()
+                source_module = self.unformed_module()
+                source_to_quotient = source_module.module_category().Mor(
+                    source_module, quotient
+                )(
+                    lambda label: quotient.module_generator(label)
+                )
                 basis_map = None
                 # Over a field, a finite presentation is not itself a free
                 # presentation: its selected generators can outnumber its
@@ -3770,7 +3776,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 return FormModules(ring)(
                     descended,
                     _extra_construction_data={
-                        "radical_quotient_cokernel_projection": inclusion.cokernel_projection(),
+                        "radical_quotient_projection": source_to_quotient,
                         "radical_quotient_basis_map": basis_map,
                     },
                 )
@@ -3785,7 +3791,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 object as codomain.
                 """
                 quotient = self.radical_quotient()
-                projection = quotient._preamble_radical_quotient_cokernel_projection
+                projection = quotient._preamble_radical_quotient_projection
                 basis_map = quotient._preamble_radical_quotient_basis_map
                 if basis_map is not None:
                     projection = basis_map.inverse() * projection
