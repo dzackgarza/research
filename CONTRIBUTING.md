@@ -24,7 +24,7 @@ For a new addition, begin with
 For construction, representation, or engine work, then apply the normative
 [preamble architecture specification](#preamble-architecture-specification).
 Its `OWN-*` policies specify the intended architecture, not implementation status.
-Record observed foundational gaps and papercuts in [COMPLAINTS.md](COMPLAINTS.md)
+Record observed foundational gaps and papercuts in GitHub issues indexed by [COMPLAINTS.md](COMPLAINTS.md)
 under [DEV-59](#dev-59-record-observed-foundational-gaps-and-papercuts).
 
 Use the [task complexity guide](COMPLEXITY.md) to score work and select a model and reasoning effort.
@@ -213,7 +213,7 @@ absent from the preamble calls for integration, not reinvention. An API may also
 present the correct object while a requested decision procedure is unavailable
 or undecidable. Do not confuse that with nonexistence of the object.
 
-When this comparison exposes an actual gap, record it in
+When this comparison exposes an actual gap, record it in an issue linked from
 [COMPLAINTS.md](COMPLAINTS.md) under `DEV-59`. Explain the missing mathematics
 and the dependency path that exposed it, not only the failing method. Search
 broadly enough to distinguish absent machinery from undiscovered machinery;
@@ -590,7 +590,7 @@ former.
   construction and the maintained computation; satisfying only one half is
   insufficient. Missing mathematics is a formalization request to
   `lean-categories`. Record it, missing presentations, and observed workflow
-  friction in `COMPLAINTS.md` under `DEV-59`, even when found outside the selected
+  friction in issues indexed by `COMPLAINTS.md` under `DEV-59`, even when found outside the selected
   implementation task. The complaint states the need; it does not authorize a
   bespoke replacement or a change of scope.
 - **Rationale:** A private Sage call can bypass the presented localization just as
@@ -1071,7 +1071,7 @@ limit and empty colimit, a directed index with incomparable elements, an inverse
 system with non-surjective transitions, and a direct system with non-injective
 transitions. Select specimens for the contract being delivered, preserve broader
 unfinished cases in TODO, and follow terminal T for execution (`DEV-58`). Record
-observed missing foundations in COMPLAINTS, with the `lean-categories` request
+observed missing foundations in issues indexed by COMPLAINTS, with the `lean-categories` request
 for missing mathematics, not invented failures inferred merely from the breadth
 of this specification.
 
@@ -1812,8 +1812,8 @@ aggregate, which is why the instrument runs on every declaration change.
 11. **When the honest parent is not in the tree, stop and say so.**  Present it
     if `lean-categories` formalizes it; otherwise request it there, leave
     `super_categories` abstract so the category refuses to construct, and record
-    the missing category in `COMPLAINTS.md` with its dependency path and in
-    `TODO.md` as a node the consumer needs, waiting on the request.  Never a
+    the missing category in an issue indexed by `COMPLAINTS.md`, with its
+    dependency path and the consumer's native blocked-by relation. Never a
     placeholder, never a local definition, never a mechanism that makes the
     construction proceed (`DEV-65`).
 
@@ -7230,8 +7230,8 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-59`: Record Observed Foundational Gaps and Papercuts
 
-- **Rule**: [COMPLAINTS.md](COMPLAINTS.md) is the repository's canonical local
-  record of unresolved observed problems, primarily missing foundational
+- **Rule**: GitHub issues are the canonical records of observed problems;
+  [COMPLAINTS.md](COMPLAINTS.md) is their navigation index. These include missing foundational
   mathematics and missing structural relationships, and also actual papercuts
   in research use or contribution workflows. Record a finding when it arises
   during mathematical tracing, source reading, implementation, review, notebook
@@ -7262,34 +7262,37 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   invent a defect from a possible future inconvenience, and do not inflate a
   local ergonomic issue into a missing theory without a mathematical trace.
 
-  Search existing complaint headings and the related TODO before adding an
-  entry. Extend the existing mathematical complaint when a new consumer exposes
+  Search existing issues, complaint headings, and the related TODO index before filing.
+  Extend the existing mathematical issue when a new consumer exposes
   the same missing foundation; retain genuinely different hypotheses or gaps.
   One general complaint can link several consumers. Its title and links should
   remain useful when those consumers move between files.
 
   **Division of responsibility:** `lean-categories` owns the mathematics, and a
   missing piece of it is a formalization request there; CONTRIBUTING and the
-  preamble's declarations specify the enduring engineering design; COMPLAINTS
-  explains the observed unmet need and its evidence, and links the request; TODO
-  supplies selected execution work, dependencies and acceptance, with the parked
-  node waiting on the request.
-  Link the existing TODO item when it already owns remediation. If the current
-  task requires the fix, update that item with the actual remaining delta and
+  preamble's declarations specify the enduring engineering design. The research
+  issue owns the unmet need, evidence, remaining requirements, acceptance, and
+  links to upstream requests. `COMPLAINTS.md` and `TODO.md` index those issues.
+  Native sub-issues under #46 give the work order; native blocked-by relations
+  record actual prerequisites. Rank by correctness, reusable capability, and
+  reduction of later work, before optimizations, cleanups, or style work.
+  Use the existing remediation issue when it already owns the complaint. If the current
+  task requires the fix, update that issue with the actual remaining delta and
   continue it. An independent finding can remain recorded without starting a new
   workstream. External issues own upstream repair; link them from the local
-  complaint without copying their live status or surrendering the preamble's
+  research issue without copying their live status or surrendering the preamble's
   obligation to present the result. Filing or recording a complaint never
   completes its repair.
 
-  **Maintenance:** follow the single-worker transaction rule in `DEV-61` for
-  COMPLAINTS and TODO. Reread before editing and preserve other changes. On delivery, compare
-  the fix with the complaint's full mathematical requirement and its affected
-  paths, then remove the resolved entry in that commit or an immediate companion.
-  For partial delivery, retain only the unresolved need, evidence and links.
-  Keep diagnosis and resolution history in git, not in resolved sections or
-  completion rows. Preserve enduring engineering decisions at their declaration
-  before removing the entry. Source-based remediation does not certify runtime
+  **Maintenance:** follow `DEV-61` for issues and their local indexes. Reread
+  before editing and preserve other changes. Keep the full complaint evidence
+  in the owning issue body or a linked comment. On delivery, compare the fix
+  with the full mathematical requirement and its affected paths, record the
+  resolution evidence, and close the issue only when its obligations are discharged.
+  Partial delivery updates the remaining requirements and leaves the issue open.
+  Index links remain useful after closure; do not duplicate live status locally.
+  Preserve enduring engineering decisions at their declaration.
+  Source-based remediation does not certify runtime
   behavior; required execution remains in terminal T under `DEV-58`. An observed
   runtime failure is not resolved merely because a speculative source fix exists.
 
@@ -7336,10 +7339,11 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 #### `DEV-61`: Reconcile the Single-Worker Queue with Delivery
 
 - **Rule:** The current repository workflow has one worker and no claim ledger.
-  Select a ready TODO node, reread its owners and acceptance, and deliver its
-  remaining delta. Reconcile that node and its complaint in the implementation
-  commit. Selection, claiming and release do not merit separate commits.
-  Before changing TODO or COMPLAINTS, reread the live file and preserve edits
+  Select a ready issue from the native tree, reread its owners and acceptance,
+  and deliver its remaining delta. Reconcile its requirements, complaint evidence,
+  and native dependencies with the implementation commit. Selection, claiming
+  and release do not merit separate commits.
+  Before changing an issue, TODO, or COMPLAINTS, reread the live record and preserve edits
   not made in the current task. A clean `HEAD` is the target's checkpoint;
   conflicting uncommitted work must be resolved with its owner.
 
@@ -7352,7 +7356,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 - **Violation Example:** commit a claim, perform no construction, then commit its
   release; reject authorized work because a removed claim ledger has no entry.
 - **Correct Example:** deliver a constructor and its falsifying specimens,
-  remove only its discharged TODO obligations in the same commit, and leave
+  discharge only the issue obligations supported by that commit, and leave
   execution evidence owed under terminal T.
 
 #### `DEV-62`: An Empirical Claim About an Engine Has Its Measurement or Is Written as a Hypothesis
@@ -7369,7 +7373,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-63`: Measured Engine Facts Have One Durable Owner
 
-- **Rule**: [TRAPS.md](TRAPS.md) at the repository root is the ledger of measured facts about the engines this repository delegates to: a route's cost as a curve, an input it rejects, an output convention, a default that is wrong or slow, and the alternate spelling that answers.  Write the row in the same turn as the measurement, before the tool or construction that exposed it moves on.  A row records the operation, the Sage spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, the route chosen, and the site that depends on it.  `COMPLAINTS.md` keeps the unresolved need under `DEV-59` and is emptied on delivery; `TRAPS.md` keeps the fact, which delivery uses and never resolves.  The owned name's docstring cites the row; it does not restate it.
+- **Rule**: [TRAPS.md](TRAPS.md) at the repository root is the ledger of measured facts about the engines this repository delegates to: a route's cost as a curve, an input it rejects, an output convention, a default that is wrong or slow, and the alternate spelling that answers.  Write the row in the same turn as the measurement, before the tool or construction that exposed it moves on.  A row records the operation, the Sage spelling measured, the specimen and its size parameter, the wall times, the version, the command that reproduces it, the route chosen, and the site that depends on it.  The issue indexed by `COMPLAINTS.md` keeps the unmet need and resolution evidence under `DEV-59`; `TRAPS.md` keeps the fact, which delivery uses and never resolves.  The owned name's docstring cites the row; it does not restate it.
 
 - **Rationale**: The fact is the product (`ENG-07`) and it has no other home.  A commit body is found only by someone who already suspects the commit; a conversation is gone; a docstring at one site is invisible to the next site that meets the same engine.  One ledger, read before any engine route is chosen, is what turns one measurement into every later rediscovery avoided.
 
@@ -7395,7 +7399,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Violation Example**: `def super_categories(self): return [Schemes(self.base_ring())]` on every scheme axiom; `_owned_integers` refining ZZ into a category whose declaration needs ZZ; `RepresentedToricSchemes -> LocallyRingedSpaces` because no base-free scheme category exists.
 
-- **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in `COMPLAINTS.md` and scheduled in `TODO.md`.
+- **Correct Example**: the schemes agent's report naming the axiom-descent mechanism with its source line, which became a ruling in `AGENTS.md`, a row in `TRAPS.md`, and the removal of every base-restriction edge; a placement left abstract with its missing construction recorded in an issue indexed by `COMPLAINTS.md` and scheduled by native dependencies.
 
 #### `DEV-66`: Keep Bulk Scratch Repository-Local
 
