@@ -844,6 +844,7 @@ class Resolutions(OwnedCategory):
             resolution_generator_morphism=None,
             resolution_relation_source=None,
             resolution_relations=None,
+            resolution_cofiber_data=None,
             **rest,
         ) -> None:
             self._resolution_target = resolution_target
@@ -857,6 +858,9 @@ class Resolutions(OwnedCategory):
             self._resolution_generator_morphism = resolution_generator_morphism
             self._resolution_relation_source = resolution_relation_source
             self._resolution_relations = resolution_relations
+            # A cofiber is data in a selected stable enhancement, not a property
+            # inferred from the augmentation or from the truncation length.
+            self._resolution_cofiber_data = resolution_cofiber_data
             super().__init__(**rest)
 
         def resolution_category(self) -> Category:
@@ -894,6 +898,24 @@ class Resolutions(OwnedCategory):
 
         def augmentation(self):
             return self._resolution_augmentation
+
+        def cofiber_data(self):
+            r"""Return explicitly selected cofiber-sequence data, when supplied.
+
+            The resolution category does not manufacture a derived/stable
+            enhancement for an arbitrary base category. In particular, a
+            nonzero cofiber is valid resolution data: vanishing is an optional
+            condition imposed by a specialization, not an admission criterion
+            of the common owner.
+            """
+            match self._resolution_cofiber_data:
+                case None:
+                    raise TypeError(
+                        f"{self} has no selected cofiber data; choose a stable enhancement "
+                        "and supply its cofiber sequence explicitly"
+                    )
+                case data:
+                    return data
 
         def generating_set(self):
             r"""Return the selected generator labels carried by degree-zero data."""
