@@ -3743,7 +3743,21 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 value_module = self.value_module()
                 value_identity = value_module.module_category().Mor(value_module, value_module).identity()
                 descended = self._formed_form().descend_along(inclusion, value_identity)
-                return FormModules(descended.module().base_ring())(descended)
+                quotient = inclusion.cokernel()
+                ring = quotient.base_ring()
+                # Over a field, a finite presentation is not itself a free
+                # presentation: its selected generators can outnumber its
+                # vector-space dimension.  Re-present the quotient on an
+                # actual basis before returning the formed module, so its
+                # underlying module and Gram tensor have the same rank.
+                if ring in OwnedFields() and quotient.module_generating_set().cardinality().is_finite():
+                    basis_labels = quotient.basis_generator_labels()
+                    free = ring.free_module(basis_labels)
+                    basis_map = free.module_category().Mor(free, quotient)(
+                        lambda label: quotient.module_generator(label)
+                    )
+                    descended = descended.pullback(basis_map)
+                return FormModules(ring)(descended)
 
             def determinant(self):
                 r"""Return the Gram determinant of a form with values in a ring containing ``R``."""
