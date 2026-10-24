@@ -3726,8 +3726,6 @@ class Lattices(OwnedCategoryOverBaseRing):
                     self.genus().local_representations(), value
                 ):
                     return False
-                case _ if rank >= 4 or self.spinor_genus_count() == ring.one():
-                    return True
                 case _:
                     line = Lattices(ring)([[value]])
                     return negation(line.Emb(self).is_empty())
