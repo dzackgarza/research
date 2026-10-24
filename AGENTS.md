@@ -289,9 +289,11 @@ capture.
 
 ## One line of record: `origin/main` (always-on)
 
-There is one line of work, `origin/main`, one DAG, and one `TODO.md`.  This
-repository is cloned on more than one host (this workstation and `rack`),
-and each clone's local `main` is only a copy.  So:
+There is one line of work, `origin/main`, one DAG, and one `TODO.md`.
+This repository is cloned on more than one host. Identify the current host
+with `hostname` before deciding which checkout is the other host; inspect the
+current host's `main` and dirty source locally. Each clone's local `main` is
+only a copy. So:
 
 - For work outside the preamble, commit and push with `--no-verify`.
   Preamble gate failures do not hold unrelated work on this repository's
