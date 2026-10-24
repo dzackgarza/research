@@ -77,44 +77,26 @@ just tags json src/dzack_research/preamble/categories/group
 
 Inspect the receiver and declaration-side contract before calling a private access a violation. The duplicate view retains its original relative source locations and roots. It detects literal AST-body reuse, not all equivalent algorithms. A same-name survey also exposes distinct return shapes: those may indicate different operations that need different names.
 
-## Constructor discovery: decorators and registries
+## Inspect constructors against their mathematical owners
 
-The constructor audit should compare three mechanisms before changing runtime construction:
+Use `just refactor-survey --view constructors` to locate the current Python entrypoints, their signatures, lexical owners, return expressions and direct calls. A Python constructor declaration is evidence about the transitional preamble; it does not register a category or operation in the final language. Compare each found construction with the typed declaration and maps in `lean-categories/LeanCategories/Catalogue`, then with the request and result route in `lean-cas-dsl`. [Constructor architecture](constructor-architecture.md) records the ownership and the data that must survive migration.
 
-| Mechanism | Useful role | Cost or limit |
+The current `_object_of` route, `ConstructionContract` and provider order explain how a research object is built today. Inspect them when tracing a consumer, but do not reproduce their MRO or initializer protocol in the kernel. The kernel uses explicit applications of registered functors and comparisons; a leaf can supply only an opaque computation against an already registered operation and input form. A named lattice string can select a private input presentation, as described in the constructor architecture document, without defining the object or its laws.
+
+For a named constructor, record the exact input type and hypotheses, its formal category and declaration, its retained object and morphism data, the result type, and the selected structural path. Read the `lean-categories` registration to establish semantic ownership. Read the `lean-cas-dsl` request path to establish how the typed construction is used. Source inspection does not certify the computation or replace the permanent acceptance assertions.
+
+These research source sites are useful starting points:
+
+| Family | Source specimen | Data to trace |
 | --- | --- | --- |
-| Ordinary category methods with source introspection | Preserve explicit signatures, inheritance and editor navigation | Hook names alone miss named mathematical constructors |
-| A declaration decorator on an existing constructor method | Mark named constructors for collection into help, the megadoc and inspection reports | Decoration alone neither exposes a method on its owner nor establishes inherited construction data |
-| An owner-local implementation registry | Add computational cases for one construction without editing its general owner | Requires explicit applicability, ambiguity handling and deterministic loading |
+| Sets | `categories/sets/set_categories.py` | Ambient set, selected elements and maps, and the exact category of each set construction. |
+| Rings | `categories/rings/rings.py` and its imported owners | The ring, localization map and commutativity hypotheses. |
+| Modules | `categories/modules/pure/modules.py`, `Modules._call_` | Base ring, scalar action and underlying object. |
+| Algebras | `categories/algebras/algebras.py`, `_call_(module, multiplication)` | Underlying module, multiplication and a chosen unit when one is part of the construction. |
+| Formed modules | `categories/modules/framed/formed/form_modules.py`, `_call_(form)` and `from_module` | Underlying module, selected form, symmetry and value-module hypotheses. |
+| Lattices | `categories/lattices.py`, `Lattices._call_` | Gram and named presentations, selected form and defining maps. |
 
-The [constructor integration design](constructor-architecture.md) specifies the target boundary: `sage-categories` owns constructor inheritance through `construction_owner()`, implementation registration through `Cat().implement(...)`, and inherited initialization through selected structure functors. Research becomes mathematical leaves on that core. Existing `ConstructionContract` and provider-order evidence remain useful for inspecting the current runtime and preserving mathematical behavior during its replacement. Exact-name lattice registration is a leaf extension, not a second framework.
-
-Collect declarations into a derived catalogue grouped by mathematical owner. A constructor declared on its owner should obtain that owner from its declaration rather than repeat it in a second hierarchy table. Read its signature, documentation and source location directly. Record additional metadata only when source structure cannot express the construction's role. The same declarations should supply documentation and opt-in inspection, so adding a constructor does not require editing another list.
-
-The [KDnuggets registry-pattern article](https://www.kdnuggets.com/stop-using-if-else-chains-use-the-registry-pattern-in-python-instead) supplies a concrete candidate: implementations register a discrete key beside their definition, and a stable dispatcher looks up the callable. Its reusable version rejects duplicate keys and exposes available entries. It also identifies import-time registration and the limited fit for conditions that are not discrete choices. Apply that pattern directly when a construction has named, interchangeable providers under one contract.
-
-For this repository, distinguish two keys: a constructor name identifies a mathematical operation; a provider key identifies an implementation of that operation. A category's constructor catalogue can collect different signatures for discovery, while each operation's provider registry must preserve that operation's own signature and datum. A named lattice catalogue is a candidate for discrete lookup; selection by ring properties or overlapping category membership still needs mathematical applicability rules. Keep those rules explicit rather than replacing a conditional chain with an ordered list of predicates. Existing `_register_indecomposable_gram` records display names by Gram data; it is not already a constructor-provider registry.
-
-Evaluate explicit decorators before automatic subclass registration: a private implementation subclass need not introduce a public construction, and the category runtime also creates classes. Registering every subclass would confuse those roles. A decorator attached to the actual construction declaration can instead make the intended extension and its owner visible to source inspection.
-
-Inspect these existing routes as initial specimens:
-
-| Family | Source specimen | Question for collection and routing |
-| --- | --- | --- |
-| Sets | `categories/sets/set_categories.py` | Which named set constructions are category methods, and which require an existing ambient set? |
-| Rings | `categories/rings/rings.py` and its imported owners | Which declarations own construction, and which only re-export it? Keep localization on the ring object under its commutativity hypotheses. |
-| Modules | `categories/modules/pure/modules.py`, `Modules._call_` | Can discovery explain both the scalar-action datum and the route with its underlying object explicitly supplied? |
-| Algebras | `categories/algebras/algebras.py`, `_call_(module, multiplication)` | Can a user discover construction from an existing module and the additional multiplication, including the extra unit datum where required? |
-| Bilinear and other formed modules | `categories/modules/framed/formed/form_modules.py`, `_call_(form)` and named `from_module` methods | Does each named route establish the same underlying module and selected form, with its actual symmetry and value-module hypotheses? |
-| Lattices | `categories/lattices.py`, `Lattices._call_` | Do named and Gram presentations reach the same formed-module construction and retain its maps? |
-
-These are source specimens, not proof that the routes satisfy their contracts. Collection must distinguish methods on a category, methods on its objects, element constructors, and private realization functions. A catalogue may show all of them with their roles; exposing every descendant constructor on `Sets` would erase that distinction. Place a construction at the highest owner that has its defining data, not the highest owner of its result.
-
-For implementation registration, dispatch must account for category parameters, supplied maps and hypotheses. Python's [`singledispatch`](https://docs.python.org/3/library/functools.html#functools.singledispatch) selects by the first argument's Python type; it is therefore not by itself a dispatcher for this mathematical relation. Compare reuse of existing category dispatch with a local registry before introducing another dispatcher. Distinct named input forms need not be forced into one overloaded call.
-
-An acceptable registry must expose the applicable cases and the reason for its selection. An incomparable overlap needs a declared mathematical resolution; import order or last registration cannot decide it. An extension adds a case while preserving the construction contract and previous cases. Loading must be explicit and reproducible, with the general category independent of imports of its descendants. Source inspection must distinguish declared providers from loaded runtime providers. Python [decorators execute when a definition is evaluated](https://docs.python.org/3/reference/compound_stmts.html#function-definitions), so a runtime registry alone cannot inventory unloaded modules.
-
-Evaluate the candidate on two different families before generalizing it. Exercise help and completion, inherited discovery, exact signatures, source-only collection, runtime binding, duplicate declarations, overlapping cases and module-loading order. Trace the constructed objects and their maps as well. Registration cannot repair a specialization that fails to use its general construction. Add the resulting queries to the existing tools; keep architectural judgments available for review rather than turning them into gates.
+The call census distinguishes category methods, object methods, element constructors and private realization functions. It does not infer that two same-named methods have the same mathematical input or that an observed implementation makes an operation available in the public language.
 
 ## Slice the category relation and method surface
 
