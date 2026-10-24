@@ -3661,15 +3661,10 @@ class Lattices(OwnedCategoryOverBaseRing):
             - Over ``ZZ``, indefinite of rank at least 3: every ``L tensor
               ZZ_p`` must represent ``a``, read from the genus's
               :meth:`~_Genus.local_representations`; ``L tensor RR`` does,
-              being indefinite.  In rank at least 4 this suffices (Cassels,
-              Ch. 9, Thm. 1.5).  In rank 3 it puts ``a`` in some lattice of the
-              genus (Cassels, Ch. 9, Thm. 1.3).  A genus of one improper
-              spinor genus is then one isometry class, because an indefinite
-              spinor genus of rank at least 3 is one proper class (Cassels,
-              Ch. 11, Thm. 1.4), so ``L`` represents ``a``.  Otherwise ``a``
-              can be a spinor exception. In this remaining case, the finite
-              integral-overlattice and primitive-embedding decision for
-              ``<a> -> L`` decides representation, including the exceptions.
+              being indefinite.  These local tests exclude impossible norms;
+              surviving norms are decided by the finite integral-overlattice
+              and primitive-embedding decision for ``<a> -> L``.  Local
+              representability alone is not used as an integral witness.
             - Over ``AA`` or applicable represented ``RR``, ``a != 0``:
               a positive value is represented exactly when the positive index of inertia is nonzero, and likewise
               for a negative value and the negative index.
