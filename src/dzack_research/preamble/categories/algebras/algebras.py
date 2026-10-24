@@ -3544,10 +3544,19 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
         def pushout_maps(self):
             coproduct = self._preamble_pushout_coproduct
             quotient_map = coproduct.Mor(self)({label: self.algebra_generator(label) for label in coproduct.algebra_generating_set()})
-            return coproduct.coproduct_injections().map(
+            maps = coproduct.coproduct_injections().map(
                 lambda injection: quotient_map * injection,
                 name="Pushout structure maps",
             )
+            source_map, target_map = self.pushout_span()
+            common = source_map.domain()
+            for label in common.algebra_generating_set():
+                element = common.algebra_generator(label)
+                if maps[0](source_map(element)) != maps[1](target_map(element)):
+                    raise ValueError(
+                        "the selected pushout structure maps do not agree on the common algebra"
+                    )
+            return maps
 
         def left_pushout_map(self):
             return self.pushout_maps()[0]
