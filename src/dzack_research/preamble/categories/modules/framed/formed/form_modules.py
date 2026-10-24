@@ -3792,9 +3792,15 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 """
                 quotient = self.radical_quotient()
                 projection = quotient._preamble_radical_quotient_projection
-                basis_map = quotient._preamble_radical_quotient_basis_map
-                if basis_map is not None:
-                    projection = basis_map.inverse() * projection
+                if projection is not None:
+                    basis_map = quotient._preamble_radical_quotient_basis_map
+                    if basis_map is not None:
+                        projection = basis_map.inverse() * projection
+                else:
+                    # Lattices retain their specialized isotropic-reduction
+                    # construction, whose own projection has the exact
+                    # quotient endpoints and representation data.
+                    projection = quotient.projection()
                 values = self.value_module()
                 value_identity = values.module_category().Mor(values, values).identity()
                 return FormModules(self.base_ring()).Mor(self, quotient)(
