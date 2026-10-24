@@ -30,3 +30,25 @@ def test_presented_commutative_coproduct_transports_both_relation_ideals():
     assert mediator * i == f
     assert mediator * j == g
     assert mediator(x * y) == target.algebra_generator("t")
+
+
+def test_presented_commutative_coproduct_functor_respects_factor_maps():
+    P = QQ["x"]
+    Q = QQ["y"]
+    A = P.quotient_by_relations((P.algebra_generator("x")**2,))
+    B = Q.quotient_by_relations((Q.algebra_generator("y")**2 - Q.algebra_generator("y"),))
+    category = Algebras(QQ).Associative().Unital().Commutative()
+    coproduct = category.coproduct_functor()
+    pair = coproduct.domain()(A, B)
+    C = coproduct(pair)
+    left_map = A.Mor(A)({"x": A.zero()})
+    right_map = B.Mor(B)({"y": B.one() - B.algebra_generator("y")})
+    pair_map = coproduct.domain().Mor(pair, pair)(left_map, right_map)
+    induced = coproduct(pair_map)
+    x = C.left_coproduct_map()(A.algebra_generator("x"))
+    y = C.right_coproduct_map()(B.algebra_generator("y"))
+    assert induced(x) == C.zero()
+    assert induced(y) == C.one() - y
+    assert induced(x * y) == C.zero()
+    assert induced * C.left_coproduct_map() == C.left_coproduct_map() * left_map
+    assert induced * C.right_coproduct_map() == C.right_coproduct_map() * right_map
