@@ -1539,6 +1539,110 @@ def _engine_row_action_from_images(source_rows, target_rows):
     return source_rows.solve_right(target_rows)
 
 
+def _engine_coisotropic_witt_extension(partial, source_inclusion, target_inclusion):
+    r"""An exact row action extending a coisotropic partial rational isometry.
+
+    Protected caller: ``LatticeIsometryMethods.witt_extension``.  Return
+    ``None`` when the ambient forms are degenerate or the specified spaces
+    are not coisotropic; those hypotheses belong to this computation, not
+    to the general extension locus.
+
+    For bases S_1,S_2 of the specified spaces, choose the Euclidean
+    nullspace complement C_1 of S_1 in its selected framing.  Solve the
+    pairing equations for C_2, then correct C_2 by X N_2, where N_2 is the
+    form-perpendicular of S_2.  Since N_2 is isotropic, the remaining
+    equations are linear: B = X A + A^t X^t.  Finally project the affine
+    solution along its saturated integral homogeneous module; this removes
+    precisely the denominators that a homogeneous correction can remove.
+
+    This is the exact finite computation of Lorentzian.g:115-249 and
+    Fundamental.g:509-516,751-794 in Indefinite.jl at 374a5ebb.  Sage's
+    rational solve and Smith form implement its linear solves, saturation
+    and unimodular completion.  The Euclidean complement selects vectors;
+    every isometry and orthogonality equation uses the supplied forms.
+    """
+    from sage.rings.integer_ring import ZZ as SageZZ
+    from sage.rings.rational_field import QQ as SageQQ
+
+    source = source_inclusion.codomain()
+    target = target_inclusion.codomain()
+    left_form = _engine_component_matrix(source.gram_tensor()).change_ring(SageQQ)
+    right_form = _engine_component_matrix(target.gram_tensor()).change_ring(SageQQ)
+    left = _engine_row_action_matrix(source_inclusion).change_ring(SageQQ)
+    right = (
+        _engine_row_action_matrix(partial)
+        * _engine_row_action_matrix(target_inclusion)
+    ).change_ring(SageQQ)
+    size = left_form.nrows()
+    if right_form.nrows() != size:
+        raise ValueError("isometric ambient spaces must have equal dimensions")
+    rank = left.nrows()
+    if right.nrows() != rank or left.rank() != rank or right.rank() != rank:
+        raise ValueError("a partial isometry must be given by injective inclusions")
+    if left * left_form * left.transpose() != right * right_form * right.transpose():
+        raise ValueError("the prescribed images do not preserve the restricted form")
+    if rank == size:
+        return left.solve_right(right)
+    if left_form.rank() != size or right_form.rank() != size:
+        return None
+    left_pairing = left * left_form
+    right_pairing = right * right_form
+    left_normal = left_pairing.right_kernel_matrix()
+    right_normal = right_pairing.right_kernel_matrix()
+    if not (
+        (left_normal * left_form * left_normal.transpose()).is_zero()
+        and (right_normal * right_form * right_normal.transpose()).is_zero()
+    ):
+        return None
+
+    complement = left.right_kernel_matrix()
+    dimension = complement.nrows()
+    source_basis = left.stack(complement)
+    source_inverse = source_basis.inverse()
+    candidate = right_pairing.solve_right(left_pairing * complement.transpose()).transpose()
+    difference = complement * left_form * complement.transpose() - candidate * right_form * candidate.transpose()
+    pairing = right_normal * right_form * candidate.transpose()
+
+    # SpecialEquationSolving: X is flattened by rows, and each equation
+    # (i,j) reads (X A + A^t X^t)[i,j].
+    equation = _sage_matrix(SageQQ, dimension * dimension, dimension * dimension)
+    for i in range(dimension):
+        for j in range(dimension):
+            row = i * dimension + j
+            for k in range(dimension):
+                equation[row, i * dimension + k] += pairing[k, j]
+                equation[row, j * dimension + k] += pairing[k, i]
+    solution = equation.solve_right(_sage_vector(SageQQ, difference.list()))
+    correction = _sage_matrix(SageQQ, dimension, dimension, solution)
+    extension = source_inverse * right.stack(candidate + correction * right_normal)
+
+    homogeneous = equation.right_kernel_matrix()
+    if homogeneous.nrows():
+        zero_rows = _sage_matrix(SageQQ, rank, size)
+        directions = _sage_matrix(SageQQ, [
+            (source_inverse * zero_rows.stack(
+                _sage_matrix(SageQQ, dimension, dimension, row) * right_normal
+            )).list()
+            for row in homogeneous.rows()
+        ])
+        # A W B = D gives a unimodular coordinate change B taking the
+        # rational homogeneous space to its first rank(W) coordinate axes.
+        # Their inverse images form the complete saturated integral module;
+        # the remaining axes give an integral complement, as in the source's
+        # IntegralSpaceSaturation/SubspaceCompletionInt construction.
+        integral_directions = (directions.denominator() * directions).change_ring(SageZZ)
+        diagonal, _row_change, column_change = integral_directions.smith_form()
+        dimension_homogeneous = diagonal.rank()
+        coordinates = _sage_vector(SageQQ, extension.list()) * column_change
+        for position in range(dimension_homogeneous):
+            coordinates[position] = 0
+        extension = _sage_matrix(SageQQ, size, size, coordinates * column_change.inverse())
+
+    if extension * right_form * extension.transpose() != left_form or left * extension != right:
+        raise ArithmeticError("the coisotropic Witt extension failed its form or restriction equation")
+    return extension
+
+
 def _engine_binary_form_pullback(form, linear_map):
     r"""Private engine adapter (`OWN-06`, `OWN-24`): pull a Sage binary form back along a map.
 

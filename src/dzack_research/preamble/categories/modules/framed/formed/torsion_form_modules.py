@@ -304,17 +304,23 @@ def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
 
 def _representative_gram(form, *, quadratic: bool):
     r"""Return owned rational representatives as a type-``(0,2)`` tensor."""
-    values = (
-        form.form().lift_coordinate_values()
-        if quadratic
-        else form.form().coordinate_values()
-    )
+    values = form.form().lift_coordinate_values() if quadratic else None
     value_module = form.value_module()
     rationals = value_module.fraction_field()
     labels = form.module_generating_set()
     rank = int(labels.cardinality())
 
     def representative(i, j):
+        if not quadratic:
+            # The tensor product underlying a bilinear form may have a
+            # smaller presentation than the formed module (in particular,
+            # no generators when that module is zero).  Evaluate on the
+            # module's actual generators instead of identifying the two
+            # unrelated framing index sets.
+            return value_module.lift(form.b(
+                form.module_generator(labels[i]),
+                form.module_generator(labels[j]),
+            ))
         pair = values.index_set()(
             lambda index: labels[i] if int(index) == 0 else labels[j]
         )

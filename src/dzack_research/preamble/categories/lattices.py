@@ -1634,8 +1634,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
             for leg in legs:
                 _assert_monic_leg(self, marked, leg)
-            return orthogonal_group.intersection(
+            stabilizer = orthogonal_group.intersection(
                 *(orthogonal_group.setwise_stabilizer(leg) for leg in legs)
+            )
+            return stabilizer.select_group_generators(
+                lambda: orthogonal_group._marking_stabilizer_generators(self, marked, stabilizer)
             )
 
     @cached_method
@@ -3018,10 +3021,9 @@ class Lattices(OwnedCategoryOverBaseRing):
             anisotropic (O'Meara, *Introduction to Quadratic Forms*, §42F).
             A lattice answers through its quadratic space :meth:`vector_space`.
             Over QQ, repeated exact rational isotropy decisions and orthogonal
-            plane splittings give the hyperbolic summand; half its dimension is
-            the Witt index. Other supported number fields use the private
-            OSCAR/Hecke realization.
-            Over AA and represented exact RR, Sylvester's law gives
+            plane splittings give the Witt index. Other supported number
+            fields use the private OSCAR/Hecke realization.
+            Over AA and RR, Sylvester's law gives
             ``min(p,q)`` from exact signature. For RR, congruence and the
             owned scalar sign decisions must succeed; undecided signs
             are refused instead of being counted as zero or negative.
@@ -3071,8 +3073,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                         signature.second().finite_value(),
                     )
                 case _ if _engine_ring(field) is SageQQ:
-                    hyperbolic = self.witt_decomposition().domain().biproduct_factor(0)
-                    index = int(hyperbolic.module_rank()) // 2
+                    index = lattice_engines._rational_witt_index(self)
                 case _ if (
                     field in OwnedNumberFields()
                     and field in NumberFieldsWithChosenPrimitiveElement()
@@ -5022,6 +5023,12 @@ class Lattices(OwnedCategoryOverBaseRing):
             linear_dual = self.linear_dual()
 
             def coordinate_functional(label):
+                if self.module_rank().is_finite():
+                    # Finite free form modules retain their algebraic dual
+                    # on this selected dual basis, rather than as a Mor
+                    # parent accepting a callable functional.
+                    return linear_dual.module_generator(label)
+
                 def value(source_label):
                     match source_label == label:
                         case True:

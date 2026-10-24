@@ -3797,7 +3797,9 @@ class _ConditionSetEngine:
             points = universe
         elif isinstance(universe, _ImageSetEngine):
             source = universe.source_set()
-            if not Sets().is_provably_finite(source) or source not in EnumeratedSets():
+            if not Sets().is_provably_finite(source) or not (
+                source in EnumeratedSets() or isinstance(source, _FiniteLiteralSet)
+            ):
                 return None
             points = universe._distinct_values()
             if points is None:
@@ -3967,7 +3969,9 @@ class _ImageSetEngine:
         source = self.source_set()
         if self._image_inverse is not None:
             return True
-        if Sets().is_provably_finite(source) and source in EnumeratedSets():
+        if Sets().is_provably_finite(source) and (
+            source in EnumeratedSets() or isinstance(source, _FiniteLiteralSet)
+        ):
             values = self._distinct_values()
             source_size = source._cardinality_decision()
             if values is not None and source_size is not None:
@@ -3980,12 +3984,16 @@ class _ImageSetEngine:
         An inverse on the image makes \(f\) a bijection \(A\to f(A)\), so
         \(|f(A)| = |A|\). A finite source with a chosen enumeration also
         supplies the size when equality decides its distinct image values.
+        A literal finite set also supplies all its points, without choosing
+        an ordinal enumeration or placing its image in EnumeratedSets.
         Undecided distinctness supplies no exact count.
         """
         match self.source_set():
             case source if self._image_inverse is not None:
                 return source._cardinality_decision()
-            case source if Sets().is_provably_finite(source) and source in EnumeratedSets():
+            case source if Sets().is_provably_finite(source) and (
+                source in EnumeratedSets() or isinstance(source, _FiniteLiteralSet)
+            ):
                 values = self._distinct_values()
                 return None if values is None else cardinal(len(values))
             case _:
@@ -4026,12 +4034,16 @@ class _ImageSetEngine:
 
     @cached_method
     def _finite_image_values(self):
-        r"""The selected finite source enumeration mapped once to its image values.
+        r"""The supplied finite source points mapped once to their image values.
 
         These values can repeat: they are not an enumeration of the image.
+        Literal points retain no selected order, even though their finite
+        presentation permits this computation.
         """
         source = self.source_set()
-        if not Sets().is_provably_finite(source) or source not in EnumeratedSets():
+        if not Sets().is_provably_finite(source) or not (
+            source in EnumeratedSets() or isinstance(source, _FiniteLiteralSet)
+        ):
             return None
         return tuple(self.image_map()(point) for point in source)
 
@@ -4052,9 +4064,13 @@ class _ImageSetEngine:
             return None
 
     def __iter__(self):
-        assert Sets().is_provably_finite(self.source_set()) and self.source_set() in EnumeratedSets(), (
-            f"cannot list the elements of the image {self}: its source {self.source_set()} is not known "
-            "to be finite; for an infinite image use Sets().image_set with an inverse on the image"
+        source = self.source_set()
+        assert Sets().is_provably_finite(source) and (
+            source in EnumeratedSets() or isinstance(source, _FiniteLiteralSet)
+        ), (
+            f"cannot list the elements of the image {self}: its source {source} "
+            "supplies no complete finite point family; for an infinite image "
+            "use Sets().image_set with an inverse on the image"
         )
         values = self._distinct_values()
         assert values is not None, (
@@ -4094,7 +4110,9 @@ class _ImageSetEngine:
                     return conjunction((admitted, AtomicProposition("is_member", element, self)))
                 image_value = self.image_map()(source(preimage))
                 return True if image_value is element else image_value == element
-            case _ if Sets().is_provably_finite(source) and source in EnumeratedSets():
+            case _ if Sets().is_provably_finite(source) and (
+                source in EnumeratedSets() or isinstance(source, _FiniteLiteralSet)
+            ):
                 hashed = self._finite_image_hash_lookup()
                 if hashed is not None:
                     try:
@@ -4136,7 +4154,9 @@ class _ImageSetEngine:
 
     def _repr_(self) -> str:
         match self.source_set():
-            case source if Sets().is_provably_finite(source) and source in EnumeratedSets():
+            case source if Sets().is_provably_finite(source) and (
+                source in EnumeratedSets() or isinstance(source, _FiniteLiteralSet)
+            ):
                 values = self._distinct_values()
                 if values is not None:
                     return "{" + ", ".join(repr(value) for value in values) + "}"

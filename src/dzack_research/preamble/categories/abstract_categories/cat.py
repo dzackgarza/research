@@ -1092,14 +1092,24 @@ class NaturalTransformationMorphism(CategoricalArrow):
         return self.transformation().naturality_square(morphism)
 
     def __eq__(self, other: Any) -> bool | Predicate:
+        r"""Compare every component when the domain is a represented finite chain.
+
+        Equality of natural transformations is equality of their component
+        families.  A finite ordinal supplies its complete object family, so
+        the conjunction of the component equalities decides equality whenever
+        those morphism equalities are decidable.  An undecided component stays
+        a proposition; an arbitrary category is not silently enumerated.
+        """
         if parent(other) is not self.parent():
             return False
         if self.transformation() is other.transformation():
             return True
-        # Different component functions need not define different natural
-        # transformations, and the source category need not be finite.
-        from dzack_research.preamble.logic import AtomicProposition
+        from dzack_research.preamble.categories.abstract_categories.products import FiniteOrdinalCategory
+        from dzack_research.preamble.logic import AtomicProposition, conjunction
 
+        shape = self.transformation().source().domain()
+        if isinstance(shape, FiniteOrdinalCategory):
+            return conjunction(self.component(obj) == other.component(obj) for obj in shape.objects())
         return AtomicProposition("equal", self, other)
 
     def __ne__(self, other: Any) -> bool | Predicate:
@@ -1220,6 +1230,34 @@ class _EvaluationFunctor(Functor):
 
     def _apply_morphism(self, transformation):
         return transformation.component(self.evaluation_object())
+
+
+def _apex_isomorphism_in_subgroup(witness, subgroup, stabilizer_generators):
+    r"""An element of ``w S`` in ``H``, using the finite coset action on ``G/H``.
+
+    Here ``w = witness`` lies in ``G = subgroup.supergroup()``, ``H`` is
+    ``subgroup``, and the supplied generators generate ``S``, the apex
+    image of the source marking's automorphisms.  The functor and coslice
+    categories own those markings and reconstruct the resulting marked
+    isomorphism.  They share this finite-action computation.
+    """
+    from dzack_research.preamble.categories.group.g_sets import FiniteGSets
+
+    group = subgroup.supergroup()
+    assert witness.domain() is witness.codomain() and witness.parent() is group, (
+        f"{subgroup} is a subgroup of {group}, but the apex isomorphism "
+        f"{witness.domain()} -> {witness.codomain()} does not lie in it"
+    )
+    cosets = group.left_cosets(subgroup)
+    assert cosets in FiniteGSets(group), (
+        f"an apex isomorphism in {subgroup} is found in the finite coset space "
+        f"{group}/{subgroup}, which is not realized as a finite {group}-set"
+    )
+    stabilizer = group.subgroup(stabilizer_generators)
+    inclusion = stabilizer.inclusion()
+    action = FiniteGSets(stabilizer)(cosets, lambda element, point: cosets.act(inclusion(element), point))
+    transporter = action.transporter_witness(cosets.coset_of(~witness), cosets.base_point())
+    return None if transporter is None else witness * ~inclusion(transporter)
 
 
 class _FunctorCategory(CategoricalMor):
@@ -1451,32 +1489,17 @@ class _FunctorCategory(CategoricalMor):
         that ``G/H`` is realized as a finite ``G``-set (``H`` of finite index,
         realized as a kernel or preimage, or ``G`` finite).
         """
-        from dzack_research.preamble.categories.group.g_sets import FiniteGSets
-
-        source, target = core_mor.domain(), core_mor.codomain()
-        codomain = self.codomain_category()
         if core_mor.is_empty():
             return None
         isomorphism = core_mor.an_element()
         _shape, top = self._marking_shape()
         witness = isomorphism.forward().component(top)
-        group = subgroup.supergroup()
-        assert witness.domain() is witness.codomain() and witness.parent() is group, (
-            f"{subgroup} is a subgroup of {group}, but the isomorphisms {source} -> {target} have apex "
-            f"components {witness.domain()} -> {witness.codomain()}, which do not lie in it"
+        apex = _apex_isomorphism_in_subgroup(
+            witness,
+            subgroup,
+            self.codomain_category()._marked_automorphism_generators(self, core_mor.domain()),
         )
-        cosets = group.left_cosets(subgroup)
-        assert cosets in FiniteGSets(group), (
-            f"the isomorphisms {source} -> {target} with apex component in {subgroup} are found in the "
-            f"finite coset space {group}/{subgroup}, which is not realized as a finite {group}-set"
-        )
-        stabilizer = group.subgroup(codomain._marked_automorphism_generators(self, source))
-        inclusion = stabilizer.inclusion()
-        action = FiniteGSets(stabilizer)(cosets, lambda element, point: cosets.act(inclusion(element), point))
-        transporter = action.transporter_witness(cosets.coset_of(~witness), cosets.base_point())
-        if transporter is None:
-            return None
-        return self._core_isomorphism_from_apex(core_mor, witness * ~inclusion(transporter))
+        return None if apex is None else self._core_isomorphism_from_apex(core_mor, apex)
 
     def __call__(self, functor: Functor):
         r"""Admit the actual functor with this Mor category's endpoints."""

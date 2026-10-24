@@ -202,7 +202,7 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     f"the discriminant form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
                 )
-            # The pairing of L^# lies in Res(K); K/R is a quotient of K.
+            # The metric dual pairs in R or Res(K); both map into K/R.
             value = self.dual_lattice().b(self.dual_lattice_lift(left), self.dual_lattice_lift(right))
             return self.bilinear_value_module()(_fraction_field_value(value))
 

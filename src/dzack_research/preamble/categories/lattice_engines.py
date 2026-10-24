@@ -501,6 +501,48 @@ def _isotropic_vector_witness(lattice):
     return _raise_lattice_direction(lattice, solution)
 
 
+def _rational_witt_index(space):
+    r"""Count exact rational hyperbolic splittings of a nondegenerate space.
+
+    This is Hecke ``e2ab5716``, ``Quad/Spaces.jl:1751--1815``:
+    find an isotropic vector, split off its hyperbolic plane, and repeat
+    on the perpendicular until the remainder is anisotropic.  The number
+    of planes is the Witt index (O'Meara, §42F).
+
+    If ``e`` is isotropic and ``d = b(e,h) != 0``, then
+    ``f = h/d - q(h)e/(2d^2)`` satisfies ``q(f)=0`` and ``b(e,f)=1``.
+    Nondegeneracy supplies such an ``h`` among the module generators.
+    The retained subobject and its orthogonal complement perform the
+    splitting; only the existing isotropic-witness owner lowers the Gram
+    tensor for PARI's exact rational solvability decision.
+    """
+    field = space.base_ring()
+    assert (
+        _engine_ring(field) is SageQQ
+        and space.module_rank().is_finite()
+        and space.is_nondegenerate()
+    ), f"rational Witt index requires a nondegenerate finite-dimensional QQ-space, not {space}"
+    index = SageZZ.zero()
+    remainder = space
+    while int(remainder.module_rank()) >= 2:
+        isotropic = _isotropic_vector_witness(remainder)
+        if isotropic is None:
+            break
+        partner = next(
+            generator for generator in remainder.module_generators()
+            if remainder.b(isotropic, generator) != field.zero()
+        )
+        pairing = remainder.b(isotropic, partner)
+        partner = remainder.scalar_multiple(field.one() / pairing, partner)
+        partner -= remainder.scalar_multiple(
+            remainder.q(partner) / field(2), isotropic
+        )
+        plane = remainder.subobject_on((isotropic, partner))
+        remainder = plane.orthogonal_complement()
+        index += 1
+    return index
+
+
 def _unit_divisibility_isotropic_witness(lattice):
     r"""Select a primitive integral null vector of divisibility one.
 
@@ -1359,12 +1401,24 @@ def isometric_within_genus(domain, codomain):
     one spinor genus decides isometry [CS99, Ch. 15, Thms 14-15].  Input: two
     preamble lattices over ``ZZ``, nondegenerate, of finite rank at least 3,
     already established to lie in one genus.  Output: a Python ``bool``, the
-    untrusted Hecke answer; no engine object crosses back.  It lowers the Gram
-    tensors and calls :meth:`_OscarLatticeAdapter.integer_lattices_are_isometric`.
+    exact verdict of the native spinor-genus computation.
+
+    Hecke ``e2ab5716``, ``ZLatticeMorphism.jl:797--893``, first identifies
+    the rational spaces, then weakly approximates the local lattice maps
+    at primes dividing ``2 det``.  The spinor operator of the remaining
+    intersection index decides isometry.  Sage supplies rational-space
+    isometry, local normal forms and the improper spinor kernel; the
+    source's exact reflection-and-CRT approximation lives at the tensor
+    arithmetic owner.  No Julia bridge or integral-group enumeration is
+    used.  This decision requires no rational hyperbolic planes.  An
+    integral isometry remains the separate ``Isom(...).an_element()``
+    construction; the rational approximation is not such a witness.
     """
-    return _oscar_lattices.integer_lattices_are_isometric(
-        _engine_component_matrix(domain.gram_tensor()).change_ring(SageZZ),
-        _engine_component_matrix(codomain.gram_tensor()).change_ring(SageZZ),
+    from dzack_research.preamble.tensors._spinor_isometry import _isometric_indefinite
+
+    return _isometric_indefinite(
+        _engine_component_matrix(domain.gram_tensor()),
+        _engine_component_matrix(codomain.gram_tensor()),
     )
 
 __all__: list[str] = []
