@@ -1497,7 +1497,7 @@ class ModuleMorphismMethods:
         is a restriction of scalars from a fraction field.
 
         Over exact fields this uses rank and linear solving directly,
-        retaining represented RR comparisons during elimination.
+        retaining RR comparisons during elimination.
 
         EXAMPLES::
 

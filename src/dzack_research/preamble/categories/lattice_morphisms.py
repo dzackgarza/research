@@ -2321,7 +2321,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         embedding can have nontrivial finite index, and absence of an
         isometry or primitive embedding does not exclude such a map.
 
-        For finite nondegenerate spaces over QQ, AA or represented RR,
+        For finite nondegenerate spaces over QQ, AA or RR,
         Witt cancellation gives ``Emb(S,T) != empty`` exactly when
         ``witt_index(T orthogonal_sum (-S)) >= dim(S)``. Indeed an embedding
         splits off ``S`` and ``S orthogonal_sum (-S)`` is hyperbolic. In
@@ -2329,7 +2329,7 @@ class LatticeEmbeddingMor(CategoricalMor):
         with its remaining hyperbolic planes, gives a complement of
         dimension ``dim(T)-dim(S)``; Witt cancellation gives the isometry.
         This is an emptiness decision, independent of any witness search.
-        Over AA or represented RR, compute the equivalent criterion
+        Over AA or RR, compute the equivalent criterion
         directly: both source inertia indices must be at most the
         corresponding target indices. This consumes the original endpoint
         nondegeneracy hypotheses without constructing a difference form
@@ -2502,7 +2502,7 @@ class LatticeEmbeddingMor(CategoricalMor):
     def an_element(self):
         r"""Construct an embedding through an applicable complete route.
 
-        Over AA or represented RR, finite nondegenerate endpoints use
+        Over AA or RR, finite nondegenerate endpoints use
         exact diagonalization and matching signs, retaining the original endpoints. Isometries
         and primitive embeddings supply other affirmative cases;
         their absence does not eliminate finite-index embeddings over ZZ.
@@ -3995,7 +3995,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         form-square validator checks it under strict checking (OWN-22).
 
         Over QQ, after deciding existence, the complete rational embedding
-        iterator finds a witness. Over AA and represented RR, matching
+        iterator finds a witness. Over AA and RR, matching
         diagonal signs gives the map and its reciprocal-scale inverse
         directly. Equal finite dimensions make the matching bijective;
         retain both module maps in the module core. No integral Gram

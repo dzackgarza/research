@@ -1412,7 +1412,7 @@ def signature_pair(positive, negative):
 def _congruence_diagonal_form(gram: Tensor):
     r"""Compute Sage's diagonal form and change of basis with exact scalar tests.
 
-    For represented RR coefficients use RR itself as the coefficient
+    For RR coefficients use RR itself as the coefficient
     field of Sage's generic arithmetic. Its equality and division refuse
     undecided predicates. Converting to SR before choosing pivots would
     instead use symbolic truth conversion, even if the final diagonal

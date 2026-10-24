@@ -3083,7 +3083,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _:
                     assert False, (
-                        f"the Witt index of {self!r} is computed here over AA, represented RR and represented absolute number fields, but {self!r} is over {field}"
+                        f"the Witt index of {self!r} is computed here over AA, RR and represented absolute number fields, but {self!r} is over {field}"
                     )
             integers = _owned_integers()
             return _owned_engine_element(integers, SageZZ(index))
@@ -3275,7 +3275,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                 )
             else:
                 raise NotImplementedError(
-                    f"a Witt decomposition of {self} is computed here over QQ, AA and represented RR, not {field}"
+                    f"a Witt decomposition of {self} is computed here over QQ, AA and RR, not {field}"
                 )
             complement = self.subobject_on(anisotropic_basis)
             plane = Lattices(field)("U")
@@ -3368,7 +3368,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             witness; the zero lattice has none. Over AA the retained
             diagonalization supplies a radical vector or a normalized
             opposite-sign pair, without enumerating real points. The same
-            construction applies to represented RR when its exact scalar
+            construction applies to RR when its exact scalar
             operations and comparisons are decided. With supplied
             nondegeneracy, RR instead refines signs of nonzero diagonal
             entries and normalizes under established positivity hypotheses.
@@ -3485,7 +3485,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _ if _engine_ring(ring) is not SageZZ:
                     assert False, (
-                        f"representation of {value} by {self!r} is decided here over ZZ, QQ, AA and represented RR, not over {ring}"
+                        f"representation of {value} by {self!r} is decided here over ZZ, QQ, AA and RR, not over {ring}"
                     )
                 case _ if self.is_definite():
                     return self.vectors_of_square(value).domain().cardinality() != 0
@@ -3589,7 +3589,7 @@ class Lattices(OwnedCategoryOverBaseRing):
                     )
                 case _ if _engine_ring(ring) is not SageZZ:
                     assert False, (
-                        f"a representation of {value} in {self!r} is constructed here over ZZ, QQ, AA and represented RR, not over {ring}"
+                        f"a representation of {value} in {self!r} is constructed here over ZZ, QQ, AA and RR, not over {ring}"
                     )
                 case _ if self.is_definite():
                     found = next(iter(self.vectors_of_square(value)), None)
@@ -4693,7 +4693,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert ring in (
                 _owned_integers(), _owned_rationals(), _owned_real_algebraic_numbers(), RR
             ), (
-                f"the hyperbolic index of {self} is computed here over ZZ, QQ, AA and represented RR"
+                f"the hyperbolic index of {self} is computed here over ZZ, QQ, AA and RR"
             )
             if not self.is_nondegenerate():
                 quotient, _section = self._hyperbolic_radical_quotient_section()
@@ -4771,7 +4771,7 @@ class Lattices(OwnedCategoryOverBaseRing):
             assert ring in (
                 _owned_integers(), _owned_rationals(), _owned_real_algebraic_numbers(), RR
             ), (
-                f"a maximal hyperbolic splitting of {self} is computed here over ZZ, QQ, AA and represented RR"
+                f"a maximal hyperbolic splitting of {self} is computed here over ZZ, QQ, AA and RR"
             )
             if not self.is_nondegenerate():
                 quotient_lattice, section = self._hyperbolic_radical_quotient_section()

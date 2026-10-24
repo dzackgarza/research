@@ -64,7 +64,7 @@ complements apply to the nondegenerate quotient.
 
 The constructor `Lattices(R)("U")` defines the plane with Gram matrix $H$
 for a supplied base ring $R$. The implemented index decision in this note
-is restricted to `ZZ`, `QQ`, `AA` and represented `RR`; existence of that
+is restricted to `ZZ`, `QQ`, `AA` and `RR`; existence of that
 constructor alone supplies no index algorithm for other rings.
 For integral input, the higher-rank step relies on the general isometric-
 embedding decision and its witness. The focused executions recorded below
@@ -1645,7 +1645,7 @@ runtime acceptance, and none of these rows closes terminal verification.
 
 | Indexed requirement | Current source owner and computation | Coverage still requiring evidence or further computation |
 | --- | --- | --- |
-| Anisotropy and nonzero isotropic witnesses | `form_modules.py`: `is_anisotropic`; `lattices.py`: `is_isotropic`, `isotropic_vector`; rational PARI decision and real congruence routes | Exact ZZ/QQ, AA and applicable represented RR cases have source routes; general real-oracle zero decisions are not supplied |
+| Anisotropy and nonzero isotropic witnesses | `form_modules.py`: `is_anisotropic`; `lattices.py`: `is_isotropic`, `isotropic_vector`; rational PARI decision and real congruence routes | Exact ZZ/QQ, AA and applicable RR cases have source routes; general real-oracle zero decisions are not supplied |
 | Witt index and decomposition | `lattices.py`: `witt_index`, `witt_decomposition`; exact rational isotropy splitting and real congruence/sign/root computation | Regular Cauchy admission, nonsingular signature and returned congruence isometry have source routes; Witt-basis sign/root normalization has a source route; nonsingular norm-witness normalization has a source route with decided requested-norm zero status; real Witt decomposition retains explicit inverse coordinate maps and actual summand maps |
 | Norm fibres, including zero | `form_modules.py`: `square_fibre`, `elements_of_norm`; `lattices.py`: `elements_of_norm`, `representation_vector`; subset-owner lazy choice | Original equalizer and inclusion; canonical zero; finite integral shells where proved finite; supplied finite nondegenerate ZZ/QQ/AA/RR fibres can select a fresh point through the existing solver without ambient enumeration. Unavailable scalar decisions and failed solvers propagate |
 | Scalar extension of objects and arrows | `FormBaseChanges`, `FormedModuleMorphism.base_change`, `LatticeIsometryMethods.base_change`, module scalar-extension functor | Original source, actual ring map and unit retained; both formed-arrow components and isometry inverse pairs retained. Finite unimodularity survives all unital maps; over a target domain, a nonzero mapped Gram determinant establishes nondegeneracy. Scalar values over a quotient ring use its regular module for the internal Mor while public pairings and Grams remain ring-valued. Arbitrary value-module extensions remain outside the current computation |
@@ -2436,7 +2436,7 @@ returns the coordinates of an actual preimage in the original $V$.
 The finite-free module preimage computation now uses these maintained
 rank and solving operations directly over exact fields; see
 [Sage's linear-system interface](https://www.sagemath.org/doc/tutorial/tour_linalg.html).
-This repairs a source obstruction for represented RR: the former route
+This repairs a source obstruction for RR: the former route
 required a PID Smith computation, whose presentation guard rejects SR
 because `SR.is_exact()` is `False`. Sage documents this explicitly in its
 [symbolic-ring reference](https://doc.sagemath.org/html/en/reference/calculus/sage/symbolic/ring.html#sage.symbolic.ring.SymbolicRing.is_exact).
@@ -2585,7 +2585,7 @@ unit = V.base_change_unit()       # L -> restriction of V to ZZ
 It must not be treated as an isometry between objects over one coefficient
 ring. `phi` is an isometry over `QQ`, with evaluation and inverse. Over `AA`,
 `witt_decomposition()` uses exact congruence diagonalization and positive
-square roots; the represented `RR` route uses the same construction when
+square roots; the `RR` route uses the same construction when
 its exact arithmetic and sign decisions succeed; `diagonalization()` itself returns an isometry from the diagonal
 space to the original space and also allows a degenerate form.
 
