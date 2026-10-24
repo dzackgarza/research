@@ -1030,6 +1030,16 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
         r"""The category constructed as this intersection is an object of Cat."""
         return _cat()
 
+    def __contains__(self, value) -> bool:
+        r"""Decide an intersection of declared property categories by its branches."""
+        branches = self._super_categories
+        if all(
+            any("_certifying_predicate" in vars(level) for level in type(branch).__mro__)
+            for branch in branches
+        ):
+            return all(value in branch for branch in branches)
+        return super().__contains__(value)
+
     def _call_(self, data, *args, **options):
         r"""Construct through a unique most-specific branch and check the join.
 

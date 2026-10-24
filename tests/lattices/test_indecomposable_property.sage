@@ -36,6 +36,44 @@ def test_irreducible_root_system_need_not_be_an_indecomposable_lattice() -> None
     assert b2 not in indecomposable
 
 
+def test_twisted_and_untwisted_are_lattice_property_categories() -> None:
+    category = Lattices(ZZ)
+    plane = category("U")
+    twice_plane = plane.twist(2)
+    root_line = category("A1")
+
+    assert plane.is_indecomposable() is True
+    assert plane.is_untwisted() is True
+    assert plane in category.Untwisted().Indecomposable()
+    assert plane in category.Indecomposable().Untwisted()
+    assert twice_plane.is_indecomposable() is True
+    assert twice_plane.is_twisted() is True
+    assert twice_plane in category.Twisted().Indecomposable()
+    assert twice_plane in category.Indecomposable().Twisted()
+    assert twice_plane not in category.Untwisted()
+    assert root_line.is_twisted() is True
+    assert category([[1]]).is_untwisted() is True
+    assert category([[-1]]).is_untwisted() is True
+
+
+def test_known_construction_seeds_come_from_untwisted_indecomposables() -> None:
+    category = Lattices(ZZ)
+    seeds_category = category.Untwisted().Indecomposable()
+    seeds = seeds_category.known_objects()
+
+    assert all(L.is_untwisted() is True and L.is_indecomposable() is True for L in seeds)
+    assert all(L in seeds_category for L in seeds)
+    assert any(L.gram_tensor() == category("U").gram_tensor() for L in seeds)
+    assert any(L.gram_tensor() == category("A2").gram_tensor() for L in seeds)
+    assert all(L.gram_tensor() != category("A1").gram_tensor() for L in seeds)
+
+    twisted = category.Twisted().Indecomposable()
+    twisted_known = twisted.known_objects()
+    assert all(L.is_twisted() is True and L.is_indecomposable() is True for L in twisted_known)
+    assert all(L in twisted for L in twisted_known)
+    assert any(L.gram_tensor() == category("A1").gram_tensor() for L in twisted_known)
+
+
 def test_odd_unimodular_family_is_indecomposable_only_in_rank_one() -> None:
     indecomposable = Lattices(ZZ).Indecomposable()
     known = indecomposable.known_objects(max_rank=3)

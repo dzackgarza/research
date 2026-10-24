@@ -226,8 +226,9 @@ def nikulin_invariants(rank, discriminant_length, delta):
 
 _Rings = OwnedRings()
 
-if "Indecomposable" not in all_axioms:
-    all_axioms.add("Indecomposable")
+for _lattice_property_axiom in ("Indecomposable", "Twisted", "Untwisted"):
+    if _lattice_property_axiom not in all_axioms:
+        all_axioms.add(_lattice_property_axiom)
 
 
 @dataclass(frozen=True)
@@ -2283,28 +2284,76 @@ class Lattices(OwnedCategoryOverBaseRing):
         def an_object(self):
             return Lattices(self.base_ring())("U")
 
+    class Twisted(CategoryWithAxiom):
+        r"""Integral lattices with a nonunit integral factor in the form."""
+
+        _certifying_predicate = "is_twisted"
+
+        def __contains__(self, lattice):
+            if lattice not in Lattices(self.base_ring()):
+                return False
+            answer = lattice.is_twisted()
+            if isinstance(answer, bool):
+                return answer
+            if super().__contains__(lattice):
+                return True
+            raise NotImplementedError(f"twistedness of {lattice!r} is not decided")
+
+        def an_object(self):
+            return Lattices(self.base_ring())("U").twist(2)
+
+    class Untwisted(CategoryWithAxiom):
+        r"""Integral lattices whose Gram entries generate the unit ideal."""
+
+        _certifying_predicate = "is_untwisted"
+
+        def __contains__(self, lattice):
+            if lattice not in Lattices(self.base_ring()):
+                return False
+            answer = lattice.is_untwisted()
+            if isinstance(answer, bool):
+                return answer
+            if super().__contains__(lattice):
+                return True
+            raise NotImplementedError(f"untwistedness of {lattice!r} is not decided")
+
+        def an_object(self):
+            return Lattices(self.base_ring())("U")
+
+    class SubcategoryMethods:
         def known_objects(self, max_rank=None):
-            r"""Return a finite selection of certified examples up to ``max_rank``."""
-            if self.base_ring() is not _owned_integers():
-                raise NotImplementedError("known indecomposable specimens are currently integral")
+            r"""Return known integral specimens satisfying this lattice category."""
+            ring = self._super_categories[0].base_ring()
+            if ring is not _owned_integers():
+                raise NotImplementedError("known lattice specimens are currently integral")
             bound = 8 if max_rank is None else max_rank
             if bound < 0:
                 raise ValueError("max_rank must be nonnegative")
+            axioms = self.axioms()
             known = []
-            for lattice in Lattices(self.base_ring()).standard_objects():
+            for lattice in Lattices(ring).standard_objects():
                 if int(lattice.module_rank()) > bound:
                     break
-                if lattice.is_indecomposable() is True:
-                    known.append(lattice)
-            return finite_family(
-                known,
-                name="Known orthogonally indecomposable lattices",
-            )
+                if "Indecomposable" in axioms and lattice.is_indecomposable() is not True:
+                    continue
+                if "Untwisted" in axioms and lattice.is_untwisted() is not True:
+                    continue
+                if "Twisted" in axioms and lattice.is_twisted() is not True:
+                    continue
+                known.append(lattice)
+            return finite_family(known, name="Known objects of this lattice category")
 
-    class SubcategoryMethods:
         def Indecomposable(self):
             r"""The full subcategory of orthogonally indecomposable lattices."""
             return self._with_axiom("Indecomposable")
+
+        def Twisted(self):
+            r"""The property subcategory of lattices with a nonunit form factor."""
+            return self._with_axiom("Twisted")
+
+        def Untwisted(self):
+            r"""The property subcategory of primitive integral forms."""
+            return self._with_axiom("Untwisted")
 
         def construction_enumeration(self, seeds):
             r"""Enumerate integral-lattice construction expressions fairly.
@@ -4014,6 +4063,8 @@ class Lattices(OwnedCategoryOverBaseRing):
                 int(factor.module_rank()) > 0 for factor in self.biproduct_factors()
             ) > 1:
                 return True
+            if self.base_ring() is _owned_integers() and self.form_content() > 1:
+                return self.untwisted_form().is_decomposable()
             gram = self.gram_tensor()
             reached = {0}
             frontier = [0]
@@ -4080,6 +4131,48 @@ class Lattices(OwnedCategoryOverBaseRing):
                 return False
             answer = self.is_decomposable()
             return not answer if isinstance(answer, bool) else negation(answer)
+
+        def form_content(self):
+            r"""Positive generator of the Gram-entry ideal of a finite integral lattice."""
+            if self.base_ring() is not _owned_integers() or not self.module_rank().is_finite():
+                raise NotImplementedError("form content requires a finite integral lattice")
+            rank = int(self.module_rank())
+            gram = self.gram_tensor()
+            content = self.base_ring().zero()
+            for row in range(rank):
+                for column in range(rank):
+                    content = gcd(content, gram[row, column])
+            return abs(content)
+
+        def is_twisted(self):
+            r"""Whether the integral form is a nonunit scalar multiple of another.
+
+            Integral basis change preserves the ideal generated by all pairing
+            values. For finite free lattices its Gram-entry ideal decides the
+            property. Unit scaling, including ``-1``, preserves the class.
+            """
+            if self.base_ring() is not _owned_integers() or not self.module_rank().is_finite():
+                return AtomicProposition("twisted by a nonunit", self)
+            return self.form_content() != self.base_ring().one()
+
+        def is_untwisted(self):
+            r"""Whether the integral form has no nonunit scalar factor."""
+            answer = self.is_twisted()
+            return not answer if isinstance(answer, bool) else negation(answer)
+
+        def untwisted_form(self):
+            r"""Divide the selected finite integral Gram form by its content."""
+            content = self.form_content()
+            if content == 0:
+                raise ValueError("the zero form has no canonical nonzero content to remove")
+            if content == 1:
+                return self
+            rank = int(self.module_rank())
+            gram = self.gram_tensor()
+            return Lattices(self.base_ring())(
+                [[gram[row, column] // content for column in range(rank)]
+                 for row in range(rank)]
+            )
 
         def indecomposable_name(self):
             return _indecomposable_name(self)
