@@ -66,8 +66,8 @@ def validate_lattice_signature(data):
         )
 
 
-def _rational_signed_direction(gram, sign):
-    r"""Select a column of Sage's rational diagonalization with the requested sign.
+def _signed_diagonal_direction(gram, sign, engine_field):
+    r"""Select a column of exact congruence diagonalization with the requested sign.
 
     This is the shared diagonalization step of the port's positive-direction
     and negative-direction-in-span computations. A subspace supplies its own
@@ -77,8 +77,8 @@ def _rational_signed_direction(gram, sign):
 
     if not isinstance(gram, Tensor) or gram.tensor_valence() != (NN**2)((0, 2)):
         raise TypeError(f"cannot find a vector of positive square for {gram}: it must be the Gram tensor of a bilinear form, a tensor of type (0, 2)")
-    engine_hessian = _engine_symmetrized_form_matrix(gram).change_ring(SageQQ)
-    diagonal, change = QuadraticForm(SageQQ, engine_hessian).rational_diagonal_form(return_matrix=True)
+    engine_hessian = _engine_symmetrized_form_matrix(gram).change_ring(engine_field)
+    diagonal, change = QuadraticForm(engine_field, engine_hessian).rational_diagonal_form(return_matrix=True)
     diagonal_matrix = diagonal.matrix()
     index = next((
         index for index in range(diagonal_matrix.nrows())
@@ -89,7 +89,7 @@ def _rational_signed_direction(gram, sign):
 
 def _rational_positive_vector(gram):
     r"""Return one rational positive vector as a type-``(1,0)`` tensor."""
-    column = _rational_signed_direction(gram, 1)
+    column = _signed_diagonal_direction(gram, 1, SageQQ)
     if column is None:
         raise ValueError(f"the form with Gram tensor {gram} has no positive direction")
     rationals = gram.base_ring().fraction_field()
@@ -99,8 +99,324 @@ def _rational_positive_vector(gram):
     )
 
 
-def _raise_rational_lattice_vector(lattice, coordinates):
-    r"""Raise a rational direction, primitively over ZZ, in its given lattice."""
+def _congruence_diagonalization(lattice):
+    r"""Raise Sage's diagonal form and transformation as an isometry.
+
+    ``QuadraticForm.rational_diagonal_form(return_matrix=True)`` returns
+    ``(D,T)`` with ``T.transpose()*G*T == D.matrix()``. The columns of T
+    are the images of the new basis in the original space. No transpose
+    or change of scalar field is made while raising this datum.
+    """
+    from dzack_research.preamble.categories._lattice import _congruence_diagonal_form
+    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+    from dzack_research.preamble.rings.real import RR
+
+    ring = lattice.base_ring()
+    if ring is _owned_real_algebraic_numbers() or (
+        ring is RR and lattice in FormModules(RR).Nondegenerate()
+    ):
+        return _exact_real_diagonalization(lattice)
+    diagonal, change = _congruence_diagonal_form(lattice.gram_tensor())
+    gram = diagonal.matrix()
+    normal = Lattices(ring)([
+        [_owned_engine_element(ring, entry) for entry in row]
+        for row in gram.rows()
+    ]) if gram.nrows() else Lattices(ring)(0)
+    images = tuple(
+        lattice.linear_combination({
+            label: _owned_engine_element(ring, entry)
+            for label, entry in zip(lattice.module_generating_set(), column, strict=True)
+        })
+        for column in change.columns()
+    )
+    return normal.Isom(lattice)(images)
+
+
+def _exact_real_diagonalization(lattice):
+    r"""Diagonalize a finite exact real form with inverse maps.
+
+    Basis directions and pairwise sums contain a nonisotropic direction
+    outside the radical. Over AA, exact zero decisions also identify a
+    remaining radical. For promised nonsingular RR input, refine all norm
+    enclosures together until one excludes zero. Fraction-free projection
+    and elementary inverse-row updates retain both maps. ``TRAPS.md``
+    records why AA does not use Sage's rational diagonal form here.
+    See docs/theory/hyperbolic-index.md for termination and the map equations.
+    """
+    from sage.rings.real_arb import RealBallField
+    from dzack_research.preamble.categories.lattices import Lattices
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+    from dzack_research.preamble.rings.real import RR
+
+    ring = lattice.base_ring()
+    assert ring in (_owned_real_algebraic_numbers(), RR)
+    basis = list(lattice.module_generators())
+    size = len(basis)
+    inverse = [[ring(int(i == j)) for j in range(size)] for i in range(size)]
+    diagonal = []
+    for position in range(size):
+        indices = (
+            [(i, i) for i in range(position, size)]
+            + [(i, j) for i in range(position, size) for j in range(i + 1, size)]
+        )
+        vectors = [basis[i] if i == j else basis[i] + basis[j] for i, j in indices]
+        norms = [lattice.q(vector) for vector in vectors]
+        if ring is RR:
+            precision = 128
+            selected = None
+            while selected is None:
+                field = RealBallField(precision)
+                for index, norm in enumerate(norms):
+                    enclosure = norm._arb_(field)
+                    if enclosure.is_finite() and enclosure.is_nonzero():
+                        selected = index
+                        break
+                precision *= 2
+        else:
+            selected = next((i for i, norm in enumerate(norms) if norm != ring.zero()), None)
+            if selected is None:
+                diagonal.extend([ring.zero()] * (size - position))
+                break
+
+        first, second = indices[selected]
+        pivot, norm = vectors[selected], norms[selected]
+        basis[position], basis[first] = basis[first], basis[position]
+        inverse[position], inverse[first] = inverse[first], inverse[position]
+        if first != second:
+            # Adding column second to the pivot subtracts the pivot row
+            # from inverse row second; second > first >= position.
+            basis[position] = pivot
+            inverse[second] = [
+                inverse[second][j] - inverse[position][j] for j in range(size)
+            ]
+
+        pairings = [lattice.b(pivot, basis[j]) for j in range(position + 1, size)]
+        for index, target in enumerate(range(position + 1, size)):
+            basis[target] = norm * basis[target] - pairings[index] * pivot
+            inverse[target] = [
+                RR._divide_by_nonzero(entry, norm) if ring is RR else entry / norm
+                for entry in inverse[target]
+            ]
+        inverse[position] = [
+            inverse[position][j] + sum(
+                (pairing * inverse[target][j]
+                 for pairing, target in zip(pairings, range(position + 1, size), strict=True)),
+                ring.zero(),
+            )
+            for j in range(size)
+        ]
+        diagonal.append(norm)
+
+    category = Lattices(ring)
+    normal = category([
+        [diagonal[i] if i == j else ring.zero() for j in range(size)]
+        for i in range(size)
+    ]) if size else category(0)
+    forward = normal.module_category().Mor(normal, lattice)(tuple(basis))
+    labels = tuple(normal.module_generating_set())
+    backward = lattice.module_category().Mor(lattice, normal)(tuple(
+        normal.linear_combination({label: inverse[i][j] for i, label in enumerate(labels)})
+        for j in range(size)
+    ))
+    module_isomorphism = normal.module_category().Core().Mor(normal, lattice)._from_known_inverse_pair(
+        forward, backward,
+    )
+    isometries = normal.Isom(lattice)
+    return isometries.element_class(isometries, module_isomorphism)
+
+
+def _real_representation_witness(lattice, value):
+    r"""Find a nonzero exact real vector of the requested norm, or return None.
+
+    Use the retained congruence-diagonalization isometry. A nonzero value
+    is represented exactly when a diagonal entry has the same sign; the
+    positive square root of their ratio supplies its scale. Zero is
+    represented nontrivially by a radical basis vector, or by the sum of
+    opposite-sign basis vectors normalized to squares +1 and -1. If none
+    of these cases applies, the diagonal form excludes a nonzero point.
+
+    For promised nonsingular RR input, diagonal squares are nonzero.
+    Their signs are found by enclosure refinement and root/quotient
+    arithmetic consumes those hypotheses. The requested value must still
+    have a decided zero status; arbitrary real equality is not decidable.
+    """
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
+    from dzack_research.preamble.rings.real import RR
+
+    ring = lattice.base_ring()
+    diagonalization = lattice.diagonalization()
+    vectors = tuple(
+        diagonalization(generator)
+        for generator in diagonalization.domain().module_generators()
+    )
+    positive = None
+    negative = None
+    if ring is RR and lattice in FormModules(RR).Nondegenerate():
+        zero_value = bool(value == ring.zero())
+        value_sign = 0 if zero_value else ring._sign_of_nonzero(value)
+        for vector in vectors:
+            square = lattice.q(vector)
+            sign = ring._sign_of_nonzero(square)
+            if not zero_value:
+                if sign == value_sign:
+                    ratio = ring._divide_by_nonzero(value, square)
+                    return vector * ring._sqrt_of_positive(ratio)
+            else:
+                root = ring._sqrt_of_positive(square if sign > 0 else -square)
+                normalized = vector * ring._divide_by_nonzero(ring.one(), root)
+                if sign > 0:
+                    positive = normalized
+                else:
+                    negative = normalized
+                if positive is not None and negative is not None:
+                    return positive + negative
+        return None
+    for vector in vectors:
+        square = lattice.q(vector)
+        if value != ring.zero():
+            if value * square > ring.zero():
+                return vector * (value / square).sqrt()
+        elif square == ring.zero():
+            return vector
+        elif square > ring.zero():
+            positive = vector * (ring.one() / square.sqrt())
+        else:
+            negative = vector * (ring.one() / (-square).sqrt())
+    if value == ring.zero() and positive is not None and negative is not None:
+        return positive + negative
+    return None
+
+
+def _real_witt_bases(lattice):
+    r"""Raise an exact real Witt basis using congruence diagonalization.
+
+    Private supplier to ``Lattices.witt_decomposition``. Sage's
+    ``QuadraticForm.rational_diagonal_form(return_matrix=True)`` returns
+    ``(D,T)`` with ``T.transpose()*G*T == D.matrix()``. Its columns are
+    therefore an orthogonal basis in the input space. Normalize each
+    positive or negative vector to square +1 or -1 using the positive
+    square root in the selected real field. For an orthogonal pair p,n of
+    these squares, e=p+n and f=(p-n)/2 have Gram U. The unpaired vectors all have the
+    same sign, so their span is anisotropic.
+
+    The input is a finite nondegenerate symmetric space over AA or the
+    represented exact RR field. Each diagonal square is nonzero; over RR
+    convergent enclosures therefore determine its sign by refinement.
+    Positive roots and quotients use these established hypotheses rather
+    than new bounded predicate queries. No approximate root or
+    exhaustive real iterator is used.
+    Sage documents the retained transformation in
+    ``quadratic_form__local_field_invariants.rational_diagonal_form``.
+    """
+    from dzack_research.preamble.categories.sets.finite_families import finite_family
+
+    ring = lattice.base_ring()
+    _diagonalization, positive_data, negative_data = _real_normalized_diagonal_basis(lattice)
+    positive = [entry[2] for entry in positive_data]
+    negative = [entry[2] for entry in negative_data]
+    index = min(len(positive), len(negative))
+    hyperbolic = tuple(
+        vector
+        for p, n in zip(positive[:index], negative[:index], strict=True)
+        for vector in (p + n, (p - n) * (ring.one() / ring(2)))
+    )
+    anisotropic = (*positive[index:], *negative[index:])
+    return finite_family(anisotropic), finite_family(hyperbolic)
+
+
+def _real_normalized_diagonal_basis(lattice):
+    r"""Retain diagonal labels, positive root scales and normalized vectors."""
+    from dzack_research.preamble.rings.real import RR
+
+    ring = lattice.base_ring()
+    diagonalization = lattice.diagonalization()
+    positive, negative = [], []
+    for label in diagonalization.domain().module_generating_set():
+        vector = diagonalization(diagonalization.domain().module_generator(label))
+        square = lattice.q(vector)
+        sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > 0 else -1)
+        if ring is RR:
+            root = ring._sqrt_of_positive(square if sign > 0 else -square)
+            normalized = vector * ring._divide_by_nonzero(ring.one(), root)
+        else:
+            root = (square if sign > 0 else -square).sqrt()
+            normalized = vector * (ring.one() / root)
+        if sign > 0:
+            positive.append((label, root, normalized))
+        else:
+            negative.append((label, root, normalized))
+    return diagonalization, positive, negative
+
+
+def _real_witt_decomposition(lattice):
+    r"""Assemble the real Witt isometry with explicit inverse coordinates.
+
+    If x has diagonal coordinates c_i and v_i=r_i p_i, its normalized
+    coordinates are r_i c_i. For e=p+n, f=(p-n)/2, the coordinates become
+    ((a+b)/2, a-b). No span or inverse is rediscovered.
+    """
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    ring = lattice.base_ring()
+    diagonalization, positive, negative = _real_normalized_diagonal_basis(lattice)
+    index = min(len(positive), len(negative))
+    remaining = (*positive[index:], *negative[index:])
+    signs = [1] * (len(positive) - index) + [-1] * (len(negative) - index)
+    complement = Lattices(ring)([
+        [ring(signs[i]) if i == j else ring.zero() for j in range(len(signs))]
+        for i in range(len(signs))
+    ]) if signs else Lattices(ring)(0)
+    hyperbolic = Lattices(ring)("U") ** index
+    normal = Lattices(ring).orthogonal_sum((hyperbolic, complement))
+    half = ring.one() / ring(2)
+    images = tuple(
+        vector
+        for p, n in zip(positive[:index], negative[:index], strict=True)
+        for vector in (p[2] + n[2], (p[2] - n[2]) * half)
+    )
+    h_labels = tuple(hyperbolic.module_generating_set())
+    a_labels = tuple(complement.module_generating_set())
+    h_projection, a_projection = normal.projection(0), normal.projection(1)
+
+    def forward_image(label):
+        generator = normal.module_generator(label)
+        h, a = h_projection(generator), a_projection(generator)
+        return sum(
+            (image * h(key) for key, image in zip(h_labels, images, strict=True)),
+            lattice.zero(),
+        ) + sum(
+            (entry[2] * a(key) for key, entry in zip(a_labels, remaining, strict=True)),
+            lattice.zero(),
+        )
+
+    h_inclusion, a_inclusion = normal.injection(0), normal.injection(1)
+
+    def backward_image(label):
+        coordinates = diagonalization.inverse()(lattice.module_generator(label))
+        h_coefficients = []
+        for p, n in zip(positive[:index], negative[:index], strict=True):
+            a, b = p[1] * coordinates(p[0]), n[1] * coordinates(n[0])
+            h_coefficients.extend(((a + b) * half, a - b))
+        h = hyperbolic.linear_combination(dict(zip(h_labels, h_coefficients, strict=True)))
+        a = complement.linear_combination({
+            key: entry[1] * coordinates(entry[0])
+            for key, entry in zip(a_labels, remaining, strict=True)
+        })
+        return h_inclusion(h) + a_inclusion(a)
+
+    forward = normal.module_category().Mor(normal, lattice)(forward_image)
+    backward = lattice.module_category().Mor(lattice, normal)(backward_image)
+    module_isomorphism = normal.module_category().Core().Mor(normal, lattice)._from_known_inverse_pair(
+        forward, backward,
+    )
+    isometries = normal.Isom(lattice)
+    return isometries.element_class(isometries, module_isomorphism)
+
+
+def _raise_lattice_direction(lattice, coordinates):
+    r"""Raise a scalar-field direction, primitively over ZZ, in its given module."""
     ring = lattice.base_ring()
     engine_ring = _engine_ring(ring)
     if engine_ring is SageZZ:
@@ -125,26 +441,36 @@ def _signed_vector_witness(lattice, sign):
     The symmetric Hessian ``G + G.transpose()`` represents the diagonal
     function of any bilinear Gram ``G``. For a quadratic datum, its polar
     diagonal is twice its selected norm, so its symmetrization has four
-    times that norm. These positive factors preserve the sign over QQ.
-    Return None only if exact rational diagonalization excludes the sign.
+    times that norm. These positive factors preserve the sign over QQ and AA.
+    Return None only if exact diagonalization excludes the sign.
     """
+    from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+
     ring = lattice.base_ring()
-    assert _engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ, (
-        f"signed vector witnesses are computed over ZZ or QQ, not {ring}"
+    from dzack_research.preamble.rings.real import RR
+    from dzack_research.preamble.categories.lattices import Lattices
+
+    if ring is RR and lattice in Lattices(RR):
+        return _real_representation_witness(lattice, ring(sign))
+    assert (_engine_ring(ring) is SageZZ or _engine_ring(ring) is SageQQ
+            or ring is _owned_real_algebraic_numbers()), (
+        f"signed vector witnesses are computed over ZZ, QQ or AA, not {ring}"
     )
     assert lattice.value_module() is ring, (
-        f"rational signed-vector computation needs values in the scalar ring {ring}, not {lattice.value_module()}"
+        f"signed-vector computation needs values in the scalar ring {ring}, not {lattice.value_module()}"
     )
     assert lattice in FramedFreeModules(ring), (
-        f"rational signed-vector computation needs a selected free framing on {lattice}"
+        f"signed-vector computation needs a selected free framing on {lattice}"
     )
     assert lattice.module_rank().is_finite(), (
-        f"rational diagonalization requires finite rank, not {lattice.module_rank()}"
+        f"diagonalization requires finite rank, not {lattice.module_rank()}"
     )
     if lattice.module_rank() == 0:
         return None
-    coordinates = _rational_signed_direction(lattice.gram_tensor(), sign)
-    return None if coordinates is None else _raise_rational_lattice_vector(lattice, coordinates)
+    coordinates = _signed_diagonal_direction(
+        lattice.gram_tensor(), sign, _engine_ring(ring.fraction_field())
+    )
+    return None if coordinates is None else _raise_lattice_direction(lattice, coordinates)
 
 
 def _isotropic_vector_witness(lattice):
@@ -172,7 +498,7 @@ def _isotropic_vector_witness(lattice):
         return None
     if isinstance(solution, Matrix):
         solution = solution.column(0)
-    return _raise_rational_lattice_vector(lattice, solution)
+    return _raise_lattice_direction(lattice, solution)
 
 
 def _rational_witt_index(space):
@@ -245,7 +571,7 @@ def _unit_divisibility_isotropic_witness(lattice):
             for pairing in pairings:
                 divisor = divisor.gcd(pairing)
             if divisor == 1:
-                return _raise_rational_lattice_vector(lattice, vector)
+                return _raise_lattice_direction(lattice, vector)
         height += 1
 
 
@@ -428,11 +754,11 @@ def _rational_representation_witness(lattice, value):
     last = solution[rank]
     isotropic = solution[:rank]
     if last:
-        return _raise_rational_lattice_vector(lattice, isotropic / last)
+        return _raise_lattice_direction(lattice, isotropic / last)
     partner = gram * isotropic
     pairing = isotropic * gram * partner
     shift = (SageQQ(_engine_element(lattice.base_ring(), value)) - partner * gram * partner) / (2 * pairing)
-    return _raise_rational_lattice_vector(lattice, partner + shift * isotropic)
+    return _raise_lattice_direction(lattice, partner + shift * isotropic)
 
 
 def _binary_special_orthogonal_representatives(lattice, square):
@@ -603,12 +929,32 @@ function _number_field_matrix(K, a, entries)
     )
 end
 
+function definite_minimum(gram_entries)
+    lattice = integer_lattice(; gram=change_base_ring(QQ, _zz_matrix(gram_entries)))
+    return ZZ(Oscar.Hecke.minimum(lattice))
+end
+
+function square_shell(gram_entries, square)
+    gram = _zz_matrix(gram_entries)
+    lattice = integer_lattice(; gram=change_base_ring(QQ, gram))
+    vectors = Oscar.Hecke.short_vectors(lattice, ZZ(square), ZZ(square))
+    return matrix(ZZ, length(vectors), nrows(gram),
+                  [coordinate for (v, _) in vectors for coordinate in v])
+end
+
 function rational_witt_index(gram_entries)
     gram = _qq_matrix(gram_entries)
     _anisotropic, hyperbolic, radical = Oscar.Hecke._quadratic_form_decomposition(gram)
     nrows(radical) == 0 || error("Witt index requires a nondegenerate quadratic space")
     iseven(nrows(hyperbolic)) || error("Hecke returned an odd-dimensional hyperbolic summand")
     return div(nrows(hyperbolic), 2)
+end
+
+function rational_witt_bases(gram_entries)
+    gram = _qq_matrix(gram_entries)
+    anisotropic, hyperbolic, radical = Oscar.Hecke._quadratic_form_decomposition(gram)
+    nrows(radical) == 0 || error("Witt decomposition requires a nondegenerate quadratic space")
+    return [anisotropic, hyperbolic]
 end
 
 function number_field_spinor_norm_class(defining_coefficients, gram_entries, isometry_entries)
@@ -671,21 +1017,15 @@ function target_primitive_embedding(source_gram_entries, target_gram_entries)
     source = integer_lattice(; gram = change_base_ring(QQ, source_gram))
     target = integer_lattice(; gram = change_base_ring(QQ, target_gram))
     exists, representatives = primitive_embeddings(
-        genus(target),
+        target,
         source;
         classification = :sub,
+        check = true,
     )
     if !exists
         return [1, 0]
     end
-    target_specific = filter(
-        record -> is_isometric_with_isometry(record[1], target; ambient_representation = false)[1],
-        representatives,
-    )
-    if isempty(target_specific)
-        return [1, 0]
-    end
-    target_prime, source_prime, _complement = first(target_specific)
+    target_prime, source_prime, _complement = first(representatives)
     inclusion = solve(
         basis_matrix(target_prime),
         basis_matrix(source_prime);
@@ -712,23 +1052,16 @@ function target_primitive_embedding_classes(
     classification = Symbol(classification_name)
     @req classification in [:sub, :emb] "primitive embedding classes are :sub or :emb"
     exists, representatives = primitive_embeddings(
-        genus(target),
+        target,
         source;
         classification = classification,
+        check = true,
     )
     if !exists
         return [1, 0, []]
     end
     result = []
     for (target_prime, source_prime, _complement) in representatives
-        is_target, _target_witness = is_isometric_with_isometry(
-            target_prime,
-            target;
-            ambient_representation = false,
-        )
-        if !is_target
-            continue
-        end
         inclusion = solve(
             basis_matrix(target_prime),
             basis_matrix(source_prime);
@@ -742,9 +1075,6 @@ function target_primitive_embedding_classes(
                 change_base_ring(ZZ, inclusion),
             ],
         )
-    end
-    if isempty(result)
-        return [1, 0, []]
     end
     return [1, 1, result]
 end
@@ -776,6 +1106,21 @@ class _OscarLatticeAdapter:
             julia.eval(_OSCAR_LATTICE_ADAPTER_SOURCE)
         return julia
 
+    def definite_minimum(self, gram):
+        r"""Return the positive minimum of a positive definite integral form."""
+        return SageZZ(self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.definite_minimum",
+            _integer_engine_matrix(gram),
+        ))
+
+    def square_shell(self, gram, square):
+        r"""Return one coordinate row per sign pair of nonzero square vectors."""
+        return self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.square_shell",
+            _integer_engine_matrix(gram),
+            SageZZ(int(square)),
+        )
+
     def rational_witt_index(self, gram):
         r"""Return the Witt index of the quadratic space ``(QQ^n, gram)``."""
         engine_gram = _rational_engine_matrix(gram)
@@ -788,6 +1133,40 @@ class _OscarLatticeAdapter:
         if not 0 <= 2 * index <= engine_gram.nrows():
             raise ArithmeticError(f"OSCAR computed Witt index {index} for the form {gram}, but a Witt index r satisfies 0 <= 2r <= the dimension")
         return index
+
+    def rational_witt_bases(self, lattice):
+        r"""Raise Hecke's two Witt-summand bases into the given QQ-lattice.
+
+        Private supplier to ``Lattices.witt_decomposition``. This extends
+        the same selected Hecke computation as ``rational_witt_index``;
+        it retains the computed basis instead of discarding it. In
+        Hecke ``src/QuadForm/Quad/Spaces.jl``,
+        ``_quadratic_form_decomposition`` returns the anisotropic,
+        hyperbolic and radical basis matrices; its
+        ``_find_hyperbolic_subspace`` normalizes each successive pair to
+        square zero and mutual pairing one. Each row is therefore an
+        actual summand-basis vector in the original quadratic space.
+        https://github.com/thofma/Hecke.jl/blob/master/src/QuadForm/Quad/Spaces.jl
+
+        No coordinate transpose or basis change is selected here. Rows
+        are only decoded as vectors in the supplied lattice. Empty
+        summands retain their empty finite basis family.
+        """
+        from dzack_research.preamble.categories.sets.finite_families import (
+            finite_family,
+        )
+
+        result = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.rational_witt_bases",
+            _rational_engine_matrix(lattice.gram_tensor()),
+        )
+        return tuple(
+            finite_family(
+                tuple(_raise_lattice_direction(lattice, row) for row in basis.rows()),
+                name="Witt summand basis",
+            )
+            for basis in result
+        )
 
     def number_field_spinor_norm_class(self, field, gram, isometry):
         r"""Return an untwisted spinor-norm representative over the absolute number field ``field``."""
@@ -876,6 +1255,14 @@ class _OscarLatticeAdapter:
         return target_gram, embedding
 
     def target_primitive_embedding(self, source_gram, target_gram):
+        r"""Use OSCAR's target-specific primitive embedding decision.
+
+        ``primitive_embeddings(target, source; check=true)`` filters the
+        genus representatives with ``is_isometric``, not the indefinite
+        isometry-witness routine. Only the Gram forms and inclusion are
+        returned here; the actual research Isom objects transport them
+        to the original endpoints when a witness is requested.
+        """
         result = self._bridge().call(
             "DzackResearchOscarLatticeAdapter.target_primitive_embedding",
             _integer_engine_matrix(source_gram),
@@ -916,6 +1303,13 @@ class _OscarLatticeAdapter:
         target_gram,
         classification,
     ):
+        r"""Return the maintained classification filtered to the actual target.
+
+        The lattice overload with ``check=true`` retains the original
+        classification mode while excluding other classes in its genus.
+        Filtering decides isometry; it need not construct a target
+        isometry at this private engine boundary.
+        """
         result = self._bridge().call(
             "DzackResearchOscarLatticeAdapter.target_primitive_embedding_classes",
             _integer_engine_matrix(source_gram),

@@ -32,8 +32,11 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     LocalRings,
     PrincipalIdealDomains,
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedRings,
     _engine_ring,
+    _linear_algebra_ring,
+    _linear_algebra_element,
     _enumerated_ring_elements,
     _owned_ring,
 )
@@ -102,12 +105,47 @@ def _integral_preimage_solver(morphism, ring):
     when ``t`` is not in the image: the Smith form ``D = U f V`` reduces
     the equation to ``d_i y_i = (U t)_i``, solvable exactly when each
     ``d_i`` divides its right-hand side, and then ``x = V y``.
+
+    Over an exact field, use maintained matrix rank and linear solving
+    directly. Equality of the coefficient and augmented ranks decides
+    consistency. No solver exception is interpreted as inconsistency;
+    undecided exact scalar operations propagate. Represented RR uses RR
+    coefficients during elimination, retaining its equality protocol.
     """
 
     from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
     assert ring in OwnedRings(), f"cannot solve a linear system integrally over {ring}: the coefficients must lie in a ring, but {ring} is not a ring"
     assert morphism.parent() in MatrixSpaces(ring), f"cannot solve f(x) = t integrally for f = {morphism} over {ring}: f must be a map of finite free {ring}-modules with chosen bases, but it lies in {morphism.parent()}"
+
+    if ring in OwnedFields() and ring.is_exact() is True:
+        from dzack_research.preamble.rings.real import RR
+
+        if ring is RR:
+            return _represented_real_preimage_solver(morphism)
+        from sage.modules.free_module_element import vector
+        from dzack_research.preamble.categories.modules.pure.modules import _engine_matrix
+
+        backend = _engine_matrix(morphism).change_ring(_linear_algebra_ring(ring))
+        field = backend.base_ring()
+        rank = backend.rank()
+        source_labels = tuple(morphism.domain().module_generating_set())
+
+        def solve_field(target):
+            values = tuple(ring(value) for value in target)
+            assert len(values) == backend.nrows(), (
+                "a linear-system target must have one coordinate per codomain basis vector"
+            )
+            right_hand_side = vector(field, tuple(_linear_algebra_element(ring, value) for value in values))
+            if backend.augment(right_hand_side).rank() != rank:
+                return None
+            solution = backend.solve_right(right_hand_side)
+            return morphism.domain().linear_combination({
+                label: _owned_engine_element(ring, coefficient)
+                for label, coefficient in zip(source_labels, solution, strict=True)
+            })
+
+        return solve_field
 
     smith_data = morphism.smith_form()
     smith = smith_data["diagonal"]
@@ -148,6 +186,50 @@ def _integral_preimage_solver(morphism, ring):
             {label: solution[position] for position, label in enumerate(right.domain().module_generating_set()) if solution[position]}
         )
         return right(normalized_solution)
+
+    return solve
+
+
+def _represented_real_preimage_solver(morphism):
+    r"""Solve a finite real linear system with only decided nonzero pivots.
+
+    Row operations retain owned real coefficients, including an undecided
+    zero coefficient in the right-hand side. An unresolved pivot or
+    consistency equation is a computational frontier, not nonmembership.
+    """
+    ring = morphism.domain().base_ring()
+    from dzack_research.preamble.categories.modules.pure.modules import _represented_real_rref
+
+    source_labels = tuple(morphism.domain().module_generating_set())
+    target_labels = tuple(morphism.codomain().module_generating_set())
+    coefficients = tuple(
+        tuple(morphism.matrix_entry(row, column) for column in source_labels)
+        for row in target_labels
+    )
+
+    def solve(target):
+        values = tuple(ring(value) for value in target)
+        assert len(values) == len(target_labels), (
+            "a linear-system target must have one coordinate per codomain basis vector"
+        )
+        rows, pivots = _represented_real_rref(
+            tuple(tuple(row) + (value,) for row, value in zip(coefficients, values, strict=True)),
+            len(source_labels),
+            ring,
+        )
+        for row in rows[len(pivots):]:
+            status = row[-1] == ring.zero()
+            assert status is True or status is False, (
+                "the real linear-system consistency equation is undecided"
+            )
+            if status is False:
+                return None
+        solution = [ring.zero()] * len(source_labels)
+        for row, column in enumerate(pivots):
+            solution[column] = rows[row][-1]
+        return morphism.domain().linear_combination(
+            dict(zip(source_labels, solution, strict=True))
+        )
 
     return solve
 
@@ -1391,7 +1473,7 @@ class ModuleMorphismMethods:
         computations instead use this explicit realization, retaining the
         original linear arrow as the construction premise. The selected
         source and target framings, hence the comparison, are fixed.
-        Callers are integral preimages, the module owner's engine-matrix
+        Callers are finite-free kernels, integral preimages, the module owner's engine-matrix
         lowering, and the tensor owner's coordinate, pullback and private
         row-action adapters.
         """
@@ -1413,6 +1495,40 @@ class ModuleMorphismMethods:
         have the same labels or vectors as those generators.  The represented
         solver retains the domain coordinates, including when the codomain
         is a restriction of scalars from a fraction field.
+
+        Over exact fields this uses rank and linear solving directly,
+        retaining RR comparisons during elimination.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.rings.real import RR
+            sage: V = RR ** 2
+            sage: e, f = V.module_generators()
+            sage: A = V.module_category().Mor(V, V)((RR.pi()*e, V.zero()))
+            sage: x = A.preimage(e)
+            sage: assert x.parent() is V and A(x) == e
+            sage: assert A.is_in_image(f) is False
+            sage: Z = RR ** 0
+            sage: z = Z.module_category().Mor(Z, V)(())
+            sage: assert z.preimage(V.zero()) == Z.zero()
+            sage: assert z.is_in_image(f) is False
+            sage: M = ZZ ** 1
+            sage: u = M.module_generators()[0]
+            sage: twice = M.module_category().Mor(M, M)((2*u,))
+            sage: assert twice.is_in_image(u) is False
+            sage: assert twice.preimage(2*u) == u
+            sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+            sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+            sage: from dzack_research.preamble.logic import Predicate
+            sage: Q = _owned_rationals()
+            sage: a = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n))
+            sage: t = RR.of_cauchy(a)
+            sage: B = V.module_category().Mor(V, V)((e, e + f))
+            sage: lifted = B.preimage((RR.one() + t)*e + f)
+            sage: assert lifted.parent() is V
+            sage: labels = tuple(V.module_generating_set())
+            sage: assert isinstance(lifted.to_vector()(labels[0]) == RR.zero(), Predicate)
+            sage: assert lifted.to_vector()(labels[1]) == RR.one()
         """
         self._require_established_linearity("preimage computation")
         domain = self.domain()
@@ -1433,6 +1549,20 @@ class ModuleMorphismMethods:
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""
         self._require_established_linearity("surjectivity")
+        ring = self.domain().base_ring()
+        if (
+            ring in OwnedFields()
+            and ring.is_exact() is True
+            and _has_finite_free_framing(self.domain())
+            and _has_finite_free_framing(self.codomain())
+        ):
+            # A linear map onto a finite free module is surjective exactly
+            # when every selected basis vector has a preimage. This uses the
+            # field's exact solver, including represented-real coefficients.
+            return all(
+                self._preimage_or_none(generator) is not None
+                for generator in self.codomain().module_generators()
+            )
         return self.cokernel().is_zero()
 
     def residue_morphism(self):
@@ -1590,10 +1720,13 @@ class ModuleMorphismMethods:
         solution = _solve_preimage_integrally(coordinate_map, target, ring)
         if solution is None:
             return None
-        return self.domain().linear_combination({label: coefficient for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True) if coefficient})
+        return self.domain().linear_combination({
+            label: coefficient
+            for label, coefficient in zip(self.domain().module_generating_set(), solution, strict=True)
+        })
 
     def lift(self, element):
-        r"""Return the unique preimage of ``element``; an element outside the image is rejected with ``ValueError``.
+        r"""Return a selected preimage of ``element``; reject an element outside the image with ``ValueError``.
 
         Along the codomain's own framing ``F(S) ->> M`` -- the augmentation of
         its chosen resolution, the identity when ``M`` is its own framing
@@ -1612,7 +1745,7 @@ class ModuleMorphismMethods:
         return preimage
 
     def is_in_image(self, element) -> bool:
-        r"""Return whether ``element`` has a preimage under this injective map."""
+        r"""Return whether ``element`` has a preimage under this linear map."""
         return self._preimage_or_none(element) is not None
 
     def has_selected_lift(self) -> bool:

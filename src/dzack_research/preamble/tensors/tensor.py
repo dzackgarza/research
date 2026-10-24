@@ -26,7 +26,7 @@ from functools import singledispatch
 from math import prod
 
 from sage.matrix.constructor import matrix as _sage_matrix
-from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.cachefunc import cache_key, cached_function, cached_method
 from sage.misc.latex import latex
 from sage.modules.free_module_element import vector as _sage_vector
 from sage.rings.infinity import Infinity
@@ -55,6 +55,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_numeral,
     _engine_ring,
+    _linear_algebra_ring,
+    _linear_algebra_element,
     _own_ring,
 )
 from dzack_research.preamble.categories.sets.cardinals import Cardinalities, cardinal
@@ -418,6 +420,21 @@ class Tensor:
         return hash(
             (self.tensor_valence(), self._index_ranks(), tuple(self._flat_components()))
         )
+
+    def _cache_key(self):
+        r"""Key a finite presentation even when its scalars are unhashable.
+
+        Sage's cache protocol recursively uses the scalar presentation
+        keys. It does not give the tensor a mathematical hash, decide
+        scalar equality, or identify distinct Cauchy presentations.
+        Infinite tensors already use identity equality and hashing.
+        """
+        if Infinity in self._index_ranks():
+            return self
+        return cache_key((
+            self.parent(), self.tensor_valence(), self._index_ranks(),
+            self._flat_components(),
+        ))
 
     def __eq__(self, other) -> bool:
         r"""Whether ``other`` is the same mathematical tensor.
@@ -996,7 +1013,9 @@ class Tensor:
         # The ubiquitous bilinear case is exactly A_1^t G A_2.  Use the
         # selected exact matrix backend only inside this boundary and cross
         # every entry back before constructing the owned tensor.
-        if q == 2:
+        from dzack_research.preamble.rings.real import RR
+
+        if q == 2 and ring is not RR:
             left, right = (
                 _engine_module_matrix(matrix).change_ring(_engine_ring(ring))
                 for matrix in matrices
@@ -1104,8 +1123,10 @@ def _engine_component_matrix(value):
 
     The owned operation -- a signature, an inverse Gram tensor, a pullback, a
     display -- is selected by the caller, and this is the one crossing of a
-    two-index tensor into Sage's matrix backend: it lowers the owned base ring
-    with ``_engine_ring`` and each component with ``_engine_element``.  The
+    two-index tensor into Sage's matrix backend: the shared generic
+    linear-algebra choice retains exact owned scalars when symbolic
+    serialization would lose their relations or presentation. Other
+    computation parents retain their ordinary engine conversion. The
     matrix it returns is engine data; callers cross results back into owned
     tensors before exposing them.
     """
@@ -1123,10 +1144,10 @@ def _engine_component_matrix(value):
     rows, columns = int(rows), int(columns)
     ring = value.base_ring()
     return _sage_matrix(
-        _engine_ring(ring),
+        _linear_algebra_ring(ring),
         rows,
         columns,
-        [_engine_element(ring, value[i, j]) for i in range(rows) for j in range(columns)],
+        [_linear_algebra_element(ring, value[i, j]) for i in range(rows) for j in range(columns)],
     )
 
 

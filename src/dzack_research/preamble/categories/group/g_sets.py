@@ -1355,16 +1355,13 @@ def _left_coset_g_set(group, subgroup):
             f"cannot form left cosets of {subgroup} in {group}: the subgroup lies in {subgroup.supergroup()}"
         )
     from dzack_research.preamble.categories.group.predicate_subgroups import (
-        KernelSubgroups,
-        PreimageSubgroups,
+        PredicateSubgroups,
     )
 
-    # A kernel or preimage along a map to a finite group is realized as the
-    # finite orbit of the target's coset, with its section, for finite and
-    # infinite G alike.
-    if (
-        subgroup in KernelSubgroups(group) or subgroup in PreimageSubgroups(group)
-    ) and subgroup.has_finite_coset_space():
+    # Kernels/preimages into finite groups, and intersections described by
+    # complete finite characters, retain a finite coset realization with
+    # its section for finite and infinite G alike.
+    if subgroup in PredicateSubgroups(group) and subgroup.has_finite_coset_space():
         return subgroup.coset_space()
     if group.is_finite() is not True:
         points = _LeftCosetPointSet(group, subgroup)

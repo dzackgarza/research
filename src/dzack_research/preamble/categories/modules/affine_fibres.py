@@ -146,6 +146,56 @@ class AffineModuleFibres(OwnedCategoryOverBaseRing):
         def point_set(self):
             return self._points
 
+        def _emptiness_decision(self):
+            r"""Decide finite-free affine feasibility by module-image membership.
+
+            For the datum c+A(p) in j(M), a point exists precisely when
+            -c lies in the image of (A,-j): P direct_sum M -> V.
+            Reuse the module owner's exact preimage solver over a PID.
+            Outside this finite-free route retain the emptiness proposition;
+            failure of a point-finding procedure never means empty.
+
+            EXAMPLES::
+
+                sage: P = ZZ ** 2
+                sage: A = P.Mor(ZZ)(lambda label: ZZ(2) if label == P.module_generating_set()[0] else ZZ(3))
+                sage: F = A.solution_fibre(ZZ(1))
+                sage: assert F.is_empty() is False
+                sage: assert A(F.base_point()) == ZZ(1)
+                sage: D = ZZ.Mor(ZZ)(lambda label: ZZ(2))
+                sage: assert D.solution_fibre(ZZ(1)).is_empty() is True
+                sage: assert D.solution_fibre(ZZ(0)).is_empty() is False
+            """
+            from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
+                _has_finite_free_framing,
+            )
+            from dzack_research.preamble.categories.rings.ring_foundation import PrincipalIdealDomains
+
+            ring = self.base_ring()
+            linear = self.linear_part()
+            target = self.target_inclusion()
+            if ring not in PrincipalIdealDomains():
+                return None
+            source, values = linear.domain(), linear.codomain()
+            if source in RestrictedScalarsModules(ring) and values in RestrictedScalarsModules(ring):
+                field = ring.fraction_field()
+                if source.extension_ring() is not field or values.extension_ring() is not field:
+                    return None
+                if not all(_has_finite_free_framing(module) for module in (
+                    source.module_over_extension(), values.module_over_extension(), target.domain()
+                )):
+                    return None
+                _rational_map, equation, rhs = self._fraction_field_lifting_equation()
+                return not equation.is_in_image(rhs)
+            if not all(
+                _has_finite_free_framing(module)
+                for module in (linear.domain(), target.domain(), linear.codomain())
+            ):
+                return None
+            product = Modules(ring).biproduct((linear.domain(), target.domain()))
+            difference = product.from_summands(linear, -target)
+            return not difference.is_in_image(-self.offset())
+
         def __contains__(self, point):
             return point in self.point_set()
 
@@ -217,17 +267,49 @@ class AffineModuleFibres(OwnedCategoryOverBaseRing):
             if self.image_translation_module().module_rank() == 0:
                 from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 
-                try:
-                    origin = self.base_point()
-                except ValueError:
-                    points = finite_ordered_set(())
-                else:
-                    points = finite_ordered_set((origin,))
+                match self.is_empty():
+                    case True:
+                        points = finite_ordered_set(())
+                    case False:
+                        points = finite_ordered_set((self.base_point(),))
+                    case _:
+                        raise NotImplementedError(
+                            f"cannot enumerate the constant affine image of {self}: emptiness remains undecided"
+                        )
                 evaluation = self.evaluation()
                 return Sets().Mor(points, evaluation.codomain())(
                     lambda point: evaluation(point)
                 ).image()
             return self.evaluation().image()
+
+        @cached_method
+        def _fraction_field_lifting_equation(self):
+            r"""The equation in the cokernel over the fraction field for mixed-scalar feasibility.
+
+            For p in a fraction-field vector space and m in the supplied
+            R-submodule, c+A(p)=j(m) is soluble precisely when the class
+            of c in coker(A) is in the image of m |-> class(j(m)).
+            Keep A as well, to recover p after solving that equation.
+            """
+            linear = self.linear_part()
+            target = self.target_inclusion()
+            ring = self.base_ring()
+            source, values = linear.domain(), linear.codomain()
+            field = ring.fraction_field()
+            if source.extension_ring() is not field or values.extension_ring() is not field:
+                raise NotImplementedError("affine point finding here requires restriction from the fraction field")
+            rational_source = source.module_over_extension()
+            rational_values = values.module_over_extension()
+            rational_map = Modules(field).Mor(rational_source, rational_values)._from_constructed_element_map(
+                lambda point: linear(source(point)).underlying_element()
+            )
+            quotient = rational_map.cokernel_projection()
+            restricted_quotient = quotient.codomain().restrict_scalars(source.ring_map())
+            integral_equation = Modules(ring).Mor(target.domain(), restricted_quotient)(
+                lambda label: restricted_quotient(quotient(target(target.domain().module_generator(label)).underlying_element()))
+            )
+            rhs = restricted_quotient(quotient(self.offset().underlying_element()))
+            return rational_map, integral_equation, rhs
 
         @cached_method
         def base_point(self):
@@ -243,22 +325,8 @@ class AffineModuleFibres(OwnedCategoryOverBaseRing):
             source = linear.domain()
             values = linear.codomain()
             if source in RestrictedScalarsModules(ring) and values in RestrictedScalarsModules(ring):
-                field = ring.fraction_field()
-                if source.extension_ring() is not field or values.extension_ring() is not field:
-                    raise NotImplementedError("affine point finding here requires restriction from the fraction field")
-                rational_source = source.module_over_extension()
-                rational_values = values.module_over_extension()
-                rational_map = Modules(field).Mor(rational_source, rational_values)._from_constructed_element_map(
-                    lambda point: linear(source(point)).underlying_element()
-                )
-                quotient = rational_map.cokernel_projection()
-                restricted_quotient = quotient.codomain().restrict_scalars(source.ring_map())
-                integral_equation = Modules(ring).Mor(target.domain(), restricted_quotient)(
-                    lambda label: restricted_quotient(quotient(target(target.domain().module_generator(label)).underlying_element()))
-                )
-                integral_value = integral_equation.preimage(
-                    restricted_quotient(quotient(self.offset().underlying_element()))
-                )
+                rational_map, integral_equation, rhs = self._fraction_field_lifting_equation()
+                integral_value = integral_equation.preimage(rhs)
                 residual = target(integral_value).underlying_element() - self.offset().underlying_element()
                 return self(source(rational_map.preimage(residual)))
             product = Modules(ring).biproduct((source, target.domain()))

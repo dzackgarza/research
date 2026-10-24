@@ -3,10 +3,10 @@ r"""Objects of a category with a chosen finite direct-sum decomposition.
 For a category ``C`` with finite biproducts, an object of ``DirectSumObjects(C)``
 is an object ``X`` of ``C`` together with a chosen indexed family of summands
 whose biproduct in ``C`` is ``X``.  The injections and projections of that
-decomposition are morphisms of ``C``, so the notion is relative to ``C``: an
-orthogonal decomposition of a lattice is a decomposition in ``Lattices(R)``,
-and the decomposition of its underlying module is its image in
-``Modules(R)``.  Forgetting the choice lands in ``C`` itself, which is the one
+decomposition are morphisms of ``C``, so the notion is relative to ``C``.
+An orthogonal sum of lattices retains such a decomposition of its underlying
+module in ``Modules(R)``; the module projections need not preserve the form.
+Forgetting the choice lands in ``C`` itself, which is the one
 declaration this construction makes.
 """
 

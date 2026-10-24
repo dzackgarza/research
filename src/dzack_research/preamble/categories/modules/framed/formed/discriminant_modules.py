@@ -20,6 +20,7 @@ from dzack_research.preamble.categories.modules.pure.modules import ModuleSubobj
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedRings,
     _engine_element,
     _engine_ring,
 )
@@ -35,6 +36,18 @@ from dzack_research.preamble.categories.sets.set_categories import Sets, finite_
 from dzack_research.preamble.tensors.tensor import _engine_quotient_form_family_contractions
 from dzack_research.preamble.owned_category import owned_category_join
 from dzack_research.preamble.logic import conjunction
+
+
+def _fraction_field_value(value):
+    r"""Read a scalar or a restricted scalar in its owned fraction field.
+
+    The metric dual can have a form valued in its base ring or in the
+    restriction of its fraction field. Only the latter value carries an
+    ``underlying_element`` map; both give classes in the same quotient.
+    """
+    if value.parent() in OwnedRings():
+        return value
+    return value.underlying_element()
 
 
 class DiscriminantModules(OwnedCategoryOverBaseRing):
@@ -189,14 +202,9 @@ class DiscriminantBilinearModules(OwnedCategoryOverBaseRing):
                 raise TypeError(
                     f"the discriminant form on {self} pairs two of its elements, but {left} or {right} is not in {self}"
                 )
-            dual = self.dual_lattice()
-            value = dual.b(self.dual_lattice_lift(left), self.dual_lattice_lift(right))
-            # An integral metric dual pairs directly in R.  Otherwise its
-            # values lie in Res(K), whose underlying K-element represents
-            # the class in K/R.
-            if dual.value_module() is self.base_ring():
-                return self.bilinear_value_module()(value)
-            return self.bilinear_value_module()(value.underlying_element())
+            # The metric dual pairs in R or Res(K); both map into K/R.
+            value = self.dual_lattice().b(self.dual_lattice_lift(left), self.dual_lattice_lift(right))
+            return self.bilinear_value_module()(_fraction_field_value(value))
 
         def orthogonal_subgroup(self, subgroup):
             r"""Return ``H^perp`` for a subgroup ``H <= A``."""
@@ -914,14 +922,13 @@ def _descended_bilinear_gram(dual_lattice, labels, bilinear_values):
     """
     return tuple(
         tuple(
-            bilinear_values(
-                # The pairing lies in Res(K), the field read as an R-module;
-                # K/R is a quotient of K, so its value in K is the one read.
+            bilinear_values(_fraction_field_value(
+                # The dual pairing can lie in R or Res(K); both map into K/R.
                 dual_lattice.b(
                     dual_lattice.module_generator(left),
                     dual_lattice.module_generator(right),
-                ).underlying_element()
-            )
+                )
+            ))
             for right in labels
         )
         for left in labels
@@ -940,17 +947,15 @@ def _descended_quadratic_gram(dual_lattice, labels, bilinear_values, quadratic_v
     return tuple(
         tuple(
             quadratic_values(
-                # The norm lies in Res(K), the field read as an R-module;
-                # K/2R is a quotient of K, so its value in K is the one read.
-                dual_lattice.norm(dual_lattice.module_generator(left)).underlying_element()
+                _fraction_field_value(dual_lattice.norm(dual_lattice.module_generator(left)))
                 if left == right
                 else bilinear_values.lift(
-                    bilinear_values(
+                    bilinear_values(_fraction_field_value(
                         dual_lattice.b(
                             dual_lattice.module_generator(left),
                             dual_lattice.module_generator(right),
-                        ).underlying_element()
-                    )
+                        )
+                    ))
                 )
             )
             for right in labels

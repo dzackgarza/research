@@ -197,3 +197,21 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 | `optional-sage-categories-property-layer` | [#556](https://github.com/dzackgarza/research/issues/556) |
 | `optional-database` | [#557](https://github.com/dzackgarza/research/issues/557) |
 | `optional-engine` | [#558](https://github.com/dzackgarza/research/issues/558) |
+
+## Computational requirements from the hyperbolic workstream
+
+### Terminal acceptance — [#498](https://github.com/dzackgarza/research/issues/498)
+
+The full hyperbolic dependency index is in
+[the theory note](docs/theory/hyperbolic-index.md#source-implementation-reconciliation).
+Its remaining mathematical specimens stay with `terminal-session`. Focused
+norm-fibre, Witt, scalar-extension, constrained-search, kernel,
+coordinate-retention, finite-sampling and maximal-splitting specimens have been executed;
+this does not close the broader terminal gate.
+
+
+  **Hyperbolic dependency specimens:** retain the full [dependency index and source reconciliation](docs/theory/hyperbolic-index.md#source-implementation-reconciliation), including norm-fibre choice and exclusions, anisotropy, Witt maps and inverse laws, changed-base formed arrows, complete constrained searches under their stated bounds, finite-support sampling, exact solving and kernel/span coordinate retention. The specimens are written at their operation owners and require final-revision execution. The main splitting methods consume the dependency constructions and require their own final-revision specimens.
+
+### Integral representation — [#505](https://github.com/dzackgarza/research/issues/505)
+
+  **Owner and remaining delta:** execute the new finite-classification route on the required mathematical specimens at T. Source now constructs a nonzero integral norm witness from `<n>.Emb(L).an_element()` and decides the remaining ternary `represents(n)` case through its emptiness decision. The general embedding operation exhausts all integral overlattices via the discriminant bilinear form, then uses the existing target-specific primitive classifier (or equal-rank integral Isom). Its saturation proof is in [the theory note](docs/theory/hyperbolic-index.md#general-integral-existence-through-integral-overlattices). This reuses maintained finite classification and the existing isometry transport; it is neither rational/local solvability used as a point nor an unbounded search. The former assertion for higher-rank witnesses and undecided ternary branch have source routes, not executed acceptance. The theory note now supplies Borovoi §2 and Example 0.1.1: Gram [[-9,1,0],[1,7,0],[0,0,2]] represents 1 everywhere locally but not integrally, and represents 2 at (0,0,1). Its genus also contains diag(-1,64,2), which represents 1; Eichler therefore gives more than one spinor genus. Execute the displayed decisions and original-lattice witnesses, including rejection of representation_vector(1); the cited proof supplies the expected answers, not a backend output. The earlier backend survey found no single maintained norm-witness operation; the new composition of existing overlattice, primitive-embedding and Isom computations supplies an independent route. The owner's ENG-06 prohibition on an unbounded witness search remains in force.

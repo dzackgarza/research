@@ -35,6 +35,7 @@ from dzack_research.preamble.categories.abstract_categories.cat import (
     NaturalTransformationMor,
     NaturalTransformationMorphism,
     _FunctorCategory,
+    _apex_isomorphism_in_subgroup,
 )
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
     CategoricalMor,
@@ -1290,6 +1291,23 @@ class CosliceCategory(_SubcategoryOfArrows):
         )
         apexes = self.base_category()._marked_automorphism_generators(self, core_mor.domain())
         return finite_ordered_set(tuple(self._core_isomorphism_from_apex(core_mor, apex) for apex in apexes))
+
+    def _core_isomorphism_in(self, core_mor, subgroup):
+        r"""An isomorphism in the coslice with apex in ``subgroup``, or ``None``.
+
+        Coslice automorphisms fix the source marking pointwise.  Their apex
+        images supply the stabilizer for the same finite-coset transporter
+        computation used by functor categories.
+        """
+        if core_mor.is_empty():
+            return None
+        witness = core_mor.an_element().forward().right()
+        apex = _apex_isomorphism_in_subgroup(
+            witness,
+            subgroup,
+            self.base_category()._marked_automorphism_generators(self, core_mor.domain()),
+        )
+        return None if apex is None else self._core_isomorphism_from_apex(core_mor, apex)
 
     def _repr_(self) -> str:
         return f"Coslice category {self.base_object()}/{self.base_category()}"

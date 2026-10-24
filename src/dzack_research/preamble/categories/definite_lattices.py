@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from functools import cache
+from itertools import product
+from typing import TYPE_CHECKING
 
 from sage.libs.pari import pari
 from sage.matrix.constructor import matrix as engine_matrix
@@ -34,6 +36,10 @@ from dzack_research.preamble.categories.sets.indexed_families import (
 )
 from dzack_research.preamble.rings.real import RR, _owned_real_from_engine_expression
 from dzack_research.preamble.tensors.tensor import _engine_component_matrix, tensor
+
+if TYPE_CHECKING:
+    from sage.structure.element import RingElement
+    from dzack_research.preamble.categories.lattices import Lattices
 
 
 def _definite_sign(lattice):
@@ -256,44 +262,76 @@ def _minimum(lattice):
         f"over ZZ, but {lattice} is over {lattice.base_ring()}"
     )
     sign, positive_gram = _positive_gram(lattice)
-    engine_gram = _engine_component_matrix(positive_gram)
-    lower = SageZZ.zero()
-    upper = min(engine_gram.diagonal())
-    pari_gram = engine_gram.__pari__()
-    while lower + 1 < upper:
-        bound = (lower + upper) // 2
-        count = SageZZ(pari_gram.qfminim(bound, 0)[0])
-        if count:
-            upper = bound
-        else:
-            lower = bound
+    if positive_gram.tensor_shape()[0] == 0:
+        raise ValueError("the zero lattice has no nonzero vector and no minimum")
+    from dzack_research.preamble.categories.lattice_engines import _oscar_lattices
+
     minimum_value = _owned_engine_element(
         lattice.base_ring(),
-        upper,
+        _oscar_lattices.definite_minimum(positive_gram),
     )
     return sign * minimum_value
 
 
 def _square_shell(positive_gram, target, reflective):
-    r"""The coordinate vectors ``v`` with ``v^T G v = target``, optionally only the reflective ones.
+    r"""All vectors of the positive definite integral square shell.
 
-    ``G`` is the positive definite Gram tensor.  PARI's ``forqfvec`` runs the
-    Fincke--Pohst enumeration of ``v^T G v <= target`` (User's Guide to PARI/GP,
-    ``forqfvec``) and ``_square_shell.gp`` retains ``v`` and ``-v`` for each
-    vector of the shell, so the order is that of ``qfminim``.  When
-    ``reflective`` is true it retains only the vectors whose reflection
-    ``w - 2 b(v,w)/b(v,v) v`` is integral, which holds exactly when ``target``
-    divides every entry of ``2 G v``.  Only the retained vectors are stored,
-    never the whole ball that ``qfminim`` returns.  The bound is a small
-    norm, far below the floating-point limit that TRAPS.md, "PARI forqfvec
-    imposes a fixed floating-point bound", records.
+    The inverse-Gram Cauchy--Schwarz bound gives a complete coordinate box.
+    Exhaust it directly when it has at most 10,000 candidates, avoiding a
+    Julia startup for small shells. Larger boxes use the maintained Hecke
+    enumeration below.
+
+    Hecke's inclusive ``short_vectors(L, target, target)`` enumerates one
+    vector per sign pair, using rational pseudo-Cholesky enumeration after
+    Gram LLL reduction, and transports coordinates to the original basis.
+    Restore both signs here. For a reflective vector, ``target`` divides
+    every entry of ``2 G v``. Zero and negative squares are handled by the
+    caller before this nonzero shell computation.
     """
-    from pathlib import Path
-
     form = _engine_component_matrix(positive_gram).change_ring(SageZZ)
-    source = Path(__file__).with_name("_square_shell.gp").read_text()
-    shell = pari(source)(pari(form), int(target), int(reflective))
-    return tuple(engine_vector(SageZZ, [int(entry) for entry in column]) for column in shell)
+    rank = form.nrows()
+    inverse = form.change_ring(SageQQ).inverse()
+    engine_target = SageZZ(_engine_element(target.parent(), target))
+    squared_bound = SageQQ(engine_target) * max(inverse.diagonal())
+    bound = int(squared_bound.floor().isqrt())
+    if (2 * bound + 1) ** rank <= 10000:
+        shell = []
+        for coordinates in product(range(-bound, bound + 1), repeat=rank):
+            vector = engine_vector(SageZZ, coordinates)
+            if vector * form * vector != engine_target:
+                continue
+            if reflective and any(entry % engine_target for entry in 2 * form * vector):
+                continue
+            shell.append(vector)
+        return tuple(shell)
+
+    from dzack_research.preamble.categories.lattice_engines import _oscar_lattices
+
+    representatives = _oscar_lattices.square_shell(positive_gram, target)
+    shell = []
+    for row in representatives.rows():
+        vector = engine_vector(SageZZ, row)
+        if reflective and any(entry % target for entry in 2 * form * vector):
+            continue
+        shell.extend((vector, -vector))
+    return tuple(shell)
+
+
+def _square_coordinate_bound(
+    lattice: Lattices.ParentMethods, square: RingElement
+) -> RingElement:
+    r"""Evaluate the inverse-Gram Cauchy--Schwarz bound using exact rationals."""
+    ring = lattice.base_ring()
+    if lattice.module_rank() == 0:
+        return ring.zero()
+    sign, positive_gram = _positive_gram(lattice)
+    target = sign * square
+    if target <= ring.zero():
+        return ring.zero()
+    inverse = _engine_component_matrix(positive_gram).change_ring(SageQQ).inverse()
+    squared_bound = SageQQ(_engine_element(ring, target)) * max(inverse.diagonal())
+    bound = squared_bound.floor().isqrt()
+    return _owned_engine_element(ring, bound)
 
 
 def _vectors_of_square(lattice, square):

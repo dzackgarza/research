@@ -88,6 +88,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedCategoryOverBaseRing,
+    OwnedFields,
     OwnedIntegralDomains,
     OwnedRings,
     _engine_element,
@@ -449,6 +450,69 @@ class FormedModuleMorphism:
 
     def map_value(self, value):
         return _mapped_value(self.domain(), self.codomain(), self.value_morphism(), value)
+
+    def base_change(self, ring_map: Morphism | CategoricalArrow) -> "FormedModuleMorphism":
+        r"""Extend both the module map and the value map along ``R -> S``.
+
+        A formed morphism is a pair ``(f,h)`` satisfying the form square.
+        Tensoring that square extends both components, as in
+        ``Lattices/Valued/BaseChange.lean:baseChangeBilWForm``. The existing
+        object construction currently computes scalar-valued forms. For
+        these, the value map is multiplication by ``h(1)``, so its extension
+        is multiplication by the image of ``h(1)`` in S. The result retains
+        the literal scalar-extended endpoints and the module component's
+        original map and scalar-extension functor.
+
+        The result is a formed morphism. Tensoring need not preserve an
+        embedding: a nonflat scalar change can destroy injectivity. The
+        isometry specialization separately transports its inverse pair.
+        Value-module extensions outside the existing object computation
+        remain unsupported; they are not replaced by scalar values.
+
+        EXAMPLES::
+
+            sage: L = Lattices(ZZ)([[1]])
+            sage: values = ZZ.regular_module()
+            sage: f = L.module_category().Mor(L, L)(lambda label: 2*L.module_generator(label))
+            sage: h = values.module_category().Mor(values, values)(lambda label: 4*values.module_generator(label))
+            sage: a = FormModules(ZZ).Mor(L, L)((f, h))
+            sage: scalar_map = ZZ.fraction_field_map()
+            sage: b = a.base_change(scalar_map)
+            sage: V = L.base_change(scalar_map)
+            sage: assert b.domain() is V and b.codomain() is V
+            sage: assert b.map_value(QQ(1)) == QQ(4)
+            sage: assert b.module_morphism().scalar_extension_of() is a.module_morphism()
+            sage: assert b.preserves_forms() is True
+            sage: assert (a*a).base_change(scalar_map) == b*b
+            sage: S = ZZ.quotient_ring(ZZ.ideal(2))
+            sage: T = Lattices(ZZ)([[4]])
+            sage: j = T.Emb(L)((2*L.module_generators()[0],))
+            sage: reduced = j.base_change(S.quotient_map())
+            sage: assert reduced.map_value(S.one()) == S.one()
+            sage: assert reduced.is_injective() is False
+            sage: assert reduced.preserves_forms() is True
+        """
+        source, target = self.domain(), self.codomain()
+        ring = source.base_ring()
+        if target.base_ring() is not ring or ring_map.domain() is not ring:
+            raise ValueError(
+                "a formed morphism is extended along a map out of its common scalar ring"
+            )
+        if ring_map.is_identity() is True:
+            return self
+        extension = Modules(ring).scalar_extension(ring_map)
+        changed_source, changed_target = extension(source), extension(target)
+        module_map = extension(self.module_morphism())
+        multiplier = _base_change_scalar(
+            ring_map, self.map_value(ring.one())
+        )
+        values = _represented_value_module(changed_source)
+        value_map = values.module_category().Mor(values, values)(
+            lambda label: values.scalar_multiple(multiplier, values.module_generator(label))
+        )
+        return FormModules(ring_map.codomain()).Mor(changed_source, changed_target)(
+            (module_map, value_map)
+        )
 
     def is_injective(self) -> bool:
         r"""Return injectivity of the retained underlying-module component."""
@@ -1372,6 +1436,19 @@ class PairedModules(OwnedParameterizedCategory):
             )
 
 
+def _base_changed_scalar_gram(source, ring_map):
+    r"""Map a finite scalar Gram along the selected map, including noncanonical maps."""
+    rank = int(source.module_rank())
+    gram = source.gram_tensor()
+    return tensor(
+        ring_map.codomain(), (), (rank, rank),
+        (
+            _base_change_scalar(ring_map, gram[i, j])
+            for i in range(rank) for j in range(rank)
+        ),
+    )
+
+
 @cached_function(key=lambda source, ring_map: (id(source), id(ring_map)))
 def _formed_module_base_change(self, ring_map):
     r"""Base-change a scalar-valued finite free form along ``R -> S``."""
@@ -1391,24 +1468,41 @@ def _formed_module_base_change(self, ring_map):
 
         categories = [FormBaseChanges(target_ring)]
         data = dict(base_change_source=source, base_change_ring_map=ring_map)
+        if _has_finite_framing(form.module()):
+            if source in FormModules(source.base_ring()).Unimodular():
+                # In a finite basis the determinant is a unit, and its
+                # image under every unital ring map remains a unit.
+                categories.append(FormModules(target_ring).Unimodular())
+            elif (source in FormModules(source.base_ring()).Nondegenerate()
+                    and target_ring in OwnedIntegralDomains()
+                    and _base_change_scalar(ring_map, source.determinant())
+                    != target_ring.zero()):
+                # Over a domain, the nonzero image of this finite Gram
+                # determinant is the exact target nondegeneracy witness.
+                categories.append(FormModules(target_ring).Nondegenerate())
         if source in BilinearFormModules(source.base_ring()).Symmetric():
             categories.append(BilinearFormModules(target_ring).Symmetric())
         if source in Lattices(source.base_ring()):
             categories.append(Lattices(target_ring))
             data["gram_tensor"] = (
-                changed_form.gram_tensor() if source.module_rank().is_finite()
+                _base_changed_scalar_gram(source, ring_map)
+                if source.module_rank().is_finite()
                 else _BaseChangedGram(changed, source.gram_tensor(), ring_map, changed_form)
             )
         return _form_module(changed_form, _extra_categories=categories, _extra_construction_data=data)
 
     if _is_bilinear_form(form):
+        target_values = _represented_module(target_ring, target_ring)
         if _has_finite_framing(form.module()):
             changed_values = form.coordinate_values().map(
-                lambda value: _base_change_scalar(ring_map, value),
+                lambda value: _as_module_element(
+                    target_ring, target_ring,
+                    _base_change_scalar(ring_map, _value_from_module_element(source, value)),
+                ),
                 name="Base-changed bilinear coordinate values",
             )
             return equip(
-                changed.bilinear_forms(target_ring)(changed_values)
+                changed.bilinear_forms(target_values)(changed_values)
             )
 
         def changed_bilinear_value(left, right):
@@ -1424,13 +1518,15 @@ def _formed_module_base_change(self, ring_map):
                         * right_coordinates(right_label)
                         * _base_change_scalar(
                             ring_map,
-                            form(source_left, source_right),
+                            _value_from_module_element(
+                                source, form(source_left, source_right)
+                            ),
                         )
                     )
-            return result
+            return _as_module_element(target_ring, target_ring, result)
 
         return equip(
-            changed.bilinear_forms(target_ring)(changed_bilinear_value)
+            changed.bilinear_forms(target_values)(changed_bilinear_value)
         )
 
     if not _is_quadratic_form(form):
@@ -1440,13 +1536,17 @@ def _formed_module_base_change(self, ring_map):
         )
 
     source_form = self.form()
+    target_values = _represented_module(target_ring, target_ring)
     if source_form.has_selected_bilinear_lift():
         changed_lift_values = source_form.lift_coordinate_values().map(
-            lambda value: _base_change_scalar(ring_map, value),
+            lambda value: _as_module_element(
+                target_ring, target_ring,
+                _base_change_scalar(ring_map, _value_from_module_element(source, value)),
+            ),
             name="Base-changed quadratic-lift coordinate values",
         )
         return equip(
-            changed.quadratic_forms(target_ring)(changed_lift_values)
+            changed.quadratic_forms(target_values)(changed_lift_values)
         )
 
     def changed_quadratic_value(element):
@@ -1456,7 +1556,9 @@ def _formed_module_base_change(self, ring_map):
             source_left = form.module().module_generator(left_label)
             result += (
                 coordinates(left_label)**2
-                * _base_change_scalar(ring_map, form(source_left))
+                * _base_change_scalar(
+                    ring_map, _value_from_module_element(source, form(source_left))
+                )
             )
             left_rank = source_labels.ranking_map()(left_label)
             for right_label in coordinates.support().domain():
@@ -1468,13 +1570,15 @@ def _formed_module_base_change(self, ring_map):
                     * coordinates(right_label)
                     * _base_change_scalar(
                         ring_map,
-                        form.b(source_left, source_right),
+                        _value_from_module_element(
+                            source, form.b(source_left, source_right)
+                        ),
                     )
                 )
-        return target_ring(result)
+        return _as_module_element(target_ring, target_ring, result)
 
     return equip(
-        changed.quadratic_map(target_ring, changed_quadratic_value)
+        changed.quadratic_map(target_values, changed_quadratic_value)
     )
 
 
@@ -1744,7 +1848,7 @@ class FormModules(OwnedCategoryOverBaseRing):
                     self.value_module(),
                     lambda element: form(module(element)),
                 )
-            return self.bilinear_forms(self.value_module())(
+            return self.bilinear_forms(form.codomain())(
                 lambda left, right: form(module(left), module(right))
             )
 
@@ -1887,18 +1991,63 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the selected quadratic/norm value of ``element``."""
             return self.norm(element)
 
+        def is_isotropic(self) -> bool | Predicate:
+            r"""Whether the selected norm vanishes at a nonzero element.
+
+            This is the negation of anisotropy in
+            ``LeanCategories/Modules/Bilinear/Valued/Witt.lean``,
+            ``BilinModuleCat.IsAnisotropic``, applied to the selected norm.
+            The nonzero zero-fibre defines the question without a framing,
+            a countability hypothesis, or an enumeration. A specialized
+            formed module may decide it; otherwise the set owner retains
+            the undecided emptiness proposition.
+            """
+            zero = self.zero()
+            null_vectors = self.elements_of_norm(self.value_module().zero())
+            return negation(
+                null_vectors.condition_set(lambda vector: vector != zero).is_empty()
+            )
+
+        def is_anisotropic(self) -> bool | Predicate:
+            r"""Whether zero is the only element of selected norm zero.
+
+            This complements the same isotropy question, including any
+            exact specialized decision, rather than interpreting a search
+            that has not found a vector as a proof of anisotropy. An
+            undecided isotropy proposition stays a proposition.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: assert U.is_anisotropic() is False
+                sage: A = Lattices(ZZ)([[1, 0], [0, -2]])
+                sage: assert A.is_anisotropic() is True
+                sage: assert (U + U).is_anisotropic() is False
+            """
+            return negation(self.is_isotropic())
+
         def vector_of_sign(self, sign):
             r"""Return a vector whose selected norm has sign ``-1`` or ``1``, or ``None``.
 
             The vector belongs to this formed module. For a represented
-            submodule its inclusion supplies the ambient vector. Rational
-            diagonalization supplies the computation over ``QQ`` and
-            ``ZZ`` with a finite framing and rational scalar form values;
-            the integral result is primitive. A bilinear form uses its
+            submodule its inclusion supplies the ambient vector. Exact
+            diagonalization supplies the computation over ``QQ``, ``ZZ``
+            and ``AA`` with a finite framing and scalar form values;
+            the integral result is primitive. For a lattice over represented
+            exact ``RR``, its retained diagonalization and decided signs
+            supply a normalized witness of square +1 or -1. A bilinear form uses its
             diagonal function, and a quadratic form retains its own norm.
 
             EXAMPLES::
 
+                sage: V = Lattices(AA)([[1, 0], [0, -2]])
+                sage: p, n = V.positive_vector(), V.negative_vector()
+                sage: p.parent() is V and n.parent() is V
+                True
+                sage: p.q() > AA(0) and n.q() < AA(0)
+                True
+                sage: Lattices(AA)([[1]]).negative_vector() is None
+                True
                 sage: U = Lattices(ZZ)("U")
                 sage: S = U.subobject_on((U.basis_vector(0) - U.basis_vector(1),))
                 sage: v = S.vector_of_sign(-1)
@@ -1992,13 +2141,106 @@ class FormModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def square_fibre(self, square):
-            r"""The fibre of the selected norm ``v |-> q(v)`` at ``square``."""
+            r"""The fibre of the selected norm ``v |-> q(v)`` at ``square``.
+
+            When the supplied value is decided zero, retain the module's
+            zero as a point of this fibre. The identity q(0)=0 provides
+            this point without searching or enumerating the module.
+            """
             values = self.value_module()
             square = values(square)
-            return OwnedSets().equalizer_construction(
+            fibre = OwnedSets().equalizer_construction(
                 OwnedSets().Mor(self, values)(lambda vector: self.norm(vector)),
                 OwnedSets().Mor(self, values)(lambda vector: square),
             )
+            if (square == values.zero()) is True:
+                fibre.object()(self.zero())
+            else:
+                from dzack_research.preamble.categories.lattices import Lattices
+                from dzack_research.preamble.categories.rings.ring_foundation import (
+                    _owned_rationals, _owned_real_algebraic_numbers,
+                )
+                from dzack_research.preamble.rings.real import RR
+
+                ring = self.base_ring()
+                if (self in Lattices(ring) and values is ring
+                        and ring in (_owned_integers(), _owned_rationals(), _owned_real_algebraic_numbers(), RR)
+                        and self.module_rank().is_finite()
+                        and int(self.module_rank()) > 0
+                        and self in FormModules(ring).Nondegenerate()):
+                    locus = fibre.object()
+                    def point():
+                        # The solver supplies a solution of this exact
+                        # equation; admission retains that actual point
+                        # without trying to decide its scalar equation again.
+                        return self.representation_vector(square)
+
+                    locus._retain_point_computation(point)
+            return fibre
+
+        def elements_of_norm(self, value):
+            r"""Return the full norm fibre as a set with its inclusion.
+
+            Unlike ``square_fibre``, which returns the selected equalizer
+            construction, this returns its object. The fibre includes zero
+            when ``value`` is zero and exists over uncountable rings as
+            well as countable ones. Its ability to enumerate points is
+            supplied by the underlying set construction, not inferred from
+            the norm equation. Values lie in ``value_module()``, including
+            quotient-valued forms.
+
+            EXAMPLES::
+
+                sage: U = Lattices(ZZ)("U")
+                sage: null_vectors = U.elements_of_norm(ZZ.zero())
+                sage: e, f = U.basis_vector(0), U.basis_vector(1)
+                sage: assert null_vectors.inclusion()(null_vectors(e)) == e
+                sage: assert U.zero() in null_vectors
+                sage: assert null_vectors.is_parent_of(e + f) is False
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: V = Lattices(RR)([[1]])
+                sage: null_vectors = V.elements_of_norm(RR.zero())
+                sage: assert null_vectors.an_element() == V.zero()
+                sage: assert null_vectors.inclusion()(null_vectors.an_element()) == V.zero()
+                sage: assert null_vectors.is_empty() is False
+                sage: assert V.square_fibre(RR.zero()).object() is null_vectors
+                sage: F = V.elements_of_norm(RR.pi())
+                sage: point = F(V.representation_vector(RR.pi()))
+                sage: assert F.an_element() == point
+                sage: assert V.q(F.inclusion()(F.an_element())) == RR.pi()
+                sage: W = Lattices(RR).Nondegenerate()([[1]])
+                sage: fresh = W.elements_of_norm(RR(3))
+                sage: point = fresh.an_element()
+                sage: assert point.parent() is W
+                sage: assert W.q(fresh.inclusion()(point)) == RR(3)
+                sage: assert fresh.is_empty() is False
+                sage: assert fresh.an_element() is point
+                sage: excluded = W.elements_of_norm(RR(-1))
+                sage: excluded.an_element()  # doctest: +ELLIPSIS
+                Traceback (most recent call last):
+                ...
+                ValueError: ... does not represent -1
+                sage: from dzack_research.preamble.logic import Predicate
+                sage: assert isinstance(excluded.is_empty(), Predicate)
+                sage: Z = Lattices(RR).Nondegenerate()(0)
+                sage: empty = Z.square_fibre(RR.one()).object()
+                sage: assert empty.inclusion().codomain() is Z
+                sage: assert empty.is_parent_of(Z.zero()) is False
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_integers
+                sage: ZZ = _owned_integers()
+                sage: P = Lattices(ZZ).Nondegenerate()([[1, 0], [0, -2]])
+                sage: shell = P.elements_of_norm(ZZ(4))
+                sage: v = shell.an_element()
+                sage: assert v.parent() is P and P.q(v) == ZZ(4)
+                sage: assert shell.inclusion()(v) == v
+                sage: assert shell.an_element() is v
+                sage: absent = P.elements_of_norm(ZZ(3))
+                sage: absent.an_element()  # doctest: +ELLIPSIS
+                Traceback (most recent call last):
+                ...
+                ValueError: ... does not represent 3
+            """
+            return self.square_fibre(value).object()
 
         def square_fibre_action(self, square, *, orbit_relation=None):
             r"""The identity-value isometry action on the complete norm fibre."""
@@ -2047,16 +2289,36 @@ class FormModules(OwnedCategoryOverBaseRing):
             r"""Return the represented quadratic/norm value of this element."""
             return self.parent().norm(self)
 
-        def is_isotropic(self) -> bool:
-            r"""Return whether this element has zero represented norm."""
-            return bool(self.q() == self.parent().value_module().zero())
+        def is_isotropic(self) -> bool | Predicate:
+            r"""Return the zero-norm equation, retaining undecided predicates.
 
-        def is_orthogonal_to(self, other) -> bool:
-            r"""Return whether the polar/bilinear value ``b(self, other)`` is zero."""
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                sage: from dzack_research.preamble.logic import Predicate
+                sage: QQ = _owned_rationals()
+                sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1)/QQ(2)**int(n))
+                sage: z = RR.of_cauchy(a)
+                sage: V = Lattices(RR)([[z]])
+                sage: v = V.module_generators()[0]
+                sage: assert isinstance(v.is_isotropic(), Predicate)
+                sage: assert isinstance(v.is_orthogonal_to(v), Predicate)
+                sage: assert isinstance(v.represents(RR.zero()), Predicate)
+                sage: assert isinstance(V.is_unimodular(), Predicate)
+                sage: U = Lattices(QQ)("U")
+                sage: assert U.module_generators()[0].is_isotropic() is True
+            """
+            return self.q() == self.parent().value_module().zero()
+
+        def is_orthogonal_to(self, other) -> bool | Predicate:
+            r"""Return the polar/bilinear zero equation, possibly undecided."""
             pairing = self.b(other)
-            return bool(pairing == pairing.parent().zero())
+            return pairing == pairing.parent().zero()
 
-        def represents(self, value) -> bool:
+        def represents(self, value) -> bool | Predicate:
             r"""Return whether this element has represented norm ``value``.
 
             This is the elementwise statement ``q(self)=value``.  It does not
@@ -2064,7 +2326,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             module represents a selected value.
             """
             parent = self.parent()
-            return bool(self.q() == parent.value_module()(value))
+            return self.q() == parent.value_module()(value)
 
     class SubcategoryMethods:
         def Nondegenerate(self):
@@ -2547,16 +2809,6 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
             return BilinearFormModules(self.base_ring()).an_object()
 
         class ParentMethods:
-            @cached_method
-            def square_fibre(self, square):
-                r"""The fibre of ``v |-> b(v,v)``, retaining its defining maps."""
-                values = self.value_module()
-                square = values(square)
-                return OwnedSets().equalizer_construction(
-                    OwnedSets().Mor(self, values)(lambda vector: self.b(vector, vector)),
-                    OwnedSets().Mor(self, values)(lambda vector: square),
-                )
-
             def square_fibre_action(self, square, *, orbit_relation=None):
                 r"""The orthogonal action on the complete square fibre."""
                 from dzack_research.preamble.categories.group.g_objects import GObjects
@@ -2571,9 +2823,9 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 r"""Return a vector of square sign ``-1`` or ``1``, or ``None``.
 
                 The vector belongs to this formed module. For a represented
-                submodule its inclusion supplies the ambient vector. Rational
-                diagonalization supplies the computation over ``QQ`` and
-                ``ZZ``; the integral result is primitive.
+                submodule its inclusion supplies the ambient vector. Exact
+                diagonalization supplies the computation over ``QQ``, ``ZZ``
+                and ``AA``; the integral result is primitive.
 
                 EXAMPLES::
 
@@ -2610,7 +2862,37 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                 return self.vector_of_sign(-1)
 
             def signature_pair(self):
-                r"""Return the Sylvester inertia pair of a finite symmetric form."""
+                r"""Return the Sylvester inertia pair of a finite symmetric form.
+
+                Nondegenerate represented-real forms use Arb enclosures and
+                an exact rational inverse-norm stopping test. This needs
+                convergent enclosures of the closed scalar expressions;
+                it does not decide singularity or return a basis.
+
+                EXAMPLES::
+
+                    sage: V = Lattices(RR).Nondegenerate()([[0, RR.pi()], [RR.pi(), 0]])
+                    sage: assert V.signature_pair().first() == cardinal(1)
+                    sage: assert V.signature_pair().second() == cardinal(1)
+                    sage: a = RR.pi()
+                    sage: P = Lattices(RR).Nondegenerate()([[1, a], [a, a*a + RR(2)**(-512)]])
+                    sage: assert P.signature_pair().first() == cardinal(2)
+                    sage: assert P.signature_pair().second() == cardinal(0)
+                    sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                    sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                    sage: Q = _owned_rationals()
+                    sage: a = Sets().Mor(NN, Q)(lambda n: Q(1) + Q(1)/Q(2)**int(n))
+                    sage: x = RR.of_cauchy(a)
+                    sage: C = Lattices(RR).Nondegenerate()([[x, 0], [0, -1]])
+                    sage: assert C.signature_pair().first() == cardinal(1)
+                    sage: assert C.signature_pair().second() == cardinal(1)
+                    sage: E = Lattices(RR).Nondegenerate()(0)
+                    sage: assert E.signature_pair().first() == cardinal(0)
+                    sage: assert E.signature_pair().second() == cardinal(0)
+                    sage: S = Lattices(RR)([[1, 0], [0, 0]])
+                    sage: assert S.signature_pair().first() == cardinal(1)
+                    sage: assert S.signature_pair().second() == cardinal(0)
+                """
                 assert self.module_rank().is_finite(), (
                     f"the signature of {self} is computed here only at finite rank, "
                     f"but it has rank {self.module_rank()}"
@@ -2623,9 +2905,14 @@ class BilinearFormModules(OwnedCategoryOverBaseRing):
                     f"but its values lie in {self.value_module()}"
                 )
                 from dzack_research.preamble.categories._lattice import (
+                    _nonsingular_real_signature,
                     _signature_pair_of_gram,
                 )
+                from dzack_research.preamble.rings.real import RR
 
+                if (self.base_ring() is RR
+                        and self in FormModules(RR).Nondegenerate()):
+                    return _nonsingular_real_signature(numerical)
                 return _signature_pair_of_gram(numerical)
 
             def signature(self):
@@ -3352,14 +3639,30 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             injective = self in FormModules(self.base_ring()).Nondegenerate()
             return _algebraic_correlation_morphism(self, injective=injective)
 
-        def is_unimodular(self) -> bool:
+        def is_unimodular(self) -> bool | Predicate:
             r"""Return whether the algebraic correlation is an isomorphism.
 
             On a finite free module over a commutative ring, its selected
             matrix is the Gram tensor, and the correlation is invertible
             exactly when the Gram determinant is a unit.  No correlation
             morphism or dual-module presentation needs constructing.
+            A supplied unimodular placement is used before asking the
+            determinant computation, as at the general form owner.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.categories.lattices import Lattices
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                sage: Q = _owned_rationals()
+                sage: a = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**8192 + Q(1)/Q(2)**int(n))
+                sage: x = RR.of_cauchy(a)
+                sage: L = Lattices(RR).Unimodular()([[x]])
+                sage: assert L.is_unimodular() is True
             """
+            if self.category().is_subcategory(FormModules(self.base_ring()).Unimodular()):
+                return True
             return self._unimodularity_decision()
 
         @cached_method
@@ -3370,7 +3673,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 and self.value_module() is ring
                 and ring in OwnedRings().Commutative()
             ):
-                return bool(self.determinant().is_unit())
+                return self.determinant().is_unit()
             correlation = _algebraic_correlation_morphism(
                 self, injective=False
             )
@@ -3474,6 +3777,21 @@ class FormBaseChanges(OwnedCategoryOverBaseRing):
             self._base_change_ring_map = base_change_ring_map
             super().__init__(**rest)
 
+        def _pairing_value_module(self):
+            return self.base_ring()
+
+        def b(self, left, right):
+            return _value_from_module_element(self, super().b(left, right))
+
+        def norm(self, element):
+            return _value_from_module_element(self, super().norm(element))
+
+        def gram_tensor(self):
+            source = self.base_change_source()
+            if source.module_rank().is_finite() and _is_bilinear_form(self.form()):
+                return _base_changed_scalar_gram(source, self.base_change_ring_map())
+            return super().gram_tensor()
+
         def base_change_source(self):
             return self._base_change_source
 
@@ -3487,7 +3805,28 @@ class FormBaseChanges(OwnedCategoryOverBaseRing):
 
 
 class FormValueScalings(OwnedCategoryOverBaseRing):
-    r"""Scalar changes of a form's values, normalized under composition."""
+    r"""Scalar changes of a form's values, normalized under composition.
+
+    Unit simplification and property preservation require explicit true
+    scalar decisions. An unknown equality or unit predicate does not
+    prevent forming the scaled bilinear or quadratic map.
+
+    EXAMPLES::
+
+        sage: from dzack_research.preamble.categories.lattices import Lattices
+        sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+        sage: from dzack_research.preamble.rings.real import RR
+        sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+        sage: QQ = _owned_rationals()
+        sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1)/QQ(2)**int(n))
+        sage: z = RR.of_cauchy(a)
+        sage: U = Lattices(RR)("U")
+        sage: scaled = U.twist(z)
+        sage: assert scaled.unscaled_form_module() is U
+        sage: assert scaled.form_scale() is z
+        sage: assert scaled.base_ring() is RR
+        sage: assert U.twist(RR.one()) is U
+    """
 
     def super_categories(self):
         return [FormModules(self.base_ring())]
@@ -3500,7 +3839,7 @@ class FormValueScalings(OwnedCategoryOverBaseRing):
         if source in self:
             scalar *= source.form_scale()
             source = source.unscaled_form_module()
-        if scalar == self.base_ring().one():
+        if (scalar == self.base_ring().one()) is True:
             return source
         return _scaled_form_module(source, scalar)
 
@@ -3525,7 +3864,7 @@ def _scaled_form_module(source, scalar):
     Thus the unit action returns the original object, including a double
     sign twist. No cancellation by a nonunit is used.
     """
-    from dzack_research.preamble.categories.lattices import BiproductLattices, Lattices
+    from dzack_research.preamble.categories.lattices import OrthogonalSumLattices, Lattices
 
     # Scaling changes the selected form on its original module, not the
     # form re-expressed on the already-formed parent.  The latter constructs
@@ -3558,17 +3897,19 @@ def _scaled_form_module(source, scalar):
         # (sb)(x,y) = s b(x,y) = s b(y,x) = (sb)(y,x): symmetry
         # transports through scalar change, without inspecting any entries.
         categories.append(BilinearFormModules(ring).Symmetric())
-    if scalar.is_unit() and source in FormModules(ring).Unimodular():
+    unit = (scalar != ring.zero()) if ring in OwnedFields() else scalar.is_unit()
+    known_unit = unit is True
+    if known_unit and source in FormModules(ring).Unimodular():
         # Multiplication by a unit is an isomorphism on the value module;
         # the correlation of sb is the correlation of b composed with it.
         categories.append(FormModules(ring).Unimodular())
     if source in FormModules(ring).Nondegenerate() and (
-        scalar.is_unit() or (ring in OwnedIntegralDomains() and scalar != ring.zero())
+        known_unit or (ring in OwnedIntegralDomains() and (scalar != ring.zero()) is True)
     ):
         # Multiplication by a unit is injective on every value module;
         # on an integral domain it is injective on this R-valued form.
         # Hence both radicals remain zero under the scalar change.
-        if scalar.is_unit() or form.codomain() in OwnedRings():
+        if known_unit or form.codomain() in OwnedRings():
             categories.append(FormModules(ring).Nondegenerate())
     data = dict(unscaled_form_module=source, form_scale=scalar)
     if source in Lattices(ring):
@@ -3595,8 +3936,8 @@ def _scaled_form_module(source, scalar):
         # scalar, including zero and nonunits.
         if source.module_rank().is_finite() and int(source.module_rank()) == 0:
             categories.extend((Lattices(ring).Nondegenerate(), Lattices(ring).Unimodular()))
-        if source in BiproductLattices(ring):
-            categories.append(BiproductLattices(ring))
+        if source in OrthogonalSumLattices(ring):
+            categories.append(OrthogonalSumLattices(ring))
             data["biproduct_factors"] = source.biproduct_factors().map(
                 lambda factor: FormValueScalings(ring)(factor, scalar),
                 name=f"Orthogonal summands scaled by {scalar}",

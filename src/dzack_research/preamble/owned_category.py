@@ -1030,6 +1030,34 @@ class OwnedJoinCategory(OwnedCategoryMixin, JoinCategory):
         r"""The category constructed as this intersection is an object of Cat."""
         return _cat()
 
+    def _call_(self, data, *args, **options):
+        r"""Construct through a unique most-specific branch and check the join.
+
+        An intersection of an object category with an axiom category retains
+        the object's constructor. The constructor establishes its own data and
+        property placement; the join admits the result only when all its
+        required properties were established.
+        """
+        constructors = tuple(
+            branch for branch in self._super_categories
+            if type(branch)._call_ is not Category._call_
+        )
+        selected = tuple(
+            branch for branch in constructors
+            if not any(
+                other is not branch and other.is_subcategory(branch)
+                for other in constructors
+            )
+        )
+        if len(selected) != 1:
+            raise NotImplementedError(
+                f"{self} has no unique constructor among its declared branches"
+            )
+        result = selected[0](data, *args, **options)
+        if result not in self:
+            raise ValueError(f"{result!r} does not satisfy {self}")
+        return result
+
     def is_subcategory(self, category):
         r"""Compare this intersection through its mathematical branches.
 

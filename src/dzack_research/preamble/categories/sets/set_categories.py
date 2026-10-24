@@ -3144,8 +3144,25 @@ class PowerSets(OwnedCategory):
             return self.from_predicate(lambda member: characteristic_morphism(member) == truth)
 
         def _from_finite_members(self, members):
-            r"""The finite subset on the stated members, as a finite ordered set with its inclusion."""
+            r"""The finite subset on the stated members, with its original inclusion.
+
+            The domain is an ordered subset of the original set, rather
+            than a detached ordered list of the same points. Its own
+            inclusion and the returned subobject have the same map.
+
+            EXAMPLES::
+
+                sage: X = finite_ordered_set((1, 2, 3))
+                sage: A = X.power_set()((1, 3))
+                sage: assert tuple(A.domain()) == (1, 3)
+                sage: assert A.domain().universe() is X
+                sage: assert A.domain().inclusion().codomain() is X
+                sage: assert A.domain().inclusion() is A.inclusion()
+                sage: assert A.domain().is_parent_of(2) is False
+            """
             from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+                FiniteOrderedSets,
+                _FilteredOrderedSetEngine,
                 finite_ordered_set,
             )
 
@@ -3159,8 +3176,18 @@ class PowerSets(OwnedCategory):
                 normalized.append(base(member))
             # ``finite_ordered_set`` identifies equal points; identifying them
             # here as well compared every pair twice.
-            subset = finite_ordered_set(tuple(normalized))
-            return Sets().Subobjects(base)(Sets().Mono(subset, base)._from_subset_inclusion())
+            points = finite_ordered_set(tuple(normalized))
+            subset = _object_of(
+                FiniteOrderedSets(),
+                _engine=(FiniteOrderedSets(), _FilteredOrderedSetEngine, None),
+                universe=base,
+                predicate=points.is_parent_of,
+                index_set=points.index_set(),
+                element_at=points.enumeration(),
+                index_of=points.enumeration_inverse(),
+                contains=points.is_parent_of,
+            )
+            return Sets().Subobjects(base)(subset.inclusion())
 
         def __call__(self, *args, **kwargs):
             r"""Construct through the owned set representation directly."""
@@ -3652,7 +3679,20 @@ class _ConditionSetEngine:
         self._universe = universe
         self._predicate = predicate
         self._admitted_members = {}
+        self._selected_point_computation = None
         super().__init__(facade=True, **rest)
+
+    def _retain_point_computation(self, computation: Callable[[], SourcePointT]) -> None:
+        r"""Retain a private, possibly failing choice computation.
+
+        Protected realization contract: a successful computation returns
+        a member of this subset. It may raise for an empty subset or
+        unavailable computation. It is not a mathematical map from a
+        singleton, which would assert nonemptiness. Retaining it alone
+        neither admits a point nor decides nonemptiness. The norm-fibre
+        realization supplies its existing equation solver here.
+        """
+        self._selected_point_computation = computation
 
     def _retain_admitted_member(self, element):
         r"""Retain an actual member whose membership was supplied by construction.
@@ -3660,7 +3700,9 @@ class _ConditionSetEngine:
         Protected ingress contract under OWN-05. Callers are successful
         predicate admission, an additive-submonoid constructor's admitted
         zero or generators, and a protected subset inclusion applied to an
-        admitted source point. This records that point, not a decision of
+        admitted source point. The norm-fibre choice computation also supplies the
+        actual solution returned by its equation solver. This records
+        that point, not a decision of
         the defining predicate and not a rule for admitting arbitrary data.
         The record is read by ``__contains__``: an admitted point is a member
         without asking the predicate again (which may be undecided on it).
@@ -3672,21 +3714,51 @@ class _ConditionSetEngine:
         return point
 
     def _an_element_(self):
-        r"""Sage's element-selection protocol: the first point of a decided finite enumeration.
+        r"""Return a retained member, or search the selected enumeration.
 
-        Emptiness and the count are asked of the owned cardinality
-        (``_cardinality_decision``); a subset whose count is not decided has no
-        selected point here.
+        An already admitted point supplies the choice without an
+        enumeration, including for a subset of an uncountable set.
+        Otherwise ``__iter__`` owns the enumeration and requires each encountered
+        membership to be decided. A retained point computation is evaluated before
+        requesting an enumeration; its computational failure propagates.
+        No cardinality computation is needed to
+        find a point. An exhausted finite enumeration raises
+        ``StopIteration``; an infinite search with no satisfying point need
+        not terminate. Neither case changes ``is_empty`` or supplies an
+        emptiness decision from an unfinished search. A successfully found
+        point is retained by membership and subsequently decides
+        nonemptiness. A universe without a selected enumeration still
+        refuses iteration.
+
+        EXAMPLES::
+
+            sage: from dzack_research.preamble.categories.sets.set_categories import NN
+            sage: tail = NN.condition_set(lambda n: n >= NN(100))
+            sage: assert tail.an_element() == NN(100)
+            sage: assert tail.inclusion()(tail.an_element()) == NN(100)
+            sage: assert tail.is_parent_of(NN(99)) is False
+            sage: assert tail.is_empty() is False
+
+        An unsuccessful membership test gives no emptiness decision::
+
+            sage: excluded = NN.condition_set(lambda n: False)
+            sage: assert excluded.is_parent_of(NN(0)) is False
+            sage: from dzack_research.preamble.logic import Predicate
+            sage: assert isinstance(excluded.is_empty(), Predicate)
+
+        A point already admitted over RR needs no exhaustive real iterator::
+
+            sage: from dzack_research.preamble.rings.real import RR
+            sage: positive = RR.condition_set(lambda x: x > RR.zero())
+            sage: point = positive(RR.pi())
+            sage: assert positive.an_element() == point
+            sage: assert positive.inclusion()(positive.an_element()) == RR.pi()
+            sage: assert positive.is_empty() is False
         """
-        count = self._cardinality_decision()
-        assert count is not None, (
-            f"cannot select a point of {self}: its membership predicate {self.predicate()} "
-            f"is not decided on an enumerated universe"
-        )
-        assert cardinal(count) != cardinal(0), (
-            f"{self} has no point to select: it is the empty subset of {self.universe()} "
-            f"cut out by {self.predicate()}"
-        )
+        if self._admitted_members:
+            return next(iter(self._admitted_members.values()))
+        if self._selected_point_computation is not None:
+            return self._retain_admitted_member(self._selected_point_computation())
         return next(iter(self))
 
     def universe(self) -> Sets().ObjectType:
@@ -3696,6 +3768,20 @@ class _ConditionSetEngine:
     def predicate(self) -> Callable[[SourcePointT], bool | Predicate]:
         r"""The predicate \(P\) cutting this subset out of \(X\)."""
         return self._predicate
+
+    def _emptiness_decision(self) -> bool | None:
+        r"""A retained member proves nonemptiness without starting a search.
+
+        Successful admission and membership already retain the actual
+        point in this subset. Such a point excludes emptiness even if the
+        universe is infinite or has no selected enumeration. Failed or
+        undecided membership tests retain no member and supply no negative
+        existence conclusion. Other available decisions, including finite
+        exhaustion, remain with the inherited set operation.
+        """
+        if self._admitted_members:
+            return False
+        return super()._emptiness_decision()
 
     def _cardinality_decision(self):
         r"""Count a supplied finite enumeration only when every predicate is decided.
@@ -3777,16 +3863,12 @@ class _ConditionSetEngine:
 
     def __iter__(self):
         universe = self.universe()
-        # A finite cardinality does not supply an enumeration. Only a
-        # selected iterator on the underlying representation can realize
-        # enumeration of the condition set.
-        if universe not in EnumeratedSets() and not isinstance(
-            universe, (_FiniteLiteralSet, _ImageSetEngine, _ConditionSetEngine)
-        ):
-            raise NotImplementedError(
-                f"cannot enumerate {self}: {universe} has no selected enumeration"
-            )
-        return self._points_satisfying(universe)
+        # Use an actual supplied iterator. A complete search iterator need
+        # not supply the ranking isomorphism required by EnumeratedSets
+        # (nor decide whether the next point exists). Conversely a finite
+        # cardinality alone supplies no iterator: iter(universe) still
+        # refuses when its construction has none.
+        return self._points_satisfying(iter(universe))
 
     def _points_satisfying(self, points):
         r"""The points of an enumeration of ``X`` at which ``P`` holds, in that order.

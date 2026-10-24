@@ -2,6 +2,7 @@ r"""Form-preserving morphisms, embeddings, and isometries of lattices."""
 
 from __future__ import annotations
 
+from itertools import product
 from typing import TYPE_CHECKING
 
 from sage.categories.map import Map
@@ -9,6 +10,7 @@ from sage.groups.matrix_gps.finitely_generated import MatrixGroup
 from sage.categories.morphism import Morphism
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_function, cached_method
+from sage.misc.mrange import cantor_product as _engine_cantor_product
 from sage.quadratic_forms.binary_qf import BinaryQF
 from sage.quadratic_forms.quadratic_form import QuadraticForm
 from sage.rings.integer_ring import ZZ as SageZZ
@@ -61,6 +63,7 @@ from dzack_research.preamble.categories.modules.module_morphisms.module_morphism
 )
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedFields,
     _own_ring,
     _owned_engine_element,
     _owned_integers,
@@ -73,8 +76,8 @@ from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     OrderedEnumeratedSets,
     finite_ordered_set,
 )
-from dzack_research.preamble.categories.sets.set_categories import NN, Sets
-from dzack_research.preamble.logic import AtomicProposition
+from dzack_research.preamble.categories.sets.set_categories import EnumeratedSets, NN, Sets
+from dzack_research.preamble.logic import AtomicProposition, conjunction
 from dzack_research.preamble.validation import validator
 from dzack_research.preamble.tensors.tensor import (
     _engine_binary_form_pullback,
@@ -515,6 +518,74 @@ class LatticeEmbeddingMethods:
             for row in kernel_basis.rows()
         )
         return target.subobject_on(embedded_basis)
+
+    def orthogonal_splitting(self):
+        r"""Return ``S orthogonal_sum S_perp -> L`` for this summand embedding.
+
+        For ``j:S -> L``, form the kernel ``S_perp`` of the pairing
+        ``L -> S.dual_module()``. Assemble ``j`` and the retained kernel
+        inclusion using the ambient orthogonal-decomposition construction.
+        The first factor is the original ``S``, with its original embedding,
+        not an isometric replacement. The result supports inversion and
+        retains the module injections and projections of its domain.
+
+        The hypothesis is that these two embeddings give a direct sum over
+        the original scalar ring. Over a field, nondegeneracy of ``S``
+        suffices; integrally, a unimodular ``S`` suffices. Primitivity alone
+        does not suffice integrally. If the assembled module map is not
+        invertible over that ring, its inverse computation raises rather
+        than replacing the lattice by its rational span. This construction
+        neither searches for an embedding nor proves maximality.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: A = Lattices(ZZ)([[2]])
+            sage: L = U + A
+            sage: j = U.Emb(L)(L.module_generators()[:2])
+            sage: phi = j.orthogonal_splitting()
+            sage: S = phi.domain()
+            sage: assert phi.codomain() is L
+            sage: assert S.biproduct_factors()[0] is U
+            sage: i = S.injection(0)
+            sage: assert all(phi(i(v)) == j(v) for v in U.module_generators())
+            sage: assert all(phi(phi.inverse()(v)) == v for v in L.module_generators())
+
+        A primitive integral image can have a nontrivial gluing quotient:
+
+        .. MATH::
+
+            L=\langle1,1\rangle,\quad j(1)=(1,1),\quad
+            j(S)^\perp=\mathbb Z(1,-1).
+
+        Their sum has index two, so it is not an integral splitting.
+        The same two subspaces do split after base change to ``QQ``::
+
+            sage: P = Lattices(ZZ)([[1, 0], [0, 1]])
+            sage: T = Lattices(ZZ)([[2]])
+            sage: v = sum(P.module_generators(), P.zero())
+            sage: j = T.Emb(P)((v,))
+            sage: K = j.orthogonal_complement()
+            sage: D = T + K
+            sage: a = D.from_coproduct_cocone((j, K.inclusion()), codomain=P)
+            sage: assert a.is_surjective() is False
+            sage: Q = Lattices(QQ)([[1, 0], [0, 1]])
+            sage: S = Lattices(QQ)([[2]])
+            sage: jQ = S.Emb(Q)((sum(Q.module_generators(), Q.zero()),))
+            sage: psi = jQ.orthogonal_splitting()
+            sage: assert all(psi(psi.inverse()(v)) == v for v in Q.module_generators())
+
+        The zero source gives the decomposition ``0 orthogonal_sum L``::
+
+            sage: Z = Lattices(ZZ)(0)
+            sage: phi = Z.Emb(U)(()).orthogonal_splitting()
+            sage: assert phi.domain().biproduct_factors()[0] is Z
+            sage: assert phi.codomain() is U
+        """
+        complement = self.orthogonal_complement()
+        return self.codomain().orthogonal_decomposition(
+            (self, complement.inclusion())
+        ).inverse()
 
     def discriminant_inclusion(self):
         r"""Return ``A_S -> A_L`` for an orthogonal direct-summand embedding.
@@ -1312,6 +1383,39 @@ class LatticeIsometryMethods:
             )
             return target.element_class(target, reverse)
         if self.domain().module_rank().is_finite() and codomain.module_rank().is_finite():
+            from dzack_research.preamble.rings.real import RR
+
+            if codomain.base_ring() is RR:
+                from dzack_research.preamble.categories.modules.pure.modules import (
+                    _represented_real_rref,
+                )
+
+                domain_labels = tuple(self.domain().module_generating_set())
+                codomain_labels = tuple(codomain.module_generating_set())
+                size = len(domain_labels)
+                columns = tuple(
+                    self(self.domain().module_generator(label)).to_vector()
+                    for label in domain_labels
+                )
+                rows = tuple(
+                    tuple(column(label) for column in columns)
+                    + tuple(RR.one() if i == j else RR.zero() for j in range(size))
+                    for i, label in enumerate(codomain_labels)
+                )
+                reduced, pivots = _represented_real_rref(rows, 2 * size, RR)
+                assert pivots == tuple(range(size)), (
+                    "a real lattice isometry must have an invertible coordinate matrix"
+                )
+                images = tuple(
+                    self.domain().linear_combination(
+                        {
+                            label: reduced[i][size + j]
+                            for i, label in enumerate(domain_labels)
+                        }
+                    )
+                    for j in range(size)
+                )
+                return codomain.Isom(self.domain())(images)
             forward_matrix = _engine_matrix(_module_matrix(self))
             return codomain.Isom(self.domain())._isometry_from_column_matrix(
                 forward_matrix.inverse()
@@ -1934,7 +2038,11 @@ class LatticeEmbeddingMor(CategoricalMor):
 
     def _codomain_is_even_unimodular_indefinite(self) -> bool:
         target = self.codomain()
-        if not target.module_rank().is_finite() or not target.is_nondegenerate():
+        if (
+            target.base_ring() is not _owned_integers()
+            or not target.module_rank().is_finite()
+            or not target.is_nondegenerate()
+        ):
             return False
         _signature = target.signature_pair()
         positive, negative = _signature.first(), _signature.second()
@@ -1975,6 +2083,57 @@ class LatticeEmbeddingMor(CategoricalMor):
             raise ValueError(f"there is no primitive embedding of {self.domain()} into {self.codomain()}")
         return self._reconstruct_target_primitive_embedding(data)
 
+    @cached_method
+    def _integral_embedding_factorization(self) -> tuple[LatticeEmbeddingMethods, CategoricalMor] | bool:
+        r"""Find a finite overlattice factorization, or decide there is none.
+
+        For nondegenerate ZZ endpoints of finite rank and an indefinite target,
+        every embedding factors through an integral overlattice of its
+        source followed by a primitive embedding into the target. The
+        discriminant bilinear form supplies every such overlattice,
+        including odd ones and the identity extension. Exhaust this finite
+        family, using the existing target-specific primitive decision in
+        smaller rank and the integral Isom decision in equal rank.
+
+        Return the actual source inclusion and the nonempty embedding or
+        isometry set for its codomain, or ``False`` after finite exclusion.
+        This private computation belongs to this Mor owner; its callers
+        are the emptiness decision and witness selection below. It does
+        not construct the final target transport merely to decide existence.
+        See the saturation proof in ``docs/theory/hyperbolic-index.md``.
+        """
+        source, target = self.domain(), self.codomain()
+        assert (
+            source.base_ring() is _owned_integers()
+            and target.base_ring() is _owned_integers()
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+            and not target.is_definite()
+        ), "the finite integral embedding factorization needs nondegenerate ZZ endpoints and an indefinite target"
+        if source.module_rank() > target.module_rank():
+            return False
+        for inclusion in source.integral_overlattice_inclusions():
+            enlarged = inclusion.codomain()
+            if enlarged.module_rank() == target.module_rank():
+                isometries = enlarged.Isom(target)
+                empty = isometries.is_empty()
+                assert empty is True or empty is False, (
+                    "the integral Isom decision must decide this nondegenerate finite-rank pair"
+                )
+                if empty is False:
+                    return inclusion, isometries
+            else:
+                embeddings = enlarged.Emb(target)
+                data = embeddings._target_primitive_embedding_data()
+                assert data is not None, (
+                    "the primitive embedding decision must cover this smaller-rank integral overlattice"
+                )
+                if data is not False:
+                    return inclusion, embeddings
+        return False
+
     def _reconstruct_target_primitive_embedding(self, data):
         target_prime_gram, source_prime_gram, embedding_matrix = data
         from dzack_research.preamble.categories.lattices import Lattices
@@ -2014,9 +2173,21 @@ class LatticeEmbeddingMor(CategoricalMor):
         ``classification='sub'`` classifies primitive sublattices up to the
         actions of ``O(source)`` and ``O(target)``, whereas
         ``classification='emb'`` fixes the source marking pointwise and
-        quotients by ``O(target)``.  The pinned genus/gluing construction
-        produces actual primitive embeddings into this target, retaining
-        the target-isometry witnesses used to transport each gluing.
+        quotients by ``O(target)``. These are finite class representatives,
+        not an enumeration of every embedding. The pinned genus/gluing
+        construction produces embeddings into the specified target and
+        retains the target isometries used to transport each gluing.
+
+        EXAMPLES::
+
+            sage: T = Lattices(ZZ)([[2]])
+            sage: L = Lattices(ZZ)("U") + T
+            sage: assert T.Emb(L).is_empty() is False
+            sage: classes = T.Emb(L).primitive_embedding_class_representatives()
+            sage: assert classes.is_empty() is False
+            sage: assert all(j.domain() is T and j.codomain() is L for j in classes)
+            sage: assert all(L.gram_tensor().pullback(j) == T.gram_tensor() for j in classes)
+            sage: assert all(j.is_primitive() is True for j in classes)
         """
         if classification not in ("sub", "emb"):
             raise ValueError(
@@ -2043,24 +2214,165 @@ class LatticeEmbeddingMor(CategoricalMor):
 
         return _primitive_embedding_class_representatives(self, classification)
 
-    def __iter__(self):
-        r"""Enumerate all embeddings when the target lattice is definite.
+    def with_generator_images_in(self, candidates):
+        r"""Return the finite subset whose basis images lie in ``candidates``.
 
-        Each source generator must land in the finite shell of target vectors
-        having the same square.  A depth-first placement is pruned by the
+        The source has a finite basis and is nondegenerate; candidates
+        form a finite enumerated subset of the target with decidable
+        pairing comparisons. Exhaust the finite product of candidate
+        images and retain the maps satisfying the Gram equations.
+        Nondegeneracy makes these maps injective. The returned set
+        subobject retains its inclusion into this embedding space.
+
+        Further decidable conditions can filter its finite enumerated
+        ``domain()`` and decide emptiness by exhaustion. This decides
+        only the supplied finite search. Excluding every embedding needs
+        a bound guaranteed to contain one whenever it exists, including
+        any extra conditions. No definiteness or countability of the
+        target is needed for this finite construction.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: C = finite_ordered_set((ZZ(-1), ZZ(0), ZZ(1)))
+            sage: box = U.coordinate_subset(C)
+            sage: bounded = U.Emb(U).with_generator_images_in(box.domain())
+            sage: assert bounded.domain().cardinality() == cardinal(4)
+            sage: assert bounded.inclusion().codomain() is U.Emb(U)
+            sage: assert all(U.gram_tensor().pullback(j) == U.gram_tensor() for j in bounded.domain())
+            sage: Z = Lattices(ZZ)(0)
+            sage: empty = finite_ordered_set(())
+            sage: assert Z.Emb(U).with_generator_images_in(empty).domain().cardinality() == cardinal(1)
+            sage: assert U.Emb(U).with_generator_images_in(empty).domain().is_empty() is True
+
+        The integral coefficient bound meets every target-isometry orbit,
+        so a decidable invariant condition such as primitivity can be
+        excluded by this finite search. Here every embedding has index
+        two, and the primitive subset is empty::
+
+            sage: T = U.twist(ZZ(2))
+            sage: B = T.integral_embedding_coefficient_bound(U)
+            sage: C = finite_ordered_set(tuple(ZZ(a) for a in range(-int(B), int(B) + 1)))
+            sage: box = U.coordinate_subset(C)
+            sage: bounded = T.Emb(U).with_generator_images_in(box.domain())
+            sage: assert bounded.domain().is_empty() is False
+            sage: primitive = bounded.domain().condition_set(lambda j: j.is_primitive())
+            sage: assert primitive.is_empty() is True
+            sage: assert all(j.domain() is T and j.codomain() is U for j in bounded.domain())
+        """
+        source = self.domain()
+        target = self.codomain()
+        assert source.module_rank().is_finite() and source.is_nondegenerate(), (
+            f"finite generator-image search in {self} requires a finite nondegenerate source"
+        )
+        assert candidates in EnumeratedSets() and candidates.is_finite() is True, (
+            f"finite generator-image search in {self} requires a finite enumerated candidate set"
+        )
+        points = tuple(candidates)
+        assert all(target.is_parent_of(point) is True for point in points), (
+            f"generator images for {self} must be elements of its target {target}"
+        )
+        gram = source.gram_tensor()
+        rank = len(tuple(source.module_generators()))
+
+        def embeddings():
+            for images in product(points, repeat=rank):
+                preserves = conjunction(
+                    target.b(images[row], images[column]) == gram[row, column]
+                    for row in range(rank)
+                    for column in range(row, rank)
+                )
+                assert preserves is True or preserves is False, (
+                    f"finite enumeration in {self} requires decidable pairing equations for {images}"
+                )
+                if preserves is True:
+                    yield self(images)
+
+        return self.power_set()(embeddings())
+
+    def __iter__(self):
+        r"""Enumerate isometric embeddings over ZZ or QQ in finite rank.
+
+        The source is nondegenerate. For a definite integral target,
+        enumerate its finite square shells. Otherwise use Sage's fair
+        ``cantor_product`` of scalar enumerations for all generator images
+        and retain precisely the form-preserving maps. Every candidate
+        occurs after finitely many predecessors, including candidates with
+        rational denominators or nonprimitive integral image. No ordering
+        by geometric length is asserted for the indefinite case.
+
+        This is an enumeration, not an emptiness decision: requesting the
+        next embedding can run forever. In particular it is not a finite
+        exclusion search for an extra predicate on the embeddings.
+
+        In the definite integral case each source generator lands in the
+        finite shell of target vectors having the same square.
+        A depth-first placement is pruned by the
         pairings with generators already placed, so a complete placement
         preserves the form.  A form-preserving map into a definite lattice
         sends each vector \(x\) of the radical of the source to a vector with
         \(q=0\), which is zero; so every complete placement is injective when
         the source form is nondegenerate, and none is when it is degenerate.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: S = U.twist(ZZ(2))
+            sage: j = next(iter(S.Emb(U)))
+            sage: assert U.gram_tensor().pullback(j) == S.gram_tensor()
+            sage: assert j.index() == cardinal(2)
+            sage: Q = Lattices(QQ)([[1]])
+            sage: T = Lattices(QQ)([[QQ(1)/4]])
+            sage: j = next(iter(T.Emb(Q)))
+            sage: assert Q.q(j(T.module_generators()[0])) == QQ(1)/4
+            sage: v = T.module_generators()[0]
+            sage: positive = T.Emb(Q).condition_set(lambda f: f(v).to_vector()(Q.module_generating_set()[0]) > 0)
+            sage: j = positive.an_element()
+            sage: assert j(v) == Q.module_generators()[0] * (QQ(1)/2)
+            sage: Z = Lattices(ZZ)(0)
+            sage: assert len(tuple(Z.Emb(U))) == 1
         """
         source = self.domain()
         target = self.codomain()
-        assert target.base_ring() is _owned_integers() and target.module_rank().is_finite() and target.is_definite(), (
-            f"the embeddings of {source} into {target} are enumerated only when {target} is a definite lattice of "
-            f"finite rank over ZZ, whose square shells are finite; {target} is over {target.base_ring()}"
+        assert source.module_rank().is_finite() and target.module_rank().is_finite(), (
+            f"enumerating embeddings {source} -> {target} requires finite ranks"
         )
-        assert source.module_rank().is_finite(), f"the embeddings of {source} into {target} are enumerated only when {source} has finite rank"
+        if source.module_rank() == cardinal(0):
+            yield self(())
+            return
+        if source.module_rank() > target.module_rank():
+            return
+        if not self._codomain_is_definite_over_integers():
+            assert target.base_ring() in (_owned_integers(), _owned_rationals()), (
+                f"enumerating embeddings {source} -> {target} requires ZZ or QQ scalars"
+            )
+            assert source.is_nondegenerate(), (
+                f"enumerating embeddings {source} -> {target} by pairing equations requires a nondegenerate source"
+            )
+            source_generators = tuple(source.module_generators())
+            target_generators = tuple(target.module_generators())
+            ring = target.base_ring()
+            engine = _engine_ring(ring)
+            width = len(target_generators)
+            source_gram = source.gram_tensor()
+            for coordinates in _engine_cantor_product(
+                *([engine] * (len(source_generators) * width))
+            ):
+                images = tuple(
+                    sum(
+                        (vector * _owned_engine_element(ring, coordinates[position * width + index])
+                         for index, vector in enumerate(target_generators)),
+                        target.zero(),
+                    )
+                    for position in range(len(source_generators))
+                )
+                if all(
+                    target.b(images[row], images[column]) == source_gram[row, column]
+                    for row in range(len(images))
+                    for column in range(row, len(images))
+                ):
+                    yield self(images)
+            return
         match source.is_nondegenerate():
             case False:
                 return
@@ -2080,25 +2392,105 @@ class LatticeEmbeddingMor(CategoricalMor):
         yield from assign(())
 
     def _emptiness_decision(self) -> bool | None:
-        r"""``Emb(L, M) = ∅``, supplied to the ``Sets`` emptiness hook; ``None`` where no route decides it."""
+        r"""Decide emptiness of all embeddings, not just primitive ones.
+
+        Embeddings between finite-dimensional spaces of equal dimension
+        over a field are isometries. Over ZZ an
+        embedding can have nontrivial finite index, and absence of an
+        isometry or primitive embedding does not exclude such a map.
+
+        For finite nondegenerate spaces over QQ, AA or RR,
+        Witt cancellation gives ``Emb(S,T) != empty`` exactly when
+        ``witt_index(T orthogonal_sum (-S)) >= dim(S)``. Indeed an embedding
+        splits off ``S`` and ``S orthogonal_sum (-S)`` is hyperbolic. In
+        the reverse direction, the anisotropic part of ``T - S``, together
+        with its remaining hyperbolic planes, gives a complement of
+        dimension ``dim(T)-dim(S)``; Witt cancellation gives the isometry.
+        This is an emptiness decision, independent of any witness search.
+        Over AA or RR, compute the equivalent criterion
+        directly: both source inertia indices must be at most the
+        corresponding target indices. This consumes the original endpoint
+        nondegeneracy hypotheses without constructing a difference form
+        and asking it to rediscover nondegeneracy.
+
+        For finite-rank nondegenerate integral endpoints, the definite
+        target uses finite shells; an indefinite target uses the finite
+        integral-overlattice factorization below. Primitive absence alone
+        is never used as general integral exclusion.
+
+        EXAMPLES::
+
+            sage: P = Lattices(QQ)([[1, 0], [0, 1]])
+            sage: assert Lattices(QQ)([[2]]).Emb(P).is_empty() is False
+            sage: assert Lattices(QQ)([[3]]).Emb(P).is_empty() is True
+            sage: assert Lattices(AA)([[3]]).Emb(Lattices(AA)([[1, 0], [0, 1]])).is_empty() is False
+            sage: assert Lattices(AA)([[-1]]).Emb(Lattices(AA)([[1, 0], [0, 1]])).is_empty() is True
+            sage: U = Lattices(ZZ)("U")
+            sage: S = U.twist(ZZ(2))
+            sage: assert S.Isom(U).is_empty() is True
+            sage: assert S.Emb(U).is_empty() is False
+            sage: V = U.twist(ZZ(2))
+            sage: W = U.twist(ZZ(4))
+            sage: assert W.Isom(V).is_empty() is True
+            sage: assert W.Emb(V).is_empty() is False
+            sage: assert Lattices(ZZ)([[1]]).Emb(V).is_empty() is True
+            sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+            sage: a = Sets().Mor(NN, QQ)(lambda n: QQ(1) + QQ(1)/QQ(2)**int(n))
+            sage: x = RR.of_cauchy(a)
+            sage: S = Lattices(RR).Nondegenerate()([[x, 0], [0, x]])
+            sage: H = Lattices(RR).Nondegenerate()([[x, 0], [0, -x]])
+            sage: assert S.Emb(H).is_empty() is True
+            sage: assert H.Emb(S).is_empty() is True
+            sage: T = Lattices(RR).Nondegenerate()([[4*x, 0], [0, 9*x]])
+            sage: assert S.Emb(T).is_empty() is False
+            sage: assert S.Isom(T).is_empty() is False
+        """
+        source = self.domain()
+        target = self.codomain()
+        if source.module_rank() == cardinal(0):
+            return False
+        if target.module_rank() == cardinal(0):
+            return True
+        if (
+            (source.base_ring() in OwnedFields() or source.base_ring() is _owned_integers())
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() > target.module_rank()
+        ):
+            return True
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
+
+        if (
+            source.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers(), RR)
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            if source.base_ring() in (_owned_real_algebraic_numbers(), RR):
+                source_signature = source.signature_pair()
+                target_signature = target.signature_pair()
+                return (
+                    source_signature.first() > target_signature.first()
+                    or source_signature.second() > target_signature.second()
+                )
+            difference = target + source.twist(-source.base_ring().one())
+            return difference.witt_index() < _owned_integers()(source.module_rank().finite_value())
         if self._codomain_is_definite_over_integers():
             for _embedding in self:
                 return False
             return True
-        source = self.domain()
-        target = self.codomain()
         if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
             match source.Isom(target).is_empty():
-                case True:
+                case True if source.base_ring() in OwnedFields():
                     return True
                 case False:
                     return False
                 case _:
-                    return None
+                    pass
         target_embedding_data = self._target_primitive_embedding_data()
-        if target_embedding_data is False:
-            return True
-        if target_embedding_data is not None:
+        if target_embedding_data is not None and target_embedding_data is not False:
             return False
         if self._codomain_is_even_unimodular_indefinite():
             match source.is_even():
@@ -2108,20 +2500,170 @@ class LatticeEmbeddingMor(CategoricalMor):
                     _signature = self.codomain().signature_pair()
                     positive, negative = _signature.first(), _signature.second()
                     return not any(inclusion.codomain().embeds_in_even_unimodular(positive, negative) for inclusion in self.even_overlattice_inclusions())
+        if (
+            source.base_ring() is _owned_integers()
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            return self._integral_embedding_factorization() is False
         return None
 
+    def _real_embedding(self):
+        r"""Construct a real embedding by matching exact diagonal signs.
+
+        Both endpoints have finite nondegenerate forms. Their retained
+        diagonalization isometries give orthogonal bases. Send a source
+        basis vector of square ``a`` to an unused target basis vector of
+        square ``b`` with the same sign, scaled by ``sqrt(a/b)``. No such
+        vector exists exactly when the corresponding inertia inequality
+        fails. Transport along the source inverse and return a map with
+        the original source and target. RR signs are refined under the
+        nonzero diagonal hypotheses. Isometries retain inverse matching
+        and reciprocal scales instead of another matrix inversion.
+        """
+        from dzack_research.preamble.rings.real import RR
+
+        source = self.domain()
+        target = self.codomain()
+        ring = source.base_ring()
+        if isinstance(self, LatticeIsometryMor) and source.module_rank() != target.module_rank():
+            raise ValueError(f"there is no isometry from {source} to {target}: the dimensions differ")
+        source_diagonalization = source.diagonalization()
+        target_diagonalization = target.diagonalization()
+        diagonal_source = source_diagonalization.domain()
+        available = {1: [], -1: []}
+        diagonal_target = target_diagonalization.domain()
+        for label in diagonal_target.module_generating_set():
+            vector = target_diagonalization(diagonal_target.module_generator(label))
+            square = target.q(vector)
+            sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > ring.zero() else -1)
+            available[sign].append((label, vector, square))
+        images = []
+        inverse_images = {}
+        for generator in diagonal_source.module_generators():
+            square = diagonal_source.q(generator)
+            sign = ring._sign_of_nonzero(square) if ring is RR else (1 if square > ring.zero() else -1)
+            if not available[sign]:
+                raise ValueError(f"there is no lattice embedding of {source} into {target}")
+            label, vector, target_square = available[sign].pop()
+            if ring is RR:
+                ratio = ring._divide_by_nonzero(square, target_square)
+                scale = ring._sqrt_of_positive(ratio)
+            else:
+                scale = (square / target_square).sqrt()
+            images.append(vector * scale)
+            if isinstance(self, LatticeIsometryMor):
+                reciprocal = ring._divide_by_nonzero(ring.one(), scale) if ring is RR else ring.one() / scale
+                inverse_images[label] = source_diagonalization(generator) * reciprocal
+        diagonal_embedding = diagonal_source.module_category().Mor(diagonal_source, target)(tuple(images))
+        inverse = source_diagonalization.inverse()
+        forward_images = tuple(
+            diagonal_embedding(inverse(generator))
+            for generator in source.module_generators()
+        )
+        if isinstance(self, LatticeIsometryMor):
+            diagonal_inverse = diagonal_target.module_category().Mor(diagonal_target, source)(inverse_images)
+            target_inverse = target_diagonalization.inverse()
+            forward = source.module_category().Mor(source, target)(forward_images)
+            backward = target.module_category().Mor(target, source)(tuple(
+                diagonal_inverse(target_inverse(generator))
+                for generator in target.module_generators()
+            ))
+            module_isomorphism = source.module_category().Core().Mor(source, target)._from_known_inverse_pair(
+                forward, backward,
+            )
+            return self.element_class(self, module_isomorphism)
+        return self(forward_images)
+
     def an_element(self):
+        r"""Construct an embedding through an applicable complete route.
+
+        Over AA or RR, finite nondegenerate endpoints use
+        exact diagonalization and matching signs, retaining the original endpoints. Isometries
+        and primitive embeddings supply other affirmative cases;
+        their absence does not eliminate finite-index embeddings over ZZ.
+        Even-overlattice inclusions retain those nonprimitive candidates.
+        Outside the classification routes, finite-rank nondegenerate-source
+        spaces over ZZ or QQ use their complete embedding iterator. That
+        search terminates when an embedding exists. For finite nondegenerate
+        rational endpoints, the Witt-index emptiness decision first excludes
+        the empty case, so this route terminates. Nondegenerate integral
+        endpoints now use finite integral overlattices followed by primitive
+        embeddings (or equal-rank isometries); the actual module maps are
+        composed to retain the original source and target. A remaining ZZ
+        search with degenerate target may run forever. Extra predicates
+        need their own complete search or valid bound.
+
+        EXAMPLES::
+
+            sage: U = Lattices(ZZ)("U")
+            sage: S = U.twist(ZZ(2))
+            sage: j = S.Emb(U).an_element()
+            sage: assert j.domain() is S and j.codomain() is U
+            sage: assert U.gram_tensor().pullback(j) == S.gram_tensor()
+            sage: assert j.index() == cardinal(2)
+            sage: T = Lattices(QQ)([[QQ(1)/4]])
+            sage: V = Lattices(QQ)([[1, 0], [0, 1]])
+            sage: j = T.Emb(V).an_element()
+            sage: assert V.gram_tensor().pullback(j) == T.gram_tensor()
+            sage: A = Lattices(AA)([[3, 1], [1, -2]])
+            sage: B = Lattices(AA)([[1, 0, 0], [0, 2, 0], [0, 0, -1]])
+            sage: j = A.Emb(B).an_element()
+            sage: assert j.domain() is A and j.codomain() is B
+            sage: assert B.gram_tensor().pullback(j) == A.gram_tensor()
+            sage: P = Lattices(AA)([[1, 0], [0, 1]])
+            sage: H = Lattices(AA)([[1, 0], [0, -1]])
+            sage: P.Emb(H).an_element()  # doctest: +ELLIPSIS
+            Traceback (most recent call last):
+            ...
+            ValueError: there is no lattice embedding of ... into ...
+            sage: Z = Lattices(QQ)(0)
+            sage: assert Z.Emb(V).is_empty() is False
+            sage: assert Z.Emb(V).an_element().domain() is Z
+            sage: assert V.Emb(Z).is_empty() is True
+            sage: P = U.twist(ZZ(2))
+            sage: S = U.twist(ZZ(4))
+            sage: j = S.Emb(P).an_element()
+            sage: assert j.domain() is S and j.codomain() is P
+            sage: assert P.gram_tensor().pullback(j) == S.gram_tensor()
+            sage: assert j.index() == cardinal(2)
+        """
+        if self.domain().module_rank() == cardinal(0):
+            return self(())
+        if self.codomain().module_rank() == cardinal(0):
+            raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
         if self._codomain_is_definite_over_integers():
             for embedding in self:
                 return embedding
             raise ValueError(f"there is no lattice embedding of {self.domain()} into {self.codomain()}")
         source = self.domain()
         target = self.codomain()
-        if source.module_rank().is_finite() and target.module_rank().is_finite() and source.module_rank() == target.module_rank():
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
+
+        if (
+            source.base_ring() in (_owned_real_algebraic_numbers(), RR)
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            return self._real_embedding()
+        if (
+            source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.module_rank() == target.module_rank()
+            and (
+                source.base_ring() in OwnedFields()
+                or source.Isom(target).is_empty() is False
+            )
+        ):
             isometry = source.Isom(target).an_element()
             return self(tuple(isometry(source.module_generator(label)) for label in source.module_generating_set()))
         target_embedding_data = self._target_primitive_embedding_data()
-        if target_embedding_data is not None:
+        if target_embedding_data is not None and target_embedding_data is not False:
             return self._target_primitive_embedding()
         if self._codomain_is_even_unimodular_indefinite():
             if self.is_empty():
@@ -2142,11 +2684,41 @@ class LatticeEmbeddingMor(CategoricalMor):
                 f"lattice {self.codomain()}, but no even overlattice of {self.domain()} "
                 f"yielded a primitive embedding"
             )
+        if (
+            source.base_ring() is _owned_integers()
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+            and target.is_nondegenerate()
+        ):
+            factorization = self._integral_embedding_factorization()
+            if factorization is False:
+                raise ValueError(f"there is no lattice embedding of {source} into {target}")
+            inclusion, embeddings = factorization
+            primitive = embeddings.an_element()
+            composite = primitive.module_morphism() * inclusion.module_morphism()
+            embedding = self.element_class(self, composite)
+            embedding.validate_linearity(check=False)
+            embedding.validate_form_preservation(check=False)
+            embedding.validate_injectivity(check=False)
+            return embedding
+        if (
+            source.base_ring() in (_owned_integers(), _owned_rationals())
+            and source.module_rank().is_finite()
+            and target.module_rank().is_finite()
+            and source.is_nondegenerate()
+        ):
+            if source.base_ring() is _owned_rationals() and self._emptiness_decision() is True:
+                raise ValueError(f"there is no lattice embedding of {source} into {target}")
+            for embedding in self:
+                return embedding
+            raise ValueError(f"there is no lattice embedding of {source} into {target}")
         assert False, (
             f"cannot construct an embedding of {self.domain()} into {self.codomain()}: "
-            f"embeddings are constructed only into definite targets over ZZ, targets of equal "
-            f"rank, indefinite targets OSCAR classifies, and even unimodular indefinite "
-            f"targets, and {self.codomain()} is none of these"
+            f"embeddings are constructed only into definite targets over ZZ, isometric targets of equal "
+            f"rank, finite-dimensional spaces of equal dimension over fields, indefinite targets OSCAR classifies, and even unimodular indefinite "
+            f"targets, or searched exhaustively in finite rank over ZZ and QQ with nondegenerate source; "
+            f"{self.domain()} -> {self.codomain()} meets none of these hypotheses"
         )
 
 
@@ -2623,11 +3195,14 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             raise ValueError(f"action={action!r} applies only to sublattices; {target} is not a sublattice of {lattice}, and a vector or a family is stabilized up to reindexing")
         if element_parent(target) is not lattice:
             return self._family_stabilizer(target)
-        return StabilizerSubgroups(self)(
+        stabilizer = StabilizerSubgroups(self)(
             target,
             self.natural_module_action_functor(),
             lambda automorphism: automorphism(target) == target,
             description=f"g fixes {target}",
+        )
+        return stabilizer.select_group_generators(
+            lambda: self.vector_stabilizer_generators(target)
         )
 
     @cached_method(key=lambda self, family: id(family))
@@ -2717,12 +3292,19 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         )
         source = embedding.domain()
         embedded = tuple(embedding(generator) for generator in source.module_generators())
-        return StabilizerSubgroups(self)(
+        stabilizer = StabilizerSubgroups(self)(
             embedding,
             self.natural_module_action_functor(),
             lambda automorphism: all(automorphism(vector) == vector for vector in embedded),
             description=f"g fixes {embedding} pointwise",
         )
+        if int(source.module_rank()) == 1:
+            category = CosliceCategory(lattice.lattice_category(), source)
+            marked = category.object(embedding)
+            stabilizer.select_group_generators(
+                lambda: self._marking_stabilizer_generators(category, marked, stabilizer)
+            )
+        return stabilizer
 
     def setwise_stabilizer(self, embedding):
         r"""Return \(\{g\in O(L): g(I)=I\}\) for \(\iota:I\hookrightarrow L\).
@@ -2748,11 +3330,20 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             inverse = automorphism.inverse()
             return all(embedding.is_in_image(automorphism(vector)) and embedding.is_in_image(inverse(vector)) for vector in embedded)
 
-        return StabilizerSubgroups(self)(
+        stabilizer = StabilizerSubgroups(self)(
             embedding,
             self.natural_module_action_functor(),
             preserves_image,
             description=f"g(im({embedding}))=im({embedding})",
+        )
+        from dzack_research.preamble.categories.abstract_categories.products import (
+            FiniteOrdinalCategory,
+        )
+
+        category = Cat().Mor(FiniteOrdinalCategory(2), lattice.lattice_category())
+        marked = category.object(embedding)
+        return stabilizer.select_group_generators(
+            lambda: self._marking_stabilizer_generators(category, marked, stabilizer)
         )
 
     def _assert_definite_over_integers(self, operation: str) -> None:
@@ -3327,7 +3918,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                     (
                         codomain.scalar_multiple(_owned_engine_element(ring, coefficient), generator)
                         for coefficient, generator in zip(column, codomain_generators, strict=True)
-                        if coefficient
                     ),
                     codomain.zero(),
                 )
@@ -3345,7 +3935,6 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
                         for coefficient, generator in zip(
                             column, domain_generators, strict=True
                         )
-                        if coefficient
                     ),
                     domain.zero(),
                 )
@@ -3368,7 +3957,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         citation of what established nonemptiness.  No isometry is
         constructed here; :meth:`an_element` constructs one on request.
 
-        After the invariant obstructions the decision compares the owned
+        The radical of a finite free ``ZZ``-lattice is saturated, so the
+        lattice splits as its nondegenerate quotient and a zero-form free
+        summand.  After comparing ranks and signatures, a degenerate pair
+        is therefore isometric exactly when its radical quotients are.
+
+        Over ZZ, after the invariant obstructions the decision compares the owned
         genera, ``L.genus() == M.genus()`` (equal signature and canonical
         ``ZZ_p``-symbols at every ``p | 2d``)
         [CS99, Ch. 15, §7, Thms 9-10; extraction
@@ -3390,6 +3984,12 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
           l.13-16] equals ``1/|O(L)|`` is the one class of ``L``; otherwise
           the exact equivalence search of :meth:`_witness_matrix` decides
           [CS99, Ch. 15, §10-§11, l.12775, l.12905].
+
+        Over QQ and AA, finite-dimensional nondegenerate endpoints of equal dimension
+        are isometric exactly when one embeds into the other. The embedding
+        decision uses Witt cancellation, as stated in
+        :meth:`LatticeEmbeddingMor._emptiness_decision`, independently of
+        integral genera and without constructing an isometry.
         """
         domain = self.domain()
         codomain = self.codomain()
@@ -3402,6 +4002,19 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             return (True, None)
         if domain.signature_pair() != codomain.signature_pair():
             return (True, None)
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
+
+        if (
+            domain.base_ring() in (_owned_rationals(), _owned_real_algebraic_numbers(), RR)
+            and domain.is_nondegenerate()
+            and codomain.is_nondegenerate()
+        ):
+            empty = domain.Emb(codomain).is_empty()
+            assert empty is True or empty is False, (
+                "Witt cancellation must decide isometry for these finite-dimensional nondegenerate field endpoints"
+            )
+            return (empty, None if empty else "Witt cancellation for nondegenerate spaces of equal dimension")
         if _engine_ring(domain.base_ring()) is not SageZZ or _engine_ring(codomain.base_ring()) is not SageZZ:
             return (undecided, None)
 
@@ -3414,6 +4027,13 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         if domain.is_nondegenerate() != codomain.is_nondegenerate():
             return (True, None)
         if not domain.is_nondegenerate():
+            quotient_empty = domain.radical_quotient().Isom(
+                codomain.radical_quotient()
+            ).is_empty()
+            if quotient_empty is True:
+                return (True, None)
+            if quotient_empty is False:
+                return (False, "isometric nondegenerate quotients and equal-rank split radicals")
             return (undecided, None)
         if domain.is_even() != codomain.is_even():
             return (True, None)
@@ -3482,6 +4102,39 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
 
         The engine's matrix is an untrusted answer; the isometry's own
         form-square validator checks it under strict checking (OWN-22).
+
+        Over QQ, after deciding existence, the complete rational embedding
+        iterator finds a witness. Over AA and RR, matching
+        diagonal signs gives the map and its reciprocal-scale inverse
+        directly. Equal finite dimensions make the matching bijective;
+        retain both module maps in the module core. No integral Gram
+        conversion or rational-point enumeration over AA is involved.
+
+        EXAMPLES::
+
+            sage: T = Lattices(QQ)([[QQ(1)/4]])
+            sage: L = Lattices(QQ)([[1]])
+            sage: phi = T.Isom(L).an_element()
+            sage: assert phi.domain() is T and phi.codomain() is L
+            sage: assert L.gram_tensor().pullback(phi) == T.gram_tensor()
+            sage: assert all(phi.inverse()(phi(v)) == v for v in T.module_generators())
+            sage: assert all(phi(phi.inverse()(v)) == v for v in L.module_generators())
+            sage: assert Lattices(QQ)([[3]]).Isom(L).is_empty() is True
+            sage: j = T.Emb(L).an_element()
+            sage: assert L.gram_tensor().pullback(j) == T.gram_tensor()
+            sage: A = Lattices(AA)([[3]])
+            sage: B = Lattices(AA)([[1]])
+            sage: psi = A.Isom(B).an_element()
+            sage: assert B.gram_tensor().pullback(psi) == A.gram_tensor()
+            sage: assert all(psi.inverse()(psi(v)) == v for v in A.module_generators())
+            sage: assert all(psi(psi.inverse()(v)) == v for v in B.module_generators())
+            sage: assert Lattices(AA)([[-1]]).Isom(B).is_empty() is True
+            sage: A = Lattices(RR).Nondegenerate()([[RR.pi()]])
+            sage: B = Lattices(RR).Nondegenerate()([[4*RR.pi()]])
+            sage: rho = A.Isom(B).an_element()
+            sage: assert rho.domain() is A and rho.codomain() is B
+            sage: assert all(rho.inverse()(rho(v)) == v for v in A.module_generators())
+            sage: assert all(rho(rho.inverse()(v)) == v for v in B.module_generators())
         """
         empty, reason = self._isometry_decision()
         assert empty is True or empty is False, f"cannot decide whether {self.domain()} and {self.codomain()} are isometric, so no isometry between them can be returned"
@@ -3491,11 +4144,27 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         codomain = self.codomain()
         if domain is codomain:
             return self.identity()
+        from dzack_research.preamble.categories.rings.ring_foundation import _owned_real_algebraic_numbers
+        from dzack_research.preamble.rings.real import RR
+
+        if domain.base_ring() in (_owned_real_algebraic_numbers(), RR):
+            return self._real_embedding()
+        if domain.base_ring() is _owned_rationals():
+            embeddings = domain.Emb(codomain)
+            embedding = next(iter(embeddings))
+            forward = embedding.module_morphism()
+            inverse = forward.inverse()
+            module_isomorphism = domain.module_category().Core().Mor(domain, codomain)(
+                forward, inverse,
+            )
+            return self.element_class(self, module_isomorphism)
         domain_gram, codomain_gram = self._engine_grams()
         if domain_gram == codomain_gram:
             return self._isometry_from_column_matrix(domain_gram.parent().one())
         signature = domain.signature_pair()
-        if signature.first() == 0 or signature.second() == 0 or int(domain.module_rank()) == 2:
+        if domain.is_nondegenerate() and (
+            signature.first() == 0 or signature.second() == 0 or int(domain.module_rank()) == 2
+        ):
             transformation = self._witness_matrix()
             assert transformation is not False, (
                 f"{domain} and {codomain} are isometric by {reason}, but the equivalence search found no isometry"

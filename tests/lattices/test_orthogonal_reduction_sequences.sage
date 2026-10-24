@@ -206,7 +206,7 @@ def test_two_u_eichler_model_can_wrap_existing_biproduct_without_rebuilding() ->
 def test_two_u_eichler_model_retains_every_remaining_biproduct_factor() -> None:
     first_complement = Lattices(ZZ)("A1")
     second_complement = Lattices(ZZ)("A2")
-    lattice = Lattices(ZZ).biproduct(
+    lattice = Lattices(ZZ).orthogonal_sum(
         (
             Lattices(ZZ)("U"),
             Lattices(ZZ)("U"),

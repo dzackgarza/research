@@ -78,7 +78,7 @@ class TwoUEichlerModel(SageObject):
         category = Lattices(ZZ)
         plane = category("U")
         self._orthogonal_complement = orthogonal_complement
-        self._lattice = category.biproduct((plane, plane, orthogonal_complement))
+        self._lattice = category.orthogonal_sum((plane, plane, orthogonal_complement))
         self._hyperbolic_inclusions = (self._lattice.injection(0), self._lattice.injection(1))
         self._selected_complement_inclusion = self._lattice.injection(2)
 
@@ -117,7 +117,7 @@ class TwoUEichlerModel(SageObject):
         elif len(remaining) == 1:
             complement = remaining[0].domain()
         else:
-            complement = category.biproduct(tuple(inclusion.domain() for inclusion in remaining))
+            complement = category.orthogonal_sum(tuple(inclusion.domain() for inclusion in remaining))
         images = tuple(inclusion(point) for inclusion in remaining for point in inclusion.domain().module_generators())
         result = cls.__new__(cls)
         result._orthogonal_complement = complement

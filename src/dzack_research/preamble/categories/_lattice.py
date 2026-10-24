@@ -48,6 +48,7 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedRings,
     _engine_element,
     _engine_ring,
+    _linear_algebra_ring,
     _own_ring,
     _owned_integers,
 )
@@ -192,21 +193,35 @@ def _form_of_gram(module, gram):
 
     At finite rank \(b(e_i,e_j)\) is the component of ``gram`` at \((i,j)\),
     the positions of the framing's enumeration.  At infinite rank \(b\) is the
-    pairing rule of the presentation evaluated on finite supports.  Either way
-    the result is an element of ``module.bilinear_forms(R)``, the Mor out of
-    the tensor square.
+    pairing rule of the presentation evaluated on finite supports. The Mor
+    out of the tensor square takes values in ``R`` when it is an ``R``-module,
+    and otherwise in its canonical regular-module realization.
     """
     ring = module.base_ring()
-    forms = module.bilinear_forms(ring)
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import (
+        _as_module_element,
+        _represented_module,
+    )
+
+    values = _represented_module(ring, ring)
+    forms = module.bilinear_forms(values)
     rank = module.module_rank()
     match rank.is_finite():
         case True:
-            # The selected covariant tensor *is* the finite form's defining
-            # data.  Its universal Hom retains that exact tensor rather than
-            # lowering it to rows and recovering it from generator images.
-            return forms(gram)
+            # When the ring is already its own module, the selected tensor is
+            # the form's defining datum. Otherwise its scalar entries enter
+            # the ring's canonical regular-module realization.
+            if values is ring:
+                return forms(gram)
+            size = int(rank)
+            return forms([
+                [_as_module_element(ring, ring, gram[i, j]) for j in range(size)]
+                for i in range(size)
+            ])
         case False:
-            form = forms(lambda left, right: gram(left, right))
+            form = forms(
+                lambda left, right: _as_module_element(ring, ring, gram(left, right))
+            )
             # This is the supplied exact infinite Gram construction, including
             # its justified invariants, not a finite observation of the form.
             form.gram_tensor.set_cache(gram)
@@ -230,10 +245,19 @@ def _gram_determinant(gram, ring):
     r"""\(\det G\) of a finite Gram presentation, in the framing's enumeration.
 
     Computed by Sage's matrix determinant on the presentation's components
-    (`OWN-06`) and raised into ``ring``.
+    (`OWN-06`) and raised into ``ring``. Represented exact reals use their
+    owned determinant computation because Sage matrix spaces reject RR.
     """
-    determinant = _gram_engine_matrix(gram).determinant()
-    return _owned_engine_element(ring, _engine_ring(ring)(determinant))
+    from dzack_research.preamble.rings.real import RR
+
+    if ring is RR:
+        size = int(_gram_rank(gram))
+        return RR._matrix_determinant(
+            tuple(tuple(gram[i, j] for j in range(size)) for i in range(size))
+        )
+    components = _gram_engine_matrix(gram)
+    determinant = components.determinant()
+    return _owned_engine_element(ring, determinant)
 
 
 def _regular_scalar(scalar, ring):
@@ -246,13 +270,14 @@ def _regular_scalar(scalar, ring):
     """
     from dzack_research.preamble.categories.rings.ring_foundation import IntegralDomains
 
-    if scalar.is_unit():
+    unit = scalar.is_unit()
+    if unit is True:
         return True
     if ring in IntegralDomains():
         return scalar != ring.zero()
     if ring in FiniteSets():
-        return False
-    if scalar == ring.zero():
+        return unit
+    if (scalar == ring.zero()) is True:
         return False
     return AtomicProposition("is_regular", scalar, ring)
 
@@ -281,7 +306,7 @@ def _gram_is_unimodular(gram, ring):
     """
     match _gram_rank(gram).is_finite():
         case True:
-            return bool(_gram_determinant(gram, ring).is_unit())
+            return _gram_determinant(gram, ring).is_unit()
         case False:
             return gram.is_unimodular()
 
@@ -307,13 +332,15 @@ def _gram_is_even(gram, ring):
     match ring in OwnedRings().Commutative():
         case False:
             return AtomicProposition("is_even", gram)
+    if ring(2).is_unit() is True:
+        return True
     twice = ring.ideal(ring(2))
     match rank.is_finite():
         case True:
             size = int(rank)
             components = gram._flat_components()
-            return all(
-                components[index * size + index] in twice
+            return conjunction(
+                twice.is_parent_of(components[index * size + index])
                 for index in range(size)
             )
         case False:
@@ -1231,7 +1258,7 @@ def _diagonal_gram(module, exceptions, default=1):
     return _DiagonalGram(resolved, stored, resolved.base_ring()(default))
 
 
-def _orthogonal_sum(summands):
+def _orthogonal_sum(summands, base_ring=None):
     r"""\(\bigoplus_{i\in I} L_i\), in the concatenated basis.
 
     The sum is taken over the family's index set, so three summands are
@@ -1244,22 +1271,27 @@ def _orthogonal_sum(summands):
     and a trailing infinite summand.  Two infinite summands are not this
     concatenation, and are not constructed.
 
-    The sum of \(R\)-lattices is an \(R\)-lattice, so the base ring is read
-    off the summands rather than supplied.  The result is placed in
-    ``BiproductLattices(R)`` with the summand family as its datum.
+    The sum of \(R\)-lattices is an \(R\)-lattice. The ambient category
+    supplies its base ring, or a nonempty family's first summand supplies
+    it. An empty family requires the ambient base ring. The result is placed in
+    ``OrthogonalSumLattices(R)`` with the summand family as its datum.
     """
     from dzack_research.preamble.categories.abstract_categories.products import (
         _finite_factor_family,
     )
 
     summands = _finite_factor_family(summands, name="Orthogonal summands")
-    return _orthogonal_sum_on_family(summands)
+    if base_ring is None:
+        blocks = tuple(summands)
+        assert blocks, "an empty orthogonal sum requires the ambient base ring"
+        base_ring = blocks[0].base_ring()
+    return _orthogonal_sum_on_family(summands, base_ring)
 
 
-@cached_function(key=lambda summands: (
-    id(summands.index_set()), tuple(id(summand) for summand in summands),
+@cached_function(key=lambda summands, ring: (
+    id(ring), id(summands.index_set()), tuple(id(summand) for summand in summands),
 ))
-def _orthogonal_sum_on_family(summands):
+def _orthogonal_sum_on_family(summands, ring):
     r"""The selected biproduct on this finite indexed family of actual lattices.
 
     Retain the index set and every component object, so the direct-sum
@@ -1267,30 +1299,36 @@ def _orthogonal_sum_on_family(summands):
     same endpoints. Distinct index sets or component objects stay distinct.
     """
     from dzack_research.preamble.categories.lattices import (
-        BiproductLattices,
+        OrthogonalSumLattices,
         Lattices,
     )
+    from dzack_research.preamble.categories.modules.framed.formed.form_modules import FormModules
 
     blocks = tuple(summands)
-    assert blocks, f"cannot form the orthogonal sum of {summands}: the family of summands is empty"
-    ring = blocks[0].base_ring()
     category = Lattices(ring)
     assert all(block in category for block in blocks), (
-        f"cannot form the orthogonal sum of {summands}: every summand must be a lattice over {ring}, the base ring of the first summand {blocks[0]}"
+        f"cannot form the orthogonal sum of {summands}: every summand must be a lattice over {ring}"
     )
     ranks = tuple(cardinal(block.module_rank()) for block in blocks)
     assert all(rank.is_finite() for rank in ranks[:-1]), (
         f"cannot form the orthogonal sum of {summands} with ranks {ranks}: only the last summand may have infinite rank, because the bases are concatenated in order"
     )
     offsets = _block_offsets(ranks)
-    total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
+    if not ranks:
+        total = cardinal(0)
+    else:
+        total = ranks[-1] if not ranks[-1].is_finite() else cardinal(offsets[-1] + int(ranks[-1]))
 
+    extra_categories = [OrthogonalSumLattices(ring)]
+    nondegenerate = FormModules(ring).Nondegenerate()
+    if all(block in nondegenerate for block in blocks):
+        extra_categories.append(nondegenerate)
     module = ring.free_module(_generating_set_for(total, None, None))
     return _lattice_object(
         category,
         module,
         _BiproductGram(module, summands, offsets),
-        extra_categories=(BiproductLattices(ring),),
+        extra_categories=tuple(extra_categories),
         construction_data={"biproduct_factors": summands},
     )
 
@@ -1371,14 +1409,87 @@ def signature_pair(positive, negative):
     return signature_pairs().pair(cardinal(positive), cardinal(negative))
 
 
+def _congruence_diagonal_form(gram: Tensor):
+    r"""Compute Sage's diagonal form and change of basis with exact scalar tests.
+
+    For RR coefficients use RR itself as the coefficient
+    field of Sage's generic arithmetic. Its equality and division refuse
+    undecided predicates. Converting to SR before choosing pivots would
+    instead use symbolic truth conversion, even if the final diagonal
+    signs were later checked in RR. Selected exact computation fields
+    remain available through the shared linear-algebra scalar choice.
+    """
+    ring = gram.base_ring()
+    field = _linear_algebra_ring(ring)
+    components = _engine_component_matrix(gram).change_ring(field)
+    return QuadraticForm(field, components).rational_diagonal_form(return_matrix=True)
+
+
 def _sylvester(gram: Tensor):
     r"""Return $(p,q)$ by Sylvester's law over the represented ordered fraction field."""
     field = _ordered_fraction_field(gram.base_ring())
+    from dzack_research.preamble.rings.real import RR
+
+    if gram.base_ring() is RR:
+        if _gram_is_nondegenerate(gram, RR) is not True:
+            raise NotImplementedError(
+                "represented-real inertia requires a known nonsingular Gram presentation"
+            )
+        return _nonsingular_real_signature(gram)
     engine_gram = _engine_component_matrix(gram).change_ring(field)
-    positive, negative, _radical = QuadraticForm(
-        field, engine_gram
-    ).signature_vector()
+    form = QuadraticForm(field, engine_gram)
+    positive, negative, _radical = form.signature_vector()
     return signature_pair(int(positive), int(negative))
+
+
+def _nonsingular_real_signature(gram: Tensor):
+    r"""Compute inertia from convergent Arb enclosures of a nonsingular Gram.
+
+    Protected computation for finite symmetric forms already placed as
+    nondegenerate over RR. Closed expressions must admit convergent Arb
+    evaluation. No singular-input decision or diagonalizing map is supplied.
+    See docs/theory/hyperbolic-index.md for the inverse-norm perturbation
+    proof. Sage supplies ball evaluation, rational inversion and inertia;
+    this routine composes those operations with the proved stopping test.
+    """
+    from sage.matrix.constructor import matrix
+    from sage.rings.real_arb import RealBallField
+    from dzack_research.preamble.rings.real import RR
+
+    size = int(_gram_rank(gram))
+    if size == 0:
+        return signature_pair(0, 0)
+    entries = {
+        (i, j): RR(gram[i, j])
+        for i in range(size) for j in range(i, size)
+    }
+    precision = 128
+    while True:
+        balls = {
+            indices: RealBallField(precision)(entry)
+            for indices, entry in entries.items()
+        }
+        precision *= 2
+        # A domain-sensitive expression may have an unbounded enclosure
+        # at low precision. Refine it; never interpret that as a sign.
+        if not all(ball.is_finite() for ball in balls.values()):
+            continue
+        approximate = matrix(QQ, size, size)
+        errors = matrix(QQ, size, size)
+        for (i, j), ball in balls.items():
+            lower, upper = ball.endpoints()
+            lower = lower.exact_rational()
+            upper = upper.exact_rational()
+            approximate[i, j] = approximate[j, i] = (lower + upper) / 2
+            errors[i, j] = errors[j, i] = (upper - lower) / 2
+        error = max(sum(row) for row in errors.rows())
+        if approximate.determinant() == 0:
+            continue
+        inverse = approximate.inverse()
+        inverse_norm = max(sum(abs(entry) for entry in row) for row in inverse.rows())
+        if inverse_norm * error < 1:
+            positive, negative, _radical = QuadraticForm(QQ, approximate).signature_vector()
+            return signature_pair(int(positive), int(negative))
 
 
 def _signature_pair_of_gram(gram: Tensor):

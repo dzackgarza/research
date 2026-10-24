@@ -66,6 +66,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _OwnedRingParent,
     _engine_element,
     _engine_ring,
+    _linear_algebra_ring,
+    _linear_algebra_element,
     _own_ring,
     _owned_ring,
     RingMor,
@@ -5607,7 +5609,7 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             _left, right = self._binary_biproduct_labels()
             return self.projection(right)
 
-        def from_coproduct_cocone(self, legs):
+        def from_coproduct_cocone(self, legs, *, codomain=None):
             r"""The unique map \(\bigoplus_i M_i \to X\) with the stated legs.
 
             A cocone under the biproduct is the family of legs
@@ -5615,6 +5617,9 @@ class BiproductModules(OwnedCategoryOverBaseRing):
             the datum this takes.  A generator of the biproduct lies in one
             factor and remembers which, so its image is the value of that
             index's leg.
+
+            Supply ``codomain`` for an empty family, whose legs alone do
+            not determine its apex.
             """
             factors = self.biproduct_factors()
             legs = _finite_factor_family(legs, name="Coproduct cocone legs")
@@ -5622,7 +5627,11 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 f"a map out of the direct sum {self} needs one map for each summand, but the maps are indexed "
                 f"by {legs.index_set()} and the summands by {factors.index_set()}"
             )
-            target = legs[factors.index_set().ranking_map().inverse()(0)].codomain()
+            target = codomain
+            if target is None:
+                if factors.index_set().cardinality() == cardinal(0):
+                    raise ValueError("an empty coproduct cocone needs its codomain")
+                target = legs[factors.index_set().ranking_map().inverse()(0)].codomain()
             assert all(leg.codomain() is target for leg in legs), (
                 f"a map out of the direct sum {self} needs maps into one module, but the maps {legs} "
                 f"do not all have codomain {target}"
@@ -5641,13 +5650,16 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 )
             )
 
-        def from_product_cone(self, legs):
+        def from_product_cone(self, legs, *, domain=None):
             r"""The unique map \(X \to \prod_i M_i\) with the stated legs.
 
             A cone over the biproduct is the family of legs
             \(f_i : X \to M_i\), indexed the way the factors are.  The image
             of a generator of the apex is the sum over the index set of the
             coordinates of its images, each placed at its own index.
+
+            Supply ``domain`` for an empty family, whose legs alone do
+            not determine its apex.
             """
             factors = self.biproduct_factors()
             legs = _finite_factor_family(legs, name="Product cone legs")
@@ -5655,7 +5667,11 @@ class BiproductModules(OwnedCategoryOverBaseRing):
                 f"a map into the direct sum {self} needs one map for each summand, but the maps are indexed "
                 f"by {legs.index_set()} and the summands by {factors.index_set()}"
             )
-            source = legs[factors.index_set().ranking_map().inverse()(0)].domain()
+            source = domain
+            if source is None:
+                if factors.index_set().cardinality() == cardinal(0):
+                    raise ValueError("an empty product cone needs its domain")
+                source = legs[factors.index_set().ranking_map().inverse()(0)].domain()
             assert all(leg.domain() is source for leg in legs), (
                 f"a map into the direct sum {self} needs maps from one module, but the maps {legs} "
                 f"do not all have domain {source}"
@@ -6027,6 +6043,13 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"the determinant of {self} is not defined: the matrix has shape {self.parent().matrix_shape()}, not square"
                 )
+            from dzack_research.preamble.rings.real import RR
+
+            if self.parent().base_ring() is RR:
+                return RR._matrix_determinant(tuple(
+                    tuple(self.matrix_entry(row, column) for column in self.parent().column_index_set())
+                    for row in self.parent().row_index_set()
+                ))
             backend = _engine_matrix(self)
             return _owned_engine_element(self.parent().base_ring(), backend.det())
 
@@ -6067,12 +6090,12 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
             ring = self.parent().base_ring()
             coordinates = target.to_vector()
             rhs = sage_vector(
-                _engine_ring(ring),
-                [_engine_element(ring, coordinates(label)) for label in self.parent().row_index_set()],
+                _linear_algebra_ring(ring),
+                [_linear_algebra_element(ring, coordinates(label)) for label in self.parent().row_index_set()],
             )
             solution = _engine_matrix(self).solve_right(rhs)
             return self.domain().linear_combination(
-                {label: _owned_engine_element(ring, solution[position]) for position, label in enumerate(self.parent().column_index_set()) if solution[position]}
+                {label: _owned_engine_element(ring, solution[position]) for position, label in enumerate(self.parent().column_index_set())}
             )
 
         def _kernel_spanning_family(self):
@@ -6137,13 +6160,43 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
                     name=f"Localized kernel spanning family of {self}",
                 )
 
-            basis = _engine_matrix(self).right_kernel().basis_matrix()
+            from dzack_research.preamble.rings.real import RR
+
+            if ring is RR:
+                labels = tuple(self.parent().column_index_set())
+                rows = tuple(
+                    tuple(self.matrix_entry(row, column) for column in labels)
+                    for row in self.parent().row_index_set()
+                )
+                reduced, pivots = _represented_real_rref(rows, len(labels), ring)
+                free = tuple(column for column in range(len(labels)) if column not in pivots)
+                positions = Sets.Δ[len(free) - 1]
+
+                def kernel_vector(position):
+                    values = [ring.zero()] * len(labels)
+                    column = free[int(position)]
+                    values[column] = ring.one()
+                    for row, pivot in enumerate(pivots):
+                        values[pivot] = -reduced[row][column]
+                    return self.domain().linear_combination(
+                        dict(zip(labels, values, strict=True))
+                    )
+
+                return finite_indexed_family(
+                    positions,
+                    kernel_vector,
+                    name=f"Kernel spanning family of {self}",
+                )
+
+            basis = _engine_matrix(self).change_ring(
+                _linear_algebra_ring(ring)
+            ).right_kernel().basis_matrix()
             labels = self.parent().column_index_set()
             positions = Sets.Δ[int(basis.nrows()) - 1]
             return finite_indexed_family(
                 positions,
                 lambda position: self.domain().linear_combination(
-                    {label: _owned_engine_element(ring, basis[int(position), column]) for column, label in enumerate(labels) if basis[int(position), column]}
+                    {label: _owned_engine_element(ring, basis[int(position), column]) for column, label in enumerate(labels)}
                 ),
                 name=f"Kernel spanning family of {self}",
             )
@@ -6209,14 +6262,32 @@ class MatrixSpaces(OwnedCategoryOverBaseRing):
         T = transpose
 
         def inverse(self):
-            r"""Return the inverse matrix morphism with reversed endpoints."""
+            r"""Return the inverse matrix morphism with reversed endpoints.
+
+            Exact scalar comparisons and division are retained through
+            the generic computation when a symbolic model is inexact.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: V = RR ** 2
+                sage: A = V.module_category().Mor(V, V).from_rows(((RR.pi(), 1), (0, 1)))
+                sage: B = A.inverse()
+                sage: assert B.domain() is V and B.codomain() is V
+                sage: assert all(A(B(v)) == v and B(A(v)) == v for v in V.module_generators())
+                sage: Z = RR ** 0
+                sage: z = Z.module_category().Mor(Z, Z).from_rows(())
+                sage: assert z.inverse()(Z.zero()) == Z.zero()
+            """
             if self.parent().nrows() != self.parent().ncols():
                 raise ValueError(
                     f"{self} has no inverse: the matrix has shape {self.parent().matrix_shape()}, not square"
                 )
 
-            backend = _engine_matrix(self).inverse()
             ring = self.parent().base_ring()
+            backend = _engine_matrix(self).change_ring(
+                _linear_algebra_ring(ring)
+            ).inverse()
             source = self.codomain()
             codomain = self.domain()
             target = _require_matrix_mor(source.module_category().Mor(source, codomain))
@@ -6432,6 +6503,39 @@ def _matrix_index(index_set, key):
     return index_set(key)
 
 
+def _represented_real_rref(coefficients, column_count, ring):
+    r"""Reduce owned real rows, refusing a pivot whose zero status is unknown."""
+    rows = [list(row) for row in coefficients]
+    pivots = []
+    for column in range(column_count):
+        candidates = tuple(
+            row for row in range(len(pivots), len(rows))
+            if (rows[row][column] == ring.zero()) is False
+        )
+        if not candidates:
+            assert all(
+                (rows[row][column] == ring.zero()) is True
+                for row in range(len(pivots), len(rows))
+            ), "the real linear-system pivot is undecided"
+            continue
+        pivot_row = len(pivots)
+        selected = candidates[0]
+        rows[pivot_row], rows[selected] = rows[selected], rows[pivot_row]
+        pivot = rows[pivot_row][column]
+        rows[pivot_row] = [ring._divide_by_nonzero(value, pivot) for value in rows[pivot_row]]
+        for row in range(len(rows)):
+            if row != pivot_row:
+                coefficient = rows[row][column]
+                rows[row] = [
+                    entry - coefficient * pivot_entry
+                    for entry, pivot_entry in zip(rows[row], rows[pivot_row], strict=True)
+                ]
+        pivots.append(column)
+        if len(pivots) == len(rows):
+            break
+    return tuple(tuple(row) for row in rows), tuple(pivots)
+
+
 def _engine_matrix(morphism):
     r"""Privately materialize the selected framed realization in one engine call.
 
@@ -6454,10 +6558,10 @@ def _engine_matrix(morphism):
         for column_label in parent.column_index_set()
     )
     return sage_matrix(
-        _engine_ring(ring),
+        _linear_algebra_ring(ring),
         parent.nrows(),
         parent.ncols(),
-        [_engine_element(ring, entry) for row in zip(*columns, strict=True) for entry in row],
+        [_linear_algebra_element(ring, entry) for row in zip(*columns, strict=True) for entry in row],
     )
 
 

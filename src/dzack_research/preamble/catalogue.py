@@ -395,7 +395,7 @@ def _orthogonal_sum(recipe):
         case (only,):
             return only
         case _:
-            return Lattices(ZZ).biproduct(blocks)
+            return Lattices(ZZ).orthogonal_sum(blocks)
 
 
 @cache

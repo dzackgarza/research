@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, TypeVar
 
 from sage.categories.category import Category
 from sage.misc.cachefunc import cached_method
+from sage.misc.prandom import randrange
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -457,6 +458,32 @@ class FiniteOrderedSets(OwnedCategory):
         )
 
     class ParentMethods:
+        def random_element(self):
+            r"""Sample uniformly from this nonempty finite enumerated set.
+
+            Each point has probability 1/|X|: draw a uniform integer rank
+            with Sage's pseudorandom generator and apply the inverse of
+            the retained ranking map. The support is exactly this finite
+            set. For a predicate subset first construct its finite
+            enumeration; this method does not sample from an unbounded
+            ambient set until a predicate happens to hold.
+
+            EXAMPLES::
+
+                sage: S = finite_ordered_set((ZZ(2), ZZ(5), ZZ(9)))
+                sage: assert S.random_element() in S
+                sage: assert finite_ordered_set((ZZ(7),)).random_element() == ZZ(7)
+                sage: finite_ordered_set(()).random_element()
+                Traceback (most recent call last):
+                ...
+                ValueError: cannot sample uniformly from the empty set
+            """
+            size = int(self.cardinality().finite_value())
+            if size == 0:
+                raise ValueError("cannot sample uniformly from the empty set")
+            ranking = self.ranking_map()
+            return ranking.inverse()(ranking.codomain()(randrange(size)))
+
         def filtered(self, predicate, *, name=None):
             r"""Return the ordered subset of this set cut out by ``predicate``."""
             subset = _filtered_ordered_set(self, predicate, name=name)

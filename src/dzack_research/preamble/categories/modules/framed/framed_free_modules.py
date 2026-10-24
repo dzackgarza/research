@@ -1,9 +1,11 @@
 """Free modules with their canonical framing."""
 
+from itertools import product
 from typing import TYPE_CHECKING
 
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.latex import latex
+from sage.misc.mrange import cantor_product as _engine_cantor_product
 from sage.misc.repr import repr_lincomb
 from sage.modules.free_module import FreeModule as _SageFreeModule
 from sage.rings.integer import Integer
@@ -25,6 +27,7 @@ from dzack_research.preamble.categories.modules.pure.modules import (
     ModuleSubobjects,
     ModulesWithChosenFinitePresentation,
     VectorSpaces,
+    _represented_real_rref,
     _require_matrix_mor,
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
@@ -37,9 +40,12 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _engine_element,
     _engine_numeral,
     _engine_ring,
+    _linear_algebra_ring,
+    _linear_algebra_element,
     _own_ring,
     _owned_ring,
     _owned_integers,
+    _owned_rationals,
 )
 from dzack_research.preamble.categories.sets.cardinals import (
     Cardinalities,
@@ -507,7 +513,25 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return self.module_category().Mor(self, codomain)
 
         def subobject_on(self, module_generating_set):
-            r"""Return the submodule spanned by the specified elements."""
+            r"""Return the submodule spanned by the specified elements.
+
+            EXAMPLES::
+
+                sage: from dzack_research.preamble.rings.real import RR
+                sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                sage: from dzack_research.preamble.logic import Predicate
+                sage: Q = _owned_rationals()
+                sage: a = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n))
+                sage: t = RR.of_cauchy(a)
+                sage: V = RR ** 2
+                sage: e, f = V.module_generators()
+                sage: S = V.subobject_on((e + t*f,))
+                sage: assert S.inclusion().codomain() is V
+                sage: image = S.inclusion()(S.module_generators()[0])
+                sage: label = tuple(V.module_generating_set())[1]
+                sage: assert isinstance(image.to_vector()(label) == RR.zero(), Predicate)
+            """
 
             return _module_subobject_on(self, module_generating_set)
 
@@ -643,6 +667,97 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
             return _kernel_arrow_functor(self.base_ring())
 
         class ParentMethods:
+            def coordinate_subset(self, coefficients):
+                r"""Return the finite set subobject with coordinates in ``coefficients``.
+
+                The basis is this module's selected finite framing, and
+                ``coefficients`` is a finite enumerated set of scalars.
+                The result retains its inclusion into the underlying set
+                of this module. Its ``inclusion().domain()`` supports finite iteration
+                and predicate filtering, independently of definiteness or
+                countability of the scalar ring.
+
+                For an integral coordinate box take coefficients -b,...,b.
+                For rational-height exhaustion use the finite set of a/d
+                with |a|<=b and 1<=d<=b, identifying repeated scalars.
+                These choices exhaust their respective finite free modules
+                as b increases, but a bound for excluding a mathematical
+                representation problem requires a separate theorem.
+
+                EXAMPLES::
+
+                    sage: M = ZZ ** 2
+                    sage: C = finite_ordered_set((ZZ(-1), ZZ(0), ZZ(1)))
+                    sage: box = M.coordinate_subset(C)
+                    sage: assert box.domain().cardinality() == cardinal(9)
+                    sage: assert box.inclusion().codomain() is M
+                    sage: assert all(box.inclusion()(v) == v for v in box.domain())
+                    sage: V = Lattices(AA)("U")
+                    sage: box = V.coordinate_subset(finite_ordered_set((AA(0), AA(1))))
+                    sage: assert box.domain().cardinality() == cardinal(4)
+                    sage: assert len(tuple(box.domain().condition_set(lambda v: V.q(v) == 0))) == 3
+                """
+                assert coefficients in Sets() and coefficients.is_finite() is True, (
+                    f"a finite coordinate subset needs a finite scalar set, not {coefficients}"
+                )
+                assert coefficients in EnumeratedSets(), (
+                    f"constructing a coordinate subset requires an enumeration of {coefficients}"
+                )
+                labels = self.module_generating_set()
+                assert labels in EnumeratedSets(), (
+                    f"constructing a coordinate subset requires an enumeration of the finite basis {labels}"
+                )
+                basis_labels = tuple(labels)
+                ring = self.base_ring()
+                scalars = tuple(ring(value) for value in coefficients)
+                return self.power_set()(
+                    self.linear_combination(dict(zip(basis_labels, coordinates, strict=True)))
+                    for coordinates in product(scalars, repeat=len(basis_labels))
+                )
+
+            def __iter__(self):
+                r"""Enumerate this finite free module over ZZ, QQ or a finite ring.
+
+                Use Sage's fair Cartesian-product enumeration of scalar
+                coordinates in the retained finite basis. Every vector
+                occurs after finitely many predecessors; rational
+                denominators are included. This does not choose a ranking
+                isomorphism or decide exhaustion of a filtered subset.
+                A zero module has just its zero vector over any base.
+                No exhaustive iterator is supplied over a real field.
+
+                EXAMPLES::
+
+                    sage: from itertools import islice
+                    sage: M = ZZ ** 2
+                    sage: points = tuple(islice(M, 9))
+                    sage: assert len(set(points)) == 9
+                    sage: assert M.zero() in points
+                    sage: T = Lattices(QQ)([[1]])
+                    sage: v = next(iter(T.elements_of_norm(QQ(1)/4)))
+                    sage: assert T.q(v) == QQ(1)/4
+                    sage: assert tuple(Lattices(QQ)(0)) == (Lattices(QQ)(0).zero(),)
+                """
+                labels = self.module_generating_set()
+                if labels.cardinality() == cardinal(0):
+                    yield self.zero()
+                    return
+                ring = self.base_ring()
+                assert ring in (_owned_integers(), _owned_rationals()) or ring.is_finite() is True, (
+                    f"enumerating {self} by scalar coordinates requires ZZ, QQ or a finite ring, not {ring}"
+                )
+                assert labels in EnumeratedSets(), (
+                    f"enumerating {self} requires an enumeration of its finite basis labels {labels}"
+                )
+                basis_labels = tuple(labels)
+                for coordinates in _engine_cantor_product(
+                    _engine_ring(ring), repeat=len(basis_labels)
+                ):
+                    yield self({
+                        label: _owned_engine_element(ring, coefficient)
+                        for label, coefficient in zip(basis_labels, coordinates)
+                    })
+
             def determinant_line(self):
                 r"""The top exterior power of this finite free module."""
                 from dzack_research.preamble.categories.modules.hodge import _determinant_line
@@ -735,6 +850,53 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                 return ring.ideal(ring.one() if int(index) >= rank else ring.zero())
 
             def _represented_kernel_of_morphism(self, morphism):
+                r"""Compute a kernel through the selected coordinate realization.
+
+                A stronger linear arrow keeps its own parent when read in
+                the module Mor. Its coordinate realization, rather than
+                Mor admission, supplies the matrix computation.
+
+                EXAMPLES::
+
+                    sage: L = Lattices(ZZ)([[4, 0], [0, 0]])
+                    sage: W = Lattices(ZZ)([[1]])
+                    sage: e, r = L.module_generators()
+                    sage: w = W.module_generators()[0]
+                    sage: f = L.Mor(W)((2*w, W.zero()))
+                    sage: K = f.kernel()
+                    sage: assert K.module_rank() == cardinal(1)
+                    sage: assert K.inclusion().codomain() is L
+                    sage: assert K.inclusion().is_in_image(r) is True
+                    sage: assert all(f(K.inclusion()(v)) == W.zero() for v in K.module_generators())
+                    sage: from dzack_research.preamble.rings.real import RR
+                    sage: V = RR ** 3
+                    sage: W = RR ** 1
+                    sage: e, f, g = V.module_generators()
+                    sage: w = W.module_generators()[0]
+                    sage: a = V.module_category().Mor(V, W)((RR.pi()*w, W.zero(), W.zero()))
+                    sage: K = a.kernel()
+                    sage: assert K.module_rank() == cardinal(2)
+                    sage: assert K.inclusion().codomain() is V
+                    sage: assert K.inclusion().is_in_image(f) is True
+                    sage: assert K.inclusion().is_in_image(g) is True
+                    sage: assert all(a(K.inclusion()(v)) == W.zero() for v in K.module_generators())
+                    sage: from dzack_research.preamble.categories.sets.set_categories import NN, Sets
+                    sage: from dzack_research.preamble.categories.rings.ring_foundation import _owned_rationals
+                    sage: from dzack_research.preamble.logic import Predicate
+                    sage: Q = _owned_rationals()
+                    sage: sequence = Sets().Mor(NN, Q)(lambda n: Q(1)/Q(2)**int(n))
+                    sage: t = RR.of_cauchy(sequence)
+                    sage: P = RR ** 2
+                    sage: e, f = P.module_generators()
+                    sage: b = P.module_category().Mor(P, W)((w, t*w))
+                    sage: N = b.kernel()
+                    sage: assert N.inclusion().codomain() is P
+                    sage: assert N.module_rank() == cardinal(1)
+                    sage: image = N.inclusion()(N.module_generators()[0])
+                    sage: labels = tuple(P.module_generating_set())
+                    sage: assert isinstance(image.to_vector()(labels[0]) == RR.zero(), Predicate)
+                    sage: assert image.to_vector()(labels[1]) == RR.one()
+                """
                 if morphism.domain() is not self:
                     return NotImplemented
                 codomain_is_zero = morphism.codomain().is_zero()
@@ -749,13 +911,14 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     # Retain its finite presentation and inclusion through
                     # the common presentation owner, not a PID span basis.
                     return _selected_presentation_kernel(morphism)
-                coordinate_matrix = self.module_category().Mor(
+                coordinate_mor = self.module_category().Mor(
                     self, morphism.codomain()
-                )(morphism)
+                )
                 from dzack_research.preamble.categories.modules.pure.modules import MatrixSpaces
 
-                if coordinate_matrix.parent() not in MatrixSpaces(self.base_ring()):
+                if coordinate_mor not in MatrixSpaces(self.base_ring()):
                     return NotImplemented
+                coordinate_matrix = morphism._framed_coordinate_morphism()
                 coordinate_generators = coordinate_matrix._kernel_spanning_family()
 
                 source_labels = tuple(self.module_generating_set())
@@ -771,11 +934,10 @@ class FramedFreeModules(OwnedCategoryOverBaseRing):
                     coordinates = coordinate_vector.to_vector()
                     return self.linear_combination(
                         {
-                            source_label: coefficient
+                            source_label: coordinates(coordinate_label)
                             for source_label, coordinate_label in zip(
                                 source_labels, coordinate_labels, strict=True
                             )
-                            if (coefficient := coordinates(coordinate_label))
                         }
                     )
 
@@ -984,7 +1146,7 @@ def _span_basis_elements(module, module_generating_set):
     if int(generators.cardinality()) == 1:
         generator = next(iter(generators))
         generator = generator if generator.parent() is module else module(generator)
-        if generator != module.zero():
+        if (generator != module.zero()) is True:
             # Over a PID, hence an integral domain, one nonzero vector is
             # automatically a basis of the cyclic submodule it generates.
             # Retain that mathematical basis instead of echelon-normalizing it;
@@ -993,9 +1155,30 @@ def _span_basis_elements(module, module_generating_set):
     support_labels = _finite_support_labels(module, generators)
     support_points = tuple(support_labels)
 
+    from dzack_research.preamble.rings.real import RR
+
+    if ring is RR:
+        rows = tuple(
+            tuple(
+                (candidate if candidate.parent() is module else module(candidate))
+                .to_vector()(label)
+                for label in support_points
+            )
+            for candidate in generators
+        )
+        reduced, pivots = _represented_real_rref(rows, len(support_points), ring)
+        positions = Sets.Δ[len(pivots) - 1]
+        return FiniteOrderedSets().from_indexed(
+            positions,
+            lambda position: module.linear_combination(
+                dict(zip(support_points, reduced[int(position)], strict=True))
+            ),
+            name=f"Canonical span basis in {module}",
+        )
+
     # Private finite backend serialization.  Only the finite support window is
     # materialized; the ambient framing itself is never enumerated.
-    engine = _engine_ring(ring)
+    engine = _linear_algebra_ring(ring)
     support_count = len(support_points)
     free = _SageFreeModule(engine, support_count)
     engine_rows = []
@@ -1004,7 +1187,7 @@ def _span_basis_elements(module, module_generating_set):
         coordinates = element.to_vector()
         engine_rows.append(
             [
-                _engine_element(
+                _linear_algebra_element(
                     ring,
                     coordinates(support_points[position]),
                 )
@@ -1185,7 +1368,6 @@ def _module_subobject_constructor_data(module, basis):
                         for support_module_label, support_point in zip(
                             support_module_labels, support_points, strict=True
                         )
-                        if coordinates(support_point)
                     }
                 )
                 for coordinates in (
@@ -1202,10 +1384,22 @@ def _module_subobject_constructor_data(module, basis):
         nonlocal coordinate_solver
         element = element if element.parent() is module else module(element)
         coordinates = element.to_vector()
-        if any(label not in support_labels for label in coordinates.support().domain()):
+        retained = coordinates.parent()._selected_module_coefficients(coordinates)
+        outside_zero = conjunction(
+            coefficient == ring.zero()
+            for label, coefficient in retained.items() if label not in support_labels
+        )
+        if outside_zero is False:
             return None
+        if outside_zero is not True:
+            raise ValueError("cannot decide whether coordinates outside the finite span window vanish")
         if source_rank == 0:
-            return None if coordinates else source.zero()
+            zero = conjunction(coefficient == ring.zero() for coefficient in retained.values())
+            if zero is True:
+                return source.zero()
+            if zero is False:
+                return None
+            raise ValueError("cannot decide membership in the zero submodule")
         if coordinate_solver is None:
             coordinate_solver = _integral_preimage_positional_solver(
                 coordinate_matrix,
@@ -1223,7 +1417,6 @@ def _module_subobject_constructor_data(module, basis):
             {
                 labels[i]: coefficient
                 for i, coefficient in enumerate(solution)
-                if coefficient
             }
         )
 

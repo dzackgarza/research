@@ -10,6 +10,14 @@ Write to it in the turn the measurement is made.
 
 ## Sage
 
+### Algebraic-real `QuadraticForm.rational_diagonal_form` rejects even a diagonal plane
+
+Measured 2026-10-23 with SageMath 11.0.beta1 and Python 3.14: `QuadraticForm(AA, matrix(AA, [[1, 0], [0, -1]])).rational_diagonal_form(return_matrix=True)` raises `TypeError: Illegal initializer for algebraic number` while assigning a diagonal matrix entry in `quadratic_form__local_field_invariants.py`. This is one rank-two data point, not a timing curve. Reproduce with `sage -python -c 'from sage.all import AA, matrix; from sage.quadratic_forms.quadratic_form import QuadraticForm; print(QuadraticForm(AA, matrix(AA, [[1,0],[0,-1]])).rational_diagonal_form(return_matrix=True))'`. Sage's documented transformation contract is `T.transpose() * G * T == D.matrix()`; the call fails before it returns that data. Route chosen: `lattice_engines._exact_real_diagonalization` uses the existing exact formed-module arithmetic for AA and retains the forward and inverse maps. Depends on this: AA lattice diagonalization, Witt decomposition and Witt index.
+
+### The mixed-rank integral embedding route did not finish at the first Julia call
+
+Measured 2026-10-23 on a 7.8 GiB host with Julia 1.12.5: after a fresh preamble import, `L = Lattices(ZZ)("U") + Lattices(ZZ)([[2]])`; `L.hyperbolic_index()` entered `sage_julia_bridge` for OSCAR's `primitive_embeddings` on the rank-two source and rank-three target. No embedding decision returned after 250 seconds; the Julia process used about 95% of one CPU and reached 38% of host RAM, and this probe was terminated. A second rank-three specimen, `U + <1>`, did not return from the same decision in 90 seconds. These are lower bounds from two runs, not completed operations or a size curve. Reproduce with `SAGE_JULIA_COMMAND=/home/dzack/.julia/juliaup/julia-1.12.5+0.x64.linux.gnu/bin/julia PYTHONPATH=/home/dzack/research/src sage -python`, import the preamble and run either specimen. The juliaup launcher could not read its root-owned `juliaupself.json`, so the direct installed binary was used. Route chosen composes primitive isotropic-vector, integral hyperbolic-partner and orthogonal-splitting constructions in even and odd lattices. Discriminant-length and parity bounds exclude larger impossible ranks before classification; genuinely unresolved candidates still use `Emb.is_empty()`. The rank-three specimens, `U^2 + <2>`, `U^2 + <1>` and `U + U(2)` passed index, Gram pullback and inverse-law checks on 2026-10-23. Depends on this: integral `hyperbolic_index` and `maximal_hyperbolic_index_splitting` for mixed rank.
+
 ### Sage's `orthogonal_group()` of a finite quadratic module searches the whole module; GAP's `forms` package is absent
 
 Measured 2026-10-15, SageMath 11.0.beta1 (container `sagemath/sagemath-dev:develop`). `TorsionQuadraticForm(diagonal_matrix(QQ, [2/3]*6)).orthogonal_group()` (no generators, so `sage.groups.fqf_orthogonal._isom_fqf` on all of `T`) did not finish within 40 minutes (`timeout 2400`, exit 124; probe sage-indefinite-port `.tmp/probe/o3_6.py`); on `(Z/3)^4` it takes 3.6 s. GAP `GO(-1, 6, 3)` (order 26127360) conjugated onto the form gives generators in 0.9 s (probe `.tmp/probe/fastO.py`, which also checks equal orders with brute force on `(Z/3)^2`, `(Z/3)^4` and `A2+A2+<2>`: 8, 1152, 8). `LoadPackage("forms")` prints `#I forms package is not available`, so `BilinearFormByMatrix`/`BaseChangeToCanonical` cannot be used.
@@ -482,6 +490,14 @@ Measured 2026-10-20, PARI 2.17.1 through Sage's `sage.libs.pari`, counting `forq
 The former annular root search (`_ROOTS_IN_ANNULUS`), which doubled its radius until the roots spanned `L`, raised it on `U(2)` (lattice-db card `0013`, certify run 39460366651), where `ZPhi(L)` has index 2 and the radius grows without end; the error ended the whole certification worker.
 Reproduce with `sage-docker-python -c 'from sage.libs.pari import pari; f = pari("(m,b)->my(c=0); forqfvec(v,m,b,c++); c"); print(f(pari("[2^34,-2^33;-2^33,2^34]"), 2^35))'`. Route chosen: `_roots_generating_lattice` in `src/dzack_research/preamble/categories/lattice_engines.py` runs `_root_generators.gp`, which enumerates `ZZ^n` with exact `forvec(v = vector(n), ...)` in increasing L1 degree and keeps a root when `matinverseimage` shows it outside the integral span held by `mathnf`; on `U(2)` it runs until the job ends, as a semi-decision may.
 
+The definite fixed-square enumerator now uses Hecke 0.39.22
+`short_vectors(L, a, a)` through the shared OSCAR adapter instead of
+`forqfvec`. The maintained route uses rational pseudo-Cholesky enumeration
+and transports vectors back from the Gram LLL basis; the adapter restores
+both signs. This is a source repair, with the scaled A2 and empty-shell
+runtime specimens still pending under DEV-58. It does not change the
+unbounded root-generation semi-decision described above.
+
 ### Two distinct symbolic variables take about 0.3 ms to compare, so a lattice basis label comparison is a symbolic decision
 
 The basis labels of a preamble lattice are the symbolic variables `e_i = SR.var("e_i")` (`_formal_symbol` in `src/dzack_research/preamble/categories/_lattice.py`). `bool(e_0 == e_1)` decides a symbolic relation, and for two distinct symbols Sage runs its numerical test with random interval values before it returns `False`; `bool(e_0 == SR.var("e_0"))` returns at once.
@@ -617,7 +633,7 @@ Depends on this: `integral.anisotropic_primes` and `integral.local_representatio
 
 ### Isotropy through the Witt index starts Julia; PARI's `qfsolve` decides it in hundredths of a second
 
-Over `QQ` the preamble's `witt_index()` calls OSCAR's `rational_witt_index` through `sage-julia-bridge`. A nonzero rational isotropic vector exists exactly when the Witt index is positive, so `is_isotropic()` routed through `witt_index()` paid the Julia start-up on its first call.
+At the time of this measurement, `witt_index()` over `QQ` called OSCAR's `rational_witt_index` through `sage-julia-bridge`. A nonzero rational isotropic vector exists exactly when the Witt index is positive, so `is_isotropic()` routed through `witt_index()` paid the Julia start-up on its first call. The current QQ Witt decomposition splits planes recursively using the exact rational isotropy decision and witness.
 In a fresh process after the session import, `(Lattices(ZZ)("U") + Lattices(ZZ)("U")).represents(0)` on that route took 48.59 s and 45.19 s in two runs, and a later isotropy call in the same process took 2.58 s. PARI's `qfsolve`, which the preamble already calls for an isotropic vector (`_isotropic_vector_witness` in `lattice_engines.py`), returns a zero or an obstruction and decides the same question (Serre, *A Course in Arithmetic*, Ch. IV, 3.2, Thm.
 8). `is_isotropic()` on that route, one run each, 2026-10-09:
 
