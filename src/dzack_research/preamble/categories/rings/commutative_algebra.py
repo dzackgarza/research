@@ -1119,7 +1119,11 @@ class QuotientRings(OwnedCategory):
                     _engine_finiteness_decision,
                 )
 
-                return _engine_finiteness_decision(self._preamble_engine_ring)
+                decision = _engine_finiteness_decision(self._preamble_engine_ring)
+                return (
+                    AtomicProposition("is_finite", self)
+                    if decision is None else decision
+                )
             source = self.quotient_source()
             if source in LocalizationRings():
                 # The canonical contracted quotient embeds into this

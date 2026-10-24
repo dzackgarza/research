@@ -5851,6 +5851,11 @@ def _engine_finiteness_decision(engine):
         ):
             dimension = engine.defining_ideal().dimension()
             return bool(dimension == -1 or (engine.cover_ring().base_ring().is_finite() and dimension == 0))
+        case QuotientRing_generic():
+            # No generic quotient-ring finiteness decision is supplied by
+            # Sage.  The remaining presentations need their own exact
+            # construction argument; absence of one is not infinitude.
+            return None
         case _:
             return engine.is_finite()
 
