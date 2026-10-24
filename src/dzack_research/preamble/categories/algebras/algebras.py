@@ -3594,7 +3594,21 @@ class CommutativeAlgebraPushouts(OwnedCategoryOverBaseRing):
                 **{("left", label): left_map(left_factor.algebra_generator(label)) for label in left_factor.algebra_generating_set()},
                 **{("right", label): right_map(right_factor.algebra_generator(label)) for label in right_factor.algebra_generating_set()},
             }
-            return self.Mor(target)(images)
+            induced = self.Mor(target)(images)
+            # The quotient presentation alone does not establish that the
+            # admitted arrow has the required composites with the selected
+            # pushout legs. Check the defining triangles at the generators.
+            for injection, factor_map, factor in (
+                (self.left_pushout_map(), left_map, left_factor),
+                (self.right_pushout_map(), right_map, right_factor),
+            ):
+                if any(
+                    induced(injection(factor.algebra_generator(label)))
+                    != factor_map(factor.algebra_generator(label))
+                    for label in factor.algebra_generating_set()
+                ):
+                    raise ValueError("the proposed pushout morphism does not factor the supplied cocone")
+            return induced
 
 
 class AlgebraMorphism:
