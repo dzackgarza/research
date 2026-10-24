@@ -1145,7 +1145,12 @@ class QuotientRings(OwnedCategory):
             if self._is_zero_ring() is True:
                 return cardinal(1)
             if self._preamble_engine_ring is not None:
-                return cardinal(self._preamble_engine_ring.cardinality())
+                engine = self._preamble_engine_ring
+                if not isinstance(engine, QuotientRing_generic):
+                    return cardinal(engine.cardinality())
+                # Sage's generic quotient has no total cardinality method.
+                # Retain the source/ideal computations below rather than
+                # treating an absent method as a mathematical answer.
             # For a k-algebra A over a field k and a proper ideal I, the
             # structure map k -> A/I is a ring map from a field to a nonzero
             # ring, hence injective, and A -> A/I is onto, so
