@@ -89,6 +89,7 @@ class CategoryDeclaration:
     supercategories: tuple[Supercategory, ...] = field(default_factory=tuple)
     axiom_of: str = ""  # for a nested axiom class, the category it refines
     nested_in: str = ""  # for a nested construction such as ``_MorCategory``, the vertex enclosing it
+    parameter: str = ""  # source symbol of a fibre sharing this class with its catalogue
     object_methods: tuple[
         str, ...
     ] = ()  # the methods its ``ParentMethods`` installs on objects
@@ -97,6 +98,8 @@ class CategoryDeclaration:
     def vertex(self) -> str:
         if self.nested_in:
             return f"{self.nested_in}::{self.name}"
+        if self.parameter:
+            return self.qualified_name
         if not self.axiom_of:
             return self.name
         return _vertex(self.axiom_of, tuple(self.qualified_name.split(".")[1:]))
@@ -192,12 +195,79 @@ def _returned_supercategories(node: ast.FunctionDef) -> tuple[str, ...]:
     for statement in ast.walk(node):
         if not isinstance(statement, ast.Return) or statement.value is None:
             continue
-        value = statement.value
-        if isinstance(value, (ast.List, ast.Tuple, ast.Set)):
-            found.extend(ast.unparse(item) for item in value.elts)
-        else:
-            found.append(ast.unparse(value))
+        found.extend(_return_expressions(statement.value))
     return tuple(found)
+
+
+def _return_expressions(value: ast.expr) -> tuple[str, ...]:
+    if isinstance(value, (ast.List, ast.Tuple, ast.Set)):
+        return tuple(ast.unparse(item) for item in value.elts)
+    return (ast.unparse(value),)
+
+
+def _catalogue_and_fibre(
+    node: ast.ClassDef, declaration: ast.FunctionDef
+) -> tuple[str, tuple[str, ...], tuple[str, ...]] | None:
+    """Separate a no-parameter catalogue from its fibre's source declaration.
+
+    The source must explicitly branch on an optional constructor parameter
+    read from its accessor.  Other conditional returns retain the ordinary
+    source graph's union semantics.
+    """
+    constructors = [
+        method
+        for method in node.body
+        if isinstance(method, ast.FunctionDef) and method.name == "__init__"
+    ]
+    body = [
+        statement for statement in declaration.body
+        if not (
+            isinstance(statement, ast.Expr)
+            and isinstance(statement.value, ast.Constant)
+        )
+    ]
+    if len(constructors) != 1 or len(body) != 3:
+        return None
+    assignment, branch, fibre_return = body
+    match assignment, branch, fibre_return:
+        case (
+            ast.Assign(
+                targets=[ast.Name(id=parameter)],
+                value=ast.Call(
+                    func=ast.Attribute(value=ast.Name(id="self"), attr=accessor),
+                    args=[],
+                    keywords=[],
+                ),
+            ),
+            ast.If(
+                test=ast.Compare(
+                    left=ast.Name(id=condition),
+                    ops=[ast.Is()],
+                    comparators=[ast.Constant(value=None)],
+                ),
+                body=[ast.Return(value=catalogue)],
+                orelse=[],
+            ),
+            ast.Return(value=fibre),
+        ) if parameter == accessor == condition:
+            constructor = constructors[0]
+            defaults = dict(
+                zip(
+                    (
+                        arg.arg
+                        for arg in constructor.args.args[
+                            len(constructor.args.args) - len(constructor.args.defaults) :
+                        ]
+                    ),
+                    constructor.args.defaults,
+                    strict=True,
+                )
+            )
+            default = defaults.get(parameter)
+            if not isinstance(default, ast.Constant) or default.value is not None:
+                return None
+            return parameter, _return_expressions(catalogue), _return_expressions(fibre)
+    return None
 
 
 def _imported_names(tree: ast.Module) -> dict[str, tuple[str, str]]:
@@ -368,48 +438,69 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
             if not _is_category(node, known):
                 continue
             declaring = _declarations(node)
-            declarations.append(
-                CategoryDeclaration(
-                    name=node.name,
-                    qualified_name=".".join((*scope, node.name)),
-                    path=str(path),
-                    line=node.lineno,
-                    bases=tuple(_head(ast.unparse(base)) for base in node.bases),
-                    summary=_summary(node),
-                    declares=bool(declaring),
-                    abstract=any(_is_abstract(d) for d in declaring),
-                    supercategories=tuple(
-                        Supercategory(
-                            expression=expression,
-                            head=_head(unfolded),
-                            resolved=_resolved(_head(unfolded), imported),
-                            origin=_origin(_head(unfolded), imported, known),
-                            axioms=_axioms(unfolded),
-                            parameters=_category_parameters(
-                                unfolded, imported, category_classes
-                            ),
-                        )
-                        for declaration in declaring
-                        for expression in _returned_supercategories(declaration)
-                        for unfolded in (_unfold(expression, factories, imported),)
-                    ),
-                    # A class nested in a category is that category with the
-                    # axioms the nesting names; a protected nested class is a
-                    # construction on it, such as its Mor category, and refines
-                    # nothing.
-                    axiom_of=scope[0]
-                    if scope
-                    and scope[0] in known
-                    and not _protected((*scope[1:], node.name))
-                    else "",
-                    nested_in=_vertex(scope[0], scope[1:])
-                    if scope
-                    and scope[0] in known
-                    and _protected((*scope[1:], node.name))
-                    else "",
-                    object_methods=tuple(_object_methods(node)),
-                )
+            split = (
+                _catalogue_and_fibre(node, declaring[0])
+                if len(declaring) == 1 and declaring[0].name == "super_categories"
+                else None
             )
+            variants = (
+                [("", split[1]), (split[0], split[2])]
+                if split is not None
+                else [
+                    (
+                        "",
+                        tuple(
+                            expression
+                            for declaration in declaring
+                            for expression in _returned_supercategories(declaration)
+                        ),
+                    )
+                ]
+            )
+            for parameter, expressions in variants:
+                declarations.append(
+                    CategoryDeclaration(
+                        name=node.name,
+                        qualified_name=".".join((*scope, node.name))
+                        + (f"({parameter})" if parameter else ""),
+                        path=str(path),
+                        line=node.lineno,
+                        bases=tuple(_head(ast.unparse(base)) for base in node.bases),
+                        summary=_summary(node),
+                        declares=bool(declaring),
+                        abstract=any(_is_abstract(d) for d in declaring),
+                        supercategories=tuple(
+                            Supercategory(
+                                expression=expression,
+                                head=_head(unfolded),
+                                resolved=_resolved(_head(unfolded), imported),
+                                origin=_origin(_head(unfolded), imported, known),
+                                axioms=_axioms(unfolded),
+                                parameters=_category_parameters(
+                                    unfolded, imported, category_classes
+                                ),
+                            )
+                            for expression in expressions
+                            for unfolded in (_unfold(expression, factories, imported),)
+                        ),
+                        # A class nested in a category is that category with the
+                        # axioms the nesting names; a protected nested class is a
+                        # construction on it, such as its Mor category, and refines
+                        # nothing.
+                        axiom_of=scope[0]
+                        if scope
+                        and scope[0] in known
+                        and not _protected((*scope[1:], node.name))
+                        else "",
+                        nested_in=_vertex(scope[0], scope[1:])
+                        if scope
+                        and scope[0] in known
+                        and _protected((*scope[1:], node.name))
+                        else "",
+                        parameter=parameter,
+                        object_methods=tuple(_object_methods(node)),
+                    )
+                )
     return declarations
 
 
@@ -545,7 +636,9 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
     # `Modules(S)`) is a restriction-of-scalars edge, ruled out on 2026-09-16
     # because Sage applies every axiom along it; reported apart from cycles
     # because it is a loop on the name, not on the objects.
-    recursive = sorted({d.name for d in declarations if d.name in d.heads})
+    recursive = sorted(
+        {d.name for d in declarations if not d.parameter and d.name in d.heads}
+    )
     # A strongly connected component with more than one category is a set of
     # categories each declared to lie under the others.
     cycles = [
@@ -588,7 +681,7 @@ def render_audit(declarations: list[CategoryDeclaration]) -> str:
 def _declared_edges(
     declarations: list[CategoryDeclaration],
 ) -> set[tuple[str, str]]:
-    """Edges between categories this tree defines, self-declaration dropped.
+    """Edges between categories this tree defines, class self-declarations dropped.
 
     An axiom category ``Base.A.B`` is the join of ``Base.A`` and ``Base.B``
     (Sage's axiom semantics), so every axiom vertex, declared or merely named,
@@ -948,6 +1041,7 @@ def render_json(declarations: list[CategoryDeclaration]) -> str:
             "name": d.name,
             "qualified_name": d.qualified_name,
             "vertex": d.vertex,
+            "parameter": d.parameter,
             "axiom_of": d.axiom_of,
             "source": f"{d.path}:{d.line}",
             "bases": list(d.bases),
@@ -1915,7 +2009,7 @@ def render_slice(
     declared = _declared_edges(declarations)
     return json.dumps(
         {
-            "basis": "source declarations plus computed axiom edges; conditional branches are unioned",
+            "basis": "source declarations plus computed axiom edges; unresolved conditional branches are unioned",
             "orientation": "subcategory -> supercategory",
             "vertices": sorted(vertices),
             "edges": sorted(edges),
