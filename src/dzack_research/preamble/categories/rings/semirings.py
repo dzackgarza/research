@@ -224,17 +224,17 @@ class OwnedNonUnitalSemirings(CategoryPacketMethods, OwnedCategory):
                 from dzack_research.preamble.logic import AtomicProposition
 
                 prime_subsets = self.prime_ideal_locus()
-                # Read the public selected minimal-prime construction: a
-                # finite realization supplies actual component indices,
-                # whereas the general locus remains available when no
-                # such calculation has been selected.
+                # This is a locus of closed subsets, so its indices must be
+                # the ideal subsets used by ``contains_ideal_subset``. The
+                # finite ``minimal_primes`` operation instead returns owned
+                # ideal objects when a computation is available.
                 return Sets().image_set(
                     lambda minimal_prime: prime_subsets.condition_set(
                         lambda prime: AtomicProposition(
                             "contains_ideal_subset", prime, minimal_prime
                         )
                     ),
-                    self.minimal_primes(),
+                    self.minimal_prime_locus(),
                 )
 
 
