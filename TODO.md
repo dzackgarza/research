@@ -16,7 +16,7 @@ Concrete repairs extracted from broader surveys are [minimal-prime loci #561](ht
 
 [Issue #417](https://github.com/dzackgarza/research/issues/417)
 
-The required [core migration #384](https://github.com/dzackgarza/research/issues/384) and [property/constructor integration #556](https://github.com/dzackgarza/research/issues/556) precede repairs to the runtime they replace. Each migrated layer retains the affected issues' full mathematical contracts; those issues then own only unmet requirements on the final construction. The native tree also places shared finite-action and formed-module computations before their decorated-family consumers.
+The required [core migration #384](https://github.com/dzackgarza/research/issues/384) and [property/constructor integration #556](https://github.com/dzackgarza/research/issues/556) precede repairs to the transitional runtime they retire. Each layer reconciles its complete mathematics with `lean-categories`, its semantic execution with the `lean-cas-dsl` kernel, and its computations with leaf registrations. The affected issues retain unmet requirements on the final construction. The native tree also places shared finite-action and formed-module computations before their decorated-family consumers.
 
 | Source identifier | Issue |
 | --- | --- |

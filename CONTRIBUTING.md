@@ -560,22 +560,23 @@ hypotheses, categories and theorems every layer below presents or computes.
 | Layer | Responsible for | Permitted dependency | Forbidden responsibility |
 | --- | --- | --- | --- |
 | Session and notation | The selected preamble spellings | Preamble entrypoints | Backend exports, adoption helpers, alternative constructor languages |
-| Preamble categories and constructions | Presenting `lean-categories`' objects and maps, hypotheses, elements, functorial behavior and result types | Immediate preamble categories and their sanctioned operations | Defining mathematics; engine data inspection; reimplementation of inherited structure |
-| Shared categorical runtime | Construction dispatch, generated preamble types, cooperative initialization | Its declared framework interfaces and private host primitives | Theory-specific branches, a second category graph |
-| Private computation adapters | Lowering, established engine calls, representation correspondence, raising | Preamble inputs and the selected engines' supported interfaces | Public taxonomy; raw results returned to mathematical consumers |
+| Research presentation | Research notebooks and experiments expressed in the catalogue's language | `lean-cas-dsl` and its public semantic operations | Defining mathematics, a parallel category runtime, or implementation-controlled operation availability |
+| Semantic kernel | Typed elaboration, structural route resolution and result reconstruction | `lean-categories`' catalogue and declared leaf contracts | Subject-specific mathematics or trusting a leaf's claims |
+| Computation leaves | Opaque implementation of a registered operation on its declared input form | Leaf contract and selected engines' supported interfaces | Public taxonomy or semantic authority |
 | External engines | Their maintained computational algorithms and internal representations | Their own dependencies and supported bridges | Defining the preamble's public API or accepting preamble objects as foreign parents |
 
-Every computation in the last three rows, including research's own code, is
-untrusted: its answers are run, never believed, and only the `lean-cas-dsl`
-acceptance suite judges them.
+Every computation supplied by a leaf or external engine, including research's
+own code, is untrusted: its answers are run, never believed, and only the
+`lean-cas-dsl` acceptance suite judges them.
 
-The shared framework boundary remains `sage-categories`: reuse its suitable
-released interfaces for generic categorical/runtime work. Repair an existing
-in-repo owner when that is the necessary current integration point; do not build
-a competing framework or import a sibling checkout by filesystem path.
-Suitability for class construction and suitability for mathematical computation
-are separate questions. A package can supply the latter without supplying the
-former.
+The final semantic runtime is the `lean-cas-dsl` kernel, which consumes
+`lean-categories`' catalogue and replaces `sage-categories`' dynamic-inheritance
+core. `sage-categories` remains a source of requirements and, where suitable,
+private computational implementations; it is not a second public category
+runtime. Retire the transitional Python construction and inheritance machinery
+as its consumers move to the formal catalogue and kernel. A computational
+implementation registers through the leaf contract and cannot determine the
+mathematical meaning or availability of an operation.
 
 ### `OWN-01`: Locate the formalized operation before selecting an implementation
 
