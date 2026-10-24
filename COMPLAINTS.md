@@ -65,7 +65,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### `lean-categories` does not formalize finiteness of binary fixed-norm orbits
 
-[Issue #583](https://github.com/dzackgarza/research/issues/583)
+[Issue #583](https://github.com/dzackgarza/research/issues/583) · [Complaint evidence](https://github.com/dzackgarza/research/issues/583#issuecomment-6381627220)
 
 ### `lean-categories` defines integral reflection vectors but not roots of a lattice
 
@@ -105,7 +105,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Formed-module Mono has a first-component-only definition
 
-[Issue #568](https://github.com/dzackgarza/research/issues/568)
+[Issue #568](https://github.com/dzackgarza/research/issues/568) · [Complaint evidence](https://github.com/dzackgarza/research/issues/568#issuecomment-6381624327)
 
 ### Protected formed-map expectations conflate two preservation laws
 
@@ -121,7 +121,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Core inverse data and its actual base-arrow representation
 
-[Issue #569](https://github.com/dzackgarza/research/issues/569)
+[Issue #569](https://github.com/dzackgarza/research/issues/569) · [Complaint evidence](https://github.com/dzackgarza/research/issues/569#issuecomment-6381624544)
 
 ### Protected Aut specimens conflate a fixed category and a group realization
 
@@ -133,7 +133,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Slice and coslice arrows still need their actual base-arrow initialization
 
-[Issue #570](https://github.com/dzackgarza/research/issues/570)
+[Issue #570](https://github.com/dzackgarza/research/issues/570) · [Complaint evidence](https://github.com/dzackgarza/research/issues/570#issuecomment-6381624791)
 
 ### Selected exterior computations and the protected augmentation spelling
 
@@ -141,7 +141,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Finite coefficient module kernels need exact coefficient presentations
 
-[Issue #571](https://github.com/dzackgarza/research/issues/571)
+[Issue #571](https://github.com/dzackgarza/research/issues/571) · [Complaint evidence](https://github.com/dzackgarza/research/issues/571#issuecomment-6381624957)
 
 ### Generic commutative-algebra specimens impose stronger laws
 
@@ -149,27 +149,27 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Free algebra constructions do not uniformly supply associative projective sources
 
-[Issue #575](https://github.com/dzackgarza/research/issues/575)
+[Issue #575](https://github.com/dzackgarza/research/issues/575) · [Complaint evidence](https://github.com/dzackgarza/research/issues/575#issuecomment-6381625690)
 
 ### Selected algebra presentations exceed the polynomial computations
 
-[Issue #576](https://github.com/dzackgarza/research/issues/576)
+[Issue #576](https://github.com/dzackgarza/research/issues/576) · [Complaint evidence](https://github.com/dzackgarza/research/issues/576#issuecomment-6381625887)
 
 ### A finite-generation reference confuses a property with a chosen family
 
-[Issue #594](https://github.com/dzackgarza/research/issues/594)
+[Issue #594](https://github.com/dzackgarza/research/issues/594) · [Complaint evidence](https://github.com/dzackgarza/research/issues/594#issuecomment-6381629331)
 
 ### General degree-zero algebras need represented homogeneous inclusions
 
-[Issue #577](https://github.com/dzackgarza/research/issues/577)
+[Issue #577](https://github.com/dzackgarza/research/issues/577) · [Complaint evidence](https://github.com/dzackgarza/research/issues/577#issuecomment-6381626082)
 
 ### General Kähler differentials exceed the selected finite conormal computation
 
-[Issue #581](https://github.com/dzackgarza/research/issues/581)
+[Issue #581](https://github.com/dzackgarza/research/issues/581) · [Complaint evidence](https://github.com/dzackgarza/research/issues/581#issuecomment-6381626813)
 
 ### Cohomology needs general represented cycle quotients
 
-[Issue #582](https://github.com/dzackgarza/research/issues/582)
+[Issue #582](https://github.com/dzackgarza/research/issues/582) · [Complaint evidence](https://github.com/dzackgarza/research/issues/582#issuecomment-6381627035)
 
 ### A coefficient presentation omits group-action relations
 
@@ -177,7 +177,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### A module annihilator uses the additive endomorphism representation
 
-[Issue #595](https://github.com/dzackgarza/research/issues/595)
+[Issue #595](https://github.com/dzackgarza/research/issues/595) · [Complaint evidence](https://github.com/dzackgarza/research/issues/595#issuecomment-6381629487)
 
 ### An integral isotropic partner with minimal pairing can fail to exist
 
@@ -217,7 +217,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Multiplicative integer submonoids do not supply the fixed power specimens
 
-[Issue #578](https://github.com/dzackgarza/research/issues/578)
+[Issue #578](https://github.com/dzackgarza/research/issues/578) · [Complaint evidence](https://github.com/dzackgarza/research/issues/578#issuecomment-6381626264)
 
 ### Fixed Mor categories with discrete 2-Morphisms do not realize their discrete universal constructions
 
@@ -225,7 +225,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Direct MorCategories ingress retains inconsistent represented endpoints
 
-[Issue #579](https://github.com/dzackgarza/research/issues/579)
+[Issue #579](https://github.com/dzackgarza/research/issues/579) · [Complaint evidence](https://github.com/dzackgarza/research/issues/579#issuecomment-6381626443)
 
 ### Discrete categories do not realize universal constructions that exist
 
@@ -265,7 +265,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### `lean-categories` does not formalize the Vinberg invariant or the PID description of P^1(R)
 
-[Issue #592](https://github.com/dzackgarza/research/issues/592)
+[Issue #592](https://github.com/dzackgarza/research/issues/592) · [Complaint evidence](https://github.com/dzackgarza/research/issues/592#issuecomment-6381629001)
 
 ### A Coxeter diagram is not constructed by its category
 
@@ -321,7 +321,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### A finite owned ring does not enumerate its points
 
-[Issue #572](https://github.com/dzackgarza/research/issues/572)
+[Issue #572](https://github.com/dzackgarza/research/issues/572) · [Complaint evidence](https://github.com/dzackgarza/research/issues/572#issuecomment-6381625129)
 
 ### Spaces of modular forms with a character are not presented
 
@@ -329,19 +329,19 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### `lean-categories` does not formalize the representation density or Siegel's formula
 
-[Issue #585](https://github.com/dzackgarza/research/issues/585)
+[Issue #585](https://github.com/dzackgarza/research/issues/585) · [Complaint evidence](https://github.com/dzackgarza/research/issues/585#issuecomment-6381627647)
 
 ### `lean-categories` does not formalize the values of a unimodular binary `ZZ_p`-lattice
 
-[Issue #586](https://github.com/dzackgarza/research/issues/586)
+[Issue #586](https://github.com/dzackgarza/research/issues/586) · [Complaint evidence](https://github.com/dzackgarza/research/issues/586#issuecomment-6381627810)
 
 ### The `even` ∧ `unimodular` join of owned lattices loses `delta()`
 
-[Issue #573](https://github.com/dzackgarza/research/issues/573)
+[Issue #573](https://github.com/dzackgarza/research/issues/573) · [Complaint evidence](https://github.com/dzackgarza/research/issues/573#issuecomment-6381625350)
 
 ### `lean-categories` does not formalize absolute Galois groups, their Frobenius elements, or the cyclotomic character
 
-[Issue #587](https://github.com/dzackgarza/research/issues/587)
+[Issue #587](https://github.com/dzackgarza/research/issues/587) · [Complaint evidence](https://github.com/dzackgarza/research/issues/587#issuecomment-6381628002)
 
 ### No embedding of the algebraic closure into Qbar_p is represented
 
@@ -365,7 +365,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Maps of a set into a module are not presented as a module
 
-[Issue #588](https://github.com/dzackgarza/research/issues/588)
+[Issue #588](https://github.com/dzackgarza/research/issues/588) · [Complaint evidence](https://github.com/dzackgarza/research/issues/588#issuecomment-6381628228)
 
 ### The real line is placed in no manifold category
 
@@ -373,11 +373,11 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### The type of a finite root system is answered as a label
 
-[Issue #589](https://github.com/dzackgarza/research/issues/589)
+[Issue #589](https://github.com/dzackgarza/research/issues/589) · [Complaint evidence](https://github.com/dzackgarza/research/issues/589#issuecomment-6381628428)
 
 ### Category stubs presented ahead of `lean-categories` (2026-10-16)
 
-[Issue #593](https://github.com/dzackgarza/research/issues/593)
+[Issue #593](https://github.com/dzackgarza/research/issues/593) · [Complaint evidence](https://github.com/dzackgarza/research/issues/593#issuecomment-6381629165)
 
 ### Abelian groups and `ZZ`-modules are two categories with no equivalence
 
@@ -403,7 +403,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### The required reading does not fit a worker context
 
-[Issue #598](https://github.com/dzackgarza/research/issues/598)
+[Issue #598](https://github.com/dzackgarza/research/issues/598) · [Complaint evidence](https://github.com/dzackgarza/research/issues/598#issuecomment-6381630082)
 
 ### Expectation files use names that AGENTS §5 calls aliases
 
@@ -415,7 +415,7 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Formal power series and their rings print without their coefficients
 
-[Issue #596](https://github.com/dzackgarza/research/issues/596)
+[Issue #596](https://github.com/dzackgarza/research/issues/596) · [Complaint evidence](https://github.com/dzackgarza/research/issues/596#issuecomment-6381629720)
 
 ### Finite cyclic subgroup membership is decided by enumerating powers
 
@@ -423,23 +423,23 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### Zettlr all-workspace lint conflates component `id=` properties with Pandoc `#` identifiers
 
-[Issue #599](https://github.com/dzackgarza/research/issues/599)
+[Issue #599](https://github.com/dzackgarza/research/issues/599) · [Complaint evidence](https://github.com/dzackgarza/research/issues/599#issuecomment-6381630246)
 
 ### Flowmark Unicode-math lint scans inert comments and literal code
 
-[Issue #600](https://github.com/dzackgarza/research/issues/600)
+[Issue #600](https://github.com/dzackgarza/research/issues/600) · [Complaint evidence](https://github.com/dzackgarza/research/issues/600#issuecomment-6381630499)
 
 ### Source category-graph slices collapse parameterized fibres into self-edges
 
-[Issue #597](https://github.com/dzackgarza/research/issues/597)
+[Issue #597](https://github.com/dzackgarza/research/issues/597) · [Complaint evidence](https://github.com/dzackgarza/research/issues/597#issuecomment-6381629895)
 
 ### Toric scalar base change drops the toric construction data
 
-[Issue #580](https://github.com/dzackgarza/research/issues/580)
+[Issue #580](https://github.com/dzackgarza/research/issues/580) · [Complaint evidence](https://github.com/dzackgarza/research/issues/580#issuecomment-6381626623)
 
 ### Book recipes still target the former writing directory
 
-[Issue #601](https://github.com/dzackgarza/research/issues/601)
+[Issue #601](https://github.com/dzackgarza/research/issues/601) · [Complaint evidence](https://github.com/dzackgarza/research/issues/601#issuecomment-6381630671)
 
 ## Additional Mathematical Gaps
 
@@ -457,28 +457,28 @@ Issue state is authoritative; this index does not duplicate it.
 
 ### A finite presentation of GL_2(ZZ) is not formalized
 
-[Issue #590](https://github.com/dzackgarza/research/issues/590)
+[Issue #590](https://github.com/dzackgarza/research/issues/590) · [Complaint evidence](https://github.com/dzackgarza/research/issues/590#issuecomment-6381628630)
 
 ### Finiteness of O(L) for split binary lattices is not formalized
 
-[Issue #584](https://github.com/dzackgarza/research/issues/584)
+[Issue #584](https://github.com/dzackgarza/research/issues/584) · [Complaint evidence](https://github.com/dzackgarza/research/issues/584#issuecomment-6381627432)
 
 ### `lean-categories` does not state that O(V) is infinite for a definite rational space
 
-[Issue #591](https://github.com/dzackgarza/research/issues/591)
+[Issue #591](https://github.com/dzackgarza/research/issues/591) · [Complaint evidence](https://github.com/dzackgarza/research/issues/591#issuecomment-6381628818)
 
 ### The dual lattice of a unimodular lattice has integer norms without the field-element interface
 
-[Issue #574](https://github.com/dzackgarza/research/issues/574)
+[Issue #574](https://github.com/dzackgarza/research/issues/574) · [Complaint evidence](https://github.com/dzackgarza/research/issues/574#issuecomment-6381625538)
 
 ### Formed module categories are not below the chosen-presentation category
 
-[Issue #565](https://github.com/dzackgarza/research/issues/565)
+[Issue #565](https://github.com/dzackgarza/research/issues/565) · [Complaint evidence](https://github.com/dzackgarza/research/issues/565#issuecomment-6381623759)
 
 ### Base change of a discriminant module's underlying presented module asserts in the formed base change of its cover
 
-[Issue #566](https://github.com/dzackgarza/research/issues/566)
+[Issue #566](https://github.com/dzackgarza/research/issues/566) · [Complaint evidence](https://github.com/dzackgarza/research/issues/566#issuecomment-6381623951)
 
 ### Submodules of a finitely presented module have no owned equality or hash
 
-[Issue #567](https://github.com/dzackgarza/research/issues/567)
+[Issue #567](https://github.com/dzackgarza/research/issues/567) · [Complaint evidence](https://github.com/dzackgarza/research/issues/567#issuecomment-6381624137)
