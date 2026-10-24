@@ -4074,6 +4074,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 cardinal,
             )
 
+            engine = self._selected_engine_ring()
+            if isinstance(engine, QuotientRing_generic) and engine.defining_ideal().is_one():
+                return cardinal(1)
             category = self.category()
             match category:
                 case _ if category.is_subcategory(owned_sets.FiniteSets()):
@@ -6173,7 +6176,11 @@ def _presented_ring_category(engine: Ring) -> Category:
             cover = _own_ring(engine.cover_ring())
             commutative = (OwnedRings().Commutative(),) if cover in OwnedRings().Commutative() else ()
             cover_noetherian = (noetherian,) if cover in OwnedRings().Noetherian() else ()
-            finite = (owned_sets.FiniteSets(),) if cover in owned_sets.FiniteSets() else ()
+            finite = (
+                (owned_sets.FiniteSets(),)
+                if engine.defining_ideal().is_one() or cover in owned_sets.FiniteSets()
+                else ()
+            )
             placements = (*commutative, *cover_noetherian, *finite)
         case _:
             placements = ()
