@@ -46,3 +46,20 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     radical = lattice.radical()
     for label in radical.module_generating_set():
         assert projection(radical.inclusion()(radical.module_generator(label))) == quotient.zero()
+
+
+def test_rational_formed_module_radical_quotient_retains_its_projection() -> None:
+    r"""The generic formed-module quotient retains its map after basis re-presentation."""
+    module = QQ ^ 3
+    form = module.bilinear_forms(QQ)([[0, 0, 0], [0, 0, 1], [0, 1, 0]])
+    formed = FormModules(QQ)(form)
+    quotient = formed.radical_quotient()
+    projection = formed.radical_quotient_projection()
+
+    assert formed.radical().module_rank() == 1
+    assert quotient.module_rank() == 2
+    assert projection.domain() is formed
+    assert projection.codomain() is quotient
+    assert projection.preserves_forms() is True
+    for label in formed.radical().module_generating_set():
+        assert projection(formed.radical().inclusion()(formed.radical().module_generator(label))) == quotient.zero()
