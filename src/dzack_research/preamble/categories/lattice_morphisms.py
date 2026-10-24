@@ -1290,6 +1290,39 @@ class LatticeIsometryMethods:
             )
             return target.element_class(target, reverse)
         if self.domain().module_rank().is_finite() and codomain.module_rank().is_finite():
+            from dzack_research.preamble.rings.real import RR
+
+            if codomain.base_ring() is RR:
+                from dzack_research.preamble.categories.modules.pure.modules import (
+                    _represented_real_rref,
+                )
+
+                domain_labels = tuple(self.domain().module_generating_set())
+                codomain_labels = tuple(codomain.module_generating_set())
+                size = len(domain_labels)
+                columns = tuple(
+                    self(self.domain().module_generator(label)).to_vector()
+                    for label in domain_labels
+                )
+                rows = tuple(
+                    tuple(column(label) for column in columns)
+                    + tuple(RR.one() if i == j else RR.zero() for j in range(size))
+                    for i, label in enumerate(codomain_labels)
+                )
+                reduced, pivots = _represented_real_rref(rows, 2 * size, RR)
+                assert pivots == tuple(range(size)), (
+                    "a real lattice isometry must have an invertible coordinate matrix"
+                )
+                images = tuple(
+                    self.domain().linear_combination(
+                        {
+                            label: reduced[i][size + j]
+                            for i, label in enumerate(domain_labels)
+                        }
+                    )
+                    for j in range(size)
+                )
+                return codomain.Isom(self.domain())(images)
             forward_matrix = _engine_matrix(_module_matrix(self))
             return codomain.Isom(self.domain())._isometry_from_column_matrix(
                 forward_matrix.inverse()

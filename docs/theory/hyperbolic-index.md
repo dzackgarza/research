@@ -1,7 +1,7 @@
 # Hyperbolic index and constructive hyperbolic splitting
 
-This note gives exact algorithms for computing the largest orthogonal sum of
-hyperbolic planes in a nondegenerate symmetric bilinear space over
+This note specifies exact algorithms for computing the largest orthogonal sum of
+hyperbolic planes in a finite-rank symmetric bilinear space over
 $\mathbb R$ or $\mathbb Q$, or an integral lattice over $\mathbb Z$.
 The output includes the complementary form and an explicit isometry.
 The integral construction applies to both even and odd lattices.
@@ -9,9 +9,9 @@ The integral construction applies to both even and odd lattices.
 ## Conventions and the mathematical output
 
 Let $R\in\{\mathbb R,\mathbb Q,\mathbb Z\}$, let $L$ be a finite free
-$R$-module, and let $B:L\times L\to R$ be symmetric and nondegenerate.
-For $R=\mathbb Z$, nondegenerate means that a Gram matrix has nonzero
-determinant; unimodularity is not assumed. Write $q(x)=B(x,x)$, so that
+$R$-module, and let $B:L\times L\to R$ be symmetric. When nondegeneracy
+is required below, it means that a Gram matrix has nonzero determinant;
+unimodularity is not assumed. Write $q(x)=B(x,x)$, so that
 $q(x+y)=q(x)+2B(x,y)+q(y)$.
 These are the symmetric-bilinear-form conventions of [Conrad, §2 and §6](#references).
 
@@ -50,8 +50,25 @@ $$
 
 Both inequalities follow by extending a splitting. The zero module has
 index $0$, an empty change-of-basis matrix, and determinant $1$ by convention.
-All remaining statements assume nondegeneracy. A degenerate form requires
-a separate treatment of its radical.
+For a degenerate form over any of these three rings, the radical
+$N=\operatorname{rad}(L)$ is saturated: if a nonzero scalar $a$ satisfies
+$ax\in N$, then $aB(x,y)=0$ for every $y$, hence $x\in N$. Since these
+rings are fields or a PID, $L/N$ is free and its quotient map has a linear
+section. The radical is perpendicular to all of $L$, so such a section gives
+an orthogonal decomposition $L\simeq N\perp(L/N)$, with the quotient form
+nondegenerate. Consequently $h_R(L)=h_R(L/N)$. A maximal splitting of the
+quotient lifts along the section, and splitting the lifted unimodular
+hyperbolic summand in $L$ returns an isometry as in (1), with the radical
+contained in $M$. Arguments below concerning discriminants or anisotropic
+complements apply to the nondegenerate quotient.
+
+The constructor `Lattices(R)("U")` defines the plane with Gram matrix $H$
+for a supplied base ring $R$. The implemented index decision in this note
+is restricted to `ZZ`, `QQ`, `AA` and represented `RR`; existence of that
+constructor alone supplies no index algorithm for other rings.
+For integral input, the higher-rank step relies on the general isometric-
+embedding decision and its witness. The focused executions recorded below
+check specimens, not universal termination or correctness of that dependency.
 
 ## Splitting a given hyperbolic summand
 
@@ -1639,7 +1656,7 @@ runtime acceptance, and none of these rows closes terminal verification.
 | Sampling | `finite_ordered_sets.py`: `random_element` on the selected finite support | Uniform finite-support distribution; empty support is rejected; no infinite uniform distribution or completeness inference |
 | Exact solving, kernels and arithmetic predicates | Module morphism `preimage`, `kernel`, `cokernel`, `is_primitive`; `AffineModuleFibres.base_point`; lattice `div`, `bezout_partner`, `hyperbolic_partner` and its locus | Original-ring image solving and full kernel inclusions retained; affine points lift the combined equation and project to the original parameter module. Partner loci use lazy solver-backed choice under known hypotheses. Selected integral and represented-real preimage/kernel specimens have executed; the rest remain under terminal T |
 | Perpendiculars and supplied decompositions | `orthogonal_complement`, `orthogonal_splitting`, `orthogonal_decomposition` | Retain the supplied first embedding and full kernel inclusion; direct-sum hypotheses remain essential |
-| Target hyperbolic index and maximal splitting | `lattices.py`: `hyperbolic_index`, `maximal_hyperbolic_index_splitting`; general `Emb` decision and witness; `orthogonal_splitting`; field `witt_decomposition` | The integral route tests actual embeddings of `U^r` in descending order and returns the isometry; field routes use the Witt decomposition. Focused zero, split, mixed, scaled and odd specimens have executed; the broader terminal suite remains open |
+| Target hyperbolic index and maximal splitting | `lattices.py`: `hyperbolic_index`, `maximal_hyperbolic_index_splitting`; general `Emb` decision and witness; `orthogonal_splitting`; field `witt_decomposition` | The integral route tests actual embeddings of `U^r` in descending order and returns the isometry; field routes use the Witt decomposition. Degenerate forms first pass to a nondegenerate radical quotient, then lift the selected summand into the original lattice. Focused zero, split, mixed, scaled, odd and degenerate specimens have executed; the broader terminal suite remains open |
 
 **The old genus test and the specified lattice.** The historical
 `integral_hyperbolic_index` implementation compared the genus of `L`
@@ -1722,7 +1739,7 @@ the focused execution above does not close terminal T.
 
 ### Invariants, predicates, and decomposition morphisms
 
-In this subsection $T$ is a nondegenerate symmetric bilinear module over
+In this subsection $T$ is a finite-rank symmetric bilinear module over
 $R\in\{\mathbb Z,\mathbb Q,\mathbb R\}$; $V$ denotes a space over a field
 $F\in\{\mathbb Q,\mathbb R\}$.
 

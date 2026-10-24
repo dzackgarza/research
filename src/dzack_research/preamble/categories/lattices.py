@@ -4613,6 +4613,47 @@ class Lattices(OwnedCategoryOverBaseRing):
             return 0, zero
 
         @cached_method
+        def _hyperbolic_radical_quotient_section(self):
+            r"""Return a nondegenerate radical quotient and a section into this lattice."""
+            ring = self.base_ring()
+            radical = self.identity_morphism().orthogonal_complement()
+            from dzack_research.preamble.rings.real import RR
+
+            if ring is RR:
+                from dzack_research.preamble.categories.modules.pure.modules import (
+                    _represented_real_rref,
+                )
+
+                labels = tuple(self.module_generating_set())
+                radical_vectors = tuple(
+                    radical.inclusion()(v) for v in radical.module_generators()
+                )
+                rows = tuple(
+                    tuple(vector.to_vector()(label) for label in labels)
+                    for vector in radical_vectors
+                )
+                _, pivots = _represented_real_rref(rows, len(labels), ring)
+                lifts = tuple(
+                    self.module_generators()[i]
+                    for i in range(len(labels))
+                    if i not in pivots
+                )
+                quotient = Lattices(ring)(
+                    [[self.b(x, y) for y in lifts] for x in lifts]
+                    if lifts else 0
+                )
+            else:
+                reduced = radical.isotropic_reduction()
+                quotient = Lattices(ring)(reduced)
+                frame = reduced.coordinate_frame()
+                perpendicular_inclusion = reduced.orthogonal_complement().inclusion()
+                lifts = tuple(
+                    perpendicular_inclusion(frame[i])
+                    for i in range(int(reduced.module_rank()))
+                )
+            return quotient, quotient.Emb(self)(lifts)
+
+        @cached_method
         def hyperbolic_index(self):
             r"""Return the largest number of orthogonal hyperbolic planes in ``self``.
 
@@ -4629,6 +4670,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             excluding all ranks above the constructed lower bound proves
             maximality.
             Over a supported exact field this is the Witt index.
+            For a degenerate finite-rank form, compute the same index on
+            the nondegenerate quotient by its radical.
 
             EXAMPLES::
 
@@ -4644,14 +4687,19 @@ class Lattices(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.rings.real import RR
 
             ring = self.base_ring()
-            assert self.module_rank().is_finite() and self.is_nondegenerate(), (
-                f"the hyperbolic index of {self} requires finite rank and a nondegenerate form"
+            assert self.module_rank().is_finite(), (
+                f"the hyperbolic index of {self} requires finite rank"
             )
-            if ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
-                return self.witt_index()
-            assert ring is _owned_integers(), (
+            assert ring in (
+                _owned_integers(), _owned_rationals(), _owned_real_algebraic_numbers(), RR
+            ), (
                 f"the hyperbolic index of {self} is computed here over ZZ, QQ, AA and represented RR"
             )
+            if not self.is_nondegenerate():
+                quotient, _section = self._hyperbolic_radical_quotient_section()
+                return quotient.hyperbolic_index()
+            if ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
+                return self.witt_index()
             plane = Lattices(ring)("U")
             signature = self.signature_pair()
             upper_bound = min(int(signature.first()), int(signature.second()))
@@ -4687,6 +4735,8 @@ class Lattices(OwnedCategoryOverBaseRing):
             by :meth:`hyperbolic_index`. ``orthogonal_splitting`` constructs
             the actual complement and an inverse over the original ring.
             Field witnesses come from the existing Witt decomposition.
+            For a degenerate form, lift a maximal hyperbolic summand from
+            the radical quotient and split its image in the original lattice.
 
             EXAMPLES::
 
@@ -4702,6 +4752,12 @@ class Lattices(OwnedCategoryOverBaseRing):
                 sage: eta = Z.maximal_hyperbolic_index_splitting()
                 sage: assert eta.domain().biproduct_factor(0).module_rank() == 0
                 sage: assert eta(eta.inverse()(Z.zero())) == Z.zero()
+                sage: D = Lattices(ZZ)([[0, 1, 1], [1, 2, 1], [1, 1, 0]])
+                sage: assert D.hyperbolic_index() == 1
+                sage: delta = D.maximal_hyperbolic_index_splitting()
+                sage: assert delta.codomain() is D
+                sage: assert delta.domain().biproduct_factor(0).module_rank() == 2
+                sage: assert all(delta(delta.inverse()(v)) == v for v in D.module_generators())
             """
             from dzack_research.preamble.categories.rings.ring_foundation import (
                 _owned_real_algebraic_numbers,
@@ -4709,11 +4765,33 @@ class Lattices(OwnedCategoryOverBaseRing):
             from dzack_research.preamble.rings.real import RR
 
             ring = self.base_ring()
-            if ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
-                return self.witt_decomposition()
-            assert ring is _owned_integers(), (
+            assert self.module_rank().is_finite(), (
+                f"a maximal hyperbolic splitting of {self} requires finite rank"
+            )
+            assert ring in (
+                _owned_integers(), _owned_rationals(), _owned_real_algebraic_numbers(), RR
+            ), (
                 f"a maximal hyperbolic splitting of {self} is computed here over ZZ, QQ, AA and represented RR"
             )
+            if not self.is_nondegenerate():
+                quotient_lattice, section = self._hyperbolic_radical_quotient_section()
+                quotient_splitting = quotient_lattice.maximal_hyperbolic_index_splitting()
+                hyperbolic = quotient_splitting.domain().biproduct_factor(0)
+                if int(hyperbolic.module_rank()) == 0:
+                    zero = hyperbolic.Emb(self)(())
+                    return self.orthogonal_decomposition(
+                        (zero, self.Aut().identity())
+                    ).inverse()
+                first_inclusion = quotient_splitting.domain().injection(0)
+                embedding = hyperbolic.Emb(self)(
+                    tuple(
+                        section(quotient_splitting(first_inclusion(v)))
+                        for v in hyperbolic.module_generators()
+                    )
+                )
+                return embedding.orthogonal_splitting()
+            if ring in (_owned_rationals(), _owned_real_algebraic_numbers(), RR):
+                return self.witt_decomposition()
             index = int(self.hyperbolic_index())
             direct_index, direct_splitting = self._direct_hyperbolic_splitting()
             if index == direct_index:

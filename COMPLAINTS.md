@@ -14,6 +14,22 @@ Durable definitions and decisions belong at their mathematical declarations or i
 
 ## Foundational Mathematics
 
+### Rational radical quotient loses its presented rank when reframed as a lattice
+
+For a finite free formed module over a field, the radical quotient must retain a
+free presentation of rank `rank(L) - rank(rad(L))` and its descended Gram form.
+On `Lattices(QQ)([[0,0,0],[0,0,1],[0,1,0]])`, the public
+`L.radical_quotient()` resolves to the formed-module construction. It reports
+rank two, but `Lattices(QQ)(L.radical_quotient())` retains a rank-three
+underlying module with a rank-two Gram tensor, so pairing evaluation raises
+`IndexError`. The lattice's radical embedding followed by
+`isotropic_reduction()` does construct the rank-two quotient and is used by
+the hyperbolic-index methods. The general formed-module quotient and its
+presentation remain unresolved; terminal T owns the separating specimen.
+The requested formal mathematics is the rank and descended-form theorem for
+the quotient of a finite free formed module by a saturated radical. This
+observation does not establish behavior over arbitrary rings or value modules.
+
 ### Constrained integral embedding search still needs applicable exclusion routes
 
 The hyperbolic-splitting dependency index requires all isometric embeddings,
