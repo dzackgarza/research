@@ -249,13 +249,12 @@ def test_quotients_of_modules_by_the_slash(pid) -> None:
     assert quotient.projection().domain() is module
 
 
-def test_mor_tensor_and_sum_in_the_owned_vocabulary(commutative_ring) -> None:
+def test_hom_tensor_and_sum_spelled_as_a_sage_user_would(commutative_ring) -> None:
     ring = commutative_ring
     plane = ring.free_module(2)
     line = ring.free_module(1)
-    mor = plane.Mor(line)
-    assert mor.module_rank() == cardinal(2)
-    assert mor in Cat()
+    assert Hom(plane, line).module_rank() == cardinal(2)
+    assert plane.hom(line) in Cat()
     assert plane.tensor(line).module_rank() == cardinal(2)
     assert plane.tensor_product(line).module_rank() == cardinal(2)
     assert plane.direct_sum(line).module_rank() == cardinal(3)
