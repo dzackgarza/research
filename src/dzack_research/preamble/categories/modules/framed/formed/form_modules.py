@@ -3732,11 +3732,11 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
             def radical_quotient(self):
                 r"""Return ``M/rad(M)`` equipped with the descended form.
 
-                The underlying module is the literal cokernel of the radical
-                inclusion.  Since the radical pairs trivially with all of ``M``,
-                the selected form descends through that cokernel with unchanged
-                values; the returned formed module is built from that descended
-                form rather than from an isomorphic quotient presentation.
+                Since the radical pairs trivially with all of ``M``, the
+                selected form descends through the cokernel of the radical
+                inclusion with unchanged values.  Over a field, the result is
+                re-presented on a basis of that quotient, so the returned
+                module need not be the literal cokernel object.
                 """
                 radical = self.radical()
                 inclusion = radical.inclusion()
