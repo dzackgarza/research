@@ -59,6 +59,12 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert quotient in additive_groups
     assert quotient in OwnedRings().Commutative()
     assert quotient in OwnedIntegralDomains()
+    quotient_module = Modules.ParentMethods._native_module_presentation(quotient)
+    assert quotient_module is not None
+    assert quotient_module.module() is quotient
+    assert quotient_module.base_ring() is QQ
+    assert quotient_module.unit() == quotient.one()
+    assert quotient_module.multiplication().codomain() is quotient
     assert quotient_fraction_field in additive_groups
     assert quotient_fraction_field in OwnedRings().Division().Commutative()
     assert quotient_fraction_field.fraction_field_localization().localization_source() is quotient
