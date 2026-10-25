@@ -4029,11 +4029,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             scalars = _owned_ring(ring_map.domain())
             associative_unital = Algebras(scalars).Associative().Unital()
+            algebra_resolution_selected = (
+                self.has_selected_resolution(associative_unital)
+                or self.has_selected_resolution(associative_unital.Commutative())
+            )
             match (
                 self.base_ring() is scalars
                 and self in FramedFreeModules(scalars)
                 and self in associative_unital
-                and self.has_selected_resolution(associative_unital)
+                and algebra_resolution_selected
             ):
                 case False:
                     return None
