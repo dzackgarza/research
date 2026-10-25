@@ -63,3 +63,7 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     assert projection.preserves_forms() is True
     for label in formed.radical().module_generating_set():
         assert projection(formed.radical().inclusion()(formed.radical().module_generator(label))) == quotient.zero()
+    lattice_quotient = Lattices(QQ)(quotient)
+    assert lattice_quotient.module_rank() == 2
+    assert lattice_quotient.gram_tensor().tensor_shape() == (2, 2)
+    assert lattice_quotient.b(lattice_quotient.module_generator(0), lattice_quotient.module_generator(1)) == 1
