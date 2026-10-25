@@ -69,7 +69,8 @@ def test_nonsymmetric_radical_quotient_kills_only_the_two_sided_radical() -> Non
     formed = FormModules(QQ)(form)
 
     assert formed.left_radical().module_rank() == 1
-    assert formed.right_radical().module_rank() == 0
+    assert formed.right_radical().module_rank() == 1
+    assert formed.left_radical().intersection(formed.right_radical()).module_rank() == 0
     quotient = formed.radical_quotient()
     projection = formed.radical_quotient_projection()
     assert quotient.unformed_module().module_rank() == 2
