@@ -75,6 +75,34 @@ def test_rational_zero_form_has_zero_rank_radical_quotient() -> None:
     assert basis_map.codomain().module_rank() == 0
 
 
+def test_rational_radical_quotient_rank_subtracts_higher_radical_rank() -> None:
+    r"""A rank-four form with a two-dimensional radical descends to a hyperbolic plane."""
+    module = QQ ^ 4
+    form = module.bilinear_forms(QQ)(
+        [[0, 1, 0, 0], [1, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
+    )
+    formed = FormModules(QQ)(form)
+    quotient = formed.radical_quotient()
+    projection = formed.radical_quotient_projection()
+
+    assert formed.radical().module_rank() == 2
+    assert quotient.unformed_module().module_rank() == 4 - 2
+    assert quotient.gram_tensor().tensor_shape() == (2, 2)
+    assert quotient.is_isometric_to(FormModules(QQ)(
+        (QQ ^ 2).bilinear_forms(QQ)([[0, 1], [1, 0]])
+    ))
+    assert projection.module_morphism().is_surjective() is True
+    assert projection.module_morphism().kernel().module_rank() == 2
+    for left in formed.module_generators():
+        for right in formed.module_generators():
+            assert quotient.b(projection(left), projection(right)) == formed.b(left, right)
+    lattice_quotient = Lattices(QQ)(quotient)
+    assert lattice_quotient.unformed_module().module_rank() == 2
+    assert lattice_quotient.gram_tensor().tensor_shape() == (2, 2)
+    generators = tuple(lattice_quotient.module_generators())
+    assert lattice_quotient.b(generators[0], generators[1]) == quotient.b(generators[0], generators[1])
+
+
 def test_module_valued_radical_quotient_uses_selected_free_basis() -> None:
     r"""Field re-presentation also preserves forms whose values are modules, not rings."""
     module = QQ ^ 3
