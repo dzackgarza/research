@@ -110,6 +110,11 @@ def test_at21_public_constructor_accepts_the_default_a_zero_minus_shape() -> Non
     assert explicitly_minus.dynkin_rank() == 0
     assert explicitly_minus.source_variant() == "short"
     assert explicitly_minus.base_pair().dynkin_variant() == ("long", "short")
+    vertices = {
+        tuple(int(coordinate) for coordinate in vertex)
+        for vertex in explicitly_minus.base_pair().polygon().vertices()
+    }
+    assert vertices == {(0, 2), (0, 0), (1, 0)}
 
 
 def test_pure_a_zero_short_shape_is_admitted_by_at21_source_rules() -> None:
