@@ -160,7 +160,17 @@ def _form_value_image(form):
 
 
 def _bilinear_form_descends_along(form, morphism, value_projection) -> bool:
-    r"""Test the radical condition for descent through a represented cokernel."""
+    r"""Decide whether the projected pairing descends through a represented cokernel.
+
+    Write ``i:N -> M`` for ``morphism`` and ``p:W -> V`` for
+    ``value_projection``. The induced pairing on ``coker(i)`` exists exactly
+    when ``p(b(i(n),m)) = p(b(m,i(n))) = 0`` for every ``n`` and ``m``:
+    changing either quotient lift then leaves the value unchanged. Since
+    ``b`` and ``p`` are linear in each relevant argument, it suffices to test
+    the selected finite generating families of ``N`` and ``M``. The framing
+    requirement is deliberate; this routine does not claim a decision
+    procedure for infinitely generated modules.
+    """
     module = form.module()
     if morphism.codomain() is not module:
         raise ValueError(
