@@ -491,7 +491,8 @@ class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
 
 
 def _algebra_from_native_ring(
-    algebra, product, unit, scalar_action, *, module_basis=None, scalar_ring=None
+    algebra, product, unit, scalar_action, *, module_basis=None, scalar_ring=None,
+    defer_scalar_action=False,
 ):
     r"""Compute (M,m) from a native ring and enter the ordinary algebra constructor.
 
@@ -543,7 +544,8 @@ def _algebra_from_native_ring(
     # endomorphism ring may itself realize module-Mor objects.  Materialize it
     # only after the complete native algebra/module placement is established,
     # while preserving the constructor-supplied action and additive group.
-    presentation.scalar_action_morphism()
+    if not defer_scalar_action:
+        presentation.scalar_action_morphism()
     return module
 
 
@@ -4512,8 +4514,10 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     self._native_scalar_action,
                     module_basis=self._native_module_basis,
                     scalar_ring=base,
+                    defer_scalar_action=True,
                 )
             refine(self, Cat().meet(tuple(placement)))
+            self.scalar_action()
             return
 
         label_size = selected_labels.cardinality()
@@ -4602,10 +4606,12 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 self._native_scalar_action,
                 module_basis=self._native_module_basis,
                 scalar_ring=base,
+                defer_scalar_action=True,
             )
         # Both selected framing and native module datum are now queryable by
         # the algebra realization hooks this placement introduces.
         refine(self, Cat().meet(tuple(placement)))
+        self.scalar_action()
 
 @cached_function
 def _owned_algebra_view(
