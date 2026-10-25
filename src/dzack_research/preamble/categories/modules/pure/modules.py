@@ -2481,8 +2481,18 @@ class Modules(OwnedCategoryOverBaseRing):
                 if native is not None
                 else self._ring_morphism_defining_module_action()
             )
+            # During native module construction, the selected presentation is
+            # retained before Modules(R)'s category hooks are installed. In
+            # that interval the parent may not yet have
+            # underlying_additive_group(); the native datum already names the
+            # exact additive-group object on which its action is defined.
+            additive_group = (
+                native.module()
+                if native is not None
+                else self.underlying_additive_group()
+            )
             return _action_with_canonical_endomorphism_parent(
-                self.base_ring(), self.underlying_additive_group(), action
+                self.base_ring(), additive_group, action
             )
 
         def annihilator(self):
