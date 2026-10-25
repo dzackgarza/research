@@ -280,7 +280,7 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
         assert basis_map(basis_map.inverse()(quotient_generator)) == quotient_generator
     for label in source_module.module_generating_set():
         generator = source_module.module_generator(label)
-        assert basis_map(projection.module_morphism()(generator)) == canonical_projection(formed(generator))
+        assert basis_map(projection.module_morphism()(generator)) == canonical_projection(generator)
     assert quotient.b(
         projection(formed.module_generator(1)),
         projection(formed.module_generator(2)),
