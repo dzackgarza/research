@@ -29,6 +29,27 @@ def test_a_rational_valued_form_descends_to_the_quotient_by_its_radical() -> Non
     assert descended(first_class, second_class) == 1
 
 
+def test_nonsymmetric_form_descends_when_relations_vanish_in_both_slots() -> None:
+    module = QQ ^ 3
+    relation_module = QQ ^ 1
+    labels = tuple(module.module_generating_set())
+    inclusion = relation_module.module_category().Mor(relation_module, module)(
+        lambda label: module.module_generator(labels[0])
+    )
+    form = module.bilinear_forms(QQ)(
+        [[0, 0, 0], [0, 1, 2], [0, 3, 4]]
+    )
+    identity = QQ.module_category().Mor(QQ, QQ).identity()
+
+    assert form.descends_along(inclusion, identity)
+    descended = form.descend_along(inclusion, identity)
+    first, second = descended.module().module_generators()
+    assert descended(first, first) == 1
+    assert descended(first, second) == 2
+    assert descended(second, first) == 3
+    assert descended(second, second) == 4
+
+
 def test_the_form_of_a_degenerate_lattice_descends_only_along_its_radical() -> None:
     lattice = Lattices(ZZ)([[1, 1], [1, 1]])
     form = lattice.form()
