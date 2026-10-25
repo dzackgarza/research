@@ -78,7 +78,7 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     assert projection.codomain() is quotient
     assert projection.preserves_forms() is True
     basis_map = quotient._preamble_radical_quotient_basis_map
-    canonical_projection = quotient._preamble_radical_quotient_projection
+    canonical_projection = quotient._preamble_radical_quotient_cokernel_projection
     for label in basis_map.domain().module_generating_set():
         basis_generator = basis_map.domain().module_generator(label)
         assert basis_map.inverse()(basis_map(basis_generator)) == basis_generator

@@ -1664,7 +1664,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             self,
             source_form,
             source_form_computation=None,
-            radical_quotient_projection=None,
+            radical_quotient_cokernel_projection=None,
             radical_quotient_basis_map=None,
             **rest,
         ) -> None:
@@ -1674,7 +1674,7 @@ class FormModules(OwnedCategoryOverBaseRing):
             )
             self._preamble_form = source_form
             self._preamble_form_computation = source_form_computation
-            self._preamble_radical_quotient_projection = radical_quotient_projection
+            self._preamble_radical_quotient_cokernel_projection = radical_quotient_cokernel_projection
             self._preamble_radical_quotient_basis_map = radical_quotient_basis_map
             super().__init__(**rest)
 
@@ -3782,7 +3782,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 return FormModules(ring)(
                     descended,
                     _extra_construction_data={
-                        "radical_quotient_projection": source_to_quotient,
+                        "radical_quotient_cokernel_projection": source_to_quotient,
                         "radical_quotient_basis_map": basis_map,
                     },
                 )
@@ -3798,7 +3798,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 formed module as codomain.
                 """
                 quotient = self.radical_quotient()
-                projection = quotient._preamble_radical_quotient_projection
+                projection = quotient._preamble_radical_quotient_cokernel_projection
                 if projection is not None:
                     basis_map = quotient._preamble_radical_quotient_basis_map
                     if basis_map is not None:
