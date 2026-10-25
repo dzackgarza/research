@@ -86,3 +86,11 @@ def test_the_at21_enhancement_of_a1_is_a_log_pair_on_the_same_surface() -> None:
     enhanced = ADELogPairs(QQ).at21("A", 1)
 
     assert enhanced in ToricLogPairs(QQ)
+
+
+def test_primed_a_polygon_uses_the_dynkin_rank_as_its_last_vertex() -> None:
+    r"""Table 4's primed 'A_{2n-3} polygon has last vertex (2n-3, 0)."""
+    vertices, point = _a_family_polygon_data(3, ("prime",), 2)
+
+    assert vertices == ((2, 2), (0, 1), (0, 0), (3, 0))
+    assert point == (2, 2)
