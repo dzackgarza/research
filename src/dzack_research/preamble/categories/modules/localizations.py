@@ -3,6 +3,7 @@ r"""Modules equipped as localizations of modules over the source ring."""
 from sage.structure.element import ModuleElement, parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
 
+from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.general_modules import _module_element_scalar_action
 
 from dzack_research.preamble.categories.modules.framed.finitely_generated.finitely_presented_modules import (
@@ -477,7 +478,15 @@ def _localized_module(
     when its source is: localization is exact, so a presentation of ``M`` maps
     to a presentation of ``S^{-1}M`` under ``R -> S^{-1}R``.
     """
-    placement = [LocalizedModules(localization_ring), *tuple(extra_categories)]
+    # Localization preserves the abelian addition of the source module.
+    # Materialize this inherited axiom at the construction owner because
+    # owned category joins do not guarantee it on the concrete parent, while
+    # native scalar-action construction requires it explicitly.
+    placement = [
+        LocalizedModules(localization_ring),
+        AdditiveGroups().AdditiveCommutative(),
+        *tuple(extra_categories),
+    ]
     data = {
         "numerator_module": numerator_module,
         "localization_ring": localization_ring,
