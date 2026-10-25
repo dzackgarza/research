@@ -235,23 +235,21 @@ class _RingModulePresentation:
                     if labels.cardinality().is_finite():
                         placement = placement.FinitelyGenerated()
                     free_placement = placement
-        # Install the defining action only after the selected resolution is
-        # retained: constructing its Mor parent may run realization hooks that
-        # inspect module generators or coordinates. Conversely, do this before
-        # category refinement, so those hooks see both the resolution and the
-        # exact action on End_Ab(module).
-        self.scalar_action_morphism()
+        # The selected resolution is defining data and is installed before
+        # placement.  Refine the module before materializing its scalar-action
+        # morphism: End_Ab(module)'s realization can construct internal module
+        # Mor objects, whose endpoint checks require module placement already
+        # to be established.  Realization hooks run after the new category is
+        # installed, and can obtain the native action from the retained
+        # presentation through Modules.ParentMethods.scalar_action().
         if free_placement is not None and module not in free_placement:
             refine(module, free_placement)
-        # Installing the selected resolution above is part of construction,
-        # not a postcondition of module placement. Category realization hooks
-        # can ask for generators, coordinates, or the scalar-action morphism;
-        # refining first exposes a half-constructed module to those hooks.
         match module in category:
             case True:
                 pass
             case False:
                 refine(module, category)
+        self.scalar_action_morphism()
         return module
 
     def module_basis(self):
