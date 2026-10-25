@@ -24,9 +24,13 @@ def test_affine_A1_lattice_modulo_its_radical_is_the_A1_root_lattice() -> None:
     assert quotient.is_isometric_to(Lattices(ZZ)([[2]]))
     assert projection.domain() is affine
     assert projection.codomain() is quotient
+    assert projection.module_morphism().is_surjective() is True
     assert projection.preserves_forms() is True
     assert projection.module_morphism().kernel().module_rank() == radical.module_rank() == 1
     assert projection(radical.inclusion()(r)) == quotient.zero()
+    for left in affine.module_generators():
+        for right in affine.module_generators():
+            assert quotient.b(projection(left), projection(right)) == affine.b(left, right)
 
 
 def test_nondegenerate_hyperbolic_plane_has_zero_radical() -> None:
