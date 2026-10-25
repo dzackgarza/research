@@ -1399,23 +1399,28 @@ class Algebras(OwnedCategoryOverBaseRing):
                     )
             match _engine_product:
                 case None:
-                    if vars(self).get("_preamble_defer_native_algebra_setup", False):
-                        _algebra_from_native_ring(
-                            self,
-                            lambda left, right: left * right,
-                            self._from_engine_element(self._engine.one()),
-                            self._native_scalar_action,
-                            module_basis=getattr(self, "_native_module_basis", None),
-                            scalar_ring=vars(self).get("_preamble_selected_algebra_base_ring"),
-                        )
+                    # _OwnedAlgebraParent deliberately starts with only the
+                    # minimal ring/additive placement. Its selected algebra
+                    # framing is installed after this Parent initialization;
+                    # constructing the native module here would ask its
+                    # category hooks for that framing before it exists.
+                    pass
                 case product:
-                    # The common ring constructor has now returned and the
-                    # selected algebra resolution, if supplied, is installed.
-                    # Only now can its regular module safely construct End(M)
-                    # and the scalar action without asking for missing framing.
+                    # Some algebra owners (notably _OwnedAlgebraParent) must
+                    # install their selected resolution after this cooperative
+                    # Parent initialization returns. Honor that owner contract
+                    # rather than installing the regular module merely because
+                    # the generating family is already visible: the resolution
+                    # and module datum are distinct construction obligations.
                     from dzack_research.preamble.categories.modules.pure.modules import Modules
 
-                    if Modules.ParentMethods._native_module_presentation(self) is None:
+                    defer_to_owner = getattr(
+                        self, "_defer_native_algebra_construction", lambda: False
+                    )()
+                    if (
+                        not defer_to_owner
+                        and Modules.ParentMethods._native_module_presentation(self) is None
+                    ):
                         _algebra_from_native_ring(
                             self,
                             product,
@@ -1424,9 +1429,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                             module_basis=getattr(self, "_native_module_basis", None),
                             scalar_ring=vars(self).get("_preamble_selected_algebra_base_ring"),
                         )
-            pending_placement = vars(self).pop("_preamble_pending_algebra_placement", None)
-            if pending_placement is not None:
-                refine(self, pending_placement)
 
         def _retain_algebra_law_decisions(self, decisions):
             r"""Retain the exact admission decision supporting each algebra axiom placement."""
@@ -4474,19 +4476,19 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         Algebras.ParentMethods._retain_algebra_law_decisions(
             self, retained_laws
         )
+        from dzack_research.preamble.categories.modules.pure.modules import Modules
+
         if labels is None:
             if generator_values is not None:
                 raise ValueError(
                     f"the algebra {engine} over {base_ring} has no chosen generators, so it cannot be given "
                     "generator values"
                 )
-            defer_setup = (
-                _defer_native_algebra_setup
-                or vars(self).get("_preamble_defer_native_algebra_setup", False)
-            )
-            if defer_setup:
-                self._preamble_pending_algebra_placement = Cat().meet(tuple(placement))
-            else:
+            # The common Parent initialization intentionally skipped the
+            # native module. At this point the owner has returned from it and
+            # the selected scalar base is retained, so construct the regular
+            # module now, before exposing the algebra placement.
+            if Modules.ParentMethods._native_module_presentation(self) is None:
                 _algebra_from_native_ring(
                     self,
                     lambda left, right: left * right,
@@ -4495,7 +4497,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     module_basis=self._native_module_basis,
                     scalar_ring=base,
                 )
-                refine(self, Cat().meet(tuple(placement)))
+            refine(self, Cat().meet(tuple(placement)))
             return
 
         label_size = selected_labels.cardinality()
@@ -4573,16 +4575,10 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             generator_morphism,
             augmentation,
         )
-        defer_setup = (
-            _defer_native_algebra_setup
-            or vars(self).get("_preamble_defer_native_algebra_setup", False)
-        )
-        if defer_setup:
-            # The outer algebra constructor still has to install its selected
-            # generator family. Do not run category hooks until that owner has
-            # installed both the resolution and the native module datum.
-            self._preamble_pending_algebra_placement = Cat().meet(tuple(placement))
-        else:
+        # The selected algebra resolution has just been retained. The common
+        # Parent initialization skipped module construction, so install the
+        # native module only now, then expose the algebra category.
+        if Modules.ParentMethods._native_module_presentation(self) is None:
             _algebra_from_native_ring(
                 self,
                 lambda left, right: left * right,
@@ -4591,17 +4587,9 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 module_basis=self._native_module_basis,
                 scalar_ring=base,
             )
-            # The resolution and native module datum are now queryable by the
-            # algebra realization hooks that this placement introduces.
-            refine(self, Cat().meet(tuple(placement)))
-
-    def _finish_pending_algebra_placement(self):
-        r"""Run algebra-category construction hooks after the outer owner installs its data."""
-        placement = vars(self).pop("_preamble_pending_algebra_placement", None)
-        if placement is not None:
-            refine(self, placement)
-
-
+        # Both selected framing and native module datum are now queryable by
+        # the algebra realization hooks this placement introduces.
+        refine(self, Cat().meet(tuple(placement)))
 
 @cached_function
 def _owned_algebra_view(
