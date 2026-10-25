@@ -4487,6 +4487,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     self._from_engine_element(engine.one()),
                     self._native_scalar_action,
                     module_basis=self._native_module_basis,
+                    scalar_ring=base,
                 )
                 refine(self, Cat().meet(tuple(placement)))
             return
