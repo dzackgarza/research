@@ -5410,7 +5410,11 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             # before deriving ring placement: placement hooks can ask for the
             # module basis before Parent.__init__ ever runs. The basis
             # callbacks remain lazy until the parent is initialized.
-            if engine in SageNumberFields() and self._native_module_basis is None:
+            if (
+                engine is not SageQQ
+                and engine in SageNumberFields()
+                and self._native_module_basis is None
+            ):
                 from dzack_research.preamble.categories.modules.native_modules import (
                     _power_module_basis,
                 )
