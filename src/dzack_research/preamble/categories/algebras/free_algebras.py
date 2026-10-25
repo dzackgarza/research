@@ -285,6 +285,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             self._from_engine_element(engine.one()),
             self._native_scalar_action,
             module_basis=self._native_module_basis,
+            scalar_ring=base,
         )
         self._finish_pending_algebra_placement()
 
