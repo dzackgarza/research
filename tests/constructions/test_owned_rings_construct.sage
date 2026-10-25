@@ -46,6 +46,7 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert polynomials.algebra_framing_source() is polynomials
     assert polynomials.algebra_framing_morphism().domain() is polynomials
     assert polynomials.algebra_framing_morphism().codomain() is polynomials
+    assert polynomials.algebra_framing_morphism() is polynomials.Mor(polynomials).identity()
     assert quotient in additive_groups
     assert quotient in OwnedRings().Commutative()
     assert fraction_field in additive_groups
