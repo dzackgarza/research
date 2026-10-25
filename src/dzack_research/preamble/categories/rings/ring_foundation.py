@@ -6047,6 +6047,7 @@ def _field_placements() -> tuple[Category, ...]:
     itself, so it is a principal ideal domain and Noetherian."""
     return (
         OwnedRings().Division().Commutative(),
+        OwnedIntegralDomains(),
         OwnedIntegralDomains().PrincipalIdeals(),
         OwnedRings().Noetherian(),
     )
