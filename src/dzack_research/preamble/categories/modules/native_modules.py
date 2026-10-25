@@ -236,12 +236,12 @@ class _RingModulePresentation:
                         placement = placement.FinitelyGenerated()
                     free_placement = placement
         # The selected resolution is defining data and is installed before
-        # placement.  Refine the module before materializing its scalar-action
-        # morphism: End_Ab(module)'s realization can construct internal module
-        # Mor objects, whose endpoint checks require module placement already
-        # to be established.  Realization hooks run after the new category is
-        # installed, and can obtain the native action from the retained
-        # presentation through Modules.ParentMethods.scalar_action().
+        # placement.  The caller that owns the complete native construction
+        # materializes the scalar-action morphism after its final category
+        # refinement: End_Ab(module)'s realization can construct internal
+        # module Mor objects, whose endpoint checks require that final
+        # placement.  The retained presentation remains the authoritative
+        # action throughout this interval.
         if free_placement is not None and module not in free_placement:
             refine(module, free_placement)
         match module in category:
@@ -249,7 +249,6 @@ class _RingModulePresentation:
                 pass
             case False:
                 refine(module, category)
-        self.scalar_action_morphism()
         return module
 
     def module_basis(self):

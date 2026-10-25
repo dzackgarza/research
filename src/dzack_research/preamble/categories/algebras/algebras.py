@@ -536,9 +536,15 @@ def _algebra_from_native_ring(
     selected_category = Cat().meet((Algebras(ring), category))
     match module in selected_category:
         case True:
-            return module
+            pass
         case False:
-            return refine(module, selected_category)
+            refine(module, selected_category)
+    # The scalar-action morphism uses End_Ab(U(module)); constructing that
+    # endomorphism ring may itself realize module-Mor objects.  Materialize it
+    # only after the complete native algebra/module placement is established,
+    # while preserving the constructor-supplied action and additive group.
+    presentation.scalar_action_morphism()
+    return module
 
 
 class AlgebraMorCategoryConstruction(MorCategoryConstruction):
