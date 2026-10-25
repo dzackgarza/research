@@ -1372,6 +1372,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         "multiplication"
                     )
                     assert callable(product) and callable(_engine_scalar_action) and callable(_native_unit_factory)
+                    rest["_defer_native_algebra_setup"] = True
                     super().__init__(**rest)
             match algebra_generating_family:
                 case None:
@@ -4360,6 +4361,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         algebra_framing_source=None,
         constructing_category=None,
         ring_placement=None,
+        _defer_native_algebra_setup=False,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 
@@ -4432,13 +4434,14 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     f"the algebra {engine} over {base_ring} has no chosen generators, so it cannot be given "
                     "generator values"
                 )
-            _algebra_from_native_ring(
-                self,
-                lambda left, right: left * right,
-                self._from_engine_element(engine.one()),
-                self._native_scalar_action,
-                module_basis=self._native_module_basis,
-            )
+            if not _defer_native_algebra_setup:
+                _algebra_from_native_ring(
+                    self,
+                    lambda left, right: left * right,
+                    self._from_engine_element(engine.one()),
+                    self._native_scalar_action,
+                    module_basis=self._native_module_basis,
+                )
             return
 
         label_size = selected_labels.cardinality()
@@ -4516,13 +4519,14 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             generator_morphism,
             augmentation,
         )
-        _algebra_from_native_ring(
-            self,
-            lambda left, right: left * right,
-            self._from_engine_element(engine.one()),
-            self._native_scalar_action,
-            module_basis=self._native_module_basis,
-        )
+        if not _defer_native_algebra_setup:
+            _algebra_from_native_ring(
+                self,
+                lambda left, right: left * right,
+                self._from_engine_element(engine.one()),
+                self._native_scalar_action,
+                module_basis=self._native_module_basis,
+            )
 
 
 
