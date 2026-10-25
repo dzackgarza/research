@@ -101,6 +101,13 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert localization_module.module() is localization
     assert localization_module.base_ring() is localization.base_ring()
     assert localization_module.unit() == localization.one()
+    punctured = polynomials.localization(polynomials.algebra_generator("x"))
+    punctured_module = Modules.ParentMethods._native_module_presentation(punctured)
+    assert punctured_module is not None
+    assert punctured_module.module() is punctured
+    assert punctured_module.base_ring() is punctured.base_ring()
+    assert punctured_module.unit() == punctured.one()
+    assert punctured.localization_source() is polynomials
     tensor_algebra = QQ.free_module(2).tensor_algebra()
     assert tensor_algebra in OwnedRings().NoZeroDivisors()
     assert tensor_algebra in OwnedRings().Nontrivial()
