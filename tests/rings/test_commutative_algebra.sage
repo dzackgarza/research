@@ -28,10 +28,14 @@ def test_integer_residue_spectrum_counts_distinct_prime_divisors() -> None:
 
 def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     inverted_two = ZZ.localization(2)
+    inverted_zero = ZZ.localization(0)
     assert inverted_two.localization_source() is ZZ
     assert tuple(inverted_two.inverted_elements()) == (ZZ(2),)
     assert inverted_two.localization_map()(ZZ(3)) == inverted_two(3)
     assert inverted_two(2).is_unit()
+    assert inverted_two in AdditiveGroups().AdditiveCommutative()
+    assert inverted_zero in AdditiveGroups().AdditiveCommutative()
+    assert inverted_zero.is_zero() is True
 
     local_at_five = ZZ.localize_at_prime(5)
     rational = local_at_five.fraction_field()
