@@ -188,6 +188,19 @@ def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
     assert point == (2, 2)
 
 
+def test_primed_rank_two_a_polygon_uses_the_a_prime_one_endpoint() -> None:
+    r"""The first even-rank primed case A^-_2 has polygon A'_1."""
+    pair = ADELogPairs(QQ).at21("A", 2, variant="'A^-")
+    vertices = {
+        tuple(int(coordinate) for coordinate in vertex)
+        for vertex in pair.base_pair().polygon().vertices()
+    }
+
+    assert pair.base_pair().dynkin_rank() == 2
+    assert (1, 0) in vertices
+    assert (2, 0) not in vertices
+
+
 def test_primed_odd_rank_a_polygon_uses_the_a_prime_2n_minus_1_endpoint() -> None:
     r"""The odd-rank primed family A'_{2n-1} ends at the pair rank."""
     pair = ADELogPairs(QQ).at21("A", 3, variant="'A")
