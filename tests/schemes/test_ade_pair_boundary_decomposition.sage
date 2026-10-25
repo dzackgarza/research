@@ -88,6 +88,15 @@ def test_the_at21_enhancement_of_a1_is_a_log_pair_on_the_same_surface() -> None:
     assert enhanced in ToricLogPairs(QQ)
 
 
+def test_at21_public_constructor_accepts_the_default_a_zero_minus_shape() -> None:
+    r"""AT21's A_0^- default is normalized before the public rank check."""
+    pair = ADELogPairs(QQ).at21("A", 0)
+
+    assert pair.dynkin_letter() == "A"
+    assert pair.dynkin_rank() == 0
+    assert pair.source_variant() == "short"
+
+
 def test_pure_a_zero_short_shape_is_admitted_by_at21_source_rules() -> None:
     r"""AT21 Table 1 includes the rank-zero pure shape A_0^-."""
     assert _validated_at21_low_level_variant("A", 0, "short", False) == ("long", "short")
