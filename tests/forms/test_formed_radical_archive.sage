@@ -81,6 +81,27 @@ def test_nonsymmetric_radical_quotient_kills_only_the_two_sided_radical() -> Non
             assert quotient.b(projection(left), projection(right)) == formed.b(left, right)
 
 
+def test_nonsymmetric_radical_quotient_drops_the_common_radical() -> None:
+    module = QQ ^ 3
+    form = module.bilinear_forms(QQ)(
+        [[0, 0, 0], [0, 0, 0], [0, 1, 0]]
+    )
+    formed = FormModules(QQ)(form)
+    common_radical = formed.left_radical().intersection(formed.right_radical())
+
+    assert formed.left_radical().module_rank() == 2
+    assert formed.right_radical().module_rank() == 2
+    assert common_radical.module_rank() == 1
+    quotient = formed.radical_quotient()
+    projection = formed.radical_quotient_projection()
+    assert quotient.unformed_module().module_rank() == 2
+    assert projection.module_morphism().is_surjective() is True
+    assert projection.module_morphism().kernel().module_rank() == 1
+    for left in formed.module_generators():
+        for right in formed.module_generators():
+            assert quotient.b(projection(left), projection(right)) == formed.b(left, right)
+
+
 def test_rational_nondegenerate_form_uses_full_rank_quotient_basis() -> None:
     r"""The field-specific quotient basis keeps all generators when the radical is zero."""
     module = QQ ^ 2
