@@ -2454,7 +2454,7 @@ class Modules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _ring_morphism_defining_module_action(
-            self, endomorphisms=None, *, additive_group=None
+            self, endomorphisms=None, additive_group=None
         ):
             r"""Return ``rho_M : R -> End_Ab(U(M))``, ``r |-> (m |-> r m)``, from the scalar multiplication.
 
@@ -2511,7 +2511,7 @@ class Modules(OwnedCategoryOverBaseRing):
             # Passing that exact object preserves the End(U(M)) endpoint while
             # retaining the common action-map implementation.
             return self._ring_morphism_defining_module_action(
-                endomorphisms, additive_group=additive_group
+                endomorphisms, additive_group
             )
 
         def annihilator(self):
