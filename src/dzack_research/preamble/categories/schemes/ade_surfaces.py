@@ -214,7 +214,10 @@ def _normalize_at21_variant(letter, rank, variant, affine):
     r"""Normalize public AT21 variant spellings to the finite internal vocabulary."""
     if isinstance(variant, str):
         source_variant = variant.lower().replace("_", "-").strip()
-        if source_variant in ("'a", "'a'", "′a", "′a′", "prime", "primed", "p"):
+        if source_variant in (
+            "'a", "'a'", "′a", "′a′", "'a^-", "'a⁻", "′a^-", "′a⁻",
+            "prime", "primed", "p",
+        ):
             return "prime"
         if letter == "A" and source_variant in ("^-a", "−a", "minus-a"):
             return "left-short"

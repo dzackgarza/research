@@ -124,6 +124,7 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     r"""AT21's decorated A types have explicit public constructor spellings."""
     primed = ADELogPairs(QQ).at21("A", 3, variant="'A")
     doubly_marked_prime = ADELogPairs(QQ).at21("A", 3, variant="'A'")
+    primed_minus = ADELogPairs(QQ).at21("A", 4, variant="'A^-")
     minus = ADELogPairs(QQ).at21("A", 4, variant="^-A")
     superscript_minus = ADELogPairs(QQ).at21("A", 4, variant="A^-")
     tuple_variant = ADELogPairs(QQ).at21("A", 3, variant=("short", "short"))
@@ -133,6 +134,9 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert primed.base_pair().dynkin_rank() == 3
     assert doubly_marked_prime.source_variant() == "prime"
     assert doubly_marked_prime.base_pair().dynkin_rank() == 3
+    assert primed_minus.source_variant() == "prime"
+    assert primed_minus.base_pair().dynkin_rank() == 4
+    assert primed_minus.base_pair().dynkin_variant() == ("prime",)
     assert minus.source_variant() == "left-short"
     assert minus.base_pair().dynkin_rank() == 4
     assert minus.base_pair().dynkin_variant() == ("short", "long")
