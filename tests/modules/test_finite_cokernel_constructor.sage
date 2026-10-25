@@ -10,5 +10,6 @@ def test_infinite_numerator_module_can_have_finite_zero_localization():
     free = ring.free_module(1)
     numerator = free.Mor(free)({0: x * free.module_generator(0)}).cokernel()
     localized = ring.localization(x).localize_module(numerator)
+    assert localized in AdditiveGroups().AdditiveCommutative()
     assert localized.is_zero() is True
     assert localized.is_finite() is True

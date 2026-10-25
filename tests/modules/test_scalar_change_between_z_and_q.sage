@@ -21,6 +21,7 @@ def test_restricting_q2_to_the_integers_gives_a_module_over_the_integers() -> No
     restricted = Modules(QQ).restriction_of_scalars(inclusion())(QQ ^ 2)
 
     assert restricted.base_ring() is ZZ
+    assert restricted in AdditiveGroups().AdditiveCommutative()
 
 
 def test_the_restriction_of_q2_is_countable_torsion_free_and_flat() -> None:
