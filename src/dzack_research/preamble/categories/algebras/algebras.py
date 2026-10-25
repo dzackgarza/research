@@ -1409,6 +1409,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                             _engine_scalar_action,
                             module_basis=getattr(self, "_native_module_basis", None),
                         )
+            self._finish_pending_algebra_placement()
 
         def _retain_algebra_law_decisions(self, decisions):
             r"""Retain the exact admission decision supporting each algebra axiom placement."""
@@ -4450,8 +4451,13 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     f"the algebra {engine} over {base_ring} has no chosen generators, so it cannot be given "
                     "generator values"
                 )
-            refine(self, Cat().meet(tuple(placement)))
-            if not (_defer_native_algebra_setup or vars(self).get("_preamble_defer_native_algebra_setup", False)):
+            defer_setup = (
+                _defer_native_algebra_setup
+                or vars(self).get("_preamble_defer_native_algebra_setup", False)
+            )
+            if defer_setup:
+                self._preamble_pending_algebra_placement = Cat().meet(tuple(placement))
+            else:
                 _algebra_from_native_ring(
                     self,
                     lambda left, right: left * right,
@@ -4459,6 +4465,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     self._native_scalar_action,
                     module_basis=self._native_module_basis,
                 )
+                refine(self, Cat().meet(tuple(placement)))
             return
 
         label_size = selected_labels.cardinality()
@@ -4536,10 +4543,16 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             generator_morphism,
             augmentation,
         )
-        # The resolution is now queryable by all algebra realization hooks.
-        # Only now add the algebra categories whose hooks consume it.
-        refine(self, Cat().meet(tuple(placement)))
-        if not (_defer_native_algebra_setup or vars(self).get("_preamble_defer_native_algebra_setup", False)):
+        defer_setup = (
+            _defer_native_algebra_setup
+            or vars(self).get("_preamble_defer_native_algebra_setup", False)
+        )
+        if defer_setup:
+            # The outer algebra constructor still has to install its selected
+            # generator family. Do not run category hooks until that owner has
+            # installed both the resolution and the native module datum.
+            self._preamble_pending_algebra_placement = Cat().meet(tuple(placement))
+        else:
             _algebra_from_native_ring(
                 self,
                 lambda left, right: left * right,
@@ -4547,6 +4560,15 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 self._native_scalar_action,
                 module_basis=self._native_module_basis,
             )
+            # The resolution and native module datum are now queryable by the
+            # algebra realization hooks that this placement introduces.
+            refine(self, Cat().meet(tuple(placement)))
+
+    def _finish_pending_algebra_placement(self):
+        r"""Run algebra-category construction hooks after the outer owner installs its data."""
+        placement = vars(self).pop("_preamble_pending_algebra_placement", None)
+        if placement is not None:
+            refine(self, placement)
 
 
 

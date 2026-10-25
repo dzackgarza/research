@@ -286,6 +286,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             self._native_scalar_action,
             module_basis=self._native_module_basis,
         )
+        self._finish_pending_algebra_placement()
 
     def _specialized_algebra_with_structure(
         self,
