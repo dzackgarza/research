@@ -106,6 +106,13 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert tensor_algebra.is_framed_algebra()
     assert tensor_algebra.algebra_framing_source() is tensor_algebra
     assert tensor_algebra.algebra_framing_morphism() is tensor_algebra.Mor(tensor_algebra).identity()
+    tensor_module = Modules.ParentMethods._native_module_presentation(tensor_algebra)
+    assert tensor_module is not None
+    assert tensor_module.module() is tensor_algebra
+    assert tensor_module.base_ring() is QQ
+    assert tensor_module.module_basis().is_basis()
+    assert tensor_module.multiplication().codomain() is tensor_algebra
+    assert tensor_module.unit() == tensor_algebra.one()
 
 
 def test_cyclic_double_cover_presentation_has_square_equal_to_branch_coefficient() -> None:
