@@ -363,8 +363,15 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         )
         letter = str(dynkin_letter).upper()
         rank = int(_engine_numeral(SageZZ, dynkin_rank))
-        source_variant = str(variant).lower().replace("_", "-")
+        source_variant = str(variant).lower().replace("_", "-").strip()
         affine = bool(affine)
+        # Accept AT21's printed decorations as well as the descriptive API
+        # names. The prime belongs to the Dynkin type; the leading minus
+        # denotes the one-short A polygon, not a negative rank.
+        if source_variant in ("'a", "′a", "prime", "primed", "p"):
+            source_variant = "prime"
+        elif source_variant in ("^-a", "−a", "minus-a", "a-minus"):
+            source_variant = "short"
         # AT21 Table 1 denotes the rank-zero pure shape by A_0^-; in the
         # side-variant parameterization this is the one-short ("short") case.
         if letter == "A" and rank == 0 and source_variant == "pure" and not affine:

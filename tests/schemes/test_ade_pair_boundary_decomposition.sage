@@ -110,6 +110,17 @@ def test_pure_a_zero_short_shape_is_admitted_by_at21_source_rules() -> None:
     )
 
 
+def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
+    r"""AT21's decorated A types have explicit public constructor spellings."""
+    primed = ADELogPairs(QQ).at21("A", 3, variant="'A")
+    minus = ADELogPairs(QQ).at21("A", 4, variant="^-A")
+
+    assert primed.source_variant() == "prime"
+    assert primed.base_pair().dynkin_rank() == 3
+    assert minus.source_variant() == "short"
+    assert minus.base_pair().dynkin_rank() == 4
+
+
 def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
     r"""Table 4's 'A_{2n-3} polygon for 'A^-_{2n-2} ends at (2n-3, 0)."""
     vertices, point = _a_family_polygon_data(4, ("prime",), 3)
