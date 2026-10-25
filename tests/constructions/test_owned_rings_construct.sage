@@ -52,8 +52,10 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert fraction_map.domain() is polynomials
     assert fraction_map.codomain() is fraction_field
     tensor_algebra = QQ.free_module(2).tensor_algebra()
-    assert tensor_algebra in OwnedIntegralDomains()
+    assert tensor_algebra in OwnedRings().NoZeroDivisors()
     assert tensor_algebra in OwnedRings().Nontrivial()
+    assert tensor_algebra not in OwnedRings().Commutative()
+    assert tensor_algebra not in OwnedIntegralDomains()
 
 
 def test_cyclic_double_cover_presentation_has_square_equal_to_branch_coefficient() -> None:
@@ -71,4 +73,3 @@ def test_predicate_subring_constructor_recovers_integers_inside_rationals() -> N
 
     assert QQ(3) in integers
     assert QQ(1) / 2 not in integers
-

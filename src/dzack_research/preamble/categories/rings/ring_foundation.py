@@ -6035,8 +6035,11 @@ def _free_associative_algebra_placements(coefficients, indeterminates: int) -> t
         for placement in (OwnedRings().NoZeroDivisors(), OwnedRings().Nontrivial())
         if coefficients in placement
     )
-    domain = (OwnedIntegralDomains(),) if coefficients in OwnedIntegralDomains() else ()
-    return (*domain, *inherited, _size_of_finitely_supported_families(coefficients, indeterminates))
+    # For at least two generators this ring is noncommutative, so it is not
+    # an integral domain in this project's commutative-ring terminology.
+    # The unique-leading-word argument proves only the non-zero-divisor
+    # property, which is already retained in ``inherited``.
+    return (*inherited, _size_of_finitely_supported_families(coefficients, indeterminates))
 
 
 def _field_placements() -> tuple[Category, ...]:
