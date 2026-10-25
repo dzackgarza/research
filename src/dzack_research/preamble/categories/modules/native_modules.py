@@ -236,12 +236,11 @@ class _RingModulePresentation:
                         placement = placement.FinitelyGenerated()
                     free_placement = placement
         # The selected resolution is defining data and is installed before
-        # placement.  The caller that owns the complete native construction
-        # materializes the scalar-action morphism after its final category
-        # refinement: End_Ab(module)'s realization can construct internal
-        # module Mor objects, whose endpoint checks require that final
-        # placement.  The retained presentation remains the authoritative
-        # action throughout this interval.
+        # placement.  Do not materialize R -> End_Ab(U(module)) here: building
+        # that endomorphism ring can itself request module-Mor objects and
+        # recurse into the construction in progress.  The retained presentation
+        # remains the authoritative pointwise action; Modules.scalar_action()
+        # constructs its typed morphism lazily against the current End parent.
         if free_placement is not None and module not in free_placement:
             refine(module, free_placement)
         match module in category:
