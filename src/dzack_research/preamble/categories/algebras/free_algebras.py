@@ -172,6 +172,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
     def __init__(self, engine, generating_module, flavor, *, categories=(), construction_data=()) -> None:
         from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
         from dzack_research.preamble.categories.modules.native_modules import _NativeModuleBasis
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 
         base = generating_module.base_ring()
         assert generating_module in FramedFreeModules(base), (
@@ -243,6 +244,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             categories=(
                 FreeAlgebras(base),
                 GradedFreeAlgebras(base),
+                AdditiveGroups().AdditiveCommutative(),
                 algebra_category,
                 module_placement,
                 *algebra_placements,
