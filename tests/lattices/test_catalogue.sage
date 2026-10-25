@@ -30,6 +30,9 @@ def test_tdp_metric_dual_is_the_formed_linear_dual() -> None:
     assert value_module.ring_map().domain() is ZZ
     assert value_module.ring_map().codomain() is QQ
     assert value_module in AdditiveGroups().AdditiveCommutative()
+    scalar_action = value_module.scalar_action()
+    assert scalar_action.domain() is ZZ
+    assert scalar_action.codomain() is AdditiveGroups().AdditiveCommutative().End(value_module)
     assert metric_dual.base_ring() is ZZ
     assert metric_dual.module_rank() == lattice.module_rank()
     assert metric_dual.gram_tensor().base_ring() is QQ
@@ -119,4 +122,3 @@ def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
     assert all(
         candidate.signature_pair() == signature_pair(0, 4) for candidate in candidates
     )
-
