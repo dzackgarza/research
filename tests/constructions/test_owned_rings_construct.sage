@@ -38,10 +38,13 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert OwnedRings().Commutative().is_subcategory(additive_groups)
     assert ZZ in additive_groups
     assert polynomials in additive_groups
+    assert polynomials in OwnedRings().Commutative()
     assert polynomials in OwnedIntegralDomains()
     assert polynomials in OwnedRings().Noetherian()
     assert quotient in additive_groups
+    assert quotient in OwnedRings().Commutative()
     assert fraction_field in additive_groups
+    assert fraction_field in OwnedRings().Division().Commutative()
 
 
 def test_cyclic_double_cover_presentation_has_square_equal_to_branch_coefficient() -> None:
