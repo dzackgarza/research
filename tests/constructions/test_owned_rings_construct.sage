@@ -130,3 +130,9 @@ def test_predicate_subring_constructor_recovers_integers_inside_rationals() -> N
 
     assert QQ(3) in integers
     assert QQ(1) / 2 not in integers
+    native_module = Modules.ParentMethods._native_module_presentation(integers)
+    assert native_module is not None
+    assert native_module.module() is integers
+    assert native_module.base_ring() is ZZ
+    assert native_module.unit() == integers.one()
+    assert native_module.multiplication().codomain() is integers
