@@ -9,7 +9,6 @@ from dzack_research.preamble.categories.sets.set_categories import (
 def test_powerset_of_the_naturals_is_uncountable_but_finite_subsets_are_countable() -> None:
     powerset = NN.power_set()
     finite_subsets = NN.finite_subsets()
-    pairs = NN.subsets_of_size(2)
 
     assert powerset in UncountableSets()
     assert powerset not in EnumeratedSets()
@@ -17,9 +16,11 @@ def test_powerset_of_the_naturals_is_uncountable_but_finite_subsets_are_countabl
     assert finite_subsets in CountablyInfiniteSets()
     assert finite_subsets in EnumeratedSets()
     assert finite_subsets.cardinality() == aleph0
-    assert pairs in CountablyInfiniteSets()
-    assert pairs in EnumeratedSets()
-    assert pairs.cardinality() == aleph0
+    for size in (1, 2, 3):
+        subsets = NN.subsets_of_size(size)
+        assert subsets in CountablyInfiniteSets()
+        assert subsets in EnumeratedSets()
+        assert subsets.cardinality() == aleph0
 
 
 def test_subset_family_constructors_require_a_set_source() -> None:
