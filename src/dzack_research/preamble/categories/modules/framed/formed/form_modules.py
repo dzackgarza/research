@@ -3755,10 +3755,13 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 quotient = inclusion.cokernel()
                 ring = quotient.base_ring()
                 source_module = self.unformed_module()
+                cokernel_projection = inclusion.cokernel_projection()
                 source_to_quotient = source_module.module_category().Mor(
                     source_module, quotient
                 )(
-                    lambda label: quotient.module_generator(label)
+                    lambda label: cokernel_projection(
+                        self(source_module.module_generator(label))
+                    )
                 )
                 basis_map = None
                 # Over a field, a finite presentation is not itself a free
