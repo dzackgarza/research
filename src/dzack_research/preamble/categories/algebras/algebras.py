@@ -1409,7 +1409,9 @@ class Algebras(OwnedCategoryOverBaseRing):
                             _engine_scalar_action,
                             module_basis=getattr(self, "_native_module_basis", None),
                         )
-            self._finish_pending_algebra_placement()
+            pending_placement = vars(self).pop("_preamble_pending_algebra_placement", None)
+            if pending_placement is not None:
+                refine(self, pending_placement)
 
         def _retain_algebra_law_decisions(self, decisions):
             r"""Retain the exact admission decision supporting each algebra axiom placement."""
