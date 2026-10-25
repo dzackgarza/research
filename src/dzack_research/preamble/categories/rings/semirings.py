@@ -223,13 +223,12 @@ class OwnedNonUnitalSemirings(CategoryPacketMethods, OwnedCategory):
                 containing its actual minimal-prime subset.
                 """
                 from dzack_research.preamble.categories.sets.set_categories import Sets
+                from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
                 from dzack_research.preamble.logic import AtomicProposition
 
                 prime_subsets = self.prime_ideal_locus()
                 minimal = self.minimal_primes()
-                if minimal is self.minimal_prime_locus():
-                    minimal_subsets = minimal
-                else:
+                if minimal in FiniteOrderedSets():
                     # The selected finite computation returns owned ideal
                     # objects, but V(p) is indexed by the corresponding
                     # subsets of the ring. Convert each ideal through its
@@ -241,6 +240,8 @@ class OwnedNonUnitalSemirings(CategoryPacketMethods, OwnedCategory):
                         ),
                         minimal,
                     )
+                else:
+                    minimal_subsets = minimal
                 return Sets().image_set(
                     lambda minimal_prime: prime_subsets.condition_set(
                         lambda prime: AtomicProposition(
