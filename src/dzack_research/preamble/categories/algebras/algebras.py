@@ -4362,7 +4362,12 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             else owned_category_join((OwnedRings(), *ring_placement()))
         )
         framing_owner = associative
-        placement = [associative, presented_ring]
+        # The algebra root constructs an additive-commutative group as part
+        # of its underlying module.  A ring placement supplied by an engine
+        # adapter need not materialize that inherited facet on the concrete
+        # parent, so include the module prerequisite at this construction
+        # owner rather than relying on the category join to infer it.
+        placement = [associative, presented_ring, AdditiveGroups().AdditiveCommutative()]
         # The ring constructor that presents ``engine``, or a category the
         # caller selected, places the product as commutative (ARC-08).
         match (
