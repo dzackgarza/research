@@ -1391,12 +1391,15 @@ class Algebras(OwnedCategoryOverBaseRing):
                     # selected algebra resolution, if supplied, is installed.
                     # Only now can its regular module safely construct End(M)
                     # and the scalar action without asking for missing framing.
-                    _algebra_from_native_ring(
-                        self,
-                        product,
-                        _native_unit_factory(self),
-                        _engine_scalar_action,
-                    )
+                    from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+                    if Modules.ParentMethods._native_module_presentation(self) is None:
+                        _algebra_from_native_ring(
+                            self,
+                            product,
+                            _native_unit_factory(self),
+                            _engine_scalar_action,
+                        )
 
         def _retain_algebra_law_decisions(self, decisions):
             r"""Retain the exact admission decision supporting each algebra axiom placement."""
