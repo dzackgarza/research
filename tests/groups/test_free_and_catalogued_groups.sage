@@ -277,6 +277,10 @@ def test_coxeter_group_retains_its_matrix_and_type_a2_order() -> None:
     retained = group.coxeter_matrix()
     assert group.coxeter_matrix() is retained
     assert group.order() == 6
+    # A2 has simple reflections s,t with (st)^3=1 and s,t distinct, so
+    # its Coxeter group is S3 and is not abelian. Construction must not
+    # eagerly require Sage's unavailable generic is_abelian() engine query.
+    assert not group.is_abelian()
     assert group.is_isomorphic_to(SymmetricGroups()(Sets.Δ[2]))
     # The Coxeter realization is not Sage's FinitelyPresentedGroup; its
     # canonical reduced words must nevertheless lift through the selected
