@@ -159,10 +159,14 @@ class _RingModulePresentation:
         """
         from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
+        # This is called while Modules(R) is being constructed on a ring
+        # parent.  At that point the parent has its additive-group methods,
+        # but its Modules(R) methods have not yet been installed.  The native
+        # presentation's module is itself the underlying additive group, so
+        # use that exact object as End's argument rather than calling
+        # underlying_additive_group() before the module category exists.
         module = self.module()
-        endomorphisms = AdditiveGroups().AdditiveCommutative().End(
-            module.underlying_additive_group()
-        )
+        endomorphisms = AdditiveGroups().AdditiveCommutative().End(module)
         return self.base_ring().Mor(endomorphisms, category=OwnedRings())(
             lambda scalar: endomorphisms.elementwise(
                 lambda element: self.scalar_multiple(scalar, element)
@@ -227,7 +231,7 @@ class _RingModulePresentation:
         # parent, and this action morphism fixes End(U(M)) on the exact
         # underlying additive group. Downstream formed objects then read this
         # retained action rather than reconstructing it through a wrapper.
-        module.scalar_action()
+        self.scalar_action_morphism()
         if free_placement is not None and module not in free_placement:
             refine(module, free_placement)
         # Installing the selected resolution above is part of construction,
