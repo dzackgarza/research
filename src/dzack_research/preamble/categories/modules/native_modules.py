@@ -18,7 +18,10 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
 from dzack_research.preamble.refine import refine
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
+from dzack_research.preamble.categories.rings.ring_foundation import (
+    OwnedRings,
+    _owned_engine_element,
+)
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
@@ -154,12 +157,17 @@ class _RingModulePresentation:
         assert Modules.ParentMethods._native_module_presentation(module) is None, (
             f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
         )
-        # Ring/algebra construction categories already inherit the additive
-        # group structure. Check that theorem here rather than mutating the
-        # object's category to force the module prerequisite to hold.
-        assert module in AdditiveGroups().AdditiveCommutative(), (
-            f"{module} cannot be made an {self.base_ring()}-module: a module's addition must be commutative, "
-            f"but {module} is only known to be in {module.category()}"
+        # This constructor is supplied only by the owned ring/algebra
+        # construction, whose underlying addition is part of the ring datum.
+        # Do not decide that defining operation by asking whether a joined
+        # runtime category has materialized the inherited AddGroups facet:
+        # that is a category-graph question, not a question about the supplied
+        # ring. The module category is joined below, preserving the ring and
+        # its existing operations while adding the scalar action.
+        assert module in OwnedRings(), (
+            f"{module} cannot be made an {self.base_ring()}-module: the native module presentation "
+            f"requires an owned ring as its underlying additive group, but {module} is only known to be in "
+            f"{module.category()}"
         )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
         match module in category:
