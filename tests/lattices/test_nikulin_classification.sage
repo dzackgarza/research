@@ -18,6 +18,7 @@ from dzack_research.preamble.all import *
 def test_nikulins_catalogues_have_the_archived_numbers_of_rows() -> None:
     assert TwoElementary.cardinality() == 75
     assert NegativeDefTwoElementary.cardinality() == 51
+    assert TwoElementary.validate() is True
 
 
 def test_small_hyperbolic_table_rows_realise_one_block_and_biproduct_routes() -> None:
