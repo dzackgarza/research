@@ -4253,13 +4253,25 @@ def _localization_at_submonoid(source, submonoid):
 
     if Modules.ParentMethods._native_module_presentation(localization) is None:
         algebra_source = getattr(localization, "algebra_source", None)
+
+        def scalar_action(scalar, element):
+            if algebra_source is None:
+                scalar_image = localization(scalar)
+            else:
+                # Preserve the source algebra's selected structure map
+                # k -> A, then apply the canonical localization map A -> S^-1 A.
+                # Coercing k directly into the localization can choose a
+                # different ambient coercion path and loses the exact retained
+                # scalar structure when A was constructed over a nontrivial map.
+                source_scalar = algebra_source._realized_scalar_structure(scalar)
+                scalar_image = localization.localization_map()(source_scalar)
+            return scalar_image * localization(element)
+
         _algebra_from_native_ring(
             localization,
             lambda left, right: localization(left * right),
             localization.one(),
-            lambda scalar, element: localization(
-                localization(scalar) * localization(element)
-            ),
+            scalar_action,
             scalar_ring=(
                 algebra_source.base_ring()
                 if algebra_source is not None
