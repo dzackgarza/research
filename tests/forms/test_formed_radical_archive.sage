@@ -44,6 +44,8 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     assert projection.codomain() is quotient
     assert projection.module_morphism().domain() is lattice.unformed_module()
     assert projection.module_morphism().codomain() is quotient.unformed_module()
+    assert projection.module_morphism().is_surjective() is True
+    assert projection.module_morphism().kernel().module_rank() == lattice.radical().module_rank() == 1
     assert projection.preserves_forms() is True
     assert projection(lattice.module_generator(1)) != quotient.zero()
     assert quotient.b(
@@ -76,6 +78,8 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     assert quotient.gram_tensor().tensor_shape() == (2, 2)
     assert projection.domain() is formed
     assert projection.codomain() is quotient
+    assert projection.module_morphism().is_surjective() is True
+    assert projection.module_morphism().kernel().module_rank() == formed.radical().module_rank() == 1
     assert projection.preserves_forms() is True
     basis_map = quotient._preamble_radical_quotient_basis_map
     canonical_projection = quotient._preamble_radical_quotient_cokernel_projection
