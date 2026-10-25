@@ -86,6 +86,30 @@ def test_indexed_family_cache_reuses_only_decided_equal_labels() -> None:
     assert len(selected) == 2
 
 
+def test_indexed_family_cache_equality_is_not_limited_to_hash_buckets() -> None:
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+    class PresentedIndex:
+        def __init__(self, key, hash_value):
+            self.key = key
+            self.hash_value = hash_value
+
+        def __hash__(self):
+            return self.hash_value
+
+        def __eq__(self, other):
+            return isinstance(other, PresentedIndex) and self.key == other.key
+
+    first = PresentedIndex("same", 1)
+    equal_presentation = PresentedIndex("same", 2)
+    selected = []
+    family = IndexedFamily(NN, lambda label: selected.append(label) or object())
+
+    first_value = family._value_at_normalized_index(first)
+    assert family._value_at_normalized_index(equal_presentation) is first_value
+    assert len(selected) == 1
+
+
 def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
     from dzack_research.preamble.categories.sets.set_categories import (
