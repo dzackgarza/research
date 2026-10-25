@@ -80,7 +80,7 @@ from dzack_research.preamble.categories.rings.semirings import (
 from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.logic import AtomicProposition, Predicate, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import RealizationHook, realize_owned_category
+from dzack_research.preamble.refine import RealizationHook, realize_owned_category, refine
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
@@ -5366,6 +5366,15 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
                 placement = owned_category_join((placement, category))
             Parent.__init__(self, base=base, category=placement)
+            # The ring's additive group is part of its defining structure.
+            # Materialize this inherited facet at the ring owner, before the
+            # native algebra constructor asks the additive-group owner for
+            # End(R) to construct the regular scalar action. A joined category
+            # alone does not guarantee that this facet is visible on the
+            # concrete parent.
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            refine(self, AdditiveGroups().AdditiveCommutative())
             realize_owned_category(self)
 
             # The primitive owned ring now exists as a Parent.  Cache every

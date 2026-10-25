@@ -154,12 +154,6 @@ class _RingModulePresentation:
         assert Modules.ParentMethods._native_module_presentation(module) is None, (
             f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
         )
-        # Every ring is an abelian group under addition. The native ring
-        # constructor is the authority for that operation; materialize its
-        # inherited additive structure before asking the End(M) owner to
-        # construct the scalar action. This does not change the ring, its
-        # operations, or its selected realization.
-        refine(module, AdditiveGroups().AdditiveCommutative())
         assert module in AdditiveGroups().AdditiveCommutative(), (
             f"{module} cannot be made an {self.base_ring()}-module: its ring addition must be commutative, "
             f"but {module} is only known to be in {module.category()}"
