@@ -11,6 +11,29 @@ def test_discriminant_group_of_a2_is_cyclic_of_order_three() -> None:
     assert tuple(discriminant.invariant_factors()) == (3,)
 
 
+def test_discriminant_group_of_two_scaled_hyperbolic_planes() -> None:
+    r"""The Gram matrix of ``U(2) ⊕ U(2)`` has Smith invariants ``(2, 2, 2, 2)``."""
+    plane = Lattices(ZZ)("U").twist(2)
+    lattice = plane + plane
+
+    discriminant = lattice.discriminant_group()
+    assert discriminant.cardinality() == 16
+    assert tuple(discriminant.invariant_factors()) == (2, 2, 2, 2)
+
+
+def test_all_integral_overlattices_of_a_scaled_hyperbolic_plane() -> None:
+    r"""The discriminant bilinear space of ``U(2)`` is symplectic of dimension 2
+    over ``F_2``. Its three lines and the zero space give all four integral
+    overlattice inclusions, of indices 2 and 1 respectively.
+    """
+    lattice = Lattices(ZZ)("U").twist(2)
+
+    indices = tuple(int(inclusion.index()) for inclusion in lattice.integral_overlattice_inclusions())
+    assert indices.count(1) == 1
+    assert indices.count(2) == 3
+    assert all(index == 1 or index == 2 for index in indices)
+
+
 def test_u_plus_a2_has_rank_four_and_determinant_minus_three() -> None:
     r"""``det(U ⊕ A_2) = det U · det A_2 = (-1) · 3``, up to the sign convention of
     ``A_2``; the rank is ``2 + 2``."""
@@ -38,4 +61,4 @@ def test_gluing_a1_to_the_fourth_along_the_diagonal_class_gives_d4() -> None:
     assert inclusion.index() == 2
     assert overlattice.module_rank() == 4
     assert abs(overlattice.determinant()) == 4
-    assert overlattice.is_isomorphic(Lattices(ZZ)("D4"))
+    assert overlattice.is_isometric(Lattices(ZZ)("D4"))

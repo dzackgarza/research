@@ -1372,7 +1372,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                         "multiplication"
                     )
                     assert callable(product) and callable(_engine_scalar_action) and callable(_native_unit_factory)
-                    rest["_defer_native_algebra_setup"] = True
+                    self._preamble_defer_native_algebra_setup = True
                     super().__init__(**rest)
             match algebra_generating_family:
                 case None:
@@ -1386,7 +1386,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                     )
             match _engine_product:
                 case None:
-                    if rest.get("_defer_native_algebra_setup", False):
+                    if vars(self).get("_preamble_defer_native_algebra_setup", False):
                         _algebra_from_native_ring(
                             self,
                             lambda left, right: left * right,
@@ -4442,7 +4442,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     f"the algebra {engine} over {base_ring} has no chosen generators, so it cannot be given "
                     "generator values"
                 )
-            if not _defer_native_algebra_setup:
+            if not (_defer_native_algebra_setup or vars(self).get("_preamble_defer_native_algebra_setup", False)):
                 _algebra_from_native_ring(
                     self,
                     lambda left, right: left * right,
@@ -4527,7 +4527,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             generator_morphism,
             augmentation,
         )
-        if not _defer_native_algebra_setup:
+        if not (_defer_native_algebra_setup or vars(self).get("_preamble_defer_native_algebra_setup", False)):
             _algebra_from_native_ring(
                 self,
                 lambda left, right: left * right,
