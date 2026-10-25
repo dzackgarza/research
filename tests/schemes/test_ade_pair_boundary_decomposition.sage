@@ -142,6 +142,12 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert primed_minus.source_variant() == "prime"
     assert primed_minus.base_pair().dynkin_rank() == 4
     assert primed_minus.base_pair().dynkin_variant() == ("prime",)
+    actual_vertices = {
+        tuple(int(coordinate) for coordinate in vertex)
+        for vertex in primed_minus.base_pair().polygon().vertices()
+    }
+    assert (3, 0) in actual_vertices
+    assert (4, 0) not in actual_vertices
     assert minus.source_variant() == "left-short"
     assert minus.base_pair().dynkin_rank() == 4
     assert minus.base_pair().dynkin_variant() == ("short", "long")
