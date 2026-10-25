@@ -32,6 +32,7 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     polynomials = QQ.polynomial_ring("x")
     quotient = polynomials.quotient_ring(polynomials.ideal(polynomials.algebra_generator("x") ** 2 - 2))
     fraction_field = polynomials.fraction_field()
+    fraction_map = polynomials.fraction_field_map()
 
     additive_groups = AdditiveGroups().AdditiveCommutative()
     assert OwnedRings().is_subcategory(additive_groups)
@@ -47,6 +48,9 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert fraction_field in OwnedRings().Division().Commutative()
     assert fraction_field in OwnedIntegralDomains()
     assert fraction_field in OwnedRings().Noetherian()
+    assert fraction_field.base_ring() is QQ
+    assert fraction_map.domain() is polynomials
+    assert fraction_map.codomain() is fraction_field
     tensor_algebra = QQ.free_module(2).tensor_algebra()
     assert tensor_algebra in OwnedIntegralDomains()
     assert tensor_algebra in OwnedRings().Nontrivial()
