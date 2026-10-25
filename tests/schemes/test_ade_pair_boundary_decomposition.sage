@@ -139,6 +139,8 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     generic_even_prime = ADELogPairs(QQ).at21("A", 4, variant=("prime",))
     minus = ADELogPairs(QQ).at21("A", 4, variant="^-A")
     superscript_minus = ADELogPairs(QQ).at21("A", 4, variant="A^-")
+    unicode_minus = ADELogPairs(QQ).at21("A", 4, variant="A^−")
+    unicode_prefix_minus = ADELogPairs(QQ).at21("A", 4, variant="^−A")
     tuple_variant = ADELogPairs(QQ).at21("A", 3, variant=("short", "short"))
     direct_minus = ADELogPairs(QQ)("A", 4, variant="^-A")
 
@@ -170,6 +172,8 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert minus.base_pair().dynkin_rank() == 4
     assert minus.base_pair().dynkin_variant() == ("short", "long")
     assert superscript_minus.source_variant() == "short"
+    assert unicode_minus.source_variant() == "short"
+    assert unicode_prefix_minus.source_variant() == "left-short"
     assert superscript_minus.base_pair().dynkin_rank() == 4
     assert superscript_minus.base_pair().dynkin_variant() == ("long", "short")
     assert tuple_variant.source_variant() == "both-short"

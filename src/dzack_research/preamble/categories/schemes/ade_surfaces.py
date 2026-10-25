@@ -224,7 +224,7 @@ def _ade_polygon_data(letter, rank, variant, affine):
 def _normalize_at21_variant(letter, rank, variant, affine):
     r"""Normalize public AT21 variant spellings to the finite internal vocabulary."""
     if isinstance(variant, str):
-        source_variant = variant.lower().replace("_", "-").strip()
+        source_variant = variant.lower().replace("_", "-").replace("−", "-").strip()
         if source_variant in ("prime", "primed", "p"):
             if letter == "A":
                 return "prime-odd" if rank % 2 else "prime-even"
@@ -233,7 +233,7 @@ def _normalize_at21_variant(letter, rank, variant, affine):
             return "prime-odd"
         if letter == "A" and source_variant in ("'a^-", "'a⁻", "′a^-", "′a⁻"):
             return "prime-even"
-        if letter == "A" and source_variant in ("^-a", "−a", "minus-a"):
+        if letter == "A" and source_variant in ("^-a", "-a", "minus-a"):
             return "left-short"
         if letter == "A" and source_variant in ("a^-", "a⁻", "a-minus"):
             return "short"
