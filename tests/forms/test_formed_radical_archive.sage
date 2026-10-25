@@ -58,6 +58,8 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
 
     assert formed.radical().module_rank() == 1
     assert quotient.module_rank() == 2
+    assert quotient.unformed_module().module_rank() == 2
+    assert quotient.unformed_module() in FramedFreeModules(QQ)
     assert projection.domain() is formed
     assert projection.codomain() is quotient
     assert projection.preserves_forms() is True

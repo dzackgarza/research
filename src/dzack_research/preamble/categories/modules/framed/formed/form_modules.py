@@ -3772,7 +3772,10 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                     basis_map = free.module_category().Mor(free, quotient)(
                         lambda label: quotient.module_generator(label)
                     )
-                    descended = descended.pullback(basis_map)
+                    quotient_form = descended
+                    descended = free.bilinear_forms(value_module)(
+                        lambda left, right: quotient_form(basis_map(left), basis_map(right))
+                    )
                 return FormModules(ring)(
                     descended,
                     _extra_construction_data={
