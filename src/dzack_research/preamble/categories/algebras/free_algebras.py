@@ -268,6 +268,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             algebra_framing_source=self,
             algebra_framing_owner=framing_owner,
             ring_placement=ring_placement,
+            _defer_native_algebra_setup=True,
         )
     def _specialized_algebra_with_structure(
         self,

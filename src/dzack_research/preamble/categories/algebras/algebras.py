@@ -1386,7 +1386,14 @@ class Algebras(OwnedCategoryOverBaseRing):
                     )
             match _engine_product:
                 case None:
-                    pass
+                    if rest.get("_defer_native_algebra_setup", False):
+                        _algebra_from_native_ring(
+                            self,
+                            lambda left, right: left * right,
+                            self._from_engine_element(self._engine.one()),
+                            self._native_scalar_action,
+                            module_basis=getattr(self, "_native_module_basis", None),
+                        )
                 case product:
                     # The common ring constructor has now returned and the
                     # selected algebra resolution, if supplied, is installed.
