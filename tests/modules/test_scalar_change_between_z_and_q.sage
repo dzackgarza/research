@@ -22,6 +22,14 @@ def test_restricting_q2_to_the_integers_gives_a_module_over_the_integers() -> No
 
     assert restricted.base_ring() is ZZ
     assert restricted in AdditiveGroups().AdditiveCommutative()
+    action = restricted.scalar_action()
+    additive_group = restricted.underlying_additive_group()
+    assert action.domain() is ZZ
+    assert action.codomain() is AdditiveGroups().AdditiveCommutative().End(additive_group)
+    generator = restricted.module_over_extension().module_generator(0)
+    assert action(ZZ(2))(additive_group(generator)) == additive_group(
+        restricted.module_over_extension().scalar_multiple(QQ(2), generator)
+    )
 
 
 def test_the_restriction_of_q2_is_countable_torsion_free_and_flat() -> None:
