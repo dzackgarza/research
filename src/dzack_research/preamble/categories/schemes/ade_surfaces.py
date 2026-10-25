@@ -227,10 +227,10 @@ def _normalize_at21_variant(letter, rank, variant, affine):
         source_variant = variant.lower().replace("_", "-").strip()
         if source_variant in ("prime", "primed", "p"):
             return "prime"
-        if letter == "A" and source_variant in (
-            "'a", "'a'", "′a", "′a′", "'a^-", "'a⁻", "′a^-", "′a⁻",
-        ):
-            return "prime"
+        if letter == "A" and source_variant in ("'a", "'a'", "′a", "′a′"):
+            return "prime-odd"
+        if letter == "A" and source_variant in ("'a^-", "'a⁻", "′a^-", "′a⁻"):
+            return "prime-even"
         if letter == "A" and source_variant in ("^-a", "−a", "minus-a"):
             return "left-short"
         if letter == "A" and source_variant in ("a^-", "a⁻", "a-minus"):
@@ -292,12 +292,16 @@ def _validated_at21_low_level_variant(letter, rank, variant, affine):
             return ("short", "long")
         if variant == "both-short" and rank % 2 == 1:
             return ("short", "short")
+        if variant == "prime-odd" and rank >= 3 and rank % 2 == 1:
+            return ("prime",)
+        if variant == "prime-even" and rank >= 2 and rank % 2 == 0:
+            return ("prime",)
         if variant == "prime" and rank >= 2:
             return ("prime",)
         raise ValueError(
             f"type A_{rank} has no toric polygon of variant {variant!r} in Alexeev-Thompson "
             "(AT21): the represented toric A shapes are pure A_n for odd n, one-short A_n for even n, "
-            "both-short A_n for odd n, and singly primed A_n for n >= 2"
+            "both-short A_n for odd n, A'_{2n-1} for odd n >= 3, and A'_{2n-3} for even n >= 2"
         )
     if letter == "D":
         if variant == "pure" and rank >= 4 and rank % 2 == 0:
@@ -885,7 +889,7 @@ class _AT21ToricADEPairEngine:
             "affine type"
         )
         rank = int(self.dynkin_rank())
-        assert self.source_variant() != "prime", (
+        assert self.source_variant() not in ("prime", "prime-odd", "prime-even"), (
             f"AT21 Table 5 supplies pure-shape normal forms, but {self} is primed"
         )
         if self.dynkin_letter() == "D":
@@ -937,7 +941,9 @@ class _AT21ToricADEPairEngine:
         selected = sections(section)
         if (selected == sections.zero()) is True:
             return False
-        if not self.is_affine_type() and self.source_variant() != "prime":
+        if not self.is_affine_type() and self.source_variant() not in (
+            "prime", "prime-odd", "prime-even",
+        ):
             if (selected == self.full_newton_branch_section()) is True:
                 return True
             if self.dynkin_letter() in ("D", "E"):

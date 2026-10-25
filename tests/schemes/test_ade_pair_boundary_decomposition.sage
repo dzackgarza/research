@@ -140,11 +140,11 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     tuple_variant = ADELogPairs(QQ).at21("A", 3, variant=("short", "short"))
     direct_minus = ADELogPairs(QQ)("A", 4, variant="^-A")
 
-    assert primed.source_variant() == "prime"
+    assert primed.source_variant() == "prime-odd"
     assert primed.base_pair().dynkin_rank() == 3
-    assert doubly_marked_prime.source_variant() == "prime"
+    assert doubly_marked_prime.source_variant() == "prime-odd"
     assert doubly_marked_prime.base_pair().dynkin_rank() == 3
-    assert primed_minus.source_variant() == "prime"
+    assert primed_minus.source_variant() == "prime-even"
     assert primed_minus.base_pair().dynkin_rank() == 4
     assert primed_minus.base_pair().dynkin_variant() == ("prime",)
     actual_vertices = {
@@ -153,6 +153,15 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     }
     assert (3, 0) in actual_vertices
     assert (4, 0) not in actual_vertices
+    for rank, variant in ((4, "'A"), (3, "'A^-")):
+        try:
+            ADELogPairs(QQ).at21("A", rank, variant=variant)
+        except ValueError as error:
+            assert f"A_{rank}" in str(error)
+        else:
+            raise AssertionError(
+                f"the AT21 source spelling {variant!r} must not admit A_{rank} of the opposite parity"
+            )
     assert minus.source_variant() == "left-short"
     assert minus.base_pair().dynkin_rank() == 4
     assert minus.base_pair().dynkin_variant() == ("short", "long")
