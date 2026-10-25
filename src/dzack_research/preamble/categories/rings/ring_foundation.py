@@ -80,7 +80,7 @@ from dzack_research.preamble.categories.rings.semirings import (
 from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.logic import AtomicProposition, Predicate, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import RealizationHook, realize_owned_category, refine
+from dzack_research.preamble.refine import RealizationHook, realize_owned_category
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
@@ -5361,20 +5361,21 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     else owned_category_join((OwnedRings(), *named_placement()))
                 ),
             )
+            # Every ring's additive structure is part of its defining
+            # operations. Include the abelian-group owner in the initial
+            # category join, before Parent.__init__ runs construction hooks;
+            # a post-construction refinement is too late for owners that
+            # construct the regular module during those hooks.
+            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+            placement = owned_category_join(
+                (placement, AdditiveGroups().AdditiveCommutative())
+            )
             if category is not None:
                 from dzack_research.preamble.owned_category import owned_category_join
 
                 placement = owned_category_join((placement, category))
             Parent.__init__(self, base=base, category=placement)
-            # The ring's additive group is part of its defining structure.
-            # Materialize this inherited facet at the ring owner, before the
-            # native algebra constructor asks the additive-group owner for
-            # End(R) to construct the regular scalar action. A joined category
-            # alone does not guarantee that this facet is visible on the
-            # concrete parent.
-            from dzack_research.preamble.categories.group.magmas import AdditiveGroups
-
-            refine(self, AdditiveGroups().AdditiveCommutative())
             realize_owned_category(self)
 
             # The primitive owned ring now exists as a Parent.  Cache every

@@ -154,13 +154,10 @@ class _RingModulePresentation:
         assert Modules.ParentMethods._native_module_presentation(module) is None, (
             f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
         )
-        # Native free-algebra parents and adopted ring parents may arrive
-        # through different category joins. The ring owner establishes this
-        # facet for its own construction, and this common module ingress must
-        # establish it for every supplied ring before End(module) is formed.
-        # This records the ring's defining additive operation; it does not
-        # replace the object, its parent, or its multiplication.
-        refine(module, AdditiveGroups().AdditiveCommutative())
+        # The ring constructor includes its abelian-group structure in the
+        # initial category before its regular module is built. Check that
+        # defining structure here; do not manufacture it by mutating the
+        # category during module construction.
         assert module in AdditiveGroups().AdditiveCommutative(), (
             f"{module} cannot be made an {self.base_ring()}-module: its ring addition must be commutative, "
             f"but {module} is only known to be in {module.category()}"
