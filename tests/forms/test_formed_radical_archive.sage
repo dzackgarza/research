@@ -36,6 +36,7 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     lattice = Lattices(QQ)([[0, 0, 0], [0, 0, 1], [0, 1, 0]])
     quotient = lattice.radical_quotient()
     projection = lattice.radical_quotient_projection()
+    assert lattice.radical_quotient_projection() is projection
 
     assert lattice.radical().module_rank() == 1
     assert quotient.module_rank() == 2
@@ -65,6 +66,7 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     formed = FormModules(QQ)(form)
     quotient = formed.radical_quotient()
     projection = formed.radical_quotient_projection()
+    assert formed.radical_quotient_projection() is projection
 
     assert formed.radical().module_rank() == 1
     assert quotient.module_rank() == 2

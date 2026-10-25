@@ -3787,6 +3787,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                     },
                 )
 
+            @cached_method
             def radical_quotient_projection(self):
                 r"""Return the canonical formed-module map to ``radical_quotient()``.
 
