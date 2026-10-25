@@ -97,6 +97,8 @@ def test_nonsymmetric_radical_quotient_drops_the_common_radical() -> None:
     assert quotient.unformed_module().module_rank() == 2
     assert projection.module_morphism().is_surjective() is True
     assert projection.module_morphism().kernel().module_rank() == 1
+    for label in common_radical.module_generating_set():
+        assert projection(common_radical.inclusion()(common_radical.module_generator(label))) == quotient.zero()
     for left in formed.module_generators():
         for right in formed.module_generators():
             assert quotient.b(projection(left), projection(right)) == formed.b(left, right)
