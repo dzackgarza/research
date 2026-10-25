@@ -66,6 +66,26 @@ def test_descent_does_not_identify_quotient_generator_labels_with_source_labels(
     assert descended(generator, generator) == 7
 
 
+def test_descent_checks_relations_after_projecting_form_values() -> None:
+    module = ZZ.free_module(2)
+    labels = tuple(module.module_generating_set())
+    relation_module = ZZ.free_module(1)
+    relation = module.module_generator(labels[0])
+    inclusion = relation_module.module_category().Mor(relation_module, module)(
+        lambda label: relation
+    )
+    form = module.bilinear_forms(ZZ)([[2, 0], [0, 1]])
+    values = ZZ.ideal(ZZ(2)).quotient_ring()
+    projection = ZZ.Mor(values)(lambda value: values(value))
+
+    assert form(relation, relation) == 2
+    assert not form.descends_along(inclusion, ZZ.Mor(ZZ).identity())
+    assert form.descends_along(inclusion, projection)
+    descended = form.descend_along(inclusion, projection)
+    (generator,) = descended.module().module_generators()
+    assert descended(generator, generator) == values(1)
+
+
 def test_the_form_of_a_degenerate_lattice_descends_only_along_its_radical() -> None:
     lattice = Lattices(ZZ)([[1, 1], [1, 1]])
     form = lattice.form()
