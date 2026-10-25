@@ -229,21 +229,21 @@ class _RingModulePresentation:
                     free_placement = placement
         # Register the selected resolution before exposing the module to any
         # category realization hooks. The factory is lazy, so this retains the
-        # framing data without constructing its augmentation Mor. Establish a
-        # selected free-module placement first when one was supplied: its
-        # realization hooks must see the defining frame, not an intermediate
-        # module that is only known to lie in Modules(R).
+        # framing data without constructing its augmentation Mor. First place
+        # the module in Modules(R): its framing augmentation is an R-module Mor
+        # whose endpoint checks require this membership. Only then add the
+        # selected free-module refinement, whose hooks may request that Mor.
+        match module in category:
+            case True:
+                pass
+            case False:
+                refine(module, category)
         if free_placement is not None and module not in free_placement:
             refine(module, free_placement)
         # Do not materialize R -> End_Ab(U(module)) here: building that
         # endomorphism ring can itself request module-Mor objects and recurse
         # into construction. Modules.scalar_action() constructs its typed map
         # lazily against the current canonical End parent.
-        match module in category:
-            case True:
-                pass
-            case False:
-                refine(module, category)
         return module
 
     def module_basis(self):
