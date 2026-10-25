@@ -17,6 +17,7 @@ def test_named_surface_lattices_have_their_expected_signatures_and_ranks() -> No
 
 def test_tdp_metric_dual_is_the_formed_linear_dual() -> None:
     lattice = NamedLattices.TdP
+    value_module = Modules(QQ).restriction_of_scalars(ZZ.fraction_field_map())(QQ)
     metric_dual = lattice.dual_lattice()
     linear_dual = lattice.linear_dual()
     identification = lattice.dual_lattice_to_linear_dual()
@@ -24,6 +25,11 @@ def test_tdp_metric_dual_is_the_formed_linear_dual() -> None:
     assert identification.domain() is metric_dual
     assert identification.codomain() is linear_dual
     assert metric_dual.value_module() is QQ
+    assert value_module.base_ring() is ZZ
+    assert value_module.module_over_extension() is QQ
+    assert value_module.ring_map().domain() is ZZ
+    assert value_module.ring_map().codomain() is QQ
+    assert value_module in AdditiveGroups().AdditiveCommutative()
     assert metric_dual.base_ring() is ZZ
     assert metric_dual.module_rank() == lattice.module_rank()
     assert metric_dual.gram_tensor().base_ring() is QQ
@@ -113,5 +119,4 @@ def test_signature_block_search_enumerates_multisets_not_subsets() -> None:
     assert all(
         candidate.signature_pair() == signature_pair(0, 4) for candidate in candidates
     )
-
 
