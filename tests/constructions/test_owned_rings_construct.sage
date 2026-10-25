@@ -61,6 +61,9 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert tensor_algebra in OwnedRings().Nontrivial()
     assert tensor_algebra not in OwnedRings().Commutative()
     assert tensor_algebra not in OwnedIntegralDomains()
+    assert tensor_algebra.is_framed_algebra()
+    assert tensor_algebra.algebra_framing_source() is tensor_algebra
+    assert tensor_algebra.algebra_framing_morphism() is tensor_algebra.Mor(tensor_algebra).identity()
 
 
 def test_cyclic_double_cover_presentation_has_square_equal_to_branch_coefficient() -> None:
