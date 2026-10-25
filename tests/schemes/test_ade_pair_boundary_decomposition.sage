@@ -175,3 +175,15 @@ def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
     assert parameter == 3
     assert vertices == ((2, 2), (0, 1), (0, 0), (3, 0))
     assert point == (2, 2)
+
+
+def test_primed_odd_rank_a_polygon_uses_the_a_prime_2n_minus_1_endpoint() -> None:
+    r"""The odd-rank primed family A'_{2n-1} ends at the pair rank."""
+    pair = ADELogPairs(QQ).at21("A", 3, variant="'A")
+    vertices = {
+        tuple(int(coordinate) for coordinate in vertex)
+        for vertex in pair.base_pair().polygon().vertices()
+    }
+
+    assert (3, 0) in vertices
+    assert (2, 0) not in vertices

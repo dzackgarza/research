@@ -134,8 +134,13 @@ def _a_family_polygon_data(rank, variant, parameter):
     left_short = _has(variant[:1], "short")
     right_short = _has(variant[1:2], "short")
     if _has(variant, "primed", "prime", "p"):
+        # The two primed AT21 families have different indices: A'_{2n-1}
+        # for odd-rank A pairs, and A'_{2n-3} for even-rank A^- pairs.
+        # The latter's endpoint is one less than the pair rank; the former's
+        # endpoint equals the pair rank.
+        endpoint = rank if rank % 2 else rank - 1
         return (
-            ((2, 2), (0, 1), (0, 0), (rank - 1, 0)),
+            ((2, 2), (0, 1), (0, 0), (endpoint, 0)),
             (2, 2),
         )
     if left_short and right_short:
