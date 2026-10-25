@@ -154,11 +154,9 @@ class _RingModulePresentation:
         assert Modules.ParentMethods._native_module_presentation(module) is None, (
             f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
         )
-        # The exact scalar-parent and single-action checks precede mutation.
-        # This presentation comes from ring/algebra owners, so its existing
-        # additive operation is an abelian group; install that inherited
-        # module prerequisite before refining to Modules(R).
-        refine(module, AdditiveGroups().AdditiveCommutative())
+        # Ring/algebra construction categories already inherit the additive
+        # group structure. Check that theorem here rather than mutating the
+        # object's category to force the module prerequisite to hold.
         assert module in AdditiveGroups().AdditiveCommutative(), (
             f"{module} cannot be made an {self.base_ring()}-module: a module's addition must be commutative, "
             f"but {module} is only known to be in {module.category()}"
