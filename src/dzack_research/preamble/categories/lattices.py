@@ -5373,9 +5373,9 @@ class Lattices(OwnedCategoryOverBaseRing):
                     def rational_pairing(left, right):
                         return value_module(sum(
                             (
-                                fraction_field(left(self.module_generator(left_label)))
+                                fraction_field(left(dual_module.module_generator(left_label)))
                                 * dual_gram[row, column]
-                                * fraction_field(right(self.module_generator(right_label)))
+                                * fraction_field(right(dual_module.module_generator(right_label)))
                                 for row, left_label in enumerate(labels)
                                 for column, right_label in enumerate(labels)
                             ),
