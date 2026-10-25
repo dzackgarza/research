@@ -2453,23 +2453,26 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def _ring_morphism_defining_module_action(
-            self, endomorphisms=None, *, additive_group=None
-        ):
+        def _ring_morphism_defining_module_action(self, endomorphisms=None):
             r"""Return ``rho_M : R -> End_Ab(U(M))``, ``r |-> (m |-> r m)``, from the scalar multiplication.
 
             A module whose datum is ``rho`` itself states it at its own level.
             """
             ring = self.base_ring()
-            if additive_group is None:
-                additive_group = self.underlying_additive_group()
             if endomorphisms is None:
+                additive_group = self.underlying_additive_group()
                 endomorphisms = AdditiveGroups().AdditiveCommutative().End(
                     additive_group
                 )
             else:
+                # The End parent is the canonical record of the chosen
+                # underlying additive group. Read the endpoint from that
+                # exact parent rather than asking a module parent for its
+                # generic underlying-group method during native construction.
+                additive_group = endomorphisms.domain()
                 assert (
-                    endomorphisms.domain() is additive_group
+                    endomorphisms
+                    is AdditiveGroups().AdditiveCommutative().End(additive_group)
                     and endomorphisms.codomain() is additive_group
                 ), (
                     f"the scalar action of {self} can only be represented in "
@@ -2510,9 +2513,7 @@ class Modules(OwnedCategoryOverBaseRing):
             # not yet installed underlying_additive_group() on the parent.
             # Passing that exact object preserves the End(U(M)) endpoint while
             # retaining the common action-map implementation.
-            return self._ring_morphism_defining_module_action(
-                endomorphisms, additive_group=additive_group
-            )
+            return self._ring_morphism_defining_module_action(endomorphisms)
 
         def annihilator(self):
             r"""Return ``Ann_R(M)=ker(rho_M: R -> End_Ab(U(M)))``.
