@@ -96,6 +96,30 @@ def test_descent_checks_relations_after_projecting_form_values() -> None:
     assert projection(form(shifted, shifted)) == descended(generator, generator)
 
 
+def test_descent_pairing_is_defined_on_a_torsion_cokernel() -> None:
+    module = ZZ.free_module(2)
+    first, second = module.module_generators()
+    relation_module = ZZ.free_module(1)
+    inclusion = relation_module.module_category().Mor(relation_module, module)(
+        lambda label: 2 * first
+    )
+    form = module.bilinear_forms(ZZ)([[1, 0], [0, 3]])
+    values = ZZ.ideal(ZZ(2)).quotient_ring()
+    projection = ZZ.Mor(values)(lambda value: values(value))
+
+    assert form.descends_along(inclusion, projection)
+    descended = form.descend_along(inclusion, projection)
+    torsion_class = next(
+        generator
+        for generator in descended.module().module_generators()
+        if 2 * generator == descended.module().zero()
+        and generator != descended.module().zero()
+    )
+    assert 2 * torsion_class == descended.module().zero()
+    assert torsion_class != descended.module().zero()
+    assert descended(torsion_class, torsion_class) == values(1)
+
+
 def test_the_form_of_a_degenerate_lattice_descends_only_along_its_radical() -> None:
     lattice = Lattices(ZZ)([[1, 1], [1, 1]])
     form = lattice.form()
