@@ -184,6 +184,7 @@ class OwnedNonUnitalSemirings(CategoryPacketMethods, OwnedCategory):
                     lambda subset: AtomicProposition("is_prime_ideal_subset", subset, self)
                 )
 
+            @cached_method
             def minimal_prime_locus(self):
                 r"""The prime-ideal subsets minimal under inclusion."""
                 from dzack_research.preamble.logic import AtomicProposition
@@ -224,9 +225,9 @@ class OwnedNonUnitalSemirings(CategoryPacketMethods, OwnedCategory):
                 from dzack_research.preamble.logic import AtomicProposition
 
                 prime_subsets = self.prime_ideal_locus()
-                minimal = self._finite_minimal_primes()
-                if minimal is None:
-                    minimal_subsets = self.minimal_prime_locus()
+                minimal = self.minimal_primes()
+                if minimal is self.minimal_prime_locus():
+                    minimal_subsets = minimal
                 else:
                     # The selected finite computation returns owned ideal
                     # objects, but V(p) is indexed by the corresponding
