@@ -228,6 +228,17 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     radical = lattice.radical()
     for label in radical.module_generating_set():
         assert projection(radical.inclusion()(radical.module_generator(label))) == quotient.zero()
+    lattice_quotient = Lattices(QQ)(quotient)
+    assert lattice_quotient.module_rank() == quotient.module_rank() == 2
+    assert lattice_quotient.unformed_module().module_rank() == 2
+    assert lattice_quotient.gram_tensor().tensor_shape() == (2, 2)
+    lattice_generators = tuple(lattice_quotient.module_generators())
+    quotient_generators = tuple(quotient.module_generators())
+    for i, left in enumerate(lattice_generators):
+        for j, right in enumerate(lattice_generators):
+            assert lattice_quotient.b(left, right) == quotient.b(
+                quotient_generators[i], quotient_generators[j]
+            )
 
 
 def test_rational_formed_module_radical_quotient_retains_its_projection() -> None:
