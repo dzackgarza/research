@@ -4450,6 +4450,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             # as named_placement would make _OwnedRingParent reintroduce those
             # categories into its initial Parent.__init__ join.
             named_placement=None,
+            _defer_construction_facets=True,
         )
         Algebras.ParentMethods._retain_algebra_law_decisions(
             self, retained_laws

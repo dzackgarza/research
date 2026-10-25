@@ -5301,7 +5301,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
     def __init__(
         self, engine: Ring, *, base=None, category=None, constructing_category=None,
-        named_placement=None, named_cardinality=None,
+        named_placement=None, named_cardinality=None, _defer_construction_facets=False,
     ) -> None:
         r"""Construct over the scalar ring the level above declares.
 
@@ -5366,6 +5366,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     None if named_placement is None
                     else owned_category_join((OwnedRings(), *named_placement()))
                 ),
+                defer_construction_facets=_defer_construction_facets,
             )
             # Every ring's additive structure is part of its defining
             # operations. Include the abelian-group owner in the initial
@@ -6268,6 +6269,7 @@ def _presented_ring_category(engine: Ring) -> Category:
 
 def _owned_ring_category(
     engine: Ring, *, scalar_base=None, owned_ring=None, presented: Category | None = None,
+    defer_construction_facets=False,
 ) -> Category:
     r"""Return the owned ring category the construction of ``engine`` places it in.
 
@@ -6284,6 +6286,16 @@ def _owned_ring_category(
     """
     from dzack_research.preamble.owned_category import owned_category_join
 
+    if defer_construction_facets:
+        # An owner such as _OwnedAlgebraParent must install its selected
+        # resolution and native module datum before any of the presented
+        # ring/algebra/free-module categories run construction hooks. This
+        # initial placement deliberately supplies only the already-defined
+        # ring and additive-group structure; the owning constructor refines
+        # to the full, construction-derived placement after setup completes.
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        return owned_category_join((OwnedRings(), AdditiveGroups().AdditiveCommutative()))
     if presented is None:
         presented = _presented_ring_category(engine)
     from dzack_research.preamble.categories.group.magmas import AdditiveGroups
