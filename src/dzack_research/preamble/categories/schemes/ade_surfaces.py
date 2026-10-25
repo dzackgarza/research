@@ -140,7 +140,7 @@ def _a_family_polygon_data(rank, variant, parameter):
     # detect the word ``short`` and previously erased both one-short variants.
     left_short = variant in ("left-short", "both-short")
     right_short = variant in ("short", "both-short")
-    if _has(variant, "primed", "prime", "p"):
+    if variant in ("prime-odd", "prime-even"):
         # The two primed AT21 families have different indices: A'_{2n-1}
         # for odd-rank A pairs, and A'_{2n-3} for even-rank A^- pairs.
         # The latter's endpoint is one less than the pair rank; the former's
@@ -162,7 +162,7 @@ def _a_family_polygon_data(rank, variant, parameter):
 
 
 def _d_family_polygon_data(rank, variant, parameter):
-    if _has(variant, "primed", "prime", "p"):
+    if variant == "prime":
         vertices = ((2, 2), (0, 2), (0, 0), (2 * parameter - 4, 0), (parameter, 1))
     elif "short" in variant or rank % 2 == 1:
         vertices = ((2, 2), (0, 2), (0, 0), (2 * parameter - 3, 0))
