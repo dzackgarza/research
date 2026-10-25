@@ -5357,7 +5357,32 @@ class Lattices(OwnedCategoryOverBaseRing):
                         ring.fraction_field_map()
                     )(fraction_field)
                     dual_module = self.dual_module()
-                    rational = dual_module.bilinear_hom_space(value_module)(dual_gram)
+                    # ``dual_gram`` is a tensor over Frac(R), on the
+                    # fraction-field extension of the dual basis.  It is not
+                    # an element of Hom_R(dual_module tensor_R dual_module,
+                    # Res_{R -> Frac(R)} Frac(R)): these are different tensor
+                    # parents.  Transfer its coefficients through the selected
+                    # R-basis by stating the bilinear evaluation in the actual
+                    # R-module Hom parent.
+                    labels = tuple(dual_module.module_generating_set())
+
+                    def rational_pairing(left, right):
+                        left_coordinates = left.to_vector()
+                        right_coordinates = right.to_vector()
+                        return value_module(sum(
+                            (
+                                fraction_field(left_coordinates(left_label))
+                                * dual_gram[row, column]
+                                * fraction_field(right_coordinates(right_label))
+                                for row, left_label in enumerate(labels)
+                                for column, right_label in enumerate(labels)
+                            ),
+                            fraction_field.zero(),
+                        ))
+
+                    rational = dual_module.bilinear_hom_space(value_module)._from_bilinear_evaluation(
+                        rational_pairing
+                    )
                     return FormModules(ring)(
                         rational,
                         _extra_categories=(FormModules(ring).Nondegenerate(), BilinearFormModules(ring).Symmetric()),
