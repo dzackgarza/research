@@ -200,14 +200,19 @@ def _bilinear_form_descends_along(form, morphism, value_projection) -> bool:
 
 
 def _descended_bilinear_form(form, morphism, value_projection):
-    r"""Construct the descended form on the actual represented cokernel."""
+    r"""Construct the descended form on the actual represented cokernel.
+
+    The selected preimages are taken through the actual cokernel projection,
+    not by identifying the quotient's generator labels with those of the
+    source. The two-slot criterion checked below makes the projected value
+    independent of either selected preimage.
+    """
     if not _bilinear_form_descends_along(form, morphism, value_projection):
         raise ValueError(
             f"the form {form} does not descend to coker({morphism}): after value projection, the form must "
             f"vanish on the image of {morphism} in both arguments"
         )
 
-    module = form.module()
     quotient = morphism.cokernel()
     quotient_projection = morphism.cokernel_projection()
 
