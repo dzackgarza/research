@@ -226,6 +226,8 @@ def _normalize_at21_variant(letter, rank, variant, affine):
     if isinstance(variant, str):
         source_variant = variant.lower().replace("_", "-").strip()
         if source_variant in ("prime", "primed", "p"):
+            if letter == "A":
+                return "prime-odd" if rank % 2 else "prime-even"
             return "prime"
         if letter == "A" and source_variant in ("'a", "'a'", "′a", "′a′"):
             return "prime-odd"
@@ -244,6 +246,8 @@ def _normalize_at21_variant(letter, rank, variant, affine):
             short = not affine and ((letter == "A" and rank % 2 == 0) or (letter == "D" and rank % 2 == 1))
             return "short" if short else "pure"
         case ("prime" | "primed" | "p",):
+            if letter == "A":
+                return "prime-odd" if rank % 2 else "prime-even"
             return "prime"
         case ("long", "short"):
             return "short"

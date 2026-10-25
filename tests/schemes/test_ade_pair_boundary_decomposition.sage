@@ -135,6 +135,8 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     primed = ADELogPairs(QQ).at21("A", 3, variant="'A")
     doubly_marked_prime = ADELogPairs(QQ).at21("A", 3, variant="'A'")
     primed_minus = ADELogPairs(QQ).at21("A", 4, variant="'A^-")
+    generic_odd_prime = ADELogPairs(QQ).at21("A", 3, variant="prime")
+    generic_even_prime = ADELogPairs(QQ).at21("A", 4, variant=("prime",))
     minus = ADELogPairs(QQ).at21("A", 4, variant="^-A")
     superscript_minus = ADELogPairs(QQ).at21("A", 4, variant="A^-")
     tuple_variant = ADELogPairs(QQ).at21("A", 3, variant=("short", "short"))
@@ -147,6 +149,8 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert primed_minus.source_variant() == "prime-even"
     assert primed_minus.base_pair().dynkin_rank() == 4
     assert primed_minus.base_pair().dynkin_variant() == ("prime",)
+    assert generic_odd_prime.source_variant() == "prime-odd"
+    assert generic_even_prime.source_variant() == "prime-even"
     actual_vertices = {
         tuple(int(coordinate) for coordinate in vertex)
         for vertex in primed_minus.base_pair().polygon().vertices()
