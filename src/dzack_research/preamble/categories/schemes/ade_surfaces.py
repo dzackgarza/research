@@ -238,6 +238,13 @@ def _normalize_at21_variant(letter, rank, variant, affine):
             return "prime-odd"
         if letter == "A" and source_variant in ("'a^-", "'a⁻", "′a^-", "′a⁻"):
             return "prime-even"
+        if letter == "A" and rank == 0 and not affine and source_variant in ("^-a", "-a", "minus-a"):
+            # AT21 Table 1 includes the degenerate-rank endpoint A^-_0.
+            # At rank zero the one-short presentation has only its right
+            # short side, represented by the low-level ``(long, short)``
+            # tuple; the generic left-short alias would be rejected by the
+            # rank-zero admission rule below.
+            return "short"
         if letter == "A" and source_variant in ("^-a", "-a", "minus-a"):
             return "left-short"
         if letter == "A" and source_variant in ("a^-", "a⁻", "a-minus"):
