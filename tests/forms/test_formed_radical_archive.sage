@@ -194,7 +194,7 @@ def test_module_valued_radical_quotient_uses_selected_free_basis() -> None:
     source_module = formed.unformed_module()
     for label in source_module.module_generating_set():
         generator = source_module.module_generator(label)
-        assert basis_map(projection.module_morphism()(generator)) == canonical_projection(formed(generator))
+        assert basis_map(projection.module_morphism()(generator)) == canonical_projection(generator)
     source_generators = tuple(formed.module_generators())
     for left in source_generators:
         for right in source_generators:

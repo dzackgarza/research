@@ -3755,15 +3755,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 descended = self._formed_form().descend_along(inclusion, value_identity)
                 quotient = descended.module()
                 ring = quotient.base_ring()
-                source_module = self.unformed_module()
                 cokernel_projection = inclusion.cokernel_projection()
-                source_to_quotient = source_module.module_category().Mor(
-                    source_module, quotient
-                )(
-                    lambda label: cokernel_projection(
-                        self(source_module.module_generator(label))
-                    )
-                )
                 basis_map = None
                 # Over a field, a finite presentation is not itself a free
                 # presentation: its selected generators can outnumber its
@@ -3788,7 +3780,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 return FormModules(ring)(
                     descended,
                     _extra_construction_data={
-                        "radical_quotient_cokernel_projection": source_to_quotient,
+                        "radical_quotient_cokernel_projection": cokernel_projection,
                         "radical_quotient_basis_map": basis_map,
                     },
                 )
