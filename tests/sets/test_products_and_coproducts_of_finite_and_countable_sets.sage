@@ -51,6 +51,41 @@ def test_indexed_family_cache_does_not_decide_undecidable_index_equality() -> No
     assert len(values) == 3
 
 
+def test_indexed_family_cache_reuses_only_decided_equal_labels() -> None:
+    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+
+    class PresentedIndex:
+        def __init__(self, key):
+            self.key = key
+
+        def __hash__(self):
+            return hash(self.key)
+
+        def __eq__(self, other):
+            if not isinstance(other, PresentedIndex):
+                return NotImplemented
+            return self.key == other.key
+
+    first = PresentedIndex("same")
+    equal_presentation = PresentedIndex("same")
+    distinct = PresentedIndex("different")
+    selected = []
+
+    def construct(label):
+        value = object()
+        selected.append((label, value))
+        return value
+
+    family = IndexedFamily(NN, construct)
+    first_value = family._value_at_normalized_index(first)
+    assert family._value_at_normalized_index(first) is first_value
+    assert family._value_at_normalized_index(equal_presentation) is first_value
+    distinct_value = family._value_at_normalized_index(distinct)
+    assert distinct_value is not first_value
+    assert family._value_at_normalized_index(distinct) is distinct_value
+    assert len(selected) == 2
+
+
 def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None:
     from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
     from dzack_research.preamble.categories.sets.set_categories import (
