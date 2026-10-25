@@ -5405,6 +5405,27 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             else:
                 base = _own_ring(base)
                 category_base = base
+            # Number fields already have a defining-polynomial power basis
+            # over their coefficient field. Install this constructor datum
+            # before deriving ring placement: placement hooks can ask for the
+            # module basis before Parent.__init__ ever runs. The basis
+            # callbacks remain lazy until the parent is initialized.
+            if engine in SageNumberFields():
+                from dzack_research.preamble.categories.modules.native_modules import (
+                    _power_module_basis,
+                )
+
+                degree = int(
+                    engine.defining_polynomial().degree()
+                    if engine.is_absolute()
+                    else engine.relative_polynomial().degree()
+                )
+                self._native_module_basis = _power_module_basis(
+                    base,
+                    degree,
+                    lambda exponent: _owned_engine_element(self, engine.gen() ** exponent),
+                    lambda element: _engine_element(self, element).list(),
+                )
             from dzack_research.preamble.owned_category import owned_category_join
 
             # A named construction (``ZZ``, ``QQ``, ...) states its placement;
@@ -5433,28 +5454,6 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                 from dzack_research.preamble.owned_category import owned_category_join
 
                 placement = owned_category_join((placement, category))
-            # Number fields already have a defining-polynomial power basis
-            # over their coefficient field. Install this constructor datum
-            # before Parent.__init__: category hooks may ask for the module
-            # basis while realizing the number-field/ring placement itself.
-            # The basis callbacks are lazy and inspect ring elements only
-            # after this parent has been initialized.
-            if engine in SageNumberFields():
-                from dzack_research.preamble.categories.modules.native_modules import (
-                    _power_module_basis,
-                )
-
-                degree = int(
-                    engine.defining_polynomial().degree()
-                    if engine.is_absolute()
-                    else engine.relative_polynomial().degree()
-                )
-                self._native_module_basis = _power_module_basis(
-                    base,
-                    degree,
-                    lambda exponent: _owned_engine_element(self, engine.gen() ** exponent),
-                    lambda element: _engine_element(self, element).list(),
-                )
             Parent.__init__(self, base=base, category=placement)
             realize_owned_category(self)
 
