@@ -255,6 +255,26 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             algebra_framing_source=self,
             ring_placement=ring_placement,
         )
+        # A free algebra is already its own degree-zero free resolution: the
+        # augmentation is the identity, and its chosen algebra generators are
+        # the images of the generating module's basis.  Retain this resolution
+        # at construction time; storing ``algebra_framing_source=self`` alone
+        # does not populate the selected-resolution registry consumed by
+        # ``algebra_framing_source()`` and polynomial-scheme constructions.
+        from dzack_research.preamble.categories.algebras.algebras import (
+            _fix_selected_algebra_resolution,
+        )
+
+        ordinary = Algebras(base).Associative().Unital()
+        owner = ordinary.Commutative() if flavor == "symmetric" else ordinary
+        _fix_selected_algebra_resolution(
+            self,
+            owner,
+            lambda: self,
+            labels,
+            Sets().Mor(labels, self)(self._native_basis_image),
+            lambda source: source.Mor(self).identity(),
+        )
 
     def _specialized_algebra_with_structure(
         self,
