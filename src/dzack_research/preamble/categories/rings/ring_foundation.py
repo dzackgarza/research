@@ -5430,6 +5430,26 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     lambda exponent: _owned_engine_element(self, engine.gen() ** exponent),
                     lambda element: _engine_element(self, element).list(),
                 )
+            if isinstance(engine, SageNumberFieldOrder) and self is not _owned_integers():
+                # The integral basis of an order is equally defining
+                # construction data. Install its ZZ-module resolution before
+                # Parent category hooks can request it, rather than waiting
+                # for the post-parent adapter phase.
+                from dzack_research.preamble.categories.modules.pure.modules import (
+                    _fix_selected_module_resolution,
+                )
+
+                integers = _owned_integers()
+                labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
+                _fix_selected_module_resolution(
+                    self,
+                    integers,
+                    labels,
+                    lambda label: _owned_engine_element(
+                        self, engine.basis()[labels.ranking_map()(label)]
+                    ),
+                    lambda: integers.free_module(labels),
+                )
             from dzack_research.preamble.owned_category import owned_category_join
 
             # A named construction (``ZZ``, ``QQ``, ...) states its placement;
@@ -6441,23 +6461,6 @@ def _owned_ring_category(
 def _install_engine_selected_ring_data(ring, engine) -> None:
     r"""Fix constructor data required by exact initial ring placement."""
     match ring:
-        case _ if ring in OwnedOrders() and ring is not _owned_integers():
-            # An order of a number field, by its construction (_order_in).
-            from dzack_research.preamble.categories.modules.pure.modules import (
-                _fix_selected_module_resolution,
-            )
-
-            integers = _owned_integers()
-            labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
-            _fix_selected_module_resolution(
-                ring,
-                integers,
-                labels,
-                lambda label: _owned_engine_element(ring,
-                    engine.basis()[labels.ranking_map()(label)]
-                ),
-                lambda: integers.free_module(labels),
-            )
         case _:
             pass
 
