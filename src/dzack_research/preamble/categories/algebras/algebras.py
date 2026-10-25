@@ -4375,6 +4375,18 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         r"""The algebra owner installs its selected resolution before its regular module."""
         return True
 
+    def _native_scalar_action(self, scalar, element):
+        r"""Apply the retained algebra structure map, not the engine's default embedding.
+
+        An owned algebra may be presented on a ring whose native engine has a
+        different ambient scalar embedding from the selected map
+        ``k -> A``.  Its regular ``k``-module must use the map retained by the
+        algebra owner; otherwise module construction silently changes the
+        specified algebra structure while leaving the underlying ring intact.
+        """
+        scalar_image = self._realized_scalar_structure(self.base_ring()(scalar))
+        return scalar_image * self(element)
+
     def __init__(
         self,
         engine,
