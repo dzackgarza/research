@@ -162,6 +162,12 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert tuple_variant.source_variant() == "both-short"
     assert tuple_variant.base_pair().dynkin_rank() == 3
     assert direct_minus.dynkin_variant() == ("short", "long")
+    try:
+        ADELogPairs(QQ).at21("D", 6, variant="'A^-")
+    except ValueError as error:
+        assert "type D_6" in str(error)
+    else:
+        raise AssertionError("an A-specific primed decoration must not normalize as a D-type decoration")
 
 
 def test_at21_default_variant_matches_the_parity_selected_base_constructor() -> None:
