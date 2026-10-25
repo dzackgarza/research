@@ -284,7 +284,13 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             f"an ADE type has letter A, D or E, but the letter is {letter!r}"
         )
         rank = int(_engine_numeral(SageZZ, dynkin_rank))
-        assert rank >= 1, f"an ADE type {letter}_n needs rank n >= 1, but n = {rank}"
+        allow_a_zero = letter == "A" and rank == 0 and not affine and (
+            variant == "short" or variant == ("long", "short") or variant == ()
+        )
+        assert rank >= 1 or allow_a_zero, (
+            f"an ADE type {letter}_n needs rank n >= 1, except for the pure A_0^- shape "
+            f"(variant='short'); got rank {rank} and variant {variant!r}"
+        )
         if isinstance(variant, str):
             source_variant = variant.lower().replace("_", "-")
         else:
@@ -357,6 +363,10 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         rank = int(_engine_numeral(SageZZ, dynkin_rank))
         source_variant = str(variant).lower().replace("_", "-")
         affine = bool(affine)
+        # AT21 Table 1 denotes the rank-zero pure shape by A_0^-; in the
+        # side-variant parameterization this is the one-short ("short") case.
+        if letter == "A" and rank == 0 and source_variant == "pure" and not affine:
+            source_variant = "short"
         low_variant = _validated_at21_low_level_variant(
             letter,
             rank,
