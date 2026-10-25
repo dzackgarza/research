@@ -4559,16 +4559,24 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                         f"the algebra {engine} has {label_size} generators, but {generator_values.cardinality()} "
                         "generator values were given"
                     )
-                family_position = generator_values.index_set().ranking_map().inverse()
+                family_labels = generator_values.index_set()
+                if family_labels is selected_labels or family_labels == selected_labels:
 
-                def value(label):
-                    # The two finite index sets need only have the same
-                    # cardinality; their labels need not be the same objects
-                    # or even integers. Transport the selected label through
-                    # its ordinal position into the supplied family's own
-                    # enumeration before asking for its value.
-                    position = selected_labels.ranking_map()(label)
-                    return self(generator_values.value(family_position(position)))
+                    def value(label):
+                        return self(generator_values.value(label))
+
+                else:
+                    # Equal cardinality does not identify two index sets.
+                    # When their labels differ, the constructors' selected
+                    # enumerations provide the only positional correspondence.
+                    # Keep the direct label path above so a finite index set
+                    # need not acquire an enumeration merely to use its own
+                    # already-matching generator family.
+                    family_position = family_labels.ranking_map().inverse()
+
+                    def value(label):
+                        position = selected_labels.ranking_map()(label)
+                        return self(generator_values.value(family_position(position)))
             elif callable(generator_values):
 
                 def value(label):
