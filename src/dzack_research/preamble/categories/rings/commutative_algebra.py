@@ -1173,6 +1173,11 @@ class QuotientRings(OwnedCategory):
             source_engine = source._selected_engine_ring()
             if source_engine is None:
                 return None
+            if source_engine is SageZZ:
+                # Every nonzero ideal of ZZ is (n), and ZZ/(n) has |n| elements.
+                generator = _engine_ideal(source, self.defining_ideal()).gen()
+                if generator != 0:
+                    return cardinal(abs(generator))
             if isinstance(source_engine, SageNumberFieldOrder):
                 defining = _engine_ideal(
                     self.quotient_source(), self.defining_ideal()
