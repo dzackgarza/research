@@ -91,9 +91,19 @@ def _power_module_basis(coefficient_ring, degree, power, coordinates):
     labels = Sets.Δ[degree - 1]
 
     def basis_coordinates(element):
+        # Polynomial and quotient representatives commonly omit trailing
+        # zero coefficients (e.g. ``1`` is represented by ``[1]`` even when
+        # the quotient basis has degree three). Missing high coordinates are
+        # zero, not a malformed basis expansion. Reject only a backend that
+        # returns more coefficients than the selected remainder degree.
+        values = tuple(coordinates(element))
+        assert len(values) <= int(degree), (
+            f"the selected power-basis coordinates of {element} have length {len(values)}, "
+            f"exceeding the quotient degree {degree}"
+        )
         return {
             label: _owned_engine_element(coefficient_ring, coefficient)
-            for label, coefficient in zip(labels, coordinates(element), strict=True)
+            for label, coefficient in zip(labels, values)
             if coefficient != 0
         }
 
