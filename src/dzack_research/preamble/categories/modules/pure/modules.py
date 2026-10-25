@@ -2463,14 +2463,37 @@ class Modules(OwnedCategoryOverBaseRing):
         def scalar_action(self):
             # A category construction hook can ask for the generic action
             # before a native ring's deferred module presentation is
-            # installed.  The generic action is cached by the method above;
-            # never reuse that cache after the native owner has supplied its
-            # defining action.  The native datum owns its own cache and exact
-            # End(U(M)) endpoint.
+            # installed.  Prefer the native datum once present, but normalize
+            # its endpoint against the *current* End(U(M)): category
+            # refinement may intern a different End parent after the action
+            # was first retained.  The action's pointwise map remains the
+            # defining datum; only its equivalent codomain parent is changed.
             native = self._native_module_presentation()
-            if native is not None:
-                return native.scalar_action_morphism()
-            return self._ring_morphism_defining_module_action()
+            action = (
+                native.scalar_action_morphism()
+                if native is not None
+                else self._ring_morphism_defining_module_action()
+            )
+            endomorphisms = AdditiveGroups().AdditiveCommutative().End(
+                self.underlying_additive_group()
+            )
+            if action.codomain() is endomorphisms:
+                return action
+            supplied_endomorphisms = action.codomain()
+            additive_group = self.underlying_additive_group()
+            assert (
+                supplied_endomorphisms.domain() is additive_group
+                and supplied_endomorphisms.codomain() is additive_group
+            ), (
+                f"the scalar action of {self} has codomain {supplied_endomorphisms}, "
+                f"not an endomorphism ring of its exact underlying additive group {additive_group}"
+            )
+            ring = self.base_ring()
+            return ring.Mor(endomorphisms, category=OwnedRings())(
+                lambda scalar, supplied_action=action: endomorphisms.elementwise(
+                    lambda element: supplied_action(scalar)(element)
+                )
+            )
 
         def annihilator(self):
             r"""Return ``Ann_R(M)=ker(rho_M: R -> End_Ab(U(M)))``.
