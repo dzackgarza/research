@@ -4415,6 +4415,14 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             case False:
                 pass
         placement.extend(categories)
+        # Construction hooks run inside Parent.__init__.  A polynomial or
+        # tensor algebra's selected generator resolution is installed only
+        # after that call, so exposing its algebra categories at this point
+        # lets their hooks ask algebra_generator() on a half-constructed
+        # parent.  Construct first as the underlying ring/additive group;
+        # restore the full algebra placement only after its selected framing
+        # has been retained below.
+        initial_placement = (presented_ring, AdditiveGroups().AdditiveCommutative())
         retained_laws = {"associativity": True, "unit": True}
         if framing_owner is not associative:
             retained_laws["commutativity"] = True
@@ -4427,7 +4435,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             self,
             engine,
             base=base,
-            category=Cat().meet(tuple(placement)),
+            category=Cat().meet(initial_placement),
             constructing_category=(
                 associative if constructing_category is None else constructing_category
             ),
@@ -4442,6 +4450,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     f"the algebra {engine} over {base_ring} has no chosen generators, so it cannot be given "
                     "generator values"
                 )
+            refine(self, Cat().meet(tuple(placement)))
             if not (_defer_native_algebra_setup or vars(self).get("_preamble_defer_native_algebra_setup", False)):
                 _algebra_from_native_ring(
                     self,
@@ -4527,6 +4536,9 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             generator_morphism,
             augmentation,
         )
+        # The resolution is now queryable by all algebra realization hooks.
+        # Only now add the algebra categories whose hooks consume it.
+        refine(self, Cat().meet(tuple(placement)))
         if not (_defer_native_algebra_setup or vars(self).get("_preamble_defer_native_algebra_setup", False)):
             _algebra_from_native_ring(
                 self,
