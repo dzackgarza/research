@@ -233,6 +233,7 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     lattice_quotient = Lattices(QQ)(quotient)
     assert lattice_quotient.module_rank() == quotient.module_rank() == 2
     assert lattice_quotient.unformed_module().module_rank() == 2
+    assert lattice_quotient.form().module() is lattice_quotient.unformed_module()
     assert lattice_quotient.gram_tensor().tensor_shape() == (2, 2)
     assert lattice_quotient.is_isometric_to(Lattices(QQ)([[0, 1], [1, 0]]))
     lattice_generators = tuple(lattice_quotient.module_generators())
