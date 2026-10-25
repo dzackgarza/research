@@ -4266,8 +4266,8 @@ def _localization_at_submonoid(source, submonoid):
                 else localization.base_ring()
             ),
         )
-    pending_placement = getattr(
-        localization, "_preamble_pending_localization_placement", None
+    pending_placement = vars(localization).pop(
+        "_preamble_pending_localization_placement", None
     )
     if pending_placement is not None:
         from dzack_research.preamble.refine import refine
