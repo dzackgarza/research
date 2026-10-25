@@ -2501,14 +2501,13 @@ class Modules(OwnedCategoryOverBaseRing):
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(
                 additive_group
             )
-            if native is not None:
-                # Cache separately for each canonical End parent: refinement
-                # can intern a new endomorphism parent for this same module,
-                # and reusing a morphism into the pre-refinement parent makes
-                # subsequent module/form constructors disagree on codomain
-                # identity. The native datum retains the defining pointwise
-                # action and rebuilds only its typed morphism wrapper.
-                return native.scalar_action_morphism(endomorphisms)
+            # Use the module owner's one construction for rho_M in both the
+            # ordinary and native cases.  _owned_scalar_multiple dispatches
+            # to the retained native action when present, while this owner
+            # derives the endpoint from U(M) and validates the exact End(U(M))
+            # parent.  A second native-only morphism constructor can otherwise
+            # retain an endpoint different from the one selected after the
+            # module's category refinements.
             return self._ring_morphism_defining_module_action(endomorphisms)
 
         def annihilator(self):

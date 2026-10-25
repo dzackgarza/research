@@ -11,7 +11,6 @@ or second authoritative ring is involved.
 
 from sage.misc.cachefunc import cached_method
 
-from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 from dzack_research.preamble.categories.modules.pure.modules import (
     Modules,
     _fix_selected_module_resolution,
@@ -147,40 +146,6 @@ class _RingModulePresentation:
 
     def scalar_multiple(self, scalar, element):
         return self.module()(self._scalar_action(self.base_ring()(scalar), self.module()(element)))
-
-    @cached_method
-    def scalar_action_morphism(self, endomorphisms=None):
-        r"""The defining ``R -> End_Ab(U(M))`` map for this exact native action.
-
-        Construct the endomorphism parent from the supplied module's actual
-        underlying additive group. This is owned by the native presentation:
-        rebuilding the action from a generic module element can accidentally
-        use a module wrapper instead of the additive group on which it acts.
-        """
-        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
-
-        # This is called while Modules(R) is being constructed on a ring
-        # parent.  At that point the parent has its additive-group methods,
-        # but its Modules(R) methods have not yet been installed.  The native
-        # presentation's module is itself the underlying additive group, so
-        # use that exact object as End's argument rather than calling
-        # underlying_additive_group() before the module category exists.
-        module = self.module()
-        if endomorphisms is None:
-            endomorphisms = AdditiveGroups().AdditiveCommutative().End(module)
-        else:
-            assert (
-                endomorphisms.domain() is module
-                and endomorphisms.codomain() is module
-            ), (
-                f"the native scalar action of {module} can only be represented in "
-                f"End({module}), not {endomorphisms}"
-            )
-        return self.base_ring().Mor(endomorphisms, category=OwnedRings())(
-            lambda scalar: endomorphisms.elementwise(
-                lambda element: self.scalar_multiple(scalar, element)
-            )
-        )
 
     def is_regular(self):
         return self.module() is self.base_ring()
