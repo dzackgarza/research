@@ -2453,7 +2453,9 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def _ring_morphism_defining_module_action(self, endomorphisms, additive_group):
+        def _ring_morphism_defining_module_action(
+            self, endomorphisms, additive_group, scalar_multiple=None
+        ):
             r"""Return ``rho_M : R -> End_Ab(U(M))``, ``r |-> (m |-> r m)``, from the scalar multiplication.
 
             A module whose datum is ``rho`` itself states it at its own level.
@@ -2466,10 +2468,12 @@ class Modules(OwnedCategoryOverBaseRing):
                 f"the scalar action of {self} can only be represented in "
                 f"End({additive_group}), not {endomorphisms}"
             )
+            if scalar_multiple is None:
+                scalar_multiple = self._owned_scalar_multiple
 
             return ring.Mor(endomorphisms, category=OwnedRings())(
                 lambda scalar: endomorphisms.elementwise(
-                    lambda element: self._owned_scalar_multiple(scalar, element),
+                    lambda element: scalar_multiple(scalar, element),
                 ),
             )
 
@@ -2499,10 +2503,15 @@ class Modules(OwnedCategoryOverBaseRing):
             # During native construction U(M) is already specified by the
             # retained module presentation, even if its category refinement has
             # not yet installed underlying_additive_group() on the parent.
-            # Passing that exact object preserves the End(U(M)) endpoint while
-            # retaining the common action-map implementation.
+            # Preserve the native constructor's actual scalar operation when
+            # supplied; reconstructing it through the generic module method
+            # can silently replace a selected coefficient embedding. The
+            # endpoint and ring-morphism construction remain common to both
+            # native and generic modules.
             return self._ring_morphism_defining_module_action(
-                endomorphisms, additive_group
+                endomorphisms,
+                additive_group,
+                None if native is None else native.scalar_multiple,
             )
 
         def annihilator(self):
