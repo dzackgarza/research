@@ -46,6 +46,28 @@ def test_rational_nondegenerate_form_uses_full_rank_quotient_basis() -> None:
     assert quotient.is_isometric_to(formed)
 
 
+def test_module_valued_radical_quotient_uses_selected_free_basis() -> None:
+    r"""Field re-presentation also preserves forms whose values are modules, not rings."""
+    module = QQ ^ 3
+    values = QQ ^ 1
+    scalar_form = module.bilinear_forms(QQ)([[0, 0, 0], [0, 0, 1], [0, 1, 0]])
+    value_generator = values.module_generator(next(iter(values.module_generating_set())))
+    form = module.bilinear_forms(values)(
+        lambda left, right: value_generator * scalar_form(left, right)
+    )
+    formed = FormModules(QQ)(form)
+    quotient = formed.radical_quotient()
+    projection = formed.radical_quotient_projection()
+
+    assert formed.radical().module_rank() == 1
+    assert quotient.unformed_module().module_rank() == 2
+    assert projection.preserves_forms() is True
+    source_generators = tuple(formed.module_generators())
+    for left in source_generators:
+        for right in source_generators:
+            assert quotient.b(projection(left), projection(right)) == formed.b(left, right)
+
+
 def test_rational_radical_quotient_retains_its_projection() -> None:
     r"""The quotient of the rank-three form with a one-dimensional radical has rank two."""
     lattice = Lattices(QQ)([[0, 0, 0], [0, 0, 1], [0, 1, 0]])

@@ -3776,9 +3776,14 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                         lambda label: quotient.module_generator(label)
                     )
                     pulled_back = descended.pullback(basis_map)
-                    descended = free.bilinear_forms(value_module)(
-                        pulled_back.gram_tensor()
-                    )
+                    if value_module in OwnedRings():
+                        descended = free.bilinear_forms(value_module)(
+                            pulled_back.gram_tensor()
+                        )
+                    else:
+                        descended = free.bilinear_forms(value_module)(
+                            lambda left, right: pulled_back(left, right)
+                        )
                 return FormModules(ring)(
                     descended,
                     _extra_construction_data={
