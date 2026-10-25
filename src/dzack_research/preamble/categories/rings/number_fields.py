@@ -698,6 +698,15 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             match ring_map.domain() is rationals and self is not rationals:
                 case False:
                     return super()._module_basis_along(ring_map)
+            native_basis = self._native_module_basis
+            if native_basis is not None and native_basis.is_basis():
+                # The number-field constructor already selected the power
+                # basis over its defining coefficient field. Do not rebuild
+                # that basis by asking ``as_algebra()`` for its framing: the
+                # latter is the algebra-generator presentation and may not
+                # yet have installed its framing while ring construction is
+                # asking for the module basis.
+                return native_basis
             algebra = self.as_algebra()
             framing = algebra.framing_morphism()
 
