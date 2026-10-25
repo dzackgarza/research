@@ -31,6 +31,21 @@ def test_nondegenerate_hyperbolic_plane_has_zero_radical() -> None:
     assert u.radical_quotient().is_isometric_to(u)
 
 
+def test_rational_nondegenerate_form_uses_full_rank_quotient_basis() -> None:
+    r"""The field-specific quotient basis keeps all generators when the radical is zero."""
+    module = QQ ^ 2
+    formed = FormModules(QQ)(module.bilinear_forms(QQ)([[0, 1], [1, 0]]))
+    quotient = formed.radical_quotient()
+    projection = formed.radical_quotient_projection()
+
+    assert formed.radical().module_rank() == 0
+    assert quotient.unformed_module().module_rank() == 2
+    assert quotient.gram_tensor().tensor_shape() == (2, 2)
+    assert projection.module_morphism().is_injective() is True
+    assert projection.module_morphism().is_surjective() is True
+    assert quotient.is_isometric_to(formed)
+
+
 def test_rational_radical_quotient_retains_its_projection() -> None:
     r"""The quotient of the rank-three form with a one-dimensional radical has rank two."""
     lattice = Lattices(QQ)([[0, 0, 0], [0, 0, 1], [0, 1, 0]])
