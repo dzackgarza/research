@@ -255,7 +255,9 @@ def _action_with_canonical_endomorphism_parent(base_ring, additive_group, action
         return action
     supplied_endomorphisms = action.codomain()
     assert (
-        supplied_endomorphisms.domain() is additive_group
+        supplied_endomorphisms
+        in AdditiveGroups().AdditiveCommutative().End(additive_group)
+        and supplied_endomorphisms.domain() is additive_group
         and supplied_endomorphisms.codomain() is additive_group
     ), (
         f"the scalar action {action} has codomain {supplied_endomorphisms}, not an endomorphism ring "
