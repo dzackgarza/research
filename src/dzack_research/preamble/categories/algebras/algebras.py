@@ -4352,15 +4352,19 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         self._realized_scalar_structure = (lambda scalar: self(scalar)) if scalar_structure is None else scalar_structure
         selected_labels = None if labels is None else finite_ordered_set(labels)
         associative = Algebras(base).Associative().Unital()
-        framing_owner = associative
-        placement = [associative]
-        # The ring constructor that presents ``engine``, or a category the
-        # caller selected, places the product as commutative (ARC-08).
+        # A native algebra that is also a ring must retain the ring category
+        # supplied by its constructor. Reading only its commutativity axiom
+        # below loses inherited structure such as additive-group membership,
+        # so the same object can fail the native ring-module prerequisite.
         presented_ring = (
             _presented_ring_category(engine)
             if ring_placement is None
             else owned_category_join((OwnedRings(), *ring_placement()))
         )
+        framing_owner = associative
+        placement = [associative, presented_ring]
+        # The ring constructor that presents ``engine``, or a category the
+        # caller selected, places the product as commutative (ARC-08).
         match (
             presented_ring.is_subcategory(OwnedRings().Commutative())
             or any(category.is_subcategory(Magmas().Commutative()) for category in categories)
