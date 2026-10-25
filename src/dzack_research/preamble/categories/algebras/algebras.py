@@ -4420,14 +4420,15 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             case False:
                 pass
         placement.extend(categories)
-        # Construction hooks run inside Parent.__init__.  A polynomial or
-        # tensor algebra's selected generator resolution is installed only
-        # after that call, so exposing its algebra categories at this point
-        # lets their hooks ask algebra_generator() on a half-constructed
-        # parent.  Construct first as the underlying ring/additive group;
-        # restore the full algebra placement only after its selected framing
-        # has been retained below.
-        initial_placement = (presented_ring, AdditiveGroups().AdditiveCommutative())
+        # Construction hooks run inside Parent.__init__. A native polynomial
+        # or tensor algebra's selected generator resolution is installed only
+        # after that call. Even its *ring* placement may have polynomial-ring
+        # hooks which ask for the selected framing, so neither the presented
+        # ring category nor the algebra categories may be exposed during the
+        # first Parent initialization. Start with the minimal owned ring and
+        # additive-group structure; install the complete stated placement only
+        # after the selected resolution and native module datum are available.
+        initial_placement = (OwnedRings(), AdditiveGroups().AdditiveCommutative())
         retained_laws = {"associativity": True, "unit": True}
         if framing_owner is not associative:
             retained_laws["commutativity"] = True
@@ -4444,7 +4445,11 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             constructing_category=(
                 associative if constructing_category is None else constructing_category
             ),
-            named_placement=ring_placement,
+            # The presented ring placement is included in ``placement`` and
+            # refined only after native module/framing setup below. Passing it
+            # as named_placement would make _OwnedRingParent reintroduce those
+            # categories into its initial Parent.__init__ join.
+            named_placement=None,
         )
         Algebras.ParentMethods._retain_algebra_law_decisions(
             self, retained_laws
