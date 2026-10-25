@@ -4028,8 +4028,14 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
 
             scalars = _owned_ring(ring_map.domain())
-            native_basis = self._native_module_basis
+            native_basis = getattr(self, "_native_module_basis_along_structure_map", None)
             if native_basis is not None and self.base_ring() is scalars:
+                associative_unital = Algebras(scalars).Associative().Unital()
+                if not (
+                    self.has_selected_resolution(associative_unital)
+                    or self.has_selected_resolution(associative_unital.Commutative())
+                ):
+                    return None
                 structure = self.algebra_structure_morphism()
                 center = structure.codomain()
                 coefficient_map = structure if center is self else center.inclusion() * structure
@@ -6409,7 +6415,7 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
                 if engine.is_absolute()
                 else engine.relative_polynomial().degree()
             )
-            ring._native_module_basis = _power_module_basis(
+            ring._native_module_basis_along_structure_map = _power_module_basis(
                 ring.base_ring(),
                 degree,
                 lambda exponent: _owned_engine_element(ring, engine.gen() ** exponent),
