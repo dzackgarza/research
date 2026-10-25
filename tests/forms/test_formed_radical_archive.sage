@@ -46,6 +46,20 @@ def test_rational_nondegenerate_form_uses_full_rank_quotient_basis() -> None:
     assert quotient.is_isometric_to(formed)
 
 
+def test_rational_zero_form_has_zero_rank_radical_quotient() -> None:
+    r"""When the entire source is radical, the selected quotient basis is empty."""
+    module = QQ ^ 3
+    formed = FormModules(QQ)(module.bilinear_forms(QQ)([[0, 0, 0], [0, 0, 0], [0, 0, 0]]))
+    quotient = formed.radical_quotient()
+    projection = formed.radical_quotient_projection()
+
+    assert formed.radical().module_rank() == 3
+    assert quotient.unformed_module().module_rank() == 0
+    assert quotient.gram_tensor().tensor_shape() == (0, 0)
+    assert projection.module_morphism().is_surjective() is True
+    assert projection.module_morphism().kernel().module_rank() == 3
+
+
 def test_module_valued_radical_quotient_uses_selected_free_basis() -> None:
     r"""Field re-presentation also preserves forms whose values are modules, not rings."""
     module = QQ ^ 3
