@@ -201,6 +201,7 @@ class _RingModulePresentation:
             free = self.base_ring().free_module(1)
             label = next(iter(free.module_generating_set()))
             self._basis = _NativeModuleBasis(free, lambda _: self.unit(), lambda value: {label: module(value)})
+        free_placement = None
         if self._basis is not None:
             source = self._basis.source()
             assert source.base_ring() is self.base_ring(), (
@@ -220,17 +221,15 @@ class _RingModulePresentation:
                     placement = FramedFreeModules(self.base_ring())
                     if labels.cardinality().is_finite():
                         placement = placement.FinitelyGenerated()
-                    match module in placement:
-                        case True:
-                            pass
-                        case False:
-                            refine(module, placement)
+                    free_placement = placement
         # Finish both pieces of the module datum before category realization
         # hooks run: the selected resolution above fixes the exact generator
         # parent, and this action morphism fixes End(U(M)) on the exact
         # underlying additive group. Downstream formed objects then read this
         # retained action rather than reconstructing it through a wrapper.
         module.scalar_action()
+        if free_placement is not None and module not in free_placement:
+            refine(module, free_placement)
         # Installing the selected resolution above is part of construction,
         # not a postcondition of module placement. Category realization hooks
         # can ask for generators, coordinates, or the scalar-action morphism;
