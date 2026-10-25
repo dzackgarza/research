@@ -347,7 +347,7 @@ class Sterk:
         return {
             name: CoxeterDiagrams().from_roots(
                 finite_indexed_family_from_values(None, tuple(roots)),
-                names=finite_ordered_set(tuple(f"r{i + 1}" for i, _root in enumerate(roots))),
+                names=finite_ordered_set(tuple(f"r{i}" for i, _root in enumerate(roots))),
                 positions=_STERK_DIAGRAM_LAYOUTS[name],
             )
             for name, roots in Sterk.sterk_roots().items()
