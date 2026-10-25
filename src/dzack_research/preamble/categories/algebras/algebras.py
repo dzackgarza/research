@@ -4405,6 +4405,8 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         construction_data=(),
         law_decisions=(),
         algebra_framing_source=None,
+        algebra_generating_family=None,
+        algebra_framing_owner=None,
         constructing_category=None,
         ring_placement=None,
     ) -> None:
@@ -4438,7 +4440,9 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             if ring_placement is None
             else owned_category_join((OwnedRings(), *ring_placement()))
         )
-        framing_owner = associative
+        framing_owner = (
+            associative if algebra_framing_owner is None else algebra_framing_owner
+        )
         # The algebra root constructs an additive-commutative group as part
         # of its underlying module.  A ring placement supplied by an engine
         # adapter need not materialize that inherited facet on the concrete
@@ -4452,10 +4456,27 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             or any(category.is_subcategory(Magmas().Commutative()) for category in categories)
         ):
             case True:
-                framing_owner = associative.Commutative()
+                if algebra_framing_owner is None:
+                    framing_owner = associative.Commutative()
                 placement.append(framing_owner)
             case False:
                 pass
+        # Native free-algebra constructors already own the exact generator
+        # family and the category relative to which its resolution is stated.
+        # Retain those data instead of rebuilding a second family from backend
+        # positions or inferring the resolution owner from category inclusion.
+        if algebra_generating_family is not None:
+            assert selected_labels is not None, (
+                "a selected algebra generating family requires its index labels"
+            )
+            assert algebra_generating_family.index_set() is selected_labels or (
+                algebra_generating_family.index_set() == selected_labels
+            ), (
+                "the selected algebra generating family must be indexed by the "
+                "same labels as the retained algebra framing"
+            )
+            if generator_values is None:
+                generator_values = lambda label: algebra_generating_family[label]
         placement.extend(categories)
         # Construction hooks run inside Parent.__init__. A native polynomial
         # or tensor algebra's selected generator resolution is installed only
