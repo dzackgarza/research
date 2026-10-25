@@ -1707,15 +1707,14 @@ in a leaf: not as a local definition, a substitute category, a temporary notion
 to reconcile later, or a Lean file here. Until `lean-categories` formalizes and
 releases it, research has no such notion.
 
-**`lean-categories` is Lean, not implementation code, and its gaps never park a
-computation.** No algorithm moves to `lean-categories`, and no computation waits
-for it. An algorithm or computation that research needs is a method of the
-preamble category whose objects it acts on, written now, whether or not
-`lean-categories` has formalized the notion yet. The request upstream, when one
-is owed, runs beside that work and never blocks it. On 2026-10-07 a worker
-parked the Coxeter, Dynkin, Satake and Vinberg recognition, the Hodge-number
-arithmetic and the root-system typing in leaf-named modules, with a TODO node
-waiting on a `lean-categories` release, and the owner rejected the parking.
+**Independent implementation work can continue while a formalization request
+is open.** That work does not introduce the missing notion into the public
+language: declaring its category, operation, type or mathematical meaning waits
+for the formal owner. A computation for an already declared operation can be
+implemented through its existing contract without waiting for unrelated
+formalization. Computations discharged entirely in Lean belong to the formal
+side, as required by the evidence model above. Research implementations supply
+answers through declared contracts and cannot supply the missing semantics.
 
 You never proceed past an observed mathematical deficiency. Not with a note
 attached, not with a substitute in place, not with a `TODO` at the site. The
@@ -2337,16 +2336,24 @@ A design that violates them is wrong even when it “works.”
 
 **In one line:** write Sage so that the category and the catalogue present the theory directly — idiomatic constructions, one home per notion, no second layer between the mathematician and the object — and delete anything whose only job is to mediate, rename, wrap, or reassure. The theory itself is `lean-categories`'; the preamble presents it and owns none of it.
 
-## 1. The preamble category is the only extension point
+## 1. Public operations come from the formal catalogue
 
-Public method placement is stated through the owned category protocol: `ObjectType`,
+Public operation declarations and their category placement belong to
+`lean-categories`; the `lean-cas-dsl` kernel consumes those declarations.
+Research presents those operations and registers private computations through
+their declared contracts. A missing declaration is requested at its formal owner.
+
+The existing Python realization states method placement through `ObjectType`,
 `ElementType`, and the object/element types of Hom/End/Aut category constructions. Sage's
 `ParentMethods`, `ElementMethods`, `MorphismMethods`, dynamic MRO, and refinement hooks are
 private runtime mechanisms used to realize that declaration on independently owned
 objects; they never decide where mathematics belongs or admit foreign parents.
+This protocol is transitional machinery to retire as its consumers move to the
+formal catalogue and kernel, as specified in `CONTRIBUTING.md` under "Layers and
+permitted dependencies".
 
-If Sage's interface is wrong or incomplete, **state the operation on the preamble category,
-as `lean-categories` formalizes it, and map it onto Sage privately**; if `lean-categories`
+If Sage's interface is wrong or incomplete, **present the formally declared
+operation on its category and map it onto Sage privately**; if `lean-categories`
 does not have it, it is requested there
 ([missing foundations](#a-missing-foundation-parks-the-work-that-found-it-always-on)).
 Workarounds (`without_element_wrap`, ad-hoc `L.isometry(matrix)`, freestanding patch
