@@ -4028,8 +4028,15 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
 
             scalars = _owned_ring(ring_map.domain())
-            native_basis = getattr(self, "_native_module_basis_along_structure_map", None)
+            native_basis = self._native_module_basis
             if native_basis is not None and self.base_ring() is scalars:
+                # A unital map out of a prime field (or Z) is unique. This
+                # lets native polynomial/number-field bases answer during
+                # Parent construction without recursively asking for the
+                # algebra structure map whose selected resolution is not yet
+                # installed.
+                if scalars in PrimeFields() or scalars is _owned_integers():
+                    return native_basis
                 associative_unital = Algebras(scalars).Associative().Unital()
                 if not (
                     self.has_selected_resolution(associative_unital)
@@ -6415,7 +6422,7 @@ def _install_engine_selected_ring_data(ring, engine) -> None:
                 if engine.is_absolute()
                 else engine.relative_polynomial().degree()
             )
-            ring._native_module_basis_along_structure_map = _power_module_basis(
+            ring._native_module_basis = _power_module_basis(
                 ring.base_ring(),
                 degree,
                 lambda exponent: _owned_engine_element(ring, engine.gen() ** exponent),
