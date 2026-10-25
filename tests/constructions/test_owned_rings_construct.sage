@@ -50,12 +50,16 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert quotient in additive_groups
     assert quotient in OwnedRings().Commutative()
     assert fraction_field in additive_groups
+    assert fraction_field.fraction_field_localization() in additive_groups
     assert fraction_field in OwnedRings().Division().Commutative()
     assert fraction_field in OwnedIntegralDomains()
     assert fraction_field in OwnedRings().Noetherian()
     assert fraction_field.base_ring() is QQ
     assert fraction_map.domain() is polynomials
     assert fraction_map.codomain() is fraction_field
+    localization = polynomials.fraction_field_localization()
+    assert localization in additive_groups
+    assert localization.localization_source() is polynomials
     tensor_algebra = QQ.free_module(2).tensor_algebra()
     assert tensor_algebra in OwnedRings().NoZeroDivisors()
     assert tensor_algebra in OwnedRings().Nontrivial()

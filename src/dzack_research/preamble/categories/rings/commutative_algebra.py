@@ -4021,7 +4021,16 @@ def _finite_generated_localization(source, submonoid):
         ) = _flattened_symmetric_localization_engine(bottom, inverted)
         if localization_engine is None:
             localization_engine = engine_bottom.localization(values)
-    placements = list(_localization_size_placements(source, submonoid))
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+    # Localization inherits the source ring's abelian addition, including
+    # the zero localization.  Owned joins do not guarantee that this inherited
+    # facet is materialized on the concrete parent; module construction and
+    # the fraction-field path require the actual additive-group placement.
+    placements = [
+        *_localization_size_placements(source, submonoid),
+        AdditiveGroups().AdditiveCommutative(),
+    ]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
     if source in OwnedRings().Commutative().NoZeroDivisors():
@@ -4121,7 +4130,13 @@ def _fraction_field_localization(source, submonoid):
             fraction_engine = SageFractionField(engine)
         case _:
             fraction_engine = engine.fraction_field()
-    placements = [OwnedIntegralDomains(), OwnedRings().Division().Commutative()]
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+    placements = [
+        OwnedIntegralDomains(),
+        OwnedRings().Division().Commutative(),
+        AdditiveGroups().AdditiveCommutative(),
+    ]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
     base = source.base_ring()
