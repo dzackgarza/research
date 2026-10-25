@@ -6450,7 +6450,11 @@ def _owned_ring_category(
             )
 
             native_source = owned_ring._native_module_basis.source()
-            native_free = FramedFreeModules(algebra_base)
+            # The retained frame is over its own coefficient ring, which
+            # need not be the ring's algebra base. In particular an order
+            # carries its integral basis over ZZ while its regular algebra
+            # structure is over the order itself.
+            native_free = FramedFreeModules(native_source.base_ring())
             if native_source.module_generating_set().cardinality().is_finite():
                 native_free = native_free.FinitelyGenerated()
             extra.append(native_free)
