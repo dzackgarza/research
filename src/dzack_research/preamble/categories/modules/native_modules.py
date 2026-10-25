@@ -96,6 +96,13 @@ def _power_module_basis(coefficient_ring, degree, power, coordinates):
         # zero, not a malformed basis expansion. Reject only a backend that
         # returns more coefficients than the selected remainder degree.
         values = tuple(coordinates(element))
+        # Some native quotient realizations retain explicit trailing zeros
+        # in their coefficient list. These do not contribute to the class
+        # and must be removed before checking the selected remainder degree;
+        # never truncate a nonzero high coefficient, which would change the
+        # represented element rather than normalize its coordinates.
+        while len(values) > int(degree) and values[-1] == 0:
+            values = values[:-1]
         assert len(values) <= int(degree), (
             f"the selected power-basis coordinates of {element} have length {len(values)}, "
             f"exceeding the quotient degree {degree}"
