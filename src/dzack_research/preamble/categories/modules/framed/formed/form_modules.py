@@ -3753,7 +3753,7 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                 value_module = self.value_module()
                 value_identity = value_module.module_category().Mor(value_module, value_module).identity()
                 descended = self._formed_form().descend_along(inclusion, value_identity)
-                quotient = inclusion.cokernel()
+                quotient = descended.module()
                 ring = quotient.base_ring()
                 source_module = self.unformed_module()
                 cokernel_projection = inclusion.cokernel_projection()
