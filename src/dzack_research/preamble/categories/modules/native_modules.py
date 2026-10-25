@@ -207,12 +207,6 @@ class _RingModulePresentation:
             f"but {module} is only known to be in {module.category()}"
         )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
-        # Establish the scalar-action morphism before constructing the chosen
-        # free resolution.  Building its source may invoke module realization
-        # hooks, and those hooks are allowed to inspect scalar_action(); the
-        # native datum is already retained and the ring's additive-group
-        # placement is already present, so End_Ab(module) is available here.
-        self.scalar_action_morphism()
         if self.is_regular():
             assert self._basis is None, (
                 f"{module} is the regular module over itself; its basis is {{1}}, and no other basis may be given"
@@ -241,10 +235,12 @@ class _RingModulePresentation:
                     if labels.cardinality().is_finite():
                         placement = placement.FinitelyGenerated()
                     free_placement = placement
-        # The selected resolution and scalar action are now both retained
-        # before either free-module or requested-module category hooks run.
-        # Downstream formed objects can consume the exact datum rather than
-        # reconstructing it through a wrapper.
+        # Install the defining action only after the selected resolution is
+        # retained: constructing its Mor parent may run realization hooks that
+        # inspect module generators or coordinates. Conversely, do this before
+        # category refinement, so those hooks see both the resolution and the
+        # exact action on End_Ab(module).
+        self.scalar_action_morphism()
         if free_placement is not None and module not in free_placement:
             refine(module, free_placement)
         # Installing the selected resolution above is part of construction,
