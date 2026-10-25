@@ -3653,7 +3653,12 @@ def _quotient_ring(source, defining_ideal):
             modulus=modulus,
             check_irreducible=False,
         )
-    placements = []
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+    # The quotient has the quotient abelian-group structure of its source.
+    # Record the inherited additive axiom on the concrete parent rather than
+    # relying on the category join to materialize it transitively.
+    placements = [AdditiveGroups().AdditiveCommutative()]
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
     if prime_field:
