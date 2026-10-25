@@ -27,6 +27,38 @@ construction, ring finiteness and centrality, and minimal-prime loci. Their
 individual mathematical algorithms have not all been independently audited.
 No preamble execution or mathematical acceptance was performed in this audit.
 
+A subsequent census parsed every Python file under `preamble` at the fixed
+endpoint revision above, using `git ls-tree`, `git cat-file --batch` and Python
+AST inspection, without importing the package. All 301 files parsed. Exactly
+103 directly import `owned_category` or `owned_category_bases`; 400
+`super_categories` definitions occur in 137 files. Twelve assignments to
+`_certifying_predicate` occur across lattices, ordinary modules, formed modules
+and number fields. These counts measure source reach, not independent defects.
+The direct imports include 23 module files, 12 group files, 12 scheme files,
+11 abstract-category files, six set files and five ring files, as well as other
+geometry and topology domains. Transitive reach is not included in 103.
+
+The endpoint diffs of all eighteen changed source files were inspected during
+this audit. That establishes the following implementation inventory, without
+claiming independent mathematical verification of every algorithm:
+
+| Source family | Observed change | Required distinction for assessment |
+| --- | --- | --- |
+| `catalogue.py` | Implementation-owned Nikulin validator | Diagnostic checks versus independent acceptance |
+| `abstract_categories/resolutions.py` | Stored optional cofiber datum and accessor | Retaining supplied data versus constructing the universal cofiber |
+| `algebras/algebras.py`, `algebras/free_algebras.py` | Deferred native setup, generator registration, identity augmentation, explicit placement, pushout checks | Repair of Python initialization versus migration of the construction; checking triangles versus establishing the universal construction |
+| `forms/forms.py` | Both-slot descent condition and lifts through the actual quotient projection | Concrete changed mathematical computation, still requiring independent acceptance |
+| `modules/framed/formed/form_modules.py` | Common radical, quotient basis presentation and projection | Concrete changed construction, with #603 execution still outstanding |
+| `lattices.py` | Property categories and enumeration; norm decisions through integral embeddings | Public semantic extension versus opaque computation; availability of the complete embedding route |
+| `modules/localizations.py`, `modules/native_modules.py`, `modules/pure/modules.py` | Additive placement, setup prerequisite, scalar-action endpoint reconstruction | Shared structural transport versus repeated local placement and retargeting |
+| `rings/commutative_algebra.py`, `rings/ring_foundation.py` | Additive placement, finiteness/centrality decisions, engine enumeration and construction dispatch | Computation of an answer versus determining public category membership |
+| `rings/semirings.py` | Cached ideal loci and finite ideal-to-subset conversion | Actual underlying-set map versus a locally reconstructed predicate subset |
+| `schemes/ade_surfaces.py` | Variant normalization, parity-dependent polygons and admitted ranks | Published source formula and hypotheses versus implementation/test agreement |
+| `sterk.py` | Root-label indexing change | Agreement with the independent source diagram, not just the local layout |
+| `sets/indexed_families.py` | Equality comparisons across hash buckets | Cache behavior versus equality semantics and final acceptance (#562) |
+| `owned_category.py` | Predicate-driven intersection membership | Implementation classification versus formal classifier interpretation |
+| `utilities/category_graph.py` | Optional-parameter source split | Faithfulness to Python declarations versus validity of those declarations |
+
 ## Instructions still prescribe the runtime slated for removal
 
 `CONTRIBUTING.md`, “Layers and permitted dependencies”, assigns public semantics
@@ -169,7 +201,7 @@ layer, identify the formal definitions and structural maps, the kernel's actual
 use of them, and the independent acceptance assertions. Existing Python classes
 are implementation evidence to compare, not definitions to transplant.
 
-The unresolved audit work is the complete layer-by-layer dependency census;
+The unresolved audit work is the complete layer-by-layer semantic dependency trace;
 the disposition of the other changed algorithms and tests; the exact formal
 construction for the cover example; and a full acceptance review of the day's
 closures and reopened issues. These remain required before a programme-wide
