@@ -4461,13 +4461,23 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 case False:
                     return generating_module.symmetric_algebra()
 
+        def augmentation(source):
+            # A native free algebra is its own degree-zero free source.  Its
+            # augmentation is therefore the identity, not a morphism built
+            # from its as-yet-uninstalled selected resolution.  Constructing
+            # that latter morphism here recursively asks the source for the
+            # very framing this constructor is in the process of installing.
+            if source is self:
+                return source.Mor(self).identity()
+            return source.Mor(self)(generator_morphism)
+
         _fix_selected_algebra_resolution(
             self,
             framing_owner,
             free_source,
             selected_labels,
             generator_morphism,
-            lambda source: source.Mor(self)(generator_morphism),
+            augmentation,
         )
 
 
