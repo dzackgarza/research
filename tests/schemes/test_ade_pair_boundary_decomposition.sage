@@ -84,8 +84,18 @@ def test_the_branch_divisor_is_linearly_equivalent_to_twice_the_other_sides() ->
 def test_the_at21_enhancement_of_a1_is_a_log_pair_on_the_same_surface() -> None:
     r"""The enhancement keeps ``(Y, C)`` and adds the branch data of Lemma 3.4."""
     enhanced = ADELogPairs(QQ).at21("A", 1)
+    base_pair = enhanced.base_pair()
 
     assert enhanced in ToricLogPairs(QQ)
+    assert enhanced.base_ring() is QQ
+    assert base_pair in ADELogPairs(QQ)
+    assert enhanced.log_scheme() is base_pair.log_scheme()
+    assert enhanced.blue_divisor() is base_pair.blue_divisor()
+    assert enhanced.complementary_divisor() is base_pair.complementary_divisor()
+    assert enhanced.scheme().divisor_class(enhanced.branch_divisor_class()) == enhanced.scheme().divisor_class(
+        2 * enhanced.complementary_divisor()
+    )
+    assert enhanced.branch_line_bundle().base_ring() is QQ
 
 
 def test_at21_public_constructor_accepts_the_default_a_zero_minus_shape() -> None:
