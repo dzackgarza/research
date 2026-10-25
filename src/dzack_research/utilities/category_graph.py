@@ -89,7 +89,7 @@ class CategoryDeclaration:
     supercategories: tuple[Supercategory, ...] = field(default_factory=tuple)
     axiom_of: str = ""  # for a nested axiom class, the category it refines
     nested_in: str = ""  # for a nested construction such as ``_MorCategory``, the vertex enclosing it
-    parameter: str = ""  # source symbol of a fibre sharing this class with its catalogue
+    parameter: str = ""  # source symbol distinguishing the optional-parameter branch
     object_methods: tuple[
         str, ...
     ] = ()  # the methods its ``ParentMethods`` installs on objects
@@ -205,10 +205,10 @@ def _return_expressions(value: ast.expr) -> tuple[str, ...]:
     return (ast.unparse(value),)
 
 
-def _catalogue_and_fibre(
+def _optional_parameter_supercategories(
     node: ast.ClassDef, declaration: ast.FunctionDef
 ) -> tuple[str, tuple[str, ...], tuple[str, ...]] | None:
-    """Separate a no-parameter catalogue from its fibre's source declaration.
+    """Separate supercategory declarations for absent and supplied parameters.
 
     The source must explicitly branch on an optional constructor parameter
     read from its accessor.  Other conditional returns retain the ordinary
@@ -228,8 +228,8 @@ def _catalogue_and_fibre(
     ]
     if len(constructors) != 1 or len(body) != 3:
         return None
-    assignment, branch, fibre_return = body
-    match assignment, branch, fibre_return:
+    assignment, branch, parameterized_return = body
+    match assignment, branch, parameterized_return:
         case (
             ast.Assign(
                 targets=[ast.Name(id=parameter)],
@@ -245,10 +245,10 @@ def _catalogue_and_fibre(
                     ops=[ast.Is()],
                     comparators=[ast.Constant(value=None)],
                 ),
-                body=[ast.Return(value=catalogue)],
+                body=[ast.Return(value=unparameterized)],
                 orelse=[],
             ),
-            ast.Return(value=fibre),
+            ast.Return(value=parameterized),
         ) if parameter == accessor == condition:
             constructor = constructors[0]
             defaults = dict(
@@ -266,7 +266,7 @@ def _catalogue_and_fibre(
             default = defaults.get(parameter)
             if not isinstance(default, ast.Constant) or default.value is not None:
                 return None
-            return parameter, _return_expressions(catalogue), _return_expressions(fibre)
+            return parameter, _return_expressions(unparameterized), _return_expressions(parameterized)
     return None
 
 
@@ -439,7 +439,7 @@ def read_tree(root: Path) -> list[CategoryDeclaration]:
                 continue
             declaring = _declarations(node)
             split = (
-                _catalogue_and_fibre(node, declaring[0])
+                _optional_parameter_supercategories(node, declaring[0])
                 if len(declaring) == 1 and declaring[0].name == "super_categories"
                 else None
             )

@@ -1137,11 +1137,11 @@ def zariski_coverage(scheme) -> Category:
 class DistinguishedAffineCovers(OwnedCategory):
     r"""Represented distinguished affine covering families.
 
-    With no parameter this is the catalogue containing every represented
-    distinguished affine cover.  ``DistinguishedAffineCovers(X)`` is its fibre
-    over one affine scheme ``X``; that fibre is a subcategory of covering
-    families in the slice ``AffSch_R/X`` and is the selected family category
-    for the distinguished-affine coverage of ``X``.
+    ``DistinguishedAffineCovers()`` is used for category membership without
+    fixing the covered scheme. ``DistinguishedAffineCovers(X)`` fixes one
+    affine scheme ``X`` and declares ``CoveringFamilies(AffSch_R/X)`` among
+    its supercategories. Its objects are distinguished affine covers of
+    ``X``. The ``an_object()`` method selects a specimen of the category.
     """
 
     _MorCategory = DistinguishedAffineCoverMorCategoryConstruction
