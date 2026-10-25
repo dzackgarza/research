@@ -103,7 +103,7 @@ def test_pure_a_zero_short_shape_is_admitted_by_at21_source_rules() -> None:
     pair = ADELogPairs(QQ)("A", 0)
     assert pair.dynkin_letter() == "A"
     assert pair.dynkin_rank() == 0
-    assert _ade_polygon_data("A", 0, ("short",), False) == (
+    assert _ade_polygon_data("A", 0, ("long", "short"), False) == (
         ((0, 2), (0, 0), (1, 0)),
         (0, 2),
         _polygon_side_decorations(((0, 2), (0, 0), (1, 0)), (0, 2)),
