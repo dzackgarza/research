@@ -1400,6 +1400,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                             product,
                             _native_unit_factory(self),
                             _engine_scalar_action,
+                            module_basis=getattr(self, "_native_module_basis", None),
                         )
 
         def _retain_algebra_law_decisions(self, decisions):
