@@ -282,7 +282,7 @@ def _validated_at21_low_level_variant(letter, rank, variant, affine):
         raise ValueError(
             f"type A_{rank} has no toric polygon of variant {variant!r} in Alexeev-Thompson "
             "(AT21): the represented toric A shapes are pure A_n for odd n, one-short A_n for even n, "
-            "both-short A_n for odd n, and singly primed A_n for n >= 2"
+            "both-short A_n for odd n, and singly primed A_n for odd n >= 3"
         )
     if letter == "D":
         if variant == "pure" and rank >= 4 and rank % 2 == 0:
