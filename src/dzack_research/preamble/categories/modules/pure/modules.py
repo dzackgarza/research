@@ -4575,8 +4575,27 @@ class RestrictedScalarsModules(OwnedCategoryOverBaseRing):
 
         @cached_method
         def _ring_morphism_defining_module_action(self):
-            r"""Return ``rho_M compose f`` for restriction along ``f : R -> S``."""
-            return self.module_over_extension().scalar_action() * self.ring_map()
+            r"""Return ``rho_M compose f`` with this module's exact endomorphism parent.
+
+            The extension action and the restricted module act on the same
+            underlying abelian group, but their construction paths need not
+            intern the identical ``End`` parent.  The native module constructor
+            requires the scalar action to land in the exact endomorphism parent
+            of ``self.underlying_additive_group()``.  Re-express each composite
+            endomorphism in that parent instead of relying on parent identity
+            across the restriction boundary.
+            """
+            ring = self.base_ring()
+            extension_action = self.module_over_extension().scalar_action()
+            endomorphisms = AdditiveGroups().AdditiveCommutative().End(
+                self.underlying_additive_group()
+            )
+            ring_map = self.ring_map()
+            return ring.Mor(endomorphisms, category=OwnedRings())(
+                lambda scalar: endomorphisms.elementwise(
+                    lambda element: extension_action(ring_map(scalar))(element)
+                ),
+            )
 
         def scalar_multiple(self, scalar, element):
             element = self(element)
