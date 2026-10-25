@@ -97,10 +97,18 @@ def test_module_valued_radical_quotient_uses_selected_free_basis() -> None:
         projection(formed.module_generator(1)),
         projection(formed.module_generator(2)),
     ) == value_generator
+    basis_map = quotient._preamble_radical_quotient_basis_map
+    canonical_projection = quotient._preamble_radical_quotient_cokernel_projection
+    source_module = formed.unformed_module()
+    for label in source_module.module_generating_set():
+        generator = source_module.module_generator(label)
+        assert basis_map(projection.module_morphism()(generator)) == canonical_projection(formed(generator))
     source_generators = tuple(formed.module_generators())
     for left in source_generators:
         for right in source_generators:
             assert quotient.b(projection(left), projection(right)) == formed.b(left, right)
+    for label in formed.radical().module_generating_set():
+        assert projection(formed.radical().inclusion()(formed.radical().module_generator(label))) == quotient.zero()
 
 
 def test_rational_radical_quotient_retains_its_projection() -> None:
