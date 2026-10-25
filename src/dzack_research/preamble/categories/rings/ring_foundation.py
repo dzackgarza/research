@@ -5546,6 +5546,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     self._from_engine_element(engine.one()),
                     self._native_scalar_action,
                     module_basis=self._native_module_basis,
+                    scalar_ring=base,
                 )
             if defer_ring_facets and not _defer_construction_facets:
                 # Orders need the same two-phase construction as native
