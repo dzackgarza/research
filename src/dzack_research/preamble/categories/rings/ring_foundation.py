@@ -83,7 +83,7 @@ from dzack_research.preamble.categories.rings.semirings import (
 from dzack_research.preamble.categories import sets as owned_sets
 from dzack_research.preamble.logic import AtomicProposition, Predicate, Propositions, conjunction, negation
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
-from dzack_research.preamble.refine import RealizationHook, realize_owned_category
+from dzack_research.preamble.refine import RealizationHook, realize_owned_category, refine
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
@@ -5497,6 +5497,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
             # A named construction (``ZZ``, ``QQ``, ...) states its placement;
             # it is not read off the engine (ARC-08).
+            defer_ring_facets = _defer_construction_facets or isinstance(
+                engine, SageNumberFieldOrder
+            )
             placement = _owned_ring_category(
                 engine,
                 scalar_base=category_base,
@@ -5505,7 +5508,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     None if named_placement is None
                     else owned_category_join((OwnedRings(), *named_placement()))
                 ),
-                defer_construction_facets=_defer_construction_facets,
+                defer_construction_facets=defer_ring_facets,
             )
             # Every ring's additive structure is part of its defining
             # operations. Include the abelian-group owner in the initial
@@ -5544,6 +5547,27 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     self._native_scalar_action,
                     module_basis=self._native_module_basis,
                 )
+            if defer_ring_facets and not _defer_construction_facets:
+                # Orders need the same two-phase construction as native
+                # algebras: install the selected ZZ-module action before
+                # exposing the full order/algebra/free-module facets whose
+                # realization hooks query that action.
+                placement = _owned_ring_category(
+                    engine,
+                    scalar_base=category_base,
+                    owned_ring=self,
+                    presented=(
+                        None if named_placement is None
+                        else owned_category_join((OwnedRings(), *named_placement()))
+                    ),
+                    defer_construction_facets=False,
+                )
+                placement = owned_category_join(
+                    (placement, AdditiveGroups().AdditiveCommutative())
+                )
+                if category is not None:
+                    placement = owned_category_join((placement, category))
+                refine(self, placement)
         except BaseException:
             # A failed constructor cannot leave its incomplete owned ring in
             # the canonical cache. Remove only this exact object's entries.
