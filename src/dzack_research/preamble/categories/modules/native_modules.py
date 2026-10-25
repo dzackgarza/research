@@ -147,22 +147,21 @@ class _RingModulePresentation:
             f"{module} cannot be made an object of {category}: its scalar action is by "
             f"{self.base_ring()}, not by {category.base_ring()}"
         )
-        # This presentation is created only by ring/algebra construction
-        # owners, whose additive operation is an abelian group by definition.
-        # Install that inherited structure before testing the module axiom;
-        # do not make success depend on how the ring's other category facets
-        # happened to be joined during parent construction.
-        refine(module, AdditiveGroups().AdditiveCommutative())
-        assert module in AdditiveGroups().AdditiveCommutative(), (
-            f"{module} cannot be made an {self.base_ring()}-module: a module's addition must be commutative, "
-            f"but {module} is only known to be in {module.category()}"
-        )
         assert module.base_ring() is self.base_ring(), (
             f"{module} cannot be made an {self.base_ring()}-module: it is already a module over "
             f"{module.base_ring()}"
         )
         assert Modules.ParentMethods._native_module_presentation(module) is None, (
             f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
+        )
+        # The exact scalar-parent and single-action checks precede mutation.
+        # This presentation comes from ring/algebra owners, so its existing
+        # additive operation is an abelian group; install that inherited
+        # module prerequisite before refining to Modules(R).
+        refine(module, AdditiveGroups().AdditiveCommutative())
+        assert module in AdditiveGroups().AdditiveCommutative(), (
+            f"{module} cannot be made an {self.base_ring()}-module: a module's addition must be commutative, "
+            f"but {module} is only known to be in {module.category()}"
         )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
         match module in category:
