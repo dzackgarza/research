@@ -42,6 +42,16 @@ def test_fraction_fields_of_countable_polynomial_domains_remain_countable() -> N
         assert field.cardinality() == aleph0
         assert field.regular_module().cardinality() == aleph0
 
+    polynomial_ring = domains[1]
+    field = polynomial_ring.fraction_field()
+    inclusion = polynomial_ring.fraction_field_map()
+    x = polynomial_ring.algebra_generator("x")
+    assert inclusion.domain() is polynomial_ring
+    assert inclusion.codomain() is field
+    assert field in OwnedRings().Division().Commutative()
+    assert inclusion(x) / inclusion(x) == field.one()
+    assert field.regular_module().base_ring() is field
+
 
 def test_localizing_a_free_module_then_passing_to_q_is_the_base_change_to_q() -> None:
     r"""For M = Z^2 and S = Z - 0, S^{-1}M = M (x)_Z S^{-1}Z = M (x)_Z Q = Q^2
