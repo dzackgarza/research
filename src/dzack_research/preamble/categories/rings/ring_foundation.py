@@ -5385,13 +5385,18 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
             _install_engine_selected_ring_data(self, engine)
 
-            from dzack_research.preamble.categories.algebras.algebras import (
-                _algebra_from_native_ring,
-            )
+            if not hasattr(self, "_native_free_flavor"):
+                from dzack_research.preamble.categories.algebras.algebras import (
+                    _algebra_from_native_ring,
+                )
 
-            _algebra_from_native_ring(self, lambda left, right: left * right,
-                self._from_engine_element(engine.one()), self._native_scalar_action,
-                module_basis=self._native_module_basis)
+                _algebra_from_native_ring(
+                    self,
+                    lambda left, right: left * right,
+                    self._from_engine_element(engine.one()),
+                    self._native_scalar_action,
+                    module_basis=self._native_module_basis,
+                )
         except BaseException:
             # A failed constructor cannot leave its incomplete owned ring in
             # the canonical cache. Remove only this exact object's entries.
