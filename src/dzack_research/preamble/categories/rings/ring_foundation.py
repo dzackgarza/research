@@ -6162,7 +6162,7 @@ def _presented_ring_category(engine: Ring) -> Category:
     noetherian = OwnedRings().Noetherian()
     # A field is a commutative division ring; its only ideals are 0 and
     # itself, so it is a principal ideal domain and Noetherian.
-    field = (OwnedRings().Division().Commutative(), principal, noetherian)
+    field = (OwnedRings().Division().Commutative(), domain, principal, noetherian)
     match engine:
         case AlgebraicClosureFiniteField_generic():
             # An algebraic closure of F_p is a field, and it is the union of
