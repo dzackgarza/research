@@ -210,6 +210,38 @@ def _ade_polygon_data(letter, rank, variant, affine):
     return (vertices, point, _polygon_side_decorations(vertices, point))
 
 
+def _normalize_at21_variant(letter, rank, variant, affine):
+    r"""Normalize public AT21 variant spellings to the finite internal vocabulary."""
+    if isinstance(variant, str):
+        source_variant = variant.lower().replace("_", "-").strip()
+        if source_variant in ("'a", "′a", "prime", "primed", "p"):
+            return "prime"
+        if source_variant in ("^-a", "−a", "minus-a", "a-minus"):
+            return "short"
+        if letter == "A" and rank == 0 and not affine and source_variant == "pure":
+            return "short"
+        return source_variant
+    variant = tuple(variant)
+    match variant:
+        case ():
+            short = not affine and ((letter == "A" and rank % 2 == 0) or (letter == "D" and rank % 2 == 1))
+            return "short" if short else "pure"
+        case ("prime" | "primed" | "p",):
+            return "prime"
+        case ("long", "short"):
+            return "short"
+        case ("short", "short"):
+            return "both-short"
+        case ("short", "long"):
+            return "left-short"
+        case ("short",):
+            return "left-short" if letter == "A" else "short"
+        case ("long", "long"):
+            return "pure"
+        case _:
+            raise ValueError(f"{variant!r} is not a represented toric ADE side variant")
+
+
 def _validated_at21_low_level_variant(letter, rank, variant, affine):
     if letter not in ("A", "D", "E"):
         raise ValueError(f"an ADE type has letter A, D or E, but the letter is {letter!r}")
@@ -284,37 +316,12 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             f"an ADE type has letter A, D or E, but the letter is {letter!r}"
         )
         rank = int(_engine_numeral(SageZZ, dynkin_rank))
-        if letter == "A" and rank == 0 and not affine and variant == "pure":
-            variant = "short"
-        allow_a_zero = letter == "A" and rank == 0 and not affine and (
-            variant == "short" or variant == ("long", "short") or variant == ()
-        )
+        source_variant = _normalize_at21_variant(letter, rank, variant, bool(affine))
+        allow_a_zero = letter == "A" and rank == 0 and not affine and source_variant == "short"
         assert rank >= 1 or allow_a_zero, (
             f"an ADE type {letter}_n needs rank n >= 1, except for the pure A_0^- shape "
-            f"(variant='short'); got rank {rank} and variant {variant!r}"
+            f"(variant='short'); got rank {rank} and variant {source_variant!r}"
         )
-        if isinstance(variant, str):
-            source_variant = variant.lower().replace("_", "-")
-        else:
-            variant = tuple(variant)
-            match variant:
-                case ():
-                    short = not affine and ((letter == "A" and rank % 2 == 0) or (letter == "D" and rank % 2 == 1))
-                    source_variant = "short" if short else "pure"
-                case ("prime" | "primed" | "p",):
-                    source_variant = "prime"
-                case ("long", "short"):
-                    source_variant = "short"
-                case ("short", "short"):
-                    source_variant = "both-short"
-                case ("short", "long"):
-                    source_variant = "left-short"
-                case ("short",):
-                    source_variant = "left-short" if letter == "A" else "short"
-                case ("long", "long"):
-                    source_variant = "pure"
-                case _:
-                    raise ValueError(f"{variant!r} is not a represented toric ADE side variant")
         variant = _validated_at21_low_level_variant(letter, rank, source_variant, bool(affine))
 
         vertices, point, decorations = _ade_polygon_data(
@@ -363,19 +370,8 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         )
         letter = str(dynkin_letter).upper()
         rank = int(_engine_numeral(SageZZ, dynkin_rank))
-        source_variant = str(variant).lower().replace("_", "-").strip()
         affine = bool(affine)
-        # Accept AT21's printed decorations as well as the descriptive API
-        # names. The prime belongs to the Dynkin type; the leading minus
-        # denotes the one-short A polygon, not a negative rank.
-        if source_variant in ("'a", "′a", "prime", "primed", "p"):
-            source_variant = "prime"
-        elif source_variant in ("^-a", "−a", "minus-a", "a-minus"):
-            source_variant = "short"
-        # AT21 Table 1 denotes the rank-zero pure shape by A_0^-; in the
-        # side-variant parameterization this is the one-short ("short") case.
-        if letter == "A" and rank == 0 and source_variant == "pure" and not affine:
-            source_variant = "short"
+        source_variant = _normalize_at21_variant(letter, rank, variant, affine)
         low_variant = _validated_at21_low_level_variant(
             letter,
             rank,
