@@ -4286,11 +4286,13 @@ class PresentedAlgebraMor(_AlgebraMorCommonMethods, UnitalMultiplicativeAlgebraM
                 f"the identity morphism exists only on Mor(A, A), but this is Mor({self.domain()}, {self.codomain()})"
             )
         domain = self.domain()
-        if domain.is_framed_algebra():
-            identity = self(lambda label: domain.algebra_generator(label))
-        else:
-            engine = _engine_ring(domain)
-            identity = self._from_engine_morphism(engine.hom(engine))
+        # The identity is the identity function on the exact owned algebra;
+        # it does not need to consult the selected generator resolution.
+        # In particular, a free algebra uses this morphism as the augmentation
+        # of its own degree-zero resolution while that resolution is being
+        # installed, so asking is_framed_algebra() here would recurse into the
+        # very resolution whose construction needs the identity.
+        identity = self._from_constructed_element_map(lambda element: element)
         identity._preamble_is_identity = True
         return identity
 
