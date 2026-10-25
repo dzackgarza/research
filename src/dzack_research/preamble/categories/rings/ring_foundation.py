@@ -6257,7 +6257,13 @@ def _owned_ring_category(
 
     if presented is None:
         presented = _presented_ring_category(engine)
-    extra = []
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+    # Owned category joins are not guaranteed to materialize inherited
+    # category facets on a concrete parent.  Ring addition is nevertheless
+    # an abelian group by construction, and native module formation consumes
+    # that facet before it refines the ring to an algebra.
+    extra = [AdditiveGroups().AdditiveCommutative()]
     match owned_ring:
         case None:
             algebra_base = scalar_base
