@@ -3808,7 +3808,9 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                     to_perpendicular = source_module.module_category().Mor(
                         source_module, perpendicular
                     )(
-                        lambda label: inclusion.lift(source_module.module_generator(label))
+                        lambda label: inclusion.lift(
+                            self(source_module.module_generator(label))
+                        )
                     )
                     projection = reduction_projection * to_perpendicular
                 values = self.value_module()
