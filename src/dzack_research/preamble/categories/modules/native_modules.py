@@ -198,14 +198,6 @@ class _RingModulePresentation:
         assert Modules.ParentMethods._native_module_presentation(module) is None, (
             f"{module} already has a scalar action by {self.base_ring()}; it cannot be given a second one"
         )
-        # The ring constructor includes its abelian-group structure in the
-        # initial category before its regular module is built. Check that
-        # defining structure here; do not manufacture it by mutating the
-        # category during module construction.
-        assert module in AdditiveGroups().AdditiveCommutative(), (
-            f"{module} cannot be made an {self.base_ring()}-module: its ring addition must be commutative, "
-            f"but {module} is only known to be in {module.category()}"
-        )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
         if self.is_regular():
             assert self._basis is None, (
@@ -242,6 +234,14 @@ class _RingModulePresentation:
         # category membership has been established.
         if module not in category:
             refine(module, category)
+        # Membership cannot be checked before refinement: this constructor
+        # runs while the native ring's Parent initialization is still building
+        # its category. The supplied module is now placed in Modules(R), whose
+        # declared supercategories include the required additive group.
+        assert module in AdditiveGroups().AdditiveCommutative(), (
+            f"{module} cannot be made an {self.base_ring()}-module: its ring addition must be commutative, "
+            f"but {module} is only known to be in {module.category()}"
+        )
         # The selected resolution is defining data and is installed before
         # placement.  Do not materialize R -> End_Ab(U(module)) here: building
         # that endomorphism ring can itself request module-Mor objects and
