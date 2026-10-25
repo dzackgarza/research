@@ -38,6 +38,7 @@ def test_finite_unit_localization_and_prime_localization_are_distinct() -> None:
     assert rational(1) / 2 in local_at_five
     assert rational(1) / 5 not in local_at_five
     assert local_at_five in LocalRings()
+    assert local_at_five in AdditiveGroups().AdditiveCommutative()
     assert int(local_at_five.residue_field().cardinality()) == 5
     assert local_at_five.maximal_ideal() == local_at_five.ideal(local_at_five(5))
 
