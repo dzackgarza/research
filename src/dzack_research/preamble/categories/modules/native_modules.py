@@ -148,6 +148,26 @@ class _RingModulePresentation:
     def scalar_multiple(self, scalar, element):
         return self.module()(self._scalar_action(self.base_ring()(scalar), self.module()(element)))
 
+    @cached_method
+    def scalar_action_morphism(self):
+        r"""The defining ``R -> End_Ab(U(M))`` map for this exact native action.
+
+        Construct the endomorphism parent from the supplied module's actual
+        underlying additive group. This is owned by the native presentation:
+        rebuilding the action from a generic module element can accidentally
+        use a module wrapper instead of the additive group on which it acts.
+        """
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
+
+        module = self.module()
+        additive_group = module.underlying_additive_group()
+        endomorphisms = AdditiveGroups().AdditiveCommutative().End(additive_group)
+        return self.base_ring().Mor(endomorphisms, category=OwnedRings())(
+            lambda scalar: endomorphisms.elementwise(
+                lambda element: self.scalar_multiple(scalar, element),
+            ),
+        )
+
     def is_regular(self):
         return self.module() is self.base_ring()
 

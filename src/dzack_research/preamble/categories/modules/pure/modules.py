@@ -2431,6 +2431,9 @@ class Modules(OwnedCategoryOverBaseRing):
 
             A module whose datum is ``rho`` itself states it at its own level.
             """
+            native = self._native_module_presentation()
+            if native is not None:
+                return native.scalar_action_morphism()
             ring = self.base_ring()
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
 
