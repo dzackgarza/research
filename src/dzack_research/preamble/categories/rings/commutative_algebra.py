@@ -879,6 +879,11 @@ def _engine_quotient_representative(quotient_engine, backend_value):
 class QuotientRings(OwnedCategory):
     r"""Commutative quotient rings equipped with their quotient map."""
 
+    def super_categories(self):
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        return [AdditiveGroups().AdditiveCommutative()]
+
     def an_object(self):
         integers = _owned_integers()
         return integers.quotient_ring(integers.ideal(integers(2)))
@@ -3663,12 +3668,9 @@ def _quotient_ring(source, defining_ideal):
     if dimension == 0 or finite_extension_field:
         placements.append(OwnedRings().Artinian())
 
-    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
-
     return _object_of(
         owned_category_join((
             QuotientRings(),
-            AdditiveGroups().AdditiveCommutative(),
             Algebras(source).Associative().Unital().Commutative(),
             *placements,
         )),
