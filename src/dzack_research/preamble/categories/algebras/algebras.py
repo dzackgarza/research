@@ -4575,6 +4575,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 self._from_engine_element(engine.one()),
                 self._native_scalar_action,
                 module_basis=self._native_module_basis,
+                scalar_ring=base,
             )
             # The resolution and native module datum are now queryable by the
             # algebra realization hooks that this placement introduces.
