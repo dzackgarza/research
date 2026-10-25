@@ -24,7 +24,10 @@ def test_tdp_metric_dual_is_the_formed_linear_dual() -> None:
     assert identification.domain() is metric_dual
     assert identification.codomain() is linear_dual
     assert metric_dual.value_module() is QQ
+    assert metric_dual.base_ring() is ZZ
     assert metric_dual in FormModules(ZZ).Nondegenerate()
+    expected_pairing = lattice.gram_tensor().change_ring(QQ).dual_pairing()
+    assert metric_dual.gram_tensor().change_ring(QQ).is_equal_tensor(expected_pairing)
     assert identification * lattice.correlation_morphism() == lattice.algebraic_correlation_morphism()
     for label in metric_dual.module_generating_set():
         assert identification(metric_dual.module_generator(label)) == linear_dual.module_generator(label)
