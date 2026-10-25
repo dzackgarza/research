@@ -4028,6 +4028,18 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
             )
 
             scalars = _owned_ring(ring_map.domain())
+            native_basis = self._native_module_basis
+            if native_basis is not None and self.base_ring() is scalars:
+                structure = self.algebra_structure_morphism()
+                center = structure.codomain()
+                coefficient_map = structure if center is self else center.inclusion() * structure
+                if _ring_morphisms_equal(ring_map, coefficient_map):
+                    # The native ring owner may have selected a module basis
+                    # independently of its algebra-generator resolution.
+                    # Prefer that actual F_R(I) -> S framing here; an algebra
+                    # resolution's source is a free algebra, not a module
+                    # basis and cannot be used as the restricted-scalar frame.
+                    return native_basis
             associative_unital = Algebras(scalars).Associative().Unital()
             algebra_resolution_selected = (
                 self.has_selected_resolution(associative_unital)
