@@ -421,6 +421,27 @@ class _TwoElementaryTable(Mapping):
     def cardinality(self):
         return cardinal(len(self))
 
+    def validate(self):
+        r"""Validate each Nikulin row's signature and 2-elementary invariants."""
+        for triple in self:
+            lattice = self[triple]
+            rank, length, delta = triple
+            expected_signature = signature_pair(1, rank - 1)
+            actual_signature = lattice.signature_pair()
+            if actual_signature != expected_signature:
+                raise ValueError(
+                    f"TwoElementary[{triple}] has signature {actual_signature}, "
+                    f"expected {expected_signature}"
+                )
+            actual_invariants = EvenTwoElementaryLattices(ZZ)(lattice).two_elementary_invariants()
+            expected_invariants = nikulin_invariants(rank, length, delta)
+            if actual_invariants != expected_invariants:
+                raise ValueError(
+                    f"TwoElementary[{triple}] has invariants {actual_invariants}, "
+                    f"expected {expected_invariants}"
+                )
+        return True
+
 TwoElementary = _TwoElementaryTable()
 
 
