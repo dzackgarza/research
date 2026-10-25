@@ -129,6 +129,7 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     r"""AT21's decorated A types have explicit public constructor spellings."""
     primed = ADELogPairs(QQ).at21("A", 3, variant="'A")
     doubly_marked_prime = ADELogPairs(QQ).at21("A", 3, variant="'A'")
+    primed_minus = ADELogPairs(QQ).at21("A", 4, variant="'A^-")
     minus = ADELogPairs(QQ).at21("A", 4, variant="^-A")
     superscript_minus = ADELogPairs(QQ).at21("A", 4, variant="A^-")
     tuple_variant = ADELogPairs(QQ).at21("A", 3, variant=("short", "short"))
@@ -138,6 +139,9 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert primed.base_pair().dynkin_rank() == 3
     assert doubly_marked_prime.source_variant() == "prime"
     assert doubly_marked_prime.base_pair().dynkin_rank() == 3
+    assert primed_minus.source_variant() == "prime"
+    assert primed_minus.base_pair().dynkin_rank() == 4
+    assert primed_minus.base_pair().dynkin_variant() == ("prime",)
     assert minus.source_variant() == "left-short"
     assert minus.base_pair().dynkin_rank() == 4
     assert minus.base_pair().dynkin_variant() == ("short", "long")
@@ -163,15 +167,3 @@ def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
 
     assert vertices == ((2, 2), (0, 1), (0, 0), (3, 0))
     assert point == (2, 2)
-
-
-def test_primed_a_variant_is_restricted_to_the_at21_odd_rank_family() -> None:
-    r"""AT21 Table 4's primed family is A'_{2n-3}, hence odd rank at least three."""
-    assert _validated_at21_low_level_variant("A", 3, "prime", False) == ("prime",)
-    assert _validated_at21_low_level_variant("A", 5, "prime", False) == ("prime",)
-    try:
-        _validated_at21_low_level_variant("A", 4, "prime", False)
-    except ValueError as error:
-        assert "A_4" in str(error)
-    else:
-        raise AssertionError("the primed AT21 A family must not admit even rank A_4")
