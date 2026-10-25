@@ -31,6 +31,7 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     r"""Ring, polynomial, quotient and fraction-field owners construct additive groups."""
     polynomials = QQ.polynomial_ring("x")
     quotient = polynomials.quotient_ring(polynomials.ideal(polynomials.algebra_generator("x") ** 2 - 2))
+    zero_quotient = polynomials.quotient_ring(polynomials.unit_ideal())
     fraction_field = polynomials.fraction_field()
     fraction_map = polynomials.fraction_field_map()
 
@@ -49,6 +50,9 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert polynomials.algebra_framing_morphism() is polynomials.Mor(polynomials).identity()
     assert quotient in additive_groups
     assert quotient in OwnedRings().Commutative()
+    assert zero_quotient in additive_groups
+    assert zero_quotient.is_zero() is True
+    assert zero_quotient.quotient_source() is polynomials
     assert fraction_field in additive_groups
     assert fraction_field.fraction_field_localization() in additive_groups
     assert fraction_field in OwnedRings().Division().Commutative()
