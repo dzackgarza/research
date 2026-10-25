@@ -87,6 +87,13 @@ def test_descent_checks_relations_after_projecting_form_values() -> None:
     descended = form.descend_along(inclusion, projection)
     (generator,) = descended.module().module_generators()
     assert descended(generator, generator) == values(1)
+    shifted = retained + relation
+    assert form(shifted, retained) == 3
+    assert form(retained, shifted) == 3
+    assert form(shifted, shifted) == 7
+    assert projection(form(shifted, retained)) == descended(generator, generator)
+    assert projection(form(retained, shifted)) == descended(generator, generator)
+    assert projection(form(shifted, shifted)) == descended(generator, generator)
 
 
 def test_the_form_of_a_degenerate_lattice_descends_only_along_its_radical() -> None:
