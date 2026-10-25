@@ -50,6 +50,22 @@ def test_nonsymmetric_form_descends_when_relations_vanish_in_both_slots() -> Non
     assert descended(second, second) == 4
 
 
+def test_descent_does_not_identify_quotient_generator_labels_with_source_labels() -> None:
+    module = QQ.free_module(("discarded", "retained"))
+    relation_module = QQ.free_module(("relation",))
+    discarded = module.module_generator("discarded")
+    inclusion = relation_module.module_category().Mor(relation_module, module)(
+        lambda label: discarded
+    )
+    form = module.bilinear_forms(QQ)([[0, 0], [0, 7]])
+    identity = QQ.module_category().Mor(QQ, QQ).identity()
+
+    descended = form.descend_along(inclusion, identity)
+    assert descended.module().module_rank() == 1
+    (generator,) = descended.module().module_generators()
+    assert descended(generator, generator) == 7
+
+
 def test_the_form_of_a_degenerate_lattice_descends_only_along_its_radical() -> None:
     lattice = Lattices(ZZ)([[1, 1], [1, 1]])
     form = lattice.form()
