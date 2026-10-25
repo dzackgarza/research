@@ -168,6 +168,12 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
             raise AssertionError(
                 f"the AT21 source spelling {variant!r} must not admit A_{rank} of the opposite parity"
             )
+    try:
+        _validated_at21_low_level_variant("A", 4, "prime", False)
+    except ValueError as error:
+        assert "A_4" in str(error)
+    else:
+        raise AssertionError("the low-level A validator must not accept an unqualified primed family")
     assert minus.source_variant() == "left-short"
     assert minus.base_pair().dynkin_rank() == 4
     assert minus.base_pair().dynkin_variant() == ("short", "long")
