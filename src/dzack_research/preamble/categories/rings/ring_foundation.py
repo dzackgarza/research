@@ -5974,6 +5974,13 @@ def _inherited_ring_placements(coefficients, *, univariate_over_field_is_princip
     discrete valuation ring.  ``R`` is read through its placement only.
     """
     placements = []
+    if coefficients in OwnedIntegralDomains():
+        # The polynomial, Laurent and formal-power-series extensions of a
+        # domain are domains.  Preserve the conjunction as a construction
+        # theorem, rather than assuming the category join reconstructs it
+        # from separately inherited commutativity, nonzero-divisor and
+        # nontriviality placements.
+        placements.append(OwnedIntegralDomains())
     if coefficients in OwnedRings().Commutative():
         placements.append(OwnedRings().Commutative())
     if coefficients in OwnedRings().Commutative().NoZeroDivisors():
