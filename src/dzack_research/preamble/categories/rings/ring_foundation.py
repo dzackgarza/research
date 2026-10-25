@@ -4029,7 +4029,11 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
 
             scalars = _owned_ring(ring_map.domain())
             native_basis = self._native_module_basis
-            if native_basis is not None and self.base_ring() is scalars:
+            if (
+                native_basis is not None
+                and native_basis.is_basis()
+                and self.base_ring() is scalars
+            ):
                 # A unital map out of a prime field (or Z) is unique. This
                 # lets native polynomial/number-field bases answer during
                 # Parent construction without recursively asking for the
