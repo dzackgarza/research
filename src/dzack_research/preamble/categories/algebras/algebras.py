@@ -1400,6 +1400,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                             self._from_engine_element(self._engine.one()),
                             self._native_scalar_action,
                             module_basis=getattr(self, "_native_module_basis", None),
+                            scalar_ring=vars(self).get("_preamble_selected_algebra_base_ring"),
                         )
                 case product:
                     # The common ring constructor has now returned and the
@@ -1415,6 +1416,7 @@ class Algebras(OwnedCategoryOverBaseRing):
                             _native_unit_factory(self),
                             _engine_scalar_action,
                             module_basis=getattr(self, "_native_module_basis", None),
+                            scalar_ring=vars(self).get("_preamble_selected_algebra_base_ring"),
                         )
             pending_placement = vars(self).pop("_preamble_pending_algebra_placement", None)
             if pending_placement is not None:
@@ -4393,6 +4395,11 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         otherwise the placement of the engine's presenting constructor is read.
         """
         base = _owned_ring(base_ring)
+        # Keep the chosen scalar ring available while category placement is
+        # deferred. In that interval algebra_base_ring() is not installed by
+        # the algebra category, but the native regular-module construction
+        # must still use this exact base rather than infer it from the engine.
+        self._preamble_selected_algebra_base_ring = base
         for name, value in construction_data:
             setattr(self, name, value)
         self._realized_scalar_structure = (lambda scalar: self(scalar)) if scalar_structure is None else scalar_structure
