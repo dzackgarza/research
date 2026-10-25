@@ -3739,15 +3739,16 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
 
             @cached_method
             def radical_quotient(self):
-                r"""Return ``M/rad(M)`` equipped with the descended form.
+                r"""Return ``M/(rad_left(M) ∩ rad_right(M))`` with its descended form.
 
-                Since the radical pairs trivially with all of ``M``, the
-                selected form descends through the cokernel of the radical
-                inclusion with unchanged values.  Over a field, the result is
-                re-presented on a basis of that quotient, so the returned
-                module need not be the literal cokernel object.
+                For a nonsymmetric bilinear form, the left and right radicals
+                can differ. The quotient pairing is defined only after killing
+                their intersection, the largest submodule that annihilates in
+                both arguments. Over a field, the result is re-presented on a
+                basis of that quotient, so the returned module need not be the
+                literal cokernel object.
                 """
-                radical = self.radical()
+                radical = self.left_radical().intersection(self.right_radical())
                 inclusion = radical.inclusion()
                 value_module = self.value_module()
                 value_identity = value_module.module_category().Mor(value_module, value_module).identity()
