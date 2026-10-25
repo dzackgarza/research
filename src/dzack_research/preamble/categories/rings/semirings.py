@@ -168,6 +168,7 @@ class OwnedNonUnitalSemirings(CategoryPacketMethods, OwnedCategory):
                 )
                 return result
 
+            @cached_method
             def prime_ideal_locus(self):
                 r"""All proper prime-ideal subsets of this exact semiring.
 
