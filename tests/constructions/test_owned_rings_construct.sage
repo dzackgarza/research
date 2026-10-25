@@ -58,6 +58,8 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert quotient_fraction_field.fraction_field_localization().localization_source() is quotient
     assert quotient_fraction_map.domain() is quotient
     assert quotient_fraction_map.codomain() is quotient_fraction_field
+    quotient_generator = quotient.quotient_map()(polynomials.algebra_generator("x"))
+    assert quotient_fraction_map(quotient_generator) ** 2 == quotient_fraction_field(2)
     assert zero_quotient in additive_groups
     assert zero_quotient.is_zero() is True
     assert zero_quotient.quotient_source() is polynomials
