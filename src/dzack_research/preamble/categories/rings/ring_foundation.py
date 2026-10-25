@@ -2346,7 +2346,13 @@ class _PredicateSubringParent(Parent):
         from dzack_research.preamble.categories.algebras.algebras import Algebras
 
         algebra = Algebras(base).Associative().Unital()
-        placements = [category]
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        # Predicate subrings are a separate concrete ring owner, not an
+        # _OwnedRingParent. Give their defining abelian-group structure the
+        # same initial-placement guarantee, before Parent.__init__ invokes
+        # the regular-module construction hooks below.
+        placements = [category, AdditiveGroups().AdditiveCommutative()]
         match self._preamble_is_commutative:
             case True:
                 from dzack_research.preamble.categories.modules.pure.modules import (
