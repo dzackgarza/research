@@ -33,6 +33,8 @@ def test_tdp_metric_dual_is_the_formed_linear_dual() -> None:
     scalar_action = value_module.scalar_action()
     assert scalar_action.domain() is ZZ
     assert scalar_action.codomain() is AdditiveGroups().AdditiveCommutative().End(value_module)
+    additive_group = value_module.underlying_additive_group()
+    assert scalar_action(ZZ(2))(additive_group(QQ(1) / 2)) == additive_group(QQ(1))
     assert metric_dual.base_ring() is ZZ
     assert metric_dual.module_rank() == lattice.module_rank()
     assert metric_dual.gram_tensor().base_ring() is QQ
