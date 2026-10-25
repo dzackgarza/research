@@ -2453,18 +2453,21 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def _ring_morphism_defining_module_action(self, endomorphisms=None):
+        def _ring_morphism_defining_module_action(
+            self, endomorphisms=None, *, additive_group=None
+        ):
             r"""Return ``rho_M : R -> End_Ab(U(M))``, ``r |-> (m |-> r m)``, from the scalar multiplication.
 
             A module whose datum is ``rho`` itself states it at its own level.
             """
             ring = self.base_ring()
+            if additive_group is None:
+                additive_group = self.underlying_additive_group()
             if endomorphisms is None:
                 endomorphisms = AdditiveGroups().AdditiveCommutative().End(
-                    self.underlying_additive_group()
+                    additive_group
                 )
             else:
-                additive_group = self.underlying_additive_group()
                 assert (
                     endomorphisms.domain() is additive_group
                     and endomorphisms.codomain() is additive_group
@@ -2501,14 +2504,15 @@ class Modules(OwnedCategoryOverBaseRing):
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(
                 additive_group
             )
-            # Use the module owner's one construction for rho_M in both the
-            # ordinary and native cases.  _owned_scalar_multiple dispatches
-            # to the retained native action when present, while this owner
-            # derives the endpoint from U(M) and validates the exact End(U(M))
-            # parent.  A second native-only morphism constructor can otherwise
-            # retain an endpoint different from the one selected after the
-            # module's category refinements.
-            return self._ring_morphism_defining_module_action(endomorphisms)
+            # Use the module owner's one construction for rho_M in both cases.
+            # During native construction U(M) is already specified by the
+            # retained module presentation, even if its category refinement has
+            # not yet installed underlying_additive_group() on the parent.
+            # Passing that exact object preserves the End(U(M)) endpoint while
+            # retaining the common action-map implementation.
+            return self._ring_morphism_defining_module_action(
+                endomorphisms, additive_group=additive_group
+            )
 
         def annihilator(self):
             r"""Return ``Ann_R(M)=ker(rho_M: R -> End_Ab(U(M)))``.
