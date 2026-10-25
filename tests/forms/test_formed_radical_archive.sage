@@ -99,3 +99,17 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     assert lattice_quotient.unformed_module() is quotient.unformed_module()
     assert lattice_quotient.gram_tensor().tensor_shape() == (2, 2)
     assert lattice_quotient.is_isometric_to(Lattices(QQ)([[0, 1], [1, 0]]))
+    lattice_projection = FormModules(QQ).Mor(lattice, lattice_quotient)(
+        (
+            projection.module_morphism(),
+            lattice.value_module().module_category().Mor(
+                lattice.value_module(), lattice.value_module()
+            ).identity(),
+        )
+    )
+    assert lattice_projection.domain() is lattice
+    assert lattice_projection.codomain() is lattice_quotient
+    assert lattice_projection.preserves_forms() is True
+    for left in lattice.module_generators():
+        for right in lattice.module_generators():
+            assert lattice_quotient.b(lattice_projection(left), lattice_projection(right)) == lattice.b(left, right)
