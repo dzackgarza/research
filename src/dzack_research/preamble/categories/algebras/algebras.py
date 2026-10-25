@@ -490,7 +490,9 @@ class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
         return f"Mor_UnitalAlg({self.domain()}, {self.codomain()})"
 
 
-def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_basis=None):
+def _algebra_from_native_ring(
+    algebra, product, unit, scalar_action, *, module_basis=None, scalar_ring=None
+):
     r"""Compute (M,m) from a native ring and enter the ordinary algebra constructor.
 
     The native unit is needed by the coefficient arithmetic of a self-based
@@ -502,7 +504,12 @@ def _algebra_from_native_ring(algebra, product, unit, scalar_action, *, module_b
     """
     from dzack_research.preamble.categories.modules.native_modules import _RingModulePresentation
 
-    ring = algebra.algebra_base_ring()
+    # Some owner constructors defer their algebra category until this module
+    # datum has been installed, so their category-provided algebra_base_ring
+    # method is not yet present. Such owners pass the already selected scalar
+    # ring explicitly; ordinary callers continue to read the retained algebra
+    # level as before.
+    ring = algebra.algebra_base_ring() if scalar_ring is None else _owned_ring(scalar_ring)
     Algebras.Unital.ParentMethods._retain_unit(algebra, unit)
     presentation = _RingModulePresentation(algebra, ring, product, unit, scalar_action, basis=module_basis)
     module = Modules(ring)(presentation)
