@@ -167,15 +167,12 @@ def _bilinear_form_descends_along(form, morphism, value_projection) -> bool:
     module_labels = _finite_framing(module)
     zero = value_projection.codomain().zero()
     return all(
-        value_projection(
-            form(
-                morphism(morphism.domain().module_generator(relation_label)),
-                module.module_generator(module_label),
-            )
-        )
-        == zero
+        value_projection(form(relation, generator)) == zero
+        and value_projection(form(generator, relation)) == zero
         for relation_label in relation_labels
         for module_label in module_labels
+        for relation in (morphism(morphism.domain().module_generator(relation_label)),)
+        for generator in (module.module_generator(module_label),)
     )
 
 

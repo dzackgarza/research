@@ -41,6 +41,25 @@ def test_nondegenerate_hyperbolic_plane_has_zero_radical() -> None:
     assert u.radical_quotient().is_isometric_to(u)
 
 
+def test_nonsymmetric_bilinear_form_does_not_descend_from_left_radical_alone() -> None:
+    r"""Quotient descent must kill relations in both arguments of a bilinear form."""
+    module = QQ ^ 2
+    submodule = QQ ^ 1
+    first_label = next(iter(module.module_generating_set()))
+    inclusion = submodule.module_category().Mor(submodule, module)(
+        lambda label: module.module_generator(first_label)
+    )
+    form = module.bilinear_forms(QQ)([[0, 0], [1, 0]])
+    value_identity = QQ.module_category().Mor(QQ, QQ).identity()
+
+    assert all(form(inclusion(submodule.module_generator(label)), module.module_generator(other)) == 0
+               for label in submodule.module_generating_set()
+               for other in module.module_generating_set())
+    labels = tuple(module.module_generating_set())
+    assert form(module.module_generator(labels[1]), module.module_generator(labels[0])) == 1
+    assert form.descends_along(inclusion, value_identity) is False
+
+
 def test_rational_nondegenerate_form_uses_full_rank_quotient_basis() -> None:
     r"""The field-specific quotient basis keeps all generators when the radical is zero."""
     module = QQ ^ 2
