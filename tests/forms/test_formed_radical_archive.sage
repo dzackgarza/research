@@ -71,11 +71,12 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     assert projection.domain() is formed
     assert projection.codomain() is quotient
     assert projection.preserves_forms() is True
-    assert (
-        quotient._preamble_radical_quotient_basis_map
-        * projection.module_morphism()
-        == quotient._preamble_radical_quotient_projection
-    )
+    basis_map = quotient._preamble_radical_quotient_basis_map
+    canonical_projection = quotient._preamble_radical_quotient_projection
+    source_module = formed.unformed_module()
+    for label in source_module.module_generating_set():
+        generator = source_module.module_generator(label)
+        assert basis_map(projection.module_morphism()(generator)) == canonical_projection(generator)
     assert quotient.b(
         projection(formed.module_generator(1)),
         projection(formed.module_generator(2)),
