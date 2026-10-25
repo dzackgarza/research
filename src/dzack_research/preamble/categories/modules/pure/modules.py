@@ -2471,9 +2471,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 # generic underlying-group method during native construction.
                 additive_group = endomorphisms.domain()
                 assert (
-                    endomorphisms
-                    is AdditiveGroups().AdditiveCommutative().End(additive_group)
-                    and endomorphisms.codomain() is additive_group
+                    endomorphisms.codomain() is additive_group
                 ), (
                     f"the scalar action of {self} can only be represented in "
                     f"End({additive_group}), not {endomorphisms}"
