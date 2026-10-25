@@ -7,8 +7,13 @@ def test_delta_distinguishes_coeven_and_coodd_discriminant_forms() -> None:
     assert EvenTwoElementaryLattices(ZZ)(NamedLattices.E10_2).two_elementary_invariants() == nikulin_invariants(10, 10, 0)
 
 
-def test_two_elementary_catalogue_validates_realized_forms_and_invariants() -> None:
-    assert TwoElementary.validate() is True
+def test_two_elementary_catalogue_realizes_requested_invariants() -> None:
+    for rank, length, delta in TwoElementary:
+        lattice = TwoElementary[rank, length, delta]
+        assert lattice.module_rank() == rank
+        assert lattice in EvenTwoElementaryLattices(ZZ)
+        assert lattice.two_elementary_invariants() == nikulin_invariants(rank, length, delta)
+        assert lattice.signature_pair() == signature_pair(1, rank - 1)
 
 
 def test_block_search_recovers_the_hand_counted_rows() -> None:

@@ -421,34 +421,6 @@ class _TwoElementaryTable(Mapping):
     def cardinality(self):
         return cardinal(len(self))
 
-    def validate(self):
-        r"""Check every stored genus representative against its Nikulin key.
-
-        Each key ``(r, a, delta)`` records the rank, discriminant length and
-        parity invariant of an even 2-elementary lattice.  The table is
-        construction data, so validation checks the realized Gram forms and
-        their computed invariants, not merely the recipe dictionary's keys.
-        """
-        for rank, length, delta in self:
-            lattice = self[(rank, length, delta)]
-            expected = nikulin_invariants(rank, length, delta)
-            assert lattice.module_rank() == rank, (
-                f"TwoElementary[{(rank, length, delta)}] has rank {lattice.module_rank()}"
-            )
-            assert lattice in EvenTwoElementaryLattices(ZZ), (
-                f"TwoElementary[{(rank, length, delta)}] is not an even 2-elementary lattice"
-            )
-            assert lattice.two_elementary_invariants() == expected, (
-                f"TwoElementary[{(rank, length, delta)}] has invariants "
-                f"{lattice.two_elementary_invariants()}, expected {expected}"
-            )
-            assert lattice.signature_pair() == signature_pair(1, rank - 1), (
-                f"TwoElementary[{(rank, length, delta)}] has signature "
-                f"{lattice.signature_pair()}, expected {signature_pair(1, rank - 1)}"
-            )
-        return True
-
-
 TwoElementary = _TwoElementaryTable()
 
 
