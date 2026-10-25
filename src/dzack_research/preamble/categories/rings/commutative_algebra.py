@@ -4163,34 +4163,13 @@ def _fraction_field_localization(source, submonoid):
             algebra_categories.append(
                 Algebras(algebra_base).Associative().Unital().Commutative()
             )
-    localization = _object_of(
+    return _object_of(
         owned_category_join((LocalizationRings(), *placements, *algebra_categories)),
         source=source,
         submonoid=submonoid,
         _engine_ring=fraction_engine,
         algebra_source=algebra_source,
     )
-    # Unlike _OwnedRingParent, the localization owner is constructed through
-    # _object_of and therefore does not pass through the native ring's
-    # post-Parent setup. Install the regular module here, after the localization
-    # object and its retained source/submonoid data exist. This is essential
-    # for Frac(R) of a quotient domain: the owned field must carry its actual
-    # scalar action before downstream lattice duals construct tensor data.
-    from dzack_research.preamble.categories.algebras.algebras import (
-        _algebra_from_native_ring,
-    )
-    from dzack_research.preamble.categories.modules.pure.modules import Modules
-
-    if Modules.ParentMethods._native_module_presentation(localization) is None:
-        _algebra_from_native_ring(
-            localization,
-            lambda left, right: localization(left * right),
-            localization.one(),
-            lambda scalar, element: localization(
-                localization(scalar) * localization(element)
-            ),
-        )
-    return localization
 
 
 def _localization(source, *datum):
