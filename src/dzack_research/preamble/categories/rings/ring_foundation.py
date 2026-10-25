@@ -1139,6 +1139,21 @@ class LocalizationRings(OwnedCategory):
     class ParentMethods:
         _derived_construction_parameters = frozenset({"base_ring"})
 
+        def base_ring(self):
+            r"""The retained scalar base of this localization as a ring object.
+
+            Localization category placement can be deferred until its native
+            regular module is installed. In that phase the algebra category
+            that normally supplies ``base_ring`` is deliberately absent, so
+            derive the same value from the retained source algebra instead of
+            accidentally treating the localization as an algebra over itself.
+            A source with no selected scalar algebra remains self-based.
+            """
+            algebra_source = getattr(self, "algebra_source", None)
+            if algebra_source is not None:
+                return algebra_source.base_ring()
+            return self
+
         def _cardinality_decision(self):
             r"""Supply the cardinality for a zero source or an integral-domain source.
 
