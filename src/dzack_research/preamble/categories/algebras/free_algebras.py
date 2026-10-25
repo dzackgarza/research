@@ -272,7 +272,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             owner,
             lambda: self,
             labels,
-            Sets().Mor(labels, self)(self._native_basis_image),
+            Sets().Mor(labels, self)(lambda label: self.algebra_generator(label)),
             lambda source: source.Mor(self).identity(),
         )
 
