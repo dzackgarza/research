@@ -6035,7 +6035,8 @@ def _free_associative_algebra_placements(coefficients, indeterminates: int) -> t
         for placement in (OwnedRings().NoZeroDivisors(), OwnedRings().Nontrivial())
         if coefficients in placement
     )
-    return (*inherited, _size_of_finitely_supported_families(coefficients, indeterminates))
+    domain = (OwnedIntegralDomains(),) if coefficients in OwnedIntegralDomains() else ()
+    return (*domain, *inherited, _size_of_finitely_supported_families(coefficients, indeterminates))
 
 
 def _field_placements() -> tuple[Category, ...]:
@@ -6142,6 +6143,7 @@ def _presented_ring_category(engine: Ring) -> Category:
         pAdicRing,
     )
     from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
+    from sage.algebras.free_algebra import FreeAlgebra_generic
     from sage.rings.finite_rings.finite_field_base import FiniteField
     from sage.rings.fraction_field import FractionField_generic
     from sage.rings.laurent_series_ring import LaurentSeriesRing
@@ -6176,6 +6178,9 @@ def _presented_ring_category(engine: Ring) -> Category:
         case PolynomialRing_generic() | MPolynomialRing_base():
             coefficients = _own_ring(engine.base_ring())
             placements = _polynomial_ring_placements(coefficients, engine.ngens())
+        case FreeAlgebra_generic():
+            coefficients = _own_ring(engine.base_ring())
+            placements = _free_associative_algebra_placements(coefficients, engine.ngens())
         case FractionField_generic():
             # Frac(D) is a field for every integral domain D.  The source
             # construction supplies the domain hypothesis and its cardinality;

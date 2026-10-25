@@ -47,6 +47,9 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert fraction_field in OwnedRings().Division().Commutative()
     assert fraction_field in OwnedIntegralDomains()
     assert fraction_field in OwnedRings().Noetherian()
+    tensor_algebra = QQ.free_module(2).tensor_algebra()
+    assert tensor_algebra in OwnedIntegralDomains()
+    assert tensor_algebra in OwnedRings().Nontrivial()
 
 
 def test_cyclic_double_cover_presentation_has_square_equal_to_branch_coefficient() -> None:
