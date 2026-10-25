@@ -4230,10 +4230,31 @@ def _localization_at_submonoid(source, submonoid):
     r"""Return the one ``S^{-1}R`` for this ring and this represented submonoid."""
     structure = submonoid._structure_data()
     if structure.get("kind") == "prime_complement":
-        return _PrimeLocalizationFromSubmonoid(source, submonoid)
-    if structure.get("kind") == "nonzero_elements":
-        return _fraction_field_localization(source, submonoid)
-    return _finite_generated_localization(source, submonoid)
+        localization = _PrimeLocalizationFromSubmonoid(source, submonoid)
+    elif structure.get("kind") == "nonzero_elements":
+        localization = _fraction_field_localization(source, submonoid)
+    else:
+        localization = _finite_generated_localization(source, submonoid)
+    # All represented localizations are unital rings over their retained
+    # source. Their object constructor is _object_of rather than
+    # _OwnedRingParent, so make the regular module explicit at this common
+    # construction boundary. The fraction-field specialization has already
+    # done this and is idempotently recognized here.
+    from dzack_research.preamble.categories.algebras.algebras import (
+        _algebra_from_native_ring,
+    )
+    from dzack_research.preamble.categories.modules.pure.modules import Modules
+
+    if Modules.ParentMethods._native_module_presentation(localization) is None:
+        _algebra_from_native_ring(
+            localization,
+            lambda left, right: localization(left * right),
+            localization.one(),
+            lambda scalar, element: localization(
+                localization(scalar) * localization(element)
+            ),
+        )
+    return localization
 
 
 def _quotient_representative(element):
