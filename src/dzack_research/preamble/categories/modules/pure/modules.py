@@ -2476,11 +2476,6 @@ class Modules(OwnedCategoryOverBaseRing):
             # was first retained.  The action's pointwise map remains the
             # defining datum; only its equivalent codomain parent is changed.
             native = self._native_module_presentation()
-            action = (
-                native.scalar_action_morphism()
-                if native is not None
-                else self._ring_morphism_defining_module_action()
-            )
             # During native module construction, the selected presentation is
             # retained before Modules(R)'s category hooks are installed. In
             # that interval the parent may not yet have
@@ -2491,6 +2486,18 @@ class Modules(OwnedCategoryOverBaseRing):
                 if native is not None
                 else self.underlying_additive_group()
             )
+            endomorphisms = AdditiveGroups().AdditiveCommutative().End(
+                additive_group
+            )
+            if native is not None:
+                # Cache separately for each canonical End parent: refinement
+                # can intern a new endomorphism parent for this same module,
+                # and reusing a morphism into the pre-refinement parent makes
+                # subsequent module/form constructors disagree on codomain
+                # identity. The native datum retains the defining pointwise
+                # action and rebuilds only its typed morphism wrapper.
+                return native.scalar_action_morphism(endomorphisms)
+            action = self._ring_morphism_defining_module_action()
             return _action_with_canonical_endomorphism_parent(
                 self.base_ring(), additive_group, action
             )

@@ -149,7 +149,7 @@ class _RingModulePresentation:
         return self.module()(self._scalar_action(self.base_ring()(scalar), self.module()(element)))
 
     @cached_method
-    def scalar_action_morphism(self):
+    def scalar_action_morphism(self, endomorphisms=None):
         r"""The defining ``R -> End_Ab(U(M))`` map for this exact native action.
 
         Construct the endomorphism parent from the supplied module's actual
@@ -166,7 +166,16 @@ class _RingModulePresentation:
         # use that exact object as End's argument rather than calling
         # underlying_additive_group() before the module category exists.
         module = self.module()
-        endomorphisms = AdditiveGroups().AdditiveCommutative().End(module)
+        if endomorphisms is None:
+            endomorphisms = AdditiveGroups().AdditiveCommutative().End(module)
+        else:
+            assert (
+                endomorphisms.domain() is module
+                and endomorphisms.codomain() is module
+            ), (
+                f"the native scalar action of {module} can only be represented in "
+                f"End({module}), not {endomorphisms}"
+            )
         return self.base_ring().Mor(endomorphisms, category=OwnedRings())(
             lambda scalar: endomorphisms.elementwise(
                 lambda element: self.scalar_multiple(scalar, element)
