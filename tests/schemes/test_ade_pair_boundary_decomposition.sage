@@ -133,13 +133,15 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert primed.base_pair().dynkin_rank() == 3
     assert doubly_marked_prime.source_variant() == "prime"
     assert doubly_marked_prime.base_pair().dynkin_rank() == 3
-    assert minus.source_variant() == "short"
+    assert minus.source_variant() == "left-short"
     assert minus.base_pair().dynkin_rank() == 4
+    assert minus.base_pair().dynkin_variant() == ("short", "long")
     assert superscript_minus.source_variant() == "short"
     assert superscript_minus.base_pair().dynkin_rank() == 4
+    assert superscript_minus.base_pair().dynkin_variant() == ("long", "short")
     assert tuple_variant.source_variant() == "both-short"
     assert tuple_variant.base_pair().dynkin_rank() == 3
-    assert direct_minus.dynkin_variant() == ("long", "short")
+    assert direct_minus.dynkin_variant() == ("short", "long")
 
 
 def test_at21_default_variant_matches_the_parity_selected_base_constructor() -> None:
