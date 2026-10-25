@@ -51,5 +51,10 @@ def test_sterk_alternative_models_and_diagrams_match_the_named_configurations() 
         diagrams[name].cardinality() == Sterk.sterk_roots()[name].cardinality()
         for name in diagrams
     )
+    for name, diagram in diagrams.items():
+        count = int(diagram.cardinality())
+        assert tuple(diagram.index_set()) == tuple(range(count))
+        assert tuple(diagram.vertex_names()) == tuple(f"r{index}" for index in range(count))
+        assert set(diagram.preferred_positions()) == set(range(count))
     assert set(isotropic) == {"s4_12"}
     assert isotropic["s4_12"].q() == 0
