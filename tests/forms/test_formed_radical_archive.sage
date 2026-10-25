@@ -1,6 +1,7 @@
 r"""The radical of a degenerate lattice and the nondegenerate quotient."""
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
+import pytest
 
 
 def test_affine_A1_lattice_modulo_its_radical_is_the_A1_root_lattice() -> None:
@@ -58,6 +59,8 @@ def test_nonsymmetric_bilinear_form_does_not_descend_from_left_radical_alone() -
     labels = tuple(module.module_generating_set())
     assert form(module.module_generator(labels[1]), module.module_generator(labels[0])) == 1
     assert form.descends_along(inclusion, value_identity) is False
+    with pytest.raises(ValueError, match="both arguments"):
+        form.descend_along(inclusion, value_identity)
 
 
 def test_rational_nondegenerate_form_uses_full_rank_quotient_basis() -> None:

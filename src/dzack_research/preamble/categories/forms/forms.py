@@ -193,8 +193,8 @@ def _descended_bilinear_form(form, morphism, value_projection):
     r"""Construct the descended form on the actual represented cokernel."""
     if not _bilinear_form_descends_along(form, morphism, value_projection):
         raise ValueError(
-            f"the form {form} does not descend to coker({morphism}): it does not vanish on the image of "
-            f"{morphism}"
+            f"the form {form} does not descend to coker({morphism}): after value projection, the form must "
+            f"vanish on the image of {morphism} in both arguments"
         )
 
     module = form.module()
