@@ -227,21 +227,18 @@ class _RingModulePresentation:
                     if labels.cardinality().is_finite():
                         placement = placement.FinitelyGenerated()
                     free_placement = placement
-        # Register the selected resolution before exposing the module to its
-        # category realization hooks. The resolution factory is lazy, so this
-        # retains the framing data without constructing its augmentation Mor;
-        # that Mor is materialized only when the resolution is requested, after
-        # category membership has been established.
-        if module not in category:
-            refine(module, category)
-        # The selected resolution is defining data and is installed before
-        # placement.  Do not materialize R -> End_Ab(U(module)) here: building
-        # that endomorphism ring can itself request module-Mor objects and
-        # recurse into the construction in progress.  The retained presentation
-        # remains the authoritative pointwise action; Modules.scalar_action()
-        # constructs its typed morphism lazily against the current End parent.
+        # Register the selected resolution before exposing the module to any
+        # category realization hooks. The factory is lazy, so this retains the
+        # framing data without constructing its augmentation Mor. Establish a
+        # selected free-module placement first when one was supplied: its
+        # realization hooks must see the defining frame, not an intermediate
+        # module that is only known to lie in Modules(R).
         if free_placement is not None and module not in free_placement:
             refine(module, free_placement)
+        # Do not materialize R -> End_Ab(U(module)) here: building that
+        # endomorphism ring can itself request module-Mor objects and recurse
+        # into construction. Modules.scalar_action() constructs its typed map
+        # lazily against the current canonical End parent.
         match module in category:
             case True:
                 pass
