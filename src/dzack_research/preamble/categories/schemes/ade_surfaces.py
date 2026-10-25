@@ -213,8 +213,11 @@ def _ade_polygon_data(letter, rank, variant, affine):
 def _validated_at21_low_level_variant(letter, rank, variant, affine):
     if letter not in ("A", "D", "E"):
         raise ValueError(f"an ADE type has letter A, D or E, but the letter is {letter!r}")
-    if rank < 1:
-        raise ValueError(f"an ADE type {letter}_n needs rank n >= 1, but n = {rank}")
+    if rank < 0 or (rank == 0 and not (letter == "A" and variant == "short" and not affine)):
+        raise ValueError(
+            f"an ADE type {letter}_n needs rank n >= 1, except for the pure A_0^- shape "
+            f"(variant='short'); got rank {rank} and variant {variant!r}"
+        )
     if affine:
         if variant != "pure":
             raise ValueError(

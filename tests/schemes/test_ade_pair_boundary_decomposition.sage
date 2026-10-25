@@ -88,6 +88,16 @@ def test_the_at21_enhancement_of_a1_is_a_log_pair_on_the_same_surface() -> None:
     assert enhanced in ToricLogPairs(QQ)
 
 
+def test_pure_a_zero_short_shape_is_admitted_by_at21_source_rules() -> None:
+    r"""AT21 Table 1 includes the rank-zero pure shape A_0^-."""
+    assert _validated_at21_low_level_variant("A", 0, "short", False) == ("long", "short")
+    assert _ade_polygon_data("A", 0, ("short",), False) == (
+        ((0, 2), (0, 0), (1, 0)),
+        (0, 2),
+        _polygon_side_decorations(((0, 2), (0, 0), (1, 0)), (0, 2)),
+    )
+
+
 def test_primed_a_polygon_uses_the_dynkin_rank_as_its_last_vertex() -> None:
     r"""Table 4's primed 'A_{2n-3} polygon has last vertex (2n-3, 0)."""
     vertices, point = _a_family_polygon_data(3, ("prime",), 2)
