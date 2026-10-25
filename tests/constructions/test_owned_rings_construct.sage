@@ -27,6 +27,18 @@ def test_integer_ring_exposes_fraction_module_polynomial_and_matrix_construction
     assert ZZ.Mor(QQ).cardinality() == cardinal(1)
 
 
+def test_native_ring_and_extension_constructions_retain_the_additive_group_spine() -> None:
+    r"""Ring, polynomial, quotient and fraction-field owners construct additive groups."""
+    polynomials = QQ.polynomial_ring("x")
+    quotient = polynomials.quotient_ring(polynomials.ideal(polynomials.algebra_generator("x") ** 2 - 2))
+    fraction_field = polynomials.fraction_field()
+
+    assert ZZ in AdditiveGroups().AdditiveCommutative()
+    assert polynomials in AdditiveGroups().AdditiveCommutative()
+    assert quotient in AdditiveGroups().AdditiveCommutative()
+    assert fraction_field in AdditiveGroups().AdditiveCommutative()
+
+
 def test_cyclic_double_cover_presentation_has_square_equal_to_branch_coefficient() -> None:
     cover = QQ.cyclic_cover_presentation(QQ.one(), 2)
     z = cover.algebra_generator("z")
