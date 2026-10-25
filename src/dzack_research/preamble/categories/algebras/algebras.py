@@ -4476,7 +4476,11 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 "same labels as the retained algebra framing"
             )
             if generator_values is None:
-                generator_values = lambda label: algebra_generating_family[label]
+                # A label is an index-set element, never a positional
+                # selector. IndexedFamily.__getitem__ also accepts positions
+                # for enumerated index sets, so use value() to preserve the
+                # constructor's label semantics for the retained family.
+                generator_values = algebra_generating_family.value
         placement.extend(categories)
         # Construction hooks run inside Parent.__init__. A native polynomial
         # or tensor algebra's selected generator resolution is installed only
