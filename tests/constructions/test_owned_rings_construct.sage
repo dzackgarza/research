@@ -70,6 +70,13 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert quotient_fraction_field.fraction_field_localization().localization_source() is quotient
     assert quotient_fraction_map.domain() is quotient
     assert quotient_fraction_map.codomain() is quotient_fraction_field
+    quotient_fraction_module = Modules.ParentMethods._native_module_presentation(
+        quotient_fraction_field
+    )
+    assert quotient_fraction_module is not None
+    assert quotient_fraction_module.module() is quotient_fraction_field
+    assert quotient_fraction_module.base_ring() is quotient
+    assert quotient_fraction_module.unit() == quotient_fraction_field.one()
     quotient_generator = quotient.quotient_map()(polynomials.algebra_generator("x"))
     assert quotient_fraction_map(quotient_generator) ** 2 == quotient_fraction_field(2)
     assert zero_quotient in additive_groups
@@ -86,6 +93,11 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     localization = polynomials.fraction_field_localization()
     assert localization in additive_groups
     assert localization.localization_source() is polynomials
+    localization_module = Modules.ParentMethods._native_module_presentation(localization)
+    assert localization_module is not None
+    assert localization_module.module() is localization
+    assert localization_module.base_ring() is QQ
+    assert localization_module.unit() == localization.one()
     tensor_algebra = QQ.free_module(2).tensor_algebra()
     assert tensor_algebra in OwnedRings().NoZeroDivisors()
     assert tensor_algebra in OwnedRings().Nontrivial()
