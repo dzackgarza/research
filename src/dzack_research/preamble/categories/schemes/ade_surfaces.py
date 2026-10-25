@@ -108,9 +108,13 @@ def _ade_parameter(letter, rank, variant, affine):
         # family and the ordinary unprimed parity rule.
         if _has(variant, "prime") and rank % 2 == 0:
             return rank // 2 + 1
-        if _has(variant[:1], "short"):
+        # The normalized variant is a string (``short``, ``left-short`` or
+        # ``both-short``), not the original pair of side labels. Test those
+        # names directly: slicing the string here reduced ``short`` to ``s``
+        # and silently selected the unshortened parameter for every A shape.
+        if variant in ("left-short", "both-short"):
             return (rank + 3) // 2
-        if _has(variant[1:2], "short"):
+        if variant == "short":
             return (rank + 2) // 2
         return (rank + 1) // 2
     if letter == "D":
@@ -131,8 +135,11 @@ def _affine_polygon_data(letter, rank, parameter):
 
 
 def _a_family_polygon_data(rank, variant, parameter):
-    left_short = _has(variant[:1], "short")
-    right_short = _has(variant[1:2], "short")
+    # ``variant`` has already been normalized to the public string vocabulary.
+    # It is not a tuple of side decorations, so string slicing here cannot
+    # detect the word ``short`` and previously erased both one-short variants.
+    left_short = variant in ("left-short", "both-short")
+    right_short = variant in ("short", "both-short")
     if _has(variant, "primed", "prime", "p"):
         # The two primed AT21 families have different indices: A'_{2n-1}
         # for odd-rank A pairs, and A'_{2n-3} for even-rank A^- pairs.
