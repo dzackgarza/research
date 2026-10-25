@@ -4812,7 +4812,12 @@ def _restricted_scalars_view(
     )
 
     base_ring = _owned_ring(ring_map.domain())
-    placement = [RestrictedScalarsModules(base_ring)]
+    # The restricted module's addition is abelian by construction.  Owned
+    # category joins do not necessarily materialize inherited facets on the
+    # concrete parent, and the native scalar-action constructor checks this
+    # prerequisite before retaining the module presentation.  Record it at
+    # the shared restriction-of-scalars construction owner.
+    placement = [RestrictedScalarsModules(base_ring), AdditiveGroups().AdditiveCommutative()]
     if base_ring in OwnedFields():
         placement.append(VectorSpaces(base_ring))
     data = {"module_over_extension": module, "ring_map": ring_map}
