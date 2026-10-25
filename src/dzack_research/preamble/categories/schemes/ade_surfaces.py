@@ -284,6 +284,8 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             f"an ADE type has letter A, D or E, but the letter is {letter!r}"
         )
         rank = int(_engine_numeral(SageZZ, dynkin_rank))
+        if letter == "A" and rank == 0 and not affine and variant == "pure":
+            variant = "short"
         allow_a_zero = letter == "A" and rank == 0 and not affine and (
             variant == "short" or variant == ("long", "short") or variant == ()
         )
