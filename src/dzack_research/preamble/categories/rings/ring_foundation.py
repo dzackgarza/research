@@ -5399,9 +5399,18 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
             _owned_integers.set_cache(self)
         try:
             if base is None:
-                scalars = _engine_scalar_ring(engine)
-                base = self if scalars is None else _own_ring(scalars)
-                category_base = None if scalars is None else base
+                if isinstance(engine, SageNumberFieldOrder) and self is not _owned_integers():
+                    # An order is a ZZ-algebra even though Sage's order engine
+                    # is implemented over its fraction field. Its native
+                    # integral basis and module resolution are over ZZ; using
+                    # engine.base_ring() here gives the wrong Parent base and
+                    # contradicts OrdersWithChosenIntegralBasis.base_ring().
+                    base = _owned_integers()
+                    category_base = base
+                else:
+                    scalars = _engine_scalar_ring(engine)
+                    base = self if scalars is None else _own_ring(scalars)
+                    category_base = None if scalars is None else base
             else:
                 base = _own_ring(base)
                 category_base = base
