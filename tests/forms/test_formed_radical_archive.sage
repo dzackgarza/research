@@ -41,6 +41,8 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     assert quotient.module_rank() == 2
     assert projection.domain() is lattice
     assert projection.codomain() is quotient
+    assert projection.module_morphism().domain() is lattice.unformed_module()
+    assert projection.module_morphism().codomain() is quotient.unformed_module()
     assert projection.preserves_forms() is True
     assert projection(lattice.module_generator(1)) != quotient.zero()
     radical = lattice.radical()

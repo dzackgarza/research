@@ -3808,14 +3808,18 @@ class FreeFormModules(OwnedCategoryOverBaseRing):
                     inclusion = perpendicular.inclusion()
                     reduction_projection = quotient.projection()
                     source_module = self.unformed_module()
-                    to_perpendicular = source_module.module_category().Mor(
-                        source_module, perpendicular
+                    target_module = quotient.unformed_module()
+                    projection = source_module.module_category().Mor(
+                        source_module, target_module
                     )(
-                        lambda label: inclusion.lift(
-                            self(source_module.module_generator(label))
+                        lambda label: quotient._element_of_unformed_module(
+                            reduction_projection(
+                                inclusion.lift(
+                                    self(source_module.module_generator(label))
+                                )
+                            )
                         )
                     )
-                    projection = reduction_projection * to_perpendicular
                 values = self.value_module()
                 value_identity = values.module_category().Mor(values, values).identity()
                 return FormModules(self.base_ring()).Mor(self, quotient)(
