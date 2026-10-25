@@ -150,13 +150,12 @@ class _RingModulePresentation:
 
     @cached_method
     def scalar_action_morphism(self):
-        r"""Return the exact owned action ``R -> End_Ab(U(M))`` retained by this datum.
+        r"""The defining ``R -> End_Ab(U(M))`` map for this exact native action.
 
-        The endomorphism parent is formed from the additive group of the
-        supplied module, not from a backend ring or from the scalar ring.  In
-        particular, the regular module on a localization or quotient keeps
-        its original module parent and its selected action when a formed
-        lattice asks for the scalar-action morphism.
+        Construct the endomorphism parent from the supplied module's actual
+        underlying additive group. This is owned by the native presentation:
+        rebuilding the action from a generic module element can accidentally
+        use a module wrapper instead of the additive group on which it acts.
         """
         from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
@@ -195,11 +194,6 @@ class _RingModulePresentation:
             f"but {module} is only known to be in {module.category()}"
         )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
-        match module in category:
-            case True:
-                pass
-            case False:
-                refine(module, category)
         if self.is_regular():
             assert self._basis is None, (
                 f"{module} is the regular module over itself; its basis is {{1}}, and no other basis may be given"
@@ -231,6 +225,15 @@ class _RingModulePresentation:
                             pass
                         case False:
                             refine(module, placement)
+        # Installing the selected resolution above is part of construction,
+        # not a postcondition of module placement. Category realization hooks
+        # can ask for generators, coordinates, or the scalar-action morphism;
+        # refining first exposes a half-constructed module to those hooks.
+        match module in category:
+            case True:
+                pass
+            case False:
+                refine(module, category)
         return module
 
     def module_basis(self):
