@@ -11,6 +11,7 @@ def test_reducible_node_normalizes_componentwise_and_retains_the_map() -> None:
     assert node.is_reduced()
     assert node.minimal_primes().cardinality() == 2
     assert node.irreducible_components().cardinality() == 2
+    assert node.irreducible_component_locus().cardinality() == 2
     for quotient in node.irreducible_components():
         # Components are quotients of the actual node, not merely abstractly
         # isomorphic quotients of its polynomial presentation. The chosen
