@@ -99,7 +99,10 @@ def test_the_at21_enhancement_of_a1_is_a_log_pair_on_the_same_surface() -> None:
     coefficients = enhanced.log_boundary_coefficient_ring()
     assert coefficients.algebra_framing_source() is coefficients
     assert coefficients.algebra_framing_morphism() == coefficients.Mor(coefficients).identity()
-    assert coefficients.algebra_generator_morphism()("epsilon") == coefficients.algebra_generator("epsilon")
+    generator_morphism = coefficients.algebra_generator_morphism()
+    assert generator_morphism.domain() is coefficients.algebra_generating_set()
+    assert generator_morphism.codomain() is coefficients
+    assert generator_morphism("epsilon") == coefficients.algebra_generator("epsilon")
 
 
 def test_at21_public_constructor_accepts_the_default_a_zero_minus_shape() -> None:
