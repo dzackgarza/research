@@ -22,6 +22,9 @@ from sage.all import (
 from sage.all import (
     Zmod as _SageZmod,
 )
+from sage.all import (
+    matrix as _SageMatrix,
+)
 from sage.arith.misc import (
     euler_phi as _engine_euler_phi,
 )
@@ -5441,24 +5444,54 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     lambda element: _engine_element(self, element).list(),
                 )
             if isinstance(engine, SageNumberFieldOrder) and self is not _owned_integers():
-                # The integral basis of an order is equally defining
-                # construction data. Install its ZZ-module resolution before
-                # Parent category hooks can request it, rather than waiting
-                # for the post-parent adapter phase.
-                from dzack_research.preamble.categories.modules.pure.modules import (
-                    _fix_selected_module_resolution,
+                # The integral basis is constructor data, but registering a
+                # selected resolution here is too early: Parent.__init__ has
+                # not yet installed the category-owned resolution registry.
+                # Retain the actual basis instead; the common native module
+                # constructor registers its resolution after Parent setup and
+                # before it exposes the module to construction hooks.
+                from dzack_research.preamble.categories.modules.native_modules import (
+                    _NativeModuleBasis,
                 )
 
                 integers = _owned_integers()
                 labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
-                _fix_selected_module_resolution(
-                    self,
-                    integers,
-                    labels,
-                    lambda label: _owned_engine_element(
-                        self, engine.basis()[labels.ranking_map()(label)]
+                degree = int(engine.number_field().degree())
+                basis_elements = tuple(engine.basis())
+                basis_matrix = _SageMatrix(
+                    SageQQ,
+                    tuple(
+                        tuple(element.list()) + (SageQQ.zero(),) * (degree - len(element.list()))
+                        for element in basis_elements
                     ),
-                    lambda: integers.free_module(labels),
+                )
+                inverse_basis_matrix = basis_matrix.inverse()
+
+                def order_coordinates(element):
+                    values = tuple(_engine_element(self, element).list())
+                    assert len(values) <= degree, (
+                        f"the coordinates of {element} exceed the degree {degree} of {engine.number_field()}"
+                    )
+                    values += (SageQQ.zero(),) * (degree - len(values))
+                    coordinates = _SageMatrix(SageQQ, 1, degree, values) * inverse_basis_matrix
+                    result = {}
+                    ranking = labels.ranking_map()
+                    for label in labels:
+                        coefficient = coordinates[0, int(ranking(label))]
+                        assert coefficient in SageZZ, (
+                            f"the selected integral basis of {self} gave nonintegral coordinate "
+                            f"{coefficient} for {element}"
+                        )
+                        if coefficient:
+                            result[label] = _owned_engine_element(integers, SageZZ(coefficient))
+                    return result
+
+                self._native_module_basis = _NativeModuleBasis(
+                    integers.free_module(labels),
+                    lambda label: _owned_engine_element(
+                        self, basis_elements[int(labels.ranking_map()(label))]
+                    ),
+                    order_coordinates,
                 )
             from dzack_research.preamble.owned_category import owned_category_join
 
