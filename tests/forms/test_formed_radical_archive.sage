@@ -49,6 +49,10 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
         projection(lattice.module_generator(1)),
         projection(lattice.module_generator(2)),
     ) == lattice.b(lattice.module_generator(1), lattice.module_generator(2)) == 1
+    source_generators = tuple(lattice.module_generators())
+    for left in source_generators:
+        for right in source_generators:
+            assert quotient.b(projection(left), projection(right)) == lattice.b(left, right)
     radical = lattice.radical()
     for label in radical.module_generating_set():
         assert projection(radical.inclusion()(radical.module_generator(label))) == quotient.zero()
@@ -81,6 +85,10 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
         projection(formed.module_generator(1)),
         projection(formed.module_generator(2)),
     ) == formed.b(formed.module_generator(1), formed.module_generator(2)) == 1
+    source_generators = tuple(formed.module_generators())
+    for left in source_generators:
+        for right in source_generators:
+            assert quotient.b(projection(left), projection(right)) == formed.b(left, right)
     for label in formed.radical().module_generating_set():
         assert projection(formed.radical().inclusion()(formed.radical().module_generator(label))) == quotient.zero()
     lattice_quotient = Lattices(QQ)(quotient)
