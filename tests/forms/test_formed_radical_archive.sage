@@ -227,6 +227,7 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     assert projection.module_morphism().codomain() is quotient.unformed_module()
     assert projection.module_morphism().is_surjective() is True
     assert projection.module_morphism().kernel().module_rank() == lattice.radical().module_rank() == 1
+    assert projection.module_morphism().kernel().is_isomorphic(lattice.radical())
     assert projection.preserves_forms() is True
     assert projection(lattice.module_generator(1)) != quotient.zero()
     assert quotient.b(
