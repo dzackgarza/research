@@ -158,7 +158,7 @@ class GeneralModules(OwnedCategoryOverBaseRing):
                     f"morphism out of {ring}, but {rho} lies in {rho.parent()}"
                 )
                 underlying_set = rho.codomain().domain()
-                assert rho.codomain() is AdditiveGroups().AdditiveCommutative().End(underlying_set), (
+                assert rho.codomain().codomain() is underlying_set, (
                     f"cannot construct an {ring}-module from {rho}: the scalar action must take values in "
                     f"the endomorphism ring End(A) of an abelian group A, but its codomain is {rho.codomain()}"
                 )
