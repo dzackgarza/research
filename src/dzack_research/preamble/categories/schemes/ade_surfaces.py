@@ -102,6 +102,12 @@ def _has(variant, *names) -> bool:
 def _ade_parameter(letter, rank, variant, affine):
     r"""The half-rank parameter ``n`` the polygon of a family is written in."""
     if letter == "A":
+        # AT21 Table 4 indexes the primed polygon by A'_{2n-3} while the
+        # corresponding log-pair has even rank 2n-2.  Thus the even-rank
+        # primed case uses n = rank/2 + 1, unlike the odd-rank A'_{2n-1}
+        # family and the ordinary unprimed parity rule.
+        if _has(variant, "prime") and rank % 2 == 0:
+            return rank // 2 + 1
         if _has(variant[:1], "short"):
             return (rank + 3) // 2
         if _has(variant[1:2], "short"):

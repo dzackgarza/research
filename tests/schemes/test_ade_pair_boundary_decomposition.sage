@@ -163,7 +163,9 @@ def test_at21_default_variant_matches_the_parity_selected_base_constructor() -> 
 
 def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
     r"""Table 4's 'A_{2n-3} polygon for 'A^-_{2n-2} ends at (2n-3, 0)."""
-    vertices, point = _a_family_polygon_data(4, ("prime",), 3)
+    parameter = _ade_parameter("A", 4, ("prime",), False)
+    vertices, point = _a_family_polygon_data(4, ("prime",), parameter)
 
+    assert parameter == 3
     assert vertices == ((2, 2), (0, 1), (0, 0), (3, 0))
     assert point == (2, 2)
