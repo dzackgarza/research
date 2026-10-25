@@ -56,5 +56,6 @@ def test_sterk_alternative_models_and_diagrams_match_the_named_configurations() 
         assert tuple(diagram.index_set()) == tuple(range(count))
         assert tuple(diagram.vertex_names()) == tuple(f"r{index}" for index in range(count))
         assert set(diagram.preferred_positions()) == set(range(count))
+        diagram.validate_positions()
     assert set(isotropic) == {"s4_12"}
     assert isotropic["s4_12"].q() == 0
