@@ -108,13 +108,12 @@ def _ade_parameter(letter, rank, variant, affine):
         # family and the ordinary unprimed parity rule.
         if _has(variant, "prime") and rank % 2 == 0:
             return rank // 2 + 1
-        # The normalized variant is a string (``short``, ``left-short`` or
-        # ``both-short``), not the original pair of side labels. Test those
-        # names directly: slicing the string here reduced ``short`` to ``s``
-        # and silently selected the unshortened parameter for every A shape.
-        if variant in ("left-short", "both-short"):
+        # _call_ passes the validated low-level tuple: (short,long) is a
+        # left-short side pair, (long,short) is right-short, and
+        # (short,short) is the odd-rank both-short family.
+        if _has(variant[:1], "short"):
             return (rank + 3) // 2
-        if variant == "short":
+        if _has(variant[1:2], "short"):
             return (rank + 2) // 2
         return (rank + 1) // 2
     if letter == "D":
@@ -135,12 +134,11 @@ def _affine_polygon_data(letter, rank, parameter):
 
 
 def _a_family_polygon_data(rank, variant, parameter):
-    # ``variant`` has already been normalized to the public string vocabulary.
-    # It is not a tuple of side decorations, so string slicing here cannot
-    # detect the word ``short`` and previously erased both one-short variants.
-    left_short = variant in ("left-short", "both-short")
-    right_short = variant in ("short", "both-short")
-    if variant in ("prime-odd", "prime-even"):
+    # The polygon constructor receives the validated low-level side tuple,
+    # not the normalized public variant string.
+    left_short = _has(variant[:1], "short")
+    right_short = _has(variant[1:2], "short")
+    if _has(variant, "prime", "primed", "p"):
         # The two primed AT21 families have different indices: A'_{2n-1}
         # for odd-rank A pairs, and A'_{2n-3} for even-rank A^- pairs.
         # The latter's endpoint is one less than the pair rank; the former's
@@ -162,7 +160,7 @@ def _a_family_polygon_data(rank, variant, parameter):
 
 
 def _d_family_polygon_data(rank, variant, parameter):
-    if variant == "prime":
+    if _has(variant, "primed", "prime", "p"):
         vertices = ((2, 2), (0, 2), (0, 0), (2 * parameter - 4, 0), (parameter, 1))
     elif "short" in variant or rank % 2 == 1:
         vertices = ((2, 2), (0, 2), (0, 0), (2 * parameter - 3, 0))
