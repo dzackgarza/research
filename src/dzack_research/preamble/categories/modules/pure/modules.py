@@ -340,10 +340,30 @@ class Modules(OwnedCategoryOverBaseRing):
             f"{scalar_action} cannot define an object of {self}: the scalar action must be a ring morphism "
             f"out of {self.base_ring()}, but its domain is {scalar_action.domain()}"
         )
-        assert scalar_action.codomain() is AdditiveGroups().AdditiveCommutative().End(module), (
-            f"{scalar_action} cannot define a module structure on {module}: the scalar action must land in "
-            f"the endomorphism ring of the abelian group {module}, but its codomain is {scalar_action.codomain()}"
-        )
+        endomorphisms = AdditiveGroups().AdditiveCommutative().End(module)
+        if scalar_action.codomain() is not endomorphisms:
+            supplied_endomorphisms = scalar_action.codomain()
+            assert (
+                supplied_endomorphisms.domain() is module
+                and supplied_endomorphisms.codomain() is module
+            ), (
+                f"{scalar_action} cannot define a module structure on {module}: the scalar action must land in "
+                f"the endomorphism ring of the abelian group {module}, but its codomain is "
+                f"{supplied_endomorphisms}"
+            )
+            # The native and generic module owners can independently obtain
+            # an End parent for the same exact additive group while one is
+            # being refined into its final category. Re-home the pointwise
+            # action in the canonical End parent required by this Modules
+            # owner; do not reject an otherwise identical mathematical action
+            # merely because the temporary endomorphism parents differ.
+            scalar_action = self.base_ring().Mor(
+                endomorphisms, category=OwnedRings()
+            )(
+                lambda scalar, supplied_action=scalar_action: endomorphisms.elementwise(
+                    lambda element: supplied_action(scalar)(element)
+                )
+            )
         return _object_of(
             GeneralModules(self.base_ring()),
             base_ring=self.base_ring(),
