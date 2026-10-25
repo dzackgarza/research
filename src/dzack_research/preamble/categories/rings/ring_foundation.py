@@ -6382,6 +6382,27 @@ def _owned_ring_category(
 def _install_engine_selected_ring_data(ring, engine) -> None:
     r"""Fix constructor data required by exact initial ring placement."""
     match ring:
+        case _ if engine in SageNumberFields():
+            # A number field K=F[t]/(p) has the selected power basis
+            # 1,t,...,t^(d-1) over its defining coefficient field F. Retain
+            # this as module data before the algebra owner constructs the
+            # regular module; the algebra-generator resolution alone is not
+            # a module basis and cannot serve as one for Frac(order) consumers.
+            from dzack_research.preamble.categories.modules.native_modules import (
+                _power_module_basis,
+            )
+
+            degree = int(
+                engine.defining_polynomial().degree()
+                if engine.is_absolute()
+                else engine.relative_polynomial().degree()
+            )
+            ring._native_module_basis = _power_module_basis(
+                ring.base_ring(),
+                degree,
+                lambda exponent: _owned_engine_element(ring, engine.gen() ** exponent),
+                lambda element: _engine_element(ring, element).list(),
+            )
         case _ if ring in OwnedOrders() and ring is not _owned_integers():
             # An order of a number field, by its construction (_order_in).
             from dzack_research.preamble.categories.modules.pure.modules import (
