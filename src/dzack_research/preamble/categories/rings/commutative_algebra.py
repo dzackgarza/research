@@ -4460,7 +4460,15 @@ def _PrimeLocalizationFromSubmonoid(source, submonoid):
         raise ValueError(
             f"the localization R_p needs the prime ideal p whose complement is {submonoid}, but it is missing"
         )
-    placements = list(_localization_size_placements(source, submonoid))
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+    # Prime localization is still a localization of the source ring, so its
+    # addition is abelian.  It has a separate owner from finite-generated
+    # localization because its inverted set has no selected finite family.
+    placements = [
+        *_localization_size_placements(source, submonoid),
+        AdditiveGroups().AdditiveCommutative(),
+    ]
     if source in OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals():
         placements.append(OwnedRings().Commutative().NoZeroDivisors().PrincipalIdeals())
     else:
