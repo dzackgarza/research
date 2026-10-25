@@ -194,11 +194,6 @@ class _RingModulePresentation:
             f"but {module} is only known to be in {module.category()}"
         )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
-        # Materialize and cache the exact action morphism while this owner is
-        # installing the module structure. Downstream formed objects then use
-        # the same End(U(M)) parent and retained scalar action, rather than
-        # first constructing that morphism along a consumer-specific path.
-        module.scalar_action()
         if self.is_regular():
             assert self._basis is None, (
                 f"{module} is the regular module over itself; its basis is {{1}}, and no other basis may be given"
@@ -230,6 +225,12 @@ class _RingModulePresentation:
                             pass
                         case False:
                             refine(module, placement)
+        # Finish both pieces of the module datum before category realization
+        # hooks run: the selected resolution above fixes the exact generator
+        # parent, and this action morphism fixes End(U(M)) on the exact
+        # underlying additive group. Downstream formed objects then read this
+        # retained action rather than reconstructing it through a wrapper.
+        module.scalar_action()
         # Installing the selected resolution above is part of construction,
         # not a postcondition of module placement. Category realization hooks
         # can ask for generators, coordinates, or the scalar-action morphism;
