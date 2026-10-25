@@ -127,7 +127,11 @@ class IndexedFamily[IndexT, ValueT]:
             candidates = (*bucket, *self._cached_hashable_values)
         else:
             bucket = self._value_cache.setdefault(index_hash, [])
-            candidates = (*bucket, *self._unhashable_value_cache)
+            # Hashing is only a storage optimization. Presented mathematical
+            # labels may have different hashes even when their equality is
+            # decided true, so the cache's equality contract must not be
+            # restricted to the matching Python hash bucket.
+            candidates = (*self._cached_hashable_values, *self._unhashable_value_cache)
         for known, value in candidates:
             equal = True if normalized is known else normalized == known
             if equal is True:
