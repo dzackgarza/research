@@ -5385,7 +5385,7 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
             _install_engine_selected_ring_data(self, engine)
 
-            if not hasattr(self, "_native_free_flavor"):
+            if not self._defer_native_algebra_construction():
                 from dzack_research.preamble.categories.algebras.algebras import (
                     _algebra_from_native_ring,
                 )
@@ -5409,6 +5409,10 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
                     if _owned_integers.cache.get(key) is self:
                         del _owned_integers.cache[key]
             raise
+
+    def _defer_native_algebra_construction(self):
+        r"""Whether a stronger algebra constructor must finish its own data first."""
+        return False
 
 
 

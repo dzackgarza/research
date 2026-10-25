@@ -269,24 +269,6 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             algebra_framing_owner=framing_owner,
             ring_placement=ring_placement,
         )
-        # The cooperative algebra constructor installs the selected algebra
-        # resolution only after the lower ring Parent has been initialized.
-        # Unlike an ordinary native ring, this free algebra must therefore
-        # defer its regular-module/scalar-action construction until that
-        # resolution exists. Otherwise consumers can observe a constructed
-        # polynomial ring without its defining algebra framing.
-        from dzack_research.preamble.categories.algebras.algebras import (
-            _algebra_from_native_ring,
-        )
-
-        _algebra_from_native_ring(
-            self,
-            lambda left, right: left * right,
-            self._from_engine_element(engine.one()),
-            self._native_scalar_action,
-            module_basis=self._native_module_basis,
-        )
-
     def _specialized_algebra_with_structure(
         self,
         base_ring,

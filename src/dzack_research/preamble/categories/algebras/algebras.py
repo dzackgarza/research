@@ -4326,6 +4326,10 @@ class _OwnedAlgebraParent(_OwnedRingParent):
 
     Element = _OwnedAlgebraElement
 
+    def _defer_native_algebra_construction(self):
+        r"""The algebra owner installs its selected resolution before its regular module."""
+        return True
+
     def __init__(
         self,
         engine,
@@ -4412,6 +4416,13 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     f"the algebra {engine} over {base_ring} has no chosen generators, so it cannot be given "
                     "generator values"
                 )
+            _algebra_from_native_ring(
+                self,
+                lambda left, right: left * right,
+                self._from_engine_element(engine.one()),
+                self._native_scalar_action,
+                module_basis=self._native_module_basis,
+            )
             return
 
         label_size = selected_labels.cardinality()
@@ -4488,6 +4499,13 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             selected_labels,
             generator_morphism,
             augmentation,
+        )
+        _algebra_from_native_ring(
+            self,
+            lambda left, right: left * right,
+            self._from_engine_element(engine.one()),
+            self._native_scalar_action,
+            module_basis=self._native_module_basis,
         )
 
 
