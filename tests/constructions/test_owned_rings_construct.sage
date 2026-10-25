@@ -50,6 +50,12 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     assert polynomials.algebra_framing_morphism().domain() is polynomials
     assert polynomials.algebra_framing_morphism().codomain() is polynomials
     assert polynomials.algebra_framing_morphism() is polynomials.Mor(polynomials).identity()
+    polynomial_module = Modules.ParentMethods._native_module_presentation(polynomials)
+    assert polynomial_module is not None
+    assert polynomial_module.base_ring() is QQ
+    assert polynomial_module.module_basis().is_basis()
+    basis_label = polynomial_module.module_basis().source().module_generating_set().an_element()
+    assert polynomial_module.module_basis().image(basis_label) in polynomials
     assert quotient in additive_groups
     assert quotient in OwnedRings().Commutative()
     assert quotient in OwnedIntegralDomains()
