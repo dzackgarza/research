@@ -4267,7 +4267,13 @@ def _localization_at_submonoid(source, submonoid):
                     algebra_source, "_realized_scalar_structure", None
                 )
                 source_scalar = (
-                    algebra_source(scalar)
+                    # A unital algebra's structure map is recovered from its
+                    # retained scalar action on 1. Do not use parent coercion
+                    # as a substitute: a coercion can follow a different
+                    # ambient route from the selected k-algebra structure.
+                    algebra_source._owned_scalar_multiple(
+                        scalar, algebra_source.one()
+                    )
                     if structure_map is None
                     else structure_map(scalar)
                 )
