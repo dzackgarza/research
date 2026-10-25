@@ -2453,13 +2453,25 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
         @cached_method
-        def _ring_morphism_defining_module_action(self):
+        def _ring_morphism_defining_module_action(self, endomorphisms=None):
             r"""Return ``rho_M : R -> End_Ab(U(M))``, ``r |-> (m |-> r m)``, from the scalar multiplication.
 
             A module whose datum is ``rho`` itself states it at its own level.
             """
             ring = self.base_ring()
-            endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
+            if endomorphisms is None:
+                endomorphisms = AdditiveGroups().AdditiveCommutative().End(
+                    self.underlying_additive_group()
+                )
+            else:
+                additive_group = self.underlying_additive_group()
+                assert (
+                    endomorphisms.domain() is additive_group
+                    and endomorphisms.codomain() is additive_group
+                ), (
+                    f"the scalar action of {self} can only be represented in "
+                    f"End({additive_group}), not {endomorphisms}"
+                )
 
             return ring.Mor(endomorphisms, category=OwnedRings())(
                 lambda scalar: endomorphisms.elementwise(
@@ -2497,10 +2509,7 @@ class Modules(OwnedCategoryOverBaseRing):
                 # identity. The native datum retains the defining pointwise
                 # action and rebuilds only its typed morphism wrapper.
                 return native.scalar_action_morphism(endomorphisms)
-            action = self._ring_morphism_defining_module_action()
-            return _action_with_canonical_endomorphism_parent(
-                self.base_ring(), additive_group, action
-            )
+            return self._ring_morphism_defining_module_action(endomorphisms)
 
         def annihilator(self):
             r"""Return ``Ann_R(M)=ker(rho_M: R -> End_Ab(U(M)))``.
