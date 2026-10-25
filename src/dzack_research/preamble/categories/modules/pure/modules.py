@@ -92,6 +92,8 @@ from dzack_research.preamble.categories.sets.set_categories import (
     NN,
     Sets,
 )
+
+
 from dzack_research.preamble.logic import AtomicProposition, Predicate, Unknown, ask, conjunction
 from dzack_research.preamble.owned_category_bases import CategoryWithAxiom
 from dzack_research.preamble.refine import RealizationHook
@@ -240,6 +242,32 @@ def _is_group_algebra(ring) -> bool:
     return any(isinstance(placement, GroupAlgebras) for placement in ring.category().all_super_categories(proper=False))
 
 
+def _action_with_canonical_endomorphism_parent(base_ring, additive_group, action):
+    r"""Re-home a scalar action in the canonical ``End_Ab(additive_group)`` parent.
+
+    Category refinement may produce two endomorphism parents with the same
+    literal object endpoints. Their pointwise functions are still actions on
+    the same group; normalize that representation at the Modules boundary
+    rather than changing the module object or rejecting the defining action.
+    """
+    endomorphisms = AdditiveGroups().AdditiveCommutative().End(additive_group)
+    if action.codomain() is endomorphisms:
+        return action
+    supplied_endomorphisms = action.codomain()
+    assert (
+        supplied_endomorphisms.domain() is additive_group
+        and supplied_endomorphisms.codomain() is additive_group
+    ), (
+        f"the scalar action {action} has codomain {supplied_endomorphisms}, not an endomorphism ring "
+        f"of its exact underlying additive group {additive_group}"
+    )
+    return base_ring.Mor(endomorphisms, category=OwnedRings())(
+        lambda scalar, supplied_action=action: endomorphisms.elementwise(
+            lambda element: supplied_action(scalar)(element)
+        )
+    )
+
+
 class Modules(OwnedCategoryOverBaseRing):
     r"""Modules over a ring, on the owned additive and scalar spines."""
 
@@ -340,30 +368,9 @@ class Modules(OwnedCategoryOverBaseRing):
             f"{scalar_action} cannot define an object of {self}: the scalar action must be a ring morphism "
             f"out of {self.base_ring()}, but its domain is {scalar_action.domain()}"
         )
-        endomorphisms = AdditiveGroups().AdditiveCommutative().End(module)
-        if scalar_action.codomain() is not endomorphisms:
-            supplied_endomorphisms = scalar_action.codomain()
-            assert (
-                supplied_endomorphisms.domain() is module
-                and supplied_endomorphisms.codomain() is module
-            ), (
-                f"{scalar_action} cannot define a module structure on {module}: the scalar action must land in "
-                f"the endomorphism ring of the abelian group {module}, but its codomain is "
-                f"{supplied_endomorphisms}"
-            )
-            # The native and generic module owners can independently obtain
-            # an End parent for the same exact additive group while one is
-            # being refined into its final category. Re-home the pointwise
-            # action in the canonical End parent required by this Modules
-            # owner; do not reject an otherwise identical mathematical action
-            # merely because the temporary endomorphism parents differ.
-            scalar_action = self.base_ring().Mor(
-                endomorphisms, category=OwnedRings()
-            )(
-                lambda scalar, supplied_action=scalar_action: endomorphisms.elementwise(
-                    lambda element: supplied_action(scalar)(element)
-                )
-            )
+        scalar_action = _action_with_canonical_endomorphism_parent(
+            self.base_ring(), module, scalar_action
+        )
         return _object_of(
             GeneralModules(self.base_ring()),
             base_ring=self.base_ring(),
@@ -2474,25 +2481,8 @@ class Modules(OwnedCategoryOverBaseRing):
                 if native is not None
                 else self._ring_morphism_defining_module_action()
             )
-            endomorphisms = AdditiveGroups().AdditiveCommutative().End(
-                self.underlying_additive_group()
-            )
-            if action.codomain() is endomorphisms:
-                return action
-            supplied_endomorphisms = action.codomain()
-            additive_group = self.underlying_additive_group()
-            assert (
-                supplied_endomorphisms.domain() is additive_group
-                and supplied_endomorphisms.codomain() is additive_group
-            ), (
-                f"the scalar action of {self} has codomain {supplied_endomorphisms}, "
-                f"not an endomorphism ring of its exact underlying additive group {additive_group}"
-            )
-            ring = self.base_ring()
-            return ring.Mor(endomorphisms, category=OwnedRings())(
-                lambda scalar, supplied_action=action: endomorphisms.elementwise(
-                    lambda element: supplied_action(scalar)(element)
-                )
+            return _action_with_canonical_endomorphism_parent(
+                self.base_ring(), self.underlying_additive_group(), action
             )
 
         def annihilator(self):
