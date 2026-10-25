@@ -88,6 +88,7 @@ def test_finite_owned_ring_iteration_enumerates_its_points() -> None:
     ring = GF(25)
     points = tuple(ring)
 
+    assert Set(ring) is ring
     assert len(points) == ring.cardinality() == 25
     assert len(set(points)) == 25
     assert all(point.parent() is ring for point in points)
