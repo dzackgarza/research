@@ -6172,6 +6172,9 @@ def _presented_ring_category(engine: Ring) -> Category:
             # Z_p and the rings of integers of its finite extensions are
             # discrete valuation rings, uncountable.
             placements = (principal, noetherian, owned_sets.UncountableSets())
+        case PolynomialRing_generic() | MPolynomialRing_base():
+            coefficients = _own_ring(engine.base_ring())
+            placements = _polynomial_ring_placements(coefficients, engine.ngens())
         case LaurentPolynomialRing_generic():
             coefficients = _own_ring(engine.base_ring())
             placements = (
