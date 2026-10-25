@@ -1,8 +1,8 @@
 r"""Descent of a bilinear form to a quotient by vectors in its radical.
 
 A bilinear form \(b\) on \(M\) descends along \(\rho\colon N\to M\) to
-\(\operatorname{coker}\rho\) exactly when \(b(\rho(n), m) = 0\) for all \(n, m\); the
-descended form is \(\bar b(\bar x,\bar y) = b(x,y)\).  The Gram
+\(\operatorname{coker}\rho\) exactly when both \(b(\rho(n), m) = 0\) and
+\(b(m, \rho(n)) = 0\) for all \(n, m\); the descended form is \(\bar b(\bar x,\bar y) = b(x,y)\). The Gram
 \(\begin{pmatrix}1&1\\1&1\end{pmatrix}\) on \(\mathbf Z^2\) has radical
 \(\mathbf Z(e_0-e_1)\), so it descends along \(1\mapsto e_0-e_1\) to
 \(\mathbf Z^2/\mathbf Z(e_0-e_1)\cong\mathbf Z\), where the classes of \(e_0\) and \(e_1\) coincide and have square

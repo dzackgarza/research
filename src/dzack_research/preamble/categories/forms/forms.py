@@ -100,11 +100,21 @@ class BilinearFormMors(OwnedCategoryOverBaseRing):
             return self._as_numerical_tensor()
 
         def descends_along(self, morphism, value_projection) -> bool:
-            r"""Whether this form descends through ``coker(morphism)`` after projecting values."""
+            r"""Whether this bilinear form descends through ``coker(morphism)`` after projecting values.
+
+            The projected form must vanish on the relation submodule in both
+            arguments: ``b(r, x) = b(x, r) = 0`` for every relation ``r`` and
+            every module element ``x``. This is the condition that makes the
+            value independent of both chosen quotient lifts.
+            """
             return _bilinear_form_descends_along(self, morphism, value_projection)
 
         def descend_along(self, morphism, value_projection):
-            r"""Return the induced bilinear form on ``coker(morphism)``."""
+            r"""Return the induced bilinear form on ``coker(morphism)``.
+
+            Raises ``ValueError`` unless the projected form vanishes on the
+            relation submodule in both arguments.
+            """
             return _descended_bilinear_form(self, morphism, value_projection)
 
 
@@ -470,6 +480,11 @@ class _CallableFormMethods:
         )
 
     def descends_along(self, morphism, value_projection) -> bool:
+        r"""Whether this bilinear form descends to the cokernel after value projection.
+
+        Descent requires both ``b(i(n), x) = 0`` and ``b(x, i(n)) = 0`` for
+        all relation elements ``i(n)`` and all ``x``.
+        """
         assert self.parent().kind() == "bilinear", (
             f"descent of {self} along {morphism} is computed here only for a bilinear form, but {self} is "
             "quadratic"
@@ -477,6 +492,7 @@ class _CallableFormMethods:
         return _bilinear_form_descends_along(self, morphism, value_projection)
 
     def descend_along(self, morphism, value_projection):
+        r"""Construct the descended form, requiring relations to vanish in both slots."""
         assert self.parent().kind() == "bilinear", (
             f"descent of {self} along {morphism} is computed here only for a bilinear form, but {self} is "
             "quadratic"
