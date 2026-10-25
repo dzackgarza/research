@@ -4469,9 +4469,11 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             assert selected_labels is not None, (
                 "a selected algebra generating family requires its index labels"
             )
-            assert algebra_generating_family.index_set() is selected_labels or (
-                algebra_generating_family.index_set() == selected_labels
-            ), (
+            family_labels = algebra_generating_family.index_set()
+            same_labels = family_labels is selected_labels or (
+                family_labels == selected_labels
+            ) is True
+            assert same_labels, (
                 "the selected algebra generating family must be indexed by the "
                 "same labels as the retained algebra framing"
             )
@@ -4561,7 +4563,10 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                         "generator values were given"
                     )
                 family_labels = generator_values.index_set()
-                if family_labels is selected_labels or family_labels == selected_labels:
+                same_labels = family_labels is selected_labels or (
+                    family_labels == selected_labels
+                ) is True
+                if same_labels:
 
                     def value(label):
                         return self(generator_values.value(label))
