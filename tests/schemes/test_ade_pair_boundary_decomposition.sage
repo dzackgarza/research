@@ -114,11 +114,13 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     r"""AT21's decorated A types have explicit public constructor spellings."""
     primed = ADELogPairs(QQ).at21("A", 3, variant="'A")
     minus = ADELogPairs(QQ).at21("A", 4, variant="^-A")
+    direct_minus = ADELogPairs(QQ)("A", 4, variant="^-A")
 
     assert primed.source_variant() == "prime"
     assert primed.base_pair().dynkin_rank() == 3
     assert minus.source_variant() == "short"
     assert minus.base_pair().dynkin_rank() == 4
+    assert direct_minus.dynkin_variant() == ("long", "short")
 
 
 def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
