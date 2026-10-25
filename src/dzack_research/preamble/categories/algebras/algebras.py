@@ -809,6 +809,7 @@ def _install_selected_algebra_generators(
             pass
     labels = generating_family.index_set()
     values = generating_family.map(algebra)
+    free_source_is_algebra = source is algebra
     match source:
         case None:
             module = algebra.base_ring().free_module(labels)
@@ -829,7 +830,11 @@ def _install_selected_algebra_generators(
         lambda: source,
         labels,
         generator_morphism,
-        lambda free_source: free_source.Mor(algebra)(generator_morphism),
+        (
+            (lambda free_source: free_source.Mor(algebra).identity())
+            if free_source_is_algebra
+            else (lambda free_source: free_source.Mor(algebra)(generator_morphism))
+        ),
     )
 
 
