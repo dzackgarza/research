@@ -1119,7 +1119,9 @@ class LocalizationRings(OwnedCategory):
             return f"({self.numerator()})/({self.denominator()})"
 
     def super_categories(self):
-        return [OwnedRings().Commutative()]
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        return [OwnedRings().Commutative(), AdditiveGroups().AdditiveCommutative()]
 
     class Local(CategoryWithAxiom):
         r"""Local rings retaining their selected localization source and submonoid."""
