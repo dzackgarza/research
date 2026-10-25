@@ -2526,7 +2526,9 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
         return _owned_integers()
 
     def super_categories(self):
-        return [OwnedSemirings(), OwnedRngs()]
+        from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
+        return [OwnedSemirings(), OwnedRngs(), AdditiveGroups().AdditiveCommutative()]
 
     def Mor(self, domain, codomain):
         if domain not in self or codomain not in self:
@@ -6237,15 +6239,10 @@ def _owned_ring_category(
     categories.
     """
     from dzack_research.preamble.owned_category import owned_category_join
-    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 
     if presented is None:
         presented = _presented_ring_category(engine)
-    # Every ring is an abelian group under addition.  State this at the ring
-    # construction boundary so the native module constructor receives its
-    # required additive object directly, rather than relying on a transitive
-    # category join to expose the inherited axiom.
-    extra = [AdditiveGroups().AdditiveCommutative()]
+    extra = []
     match owned_ring:
         case None:
             algebra_base = scalar_base
