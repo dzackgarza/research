@@ -16,6 +16,11 @@ def test_the_tensor_algebra_is_associative_unital_and_noncommutative() -> None:
     a = tensor.algebra_generator("a")
     b = tensor.algebra_generator("b")
 
+    assert tensor.algebra_framing_source() is tensor
+    assert tensor.algebra_framing_morphism().is_identity() is True
+    assert tensor.algebra_generator("a") == tensor.algebra_framing_morphism()(
+        tensor.algebra_framing_source().algebra_generator("a")
+    )
     assert a * b != b * a
     assert (a * b) * a == a * (b * a)
     assert tensor.one() * a == a
@@ -52,6 +57,11 @@ def test_the_symmetric_algebra_of_the_plane_is_a_polynomial_ring_in_two_variable
     a = symmetric.algebra_generator("a")
     b = symmetric.algebra_generator("b")
 
+    assert symmetric.algebra_framing_source() is symmetric
+    assert symmetric.algebra_framing_morphism().is_identity() is True
+    assert symmetric.algebra_generator("a") == symmetric.algebra_framing_morphism()(
+        symmetric.algebra_framing_source().algebra_generator("a")
+    )
     assert symmetric.is_commutative()
     assert a * b == b * a
     assert symmetric.krull_dimension() == 2
