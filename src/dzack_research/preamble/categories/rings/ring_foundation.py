@@ -4033,6 +4033,7 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 native_basis is not None
                 and native_basis.is_basis()
                 and self.base_ring() is scalars
+                and native_basis.source().base_ring() is scalars
             ):
                 # A unital map out of a prime field (or Z) is unique. This
                 # lets native polynomial/number-field bases answer during
