@@ -288,6 +288,8 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     assert canonical_projection.domain() is source_module
     assert canonical_projection.codomain() is basis_map.codomain()
     assert canonical_projection.is_surjective() is True
+    assert canonical_projection.kernel().module_rank() == formed.radical().module_rank() == 1
+    assert canonical_projection.kernel().is_isomorphic(formed.radical())
     for label in basis_map.domain().module_generating_set():
         basis_generator = basis_map.domain().module_generator(label)
         assert basis_map.inverse()(basis_map(basis_generator)) == basis_generator
