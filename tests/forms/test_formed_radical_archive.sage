@@ -79,6 +79,12 @@ def test_rational_formed_module_radical_quotient_retains_its_projection() -> Non
     assert projection.preserves_forms() is True
     basis_map = quotient._preamble_radical_quotient_basis_map
     canonical_projection = quotient._preamble_radical_quotient_projection
+    for label in basis_map.domain().module_generating_set():
+        basis_generator = basis_map.domain().module_generator(label)
+        assert basis_map.inverse()(basis_map(basis_generator)) == basis_generator
+    for label in basis_map.codomain().module_generating_set():
+        quotient_generator = basis_map.codomain().module_generator(label)
+        assert basis_map(basis_map.inverse()(quotient_generator)) == quotient_generator
     source_module = formed.unformed_module()
     for label in source_module.module_generating_set():
         generator = source_module.module_generator(label)
