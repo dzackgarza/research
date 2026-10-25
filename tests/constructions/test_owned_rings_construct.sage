@@ -68,6 +68,10 @@ def test_native_ring_and_extension_constructions_retain_the_additive_group_spine
     quotient_basis_coordinates = quotient_module.module_basis().coordinates(quotient.one())
     assert len(quotient_basis_coordinates) == 1
     assert next(iter(quotient_basis_coordinates.values())) == quotient.base_ring().one()
+    quotient_generator_coordinates = quotient_module.module_basis().coordinates(
+        quotient.quotient_map()(polynomials.algebra_generator("x"))
+    )
+    assert quotient_generator_coordinates == {1: quotient.base_ring().one()}
     assert quotient_fraction_field in additive_groups
     assert quotient_fraction_field in OwnedRings().Division().Commutative()
     assert quotient_fraction_field.fraction_field_localization().localization_source() is quotient
