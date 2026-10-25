@@ -3663,8 +3663,15 @@ def _quotient_ring(source, defining_ideal):
     if dimension == 0 or finite_extension_field:
         placements.append(OwnedRings().Artinian())
 
+    from dzack_research.preamble.categories.group.magmas import AdditiveGroups
+
     return _object_of(
-        owned_category_join((QuotientRings(), Algebras(source).Associative().Unital().Commutative(), *placements)),
+        owned_category_join((
+            QuotientRings(),
+            AdditiveGroups().AdditiveCommutative(),
+            Algebras(source).Associative().Unital().Commutative(),
+            *placements,
+        )),
         source=source,
         defining_ideal=defining_ideal,
         _engine_ring=quotient_engine,
