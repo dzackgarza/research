@@ -29,7 +29,13 @@ def test_affine_A1_lattice_modulo_its_radical_is_the_A1_root_lattice() -> None:
     assert projection.preserves_forms() is True
     assert projection.module_morphism().kernel().module_rank() == radical.module_rank() == 1
     assert projection(radical.inclusion()(r)) == quotient.zero()
+    perpendicular = quotient.orthogonal_complement()
+    inclusion = perpendicular.inclusion()
+    reduction_projection = quotient.projection()
     for left in affine.module_generators():
+        assert projection.module_morphism()(affine.unformed_module()(left)) == quotient._element_of_unformed_module(
+            reduction_projection(inclusion.lift(left))
+        )
         for right in affine.module_generators():
             assert quotient.b(projection(left), projection(right)) == affine.b(left, right)
 
