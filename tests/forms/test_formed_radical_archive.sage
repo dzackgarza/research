@@ -83,6 +83,10 @@ def test_module_valued_radical_quotient_uses_selected_free_basis() -> None:
     assert quotient.form().module() is quotient.unformed_module()
     assert quotient.value_module() is values
     assert projection.preserves_forms() is True
+    assert quotient.b(
+        projection(formed.module_generator(1)),
+        projection(formed.module_generator(2)),
+    ) == value_generator
     source_generators = tuple(formed.module_generators())
     for left in source_generators:
         for right in source_generators:
