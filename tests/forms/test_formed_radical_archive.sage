@@ -58,6 +58,11 @@ def test_rational_zero_form_has_zero_rank_radical_quotient() -> None:
     assert quotient.gram_tensor().tensor_shape() == (0, 0)
     assert projection.module_morphism().is_surjective() is True
     assert projection.module_morphism().kernel().module_rank() == 3
+    for generator in formed.module_generators():
+        assert projection(generator) == quotient.zero()
+    basis_map = quotient._preamble_radical_quotient_basis_map
+    assert basis_map.domain().module_rank() == 0
+    assert basis_map.codomain().module_rank() == 0
 
 
 def test_module_valued_radical_quotient_uses_selected_free_basis() -> None:
