@@ -357,7 +357,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             },
         )
 
-    def at21(self, dynkin_letter, dynkin_rank, *, variant="pure", affine=False):
+    def at21(self, dynkin_letter, dynkin_rank, *, variant=(), affine=False):
         r"""Construct a toric AT21 base with its branch linear system.
 
         The source's ADE and log-canonicity assertions are geometric

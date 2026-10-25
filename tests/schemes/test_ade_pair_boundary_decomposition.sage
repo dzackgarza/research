@@ -129,6 +129,14 @@ def test_at21_accepts_the_printed_prime_and_minus_a_decorations() -> None:
     assert direct_minus.dynkin_variant() == ("long", "short")
 
 
+def test_at21_default_variant_matches_the_parity_selected_base_constructor() -> None:
+    r"""The default means the canonical AT21 shape for the Dynkin rank."""
+    for letter, rank, expected in (("A", 3, "pure"), ("A", 4, "short"), ("D", 5, "short")):
+        pair = ADELogPairs(QQ).at21(letter, rank)
+        assert pair.source_variant() == expected
+        assert pair.base_pair().dynkin_rank() == rank
+
+
 def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
     r"""Table 4's 'A_{2n-3} polygon for 'A^-_{2n-2} ends at (2n-3, 0)."""
     vertices, point = _a_family_polygon_data(4, ("prime",), 3)
