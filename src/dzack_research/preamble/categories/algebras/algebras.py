@@ -1373,7 +1373,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                     )
                     assert callable(product) and callable(_engine_scalar_action) and callable(_native_unit_factory)
                     super().__init__(**rest)
-                    _algebra_from_native_ring(self, product, _native_unit_factory(self), _engine_scalar_action)
             match algebra_generating_family:
                 case None:
                     pass
@@ -1383,6 +1382,20 @@ class Algebras(OwnedCategoryOverBaseRing):
                         family,
                         source=algebra_framing_source,
                         owner=algebra_framing_owner,
+                    )
+            match _engine_product:
+                case None:
+                    pass
+                case product:
+                    # The common ring constructor has now returned and the
+                    # selected algebra resolution, if supplied, is installed.
+                    # Only now can its regular module safely construct End(M)
+                    # and the scalar action without asking for missing framing.
+                    _algebra_from_native_ring(
+                        self,
+                        product,
+                        _native_unit_factory(self),
+                        _engine_scalar_action,
                     )
 
         def _retain_algebra_law_decisions(self, decisions):
