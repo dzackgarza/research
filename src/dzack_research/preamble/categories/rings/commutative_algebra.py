@@ -4263,7 +4263,14 @@ def _localization_at_submonoid(source, submonoid):
                 # Coercing k directly into the localization can choose a
                 # different ambient coercion path and loses the exact retained
                 # scalar structure when A was constructed over a nontrivial map.
-                source_scalar = algebra_source._realized_scalar_structure(scalar)
+                structure_map = getattr(
+                    algebra_source, "_realized_scalar_structure", None
+                )
+                source_scalar = (
+                    algebra_source(scalar)
+                    if structure_map is None
+                    else structure_map(scalar)
+                )
                 scalar_image = localization.localization_map()(source_scalar)
             return scalar_image * localization(element)
 
