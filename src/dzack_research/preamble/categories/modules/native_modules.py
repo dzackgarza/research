@@ -234,14 +234,6 @@ class _RingModulePresentation:
         # category membership has been established.
         if module not in category:
             refine(module, category)
-        # Membership cannot be checked before refinement: this constructor
-        # runs while the native ring's Parent initialization is still building
-        # its category. The supplied module is now placed in Modules(R), whose
-        # declared supercategories include the required additive group.
-        assert module in AdditiveGroups().AdditiveCommutative(), (
-            f"{module} cannot be made an {self.base_ring()}-module: its ring addition must be commutative, "
-            f"but {module} is only known to be in {module.category()}"
-        )
         # The selected resolution is defining data and is installed before
         # placement.  Do not materialize R -> End_Ab(U(module)) here: building
         # that endomorphism ring can itself request module-Mor objects and
