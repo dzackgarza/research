@@ -100,6 +100,9 @@ def test_at21_public_constructor_accepts_the_default_a_zero_minus_shape() -> Non
 def test_pure_a_zero_short_shape_is_admitted_by_at21_source_rules() -> None:
     r"""AT21 Table 1 includes the rank-zero pure shape A_0^-."""
     assert _validated_at21_low_level_variant("A", 0, "short", False) == ("long", "short")
+    pair = ADELogPairs(QQ)("A", 0)
+    assert pair.dynkin_letter() == "A"
+    assert pair.dynkin_rank() == 0
     assert _ade_polygon_data("A", 0, ("short",), False) == (
         ((0, 2), (0, 0), (1, 0)),
         (0, 2),
