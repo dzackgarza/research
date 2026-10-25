@@ -207,6 +207,14 @@ class _RingModulePresentation:
             f"but {module} is only known to be in {module.category()}"
         )
         Modules.ParentMethods._retain_native_module_presentation(module, self)
+        # The selected degree-zero resolution constructs its augmentation as a
+        # module Mor from the free framing source into this module.  Its Mor
+        # constructor requires both endpoints already to lie in Modules(R),
+        # so establish that base category before constructing the resolution;
+        # the retained native presentation makes scalar-action lookup safe
+        # during the resulting realization hooks.
+        if module not in category:
+            refine(module, category)
         if self.is_regular():
             assert self._basis is None, (
                 f"{module} is the regular module over itself; its basis is {{1}}, and no other basis may be given"
