@@ -699,7 +699,11 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
                 case False:
                     return super()._module_basis_along(ring_map)
             native_basis = self._native_module_basis
-            if native_basis is not None and native_basis.is_basis():
+            if (
+                native_basis is not None
+                and native_basis.is_basis()
+                and native_basis.source().base_ring() is ring_map.domain()
+            ):
                 # The number-field constructor already selected the power
                 # basis over its defining coefficient field. Do not rebuild
                 # that basis by asking ``as_algebra()`` for its framing: the
