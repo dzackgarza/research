@@ -150,22 +150,24 @@ class _RingModulePresentation:
 
     @cached_method
     def scalar_action_morphism(self):
-        r"""The defining ``R -> End_Ab(U(M))`` map for this exact native action.
+        r"""Return the exact owned action ``R -> End_Ab(U(M))`` retained by this datum.
 
-        Construct the endomorphism parent from the supplied module's actual
-        underlying additive group. This is owned by the native presentation:
-        rebuilding the action from a generic module element can accidentally
-        use a module wrapper instead of the additive group on which it acts.
+        The endomorphism parent is formed from the additive group of the
+        supplied module, not from a backend ring or from the scalar ring.  In
+        particular, the regular module on a localization or quotient keeps
+        its original module parent and its selected action when a formed
+        lattice asks for the scalar-action morphism.
         """
         from dzack_research.preamble.categories.rings.ring_foundation import OwnedRings
 
         module = self.module()
-        additive_group = module.underlying_additive_group()
-        endomorphisms = AdditiveGroups().AdditiveCommutative().End(additive_group)
+        endomorphisms = AdditiveGroups().AdditiveCommutative().End(
+            module.underlying_additive_group()
+        )
         return self.base_ring().Mor(endomorphisms, category=OwnedRings())(
             lambda scalar: endomorphisms.elementwise(
-                lambda element: self.scalar_multiple(scalar, element),
-            ),
+                lambda element: self.scalar_multiple(scalar, element)
+            )
         )
 
     def is_regular(self):
