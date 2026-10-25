@@ -2431,9 +2431,6 @@ class Modules(OwnedCategoryOverBaseRing):
 
             A module whose datum is ``rho`` itself states it at its own level.
             """
-            native = self._native_module_presentation()
-            if native is not None:
-                return native.scalar_action_morphism()
             ring = self.base_ring()
             endomorphisms = AdditiveGroups().AdditiveCommutative().End(self.underlying_additive_group())
 
@@ -2444,6 +2441,15 @@ class Modules(OwnedCategoryOverBaseRing):
             )
 
         def scalar_action(self):
+            # A category construction hook can ask for the generic action
+            # before a native ring's deferred module presentation is
+            # installed.  The generic action is cached by the method above;
+            # never reuse that cache after the native owner has supplied its
+            # defining action.  The native datum owns its own cache and exact
+            # End(U(M)) endpoint.
+            native = self._native_module_presentation()
+            if native is not None:
+                return native.scalar_action_morphism()
             return self._ring_morphism_defining_module_action()
 
         def annihilator(self):
