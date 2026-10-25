@@ -1385,7 +1385,6 @@ class Algebras(OwnedCategoryOverBaseRing):
                         "multiplication"
                     )
                     assert callable(product) and callable(_engine_scalar_action) and callable(_native_unit_factory)
-                    self._preamble_defer_native_algebra_setup = True
                     super().__init__(**rest)
             match algebra_generating_family:
                 case None:
@@ -4390,7 +4389,6 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         algebra_framing_source=None,
         constructing_category=None,
         ring_placement=None,
-        _defer_native_algebra_setup=False,
     ) -> None:
         r"""Realize a ring as an algebra over ``base_ring`` on a private engine.
 

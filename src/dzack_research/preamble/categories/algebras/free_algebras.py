@@ -268,7 +268,6 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             algebra_framing_source=self,
             algebra_framing_owner=framing_owner,
             ring_placement=ring_placement,
-            _defer_native_algebra_setup=True,
         )
         # Algebras.ParentMethods.__init__, entered through the common parent
         # constructor above, installs the selected resolution, native regular
