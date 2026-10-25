@@ -6419,7 +6419,11 @@ def _owned_ring_category(
         case _:
             pass
     match owned_ring:
-        case _ if owned_ring is not None and owned_ring._native_module_basis is not None:
+        case _ if (
+            not defer_construction_facets
+            and owned_ring is not None
+            and owned_ring._native_module_basis is not None
+        ):
             from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
                 FramedFreeModules,
             )
