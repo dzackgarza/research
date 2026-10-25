@@ -491,8 +491,7 @@ class UnitalMultiplicativeAlgebraMor(MultiplicativeAlgebraMor):
 
 
 def _algebra_from_native_ring(
-    algebra, product, unit, scalar_action, *, module_basis=None, scalar_ring=None,
-    defer_scalar_action=False,
+    algebra, product, unit, scalar_action, *, module_basis=None, scalar_ring=None
 ):
     r"""Compute (M,m) from a native ring and enter the ordinary algebra constructor.
 
@@ -540,12 +539,11 @@ def _algebra_from_native_ring(
             pass
         case False:
             refine(module, selected_category)
-    # The scalar-action morphism uses End_Ab(U(module)); constructing that
-    # endomorphism ring may itself realize module-Mor objects.  Materialize it
-    # only after the complete native algebra/module placement is established,
-    # while preserving the constructor-supplied action and additive group.
-    if not defer_scalar_action:
-        presentation.scalar_action_morphism()
+    # Keep the scalar action as defining constructor data, but do not eagerly
+    # realize R -> End_Ab(U(module)) here.  The End construction can itself
+    # demand module-Mor objects and recurse into this constructor.  The public
+    # scalar_action() owner realizes the map on demand against the final
+    # additive-group parent, preserving this exact pointwise action.
     return module
 
 
@@ -4514,10 +4512,8 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     self._native_scalar_action,
                     module_basis=self._native_module_basis,
                     scalar_ring=base,
-                    defer_scalar_action=True,
                 )
             refine(self, Cat().meet(tuple(placement)))
-            self.scalar_action()
             return
 
         label_size = selected_labels.cardinality()
@@ -4606,12 +4602,10 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 self._native_scalar_action,
                 module_basis=self._native_module_basis,
                 scalar_ring=base,
-                defer_scalar_action=True,
             )
         # Both selected framing and native module datum are now queryable by
         # the algebra realization hooks this placement introduces.
         refine(self, Cat().meet(tuple(placement)))
-        self.scalar_action()
 
 @cached_function
 def _owned_algebra_view(
