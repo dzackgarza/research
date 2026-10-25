@@ -347,7 +347,11 @@ class Sterk:
         return {
             name: CoxeterDiagrams().from_roots(
                 finite_indexed_family_from_values(None, tuple(roots)),
-                names=finite_ordered_set(tuple(f"r{i}" for i, _root in enumerate(roots))),
+                # The source diagrams and the retained layouts both index
+                # simple roots from zero. Naming them r1,...,rn silently
+                # shifted every label relative to the dissertation's layout
+                # and to the indexed family used by the Coxeter diagram.
+                names=finite_ordered_set(tuple(f"r{i}" for i in range(len(roots)))),
                 positions=_STERK_DIAGRAM_LAYOUTS[name],
             )
             for name, roots in Sterk.sterk_roots().items()
