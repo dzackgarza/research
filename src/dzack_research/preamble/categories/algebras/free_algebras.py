@@ -239,6 +239,18 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             self._native_basis_image,
             self._native_basis_coefficients,
         )
+        generator_ranking = labels.ranking_map()
+        algebra_generators = indexed_family(
+            labels,
+            lambda label: self._from_engine_element(
+                engine.gen(int(generator_ranking(label)))
+            ),
+            name="Free algebra generators",
+        )
+        associative_owner = Algebras(base).Associative().Unital()
+        framing_owner = (
+            associative_owner.Commutative() if flavor == "symmetric" else associative_owner
+        )
         super().__init__(
             engine, base, generating_module.module_generating_set(),
             categories=(
@@ -252,7 +264,9 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             ),
             construction_data=construction_data,
             law_decisions=(("grading", True),),
+            algebra_generating_family=algebra_generators,
             algebra_framing_source=self,
+            algebra_framing_owner=framing_owner,
             ring_placement=ring_placement,
         )
 
