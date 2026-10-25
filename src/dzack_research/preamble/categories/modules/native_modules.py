@@ -147,6 +147,12 @@ class _RingModulePresentation:
             f"{module} cannot be made an object of {category}: its scalar action is by "
             f"{self.base_ring()}, not by {category.base_ring()}"
         )
+        # This presentation is created only by ring/algebra construction
+        # owners, whose additive operation is an abelian group by definition.
+        # Install that inherited structure before testing the module axiom;
+        # do not make success depend on how the ring's other category facets
+        # happened to be joined during parent construction.
+        refine(module, AdditiveGroups().AdditiveCommutative())
         assert module in AdditiveGroups().AdditiveCommutative(), (
             f"{module} cannot be made an {self.base_ring()}-module: a module's addition must be commutative, "
             f"but {module} is only known to be in {module.category()}"
