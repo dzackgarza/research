@@ -84,6 +84,15 @@ def test_owned_ring_cardinality_distinguishes_countable_and_uncountable_infinite
     assert Qp(5).cardinality() == continuum
 
 
+def test_finite_owned_ring_iteration_enumerates_its_points() -> None:
+    ring = GF(25)
+    points = tuple(ring)
+
+    assert len(points) == ring.cardinality() == 25
+    assert len(set(points)) == 25
+    assert all(point.parent() is ring for point in points)
+
+
 def test_owned_algebraic_real_and_complex_closures_are_countable() -> None:
     assert AA.cardinality() == aleph0
     assert QQbar.cardinality() == aleph0

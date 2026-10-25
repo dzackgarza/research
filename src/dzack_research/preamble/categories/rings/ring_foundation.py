@@ -3659,6 +3659,24 @@ class OwnedRings(CategoryPacketMethods, OwnedCategory):
                 return zero_ideal.colon(ring.ideal(self)) == zero_ideal
 
     class ParentMethods:
+        def __iter__(self):
+            r"""Enumerate the points of a finite owned ring through its selected engine.
+
+            Ring adjunction syntax is implemented by ``__getitem__`` and is
+            not an enumeration protocol. For a finite ring, the selected
+            engine already enumerates the underlying points; expose those
+            points as owned elements instead of allowing Python's sequence
+            fallback to repeatedly return the ring itself.
+            """
+            from dzack_research.preamble.categories.sets.set_categories import FiniteSets
+
+            if self not in FiniteSets():
+                raise TypeError(f"cannot enumerate {self}: it is not placed among finite sets")
+            engine = self._selected_engine_ring()
+            if engine is None or engine is self:
+                raise TypeError(f"cannot enumerate {self}: no selected finite engine enumeration is available")
+            return iter(_owned_engine_element(self, point) for point in engine)
+
         @cached_method
         def as_ZZ_algebra(self):
             r"""Read this unital ring with its unique central integer action.
