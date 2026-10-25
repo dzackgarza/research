@@ -270,24 +270,11 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             ring_placement=ring_placement,
             _defer_native_algebra_setup=True,
         )
-        # This is a direct _OwnedAlgebraParent construction, not the outer
-        # Algebras(...) constructor that can finish a deferred native setup.
-        # Install the regular module only after the selected free-algebra
-        # resolution above has been retained; otherwise polynomial and tensor
-        # rings reach consumers with no native module presentation.
-        from dzack_research.preamble.categories.algebras.algebras import (
-            _algebra_from_native_ring,
-        )
-
-        _algebra_from_native_ring(
-            self,
-            lambda left, right: left * right,
-            self._from_engine_element(engine.one()),
-            self._native_scalar_action,
-            module_basis=self._native_module_basis,
-            scalar_ring=base,
-        )
-        self._finish_pending_algebra_placement()
+        # Algebras.ParentMethods.__init__, entered through the common parent
+        # constructor above, installs the selected resolution, native regular
+        # module and deferred algebra placement in that order. Reconstructing
+        # the module here would attempt to install a second scalar action on
+        # the same parent, violating the one-shot Modules owner contract.
 
     def _specialized_algebra_with_structure(
         self,
