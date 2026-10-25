@@ -237,6 +237,13 @@ def test_rational_radical_quotient_retains_its_projection() -> None:
     assert lattice_quotient.form().module() is lattice_quotient.unformed_module()
     assert lattice_quotient.gram_tensor().tensor_shape() == (2, 2)
     assert lattice_quotient.is_isometric_to(Lattices(QQ)([[0, 1], [1, 0]]))
+    basis_map = quotient._preamble_radical_quotient_basis_map
+    canonical_projection = quotient._preamble_radical_quotient_cokernel_projection
+    assert canonical_projection.domain() is lattice.unformed_module()
+    assert canonical_projection.codomain() is basis_map.codomain()
+    for label in lattice.unformed_module().module_generating_set():
+        generator = lattice.unformed_module().module_generator(label)
+        assert basis_map(lattice.radical_quotient_projection().module_morphism()(generator)) == canonical_projection(generator)
     lattice_generators = tuple(lattice_quotient.module_generators())
     quotient_generators = tuple(quotient.module_generators())
     for i, left in enumerate(lattice_generators):
