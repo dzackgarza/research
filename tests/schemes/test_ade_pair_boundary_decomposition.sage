@@ -110,9 +110,9 @@ def test_pure_a_zero_short_shape_is_admitted_by_at21_source_rules() -> None:
     )
 
 
-def test_primed_a_polygon_uses_the_dynkin_rank_as_its_last_vertex() -> None:
-    r"""Table 4's primed 'A_{2n-3} polygon has last vertex (2n-3, 0)."""
-    vertices, point = _a_family_polygon_data(3, ("prime",), 2)
+def test_primed_a_polygon_uses_the_table_four_endpoint() -> None:
+    r"""Table 4's 'A_{2n-3} polygon for 'A^-_{2n-2} ends at (2n-3, 0)."""
+    vertices, point = _a_family_polygon_data(4, ("prime",), 3)
 
     assert vertices == ((2, 2), (0, 1), (0, 0), (3, 0))
     assert point == (2, 2)

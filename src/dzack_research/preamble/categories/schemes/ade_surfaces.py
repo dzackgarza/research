@@ -129,7 +129,7 @@ def _a_family_polygon_data(rank, variant, parameter):
     right_short = _has(variant[1:2], "short")
     if _has(variant, "primed", "prime", "p"):
         return (
-            ((2, 2), (0, 1), (0, 0), (rank, 0)),
+            ((2, 2), (0, 1), (0, 0), (rank - 1, 0)),
             (2, 2),
         )
     if left_short and right_short:
