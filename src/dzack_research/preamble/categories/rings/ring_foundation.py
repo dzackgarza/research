@@ -5456,19 +5456,23 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
 
                 integers = _owned_integers()
                 labels = owned_sets.finite_ordered_set(range(int(engine.rank())))
-                degree = int(engine.number_field().degree())
+                field_engine = engine.number_field()
+                degree = int(field_engine.degree())
                 basis_elements = tuple(engine.basis())
                 basis_matrix = _SageMatrix(
                     SageQQ,
                     tuple(
-                        tuple(element.list()) + (SageQQ.zero(),) * (degree - len(element.list()))
+                        tuple(field_engine(element).list())
+                        + (SageQQ.zero(),) * (degree - len(field_engine(element).list()))
                         for element in basis_elements
                     ),
                 )
                 inverse_basis_matrix = basis_matrix.inverse()
 
                 def order_coordinates(element):
-                    values = tuple(_engine_element(self, element).list())
+                    # Read coordinates in the number field's power basis,
+                    # not through any order-specific element representation.
+                    values = tuple(field_engine(_engine_element(self, element)).list())
                     assert len(values) <= degree, (
                         f"the coordinates of {element} exceed the degree {degree} of {engine.number_field()}"
                     )
