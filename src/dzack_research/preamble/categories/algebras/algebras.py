@@ -4573,6 +4573,12 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                     # Keep the direct label path above so a finite index set
                     # need not acquire an enumeration merely to use its own
                     # already-matching generator family.
+                    if family_labels not in EnumeratedSets():
+                        raise TypeError(
+                            f"the generator family for {engine} is indexed by {family_labels}, "
+                            f"which differs from the selected algebra labels {selected_labels}; "
+                            "positional transport requires a selected enumeration of the supplied index set"
+                        )
                     family_position = family_labels.ranking_map().inverse()
 
                     def value(label):
