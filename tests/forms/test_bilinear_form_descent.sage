@@ -74,11 +74,14 @@ def test_descent_checks_relations_after_projecting_form_values() -> None:
     inclusion = relation_module.module_category().Mor(relation_module, module)(
         lambda label: relation
     )
-    form = module.bilinear_forms(ZZ)([[2, 0], [0, 1]])
+    form = module.bilinear_forms(ZZ)([[2, 2], [2, 1]])
     values = ZZ.ideal(ZZ(2)).quotient_ring()
     projection = ZZ.Mor(values)(lambda value: values(value))
 
     assert form(relation, relation) == 2
+    retained = module.module_generator(labels[1])
+    assert form(relation, retained) == form(retained, relation) == 2
+    assert projection(form(relation, retained)) == values.zero()
     assert not form.descends_along(inclusion, ZZ.Mor(ZZ).identity())
     assert form.descends_along(inclusion, projection)
     descended = form.descend_along(inclusion, projection)
