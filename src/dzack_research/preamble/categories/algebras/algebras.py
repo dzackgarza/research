@@ -509,7 +509,13 @@ def _algebra_from_native_ring(
     # method is not yet present. Such owners pass the already selected scalar
     # ring explicitly; ordinary callers continue to read the retained algebra
     # level as before.
-    ring = algebra.algebra_base_ring() if scalar_ring is None else _owned_ring(scalar_ring)
+    if scalar_ring is None:
+        scalar_ring = vars(algebra).get("_preamble_selected_algebra_base_ring")
+    ring = (
+        algebra.algebra_base_ring()
+        if scalar_ring is None
+        else _owned_ring(scalar_ring)
+    )
     Algebras.Unital.ParentMethods._retain_unit(algebra, unit)
     presentation = _RingModulePresentation(algebra, ring, product, unit, scalar_action, basis=module_basis)
     module = Modules(ring)(presentation)
