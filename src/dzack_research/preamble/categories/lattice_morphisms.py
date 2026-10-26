@@ -57,10 +57,6 @@ from dzack_research.preamble.categories.modules.framed.formed.form_modules impor
     FormedModuleMorphism,
     _represented_value_module,
 )
-from dzack_research.preamble.categories.modules.module_morphisms.module_morphisms import (
-    ModuleMorphism,
-    ModuleMorphismMethods,
-)
 from dzack_research.preamble.categories.modules.pure.modules import Modules, ModulesOverIntegralDomains, _engine_matrix
 from dzack_research.preamble.categories.rings.ring_foundation import (
     OwnedFields,
@@ -416,11 +412,7 @@ class LatticeMorphismMethods:
         return source.Mor(self.codomain())(lambda label: self(other(source.module_generator(label))))
 
 
-class LatticeMorphism(LatticeMorphismMethods, ModuleMorphism):
-    r"""Compatibility shell for private lattice-arrow realizations not yet graph-generated."""
-
-    def __init__(self, parent, images, *, elementwise=False) -> None:
-        ModuleMorphism.__init__(self, parent, images, elementwise=elementwise)
+LatticeMorphism = LatticeMorphismMethods
 
 
 class LatticeEmbeddingMethods:
@@ -904,8 +896,7 @@ def _subgroup_inclusion_into(subgroup, group):
     return inclusion
 
 
-class LatticeEmbedding(LatticeEmbeddingMethods, LatticeMorphism):
-    r"""Compatibility shell for private lattice-embedding realizations."""
+LatticeEmbedding = LatticeEmbeddingMethods
 
 
 class LatticeIsometryMethods:
@@ -1884,8 +1875,7 @@ def _hermitian_miranda_morrison_image(isometry, action):
     return orthogonal_group.subgroup_on(tuple(generators))
 
 
-class LatticeIsometry(LatticeIsometryMethods, LatticeEmbedding):
-    r"""Compatibility shell for private lattice-isometry realizations."""
+LatticeIsometry = LatticeIsometryMethods
 
 
 class LatticeMor(CategoricalMor):
