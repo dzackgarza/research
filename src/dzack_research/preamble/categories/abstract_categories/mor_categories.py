@@ -1659,6 +1659,21 @@ class MorCategories(OwnedCategoryBase):
 
         return [Cat()]
 
+    def Mor(self, domain: Category, codomain: Category) -> Category:
+        r"""Return the represented functor category between fixed-Mor categories.
+
+        ``MorCategories`` is a full subcategory of ``Cat`` on represented Mor
+        categories. Its arrows are therefore the actual functors and natural
+        transformations of ``Cat``; constructing them through a raw generic
+        Mor-family ingress records the unrepresented endpoints and breaks the
+        identity-sensitive admission lookup. Normalize both endpoints through
+        the owner before entering that canonical family.
+        """
+        from dzack_research.preamble.categories.abstract_categories.cat import Cat
+
+        cat = Cat()
+        return cat.functor_mor(cat.object(domain), cat.object(codomain))
+
     def an_object(self) -> Category:
         r"""The Mor of the witness of the category of sets to itself."""
         from dzack_research.preamble.categories.sets.set_categories import Sets
