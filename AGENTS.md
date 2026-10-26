@@ -233,8 +233,9 @@ notebook execution and kernel in the foreground under `timeout`, runs only the
 notebooks its brief names, and trashes its runner scripts before it reports.
 Before returning it checks that no process using its scratch files is left.
 On 2026-10-27 a porting worker returned with a `.tmp/run_nb.py` loop still
-executing an unassigned notebook. That loop started about twelve kernels at a
-time and held the host at full CPU after the worker had returned.
+executing an unassigned notebook. The notebook's `@parallel` computation forked
+a worker per core on each run, and the loop held the host at full CPU after the
+worker had returned.
 
 Only the orchestrating agent:
 
