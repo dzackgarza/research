@@ -33,9 +33,8 @@ def _canonical_attach_code(filename: str) -> str | None:
     return (
         "import importlib as __preamble_importlib, sys as __preamble_sys\n"
         f"__preamble_module = __preamble_sys.modules[{module_name!r}]\n"
-        "if any(isinstance(value, type) and getattr(value, '__module__', None) == __preamble_module.__name__ "
-        "for value in vars(__preamble_module).values()):\n"
-        "    raise RuntimeError('cannot attach-reload a canonical module defining classes: reload would split class identity; restart the Sage session to reload this module')\n"
+        "if any(isinstance(value, type) for value in vars(__preamble_module).values()):\n"
+        "    raise RuntimeError('cannot attach-reload a canonical module exposing classes: reload can split class identity; restart the Sage session to reload this module')\n"
         "__preamble_module = __preamble_importlib.reload(__preamble_module)\n"
         "globals().update({name: value for name, value in vars(__preamble_module).items() "
         "if not (name.startswith('__') and name.endswith('__'))})\n"
