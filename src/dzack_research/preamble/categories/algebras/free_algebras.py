@@ -252,7 +252,11 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             associative_owner.Commutative() if flavor == "symmetric" else associative_owner
         )
         super().__init__(
-            engine, base, generating_module.module_generating_set(),
+            # The generator family above and the selected algebra framing
+            # must share the very same index-set object. Re-querying the
+            # module can return an equal but distinct set, forcing the common
+            # constructor to decide extensional equality unnecessarily.
+            engine, base, labels,
             categories=(
                 FreeAlgebras(base),
                 GradedFreeAlgebras(base),
