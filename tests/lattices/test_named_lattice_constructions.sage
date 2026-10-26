@@ -70,6 +70,9 @@ def test_the_dolgachev_pinkham_dual_lattice_retains_its_metric_form() -> None:
     assert dual in FormModules(ZZ)
     assert dual.base_ring() is lattice.base_ring() is ZZ
     assert dual.module_rank() == lattice.module_rank() == 20
+    assert dual.unformed_module() is lattice.dual_module()
+    assert dual.module_generating_set() is lattice.module_generating_set()
+    assert dual.form().codomain() is dual.value_module()
     assert dual_gram == gram.inverse()
     assert dual.signature_pair() == lattice.signature_pair() == signature_pair(2, 18)
     assert lattice.determinant() * dual.determinant() == 1
