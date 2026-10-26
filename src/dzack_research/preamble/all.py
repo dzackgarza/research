@@ -763,6 +763,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     module_depth = -1
     conflicting_source = None
     unresolved_package_source = None
+    loaded_source_modules = []
     # Existing module identity outranks the current sys.path interpretation:
     # paths can be inserted or reordered after import, but that must not make
     # ``load(source)`` choose a second name for the same already-loaded file.
@@ -777,12 +778,23 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             same_source = _Path(module_file).resolve() == source
         except (OSError, RuntimeError, TypeError, ValueError):
             continue
-        if same_source and (
-            name.count(".") > module_depth
-            or (name.count(".") == module_depth and (module_name is None or name < module_name))
-        ):
-            module_name = name
-            module_depth = name.count(".")
+        if same_source:
+            loaded_source_modules.append((name, module))
+            if (
+                name.count(".") > module_depth
+                or (name.count(".") == module_depth and (module_name is None or name < module_name))
+            ):
+                module_name = name
+                module_depth = name.count(".")
+    distinct_loaded_modules = {}
+    for name, module in loaded_source_modules:
+        distinct_loaded_modules.setdefault(id(module), []).append(name)
+    if len(distinct_loaded_modules) > 1:
+        aliases = sorted(name for names in distinct_loaded_modules.values() for name in names)
+        raise ImportError(
+            f"{source} is already loaded as distinct module objects {aliases}; "
+            "refusing to continue with duplicate category/module identities"
+        )
     for entry in (() if module_name is not None else _sys.path):
         root = _Path(entry or ".").resolve()
         try:
