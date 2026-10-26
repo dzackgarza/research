@@ -124,9 +124,9 @@ class ClassifyingCategory(CategoryPacketMethods, OwnedParameterizedCategory):
             sage: B.Mor(B.object(), B.object()).identity().group_element() == B.group().one()
             True
         """
-        from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+        from dzack_research.preamble.categories.sets.set_categories import Set
 
-        return finite_ordered_set((self.object(),))
+        return Set((self.object(),))
 
     def arrows(self):
         r"""The complete set of arrows of ``BG``, namely ``Mor_BG(*,*)``.

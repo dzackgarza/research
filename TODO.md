@@ -34,7 +34,6 @@ The required [core migration #384](https://github.com/dzackgarza/research/issues
 | `an-object-lies-in-several-slices` | [#468](https://github.com/dzackgarza/research/issues/468) |
 | `module-and-algebra-slice-objects-lie-in-their-slice` | [#469](https://github.com/dzackgarza/research/issues/469) |
 | `every-arrow-is-an-element-of-its-mor` | [#454](https://github.com/dzackgarza/research/issues/454) |
-| `classifying-categories-have-an-object-set` | [#455](https://github.com/dzackgarza/research/issues/455) |
 | `objects-of-sets-answer-their-endomorphisms` | [#458](https://github.com/dzackgarza/research/issues/458) |
 | `maximal-and-prime-ideals-are-presented` | [#444](https://github.com/dzackgarza/research/issues/444) |
 | `quotient-ring-placement-follows-construction` | [#445](https://github.com/dzackgarza/research/issues/445) |
