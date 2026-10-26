@@ -46,7 +46,7 @@ def test_a_morphism_out_of_the_free_group_is_given_by_the_images_of_its_letters(
 def test_generator_images_must_generate_the_whole_source() -> None:
     # A single transposition generates only C2 inside S3. Its image
     # cannot specify a homomorphism on arbitrary elements of S3.
-    from dzack_research.preamble.categories.group.groups import _engine_generator_epimorphism
+    from sage_extensions.categories.group.groups import _engine_generator_epimorphism
 
     group = Groups.S(3)
     transposition = group((1, 2))
@@ -59,7 +59,7 @@ def test_generator_images_must_generate_the_whole_source() -> None:
 
 
 def test_engine_generator_image_family_has_exact_arity() -> None:
-    from dzack_research.preamble.categories.group.groups import _gap_model
+    from sage_extensions.categories.group.groups import _gap_model
 
     symmetric = Groups.S(3)
     cyclic = Groups.C(2)
@@ -83,7 +83,7 @@ def test_engine_generator_image_family_has_exact_arity() -> None:
     # The same ingress must reject maps which violate source relations,
     # even with a complete generator-image family: C4 cannot map its
     # generator to an element of order three.
-    from dzack_research.preamble.categories.group.groups import _element_to_engine
+    from sage_extensions.categories.group.groups import _element_to_engine
 
     four = Groups.C(4)
     three = Groups.C(3)
@@ -108,7 +108,7 @@ def test_engine_generator_image_family_has_exact_arity() -> None:
 
 
 def test_gap_group_morphism_requires_its_selected_endpoints() -> None:
-    from dzack_research.preamble.categories.group.groups import _gap_model
+    from sage_extensions.categories.group.groups import _gap_model
     from sage.libs.gap.libgap import libgap
 
     two = Groups.C(2)
@@ -161,7 +161,7 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     assert group.natural_points() is points
     action = group.natural_g_set()
     assert action.point_set() is points
-    from dzack_research.preamble.categories.group.g_sets import _permutation_from_point_map
+    from sage_extensions.categories.group.g_sets import _permutation_from_point_map
 
     try:
         _permutation_from_point_map(group, points, lambda _point: points(0))
@@ -172,7 +172,7 @@ def test_symmetric_group_retains_its_chosen_point_set_and_action() -> None:
     identity = group.one()
     for point in points:
         assert action.act(identity, point) == point
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
     # The common PermutationGroups owner must not silently extend an
     # unlabelled permutation's action beyond its represented domain.
     unlabelled = Groups.S(3)
@@ -231,7 +231,7 @@ def test_symmetric_group_arrows_are_induced_by_bijections() -> None:
     ``S_3`` has ten group endomorphisms (four of them with image of order at
     most two, one of them trivial).
     """
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
 
     points = Sets.Δ[2]
     labels = finite_ordered_set(("a", "b", "c"))
@@ -636,7 +636,7 @@ def test_presentations_outside_the_computed_cases_and_foreign_relators() -> None
 
     # Relations from another presented group are not words in this
     # selected free source, even if both have one chosen generator.
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
     other_free = Groups.Free(index_set=finite_ordered_set(("z",)))
     other_generator = other_free.group_generators()[0]
     try:

@@ -18,7 +18,7 @@ from sage.misc.lazy_import import lazy_import as _lazy_import
 from sage.repl.load import load as _sage_load
 
 from dzack_research.preamble import language_runtime as _language_runtime
-from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
+from sage_extensions.categories.abstract_categories import (  # noqa: F401
     Cat,
     CategoricalIsomorphism,
     CommutativeSquare,
@@ -46,12 +46,12 @@ from dzack_research.preamble.categories.abstract_categories import (  # noqa: F4
     trivial_coverage,
     OpenCoveringFamilies,
 )
-from dzack_research.preamble.categories.abstract_categories.functors import (  # noqa: F401
+from sage_extensions.categories.abstract_categories.functors import (  # noqa: F401
     DiscreteCategories,
     DiscreteCategory,
     ObjectSetFunctor,
 )
-from dzack_research.preamble.categories.algebras import (
+from sage_extensions.categories.algebras import (
     AlgebraMor,
     AlgebraMorphism,
     Algebras,
@@ -100,25 +100,25 @@ from dzack_research.preamble.categories.algebras import (
     SymmetricAlgebras,
     TensorAlgebras,
 )
-from dzack_research.preamble.categories.algebras.algebras import (
+from sage_extensions.categories.algebras.algebras import (
     MatrixAlgebras as MatrixAlgebras,
 )
-from dzack_research.preamble.categories.coxeter_diagrams import (
+from sage_extensions.categories.coxeter_diagrams import (
     CoxeterDiagrams as CoxeterDiagrams,
 )
-from dzack_research.preamble.categories.satake_diagrams import (
+from sage_extensions.categories.satake_diagrams import (
     SatakeDiagrams as SatakeDiagrams,
 )
-from dzack_research.preamble.categories.chamber_systems import (  # noqa: F401
+from sage_extensions.categories.chamber_systems import (  # noqa: F401
     ChamberSystems,
 )
-from dzack_research.preamble.categories.graph_categories import (  # noqa: F401
+from sage_extensions.categories.graph_categories import (  # noqa: F401
     Digraphs,
     Graphs,
     LabelledDigraphs,
     LabelledGraphs,
 )
-from dzack_research.preamble.categories.divisors import (  # noqa: F401
+from sage_extensions.categories.divisors import (  # noqa: F401
     AlgebraicCycleGroups,
     CartierDivisorGroups,
     ChowGroups,
@@ -137,12 +137,12 @@ from dzack_research.preamble.categories.divisors import (  # noqa: F401
     TorusInvariantCycleGroups,
     WeilDivisorGroups,
 )
-from dzack_research.preamble.categories.forms import (
+from sage_extensions.categories.forms import (
     BilinearFormMorphism,
     PairingMorphism,
     QuadraticFormMorphism,
 )
-from dzack_research.preamble.categories.functions import (  # noqa: F401
+from sage_extensions.categories.functions import (  # noqa: F401
     C,
     GradedLebesgueModule,
     GradedTensorProductModules,
@@ -159,19 +159,19 @@ from dzack_research.preamble.categories.functions import (  # noqa: F401
 )
 
 # Explicit redundant aliases below are public session exports, not private imports.
-from dzack_research.preamble.categories.functors.core import (
+from sage_extensions.categories.functors.core import (
     Adjunction as Adjunction,
 )
-from dzack_research.preamble.categories.functors.core import (
+from sage_extensions.categories.functors.core import (
     Functor as Functor,
 )
-from dzack_research.preamble.categories.functors.core import (
+from sage_extensions.categories.functors.core import (
     IdentityFunctor as IdentityFunctor,
 )
-from dzack_research.preamble.categories.functors.core import (
+from sage_extensions.categories.functors.core import (
     NaturalTransformation as NaturalTransformation,
 )
-from dzack_research.preamble.groups import (
+from sage_extensions.groups import (
     FreeGroupQuotients,
     CoxeterGroups,
     AbelianGroups,
@@ -233,26 +233,26 @@ from dzack_research.preamble.groups import (
     Torsors,
     groups,
 )
-from dzack_research.preamble.categories.hyperbolic_lattices import (  # noqa: F401
+from sage_extensions.categories.hyperbolic_lattices import (  # noqa: F401
     HyperbolicLattices,
 )
-from dzack_research.preamble.categories.isotropic_orbits import (  # noqa: F401
+from sage_extensions.categories.isotropic_orbits import (  # noqa: F401
     FlagType,
     IsotropicFlag,
 )
-from dzack_research.preamble.categories.isotropic_parabolics import (  # noqa: F401
+from sage_extensions.categories.isotropic_parabolics import (  # noqa: F401
     PrimitiveIsotropicSubobjects,
 )
-from dzack_research.preamble.categories.lattice_centralizers import (  # noqa: F401
+from sage_extensions.categories.lattice_centralizers import (  # noqa: F401
     IsometryPrimitiveExtension,
 )
-from dzack_research.preamble.categories.lattice_morphisms import (  # noqa: F401
+from sage_extensions.categories.lattice_morphisms import (  # noqa: F401
     LatticeEmbedding,
     LatticeMor,
     LatticeIsometry,
     LatticeMorphism,
 )
-from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa: F401
+from sage_extensions.categories.lattices import (  # noqa: F401  # noqa: F401
     EvenLattices,
     EvenTwoElementaryLattices,
     DefiniteLattices,
@@ -267,75 +267,75 @@ from dzack_research.preamble.categories.lattices import (  # noqa: F401  # noqa:
     signature_pair,
     signature_pairs,
 )
-from dzack_research.preamble.categories.group.groups import (  # noqa: F401
+from sage_extensions.categories.group.groups import (  # noqa: F401
     LieGroups,
     TopologicalGroups,
 )
-from dzack_research.preamble.categories.hyperbolic_geometry import (  # noqa: F401
+from sage_extensions.categories.hyperbolic_geometry import (  # noqa: F401
     HyperbolicPolyhedra,
     HyperbolicRationalPoints,
     HyperbolicSpaces,
     PositiveConeComponents,
 )
-from dzack_research.preamble.categories.manifolds import (  # noqa: F401
+from sage_extensions.categories.manifolds import (  # noqa: F401
     ComplexManifolds,
     DifferentiableManifolds,
     RiemannianManifolds,
     SmoothManifolds,
     TopologicalManifolds,
 )
-from dzack_research.preamble.categories.integral_affine_manifolds import (  # noqa: F401
+from sage_extensions.categories.integral_affine_manifolds import (  # noqa: F401
     IntegralAffineManifolds,
     IntegralAffineManifoldsWithBoundary,
     IntegralAffineManifoldsWithCorners,
     SingularIntegralAffineLocalModels,
     SingularIntegralAffineSpaces,
 )
-from dzack_research.preamble.categories.integral_affine_atlases import (  # noqa: F401
+from sage_extensions.categories.integral_affine_atlases import (  # noqa: F401
     IntegralAffineAtlases,
 )
-from dzack_research.preamble.categories.integral_affine_stratified_atlases import (  # noqa: F401
+from sage_extensions.categories.integral_affine_stratified_atlases import (  # noqa: F401
     IntegralAffineBoundaryAtlases,
     IntegralAffineCornerAtlases,
 )
-from dzack_research.preamble.categories.integral_affine_collars import (  # noqa: F401
+from sage_extensions.categories.integral_affine_collars import (  # noqa: F401
     IntegralAffineCollars,
 )
-from dzack_research.preamble.categories.sets.finite_graded_posets import (  # noqa: F401
+from sage_extensions.categories.sets.finite_graded_posets import (  # noqa: F401
     FiniteGradedPosets,
 )
-from dzack_research.preamble.categories.cell_complexes import (  # noqa: F401
+from sage_extensions.categories.cell_complexes import (  # noqa: F401
     CellComplexes,
     DeltaComplexes,
     PolytopalComplexes,
     SimplicialComplexes,
     SimplicialSets,
 )
-from dzack_research.preamble.categories.schemes.degeneration_central_fibers import (  # noqa: F401
+from sage_extensions.categories.schemes.degeneration_central_fibers import (  # noqa: F401
     DegenerationCentralFibers,
 )
-from dzack_research.preamble.categories.triangulations import (  # noqa: F401
+from sage_extensions.categories.triangulations import (  # noqa: F401
     ChosenTriangulations,
 )
-from dzack_research.preamble.categories.real_ck_manifolds import (  # noqa: F401
+from sage_extensions.categories.real_ck_manifolds import (  # noqa: F401
     RealCkManifolds,
 )
-from dzack_research.preamble.categories.topological_atlases import (  # noqa: F401
+from sage_extensions.categories.topological_atlases import (  # noqa: F401
     TopologicalAtlases,
 )
-from dzack_research.preamble.categories.real_ck_atlases import (  # noqa: F401
+from sage_extensions.categories.real_ck_atlases import (  # noqa: F401
     RealCkAtlases,
 )
-from dzack_research.preamble.categories.stratified_atlases import (  # noqa: F401
+from sage_extensions.categories.stratified_atlases import (  # noqa: F401
     RealCkBoundaryAtlases,
     RealCkCornerAtlases,
     TopologicalBoundaryAtlases,
     TopologicalCornerAtlases,
 )
-from dzack_research.preamble.categories.holomorphic_atlases import (  # noqa: F401
+from sage_extensions.categories.holomorphic_atlases import (  # noqa: F401
     HolomorphicAtlases,
 )
-from dzack_research.preamble.categories.manifolds_with_boundary import (  # noqa: F401
+from sage_extensions.categories.manifolds_with_boundary import (  # noqa: F401
     RealCkManifoldsWithBoundary,
     RealCkManifoldsWithCorners,
     SmoothManifoldsWithBoundary,
@@ -343,32 +343,32 @@ from dzack_research.preamble.categories.manifolds_with_boundary import (  # noqa
     TopologicalManifoldsWithBoundary,
     TopologicalManifoldsWithCorners,
 )
-from dzack_research.preamble.categories.manifold_dimension_strata import (  # noqa: F401
+from sage_extensions.categories.manifold_dimension_strata import (  # noqa: F401
     ManifoldsOfDimensionAtMost,
     PureDimensionalManifolds,
 )
-from dzack_research.preamble.categories.real_affine_spaces import (  # noqa: F401
+from sage_extensions.categories.real_affine_spaces import (  # noqa: F401
     AffineSpacesWithLattice,
     RealAffineSpaces,
     RealVectorSpaces,
 )
-from dzack_research.preamble.categories.complex_affine_spaces import (  # noqa: F401
+from sage_extensions.categories.complex_affine_spaces import (  # noqa: F401
     ComplexAffineSpaces,
     ComplexVectorSpaces,
 )
-from dzack_research.preamble.categories.metric_affine_spaces import (  # noqa: F401
+from sage_extensions.categories.metric_affine_spaces import (  # noqa: F401
     EuclideanSpaces,
     SphericalSpaces,
 )
-from dzack_research.preamble.categories.complex_analytic_spaces import (  # noqa: F401
+from sage_extensions.categories.complex_analytic_spaces import (  # noqa: F401
     ComplexAnalyticSpaces,
 )
-from dzack_research.preamble.categories.orbifolds import (  # noqa: F401
+from sage_extensions.categories.orbifolds import (  # noqa: F401
     ComplexOrbifolds,
     Orbifolds,
     RiemannianOrbifolds,
 )
-from dzack_research.preamble.categories.modules import (
+from sage_extensions.categories.modules import (
     BilinearFormModules,
     BilinearMap,
     BiproductModules,
@@ -445,22 +445,22 @@ from dzack_research.preamble.categories.modules import (
     LinearCategories,
     TriangulatedCategories,
 )
-from dzack_research.preamble.categories.modules.pure.modules import (  # noqa: F401
+from sage_extensions.categories.modules.pure.modules import (  # noqa: F401
     MatrixEndomorphismSpaces,
     MatrixSpaces,
 )
-from dzack_research.preamble.categories.modules.hodge_structures import (  # noqa: F401
+from sage_extensions.categories.modules.hodge_structures import (  # noqa: F401
     FilteredModules,
     HodgeStructures,
     MixedHodgeStructures,
     PolarizedHodgeStructures,
 )
-from dzack_research.preamble.categories.rational_integral_stabilizers import (  # noqa: F401
+from sage_extensions.categories.rational_integral_stabilizers import (  # noqa: F401
     FiniteCommensurabilityQuotient,
     IntegralStructureAction,
 )
 _lazy_import(
-    "dzack_research.preamble.schemes",
+    "sage_extensions.schemes",
     (
         "ADELogPairs",
         "AlgebraSheaves",
@@ -551,10 +551,10 @@ _lazy_import(
     ),
 )
 _lazy_import(
-    "dzack_research.preamble.categories.schemes.cyclic_covers",
+    "sage_extensions.categories.schemes.cyclic_covers",
     "CyclicCovers",
 )
-from dzack_research.preamble.categories.sets import (  # noqa: F401
+from sage_extensions.categories.sets import (  # noqa: F401
     AugmentedSimplexCategory,
     NN,
     CardinalComparison,
@@ -597,37 +597,37 @@ from dzack_research.preamble.categories.sets import (  # noqa: F401
     omega0,
     ordinal,
 )
-from dzack_research.preamble.categories.topological_spaces import (  # noqa: F401
+from sage_extensions.categories.topological_spaces import (  # noqa: F401
     ContinuousMap,
     TopologicalSpaceMor,
     TopologicalSpaces,
 )
-from dzack_research.preamble.categories.fundamental_groupoids import (  # noqa: F401
+from sage_extensions.categories.fundamental_groupoids import (  # noqa: F401
     FundamentalGroupoid,
     FundamentalGroupoids,
 )
-from dzack_research.preamble.categories.pointed_topological_spaces import (  # noqa: F401
+from sage_extensions.categories.pointed_topological_spaces import (  # noqa: F401
     TopologicalSpaceCoslices,
 )
-from dzack_research.preamble.categories.algebras.graded_lie_algebras import (  # noqa: F401
+from sage_extensions.categories.algebras.graded_lie_algebras import (  # noqa: F401
     GradedLieAlgebras,
 )
-from dzack_research.preamble.categories.algebras.graded_nonassociative_algebras import (  # noqa: F401
+from sage_extensions.categories.algebras.graded_nonassociative_algebras import (  # noqa: F401
     GradedNonassociativeAlgebras,
 )
-from dzack_research.preamble.categories.vector_orbits import (  # noqa: F401
+from sage_extensions.categories.vector_orbits import (  # noqa: F401
     VectorPrimitiveExtension,
 )
-from dzack_research.preamble.categories.rings.ring_foundation import (
+from sage_extensions.categories.rings.ring_foundation import (
     _OwnedRingParent,
 )
-from dzack_research.preamble.categories.vinberg_invariants import (  # noqa: F401
+from sage_extensions.categories.vinberg_invariants import (  # noqa: F401
     VinbergInvariantMatrices,
     reflection_cosines,
 )
-from dzack_research.preamble.logic import Predicate, Propositions, Unknown, ask  # noqa: F401
-from dzack_research.preamble.validation import strict_checking  # noqa: F401
-from dzack_research.preamble.rings import (  # noqa: F401
+from sage_extensions.logic import Predicate, Propositions, Unknown, ask  # noqa: F401
+from sage_extensions.validation import strict_checking  # noqa: F401
+from sage_extensions.rings import (  # noqa: F401
     RR,
     CC,
     I,
@@ -686,17 +686,17 @@ from dzack_research.preamble.rings import (  # noqa: F401
     _restore_session_ring_bindings,  # noqa: F401
     session_ring_objects as _session_ring_objects,
 )
-from dzack_research.preamble.tensors import Tensor, TensorModule, tensor  # noqa: F401
-from dzack_research.preamble.utilities import (
+from sage_extensions.tensors import Tensor, TensorModule, tensor  # noqa: F401
+from sage_extensions.utilities import (
     lmap as lmap,
 )
-from dzack_research.preamble.utilities import (
+from sage_extensions.utilities import (
     lzip as lzip,
 )
-from dzack_research.preamble.utilities import (
+from sage_extensions.utilities import (
     to_var_names as to_var_names,
 )
-from dzack_research.preamble.utilities import (
+from sage_extensions.utilities import (
     zipsum as zipsum,
 )
 
@@ -729,7 +729,7 @@ ellipsis_iter = _language_runtime.ellipsis_iter
 # The catalogue constructs named lattices at import time, so it is imported
 # last, after every name it uses exists.
 _lazy_import(
-    "dzack_research.preamble.catalogue",
+    "sage_extensions.catalogue",
     (
         "Embeddings",
         "Involutions",
@@ -740,8 +740,8 @@ _lazy_import(
         "two_elementary_orthogonal_sums",
     ),
 )
-_lazy_import("dzack_research.preamble.coble", "Coble")
-_lazy_import("dzack_research.preamble.sterk", "Sterk")
+_lazy_import("sage_extensions.coble", "Coble")
+_lazy_import("sage_extensions.sterk", "Sterk")
 
 
 _language_runtime.install(globals())

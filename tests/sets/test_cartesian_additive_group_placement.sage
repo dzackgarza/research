@@ -4,7 +4,7 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_additive_group_product_category_supplies_a_group_object() -> None:
-    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveGroups
+    from sage_extensions.categories.sets.set_categories import CartesianProductsOfAdditiveGroups
 
     product = CartesianProductsOfAdditiveGroups().an_object()
     assert product in CartesianProductsOfAdditiveGroups()
@@ -55,8 +55,8 @@ def test_infinite_constant_additive_monoid_does_not_gain_inverses() -> None:
 
 
 def test_infinite_group_cone_factors_as_an_additive_group_morphism() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
 
     groups = AdditiveGroups()
     index = DiscreteCategory(NN)
@@ -84,8 +84,8 @@ def test_group_product_retains_monoid_universal_property() -> None:
 
 
 def test_infinite_group_product_retains_monoid_cones() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
 
     index = DiscreteCategory(NN)
     additive = AdditiveMonoids()
@@ -120,8 +120,8 @@ def test_opaque_infinite_callback_does_not_claim_additive_group_structure() -> N
 
 
 def test_nonconstant_infinite_group_diagram_retains_group_structure() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
 
     labels = Sets.Δ[1]
     finite_index = DiscreteCategory(labels)

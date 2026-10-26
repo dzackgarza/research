@@ -2193,7 +2193,7 @@ target map.  Every coverage, which selects some of these objects, builds them by
 Unverified specimen: the cover is literally placed over its presentation
 functor, not recognized afterwards from methods on an arbitrary object::
 
-    sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+    sage: from sage_extensions.categories.sets.set_categories import Sets
     sage: C = CoveringFamilies(Sets())
     sage: cover = C.an_object()
     sage: cover in C and cover in C.presentation_category()
@@ -2203,8 +2203,8 @@ functor, not recognized afterwards from methods on an arbitrary object::
     sage: C.Mor(cover, cover).identity().domain() is cover
     True
 
-    sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-    sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    sage: from sage_extensions.categories.sets.set_categories import Sets
+    sage: from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
     sage: points = finite_ordered_set(("a", "b"))
     sage: identity = Sets().Mor(points, points).identity()
     sage: covers = CoveringFamilies(Sets())
@@ -2327,13 +2327,13 @@ source and target of every selected biproduct structure arrow::
 
 *on objects*
 
-- `number_of_summands() -> dzack_research.preamble.categories.sets.cardinals.Cardinalities.parent_class`
+- `number_of_summands() -> sage_extensions.categories.sets.cardinals.Cardinalities.parent_class`
 
 - `summand(label: ~LabelT) -> ObjectOfCategory`
 
-- `summand_index_set() -> dzack_research.preamble.categories.sets.set_categories.Sets.parent_class`
+- `summand_index_set() -> sage_extensions.categories.sets.set_categories.Sets.parent_class`
 
-- `summands() -> dzack_research.preamble.categories.sets.indexed_families.IndexedFamily`
+- `summands() -> sage_extensions.categories.sets.indexed_families.IndexedFamily`
 
 #### `DirectedSystem` {#cat-directedsystem}
 
@@ -2351,7 +2351,7 @@ The discrete category on one set.
 Unverified specimens retain unhashable labels and distinguish two equal
 underlying sets supplied as different objects::
 
-    sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    sage: from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
     sage: labels = finite_ordered_set(([0], [1]))
     sage: category = DiscreteCategory(labels)
     sage: category([0]) is category([0])
@@ -3090,9 +3090,9 @@ retained records is introduced.
 Unverified separating specimen: the same presheaf fails descent for a
 two-member cover but has canonical descent data for the trivial coverage::
 
-    sage: from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
-    sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-    sage: from dzack_research.preamble.categories.sets.set_categories import Sets
+    sage: from sage_extensions.categories.abstract_categories.products import PosetCategory
+    sage: from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
+    sage: from sage_extensions.categories.sets.set_categories import Sets
     sage: labels = finite_ordered_set(("U", "U0", "U1", "U01"))
     sage: relations = {("U0", "U"), ("U1", "U"), ("U01", "U0"), ("U01", "U1"), ("U01", "U")}
     sage: site = PosetCategory(labels, le=lambda left, right: left == right or (left, right) in relations)
@@ -3507,7 +3507,7 @@ A primitive totally isotropic flag, recorded by its nested lattice subobjects.
 
   - Return how many terms this flag has.
 
-- `flag_type() -> dzack_research.preamble.categories.isotropic_orbits.FlagType`
+- `flag_type() -> sage_extensions.categories.isotropic_orbits.FlagType`
 
   - Return the ranks of the nested primitive isotropic terms.
 
@@ -3706,8 +3706,8 @@ The functor itself is an arrow of ``Cat`` and an object of ``[C,D]``.
 Unverified specimen: a proposed identity on underlying sets is not a
 functor to the category of injections when applied to a noninjective map::
 
-    sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-    sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    sage: from sage_extensions.categories.sets.set_categories import Sets
+    sage: from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
     sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
     sage: class ProposedInclusion(Functor):
     ....:     def __init__(self):
@@ -3852,8 +3852,8 @@ The functor itself is an arrow of ``Cat`` and an object of ``[C,D]``.
 Unverified specimen: a proposed identity on underlying sets is not a
 functor to the category of injections when applied to a noninjective map::
 
-    sage: from dzack_research.preamble.categories.sets.set_categories import Sets
-    sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    sage: from sage_extensions.categories.sets.set_categories import Sets
+    sage: from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
     sage: injections = Sets().WideSubcategory(Sets().MonomorphismArrowCategory())
     sage: class ProposedInclusion(Functor):
     ....:     def __init__(self):
@@ -3995,7 +3995,7 @@ mathematical object.
 
 EXAMPLES::
 
-    sage: from dzack_research.preamble.categories.lattices import Lattices
+    sage: from sage_extensions.categories.lattices import Lattices
     sage: Lattices(ZZ)
     Lattices(ZZ)
     sage: Lattices(ZZ).super_categories()
@@ -8389,7 +8389,7 @@ commutative subring and determines that scalar placement.
 
 EXAMPLES::
 
-    sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
+    sage: from sage_extensions.categories.algebras.algebras import MatrixAlgebras
     sage: R = MatrixAlgebras(ZZ).an_object()
     sage: MatrixSpaces(R).super_categories()[0].base_ring() is R.ring_center()
     True
@@ -8809,8 +8809,8 @@ The matrix realization of `End_R(F)` as an algebra over `Z(R)`.
 ```text
 EXAMPLES::
 
-    sage: from dzack_research.preamble.categories.algebras.algebras import MatrixAlgebras
-    sage: from dzack_research.preamble.categories.group.additive_mors import AdditiveEndomorphismRings
+    sage: from sage_extensions.categories.algebras.algebras import MatrixAlgebras
+    sage: from sage_extensions.categories.group.additive_mors import AdditiveEndomorphismRings
     sage: R = MatrixAlgebras(ZZ).an_object()
     sage: MatrixEndomorphismSpaces(R).super_categories()[1] is AdditiveEndomorphismRings(R.ring_center())
     True
@@ -9074,7 +9074,7 @@ Construction calls ``validate_placement`` once with ``check=False``
 
 - `map_value(value)`
 
-- `preserves_forms() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `preserves_forms() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on generators of the scalar extension.
 
@@ -9238,11 +9238,11 @@ Construction calls ``validate_placement`` once with ``check=False``
 
   - Return the retained first component ``f`` of the defining pair ``(f,h)``.
 
-- `preserves_form_exactly() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `preserves_form_exactly() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - Return whether the value-object map is the identity.
 
-- `preserves_forms() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `preserves_forms() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on the module generators.
 
@@ -10149,7 +10149,7 @@ construction rather than being represented by a semilinear fiction.
 
 - `map_value(value)`
 
-- `preserves_forms() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `preserves_forms() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on generators of the scalar extension.
 
@@ -10225,11 +10225,11 @@ zero form, together with the identity value map, preserves that form.
 
   - Return the retained first component ``f`` of the defining pair ``(f,h)``.
 
-- `preserves_form_exactly() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `preserves_form_exactly() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - Return whether the value-object map is the identity.
 
-- `preserves_forms() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `preserves_forms() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on the module generators.
 
@@ -15014,7 +15014,7 @@ forgetful functor supplies the exact underlying arrow endpoints::
 
   - Return ``X^g``, the equalizer of ``rho(g)`` and the identity of ``X``.
 
-- `in_same_orbit(source, target) -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `in_same_orbit(source, target) -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - Whether some ``g`` in ``G`` carries ``source`` to ``target``.
 
@@ -15428,7 +15428,7 @@ coherence of its values under restriction a premise of its caller.
 
 - **defined at** `src/dzack_research/preamble/categories/group/profinite/absolute_galois_group.py:58`
 
-- **built by** `AbsoluteGaloisGroupElement(parent, *, exact_action: dzack_research.preamble.categories.rings.ring_foundation.RingMorphism | None = None, coordinates=(), frobenius_exponent=None, stage_rule=None)`
+- **built by** `AbsoluteGaloisGroupElement(parent, *, exact_action: sage_extensions.categories.rings.ring_foundation.RingMorphism | None = None, coordinates=(), frobenius_exponent=None, stage_rule=None)`
 
 **Operations**
 
@@ -15446,7 +15446,7 @@ coherence of its values under restriction a premise of its caller.
 
   - Install a higher finite coordinate after checking compatibility.
 
-- `fixes_base_field() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]`
+- `fixes_base_field() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]`
 
   - The equation ``sigma * e == e`` for the retained ``e: K -> Kbar``.
 
@@ -15488,9 +15488,9 @@ an element is its position in the group's enumeration of the
 
 **Operations**
 
-- `action() -> dzack_research.preamble.categories.rings.ring_foundation.RingMorphism`
+- `action() -> sage_extensions.categories.rings.ring_foundation.RingMorphism`
 
-- `as_morphism() -> dzack_research.preamble.categories.rings.ring_foundation.RingMorphism`
+- `as_morphism() -> sage_extensions.categories.rings.ring_foundation.RingMorphism`
 
 - `inverse()`
 
@@ -15726,7 +15726,7 @@ a factorization of that very geometric point.
 
 - **defined at** `src/dzack_research/preamble/categories/group/profinite/galois_quotient.py:148`
 
-- **built by** `FiniteGaloisExtension(base_field, field, base_embedding: dzack_research.preamble.categories.rings.ring_foundation.RingMorphism, closure, closure_embedding: dzack_research.preamble.categories.rings.ring_foundation.RingMorphism, *, extension_object=None)`
+- **built by** `FiniteGaloisExtension(base_field, field, base_embedding: sage_extensions.categories.rings.ring_foundation.RingMorphism, closure, closure_embedding: sage_extensions.categories.rings.ring_foundation.RingMorphism, *, extension_object=None)`
 
 #### `FiniteGaloisQuotient` <sub>FUNCTION</sub>
 
@@ -15804,7 +15804,7 @@ The actual fiber `{sigma in G_K : sigma|_L = element}` as a subset of `G_K`.
 
 - **defined at** `src/dzack_research/preamble/categories/group/profinite/galois_quotient.py:575`
 
-- **built by** `LiftCoset(restriction_map: dzack_research.preamble.categories.group.profinite.galois_quotient.GaloisRestrictionMap, element)`
+- **built by** `LiftCoset(restriction_map: sage_extensions.categories.group.profinite.galois_quotient.GaloisRestrictionMap, element)`
 
 #### `OpenAbsoluteGaloisSubgroup` <sub>FUNCTION</sub>
 
@@ -21676,7 +21676,7 @@ section \(i\mapsto x_i\in X_i\).
 
 Unverified specimens for nonordinal labels and canonical finite products::
 
-    sage: from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    sage: from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
     sage: labels = finite_ordered_set(("red", "blue"))
     sage: points = finite_ordered_set(("a", "b"))
     sage: family = indexed_family(labels, lambda label: points)
@@ -22469,7 +22469,7 @@ integer index, and indexing takes the corresponding natural number.
 
 - `function(index: <class 'SupportsIndex'>)`
 
-- `index_set() -> dzack_research.preamble.categories.sets.set_categories.Sets.parent_class`
+- `index_set() -> sage_extensions.categories.sets.set_categories.Sets.parent_class`
 
 **Inherited operations**, defined where they are owned:
 
@@ -22509,7 +22509,7 @@ Infinite enumerated sets ranked by \(\mathbb N\).
 
 - `function(index: <class 'SupportsIndex'>)`
 
-- `index_set() -> dzack_research.preamble.categories.sets.set_categories.Sets.parent_class`
+- `index_set() -> sage_extensions.categories.sets.set_categories.Sets.parent_class`
 
 **Inherited operations**, defined where they are owned:
 
@@ -23134,7 +23134,7 @@ module.
 
 EXAMPLES::
 
-    sage: from dzack_research.preamble.tensors import tensor
+    sage: from sage_extensions.tensors import tensor
     sage: G = tensor(ZZ, (), (2, 2), [[0, 1], [1, 0]])
     sage: G.parent()
     ((ZZ^2)*)^{⊗2}
@@ -23166,7 +23166,7 @@ are different constructor calls even though both have one index.
 
 - **defined at** `src/dzack_research/preamble/tensors/tensor.py:2501`
 
-- **built by** `tensor(base_ring: sage.structure.parent.Parent, upper_ranks, lower_ranks, components=None, **kwds) -> dzack_research.preamble.tensors.tensor.Tensor`
+- **built by** `tensor(base_ring: sage.structure.parent.Parent, upper_ranks, lower_ranks, components=None, **kwds) -> sage_extensions.tensors.tensor.Tensor`
 
 ## Logic & Predicates
 
@@ -23204,7 +23204,7 @@ compose this with existing Sage three-valued predicates.
 
 - **defined at** `src/dzack_research/preamble/logic.py:179`
 
-- **built by** `ask(statement: bool | sage.misc.unknown.UnknownClass | dzack_research.preamble.logic.Sets.element_class[_PropositionElement], *, max_prec: int = 4096) -> bool | sage.misc.unknown.UnknownClass`
+- **built by** `ask(statement: bool | sage.misc.unknown.UnknownClass | sage_extensions.logic.Sets.element_class[_PropositionElement], *, max_prec: int = 4096) -> bool | sage.misc.unknown.UnknownClass`
 
 ## Specialized Geometries (Coble & Sterk)
 

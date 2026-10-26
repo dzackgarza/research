@@ -7,7 +7,7 @@ unexecuted under DEV-58; executed at T.
 """
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.sets.finite_families import finite_family
+from sage_extensions.categories.sets.finite_families import finite_family
 
 
 def test_dickson_ross_ternary_forms_are_isometric() -> None:

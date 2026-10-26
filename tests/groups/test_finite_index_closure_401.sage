@@ -1,7 +1,7 @@
 r"""Issue 401 finite-index and subgroup-image closure specimens."""
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
-from dzack_research.preamble.categories.group.groups import _matrix_group_element_matrix
+from sage_extensions.categories.group.groups import _matrix_group_element_matrix
 
 
 def test_mod_two_kernel_of_sl2z_has_index_six_and_schreier_generators():

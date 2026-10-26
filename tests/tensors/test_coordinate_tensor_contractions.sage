@@ -22,7 +22,7 @@ def test_private_modular_pairing_realization_uses_exact_products_when_int64_woul
     """
     import numpy
 
-    from dzack_research.preamble.tensors.tensor import _engine_modular_pairing_pullback
+    from sage_extensions.tensors.tensor import _engine_modular_pairing_pullback
 
     modulus = 10**12 + 39
     coordinates = numpy.array(((modulus - 4, modulus - 3), (3, 5)), dtype=numpy.int64)

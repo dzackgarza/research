@@ -1504,7 +1504,7 @@ of this specification.
   computation, because some laws cannot be checked at all: no finite
   computation shows that the Fourier transform is an isometry of `L^2(RR)`.
 
-  The flag and the protocol have one owner, `dzack_research.preamble.validation`.
+  The flag and the protocol have one owner, `sage_extensions.validation`.
   `strict_checking()` reads the flag and `strict_checking(True)` sets it, in the
   spelling of Sage's `proof.arithmetic()`; the session import exports it.  A
   validator is a method decorated with `@validator`, named `validate_<law>`

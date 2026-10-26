@@ -53,7 +53,7 @@ def session():
     import sage.all as sage_all
 
     scope = {k: v for k, v in vars(sage_all).items() if not k.startswith("_")}
-    from dzack_research.preamble.install import install_preamble
+    from sage_extensions.install import install_preamble
 
     install_preamble(scope)
     return scope
@@ -161,14 +161,14 @@ def _mor(parent):
 
 
 def _placement(parent):
-    from dzack_research.preamble.categories.sets.owned_sets import placement_of
+    from sage_extensions.categories.sets.owned_sets import placement_of
 
     return placement_of(parent)
 
 
 def _cardinal_kind(parent):
     r"""The count, and whether it is an owned cardinal rather than a raw count."""
-    from dzack_research.preamble.categories.sets.cardinals import Cardinal
+    from sage_extensions.categories.sets.cardinals import Cardinal
 
     count = parent.cardinality()
     if not isinstance(count, Cardinal):

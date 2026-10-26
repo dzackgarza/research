@@ -8,7 +8,7 @@ def test_regular_representation_has_a_rank_one_group_algebra_basis_isomorphism()
     A basis isomorphism compares the generic matrix Mor with an equivariant
     endomorphism without discarding the coefficient-module presentation.
     """
-    from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
+    from sage_extensions.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
     group = Groups.C(2)
     algebra = ZZ[group]
@@ -19,7 +19,7 @@ def test_regular_representation_has_a_rank_one_group_algebra_basis_isomorphism()
     assert free.module_rank() == 1
     assert acted.module_generating_set().cardinality() == 1
     assert acted.unformed_module().module_generating_set().cardinality() == 2
-    from dzack_research.preamble.categories.modules.framed.framed_free_modules import FramedFreeModules
+    from sage_extensions.categories.modules.framed.framed_free_modules import FramedFreeModules
     assert acted in FramedFreeModules(algebra)
     assert acted.module_rank() == 1
     assert acted.coefficient_module_rank() == 2

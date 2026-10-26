@@ -51,8 +51,8 @@ from sage.misc.cachefunc import CachedMethod
 from sage.structure.element import Element
 from sage.structure.parent import Parent
 
-from dzack_research.preamble.categories.functors.core import Adjunction, Functor
-from dzack_research.preamble.categories.abstract_categories.mor_foundation import ObjectLevelOperation
+from sage_extensions.categories.functors.core import Adjunction, Functor
+from sage_extensions.categories.abstract_categories.mor_foundation import ObjectLevelOperation
 from dzack_research.utilities.source_inventory import source_fingerprint
 
 
@@ -257,7 +257,7 @@ def source_of(obj: Inspectable) -> str:
 
 def subsystem_of(module_name: str) -> str:
     r"""The chapter a symbol belongs to, from the module that defines it."""
-    prefix = "dzack_research.preamble."
+    prefix = "sage_extensions."
     if not module_name.startswith(prefix):
         return "preamble_root"
     parts = module_name[len(prefix) :].split(".")
@@ -395,7 +395,7 @@ class Survey:
     def __init__(self) -> None:
         sys.setrecursionlimit(5000)
         import dzack_research.preamble.all as session
-        from dzack_research.preamble.rings import session_ring_objects
+        from sage_extensions.rings import session_ring_objects
 
         self.session: ModuleType = session
         self.names = [n for n in dir(session) if not n.startswith("_")]
@@ -443,7 +443,7 @@ class Survey:
     @staticmethod
     def is_abstract_declaration_base(klass: type) -> bool:
         r"""Whether ``klass`` is public vocabulary for declaring categories only."""
-        from dzack_research.preamble.categories.rings.ring_foundation import (
+        from sage_extensions.categories.rings.ring_foundation import (
             OwnedCategoryOverBaseRing,
         )
 
@@ -494,7 +494,7 @@ class Survey:
     @staticmethod
     def is_over_a_ring(klass: type) -> bool:
         r"""Whether the category declares, by its base class, that it is over a ring."""
-        from dzack_research.preamble.categories.rings.ring_foundation import (
+        from sage_extensions.categories.rings.ring_foundation import (
             OwnedCategoryOverBaseRing,
         )
 

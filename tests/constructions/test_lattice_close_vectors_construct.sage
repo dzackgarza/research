@@ -1,7 +1,7 @@
 r"""A small Euclidean ball around a point of (mathbf Q^2) can contain one lattice point."""
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
-from dzack_research.preamble.categories.definite_lattices import _ExactCVPEngine
+from sage_extensions.categories.definite_lattices import _ExactCVPEngine
 from sage.matrix.constructor import matrix as sage_matrix
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.rings.rational_field import QQ as SageQQ

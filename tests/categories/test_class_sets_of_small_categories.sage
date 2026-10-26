@@ -6,9 +6,9 @@ from an unrelated chosen list of representatives.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
-from dzack_research.preamble.categories.abstract_categories.products import PosetCategory
-from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+from sage_extensions.categories.abstract_categories.products import PosetCategory
+from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
 
 
 def test_poset_category_has_two_components_with_their_quotient_projection() -> None:

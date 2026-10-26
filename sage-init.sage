@@ -36,7 +36,7 @@ from sage.env import SAGE_STARTUP_FILE
 from sage.libs.gap.libgap import libgap
 from sage.misc.latex import latex
 
-from dzack_research.static_types import DisplayedValue
+from sage_extensions.static_types import DisplayedValue
 
 # Sage loads this file with ``run_cell(source)``, so ``__file__`` is never
 # set.  ``SAGE_STARTUP_FILE`` is the symlink (or the file itself); resolve
@@ -82,7 +82,7 @@ from dzack_research.preamble.all import *
 # The star import adds names; it cannot remove the ones ``sage.all`` already
 # bound here.  Sage's second spellings of the session's ring constructors
 # (FiniteField, IntegerModRing, Integers) are removed from this scope by
-# their owner, which cites the rule (dzack_research.preamble.rings).
+# their owner, which cites the rule (sage_extensions.rings).
 from dzack_research.preamble.all import _restore_session_ring_bindings
 
 _restore_session_ring_bindings(globals())

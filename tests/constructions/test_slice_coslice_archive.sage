@@ -5,7 +5,7 @@ from dzack_research.preamble.all import (
     Modules,
     Sets,
 )
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
+from sage_extensions.categories.sets.finite_ordered_sets import (
     finite_ordered_set,
 )
 

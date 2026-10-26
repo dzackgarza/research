@@ -4,8 +4,8 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_discrete_diagram_rejects_invalid_finite_object_images() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     labels = Sets.Δ[1]
     index = DiscreteCategory(labels)

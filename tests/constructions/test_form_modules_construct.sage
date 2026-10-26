@@ -241,7 +241,7 @@ def test_finite_module_valued_bilinear_hom_keeps_selected_pair_coordinates() -> 
 
 
 def test_finite_bilinear_tensor_respects_actual_selected_generator_labels() -> None:
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
+    from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
 
     labels = finite_ordered_set(("left", "right"))
     module = ZZ.free_module(labels)

@@ -10420,7 +10420,7 @@
         "objects": [
           {
             "name": "number_of_summands",
-            "signature": "() -> dzack_research.preamble.categories.sets.cardinals.Cardinalities.parent_class",
+            "signature": "() -> sage_extensions.categories.sets.cardinals.Cardinalities.parent_class",
             "summary": "",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py:151"
@@ -10434,14 +10434,14 @@
           },
           {
             "name": "summand_index_set",
-            "signature": "() -> dzack_research.preamble.categories.sets.set_categories.Sets.parent_class",
+            "signature": "() -> sage_extensions.categories.sets.set_categories.Sets.parent_class",
             "summary": "",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py:140"
           },
           {
             "name": "summands",
-            "signature": "() -> dzack_research.preamble.categories.sets.indexed_families.IndexedFamily",
+            "signature": "() -> sage_extensions.categories.sets.indexed_families.IndexedFamily",
             "summary": "",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py:137"
@@ -11902,7 +11902,7 @@
           },
           {
             "name": "index_set",
-            "signature": "() -> dzack_research.preamble.categories.sets.set_categories.Sets.parent_class",
+            "signature": "() -> sage_extensions.categories.sets.set_categories.Sets.parent_class",
             "summary": "",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/sets/enumerated/function_sets.py:290"
@@ -12017,7 +12017,7 @@
           },
           {
             "name": "index_set",
-            "signature": "() -> dzack_research.preamble.categories.sets.set_categories.Sets.parent_class",
+            "signature": "() -> sage_extensions.categories.sets.set_categories.Sets.parent_class",
             "summary": "",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/sets/enumerated/function_sets.py:259"
@@ -12434,7 +12434,7 @@
           },
           {
             "name": "preserves_forms",
-            "signature": "() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]",
+            "signature": "() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]",
             "summary": "Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on generators of the scalar extension.",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:894"
@@ -14389,14 +14389,14 @@
           },
           {
             "name": "preserves_form_exactly",
-            "signature": "() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]",
+            "signature": "() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]",
             "summary": "Return whether the value-object map is the identity.",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:401"
           },
           {
             "name": "preserves_forms",
-            "signature": "() -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]",
+            "signature": "() -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]",
             "summary": "Return whether ``h(b(x,y)) = b'(f(x),f(y))`` on the module generators.",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py:415"
@@ -16043,7 +16043,7 @@
           },
           {
             "name": "in_same_orbit",
-            "signature": "(source, target) -> bool | dzack_research.preamble.logic.Sets.element_class[_PropositionElement]",
+            "signature": "(source, target) -> bool | sage_extensions.logic.Sets.element_class[_PropositionElement]",
             "summary": "Whether some ``g`` in ``G`` carries ``source`` to ``target``.",
             "mark": "",
             "source": "src/dzack_research/preamble/categories/group/g_objects.py:1448"

@@ -8,9 +8,9 @@ semantics and checks each factor's actual morphism category.
 
 import pytest
 
-from dzack_research.preamble.categories.abstract_categories.cat import Cat
-from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-from dzack_research.preamble.categories.sets.set_categories import Sets
+from sage_extensions.categories.abstract_categories.cat import Cat
+from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
+from sage_extensions.categories.sets.set_categories import Sets
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/abstract_categories/category_constructions.sage",

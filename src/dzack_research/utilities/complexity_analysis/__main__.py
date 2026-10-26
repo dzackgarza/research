@@ -13,9 +13,11 @@ def _default_root() -> Path:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Analyze Python source-tree complexity without importing it.")
+    parser = argparse.ArgumentParser(
+        description="Analyze Python source-tree complexity without importing it."
+    )
     parser.add_argument("root", nargs="?", type=Path, default=_default_root())
-    parser.add_argument("--package-prefix", default="dzack_research.preamble")
+    parser.add_argument("--package-prefix", default="sage_extensions")
     parser.add_argument(
         "--foundation-prefix",
         action="append",
@@ -33,7 +35,11 @@ def main() -> None:
         foundation_prefixes=tuple(args.foundation_prefix),
         top=args.top,
     )
-    output = render_json(report) if args.format == "json" else render_markdown(report, top=args.top)
+    output = (
+        render_json(report)
+        if args.format == "json"
+        else render_markdown(report, top=args.top)
+    )
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(output, encoding="utf-8")

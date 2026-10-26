@@ -1,6 +1,6 @@
 """Exact inertia of rooted and unrooted Coxeter diagrams."""
 
-from dzack_research.preamble.categories.coxeter_diagrams import CoxeterDiagrams
+from sage_extensions.categories.coxeter_diagrams import CoxeterDiagrams
 
 
 def test_coxeter_inertia_congruence():

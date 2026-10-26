@@ -1,7 +1,7 @@
 r"""Direct and inverse images of subsets along maps of sets."""
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.categories.sets.set_categories import (
+from sage_extensions.categories.sets.set_categories import (
     FinitePowerSets, FixedCardinalitySubsetSets,
 )
 

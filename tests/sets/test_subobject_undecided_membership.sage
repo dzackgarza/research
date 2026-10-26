@@ -1,7 +1,7 @@
 r"""Finite subobject operations retain undecidable characteristic predicates."""
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
-from dzack_research.preamble.logic import AtomicProposition
+from sage_extensions.logic import AtomicProposition
 
 
 def test_finite_subobject_boolean_operations_retain_propositions() -> None:

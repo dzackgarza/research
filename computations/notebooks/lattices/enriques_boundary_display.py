@@ -11,9 +11,9 @@ reflection-diagram calls require the configured exact Vinberg/reflection
 provider; bounded searches are not interpreted here as complete diagrams.
 """
 
-from dzack_research.preamble.catalogue import NamedLattices
-from dzack_research.preamble.categories.hyperbolic_lattices import HyperbolicLattices
-from dzack_research.preamble.categories.isotropic_orbits import (
+from sage_extensions.catalogue import NamedLattices
+from sage_extensions.categories.hyperbolic_lattices import HyperbolicLattices
+from sage_extensions.categories.isotropic_orbits import (
     cusps,
     tits_building_incidence,
 )

@@ -167,7 +167,7 @@ def test_finite_ordered_set_operations_retain_selected_well_orders() -> None:
 
 def test_ordered_union_requires_a_selected_order_on_both_inputs() -> None:
     r"""A finite cardinality does not provide a canonical order for the union."""
-    from dzack_research.preamble.categories.sets.set_categories import Set
+    from sage_extensions.categories.sets.set_categories import Set
 
     left = finite_ordered_set(("a", "b"))
     unordered = Set(("b", "c"))
@@ -180,8 +180,8 @@ def test_ordered_union_requires_a_selected_order_on_both_inputs() -> None:
 
 
 def test_literal_union_preserves_unenumerated_finite_image() -> None:
-    from dzack_research.preamble.categories.sets.set_categories import Set
-    from dzack_research.preamble.logic import AtomicProposition
+    from sage_extensions.categories.sets.set_categories import Set
+    from sage_extensions.logic import AtomicProposition
 
     left = Set((0, 1))
     unknown_subset = Sets().condition_set(
@@ -204,7 +204,7 @@ def test_literal_union_preserves_unenumerated_finite_image() -> None:
 
 
 def test_literal_union_with_infinite_set_keeps_its_coproduct_image() -> None:
-    from dzack_research.preamble.categories.sets.set_categories import Set
+    from sage_extensions.categories.sets.set_categories import Set
 
     finite = Set((0, 1))
     union = finite.union(NN)
@@ -215,8 +215,8 @@ def test_literal_union_with_infinite_set_keeps_its_coproduct_image() -> None:
 
 
 def test_literal_intersection_and_difference_preserve_undecided_membership() -> None:
-    from dzack_research.preamble.categories.sets.set_categories import Set
-    from dzack_research.preamble.logic import AtomicProposition
+    from sage_extensions.categories.sets.set_categories import Set
+    from sage_extensions.logic import AtomicProposition
 
     ambient = Sets.Δ[2]
     left = Set(tuple(ambient))
@@ -233,7 +233,7 @@ def test_literal_intersection_and_difference_preserve_undecided_membership() -> 
 
 
 def test_ordered_intersection_retains_finite_predicate_when_membership_is_undecided() -> None:
-    from dzack_research.preamble.logic import AtomicProposition
+    from sage_extensions.logic import AtomicProposition
 
     ordered = finite_ordered_set(("a", "b", "c"))
     unknown = Sets().condition_set(
@@ -250,7 +250,7 @@ def test_ordered_intersection_retains_finite_predicate_when_membership_is_undeci
 
 
 def test_ordered_and_unordered_sets_do_not_have_false_structural_equality() -> None:
-    from dzack_research.preamble.categories.sets.set_categories import Set
+    from sage_extensions.categories.sets.set_categories import Set
 
     ascending = finite_ordered_set(("a", "b"))
     descending = finite_ordered_set(("b", "a"))
@@ -264,7 +264,7 @@ def test_ordered_and_unordered_sets_do_not_have_false_structural_equality() -> N
 
 def test_finite_indexed_enumeration_evaluates_selected_points_once() -> None:
     r"""The finite presentation retains its chosen values across all operations."""
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import FiniteOrderedSets
+    from sage_extensions.categories.sets.finite_ordered_sets import FiniteOrderedSets
 
     indices = Sets.Δ[2]
     calls = []

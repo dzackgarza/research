@@ -9,7 +9,7 @@ retain stronger information when it is genuinely available.
 import pytest
 
 from dzack_research.preamble.all import *
-from dzack_research.preamble.logic import Unknown, ask
+from sage_extensions.logic import Unknown, ask
 
 
 def test_exact_polynomial_images_survive_beyond_a_low_adic_stage() -> None:

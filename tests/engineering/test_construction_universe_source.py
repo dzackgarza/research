@@ -72,7 +72,7 @@ class NamedLattices:
         encoding="utf-8",
     )
     (root / "all.py").write_text(
-        "from dzack_research.preamble.example import Lattices, NamedLattices\n",
+        "from sage_extensions.example import Lattices, NamedLattices\n",
         encoding="utf-8",
     )
     return root

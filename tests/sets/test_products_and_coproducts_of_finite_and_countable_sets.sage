@@ -14,8 +14,8 @@ from dzack_research.preamble.all import *  # noqa: F401,F403
 
 
 def test_indexed_family_cache_does_not_decide_undecidable_index_equality() -> None:
-    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
-    from dzack_research.preamble.logic import AtomicProposition
+    from sage_extensions.categories.sets.indexed_families import IndexedFamily
+    from sage_extensions.logic import AtomicProposition
 
     class SymbolicIndex:
         def __hash__(self):
@@ -52,7 +52,7 @@ def test_indexed_family_cache_does_not_decide_undecidable_index_equality() -> No
 
 
 def test_indexed_family_cache_reuses_only_decided_equal_labels() -> None:
-    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from sage_extensions.categories.sets.indexed_families import IndexedFamily
 
     class PresentedIndex:
         def __init__(self, key):
@@ -87,7 +87,7 @@ def test_indexed_family_cache_reuses_only_decided_equal_labels() -> None:
 
 
 def test_indexed_family_cache_equality_is_not_limited_to_hash_buckets() -> None:
-    from dzack_research.preamble.categories.sets.indexed_families import IndexedFamily
+    from sage_extensions.categories.sets.indexed_families import IndexedFamily
 
     class PresentedIndex:
         def __init__(self, key, hash_value):
@@ -111,8 +111,8 @@ def test_indexed_family_cache_equality_is_not_limited_to_hash_buckets() -> None:
 
 
 def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None:
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-    from dzack_research.preamble.categories.sets.set_categories import (
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.sets.set_categories import (
         CartesianProductsOfAdditiveMonoids,
     )
 
@@ -143,7 +143,7 @@ def test_finite_product_of_additive_monoids_has_componentwise_addition() -> None
 
 
 def test_finite_set_product_and_coproduct_accept_stronger_mor_legs() -> None:
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
 
     factor = AdditiveMonoids().an_object()
     identity = AdditiveMonoids().Mor(factor, factor).identity()
@@ -162,10 +162,10 @@ def test_finite_set_product_and_coproduct_accept_stronger_mor_legs() -> None:
 
 
 def test_finite_additive_product_factors_a_verified_nonconstant_diagram() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids, AdditiveGroups
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.group.magmas import AdditiveMonoids, AdditiveGroups
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     additive = AdditiveMonoids()
     first, second = additive.an_object(), AdditiveGroups().an_object()
@@ -189,9 +189,9 @@ def test_finite_additive_product_factors_a_verified_nonconstant_diagram() -> Non
 
 
 def test_finite_product_accepts_validated_nonconstant_diagram_cone() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     factors = (Sets.Δ[0], Sets.Δ[1])
     product = Sets().product(factors)
@@ -214,8 +214,8 @@ def test_finite_product_accepts_validated_nonconstant_diagram_cone() -> None:
 
 
 def test_finite_indexed_family_rank_cache_supplies_product_factors() -> None:
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     labels = finite_ordered_set(([0], [1]))
     factor = Sets.Δ[1]
@@ -240,8 +240,8 @@ def test_finite_indexed_family_rank_cache_supplies_product_factors() -> None:
 
 
 def test_finite_family_hash_does_not_require_hashable_index_labels() -> None:
-    from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.finite_ordered_sets import finite_ordered_set
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     labels = finite_ordered_set(([0], [1]))
     first = indexed_family(labels, lambda label: Sets.Δ[1] if label[0] == 0 else Sets.Δ[2])
@@ -258,9 +258,9 @@ def test_finite_family_hash_does_not_require_hashable_index_labels() -> None:
 
 
 def test_infinite_constant_additive_product_retains_its_monoid_and_projections() -> None:
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-    from dzack_research.preamble.categories.sets.set_categories import (
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.set_categories import (
         CartesianProductsOfAdditiveMonoids,
     )
 
@@ -296,10 +296,10 @@ def test_infinite_constant_additive_product_retains_its_monoid_and_projections()
 
 def test_infinite_constant_additive_product_universal_morphism() -> None:
     """The categorical cone has all its projection equations, not just object placement."""
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     additive = AdditiveMonoids()
     factor = additive.an_object()
@@ -330,9 +330,9 @@ def test_infinite_constant_additive_product_universal_morphism() -> None:
 
 
 def test_unproved_infinite_value_category_cannot_place_monoid_product() -> None:
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
 
     factor = AdditiveMonoids().an_object()
     for value in (lambda index: factor, lambda index: factor if int(index) % 2 == 0 else Sets.Δ[1]):
@@ -351,9 +351,9 @@ def test_unproved_infinite_value_category_cannot_place_monoid_product() -> None:
 
 
 def test_unchecked_discrete_diagram_cannot_certify_infinite_factors() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     factor = AdditiveMonoids().an_object()
     index_category = DiscreteCategory(NN)
@@ -374,10 +374,10 @@ def test_unchecked_discrete_diagram_cannot_certify_infinite_factors() -> None:
 
 
 def test_finite_diagram_restricted_to_infinite_parity_family() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids, AdditiveGroups
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-    from dzack_research.preamble.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.group.magmas import AdditiveMonoids, AdditiveGroups
+    from sage_extensions.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.set_categories import CartesianProductsOfAdditiveMonoids
 
     labels = Sets.Δ[1]
     finite_index = DiscreteCategory(labels)
@@ -406,7 +406,7 @@ def test_finite_diagram_restricted_to_infinite_parity_family() -> None:
     # The nonconstant product also has the actual AddMon universal arrow.
     # The common source is the even factor, and its selected zero maps give
     # compatible legs into both kinds of factors without identifying them.
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.functors.core import NaturalTransformation
 
     source_diagram = Cat().Mor(infinite_index, AdditiveMonoids()).constant_functor(even)
     components = NaturalTransformation(
@@ -449,9 +449,9 @@ def test_finite_diagram_restricted_to_infinite_parity_family() -> None:
 
 def test_infinite_indexed_functor_map_retains_canonical_category_inclusion() -> None:
     """A diagram in AddGroups maps through AddMon -> Sets without losing its arrows."""
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.group.magmas import AdditiveGroups, AdditiveMonoids
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.group.magmas import AdditiveGroups, AdditiveMonoids
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     shape = DiscreteCategory(NN)
     group = AdditiveGroups().an_object()
@@ -492,8 +492,8 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
     )
     induced = source.from_maps(target, components)
     assert induced.parent() is Sets().Mor(source, target)
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
     shape = DiscreteCategory(source.index_set())
     summands = source.family().selected_diagram()
     if summands is None:
@@ -517,7 +517,7 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
     else:
         raise AssertionError("coproduct accepted a map with incorrect component endpoints")
 
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     infinite = Sets().coproduct(indexed_family(NN, Sets.Δ[0]))
     try:
@@ -530,8 +530,8 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
     else:
         raise AssertionError("unchecked infinite coproduct component callback admitted")
 
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
 
     shape = DiscreteCategory(NN)
     constant = Cat().Mor(shape, Sets()).constant_functor(Sets.Δ[0])
@@ -571,7 +571,7 @@ def test_coproduct_induced_map_requires_compatible_component_morphisms() -> None
 
 
 def test_componentwise_coproduct_morphism_checks_its_source_and_target_summands() -> None:
-    from dzack_research.preamble.categories.sets.set_categories import _coproduct_morphism
+    from sage_extensions.categories.sets.set_categories import _coproduct_morphism
 
     left = Sets.Δ[1]
     right = Sets.Δ[2]
@@ -613,7 +613,7 @@ def test_empty_index_coproduct_enumeration_terminates() -> None:
 
 
 def test_constant_countable_coproduct_has_diagonal_enumeration() -> None:
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     coproduct = Sets().coproduct(indexed_family(NN, Sets.Δ[1]))
     assert coproduct in EnumeratedSets()
@@ -629,8 +629,8 @@ def test_constant_countable_coproduct_has_diagonal_enumeration() -> None:
 
 
 def test_selected_nonconstant_countable_coproduct_is_enumerated() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.sets.indexed_families import indexed_family
 
     labels = Sets.Δ[1]
     finite_shape = DiscreteCategory(labels)
@@ -705,7 +705,7 @@ def test_the_product_functor_applies_a_transposition_to_the_first_coordinate() -
 
 
 def test_componentwise_product_morphism_rejects_wrong_factor_map() -> None:
-    from dzack_research.preamble.categories.sets.set_categories import _cartesian_product_morphism
+    from sage_extensions.categories.sets.set_categories import _cartesian_product_morphism
 
     small, large = Sets.Δ[1], Sets.Δ[2]
     source = Sets().product((small, large))
@@ -727,11 +727,11 @@ def test_componentwise_product_morphism_rejects_wrong_factor_map() -> None:
 
 
 def test_componentwise_set_maps_accept_additive_diagrams() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-    from dzack_research.preamble.categories.sets.set_categories import (
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.set_categories import (
         _cartesian_product_morphism, _coproduct_morphism,
     )
 
@@ -751,8 +751,8 @@ def test_componentwise_set_maps_accept_additive_diagrams() -> None:
 
 
 def test_finite_componentwise_set_maps_inherit_additive_morphisms() -> None:
-    from dzack_research.preamble.categories.group.magmas import AdditiveMonoids
-    from dzack_research.preamble.categories.sets.set_categories import (
+    from sage_extensions.categories.group.magmas import AdditiveMonoids
+    from sage_extensions.categories.sets.set_categories import (
         _cartesian_product_morphism, _coproduct_morphism,
     )
 
@@ -770,10 +770,10 @@ def test_finite_componentwise_set_maps_inherit_additive_morphisms() -> None:
 
 
 def test_infinite_componentwise_set_maps_use_a_selected_natural_transformation() -> None:
-    from dzack_research.preamble.categories.abstract_categories.functors import DiscreteCategory
-    from dzack_research.preamble.categories.functors.core import NaturalTransformation
-    from dzack_research.preamble.categories.sets.indexed_families import indexed_family
-    from dzack_research.preamble.categories.sets.set_categories import (
+    from sage_extensions.categories.abstract_categories.functors import DiscreteCategory
+    from sage_extensions.categories.functors.core import NaturalTransformation
+    from sage_extensions.categories.sets.indexed_families import indexed_family
+    from sage_extensions.categories.sets.set_categories import (
         _cartesian_product_morphism, _coproduct_morphism,
     )
 

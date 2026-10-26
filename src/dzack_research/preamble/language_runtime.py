@@ -13,20 +13,20 @@ from sage.structure.element import parent as element_parent
 from sageparse import Context, Node, splice
 from sageparse.extensions.research import EXTENSION as _RESEARCH_EXTENSION
 
-from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
-from dzack_research.preamble.categories.rings.ring_foundation import (
+from sage_extensions.categories.rings.ring_foundation import _owned_engine_element
+from sage_extensions.categories.rings.ring_foundation import (
     OwnedRings,
     _OwnedIntegerElement,
     _own_ring,
     _owned_integers,
 )
-from dzack_research.preamble.categories.sets.set_categories import (
+from sage_extensions.categories.sets.set_categories import (
     Set as owned_set,
 )
-from dzack_research.preamble.rings.real import (
+from sage_extensions.rings.real import (
     RR,
 )
-from dzack_research.preamble.rings.real import (
+from sage_extensions.rings.real import (
     ExactRealNumber,
     RealApproximation as owned,
 )
