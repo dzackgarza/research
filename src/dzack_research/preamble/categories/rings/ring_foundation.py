@@ -6565,14 +6565,30 @@ def _owned_engine_ring(engine: Ring) -> Ring:
                 tuple(engine.variable_names()), default_prec=engine.default_prec()
             )
         case LaurentSeriesRing() | LazyLaurentSeriesRing():
-            # A Laurent-series engine is a localization/completion presentation
-            # whose exact retained construction is not yet represented for
-            # every coefficient ring. Do not infer its placement from the
-            # engine class in the generic adapter.
-            raise TypeError(
-                f"cannot raise {engine} through an owned Laurent-series construction: "
-                "the coefficient-ring and localization data are not retained"
+            # R((t)) is the localization of R[[t]] at the powers of t.
+            # Rebuild the retained formal-series source first, then use its
+            # localization constructor so the source and inverted parameter
+            # remain explicit construction data rather than a Laurent engine
+            # being adopted and classified by its Sage parent class.
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                FormalPowerSeriesRings,
             )
+
+            coefficient_ring = _own_ring(engine.base_ring())
+            variable_names = tuple(engine.variable_names())
+            if len(variable_names) != 1:
+                raise TypeError(
+                    f"Laurent-series construction requires one formal variable, got {variable_names!r}"
+                )
+            precision = (
+                int(engine.default_prec())
+                if callable(getattr(engine, "default_prec", None))
+                else int(engine.precision_cap())
+            )
+            power_series = FormalPowerSeriesRings(coefficient_ring)(
+                variable_names, default_prec=precision
+            )
+            return power_series.localization(power_series.power_series_variable())
         case PolynomialRing_generic() | MPolynomialRing_base():
             # A polynomial engine met in an adapter is raised through the
             # one polynomial ring on its variables (OWN-02); its elements
