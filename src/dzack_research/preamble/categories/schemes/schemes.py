@@ -1065,6 +1065,14 @@ class SchemeMorphismMethods:
                 and other.codomain() is self.codomain()
                 and other.sheaf_morphism() is self.sheaf_morphism()
             )
+        if self._relative_projectivization_role == "surjectivity_induced_morphism":
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._relative_projectivization_role == "surjectivity_induced_morphism"
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+                and other.sheaf_morphism() is self.sheaf_morphism()
+            )
         if self._relative_projectivization_role == "base_projection":
             if other is self.underlying_projection():
                 return True
@@ -1797,7 +1805,7 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
-        if self._relative_projectivization_role in ("base_change_composite", "base_change_total", "base_change_base", "base_projection", "surjectivity_open_inclusion"):
+        if self._relative_projectivization_role in ("base_change_composite", "base_change_total", "base_change_base", "base_projection", "surjectivity_open_inclusion", "surjectivity_induced_morphism"):
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._relative_projectivization_source_sheaf is not None:
             raise TypeError(f"unhashable type: {type(self).__name__}")
@@ -1829,6 +1837,8 @@ class SchemeMorphismMethods:
             return f"Relative-Proj selected base projection {self.domain()} -> {self.codomain()}"
         if self._relative_projectivization_role == "surjectivity_open_inclusion":
             return f"Relative-Proj surjectivity-locus inclusion {self.domain()} -> {self.codomain()}"
+        if self._relative_projectivization_role == "surjectivity_induced_morphism":
+            return f"Relative-Proj induced map on surjectivity locus {self.domain()} -> {self.codomain()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:

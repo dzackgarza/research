@@ -1608,34 +1608,15 @@ class _RelativeProjectivizationSurjectivityLocusEngine:
         return self._projectivization_sheaf_morphism
 
 
-class _RelativeProjectivizationInducedMorphism(SchemeMorphism):
-    r"""The induced map to ``P_quot(F)`` on the quotient-surjectivity locus."""
-
-    def __init__(self, parent, sheaf_morphism) -> None:
-        self._sheaf_morphism = sheaf_morphism
-        super().__init__(None, mor=parent)
-
-    def sheaf_morphism(self):
-        return self._sheaf_morphism
-
-    def _in_mor(self, mor):
-        return _RelativeProjectivizationInducedMorphism(
-            mor,
-            self.sheaf_morphism(),
-        )
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, _RelativeProjectivizationInducedMorphism)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
-            and other.sheaf_morphism() is self.sheaf_morphism()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    __hash__ = None
+def _relative_projectivization_induced_morphism(parent, sheaf_morphism):
+    r"""Construct the induced surjectivity-locus map in the generated scheme Mor."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        relative_projectivization_sheaf_morphism=sheaf_morphism,
+        relative_projectivization_role="surjectivity_induced_morphism",
+    )
 
 
 def _exact_projectivization_map(
@@ -1661,10 +1642,7 @@ def _exact_projectivization_map(
         projectivization_sheaf_morphism=sheaf_morphism,
     )
     induced = locus.Mor(source_total)(
-        lambda mor: _RelativeProjectivizationInducedMorphism(
-            mor,
-            sheaf_morphism,
-        )
+        lambda mor: _relative_projectivization_induced_morphism(mor, sheaf_morphism)
     )
     return ProjectivizationMapOnSurjectivityLocus(
         sheaf_morphism,
