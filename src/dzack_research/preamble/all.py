@@ -8,7 +8,7 @@ an ordinary Python support object deliberately selected by the preamble.
 """
 
 import sys as _sys
-from importlib import import_module as _import_module, reload as _reload_module
+from importlib import import_module as _import_module
 from importlib.util import find_spec as _find_spec
 from pathlib import Path as _Path
 from typing import cast as _cast
@@ -810,16 +810,11 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             )
             conflicting_source = (candidate, _Path(spec.origin).resolve(), package_parent)
     if module_name is not None:
-        imported = _sys.modules.get(module_name)
-        if imported is None:
-            imported = _import_module(module_name)
-        else:
-            # Sage's ``load`` executes the source on every call.  Re-execute
-            # an already canonical module in place so the session retains the
-            # same class/module identities without silently turning repeated
-            # loads into no-ops.  Reload is safe here because the exact source
-            # origin was established above.
-            imported = _reload_module(imported)
+        # The importer is the sole owner of module execution and identity.
+        # Reloading here would recreate classes in the same module object while
+        # already-imported consumers retain references to the old classes,
+        # reintroducing the split population this route exists to prevent.
+        imported = _import_module(module_name)
     elif conflicting_source is not None and (
         conflicting_source[2]
         or (
