@@ -66,7 +66,7 @@ def test_the_preimage_of_c2_in_c4_has_a_schreier_cover_of_order_two() -> None:
     images = tuple(augmentation(word) for word in augmentation.domain().group_generators())
 
     assert all(image in subgroup for image in images)
-    assert group.subgroup_on(images).cardinality() == cardinal(2)
+    assert group.subgroup(images).cardinality() == cardinal(2)
 
 
 def test_centralizers_in_s3_and_the_invertibility_of_its_order() -> None:

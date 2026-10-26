@@ -47,7 +47,8 @@ def test_split_four_dimensional_form_cosets_are_its_nonzero_singular_vectors() -
     form = (Lattices(ZZ)([[0, 2], [2, 0]]) ** 2).discriminant_group()
     group = form.orthogonal_group()
     vector = next(iter(form.module_generators()))
-    stabilizer = group.stabilizer_of_element(vector)
+    vector_stabilizer = group.stabilizer_of_element(vector)
+    stabilizer = group.subgroup_on(tuple(vector_stabilizer.group_generators()))
     cosets = group.left_cosets(stabilizer)
     section = cosets.representative_map()
 
