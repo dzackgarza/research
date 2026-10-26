@@ -103,54 +103,16 @@ def _relative_projectivization_base_change_base_morphism(parent, comparison, rin
     )
 
 
-class _RelativeProjectivizationBaseProjectionMorphism(SchemeMorphism):
-    r"""The selected base projection in an exact finite-atlas Proj base-change square."""
-
-    def __init__(self, parent, comparison, underlying_projection) -> None:
-        self._comparison = comparison
-        self._underlying_projection = underlying_projection
-        super().__init__(None, mor=parent)
-
-    def comparison(self):
-        return self._comparison
-
-    def underlying_projection(self):
-        return self._underlying_projection
-
-    def _in_mor(self, mor):
-        return _RelativeProjectivizationBaseProjectionMorphism(
-            mor,
-            self.comparison(),
-            self.underlying_projection(),
-        )
-
-    def __mul__(self, other):
-        if (
-            other
-            is self.comparison()
-            .changed_projectivization()
-            .arrow()
-            .domain()
-            .projectivization_projection()
-        ):
-            return self.comparison().square_composite()
-        return self.underlying_projection() * other
-
-    def __eq__(self, other) -> bool:
-        if other is self.underlying_projection():
-            return True
-        if isinstance(other, _RelativeProjectivizationBaseProjectionMorphism):
-            return (
-                other.domain() is self.domain()
-                and other.codomain() is self.codomain()
-                and other.underlying_projection() == self.underlying_projection()
-            )
-        return self.underlying_projection() == other
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    __hash__ = None
+def _relative_projectivization_base_projection_morphism(parent, comparison, underlying_projection):
+    r"""Construct the selected base projection in the generated scheme Mor."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        relative_projectivization_comparison=comparison,
+        relative_projectivization_role="base_projection",
+        relative_projectivization_underlying_projection=underlying_projection,
+    )
 
 
 class GeneralProjectivizationBaseChangeComparison(SageObject):
@@ -261,10 +223,8 @@ class ExactProjectivizationBaseChangeComparison(SageObject):
             lambda mor: _relative_projectivization_base_change_composite(mor, self)
         )
         self._base_projection = changed_base.Mor(source_scheme)(
-            lambda mor: _RelativeProjectivizationBaseProjectionMorphism(
-                mor,
-                self,
-                underlying_base_projection,
+            lambda mor: _relative_projectivization_base_projection_morphism(
+                mor, self, underlying_base_projection
             )
         )
         self._total_projection = changed_total.Mor(projectivization)(
@@ -349,10 +309,8 @@ class ExactFiniteAtlasProjectivizationBaseChangeComparison(SageObject):
             lambda mor: _relative_projectivization_base_change_composite(mor, self)
         )
         self._base_projection = changed_base.Mor(source_scheme)(
-            lambda mor: _RelativeProjectivizationBaseProjectionMorphism(
-                mor,
-                self,
-                self._underlying_base_projection,
+            lambda mor: _relative_projectivization_base_projection_morphism(
+                mor, self, self._underlying_base_projection
             )
         )
         self._total_projection = changed_total.Mor(projectivization)(
