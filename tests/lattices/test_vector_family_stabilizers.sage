@@ -32,6 +32,18 @@ def _simple_roots(lattice):
     return Sets().Mor(lattice.module_generating_set(), lattice)(lattice.module_generator)
 
 
+@pytest.mark.parametrize("multiple", [1, 2])
+def test_a2_bases_with_different_pairings_have_no_orthogonal_transporter(multiple):
+    r"""b(a,b)=-1 differs from b(a,m*a+b)=2m-1 for m=1,2."""
+    lattice = Lattices(ZZ)("A2")
+    first, second = tuple(lattice.module_generators())
+    source = Sets().Mor(Sets.Δ[1], lattice)(lambda i: (first, second)[int(i)])
+    target = Sets().Mor(Sets.Δ[1], lattice)(
+        lambda i: (first, multiple * first + second)[int(i)]
+    )
+    assert lattice.O().transporter(source, target) is None
+
+
 @pytest.mark.parametrize("name", ROOT_BASES)
 def test_the_stabilizer_of_the_simple_roots_is_the_diagram_automorphism_group(name) -> None:
     diagram_order, isometry_order, weyl_order = ROOT_BASES[name]
