@@ -251,7 +251,7 @@ def _action_with_canonical_endomorphism_parent(base_ring, additive_group, action
     rather than changing the module object or rejecting the defining action.
     """
     endomorphisms = AdditiveGroups().AdditiveCommutative().End(additive_group)
-    if action.codomain() is endomorphisms:
+    if action.domain() is base_ring and action.codomain() is endomorphisms:
         return action
     supplied_endomorphisms = action.codomain()
     assert (
