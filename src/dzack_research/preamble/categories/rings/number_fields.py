@@ -841,7 +841,7 @@ class NumberFieldsWithChosenPrimitiveElement(OwnedCategory):
             r"""Return the owned defining polynomial of the selected primitive element."""
 
             polynomial = _engine_ring(self).defining_polynomial()
-            parent = _own_ring(polynomial.parent())
+            parent = self.algebra_framing_source()
             return _owned_engine_element(parent, polynomial)
 
         def embedding_images(self, target):
