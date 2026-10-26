@@ -10,6 +10,38 @@ Write to it in the turn the measurement is made.
 
 ## Sage
 
+### PARI overflows on the orthogonal group of a line plus E8
+
+On SageMath 11.0.beta1 with Python 3.14, the orthogonal group of the positive
+definite lattice `<18> + E8` reaches PARI `qfauto` and raises a stack overflow
+at its 1 GiB limit. The independent mathematical example is
+`tests/lattices/test_orthogonal_group_semantic_api.sage::test_e8_with_a_norm_eighteen_line_has_the_product_orthogonal_group`.
+Its expected order is twice the E8 Weyl-group order: the norm-two vectors
+span the characteristic E8 summand, and the perpendicular line permits two
+signs. The selected test failed in 36.99 seconds on 2026-10-26; that includes
+test setup and is one data point.
+
+The [PARI qfisominit contract](https://pari.math.u-bordeaux.fr/dochtml/html-stable/Vectors,_matrices,_linear_algebra_and_sets.html#qfisominit)
+requires all vectors up to the largest diagonal entry. The norm-18 basis
+vector therefore forces enumeration of long E8 shells as well.
+[OSCAR 1.8.2 isometry_group](https://github.com/oscar-system/Oscar.jl/blob/v1.8.2/src/Groups/matrices/isometry_group.jl)
+supplies a complete computation by decomposition into invariant sublattices.
+On Julia 1.12.5 it returned the required order. Julia's timing report
+attributes almost all of the first call to compilation.
+
+| Direct OSCAR call on `<18> + E8` | Observed value |
+| --- | ---: |
+| Group order | 1393459200 |
+| First `isometry_group` call, excluding `using Oscar` | 267.750760 s |
+| Compilation share | 99.89% |
+
+Reproduce in the bridge's Julia project with `using Oscar`,
+`G = diagonal_matrix(matrix(QQ,1,1,[18]), gram_matrix(root_lattice(:E,8)))`,
+`L = integer_lattice(; gram=G)`, `@time A = isometry_group(L)`, and
+`order(A)`. This is a cold-call data point, not a throughput comparison.
+The owned group-order and generator checks above also verify the adapter's
+basis transport.
+
 ### Algebraic-real `QuadraticForm.rational_diagonal_form` rejects even a diagonal plane
 
 Measured 2026-10-23 with SageMath 11.0.beta1 and Python 3.14: `QuadraticForm(AA, matrix(AA, [[1, 0], [0, -1]])).rational_diagonal_form(return_matrix=True)` raises `TypeError: Illegal initializer for algebraic number` while assigning a diagonal matrix entry in `quadratic_form__local_field_invariants.py`. This is one rank-two data point, not a timing curve. Reproduce with `sage -python -c 'from sage.all import AA, matrix; from sage.quadratic_forms.quadratic_form import QuadraticForm; print(QuadraticForm(AA, matrix(AA, [[1,0],[0,-1]])).rational_diagonal_form(return_matrix=True))'`. Sage's documented transformation contract is `T.transpose() * G * T == D.matrix()`; the call fails before it returns that data. Route chosen: `lattice_engines._exact_real_diagonalization` uses the existing exact formed-module arithmetic for AA and retains the forward and inverse maps. Depends on this: AA lattice diagonalization, Witt decomposition and Witt index.
