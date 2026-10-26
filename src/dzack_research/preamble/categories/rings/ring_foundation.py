@@ -6286,6 +6286,11 @@ def _algebraic_number_placements() -> tuple[Category, ...]:
     return (*_field_placements(), owned_sets.CountablyInfiniteSets())
 
 
+def _algebraic_closure_finite_field_placements() -> tuple[Category, ...]:
+    r"""An algebraic closure of a finite field is a countable field."""
+    return (*_field_placements(), owned_sets.CountablyInfiniteSets())
+
+
 def _monomial_term_variables(ring, element):
     r"""The variables of ``element`` when it is one nonzero term ``c x^a`` of the polynomial ring ``ring``."""
     engine_element = _engine_element(ring, element)
@@ -6434,6 +6439,10 @@ def _owned_engine_ring(engine: Ring) -> Ring:
     from sage.algebras.free_algebra import FreeAlgebra_generic
     from sage.rings.complex_double import CDF as SageCDF
     from sage.rings.qqbar import QQbar as SageQQbar
+    from sage.rings.algebraic_closure_finite_field import (
+        AlgebraicClosureFiniteField,
+        AlgebraicClosureFiniteField_generic,
+    )
     from sage.rings.abc import ComplexField as SageComplexFieldClass
     from sage.rings.abc import RealField as SageRealFieldClass
     from sage.rings.abc import pAdicField as SagePadicFieldClass
@@ -6458,6 +6467,13 @@ def _owned_engine_ring(engine: Ring) -> Ring:
             return _owned_real_algebraic_numbers()
         case _ if engine is SageQQbar:
             return _owned_algebraic_numbers()
+        case AlgebraicClosureFiniteField_generic():
+            characteristic = int(engine.characteristic())
+            closure = AlgebraicClosureFiniteField(characteristic)
+            return _OwnedRingParent(
+                closure,
+                named_placement=_algebraic_closure_finite_field_placements,
+            )
         case _ if engine is SageRDF:
             return _owned_real_double_field()
         case _ if engine is SageCDF:
