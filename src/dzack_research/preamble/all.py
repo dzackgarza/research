@@ -722,8 +722,10 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             relative = source.relative_to(root)
         except ValueError:
             continue
-        suffix = relative.suffix
-        if suffix not in (".py", ".sage"):
+        # The canonical module route is specific to Sage source.  ``load`` on
+        # an ordinary Python script deliberately keeps Sage's execute-into-
+        # scope semantics instead of silently changing it into an import.
+        if relative.suffix != ".sage":
             continue
         parts = list(relative.with_suffix("").parts)
         if parts and parts[-1] == "__init__":
@@ -731,9 +733,8 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         if not parts or not all(part.isidentifier() for part in parts):
             continue
         candidate = ".".join(parts)
-        # Only delegate when normal import resolution chooses this exact file;
-        # a neighbouring .py takes precedence over a .sage source in the
-        # installed finder, and package directories may have their own loader.
+        # Only delegate when the installed sageparse finder chooses this exact
+        # source; package directories may have their own loader.
         try:
             spec = _find_spec(candidate)
         except (ImportError, ModuleNotFoundError, ValueError):
