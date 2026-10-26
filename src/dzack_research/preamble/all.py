@@ -761,11 +761,29 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     source = _Path(filename).expanduser().resolve()
     module_name = None
     module_depth = -1
-    loaded_module_name = None
-    loaded_module_depth = -1
     conflicting_source = None
     unresolved_package_source = None
-    for entry in _sys.path:
+    # Existing module identity outranks the current sys.path interpretation:
+    # paths can be inserted or reordered after import, but that must not make
+    # ``load(source)`` choose a second name for the same already-loaded file.
+    for name, module in tuple(_sys.modules.items()):
+        spec = getattr(module, "__spec__", None)
+        if name == "__main__" or spec is None or getattr(spec, "name", None) != name:
+            continue
+        module_file = getattr(module, "__file__", None)
+        if module_file is None:
+            continue
+        try:
+            same_source = _Path(module_file).resolve() == source
+        except (OSError, RuntimeError, TypeError, ValueError):
+            continue
+        if same_source and (
+            name.count(".") > module_depth
+            or (name.count(".") == module_depth and (module_name is None or name < module_name))
+        ):
+            module_name = name
+            module_depth = name.count(".")
+    for entry in (() if module_name is not None else _sys.path):
         root = _Path(entry or ".").resolve()
         try:
             relative = source.relative_to(root)
@@ -822,19 +840,8 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             if len(parts) > module_depth:
                 module_name = candidate
                 module_depth = len(parts)
-            # If the source is already loaded under a shorter alias, reusing
-            # that module is preferable to creating a second population under
-            # a package-qualified alias. Existing identity outranks a merely
-            # potential canonical name; among existing names, prefer the most
-            # qualified one.
-            existing = _sys.modules.get(candidate)
-            if existing is not None and len(parts) > loaded_module_depth:
-                loaded_module_name = candidate
-                loaded_module_depth = len(parts)
         elif conflicting_source is None:
             conflicting_source = (candidate, _Path(spec.origin).resolve(), package_parent)
-    if loaded_module_name is not None:
-        module_name = loaded_module_name
     if module_name is not None:
         # The importer is the sole owner of module execution and identity.
         # Reloading here would recreate classes in the same module object while
