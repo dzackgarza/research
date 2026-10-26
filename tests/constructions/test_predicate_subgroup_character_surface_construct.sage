@@ -31,5 +31,4 @@ def test_enriques_coinvariant_group_has_identity_isotropic_equivalence_witness()
     representative = group.isotropic_orbit_representatives(1)[0]
     witness = group.isotropic_equivalence_witness(representative, representative)
 
-    assert witness is not None
     assert witness(representative) == representative
