@@ -460,6 +460,7 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 ),
             )
 
+        @cached_method
         def finite_character_quotient(self):
             if not self.character_data_is_complete():
                 raise ValueError(
@@ -494,6 +495,15 @@ class PredicateSubgroups(OwnedParameterizedCategory):
                 f"{self} has no complete finite-character condition realizing its coset space"
             )
             group = self.supergroup()
+            if self.character_data_is_complete():
+                quotient = self.finite_character_quotient()
+                _points, base, action = quotient.left_coset_action_data()
+                return FiniteGSets(group).pointed_orbit(
+                    self,
+                    base,
+                    action,
+                    _free_cover(group, generators),
+                )
             points = _LeftCosetPointSet(group, self)
             return FiniteGSets(group).pointed_orbit(
                 self,

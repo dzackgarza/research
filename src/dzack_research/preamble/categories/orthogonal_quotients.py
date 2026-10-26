@@ -173,6 +173,53 @@ class OrthogonalCharacterQuotient:
             tuple(key for key in self._witnesses if self._allowed(key))
         )
 
+    @cached_method
+    def left_coset_action_data(self):
+        r"""Return the exact finite left-coset action of the character image modulo rho(self.subgroup).
+
+        The points are canonical image keys for the cosets qH. The returned
+        action maps qH to rho(g) qH by one exact quotient multiplication and a
+        lookup. This retains the actual preimage subgroup in the caller's
+        pointed-orbit construction while avoiding repeated equality tests
+        between ambient predicate cosets.
+        """
+        keys = tuple(self.image_keys())
+        key_set = frozenset(keys)
+        subgroup = frozenset(self.subgroup_image_keys())
+        if not subgroup or not subgroup <= key_set:
+            raise ArithmeticError("the finite-character subgroup image is not a nonempty subset of its image")
+
+        representative_of = {}
+        representatives = []
+        for representative in keys:
+            if representative in representative_of:
+                continue
+            coset = frozenset(
+                self._multiply(representative, subgroup_element)
+                for subgroup_element in subgroup
+            )
+            if not coset <= key_set:
+                raise ArithmeticError("a finite-character left coset escapes the represented image")
+            if any(element in representative_of for element in coset):
+                raise ArithmeticError("the finite-character left cosets overlap")
+            representatives.append(representative)
+            for element in coset:
+                representative_of[element] = representative
+
+        if frozenset(representative_of) != key_set:
+            raise ArithmeticError("the finite-character left cosets do not cover the represented image")
+        identity = self.image(self.supergroup.one())
+        base = representative_of[identity]
+
+        def act(isometry, point):
+            translated = self._multiply(self.image(isometry), point)
+            try:
+                return representative_of[translated]
+            except KeyError as error:
+                raise ArithmeticError("the finite-character left-coset action escaped the image") from error
+
+        return finite_ordered_set(tuple(representatives)), base, act
+
     def stabilizer_image_keys(self, stabilizer_generators):
         return frozenset(self.stabilizer_image_witnesses(stabilizer_generators))
 

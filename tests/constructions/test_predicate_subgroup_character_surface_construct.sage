@@ -15,6 +15,15 @@ def test_enriques_coinvariant_group_has_complete_character_kernel_data() -> None
     assert group.character_data_is_complete()
     assert group.contains_character_kernel()
     assert quotient.subgroup is group
+    assert group.finite_character_quotient() is quotient
+    cosets = group.coset_space()
+    assert cosets in FiniteGSets(group.supergroup())
+    assert cosets.cardinality() == cardinal(
+        len(quotient.image_keys()) // len(quotient.subgroup_image_keys())
+    )
+    assert cosets.projection().codomain() is cosets
+    schreier = cosets.schreier_generating_morphism()
+    assert schreier.codomain() is group
 
 
 def test_enriques_coinvariant_group_has_identity_isotropic_equivalence_witness() -> None:
