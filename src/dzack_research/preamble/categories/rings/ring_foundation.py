@@ -6634,6 +6634,18 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             )
 
             return _number_field_from_engine(engine)
+        case QuotientRing_generic():
+            # A quotient engine is raised through R/I, retaining its owned
+            # cover and the ideal's defining generators.  The generic engine
+            # adoption fallback would instead select category placement from
+            # the quotient's Sage parent class and lose the construction data.
+            from dzack_research.preamble.categories.rings.commutative_ideals import (
+                _from_engine_ideal,
+            )
+
+            cover = _own_ring(engine.cover_ring())
+            defining_ideal = _from_engine_ideal(cover, engine.defining_ideal())
+            return cover.quotient_ring(defining_ideal)
         case PolynomialRing_generic() | MPolynomialRing_base():
             # A polynomial engine met in an adapter is raised through the
             # one polynomial ring on its variables (OWN-02); its elements
