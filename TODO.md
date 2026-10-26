@@ -36,7 +36,6 @@ The required [core migration #384](https://github.com/dzackgarza/research/issues
 | `every-arrow-is-an-element-of-its-mor` | [#454](https://github.com/dzackgarza/research/issues/454) |
 | `objects-of-sets-answer-their-endomorphisms` | [#458](https://github.com/dzackgarza/research/issues/458) |
 | `maximal-and-prime-ideals-are-presented` | [#444](https://github.com/dzackgarza/research/issues/444) |
-| `quotient-ring-placement-follows-construction` | [#445](https://github.com/dzackgarza/research/issues/445) |
 | `integer-residue-rings-placed-by-their-ideal` | [#448](https://github.com/dzackgarza/research/issues/448) |
 | `native-rings-are-constructed-not-adopted` | [#447](https://github.com/dzackgarza/research/issues/447) |
 | `adopted-rings-declare-their-construction-data` | [#467](https://github.com/dzackgarza/research/issues/467) |

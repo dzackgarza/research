@@ -66,7 +66,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     PrimeFields,
     _engine_element,
     _engine_krull_dimension,
-    _krull_dimension_of_engine,
     _engine_quotient_cover_ideal,
     _engine_ring,
     _engine_ring_value,
@@ -3605,25 +3604,30 @@ def _quotient_ring(source, defining_ideal):
     # for n != 0 (``ZMod.fintype``, Mathlib/Data/ZMod/Defs.lean).  The
     # placement reads the source's construction and the ideal's generators,
     # never the class of a realization (ARC-08).
+    # A nonzero ideal of a finite-rank order has finite index, so its quotient
+    # is finite and Artinian. Read only the retained generators here: an
+    # undecided equality to zero is not a premise for finite placement.
     finite_order_quotient = (
         not exact_source_quotient
         and source in OwnedOrders()
-        and not defining.is_zero()
+        and any(
+            (generator == source.zero()) is False
+            for generator in defining_ideal.ideal_generators()
+        )
     )
-    dimension = None
-    # R/R has dimension -infinity, outside this finite-integer datum.
-    if finite_order_quotient and not defining.is_one():
-        dimension = 0
-    elif quotient_engine is not None and source in OwnedRings().Noetherian() and not defining.is_one():
-        dimension = _krull_dimension_of_engine(quotient_engine)
 
-    quotient_is_field = False
-    quotient_is_domain = False
-    if not exact_source_quotient:
-        quotient_is_field = defining_ideal.is_maximal() is True
-        quotient_is_domain = quotient_is_field or defining_ideal.is_prime() is True
-        if quotient_is_domain and dimension == 0:
-            quotient_is_field = True
+    # A field/domain placement is inherited from the ideal's construction
+    # category, never selected by asking its maximality/primality predicate.
+    # Unplaced ideals leave the quotient's corresponding property to the
+    # caller, as required by CON-07 and ARC-08.
+    quotient_is_field = (
+        not exact_source_quotient
+        and Category.__contains__(CommutativeIdeals(source).Maximal(), defining_ideal)
+    )
+    quotient_is_domain = quotient_is_field or (
+        not exact_source_quotient
+        and Category.__contains__(CommutativeIdeals(source).PrimeAsIdeal(), defining_ideal)
+    )
     # ZZ/(p) for a maximal (p) is the prime field F_p, one object for every
     # route (``GF(p)``, ``PrimeFields()(p)``, ``Zmod(p)``).  It has no proper
     # subfield: every ring map into ZZ/(p) is onto (Mathlib
@@ -3681,7 +3685,7 @@ def _quotient_ring(source, defining_ideal):
         placements.append(OwnedIntegralDomains())
     if source in FiniteSets() or finite_order_quotient or finite_extension_field:
         placements.append(FiniteSets())
-    if dimension == 0 or finite_extension_field:
+    if finite_order_quotient or finite_extension_field:
         placements.append(OwnedRings().Artinian())
 
     return _object_of(
