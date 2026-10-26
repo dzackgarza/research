@@ -12,7 +12,7 @@ from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.dynamic_class import DynamicMetaclass
-from sage.structure.element import Element, parent
+from sage.structure.element import parent
 from sage.structure.parent import Parent
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -1200,7 +1200,7 @@ class Cat(CategoryPacketMethods, Category):
         return "Cat: categories with functors as morphisms"
 
 
-class NaturalTransformationMorphism(CategoricalArrow, Element):
+class NaturalTransformationMorphism(CategoricalArrow, CategoricalMor.ElementMethods):
     r"""A natural transformation as a morphism in a functor category."""
 
     def __init__(
@@ -1208,7 +1208,7 @@ class NaturalTransformationMorphism(CategoricalArrow, Element):
         parent: NaturalTransformationMor,
         transformation: NaturalTransformation,
     ) -> None:
-        CategoricalArrow.__init__(self, parent)
+        Morphism.__init__(self, parent)
         if transformation.source() is not parent.source():
             raise ValueError(
                 f"a morphism {self.domain()} -> {self.codomain()} in the functor category needs a natural "
@@ -1286,7 +1286,7 @@ class NaturalTransformationMorphism(CategoricalArrow, Element):
 
 
 class NaturalTransformationMor(CategoricalMor):
-    Element = NaturalTransformationMorphism
+    ElementMethods = NaturalTransformationMorphism
 
     def __init__(
         self,
@@ -1324,7 +1324,7 @@ class NaturalTransformationMor(CategoricalMor):
                 transformation = NaturalTransformation(
                     self.source(), self.target(), transformation
                 )
-        selected = NaturalTransformationMorphism if element_class is None else element_class
+        selected = self.element_class if element_class is None else element_class
         return selected(self, transformation, **dict(construction_data or {}))
 
     @object_level
