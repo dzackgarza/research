@@ -606,6 +606,10 @@ class SchemeMorphismMethods:
     _cone_construction = None
     _point_coordinates = None
     _closed_complement = None
+    _homogeneous_coordinates = None
+    _coefficient_map = None
+    _standard_projective_chart_embedding = False
+    _multiprojective_chart_embedding = False
 
     def __init__(
         self,
@@ -617,6 +621,10 @@ class SchemeMorphismMethods:
         cone_construction=None,
         point_coordinates=None,
         closed_complement=None,
+        homogeneous_coordinates=None,
+        coefficient_map=None,
+        standard_projective_chart_embedding=False,
+        multiprojective_chart_embedding=False,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -624,6 +632,13 @@ class SchemeMorphismMethods:
         self._cone_construction = cone_construction
         self._point_coordinates = point_coordinates
         self._closed_complement = closed_complement
+        self._homogeneous_coordinates = (
+            None if homogeneous_coordinates is None
+            else finite_family(tuple(homogeneous_coordinates), name="Homogeneous coordinates")
+        )
+        self._coefficient_map = coefficient_map
+        self._standard_projective_chart_embedding = standard_projective_chart_embedding
+        self._multiprojective_chart_embedding = multiprojective_chart_embedding
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -637,6 +652,10 @@ class SchemeMorphismMethods:
             cone_construction=construction,
             point_coordinates=self._point_coordinates,
             closed_complement=self._closed_complement,
+            homogeneous_coordinates=self._homogeneous_coordinates,
+            coefficient_map=self._coefficient_map,
+            standard_projective_chart_embedding=self._standard_projective_chart_embedding,
+            multiprojective_chart_embedding=self._multiprojective_chart_embedding,
         )
 
     def cone_construction(self):
@@ -651,7 +670,11 @@ class SchemeMorphismMethods:
 
     def is_open_immersion(self):
         r"""Whether this arrow is the open inclusion of a selected closed complement."""
-        return self._closed_complement is not None
+        return (
+            self._closed_complement is not None
+            or self._standard_projective_chart_embedding
+            or self._multiprojective_chart_embedding
+        )
 
     def _in_mor(self, mor):
         r"""Re-site this representation in a Mor with the same endpoints.
@@ -669,6 +692,10 @@ class SchemeMorphismMethods:
             cone_construction=self.cone_construction(),
             point_coordinates=self._represented_point_coordinates(),
             closed_complement=self._closed_complement,
+            homogeneous_coordinates=self._homogeneous_coordinates,
+            coefficient_map=self._coefficient_map,
+            standard_projective_chart_embedding=self._standard_projective_chart_embedding,
+            multiprojective_chart_embedding=self._multiprojective_chart_embedding,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -682,6 +709,10 @@ class SchemeMorphismMethods:
                 "cone_construction": self.cone_construction(),
                 "point_coordinates": self._represented_point_coordinates(),
                 "closed_complement": self._closed_complement,
+                "homogeneous_coordinates": self._homogeneous_coordinates,
+                "coefficient_map": self._coefficient_map,
+                "standard_projective_chart_embedding": self._standard_projective_chart_embedding,
+                "multiprojective_chart_embedding": self._multiprojective_chart_embedding,
             },
         )
 
@@ -691,8 +722,102 @@ class SchemeMorphismMethods:
     def _represented_point_coordinates(self):
         return self._point_coordinates
 
+    def homogeneous_coordinates(self):
+        if self._homogeneous_coordinates is None:
+            raise AttributeError(f"{self} is not represented by homogeneous coordinates")
+        return self._homogeneous_coordinates
+
+    def coefficient_map(self):
+        if self._coefficient_map is None:
+            raise AttributeError(f"{self} has no selected coefficient map")
+        return self._coefficient_map
+
+    def _projective_coordinate_data(self):
+        return self._homogeneous_coordinates is not None
+
+    def _projective_engine_morphism(self):
+        ring = self.coefficient_map().codomain()
+        base = self.coefficient_map().domain()
+        native_scalar = _engine_ring(ring).coerce_map_from(_engine_ring(base))
+        assert native_scalar is not None, f"Sage has no canonical coefficient map {base} -> {ring} for {self}"
+        natural = OwnedRings().Mor(base, ring)(native_scalar)
+        assert _ring_morphisms_equal(self.coefficient_map(), natural) is True, (
+            f"the selected coefficient map of {self} is not Sage's canonical map {base} -> {ring}"
+        )
+        return _native_scheme_mor(self.domain(), self.codomain())(
+            [_engine_element(ring, value) for value in self.homogeneous_coordinates()], check=False,
+        )
+
+    def __mul__(self, other):
+        if self._multiprojective_chart_embedding:
+            if other.codomain() is not self.domain():
+                return NotImplemented
+            return _projective_coordinate_morphism(self) * other
+        if self._homogeneous_coordinates is None:
+            return super().__mul__(other)
+        assert other.codomain() is self.domain(), f"{self} and {other} are not composable"
+        cone_leg = self._projected_cone_leg(other)
+        if cone_leg is not None:
+            return cone_leg
+        if other._is_the_identity():
+            return self
+        mor = _scheme_composition_mor(self, other)
+        if self.domain() in Schemes(self.domain().scheme_base_ring()).Affine():
+            pullback = other.coordinate_algebra_morphism()
+            return _ProjectiveCoordinateMorphism(
+                mor, tuple(pullback(value) for value in self.homogeneous_coordinates()),
+                coefficient_map=OwnedRings().Mor(self.coefficient_map().domain(), pullback.codomain()).elementwise(
+                    lambda value: pullback(self.coefficient_map()(value))
+                ),
+            )
+        if other.domain()._is_glued_from_affine_atlas():
+            return other._postcompose_with(self)
+        before = _projective_coordinate_morphism(other)
+        source_ring = self.coefficient_map().codomain()
+
+        def substitute(polynomial):
+            return _evaluate_owned_homogeneous_polynomial_on_coordinates(
+                polynomial, source_ring, tuple(before.homogeneous_coordinates()),
+                coefficient_map=before.coefficient_map(),
+            )
+
+        coefficients = OwnedRings().Mor(
+            self.coefficient_map().domain(), before.coefficient_map().codomain()
+        ).elementwise(lambda value: substitute(self.coefficient_map()(value)))
+        values = tuple(substitute(value) for value in self.homogeneous_coordinates())
+        point_values = finite_family(values, name="Point coordinates") if before._represented_point_coordinates() is not None else None
+        return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
+
+    def __eq__(self, other):
+        if self._homogeneous_coordinates is None:
+            return super().__eq__(other)
+        if self is other:
+            return True
+        if not isinstance(other, SchemeMorphismMethods) or other.domain() is not self.domain() or other.codomain() is not self.codomain():
+            return False
+        other = _projective_coordinate_morphism(other)
+        ring = self.coefficient_map().codomain()
+        restriction = _projective_section_restriction(self.domain(), ring)
+        mor = OwnedRings().Mor(self.coefficient_map().domain(), restriction.codomain())
+        coefficients_equal = _ring_morphisms_equal(
+            mor.elementwise(lambda scalar: restriction(self.coefficient_map()(scalar))),
+            mor.elementwise(lambda scalar: restriction(ring(other.coefficient_map()(scalar)))),
+        )
+        if coefficients_equal is False:
+            return False
+        left, right = tuple(self.homogeneous_coordinates()), tuple(ring(value) for value in other.homogeneous_coordinates())
+        offset = 0
+        for width in _projective_coordinate_blocks(self.codomain()):
+            if any(not restriction(left[i] * right[j] - left[j] * right[i]).is_zero()
+                   for i, j in combinations(range(offset, offset + width), 2)):
+                return False
+            offset += width
+        return coefficients_equal
+
     def _engine_morphism_crossing(self):
         r"""The Sage morphism between the engines this morphism computes in."""
+        if self._homogeneous_coordinates is not None:
+            return self._projective_engine_morphism()
         if self._scalar_pullback is not None:
             base_arrow = LocallyRingedSpaces().Mor(self.domain().base_scheme(), self.codomain())(
                 self._scalar_pullback
@@ -1282,6 +1407,8 @@ class SchemeMorphismMethods:
     def _repr_(self) -> str:
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
+        if self._homogeneous_coordinates is not None:
+            return f"Projective morphism from {self.domain()} to {self.codomain()} defined by {tuple(self._homogeneous_coordinates)}"
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
 
     def scalar_pullback(self):
@@ -1322,9 +1449,8 @@ def _projective_coordinate_morphism(morphism):
     map on coefficients.  An already owned coordinate map keeps its stated
     coefficient map instead, including a noncanonical scalar base change.
     """
-    match morphism:
-        case _ProjectiveCoordinateMorphism():
-            return morphism
+    if morphism._projective_coordinate_data():
+        return morphism
     coordinates = morphism._represented_point_coordinates()
     if coordinates is not None:
         return _ProjectiveCoordinateMorphism(
@@ -1429,254 +1555,57 @@ def _scalar_maps_equal_on_scheme(scheme, left, right):
     )
 
 
-class _ProjectiveCoordinateMorphism(SchemeMorphism):
-    r"""A projective morphism given by coordinate sections and its coefficient map.
+def _ProjectiveCoordinateMorphism(mor, coordinates, *, coefficient_map=None,
+                                 cone_construction=None, point_coordinates=None,
+                                 standard_projective_chart_embedding=False):
+    r"""Construct a projective-coordinate arrow in its actual SchemeMor parent.
 
-    The coefficients of the target act in the source coordinate ring by the
-    retained ring map.  Thus the projection along R -> R' keeps that map,
-    not a natural coercion between engines.  In each projective block the
-    sections generate the line bundle on the stated source; on affine charts
-    this is the usual homogeneous-coordinate construction (Stacks, 01ND).
+    The homogeneous sections and coefficient map are defining data of the
+    generated ``SchemeMorphismMethods`` element; this factory is not an arrow
+    class and cannot create a parallel morphism host.
     """
-
-    def __init__(self, mor, coordinates, *, coefficient_map=None,
-                 cone_construction=None, point_coordinates=None) -> None:
-        coordinates = tuple(coordinates)
-        assert coordinates, (
-            f"cannot build a morphism {mor.domain()} -> {mor.codomain()} from homogeneous coordinates: "
-            "no coordinates were given"
-        )
-        ring = coordinates[0].parent()
-        assert all(value.parent() is ring for value in coordinates), (
-            f"cannot build a morphism {mor.domain()} -> {mor.codomain()} from the homogeneous "
-            f"coordinates {coordinates}: they do not all lie in one ring (the first lies in {ring})"
-        )
-        target_base = mor.codomain().scheme_base_ring()
-        if coefficient_map is None:
-            coefficient_map = _restriction_to_base(ring, target_base)
-        assert coefficient_map.domain() is target_base and coefficient_map.codomain() is ring, (
-            f"cannot build a morphism {mor.domain()} -> {mor.codomain()} from homogeneous coordinates: "
-            f"the map on coefficients {coefficient_map} must be a ring map {target_base} -> {ring}, but "
-            f"it is {coefficient_map.domain()} -> {coefficient_map.codomain()}"
-        )
-        assert sum(_projective_coordinate_blocks(mor.codomain())) == len(coordinates), (
-            f"cannot build a morphism into {mor.codomain()} from the homogeneous coordinates "
-            f"{coordinates}: {mor.codomain()} needs {sum(_projective_coordinate_blocks(mor.codomain()))} "
-            f"homogeneous coordinates, but {len(coordinates)} were given"
-        )
-        self._homogeneous_coordinates = finite_family(coordinates, name="Homogeneous coordinates")
-        self._coefficient_map = coefficient_map
-        super().__init__(None, mor=mor, cone_construction=cone_construction,
-                         point_coordinates=point_coordinates)
-
-    def with_cone_construction(self, construction):
-        return _ProjectiveCoordinateMorphism(
-            self.parent(), tuple(self.homogeneous_coordinates()),
-            coefficient_map=self.coefficient_map(), cone_construction=construction,
-            point_coordinates=self._represented_point_coordinates(),
-        )
-
-    def coefficient_map(self):
-        r"""The map from the target scalar ring into the source coordinate ring."""
-        return self._coefficient_map
-
-    def homogeneous_coordinates(self):
-        return self._homogeneous_coordinates
-
-    @cached_method
-    def _engine_morphism_crossing(self):
-        r"""The native polynomial map, when its scalar coercion is the stated map.
-
-        This is a private engine boundary.  Sage's polynomial-map entry has
-        no coefficient-map argument; a different map must not be erased.
-        Owned substitution and point evaluation do not require this entry.
-        """
-        ring = self.coefficient_map().codomain()
-        base = self.coefficient_map().domain()
-        native_scalar = _engine_ring(ring).coerce_map_from(_engine_ring(base))
-        assert native_scalar is not None, (
-            f"cannot compute with {self} in Sage: Sage has no canonical map from {base} to {ring} to "
-            "act on the coefficients of the homogeneous coordinates"
-        )
-        natural = OwnedRings().Mor(base, ring)(native_scalar)
-        assert _ring_morphisms_equal(self.coefficient_map(), natural) is True, (
-            f"cannot compute with {self} in Sage: its map on coefficients {self.coefficient_map()} is "
-            f"not the canonical map {base} -> {ring}, and Sage's morphisms given by polynomials use "
-            "only the canonical one"
-        )
-        return _native_scheme_mor(self.domain(), self.codomain())(
-            [_engine_element(ring, value) for value in self.homogeneous_coordinates()], check=False,
-        )
-
-    def _map_to_target_base(self):
-        r"""The composite to the target's scalar spectrum, retaining coefficients."""
-        source = self.domain()
-        base = self.coefficient_map().domain()
-        target = Schemes(base).base_scheme()
-        mor = LocallyRingedSpaces().Mor(source, target)
-        if source in Schemes(source.scheme_base_ring()).Affine():
-            return mor(self.coefficient_map())
-        # In a homogeneous polynomial presentation degree-zero polynomials
-        # are scalars.  Read that constant at the engine boundary; a rational
-        # section on a more general presentation is not such a polynomial.
-        ring = self.coefficient_map().codomain()
-        source_base = source.scheme_base_ring()
-
-        def scalar(value):
-            polynomial = _engine_element(ring, self.coefficient_map()(value))
-            assert polynomial.is_constant(), (
-                f"cannot map {value} into the base ring {source_base} of {source}: its image {polynomial} "
-                "in the homogeneous coordinate ring is not a constant"
-            )
-            return _owned_engine_element(source_base, _engine_ring(source_base)(polynomial.constant_coefficient()))
-
-        scalar_map = OwnedRings().Mor(base, source_base).elementwise(scalar)
-        base_arrow = LocallyRingedSpaces().Mor(source.base_scheme(), target)(scalar_map)
-        return base_arrow * source.structure_morphism()
-
-    def image_of_point(self, point):
-        return self * point
-
-    def __mul__(self, other):
-        assert other.codomain() is self.domain(), (
-            f"{self} and {other} are not composable: the codomain {other.codomain()} of the second is "
-            f"not the domain {self.domain()} of the first"
-        )
-        cone_leg = self._projected_cone_leg(other)
-        if cone_leg is not None:
-            return cone_leg
-        if other._is_the_identity():
-            return self
-        mor = _scheme_composition_mor(self, other)
-        source = other.domain()
-        if self.domain() in Schemes(self.domain().scheme_base_ring()).Affine():
-            pullback = other.coordinate_algebra_morphism()
-            return _ProjectiveCoordinateMorphism(
-                mor, tuple(pullback(value) for value in self.homogeneous_coordinates()),
-                coefficient_map=OwnedRings().Mor(self.coefficient_map().domain(), pullback.codomain()).elementwise(
-                    lambda value: pullback(self.coefficient_map()(value))
-                ),
-            )
-        if source._is_glued_from_affine_atlas():
-            return other._postcompose_with(self)
-        before = _projective_coordinate_morphism(other)
-        source_ring = self.coefficient_map().codomain()
-        images = tuple(before.homogeneous_coordinates())
-
-        def substitute(polynomial):
-            return _evaluate_owned_homogeneous_polynomial_on_coordinates(
-                polynomial, source_ring, images, coefficient_map=before.coefficient_map(),
-            )
-
-        coefficients = OwnedRings().Mor(self.coefficient_map().domain(), before.coefficient_map().codomain()).elementwise(
-            lambda value: substitute(self.coefficient_map()(value))
-        )
-        values = tuple(substitute(value) for value in self.homogeneous_coordinates())
-        point_values = None
-        if before._represented_point_coordinates() is not None:
-            point_values = finite_family(values, name="Point coordinates")
-        return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
-
-    def _postcompose_with(self, after):
-        relative = Schemes(self.codomain().scheme_base_ring())
-        if (after.codomain() is self.codomain().base_scheme()
-                and after.parent().mor_category().is_subcategory(relative)):
-            return self._map_to_target_base()
-        if after.codomain() in Schemes(after.codomain().scheme_base_ring()).Projective():
-            return _projective_coordinate_morphism(after) * self
-        return None
-
-    def __eq__(self, other):
-        if self is other:
-            return True
-        if not isinstance(other, SchemeMorphismMethods) or other.domain() is not self.domain() or other.codomain() is not self.codomain():
-            return False
-        other = _projective_coordinate_morphism(other)
-        ring = self.coefficient_map().codomain()
-        restriction = _projective_section_restriction(self.domain(), ring)
-        mor = OwnedRings().Mor(self.coefficient_map().domain(), restriction.codomain())
-        coefficients_equal = _ring_morphisms_equal(
-            mor.elementwise(lambda scalar: restriction(self.coefficient_map()(scalar))),
-            mor.elementwise(lambda scalar: restriction(ring(other.coefficient_map()(scalar)))),
-        )
-        if coefficients_equal is False:
-            return False
-        left = tuple(self.homogeneous_coordinates())
-        right = tuple(ring(value) for value in other.homogeneous_coordinates())
-        offset = 0
-        for width in _projective_coordinate_blocks(self.codomain()):
-            if any(not restriction(left[i] * right[j] - left[j] * right[i]).is_zero()
-                   for i, j in combinations(range(offset, offset + width), 2)):
-                return False
-            offset += width
-        return coefficients_equal
-
-    def __ne__(self, other):
-        return negation(self == other)
-
-    __hash__ = SchemeMorphism.__hash__
-
-    def _repr_(self):
-        return f"Projective morphism from {self.domain()} to {self.codomain()} defined by {tuple(self.homogeneous_coordinates())}"
+    coordinates = tuple(coordinates)
+    assert coordinates, (
+        f"cannot build a morphism {mor.domain()} -> {mor.codomain()} from homogeneous coordinates: no coordinates were given"
+    )
+    ring = coordinates[0].parent()
+    assert all(value.parent() is ring for value in coordinates), (
+        f"the homogeneous coordinates {coordinates} do not all lie in the same ring {ring}"
+    )
+    target_base = mor.codomain().scheme_base_ring()
+    if coefficient_map is None:
+        coefficient_map = _restriction_to_base(ring, target_base)
+    assert coefficient_map.domain() is target_base and coefficient_map.codomain() is ring, (
+        f"the coefficient map {coefficient_map} must have parent {target_base} -> {ring}"
+    )
+    assert sum(_projective_coordinate_blocks(mor.codomain())) == len(coordinates), (
+        f"{mor.codomain()} needs {sum(_projective_coordinate_blocks(mor.codomain()))} homogeneous coordinates, "
+        f"but {len(coordinates)} were given"
+    )
+    return mor.element_class(
+        mor, None, mor=mor, homogeneous_coordinates=coordinates, coefficient_map=coefficient_map,
+        cone_construction=cone_construction, point_coordinates=point_coordinates,
+        standard_projective_chart_embedding=standard_projective_chart_embedding,
+    )
 
 
-class _StandardProjectiveChartEmbedding(_ProjectiveCoordinateMorphism):
-    r"""The standard open immersion ``D_+(x_i) -> P^n`` in its coordinate presentation.
-
-    The source is the standard chart of ``ProjectiveSpaces.ParentMethods``;
-    that construction identifies it with ``D_+(x_i)`` (Stacks Project,
-    Tag 01M3), so openness is part of this selected morphism's defining datum,
-    not a predicate inferred from its coordinate implementation.
-    """
-
-    def is_open_immersion(self) -> bool:
-        return True
-
-    def _in_mor(self, mor):
-        return _StandardProjectiveChartEmbedding(
-            mor,
-            tuple(self.homogeneous_coordinates()),
-            coefficient_map=self.coefficient_map(),
-            cone_construction=self.cone_construction(),
-            point_coordinates=self._represented_point_coordinates(),
-        )
+def _StandardProjectiveChartEmbedding(mor, coordinates, *, coefficient_map=None,
+                                      cone_construction=None, point_coordinates=None):
+    r"""Construct a standard projective chart inclusion as a generated Mor element."""
+    return _ProjectiveCoordinateMorphism(
+        mor, coordinates, coefficient_map=coefficient_map,
+        cone_construction=cone_construction, point_coordinates=point_coordinates,
+        standard_projective_chart_embedding=True,
+    )
 
 
-class _StandardMultiprojectiveChartEmbedding(SchemeMorphism):
-    r"""The product of selected standard projective-chart open immersions.
-
-    Composing into the projective product pulls back the homogeneous
-    coordinate sections, not merely a formal native Sage map::
-
-        sage: from dzack_research.preamble.all import QQ, ProjectiveSpaces
-        sage: P = ProjectiveSpaces(QQ)(1)
-        sage: product = P.scheme_category().product((P, P))
-        sage: atlas = product.standard_affine_atlas()
-        sage: atlas in atlas.category() and atlas.chart_index_set().cardinality() == 4
-        True
-    """
-
-    def __mul__(self, other):
-        r"""Compose the selected homogeneous-coordinate map by substitution.
-
-        The native Sage composite is only a formal composite map; the
-        represented projective-coordinate construction retains the actual
-        pullback of each homogeneous section to the source chart.
-        """
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        return _projective_coordinate_morphism(self) * other
-
-    def is_open_immersion(self) -> bool:
-        return True
-
-    def _in_mor(self, mor):
-        return _StandardMultiprojectiveChartEmbedding(
-            _engine_scheme_morphism(self),
-            mor=mor,
-            cone_construction=self.cone_construction(),
-            point_coordinates=self._represented_point_coordinates(),
-        )
+def _StandardMultiprojectiveChartEmbedding(native_morphism, *, mor,
+                                           cone_construction=None, point_coordinates=None):
+    r"""Construct a product-chart inclusion as an element of its actual SchemeMor."""
+    return mor.element_class(
+        mor, native_morphism, mor=mor, cone_construction=cone_construction,
+        point_coordinates=point_coordinates, multiprojective_chart_embedding=True,
+    )
 
 
 class SchemeMorCategory(CategoricalMor):
@@ -1732,8 +1661,6 @@ class SchemeMorCategory(CategoricalMor):
         match datum:
             case SchemeMorphismMethods() if datum.parent() is self:
                 return datum
-            case _ProjectiveCoordinateMorphism():
-                raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case SchemeMorphismMethods() if affine_endpoints:
                 raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case SchemeMorphismMethods():
