@@ -760,6 +760,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     scope = _sys._getframe(1).f_globals if globals is None else globals
     source = _Path(filename).expanduser().resolve()
     module_name = None
+    module_depth = -1
     conflicting_candidate = None
     for entry in _sys.path:
         root = _Path(entry or ".").resolve()
@@ -790,11 +791,19 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             # It is not evidence of a competing canonical module.
             continue
         if _Path(spec.origin).resolve() == source:
-            imported = _import_module(candidate)
-            module_name = candidate
-            break
-        conflicting_candidate = candidate
-    if module_name is None and conflicting_candidate is not None:
+            # Overlapping sys.path entries can make one file importable under
+            # both its full package name and a shorter alias (for example,
+            # ``pkg.mod`` and ``mod``).  The package-qualified route is the
+            # canonical population; choosing the first matching path entry
+            # would make identity depend on sys.path insertion order.
+            if len(parts) > module_depth:
+                module_name = candidate
+                module_depth = len(parts)
+        elif conflicting_candidate is None:
+            conflicting_candidate = candidate
+    if module_name is not None:
+        imported = _import_module(module_name)
+    elif conflicting_candidate is not None:
         # Normal import resolution selected a different source for a module
         # name that this path would otherwise claim. Falling back to
         # exec-into-scope here would create a second class population.
