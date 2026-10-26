@@ -18,7 +18,7 @@ from dzack_research.preamble.categories.group.g_objects import GObjects
 from dzack_research.preamble.categories.group.groups import OwnedGroups
 from dzack_research.preamble.categories.lattice_morphisms import (
     LatticeMor,
-    LatticeMorphism,
+    LatticeMorphismMethods,
 )
 from dzack_research.preamble.categories.lattices import (
     Lattices,
@@ -34,8 +34,8 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
 from dzack_research.preamble.categories.sets.set_categories import Sets
 
 
-class GroupLatticeMorphism(LatticeMorphism):
-    r"""A form-preserving equivariant morphism of lattices with one group action."""
+class GroupLatticeMorphism(LatticeMorphismMethods):
+    r"""Methods for a generated form-preserving equivariant lattice morphism."""
 
     def __mul__(self, other):
         if not isinstance(other, GroupLatticeMorphism):
@@ -50,7 +50,7 @@ class GroupLatticeMorphism(LatticeMorphism):
 class GroupLatticeMor(LatticeMor):
     r"""Form-preserving maps commuting with one selected group action."""
 
-    Element = GroupLatticeMorphism
+    ElementMethods = GroupLatticeMorphism
 
     def __init__(self, mor_family, domain, codomain) -> None:
         if domain.group() != codomain.group():

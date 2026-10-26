@@ -875,7 +875,7 @@ class ConnectionMorphism(Element):
 
 
 class ConnectionMor(RestrictedMorCategoryParent):
-    Element = ConnectionMorphism
+    ElementMethods = ConnectionMorphism
 
     def __init__(self, family, domain, codomain, *, category) -> None:
         # Horizontality of an arbitrary linear map is decided only on module
