@@ -109,8 +109,8 @@ class InverseSystem(_DiagramCategory):
 
 
 
-class PosetMorphism(Morphism):
-    r"""The unique arrow ``p -> q`` of a thin poset category when ``p <= q``."""
+class PosetMorphism(CategoricalMor.ElementMethods):
+    r"""Methods for the generated unique arrow ``p -> q`` when ``p <= q``."""
 
     def __init__(self, parent) -> None:
         Morphism.__init__(self, parent)
@@ -131,7 +131,7 @@ class PosetMorphism(Morphism):
 
 
 class PosetMor(CategoricalMor):
-    Element = PosetMorphism
+    ElementMethods = PosetMorphism
 
     def poset_category(self):
         return self.base_category()
@@ -151,7 +151,7 @@ class PosetMor(CategoricalMor):
                 f"there is no arrow {self.domain()} -> {self.codomain()} in the poset: {self.domain()} is not "
                 f"<= {self.codomain()}"
             )
-        return PosetMorphism(self)
+        return self.element_class(self)
 
     def _element_constructor_(self, value=None):
         if value is not None and value is not self.unique():
