@@ -5375,11 +5375,13 @@ class Lattices(OwnedCategoryOverBaseRing):
                     labels = tuple(self.module_generating_set())
 
                     def rational_pairing(left, right):
+                        left_coordinates = left.to_vector()
+                        right_coordinates = right.to_vector()
                         return value_module(sum(
                             (
-                                fraction_field(left(self.module_generator(left_label)))
+                                fraction_field(left_coordinates(left_label))
                                 * dual_gram[row, column]
-                                * fraction_field(right(self.module_generator(right_label)))
+                                * fraction_field(right_coordinates(right_label))
                                 for row, left_label in enumerate(labels)
                                 for column, right_label in enumerate(labels)
                             ),
