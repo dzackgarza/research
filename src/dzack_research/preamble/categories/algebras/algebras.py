@@ -4684,13 +4684,9 @@ def _owned_algebra_view(
     categories=(),
     construction_data=(),
     law_decisions=(),
+    ring_placement=(),
 ):
     base = _owned_ring(base_ring)
-    ring_placement = tuple(
-        category
-        for category in algebra.category().all_super_categories()
-        if category is OwnedRings()._with_axioms(category.axioms())
-    )
     return _OwnedAlgebraParent(
         engine,
         base,
@@ -4726,12 +4722,18 @@ def _algebra_with_structure(
     )
     if specialized is not None:
         return specialized
+    ring_placement = tuple(
+        category
+        for category in algebra.category().all_super_categories()
+        if category is OwnedRings()._with_axioms(category.axioms())
+    )
     return _owned_algebra_view(
         _engine_ring(algebra),
         base,
         labels,
         tuple(categories),
         tuple(construction_data),
+        ring_placement=ring_placement,
     )
 
 
