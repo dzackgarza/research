@@ -149,14 +149,14 @@ class UnderlyingSetMor(OwnedMor):
             raise TypeError(
                 f"a map {self.domain()} -> {self.codomain()} needs a function on points, but {datum!r} is not callable"
             )
-        return SetMorphism(self, datum)
+        return self.element_class(self, datum)
 
     def identity(self) -> SetMorphism:
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"the identity map exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
-        return SetMorphism(self, lambda element: element)
+        return self.element_class(self, lambda element: element)
 
 
 _underlying_set_mors = {}
