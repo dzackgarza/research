@@ -20,6 +20,50 @@ import sageparse.preparser.research  # noqa: F401
 from sage.misc.lazy_import import lazy_import as _lazy_import
 from sage.repl.load import load as _sage_load
 
+_canonical_attached_modules: dict[str, str] = {}
+_sage_attach_reload_wrapped = False
+
+
+def _canonical_attach_code(filename: str) -> str | None:
+    r"""Return a reload expression only for sources owned by canonical imports."""
+    source = str(_Path(filename).expanduser().resolve())
+    module_name = _canonical_attached_modules.get(source)
+    if module_name is None:
+        return None
+    return (
+        "import importlib as __preamble_importlib, sys as __preamble_sys\n"
+        f"__preamble_module = __preamble_importlib.reload(__preamble_sys.modules[{module_name!r}])\n"
+        "globals().update({name: value for name, value in vars(__preamble_module).items() "
+        "if not (name.startswith('__') and name.endswith('__'))})\n"
+    )
+
+
+def _install_canonical_attach_reload() -> None:
+    r"""Route Sage's existing attach/reload callbacks through module identity."""
+    global _sage_attach_reload_wrapped
+    if _sage_attach_reload_wrapped:
+        return
+    from sage.repl import attach as _sage_attach
+
+    original_load = _sage_attach.load
+    original_load_wrap = _sage_attach.load_wrap
+
+    def load(filename, scope, attach=False):
+        code = _canonical_attach_code(str(filename))
+        if code is None:
+            return original_load(filename, scope, attach=attach)
+        exec(compile(code, str(filename), "exec"), scope)
+
+    def load_wrap(filename, attach=False):
+        code = _canonical_attach_code(str(filename))
+        if code is None:
+            return original_load_wrap(filename, attach=attach)
+        return code
+
+    _sage_attach.load = load
+    _sage_attach.load_wrap = load_wrap
+    _sage_attach_reload_wrapped = True
+
 from dzack_research.preamble import language_runtime as _language_runtime
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
     Cat,
@@ -745,6 +789,12 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             break
     if module_name is not None:
         imported = _sys.modules[module_name]
+        if attach:
+            _canonical_attached_modules[str(source)] = module_name
+            _install_canonical_attach_reload()
+            from sage.repl.attach import add_attached_file as _add_attached_file
+
+            _add_attached_file(source)
         scope.update(
             (name, value)
             for name, value in vars(imported).items()
