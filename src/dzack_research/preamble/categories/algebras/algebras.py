@@ -4434,7 +4434,13 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         for name, value in construction_data:
             setattr(self, name, value)
         self._realized_scalar_structure = (lambda scalar: self(scalar)) if scalar_structure is None else scalar_structure
-        selected_labels = None if labels is None else finite_ordered_set(labels)
+        selected_labels = (
+            None
+            if labels is None
+            else labels
+            if labels in EnumeratedSets()
+            else finite_ordered_set(labels)
+        )
         associative = Algebras(base).Associative().Unital()
         # A native algebra that is also a ring must retain the ring category
         # supplied by its constructor. Reading only its commutativity axiom
