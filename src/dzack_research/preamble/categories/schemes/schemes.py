@@ -602,6 +602,7 @@ class SchemeMorphismMethods:
 
     _native_morphism = None
     _coordinate_pullback = None
+    _scalar_pullback = None
     _cone_construction = None
     _point_coordinates = None
 
@@ -611,11 +612,13 @@ class SchemeMorphismMethods:
         *,
         mor,
         pullback=None,
+        scalar_pullback=None,
         cone_construction=None,
         point_coordinates=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
+        self._scalar_pullback = scalar_pullback
         self._cone_construction = cone_construction
         self._point_coordinates = point_coordinates
         super().__init__(mor)
@@ -627,6 +630,7 @@ class SchemeMorphismMethods:
             self._native_morphism,
             mor=self.parent(),
             pullback=self._coordinate_pullback,
+            scalar_pullback=self._scalar_pullback,
             cone_construction=construction,
             point_coordinates=self._point_coordinates,
         )
@@ -647,6 +651,7 @@ class SchemeMorphismMethods:
         return mor.element_class(
             mor, self._native_morphism, mor=mor,
             pullback=self._coordinate_pullback,
+            scalar_pullback=self._scalar_pullback,
             cone_construction=self.cone_construction(),
             point_coordinates=self._represented_point_coordinates(),
         )
@@ -658,6 +663,7 @@ class SchemeMorphismMethods:
             {
                 "mor": mor,
                 "pullback": self._coordinate_pullback,
+                "scalar_pullback": self._scalar_pullback,
                 "cone_construction": self.cone_construction(),
                 "point_coordinates": self._represented_point_coordinates(),
             },
@@ -671,6 +677,14 @@ class SchemeMorphismMethods:
 
     def _engine_morphism_crossing(self):
         r"""The Sage morphism between the engines this morphism computes in."""
+        if self._scalar_pullback is not None:
+            base_arrow = LocallyRingedSpaces().Mor(self.domain().base_scheme(), self.codomain())(
+                self._scalar_pullback
+            )
+            return (
+                _engine_scheme_morphism(base_arrow)
+                * _engine_scheme_morphism(self.domain().structure_morphism())
+            )
         if self._coordinate_pullback is not None:
             if self._is_the_identity():
                 return _engine_scheme(self.domain()).identity_morphism()
@@ -796,13 +810,30 @@ class SchemeMorphismMethods:
             )
         left_pullback = self._represented_coordinate_pullback()
         right_pullback = other._represented_coordinate_pullback()
+        left_scalar_pullback = self._scalar_pullback
+        right_scalar_pullback = other._scalar_pullback
+        if left_scalar_pullback is not None or right_scalar_pullback is not None:
+            if left_scalar_pullback is None or right_scalar_pullback is None:
+                return False
+            equal = _ring_morphisms_equal(left_scalar_pullback, right_scalar_pullback)
+            if equal is True or self.domain() in ProjectiveSpaces(self.domain().scheme_base_ring()):
+                return equal
+            return AtomicProposition("equal", self, other)
         if left_pullback is not None and right_pullback is not None:
             return mor(right_pullback * left_pullback)
         if (left_pullback is not None
                 and self.codomain() is Schemes(left_pullback.domain()).base_scheme()
                 and other.codomain() is other.domain().base_scheme()
                 and other.parent().mor_category().is_subcategory(Schemes(other.domain().scheme_base_ring()))):
-            return _ScalarStructureSchemeMorphism(mor, left_pullback)
+            assert left_pullback.codomain() is mor.domain().scheme_base_ring(), (
+                f"cannot compose the structure morphism of {mor.domain()} with Spec of {left_pullback}: "
+                f"the ring map must land in the base ring {mor.domain().scheme_base_ring()} of {mor.domain()}, "
+                f"but it lands in {left_pullback.codomain()}"
+            )
+            assert mor.codomain() is Schemes(left_pullback.domain()).base_scheme(), (
+                f"the composite lands in Spec {left_pullback.domain()}, but the requested codomain is {mor.codomain()}"
+            )
+            return mor.element_class(mor, None, mor=mor, scalar_pullback=left_pullback)
         structured = other._postcompose_with(self)
         if structured is not None:
             return structured
@@ -1233,65 +1264,14 @@ class SchemeMorphismMethods:
     def _repr_(self) -> str:
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
 
+    def scalar_pullback(self):
+        if self._scalar_pullback is None:
+            raise AttributeError(f"{self} is not represented by a scalar pullback")
+        return self._scalar_pullback
+
 
 class SchemeMorphism(SchemeMorphismMethods, Morphism):
     r"""Compatibility shell for private scheme-arrow realizations."""
-
-
-class _ScalarStructureSchemeMorphism(SchemeMorphism):
-    r"""``X -> Spec S -> Spec R`` with the actual pullback ``R -> S``.
-
-    This is the composition of the structure map of X with Spec of a ring
-    map.  Keeping that ring map avoids treating two opaque native function
-    compositions as distinct maps.  It introduces no scheme or category.
-    """
-
-    def __init__(self, mor, scalar_pullback, *, cone_construction=None) -> None:
-        assert scalar_pullback.codomain() is mor.domain().scheme_base_ring(), (
-            f"cannot compose the structure morphism of {mor.domain()} with Spec of {scalar_pullback}: "
-            f"the ring map must land in the base ring {mor.domain().scheme_base_ring()} of "
-            f"{mor.domain()}, but it lands in {scalar_pullback.codomain()}"
-        )
-        assert mor.codomain() is Schemes(scalar_pullback.domain()).base_scheme(), (
-            f"cannot compose the structure morphism of {mor.domain()} with Spec of {scalar_pullback}: "
-            f"the composite lands in Spec {scalar_pullback.domain()}, but the requested codomain is "
-            f"{mor.codomain()}"
-        )
-        self._scalar_pullback = scalar_pullback
-        super().__init__(None, mor=mor, cone_construction=cone_construction)
-
-    def scalar_pullback(self):
-        return self._scalar_pullback
-
-    def with_cone_construction(self, construction):
-        return _ScalarStructureSchemeMorphism(self.parent(), self.scalar_pullback(), cone_construction=construction)
-
-    def _engine_morphism_crossing(self):
-        base_arrow = LocallyRingedSpaces().Mor(self.domain().base_scheme(), self.codomain())(self.scalar_pullback())
-        return (
-            _engine_scheme_morphism(base_arrow)
-            * _engine_scheme_morphism(self.domain().structure_morphism())
-        )
-
-    def __eq__(self, other):
-        if self is other:
-            return True
-        if not isinstance(other, _ScalarStructureSchemeMorphism):
-            return False
-        if self.domain() is not other.domain() or self.codomain() is not other.codomain():
-            return False
-        equal = _ring_morphisms_equal(self.scalar_pullback(), other.scalar_pullback())
-        # Equal scalar maps always give equal composites.  For projective
-        # space Gamma(P^n_S,O)=S also gives the converse.  For an arbitrary
-        # scheme the converse needs its global-section pullback.
-        if equal is True or self.domain() in ProjectiveSpaces(self.domain().scheme_base_ring()):
-            return equal
-        return AtomicProposition("equal", self, other)
-
-    def __ne__(self, other):
-        return negation(self == other)
-
-    __hash__ = SchemeMorphism.__hash__
 
 
 class _OpenComplementInclusion(SchemeMorphism):
@@ -1766,8 +1746,6 @@ class SchemeMorCategory(CategoricalMor):
             case SchemeMorphismMethods() if datum.parent() is self:
                 return datum
             case _ProjectiveCoordinateMorphism():
-                raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
-            case _ScalarStructureSchemeMorphism():
                 raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
             case SchemeMorphismMethods() if affine_endpoints:
                 raise TypeError(f"{datum} belongs to another Mor; apply the functor between the categories")
