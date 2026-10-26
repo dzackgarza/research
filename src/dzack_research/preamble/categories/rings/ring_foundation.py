@@ -6411,19 +6411,6 @@ def _presented_ring_category(engine: Ring) -> Category:
                 *_inherited_ring_placements(coefficients, univariate_over_field_is_principal=False),
                 _size_of_all_coefficient_families(coefficients),
             )
-        case QuotientRing_generic():
-            # R/I is commutative, Noetherian or finite when R is.  Whether
-            # I is prime or maximal is computed, never a datum of R/I, so
-            # it places nothing here.
-            cover = _own_ring(engine.cover_ring())
-            commutative = (OwnedRings().Commutative(),) if cover in OwnedRings().Commutative() else ()
-            cover_noetherian = (noetherian,) if cover in OwnedRings().Noetherian() else ()
-            finite = (
-                (owned_sets.FiniteSets(),)
-                if engine.defining_ideal().is_one() or cover in owned_sets.FiniteSets()
-                else ()
-            )
-            placements = (*commutative, *cover_noetherian, *finite)
         case _:
             placements = ()
     joined = owned_category_join((OwnedRings(), *placements))
