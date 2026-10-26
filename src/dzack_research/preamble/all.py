@@ -760,7 +760,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     scope = _sys._getframe(1).f_globals if globals is None else globals
     source = _Path(filename).expanduser().resolve()
     module_name = None
-    import_candidate = None
+    conflicting_candidate = None
     for entry in _sys.path:
         root = _Path(entry or ".").resolve()
         try:
@@ -794,27 +794,33 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         if not parts or not all(part.isidentifier() for part in parts):
             continue
         candidate = ".".join(parts)
-        import_candidate = candidate
         # Only delegate when the installed sageparse finder chooses this exact
         # source; package directories may have their own loader.
         try:
             spec = _find_spec(candidate)
         except (ImportError, ModuleNotFoundError, ValueError):
             continue
-        if spec is not None and spec.origin is not None and _Path(spec.origin).resolve() == source:
+        if spec is None or spec.origin is None:
+            # This sys.path entry did not make the source importable under the
+            # candidate name (a nested path entry may be only a partial name).
+            # It is not evidence of a competing canonical module.
+            continue
+        if _Path(spec.origin).resolve() == source:
             imported = _import_module(candidate)
             module_name = candidate
             break
-    if module_name is None and import_candidate is not None:
-        # The path was under an import root and has a valid module-shaped
-        # name, but the canonical importer did not select that exact file.
+        conflicting_candidate = candidate
+    if module_name is None and conflicting_candidate is not None:
+        # Normal import resolution selected a different source for a module
+        # name that this path would otherwise claim. Falling back to
+        # exec-into-scope here would create a second class population.
         # Falling back to exec-into-scope for either .py or .sage package
         # source is precisely the second loading route that duplicates
         # category/module classes.  Keep legacy loading only for genuinely
         # non-importable session scripts.
         raise ImportError(
             f"{source} is under an import root but is not the canonical source "
-            f"for {import_candidate!r}; import the module selected by sageparse instead"
+            f"for {conflicting_candidate!r}; import the module selected by sageparse instead"
         )
     if module_name is not None:
         imported = _sys.modules[module_name]
