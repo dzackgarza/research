@@ -616,6 +616,7 @@ class SchemeMorphismMethods:
     _gluing_chart_map = None
     _finite_atlas = None
     _atlas_local_maps = None
+    _glued_local_maps = None
 
     def __init__(
         self,
@@ -637,6 +638,7 @@ class SchemeMorphismMethods:
         gluing_chart_map=None,
         finite_atlas=None,
         atlas_local_maps=None,
+        glued_local_maps=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -657,6 +659,7 @@ class SchemeMorphismMethods:
         self._gluing_chart_map = gluing_chart_map
         self._finite_atlas = finite_atlas
         self._atlas_local_maps = atlas_local_maps
+        self._glued_local_maps = glued_local_maps
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -680,6 +683,7 @@ class SchemeMorphismMethods:
             gluing_chart_map=self._gluing_chart_map,
             finite_atlas=self._finite_atlas,
             atlas_local_maps=self._atlas_local_maps,
+            glued_local_maps=self._glued_local_maps,
         )
 
     def gluing_datum(self):
@@ -728,6 +732,14 @@ class SchemeMorphismMethods:
     def local_map(self, index):
         return self.local_maps()[self.atlas().normalize_chart_index(index)]
 
+    def glued_local_maps(self):
+        if self._gluing_role != "glued_domain":
+            raise AttributeError(f"{self} is not represented by local maps on a glued domain")
+        return self._glued_local_maps
+
+    def glued_local_map(self, index):
+        return self.glued_local_maps()[self.gluing_datum().normalize_chart_index(index)]
+
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
         return self._cone_construction
@@ -761,6 +773,16 @@ class SchemeMorphismMethods:
             gluing_chart_map = mor.mor_category().Mor(
                 self.domain(), self.chart_embedding().domain()
             )(self.chart_map())
+        glued_local_maps = self._glued_local_maps
+        if self._gluing_role == "glued_domain":
+            datum = self.gluing_datum()
+            glued_local_maps = finite_indexed_family(
+                datum.chart_index_set(),
+                lambda index: mor.mor_category().Mor(
+                    datum.chart(index), self.codomain()
+                )(self.glued_local_map(index)),
+                name="Re-sited glued-domain local maps",
+            )
         return mor.element_class(
             mor, self._native_morphism, mor=mor,
             pullback=self._coordinate_pullback,
@@ -786,6 +808,7 @@ class SchemeMorphismMethods:
                     name="Re-sited finite-atlas local maps",
                 )
             ),
+            glued_local_maps=glued_local_maps,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -809,6 +832,7 @@ class SchemeMorphismMethods:
                 "gluing_chart_map": self._gluing_chart_map,
                 "finite_atlas": self._finite_atlas,
                 "atlas_local_maps": self._atlas_local_maps,
+                "glued_local_maps": self._glued_local_maps,
             },
         )
 
@@ -845,6 +869,14 @@ class SchemeMorphismMethods:
         )
 
     def __mul__(self, other):
+        if self._gluing_role == "glued_domain":
+            if not isinstance(other, SchemeMorphismMethods) or other.codomain() is not self.domain():
+                return NotImplemented
+            if self._is_the_identity():
+                return other
+            if other._is_the_identity():
+                return self
+            return other._postcompose_with(self)
         if self._gluing_role == "finite_atlas":
             if not isinstance(other, SchemeMorphismMethods) or other.codomain() is not self.domain():
                 return NotImplemented
@@ -914,6 +946,15 @@ class SchemeMorphismMethods:
         return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
 
     def _postcompose_with(self, after):
+        if self._gluing_role == "glued_domain":
+            if after.domain() is not self.codomain():
+                return NotImplemented
+            from dzack_research.preamble.categories.schemes.gluing import _glued_scheme_morphism
+            datum = self.gluing_datum()
+            return _glued_scheme_morphism(
+                _scheme_composition_mor(after, self),
+                tuple(after * self.glued_local_map(index) for index in datum.chart_indices()),
+            )
         if self._gluing_role == "finite_atlas":
             if after.domain() is not self.codomain():
                 return NotImplemented
@@ -936,6 +977,18 @@ class SchemeMorphismMethods:
         return NotImplemented
 
     def __eq__(self, other):
+        if self._gluing_role == "glued_domain":
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._gluing_role == "glued_domain"
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+                and other.gluing_datum() is self.gluing_datum()
+                and all(
+                    self.glued_local_map(index) == other.glued_local_map(index)
+                    for index in self.gluing_datum().chart_indices()
+                )
+            )
         if self._gluing_role == "finite_atlas":
             if not isinstance(other, SchemeMorphismMethods) or other.domain() is not self.domain() or other.codomain() is not self.codomain():
                 return False
@@ -1623,7 +1676,7 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
-        if self._gluing_role in ("chart_map", "finite_atlas"):
+        if self._gluing_role in ("chart_map", "finite_atlas", "glued_domain"):
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._gluing_role == "open_inclusion":
             position = self.gluing_datum().chart_index_set().ranking_map()(self.chart_index())
@@ -1633,6 +1686,14 @@ class SchemeMorphismMethods:
     def _repr_(self) -> str:
         if self._gluing_role == "open_inclusion":
             return f"Open inclusion {self.domain()} -> {self.codomain()}"
+        if self._gluing_role == "chart_embedding":
+            return f"Open chart embedding {self.domain()} -> {self.codomain()} (chart {self.chart_index()})"
+        if self._gluing_role == "chart_map":
+            return f"Scheme morphism into glued chart {self.chart_index()}: {self.domain()} -> {self.codomain()}"
+        if self._gluing_role == "finite_atlas":
+            return f"Scheme morphism from finite atlas: {self.domain()} -> {self.codomain()}"
+        if self._gluing_role == "glued_domain":
+            return f"Scheme morphism from glued charts: {self.domain()} -> {self.codomain()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
