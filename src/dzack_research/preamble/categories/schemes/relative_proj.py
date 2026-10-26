@@ -1586,37 +1586,15 @@ class ProjectivizationMapOnSurjectivityLocus(SageObject):
         return self._induced_morphism
 
 
-class _RelativeProjectivizationSurjectivityOpenInclusion(SchemeMorphism):
-    r"""Inclusion of the locus where the induced quotient of a line is surjective."""
-
-    def __init__(self, parent, sheaf_morphism) -> None:
-        self._sheaf_morphism = sheaf_morphism
-        super().__init__(None, mor=parent)
-
-    def sheaf_morphism(self):
-        return self._sheaf_morphism
-
-    def is_open_immersion(self) -> bool:
-        return True
-
-    def _in_mor(self, mor):
-        return _RelativeProjectivizationSurjectivityOpenInclusion(
-            mor,
-            self.sheaf_morphism(),
-        )
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, _RelativeProjectivizationSurjectivityOpenInclusion)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
-            and other.sheaf_morphism() is self.sheaf_morphism()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    __hash__ = None
+def _relative_projectivization_surjectivity_open_inclusion(parent, sheaf_morphism):
+    r"""Construct the surjectivity-locus inclusion in the generated scheme Mor."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        relative_projectivization_sheaf_morphism=sheaf_morphism,
+        relative_projectivization_role="surjectivity_open_inclusion",
+    )
 
 
 class _RelativeProjectivizationSurjectivityLocusEngine:
@@ -1671,10 +1649,7 @@ def _exact_projectivization_map(
     category = OpenImmersions(target_total)
 
     def inclusion(mor):
-        return _RelativeProjectivizationSurjectivityOpenInclusion(
-            mor,
-            sheaf_morphism,
-        )
+        return _relative_projectivization_surjectivity_open_inclusion(mor, sheaf_morphism)
 
     locus = _object_of(
         category,

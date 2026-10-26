@@ -621,6 +621,7 @@ class SchemeMorphismMethods:
     _relative_projectivization_comparison = None
     _relative_projectivization_role = None
     _relative_projectivization_underlying_projection = None
+    _relative_projectivization_sheaf_morphism = None
 
     def __init__(
         self,
@@ -647,6 +648,7 @@ class SchemeMorphismMethods:
         relative_projectivization_comparison=None,
         relative_projectivization_role=None,
         relative_projectivization_underlying_projection=None,
+        relative_projectivization_sheaf_morphism=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -672,6 +674,7 @@ class SchemeMorphismMethods:
         self._relative_projectivization_comparison = relative_projectivization_comparison
         self._relative_projectivization_role = relative_projectivization_role
         self._relative_projectivization_underlying_projection = relative_projectivization_underlying_projection
+        self._relative_projectivization_sheaf_morphism = relative_projectivization_sheaf_morphism
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -700,6 +703,7 @@ class SchemeMorphismMethods:
             relative_projectivization_comparison=self._relative_projectivization_comparison,
             relative_projectivization_role=self._relative_projectivization_role,
             relative_projectivization_underlying_projection=self._relative_projectivization_underlying_projection,
+            relative_projectivization_sheaf_morphism=self._relative_projectivization_sheaf_morphism,
         )
 
     def gluing_datum(self):
@@ -771,6 +775,11 @@ class SchemeMorphismMethods:
             raise AttributeError(f"{self} has no selected underlying base projection")
         return self._relative_projectivization_underlying_projection
 
+    def sheaf_morphism(self):
+        if self._relative_projectivization_sheaf_morphism is None:
+            raise AttributeError(f"{self} is not defined by a relative-projectivization sheaf morphism")
+        return self._relative_projectivization_sheaf_morphism
+
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
         return self._cone_construction
@@ -788,6 +797,7 @@ class SchemeMorphismMethods:
             or self._standard_projective_chart_embedding
             or self._multiprojective_chart_embedding
             or self._gluing_role in ("open_inclusion", "chart_embedding")
+            or self._relative_projectivization_role == "surjectivity_open_inclusion"
         )
 
     def _in_mor(self, mor):
@@ -844,6 +854,7 @@ class SchemeMorphismMethods:
             relative_projectivization_comparison=self._relative_projectivization_comparison,
             relative_projectivization_role=self._relative_projectivization_role,
             relative_projectivization_underlying_projection=self._relative_projectivization_underlying_projection,
+            relative_projectivization_sheaf_morphism=self._relative_projectivization_sheaf_morphism,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -872,6 +883,7 @@ class SchemeMorphismMethods:
                 "relative_projectivization_comparison": self._relative_projectivization_comparison,
                 "relative_projectivization_role": self._relative_projectivization_role,
                 "relative_projectivization_underlying_projection": self._relative_projectivization_underlying_projection,
+                "relative_projectivization_sheaf_morphism": self._relative_projectivization_sheaf_morphism,
             },
         )
 
@@ -1045,6 +1057,14 @@ class SchemeMorphismMethods:
         return NotImplemented
 
     def __eq__(self, other):
+        if self._relative_projectivization_role == "surjectivity_open_inclusion":
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._relative_projectivization_role == "surjectivity_open_inclusion"
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+                and other.sheaf_morphism() is self.sheaf_morphism()
+            )
         if self._relative_projectivization_role == "base_projection":
             if other is self.underlying_projection():
                 return True
@@ -1777,7 +1797,7 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
-        if self._relative_projectivization_role in ("base_change_composite", "base_change_total", "base_change_base", "base_projection"):
+        if self._relative_projectivization_role in ("base_change_composite", "base_change_total", "base_change_base", "base_projection", "surjectivity_open_inclusion"):
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._relative_projectivization_source_sheaf is not None:
             raise TypeError(f"unhashable type: {type(self).__name__}")
@@ -1807,6 +1827,8 @@ class SchemeMorphismMethods:
             return f"Relative-Proj base-change base map {self.domain()} -> {self.codomain()}"
         if self._relative_projectivization_role == "base_projection":
             return f"Relative-Proj selected base projection {self.domain()} -> {self.codomain()}"
+        if self._relative_projectivization_role == "surjectivity_open_inclusion":
+            return f"Relative-Proj surjectivity-locus inclusion {self.domain()} -> {self.codomain()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
