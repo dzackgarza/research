@@ -2037,8 +2037,7 @@ class SchemeMorphismMethods:
         return self._scalar_pullback
 
 
-class SchemeMorphism(SchemeMorphismMethods, Morphism):
-    r"""Compatibility shell for private scheme-arrow realizations."""
+SchemeMorphism = SchemeMorphismMethods
 
 
 def _open_complement_inclusion(closed_complement):
