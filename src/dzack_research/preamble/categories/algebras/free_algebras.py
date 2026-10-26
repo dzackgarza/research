@@ -294,6 +294,8 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
         selected_labels = (
             self.algebra_generating_set()
             if labels is None
+            else labels
+            if labels in EnumeratedSets()
             else finite_ordered_set(labels)
         )
         current_labels = self.algebra_generating_set()
