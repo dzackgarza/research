@@ -73,6 +73,9 @@ def test_the_dolgachev_pinkham_dual_lattice_retains_its_metric_form() -> None:
     assert dual.unformed_module() is lattice.dual_module()
     assert dual.module_generating_set() is lattice.module_generating_set()
     assert dual.form().codomain() is dual.value_module()
+    assert dual.value_module() is Modules(QQ).restriction_of_scalars(
+        ZZ.fraction_field_map()
+    )(QQ)
     assert dual_gram == gram.inverse()
     assert dual.signature_pair() == lattice.signature_pair() == signature_pair(2, 18)
     assert lattice.determinant() * dual.determinant() == 1
