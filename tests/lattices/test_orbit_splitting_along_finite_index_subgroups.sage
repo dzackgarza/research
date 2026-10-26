@@ -29,6 +29,26 @@ def _lattice():
     return Lattices(ZZ)([[2, 0], [0, 2]])
 
 
+def test_stable_group_stabilizers_of_an_axis_have_the_expected_sign_changes() -> None:
+    lattice = _lattice()
+    e1, e2 = tuple(lattice.module_generators().values())
+    stable = lattice.stable_orthogonal_group()
+    axis = lattice.subobject_on((e1,))
+    setwise = stable.stabilizer(axis, action="setwise")
+    pointwise = stable.stabilizer(axis, action="pointwise")
+    vector_stabilizer = stable.stabilizer(e1)
+
+    for first_sign in (-1, 1):
+        for second_sign in (-1, 1):
+            isometry = lattice.O()({0: first_sign * e1, 1: second_sign * e2})
+            assert isometry in setwise
+            assert (isometry in pointwise) == (first_sign == 1)
+            assert (isometry in vector_stabilizer) == (first_sign == 1)
+    exchange = lattice.O()({0: e2, 1: e1})
+    assert exchange not in setwise
+    assert all(generator(e1) == e1 for generator in pointwise.group_generators())
+
+
 def _pointed(lattice, vector):
     source = Lattices(ZZ)([[lattice.q(vector)]])
     category = Lattices(ZZ).CosliceUnder(source)
