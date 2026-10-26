@@ -9,10 +9,8 @@ an ordinary Python support object deliberately selected by the preamble.
 
 import sys as _sys
 from importlib import import_module as _import_module
-from importlib import reload as _reload_module
 from importlib.util import find_spec as _find_spec
 from pathlib import Path as _Path
-from types import FunctionType as _FunctionType
 from typing import cast as _cast
 
 # The session's numeric vocabulary and its parser are one contract: decimal
@@ -21,123 +19,6 @@ from typing import cast as _cast
 import sageparse.preparser.research  # noqa: F401
 from sage.misc.lazy_import import lazy_import as _lazy_import
 from sage.repl.load import load as _sage_load
-
-_canonical_attached_modules: dict[str, str] = {}
-_sage_attach_reload_wrapped = False
-
-
-def _canonical_attach_code(filename: str) -> str | None:
-    r"""Return a reload expression only for sources owned by canonical imports."""
-    source = str(_Path(filename).expanduser().resolve())
-    module_name = _canonical_attached_modules.get(source)
-    if module_name is None:
-        return None
-    return (
-        "from dzack_research.preamble.all import _reload_canonical_module as __preamble_reload\n"
-        f"__preamble_module = __preamble_reload({module_name!r})\n"
-        "globals().update({name: value for name, value in vars(__preamble_module).items() "
-        "if not (name.startswith('__') and name.endswith('__'))})\n"
-    )
-
-
-def _reload_canonical_module(module_name: str):
-    r"""Reload source while reconciling class definitions into existing objects."""
-    module = _sys.modules[module_name]
-    old_classes = {
-        name: value for name, value in vars(module).items()
-        if isinstance(value, type) and value.__module__ == module.__name__
-    }
-    _reload_module(module)
-    replacements = {
-        vars(module)[name]: old_class for name, old_class in old_classes.items()
-        if isinstance(vars(module).get(name), type)
-        and vars(module)[name].__module__ == module.__name__
-    }
-
-    def cell(value):
-        return (lambda: value).__closure__[0]
-
-    def preserve_function(function, old_class):
-        if function is None or not isinstance(function, _FunctionType):
-            return function
-        closure = function.__closure__
-        if not closure or "__class__" not in function.__code__.co_freevars:
-            return function
-        cells = list(closure)
-        index = function.__code__.co_freevars.index("__class__")
-        if cells[index].cell_contents not in replacements:
-            return function
-        cells[index] = cell(old_class)
-        replacement = _FunctionType(
-            function.__code__, function.__globals__, function.__name__,
-            function.__defaults__, tuple(cells),
-        )
-        replacement.__kwdefaults__ = function.__kwdefaults__
-        replacement.__annotations__ = function.__annotations__
-        replacement.__dict__.update(function.__dict__)
-        replacement.__doc__ = function.__doc__
-        replacement.__module__ = function.__module__
-        replacement.__qualname__ = function.__qualname__
-        return replacement
-
-    for name, old_class in old_classes.items():
-        new_class = vars(module).get(name)
-        if new_class not in replacements or replacements[new_class] is not old_class:
-            continue
-        new_namespace = dict(vars(new_class))
-        for key, value in new_namespace.items():
-            if key in {
-                "__dict__", "__weakref__", "__classcell__", "__slots__",
-                "__bases__", "__mro__",
-            }:
-                continue
-            if isinstance(value, _FunctionType):
-                value = preserve_function(value, old_class)
-            elif isinstance(value, classmethod):
-                value = classmethod(preserve_function(value.__func__, old_class))
-            elif isinstance(value, staticmethod):
-                value = staticmethod(preserve_function(value.__func__, old_class))
-            elif isinstance(value, property):
-                value = property(
-                    preserve_function(value.fget, old_class),
-                    preserve_function(value.fset, old_class),
-                    preserve_function(value.fdel, old_class), value.__doc__,
-                )
-            elif isinstance(value, type):
-                value = replacements.get(value, value)
-            setattr(old_class, key, value)
-        for key in set(vars(old_class)) - set(new_namespace):
-            if key not in {"__dict__", "__weakref__", "__module__", "__name__", "__qualname__"}:
-                delattr(old_class, key)
-        vars(module)[name] = old_class
-    return module
-
-
-def _install_canonical_attach_reload() -> None:
-    r"""Route Sage's existing attach/reload callbacks through module identity."""
-    global _sage_attach_reload_wrapped
-    if _sage_attach_reload_wrapped:
-        return
-    from sage.repl import attach as _sage_attach
-
-    original_load = _sage_attach.load
-    original_load_wrap = _sage_attach.load_wrap
-
-    def load(filename, scope, attach=False):
-        code = _canonical_attach_code(str(filename))
-        if code is None:
-            return original_load(filename, scope, attach=attach)
-        exec(compile(code, str(filename), "exec"), scope)
-
-    def load_wrap(filename, attach=False):
-        code = _canonical_attach_code(str(filename))
-        if code is None:
-            return original_load_wrap(filename, attach=attach)
-        return code
-
-    _sage_attach.load = load
-    _sage_attach.load_wrap = load_wrap
-    _sage_attach_reload_wrapped = True
 
 from dzack_research.preamble import language_runtime as _language_runtime
 from dzack_research.preamble.categories.abstract_categories import (  # noqa: F401
@@ -998,8 +879,6 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     if module_name is not None:
         imported = _sys.modules[module_name]
         if attach:
-            _canonical_attached_modules[str(source)] = module_name
-            _install_canonical_attach_reload()
             from sage.repl.attach import add_attached_file as _add_attached_file
 
             _add_attached_file(source)
