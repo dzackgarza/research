@@ -341,6 +341,9 @@ class ModuleMorphismMethods:
         derivation = getattr(self, "_originating_derivation", None)
         if derivation is not None:
             return derivation.linearity_decision()
+        witness = getattr(self, "_elementwise_linearity_witness", None)
+        if witness is not None:
+            return witness.linearity_decision() if hasattr(witness, "linearity_decision") else witness
         return None
 
     def derivation(self):

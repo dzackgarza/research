@@ -585,16 +585,6 @@ class Connection(Element):
         return ConnectionDeRhamModule(self)
 
 
-class ConnectionUnderlyingLinearMorphism(ModuleMorphism):
-    r"""The selected underlying linear morphism of one algebraic connection."""
-
-    def __init__(self, parent, function) -> None:
-        super().__init__(parent, function, elementwise=True)
-
-    def _elementwise_linearity_derivation(self):
-        return True
-
-
 class ConnectionSpace(RestrictedMorCategoryParent):
     Element = Connection
 
@@ -645,10 +635,14 @@ class ConnectionSpace(RestrictedMorCategoryParent):
         if arrow is not None:
             return arrow
         target = self.codomain_object()
-        arrow = ConnectionUnderlyingLinearMorphism(
-            self.arrow_set(),
+        parent = self.arrow_set()
+        arrow = parent.element_class(
+            parent,
             lambda element: target(connection(element.underlying_element())),
+            elementwise=True,
+            linearity_premises=(),
         )
+        arrow._elementwise_linearity_witness = True
         self._underlying_arrows[id(connection)] = arrow
         self._inclusion_preimages[id(arrow)] = connection
         return arrow
@@ -752,10 +746,15 @@ class ConnectionMorphism(Element):
     def __init__(self, parent, images, *, horizontality_premises=None) -> None:
         Element.__init__(self, parent)
         self._horizontality_premises = horizontality_premises
-        self._underlying_morphism = HorizontalConnectionUnderlyingMorphism(
-            parent.arrow_set(),
-            parent.arrow_set()(images),
+        arrow_parent = parent.arrow_set()
+        underlying = arrow_parent(images)
+        self._underlying_morphism = arrow_parent.element_class(
+            arrow_parent,
+            lambda element: underlying(element),
+            elementwise=True,
+            linearity_premises=(underlying,),
         )
+        self._underlying_morphism._elementwise_linearity_witness = underlying
 
     def _horizontality_derivation(self):
         r"""Return a construction-derived horizontality decision, or ``None``.
@@ -873,21 +872,6 @@ class ConnectionMorphism(Element):
                 domain_module.module_generator(label) for label in domain_module.module_generating_set()
             )
         )
-
-
-class HorizontalConnectionUnderlyingMorphism(ModuleMorphism):
-    r"""The selected underlying module morphism of one horizontal map."""
-
-    def __init__(self, parent, underlying) -> None:
-        self._underlying_source_morphism = underlying
-        super().__init__(
-            parent,
-            lambda element: underlying(element),
-            elementwise=True,
-        )
-
-    def _elementwise_linearity_derivation(self):
-        return self._underlying_source_morphism.linearity_decision()
 
 
 class ConnectionMor(RestrictedMorCategoryParent):
