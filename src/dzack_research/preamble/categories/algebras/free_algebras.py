@@ -448,7 +448,7 @@ def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=No
     return _symmetric_algebra_of_free_module(generating)
 
 
-@cached_function
+@cached_function(key=lambda generating: id(generating))
 def _symmetric_algebra_of_free_module(generating):
     r"""``Sym_R(F)`` for the free module ``F = F_R(S)``: one object per ``F``, which is the cache key.
 
