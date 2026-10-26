@@ -309,8 +309,8 @@ class _TwoLegDiagram(Functor):
         raise ValueError("a two-leg diagram has exactly two nonidentity morphisms")
 
 
-class FiniteOrdinalMorphism(Morphism):
-    r"""The unique arrow ``i -> j`` in a finite ordinal category when ``i <= j``."""
+class FiniteOrdinalMorphism(CategoricalMor.ElementMethods):
+    r"""Methods for the generated unique arrow ``i -> j`` when ``i <= j``."""
 
     def __init__(self, parent) -> None:
         Morphism.__init__(self, parent)
@@ -331,7 +331,7 @@ class FiniteOrdinalMorphism(Morphism):
 
 
 class FiniteOrdinalMor(CategoricalMor):
-    Element = FiniteOrdinalMorphism
+    ElementMethods = FiniteOrdinalMorphism
 
     def ordinal_category(self):
         return self.base_category()
@@ -346,7 +346,7 @@ class FiniteOrdinalMor(CategoricalMor):
                 f"there is no arrow {self.domain()} -> {self.codomain()} in a finite ordinal: arrows go only "
                 "from smaller to larger elements"
             )
-        return FiniteOrdinalMorphism(self)
+        return self.element_class(self)
 
     def _element_constructor_(self, value=None):
         if value is not None and value is not self.unique():
