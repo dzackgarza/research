@@ -405,7 +405,7 @@ def _stable_signature_integer(signature) -> int:
     return int.from_bytes(digest, "big")
 
 
-def _category_provider_order_key(category: Category):
+def _category_provider_order_key(category: Category, memo=None):
     r"""Order category providers without modifying Sage's native ``_cmp_key``.
 
     The controlled C3 merge requires a strict provider order, with each strict
@@ -415,11 +415,18 @@ def _category_provider_order_key(category: Category):
     parameter signatures distinguish incomparable and parameterized providers;
     Sage's original session counter is the final tie-breaker.
     """
-    return (
-        _category_graph_depth(category),
-        repr((_category_graph_signature(category), _category_parameter_signature(category))),
-        category._cmp_key[1],
-    )
+    if memo is None:
+        memo = {}
+    identity = id(category)
+    cached = memo.get(identity)
+    if cached is None:
+        cached = (
+            _category_graph_depth(category),
+            repr((_category_graph_signature(category), _category_parameter_signature(category))),
+            category._cmp_key[1],
+        )
+        memo[identity] = cached
+    return cached
 
 
 class _OwnedCategoryComparisonKey:
@@ -636,18 +643,20 @@ def _declared_category_linearization(category: Category) -> tuple[Category, ...]
     from sage.misc.c3_controlled import C3_sorted_merge
 
     cache = {}
+    provider_order_cache = {}
+    provider_order_key = lambda node: _category_provider_order_key(node, provider_order_cache)
 
     def linearize(node):
         known = cache.get(id(node))
         if known is not None:
             return known
         parents = tuple(
-            sorted(node.super_categories(), key=_category_provider_order_key, reverse=True)
+            sorted(node.super_categories(), key=provider_order_key, reverse=True)
         )
         sequences = [list(linearize(parent)) for parent in parents]
         sequences.append(list(parents))
         merged, _suggestion = C3_sorted_merge(
-            sequences, key=_category_provider_order_key
+            sequences, key=provider_order_key
         )
         result = (node, *merged)
         cache[id(node)] = result
