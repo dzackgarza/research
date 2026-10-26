@@ -625,6 +625,7 @@ class SchemeMorphismMethods:
     _toric_lattice_morphism = None
     _toric_chart_targets = None
     _toric_chart_pullbacks = None
+    _affine_quotient_base_change_datum = None
 
     def __init__(
         self,
@@ -655,6 +656,7 @@ class SchemeMorphismMethods:
         toric_lattice_morphism=None,
         toric_chart_targets=None,
         toric_chart_pullbacks=None,
+        affine_quotient_base_change_data=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -684,6 +686,7 @@ class SchemeMorphismMethods:
         self._toric_lattice_morphism = toric_lattice_morphism
         self._toric_chart_targets = toric_chart_targets
         self._toric_chart_pullbacks = toric_chart_pullbacks
+        self._affine_quotient_base_change_datum = affine_quotient_base_change_data
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -716,6 +719,7 @@ class SchemeMorphismMethods:
             toric_lattice_morphism=self._toric_lattice_morphism,
             toric_chart_targets=self._toric_chart_targets,
             toric_chart_pullbacks=self._toric_chart_pullbacks,
+            affine_quotient_base_change_data=self._affine_quotient_base_change_datum,
         )
 
     def gluing_datum(self):
@@ -814,6 +818,88 @@ class SchemeMorphismMethods:
         source_chart = self.domain().affine_chart(source_cone)
         target_chart = self.codomain().affine_chart(self.chart_target(source_cone))
         return source_chart.Mor(target_chart)(self.chart_pullback(source_cone))
+
+    def _affine_quotient_base_change_data(self):
+        if self._affine_quotient_base_change_datum is None:
+            raise AttributeError(f"{self} is not an invariant-quotient base-change comparison")
+        return self._affine_quotient_base_change_datum
+
+    def source_acted_scheme(self):
+        return self._affine_quotient_base_change_data()["acted_scheme"]
+
+    def ring_map(self):
+        return self._affine_quotient_base_change_data()["ring_map"]
+
+    def base_changed_acted_scheme(self):
+        return self._affine_quotient_base_change_data()["changed_acted_scheme"]
+
+    def quotient_after_base_change(self):
+        return self.base_changed_acted_scheme().affine_quotient()
+
+    def base_change_after_quotient(self):
+        return self._affine_quotient_base_change_data()["base_changed_old_quotient"]
+
+    def comparison_morphism(self):
+        return self
+
+    def reynolds_hypothesis_holds(self) -> bool:
+        from dzack_research.preamble.categories.rings.ring_foundation import OwnedFields, _owned_ring
+        source = _owned_ring(self.ring_map().domain())
+        target = _owned_ring(self.ring_map().codomain())
+        if source not in OwnedFields() or target not in OwnedFields():
+            return False
+        group = self.base_changed_acted_scheme().acting_group()
+        return group.is_finite() is True and group.order_is_invertible_in(target)
+
+    @cached_method
+    def reynolds_isomorphism(self):
+        from dzack_research.preamble.categories.rings.ring_foundation import _engine_element, _engine_ring
+        from dzack_research.preamble.categories.schemes.quotients import _evaluate_polynomial_in_algebra
+        assert self.reynolds_hypothesis_holds() is True, (
+            f"the comparison X_(k')/G -> (X/G)_(k') for {self.source_acted_scheme()} along "
+            f"{self.ring_map()} is proved an isomorphism only when the acting group "
+            f"{self.base_changed_acted_scheme().acting_group()} is finite and its order is invertible "
+            "in the target field (Reynolds operator)"
+        )
+        forward = self.comparison_morphism()
+        source_quotient = self.quotient_after_base_change()
+        target_quotient = self.base_change_after_quotient()
+        changed_acted = self.base_changed_acted_scheme()
+        changed_source_algebra = changed_acted.coordinate_algebra()
+        changed_invariants = source_quotient.coordinate_algebra()
+        changed_old_invariants = target_quotient.coordinate_algebra()
+        comparison_pullback = forward.coordinate_algebra_morphism()
+        invariant_inclusion = changed_acted.invariant_algebra_inclusion()
+        engine_source = _engine_ring(changed_source_algebra)
+        old_generator_images = tuple(
+            engine_source(
+                _engine_element(
+                    changed_source_algebra,
+                    invariant_inclusion(comparison_pullback(changed_old_invariants.algebra_generator(label))),
+                )
+            )
+            for label in changed_old_invariants.algebra_generating_set()
+        )
+        inverse_images = {}
+        for label in changed_invariants.algebra_generating_set():
+            invariant = invariant_inclusion(changed_invariants.algebra_generator(label))
+            engine_invariant = engine_source(_engine_element(changed_source_algebra, invariant))
+            certificate = engine_invariant.in_subalgebra(
+                old_generator_images, algorithm="groebner", certificate="invariant"
+            )
+            if certificate is None:
+                raise ArithmeticError(
+                    f"the Reynolds operator makes the comparison along {self.ring_map()} an "
+                    f"isomorphism, but the invariant {invariant} of the base-changed ring could not "
+                    "be written as a polynomial in the base changes of the original invariants"
+                )
+            inverse_images[label] = _evaluate_polynomial_in_algebra(certificate, changed_old_invariants)
+        inverse_pullback = changed_invariants.Mor(changed_old_invariants)(inverse_images)
+        from dzack_research.preamble.categories.schemes.schemes import _affine_morphism_from_pullback
+        inverse = _affine_morphism_from_pullback(target_quotient, source_quotient, inverse_pullback)
+        return Schemes(source_quotient.scheme_base_ring()).Core().Mor(
+            source_quotient, target_quotient
+        )(forward, inverse)
 
     def pullback_divisor(self, divisor):
         if self._toric_lattice_morphism is None:
@@ -934,6 +1020,7 @@ class SchemeMorphismMethods:
             toric_lattice_morphism=self._toric_lattice_morphism,
             toric_chart_targets=self._toric_chart_targets,
             toric_chart_pullbacks=self._toric_chart_pullbacks,
+            affine_quotient_base_change_data=self._affine_quotient_base_change_datum,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -966,6 +1053,7 @@ class SchemeMorphismMethods:
                 "toric_lattice_morphism": self._toric_lattice_morphism,
                 "toric_chart_targets": self._toric_chart_targets,
                 "toric_chart_pullbacks": self._toric_chart_pullbacks,
+                "affine_quotient_base_change_data": self._affine_quotient_base_change_datum,
             },
         )
 
@@ -1934,6 +2022,11 @@ class SchemeMorphismMethods:
             return f"Relative-Proj induced map on surjectivity locus {self.domain()} -> {self.codomain()}"
         if self._toric_lattice_morphism is not None:
             return f"Toric scheme morphism {self.domain()} -> {self.codomain()} induced by {self.lattice_morphism()}"
+        if self._affine_quotient_base_change_datum is not None:
+            return (
+                f"Invariant-quotient base-change morphism along {self.ring_map()} "
+                f"for {self.source_acted_scheme()}"
+            )
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
