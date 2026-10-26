@@ -722,10 +722,10 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             relative = source.relative_to(root)
         except ValueError:
             continue
-        # The canonical module route is specific to Sage source.  ``load`` on
-        # an ordinary Python script deliberately keeps Sage's execute-into-
-        # scope semantics instead of silently changing it into an import.
-        if relative.suffix != ".sage":
+        # Canonicalize package sources in either source format.  An ordinary
+        # standalone script still falls through unless normal import resolution
+        # identifies this exact file as a module.
+        if relative.suffix not in (".py", ".sage"):
             continue
         parts = list(relative.with_suffix("").parts)
         if parts and parts[-1] == "__init__":
