@@ -6342,7 +6342,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
     from sage.algebras.free_algebra import FreeAlgebra_generic
     from sage.rings.finite_rings.finite_field_base import FiniteField
-    from sage.rings.fraction_field import FractionField_generic
     from sage.rings.laurent_series_ring import LaurentSeriesRing
     from sage.rings.lazy_series_ring import LazyLaurentSeriesRing, LazyPowerSeriesRing
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
@@ -6372,12 +6371,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             # Z_p and the rings of integers of its finite extensions are
             # discrete valuation rings, uncountable.
             placements = (principal, noetherian, owned_sets.UncountableSets())
-        case FractionField_generic():
-            # Frac(D) is a field for every integral domain D.  The source
-            # construction supplies the domain hypothesis and its cardinality;
-            # the native fraction-field parent does not inherit Sage categories.
-            source = _own_ring(engine.ring())
-            placements = (*field, _placed_size(source))
         case LaurentPolynomialRing_generic():
             coefficients = _own_ring(engine.base_ring())
             placements = (
