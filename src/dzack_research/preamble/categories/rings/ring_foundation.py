@@ -4796,7 +4796,7 @@ def _owned_ring_element_text(element) -> str:
     if isinstance(engine, QuotientRing_generic) and isinstance(
         engine.cover_ring(), (PolynomialRing_generic, MPolynomialRing_base)
     ):
-        cover = _own_ring(engine.cover_ring())
+        cover = parent.quotient_source()
         return f"[{_owned_polynomial_text(cover, value.lift())}]"
     return f"element of {parent}"
 
