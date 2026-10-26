@@ -282,8 +282,7 @@ sage-rebuild:
 _lock:
     uv lock
 
-# Development commits inspect staged source syntax only. The repository-owned
-# coordinate-ownership scan is retained as an independent CI diagnostic.
+# Development commits inspect staged source syntax only.
 test-commit:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-commit
 
@@ -291,22 +290,13 @@ test-commit:
 test-push:
     @just -f ~/ai-review-ci/justfiles/sage.just -d . test-push
 
-# Run CI suites and the repository-owned tensor-ownership detector independently,
-# retaining both in one nonblocking findings/burndown report.
+# Run the CI suites.
 test-ci:
-    @python3 ~/ai-review-ci/scripts/ci-triage.py sage --caller-check research-tensor-boundary tensor-boundary
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . test-ci
 
-# The scheduled whole-tree audit includes the tensor-ownership detector.
+# The scheduled whole-tree audit.
 ambient:
-    @python3 ~/ai-review-ci/scripts/ci-triage.py sage --tier ambient --caller-check research-tensor-boundary tensor-boundary
-
-# CI-only provision for the repository-specific scanner, not a local hook.
-_ci-tensor-tools:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    prefix="$RUNNER_TEMP/research-tensor-tools"
-    npm install --prefix "$prefix" --no-audit --no-fund @ast-grep/cli@0.41.0
-    printf '%s\n' "$prefix/node_modules/.bin" >> "$GITHUB_PATH"
+    @just -f ~/ai-review-ci/justfiles/sage.just -d . ambient
 
 # Survey an operation before changing what it returns or renaming it.
 # Reports every definition with its owner and return expressions, flags

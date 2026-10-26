@@ -45,10 +45,17 @@ packages = ["sage_extensions"]
 [tool.pytest.ini_options]
 # The archived preamble is source evidence, not an executable test tree.
 # Bare pytest invocations collect the live suite only; an archive path may still
-# be named explicitly when inspecting historical material. The mathematics
-# tests live with their code in sage-extensions; these test the research
-# tooling.
+# be named explicitly when inspecting historical material.
+#
+# The expectation suite (tests/constructions, tests/user_simulations and their
+# catalogue tests/conftest.py) states what a mathematician expects of the
+# session. It lives here, outside sage-extensions, so the repository that
+# changes the implementation cannot edit it. The implementation tests live
+# with the code in sage-extensions.
 testpaths = ["tests"]
+# The specification helpers beside tests/constructions are imported from
+# other test directories as well.
+pythonpath = ["tests/constructions"]
 # Every run says where its wall time went and leaves a machine-readable record.
 #
 # --timeout bounds one test: a test that blocks -- on a subprocess, a lock, a
