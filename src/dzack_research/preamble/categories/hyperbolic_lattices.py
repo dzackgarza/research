@@ -262,12 +262,19 @@ class NumberFieldVinbergLattice(SageObject):
         selected_position = embeddings.ranking_map()(real_embedding)
         selected_signature = _signature_at_real_embedding(lattice, real_embedding)
         rank = int(lattice.module_rank())
-        if selected_signature.first() != rank - 1 or selected_signature.second() != 1:
+        if (
+            (selected_signature.first() == cardinal(rank - 1)) is not True
+            or (selected_signature.second() == cardinal(1)) is not True
+        ):
             raise ValueError(f"{lattice} is not hyperbolic at the real place {real_embedding}: it must have signature ({rank - 1}, 1) there, but has {selected_signature}")
         other_signatures = finite_ordered_set(
             tuple(_signature_at_real_embedding(lattice, embeddings[position]) for position in embeddings.index_set() if position != selected_position)
         )
-        if any(other.first() != rank or other.second() != 0 for other in other_signatures):
+        if any(
+            (other.first() == cardinal(rank)) is not True
+            or (other.second() == cardinal(0)) is not True
+            for other in other_signatures
+        ):
             raise ValueError(
                 f"cannot run Vinberg's algorithm on {lattice} with hyperbolic place "
                 f"{real_embedding}: at every other real place the form must be positive "
