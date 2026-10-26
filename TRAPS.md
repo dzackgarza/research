@@ -10,7 +10,7 @@ Write to it in the turn the measurement is made.
 
 ## Sage
 
-### PARI overflows on the orthogonal group of a line plus E8
+### PARI overflows on groups and isometry witnesses for a line plus E8
 
 On SageMath 11.0.beta1 with Python 3.14, the orthogonal group of the positive
 definite lattice `<18> + E8` reaches PARI `qfauto` and raises a stack overflow
@@ -41,6 +41,19 @@ Reproduce in the bridge's Julia project with `using Oscar`,
 `order(A)`. This is a cold-call data point, not a throughput comparison.
 The owned group-order and generator checks above also verify the adapter's
 basis transport.
+
+The definite witness operation has the same enumeration limit. The unchanged
+port degree-18 vector-orbit and reflected-vector `r_0` consumers overflow
+in `QuadraticForm.is_globally_equivalent_to`, which calls PARI `qfisom`.
+The owner test
+`tests/lattices/test_lattice_isometry_semantic_api.sage::test_e8_with_a_norm_eighteen_line_has_integral_change_of_basis_witnesses`
+reproduces the overflow on `<18> + E8` and the unimodular shear with
+`change[0,1] = 1`. Its red run took 35.82 seconds, including setup, on
+2026-10-26 with the same Sage runtime and 1 GiB PARI limit.
+OSCAR's `is_isometric_with_isometry` uses invariant-sublattice decomposition
+in the same source file, lines 645-844. The adapter transposes its row-action
+witness to the owned column-image convention. Its mathematical verification
+must cover both definite signs and an empty isometry set.
 
 ### Algebraic-real `QuadraticForm.rational_diagonal_form` rejects even a diagonal plane
 
