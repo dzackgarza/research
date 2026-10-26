@@ -651,7 +651,9 @@ class _Genus(Sets().ObjectType):
 
         signature = self.signature_pair()
         positive, negative = signature.first(), signature.second()
-        if positive != 0 and negative != 0:
+        positive_is_zero = (positive == cardinal(0)) is True
+        negative_is_zero = (negative == cardinal(0)) is True
+        if not positive_is_zero and not negative_is_zero:
             raise ValueError(
                 f"the Smith--Minkowski--Siegel mass of {self!r} is not defined: the mass is a finite sum only for a definite genus, and this genus has signature ({positive}, {negative})"
             )
@@ -683,7 +685,9 @@ class _Genus(Sets().ObjectType):
         component of the theta series of every member.
         """
         signature = self.signature_pair()
-        assert signature.first() == 0 or signature.second() == 0, (
+        positive_is_zero = (signature.first() == cardinal(0)) is True
+        negative_is_zero = (signature.second() == cardinal(0)) is True
+        assert positive_is_zero or negative_is_zero, (
             f"the theta series of {self!r} is a power series only for a definite genus, and this genus has signature ({signature.first()}, {signature.second()})"
         )
         rationals = self._lattice.base_ring().fraction_field()
@@ -6521,12 +6525,18 @@ class Lattices(OwnedCategoryOverBaseRing):
             )
 
         def is_positive_definite(self) -> bool:
-            rank = self.module_rank()
-            return self.signature_pair() == signature_pair(rank, 0)
+            signature = self.signature_pair()
+            return (
+                (signature.first() == self.module_rank()) is True
+                and (signature.second() == cardinal(0)) is True
+            )
 
         def is_negative_definite(self) -> bool:
-            rank = self.module_rank()
-            return self.signature_pair() == signature_pair(0, rank)
+            signature = self.signature_pair()
+            return (
+                (signature.first() == cardinal(0)) is True
+                and (signature.second() == self.module_rank()) is True
+            )
 
         def is_definite(self) -> bool:
             return self.is_positive_definite() or self.is_negative_definite()
@@ -6583,7 +6593,11 @@ class Lattices(OwnedCategoryOverBaseRing):
             finite_rank = int(rank.finite_value())
             if finite_rank < 2:
                 return False
-            return self.signature_pair() == signature_pair(0, finite_rank - 1)
+            signature = self.signature_pair()
+            return (
+                (signature.first() == cardinal(0)) is True
+                and (signature.second() == cardinal(finite_rank - 1)) is True
+            )
 
         def lll_reduction(self):
             return _lll_reduction(self)
