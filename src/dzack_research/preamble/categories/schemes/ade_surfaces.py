@@ -357,12 +357,14 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             f"an ADE type {letter}_n needs rank n >= 1, except for the pure A_0^- shape "
             f"(variant='short'); got rank {rank} and variant {source_variant!r}"
         )
-        variant = _validated_at21_low_level_variant(letter, rank, source_variant, bool(affine))
+        low_level_variant = _validated_at21_low_level_variant(
+            letter, rank, source_variant, bool(affine)
+        )
 
         vertices, point, decorations = _ade_polygon_data(
             letter,
             rank,
-            variant,
+            low_level_variant,
             bool(affine),
         )
         polygon_lattice = _owned_integers().free_module(2)
@@ -376,7 +378,12 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             construction_data={
                 "dynkin_letter": letter,
                 "dynkin_rank": rank,
-                "dynkin_variant": variant,
+                "source_variant": source_variant,
+                # Public normalized variant strings and polygon side tuples
+                # are different representations. Retain the latter here for
+                # side decorations; the AT21 wrapper separately retains the
+                # former as ``source_variant``.
+                "dynkin_variant": low_level_variant,
                 "is_affine_type": bool(affine),
                 "polygon": polygon,
                 "polygon_vertex_order": finite_family(
@@ -454,6 +461,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             self,
             dynkin_letter,
             dynkin_rank,
+            source_variant,
             dynkin_variant,
             is_affine_type,
             polygon,
@@ -464,6 +472,7 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         ) -> None:
             self._dynkin_letter = dynkin_letter
             self._dynkin_rank = dynkin_rank
+            self._source_variant = source_variant
             self._dynkin_variant = dynkin_variant
             self._is_affine_type = is_affine_type
             self._polygon = polygon
@@ -487,6 +496,10 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
 
         def dynkin_rank(self):
             return _owned_integers()(self._dynkin_rank)
+
+        def source_variant(self) -> str:
+            r"""Return the normalized public variant spelling before side expansion."""
+            return self._source_variant
 
         def letter(self) -> str:
             r"""Return the ADE letter; archived synonym for :meth:`dynkin_letter`."""
