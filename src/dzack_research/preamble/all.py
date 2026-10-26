@@ -721,6 +721,22 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     unresolved_package_source = None
     loaded_source_modules = []
 
+    package_source = False
+    for entry in _sys.path:
+        root = _Path(entry or ".").resolve()
+        try:
+            relative = source.relative_to(root)
+        except ValueError:
+            continue
+        if relative.suffix not in (".py", ".sage"):
+            continue
+        if (
+            len(relative.parts) > 1
+            or relative.name in ("__init__.py", "__init__.sage")
+        ):
+            package_source = True
+            break
+
     def is_canonical_source(module_file: str | _Path) -> bool:
         try:
             resolved = _Path(module_file).resolve()
@@ -741,7 +757,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     # Existing module identity outranks the current sys.path interpretation:
     # paths can be inserted or reordered after import, but that must not make
     # ``load(source)`` choose a second name for the same already-loaded file.
-    for name, module in tuple(_sys.modules.items()):
+    for name, module in tuple(_sys.modules.items()) if package_source else ():
         spec = getattr(module, "__spec__", None)
         if name == "__main__" or spec is None or getattr(spec, "name", None) != name:
             continue
