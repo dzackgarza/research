@@ -4573,9 +4573,10 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                         "generator values were given"
                     )
                 family_labels = generator_values.index_set()
-                same_labels = family_labels is selected_labels or (
-                    family_labels == selected_labels
-                ) is True
+                # A family indexed by an equal-but-distinct set is not already
+                # indexed by the selected algebra framing. Treat it as a new
+                # presentation and use the explicit positional transport below.
+                same_labels = family_labels is selected_labels
                 if same_labels:
 
                     def value(label):
