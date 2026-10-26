@@ -772,9 +772,11 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         except ValueError:
             continue
         # Canonicalize package sources in either source format.  An ordinary
-        # standalone script still falls through unless normal import resolution
-        # identifies this exact file as a module.
+        # top-level Sage script still uses Sage's execute-into-scope loader,
+        # even though sageparse also makes top-level .sage files importable.
         if relative.suffix not in (".py", ".sage"):
+            continue
+        if len(relative.parts) == 1 and relative.name not in ("__init__.py", "__init__.sage"):
             continue
         parts = list(relative.with_suffix("").parts)
         if parts and parts[-1] == "__init__":
