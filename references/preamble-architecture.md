@@ -320,5 +320,5 @@ Changing the category in which objects live should preserve the action-diagram f
 Higher or derived settings additionally require their own coherent categorical structure; ordinary equality of composites does not supply it.
 The present design therefore exposes the categorical parameters and maps on which those later extensions depend.
 
-The [contribution procedure](../CONTRIBUTING.md#preamble-design-philosophy) directs a writer to the immediate owner and its constructor.
+The [contribution procedure](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md#preamble-design-philosophy) directs a writer to the immediate owner and its constructor.
 The [work queue](../TODO.md#constructor-and-admission-foundations) orders the repair by those dependencies.

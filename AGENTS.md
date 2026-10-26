@@ -240,10 +240,6 @@ in this file removes. A brief that told a worker to run the import and the
 lattice-db tests after each unit cost it hours of runs that decided nothing. Accept no delivery whose report does not list
 this reading.
 
-## Preamble coding prerequisites
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
 ## Reproductions and scratch stay inside this repository
 
 A repro that copies the tree costs about 270 MB here. Two such copies created
@@ -393,7 +389,7 @@ and `OWN-01`. State the leaf request using standard mathematical objects, maps,
 categories and hypotheses, as it should be expressed in an ideal API. Recursively
 trace what those notions require down to the named set-theoretic and categorical
 foundations in `lean-categories`; a notion it lacks is requested there
-([below](#a-missing-foundation-parks-the-work-that-found-it-always-on)). Do not
+([below](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md#a-missing-foundation-parks-the-work-that-found-it-always-on)). Do not
 start with the classes, engine objects, or methods that happen to be available.
 
 Trace defining data, morphisms, universal constructions, and preservation
@@ -422,14 +418,6 @@ proof work under terminal T. Read and update the issues through itree and GitHub
 Apply `DEV-61` to issue edits; the current single-worker
 workflow has no claim ledger or coordination mutex.
 The detailed capture and maintenance contract lives in `DEV-59`.
-
-## Construction and engine boundaries (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-## Threaded specialization and universal constructions (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
 
 ## Do not end a turn without the next node started (always-on)
 
@@ -841,14 +829,6 @@ One cycle:
 
 7. **Reopen** — `annotate wait` again for the next window (with `notifyOnExit: true`). Back to step 2.
 
-# Mathematical structure as implementation compression
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Search the formalization corpus first (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
 # Work-selection discipline (always-on)
 
 An output that cannot fail carries no information.
@@ -905,18 +885,6 @@ recurring shapes (memory: `relay-translation-not-forwarding`, 2026-08-09):
 - **Compression test.** If the user's own summary of the issue is two
   sentences, the message that needed those two sentences and didn't lead
   with them failed, regardless of how much correct detail it carried.
-
-# Performance claims (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# What optimization is for (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Construction is instant; checking is asked for; loops are tensors (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
 
 # Every task is an instrument; the product is a map of Sage (always-on)
 
@@ -1320,56 +1288,4 @@ Do not make the reader excavate the missing work from beneath praise, context-se
 
 Nuance belongs in the evidence and blocker analysis, not in softening the completion standard.
 The review should make it easy to finish the work, not easy to feel satisfied with less than the original contract required.
-
-# The preamble is a universe over Sage (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# A missing foundation parks the work that found it (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# A misstep is a population, not a slice (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# A supercategory entry presents a formalized inclusion (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# How the preamble presents the mathematics (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Mathematical Sage API discipline (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Declaring a category: the questions answered before writing (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Categorical organization model (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Python and Sage research code style (always-on)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Addendum: private Sage-runtime realization of preamble category types
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Transcript-derived research directives (2026-08-21)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Mathematical judgment and repository practice from transcript corrections (2026-08-21)
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
-
-# Categorical constructions carry structural relations
-
-Moved to [sage-extensions `AGENTS.md`](https://github.com/dzackgarza/sage-extensions/blob/main/AGENTS.md): this section governs the library code, which lives there.
 

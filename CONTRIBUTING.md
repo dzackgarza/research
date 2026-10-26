@@ -19,11 +19,8 @@ and publication rules.
 
 ## Contribution policies
 
-For a new addition, begin with
-[mathematical dependency tracing](#mathematical-dependency-tracing).
-For construction, representation, or engine work, then apply the normative
-[preamble architecture specification](#preamble-architecture-specification).
-Its `OWN-*` policies specify the intended architecture, not implementation status.
+Construction, representation and engine work is library work: its policies
+are in [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md).
 Record observed foundational gaps and papercuts in the [native issue tree](https://github.com/dzackgarza/research/issues/46)
 under [DEV-59](#dev-59-record-observed-foundational-gaps-and-papercuts).
 
@@ -36,77 +33,11 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 * * *
 
-## Preamble design philosophy
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-## Preamble architecture specification
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-## Corrective implementation style guide (`STY-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
 ## Policy Index
 
 | Family | Governs |
 | --- | --- |
-| `OWN-*` | [normative architecture](#preamble-architecture-specification): sanctioned construction paths, the recursive public boundary, encapsulation, and reuse |
-| `ARC-*` | architecture of the preamble's presentation of `lean-categories`' mathematics |
-| `API-*` | the public surface of preamble objects |
-| `CON-*` | constructors, witnesses, actions, and structural transport |
-| `CAT-*` | category placement, chosen data, and computational capability |
-| `DEF-*` | definitions, predicates, structural results, and special cases |
-| `LEX-*` | mathematical vocabulary and public type names |
-| `SET-*` | mathematical collections, underlying sets, and cardinality |
-| `ENG-*` | delegation of heavy computation to exact engines |
-| `BND-*` | private engine crossings and representation boundaries |
-| `BRG-*` | external-system interoperability and bridge transport |
-| `ENV-*` | repository execution and environment conventions |
 | `DEV-*` | development, verification, migrations, and policy promotion |
-| `STY-*` | corrective implementation style and declarative Python patterns |
-| `FSA-*` | search of `lean-categories` and its libraries, absence claims, and the sourcing of a formalization request |
-
-### 1. Presentation Architecture (`ARC-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 2. Public Mathematical API (`API-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 3. Construction & Witness Interfaces (`CON-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 4. Category Placement & Capability (`CAT-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 5. Definition Fidelity (`DEF-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 6. Mathematical Vocabulary & Public Types (`LEX-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 7. Sets, Collections & Cardinality (`SET-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 8. Computational Backend Delegation (`ENG-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 9. Engine Crossing Boundaries (`BND-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
-
-### 11. Environment, Execution & Tooling (`ENV-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
 
 ### 12. Development Discipline & Verification (`DEV-*`)
 
@@ -1218,10 +1149,6 @@ Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-
 - **Correct Example**: display the embedding and its cokernel/torsion-freeness, or assert the relevant predicate and print the resulting mathematical object when useful.
 
 
-
-### 14. Formalization Requests and Search (`FSA-*`)
-
-Moved to [sage-extensions `CONTRIBUTING.md`](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md): this section governs the library code, which lives there.
 
 ## Writing house conventions
 
