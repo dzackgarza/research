@@ -7382,6 +7382,24 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   discharge only the issue obligations supported by that commit, and leave
   execution evidence owed under terminal T.
 
+  **Acceptance before reselection:** after a source unit is delivered, the
+  orchestrator compares every requirement with the committed owners, callers
+  and falsifying specimens. Record the verdict on the existing issue before
+  selecting another unit. A remaining source defect stays with that issue.
+  When the complete source contract is satisfied, close the source issue under
+  `DEV-58` and #414, with the reviewed revision and clause-level evidence.
+  First link its exact unexecuted assertions from the applicable open terminal
+  acceptance issue. Source closure discharges a source prerequisite; only
+  execution can discharge an execution obligation. An issue whose own assigned
+  phase requires execution stays open until that evidence exists.
+
+  `architecture-remediation` (#486) requires source closure before T. Waiting
+  for T to close every source prerequisite would make that phase unreachable.
+  Retain the original mathematical requirements and distinguish source acceptance
+  from executed acceptance in every closure record. The orchestrator reviews
+  delivered work while the sole implementation worker continues its current
+  coherent unit; worker activity does not discharge this review.
+
 #### `DEV-62`: An Empirical Claim About an Engine Has Its Measurement or Is Written as a Hypothesis
 
 - **Rule**: A statement about what Sage or another engine does, costs, supports, or demands of its input is one of two things.  Either it is a finding, and it travels with the probe that produced it: the command, the specimen and its size parameter, the version, and the result.  Or it is a hypothesis, and it is written in words that cannot be read as a finding ("untested: `longest_path` may be the cost").  A causal sentence in the grammatical register of a finding, with no measurement behind it, is fabrication.  It is banned in code comments, docstrings, commit bodies, `TRAPS.md`, issues, reports, and conversation alike.  This extends the always-on performance-claims rule (wall time as a function of size, never counts) from how a cost is reported to whether the sentence may be written at all.
