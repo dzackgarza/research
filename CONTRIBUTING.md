@@ -7386,17 +7386,14 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   orchestrator compares every requirement with the committed owners, callers
   and falsifying specimens. Record the verdict on the existing issue before
   selecting another unit. A remaining source defect stays with that issue.
-  When the complete source contract is satisfied, close the source issue under
-  `DEV-58` and #414, with the reviewed revision and clause-level evidence.
-  First link its exact unexecuted assertions from the applicable open terminal
-  acceptance issue. Source closure discharges a source prerequisite; only
-  execution can discharge an execution obligation. An issue whose own assigned
-  phase requires execution stays open until that evidence exists.
+  Close an issue only when its original acceptance requirements are satisfied.
+  An issue that requires runtime behavior stays open while those assertions are
+  unexecuted. A link from terminal acceptance preserves programme coverage;
+  it does not transfer the issue's obligations or justify closing it.
 
-  `architecture-remediation` (#486) requires source closure before T. Waiting
-  for T to close every source prerequisite would make that phase unreachable.
-  Retain the original mathematical requirements and distinguish source acceptance
-  from executed acceptance in every closure record. The orchestrator reviews
+  Distinguish delivered source from accepted issues. When a phase rule prevents
+  the required acceptance, identify that rule and resolve the execution decision
+  before claiming restored delivery. The orchestrator reviews
   delivered work while the sole implementation worker continues its current
   coherent unit; worker activity does not discharge this review.
 
