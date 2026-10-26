@@ -733,6 +733,8 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         if (
             len(relative.parts) > 1
             or relative.name in ("__init__.py", "__init__.sage")
+            or (root / "__init__.py").is_file()
+            or (root / "__init__.sage").is_file()
         ):
             package_source = True
             break
@@ -793,6 +795,13 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         if relative.suffix not in (".py", ".sage"):
             continue
         if len(relative.parts) == 1 and relative.name not in ("__init__.py", "__init__.sage"):
+            # A source at the root of a package directory is a package module,
+            # but this sys.path entry alone omits the package's parent name.
+            # Do not import it under a short top-level alias. A broader import
+            # root may still provide the canonical qualified name later in the
+            # loop; if none does, the unresolved-package check fails closed.
+            if (root / "__init__.py").is_file() or (root / "__init__.sage").is_file():
+                unresolved_package_source = (source.stem, 1)
             continue
         parts = list(relative.with_suffix("").parts)
         if parts and parts[-1] == "__init__":
@@ -800,10 +809,15 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         if not parts or not all(part.isidentifier() for part in parts):
             continue
         candidate = ".".join(parts)
-        package_parent = relative.name in ("__init__.py", "__init__.sage") or any(
-            (root.joinpath(*relative.parts[:index]) / "__init__.py").is_file()
-            or (root.joinpath(*relative.parts[:index]) / "__init__.sage").is_file()
-            for index in range(1, len(relative.parts))
+        package_parent = (
+            relative.name in ("__init__.py", "__init__.sage")
+            or (root / "__init__.py").is_file()
+            or (root / "__init__.sage").is_file()
+            or any(
+                (root.joinpath(*relative.parts[:index]) / "__init__.py").is_file()
+                or (root.joinpath(*relative.parts[:index]) / "__init__.sage").is_file()
+                for index in range(1, len(relative.parts))
+            )
         )
         # Only delegate when the installed sageparse finder chooses this exact
         # source; package directories may have their own loader.
