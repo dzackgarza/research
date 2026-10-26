@@ -2457,11 +2457,7 @@ def _combined_linearity_decision(morphisms):
     return conjunction(morphism.linearity_decision() for morphism in morphisms)
 
 
-class ModuleMorphism(ModuleMorphismMethods, Morphism):
-    r"""Compatibility shell for private realizations not yet moved to generated Mor types."""
-
-    def _initialize_lower_arrow(self, parent) -> None:
-        Morphism.__init__(self, parent)
+ModuleMorphism = ModuleMorphismMethods
 
 
 def FramingMorphism(parent, generator_morphism):
