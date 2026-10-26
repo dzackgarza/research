@@ -1195,8 +1195,8 @@ def _apex_morphism_equal(left, right):
     return left.apex_map() == right.apex_map()
 
 
-class ConeMorphism(Morphism):
-    r"""A morphism of cones, determined by its apex map."""
+class ConeMorphism(CategoricalMor.ElementMethods):
+    r"""Methods for a generated morphism of cones, determined by its apex map."""
 
     def __init__(self, parent: ConeMor, apex_map: Morphism, *, verify: bool = False) -> None:
         Morphism.__init__(self, parent)
@@ -1262,8 +1262,8 @@ class ConeMorphism(Morphism):
         )
 
 
-class CoconeMorphism(Morphism):
-    r"""A morphism of cocones, determined by its apex map."""
+class CoconeMorphism(CategoricalMor.ElementMethods):
+    r"""Methods for a generated morphism of cocones, determined by its apex map."""
 
     def __init__(self, parent: CoconeMor, apex_map: Morphism, *, verify: bool = False) -> None:
         Morphism.__init__(self, parent)
@@ -1330,7 +1330,7 @@ class CoconeMorphism(Morphism):
 
 
 class ConeMor(CategoricalMor):
-    Element = ConeMorphism
+    ElementMethods = ConeMorphism
 
     def __init__(
         self,
@@ -1372,7 +1372,7 @@ class ConeMor(CategoricalMor):
 
 
 class CoconeMor(CategoricalMor):
-    Element = CoconeMorphism
+    ElementMethods = CoconeMorphism
 
     def __init__(
         self,
