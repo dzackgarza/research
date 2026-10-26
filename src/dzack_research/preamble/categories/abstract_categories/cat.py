@@ -276,6 +276,20 @@ class Cat(CategoryPacketMethods, Category):
 
             return _CoproductCoconeCategory(self.coproduct_construction(cofactors).diagram())
 
+        def Biproduct(self, factors) -> Category:
+            r"""Return the owned category of the selected biproduct object."""
+            construction = getattr(self, "biproduct", None)
+            if construction is None:
+                raise TypeError(f"biproducts are not represented in {self}")
+            return construction(factors).category()
+
+        def TensorProduct(self, factors) -> Category:
+            r"""Return the owned category of the selected tensor-product object."""
+            construction = getattr(self, "tensor_product", None)
+            if construction is None:
+                raise TypeError(f"tensor products are not represented in {self}")
+            return construction(factors).category()
+
         def DirectSum(self) -> Category:
             r"""Return objects of ``self`` with a chosen direct-sum decomposition."""
             from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
@@ -1031,6 +1045,22 @@ class Cat(CategoryPacketMethods, Category):
         def CoveredObject(self, base_object: Parent) -> Category:
             r"""Return the covered-object category under the legacy construction name."""
             return self.CoveredObjectCategory(base_object)
+
+        def Kernel(self, morphism: Morphism) -> Category:
+            r"""Return the category of kernel subobjects of ``morphism``."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                KernelCategory,
+            )
+
+            return KernelCategory(self, morphism)
+
+        def Cokernel(self, morphism: Morphism) -> Category:
+            r"""Return the category of cokernel quotients of ``morphism``."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                CokernelCategory,
+            )
+
+            return CokernelCategory(self, morphism)
 
         def Subobjects(self, base_object: Parent) -> Category:
             return self.SubobjectCategory(base_object)

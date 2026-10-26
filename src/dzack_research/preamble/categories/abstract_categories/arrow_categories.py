@@ -1998,6 +1998,48 @@ class CoveredObjectCategory(CosliceCategory):
         return f"Covered objects of {self.base_object()}"
 
 
+class KernelCategory(SubobjectCategory):
+    r"""The category of kernel objects as subobjects of a morphism's domain."""
+
+    @staticmethod
+    @cached_function(key=lambda cls, base_category, morphism: (cls, id(base_category), id(morphism)))
+    def __classcall__(cls, base_category: Category, morphism: Morphism):
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(base_category, morphism)
+        return typecall(cls, base_category, morphism)
+
+    def __init__(self, base_category: Category, morphism: Morphism) -> None:
+        if morphism.domain() not in base_category or morphism.codomain() not in base_category:
+            raise TypeError(f"the kernel morphism {morphism} must be a morphism of {base_category}")
+        self._kernel_morphism = morphism
+        super().__init__(base_category, morphism.domain())
+
+    def super_categories(self):
+        return [SubobjectCategory(self.base_category(), self._kernel_morphism.domain())]
+
+
+class CokernelCategory(CoveredObjectCategory):
+    r"""The category of cokernel objects as quotients of a morphism's codomain."""
+
+    @staticmethod
+    @cached_function(key=lambda cls, base_category, morphism: (cls, id(base_category), id(morphism)))
+    def __classcall__(cls, base_category: Category, morphism: Morphism):
+        match cls:
+            case DynamicMetaclass():
+                return cls.__base__(base_category, morphism)
+        return typecall(cls, base_category, morphism)
+
+    def __init__(self, base_category: Category, morphism: Morphism) -> None:
+        if morphism.domain() not in base_category or morphism.codomain() not in base_category:
+            raise TypeError(f"the cokernel morphism {morphism} must be a morphism of {base_category}")
+        self._cokernel_morphism = morphism
+        super().__init__(base_category, morphism.codomain())
+
+    def super_categories(self):
+        return [CoveredObjectCategory(self.base_category(), self._cokernel_morphism.codomain())]
+
+
 class FixedWideMorCategory(FixedRestrictedMorCategory):
     r"""The selected arrows in one existing Mor of the underlying category.
 
