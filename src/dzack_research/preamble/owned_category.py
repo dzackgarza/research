@@ -1490,23 +1490,10 @@ def _implementation_with_engine(implementation: type, owner: type, engine: type)
         # such base, preserving the same semantic precedence as the ordinary
         # subclass path below: stronger providers first, engine computation,
         # then the owner's defaults and the weaker structure underneath it.
-        # The owner of a category that Sage builds (``Cat``) copies each
-        # method provider into its own class rather than inheriting it, and
-        # records the provider as ``_doccls`` (``dynamic_class_internal``,
-        # sage/structure/dynamic_class.py).  An owned join lists the provider
-        # class itself among its bases, so both name the owner's providers.
-        # The engine also precedes every base it specializes: a join may
-        # place the root ``Objects.ParentMethods``, which an engine of a
-        # Sage-built owner names as its base, before that owner's providers.
-        owner_mro = frozenset(owner.__mro__) | frozenset(
-            provider.__dict__["_doccls"][0]
-            for provider in owner.__mro__
-            if "_doccls" in provider.__dict__
-        )
         anchors = tuple(
             index
             for index, base in enumerate(implementation.__bases__)
-            if base in owner_mro or issubclass(engine, base)
+            if base in owner.__mro__
         )
         assert anchors, (
             f"cannot insert the computation class {engine.__name__} for objects of type "
@@ -1675,7 +1662,7 @@ def _cat() -> Category:
     r"""``Cat()``, resolved late: the constructions it declares import this module."""
     from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
-    return Cat()
+    return Cat._construction_instance or Cat()
 
 
 def _cat_constructions() -> type:

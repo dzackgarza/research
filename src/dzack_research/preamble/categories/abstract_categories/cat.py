@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, overload
 from sage.categories.category import Category
 from sage.categories.map import Map
 from sage.categories.morphism import Morphism
-from sage.categories.objects import Objects as SageObjects
 from sage.misc.abstract_method import abstract_method
 from sage.misc.cachefunc import cached_method
 from sage.misc.classcall_metaclass import typecall
@@ -119,10 +118,21 @@ class Cat(CategoryPacketMethods, Category):
     """
 
     _MorCategory = FunctorMorCategoryConstruction
+    _construction_instance = None
 
     def __init__(self) -> None:
         self._arrows = {}
-        super().__init__()
+        if Cat._construction_instance is not None:
+            raise RuntimeError("Cat construction is re-entrant before its owned Objects root is initialized")
+        # Objects records Cat as its placement category. Publish this partially
+        # initialized instance only across the superclass construction, so
+        # Objects._init_cat_object can reuse it rather than recursively calling
+        # Cat() while Cat's supercategories are being assembled.
+        Cat._construction_instance = self
+        try:
+            super().__init__()
+        finally:
+            Cat._construction_instance = None
 
     def an_object(self) -> Category:
         r"""The category of sets, which every owned chain roots at."""
@@ -131,16 +141,9 @@ class Cat(CategoryPacketMethods, Category):
         return Sets()
 
     def super_categories(self):
-        # A category is an object.  This one edge names Sage's ``Objects`` and
-        # not the owned one: every owned category is an object of ``Cat``, so
-        # an owned supercategory here would have to be constructed while
-        # ``Cat`` itself is still under construction.  Measured 2026-10-07:
-        # declaring the owned ``Objects`` recurses at import, because Sage's
-        # ``Category.__init__`` builds ``subcategory_class`` from the
-        # supercategories, and ``Objects()`` records ``Cat()`` when it is
-        # built. Its objects are the actual categories, whose owned bases
-        # supply the operations of Cat.
-        return [SageObjects()]
+        from dzack_research.preamble.categories.abstract_categories.objects import Objects
+
+        return [Objects()]
 
     def category(self) -> Cat:
         r"""``Cat`` is placed in itself."""
