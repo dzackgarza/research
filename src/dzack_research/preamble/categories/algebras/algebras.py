@@ -4665,7 +4665,14 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         # the algebra realization hooks this placement introduces.
         refine(self, Cat().meet(tuple(placement)))
 
-@cached_function
+@cached_function(key=lambda engine, base_ring, labels=None, categories=(), construction_data=(), law_decisions=(): (
+    id(engine),
+    id(base_ring),
+    None if labels is None else id(labels),
+    tuple(map(id, categories)),
+    tuple((name, id(value)) for name, value in construction_data),
+    tuple((name, id(value)) for name, value in law_decisions),
+))
 def _owned_algebra_view(
     engine,
     base_ring,
