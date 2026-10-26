@@ -622,6 +622,9 @@ class SchemeMorphismMethods:
     _relative_projectivization_role = None
     _relative_projectivization_underlying_projection = None
     _relative_projectivization_sheaf_morphism = None
+    _toric_lattice_morphism = None
+    _toric_chart_targets = None
+    _toric_chart_pullbacks = None
 
     def __init__(
         self,
@@ -649,6 +652,9 @@ class SchemeMorphismMethods:
         relative_projectivization_role=None,
         relative_projectivization_underlying_projection=None,
         relative_projectivization_sheaf_morphism=None,
+        toric_lattice_morphism=None,
+        toric_chart_targets=None,
+        toric_chart_pullbacks=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -675,6 +681,9 @@ class SchemeMorphismMethods:
         self._relative_projectivization_role = relative_projectivization_role
         self._relative_projectivization_underlying_projection = relative_projectivization_underlying_projection
         self._relative_projectivization_sheaf_morphism = relative_projectivization_sheaf_morphism
+        self._toric_lattice_morphism = toric_lattice_morphism
+        self._toric_chart_targets = toric_chart_targets
+        self._toric_chart_pullbacks = toric_chart_pullbacks
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -704,6 +713,9 @@ class SchemeMorphismMethods:
             relative_projectivization_role=self._relative_projectivization_role,
             relative_projectivization_underlying_projection=self._relative_projectivization_underlying_projection,
             relative_projectivization_sheaf_morphism=self._relative_projectivization_sheaf_morphism,
+            toric_lattice_morphism=self._toric_lattice_morphism,
+            toric_chart_targets=self._toric_chart_targets,
+            toric_chart_pullbacks=self._toric_chart_pullbacks,
         )
 
     def gluing_datum(self):
@@ -750,6 +762,9 @@ class SchemeMorphismMethods:
         return self._atlas_local_maps
 
     def local_map(self, index):
+        if self._toric_lattice_morphism is not None:
+            target_embedding = self.codomain().gluing_datum().chart_embedding(self.chart_target(index))
+            return target_embedding * self.chart_morphism(index)
         return self.local_maps()[self.atlas().normalize_chart_index(index)]
 
     def glued_local_maps(self):
@@ -779,6 +794,67 @@ class SchemeMorphismMethods:
         if self._relative_projectivization_sheaf_morphism is None:
             raise AttributeError(f"{self} is not defined by a relative-projectivization sheaf morphism")
         return self._relative_projectivization_sheaf_morphism
+
+    def lattice_morphism(self):
+        if self._toric_lattice_morphism is None:
+            raise AttributeError(f"{self} is not a represented toric morphism")
+        return self._toric_lattice_morphism
+
+    def chart_target(self, source_cone):
+        if self._toric_chart_targets is None:
+            raise AttributeError(f"{self} has no toric chart targets")
+        return self._toric_chart_targets.value(source_cone)
+
+    def chart_pullback(self, source_cone):
+        if self._toric_chart_pullbacks is None:
+            raise AttributeError(f"{self} has no toric chart pullbacks")
+        return self._toric_chart_pullbacks.value(source_cone)
+
+    def chart_morphism(self, source_cone):
+        source_chart = self.domain().affine_chart(source_cone)
+        target_chart = self.codomain().affine_chart(self.chart_target(source_cone))
+        return source_chart.Mor(target_chart)(self.chart_pullback(source_cone))
+
+    def pullback_divisor(self, divisor):
+        if self._toric_lattice_morphism is None:
+            raise AttributeError(f"{self} is not a represented toric morphism")
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
+            _engine_scheme, _engine_scheme_morphism, _integers,
+        )
+        codomain = self.codomain()
+        target_group = codomain.weil_divisor_group()
+        divisor = target_group(divisor)
+        assert codomain.is_cartier(divisor), (
+            f"the pullback along {self} is defined for Cartier divisors, but {divisor} is not "
+            f"Cartier on {codomain}"
+        )
+        target_rays = codomain.fan().cones(1)
+        target_coordinates = divisor.to_vector()
+        engine_divisor = _engine_scheme(codomain).divisor(
+            [int(target_coordinates(ray)) for ray in target_rays]
+        )
+        pulled = _engine_scheme_morphism(self).pullback_divisor(engine_divisor)
+        source = self.domain()
+        source_group = source.weil_divisor_group()
+        source_rays = source.fan().cones(1)
+        return source_group.linear_combination(
+            {
+                ray: _integers()(pulled.coefficient(position))
+                for position, ray in enumerate(source_rays)
+                if pulled.coefficient(position)
+            }
+        )
+
+    def pullback_line_bundle(self, bundle):
+        if self._toric_lattice_morphism is None:
+            raise AttributeError(f"{self} is not a represented toric morphism")
+        assert bundle.scheme() is self.codomain(), (
+            f"cannot pull back {bundle} along {self}: it is a line bundle on {bundle.scheme()}, "
+            f"not on the codomain {self.codomain()}"
+        )
+        return self.domain().invertible_sheaf_of_divisor(
+            self.pullback_divisor(bundle.associated_divisor())
+        )
 
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
@@ -855,6 +931,9 @@ class SchemeMorphismMethods:
             relative_projectivization_role=self._relative_projectivization_role,
             relative_projectivization_underlying_projection=self._relative_projectivization_underlying_projection,
             relative_projectivization_sheaf_morphism=self._relative_projectivization_sheaf_morphism,
+            toric_lattice_morphism=self._toric_lattice_morphism,
+            toric_chart_targets=self._toric_chart_targets,
+            toric_chart_pullbacks=self._toric_chart_pullbacks,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -884,6 +963,9 @@ class SchemeMorphismMethods:
                 "relative_projectivization_role": self._relative_projectivization_role,
                 "relative_projectivization_underlying_projection": self._relative_projectivization_underlying_projection,
                 "relative_projectivization_sheaf_morphism": self._relative_projectivization_sheaf_morphism,
+                "toric_lattice_morphism": self._toric_lattice_morphism,
+                "toric_chart_targets": self._toric_chart_targets,
+                "toric_chart_pullbacks": self._toric_chart_pullbacks,
             },
         )
 
@@ -1007,6 +1089,14 @@ class SchemeMorphismMethods:
         return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
 
     def _postcompose_with(self, after):
+        if self._toric_lattice_morphism is not None:
+            datum = self.domain().gluing_datum()
+            return _scheme_composition_mor(after, self)(
+                finite_indexed_family(
+                    datum.chart_index_set(),
+                    lambda index: after * self.local_map(index),
+                )
+            )
         if self._relative_projectivization_role == "base_change_total":
             if after is self.comparison().projectivization().projectivization_projection():
                 return self.comparison().square_composite()
@@ -1023,17 +1113,6 @@ class SchemeMorphismMethods:
             return _glued_scheme_morphism(
                 _scheme_composition_mor(after, self),
                 tuple(after * self.glued_local_map(index) for index in datum.chart_indices()),
-            )
-        if self._relative_projectivization_role == "base_change_base":
-            return (
-                isinstance(other, SchemeMorphismMethods)
-                and other._relative_projectivization_role == "base_change_base"
-                and other.domain() is self.domain()
-                and other.codomain() is self.codomain()
-                and other.comparison() is self.comparison()
-                and _ring_morphisms_equal(
-                    other.coordinate_algebra_morphism(), self.coordinate_algebra_morphism()
-                ) is True
             )
         if self._gluing_role == "finite_atlas":
             if after.domain() is not self.codomain():
@@ -1057,6 +1136,14 @@ class SchemeMorphismMethods:
         return NotImplemented
 
     def __eq__(self, other):
+        if self._toric_lattice_morphism is not None:
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._toric_lattice_morphism is not None
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+                and other.lattice_morphism() == self.lattice_morphism()
+            )
         if self._relative_projectivization_role == "surjectivity_open_inclusion":
             return (
                 isinstance(other, SchemeMorphismMethods)
@@ -1211,6 +1298,12 @@ class SchemeMorphismMethods:
 
     def _engine_morphism_crossing(self):
         r"""The Sage morphism between the engines this morphism computes in."""
+        if self._toric_lattice_morphism is not None:
+            assert self._native_morphism is not None, (
+                f"cannot compute with {self} in Sage: the toric morphism was constructed from its "
+                "fan-compatible lattice map without a Sage morphism over this base ring"
+            )
+            return self._native_morphism
         if self._gluing_role == "open_inclusion":
             raise NotImplementedError("a glued open inclusion is represented by its gluing datum")
         if self._homogeneous_coordinates is not None:
@@ -1805,7 +1898,7 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
-        if self._relative_projectivization_role in ("base_change_composite", "base_change_total", "base_change_base", "base_projection", "surjectivity_open_inclusion", "surjectivity_induced_morphism"):
+        if self._toric_lattice_morphism is not None or self._relative_projectivization_role in ("base_change_composite", "base_change_total", "base_change_base", "base_projection", "surjectivity_open_inclusion", "surjectivity_induced_morphism"):
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._relative_projectivization_source_sheaf is not None:
             raise TypeError(f"unhashable type: {type(self).__name__}")
@@ -1839,6 +1932,8 @@ class SchemeMorphismMethods:
             return f"Relative-Proj surjectivity-locus inclusion {self.domain()} -> {self.codomain()}"
         if self._relative_projectivization_role == "surjectivity_induced_morphism":
             return f"Relative-Proj induced map on surjectivity locus {self.domain()} -> {self.codomain()}"
+        if self._toric_lattice_morphism is not None:
+            return f"Toric scheme morphism {self.domain()} -> {self.codomain()} induced by {self.lattice_morphism()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
