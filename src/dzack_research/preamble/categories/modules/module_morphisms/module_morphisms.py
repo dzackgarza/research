@@ -346,6 +346,10 @@ class ModuleMorphismMethods:
             return witness.linearity_decision() if hasattr(witness, "linearity_decision") else witness
         return None
 
+    def represented_module_morphism(self):
+        r"""Return this arrow as its represented module-morphism object."""
+        return self
+
     def derivation(self):
         r"""Return the derivation whose underlying linear arrow this is, when recorded."""
         try:
