@@ -35,3 +35,29 @@ def test_hyperbolic_discriminant_form_of_exponent_four() -> None:
     assert group.cardinality() == 4
     for generator in group.group_generators():
         assert all(form.q(generator(point)) == form.q(point) for point in form.elements())
+
+
+def test_split_four_dimensional_form_cosets_are_its_nonzero_singular_vectors() -> None:
+    r"""O^+(4,2) acts transitively on its nine nonzero singular vectors.
+
+    The stabilizer has order 72/9=8. The coset section must send its
+    distinguished vector to the corresponding orbit point, and its
+    Schreier images must generate that stabilizer.
+    """
+    form = (Lattices(ZZ)([[0, 2], [2, 0]]) ** 2).discriminant_group()
+    group = form.orthogonal_group()
+    vector = next(iter(form.module_generators()))
+    stabilizer = group.stabilizer_of_element(vector)
+    cosets = group.left_cosets(stabilizer)
+    section = cosets.representative_map()
+
+    assert stabilizer.cardinality() == 8
+    assert cosets.cardinality() == 9
+    assert len({section(point)(vector) for point in cosets}) == 9
+    for point in cosets:
+        assert cosets.coset_of(section(point)) == point
+        for generator in group.group_generators():
+            assert section(cosets.act(generator, point))(vector) == generator(section(point)(vector))
+    augmentation = cosets.schreier_generating_morphism()
+    images = tuple(augmentation(generator) for generator in augmentation.domain().group_generators())
+    assert group.subgroup_on(images).cardinality() == 8
