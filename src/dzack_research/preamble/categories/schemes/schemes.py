@@ -613,6 +613,7 @@ class SchemeMorphismMethods:
     _gluing_datum = None
     _gluing_chart_index = None
     _gluing_role = None
+    _gluing_chart_map = None
 
     def __init__(
         self,
@@ -631,6 +632,7 @@ class SchemeMorphismMethods:
         gluing_datum=None,
         gluing_chart_index=None,
         gluing_role=None,
+        gluing_chart_map=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -648,6 +650,7 @@ class SchemeMorphismMethods:
         self._gluing_datum = gluing_datum
         self._gluing_chart_index = gluing_chart_index
         self._gluing_role = gluing_role
+        self._gluing_chart_map = gluing_chart_map
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -668,6 +671,7 @@ class SchemeMorphismMethods:
             gluing_datum=self._gluing_datum,
             gluing_chart_index=self._gluing_chart_index,
             gluing_role=self._gluing_role,
+            gluing_chart_map=self._gluing_chart_map,
         )
 
     def gluing_datum(self):
@@ -692,6 +696,16 @@ class SchemeMorphismMethods:
 
     def open_inclusion(self):
         return self.open_image().inclusion()
+
+    def chart_embedding(self):
+        if self._gluing_role != "chart_map":
+            raise AttributeError(f"{self} is not a map through a selected gluing chart")
+        return self.gluing_datum().chart_embedding(self.chart_index())
+
+    def chart_map(self):
+        if self._gluing_role != "chart_map":
+            raise AttributeError(f"{self} is not represented by a map through a selected gluing chart")
+        return self._gluing_chart_map
 
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
@@ -721,6 +735,11 @@ class SchemeMorphismMethods:
         the same defining data.  In particular chart maps never need a native
         realization merely to forget the relative-base condition.
         """
+        gluing_chart_map = self._gluing_chart_map
+        if self._gluing_role == "chart_map":
+            gluing_chart_map = mor.mor_category().Mor(
+                self.domain(), self.chart_embedding().domain()
+            )(self.chart_map())
         return mor.element_class(
             mor, self._native_morphism, mor=mor,
             pullback=self._coordinate_pullback,
@@ -735,6 +754,7 @@ class SchemeMorphismMethods:
             gluing_datum=self._gluing_datum,
             gluing_chart_index=self._gluing_chart_index,
             gluing_role=self._gluing_role,
+            gluing_chart_map=gluing_chart_map,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -755,6 +775,7 @@ class SchemeMorphismMethods:
                 "gluing_datum": self._gluing_datum,
                 "gluing_chart_index": self._gluing_chart_index,
                 "gluing_role": self._gluing_role,
+                "gluing_chart_map": self._gluing_chart_map,
             },
         )
 
@@ -798,10 +819,19 @@ class SchemeMorphismMethods:
         if self._gluing_role == "chart_embedding":
             if other.codomain() is not self.domain():
                 return NotImplemented
-            from dzack_research.preamble.categories.schemes.gluing import _GluedSchemeChartMap
+            from dzack_research.preamble.categories.schemes.gluing import _glued_scheme_chart_map
             from dzack_research.preamble.categories.schemes.gluing import _scheme_composition_mor
-            return _GluedSchemeChartMap(
+            return _glued_scheme_chart_map(
                 _scheme_composition_mor(self, other), self, other,
+            )
+        if self._gluing_role == "chart_map":
+            composite = self.chart_map() * other
+            if composite is NotImplemented:
+                return NotImplemented
+            from dzack_research.preamble.categories.schemes.gluing import _glued_scheme_chart_map
+            from dzack_research.preamble.categories.schemes.gluing import _scheme_composition_mor
+            return _glued_scheme_chart_map(
+                _scheme_composition_mor(self, other), self.chart_embedding(), composite,
             )
         if self._multiprojective_chart_embedding:
             if other.codomain() is not self.domain():
@@ -850,9 +880,40 @@ class SchemeMorphismMethods:
             if after.domain() is not self.codomain():
                 return NotImplemented
             return after.local_map(self.chart_index())
+        if self._gluing_role == "chart_map":
+            if after.domain() is not self.codomain():
+                return NotImplemented
+            return after.local_map(self.chart_index()) * self.chart_map()
         return NotImplemented
 
     def __eq__(self, other):
+        if self._gluing_role == "chart_map":
+            if not isinstance(other, SchemeMorphismMethods) or other.codomain() is not self.codomain():
+                return False
+            if other._gluing_role == "chart_embedding":
+                return (
+                    other.gluing_datum() is self.gluing_datum()
+                    and other.chart_index() == self.chart_index()
+                    and self.chart_map() == other.domain().categorical_identity_morphism()
+                )
+            if other._gluing_role != "chart_map":
+                return False
+            if self.chart_index() == other.chart_index():
+                return self.chart_map() == other.chart_map()
+            datum = self.gluing_datum()
+            if other.gluing_datum() is not datum:
+                return False
+            from dzack_research.preamble.categories.schemes.gluing import _lands_in_distinguished_open
+            left_overlap = datum.overlap(self.chart_index(), other.chart_index())
+            right_overlap = datum.overlap(other.chart_index(), self.chart_index())
+            if not _lands_in_distinguished_open(self.chart_map(), left_overlap):
+                return False
+            if not _lands_in_distinguished_open(other.chart_map(), right_overlap):
+                return False
+            left = left_overlap.corestriction(self.chart_map())
+            right = right_overlap.corestriction(other.chart_map())
+            transition = datum.transition_between(self.chart_index(), other.chart_index()).forward()
+            return transition * left == right
         if self._gluing_role == "chart_embedding":
             if getattr(other, "_gluing_role", None) == "chart_map":
                 return (
@@ -1496,6 +1557,8 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
+        if self._gluing_role == "chart_map":
+            raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._gluing_role == "open_inclusion":
             position = self.gluing_datum().chart_index_set().ranking_map()(self.chart_index())
             return hash((id(self.gluing_datum()), int(position), "open-image"))

@@ -205,94 +205,36 @@ def _glued_scheme_chart_embedding(parent, gluing_datum, chart_index):
     )
 
 
-class _GluedSchemeChartMap(SchemeMorphism):
-    r"""A map into a glued scheme factoring through one selected affine chart."""
-
-    def __init__(self, parent, chart_embedding, chart_map) -> None:
-        super().__init__(None, mor=parent)
-        if chart_embedding is not chart_embedding.gluing_datum().chart_embedding(chart_embedding.chart_index()):
-            raise TypeError(
-                f"cannot build a morphism through the chart embedding {chart_embedding}: it is not the "
-                f"embedding of chart {chart_embedding.chart_index()} chosen when the scheme was glued"
-            )
-        if chart_map.codomain() is not chart_embedding.domain():
-            raise ValueError(
-                f"cannot build a morphism through the chart embedding {chart_embedding}: the map "
-                f"{chart_map} must land in the chart {chart_embedding.domain()}, but it lands in "
-                f"{chart_map.codomain()}"
-            )
-        if chart_map.domain() is not self.domain() or chart_embedding.codomain() is not self.codomain():
-            raise ValueError(
-                f"cannot make the composite of {chart_map} and {chart_embedding} a morphism "
-                f"{self.domain()} -> {self.codomain()}: it is a morphism {chart_map.domain()} -> "
-                f"{chart_embedding.codomain()}"
-            )
-        self._chart_embedding = chart_embedding
-        self._chart_map = chart_map
-
-    def chart_embedding(self):
-        return self._chart_embedding
-
-    def chart_index(self):
-        return self.chart_embedding().chart_index()
-
-    def chart_map(self):
-        return self._chart_map
-
-    def gluing_datum(self):
-        return self.chart_embedding().gluing_datum()
-
-    def _in_mor(self, mor):
-        chart_map = mor.mor_category().Mor(self.domain(), self.chart_embedding().domain())(self.chart_map())
-        return _GluedSchemeChartMap(mor, self.chart_embedding(), chart_map)
-
-    def __mul__(self, other):
-        composite = self.chart_map() * other
-        if composite is NotImplemented:
-            return NotImplemented
-        return _GluedSchemeChartMap(
-            _scheme_composition_mor(self, other), self.chart_embedding(), composite,
+def _glued_scheme_chart_map(parent, chart_embedding, chart_map):
+    r"""Construct a map through one selected affine chart as an element of its scheme Mor."""
+    datum = chart_embedding.gluing_datum()
+    index = datum.normalize_chart_index(chart_embedding.chart_index())
+    if chart_embedding is not datum.chart_embedding(index):
+        raise TypeError(
+            f"cannot build a morphism through the chart embedding {chart_embedding}: it is not the "
+            f"embedding of chart {index} chosen when the scheme was glued"
         )
-
-    def _postcompose_with(self, after):
-        r"""``after o e_i o g`` is the local map of ``after`` on chart ``i`` after ``g``."""
-        if after.domain() is not self.codomain():
-            return NotImplemented
-        return after.local_map(self.chart_index()) * self.chart_map()
-
-    def __eq__(self, other) -> bool:
-        if isinstance(other, SchemeMorphismMethods) and other._gluing_role == "chart_embedding":
-            return (
-                other.codomain() is self.codomain()
-                and other.gluing_datum() is self.gluing_datum()
-                and other.chart_index() == self.chart_index()
-                and self.chart_map()
-                == other.domain().categorical_identity_morphism()
-            )
-        if not isinstance(other, _GluedSchemeChartMap) or other.codomain() is not self.codomain():
-            return False
-        if self.chart_index() == other.chart_index():
-            return self.chart_map() == other.chart_map()
-        datum = self.gluing_datum()
-        if other.gluing_datum() is not datum:
-            return False
-        left_overlap = datum.overlap(self.chart_index(), other.chart_index())
-        right_overlap = datum.overlap(other.chart_index(), self.chart_index())
-        if not _lands_in_distinguished_open(self.chart_map(), left_overlap):
-            return False
-        if not _lands_in_distinguished_open(other.chart_map(), right_overlap):
-            return False
-        left = left_overlap.corestriction(self.chart_map())
-        right = right_overlap.corestriction(other.chart_map())
-        transition = datum.transition_between(
-            self.chart_index(), other.chart_index()
-        ).forward()
-        return transition * left == right
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    __hash__ = None
+    if chart_map.codomain() is not chart_embedding.domain():
+        raise ValueError(
+            f"cannot build a morphism through the chart embedding {chart_embedding}: the map "
+            f"{chart_map} must land in the chart {chart_embedding.domain()}, but it lands in "
+            f"{chart_map.codomain()}"
+        )
+    if chart_map.domain() is not parent.domain() or chart_embedding.codomain() is not parent.codomain():
+        raise ValueError(
+            f"cannot make the composite of {chart_map} and {chart_embedding} a morphism "
+            f"{parent.domain()} -> {parent.codomain()}: it is a morphism {chart_map.domain()} -> "
+            f"{chart_embedding.codomain()}"
+        )
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        gluing_datum=datum,
+        gluing_chart_index=index,
+        gluing_role="chart_map",
+        gluing_chart_map=chart_map,
+    )
 
 
 class _GluedSchemeMorphism(SchemeMorphism):
@@ -7388,7 +7330,7 @@ def _glued_fiber_product_factorization(product, datum, labels, charts, left_cone
     source = left_cone_map.domain()
     product_datum = product.gluing_datum()
     match left_cone_map:
-        case _GluedSchemeChartMap():
+        case SchemeMorphismMethods() if left_cone_map._gluing_role == "chart_map":
             chart_map = left_cone_map.chart_map()
         case SchemeMorphismMethods() if left_cone_map._gluing_role == "chart_embedding":
             chart_map = source.categorical_identity_morphism()
