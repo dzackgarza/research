@@ -310,6 +310,7 @@ class ModuleMorphismMethods:
     _lift_function = None
     _linearity_premises = None
     _projective_section_restriction_data = None
+    _surjectivity_premise = None
 
     def _initialize_lower_arrow(self, parent) -> None:
         domain = parent.domain()
@@ -422,6 +423,7 @@ class ModuleMorphismMethods:
         lift=None,
         linearity_premises=None,
         projective_section_restriction_data=None,
+        surjectivity_premise=None,
     ) -> None:
         self._initialize_lower_arrow(parent)
         assert (scalar_extension_of is None) == (scalar_extension_functor is None), (
@@ -433,6 +435,7 @@ class ModuleMorphismMethods:
         self._lift_function = lift
         self._linearity_premises = linearity_premises
         self._projective_section_restriction_data = projective_section_restriction_data
+        self._surjectivity_premise = surjectivity_premise
         self._source_module_morphism = None
         self._element_function = None
         domain = self.domain()
@@ -1612,6 +1615,8 @@ class ModuleMorphismMethods:
 
     def is_surjective(self) -> bool:
         r"""Return whether ``coker(self)=0`` when the cokernel is computable."""
+        if self._surjectivity_premise is not None:
+            return self._surjectivity_premise
         self._require_established_linearity("surjectivity")
         ring = self.domain().base_ring()
         if (
@@ -2459,34 +2464,18 @@ class ModuleMorphism(ModuleMorphismMethods, Morphism):
         Morphism.__init__(self, parent)
 
 
-class FramingMorphism(ModuleMorphism):
-    r"""A constructor-selected generating epimorphism from a free module."""
+def FramingMorphism(parent, generator_morphism):
+    r"""Construct a framing epimorphism as an element of its generated module Mor.
 
-    def __init__(self, parent, generator_morphism) -> None:
-        match generator_morphism.codomain() is parent.codomain():
-            case False:
-                raise ValueError(
-                    f"the generator map inducing {parent.domain()} -> {parent.codomain()} "
-                    f"must land in {parent.codomain()}, but it lands in "
-                    f"{generator_morphism.codomain()}"
-                )
-            case True:
-                pass
-        super().__init__(parent, generator_morphism)
-
-    def lift(self, element):
-        r"""The preimage of ``element`` in the free module that the codomain's construction chose.
-
-        On a basis it is the unique preimage, the coordinate vector.  The
-        construction that produced the codomain's elements chose it, so it is
-        not recombined and compared here.
-        """
-        codomain = self.codomain()
-        return codomain._framing_lift(codomain(element))
-
-    def is_surjective(self) -> bool:
-        r"""True: the codomain's framing coefficients supply a preimage in the selected free source."""
-        return True
+    This compatibility constructor retains the historical public entry point
+    without introducing a second arrow class beside ``parent.element_class``.
+    """
+    if generator_morphism.codomain() is not parent.codomain():
+        raise ValueError(
+            f"the generator map inducing {parent.domain()} -> {parent.codomain()} "
+            f"must land in {parent.codomain()}, but it lands in {generator_morphism.codomain()}"
+        )
+    return parent.element_class(parent, generator_morphism, surjectivity_premise=True)
 
 
 class ModuleEmbeddingMethods:
@@ -3192,7 +3181,7 @@ class ModuleMor(_ModuleMorCommonMethods, CategoricalMor):
         return f"Mor({self.domain()}, {self.codomain()})"
 
 
-def _framing_morphism(codomain, domain, generator_morphism) -> FramingMorphism:
+def _framing_morphism(codomain, domain, generator_morphism):
     from dzack_research.preamble.categories.modules.pure.modules import Modules
     from dzack_research.preamble.categories.rings.ring_foundation import OwnedCategoryOverBaseRing
 
