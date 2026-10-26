@@ -4481,12 +4481,9 @@ class _OwnedAlgebraParent(_OwnedRingParent):
                 "a selected algebra generating family requires its index labels"
             )
             family_labels = algebra_generating_family.index_set()
-            same_labels = family_labels is selected_labels or (
-                family_labels == selected_labels
-            ) is True
-            assert same_labels, (
+            assert family_labels is selected_labels, (
                 "the selected algebra generating family must be indexed by the "
-                "same labels as the retained algebra framing"
+                "literal index-set object retained as the algebra framing"
             )
             if generator_values is None:
                 # Retain the family as a family until the common generator
