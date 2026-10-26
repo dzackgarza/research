@@ -6633,56 +6633,55 @@ class _FiniteAtlasInverseImageModuleSheafEngine:
         return self.refinement().inverse_image_scalar_extension_functor()(self)
 
 
-class _FiniteAtlasInverseImageModuleMorphism(Morphism):
-    r"""Inverse image of one finite-atlas module-sheaf morphism."""
-
-    def __init__(self, parent, source_morphism) -> None:
-        Morphism.__init__(self, parent)
-        if source_morphism.domain() is not self.domain().source_sheaf():
-            raise ValueError(
-                f"cannot pull {source_morphism} back to a morphism {self.domain()} -> {self.codomain()}: "
-                f"it must start at {self.domain().source_sheaf()}, but it starts at "
-                f"{source_morphism.domain()}"
-            )
-        if source_morphism.codomain() is not self.codomain().source_sheaf():
-            raise ValueError(
-                f"cannot pull {source_morphism} back to a morphism {self.domain()} -> {self.codomain()}: "
-                f"it must end at {self.codomain().source_sheaf()}, but it ends at "
-                f"{source_morphism.codomain()}"
-            )
-        self._source_morphism = source_morphism
-
-    def source_morphism(self):
-        return self._source_morphism
-
-    def local_map(self, fine_index):
-        return self.source_morphism().local_map(
-            self.domain().coarse_index(fine_index)
-        )
-
-    def __mul__(self, other):
-        match other:
-            case _FiniteAtlasInverseImageModuleMorphism() if other.codomain() is self.domain():
-                return self.domain().category().Mor(other.domain(), self.codomain())(
-                    self.source_morphism() * other.source_morphism()
-                )
-            case _:
-                return NotImplemented
-
-
 class _FiniteAtlasInverseImageModuleMor(CategoricalMor):
     r"""Mor in ``Mod(f^{-1}O_Y)`` for one represented finite-atlas refinement."""
 
-    Element = _FiniteAtlasInverseImageModuleMorphism
+    class ElementMethods(CategoricalMor.ElementMethods):
+        r"""A generated arrow carrying the source sheaf morphism it pulls back."""
+
+        def __init__(self, parent, source_morphism) -> None:
+            super().__init__(parent)
+            if source_morphism.domain() is not self.domain().source_sheaf():
+                raise ValueError(
+                    f"cannot pull {source_morphism} back to a morphism {self.domain()} -> {self.codomain()}: "
+                    f"it must start at {self.domain().source_sheaf()}, but it starts at "
+                    f"{source_morphism.domain()}"
+                )
+            if source_morphism.codomain() is not self.codomain().source_sheaf():
+                raise ValueError(
+                    f"cannot pull {source_morphism} back to a morphism {self.domain()} -> {self.codomain()}: "
+                    f"it must end at {self.codomain().source_sheaf()}, but it ends at "
+                    f"{source_morphism.codomain()}"
+                )
+            self._source_morphism = source_morphism
+
+        def source_morphism(self):
+            return self._source_morphism
+
+        def local_map(self, fine_index):
+            return self.source_morphism().local_map(
+                self.domain().coarse_index(fine_index)
+            )
+
+        def __mul__(self, other):
+            if (
+                isinstance(other, CategoricalMor.ElementMethods)
+                and other.parent().base_category() is self.parent().base_category()
+                and other.codomain() is self.domain()
+            ):
+                return self.domain().category().Mor(other.domain(), self.codomain())(
+                    self.source_morphism() * other.source_morphism()
+                )
+            return NotImplemented
 
     def _element_constructor_(self, source_morphism):
-        match source_morphism:
-            case _FiniteAtlasInverseImageModuleMorphism() if source_morphism.parent() is self:
+        if (
+            isinstance(source_morphism, CategoricalMor.ElementMethods)
+            and source_morphism.parent().base_category() is self.base_category()
+        ):
+            if source_morphism.parent() is self:
                 return source_morphism
-            case _FiniteAtlasInverseImageModuleMorphism():
-                raise TypeError(f"{source_morphism} belongs to another Mor; apply the functor between the categories")
-            case _:
-                pass
+            raise TypeError(f"{source_morphism} belongs to another Mor; apply the functor between the categories")
         source_mor = self.base_category().source_category().Mor(
             self.domain().source_sheaf(),
             self.codomain().source_sheaf(),
