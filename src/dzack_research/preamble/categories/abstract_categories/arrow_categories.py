@@ -2441,10 +2441,11 @@ class CoreMor(CategoricalMor):
         if inverse is None:
             forward, inverse = forward
         self._require_base_morphisms(forward, inverse)
-        # This is the public inverse-pair ingress: check both equations now.
-        # CategoricalIsomorphism's validator rejects a proved-false equation
-        # while retaining an undecided equality as a separate result.
-        return self.element_class(self, forward, lambda: inverse, verify=True)
+        # The inverse pair is the defining premise of this Mor construction.
+        # OWN-22 forbids re-proving it at construction; callers that derive an
+        # inverse use _from_known_inverse_pair, and explicit verification is a
+        # separate call to validate_inverse_pair(check=True).
+        return self.element_class(self, forward, lambda: inverse, verify=False)
 
     def _require_base_morphisms(self, forward: Morphism, inverse: Morphism) -> None:
         base = self.core_category().base_category()
