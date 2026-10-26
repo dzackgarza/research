@@ -383,20 +383,7 @@ def _category_parameter_signature(category: Category):
         if parameter is category:
             continue
         parameter_type = type(parameter)
-        # Parent-valued category parameters are semantic vertices of the
-        # category graph.  Their runtime class alone does not distinguish,
-        # for example, C/M from C/N when M and N are different owned modules.
-        # Falling through to Sage's creation counter for those siblings makes
-        # the order of a later C3 merge depend on which category was created
-        # first.  Keep the parameter alive through the category object and use
-        # its identity as the in-session tie-breaker; the counter remains only
-        # for genuinely indistinguishable graph keys.
-        signature = (
-            accessor,
-            parameter_type.__module__,
-            parameter_type.__qualname__,
-            ("parent-identity", id(parameter)) if isinstance(parameter, SageParent) else (),
-        )
+        signature = (accessor, parameter_type.__module__, parameter_type.__qualname__)
         # A fixed Mor is both a Category and a Sage Parent.  As a parameter it
         # is the parent object, just like any other ambient group or module;
         # its runtime type supplies the structural part and Sage's retained
@@ -518,18 +505,6 @@ class CatConstructionsMixin:
     ) -> type:
         if name == "subcategory_class":
             return self._subcategory_class_with_cat_constructions(method_provider, cache=cache, picklable=picklable)
-        if name in OwnedCategoryMixin._TIED_NAMED_CLASSES:
-            # CatConstructionsMixin precedes OwnedCategoryMixin for the
-            # parameterized categories and joins that need both.  Delegating
-            # through ``super()`` here therefore skips the owned tied-class
-            # builder, even though CategoryWithParameters calls this method by
-            # name and never reaches a later override.  Route the three object
-            # implementation classes through their actual owner before the
-            # generic Sage builder can reintroduce construction-order-sensitive
-            # C3 failures (notably FinitelyPresentedModules before free modules).
-            return OwnedCategoryMixin._make_named_class(
-                self, name, method_provider, cache=cache, picklable=picklable
-            )
         return super()._make_named_class(  # type: ignore[misc]
             name, method_provider, cache=cache, picklable=picklable
         )
