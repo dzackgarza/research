@@ -647,6 +647,43 @@ def declared_implementation_types(
     return declared[0], tuple(declared[1:])
 
 
+def _declared_category_linearization(category: Category) -> tuple[Category, ...]:
+    r"""C3-linearize the declared category graph without Sage's sort keys."""
+    cache = {}
+
+    def linearize(node):
+        known = cache.get(id(node))
+        if known is not None:
+            return known
+        parents = tuple(node.super_categories())
+        sequences = [list(linearize(parent)) for parent in parents]
+        sequences.append(list(parents))
+        merged = []
+        while any(sequences):
+            sequences = [sequence for sequence in sequences if sequence]
+            head = None
+            for sequence in sequences:
+                candidate = sequence[0]
+                if not any(
+                    any(candidate is tail for tail in other[1:])
+                    for other in sequences
+                ):
+                    head = candidate
+                    break
+            assert head is not None, (
+                f"the declared category graph of {node} has no C3 linearization: {sequences}"
+            )
+            merged.append(head)
+            for sequence in sequences:
+                if sequence[0] is head:
+                    sequence.pop(0)
+        result = (node, *merged)
+        cache[id(node)] = result
+        return result
+
+    return linearize(category)
+
+
 def _owned_implementation_bases(
     category: Category,
     provider_names: tuple[str, ...],
@@ -664,7 +701,7 @@ def _owned_implementation_bases(
     dynamic implementation classes.
     """
     bases: list[type] = []
-    for level in category._all_super_categories:
+    for level in _declared_category_linearization(category):
         provider, inherited = declared_implementation_types(
             type(level), provider_names
         )
