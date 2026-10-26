@@ -228,6 +228,14 @@ The probe prints `dzack_research.__file__`, and that path shows whether the
 worktree source was loaded. On 2026-10-07 a worker's first run of a protected test
 loaded the main checkout and so did not test its change.
 
+A subagent leaves no process running when it returns. It runs every probe,
+notebook execution and kernel in the foreground under `timeout`, runs only the
+notebooks its brief names, and trashes its runner scripts before it reports.
+Before returning it checks that no process using its scratch files is left.
+On 2026-10-27 a porting worker returned with a `.tmp/run_nb.py` loop still
+executing an unassigned notebook. That loop started about twelve kernels at a
+time and held the host at full CPU after the worker had returned.
+
 Only the orchestrating agent:
 
 - decides whether the delivered work is accepted;
