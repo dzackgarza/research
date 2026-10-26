@@ -730,6 +730,20 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         # even though sageparse also makes top-level .sage files importable.
         if relative.suffix not in (".py", ".sage"):
             continue
+        root_is_package = (root / "__init__.py").is_file() or (root / "__init__.sage").is_file()
+        if root_is_package and relative.name not in ("__init__.py", "__init__.sage"):
+            # This sys.path entry is itself a package directory. Names derived
+            # relative to it omit that package's qualified prefix; probing
+            # them with find_spec can import the same source under a second
+            # top-level alias before a broader sys.path root is considered.
+            # Let a broader root resolve the source without executing this
+            # short alias. If none exists, fail closed below.
+            parts = list(relative.with_suffix("").parts)
+            if parts and all(part.isidentifier() for part in parts):
+                candidate = ".".join(parts)
+                if unresolved_package_source is None or len(parts) > unresolved_package_source[1]:
+                    unresolved_package_source = (candidate, len(parts))
+            continue
         if len(relative.parts) == 1 and relative.name not in ("__init__.py", "__init__.sage"):
             # A source at the root of a package directory is a package module,
             # but this sys.path entry alone omits the package's parent name.
