@@ -2294,7 +2294,11 @@ class _WideSubcategory(OwnedCategoryBase):
 
 
 class CoreMor(CategoricalMor):
-    Element = CategoricalIsomorphism
+    # The isomorphism implementation is an arrow-method provider.  The
+    # concrete arrow class is generated from this Mor's declared category
+    # graph, so its instances are actual elements of the selected Mor rather
+    # than instances of a parallel handwritten host class.
+    ElementMethods = CategoricalIsomorphism
 
     def _cardinality_decision(self):
         r"""``|Iso_C(X, Y)|``, this realization of the ``Sets`` and ``OwnedGroups`` cardinality hook.
