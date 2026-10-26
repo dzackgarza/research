@@ -338,7 +338,32 @@ class ModuleMorphismMethods:
         source_morphism = self._source_module_morphism
         if source_morphism is not None:
             return source_morphism.linearity_decision()
+        derivation = getattr(self, "_originating_derivation", None)
+        if derivation is not None:
+            return derivation.linearity_decision()
         return None
+
+    def derivation(self):
+        r"""Return the derivation whose underlying linear arrow this is, when recorded."""
+        try:
+            return self._originating_derivation
+        except AttributeError:
+            raise AttributeError(f"{self} is not marked as the underlying arrow of a derivation") from None
+
+    def degree_shift(self):
+        r"""Return the recorded graded-derivation degree when this arrow has one."""
+        try:
+            return self._originating_derivation.degree_shift()
+        except AttributeError:
+            raise AttributeError(f"{self} has no originating graded derivation") from None
+
+    def _repr_(self):
+        derivation = getattr(self, "_originating_derivation", None)
+        if derivation is None:
+            return super()._repr_()
+        if hasattr(derivation, "degree_shift"):
+            return f"Degree {derivation.degree_shift()} graded derivation of {derivation.algebra()}"
+        return f"Derivation {derivation.domain()} -> {derivation.codomain()}"
 
     def _generator_image_linearity_derivation(self):
         r"""The linearity decision of a map given by images of a chosen generating set.
@@ -962,6 +987,9 @@ class ModuleMorphismMethods:
         return hash(id(self.parent()))
 
     def __rmul__(self, actor):
+        derivation = getattr(self, "_originating_derivation", None)
+        if derivation is not None:
+            return derivation.parent().algebra_multiple(actor, self)
         # A specialized right operand such as a module embedding gets reflected
         # multiplication before Python tries the less-specialized left
         # ModuleMorphism.__mul__.  In that case the operation is composition,
@@ -983,6 +1011,12 @@ class ModuleMorphismMethods:
 
     def _acted_upon_(self, actor, self_on_left):
         r"""Use the canonical pointwise scalar action of the Mor module."""
+        derivation = getattr(self, "_originating_derivation", None)
+        if derivation is not None:
+            try:
+                return derivation.parent().algebra_multiple(actor, self)
+            except (TypeError, ValueError):
+                return None
         _ = self_on_left
         match actor:
             case _ if actor in self.parent().base_ring():
