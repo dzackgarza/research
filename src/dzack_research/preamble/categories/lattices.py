@@ -4712,8 +4712,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"{self!r} has no Nikulin invariant delta: delta is defined for an even 2-elementary lattice, and {self!r} is not both even and 2-elementary"
                 )
-            discriminant_form = self.discriminant_quadratic_form()
             ring = self.base_ring()
+            if self.is_unimodular() is True:
+                return ring.zero()
+            discriminant_form = self.discriminant_quadratic_form()
             if discriminant_form.is_zero():
                 return ring.zero()
             return ring(
@@ -6195,6 +6197,11 @@ class Lattices(OwnedCategoryOverBaseRing):
                 raise ValueError(
                     f"cannot decide whether {self!r} is p-elementary for p = {prime}: {prime} is not prime"
                 )
+            if self.is_unimodular() is True:
+                # A unimodular lattice has trivial discriminant group, so its
+                # p-elementarity is immediate for every prime. Avoid building
+                # the correlation cokernel merely to enumerate no invariants.
+                return True
             invariants = tuple(
                 abs(invariant)
                 for invariant in self.correlation_morphism().cokernel().invariant_factors()
@@ -8667,6 +8674,10 @@ class EvenTwoElementaryLattices(OwnedCategoryOverBaseRing):
         ]
 
     class ParentMethods:
+        def delta(self):
+            r"""Return Nikulin's invariant on the even 2-elementary lattice surface."""
+            return Lattices.ParentMethods.delta(self)
+
         def two_elementary_invariants(self):
             r"""Return Nikulin's \((r,a,\delta)\) for an even 2-elementary lattice.
 

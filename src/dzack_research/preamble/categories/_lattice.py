@@ -356,18 +356,32 @@ def _gram_axiom_categories(lattices, gram):
     """
     ring = lattices.base_ring()
     placement = lattices
-    match _gram_rank(gram).is_finite():
-        case True:
-            placement = placement.FinitelyGenerated()
-    match _gram_is_nondegenerate(gram, ring):
-        case True:
-            placement = placement.Nondegenerate()
-            match _gram_is_unimodular(gram, ring):
-                case True:
-                    placement = placement.Unimodular()
-    match _gram_is_even(gram, ring):
-        case True:
-            placement = placement.Even()
+    finite_rank = _gram_rank(gram).is_finite()
+    if finite_rank:
+        placement = placement.FinitelyGenerated()
+    nondegenerate = _gram_is_nondegenerate(gram, ring)
+    unimodular = _gram_is_unimodular(gram, ring) if nondegenerate is True else False
+    even = _gram_is_even(gram, ring)
+    if nondegenerate is True:
+        placement = placement.Nondegenerate()
+        if unimodular is True:
+            placement = placement.Unimodular()
+    if even is True:
+        placement = placement.Even()
+    if (
+        _engine_ring(ring) is SageZZ
+        and finite_rank
+        and nondegenerate is True
+        and unimodular is True
+        and even is True
+    ):
+        # A unimodular discriminant group is trivial, hence 2-elementary.
+        # Record that stronger mathematical surface explicitly so operations
+        # such as Nikulin's delta are supplied by their defining category even
+        # when the generic even/unimodular join's flattened providers omit it.
+        from dzack_research.preamble.categories.lattices import EvenTwoElementaryLattices
+
+        return placement, EvenTwoElementaryLattices(ring)
     return () if placement is lattices else (placement,)
 
 
