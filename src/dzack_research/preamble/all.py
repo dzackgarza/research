@@ -840,8 +840,15 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             if len(parts) > module_depth:
                 module_name = candidate
                 module_depth = len(parts)
-        elif conflicting_source is None:
-            conflicting_source = (candidate, _Path(spec.origin).resolve(), package_parent)
+        else:
+            # A shallow alias conflict must not hide a more-qualified package
+            # conflict discovered through another sys.path root. Prefer the
+            # strongest ownership evidence, then the longest module name.
+            conflict = (candidate, _Path(spec.origin).resolve(), package_parent, len(parts))
+            if conflicting_source is None or (
+                package_parent and not conflicting_source[2]
+            ) or (package_parent == conflicting_source[2] and len(parts) > conflicting_source[3]):
+                conflicting_source = conflict
     if module_name is not None:
         # The importer is the sole owner of module execution and identity.
         # Reloading here would recreate classes in the same module object while
