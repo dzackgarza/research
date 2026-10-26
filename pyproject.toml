@@ -4,7 +4,7 @@ version = "0.1.1"
 requires-python = ">=3.14"
 dependencies = [
     "haystack-ai>=2.31.0",
-    "pandoc-config @ https://github.com/dzackgarza/pandoc-config/archive/b567314b56b11326fdba05041afdccd11adee5b3.tar.gz",
+    "pandoc-config @ git+https://github.com/dzackgarza/pandoc-config",
     "python-dotenv>=1.2.2",
     "sage-julia-bridge @ git+https://github.com/dzackgarza/sage-julia-bridge",
     "sage-categories",
@@ -35,7 +35,7 @@ dzack_research = ["py.typed"]
 [tool.uv.sources]
 sage-stubs = { git = "https://github.com/dzackgarza/sage-stubs.git" }
 tree-sitter-sage = { git = "https://github.com/dzackgarza/tree-sitter-sage" }
-sage-categories = { git = "https://github.com/dzackgarza/sage-categories.git", rev = "484727f4f9605836ba409962e0c750c9366d3312" }
+sage-categories = { git = "https://github.com/dzackgarza/sage-categories.git" }
 
 # The category packages sage-mypy-category-plugin projects for the Sage QC
 # tier's mypy run: the preamble's categories, built through Sage's runtime.
