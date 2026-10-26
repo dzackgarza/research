@@ -789,12 +789,13 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             imported = _import_module(candidate)
             module_name = candidate
             break
-    if module_name is None and import_candidate is not None and source.suffix == ".sage":
+    if module_name is None and import_candidate is not None:
         # The path was under an import root and has a valid module-shaped
-        # name, but the canonical finder did not select it.  Falling back to
-        # exec-into-scope here is precisely the second loading route that
-        # duplicates category/module classes.  Keep legacy loading for truly
-        # non-importable scripts, but fail closed for a package-source path.
+        # name, but the canonical importer did not select that exact file.
+        # Falling back to exec-into-scope for either .py or .sage package
+        # source is precisely the second loading route that duplicates
+        # category/module classes.  Keep legacy loading only for genuinely
+        # non-importable session scripts.
         raise ImportError(
             f"{source} is under an import root but is not the canonical source "
             f"for {import_candidate!r}; import the module selected by sageparse instead"
