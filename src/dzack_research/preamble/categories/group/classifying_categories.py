@@ -25,8 +25,8 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
-class ClassifyingMorphism(Morphism):
-    r"""An arrow of ``BG``, named by its group element."""
+class ClassifyingMorphism(CategoricalMor.ElementMethods):
+    r"""Methods for a generated arrow of ``BG``, named by its group element."""
 
     def __init__(self, parent, group_element) -> None:
         self._group_element = parent.mor_category().group()(group_element)
@@ -57,7 +57,7 @@ class ClassifyingMorphism(Morphism):
 class ClassifyingMor(CategoricalMor):
     r"""The single Mor object of ``BG``."""
 
-    Element = ClassifyingMorphism
+    ElementMethods = ClassifyingMorphism
 
     def _element_constructor_(self, datum):
         if isinstance(datum, ClassifyingMorphism):
