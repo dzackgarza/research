@@ -1200,7 +1200,7 @@ class Cat(CategoryPacketMethods, Category):
         return "Cat: categories with functors as morphisms"
 
 
-class NaturalTransformationMorphism(CategoricalArrow):
+class NaturalTransformationMorphism(CategoricalArrow, Element):
     r"""A natural transformation as a morphism in a functor category."""
 
     def __init__(

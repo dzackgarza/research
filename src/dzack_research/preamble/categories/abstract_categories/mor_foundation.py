@@ -68,7 +68,7 @@ class OwnedMor(SageHomset):
         return self.identity()
 
 
-class CategoricalArrow(Element):
+class CategoricalArrow:
     r"""An arrow with its actual categorical endpoints.
 
     Sage's ``Map`` stores endpoints as ``Parent`` instances. Objects of a
@@ -76,6 +76,9 @@ class CategoricalArrow(Element):
     Mor category. This realization stores only the Mor parent and reads its
     endpoints without replacing them by auxiliary objects.
     """
+
+    def __init__(self, parent: Parent) -> None:
+        Element.__init__(self, parent)
 
     def domain(self):
         return self.parent().domain()
@@ -449,4 +452,3 @@ class CategoryPacketMethods(_CategoryPacketOperations):
         from dzack_research.preamble.categories.abstract_categories.cat import Cat
 
         return Cat().Aut(self)
-
