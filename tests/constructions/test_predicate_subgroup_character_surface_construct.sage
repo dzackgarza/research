@@ -19,7 +19,7 @@ def test_enriques_coinvariant_group_has_complete_character_kernel_data() -> None
     cosets = group.coset_space()
     assert cosets in FiniteGSets(group.supergroup())
     assert cosets.cardinality() == cardinal(
-        len(quotient.image_keys()) // len(quotient.subgroup_image_keys())
+        int(quotient.image_keys().cardinality()) // int(quotient.subgroup_image_keys().cardinality())
     )
     assert cosets.projection().codomain() is cosets
     schreier = cosets.schreier_generating_morphism()
