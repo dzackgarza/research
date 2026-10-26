@@ -251,14 +251,23 @@ def _engine_coordinate_pullback_of(native, domain_algebra, codomain_algebra):
             )
 
 
+@cached_function(
+    key=lambda engine_polynomial_ring, base: (
+        id(base),
+        tuple(engine_polynomial_ring.variable_names()),
+    )
+)
 def _engine_polynomial_algebra(engine_polynomial_ring, base):
     r"""The owned polynomial algebra over ``base`` whose engine is a Sage polynomial ring.
 
     Affine and projective spaces present their coordinates through Sage's
     polynomial rings; this is the one place such a ring is raised to the owned
-    free, graded free and symmetric algebra it is.  It is the symmetric
-    algebra over the owned ``base`` itself: raising the engine's own base
-    ring a second time would give a different scalar ring.
+    free, graded free and symmetric algebra it is.  Cache by the owned base
+    identity and ordered variable names, rather than by the engine ring's
+    equality: repeated adapters for the same coordinate presentation must
+    retain one selected variable set and hence one symmetric-algebra parent.
+    It is the symmetric algebra over the owned ``base`` itself: raising the
+    engine's own base ring a second time would give a different scalar ring.
     """
     algebra = _symmetric_algebra_on(
         base, tuple(engine_polynomial_ring.variable_names())
