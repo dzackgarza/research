@@ -450,7 +450,16 @@ class _OwnedCategoryComparisonKey:
         # It temporarily stores them on the instance; the assignment below
         # immediately replaces that value with the owned structural key.
         native_descriptor = Category.__dict__["_cmp_key"]
-        flags, session_counter = native_descriptor.__get__(category, type(category))
+        # Sage's CmpKey descriptor reads the instance's current key when
+        # called explicitly. Once we install the packed owned key, asking the
+        # descriptor again would reinterpret that packed word as Sage flags.
+        # Retain the native pair on first access and reuse it for every later
+        # access to this descriptor.
+        native_pair = getattr(category, "_owned_native_cmp_pair", None)
+        if native_pair is None:
+            native_pair = native_descriptor.__get__(category, type(category))
+            category._owned_native_cmp_pair = tuple(native_pair)
+        flags, session_counter = native_pair
         # The comparison key is stored permanently on this category below.
         # Retain the graph inputs at exactly that boundary: caching them before
         # the key is fixed would freeze a category whose construction has not
