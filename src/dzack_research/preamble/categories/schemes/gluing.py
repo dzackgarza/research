@@ -5364,8 +5364,8 @@ class _FiniteAtlasModuleCechPresheaf(_ModuleGluingCechPresheaf):
         return f"Finite-atlas Čech presheaf of {self.gluing_datum()}"
 
 
-class ModuleGluingMorphism(Morphism):
-    r"""A morphism between module descent data on one represented affine cover."""
+class ModuleGluingMorphismMethods(CategoricalMor.ElementMethods):
+    r"""Methods for a generated morphism between module descent data on one affine cover."""
 
     def __init__(self, parent, local_maps) -> None:
         super().__init__(parent)
@@ -5495,7 +5495,7 @@ class ModuleGluingMorphism(Morphism):
 class ModuleGluingMor(CategoricalMor):
     r"""The fixed Mor category between two module descent data on one cover."""
 
-    Element = ModuleGluingMorphism
+    ElementMethods = ModuleGluingMorphismMethods
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.cover() is not codomain.cover():
@@ -5507,7 +5507,10 @@ class ModuleGluingMor(CategoricalMor):
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps):
-        if isinstance(local_maps, ModuleGluingMorphism):
+        if (
+            isinstance(local_maps, CategoricalMor.ElementMethods)
+            and local_maps.parent().base_category() is self.base_category()
+        ):
             if local_maps.domain() is not self.domain() or local_maps.codomain() is not self.codomain():
                 raise ValueError(
                     f"cannot make {local_maps} a morphism {self.domain()} -> {self.codomain()}: it is a "
@@ -7615,7 +7618,6 @@ __all__ = [
     "FiniteAtlasModuleTransition",
     "ModuleGluingData",
     "ModuleGluingMor",
-    "ModuleGluingMorphism",
     "SemilinearAlgebraMorphism",
     "SemilinearModuleMorphism",
 ]
