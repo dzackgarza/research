@@ -5334,70 +5334,42 @@ class Lattices(OwnedCategoryOverBaseRing):
 
             fraction_field = ring.fraction_field()
             dual_gram = self.gram_tensor().change_ring(fraction_field).dual_pairing()
-            rank = int(self.module_rank())
-            match all(
-                dual_gram[row, column] in ring
-                for row in range(rank)
-                for column in range(rank)
-            ):
-                case True:
-                    integral_dual_form = tensor(
-                        ring,
-                        (),
-                        (rank, rank),
-                        [
-                            [ring(dual_gram[row, column]) for column in range(rank)]
-                            for row in range(rank)
-                        ],
-                    )
-                    return Lattices(ring)(
-                        integral_dual_form,
-                        module_generators=self.module_generating_set(),
-                    )
-                case False:
-                    # The metric dual is still an R-module.  Its values
-                    # lie in Res_{R -> K}(K), an R-module selected by the
-                    # fraction-field map, not in a second, untyped
-                    # callable-form space over the bare ring K.
-                    value_module = Modules(fraction_field).restriction_of_scalars(
-                        ring.fraction_field_map()
-                    )(fraction_field)
-                    dual_module = self.dual_module()
-                    # ``dual_gram`` is a tensor over Frac(R), on the
-                    # fraction-field extension of the dual basis.  It is not
-                    # an element of Hom_R(dual_module tensor_R dual_module,
-                    # Res_{R -> Frac(R)} Frac(R)): these are different tensor
-                    # parents.  Transfer its coefficients through the selected
-                    # R-basis by stating the bilinear evaluation in the actual
-                    # R-module Hom parent.
-                    # The inverse Gram is indexed by the original lattice
-                    # basis.  The owned dual module is the free coordinate
-                    # module on those same labels; its selected basis vectors
-                    # represent the corresponding dual basis functionals, but
-                    # the vectors themselves are not callable functionals.
-                    labels = tuple(self.module_generating_set())
+            # The dual lattice has one value type in every case: the selected
+            # restriction-of-scalars module Res_{R -> K}(K).  Even when every
+            # inverse-Gram entry lies in R (notably for unimodular lattices),
+            # returning an R-valued form here gives its norm a different
+            # interface and breaks generic descent through ``underlying_element``.
+            value_module = Modules(fraction_field).restriction_of_scalars(
+                ring.fraction_field_map()
+            )(fraction_field)
+            dual_module = self.dual_module()
+            # ``dual_gram`` is a tensor over Frac(R), on the fraction-field
+            # extension of the dual basis. Transfer its coefficients through
+            # the selected R-basis by stating the bilinear evaluation in the
+            # actual R-module Hom parent.
+            labels = tuple(self.module_generating_set())
 
-                    def rational_pairing(left, right):
-                        left_coordinates = left.to_vector()
-                        right_coordinates = right.to_vector()
-                        return value_module(sum(
-                            (
-                                fraction_field(left_coordinates(left_label))
-                                * dual_gram[row, column]
-                                * fraction_field(right_coordinates(right_label))
-                                for row, left_label in enumerate(labels)
-                                for column, right_label in enumerate(labels)
-                            ),
-                            fraction_field.zero(),
-                        ))
+            def rational_pairing(left, right):
+                left_coordinates = left.to_vector()
+                right_coordinates = right.to_vector()
+                return value_module(sum(
+                    (
+                        fraction_field(left_coordinates(left_label))
+                        * dual_gram[row, column]
+                        * fraction_field(right_coordinates(right_label))
+                        for row, left_label in enumerate(labels)
+                        for column, right_label in enumerate(labels)
+                    ),
+                    fraction_field.zero(),
+                ))
 
-                    rational = dual_module.bilinear_hom_space(value_module)._from_bilinear_evaluation(
-                        rational_pairing
-                    )
-                    return FormModules(ring)(
-                        rational,
-                        _extra_categories=(FormModules(ring).Nondegenerate(), BilinearFormModules(ring).Symmetric()),
-                    )
+            rational = dual_module.bilinear_hom_space(value_module)._from_bilinear_evaluation(
+                rational_pairing
+            )
+            return FormModules(ring)(
+                rational,
+                _extra_categories=(FormModules(ring).Nondegenerate(), BilinearFormModules(ring).Symmetric()),
+            )
 
         @cached_method
         def dual_lattice_to_linear_dual(self):
