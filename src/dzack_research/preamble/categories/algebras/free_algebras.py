@@ -2338,10 +2338,9 @@ class FramedFreeAlgebraMorphism:
         return self._images
 
     def algebra_generator_morphism(self):
-        return SetMorphism(
-            Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
-            self._images.value,
-        )
+        return Sets().Mor(
+            self.domain().algebra_generating_set(), self.codomain()
+        )(self._images.value)
 
     def _tensor_terms(self, element):
         domain = self.domain()

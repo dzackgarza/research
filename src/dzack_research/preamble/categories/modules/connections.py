@@ -4,7 +4,6 @@ from collections.abc import Mapping
 
 from sage.categories.category import Category
 from sage.categories.category_with_axiom import all_axioms
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.integer_ring import ZZ as SageZZ
 from sage.structure.element import Element
@@ -625,10 +624,7 @@ class ConnectionSpace(RestrictedMorCategoryParent):
         # this restricted Mor when it lies in that recorded image.
         self._underlying_arrows = {}
         self._inclusion_preimages = {}
-        self._inclusion = SetMorphism(
-            Sets().Mor(self, self.arrow_set()),
-            self._underlying_arrow,
-        )
+        self._inclusion = Sets().Mor(self, self.arrow_set())(self._underlying_arrow)
 
     def _underlying_arrow(self, connection):
         arrow = self._underlying_arrows.get(id(connection))

@@ -12,7 +12,7 @@ from collections.abc import Mapping
 
 from sage.categories.map import Map
 from sage.categories.action import Action
-from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.misc.classcall_metaclass import typecall
 from sage.structure.element import ModuleElement, parent
@@ -646,11 +646,10 @@ class DerivationSpace(RestrictedMorCategoryParent):
     def algebra_action(self):
 
         endomorphisms = Modules(self.algebra()).End(self)
-        return SetMorphism(
-            self.algebra().Mor(endomorphisms),
+        return self.algebra().Mor(endomorphisms)._from_constructed_element_map(
             lambda scalar: endomorphisms.elementwise(
                 lambda derivation: self.algebra_multiple(scalar, derivation)
-            ),
+            )
         )
 
     scalar_action = algebra_action

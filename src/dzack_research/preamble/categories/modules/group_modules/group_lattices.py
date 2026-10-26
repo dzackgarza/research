@@ -7,7 +7,6 @@ whenever ``S`` is a group algebra; the constructor is
 ``Lattices(R[G])(L, action)``.
 """
 
-from sage.categories.morphism import SetMorphism
 from sage.misc.cachefunc import cached_method
 
 from dzack_research.preamble.categories.abstract_categories.mor_categories import (
@@ -239,11 +238,10 @@ class LatticesOverGroupAlgebra(OwnedCategoryOverBaseRing):
                 )
 
             orthogonal_group = self.Aut()
-            action = SetMorphism(
-                Sets().Mor(group, orthogonal_group),
+            action = Sets().Mor(group, orthogonal_group)(
                 lambda group_element: orthogonal_group(
                     lambda label: transported_image(group_element, label)
-                ),
+                )
             )
             assert group.has_selected_group_resolution()
             for group_generator in group.group_generators():

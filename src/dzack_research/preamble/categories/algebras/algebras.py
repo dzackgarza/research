@@ -3911,10 +3911,9 @@ class AlgebraMorphism:
             f"{self} has no images of algebra generators: its domain {self.domain()} has no chosen "
             "algebra generators"
         )
-        return SetMorphism(
-            Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
-            self._generator_images.value,
-        )
+        return Sets().Mor(
+            self.domain().algebra_generating_set(), self.codomain()
+        )(self._generator_images.value)
 
     def algebra_generator_images(self):
         assert self._generator_images is not None, (
@@ -4153,10 +4152,9 @@ class PresentedAlgebraMorphism:
         self.validate_presentation_relations(check=False)
 
     def algebra_generator_morphism(self):
-        return SetMorphism(
-            Sets().Mor(self.domain().algebra_generating_set(), self.codomain()),
-            self._generator_images.value,
-        )
+        return Sets().Mor(
+            self.domain().algebra_generating_set(), self.codomain()
+        )(self._generator_images.value)
 
     def algebra_generator_images(self):
         return self._generator_images

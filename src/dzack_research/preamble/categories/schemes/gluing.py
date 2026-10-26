@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from itertools import combinations, permutations
 
 from sage.categories.category import Category
-from sage.categories.morphism import Morphism, SetMorphism
+from sage.categories.morphism import Morphism
 from sage.misc.cachefunc import cached_method
 from sage.structure.element import parent as element_parent
 from sage.structure.richcmp import op_EQ, op_NE
@@ -6233,11 +6233,8 @@ class _AlgebraGluingCechPresheaf(Functor):
         mor = _algebra_mor(source, target)
         if source_label == target_label:
             return mor.identity()
-        return mor(
-            SetMorphism(
-                Sets().Mor(source, target),
-                lambda element: self._restriction_value(source_label, target_label, element),
-            )
+        return mor._from_constructed_element_map(
+            lambda element: self._restriction_value(source_label, target_label, element)
         )
 
     def _repr_(self):
@@ -6324,7 +6321,7 @@ class AlgebraGluingMorphism(CategoricalMor.ElementMethods):
                 )
             )
 
-        return _algebra_mor(source, target)(SetMorphism(Sets().Mor(source, target), image))
+        return _algebra_mor(source, target)._from_constructed_element_map(image)
 
     def relative_spectrum_morphism(self):
         r"""Return the contravariant morphism of relative spectra induced by this algebra map."""
