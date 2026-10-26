@@ -5369,9 +5369,10 @@ class Lattices(OwnedCategoryOverBaseRing):
                     # R-basis by stating the bilinear evaluation in the actual
                     # R-module Hom parent.
                     # The inverse Gram is indexed by the original lattice
-                    # basis: its entries pair the dual basis functionals
-                    # corresponding to those labels.  The dual module's own
-                    # generators are functionals, not labels of L's basis.
+                    # basis.  The owned dual module is the free coordinate
+                    # module on those same labels; its selected basis vectors
+                    # represent the corresponding dual basis functionals, but
+                    # the vectors themselves are not callable functionals.
                     labels = tuple(self.module_generating_set())
 
                     def rational_pairing(left, right):
