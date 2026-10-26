@@ -839,6 +839,24 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     conflicting_source = None
     unresolved_package_source = None
     loaded_source_modules = []
+
+    def is_canonical_source(module_file: str | _Path) -> bool:
+        try:
+            resolved = _Path(module_file).resolve()
+        except (OSError, RuntimeError, TypeError, ValueError):
+            return False
+        if resolved == source:
+            return True
+        # sageparse gives a generated sibling .py precedence over its .sage
+        # source. Treat that pair as one source identity during the loaded
+        # module scan, or the compiled artifact can evade duplicate detection.
+        return (
+            source.suffix == ".sage"
+            and resolved.suffix == ".py"
+            and resolved.parent == source.parent
+            and resolved.stem == source.stem
+        )
+
     # Existing module identity outranks the current sys.path interpretation:
     # paths can be inserted or reordered after import, but that must not make
     # ``load(source)`` choose a second name for the same already-loaded file.
@@ -849,11 +867,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         module_file = getattr(module, "__file__", None)
         if module_file is None:
             continue
-        try:
-            same_source = _Path(module_file).resolve() == source
-        except (OSError, RuntimeError, TypeError, ValueError):
-            continue
-        if same_source:
+        if is_canonical_source(module_file):
             loaded_source_modules.append((name, module))
             if (
                 name.count(".") > module_depth
