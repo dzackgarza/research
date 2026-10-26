@@ -3358,7 +3358,7 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
         r"""Return Sage's private orthogonal-group engine when it is exact.
 
         The public group remains this Mor of live lattice isometries.  Sage's
-        ``GroupOfIsometries`` is used only to compute the finite group ``O(L)``
+        ``GroupOfIsometries`` retains the finite group ``O(L)`` computed by OSCAR
         of a definite lattice of finite rank over ``ZZ``
         (``orthogonalGroup_finite``); its matrices act on row vectors, hence
         are transposed when converted to this Mor's column-image convention.
@@ -3386,16 +3386,15 @@ class LatticeIsometryMor(LatticeEmbeddingMor, CoreMor):
             return MatrixGroup(tuple(engine_matrix(ring, [[solution]]) for solution in solutions if solution != ring.one()))
         self._assert_definite_over_integers("compute")
         from sage.modules.free_quadratic_module_integer_symmetric import IntegralLattice
+        from dzack_research.preamble.categories.lattice_engines import _oscar_lattices
 
         gram = _engine_component_matrix(lattice.gram_tensor()).change_ring(SageZZ)
         signature = lattice.signature_pair()
         if signature.first() == lattice.base_ring().zero() and signature.second() != lattice.base_ring().zero():
             gram = -gram
-        engine = IntegralLattice(gram).orthogonal_group()
-        # PARI's ``qfauto`` (Plesken--Souvignier) returns |O(L)| with the
-        # generators; GAP would otherwise recompute the order of the matrix
-        # group by an orbit algorithm.  TRAPS.md records both wall times.
-        engine.gap().SetSize(SageZZ(QuadraticForm(SageZZ, 2 * gram).number_of_automorphisms()))
+        order, generators = _oscar_lattices.definite_isometry_group(lattice.gram_tensor())
+        engine = IntegralLattice(gram).orthogonal_group(gens=list(generators), is_finite=True)
+        engine.gap().SetSize(order)
         return engine
 
     def _from_engine(self, _engine_element):

@@ -934,6 +934,12 @@ function definite_minimum(gram_entries)
     return ZZ(Oscar.Hecke.minimum(lattice))
 end
 
+function definite_isometry_group(gram_entries)
+    lattice = integer_lattice(; gram=change_base_ring(QQ, _zz_matrix(gram_entries)))
+    group = isometry_group(lattice)
+    return order(group), [matrix(generator) for generator in gens(group)]
+end
+
 function square_shell(gram_entries, square)
     gram = _zz_matrix(gram_entries)
     lattice = integer_lattice(; gram=change_base_ring(QQ, gram))
@@ -1112,6 +1118,21 @@ class _OscarLatticeAdapter:
             "DzackResearchOscarLatticeAdapter.definite_minimum",
             _integer_engine_matrix(gram),
         ))
+
+    def definite_isometry_group(self, gram):
+        r"""Return the order and row-action generators of a definite ZZ-lattice.
+
+        Oscar 1.8.2, src/Groups/matrices/isometry_group.jl:20-63,
+        computes the full group using Plesken--Souvignier or a decomposition
+        into invariant sublattices.  Both return matrices in the ambient
+        basis, which here is the supplied Gram basis.
+        https://github.com/oscar-system/Oscar.jl/blob/v1.8.2/src/Groups/matrices/isometry_group.jl
+        """
+        order, generators = self._bridge().call(
+            "DzackResearchOscarLatticeAdapter.definite_isometry_group",
+            _integer_engine_matrix(gram),
+        )
+        return SageZZ(order), tuple(generator.change_ring(SageZZ) for generator in generators)
 
     def square_shell(self, gram, square):
         r"""Return one coordinate row per sign pair of nonzero square vectors."""
