@@ -405,98 +405,47 @@ def _stable_signature_integer(signature) -> int:
     return int.from_bytes(digest, "big")
 
 
+def _category_provider_order_key(category: Category):
+    r"""Order category providers without modifying Sage's native ``_cmp_key``.
+
+    The controlled C3 merge requires a strict provider order, with each strict
+    subcategory before its supercategories. Sage's first native CmpKey field is
+    semantic flag data inherited by bitwise OR, so this structural ordering is
+    deliberately kept separate. Graph depth gives the edge order; graph and
+    parameter signatures distinguish incomparable and parameterized providers;
+    Sage's original session counter is the final tie-breaker.
+    """
+    return (
+        -_category_graph_depth(category),
+        repr((_category_graph_signature(category), _category_parameter_signature(category))),
+        category._cmp_key[1],
+    )
+
+
 class _OwnedCategoryComparisonKey:
     r"""Deterministic ``_cmp_key`` for owned categories.
 
-    Sage's native ``CmpKey`` is a C-level pair of signed C longs
-    ``(flags, counter)``.  Its first component must remain an integer-sized flag
-    word; a Python-sized structural integer in that slot raises
-    ``OverflowError``.  The flags carry Sage's semantic conventions, but are
-    not monotone on every preamble category edge.  Pack the owned graph depth
-    above Sage's low 32 flag bits in a bounded C-long word, with an owned floor
-    above native category flags.  A bounded digest of the full graph and
-    parameter signature resolves siblings; the session counter breaks the
-    unlikely digest collision and preserves distinct parameterized instances.
+    Sage's native ``CmpKey`` is a C-level pair ``(flags, counter)``. Its first
+    component is a C ``int`` assembled by OR-ing the *native flags of direct
+    supercategories*. It must never be replaced by an owned ordering key:
+    descendants inherit that first component as their own flags. The native
+    descriptor already supplies the correct pair; provider linearization uses
+    a separate controlled ordering below.
 
-    The structural integer does not separate two categories of one family whose
-    parameter is an object rather than a category: ``C/X`` and ``C/Y`` have the
-    same declaring class, the same supercategory ``C`` and the same base
-    category.  Sage's C3 merge (``C3_sorted_merge`` in
-    ``sage/misc/c3_controlled.pyx``) keys its tails by ``_cmp_key``, so two such
-    categories in one join -- an object of ``C/X`` and of ``C/Y`` at once --
-    need distinct keys.  Sage's session counter is kept as the last component;
-    it orders only categories whose structural keys agree.
-
-    This is a non-data descriptor.  Its first use writes the resulting tuple to
-    the category instance, exactly as Sage's Cython descriptor does, after which
-    normal instance lookup is the fast path.
+    This descriptor returns Sage's original native pair unchanged. Provider
+    order is computed separately by :func:`_category_provider_order_key`, where
+    the full parameter signature and native session counter distinguish
+    parameterized categories sharing the same implementation graph.
     """
-
-    # CmpKey's flags field is a C ``int`` (not an arbitrary Python integer),
-    # while its second counter field is a C ``long``. Reserve 21 low bits for
-    # Sage's current category flag bit-vector and use the remaining signed-int
-    # bits for the owned depth. Reject a future Sage flag expansion rather than
-    # silently aliasing distinct flag vectors.
-    _DEPTH_SHIFT = 21
-    _FLAG_MASK = (1 << _DEPTH_SHIFT) - 1
-    _OWNED_FLOOR = 1 << _DEPTH_SHIFT
-    _MAX_DEPTH = (1 << (31 - _DEPTH_SHIFT)) - 2
-    _STRUCTURAL_MASK = (1 << 62) - 1
 
     def __get__(self, category: Category | None, owner=None):
         if category is None:
             return self
-        # Ask Sage's original descriptor for the flags and its session counter.
-        # It temporarily stores them on the instance; the assignment below
-        # immediately replaces that value with the owned structural key.
+        # Preserve Sage's native C-int flags and C-long session counter exactly.
+        # The category graph's provider order is controlled separately and must
+        # not be encoded into this inherited native flag field.
         native_descriptor = Category.__dict__["_cmp_key"]
-        # Sage's CmpKey descriptor reads the instance's current key when
-        # called explicitly. Once we install the packed owned key, asking the
-        # descriptor again would reinterpret that packed word as Sage flags.
-        # Retain the native pair on first access and reuse it for every later
-        # access to this descriptor.
-        native_pair = category.__dict__.get("_owned_native_cmp_pair")
-        if native_pair is None:
-            native_pair = native_descriptor.__get__(category, type(category))
-            category._owned_native_cmp_pair = tuple(native_pair)
-        flags, session_counter = native_pair
-        # The comparison key is stored permanently on this category below.
-        # Retain the graph inputs at exactly that boundary: caching them before
-        # the key is fixed would freeze a category whose construction has not
-        # yet finished, while recomputing them afterward cannot change the key.
-        depth = _category_graph_depth(category)
-        graph_signature = _category_graph_signature(category)
-        category._owned_graph_depth = depth
-        category._owned_graph_signature = graph_signature
-        direct_graph = getattr(category, "_owned_direct_supercategories", None)
-        category._owned_graph_supercategories = (
-            tuple(category.super_categories())
-            if direct_graph is None
-            else direct_graph()
-        )
-        parameter_signature = _category_parameter_signature(category)
-        category._owned_parameter_signature = parameter_signature
-        signature = (
-            graph_signature,
-            parameter_signature,
-        )
-        if flags < 0 or flags > self._FLAG_MASK:
-            raise OverflowError(
-                f"Sage category flags {flags} do not fit the owned CmpKey flag allocation"
-            )
-        if depth > self._MAX_DEPTH:
-            raise OverflowError(
-                f"owned category depth {depth} exceeds the CmpKey C-int allocation"
-            )
-        ordered_flags = (
-            self._OWNED_FLOOR
-            + (depth << self._DEPTH_SHIFT)
-            + flags
-        )
-        structural = _stable_signature_integer(signature) & self._STRUCTURAL_MASK
-        result = (ordered_flags, structural, session_counter)
-        category._cmp_key = result
-        return result
+        return native_descriptor.__get__(category, type(category))
 
 
 class CatConstructionsMixin:
@@ -692,11 +641,13 @@ def _declared_category_linearization(category: Category) -> tuple[Category, ...]
         known = cache.get(id(node))
         if known is not None:
             return known
-        parents = tuple(sorted(node.super_categories(), key=lambda parent: parent._cmp_key, reverse=True))
+        parents = tuple(
+            sorted(node.super_categories(), key=_category_provider_order_key)
+        )
         sequences = [list(linearize(parent)) for parent in parents]
         sequences.append(list(parents))
         merged, _suggestion = C3_sorted_merge(
-            sequences, key=lambda parent: parent._cmp_key
+            sequences, key=_category_provider_order_key
         )
         result = (node, *merged)
         cache[id(node)] = result
