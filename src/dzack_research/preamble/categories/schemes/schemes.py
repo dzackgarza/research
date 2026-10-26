@@ -254,6 +254,7 @@ def _engine_coordinate_pullback_of(native, domain_algebra, codomain_algebra):
 @cached_function(
     key=lambda engine_polynomial_ring, base: (
         id(base),
+        base,
         tuple(engine_polynomial_ring.variable_names()),
     )
 )
