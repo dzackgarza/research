@@ -428,9 +428,13 @@ class _TwoElementaryTable(Mapping):
             rank, length, delta = triple
             expected_signature = signature_pair(1, rank - 1)
             actual_signature = lattice.signature_pair()
-            signature_matches = actual_signature is expected_signature or (
-                actual_signature == expected_signature
-            ) is True
+            # Compare the owned cardinal components themselves. Equality of
+            # product points may remain a three-valued proposition even when
+            # each inertia index is decidable.
+            signature_matches = (
+                (actual_signature.first() == expected_signature.first()) is True
+                and (actual_signature.second() == expected_signature.second()) is True
+            )
             if not signature_matches:
                 raise ValueError(
                     f"TwoElementary[{triple}] has signature {actual_signature}, "
@@ -438,9 +442,13 @@ class _TwoElementaryTable(Mapping):
                 )
             actual_invariants = EvenTwoElementaryLattices(ZZ)(lattice).two_elementary_invariants()
             expected_invariants = nikulin_invariants(rank, length, delta)
-            invariants_match = actual_invariants is expected_invariants or (
-                actual_invariants == expected_invariants
-            ) is True
+            # Nikulin's triple lives in the owned product NN^3. Decide each
+            # natural-number coordinate rather than asking product equality
+            # for a Boolean decision it need not provide.
+            invariants_match = all(
+                (actual_invariants.component(index) == expected_invariants.component(index)) is True
+                for index in actual_invariants.parent().index_set()
+            )
             if not invariants_match:
                 raise ValueError(
                     f"TwoElementary[{triple}] has invariants {actual_invariants}, "
