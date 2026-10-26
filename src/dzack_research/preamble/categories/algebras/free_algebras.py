@@ -367,11 +367,24 @@ def _variable_names(labels) -> tuple[str, ...]:
     return tuple(names)
 
 
+@cached_function(
+    key=lambda variables: (
+        "names",
+        tuple(name.strip() for name in variables.split(","))
+        if isinstance(variables, str)
+        else tuple(variables),
+    )
+    if isinstance(variables, (str, tuple, list))
+    else ("selected-set", id(variables))
+)
 def _polynomial_variables(variables):
     r"""The set of variables a polynomial ring is constructed on.
 
     A string names its comma-separated variables, ``"x,y"``; a tuple or list
     names its entries in order; an owned set is its own set of variables.
+    Name-based inputs are interned by their ordered names, so separate
+    constructors of ``R[x_1, ..., x_n]`` retain the same literal selected
+    index set. Explicit owned sets retain their own identity.
     """
     match variables:
         case str():
