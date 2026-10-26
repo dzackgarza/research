@@ -518,6 +518,18 @@ class CatConstructionsMixin:
     ) -> type:
         if name == "subcategory_class":
             return self._subcategory_class_with_cat_constructions(method_provider, cache=cache, picklable=picklable)
+        if name in OwnedCategoryMixin._TIED_NAMED_CLASSES:
+            # CatConstructionsMixin precedes OwnedCategoryMixin for the
+            # parameterized categories and joins that need both.  Delegating
+            # through ``super()`` here therefore skips the owned tied-class
+            # builder, even though CategoryWithParameters calls this method by
+            # name and never reaches a later override.  Route the three object
+            # implementation classes through their actual owner before the
+            # generic Sage builder can reintroduce construction-order-sensitive
+            # C3 failures (notably FinitelyPresentedModules before free modules).
+            return OwnedCategoryMixin._make_named_class(
+                self, name, method_provider, cache=cache, picklable=picklable
+            )
         return super()._make_named_class(  # type: ignore[misc]
             name, method_provider, cache=cache, picklable=picklable
         )
