@@ -331,8 +331,16 @@ def _category_graph_depth(category: Category, memo=None) -> int:
     identity = id(category)
     cached = memo.get(identity)
     if cached is not None:
+        if cached is Ellipsis:
+            raise RuntimeError(
+                f"cycle in declared category graph while ordering {category}"
+            )
         return cached
     supers = tuple(category._super_categories)
+    # Mark the active recursion path before visiting parents. Without this
+    # marker, a malformed/cyclic declared graph recurses until Python's limit
+    # instead of identifying the category edge responsible for the cycle.
+    memo[identity] = Ellipsis
     if not supers:
         memo[identity] = 0
         return 0
