@@ -7205,8 +7205,17 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 - **Where the condition is checked**: this rule suspends execution *while the architecture,
   implementation, integration and transfer work remains open*, and whether it is open is not
-  recorded here — it is the state of the work nodes in [TODO.md](TODO.md). Read them before
-  concluding the suspension applies. A worker that treats the suspension as permanent has no
+  recorded here — it is the state of the **source obligations** of the work nodes in
+  [TODO.md](TODO.md). Read them before concluding the suspension applies. The open/closed
+  state of an issue is its complete acceptance state, **not** a certificate that its
+  source prerequisite is unfinished: under `DEV-61`, an issue with source delivered
+  but original behavioral assertions unexecuted at T remains OPEN. That open issue
+  does not by itself postpone T once every required M1 source obligation and its
+  written falsifying specimens have been delivered. At T, execute the outstanding
+  requirements against the integrated source at their original issue owners;
+  only the actual verdict can close those issues. No requirements are transferred,
+  waived or counted accepted merely because their source was delivered. A worker
+  that treats the suspension as permanent has no
   way to reach T, and the repository accumulates unexecuted constructions for as long as that
   lasts; on 2026-09-13 it had banked sixty of them after the condition was already satisfied.
   The current required source nodes decide whether the suspension applies.
@@ -7217,7 +7226,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   Failures discovered while executing T stay in its
   repair phase and are re-executed there; they do not restart the pre-T programme.
 
-- **Rule**: T is the execution phase after the M1 source prerequisites in `TODO.md`. It begins with the selected daily mathematical core; `terminal-session` later owns complete frozen-API acceptance, and `extended-mathematics-session` owns required feature acceptance. While the M1 source prerequisites remain open, run no preamble tests, QC gates, Sage executions, or notebooks. Write and commit constructions and their falsifying mathematical specimens explicitly unverified. Once the daily-core session begins, keep execution and owner-local repair active through the later milestones. Their acceptance scopes are distinct: ordinary usability does not require the entire unsettled suite to pass, while frozen-API acceptance does. References in other contribution policies to testing a work unit do not override this phase rule.
+- **Rule**: T is the execution phase after all required M1 **source** prerequisites in `TODO.md` have been delivered. It begins with the selected daily mathematical core; `terminal-session` later owns complete frozen-API acceptance, and `extended-mathematics-session` owns required feature acceptance. While any required M1 source obligation remains unfinished, run no preamble tests, QC gates, Sage executions, or notebooks, even if some other issue is source-complete. Write and commit constructions and their falsifying mathematical specimens explicitly unverified. Once the daily-core session begins, keep execution and owner-local repair active through the later milestones, and discharge every original still-open behavioral assertion at its owner. Their acceptance scopes are distinct: ordinary usability does not require the entire unsettled suite to pass, while frozen-API acceptance does. References in other contribution policies to testing a work unit do not override this phase rule.
 
   Retain the two narrow operational exceptions: one short import check of a merged tree, and provisioning a tool required by a selected task. Neither is mathematical verification or permission to run a suite. Source review and checking a prose diff remain applicable. At T, execute the required mathematical evidence on the integrated architecture, diagnose actual failures, and establish the failed propositions at their owners. Do not restart repeated verification cycles against intermediate architectures.
 
