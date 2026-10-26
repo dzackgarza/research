@@ -605,6 +605,7 @@ class SchemeMorphismMethods:
     _scalar_pullback = None
     _cone_construction = None
     _point_coordinates = None
+    _closed_complement = None
 
     def __init__(
         self,
@@ -615,12 +616,14 @@ class SchemeMorphismMethods:
         scalar_pullback=None,
         cone_construction=None,
         point_coordinates=None,
+        closed_complement=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
         self._scalar_pullback = scalar_pullback
         self._cone_construction = cone_construction
         self._point_coordinates = point_coordinates
+        self._closed_complement = closed_complement
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -633,11 +636,22 @@ class SchemeMorphismMethods:
             scalar_pullback=self._scalar_pullback,
             cone_construction=construction,
             point_coordinates=self._point_coordinates,
+            closed_complement=self._closed_complement,
         )
 
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
         return self._cone_construction
+
+    def closed_complement(self):
+        r"""Return the selected closed complement when this is its open inclusion."""
+        if self._closed_complement is None:
+            raise AttributeError(f"{self} has no selected closed complement")
+        return self._closed_complement
+
+    def is_open_immersion(self):
+        r"""Whether this arrow is the open inclusion of a selected closed complement."""
+        return self._closed_complement is not None
 
     def _in_mor(self, mor):
         r"""Re-site this representation in a Mor with the same endpoints.
@@ -654,6 +668,7 @@ class SchemeMorphismMethods:
             scalar_pullback=self._scalar_pullback,
             cone_construction=self.cone_construction(),
             point_coordinates=self._represented_point_coordinates(),
+            closed_complement=self._closed_complement,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -666,6 +681,7 @@ class SchemeMorphismMethods:
                 "scalar_pullback": self._scalar_pullback,
                 "cone_construction": self.cone_construction(),
                 "point_coordinates": self._represented_point_coordinates(),
+                "closed_complement": self._closed_complement,
             },
         )
 
@@ -1237,6 +1253,8 @@ class SchemeMorphismMethods:
             return False
         if self.domain() is not other.domain() or self.codomain() is not other.codomain():
             return False
+        if self._closed_complement is not None or other._closed_complement is not None:
+            return self._closed_complement is not None and self._closed_complement is other._closed_complement
         left_pullback = self._represented_coordinate_pullback()
         right_pullback = other._represented_coordinate_pullback()
         if left_pullback is not None and right_pullback is not None:
@@ -1262,6 +1280,8 @@ class SchemeMorphismMethods:
         return hash((id(self.domain()), id(self.codomain())))
 
     def _repr_(self) -> str:
+        if self._closed_complement is not None:
+            return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         return f"Scheme morphism: {self.domain()} -> {self.codomain()}"
 
     def scalar_pullback(self):
@@ -1274,44 +1294,11 @@ class SchemeMorphism(SchemeMorphismMethods, Morphism):
     r"""Compatibility shell for private scheme-arrow realizations."""
 
 
-class _OpenComplementInclusion(SchemeMorphism):
-    r"""The open immersion ``X - Z -> X`` defined by its closed complement ``Z``."""
-
-    def __init__(self, mor, closed_complement, *, cone_construction=None) -> None:
-        self._closed_complement = closed_complement
-        SchemeMorphism.__init__(self, None, mor=mor, cone_construction=cone_construction)
-
-    def with_cone_construction(self, construction):
-        return _OpenComplementInclusion(self.parent(), self.closed_complement(), cone_construction=construction)
-
-    def _in_mor(self, mor):
-        return _OpenComplementInclusion(mor, self.closed_complement(), cone_construction=self.cone_construction())
-
-    def closed_complement(self):
-        return self._closed_complement
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, _OpenComplementInclusion)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
-            and other.closed_complement() is self.closed_complement()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    __hash__ = SchemeMorphism.__hash__
-
-    def _repr_(self):
-        return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self.closed_complement()}"
-
-
 def _open_complement_inclusion(closed_complement):
     r"""The arrow realization rule ``Mor -> (X - Z -> X)`` for the closed complement ``Z``."""
 
     def realize(mor):
-        return _OpenComplementInclusion(mor, closed_complement)
+        return mor.element_class(mor, None, mor=mor, closed_complement=closed_complement)
 
     return realize
 
