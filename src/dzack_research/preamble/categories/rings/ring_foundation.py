@@ -6341,10 +6341,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     )
     from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
     from sage.algebras.free_algebra import FreeAlgebra_generic
-    from sage.rings.laurent_series_ring import LaurentSeriesRing
-    from sage.rings.lazy_series_ring import LazyLaurentSeriesRing, LazyPowerSeriesRing
-    from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
-    from sage.rings.power_series_ring import PowerSeriesRing_generic
     from sage.rings.qqbar import QQbar as SageQQbar
 
     from dzack_research.preamble.owned_category import owned_category_join
@@ -6370,32 +6366,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             # Z_p and the rings of integers of its finite extensions are
             # discrete valuation rings, uncountable.
             placements = (principal, noetherian, owned_sets.UncountableSets())
-        case LaurentPolynomialRing_generic():
-            coefficients = _own_ring(engine.base_ring())
-            placements = (
-                *_inherited_ring_placements(
-                    coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
-                ),
-                _size_of_finitely_supported_families(coefficients, engine.ngens()),
-            )
-        case PowerSeriesRing_generic() | LazyPowerSeriesRing():
-            coefficients = _own_ring(engine.base_ring())
-            placements = (
-                *_inherited_ring_placements(
-                    coefficients, univariate_over_field_is_principal=engine.ngens() == 1,
-                ),
-                _size_of_all_coefficient_families(coefficients),
-            )
-        case LaurentSeriesRing() | LazyLaurentSeriesRing():
-            # K((x)) = Frac(K[[x]]) is a field over a field K; over any R it
-            # inherits commutativity and the domain property from R[[x]].
-            coefficients = _own_ring(engine.base_ring())
-            over_field = field if coefficients in OwnedRings().Division().Commutative() else ()
-            placements = (
-                *over_field,
-                *_inherited_ring_placements(coefficients, univariate_over_field_is_principal=False),
-                _size_of_all_coefficient_families(coefficients),
-            )
         case _:
             placements = ()
     joined = owned_category_join((OwnedRings(), *placements))
@@ -6535,6 +6505,10 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
     from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
     from sage.matrix.matrix_space import MatrixSpace as SageMatrixSpaceClass
     from sage.rings.fraction_field import FractionField_generic
+    from sage.rings.laurent_series_ring import LaurentSeriesRing
+    from sage.rings.lazy_series_ring import LazyLaurentSeriesRing, LazyPowerSeriesRing
+    from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
+    from sage.rings.power_series_ring import PowerSeriesRing_generic
     from sage.rings.real_double import RDF as SageRDF
 
     match engine:
@@ -6618,6 +6592,31 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
             cover = _own_ring(engine.cover_ring())
             defining_ideal = _from_engine_ideal(cover, engine.defining_ideal())
             return cover.quotient_ring(defining_ideal)
+        case LaurentPolynomialRing_generic():
+            from dzack_research.preamble.categories.algebras.free_algebras import (
+                _laurent_polynomial_ring,
+            )
+
+            return _laurent_polynomial_ring(
+                _own_ring(engine.base_ring()), tuple(engine.variable_names())
+            )
+        case PowerSeriesRing_generic() | LazyPowerSeriesRing():
+            from dzack_research.preamble.categories.rings.commutative_algebra import (
+                FormalPowerSeriesRings,
+            )
+
+            return FormalPowerSeriesRings(_own_ring(engine.base_ring()))(
+                tuple(engine.variable_names()), default_prec=engine.default_prec()
+            )
+        case LaurentSeriesRing() | LazyLaurentSeriesRing():
+            # A Laurent-series engine is a localization/completion presentation
+            # whose exact retained construction is not yet represented for
+            # every coefficient ring. Do not infer its placement from the
+            # engine class in the generic adapter.
+            raise TypeError(
+                f"cannot raise {engine} through an owned Laurent-series construction: "
+                "the coefficient-ring and localization data are not retained"
+            )
         case PolynomialRing_generic() | MPolynomialRing_base():
             # A polynomial engine met in an adapter is raised through the
             # one polynomial ring on its variables (OWN-02); its elements
