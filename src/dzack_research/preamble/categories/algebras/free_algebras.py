@@ -340,7 +340,12 @@ def _finite_labels(labels):
         # the defining index object before the common algebra constructor sees it.
         return labels
     if isinstance(labels, int):
-        return finite_ordered_set(range(labels))
+        # Match the canonical rank-to-label rule of ``_module_generating_set``:
+        # a rank n denotes the ordinal S.Δ[n-1], not a separately constructed
+        # ordered set whose elements happen to be 0,...,n-1.
+        if labels < 0:
+            raise ValueError(f"a free algebra generator rank must be nonnegative, got {labels}")
+        return Sets.Δ[labels - 1]
     return finite_ordered_set(labels)
 
 
@@ -419,10 +424,25 @@ def _laurent_polynomial_ring(base_ring, *args, **kwargs):
 
 def _symmetric_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
     r"""``Sym_R(F_R(S))`` on the free module ``F_R(S)`` (or the given ``source_module`` on ``S``)."""
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FramedFreeModules,
+    )
+
     base = _owned_ring(base_ring)
     infinite = algebra_generating_set in Sets() and algebra_generating_set.is_finite() is not True
     labels = algebra_generating_set if infinite else _finite_labels(algebra_generating_set)
     generating = base.free_module(labels) if source_module is None else source_module
+    assert generating.base_ring() is base, (
+        f"the symmetric algebra on {labels} over {base} needs a generating module over that exact ring, "
+        f"but {generating} is over {generating.base_ring()}"
+    )
+    assert generating in FramedFreeModules(base), (
+        f"the symmetric algebra on {labels} needs a free generating module, but {generating} is not free over {base}"
+    )
+    assert generating.module_generating_set() is labels, (
+        f"the symmetric algebra's generating module {generating} must use the literal selected index set {labels}, "
+        f"not {generating.module_generating_set()}"
+    )
     return _symmetric_algebra_of_free_module(generating)
 
 
@@ -455,23 +475,37 @@ def _symmetric_algebra_of_free_module(generating):
 
 
 def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None):
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        FramedFreeModules,
+    )
+
     base = _owned_ring(base_ring)
     engine_base = _engine_ring(base)
-    if (
+    infinite = (
         algebra_generating_set in Sets()
         and algebra_generating_set.is_finite() is not True
-    ) or engine_base not in SageRings():
+    )
+    labels = algebra_generating_set if infinite else _finite_labels(algebra_generating_set)
+    generating = base.free_module(labels) if source_module is None else source_module
+    assert generating.base_ring() is base, (
+        f"the tensor algebra on {labels} over {base} needs a generating module over that exact ring, "
+        f"but {generating} is over {generating.base_ring()}"
+    )
+    assert generating in FramedFreeModules(base), (
+        f"the tensor algebra on {labels} needs a free generating module, but {generating} is not free over {base}"
+    )
+    assert generating.module_generating_set() is labels, (
+        f"the tensor algebra's generating module {generating} must use the literal selected index set {labels}, "
+        f"not {generating.module_generating_set()}"
+    )
+    if infinite or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_tensor_algebra_of,
         )
 
-        return _sparse_tensor_algebra_of(
-            base.free_module(algebra_generating_set) if source_module is None else source_module
-        )
-    labels = _finite_labels(algebra_generating_set)
+        return _sparse_tensor_algebra_of(generating)
     names = _variable_names(labels)
     algebra = _SageFreeAlgebra(engine_base, len(labels), names=names)
-    generating = base.free_module(labels) if source_module is None else source_module
     return _native_free_algebra(algebra, generating, "tensor")
 
 
