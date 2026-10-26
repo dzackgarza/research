@@ -367,16 +367,12 @@ def _variable_names(labels) -> tuple[str, ...]:
     return tuple(names)
 
 
-@cached_function(
-    key=lambda variables: (
-        "names",
-        tuple(name.strip() for name in variables.split(","))
-        if isinstance(variables, str)
-        else tuple(variables),
-    )
-    if isinstance(variables, (str, tuple, list))
-    else ("selected-set", id(variables))
-)
+@cached_function(key=lambda names: tuple(name.strip() for name in names))
+def _named_polynomial_variables(names):
+    """Intern a polynomial variable index set by its normalized ordered names."""
+    return finite_ordered_set(tuple(name.strip() for name in names))
+
+
 def _polynomial_variables(variables):
     r"""The set of variables a polynomial ring is constructed on.
 
@@ -388,9 +384,12 @@ def _polynomial_variables(variables):
     """
     match variables:
         case str():
-            return finite_ordered_set(tuple(name.strip() for name in variables.split(",")))
+            return _named_polynomial_variables(tuple(variables.split(",")))
         case tuple() | list():
-            return finite_ordered_set(tuple(variables))
+            assert all(isinstance(name, str) for name in variables), (
+                f"polynomial variable names must be strings, but got {variables!r}"
+            )
+            return _named_polynomial_variables(tuple(variables))
         case _:
             assert variables in Sets(), (
                 f"cannot form a polynomial ring in {variables!r}: give the variables as a string, "
