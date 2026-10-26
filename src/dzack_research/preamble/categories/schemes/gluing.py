@@ -334,143 +334,41 @@ class _GluedSchemeMorphism(SchemeMorphism):
         return f"Scheme morphism from glued charts: {self.domain()} -> {self.codomain()}"
 
 
-class _FiniteAtlasSchemeMorphism(SchemeMorphism):
-    r"""A morphism glued from compatible maps on a selected finite affine atlas.
-
-    Unlike :class:`_GluedSchemeMorphism`, the domain need not itself use the
-    gluing realization privately.  This is the descent statement for maps out
-    of any represented scheme carrying a finite affine atlas, such as a
-    projective or multiprojective scheme with its standard atlas.
-    """
-
-    def __init__(self, parent, atlas, local_maps) -> None:
-        super().__init__(None, mor=parent)
-        match atlas.scheme() is self.domain():
-            case True:
-                pass
-            case False:
-                raise ValueError(
-                    f"cannot build a morphism out of {self.domain()} from local maps on {atlas}: the atlas must "
-                    f"cover {self.domain()}, but it covers {atlas.scheme()}"
-                )
-        self._atlas = atlas
-        raw = _family_on_finite_ordered_set(
-            atlas.chart_index_set(),
-            local_maps,
-            name="Raw local maps of a finite-atlas scheme morphism",
-            noun="a finite-atlas scheme morphism",
-        )
-        schemes = self.parent().mor_category()
-        self._local_maps = finite_indexed_family(
-            atlas.chart_index_set(),
-            lambda index: schemes.Mor(atlas.chart(index), self.codomain())(
-                raw[index]
-            ),
-            name="Local maps of a finite-atlas scheme morphism",
-        )
-        self._verify_overlap_compatibility()
-
-    def atlas(self):
-        return self._atlas
-
-    def local_maps(self):
-        return self._local_maps
-
-    def local_map(self, index):
-        return self.local_maps()[self.atlas().normalize_chart_index(index)]
-
-    def _verify_overlap_compatibility(self) -> None:
-        atlas = self.atlas()
-        for left_index, right_index in atlas.transition_index_set():
-            left_overlap = atlas.overlap(left_index, right_index)
-            right_overlap = atlas.overlap(right_index, left_index)
-            transition = atlas.transition_between(left_index, right_index).forward()
-            left = self.local_map(left_index) * left_overlap.inclusion()
-            right = self.local_map(right_index) * right_overlap.inclusion() * transition
-            match left == right:
-                case True:
-                    pass
-                case False:
-                    raise ValueError(
-                        f"the local morphisms of a morphism {self.domain()} -> {self.codomain()} do not glue: on "
-                        f"the overlap of charts {left_index} and {right_index} they disagree after the chart change"
-                    )
-
-    def _postcompose_with(self, after):
-        match after.domain() is self.codomain():
-            case True:
-                pass
-            case False:
-                return NotImplemented
-        return _FiniteAtlasSchemeMorphism(
-            _scheme_composition_mor(after, self),
-            self.atlas(),
-            self.local_maps().map(lambda local_map: after * local_map),
-        )
-
-    def __mul__(self, other):
-        match other:
-            case SchemeMorphismMethods():
-                pass
-            case _:
-                return NotImplemented
-        match (
-            other.codomain() is self.domain(),
-            self._is_the_identity(),
-            other._is_the_identity(),
-        ):
-            case (False, _, _):
-                return NotImplemented
-            case (True, True, _):
-                return other
-            case (True, False, True):
-                return self
-            case _:
-                pass
-        return other._postcompose_with(self)
-
-    def __eq__(self, other) -> bool:
-        match other:
-            case _ if self is other:
-                return True
-            case SchemeMorphismMethods() if (
-                other.domain() is self.domain()
-                and other.codomain() is self.codomain()
-            ):
-                pass
-            case _:
-                return False
-        match other:
-            case _FiniteAtlasSchemeMorphism() if other.atlas() is self.atlas():
-                return all(
-                    self.local_map(index) == other.local_map(index)
-                    for index in self.atlas().chart_indices()
-                )
-            case _ if other._is_the_identity():
-                return all(
-                    self.local_map(index) == self.atlas().chart_embedding(index)
-                    for index in self.atlas().chart_indices()
-                )
-            case _:
-                pass
-        return all(
-            self.local_map(index)
-            == other * self.atlas().chart_embedding(index)
-            for index in self.atlas().chart_indices()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    __hash__ = None
-
-
 def _finite_atlas_scheme_morphism(domain, codomain, atlas, local_maps):
     r"""Construct a scheme morphism by descent from compatible atlas maps."""
-    return _FiniteAtlasSchemeMorphism(
-        Schemes(domain.scheme_base_ring()).Mor(domain, codomain),
-        atlas,
+    parent = Schemes(domain.scheme_base_ring()).Mor(domain, codomain)
+    if atlas.scheme() is not domain:
+        raise ValueError(
+            f"cannot build a morphism out of {domain} from local maps on {atlas}: the atlas must "
+            f"cover {domain}, but it covers {atlas.scheme()}"
+        )
+    raw = _family_on_finite_ordered_set(
+        atlas.chart_index_set(),
         local_maps,
+        name="Raw local maps of a finite-atlas scheme morphism",
+        noun="a finite-atlas scheme morphism",
+    )
+    local_maps = finite_indexed_family(
+        atlas.chart_index_set(),
+        lambda index: parent.mor_category().Mor(atlas.chart(index), codomain)(raw[index]),
+        name="Local maps of a finite-atlas scheme morphism",
+    )
+    for left_index, right_index in atlas.transition_index_set():
+        left_overlap = atlas.overlap(left_index, right_index)
+        right_overlap = atlas.overlap(right_index, left_index)
+        transition = atlas.transition_between(left_index, right_index).forward()
+        left = local_maps[left_index] * left_overlap.inclusion()
+        right = local_maps[right_index] * right_overlap.inclusion() * transition
+        if left != right:
+            raise ValueError(
+                f"the local morphisms of a morphism {domain} -> {codomain} do not glue: on "
+                f"the overlap of charts {left_index} and {right_index} they disagree after the chart change"
+            )
+    return parent.element_class(
+        parent, None, mor=parent,
+        gluing_role="finite_atlas",
+        finite_atlas=atlas,
+        atlas_local_maps=local_maps,
     )
 
 
