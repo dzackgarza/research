@@ -836,7 +836,7 @@ def _chains_above(directed: DiGraph) -> dict[str, int]:
     ``level_sets()`` of the reversed graph puts a category in level ``k`` when
     its longest path to a maximal category has ``k`` declarations (Sage's
     ``DiGraph.level_sets``, linear time).  ``longest_path()`` is a MILP by
-    default; see ``TRAPS.md``.
+    default; see sage-extensions ``TRAPS.md``.
     """
     return {
         _name(vertex): level
@@ -860,7 +860,7 @@ def _in_cyclic_order(graph: Graph, cycle: list[str]) -> list[str]:
 def _minimum_cycle_basis(graph: Graph) -> list[list[str]]:
     """Sage's default minimum cycle basis takes integer vertices only; relabel.
 
-    Wall time on the declared graph is in ``TRAPS.md``.
+    Wall time on the declared graph is in sage-extensions ``TRAPS.md``.
     """
     relabelled = graph.copy()
     names = relabelled.relabel(return_map=True)
