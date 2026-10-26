@@ -617,6 +617,7 @@ class SchemeMorphismMethods:
     _finite_atlas = None
     _atlas_local_maps = None
     _glued_local_maps = None
+    _relative_projectivization_source_sheaf = None
 
     def __init__(
         self,
@@ -639,6 +640,7 @@ class SchemeMorphismMethods:
         finite_atlas=None,
         atlas_local_maps=None,
         glued_local_maps=None,
+        relative_projectivization_source_sheaf=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -660,6 +662,7 @@ class SchemeMorphismMethods:
         self._finite_atlas = finite_atlas
         self._atlas_local_maps = atlas_local_maps
         self._glued_local_maps = glued_local_maps
+        self._relative_projectivization_source_sheaf = relative_projectivization_source_sheaf
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -684,6 +687,7 @@ class SchemeMorphismMethods:
             finite_atlas=self._finite_atlas,
             atlas_local_maps=self._atlas_local_maps,
             glued_local_maps=self._glued_local_maps,
+            relative_projectivization_source_sheaf=self._relative_projectivization_source_sheaf,
         )
 
     def gluing_datum(self):
@@ -739,6 +743,11 @@ class SchemeMorphismMethods:
 
     def glued_local_map(self, index):
         return self.glued_local_maps()[self.gluing_datum().normalize_chart_index(index)]
+
+    def source_sheaf(self):
+        if self._relative_projectivization_source_sheaf is None:
+            raise AttributeError(f"{self} is not a relative-projectivization projection")
+        return self._relative_projectivization_source_sheaf
 
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
@@ -809,6 +818,7 @@ class SchemeMorphismMethods:
                 )
             ),
             glued_local_maps=glued_local_maps,
+            relative_projectivization_source_sheaf=self._relative_projectivization_source_sheaf,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -833,6 +843,7 @@ class SchemeMorphismMethods:
                 "finite_atlas": self._finite_atlas,
                 "atlas_local_maps": self._atlas_local_maps,
                 "glued_local_maps": self._glued_local_maps,
+                "relative_projectivization_source_sheaf": self._relative_projectivization_source_sheaf,
             },
         )
 
@@ -946,6 +957,10 @@ class SchemeMorphismMethods:
         return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
 
     def _postcompose_with(self, after):
+        if self._relative_projectivization_source_sheaf is not None:
+            if after is self.codomain().structure_morphism():
+                return self.domain().structure_morphism()
+            return None
         if self._gluing_role == "glued_domain":
             if after.domain() is not self.codomain():
                 return NotImplemented
@@ -977,6 +992,13 @@ class SchemeMorphismMethods:
         return NotImplemented
 
     def __eq__(self, other):
+        if self._relative_projectivization_source_sheaf is not None:
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._relative_projectivization_source_sheaf is self._relative_projectivization_source_sheaf
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+            )
         if self._gluing_role == "glued_domain":
             return (
                 isinstance(other, SchemeMorphismMethods)
@@ -1676,6 +1698,8 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
+        if self._relative_projectivization_source_sheaf is not None:
+            raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._gluing_role in ("chart_map", "finite_atlas", "glued_domain"):
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._gluing_role == "open_inclusion":

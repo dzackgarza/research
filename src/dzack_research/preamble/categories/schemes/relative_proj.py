@@ -59,38 +59,14 @@ from dzack_research.preamble.owned_category import _object_of
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
 
 
-class _RelativeProjectivizationProjection(SchemeMorphism):
-    r"""The exact structure map ``Proj_X(Sym(F)) -> X`` retained by construction."""
-
-    def __init__(self, parent, source_sheaf) -> None:
-        self._source_sheaf = source_sheaf
-        super().__init__(None, mor=parent)
-
-    def source_sheaf(self):
-        return self._source_sheaf
-
-    def _in_mor(self, mor):
-        return _RelativeProjectivizationProjection(mor, self.source_sheaf())
-
-    def _postcompose_with(self, after):
-        match after is self.codomain().structure_morphism():
-            case True:
-                return self.domain().structure_morphism()
-            case False:
-                return None
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, _RelativeProjectivizationProjection)
-            and other.domain() is self.domain()
-            and other.codomain() is self.codomain()
-            and other.source_sheaf() is self.source_sheaf()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    __hash__ = None
+def _relative_projectivization_projection(parent, source_sheaf):
+    r"""Construct the relative-Proj structure map as a generated scheme-Mor element."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        relative_projectivization_source_sheaf=source_sheaf,
+    )
 
 
 class _RelativeProjectivizationBaseChangeComposite(SchemeMorphism):
@@ -694,9 +670,8 @@ class RelativeProjectivizations(OwnedCategoryOverBaseRing):
         def projectivization_projection(self):
             source_scheme = self.projectivization_source_sheaf().scheme()
             return self.Mor(source_scheme)(
-                lambda mor: _RelativeProjectivizationProjection(
-                    mor,
-                    self.projectivization_source_sheaf(),
+                lambda mor: _relative_projectivization_projection(
+                    mor, self.projectivization_source_sheaf()
                 )
             )
 
