@@ -5376,10 +5376,9 @@ class _OwnedRingParent(UniqueRepresentation, Parent):
         SageObject.__init__(self)
         canonical_native = base is None and category is None
         # The constructing category is defining construction data (OWN-15):
-        # a level above names the category it builds in; a ring adopted
-        # from its engine by ``_own_ring`` is adopted into ``OwnedRings()``.
-        # Its placement below is still read off the engine (ARC-08); the
-        # constructing category is not.
+        # a level above names the category it builds in. Raw engine rings do
+        # not receive a generic OwnedRings placement; _owned_engine_ring must
+        # route them through a constructor that supplies this datum.
         self._constructing_category = (
             OwnedRings() if constructing_category is None else constructing_category
         )
@@ -6310,81 +6309,14 @@ def _real_or_complex_field_placements() -> tuple[Category, ...]:
     return (*_field_placements(), owned_sets.UncountableSets())
 
 
-def _presented_ring_category(engine: Ring) -> Category:
-    r"""The owned ring placement given by the construction that presents ``engine``.
-
-    Each case names one ring constructor and reads only the data that
-    constructor received: the coefficient ring and the number of
-    indeterminates of a Laurent or power-series ring, the cover of a
-    quotient.  Polynomial and free associative
-    algebras, number fields, orders, fraction fields, finite products and
-    matrix rings are placed by their own constructions.  A constituent ring the
-    preamble already owns is read by its placement.  The theorem that places
-    the result is stated in the case.  No answer the engine computes about the
-    ring itself -- ``is_field``, ``is_commutative``, ``is_noetherian``, its
-    Sage category -- is read; those answer their callers through the decision
-    procedures of the owned ring.  A construction no case names is placed in
-    ``OwnedRings()`` alone, with no size.
-
-    The case is selected by the Sage parent class of ``engine``.
-    """
-    from sage.rings.abc import (
-        ComplexBallField,
-        ComplexDoubleField,
-        ComplexField,
-        ComplexIntervalField,
-        RealBallField,
-        RealDoubleField,
-        RealField,
-        RealIntervalField,
-        pAdicRing,
-    )
-    from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
-    from sage.algebras.free_algebra import FreeAlgebra_generic
-    from sage.rings.qqbar import QQbar as SageQQbar
-
-    from dzack_research.preamble.owned_category import owned_category_join
-
-    domain = OwnedIntegralDomains()
-    principal = domain.PrincipalIdeals()
-    noetherian = OwnedRings().Noetherian()
-    # A field is a commutative division ring; its only ideals are 0 and
-    # itself, so it is a principal ideal domain and Noetherian.
-    field = (OwnedRings().Division().Commutative(), domain, principal, noetherian)
-    match engine:
-        case AlgebraicClosureFiniteField_generic():
-            # An algebraic closure of F_p is a field, and it is the union of
-            # the finite fields F_{p^n}, so countably infinite.
-            placements = (*field, owned_sets.CountablyInfiniteSets())
-        case (
-            RealDoubleField() | RealBallField() | RealIntervalField()
-            | ComplexDoubleField() | ComplexBallField() | ComplexIntervalField()
-        ):
-            # These constructors present RR or CC, uncountable fields.
-            placements = (*field, owned_sets.UncountableSets())
-        case pAdicRing():
-            # Z_p and the rings of integers of its finite extensions are
-            # discrete valuation rings, uncountable.
-            placements = (principal, noetherian, owned_sets.UncountableSets())
-        case _:
-            placements = ()
-    joined = owned_category_join((OwnedRings(), *placements))
-    match joined.is_subcategory(owned_sets.FiniteSets()):
-        case True:
-            # A finite ring has finite length over itself.
-            return owned_category_join((joined, OwnedRings().Artinian()))
-        case False:
-            return joined
-
-
 def _owned_ring_category(
     engine: Ring, *, scalar_base=None, owned_ring=None, presented: Category | None = None,
     defer_construction_facets=False,
 ) -> Category:
     r"""Return the owned ring category the construction of ``engine`` places it in.
 
-    The ring placement is :func:`_presented_ring_category`.  To it this adds
-    the algebra and module structure the constructor selects: the ring is an
+    The ring placement is supplied by the selected constructor. To it this
+    adds the algebra and module structure the constructor selects: the ring is an
     associative unital algebra over ``scalar_base`` (over itself when there is
     none), commutative exactly when its ring placement is, and the module
     framing the constructor fixes.
@@ -6407,7 +6339,10 @@ def _owned_ring_category(
 
         return owned_category_join((OwnedRings(), AdditiveGroups().AdditiveCommutative()))
     if presented is None:
-        presented = _presented_ring_category(engine)
+        raise TypeError(
+            f"{engine} has no selected ring-construction placement; "
+            "native engine classes do not determine owned category membership"
+        )
     from dzack_research.preamble.categories.group.magmas import AdditiveGroups
 
     # Owned category joins are not guaranteed to materialize inherited
@@ -6488,8 +6423,8 @@ def _own_if_ring(result):
 
 
 @cached_function
-def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
-    r"""Adopt the engine through the construction that supplies its module.
+def _owned_engine_ring(engine: Ring) -> Ring:
+    r"""Raise a native engine through the owned constructor for its defining data.
 
     Polynomial and free associative engines present the free algebra on
     their native variables over their coefficient ring.  They therefore
@@ -6502,6 +6437,7 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
     from sage.rings.abc import ComplexField as SageComplexFieldClass
     from sage.rings.abc import RealField as SageRealFieldClass
     from sage.rings.abc import pAdicField as SagePadicFieldClass
+    from sage.rings.abc import pAdicRing as SagePadicRingClass
     from sage.rings.finite_rings.finite_field_base import FiniteField as SageFiniteFieldClass
     from sage.matrix.matrix_space import MatrixSpace as SageMatrixSpaceClass
     from sage.rings.fraction_field import FractionField_generic
@@ -6539,6 +6475,10 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
                 f"{engine} is a p-adic field with no owned construction: Q_p is constructed by "
                 "Qp(p, precision), and a finite extension of Q_p is not yet constructed"
             )
+        case SagePadicRingClass():
+            from dzack_research.preamble.categories.rings.commutative_algebra import Zp
+
+            return Zp(int(engine.prime()), int(engine.precision_cap()))
         case SageFiniteFieldClass() if engine.degree() == 1:
             # A prime-field engine is ZZ/(p).
             return Zmod(int(engine.characteristic()))
@@ -6641,7 +6581,10 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
                 _own_ring(engine.base_ring()), tuple(engine.variable_names())
             )
         case _:
-            return _OwnedRingParent(engine)
+            raise TypeError(
+                f"cannot raise {engine} through an owned ring constructor: "
+                "no constructor for this native ring family has been selected"
+            )
 
 
 def _own_ring(ring):
