@@ -62,16 +62,18 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _set_owned_ring_display,
 )
 from dzack_research.preamble.categories.sets.cardinals import cardinal
-from dzack_research.preamble.categories.sets.finite_ordered_sets import (
-    FiniteOrderedSets,
-    finite_ordered_set,
-)
+from dzack_research.preamble.categories.sets.finite_ordered_sets import finite_ordered_set
 from dzack_research.preamble.categories.sets.finite_families import finite_family
 from dzack_research.preamble.categories.sets.indexed_families import (
     IndexedFamily,
     indexed_family,
 )
-from dzack_research.preamble.categories.sets.set_categories import FiniteSets, NN, Sets
+from dzack_research.preamble.categories.sets.set_categories import (
+    EnumeratedSets,
+    FiniteSets,
+    NN,
+    Sets,
+)
 from dzack_research.preamble.logic import AtomicProposition, conjunction, negation
 from dzack_research.preamble.refine import RealizationHook
 from dzack_research.preamble.categories.abstract_categories.mor_foundation import object_level
@@ -327,7 +329,11 @@ def _native_free_algebra(engine, generating_module, flavor, *, categories=(), co
 
 
 def _finite_labels(labels):
-    if labels in FiniteOrderedSets():
+    if labels in EnumeratedSets():
+        # The free module and its algebra must share the exact selected
+        # generating set. Enumeration is enough to order the engine names;
+        # rebuilding a finite enumerated set as a new finite ordinal changes
+        # the defining index object before the common algebra constructor sees it.
         return labels
     if isinstance(labels, int):
         return finite_ordered_set(range(labels))
