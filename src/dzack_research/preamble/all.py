@@ -8,6 +8,9 @@ an ordinary Python support object deliberately selected by the preamble.
 """
 
 import sys as _sys
+from importlib import import_module as _import_module
+from importlib.util import find_spec as _find_spec
+from pathlib import Path as _Path
 from typing import cast as _cast
 
 # The session's numeric vocabulary and its parser are one contract: decimal
@@ -701,9 +704,53 @@ from dzack_research.preamble.utilities import (
 )
 
 def load(filename: str, globals: dict | None = None, attach: bool = False) -> None:
-    r"""Load a Sage file and restore this session's owned scalar vocabulary."""
+    r"""Load a Sage file through its canonical module when it is importable.
+
+    Package sources must not be executed into an ad-hoc namespace: that creates
+    a second population of category and module classes beside the ordinary
+    import population.  Resolve an importable source path to its dotted module
+    name and let the installed ``sageparse`` finder own compilation and module
+    identity.  Arbitrary session scripts, which have no importable module name,
+    retain Sage's traditional namespace-loading behavior.
+    """
     scope = _sys._getframe(1).f_globals if globals is None else globals
-    _sage_load(filename, scope, attach)
+    source = _Path(filename).expanduser().resolve()
+    module_name = None
+    for entry in _sys.path:
+        root = _Path(entry or ".").resolve()
+        try:
+            relative = source.relative_to(root)
+        except ValueError:
+            continue
+        suffix = relative.suffix
+        if suffix not in (".py", ".sage"):
+            continue
+        parts = list(relative.with_suffix("").parts)
+        if parts and parts[-1] == "__init__":
+            parts.pop()
+        if not parts or not all(part.isidentifier() for part in parts):
+            continue
+        candidate = ".".join(parts)
+        # Only delegate when normal import resolution chooses this exact file;
+        # a neighbouring .py takes precedence over a .sage source in the
+        # installed finder, and package directories may have their own loader.
+        try:
+            spec = _find_spec(candidate)
+        except (ImportError, ModuleNotFoundError, ValueError):
+            continue
+        if spec is not None and spec.origin is not None and _Path(spec.origin).resolve() == source:
+            imported = _import_module(candidate)
+            module_name = candidate
+            break
+    if module_name is not None:
+        imported = _sys.modules[module_name]
+        scope.update(
+            (name, value)
+            for name, value in vars(imported).items()
+            if not (name.startswith("__") and name.endswith("__"))
+        )
+    else:
+        _sage_load(filename, scope, attach)
     _restore_session_ring_bindings(scope)
     scope["GradedLebesgueAlgebra"] = GradedLebesgueAlgebra
     scope["LebesgueConvolutionAlgebra"] = LebesgueConvolutionAlgebra
