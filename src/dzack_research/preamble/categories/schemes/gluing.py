@@ -6350,7 +6350,7 @@ class AlgebraGluingMorphism(CategoricalMor.ElementMethods):
 
 
 class AlgebraGluingMor(CategoricalMor):
-    Element = AlgebraGluingMorphism
+    ElementMethods = AlgebraGluingMorphism
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.cover() is not codomain.cover():
