@@ -737,10 +737,18 @@ class _PresentedAlgebraParent(_OwnedAlgebraParent):
             labels,
             generator_values=selected_generator_values,
             categories=tuple(placement),
-            law_decisions=law_decisions,
-            algebra_framing_source=presentation_ring,
-            constructing_category=constructing_category,
-        )
+        law_decisions=law_decisions,
+        algebra_framing_source=presentation_ring,
+        constructing_category=constructing_category,
+        ring_placement=lambda: tuple(
+            category
+            for category in (
+                *((OwnedRings().Commutative(),) if commutative_backend else ()),
+                *((OwnedRings().Noetherian(),) if base in OwnedRings().Noetherian() and (commutative_backend or finite_free_degree is not None) else ()),
+                *((OwnedRings().Artinian(),) if base in OwnedRings().Artinian() and finite_free_degree is not None else ()),
+            )
+        ),
+    )
         _fix_selected_algebra_presentation(
             self,
             presentation_ring,

@@ -3306,8 +3306,12 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
                     formal_parameter_labels
                 )
         placements = [AdicCompletions(), *extra_categories]
+        ring_placements = []
+        if source in OwnedRings().Commutative():
+            ring_placements.append(OwnedRings().Commutative())
         if source in OwnedRings().Noetherian():
             placements.append(OwnedRings().Noetherian())
+            ring_placements.append(OwnedRings().Noetherian())
         formal_base = algebra_base
         match formal_base:
             case None:
@@ -3342,9 +3346,13 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             formal_base_is_local,
         ):
             case (True, _, _) | (_, True, _):
-                placements.append(OwnedRings().Commutative().Local().Complete())
+                local_complete = OwnedRings().Commutative().Local().Complete()
+                placements.append(local_complete)
+                ring_placements.append(local_complete)
             case (_, _, True):
-                placements.append(OwnedRings().Commutative().Local())
+                local = OwnedRings().Commutative().Local()
+                placements.append(local)
+                ring_placements.append(local)
             case _:
                 pass
         _OwnedAlgebraParent.__init__(
@@ -3353,6 +3361,7 @@ class _AdicCompletionAlgebraParent(_OwnedAlgebraParent):
             source if algebra_base is None else algebra_base,
             algebra_labels,
             categories=tuple(placements),
+            ring_placement=lambda: tuple(ring_placements),
         )
         completion_map = self.completion_map()
         match (formal_base_is_local, defining_ideal_is_maximal):
@@ -5217,18 +5226,26 @@ class _DualNumbersAlgebraParent(_OwnedAlgebraParent):
         self._quotient_defining_ideal = defining_ideal
         self._quotient_map_factory = quotient_map
         placements = [QuotientRings()]
+        ring_placements = []
+        if base in OwnedRings().Commutative():
+            ring_placements.append(OwnedRings().Commutative())
         if base in OwnedRings().Noetherian():
             placements.append(OwnedRings().Noetherian())
+            ring_placements.append(OwnedRings().Noetherian())
         if base in OwnedRings().Artinian():
             placements.append(OwnedRings().Artinian())
+            ring_placements.append(OwnedRings().Artinian())
         if base in OwnedRings().Commutative().Local():
-            placements.append(OwnedRings().Commutative().Local())
+            local = OwnedRings().Commutative().Local()
+            placements.append(local)
+            ring_placements.append(local)
         _OwnedAlgebraParent.__init__(
             self,
             engine,
             base,
             (label,),
             categories=tuple(placements),
+            ring_placement=lambda: tuple(ring_placements),
         )
         if base in OwnedRings().Commutative().Local():
             epsilon_bar = self._from_engine_element(engine.gen())
