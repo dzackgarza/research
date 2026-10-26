@@ -1871,7 +1871,11 @@ def _lattice(
             return _lattice_from_gram_tensor(data, ring, names, module_generators, category)
         case Tensor() | Matrix():
             raise TypeError(f"{data} cannot be the Gram matrix of a lattice: it is a linear map, a tensor of type (1, 1), but a bilinear form is a tensor of type (0, 2)")
-        case _ if data in FormModules(ring) and data.module_rank().is_finite():
+        case _ if (
+            data in FormModules(ring)
+            and data.module_rank().is_finite()
+            and data.is_base_ring_valued() is True
+        ):
             rank = int(data.module_rank())
             gram = data.gram_tensor()
             return _lattice_on_gram(
@@ -1880,6 +1884,11 @@ def _lattice(
                 _nested_gram_tensor([[gram[row, column] for column in range(rank)] for row in range(rank)], ring),
                 _normalized_lattice_names(names, rank),
                 None,
+            )
+        case _ if data in FormModules(ring) and data.module_rank().is_finite():
+            raise TypeError(
+                f"Lattices({ring}) cannot construct an integral lattice from {data}: "
+                f"its selected form is not known to take values in {ring}"
             )
         case _ if data in FramedFreeModules(ring):
             return _identity_lattice(data, ring, names, module_generators, category)
