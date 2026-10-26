@@ -1444,8 +1444,8 @@ def _subobject_source(subobject):
     return inclusion.domain() if inclusion is subobject else subobject
 
 
-class SubobjectMorphism(Morphism):
-    r"""A factor map with its retained commuting triangle of subobjects.
+class SubobjectMorphism(CategoricalMor.ElementMethods):
+    r"""Methods for a generated factor arrow with its commuting triangle of subobjects.
 
     Monic cancellation proves uniqueness only under the two actual triangle
     laws.  Undecided laws remain on their selected slice squares, rather than
@@ -1517,7 +1517,11 @@ class SubobjectMorphism(Morphism):
     def __eq__(self, other: Any):
         if self is other:
             return True
-        if parent(other) is not self.parent() or not isinstance(other, SubobjectMorphism):
+        if (
+            not isinstance(other, CategoricalMor.ElementMethods)
+            or other.parent().base_category() is not self.parent().base_category()
+            or parent(other) is not self.parent()
+        ):
             return False
         # A monomorphism cancels on the left: there is at most one factor
         # whose actual triangle commutes with the two chosen inclusions.
@@ -1537,20 +1541,24 @@ class SubobjectMorphism(Morphism):
         return hash(id(self.parent()))
 
     def __mul__(self, other):
-        if not isinstance(other, SubobjectMorphism) or not _precomposable(self, other):
+        if (
+            not isinstance(other, CategoricalMor.ElementMethods)
+            or other.parent().base_category() is not self.parent().base_category()
+            or not _precomposable(self, other)
+        ):
             return NotImplemented
         parent_mor = self.parent().subobject_category().Mor(
             other.domain(), self.codomain()
         )
         # If j f = i and k g = j, then k (g f) = i.
         square = self._slice_square * other._slice_square
-        return SubobjectMorphism(
+        return parent_mor.element_class(
             parent_mor, square.left(), _slice_square=square
         )
 
 
 class SubobjectMor(CategoricalMor):
-    Element = SubobjectMorphism
+    ElementMethods = SubobjectMorphism
 
     def __init__(
         self,
@@ -1592,12 +1600,12 @@ class SubobjectMor(CategoricalMor):
             is not None
         )
 
-    def canonical_morphism(self) -> SubobjectMorphism:
-        return SubobjectMorphism(self, self._canonical_factor(), verify=False)
+    def canonical_morphism(self):
+        return self.element_class(self, self._canonical_factor(), verify=False)
 
     def _element_constructor_(self, factor_morphism=None, *, check=False):
         match factor_morphism:
-            case SubobjectMorphism():
+            case CategoricalMor.ElementMethods() if factor_morphism.parent().base_category() is self.base_category():
                 if factor_morphism.parent() is self:
                     factor_morphism.validate_commutativity(check=check)
                     return factor_morphism
@@ -1606,16 +1614,16 @@ class SubobjectMor(CategoricalMor):
                 result = self.canonical_morphism()
                 result.validate_commutativity(check=check)
                 return result
-        return SubobjectMorphism(self, factor_morphism, verify=check)
+        return self.element_class(self, factor_morphism, verify=check)
 
     @object_level
-    def identity(self) -> SubobjectMorphism:
+    def identity(self):
         if self.domain() is not self.codomain():
             raise ValueError(
                 f"the identity morphism exists only on Mor(X, X), but this is Mor({self.domain()}, {self.codomain()})"
             )
         square = self._slice_mor().identity()
-        return SubobjectMorphism(self, square.left(), _slice_square=square)
+        return self.element_class(self, square.left(), _slice_square=square)
 
 
 class SubobjectMorCategoryConstruction(MorCategoryConstruction):
