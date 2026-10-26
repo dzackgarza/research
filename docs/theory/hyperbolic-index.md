@@ -2725,11 +2725,11 @@ The evaluated bound meets every target-isometry orbit, so decidable
 invariant predicates also admit complete finite exclusion. Other predicates
 require their own termination argument.
 
-The interfaces are defined at the [lattice owner](../../src/dzack_research/preamble/categories/lattices.py),
-[embedding-space owner](../../src/dzack_research/preamble/categories/lattice_morphisms.py),
-[finite free-module owner](../../src/dzack_research/preamble/categories/modules/framed/framed_free_modules.py)
-and [finite enumerated-set owner](../../src/dzack_research/preamble/categories/sets/finite_ordered_sets.py).
-The [formed scalar-extension construction](../../src/dzack_research/preamble/categories/modules/framed/formed/form_modules.py)
+The interfaces are defined at the [lattice owner](../../sage_extensions/categories/lattices.py),
+[embedding-space owner](../../sage_extensions/categories/lattice_morphisms.py),
+[finite free-module owner](../../sage_extensions/categories/modules/framed/framed_free_modules.py)
+and [finite enumerated-set owner](../../sage_extensions/categories/sets/finite_ordered_sets.py).
+The [formed scalar-extension construction](../../sage_extensions/categories/modules/framed/formed/form_modules.py)
 retains the original lattice and scalar map.
 
 ## References

@@ -11,6 +11,8 @@ mathematics is compared at the live owner.
 
 from __future__ import annotations
 
+import importlib.util
+
 import argparse
 import ast
 import csv
@@ -229,7 +231,7 @@ def main() -> None:
     parser.add_argument(
         "--live-root",
         type=Path,
-        default=Path("src/dzack_research/preamble"),
+        default=Path(importlib.util.find_spec("sage_extensions").origin).parent,
     )
     parser.add_argument(
         "--output",

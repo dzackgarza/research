@@ -9,7 +9,7 @@ from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/fractional_ideals.sage",
-    "live_owner": "src/dzack_research/preamble/categories/modules/fractional_ideals.py",
+    "live_owner": "sage_extensions/categories/modules/fractional_ideals.py",
     "disposition": "reconciled-live-owner",
 }
 

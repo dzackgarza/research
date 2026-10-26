@@ -74,7 +74,7 @@ there.
 ## Missing or defective parts of the public constructions
 
 Source paths in this table are relative to
-`src/dzack_research/preamble/categories/`.
+`sage_extensions/categories/`.
 
 | Primitive | Required mathematical output | Observed defect |
 | --- | --- | --- |

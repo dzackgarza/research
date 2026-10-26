@@ -26,6 +26,8 @@ says so.
 
 from __future__ import annotations
 
+import importlib.util
+
 import argparse
 import html
 import inspect
@@ -1447,8 +1449,8 @@ def graph_json(survey: Survey) -> str:
     return json.dumps(
         {
             "source": {
-                "fingerprint": source_fingerprint(REPO_ROOT / "src/dzack_research/preamble"),
-                "scope": "src/dzack_research/preamble/**/*.py",
+                "fingerprint": source_fingerprint(Path(importlib.util.find_spec("sage_extensions").origin).parent),
+                "scope": "sage_extensions/**/*.py",
                 "basis": "live session; each category record states its sampled parameters in probed_as",
             },
             "categories": categories, "functors": functors, "specimens": specimens,

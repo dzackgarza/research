@@ -10,10 +10,10 @@ from dzack_research.preamble.all import Sets
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/abstract_categories/products.sage",
-    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/products.py",
+    "live_owner": "sage_extensions/categories/abstract_categories/products.py",
     "owner_overrides": {
-        "Sets.product": "src/dzack_research/preamble/categories/sets/set_categories.py",
-        "Sets.coproduct": "src/dzack_research/preamble/categories/sets/set_categories.py",
+        "Sets.product": "sage_extensions/categories/sets/set_categories.py",
+        "Sets.coproduct": "sage_extensions/categories/sets/set_categories.py",
     },
     "disposition": "reconciled-live-owner",
 }

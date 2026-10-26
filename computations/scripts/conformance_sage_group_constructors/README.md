@@ -27,7 +27,7 @@ $\operatorname{Aut}(G)$ is, depending on which one you hold: present under
 Z)$ for a free abelian object); reachable only through the object's GAP
 model; or genuinely uncomputable. That variation is exactly what the
 preamble's owned `Aut()` exists to remove
-(`src/dzack_research/preamble/categories/group/groups.sage`,
+(`sage_extensions/categories/group/groups.sage`,
 `OwnedGroups.ParentMethods.Aut`), so the dispatcher itself is superseded.
 
 What is **not** superseded is the checklist: it is a requirement list for the

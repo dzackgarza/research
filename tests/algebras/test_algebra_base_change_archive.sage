@@ -11,7 +11,7 @@ from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/functors/algebra_base_change.sage",
-    "live_owner": "src/dzack_research/preamble/categories/functors/algebra_scalar_change.py",
+    "live_owner": "sage_extensions/categories/functors/algebra_scalar_change.py",
     "disposition": "reconciled-live-owner",
 }
 

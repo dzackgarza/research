@@ -251,7 +251,7 @@ evidence, acceptance, dependencies, and closure.
 
 When the owner calls an engineering move "standard", "the usual way" or "how it is done", the standard is this repository's own `CONTRIBUTING.md`, this file and the terminology dictionary before it is anything external (for mathematics the standard is `lean-categories`): look the move up there first, and survey prior art only for what they do not state. On 2026-09-17 the qualified-predicate rule (`LEX-02`) was looked up in Sage, which has no such notion, instead of in `CONTRIBUTING.md`, which does.
 
-Before writing or editing code under `src/dzack_research/preamble/`, first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
+Before writing or editing code under `src/dzack_research/preamble/` or in sage-extensions (`sage_extensions`), first read the root [TODO.md](TODO.md). It contains only unfinished work, its priorities, mathematical contracts, dependencies, acceptance criteria, and active file reservations. Use it according to the rules below.
 
 Use [COMPLEXITY.md](COMPLEXITY.md) to score work and select a model and reasoning effort.
 The [TODO workstream table](TODO.md#workstreams) records the DAG task scores and their reasons.
@@ -766,7 +766,7 @@ different acts, and only the second one does anything.
 
 - For any notebook inspection, execution, or result-checking, use `japi` (from `jupyter-assistant-api`) rather than direct Notebook HTTP API calls.
 - `japi` is the required interface for reading cells, restarting kernels, and verifying rendered results in `computations/notebooks/` during development and debugging.
-- Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/` or `src/dzack_research/preamble/`.  This exemption holds even though those changes do contain code; it is a scope decision, not the prose rule under *QC integration*.
+- Skip test, QC, build, execution, and rendered-result verification for changes confined to `computations/notebooks/`, `src/dzack_research/preamble/` or sage-extensions.  This exemption holds even though those changes do contain code; it is a scope decision, not the prose rule under *QC integration*.
 - Commit those changes with verification hooks skipped; do not let unrelated repository failures block notebook or preamble work.
 
 # Goal-integrity routing (always-on)
@@ -1320,7 +1320,7 @@ Top-level directories (this is a navigational map; each tree owns its own README
 - **`computations/`** — the working computational corpus.
   Its `experiments/` subtree holds the **spikes** (see the lineage note below and *QC integration for spikes*). Other subdirs are task-specific: `vendor/` (third-party code — see below), `coxiter/` (CoxIter tool integration), `enriques-moduli/` + `enriques-paper-artifacts/` (Enriques-surface moduli work), `notebooks/` (**the user's plane — see below**), `scripts/` (one-off and exploratory scripts — **the only `scripts/` dir; it is QC-exempt**, and is where exploratory code is relocated to de-scope it from the strict gates; holds `components/`, the reusable computation pieces such as the `coxeter-vinberg/` prototypes, relocated here in `746595e`, and the exploratory `lattice-orbits/` isotropic-orbit scripts), `reports/` (generated output).
 
-- **`src/`** — the installable package (`dzack_research`). The live mathematical preamble is `src/dzack_research/preamble/`; `from dzack_research.preamble.all import *` is the session import. Non-mathematical repository tooling that analyzes or generates source artifacts lives under `src/dzack_research/utilities/` and is not part of the preamble session surface. **Migration criterion:** code lives in a spike until it has matured past spike status and is usable for real research — demonstrated by *shipped, tested, high-level notebooks* that do actual work with it.
+- **`src/`** — the installable package (`dzack_research`). The session preamble is `src/dzack_research/preamble/`; `from dzack_research.preamble.all import *` is the session import. The mathematical library lives in [sage-extensions](https://github.com/dzackgarza/sage-extensions) (`sage_extensions`), a git dependency on its `main` head. Non-mathematical repository tooling that analyzes or generates source artifacts lives under `src/dzack_research/utilities/` and is not part of the preamble session surface. **Migration criterion:** code lives in a spike until it has matured past spike status and is usable for real research — demonstrated by *shipped, tested, high-level notebooks* that do actual work with it.
   Only then does it migrate here, and the move is the semantic statement that it is meant to be shared and reused.
   Do not promote code into `src/` because it looks finished; promote it when a notebook proves a researcher can use it.
 
@@ -1403,7 +1403,7 @@ The goal — a mathematically-semantic, Sage-compatible substrate for exact latt
 - **The spikes** (`sage_lattice_category_spike`, `sage_lattice_feature_spike`) — the second attempt — were absorbed into the preamble and deleted on 2026-08-19 (PLAN-spike-absorption-workstreams; the migration commits' bodies record each notion's origin and synthesis). Git history is their archive; do not expect their directories to exist.
 
 - **The archived preamble** — the third attempt — was archived on 2026-08-30 at `archives/preamble/`.
-- **The live preamble** is `src/dzack_research/preamble/`. `from dzack_research.preamble.all import *` is the session import.
+- **The live preamble** is `src/dzack_research/preamble/`. `from dzack_research.preamble.all import *` is the session import. Its mathematics is [sage-extensions](https://github.com/dzackgarza/sage-extensions) (`sage_extensions`).
 
 # Issue-tree and milestone policy (research repo)
 
@@ -1661,7 +1661,7 @@ The review should make it easy to finish the work, not easy to feel satisfied wi
 
 # The preamble is a universe over Sage (always-on)
 
-The live package is `src/dzack_research/preamble/`. This ownership contract governs
+The live package is sage-extensions (`sage_extensions`), imported by the session preamble `src/dzack_research/preamble/`. This ownership contract governs
 the live package; `archives/preamble/` is prior implementation material, not an
 alternate API contract.
 

@@ -28,6 +28,8 @@ Run ``python -m dzack_research.utilities.placement [CATEGORY ...]``, or
 
 from __future__ import annotations
 
+import importlib.util
+
 import argparse
 import hashlib
 import json
@@ -189,7 +191,7 @@ def main() -> None:
     parser.add_argument("--method", action="append", default=[], help="operation glob; repeatable")
     parser.add_argument("--format", choices=("markdown", "json", "dot"), default="markdown")
     parser.add_argument("--compare", type=Path, help="earlier graph snapshot; report added and removed relations")
-    parser.add_argument("--source-root", type=Path, default=GRAPH.parents[1] / "src/dzack_research/preamble")
+    parser.add_argument("--source-root", type=Path, default=Path(importlib.util.find_spec("sage_extensions").origin).parent)
     arguments = parser.parse_args()
     if arguments.compare and (arguments.categories or arguments.method or arguments.between or arguments.direction != "self" or arguments.format != "markdown"):
         parser.error("--compare compares whole snapshots and emits JSON; omit slice and format options")

@@ -16,7 +16,7 @@ from dzack_research.preamble.all import (
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/abstract_categories/direct_sum_objects.sage",
-    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/direct_sum_objects.py",
+    "live_owner": "sage_extensions/categories/abstract_categories/direct_sum_objects.py",
     "disposition": "reconciled-live-owner",
 }
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import importlib.util
+
 import argparse
 from pathlib import Path
 
@@ -9,7 +11,7 @@ from .report import analyze_tree, render_json, render_markdown
 
 
 def _default_root() -> Path:
-    return Path(__file__).resolve().parents[2] / "preamble"
+    return Path(importlib.util.find_spec("sage_extensions").origin).parent
 
 
 def main() -> None:

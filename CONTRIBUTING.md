@@ -6553,7 +6553,7 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
-- **Rule**: Before adding or changing code under `src/dzack_research/preamble/`, read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its unfinished constructions, input contracts, priorities, dependencies, acceptance criteria, and active file reservations.
+- **Rule**: Before adding or changing code under `src/dzack_research/preamble/` or in sage-extensions (`sage_extensions`), read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its unfinished constructions, input contracts, priorities, dependencies, acceptance criteria, and active file reservations.
   Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; when `DEV-58` permits execution, regenerate a stale document with `just preamble-megadoc` and read it. While execution is suspended, read the existing reference as an index, inspect the affected live source, and retain regeneration under terminal T.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.

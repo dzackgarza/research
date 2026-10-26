@@ -11,7 +11,7 @@ from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/integrallattice/subobjects.sage",
-    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
+    "live_owner": "sage_extensions/categories/abstract_categories/arrow_categories.py",
     "disposition": "reconciled-live-owner",
 }
 

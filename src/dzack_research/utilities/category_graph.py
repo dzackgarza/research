@@ -13,6 +13,7 @@ makes each claim legible beside every other one.
 
 from __future__ import annotations
 
+import importlib.util
 import argparse
 import ast
 import json
@@ -1704,7 +1705,14 @@ def render_constructions(
         for path in sorted(root.rglob("*.py"))
     }
     factories = _factories(list(trees.values()))
-    source_root = root.parents[1]
+    # The import base is the first ancestor outside the package's
+    # __init__.py chain: src/ for both src/sage_extensions and
+    # src/dzack_research/preamble.
+    source_root = root.parent
+    while (source_root / "__init__.py").exists():
+        source_root = source_root.parent
+    if not (root / "__init__.py").exists():
+        source_root = root.parents[1]
     module_paths = {
         ".".join(path.relative_to(source_root).with_suffix("").parts): path
         for path in trees
@@ -1931,7 +1939,7 @@ def render_constructions(
 
 
 def _default_root() -> Path:
-    return Path(__file__).resolve().parents[1] / "preamble"
+    return Path(importlib.util.find_spec("sage_extensions").origin).parent
 
 
 def select_vertices(

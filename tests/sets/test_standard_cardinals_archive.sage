@@ -4,7 +4,7 @@ from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/sets/cardinals.py",
-    "live_owner": "src/dzack_research/preamble/categories/sets/cardinals.py",
+    "live_owner": "sage_extensions/categories/sets/cardinals.py",
     "disposition": "reconciled-live-owner",
 }
 

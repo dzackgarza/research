@@ -105,7 +105,7 @@ mathematical claim.
 
 ## Boundaries and next levels of precision
 
-The inventory visits all Python files below `src/dzack_research/preamble/`
+The inventory visits all Python files of the installed `sage_extensions` package
 and extracts the source-defined category and method containers, including
 Mor-category implementation classes named by `ElementMethods = ...`.
 Built-in Sage methods absent from the owned source are not falsely counted as

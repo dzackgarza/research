@@ -11,7 +11,7 @@ from sage_extensions.categories.sets.finite_ordered_sets import (
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/abstract_categories/slice_categories.sage",
-    "live_owner": "src/dzack_research/preamble/categories/abstract_categories/arrow_categories.py",
+    "live_owner": "sage_extensions/categories/abstract_categories/arrow_categories.py",
     "disposition": "reconciled-live-owner",
 }
 

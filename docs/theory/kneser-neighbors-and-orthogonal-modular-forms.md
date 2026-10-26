@@ -57,7 +57,7 @@ It does not imply that the positive-definite genus $II_{n-2,0}$ has one class.
 Distinct positive-definite complements can give the same indefinite lattice
 after adjoining two hyperbolic planes.
 
-The current [preamble implementation](../../src/dzack_research/preamble/categories/lattices.py)
+The current [preamble implementation](../../sage_extensions/categories/lattices.py)
 already uses the name `L.genus()` for the finite set of isometry classes,
 that is, for $\operatorname{Cl}(L)$ in this notation. Its interfaces are:
 

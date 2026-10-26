@@ -10,6 +10,7 @@ Category declarations and inheritance come from the existing category_graph.
 
 from __future__ import annotations
 
+import importlib.util
 import argparse
 import ast
 import json
@@ -167,18 +168,34 @@ def _result(kind: str, category: str | None, evidence: str, expr: ast.AST | str,
 class Index:
     r"""Source-method and category index, including alias and import resolution."""
 
-    def __init__(self, root: Path):
+    def __init__(self, root: Path, session: Path | None = None):
         self.root = root.resolve()
-        self.repo = self.root.parents[2]
+        # The import base is the first ancestor outside the package's
+        # __init__.py chain: src/ for both src/sage_extensions and
+        # src/dzack_research/preamble.
+        self.base = self.root.parent
+        while (self.base / "__init__.py").exists():
+            self.base = self.base.parent
+        if not (self.root / "__init__.py").exists():
+            self.base = self.root.parents[1]
+        self.repo = self.base.parent
         self.trees = {p: ast.parse(p.read_text(encoding="utf-8"), filename=str(p))
                       for p in sorted(self.root.rglob("*.py"))}
+        # The session module may live outside the library root: research's
+        # dzack_research.preamble.all imports the sage_extensions library.
+        self.session = (session or self.root / "all.py").resolve()
+        if self.session.exists() and self.session not in self.trees:
+            self.trees[self.session] = ast.parse(
+                self.session.read_text(encoding="utf-8"), filename=str(self.session))
         self.declarations = graph.read_tree(self.root)
         self.inclusions = sorted(graph._all_edges(self.declarations))
         self.imports = {p: graph._imported_names(tree) for p, tree in self.trees.items()}
         self.by_module = {
-            ".".join(p.relative_to(self.root.parents[1]).with_suffix("").parts): p
-            for p in self.trees
+            ".".join(p.relative_to(self.base).with_suffix("").parts): p
+            for p in self.trees if p.is_relative_to(self.root)
         }
+        if not self.session.is_relative_to(self.root) and self.session in self.trees:
+            self.by_module["dzack_research.preamble.all"] = self.session
         self.methods: dict[str, Method] = {}
         self.by_owner: dict[tuple[str, str, str], str] = {}
         self.functions: dict[tuple[Path, str], str] = {}
@@ -197,7 +214,9 @@ class Index:
         self._exports()
 
     def path(self, path: Path) -> str:
-        return str(path.relative_to(self.repo))
+        if path.is_relative_to(self.repo):
+            return str(path.relative_to(self.repo))
+        return str(path.relative_to(self.session.parents[3]))
 
     def _method(self, node, path: Path, owner: str, slot: str) -> str:
         identifier = f"{self.path(path)}:{node.lineno}:{owner}.{slot}.{node.name}"
@@ -341,7 +360,7 @@ class Index:
 
     def _exports(self) -> None:
         r"""Resolve session function exports through package reexports, without imports."""
-        session = self.root / "all.py"
+        session = self.session
         if session not in self.trees:
             return
 
@@ -934,9 +953,10 @@ def _closure(categories: list[dict[str, Any]], rules: list[dict[str, Any]],
 
 
 def build_manifest(root: Path, *, depth: int = MAX_TRACE_DEPTH,
-                   observations: dict[str, Any] | None = None) -> dict[str, Any]:
+                   observations: dict[str, Any] | None = None,
+                   session: Path | None = None) -> dict[str, Any]:
     r"""Inventory every method and return branch, then close typed result edges."""
-    index = Index(root)
+    index = Index(root, session)
     inference = Inference(index, depth=depth)
     categories: list[dict[str, Any]] = []
     declarations_by_vertex = defaultdict(list)
@@ -1139,7 +1159,8 @@ def render_html(manifest: dict[str, Any]) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1] / "preamble")
+    parser.add_argument("--root", type=Path, default=Path(importlib.util.find_spec("sage_extensions").origin).parent)
+    parser.add_argument("--session", type=Path, default=Path(__file__).resolve().parents[1] / "preamble" / "all.py")
     parser.add_argument("--json", type=Path, required=True, help="machine-readable complete audit")
     parser.add_argument("--html", type=Path, required=True, help="standalone interactive browser")
     parser.add_argument("--depth", type=int, default=MAX_TRACE_DEPTH)
@@ -1148,7 +1169,8 @@ def main(argv: list[str] | None = None) -> int:
     if options.depth < 1:
         parser.error("--depth must be positive")
     observations = json.loads(options.inferred.read_text()) if options.inferred else None
-    report = build_manifest(options.root, depth=options.depth, observations=observations)
+    report = build_manifest(options.root, depth=options.depth, observations=observations,
+                            session=options.session)
     options.json.parent.mkdir(parents=True, exist_ok=True)
     options.html.parent.mkdir(parents=True, exist_ok=True)
     options.json.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")

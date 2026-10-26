@@ -802,7 +802,7 @@ mathematical object they study, not copied wholesale into one new framework.
 | `preamble.ipynb` | Guide to the common notebook language once the category surface is stable. |
 | `Local_Axiom_Probe.ipynb`, `Prime_Localization_Probe.ipynb` | Empty probes whose mathematical questions are absorbed by Stages 1 and 2. |
 | `Projective_Framework_Validation.ipynb`, `Kernel_Interrupt_Helper.ipynb` | Operational notebooks with no authority over the mathematical dependency order. |
-| `src/dzack_research/preamble/Untitled.ipynb` | Unsettled scratch work with no independent mathematical claim. |
+| `sage_extensions/Untitled.ipynb` | Unsettled scratch work with no independent mathematical claim. |
 
 The large first projective framework should be disassembled conceptually:
 

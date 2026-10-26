@@ -10,7 +10,7 @@ from dzack_research.preamble.all import *
 
 ARCHIVE_RECONCILIATION = {
     "archive_module": "preamble/categories/modules/framed/formed/lattices.sage",
-    "live_owner": "src/dzack_research/preamble/categories/lattices.py",
+    "live_owner": "sage_extensions/categories/lattices.py",
     "owner_overrides": {
         "Lattices.namespace": "src/dzack_research/preamble/all.py",
         "Lattices.install": "src/dzack_research/preamble/all.py",

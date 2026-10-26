@@ -53,11 +53,11 @@ A subset of a finite set is finite, and so are a quotient, a product and an imag
 
 ```sh
 just category-graph slice --select PredicateSubgroups --direction up
-just refactor-survey --root src/dzack_research/preamble/categories/group \
+just refactor-survey --root sage_extensions/categories/group \
   --view constructors 'Subgroups.*' 'PredicateSubgroups.*'
-just refactor-survey --root src/dzack_research/preamble \
+just refactor-survey --root ~/gitclones/sage-extensions/src/sage_extensions \
   subgroup preimage_subgroup inclusion _canonical_subgroup_inclusion
-just refactor-survey --root src/dzack_research/preamble \
+just refactor-survey --root ~/gitclones/sage-extensions/src/sage_extensions \
   'SetSubobjectCategory.*' 'Subgroups.*'
 ```
 
@@ -68,11 +68,11 @@ For an orthogonal-group specialization, start at its public subgroup operation a
 To inspect encapsulation around the same route:
 
 ```sh
-just refactor-survey --root src/dzack_research/preamble/categories/group \
+just refactor-survey --root sage_extensions/categories/group \
   --view private --json 'PredicateSubgroups.*'
-just refactor-survey --root src/dzack_research/preamble/categories/group \
+just refactor-survey --root sage_extensions/categories/group \
   --view duplicates --json
-just tags json src/dzack_research/preamble/categories/group
+just tags json sage_extensions/categories/group
 ```
 
 Inspect the receiver and declaration-side contract before calling a private access a violation. The duplicate view retains its original relative source locations and roots. It detects literal AST-body reuse, not all equivalent algorithms. A same-name survey also exposes distinct return shapes: those may indicate different operations that need different names.

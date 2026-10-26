@@ -16,6 +16,7 @@ HTML inspector.  No Sage session and no method evaluation are needed.
 
 from __future__ import annotations
 
+import importlib.util
 import argparse
 import ast
 import html
@@ -211,7 +212,7 @@ def _arguments(method: ast.FunctionDef, container: str) -> tuple[str, ...]:
 def inventory(root: Path) -> dict:
     """Read every declared category and all source-level operation returns."""
     root = root.resolve()
-    repo_root = root.parents[2] if root.parts[-3:] == ("src", "dzack_research", "preamble") else root
+    repo_root = root.parents[1] if root.parts[-2:] == ("src", "sage_extensions") else root
 
     def location(path: Path | str, line: int) -> str:
         # Machine-independent provenance: an audit on a CI runner and one on
@@ -564,7 +565,7 @@ $("filter").oninput=draw;$("mode").onchange=draw;draw();
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1] / "preamble")
+    parser.add_argument("--root", type=Path, default=Path(importlib.util.find_spec("sage_extensions").origin).parent)
     parser.add_argument("--output", type=Path, default=Path(".tmp/construction-closure"))
     args = parser.parse_args(argv)
     args.output.mkdir(parents=True, exist_ok=True)
