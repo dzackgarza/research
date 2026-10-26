@@ -185,7 +185,7 @@ tags format="tags" root="src":
     @case "$1" in tags) ctags -R --languages=Python -f tags "$2" ;; json) ctags -R --languages=Python --output-format=json --fields=+n --extras=+q "$2" ;; *) echo 'format must be tags or json' >&2; exit 2 ;; esac
 
 # Link sage-init.sage as Sage's startup file (${DOT_SAGE:-~/.sage}/init.sage), giving every Sage process — terminal REPL and every Jupyter kernel — implicit LaTeX rendering of cell results. Idempotent, and refuses to replace anything it did not create.
-sage-init-install:
+sage-init-install: _sage-plain-kernel
     #!/usr/bin/env bash
     set -euo pipefail
     source="{{justfile_directory()}}/sage-init.sage"
@@ -210,6 +210,20 @@ sage-init-install:
     ln -s "${source}" "${target}"
     echo "sage-init-install: linked ${target} -> ${source}"
     echo "sage-init-install: restart running kernels to pick it up"
+
+# _sage-plain-kernel: the "SageMath (no preamble)" Jupyter kernel for the
+# notebooks under computations/notebooks/base-sage. It is the sagemath kernel
+# with SAGE_STARTUP_FILE pointed at an empty file, so sage-init.sage and the
+# preamble are never loaded.
+[private]
+_sage-plain-kernel:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    kernels="${JUPYTER_DATA_DIR:-$HOME/.local/share/jupyter}/kernels"
+    mkdir -p "${kernels}/sagemath-plain"
+    jq '.display_name = "SageMath (no preamble)" | .env = {"SAGE_STARTUP_FILE": "/dev/null"}' \
+        "${kernels}/sagemath/kernel.json" > "${kernels}/sagemath-plain/kernel.json"
+    echo "sage-init-install: kernel sagemath-plain at ${kernels}/sagemath-plain"
 
 # Prove the installed startup file actually typesets in a real Sage kernel
 sage-init-check: sage-init-install
