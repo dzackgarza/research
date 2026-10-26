@@ -344,14 +344,26 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         r"""The base log pair of the ``A_1`` polygon."""
         return self("A", 1)
 
-    def _call_(self, dynkin_letter, dynkin_rank, variant=(), affine=False):
+    def _call_(
+        self,
+        dynkin_letter,
+        dynkin_rank,
+        variant=(),
+        affine=False,
+        *,
+        _source_variant=None,
+    ):
         r"""Construct the base log pair of one ADE type over this category's base."""
         letter = str(dynkin_letter).upper()
         assert letter in ("A", "D", "E"), (
             f"an ADE type has letter A, D or E, but the letter is {letter!r}"
         )
         rank = int(_engine_numeral(SageZZ, dynkin_rank))
-        source_variant = _normalize_at21_variant(letter, rank, variant, bool(affine))
+        source_variant = (
+            _normalize_at21_variant(letter, rank, variant, bool(affine))
+            if _source_variant is None
+            else _source_variant
+        )
         allow_a_zero = letter == "A" and rank == 0 and not affine and source_variant == "short"
         assert rank >= 1 or allow_a_zero, (
             f"an ADE type {letter}_n needs rank n >= 1, except for the pure A_0^- shape "
@@ -360,6 +372,11 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         low_level_variant = _validated_at21_low_level_variant(
             letter, rank, source_variant, bool(affine)
         )
+        if _source_variant is not None:
+            assert tuple(variant) == low_level_variant, (
+                f"the supplied low-level ADE side tuple {variant!r} does not represent "
+                f"the retained source variant {source_variant!r}, whose tuple is {low_level_variant!r}"
+            )
 
         vertices, point, decorations = _ade_polygon_data(
             letter,
@@ -420,7 +437,13 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
             source_variant,
             affine,
         )
-        pair = self(letter, rank, variant=low_variant, affine=affine)
+        pair = self(
+            letter,
+            rank,
+            variant=low_variant,
+            affine=affine,
+            _source_variant=source_variant,
+        )
         surface = pair.log_scheme()
         branch_class = surface.polarizing_divisor()
         expected = _owned_integers()(2) * pair.complementary_divisor()
