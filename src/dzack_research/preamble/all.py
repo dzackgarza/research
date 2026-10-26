@@ -9,8 +9,10 @@ an ordinary Python support object deliberately selected by the preamble.
 
 import sys as _sys
 from importlib import import_module as _import_module
+from importlib import reload as _reload_module
 from importlib.util import find_spec as _find_spec
 from pathlib import Path as _Path
+from types import FunctionType as _FunctionType
 from typing import cast as _cast
 
 # The session's numeric vocabulary and its parser are one contract: decimal
@@ -31,8 +33,84 @@ def _canonical_attach_code(filename: str) -> str | None:
     if module_name is None:
         return None
     return (
-        "raise RuntimeError('cannot attach-reload a canonical imported module: re-execution can split class, function, and parent identities across consumers; restart the Sage session to load changed package source')\n"
+        "from dzack_research.preamble.all import _reload_canonical_module as __preamble_reload\n"
+        f"__preamble_module = __preamble_reload({module_name!r})\n"
+        "globals().update({name: value for name, value in vars(__preamble_module).items() "
+        "if not (name.startswith('__') and name.endswith('__'))})\n"
     )
+
+
+def _reload_canonical_module(module_name: str):
+    r"""Reload source while reconciling class definitions into existing objects."""
+    module = _sys.modules[module_name]
+    old_classes = {
+        name: value for name, value in vars(module).items()
+        if isinstance(value, type) and value.__module__ == module.__name__
+    }
+    _reload_module(module)
+    replacements = {
+        vars(module)[name]: old_class for name, old_class in old_classes.items()
+        if isinstance(vars(module).get(name), type)
+        and vars(module)[name].__module__ == module.__name__
+    }
+
+    def cell(value):
+        return (lambda: value).__closure__[0]
+
+    def preserve_function(function, old_class):
+        if function is None or not isinstance(function, _FunctionType):
+            return function
+        closure = function.__closure__
+        if not closure or "__class__" not in function.__code__.co_freevars:
+            return function
+        cells = list(closure)
+        index = function.__code__.co_freevars.index("__class__")
+        if cells[index].cell_contents not in replacements:
+            return function
+        cells[index] = cell(old_class)
+        replacement = _FunctionType(
+            function.__code__, function.__globals__, function.__name__,
+            function.__defaults__, tuple(cells),
+        )
+        replacement.__kwdefaults__ = function.__kwdefaults__
+        replacement.__annotations__ = function.__annotations__
+        replacement.__dict__.update(function.__dict__)
+        replacement.__doc__ = function.__doc__
+        replacement.__module__ = function.__module__
+        replacement.__qualname__ = function.__qualname__
+        return replacement
+
+    for name, old_class in old_classes.items():
+        new_class = vars(module).get(name)
+        if new_class not in replacements or replacements[new_class] is not old_class:
+            continue
+        new_namespace = dict(vars(new_class))
+        for key, value in new_namespace.items():
+            if key in {
+                "__dict__", "__weakref__", "__classcell__", "__slots__",
+                "__bases__", "__mro__",
+            }:
+                continue
+            if isinstance(value, _FunctionType):
+                value = preserve_function(value, old_class)
+            elif isinstance(value, classmethod):
+                value = classmethod(preserve_function(value.__func__, old_class))
+            elif isinstance(value, staticmethod):
+                value = staticmethod(preserve_function(value.__func__, old_class))
+            elif isinstance(value, property):
+                value = property(
+                    preserve_function(value.fget, old_class),
+                    preserve_function(value.fset, old_class),
+                    preserve_function(value.fdel, old_class), value.__doc__,
+                )
+            elif isinstance(value, type):
+                value = replacements.get(value, value)
+            setattr(old_class, key, value)
+        for key in set(vars(old_class)) - set(new_namespace):
+            if key not in {"__dict__", "__weakref__", "__module__", "__name__", "__qualname__"}:
+                delattr(old_class, key)
+        vars(module)[name] = old_class
+    return module
 
 
 def _install_canonical_attach_reload() -> None:
