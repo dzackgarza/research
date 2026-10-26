@@ -69,18 +69,15 @@ def _relative_projectivization_projection(parent, source_sheaf):
     )
 
 
-class _RelativeProjectivizationBaseChangeComposite(SchemeMorphism):
-    r"""The common composite in one exact relative-Proj base-change square."""
-
-    def __init__(self, parent, comparison) -> None:
-        self._comparison = comparison
-        super().__init__(None, mor=parent)
-
-    def comparison(self):
-        return self._comparison
-
-    def _in_mor(self, mor):
-        return _RelativeProjectivizationBaseChangeComposite(mor, self.comparison())
+def _relative_projectivization_base_change_composite(parent, comparison):
+    r"""Construct the common square composite in the generated scheme Mor."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        relative_projectivization_comparison=comparison,
+        relative_projectivization_role="base_change_composite",
+    )
 
 
 class _RelativeProjectivizationBaseChangeTotalMorphism(SchemeMorphism):
@@ -210,10 +207,7 @@ class GeneralProjectivizationBaseChangeComparison(SageObject):
         self._changed_source_sheaf = changed_sheaf
         self._changed_projectivization = changed_family
         self._square_composite = changed_total.Mor(source_scheme)(
-            lambda mor: _RelativeProjectivizationBaseChangeComposite(
-                mor,
-                self,
-            )
+            lambda mor: _relative_projectivization_base_change_composite(mor, self)
         )
         self._base_morphism = changed_scheme.Mor(source_scheme)(
             lambda mor: _RelativeProjectivizationBaseChangeBaseMorphism(
@@ -292,10 +286,7 @@ class ExactProjectivizationBaseChangeComparison(SageObject):
         self._changed_projectivization = changed_family
         self._underlying_base_projection = underlying_base_projection
         self._square_composite = changed_total.Mor(source_scheme)(
-            lambda mor: _RelativeProjectivizationBaseChangeComposite(
-                mor,
-                self,
-            )
+            lambda mor: _relative_projectivization_base_change_composite(mor, self)
         )
         self._base_projection = changed_base.Mor(source_scheme)(
             lambda mor: _RelativeProjectivizationBaseProjectionMorphism(
@@ -386,10 +377,7 @@ class ExactFiniteAtlasProjectivizationBaseChangeComparison(SageObject):
         self._changed_projectivization = changed_family
         self._underlying_base_projection = changed_base.left_projection()
         self._square_composite = changed_total.Mor(source_scheme)(
-            lambda mor: _RelativeProjectivizationBaseChangeComposite(
-                mor,
-                self,
-            )
+            lambda mor: _relative_projectivization_base_change_composite(mor, self)
         )
         self._base_projection = changed_base.Mor(source_scheme)(
             lambda mor: _RelativeProjectivizationBaseProjectionMorphism(

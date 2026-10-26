@@ -618,6 +618,8 @@ class SchemeMorphismMethods:
     _atlas_local_maps = None
     _glued_local_maps = None
     _relative_projectivization_source_sheaf = None
+    _relative_projectivization_comparison = None
+    _relative_projectivization_role = None
 
     def __init__(
         self,
@@ -641,6 +643,8 @@ class SchemeMorphismMethods:
         atlas_local_maps=None,
         glued_local_maps=None,
         relative_projectivization_source_sheaf=None,
+        relative_projectivization_comparison=None,
+        relative_projectivization_role=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -663,6 +667,8 @@ class SchemeMorphismMethods:
         self._atlas_local_maps = atlas_local_maps
         self._glued_local_maps = glued_local_maps
         self._relative_projectivization_source_sheaf = relative_projectivization_source_sheaf
+        self._relative_projectivization_comparison = relative_projectivization_comparison
+        self._relative_projectivization_role = relative_projectivization_role
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -688,6 +694,8 @@ class SchemeMorphismMethods:
             atlas_local_maps=self._atlas_local_maps,
             glued_local_maps=self._glued_local_maps,
             relative_projectivization_source_sheaf=self._relative_projectivization_source_sheaf,
+            relative_projectivization_comparison=self._relative_projectivization_comparison,
+            relative_projectivization_role=self._relative_projectivization_role,
         )
 
     def gluing_datum(self):
@@ -748,6 +756,11 @@ class SchemeMorphismMethods:
         if self._relative_projectivization_source_sheaf is None:
             raise AttributeError(f"{self} is not a relative-projectivization projection")
         return self._relative_projectivization_source_sheaf
+
+    def comparison(self):
+        if self._relative_projectivization_comparison is None:
+            raise AttributeError(f"{self} is not defined by a relative-projectivization comparison")
+        return self._relative_projectivization_comparison
 
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
@@ -819,6 +832,8 @@ class SchemeMorphismMethods:
             ),
             glued_local_maps=glued_local_maps,
             relative_projectivization_source_sheaf=self._relative_projectivization_source_sheaf,
+            relative_projectivization_comparison=self._relative_projectivization_comparison,
+            relative_projectivization_role=self._relative_projectivization_role,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -844,6 +859,8 @@ class SchemeMorphismMethods:
                 "atlas_local_maps": self._atlas_local_maps,
                 "glued_local_maps": self._glued_local_maps,
                 "relative_projectivization_source_sheaf": self._relative_projectivization_source_sheaf,
+                "relative_projectivization_comparison": self._relative_projectivization_comparison,
+                "relative_projectivization_role": self._relative_projectivization_role,
             },
         )
 
@@ -992,6 +1009,14 @@ class SchemeMorphismMethods:
         return NotImplemented
 
     def __eq__(self, other):
+        if self._relative_projectivization_role == "base_change_composite":
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._relative_projectivization_role == "base_change_composite"
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+                and other.comparison() is self.comparison()
+            )
         if self._relative_projectivization_source_sheaf is not None:
             return (
                 isinstance(other, SchemeMorphismMethods)
@@ -1698,6 +1723,8 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
+        if self._relative_projectivization_role == "base_change_composite":
+            raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._relative_projectivization_source_sheaf is not None:
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._gluing_role in ("chart_map", "finite_atlas", "glued_domain"):
@@ -1718,6 +1745,8 @@ class SchemeMorphismMethods:
             return f"Scheme morphism from finite atlas: {self.domain()} -> {self.codomain()}"
         if self._gluing_role == "glued_domain":
             return f"Scheme morphism from glued charts: {self.domain()} -> {self.codomain()}"
+        if self._relative_projectivization_role == "base_change_composite":
+            return f"Relative-Proj base-change composite {self.domain()} -> {self.codomain()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
