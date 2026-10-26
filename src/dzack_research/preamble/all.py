@@ -841,14 +841,32 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
                 module_name = candidate
                 module_depth = len(parts)
         else:
-            # A shallow alias conflict must not hide a more-qualified package
-            # conflict discovered through another sys.path root. Prefer the
-            # strongest ownership evidence, then the longest module name.
-            conflict = (candidate, _Path(spec.origin).resolve(), package_parent, len(parts))
-            if conflicting_source is None or (
-                package_parent and not conflicting_source[2]
-            ) or (package_parent == conflicting_source[2] and len(parts) > conflicting_source[3]):
-                conflicting_source = conflict
+            resolved_source = _Path(spec.origin).resolve()
+            # The sageparse finder deliberately prefers a generated .py beside
+            # its .sage source. Canonicalize through that selected module rather
+            # than rejecting the source or executing it into a second scope.
+            same_compiled_source = (
+                resolved_source.parent == source.parent
+                and resolved_source.stem == source.stem
+                and resolved_source.suffix in (".py", ".sage")
+                and source.suffix in (".py", ".sage")
+            )
+            if same_compiled_source:
+                if len(parts) > module_depth:
+                    module_name = candidate
+                    module_depth = len(parts)
+            else:
+                # A shallow alias conflict must not hide a more-qualified
+                # package conflict discovered through another sys.path root.
+                # Prefer the strongest ownership evidence, then name depth.
+                conflict = (candidate, resolved_source, package_parent, len(parts))
+                if conflicting_source is None or (
+                    package_parent and not conflicting_source[2]
+                ) or (
+                    package_parent == conflicting_source[2]
+                    and len(parts) > conflicting_source[3]
+                ):
+                    conflicting_source = conflict
     if module_name is not None:
         # The importer is the sole owner of module execution and identity.
         # Reloading here would recreate classes in the same module object while
