@@ -419,7 +419,12 @@ class ADELogPairs(OwnedCategoryOverBaseRing):
         expected = _owned_integers()(2) * pair.complementary_divisor()
         # Lemma 3.4 is an identity of divisor classes: L and 2C' differ by the
         # divisor of a character, so they are compared in Cl(Y).
-        if surface.divisor_class(branch_class) != surface.divisor_class(expected):
+        actual_class = surface.divisor_class(branch_class)
+        expected_class = surface.divisor_class(expected)
+        classes_match = actual_class is expected_class or (
+            actual_class == expected_class
+        ) is True
+        if not classes_match:
             raise ArithmeticError(
                 f"the log pair {pair} of type {letter}_{rank} does not satisfy AT21 Lemma 3.4: "
                 f"the branch divisor L = -2(K_Y + C) = {branch_class} is not linearly equivalent "
