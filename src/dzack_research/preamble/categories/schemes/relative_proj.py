@@ -91,29 +91,16 @@ def _relative_projectivization_base_change_total_morphism(parent, comparison):
     )
 
 
-class _RelativeProjectivizationBaseChangeBaseMorphism(SchemeMorphism):
-    r"""The affine base map in one exact relative-Proj base-change square."""
-
-    def __init__(self, parent, comparison, ring_map) -> None:
-        self._comparison = comparison
-        super().__init__(None, mor=parent, pullback=ring_map)
-
-    def comparison(self):
-        return self._comparison
-
-    def _in_mor(self, mor):
-        return _RelativeProjectivizationBaseChangeBaseMorphism(
-            mor,
-            self.comparison(),
-            self.coordinate_algebra_morphism(),
-        )
-
-    def __mul__(self, other):
-        if (
-            other is self.comparison().changed_projectivization().arrow().domain().projectivization_projection()
-        ):
-            return self.comparison().square_composite()
-        return super().__mul__(other)
+def _relative_projectivization_base_change_base_morphism(parent, comparison, ring_map):
+    r"""Construct the affine base map in the generated scheme Mor."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        pullback=ring_map,
+        relative_projectivization_comparison=comparison,
+        relative_projectivization_role="base_change_base",
+    )
 
 
 class _RelativeProjectivizationBaseProjectionMorphism(SchemeMorphism):
@@ -202,11 +189,7 @@ class GeneralProjectivizationBaseChangeComparison(SageObject):
             lambda mor: _relative_projectivization_base_change_composite(mor, self)
         )
         self._base_morphism = changed_scheme.Mor(source_scheme)(
-            lambda mor: _RelativeProjectivizationBaseChangeBaseMorphism(
-                mor,
-                self,
-                ring_map,
-            )
+            lambda mor: _relative_projectivization_base_change_base_morphism(mor, self, ring_map)
         )
         self._projection_to_original = changed_total.Mor(projectivization)(
             lambda mor: _relative_projectivization_base_change_total_morphism(mor, self)

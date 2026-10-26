@@ -897,6 +897,12 @@ class SchemeMorphismMethods:
         )
 
     def __mul__(self, other):
+        if self._relative_projectivization_role == "base_change_base":
+            if (
+                other is self.comparison().changed_projectivization().arrow().domain().projectivization_projection()
+            ):
+                return self.comparison().square_composite()
+            return super().__mul__(other)
         if self._gluing_role == "glued_domain":
             if not isinstance(other, SchemeMorphismMethods) or other.codomain() is not self.domain():
                 return NotImplemented
@@ -990,6 +996,17 @@ class SchemeMorphismMethods:
             return _glued_scheme_morphism(
                 _scheme_composition_mor(after, self),
                 tuple(after * self.glued_local_map(index) for index in datum.chart_indices()),
+            )
+        if self._relative_projectivization_role == "base_change_base":
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._relative_projectivization_role == "base_change_base"
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+                and other.comparison() is self.comparison()
+                and _ring_morphisms_equal(
+                    other.coordinate_algebra_morphism(), self.coordinate_algebra_morphism()
+                ) is True
             )
         if self._gluing_role == "finite_atlas":
             if after.domain() is not self.codomain():
@@ -1735,7 +1752,7 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
-        if self._relative_projectivization_role in ("base_change_composite", "base_change_total"):
+        if self._relative_projectivization_role in ("base_change_composite", "base_change_total", "base_change_base"):
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._relative_projectivization_source_sheaf is not None:
             raise TypeError(f"unhashable type: {type(self).__name__}")
@@ -1761,6 +1778,8 @@ class SchemeMorphismMethods:
             return f"Relative-Proj base-change composite {self.domain()} -> {self.codomain()}"
         if self._relative_projectivization_role == "base_change_total":
             return f"Relative-Proj base-change total map {self.domain()} -> {self.codomain()}"
+        if self._relative_projectivization_role == "base_change_base":
+            return f"Relative-Proj base-change base map {self.domain()} -> {self.codomain()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
