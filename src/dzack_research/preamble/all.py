@@ -792,6 +792,16 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         try:
             spec = _find_spec(candidate)
         except (ImportError, ModuleNotFoundError, ValueError):
+            # find_spec for a dotted name may import its parent package. If
+            # that package fails to initialize, do not treat the exception as
+            # proof that this package source is non-importable and fall back to
+            # Sage's independent exec route. Preserve the most-qualified failed
+            # package candidate so the failure is reported below.
+            if package_parent and (
+                unresolved_package_source is None
+                or len(parts) > unresolved_package_source[1]
+            ):
+                unresolved_package_source = (candidate, len(parts))
             continue
         if spec is None or spec.origin is None:
             # This sys.path entry did not make the source importable under the
