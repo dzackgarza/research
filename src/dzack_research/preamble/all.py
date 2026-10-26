@@ -761,7 +761,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     source = _Path(filename).expanduser().resolve()
     module_name = None
     module_depth = -1
-    conflicting_candidate = None
+    conflicting_source = None
     for entry in _sys.path:
         root = _Path(entry or ".").resolve()
         try:
@@ -799,21 +799,33 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             if len(parts) > module_depth:
                 module_name = candidate
                 module_depth = len(parts)
-        elif conflicting_candidate is None:
-            conflicting_candidate = candidate
+        elif conflicting_source is None:
+            package_parent = any(
+                (parent / "__init__.py").is_file()
+                or (parent / "__init__.sage").is_file()
+                for parent in (
+                    root.joinpath(*relative.parts[:index])
+                    for index in range(1, len(relative.parts))
+                )
+            )
+            conflicting_source = (candidate, _Path(spec.origin).resolve(), package_parent)
     if module_name is not None:
         imported = _import_module(module_name)
-    elif conflicting_candidate is not None:
+    elif conflicting_source is not None and (
+        conflicting_source[2]
+        or (
+            conflicting_source[1].parent == source.parent
+            and conflicting_source[1].stem == source.stem
+        )
+    ):
         # Normal import resolution selected a different source for a module
-        # name that this path would otherwise claim. Falling back to
-        # exec-into-scope here would create a second class population.
-        # Falling back to exec-into-scope for either .py or .sage package
-        # source is precisely the second loading route that duplicates
-        # category/module classes.  Keep legacy loading only for genuinely
-        # non-importable session scripts.
+        # name that this package source would otherwise claim. Falling back to
+        # exec-into-scope here would create a second class population. A bare
+        # session script that happens to share a dotted candidate with some
+        # unrelated import keeps the traditional Sage loading behavior.
         raise ImportError(
             f"{source} is under an import root but is not the canonical source "
-            f"for {conflicting_candidate!r}; import the module selected by sageparse instead"
+            f"for {conflicting_source[0]!r}; import the module selected by sageparse instead"
         )
     if module_name is not None:
         imported = _sys.modules[module_name]
