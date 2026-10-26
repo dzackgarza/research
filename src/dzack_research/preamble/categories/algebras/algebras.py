@@ -4435,7 +4435,7 @@ class _OwnedAlgebraParent(_OwnedRingParent):
             None
             if labels is None
             else labels
-            if labels in EnumeratedSets()
+            if labels in Sets()
             else finite_ordered_set(labels)
         )
         associative = Algebras(base).Associative().Unital()
