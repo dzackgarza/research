@@ -48,6 +48,39 @@ def test_there_is_no_even_unimodular_lattice_of_signature_1_2() -> None:
         Lattices.IIPQ(1, 2)
 
 
+def test_the_dolgachev_pinkham_dual_lattice_retains_its_metric_form() -> None:
+    r"""The metric dual of U + U(2) + E8^2 has Gram matrix G^{-1} over QQ.
+
+    The dual remains a lattice over the original owned integer ring; only its
+    pairing takes values in the fraction field.
+    """
+    from sage.matrix.constructor import matrix
+
+    lattice = NamedLattices.TdP
+    dual = lattice.dual_lattice()
+    gram = matrix(
+        QQ,
+        [[QQ(lattice.gram_tensor()[i, j]) for j in range(20)] for i in range(20)],
+    )
+    dual_gram = matrix(
+        QQ,
+        [[QQ(dual.gram_tensor()[i, j]) for j in range(20)] for i in range(20)],
+    )
+
+    assert dual in FormModules(ZZ)
+    assert dual.base_ring() is lattice.base_ring() is ZZ
+    assert dual.module_rank() == lattice.module_rank() == 20
+    assert dual.unformed_module() is lattice.dual_module()
+    assert dual.module_generating_set() is lattice.module_generating_set()
+    assert dual.form().codomain() is dual.value_module()
+    assert dual.value_module() is Modules(QQ).restriction_of_scalars(
+        ZZ.fraction_field_map()
+    )(QQ)
+    assert dual_gram == gram.inverse()
+    assert dual.signature_pair() == lattice.signature_pair() == signature_pair(2, 18)
+    assert lattice.determinant() * dual.determinant() == 1
+
+
 def test_the_k3_complement_of_a_degree_two_polarization() -> None:
     lattice = Lattices.LK3_2d(1)
 

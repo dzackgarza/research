@@ -8,6 +8,9 @@ an ordinary Python support object deliberately selected by the preamble.
 """
 
 import sys as _sys
+from importlib import import_module as _import_module
+from importlib.util import find_spec as _find_spec
+from pathlib import Path as _Path
 from typing import cast as _cast
 
 # The session's numeric vocabulary and its parser are one contract: decimal
@@ -701,9 +704,179 @@ from sage_extensions.utilities import (
 )
 
 def load(filename: str, globals: dict | None = None, attach: bool = False) -> None:
-    r"""Load a Sage file and restore this session's owned scalar vocabulary."""
+    r"""Load a Sage file through its canonical module when it is importable.
+
+    Package sources must not be executed into an ad-hoc namespace: that creates
+    a second population of category and module classes beside the ordinary
+    import population.  Resolve an importable source path to its dotted module
+    name and let the installed ``sageparse`` finder own compilation and module
+    identity.  Arbitrary session scripts, which have no importable module name,
+    retain Sage's traditional namespace-loading behavior.
+    """
     scope = _sys._getframe(1).f_globals if globals is None else globals
-    _sage_load(filename, scope, attach)
+    source = _Path(filename).expanduser().resolve()
+    module_name = None
+    module_depth = -1
+    conflicting_source = None
+    unresolved_package_source = None
+    for entry in _sys.path:
+        root = _Path(entry or ".").resolve()
+        try:
+            relative = source.relative_to(root)
+        except ValueError:
+            continue
+        # Canonicalize package sources in either source format.  An ordinary
+        # top-level Sage script still uses Sage's execute-into-scope loader,
+        # even though sageparse also makes top-level .sage files importable.
+        if relative.suffix not in (".py", ".sage"):
+            continue
+        root_is_package = (root / "__init__.py").is_file() or (root / "__init__.sage").is_file()
+        if root_is_package and relative.name not in ("__init__.py", "__init__.sage"):
+            # This sys.path entry is itself a package directory. Names derived
+            # relative to it omit that package's qualified prefix; probing
+            # them with find_spec can import the same source under a second
+            # top-level alias before a broader sys.path root is considered.
+            # Let a broader root resolve the source without executing this
+            # short alias. If none exists, fail closed below.
+            parts = list(relative.with_suffix("").parts)
+            if parts and all(part.isidentifier() for part in parts):
+                candidate = ".".join(parts)
+                if unresolved_package_source is None or len(parts) > unresolved_package_source[1]:
+                    unresolved_package_source = (candidate, len(parts))
+            continue
+        if len(relative.parts) == 1 and relative.name not in ("__init__.py", "__init__.sage"):
+            # A source at the root of a package directory is a package module,
+            # but this sys.path entry alone omits the package's parent name.
+            # Do not import it under a short top-level alias. A broader import
+            # root may still provide the canonical qualified name later in the
+            # loop; if none does, the unresolved-package check fails closed.
+            if (root / "__init__.py").is_file() or (root / "__init__.sage").is_file():
+                unresolved_package_source = (source.stem, 1)
+            continue
+        parts = list(relative.with_suffix("").parts)
+        if parts and parts[-1] == "__init__":
+            parts.pop()
+        if not parts or not all(part.isidentifier() for part in parts):
+            continue
+        candidate = ".".join(parts)
+        package_parent = (
+            relative.name in ("__init__.py", "__init__.sage")
+            or (root / "__init__.py").is_file()
+            or (root / "__init__.sage").is_file()
+            or any(
+                (root.joinpath(*relative.parts[:index]) / "__init__.py").is_file()
+                or (root.joinpath(*relative.parts[:index]) / "__init__.sage").is_file()
+                for index in range(1, len(relative.parts))
+            )
+        )
+        if not package_parent:
+            # A dotted-looking path below sys.path is not itself a package
+            # contract: Sage scripts are often kept in subdirectories without
+            # package initializers. Keep those on Sage's normal load route;
+            # only package-owned sources must share import-module identity.
+            continue
+        # Only delegate when the installed sageparse finder chooses this exact
+        # source; package directories may have their own loader.
+        try:
+            spec = _find_spec(candidate)
+        except (ImportError, ModuleNotFoundError, ValueError):
+            # find_spec for a dotted name may import its parent package. If
+            # that package fails to initialize, do not treat the exception as
+            # proof that this package source is non-importable and fall back to
+            # Sage's independent exec route. Preserve the most-qualified failed
+            # package candidate so the failure is reported below.
+            if package_parent and (
+                unresolved_package_source is None
+                or len(parts) > unresolved_package_source[1]
+            ):
+                unresolved_package_source = (candidate, len(parts))
+            continue
+        if spec is None or spec.origin is None:
+            # This sys.path entry did not make the source importable under the
+            # candidate name (a nested path entry may be only a partial name).
+            # It is not evidence of a competing canonical module.
+            if package_parent and (
+                unresolved_package_source is None
+                or len(parts) > unresolved_package_source[1]
+            ):
+                unresolved_package_source = (candidate, len(parts))
+            continue
+        if _Path(spec.origin).resolve() == source:
+            # Overlapping sys.path entries can make one file importable under
+            # both its full package name and a shorter alias (for example,
+            # ``pkg.mod`` and ``mod``).  The package-qualified route is the
+            # canonical population; choosing the first matching path entry
+            # would make identity depend on sys.path insertion order.
+            if len(parts) > module_depth:
+                module_name = candidate
+                module_depth = len(parts)
+        else:
+            resolved_source = _Path(spec.origin).resolve()
+            # The sageparse finder deliberately prefers a generated .py beside
+            # its .sage source. Canonicalize through that selected module rather
+            # than rejecting the source or executing it into a second scope.
+            same_compiled_source = (
+                resolved_source.parent == source.parent
+                and resolved_source.stem == source.stem
+                and source.suffix == ".sage"
+                and resolved_source.suffix == ".py"
+            )
+            if same_compiled_source:
+                if len(parts) > module_depth:
+                    module_name = candidate
+                    module_depth = len(parts)
+            else:
+                # A shallow alias conflict must not hide a more-qualified
+                # package conflict discovered through another sys.path root.
+                # Prefer the strongest ownership evidence, then name depth.
+                conflict = (candidate, resolved_source, package_parent, len(parts))
+                if conflicting_source is None or (
+                    package_parent and not conflicting_source[2]
+                ) or (
+                    package_parent == conflicting_source[2]
+                    and len(parts) > conflicting_source[3]
+                ):
+                    conflicting_source = conflict
+    if module_name is not None:
+        # The importer is the sole owner of module execution and identity.
+        # Reloading here would recreate classes in the same module object while
+        # already-imported consumers retain references to the old classes,
+        # reintroducing the split population this route exists to prevent.
+        imported = _import_module(module_name)
+    elif conflicting_source is not None and (
+        conflicting_source[2]
+        or (
+            conflicting_source[1].parent == source.parent
+            and conflicting_source[1].stem == source.stem
+        )
+    ):
+        # Normal import resolution selected a different source for a module
+        # name that this package source would otherwise claim. Falling back to
+        # exec-into-scope here would create a second class population. A bare
+        # session script that happens to share a dotted candidate with some
+        # unrelated import keeps the traditional Sage loading behavior.
+        raise ImportError(
+            f"{source} is under an import root but is not the canonical source "
+            f"for {conflicting_source[0]!r}; import the module selected by sageparse instead"
+        )
+    elif unresolved_package_source is not None:
+        raise ImportError(
+            f"{source} belongs to package source {unresolved_package_source[0]!r}, "
+            "but the canonical importer could not resolve it; refusing duplicate execution"
+        )
+    if module_name is not None:
+        imported = _sys.modules[module_name]
+        if attach:
+            from sage.repl.attach import add_attached_file as _add_attached_file
+
+            _add_attached_file(source)
+        scope.update(
+            (name, value)
+            for name, value in vars(imported).items()
+            if not (name.startswith("__") and name.endswith("__"))
+        )
+    else:
+        _sage_load(filename, scope, attach)
     _restore_session_ring_bindings(scope)
     scope["GradedLebesgueAlgebra"] = GradedLebesgueAlgebra
     scope["LebesgueConvolutionAlgebra"] = LebesgueConvolutionAlgebra

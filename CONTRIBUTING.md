@@ -7382,6 +7382,21 @@ A construct that survives these questions is allowed.  The catalogue exists to m
   discharge only the issue obligations supported by that commit, and leave
   execution evidence owed under terminal T.
 
+  **Acceptance before reselection:** after a source unit is delivered, the
+  orchestrator compares every requirement with the committed owners, callers
+  and falsifying specimens. Record the verdict on the existing issue before
+  selecting another unit. A remaining source defect stays with that issue.
+  Close an issue only when its original acceptance requirements are satisfied.
+  An issue that requires runtime behavior stays open while those assertions are
+  unexecuted. A link from terminal acceptance preserves programme coverage;
+  it does not transfer the issue's obligations or justify closing it.
+
+  Distinguish delivered source from accepted issues. When a phase rule prevents
+  the required acceptance, identify that rule and resolve the execution decision
+  before claiming restored delivery. The orchestrator reviews
+  delivered work while the sole implementation worker continues its current
+  coherent unit; worker activity does not discharge this review.
+
 #### `DEV-62`: An Empirical Claim About an Engine Has Its Measurement or Is Written as a Hypothesis
 
 - **Rule**: A statement about what Sage or another engine does, costs, supports, or demands of its input is one of two things.  Either it is a finding, and it travels with the probe that produced it: the command, the specimen and its size parameter, the version, and the result.  Or it is a hypothesis, and it is written in words that cannot be read as a finding ("untested: `longest_path` may be the cost").  A causal sentence in the grammatical register of a finding, with no measurement behind it, is fabrication.  It is banned in code comments, docstrings, commit bodies, `TRAPS.md`, issues, reports, and conversation alike.  This extends the always-on performance-claims rule (wall time as a function of size, never counts) from how a cost is reported to whether the sentence may be written at all.

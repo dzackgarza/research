@@ -99,6 +99,11 @@ def test_the_at21_enhancement_of_a1_is_a_log_pair_on_the_same_surface() -> None:
     coefficients = enhanced.log_boundary_coefficient_ring()
     assert coefficients.algebra_framing_source() is coefficients
     assert coefficients.algebra_framing_morphism() == coefficients.Mor(coefficients).identity()
+    module_resolution = coefficients.selected_module_resolution()
+    assert module_resolution.target() is coefficients
+    assert module_resolution.level(0) is coefficients.framing_source()
+    assert module_resolution.augmentation().domain() is coefficients.framing_source()
+    assert module_resolution.augmentation().codomain() is coefficients
     generator_morphism = coefficients.algebra_generator_morphism()
     assert generator_morphism.domain() is coefficients.algebra_generating_set()
     assert generator_morphism.codomain() is coefficients

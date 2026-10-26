@@ -57,7 +57,13 @@ def ComplexNumber(real, imag=None):
         if imag is None
         else create_ComplexNumber(real, imag)
     )
-    parent = _own_ring(backend.parent())
+    # create_ComplexNumber selects the native complex field precision; raise
+    # that datum through the owned field constructor, not generic engine ingress.
+    from sage_extensions.categories.rings.ring_foundation import (
+        _owned_complex_field_of_precision,
+    )
+
+    parent = _owned_complex_field_of_precision(int(backend.parent().precision()))
     return _owned_engine_element(parent, backend)
 
 

@@ -28,6 +28,9 @@ def test_hyperbolic_plane_refines_the_lattice_and_selects_a_positive_component()
 
     assert lattice in HyperbolicLattices(ZZ)
     assert lattice in Lattices(ZZ)
+    assert lattice.base_ring() is NamedLattices.U.base_ring() is ZZ
+    assert lattice.gram_tensor() == NamedLattices.U.gram_tensor()
+    assert lattice.module_rank() == NamedLattices.U.module_rank() == 2
     assert lattice.signature_pair() == signature_pair(1, 1)
     assert isinstance(e, lattice.ElementType)
     assert timelike in component

@@ -11,6 +11,8 @@ def test_two_elementary_catalogue_realizes_requested_invariants() -> None:
     for rank, length, delta in TwoElementary:
         lattice = TwoElementary[rank, length, delta]
         assert lattice.module_rank() == rank
+        assert lattice.base_ring() is ZZ
+        assert lattice in Lattices(ZZ)
         assert lattice in EvenTwoElementaryLattices(ZZ)
         assert lattice.two_elementary_invariants() == nikulin_invariants(rank, length, delta)
         assert lattice.signature_pair() == signature_pair(1, rank - 1)
