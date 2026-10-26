@@ -6637,12 +6637,16 @@ def _owned_engine_ring(engine: Ring) -> _OwnedRingParent:
         case PolynomialRing_generic() | MPolynomialRing_base():
             # A polynomial engine met in an adapter is raised through the
             # one polynomial ring on its variables (OWN-02); its elements
-            # convert by variable name into that ring's realization.
+            # convert by variable name into that ring's realization. Route
+            # through the polynomial-ring owner rather than calling the
+            # symmetric-algebra constructor with a raw tuple: fraction-field
+            # adapters arrive here with the same variable names as an already
+            # selected polynomial ring, and must reuse its literal framing.
             from dzack_research.preamble.categories.algebras.free_algebras import (
-                _symmetric_algebra_on,
+                _polynomial_ring,
             )
 
-            return _symmetric_algebra_on(
+            return _polynomial_ring(
                 _own_ring(engine.base_ring()), tuple(engine.variable_names())
             )
         case FreeAlgebra_generic():
