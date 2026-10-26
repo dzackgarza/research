@@ -7203,40 +7203,37 @@ A construct that survives these questions is allowed.  The catalogue exists to m
 
 #### `DEV-58`: Observe the Current Verification Phase
 
-- **Where the condition is checked**: this rule suspends execution *while the architecture,
-  implementation, integration and transfer work remains open*, and whether it is open is not
-  recorded here — it is the state of the **source obligations** of the work nodes in
-  [TODO.md](TODO.md). Read them before concluding the suspension applies. The open/closed
-  state of an issue is its complete acceptance state, **not** a certificate that its
-  source prerequisite is unfinished: under `DEV-61`, an issue with source delivered
-  but original behavioral assertions unexecuted at T remains OPEN. That open issue
-  does not by itself postpone T once every required M1 source obligation and its
-  written falsifying specimens have been delivered. At T, execute the outstanding
-  requirements against the integrated source at their original issue owners;
-  only the actual verdict can close those issues. No requirements are transferred,
-  waived or counted accepted merely because their source was delivered. A worker
-  that treats the suspension as permanent has no
-  way to reach T, and the repository accumulates unexecuted constructions for as long as that
-  lasts; on 2026-09-13 it had banked sixty of them after the condition was already satisfied.
-  The current required source nodes decide whether the suspension applies.
-  The milestone DAG places M1 source remediation before T. Its
-  `architecture-remediation` closure starts T at `core-usability-session`.
-  M2 audits and API freeze, M3 full-suite acceptance, and M4 capability growth
-  follow that executed daily core; their open nodes do not suspend execution.
-  Failures discovered while executing T stay in its
-  repair phase and are re-executed there; they do not restart the pre-T programme.
+- **Issue acceptance:** Once an issue's source changes and actual construction
+  prerequisites are complete, the orchestrator runs that issue's original
+  mathematical acceptance assertions on the integrated committed source. This
+  applies during M1. Unrelated unfinished M1 work does not block those checks.
+  Keep failures and their repairs with the original issue, and rerun the affected
+  assertions after repair. Close the issue only when every original requirement
+  has supporting evidence, as required by `DEV-61`.
 
-- **Rule**: T is the execution phase after all required M1 **source** prerequisites in `TODO.md` have been delivered. It begins with the selected daily mathematical core; `terminal-session` later owns complete frozen-API acceptance, and `extended-mathematics-session` owns required feature acceptance. While any required M1 source obligation remains unfinished, run no preamble tests, QC gates, Sage executions, or notebooks, even if some other issue is source-complete. Write and commit constructions and their falsifying mathematical specimens explicitly unverified. Once the daily-core session begins, keep execution and owner-local repair active through the later milestones, and discharge every original still-open behavioral assertion at its owner. Their acceptance scopes are distinct: ordinary usability does not require the entire unsettled suite to pass, while frozen-API acceptance does. References in other contribution policies to testing a work unit do not override this phase rule.
+- **Programme acceptance:** Broad suites, QC gates and notebook campaigns remain
+  suspended until the required M1 source prerequisites in `TODO.md` are delivered.
+  T begins with `core-usability-session`; `terminal-session` owns complete
+  frozen-API acceptance and `extended-mathematics-session` owns required feature
+  acceptance. M2 audits and API freeze, M3 full-suite acceptance and M4 capability
+  growth do not restart the suspension after T begins.
 
-  Retain the two narrow operational exceptions: one short import check of a merged tree, and provisioning a tool required by a selected task. Neither is mathematical verification or permission to run a suite. Source review and checking a prose diff remain applicable. At T, execute the required mathematical evidence on the integrated architecture, diagnose actual failures, and establish the failed propositions at their owners. Do not restart repeated verification cycles against intermediate architectures.
+- **Readiness:** Inspect the source obligations and actual dependencies, not just
+  issue open/closed state. An issue awaiting execution remains open without making
+  its delivered source unfinished. Before an issue's prerequisites are ready,
+  write and commit constructions and falsifying assertions explicitly unverified.
+  The short merged-tree import check and required tool provisioning remain allowed.
 
-  Classify hook applicability by the staged paths, not unrelated dirty files or a remembered failure. Under `AGENTS.md`'s QC integration rule, a prose-only commit uses `--no-verify`; the explicit notebook/preamble scope exemption also remains binding. Do not change shared QC configuration to obtain that authorized path, and do not extend an exemption to unrelated executable changes.
+- **Evidence:** Record the checked revision, original assertions and results at
+  the existing issue. A startup check, source review or compilation does not prove
+  mathematical acceptance. The orchestrator owns acceptance and publication;
+  workers retain their existing targeted-check and commit limits. Keep the
+  protected expectations and mathematical evidence boundaries intact.
 
-- **Rationale**: Runtime checks during the unsettled rewrite can redirect work into repairing a temporary architecture. Forgetting a declared exemption can also make an irrelevant hook result stop work that is expressly authorized. Neither error is repaired by adding another tracking artifact.
-
-- **Violation Example**: running Sage to obtain a green completion specimen while required architecture remains open; repeatedly invoking whole-repo hooks for a TODO-only commit; describing a written but unexecuted assertion as a passing regression test.
-
-- **Correct Example**: review the source and new mathematical assertions, commit them as unverified under the current scope rule, retain terminal T as unfinished work, and execute the required evidence only at that phase. For a TODO and policy edit, inspect the intended diff and commit only those prose paths with the prescribed hook exemption.
+- **Hooks:** Classify hook applicability by staged paths. Prose-only commits use
+  `--no-verify`; the notebook/preamble scope exemption remains binding. Issue-level
+  acceptance does not authorize broad hooks before T or changes to shared QC
+  configuration.
 
 #### `DEV-59`: Record Observed Foundational Gaps and Papercuts
 
