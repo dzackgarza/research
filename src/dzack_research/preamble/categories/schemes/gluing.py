@@ -194,51 +194,16 @@ class _GluedChartPointMorphism(SchemeMorphism):
         return super()._call_(point)
 
 
-class _GluedSchemeOpenInclusion(_GluedChartPointMorphism):
-    r"""The chosen inclusion of one chart image into the glued scheme."""
-
-    def __init__(self, parent, gluing_datum, chart_index) -> None:
-        super().__init__(None, mor=parent)
-        self._gluing_datum = gluing_datum
-        self._chart_index = gluing_datum.normalize_chart_index(chart_index)
-
-    def gluing_datum(self):
-        return self._gluing_datum
-
-    def chart_index(self):
-        return self._chart_index
-
-    def _in_mor(self, mor):
-        return _GluedSchemeOpenInclusion(mor, self.gluing_datum(), self.chart_index())
-
-    def is_open_immersion(self) -> bool:
-        return True
-
-    def __mul__(self, other):
-        datum = self.gluing_datum()
-        chart = datum.chart_isomorphism(self.chart_index())
-        return datum.chart_embedding(self.chart_index()) * (chart.inverse() * other)
-
-    def _postcompose_with(self, after):
-        chart = self.gluing_datum().chart_isomorphism(self.chart_index())
-        return after.local_map(self.chart_index()) * chart.inverse().forward()
-
-    def __eq__(self, other) -> bool:
-        return (
-            isinstance(other, _GluedSchemeOpenInclusion)
-            and other.gluing_datum() is self.gluing_datum()
-            and other.chart_index() == self.chart_index()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __hash__(self) -> int:
-        position = self.gluing_datum().chart_index_set().ranking_map()(self.chart_index())
-        return hash((id(self.gluing_datum()), int(position), "open-image"))
-
-    def _repr_(self):
-        return f"Open inclusion {self.domain()} -> {self.codomain()}"
+def _glued_scheme_open_inclusion(parent, gluing_datum, chart_index):
+    r"""Construct the chart-image inclusion as an element of its generated scheme Mor."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        gluing_datum=gluing_datum,
+        gluing_chart_index=gluing_datum.normalize_chart_index(chart_index),
+        gluing_role="open_inclusion",
+    )
 
 
 class _GluedSchemeChartEmbedding(_GluedChartPointMorphism):
@@ -770,7 +735,7 @@ def _glued_chart_image(datum, index):
         datum.base_ring(),
         (OpenImmersions(scheme),),
         inclusion_codomain=scheme,
-        inclusion_datum=lambda mor: _GluedSchemeOpenInclusion(mor, datum, index),
+        inclusion_datum=lambda mor: _glued_scheme_open_inclusion(mor, datum, index),
     )
 
 

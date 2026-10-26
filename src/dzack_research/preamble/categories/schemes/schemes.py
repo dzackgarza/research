@@ -610,6 +610,9 @@ class SchemeMorphismMethods:
     _coefficient_map = None
     _standard_projective_chart_embedding = False
     _multiprojective_chart_embedding = False
+    _gluing_datum = None
+    _gluing_chart_index = None
+    _gluing_role = None
 
     def __init__(
         self,
@@ -625,6 +628,9 @@ class SchemeMorphismMethods:
         coefficient_map=None,
         standard_projective_chart_embedding=False,
         multiprojective_chart_embedding=False,
+        gluing_datum=None,
+        gluing_chart_index=None,
+        gluing_role=None,
     ) -> None:
         self._native_morphism = native_morphism
         self._coordinate_pullback = pullback
@@ -639,6 +645,9 @@ class SchemeMorphismMethods:
         self._coefficient_map = coefficient_map
         self._standard_projective_chart_embedding = standard_projective_chart_embedding
         self._multiprojective_chart_embedding = multiprojective_chart_embedding
+        self._gluing_datum = gluing_datum
+        self._gluing_chart_index = gluing_chart_index
+        self._gluing_role = gluing_role
         super().__init__(mor)
 
     def with_cone_construction(self, construction):
@@ -656,7 +665,20 @@ class SchemeMorphismMethods:
             coefficient_map=self._coefficient_map,
             standard_projective_chart_embedding=self._standard_projective_chart_embedding,
             multiprojective_chart_embedding=self._multiprojective_chart_embedding,
+            gluing_datum=self._gluing_datum,
+            gluing_chart_index=self._gluing_chart_index,
+            gluing_role=self._gluing_role,
         )
+
+    def gluing_datum(self):
+        if self._gluing_datum is None:
+            raise AttributeError(f"{self} is not defined by a selected scheme gluing")
+        return self._gluing_datum
+
+    def chart_index(self):
+        if self._gluing_chart_index is None:
+            raise AttributeError(f"{self} has no selected gluing chart")
+        return self._gluing_chart_index
 
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
@@ -674,6 +696,7 @@ class SchemeMorphismMethods:
             self._closed_complement is not None
             or self._standard_projective_chart_embedding
             or self._multiprojective_chart_embedding
+            or self._gluing_role in ("open_inclusion", "chart_embedding")
         )
 
     def _in_mor(self, mor):
@@ -696,6 +719,9 @@ class SchemeMorphismMethods:
             coefficient_map=self._coefficient_map,
             standard_projective_chart_embedding=self._standard_projective_chart_embedding,
             multiprojective_chart_embedding=self._multiprojective_chart_embedding,
+            gluing_datum=self._gluing_datum,
+            gluing_chart_index=self._gluing_chart_index,
+            gluing_role=self._gluing_role,
         )
 
     def _transport_initialization_to_mor(self, mor):
@@ -713,6 +739,9 @@ class SchemeMorphismMethods:
                 "coefficient_map": self._coefficient_map,
                 "standard_projective_chart_embedding": self._standard_projective_chart_embedding,
                 "multiprojective_chart_embedding": self._multiprojective_chart_embedding,
+                "gluing_datum": self._gluing_datum,
+                "gluing_chart_index": self._gluing_chart_index,
+                "gluing_role": self._gluing_role,
             },
         )
 
@@ -749,6 +778,18 @@ class SchemeMorphismMethods:
         )
 
     def __mul__(self, other):
+        if self._gluing_role == "open_inclusion":
+            datum = self.gluing_datum()
+            chart = datum.chart_isomorphism(self.chart_index())
+            return datum.chart_embedding(self.chart_index()) * (chart.inverse() * other)
+        if self._gluing_role == "chart_embedding":
+            if other.codomain() is not self.domain():
+                return NotImplemented
+            from dzack_research.preamble.categories.schemes.gluing import _GluedSchemeChartMap
+            from dzack_research.preamble.categories.schemes.gluing import _scheme_composition_mor
+            return _GluedSchemeChartMap(
+                _scheme_composition_mor(self, other), self, other,
+            )
         if self._multiprojective_chart_embedding:
             if other.codomain() is not self.domain():
                 return NotImplemented
@@ -788,7 +829,21 @@ class SchemeMorphismMethods:
         point_values = finite_family(values, name="Point coordinates") if before._represented_point_coordinates() is not None else None
         return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
 
+    def _postcompose_with(self, after):
+        if self._gluing_role == "open_inclusion":
+            chart = self.gluing_datum().chart_isomorphism(self.chart_index())
+            return after.local_map(self.chart_index()) * chart.inverse().forward()
+        return NotImplemented
+
     def __eq__(self, other):
+        if self._gluing_role == "open_inclusion" or getattr(other, "_gluing_role", None) == "open_inclusion":
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and self._gluing_role == other._gluing_role == "open_inclusion"
+                and self.gluing_datum() is other.gluing_datum()
+                and self.chart_index() == other.chart_index()
+                and self.domain() is other.domain() and self.codomain() is other.codomain()
+            )
         if self._homogeneous_coordinates is None:
             return super().__eq__(other)
         if self is other:
@@ -816,6 +871,8 @@ class SchemeMorphismMethods:
 
     def _engine_morphism_crossing(self):
         r"""The Sage morphism between the engines this morphism computes in."""
+        if self._gluing_role == "open_inclusion":
+            raise NotImplementedError("a glued open inclusion is represented by its gluing datum")
         if self._homogeneous_coordinates is not None:
             return self._projective_engine_morphism()
         if self._scalar_pullback is not None:
@@ -848,6 +905,12 @@ class SchemeMorphismMethods:
         return self._point_coordinates
 
     def _call_(self, point):
+        if self._gluing_role in ("open_inclusion", "chart_embedding"):
+            from dzack_research.preamble.categories.rings.commutative_algebra import PrimeSpectra
+            if element_parent(point) in PrimeSpectra():
+                if element_parent(point) is not self.domain().underlying_space():
+                    raise ValueError(f"{point} is not a prime point of the chart {self.domain()}")
+                return self.codomain()._glued_chart_point_map(self.chart_index())(point)
         r"""Evaluate a prime point or compose a scheme-valued point.
 
         On affine prime points, ``Spec(f)`` acts by contraction along ``f``.
@@ -1402,9 +1465,14 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
+        if self._gluing_role == "open_inclusion":
+            position = self.gluing_datum().chart_index_set().ranking_map()(self.chart_index())
+            return hash((id(self.gluing_datum()), int(position), "open-image"))
         return hash((id(self.domain()), id(self.codomain())))
 
     def _repr_(self) -> str:
+        if self._gluing_role == "open_inclusion":
+            return f"Open inclusion {self.domain()} -> {self.codomain()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
