@@ -70,7 +70,6 @@ from dzack_research.preamble.categories.rings.ring_foundation import (
     _owned_ring,
     _OwnedRingElement,
     _OwnedRingParent,
-    _presented_ring_category,
 )
 from dzack_research.preamble.categories.sets.finite_ordered_sets import (
     FiniteOrderedSets,
@@ -4446,11 +4445,12 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         # supplied by its constructor. Reading only its commutativity axiom
         # below loses inherited structure such as additive-group membership,
         # so the same object can fail the native ring-module prerequisite.
-        presented_ring = (
-            _presented_ring_category(engine)
-            if ring_placement is None
-            else owned_category_join((OwnedRings(), *ring_placement()))
-        )
+        if ring_placement is None:
+            raise TypeError(
+                f"{engine} has no selected ring-construction placement; "
+                "an algebra adapter must retain the placement supplied by its constructor"
+            )
+        presented_ring = owned_category_join((OwnedRings(), *ring_placement()))
         framing_owner = (
             associative if algebra_framing_owner is None else algebra_framing_owner
         )
@@ -4686,6 +4686,11 @@ def _owned_algebra_view(
     law_decisions=(),
 ):
     base = _owned_ring(base_ring)
+    ring_placement = tuple(
+        category
+        for category in algebra.category().all_super_categories()
+        if category is OwnedRings()._with_axioms(category.axioms())
+    )
     return _OwnedAlgebraParent(
         engine,
         base,
@@ -4693,6 +4698,7 @@ def _owned_algebra_view(
         categories=tuple(categories),
         construction_data=tuple(construction_data),
         law_decisions=tuple(law_decisions),
+        ring_placement=lambda: ring_placement,
     )
 
 
