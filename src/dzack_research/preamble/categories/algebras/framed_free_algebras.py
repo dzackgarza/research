@@ -67,7 +67,14 @@ def _symmetric_algebra_of(module):
         relation_morphism(relation_morphism.domain().module_generator(label)) == relation_morphism.codomain().zero()
         for label in relation_labels
     ):
-        return _symmetric_algebra_on(base, labels, source_module=module)
+        # A zero relation morphism proves the presented module is free only
+        # when its parent carries the corresponding free-module structure.
+        # Otherwise retain the chosen module object as degree one through the
+        # sparse word quotient rather than falsely presenting it as a native
+        # polynomial algebra on a free module.
+        if module in FramedFreeModules(base):
+            return _symmetric_algebra_on(base, labels, source_module=module)
+        return _sparse_symmetric_algebra_of(module)
 
     # Sage's univariate quotient constructor only accepts monic defining
     # polynomials.  A one-variable symmetric algebra with a torsion relation
