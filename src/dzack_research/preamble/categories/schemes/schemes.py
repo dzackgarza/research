@@ -904,9 +904,7 @@ class SchemeMorphismMethods:
     def pullback_divisor(self, divisor):
         if self._toric_lattice_morphism is None:
             raise AttributeError(f"{self} is not a represented toric morphism")
-        from dzack_research.preamble.categories.schemes.toric.toric_schemes import (
-            _engine_scheme, _engine_scheme_morphism, _integers,
-        )
+        from dzack_research.preamble.categories.schemes.toric.toric_schemes import _integers
         codomain = self.codomain()
         target_group = codomain.weil_divisor_group()
         divisor = target_group(divisor)
