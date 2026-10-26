@@ -428,14 +428,20 @@ class _TwoElementaryTable(Mapping):
             rank, length, delta = triple
             expected_signature = signature_pair(1, rank - 1)
             actual_signature = lattice.signature_pair()
-            if actual_signature != expected_signature:
+            signature_matches = actual_signature is expected_signature or (
+                actual_signature == expected_signature
+            ) is True
+            if not signature_matches:
                 raise ValueError(
                     f"TwoElementary[{triple}] has signature {actual_signature}, "
                     f"expected {expected_signature}"
                 )
             actual_invariants = EvenTwoElementaryLattices(ZZ)(lattice).two_elementary_invariants()
             expected_invariants = nikulin_invariants(rank, length, delta)
-            if actual_invariants != expected_invariants:
+            invariants_match = actual_invariants is expected_invariants or (
+                actual_invariants == expected_invariants
+            ) is True
+            if not invariants_match:
                 raise ValueError(
                     f"TwoElementary[{triple}] has invariants {actual_invariants}, "
                     f"expected {expected_invariants}"
