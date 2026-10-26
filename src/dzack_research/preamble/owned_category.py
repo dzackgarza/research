@@ -416,7 +416,7 @@ def _category_provider_order_key(category: Category):
     Sage's original session counter is the final tie-breaker.
     """
     return (
-        -_category_graph_depth(category),
+        _category_graph_depth(category),
         repr((_category_graph_signature(category), _category_parameter_signature(category))),
         category._cmp_key[1],
     )
@@ -642,7 +642,7 @@ def _declared_category_linearization(category: Category) -> tuple[Category, ...]
         if known is not None:
             return known
         parents = tuple(
-            sorted(node.super_categories(), key=_category_provider_order_key)
+            sorted(node.super_categories(), key=_category_provider_order_key, reverse=True)
         )
         sequences = [list(linearize(parent)) for parent in parents]
         sequences.append(list(parents))
