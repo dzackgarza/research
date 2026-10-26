@@ -294,8 +294,12 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             if labels is None
             else finite_ordered_set(labels)
         )
+        current_labels = self.algebra_generating_set()
+        same_labels = selected_labels is current_labels or (
+            selected_labels == current_labels
+        ) is True
         generating = self.generating_module()
-        if selected_labels == self.algebra_generating_set():
+        if same_labels:
             if (
                 not construction_data
                 and all(self in category for category in categories)
