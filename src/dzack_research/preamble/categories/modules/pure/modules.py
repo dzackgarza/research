@@ -2452,7 +2452,6 @@ class Modules(OwnedCategoryOverBaseRing):
                 source._element_of_unformed_module(element)
             )
 
-        @cached_method
         def _ring_morphism_defining_module_action(
             self, endomorphisms, additive_group, scalar_multiple=None
         ):
