@@ -761,6 +761,8 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     source = _Path(filename).expanduser().resolve()
     module_name = None
     module_depth = -1
+    loaded_module_name = None
+    loaded_module_depth = -1
     conflicting_source = None
     unresolved_package_source = None
     for entry in _sys.path:
@@ -810,8 +812,19 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             if len(parts) > module_depth:
                 module_name = candidate
                 module_depth = len(parts)
+            # If the source is already loaded under a shorter alias, reusing
+            # that module is preferable to creating a second population under
+            # a package-qualified alias. Existing identity outranks a merely
+            # potential canonical name; among existing names, prefer the most
+            # qualified one.
+            existing = _sys.modules.get(candidate)
+            if existing is not None and len(parts) > loaded_module_depth:
+                loaded_module_name = candidate
+                loaded_module_depth = len(parts)
         elif conflicting_source is None:
             conflicting_source = (candidate, _Path(spec.origin).resolve(), package_parent)
+    if loaded_module_name is not None:
+        module_name = loaded_module_name
     if module_name is not None:
         # The importer is the sole owner of module execution and identity.
         # Reloading here would recreate classes in the same module object while
