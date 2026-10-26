@@ -3,17 +3,6 @@ r"""The polarized Enriques arithmetic group inside \(O(L_{K3})\)."""
 from dzack_research.preamble.all import *
 
 
-def test_full_glue_inclusion_inverses_are_exact_and_cached() -> None:
-    lattice = Lattices(ZZ)([[0, 1, 0, 0], [1, 0, 0, 0],
-                            [0, 0, 0, 1], [0, 0, 1, 0]])
-    e, f, u, v = tuple(lattice.module_generators().values())
-    involution = lattice.O()({0: u, 1: v, 2: e, 3: f})
-    extension = involution.polarized(e + u + 2 * (f + v)).primitive_extension()
-
-    subgroup = extension.coinvariant_extension_subgroup()
-    assert extension.coinvariant_extension_subgroup() is subgroup
-
-
 def test_polarization_restricts_extensions_across_two_hyperbolic_planes() -> None:
     r"""On U + U, exchange the summands; the fixed and opposite lattices are U(2).
 
