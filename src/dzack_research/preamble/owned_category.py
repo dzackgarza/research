@@ -419,9 +419,9 @@ def _category_provider_order_key(category: Category, memo=None):
     The controlled C3 merge requires a strict provider order, with each strict
     subcategory before its supercategories. Sage's first native CmpKey field is
     semantic flag data inherited by bitwise OR, so this structural ordering is
-    deliberately kept separate. Graph depth gives the edge order; graph and
-    parameter signatures distinguish incomparable and parameterized providers;
-    Sage's original session counter is the final tie-breaker.
+    deliberately kept separate. Graph depth gives the edge order; the structural
+    graph signature and Sage's original session counter distinguish incomparable
+    and parameterized providers without constructing their Mor-family classes.
     """
     if memo is None:
         memo = {}
@@ -430,7 +430,7 @@ def _category_provider_order_key(category: Category, memo=None):
     if cached is None:
         cached = (
             _category_graph_depth(category),
-            repr((_category_graph_signature(category), _category_parameter_signature(category))),
+            repr(_category_graph_signature(category)),
             category._cmp_key[1],
         )
         memo[identity] = cached
