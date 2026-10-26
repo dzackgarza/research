@@ -719,71 +719,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     module_depth = -1
     conflicting_source = None
     unresolved_package_source = None
-    loaded_source_modules = []
-
-    package_source = False
     for entry in _sys.path:
-        root = _Path(entry or ".").resolve()
-        try:
-            relative = source.relative_to(root)
-        except ValueError:
-            continue
-        if relative.suffix not in (".py", ".sage"):
-            continue
-        if (
-            len(relative.parts) > 1
-            or relative.name in ("__init__.py", "__init__.sage")
-            or (root / "__init__.py").is_file()
-            or (root / "__init__.sage").is_file()
-        ):
-            package_source = True
-            break
-
-    def is_canonical_source(module_file: str | _Path) -> bool:
-        try:
-            resolved = _Path(module_file).resolve()
-        except (OSError, RuntimeError, TypeError, ValueError):
-            return False
-        if resolved == source:
-            return True
-        # sageparse gives a generated sibling .py precedence over its .sage
-        # source. Treat that pair as one source identity during the loaded
-        # module scan, or the compiled artifact can evade duplicate detection.
-        return (
-            source.suffix == ".sage"
-            and resolved.suffix == ".py"
-            and resolved.parent == source.parent
-            and resolved.stem == source.stem
-        )
-
-    # Existing module identity outranks the current sys.path interpretation:
-    # paths can be inserted or reordered after import, but that must not make
-    # ``load(source)`` choose a second name for the same already-loaded file.
-    for name, module in tuple(_sys.modules.items()) if package_source else ():
-        spec = getattr(module, "__spec__", None)
-        if name == "__main__" or spec is None or getattr(spec, "name", None) != name:
-            continue
-        module_file = getattr(module, "__file__", None)
-        if module_file is None:
-            continue
-        if is_canonical_source(module_file):
-            loaded_source_modules.append((name, module))
-            if (
-                name.count(".") > module_depth
-                or (name.count(".") == module_depth and (module_name is None or name < module_name))
-            ):
-                module_name = name
-                module_depth = name.count(".")
-    distinct_loaded_modules = {}
-    for name, module in loaded_source_modules:
-        distinct_loaded_modules.setdefault(id(module), []).append(name)
-    if len(distinct_loaded_modules) > 1:
-        aliases = sorted(name for names in distinct_loaded_modules.values() for name in names)
-        raise ImportError(
-            f"{source} is already loaded as distinct module objects {aliases}; "
-            "refusing to continue with duplicate category/module identities"
-        )
-    for entry in (() if module_name is not None else _sys.path):
         root = _Path(entry or ".").resolve()
         try:
             relative = source.relative_to(root)
@@ -819,6 +755,12 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
                 for index in range(1, len(relative.parts))
             )
         )
+        if not package_parent:
+            # A dotted-looking path below sys.path is not itself a package
+            # contract: Sage scripts are often kept in subdirectories without
+            # package initializers. Keep those on Sage's normal load route;
+            # only package-owned sources must share import-module identity.
+            continue
         # Only delegate when the installed sageparse finder chooses this exact
         # source; package directories may have their own loader.
         try:
