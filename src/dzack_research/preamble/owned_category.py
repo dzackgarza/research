@@ -432,9 +432,15 @@ class _OwnedCategoryComparisonKey:
     normal instance lookup is the fast path.
     """
 
-    _DEPTH_SHIFT = 32
+    # CmpKey's flags field is a C ``int`` (not an arbitrary Python integer),
+    # while its second counter field is a C ``long``. Reserve 19 low bits for
+    # Sage's current category flag bit-vector and use the remaining signed-int
+    # bits for the owned depth. Reject a future Sage flag expansion rather than
+    # silently aliasing distinct flag vectors.
+    _DEPTH_SHIFT = 19
     _FLAG_MASK = (1 << _DEPTH_SHIFT) - 1
-    _OWNED_FLOOR = 1 << 48
+    _OWNED_FLOOR = 1 << _DEPTH_SHIFT
+    _MAX_DEPTH = (1 << (31 - _DEPTH_SHIFT)) - 2
     _STRUCTURAL_MASK = (1 << 62) - 1
 
     def __get__(self, category: Category | None, owner=None):
@@ -465,10 +471,18 @@ class _OwnedCategoryComparisonKey:
             graph_signature,
             parameter_signature,
         )
+        if flags < 0 or flags > self._FLAG_MASK:
+            raise OverflowError(
+                f"Sage category flags {flags} do not fit the owned CmpKey flag allocation"
+            )
+        if depth > self._MAX_DEPTH:
+            raise OverflowError(
+                f"owned category depth {depth} exceeds the CmpKey C-int allocation"
+            )
         ordered_flags = (
             self._OWNED_FLOOR
             + (depth << self._DEPTH_SHIFT)
-            + (flags & self._FLAG_MASK)
+            + flags
         )
         structural = _stable_signature_integer(signature) & self._STRUCTURAL_MASK
         result = (ordered_flags, structural, session_counter)
