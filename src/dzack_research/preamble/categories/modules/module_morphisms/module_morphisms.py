@@ -309,6 +309,7 @@ class ModuleMorphismMethods:
     _scalar_extension_functor = None
     _lift_function = None
     _linearity_premises = None
+    _projective_section_restriction_data = None
 
     def _initialize_lower_arrow(self, parent) -> None:
         domain = parent.domain()
@@ -349,6 +350,26 @@ class ModuleMorphismMethods:
     def represented_module_morphism(self):
         r"""Return this arrow as its represented module-morphism object."""
         return self
+
+    def _projective_section_restriction_datum(self):
+        if self._projective_section_restriction_data is None:
+            raise AttributeError(f"{self} is not a projective-section restriction map")
+        return self._projective_section_restriction_data
+
+    def line_bundle(self):
+        return self._projective_section_restriction_datum()["line_bundle"]
+
+    def closed_subscheme(self):
+        return self._projective_section_restriction_datum()["closed_subscheme"]
+
+    def coordinate_quotient(self):
+        return self._projective_section_restriction_datum()["coordinate_quotient"]
+
+    def ambient_normal_form_space(self):
+        return self._projective_section_restriction_datum()["ambient_normal_form_space"]
+
+    def restriction_image_inclusion(self):
+        return self._projective_section_restriction_datum()["image_inclusion"]
 
     def derivation(self):
         r"""Return the derivation whose underlying linear arrow this is, when recorded."""
@@ -400,6 +421,7 @@ class ModuleMorphismMethods:
         scalar_extension_functor=None,
         lift=None,
         linearity_premises=None,
+        projective_section_restriction_data=None,
     ) -> None:
         self._initialize_lower_arrow(parent)
         assert (scalar_extension_of is None) == (scalar_extension_functor is None), (
@@ -410,6 +432,7 @@ class ModuleMorphismMethods:
         self._scalar_extension_functor = scalar_extension_functor
         self._lift_function = lift
         self._linearity_premises = linearity_premises
+        self._projective_section_restriction_data = projective_section_restriction_data
         self._source_module_morphism = None
         self._element_function = None
         domain = self.domain()
