@@ -408,13 +408,14 @@ def _stable_signature_integer(signature) -> int:
 class _OwnedCategoryComparisonKey:
     r"""Deterministic ``_cmp_key`` for owned categories.
 
-    Sage's native comparison key is ``(flags, creation_counter)``.  The flags
-    carry semantic ordering conventions, but the counter makes sibling order a
-    function of which category a session happened to touch first.  Owned
-    categories retain Sage's flags and replace only that counter by a structural
-    integer.  Graph depth occupies the high bits, so a strict owned subcategory
-    always compares below its owned supercategory; a digest of the category
-    graph resolves siblings reproducibly.
+    Sage's native comparison key starts with ``flags`` and uses a creation
+    counter to break ties.  The flags carry semantic ordering conventions, but
+    they are not guaranteed to be monotone on the preamble's declared category
+    edges.  Sage's C3-controlled merge requires every strict subcategory to sort
+    before its supercategory.  The owned key therefore puts a structural integer
+    first: graph depth occupies its high bits, and a digest of the full graph and
+    parameter signature resolves siblings reproducibly.  Sage's flags and
+    session counter remain as subsequent tie-breakers.
 
     The structural integer does not separate two categories of one family whose
     parameter is an object rather than a category: ``C/X`` and ``C/Y`` have the
@@ -466,7 +467,7 @@ class _OwnedCategoryComparisonKey:
             + (depth << self._DEPTH_SHIFT)
             + _stable_signature_integer(signature)
         )
-        result = (flags, structural, session_counter)
+        result = (structural, flags, session_counter)
         category._cmp_key = result
         return result
 
@@ -648,35 +649,28 @@ def declared_implementation_types(
 
 
 def _declared_category_linearization(category: Category) -> tuple[Category, ...]:
-    r"""C3-linearize the declared category graph without Sage's sort keys."""
+    r"""Linearize the declared graph using Sage's controlled provider ordering.
+
+    ``C3_sorted_merge`` computes the provider order and, when plain C3 would
+    fail, the controlled order compatible with a total ordering of categories.
+    The returned suggestion is the direct-supercategory ordering Sage would
+    need to realize that linearization in a Python class MRO. We retain the
+    declared edges; only their provider order is controlled.
+    """
+    from sage.misc.c3_controlled import C3_sorted_merge
+
     cache = {}
 
     def linearize(node):
         known = cache.get(id(node))
         if known is not None:
             return known
-        parents = tuple(node.super_categories())
+        parents = tuple(sorted(node.super_categories(), key=lambda parent: parent._cmp_key, reverse=True))
         sequences = [list(linearize(parent)) for parent in parents]
         sequences.append(list(parents))
-        merged = []
-        while any(sequences):
-            sequences = [sequence for sequence in sequences if sequence]
-            head = None
-            for sequence in sequences:
-                candidate = sequence[0]
-                if not any(
-                    any(candidate is tail for tail in other[1:])
-                    for other in sequences
-                ):
-                    head = candidate
-                    break
-            assert head is not None, (
-                f"the declared category graph of {node} has no C3 linearization: {sequences}"
-            )
-            merged.append(head)
-            for sequence in sequences:
-                if sequence[0] is head:
-                    sequence.pop(0)
+        merged, _suggestion = C3_sorted_merge(
+            sequences, key=lambda parent: parent._cmp_key
+        )
         result = (node, *merged)
         cache[id(node)] = result
         return result
