@@ -772,6 +772,22 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         # identifies this exact file as a module.
         if relative.suffix not in (".py", ".sage"):
             continue
+        # A path merely lying under sys.path does not make a session script a
+        # package module: test and notebook scripts commonly live there too.
+        # Canonicalize only sources inside a package tree (or the package
+        # initializer itself); otherwise preserve Sage's execute-into-scope
+        # semantics even if a namespace-package finder could import the file.
+        ancestors = []
+        directory = root
+        for part in relative.parts[:-1]:
+            directory = directory / part
+            ancestors.append(directory)
+        if relative.name not in ("__init__.py", "__init__.sage") and not any(
+            (directory / "__init__.py").is_file()
+            or (directory / "__init__.sage").is_file()
+            for directory in ancestors
+        ):
+            continue
         parts = list(relative.with_suffix("").parts)
         if parts and parts[-1] == "__init__":
             parts.pop()
