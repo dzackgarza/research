@@ -49,8 +49,11 @@ from dzack_research.preamble.categories.modules.pure.modules import (
 )
 from dzack_research.preamble.categories.rings.ring_foundation import _owned_engine_element
 from dzack_research.preamble.categories.rings.ring_foundation import (
+    _OwnedRingParent,
     _free_associative_algebra_placements,
+    _inherited_ring_placements,
     _polynomial_ring_placements,
+    _size_of_finitely_supported_families,
     LocalizationRings,
     OwnedCategoryOverBaseRing,
     OwnedRings,
@@ -422,13 +425,39 @@ def _polynomial_engine(engine_base, names):
     return _SagePolynomialRing(engine_base, names)
 
 
-def _laurent_polynomial_ring(base_ring, *args, **kwargs):
+def _laurent_polynomial_ring(base_ring, *args, _engine=None, **kwargs):
     base = _owned_ring(base_ring)
-    result = _own_ring(
+    engine = (
         _SageLaurentPolynomialRing(_engine_ring(base), *args, **kwargs)
+        if _engine is None
+        else _engine
     )
-    labels = tuple(_engine_ring(result).variable_names())
-    algebra = _algebra_with_structure(result, base, labels)
+    labels = tuple(engine.variable_names())
+    return _owned_laurent_polynomial_ring(base, labels, engine)
+
+
+@cached_function(key=lambda base, labels, engine: (id(base), tuple(labels)))
+def _owned_laurent_polynomial_ring(base, labels, engine):
+    r"""The Laurent polynomial algebra interned by its owned coefficient ring and variable labels."""
+    placements = (
+        *_inherited_ring_placements(
+            base, univariate_over_field_is_principal=len(labels) == 1
+        ),
+        _size_of_finitely_supported_families(base, len(labels)),
+    )
+    ring_parent = _OwnedRingParent(
+        engine,
+        base=base,
+        named_placement=lambda: placements,
+        constructing_category=Algebras(base).Associative().Unital().Commutative(),
+    )
+    algebra = _algebra_with_structure(
+        ring_parent,
+        base,
+        labels,
+        Algebras(base).Associative().Unital().Commutative(),
+        construction_data=(("kind", "laurent_polynomial"), ("variables", tuple(labels))),
+    )
     _set_owned_ring_display(
         algebra,
         f"{base}[{', '.join(labels)}^±1]",

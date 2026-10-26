@@ -2134,7 +2134,13 @@ def _affine_quotient_normalization_data(quotient):
                 generator.sage_poly(normal_cover_engine)
                 for generator in singular("normap")
             )
-            normal_cover = _own_ring(normal_cover_engine)
+            # Singular returned a polynomial presentation with these literal
+            # coefficient ring and ordered variable labels. Reconstruct the
+            # owned cover from that datum rather than adopting the returned
+            # engine parent as a second ring object.
+            normal_cover = _own_ring(normal_cover_engine.base_ring()).polynomial_ring(
+                tuple(normal_cover_engine.variable_names())
+            )
             normal_ideal = normal_cover.ideal(
                 *(
                     _owned_engine_element(normal_cover, normal_cover_engine(generator))
