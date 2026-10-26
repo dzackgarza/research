@@ -62,3 +62,25 @@ def test_split_four_dimensional_form_cosets_are_its_nonzero_singular_vectors() -
     augmentation = cosets.schreier_generating_morphism()
     images = tuple(augmentation(generator) for generator in augmentation.domain().group_generators())
     assert group.subgroup_on(images).cardinality() == 8
+
+
+def test_anisotropic_ternary_plane_cosets_are_its_unit_vectors() -> None:
+    r"""O(x^2+y^2,F3) has order eight and is transitive on +/-e1, +/-e2."""
+    form = Lattices(ZZ)([[3, 0], [0, 3]]).discriminant_bilinear_form()
+    group = form.orthogonal_group()
+    vector = next(iter(form.module_generators()))
+    stabilizer = group.subgroup_on(tuple(group.stabilizer_of_element(vector).group_generators()))
+    cosets = group.left_cosets(stabilizer)
+    section = cosets.representative_map()
+
+    assert group.cardinality() == 8
+    assert stabilizer.cardinality() == 2
+    assert cosets.cardinality() == 4
+    assert len({section(point)(vector) for point in cosets}) == 4
+    for point in cosets:
+        assert cosets.coset_of(section(point)) == point
+        for generator in group.group_generators():
+            assert section(cosets.act(generator, point))(vector) == generator(section(point)(vector))
+    augmentation = cosets.schreier_generating_morphism()
+    images = tuple(augmentation(generator) for generator in augmentation.domain().group_generators())
+    assert group.subgroup_on(images).cardinality() == 2

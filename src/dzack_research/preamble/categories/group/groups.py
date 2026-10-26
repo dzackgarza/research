@@ -6166,8 +6166,15 @@ class OwnedGroups(CategoryPacketMethods, OwnedCategory):
                 return self._selected_data_registry()[LeftCosetGSets(subgroup)]
             return self._left_coset_construction(subgroup)
 
+        @RealizationHook
         @cached_method
         def _left_coset_construction(self, subgroup):
+            r"""Construct the pointed G/H action through the selected group realization.
+
+            Protected construction contract: left_cosets is the caller;
+            group realizations supply owned pointed actions with their
+            section. The general realization uses exact coset equality.
+            """
             from dzack_research.preamble.categories.group.g_sets import _left_coset_g_set
             return _left_coset_g_set(self, subgroup)
 
