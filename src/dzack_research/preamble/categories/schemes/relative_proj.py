@@ -80,23 +80,15 @@ def _relative_projectivization_base_change_composite(parent, comparison):
     )
 
 
-class _RelativeProjectivizationBaseChangeTotalMorphism(SchemeMorphism):
-    r"""The canonical map ``P(F_A') -> P(F)`` in an exact base-change square."""
-
-    def __init__(self, parent, comparison) -> None:
-        self._comparison = comparison
-        super().__init__(None, mor=parent)
-
-    def comparison(self):
-        return self._comparison
-
-    def _in_mor(self, mor):
-        return _RelativeProjectivizationBaseChangeTotalMorphism(mor, self.comparison())
-
-    def _postcompose_with(self, after):
-        if after is self.comparison().projectivization().projectivization_projection():
-            return self.comparison().square_composite()
-        return None
+def _relative_projectivization_base_change_total_morphism(parent, comparison):
+    r"""Construct the canonical total-space map in the generated scheme Mor."""
+    return parent.element_class(
+        parent,
+        None,
+        mor=parent,
+        relative_projectivization_comparison=comparison,
+        relative_projectivization_role="base_change_total",
+    )
 
 
 class _RelativeProjectivizationBaseChangeBaseMorphism(SchemeMorphism):
@@ -217,10 +209,7 @@ class GeneralProjectivizationBaseChangeComparison(SageObject):
             )
         )
         self._projection_to_original = changed_total.Mor(projectivization)(
-            lambda mor: _RelativeProjectivizationBaseChangeTotalMorphism(
-                mor,
-                self,
-            )
+            lambda mor: _relative_projectivization_base_change_total_morphism(mor, self)
         )
         if (
             projectivization.projectivization_projection()
@@ -296,10 +285,7 @@ class ExactProjectivizationBaseChangeComparison(SageObject):
             )
         )
         self._total_projection = changed_total.Mor(projectivization)(
-            lambda mor: _RelativeProjectivizationBaseChangeTotalMorphism(
-                mor,
-                self,
-            )
+            lambda mor: _relative_projectivization_base_change_total_morphism(mor, self)
         )
         if (
             projectivization.projectivization_projection() * self.total_projection()
@@ -387,10 +373,7 @@ class ExactFiniteAtlasProjectivizationBaseChangeComparison(SageObject):
             )
         )
         self._total_projection = changed_total.Mor(projectivization)(
-            lambda mor: _RelativeProjectivizationBaseChangeTotalMorphism(
-                mor,
-                self,
-            )
+            lambda mor: _relative_projectivization_base_change_total_morphism(mor, self)
         )
         if (
             projectivization.projectivization_projection() * self.total_projection()

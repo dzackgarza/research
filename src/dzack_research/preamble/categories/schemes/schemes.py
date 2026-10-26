@@ -974,6 +974,10 @@ class SchemeMorphismMethods:
         return _ProjectiveCoordinateMorphism(mor, values, coefficient_map=coefficients, point_coordinates=point_values)
 
     def _postcompose_with(self, after):
+        if self._relative_projectivization_role == "base_change_total":
+            if after is self.comparison().projectivization().projectivization_projection():
+                return self.comparison().square_composite()
+            return None
         if self._relative_projectivization_source_sheaf is not None:
             if after is self.codomain().structure_morphism():
                 return self.domain().structure_morphism()
@@ -1013,6 +1017,14 @@ class SchemeMorphismMethods:
             return (
                 isinstance(other, SchemeMorphismMethods)
                 and other._relative_projectivization_role == "base_change_composite"
+                and other.domain() is self.domain()
+                and other.codomain() is self.codomain()
+                and other.comparison() is self.comparison()
+            )
+        if self._relative_projectivization_role == "base_change_total":
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._relative_projectivization_role == "base_change_total"
                 and other.domain() is self.domain()
                 and other.codomain() is self.codomain()
                 and other.comparison() is self.comparison()
@@ -1723,7 +1735,7 @@ class SchemeMorphismMethods:
         return negation(self == other)
 
     def __hash__(self) -> int:
-        if self._relative_projectivization_role == "base_change_composite":
+        if self._relative_projectivization_role in ("base_change_composite", "base_change_total"):
             raise TypeError(f"unhashable type: {type(self).__name__}")
         if self._relative_projectivization_source_sheaf is not None:
             raise TypeError(f"unhashable type: {type(self).__name__}")
@@ -1747,6 +1759,8 @@ class SchemeMorphismMethods:
             return f"Scheme morphism from glued charts: {self.domain()} -> {self.codomain()}"
         if self._relative_projectivization_role == "base_change_composite":
             return f"Relative-Proj base-change composite {self.domain()} -> {self.codomain()}"
+        if self._relative_projectivization_role == "base_change_total":
+            return f"Relative-Proj base-change total map {self.domain()} -> {self.codomain()}"
         if self._closed_complement is not None:
             return f"Open immersion {self.domain()} -> {self.codomain()} complementing {self._closed_complement}"
         if self._homogeneous_coordinates is not None:
