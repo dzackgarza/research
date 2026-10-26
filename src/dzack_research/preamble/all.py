@@ -860,8 +860,8 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             same_compiled_source = (
                 resolved_source.parent == source.parent
                 and resolved_source.stem == source.stem
-                and resolved_source.suffix in (".py", ".sage")
-                and source.suffix in (".py", ".sage")
+                and source.suffix == ".sage"
+                and resolved_source.suffix == ".py"
             )
             if same_compiled_source:
                 if len(parts) > module_depth:
