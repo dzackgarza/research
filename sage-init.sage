@@ -83,7 +83,7 @@ from dzack_research.preamble.all import *
 # bound here.  Sage's second spellings of the session's ring constructors
 # (FiniteField, IntegerModRing, Integers) are removed from this scope by
 # their owner, which cites the rule (sage_extensions.rings).
-from dzack_research.preamble.all import _restore_session_ring_bindings
+from sage_extensions.all import _restore_session_ring_bindings
 
 _restore_session_ring_bindings(globals())
 

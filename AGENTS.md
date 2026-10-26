@@ -680,7 +680,7 @@ it does not authorize deferring, dropping, or weakening unfinished requirements.
 
 ## The expectation subtrees are never edited to match an implementation (always-on)
 
-`tests/constructions/` and `tests/user_simulations/`, with their shared catalogue `tests/conftest.py`, record what a mathematician expects of a session, written with zero knowledge of the implementation. They measure the preamble; the preamble never measures them. **Never change a test in these subtrees to match an implementation. Not ever.** Not when a category is renamed, not when a constructor's signature changes, not when a spelling the test uses does not exist, not when a red row is inconvenient, not when a refactor touches every caller. If the implementation moves, the test stays and reports the move; if a name the test uses is missing, that absence is the finding. The files are read-only on disk for this reason, and a red suite there is the expected state until the preamble meets it.
+The mathematics tests live with the code in sage-extensions (`~/gitclones/sage-extensions/tests/`). There, `tests/constructions/` and `tests/user_simulations/`, with their shared catalogue `tests/conftest.py`, record what a mathematician expects of a session, written with zero knowledge of the implementation. They measure the preamble; the preamble never measures them. **Never change a test in these subtrees to match an implementation. Not ever.** Not when a category is renamed, not when a constructor's signature changes, not when a spelling the test uses does not exist, not when a red row is inconvenient, not when a refactor touches every caller. If the implementation moves, the test stays and reports the move; if a name the test uses is missing, that absence is the finding. The files are read-only on disk for this reason, and a red suite there is the expected state until the preamble meets it.
 
 The only edit these subtrees admit is one that changes the mathematics an expectation states, because the mathematics was wrong, recorded as such in its commit. Everything else about them, including that they are written blind, take every name from the session's star import, and are never run in order to shape them, is in `tests/constructions/CONTRIBUTING.md`.
 
@@ -1366,7 +1366,7 @@ Top-level directories (this is a navigational map; each tree owns its own README
 
 Editable installs point at the working tree, so a rebuilt or reinstalled Sage is the only thing that breaks them — re-run the two `-e` installs and check the vendor path with `sage -c 'import _vendor_selfcheck'`.
 
-- **`tests/`** — tests for the live `src/` package surface only.
+- **`tests/`** — tests for the research tooling in `src/dzack_research/utilities/`. The mathematics tests, the test lint, the suite budget and the coverage recipes live in sage-extensions.
   The archived preamble's tests travelled with it to `archives/preamble/tests/`.
   Spike tests live in each spike's own `tests/` tree.
   `projects/lattice-research/` is a **git submodule** (`dzackgarza/lattice-research`) and contains `category_specs/` (see lineage note), plus `src/`, `theory/`, `lean/`, `paper/`, `tests/`, `reports/`. Because it is a submodule, edits there are commits to a *separate* repo.
