@@ -762,6 +762,7 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
     module_name = None
     module_depth = -1
     conflicting_source = None
+    unresolved_package_source = None
     for entry in _sys.path:
         root = _Path(entry or ".").resolve()
         try:
@@ -779,6 +780,11 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         if not parts or not all(part.isidentifier() for part in parts):
             continue
         candidate = ".".join(parts)
+        package_parent = relative.name in ("__init__.py", "__init__.sage") or any(
+            (root.joinpath(*relative.parts[:index]) / "__init__.py").is_file()
+            or (root.joinpath(*relative.parts[:index]) / "__init__.sage").is_file()
+            for index in range(1, len(relative.parts))
+        )
         # Only delegate when the installed sageparse finder chooses this exact
         # source; package directories may have their own loader.
         try:
@@ -789,6 +795,11 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
             # This sys.path entry did not make the source importable under the
             # candidate name (a nested path entry may be only a partial name).
             # It is not evidence of a competing canonical module.
+            if package_parent and (
+                unresolved_package_source is None
+                or len(parts) > unresolved_package_source[1]
+            ):
+                unresolved_package_source = (candidate, len(parts))
             continue
         if _Path(spec.origin).resolve() == source:
             # Overlapping sys.path entries can make one file importable under
@@ -800,14 +811,6 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
                 module_name = candidate
                 module_depth = len(parts)
         elif conflicting_source is None:
-            package_parent = any(
-                (parent / "__init__.py").is_file()
-                or (parent / "__init__.sage").is_file()
-                for parent in (
-                    root.joinpath(*relative.parts[:index])
-                    for index in range(1, len(relative.parts))
-                )
-            )
             conflicting_source = (candidate, _Path(spec.origin).resolve(), package_parent)
     if module_name is not None:
         # The importer is the sole owner of module execution and identity.
@@ -830,6 +833,11 @@ def load(filename: str, globals: dict | None = None, attach: bool = False) -> No
         raise ImportError(
             f"{source} is under an import root but is not the canonical source "
             f"for {conflicting_source[0]!r}; import the module selected by sageparse instead"
+        )
+    elif unresolved_package_source is not None:
+        raise ImportError(
+            f"{source} belongs to package source {unresolved_package_source[0]!r}, "
+            "but the canonical importer could not resolve it; refusing duplicate execution"
         )
     if module_name is not None:
         imported = _sys.modules[module_name]
