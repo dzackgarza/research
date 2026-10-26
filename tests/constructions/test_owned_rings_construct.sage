@@ -16,6 +16,7 @@ def test_integer_ring_exposes_fraction_module_polynomial_and_matrix_construction
     assert ZZ in OwnedRings()
     assert ZZ.cardinality() == aleph0
     assert ZZ.fraction_field() is QQ
+    assert ZZ.fraction_field() in OwnedOrderedRings()
     assert module.module_rank() == 2
     assert x in polynomials
     assert t * t**-1 == laurent.one()

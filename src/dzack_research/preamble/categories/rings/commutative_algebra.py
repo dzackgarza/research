@@ -14,8 +14,12 @@ from sage.all import (
 )
 from sage.rings.finite_rings.finite_field_constructor import GF as _SageGF
 from sage.categories.fields import Fields as SageFields
-from sage.categories.ordered_fields import OrderedFields as SageOrderedFields
+try:
+    from sage.categories.ordered_fields import OrderedFields as SageOrderedFields
+except ImportError:
+    SageOrderedFields = None
 from sage.categories.rings import Rings as SageRings
+from sage.rings.rational_field import QQ as SageQQ
 from sage.misc.cachefunc import cached_function, cached_method
 from sage.rings.abc import Order as SageNumberFieldOrder
 from sage.rings.fraction_field import FractionField_generic as SageFractionField
@@ -4163,10 +4167,23 @@ def _fraction_field_localization(source, submonoid):
     if source in OwnedRings().Noetherian():
         placements.append(OwnedRings().Noetherian())
     # An ordered integral domain has a unique order extension to its fraction
-    # field. Preserve the owned order only when the selected fraction-field
-    # engine itself realizes Sage's ordered-field contract; do not manufacture
-    # an order for an engine whose comparisons do not implement that extension.
-    if source in OwnedOrderedRings() and fraction_engine in SageOrderedFields():
+    # field. Newer Sage versions expose that contract as OrderedFields. Older
+    # supported Sage images lack the category module, so retain the order only
+    # for QQ or an unchanged field engine there; do not infer an order for an
+    # arbitrary rational-function or other field merely from field membership.
+    realizes_ordered_field = (
+        fraction_engine is SageQQ
+        or fraction_engine is engine
+        or (
+            SageOrderedFields is not None
+            and fraction_engine in SageOrderedFields()
+        )
+    )
+    if (
+        source in OwnedOrderedRings()
+        and fraction_engine in SageFields()
+        and realizes_ordered_field
+    ):
         placements.append(OwnedOrderedRings())
     base = source.base_ring()
     algebra_source = (
