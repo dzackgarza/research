@@ -408,14 +408,15 @@ def _stable_signature_integer(signature) -> int:
 class _OwnedCategoryComparisonKey:
     r"""Deterministic ``_cmp_key`` for owned categories.
 
-    Sage's native comparison key starts with ``flags`` and uses a creation
-    counter to break ties.  The flags carry semantic ordering conventions, but
-    they are not guaranteed to be monotone on the preamble's declared category
-    edges.  Sage's C3-controlled merge requires every strict subcategory to sort
-    before its supercategory.  The owned key therefore puts a structural integer
-    first: graph depth occupies its high bits, and a digest of the full graph and
-    parameter signature resolves siblings reproducibly.  Sage's flags and
-    session counter remain as subsequent tie-breakers.
+    Sage's native ``CmpKey`` is a C-level pair of signed C longs
+    ``(flags, counter)``.  Its first component must remain an integer-sized flag
+    word; a Python-sized structural integer in that slot raises
+    ``OverflowError``.  The flags carry Sage's semantic conventions, but are
+    not monotone on every preamble category edge.  Pack the owned graph depth
+    above Sage's low 32 flag bits in a bounded C-long word, with an owned floor
+    above native category flags.  A bounded digest of the full graph and
+    parameter signature resolves siblings; the session counter breaks the
+    unlikely digest collision and preserves distinct parameterized instances.
 
     The structural integer does not separate two categories of one family whose
     parameter is an object rather than a category: ``C/X`` and ``C/Y`` have the
@@ -431,8 +432,10 @@ class _OwnedCategoryComparisonKey:
     normal instance lookup is the fast path.
     """
 
-    _DEPTH_SHIFT = 160
-    _OWNED_FLOOR = 1 << 240
+    _DEPTH_SHIFT = 32
+    _FLAG_MASK = (1 << _DEPTH_SHIFT) - 1
+    _OWNED_FLOOR = 1 << 48
+    _STRUCTURAL_MASK = (1 << 62) - 1
 
     def __get__(self, category: Category | None, owner=None):
         if category is None:
@@ -462,12 +465,13 @@ class _OwnedCategoryComparisonKey:
             graph_signature,
             parameter_signature,
         )
-        structural = (
+        ordered_flags = (
             self._OWNED_FLOOR
             + (depth << self._DEPTH_SHIFT)
-            + _stable_signature_integer(signature)
+            + (flags & self._FLAG_MASK)
         )
-        result = (structural, flags, session_counter)
+        structural = _stable_signature_integer(signature) & self._STRUCTURAL_MASK
+        result = (ordered_flags, structural, session_counter)
         category._cmp_key = result
         return result
 
