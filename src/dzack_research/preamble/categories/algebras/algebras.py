@@ -3195,7 +3195,12 @@ class AlgebrasWithChosenFinitePresentation(OwnedCategoryOverBaseRing):
         def generating_module(self):
             r"""Return the exact module on which the selected free algebra is built."""
             generating = self.presentation_ring().generating_module()
-            assert (generating.module_generating_set() == self.algebra_generating_set()) is True, (
+            module_labels = generating.module_generating_set()
+            algebra_labels = self.algebra_generating_set()
+            labels_match = module_labels is algebra_labels or (
+                module_labels == algebra_labels
+            ) is True
+            assert labels_match, (
                 f"the generators {generating.module_generating_set()} of the presentation algebra of {self} "
                 f"must equal its chosen algebra generators {self.algebra_generating_set()}"
             )
