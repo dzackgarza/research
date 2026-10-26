@@ -4431,13 +4431,18 @@ class _OwnedAlgebraParent(_OwnedRingParent):
         for name, value in construction_data:
             setattr(self, name, value)
         self._realized_scalar_structure = (lambda scalar: self(scalar)) if scalar_structure is None else scalar_structure
-        selected_labels = (
-            None
-            if labels is None
-            else labels
-            if labels in Sets()
-            else finite_ordered_set(labels)
-        )
+        if labels is None:
+            selected_labels = None
+        else:
+            # Share the module owner's rank/cardinality/set normalization.
+            # In particular an owned set is retained literally, while a rank
+            # denotes the canonical ordinal rather than an ordered set built
+            # by iterating the integer.
+            from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+                _module_generating_set,
+            )
+
+            selected_labels = _module_generating_set(labels)
         associative = Algebras(base).Associative().Unital()
         # A native algebra that is also a ring must retain the ring category
         # supplied by its constructor. Reading only its commutativity axiom

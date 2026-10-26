@@ -294,9 +294,7 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
         selected_labels = (
             self.algebra_generating_set()
             if labels is None
-            else labels
-            if labels in Sets()
-            else finite_ordered_set(labels)
+            else _finite_labels(labels)
         )
         current_labels = self.algebra_generating_set()
         # A specialization that supplies an equal-but-distinct enumerated set
