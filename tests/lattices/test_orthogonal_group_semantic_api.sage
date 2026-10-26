@@ -12,7 +12,7 @@ def test_e8_with_a_norm_eighteen_line_has_the_product_orthogonal_group() -> None
     """
     from sage.all import CartanMatrix, ZZ as SageZZ, block_diagonal_matrix, matrix
 
-    gram = block_diagonal_matrix(matrix(SageZZ, [[18]]), matrix(SageZZ, CartanMatrix(["E", 8])))
+    gram = block_diagonal_matrix(matrix(SageZZ, [[18]]), matrix(SageZZ, CartanMatrix("E8")))
     lattice = Lattices(ZZ)([list(row) for row in gram.rows()])
     group = lattice.O()
     basis = tuple(lattice.module_generators().values())
