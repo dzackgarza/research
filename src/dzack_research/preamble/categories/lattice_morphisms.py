@@ -404,7 +404,7 @@ class LatticeMorphismMethods:
         )
 
     def __mul__(self, other):
-        if not isinstance(other, LatticeMorphism):
+        if not isinstance(other, LatticeMorphismMethods):
             return super().__mul__(other)
         if other.codomain() is not self.domain():
             return NotImplemented
