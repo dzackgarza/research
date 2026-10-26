@@ -3688,7 +3688,7 @@ def _quotient_ring(source, defining_ideal):
     if finite_order_quotient or finite_extension_field:
         placements.append(OwnedRings().Artinian())
 
-    return _object_of(
+    quotient = _object_of(
         owned_category_join((
             QuotientRings(),
             Algebras(source).Associative().Unital().Commutative(),
@@ -3698,6 +3698,34 @@ def _quotient_ring(source, defining_ideal):
         defining_ideal=defining_ideal,
         _engine_ring=quotient_engine,
     )
+
+    # For p prime and k > 1, an integer class modulo p^k is a unit exactly
+    # when it is not divisible by p.  Thus all nonunits lie in (p), making
+    # (p) the unique maximal ideal; the quotient by it is Z/p.  The selected
+    # integer generator is the construction datum; use its exact prime-power
+    # factorization rather than testing any property of the quotient or its
+    # engine realization.
+    if source is _owned_integers() and not exact_source_quotient:
+        integer_generators = tuple(defining_ideal.ideal_generators())
+        if len(integer_generators) == 1:
+            modulus = abs(int(integer_generators[0]))
+            if modulus > 1:
+                prime_power = SageZZ(modulus).is_prime_power(get_data=True)
+                if prime_power and int(prime_power[1]) > 1:
+                    prime, _exponent = prime_power
+                    maximal_ideal = CommutativeIdeals(quotient).Maximal()(
+                        quotient(_owned_integers()(prime))
+                    )
+                    residue_field = _owned_integers().quotient_ring(
+                        _owned_integers().ideal(_owned_integers()(prime))
+                    )
+                    residue_map = quotient.Mor(residue_field)(
+                        lambda element: residue_field(element.lift())
+                    )
+                    _install_local_ring_construction(
+                        quotient, maximal_ideal, residue_field, residue_map
+                    )
+    return quotient
 
 
 def _localization_descent(source, elements):
