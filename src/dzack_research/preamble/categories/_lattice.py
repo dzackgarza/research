@@ -1874,7 +1874,7 @@ def _lattice(
         case _ if (
             data in FormModules(ring)
             and data.module_rank().is_finite()
-            and data.value_module() is ring
+            and data.is_base_ring_valued() is True
         ):
             rank = int(data.module_rank())
             gram = data.gram_tensor()
