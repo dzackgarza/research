@@ -433,11 +433,11 @@ class _OwnedCategoryComparisonKey:
     """
 
     # CmpKey's flags field is a C ``int`` (not an arbitrary Python integer),
-    # while its second counter field is a C ``long``. Reserve 20 low bits for
+    # while its second counter field is a C ``long``. Reserve 21 low bits for
     # Sage's current category flag bit-vector and use the remaining signed-int
     # bits for the owned depth. Reject a future Sage flag expansion rather than
     # silently aliasing distinct flag vectors.
-    _DEPTH_SHIFT = 20
+    _DEPTH_SHIFT = 21
     _FLAG_MASK = (1 << _DEPTH_SHIFT) - 1
     _OWNED_FLOOR = 1 << _DEPTH_SHIFT
     _MAX_DEPTH = (1 << (31 - _DEPTH_SHIFT)) - 2
