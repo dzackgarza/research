@@ -4245,8 +4245,8 @@ class _FiniteAtlasAlgebraGluingDatumEngine:
         )
 
 
-class FiniteAtlasAlgebraGluingMorphism(Morphism):
-    r"""A morphism of finite-atlas algebra descent data."""
+class FiniteAtlasAlgebraGluingMorphismMethods(CategoricalMor.ElementMethods):
+    r"""Methods for a generated morphism of finite-atlas algebra descent data."""
 
     def __init__(self, parent, local_maps) -> None:
         Morphism.__init__(self, parent)
@@ -4372,7 +4372,7 @@ class FiniteAtlasAlgebraGluingMorphism(Morphism):
 class FiniteAtlasAlgebraGluingMor(CategoricalMor):
     r"""Compatible local algebra maps between two descent data on one finite atlas."""
 
-    Element = FiniteAtlasAlgebraGluingMorphism
+    ElementMethods = FiniteAtlasAlgebraGluingMorphismMethods
 
     def __init__(self, family, domain, codomain) -> None:
         if domain.gluing_datum() is not codomain.gluing_datum():
@@ -4384,15 +4384,15 @@ class FiniteAtlasAlgebraGluingMor(CategoricalMor):
         super().__init__(family, domain, codomain)
 
     def _element_constructor_(self, local_maps, *, check=False):
-        match local_maps:
-            case FiniteAtlasAlgebraGluingMorphism() if local_maps.parent() is self:
+        if (
+            isinstance(local_maps, CategoricalMor.ElementMethods)
+            and local_maps.parent().base_category() is self.base_category()
+        ):
+            if local_maps.parent() is self:
                 if check:
                     local_maps.validate_overlap_compatibility()
                 return local_maps
-            case FiniteAtlasAlgebraGluingMorphism():
-                raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
-            case _:
-                pass
+            raise TypeError(f"{local_maps} belongs to another Mor; apply the functor between the categories")
         morphism = self.element_class(self, local_maps)
         if check:
             morphism.validate_overlap_compatibility()
@@ -7605,7 +7605,6 @@ __all__ = [
     "AlgebraGluingMor",
     "AlgebraGluingMorphism",
     "FiniteAtlasAlgebraGluingData",
-    "FiniteAtlasAlgebraGluingMorphism",
     "FiniteAtlasAlgebraTransition",
     "FiniteAffineAtlases",
     "FiniteAtlasInvertibleSheafRefinement",
