@@ -6341,7 +6341,6 @@ def _presented_ring_category(engine: Ring) -> Category:
     )
     from sage.rings.algebraic_closure_finite_field import AlgebraicClosureFiniteField_generic
     from sage.algebras.free_algebra import FreeAlgebra_generic
-    from sage.rings.finite_rings.finite_field_base import FiniteField
     from sage.rings.laurent_series_ring import LaurentSeriesRing
     from sage.rings.lazy_series_ring import LazyLaurentSeriesRing, LazyPowerSeriesRing
     from sage.rings.polynomial.laurent_polynomial_ring_base import LaurentPolynomialRing_generic
