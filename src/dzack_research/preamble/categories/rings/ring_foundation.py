@@ -6328,7 +6328,6 @@ def _presented_ring_category(engine: Ring) -> Category:
 
     The case is selected by the Sage parent class of ``engine``.
     """
-    from sage.algebras.free_algebra import FreeAlgebra_generic
     from sage.rings.abc import (
         ComplexBallField,
         ComplexDoubleField,
@@ -6373,12 +6372,6 @@ def _presented_ring_category(engine: Ring) -> Category:
             # Z_p and the rings of integers of its finite extensions are
             # discrete valuation rings, uncountable.
             placements = (principal, noetherian, owned_sets.UncountableSets())
-        case PolynomialRing_generic() | MPolynomialRing_base():
-            coefficients = _own_ring(engine.base_ring())
-            placements = _polynomial_ring_placements(coefficients, engine.ngens())
-        case FreeAlgebra_generic():
-            coefficients = _own_ring(engine.base_ring())
-            placements = _free_associative_algebra_placements(coefficients, engine.ngens())
         case FractionField_generic():
             # Frac(D) is a field for every integral domain D.  The source
             # construction supplies the domain hypothesis and its cardinality;
