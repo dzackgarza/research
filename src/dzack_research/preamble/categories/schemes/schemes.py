@@ -260,10 +260,17 @@ def _engine_polynomial_algebra(engine_polynomial_ring, base):
     algebra over the owned ``base`` itself: raising the engine's own base
     ring a second time would give a different scalar ring.
     """
+    algebra = _symmetric_algebra_on(
+        base, tuple(engine_polynomial_ring.variable_names())
+    )
+    # The symmetric-algebra owner has already selected and retained the exact
+    # generator index set. Passing the engine's tuple of names again would
+    # normalize it to a second finite set in _OwnedAlgebraParent and break the
+    # literal identity between the generating module and algebra framing.
     return _commutative_algebra_with_structure(
-        _symmetric_algebra_on(base, tuple(engine_polynomial_ring.variable_names())),
+        algebra,
         base,
-        tuple(engine_polynomial_ring.variable_names()),
+        algebra.algebra_generating_set(),
         FreeAlgebras(base),
         GradedFreeAlgebras(base),
         SymmetricAlgebras(base),
