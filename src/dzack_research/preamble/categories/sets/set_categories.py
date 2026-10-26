@@ -581,7 +581,7 @@ class _IntegerTranslationOnZZ:
         return self._displacement
 
 
-class OwnedSetMorphism(SetMorphism):
+class OwnedSetMorphism:
     r"""A set map whose composition remains in the canonical owned Set Mor.
 
     Unverified construction specimens, including a subset inclusion and maps
