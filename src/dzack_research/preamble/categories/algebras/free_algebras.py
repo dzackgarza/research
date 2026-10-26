@@ -299,9 +299,11 @@ class _NativeFreeAlgebraParent(_NativeMonomialEvaluation, _OwnedAlgebraParent):
             else finite_ordered_set(labels)
         )
         current_labels = self.algebra_generating_set()
-        same_labels = selected_labels is current_labels or (
-            selected_labels == current_labels
-        ) is True
+        # A specialization that supplies an equal-but-distinct enumerated set
+        # has selected a new framing. Extensional equality does not authorize
+        # retaining the old generating module, whose basis is indexed by the
+        # old set object.
+        same_labels = selected_labels is current_labels
         generating = self.generating_module()
         if same_labels:
             if (
