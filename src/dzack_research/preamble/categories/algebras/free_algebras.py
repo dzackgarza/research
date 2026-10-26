@@ -340,14 +340,15 @@ def _finite_labels(labels):
         # ordered set changes that defining object before the algebra owner
         # sees it.
         return labels
-    if isinstance(labels, int):
-        # Match the canonical rank-to-label rule of ``_module_generating_set``:
-        # a rank n denotes the ordinal S.Δ[n-1], not a separately constructed
-        # ordered set whose elements happen to be 0,...,n-1.
-        if labels < 0:
-            raise ValueError(f"a free algebra generator rank must be nonnegative, got {labels}")
-        return Sets.Δ[labels - 1]
-    return finite_ordered_set(labels)
+    # Use the module owner's single normalization rule for ranks, finite
+    # cardinalities, and literal finite label families. In particular Sage's
+    # Integer is not a Python int, and must still denote the canonical ordinal
+    # basis rather than being sent to the explicit-label constructor.
+    from dzack_research.preamble.categories.modules.framed.framed_free_modules import (
+        _module_generating_set,
+    )
+
+    return _module_generating_set(labels)
 
 
 def _variable_names(labels) -> tuple[str, ...]:
