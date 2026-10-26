@@ -256,6 +256,86 @@ class Cat(CategoryPacketMethods, Category):
         def identity_functor(self):
             return Cat().identity(self)
 
+        def Diagram(self, index_category: Category) -> Category:
+            r"""Return the category of diagrams in ``self`` indexed by ``index_category``."""
+            return Cat().Mor(index_category, self)
+
+        def Product(self, factors) -> Category:
+            r"""Return the category of cones over the selected discrete product diagram."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _ProductConeCategory,
+            )
+
+            return _ProductConeCategory(self.product_construction(factors).diagram())
+
+        def Coproduct(self, cofactors) -> Category:
+            r"""Return the category of cocones under the selected discrete coproduct diagram."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _CoproductCoconeCategory,
+            )
+
+            return _CoproductCoconeCategory(self.coproduct_construction(cofactors).diagram())
+
+        def DirectSum(self) -> Category:
+            r"""Return objects of ``self`` with a chosen direct-sum decomposition."""
+            from dzack_research.preamble.categories.abstract_categories.direct_sum_objects import (
+                DirectSumObjects,
+            )
+
+            return DirectSumObjects(self)
+
+        def DirectedSystem(self, index_category: Category) -> Category:
+            r"""Return covariant diagrams in ``self`` on a directed index category."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                DirectedSystem,
+            )
+
+            return DirectedSystem(index_category, self)
+
+        def InverseSystem(self, index_category: Category) -> Category:
+            r"""Return inverse diagrams in ``self`` indexed by ``index_category``."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                InverseSystem,
+            )
+
+            return InverseSystem(index_category, self)
+
+        def Cone(self, diagram: Functor) -> Category:
+            r"""Return the category of cones over ``diagram`` in ``self``."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _ConeCategory,
+            )
+
+            if diagram.codomain() is not self:
+                raise ValueError(f"the diagram {diagram} does not take values in {self}")
+            return _ConeCategory(diagram)
+
+        def Cocone(self, diagram: Functor) -> Category:
+            r"""Return the category of cocones under ``diagram`` in ``self``."""
+            from dzack_research.preamble.categories.abstract_categories.products import (
+                _CoconeCategory,
+            )
+
+            if diagram.codomain() is not self:
+                raise ValueError(f"the diagram {diagram} does not take values in {self}")
+            return _CoconeCategory(diagram)
+
+        def Arrow(self) -> Category:
+            r"""Return the arrow category ``[1, self]`` through Cat's owned Mor construction."""
+            return self.ArrowCategory()
+
+        def IsoArrow(self) -> Category:
+            r"""Return the full subcategory of ``Arrow()`` on isomorphisms."""
+            return self.IsoArrowCategory()
+
+        def core(self):
+            r"""Return the core groupoid of this category."""
+            from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
+                _CoreCategory,
+            )
+
+            return _CoreCategory(self)
+
         def inclusion_into(self, supercategory: Category):
             r"""Return the canonical inclusion functor into a declared supercategory."""
             from dzack_research.preamble.categories.functors.core import _CategoryInclusionFunctor
@@ -911,6 +991,11 @@ class Cat(CategoryPacketMethods, Category):
             )
 
             return SubobjectCategory(self, base_object)
+
+        def SubObject(self, base_object: Parent) -> Category:
+            r"""Return the subobject category under the legacy construction name."""
+            return self.SubobjectCategory(base_object)
+
         def SuperobjectCategory(self, base_object: Parent) -> Category:
             r"""Return the category of monic superobjects of ``base_object`` here."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -918,6 +1003,11 @@ class Cat(CategoryPacketMethods, Category):
             )
 
             return SuperobjectCategory(self, base_object)
+
+        def SuperObject(self, base_object: Parent) -> Category:
+            r"""Return the superobject category under the legacy construction name."""
+            return self.SuperobjectCategory(base_object)
+
         def CoveringObjectCategory(self, base_object: Parent) -> Category:
             r"""Return the category of epic objects covering ``base_object`` here."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -925,6 +1015,11 @@ class Cat(CategoryPacketMethods, Category):
             )
 
             return CoveringObjectCategory(self, base_object)
+
+        def CoveringObject(self, base_object: Parent) -> Category:
+            r"""Return the covering-object category under the legacy construction name."""
+            return self.CoveringObjectCategory(base_object)
+
         def CoveredObjectCategory(self, base_object: Parent) -> Category:
             r"""Return the category of epic quotients covered by ``base_object`` here."""
             from dzack_research.preamble.categories.abstract_categories.arrow_categories import (
@@ -932,6 +1027,11 @@ class Cat(CategoryPacketMethods, Category):
             )
 
             return CoveredObjectCategory(self, base_object)
+
+        def CoveredObject(self, base_object: Parent) -> Category:
+            r"""Return the covered-object category under the legacy construction name."""
+            return self.CoveredObjectCategory(base_object)
+
         def Subobjects(self, base_object: Parent) -> Category:
             return self.SubobjectCategory(base_object)
         def Superobjects(self, base_object: Parent) -> Category:
