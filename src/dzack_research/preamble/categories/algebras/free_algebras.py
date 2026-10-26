@@ -333,11 +333,12 @@ def _native_free_algebra(engine, generating_module, flavor, *, categories=(), co
 
 
 def _finite_labels(labels):
-    if labels in EnumeratedSets():
+    if labels in Sets():
         # The free module and its algebra must share the exact selected
-        # generating set. Enumeration is enough to order the engine names;
-        # rebuilding a finite enumerated set as a new finite ordinal changes
-        # the defining index object before the common algebra constructor sees it.
+        # generating set. An owned set is its own indexing datum, whether or
+        # not an enumeration has been selected. Rebuilding it as a finite
+        # ordered set changes that defining object before the algebra owner
+        # sees it.
         return labels
     if isinstance(labels, int):
         # Match the canonical rank-to-label rule of ``_module_generating_set``:
@@ -460,7 +461,11 @@ def _symmetric_algebra_of_free_module(generating):
     base = generating.base_ring()
     labels = generating.module_generating_set()
     engine_base = _engine_ring(base)
-    if labels.is_finite() is not True or engine_base not in SageRings():
+    if (
+        labels.is_finite() is not True
+        or labels not in EnumeratedSets()
+        or engine_base not in SageRings()
+    ):
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_symmetric_algebra_of,
         )
@@ -498,7 +503,7 @@ def _tensor_algebra_on(base_ring, algebra_generating_set, *, source_module=None)
         f"the tensor algebra's generating module {generating} must use the literal selected index set {labels}, "
         f"not {generating.module_generating_set()}"
     )
-    if infinite or engine_base not in SageRings():
+    if infinite or labels not in EnumeratedSets() or engine_base not in SageRings():
         from dzack_research.preamble.categories.algebras.sparse_free_algebras import (
             _sparse_tensor_algebra_of,
         )
