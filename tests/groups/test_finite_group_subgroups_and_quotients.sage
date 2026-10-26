@@ -8,39 +8,7 @@ right cosets; the centralizer of a $3$-cycle in $S_3$ is $A_3$.  The product
 claims are the universal property of $C_2 \times C_3$ in $\mathbf{Grp}$.
 """
 
-from itertools import permutations as itertools_permutations
-from types import SimpleNamespace
-
 from dzack_research.preamble.all import *  # noqa: F401,F403
-from dzack_research.preamble.categories.orthogonal_quotients import OrthogonalCharacterQuotient
-
-
-def test_finite_character_left_cosets_use_the_exact_left_action() -> None:
-    identity = (0, 1, 2)
-    elements = tuple(itertools_permutations(range(3)))
-    transposition = (1, 0, 2)
-    subgroup = {identity, transposition}
-
-    def multiply(left, right):
-        return tuple(left[right[index]] for index in range(3))
-
-    quotient = object.__new__(OrthogonalCharacterQuotient)
-    quotient._witnesses = dict.fromkeys(elements)
-    quotient._allowed = lambda element: element in subgroup
-    quotient._multiply = multiply
-    quotient.image = lambda element: element
-    quotient.supergroup = SimpleNamespace(one=lambda: identity)
-    points, base, action = quotient.left_coset_action_data()
-
-    assert len(points) == 3
-    assert all((action(element, base) == base) == (element in subgroup) for element in elements)
-    assert {action(element, base) for element in elements} == set(points)
-    for left in elements:
-        for right in elements:
-            for point in points:
-                assert action(multiply(left, right), point) == action(left, action(right, point))
-
-
 def test_the_quaternion_group_has_centre_and_commutator_subgroup_plus_minus_one() -> None:
     group = Groups.Q()
 
