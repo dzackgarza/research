@@ -3471,8 +3471,7 @@ class TensorProductModuleMorphismMethods:
         return self.parent().scalar_multiple(self.domain().base_ring()(2), self)
 
 
-class TensorProductModuleMorphism(TensorProductModuleMorphismMethods, ModuleMorphism):
-    r"""Compatibility shell for private tensor-product arrow realizations."""
+TensorProductModuleMorphism = TensorProductModuleMorphismMethods
 
 
 class ModuleAutomorphismMethods:
@@ -3541,8 +3540,7 @@ class ModuleAutomorphismMethods:
                 return self.forward() * other
 
 
-class ModuleAutomorphism(ModuleAutomorphismMethods, ModuleMorphism):
-    r"""Compatibility shell for private module-automorphism realizations."""
+ModuleAutomorphism = ModuleAutomorphismMethods
 
 
 def _flag_stabilizer_engine_data(automorphisms, terms):
