@@ -11,7 +11,7 @@ def test_e8_with_a_norm_eighteen_line_has_integral_change_of_basis_witnesses() -
     change = identity_matrix(SageZZ, 9)
     change[0, 1] = 1
     changed = change * gram * change.transpose()
-    for sign in (1, -1):
+    for sign in (SageZZ.one(), -SageZZ.one()):
         source = Lattices(ZZ)([list(row) for row in (sign * gram).rows()])
         target = Lattices(ZZ)([list(row) for row in (sign * changed).rows()])
         assert source.is_isometric(target)
