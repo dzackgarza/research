@@ -181,19 +181,6 @@ def _finite_chart_family(charts):
     return family
 
 
-class _GluedChartPointMorphism(SchemeMorphism):
-    r"""Point evaluation shared by a chart embedding and its open inclusion."""
-
-    def _call_(self, point):
-        from dzack_research.preamble.categories.rings.commutative_algebra import PrimeSpectra
-
-        if element_parent(point) in PrimeSpectra():
-            if element_parent(point) is not self.domain().underlying_space():
-                raise ValueError(f"{point} is not a prime point of the chart {self.domain()}")
-            return self.codomain()._glued_chart_point_map(self.chart_index())(point)
-        return super()._call_(point)
-
-
 def _glued_scheme_open_inclusion(parent, gluing_datum, chart_index):
     r"""Construct the chart-image inclusion as an element of its generated scheme Mor."""
     return parent.element_class(
@@ -206,91 +193,16 @@ def _glued_scheme_open_inclusion(parent, gluing_datum, chart_index):
     )
 
 
-class _GluedSchemeChartEmbedding(_GluedChartPointMorphism):
-    r"""One canonical chart map into a represented two-chart glued scheme."""
-
-    def __init__(
-        self,
+def _glued_scheme_chart_embedding(parent, gluing_datum, chart_index):
+    r"""Construct the selected chart embedding in the generated scheme Mor."""
+    return parent.element_class(
         parent,
-        gluing_datum,
-        chart_index,
-        open_image,
-        chart_isomorphism,
-    ) -> None:
-        super().__init__(None, mor=parent)
-        self._gluing_datum = gluing_datum
-        self._chart_index = gluing_datum.normalize_chart_index(chart_index)
-        self._open_image = open_image
-        self._chart_isomorphism = chart_isomorphism
-
-    def gluing_datum(self):
-        return self._gluing_datum
-
-    def chart_index(self):
-        return self._chart_index
-
-    def open_image(self):
-        return self._open_image
-
-    def chart_isomorphism(self):
-        return self._chart_isomorphism
-
-    def open_inclusion(self):
-        return self.open_image().inclusion()
-
-    def _in_mor(self, mor):
-        return _GluedSchemeChartEmbedding(
-            mor, self.gluing_datum(), self.chart_index(),
-            self.open_image(), self.chart_isomorphism(),
-        )
-
-    def is_open_immersion(self) -> bool:
-        r"""True: ``e_i`` is the chart isomorphism onto its open image followed by that image's inclusion."""
-        return True
-
-    def __mul__(self, other):
-        if other.codomain() is not self.domain():
-            return NotImplemented
-        chart_map = other
-        return _GluedSchemeChartMap(
-            _scheme_composition_mor(self, other),
-            self.gluing_datum().chart_embedding(self.chart_index()),
-            chart_map,
-        )
-
-    def _postcompose_with(self, after):
-        r"""``after o e_i`` is the local map of ``after`` on chart ``i``."""
-        if after.domain() is not self.codomain():
-            return NotImplemented
-        return after.local_map(self.chart_index())
-
-    def __eq__(self, other) -> bool:
-        if isinstance(other, _GluedSchemeChartMap):
-            return (
-                other.codomain() is self.codomain()
-                and other.gluing_datum() is self.gluing_datum()
-                and other.chart_index() == self.chart_index()
-                and other.chart_map()
-                == self.domain().categorical_identity_morphism()
-            )
-        return (
-            isinstance(other, _GluedSchemeChartEmbedding)
-            and other.gluing_datum() is self.gluing_datum()
-            and other.chart_index() == self.chart_index()
-        )
-
-    def __ne__(self, other) -> bool:
-        return not self == other
-
-    def __hash__(self) -> int:
-        position = self.gluing_datum().chart_index_set().ranking_map()(self.chart_index())
-        return hash((id(self.gluing_datum()), int(position)))
-
-    def _repr_(self):
-        return (
-            f"Open chart embedding {self.domain()} -> {self.codomain()} "
-            f"(chart {self.chart_index()})"
-        )
+        None,
+        mor=parent,
+        gluing_datum=gluing_datum,
+        gluing_chart_index=gluing_datum.normalize_chart_index(chart_index),
+        gluing_role="chart_embedding",
+    )
 
 
 class _GluedSchemeChartMap(SchemeMorphism):
@@ -349,7 +261,7 @@ class _GluedSchemeChartMap(SchemeMorphism):
         return after.local_map(self.chart_index()) * self.chart_map()
 
     def __eq__(self, other) -> bool:
-        if isinstance(other, _GluedSchemeChartEmbedding):
+        if isinstance(other, SchemeMorphismMethods) and other._gluing_role == "chart_embedding":
             return (
                 other.codomain() is self.codomain()
                 and other.gluing_datum() is self.gluing_datum()
@@ -755,12 +667,8 @@ def _glued_chart_isomorphism(datum, index):
 def _glued_chart_embedding(datum, index):
     r"""``e_i : U_i -> X``, the chart isomorphism onto its open image followed by that image's inclusion."""
     chart = datum.chart(index)
-    return _GluedSchemeChartEmbedding(
-        Schemes(datum.base_ring()).Mor(chart, datum.scheme()),
-        datum,
-        index,
-        datum.chart_image(index),
-        datum.chart_isomorphism(index),
+    return _glued_scheme_chart_embedding(
+        Schemes(datum.base_ring()).Mor(chart, datum.scheme()), datum, index,
     )
 
 
@@ -7482,7 +7390,7 @@ def _glued_fiber_product_factorization(product, datum, labels, charts, left_cone
     match left_cone_map:
         case _GluedSchemeChartMap():
             chart_map = left_cone_map.chart_map()
-        case _GluedSchemeChartEmbedding():
+        case SchemeMorphismMethods() if left_cone_map._gluing_role == "chart_embedding":
             chart_map = source.categorical_identity_morphism()
         case _:
             chart_map = None

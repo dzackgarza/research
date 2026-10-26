@@ -680,6 +680,19 @@ class SchemeMorphismMethods:
             raise AttributeError(f"{self} has no selected gluing chart")
         return self._gluing_chart_index
 
+    def open_image(self):
+        if self._gluing_role != "chart_embedding":
+            raise AttributeError(f"{self} is not a chart embedding")
+        return self.gluing_datum().chart_image(self.chart_index())
+
+    def chart_isomorphism(self):
+        if self._gluing_role != "chart_embedding":
+            raise AttributeError(f"{self} is not a chart embedding")
+        return self.gluing_datum().chart_isomorphism(self.chart_index())
+
+    def open_inclusion(self):
+        return self.open_image().inclusion()
+
     def cone_construction(self):
         r"""Return the selected universal-cone datum defining this map, or ``None``."""
         return self._cone_construction
@@ -833,9 +846,27 @@ class SchemeMorphismMethods:
         if self._gluing_role == "open_inclusion":
             chart = self.gluing_datum().chart_isomorphism(self.chart_index())
             return after.local_map(self.chart_index()) * chart.inverse().forward()
+        if self._gluing_role == "chart_embedding":
+            if after.domain() is not self.codomain():
+                return NotImplemented
+            return after.local_map(self.chart_index())
         return NotImplemented
 
     def __eq__(self, other):
+        if self._gluing_role == "chart_embedding":
+            if getattr(other, "_gluing_role", None) == "chart_map":
+                return (
+                    other.codomain() is self.codomain()
+                    and other.gluing_datum() is self.gluing_datum()
+                    and other.chart_index() == self.chart_index()
+                    and other.chart_map() == self.domain().categorical_identity_morphism()
+                )
+            return (
+                isinstance(other, SchemeMorphismMethods)
+                and other._gluing_role == "chart_embedding"
+                and other.gluing_datum() is self.gluing_datum()
+                and other.chart_index() == self.chart_index()
+            )
         if self._gluing_role == "open_inclusion" or getattr(other, "_gluing_role", None) == "open_inclusion":
             return (
                 isinstance(other, SchemeMorphismMethods)
