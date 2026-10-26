@@ -455,7 +455,7 @@ class _OwnedCategoryComparisonKey:
         # descriptor again would reinterpret that packed word as Sage flags.
         # Retain the native pair on first access and reuse it for every later
         # access to this descriptor.
-        native_pair = getattr(category, "_owned_native_cmp_pair", None)
+        native_pair = category.__dict__.get("_owned_native_cmp_pair")
         if native_pair is None:
             native_pair = native_descriptor.__get__(category, type(category))
             category._owned_native_cmp_pair = tuple(native_pair)
