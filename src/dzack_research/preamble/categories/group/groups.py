@@ -759,10 +759,11 @@ def _engine_element_action(group, backend_element, point):
         case SageGaloisGroup():
             from dzack_research.preamble.categories.rings.number_fields import (
                 _engine_number_field_isomorphism,
+                _number_field_from_engine,
             )
 
             source = engine.number_field()
-            field = _own_ring(source)
+            field = _number_field_from_engine(source)
             assert point in field, f"{group} acts on the field {field} by automorphisms, but {point} is not an element of {field}"
             # The automorphism on the owned field's own realization: the
             # Galois group's engine field is carried there generator to

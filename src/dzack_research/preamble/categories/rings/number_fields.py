@@ -564,7 +564,7 @@ class OwnedNumberFields(CategoryPacketMethods, OwnedCategory):
             r"""Return a chosen normal closure of ``K/QQ``."""
 
             engine = _engine_ring(self)
-            return self if engine is SageQQ else _own_ring(engine.galois_closure())
+            return self if engine is SageQQ else _number_field_from_engine(engine.galois_closure())
 
         def normal_closure_galois_group(self):
             r"""Return the Galois group of a chosen normal closure of ``K``."""
