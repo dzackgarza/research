@@ -1414,14 +1414,19 @@ class TorsionFormOrthogonalGroup(CategoricalMor):
             len(labels),
             [entry for row in engine_rows for entry in row],
         )
-        # ``morphism`` is already the exact owned form isometry represented by
-        # this normalized engine matrix. Reuse its stored mutually inverse maps
-        # instead of reconstructing them through normalization in _from_engine.
-        return self._from_engine(
-            self._engine_group()(engine_matrix),
-            forward=morphism.forward(),
-            inverse=morphism.inverse_morphism(),
-        )
+        engine_automorphism = self._engine_group()(engine_matrix)
+        if isinstance(morphism, TorsionFormIsometry):
+            # ``morphism`` is already the exact owned form isometry represented
+            # by this normalized engine matrix. Reuse its stored mutually
+            # inverse maps instead of reconstructing them through normalization
+            # in _from_engine. A general Core morphism does not promise an
+            # inverse, so it retains the ordinary engine-to-owned crossing.
+            return self._from_engine(
+                engine_automorphism,
+                forward=morphism.forward(),
+                inverse=morphism.inverse_morphism(),
+            )
+        return self._from_engine(engine_automorphism)
 
     def _element_constructor_(self, datum):
 
