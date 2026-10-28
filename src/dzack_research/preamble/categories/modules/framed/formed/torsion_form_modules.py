@@ -1123,7 +1123,14 @@ class TorsionFormAutomorphism(TorsionFormIsometry):
         return self._engine_element
 
     def inverse(self):
-        return self.parent()._from_engine(~self._engine())
+        # The exact inverse map is already owned and was validated when this
+        # isometry was constructed. Do not throw it away and reconstruct both
+        # maps from the inverse engine element.
+        return self.parent()._from_engine(
+            ~self._engine(),
+            forward=self.inverse_morphism(),
+            inverse=self.forward(),
+        )
 
     def __invert__(self):
         return self.inverse()
