@@ -59,7 +59,6 @@ from itertools import permutations
 from math import factorial, gcd
 
 from sage.graphs.graph import Graph
-from sage.graphs.bliss import canonical_form
 from sage.groups.perm_gps.permgroup_named import SymmetricGroup
 from sage.matrix.constructor import matrix as engine_matrix
 from sage.misc.cachefunc import cached_method, weak_cached_function
@@ -149,14 +148,12 @@ class _LabelledPairingGraph:
     def _graph(self):
         tables = self._pairing_tables()
         size = self._size()
-        # GenericGraph.__eq__ compares edge labels only for weighted graphs.
-        # The canonical forms must retain their actual colours and pairings.
-        graph = Graph(loops=True, multiedges=False, weighted=True)
+        # Vertex labels are supplied as a partition to canonical_label(); the
+        # graph carries only the off-diagonal pairing labels.
+        graph = Graph(loops=False, multiedges=False, weighted=True)
         graph.add_vertices(range(size))
         edge_colours = {}
         for left in range(size):
-            colour = self._colouring(self._position(left))
-            graph.add_edge(left, left, ("vertex", colour, tuple(table[left, left] for table in tables)))
             for right in range(left):
                 pairings = tuple(table[left, right] for table in tables)
                 if any(pairings):
@@ -264,14 +261,38 @@ class _LabelledPairingGraph:
         target_tables = other._pairing_tables()
         if len(source_tables) != len(target_tables):
             return None
-        # Sage's Bliss canonical_form returns the exact vertex certificate.
-        # Release its edge list and input graph before constructing the other
-        # graph. The original tables certify the resulting bijection directly.
-        source_certificate = canonical_form(
-            self._graph(), use_edge_labels=True, certificate=True
+        # Bliss canonical labeling operates on loop-free graphs. Encode the
+        # vertex colours and diagonal pairings as an ordered vertex partition,
+        # shared by both graphs, and the off-diagonal pairings as edge labels.
+        source_vertex_labels = tuple(
+            (self._colouring(self._position(vertex)), tuple(table[vertex, vertex] for table in source_tables))
+            for vertex in range(self._size())
+        )
+        target_vertex_labels = tuple(
+            (other._colouring(other._position(vertex)), tuple(table[vertex, vertex] for table in target_tables))
+            for vertex in range(other._size())
+        )
+        vertex_classes = []
+        for label in source_vertex_labels:
+            if label not in vertex_classes:
+                vertex_classes.append(label)
+        if any(label not in vertex_classes for label in target_vertex_labels):
+            return None
+        source_partition = tuple(
+            tuple(vertex for vertex, value in enumerate(source_vertex_labels) if value == label)
+            for label in vertex_classes
+        )
+        target_partition = tuple(
+            tuple(vertex for vertex, value in enumerate(target_vertex_labels) if value == label)
+            for label in vertex_classes
+        )
+        if any(len(source) != len(target) for source, target in zip(source_partition, target_partition, strict=True)):
+            return None
+        source_certificate = self._graph().canonical_label(
+            partition=source_partition, edge_labels=True, algorithm="bliss", certificate=True
         )[1]
-        target_certificate = canonical_form(
-            other._graph(), use_edge_labels=True, certificate=True
+        target_certificate = other._graph().canonical_label(
+            partition=target_partition, edge_labels=True, algorithm="bliss", certificate=True
         )[1]
         inverse_target = {image: vertex for vertex, image in target_certificate.items()}
         images = tuple(inverse_target[source_certificate[vertex]] for vertex in range(self._size()))
