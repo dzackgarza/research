@@ -282,14 +282,14 @@ class _LabelledPairingGraph:
                 vertex_classes.append(label)
         if set(vertex_classes) != set(target_vertex_labels):
             return None
-        source_partition = tuple(
-            tuple(vertex for vertex, value in enumerate(source_vertex_labels) if value == label)
+        source_partition = [
+            [vertex for vertex, value in enumerate(source_vertex_labels) if value == label]
             for label in vertex_classes
-        )
-        target_partition = tuple(
-            tuple(vertex for vertex, value in enumerate(target_vertex_labels) if value == label)
+        ]
+        target_partition = [
+            [vertex for vertex, value in enumerate(target_vertex_labels) if value == label]
             for label in vertex_classes
-        )
+        ]
         if any(not target or len(source) != len(target) for source, target in zip(source_partition, target_partition, strict=True)):
             return None
         pairings = {
@@ -303,10 +303,10 @@ class _LabelledPairingGraph:
         # classes therefore use strictly positive integer labels.
         pairing_labels = {pairing: label for label, pairing in enumerate(sorted(pairings), start=1)}
         source_certificate = self._graph(pairing_labels).canonical_label(
-            partition=source_partition, edge_labels=True, algorithm="bliss", certificate=True
+            partition=source_partition, edge_labels=True, algorithm="sage", certificate=True
         )[1]
         target_certificate = other._graph(pairing_labels).canonical_label(
-            partition=target_partition, edge_labels=True, algorithm="bliss", certificate=True
+            partition=target_partition, edge_labels=True, algorithm="sage", certificate=True
         )[1]
         inverse_target = {image: vertex for vertex, image in target_certificate.items()}
         images = tuple(inverse_target[source_certificate[vertex]] for vertex in range(self._size()))
