@@ -145,22 +145,26 @@ class _LabelledPairingGraph:
         relations = columns * (columns.transpose() * columns).inverse() * columns.transpose()
         return self._pairings(), relations
 
-    def _graph(self):
+    def _graph(self, pairing_labels=None):
         tables = self._pairing_tables()
         size = self._size()
         # Vertex labels are supplied as a partition to canonical_label(); the
         # graph carries only the off-diagonal pairing labels.
         graph = Graph(loops=False, multiedges=False, weighted=True)
         graph.add_vertices(range(size))
-        edge_colours = {}
+        if pairing_labels is None:
+            pairings = {
+                tuple(table[left, right] for table in tables)
+                for left in range(size)
+                for right in range(left)
+                if any(table[left, right] for table in tables)
+            }
+            pairing_labels = {pairing: label for label, pairing in enumerate(sorted(pairings))}
         for left in range(size):
             for right in range(left):
                 pairings = tuple(table[left, right] for table in tables)
                 if any(pairings):
-                    # Sage retains the supplied Python label on every edge.
-                    # Equal pairings therefore share one exact label object.
-                    label = edge_colours.setdefault(pairings, ("pairing", pairings))
-                    graph.add_edge(left, right, label)
+                    graph.add_edge(left, right, pairing_labels[pairings])
         return graph
 
     @cached_method
@@ -288,10 +292,18 @@ class _LabelledPairingGraph:
         )
         if any(len(source) != len(target) for source, target in zip(source_partition, target_partition, strict=True)):
             return None
-        source_certificate = self._graph().canonical_label(
+        pairings = {
+            tuple(table[left, right] for table in tables)
+            for tables, size in ((source_tables, self._size()), (target_tables, other._size()))
+            for left in range(size)
+            for right in range(left)
+            if any(table[left, right] for table in tables)
+        }
+        pairing_labels = {pairing: label for label, pairing in enumerate(sorted(pairings))}
+        source_certificate = self._graph(pairing_labels).canonical_label(
             partition=source_partition, edge_labels=True, algorithm="bliss", certificate=True
         )[1]
-        target_certificate = other._graph().canonical_label(
+        target_certificate = other._graph(pairing_labels).canonical_label(
             partition=target_partition, edge_labels=True, algorithm="bliss", certificate=True
         )[1]
         inverse_target = {image: vertex for vertex, image in target_certificate.items()}
