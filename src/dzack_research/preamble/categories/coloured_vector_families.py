@@ -280,7 +280,7 @@ class _LabelledPairingGraph:
         for label in source_vertex_labels:
             if label not in vertex_classes:
                 vertex_classes.append(label)
-        if any(label not in vertex_classes for label in target_vertex_labels):
+        if set(vertex_classes) != set(target_vertex_labels):
             return None
         source_partition = tuple(
             tuple(vertex for vertex, value in enumerate(source_vertex_labels) if value == label)
@@ -290,7 +290,7 @@ class _LabelledPairingGraph:
             tuple(vertex for vertex, value in enumerate(target_vertex_labels) if value == label)
             for label in vertex_classes
         )
-        if any(len(source) != len(target) for source, target in zip(source_partition, target_partition, strict=True)):
+        if any(not target or len(source) != len(target) for source, target in zip(source_partition, target_partition, strict=True)):
             return None
         pairings = {
             tuple(table[left, right] for table in tables)
