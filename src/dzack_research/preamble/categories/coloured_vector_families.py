@@ -199,7 +199,17 @@ class _LabelledPairingGraph:
         r"""The exact engine permutation group of the labelled pairing table."""
         automorphisms = self._small_automorphisms()
         if automorphisms is None:
-            return self._graph().automorphism_group(edge_labels=True)
+            vertex_labels = tuple(
+                (self._colouring(self._position(vertex)),
+                 tuple(table[vertex, vertex] for table in self._pairing_tables()))
+                for vertex in range(self._size())
+            )
+            classes = list(dict.fromkeys(vertex_labels))
+            partition = [[vertex for vertex, value in enumerate(vertex_labels) if value == label]
+                         for label in classes]
+            return self._graph().automorphism_group(
+                partition=partition, edge_labels=True, algorithm="sage"
+            )
         symmetric = SymmetricGroup(self._size())
         return symmetric.subgroup(
             tuple(symmetric([image + 1 for image in permutation]) for permutation in automorphisms)
