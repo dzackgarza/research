@@ -299,7 +299,9 @@ class _LabelledPairingGraph:
             for right in range(left)
             if any(table[left, right] for table in tables)
         }
-        pairing_labels = {pairing: label for label, pairing in enumerate(sorted(pairings))}
+        # Bliss reserves label zero for an unlabelled edge; weighted pairing
+        # classes therefore use strictly positive integer labels.
+        pairing_labels = {pairing: label for label, pairing in enumerate(sorted(pairings), start=1)}
         source_certificate = self._graph(pairing_labels).canonical_label(
             partition=source_partition, edge_labels=True, algorithm="bliss", certificate=True
         )[1]
