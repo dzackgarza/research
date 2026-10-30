@@ -8,6 +8,6 @@ complete session.
 
 from sage_extensions import language_runtime as _language_runtime
 from sage_extensions.all import *  # noqa: F401,F403
-from sage_extensions.categories.group.groups import Groups as Groups
+from sage_extensions.categories.group.groups import OwnedGroups as Groups
 
 _language_runtime.register_session_module(__name__)
