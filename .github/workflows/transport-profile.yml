@@ -24,13 +24,10 @@ jobs:
           enable-cache: false
       - name: Install the Sage-side test dependencies and both exact checkouts
         env:
+          SAGE_BIN: /sage/.venv/bin/sage
           PORT_REV: d9b04c748bd6433af1c549f5a1565ad6dd6a973e
         run: |
           set -euo pipefail
-          SAGE_BIN="$(command -v sage || true)"
-          if [[ -z "$SAGE_BIN" ]]; then
-            SAGE_BIN="$(find / -name sage -executable -print -quit 2>/dev/null || true)"
-          fi
           test -x "$SAGE_BIN"
           echo "SAGE_BIN=$SAGE_BIN" >> "$GITHUB_ENV"
           sage_python="$($SAGE_BIN -python -c 'import sys; print(sys.executable)')"
