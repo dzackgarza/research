@@ -288,30 +288,12 @@ def _torsion_form_isometry(forward, inverse, *, quadratic: bool):
     value_identity = values.module_category().Mor(values, values).identity()
     forward_component = forward.module_morphism() if isinstance(forward, FormedModuleMorphism) else forward
     inverse_component = inverse.module_morphism() if isinstance(inverse, FormedModuleMorphism) else inverse
-    source_module_mor = source.module_category().Mor(source, target)
-    target_module_mor = target.module_category().Mor(target, source)
-    # A retained module component may already be the exact ordinary module
-    # arrow.  Re-coercing it invokes the selected finite-presentation
-    # constructor (and its relation/framing lifts) for no mathematical gain.
-    # Keep the general forgetful conversion for stronger module-map parents.
-    if (
-        forward_component.domain() is source
-        and forward_component.codomain() is target
-        and forward_component.parent() is source_module_mor
-    ):
-        module_forward = forward_component
-    else:
-        module_forward = source_module_mor(forward_component)
-    if (
-        inverse_component.domain() is target
-        and inverse_component.codomain() is source
-        and inverse_component.parent() is target_module_mor
-    ):
-        module_inverse = inverse_component
-    else:
-        module_inverse = target_module_mor(inverse_component)
-    formed_forward = category.Mor(source, target)((module_forward, value_identity))
-    formed_inverse = category.Mor(target, source)((module_inverse, value_identity))
+    # The module Mor constructor already returns an arrow unchanged when it
+    # has this exact parent.  Keep that constructor as the ownership boundary;
+    # its existing-parent branch is constant-time and does not rebuild a
+    # finite presentation.
+    formed_forward = category.Mor(source, target)((forward_component, value_identity))
+    formed_inverse = category.Mor(target, source)((inverse_component, value_identity))
     return category.Core().Mor(source, target)._from_known_inverse_pair(
         formed_forward,
         formed_inverse,

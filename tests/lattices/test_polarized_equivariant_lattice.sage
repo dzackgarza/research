@@ -74,6 +74,13 @@ def test_coinvariant_discriminant_transport_preserves_inverse_and_glue() -> None
         transported_inverse = extension._coinvariant_discriminant_from_invariant(generator.inverse())
         assert transported.parent() is coinvariant_form.O()
         assert transported_inverse.parent() is coinvariant_form.O()
+        module_mor = coinvariant_form.module_category().Mor(
+            coinvariant_form, coinvariant_form
+        )
+        assert transported.forward().module_morphism().parent() is module_mor
+        assert transported.inverse_morphism().module_morphism().parent() is module_mor
+        assert transported_inverse.forward().module_morphism().parent() is module_mor
+        assert transported_inverse.inverse_morphism().module_morphism().parent() is module_mor
         for element in coinvariant_form.module_generators():
             assert transported_inverse(transported(element)) == element
             assert transported(transported_inverse(element)) == element
