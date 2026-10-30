@@ -18,13 +18,22 @@ jobs:
     timeout-minutes: 90
     container:
       image: ghcr.io/dzackgarza/sage:develop
-      options: --user root
-    env:
-      SAGE_BIN: /home/sage/sage/sage
     steps:
       - uses: actions/checkout@v4
       - name: Trust the checkout in the container
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Resolve the Sage launcher from the image
+        run: |
+          sage_bin="${SAGE_BIN:-$HOME/.local/bin/sage}"
+          if [ ! -x "$sage_bin" ]; then
+            echo "Sage launcher is not executable: $sage_bin" >&2
+            printf 'HOME=%s\nPATH=%s\n' "$HOME" "$PATH" >&2
+            command -v sage >&2 || true
+            find /home /root -maxdepth 4 -type f -name sage -print 2>/dev/null | head -30 >&2
+            exit 1
+          fi
+          echo "SAGE_BIN=$sage_bin" >> "$GITHUB_ENV"
+          "$sage_bin" --version
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: false
