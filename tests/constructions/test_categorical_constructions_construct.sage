@@ -346,6 +346,7 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     assert cone_object.diagram() is diagram
     assert cocone_object in cocone
     assert cocone_object.diagram() is diagram
+    print("CAT-370: diagram and cone constructors passed", flush=True)
     product_construction = groups.Limits(product.diagram().domain()).construction(
         product.diagram()
     )
@@ -363,6 +364,7 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
             * product_factor.apex_map()
             == product_cone.structure_morphism(index_object)
         )
+    print("CAT-370: product universal property passed", flush=True)
 
     coproduct_construction = groups.Colimits(
         coproduct.diagram().domain()
@@ -381,9 +383,11 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
             * coproduct_construction.costructure_morphism(index_object)
             == coproduct_cocone.costructure_morphism(index_object)
         )
+    print("CAT-370: coproduct universal property passed", flush=True)
 
     module_two = ZZ.free_module(2)
     biproduct_object = modules.biproduct((module, module_two))
+    print("CAT-370: biproduct constructed", flush=True)
     assert biproduct is biproduct_object.category()
     assert biproduct_object.biproduct_factor(0) is module
     assert biproduct_object.biproduct_factor(1) is module_two
@@ -395,10 +399,13 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
         biproduct_object.projection(1) * biproduct_object.injection(1)
         == modules.Mor(module_two, module_two).identity()
     )
+    print("CAT-370: biproduct maps passed", flush=True)
 
+    print("CAT-370: before direct-sum verification", flush=True)
     direct_sum_object = direct_sum.verify_decomposition(
         biproduct_object, (module, module_two)
     )
+    print("CAT-370: direct-sum verification passed", flush=True)
     assert direct_sum.base_category() is modules
     assert direct_sum_object in direct_sum
     assert direct_sum_object.summand(0) is module
@@ -406,7 +413,9 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     assert direct_sum_object.injection(0).codomain() is direct_sum_object
     assert direct_sum_object.projection(0).domain() is direct_sum_object
 
+    print("CAT-370: before tensor product", flush=True)
     tensor_product_object = modules.tensor_product((module, module_two))
+    print("CAT-370: tensor product constructed", flush=True)
     assert tensor_product is tensor_product_object.category()
     assert tensor_product_object.tensor_factor(0) is module
     assert tensor_product_object.tensor_factor(1) is module_two
@@ -416,6 +425,7 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
         )
         in tensor_product_object
     )
+    print("CAT-370: pure tensor passed", flush=True)
     assert slice_object in slice_category
     assert slice_category.arrow(slice_object) is identity_group
     assert coslice_object in coslice_category
