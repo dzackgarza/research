@@ -419,4 +419,4 @@ Each link opens the named result, construction, or section in its attached Zoter
 
 ## Reference awaiting a PDF link
 
-**Loo85 — Looijenga. “Semi-toric partial compactifications I.”** [Zotero record](zotero://select/library/items/QUCV2EVG). Historical background for semitoric compactification. This record has no PDF attachment in the live library inspected on 2026-10-30; [Loo02](#loo02) supplies section links for the type-IV treatment.
+**Loo85 — Looijenga. “Semi-toric partial compactifications I.”** [Zotero record](zotero://select/library/items/QUCV2EVG). PDF attachment unavailable as of 2026-10-30.
