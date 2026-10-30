@@ -8,6 +8,8 @@ and Iso constructions.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
+from sage_extensions.categories.group.groups import OwnedAbelianGroups, OwnedGroups
+from sage_extensions.categories.modules.pure.modules import Modules
 
 # ---------------------------------------------------------------------------
 # Limits and colimits in Sets.
@@ -159,36 +161,36 @@ def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
 
 
 def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
-    symmetric = Groups.S(3)
-    two = Groups.C(2)
-    three = Groups.C(3)
-    groups = Groups()
+    symmetric = OwnedGroups().S(3)
+    two = OwnedGroups().C(2)
+    three = OwnedGroups().C(3)
+    groups = OwnedGroups()
     product = groups.product((symmetric, two))
     free_product = groups.coproduct((two, three))
     sign = symmetric.Mor(two)(
         {g: (two.group_generators()[0] if g.order() == 2 else two.one()) for g in symmetric.group_generators()}
     )
 
-    assert product in Groups()
+    assert product in OwnedGroups()
     assert product.order() == 12
     assert not product.is_abelian()
-    assert free_product in Groups()
+    assert free_product in OwnedGroups()
     assert free_product not in FiniteGroups()
     assert free_product.cardinality() == aleph0
     assert sign.kernel().order() == 3
     assert sign.kernel().is_abelian()
     assert sign.kernel().inclusion().cokernel().order() == 2
     assert sign.cokernel().order() == 1
-    assert groups.product((two, three)).is_isomorphic_to(Groups.C(6))
+    assert groups.product((two, three)).is_isomorphic_to(OwnedGroups().C(6))
 
 
 def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
-    symmetric = Groups.S(3)
-    subgroups = Groups().Subobjects(symmetric)
+    symmetric = OwnedGroups().S(3)
+    subgroups = OwnedGroups().Subobjects(symmetric)
     assert subgroups in Cat()
     assert subgroups.cardinality() == cardinal(6)
-    assert Groups().Subobjects(Groups.C(6)).cardinality() == cardinal(4)
-    assert Groups().Subobjects(Groups.Q()).cardinality() == cardinal(6)
+    assert OwnedGroups().Subobjects(OwnedGroups().C(6)).cardinality() == cardinal(4)
+    assert OwnedGroups().Subobjects(OwnedGroups().Q()).cardinality() == cardinal(6)
 
 
 # ---------------------------------------------------------------------------
@@ -202,12 +204,12 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
         Modules(ZZ).SliceOver(module),
         OwnedRings().CosliceUnder(ZZ),
         Sets().opposite(),
-        Cat().product((Sets(), Groups())),
+        Cat().product((Sets(), OwnedGroups())),
         Cat().Mor(Sets(), Sets()),
         Sets().Core(),
         Modules(ZZ),
         Sets(),
-        Groups(),
+        OwnedGroups(),
     ):
         assert category in Cat()
     assert module.subobject_on([module.module_generator(0)]) in Modules(ZZ).SliceOver(module)
@@ -220,9 +222,9 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
 
 def test_all_cat_construction_accessors_build_owned_categories() -> None:
     r"""Each of the 21 Cat-carried accessors builds its selected category on the supplied data."""
-    groups = Groups()
-    group = Groups.C(2)
-    symmetric = Groups.S(3)
+    groups = OwnedGroups()
+    group = OwnedGroups().C(2)
+    symmetric = OwnedGroups().S(3)
     labels = Sets.Δ[1]
     index = PosetCategory(labels, le=lambda left, right: int(left) <= int(right))
     diagrams = groups.Diagram(index)
@@ -409,7 +411,7 @@ def test_identity_and_inclusion_functors() -> None:
     assert inclusion(QQ) is QQ
     assert inclusion.domain() is Fields()
     assert inclusion.codomain() is CommutativeRings()
-    assert AbelianGroups().inclusion_into(Groups())(Groups.C(4)) is Groups.C(4)
+    assert OwnedAbelianGroups().inclusion_into(OwnedGroups())(OwnedGroups().C(4)) is OwnedGroups().C(4)
 
 
 def test_natural_transformations_between_functors() -> None:
@@ -446,7 +448,7 @@ def test_hom_end_aut_mono_epi_constructions_on_sets() -> None:
     assert Sets().Mor(two, three).cardinality() == cardinal(9)
     assert Sets().End(three).cardinality() == cardinal(27)
     assert Sets().Aut(three).order() == 6
-    assert Sets().Aut(three) in Groups()
+    assert Sets().Aut(three) in OwnedGroups()
     assert Sets().Mono(two, three).cardinality() == cardinal(6)
     assert Sets().Epi(three, two).cardinality() == cardinal(6)
     assert Sets().Epi(two, three).cardinality() == cardinal(0)
@@ -458,7 +460,7 @@ def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
     endomorphisms = Modules(field).End(plane)
     automorphisms = Modules(field).Aut(plane)
     assert endomorphisms in Cat()
-    assert automorphisms in Groups()
+    assert automorphisms in OwnedGroups()
     assert endomorphisms.identity() in automorphisms
     if field.cardinality().is_finite():
         q = field.cardinality()

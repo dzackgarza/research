@@ -9,6 +9,7 @@ definitions of the constructions.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
+from sage_extensions.categories.group.groups import OwnedGroups
 
 
 def _collapse_three_to_two():
@@ -264,7 +265,7 @@ def test_all_twenty_one_construction_accessors_are_owned_by_cat() -> None:
     assert all(name in vars(Cat.ParentMethods) for name in names)
     assert all(name not in vars(SageCategory) for name in names)
 
-    groups = Groups()
+    groups = OwnedGroups()
     assert groups in Cat()
     methods = (
         groups.Arrow,
@@ -290,7 +291,7 @@ def test_all_twenty_one_construction_accessors_are_owned_by_cat() -> None:
         groups.Cokernel,
     )
     assert all(callable(method) for method in methods)
-    assert groups.SliceOver(Groups.C(2)) in Cat()
+    assert groups.SliceOver(OwnedGroups().C(2)) in Cat()
 
 
 def test_cat_slice_coslice_subobject_superobject_and_quotient_categories_retain_the_base() -> None:
