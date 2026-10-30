@@ -279,6 +279,29 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     kernel_object = sign.kernel()
     cokernel_object = sign.cokernel()
 
+    construction_names = (
+        "Arrow",
+        "IsoArrow",
+        "core",
+        "Diagram",
+        "DirectedSystem",
+        "InverseSystem",
+        "Cone",
+        "Cocone",
+        "Product",
+        "Coproduct",
+        "Biproduct",
+        "DirectSum",
+        "TensorProduct",
+        "SliceOver",
+        "CosliceUnder",
+        "SubObject",
+        "SuperObject",
+        "CoveringObject",
+        "CoveredObject",
+        "Kernel",
+        "Cokernel",
+    )
     constructions = (
         arrow,
         iso_arrow,
@@ -302,7 +325,8 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
         kernels,
         cokernels,
     )
-    assert all(construction in Cat() for construction in constructions)
+    for name, construction in zip(construction_names, constructions, strict=True):
+        assert construction in Cat(), f"{name} returned {construction}, not an object of Cat()"
     assert diagrams is Cat().Mor(index, groups)
     assert diagram.domain() is index
     assert diagram.codomain() is groups
