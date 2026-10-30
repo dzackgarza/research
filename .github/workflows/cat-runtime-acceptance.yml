@@ -70,10 +70,12 @@ jobs:
           source .envrc
           set +a
           export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins:$PYTHONPATH"
-          mkdir -p "$TMPDIR" tests/.report
+          mkdir -p "$TMPDIR" tests/.report .ai-review-ci/sage/pytest-history
           sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+          export PATH="$(dirname "$sage_python"):$PATH"
           "$sage_python" -c 'import sage.all, sys, pytest; sys.exit(pytest.main(sys.argv[1:]))' \
-            -p qc_sage_session -p qc_xfail_issues -p qc_unique_inventory \
+            -p qc_sage_session -p qc_xfail_issues -p qc_test_history -p qc_unique_inventory \
+            --qc-history-dir .ai-review-ci/sage/pytest-history \
             -k 'test_all_twenty_one_construction_accessors_are_owned_by_cat or test_all_cat_construction_accessors_build_owned_categories' \
             tests/constructions/test_cat_methods_construct.sage \
             tests/constructions/test_categorical_constructions_construct.sage
