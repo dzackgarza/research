@@ -58,7 +58,7 @@ jobs:
           sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
           uv pip install --python "$sage_python" --editable . pytest pytest-timeout pytest-reportlog
           uv pip install --python "$sage_python" --reinstall \
-            'sage-extensions @ git+https://github.com/dzackgarza/sage-extensions@a0a2d93d524e990a67290cb50a8695b75cda80ab'
+            'sage-extensions @ git+https://github.com/dzackgarza/sage-extensions@230bdf903d2968e531d26cb5d5a9d6420b734124'
       - name: Install the Sage pytest plugins
         run: git clone --depth 1 https://github.com/dzackgarza/ai-review-ci.git "$HOME/ai-review-ci"
       - name: Execute the original Cat construction specimens
