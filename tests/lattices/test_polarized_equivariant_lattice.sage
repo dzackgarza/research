@@ -54,3 +54,26 @@ def test_negation_centralizes_the_enriques_involution_but_leaves_its_polarized_g
     assert negation in centralizer
     assert negation not in stabilizer
     assert negation not in group
+
+
+def test_coinvariant_discriminant_transport_preserves_inverse_and_glue() -> None:
+    r"""Conjugating across full glue preserves the action and its inverse.
+
+    This exercises the exact forward/inverse transport rather than asking the
+    generic finite presented-module solver to rediscover an inverse.
+    """
+    lattice = Lattices(ZZ)([[0, 1, 0, 0], [1, 0, 0, 0],
+                            [0, 0, 0, 1], [0, 0, 1, 0]])
+    e, f, u, v = tuple(lattice.module_generators().values())
+    involution = lattice.O()({0: u, 1: v, 2: e, 3: f})
+    extension = involution.polarized(e + u + f + v).primitive_extension()
+    invariant_group = extension.invariant.discriminant_image()
+    _, invariant_form, coinvariant_form, *_ = extension._coinvariant_glue_inverse_maps()
+    for generator in invariant_group.group_generators():
+        transported = extension._coinvariant_discriminant_from_invariant(generator)
+        transported_inverse = extension._coinvariant_discriminant_from_invariant(generator.inverse())
+        assert transported.parent() is coinvariant_form.O()
+        assert transported_inverse.parent() is coinvariant_form.O()
+        for element in coinvariant_form.module_generators():
+            assert transported_inverse(transported(element)) == element
+            assert transported(transported_inverse(element)) == element
