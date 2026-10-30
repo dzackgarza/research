@@ -307,7 +307,7 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     assert arrow_object in arrow
     assert iso_arrow_object in iso_arrow
     assert group in core
-    assert core_identity in core.Mor(group, group)
+    assert core_identity == core.identity(group)
     assert directed_diagram in directed
     assert directed_diagram.domain() is index
     assert inverse_diagram in inverse
