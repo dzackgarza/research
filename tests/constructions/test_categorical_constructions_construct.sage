@@ -260,6 +260,22 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     covered_objects = groups.CoveredObject(symmetric)
     kernels = groups.Kernel(sign)
     cokernels = groups.Cokernel(sign)
+    identity_group = groups.Mor(group, group).identity()
+    identity_symmetric = groups.Mor(symmetric, symmetric).identity()
+    arrow_object = arrow(sign)
+    iso_arrow_object = iso_arrow(identity_group)
+    core_identity = core.Mor(group, group)(identity_group, identity_group)
+    directed_diagram = directed.constant_functor(group)
+    inverse_diagram = inverse.constant_functor(group)
+    cone_object = cone.cone(group, lambda _index: identity_group)
+    cocone_object = cocone.cocone(group, lambda _index: identity_group)
+    slice_object = slice_category(identity_group)
+    coslice_object = coslice_category(identity_group)
+    superobject = superobjects(identity_group)
+    covering_object = covering_objects(identity_group)
+    covered_object = covered_objects(identity_symmetric)
+    kernel_object = sign.kernel()
+    cokernel_object = sign.cokernel()
 
     constructions = (
         arrow,
@@ -288,10 +304,22 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     assert diagrams is Cat().Mor(index, groups)
     assert diagram.domain() is index
     assert diagram.codomain() is groups
+    assert arrow_object in arrow
+    assert iso_arrow_object in iso_arrow
+    assert group in core
+    assert core_identity in core.Mor(group, group)
+    assert directed_diagram in directed
+    assert directed_diagram.domain() is index
+    assert inverse_diagram in inverse
+    assert inverse_diagram.domain() is index.opposite()
     assert directed.index_category() is index
     assert inverse.base_index_category() is index
     assert cone.diagram() is diagram
     assert cocone.diagram() is diagram
+    assert cone_object in cone
+    assert cone_object.diagram() is diagram
+    assert cocone_object in cocone
+    assert cocone_object.diagram() is diagram
     product_construction = groups.Limits(product.diagram().domain()).construction(
         product.diagram()
     )
@@ -352,13 +380,23 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
         )
         in tensor_product_object
     )
+    assert slice_object in slice_category
+    assert slice_category.arrow(slice_object) is identity_group
+    assert coslice_object in coslice_category
+    assert coslice_category.arrow(coslice_object) is identity_group
     assert slice_category.base_object() is group
     assert coslice_category.base_object() is group
     assert subobjects.base_object() is symmetric
+    assert kernel_object in subobjects
     assert superobjects.base_object() is group
+    assert superobject in superobjects
     assert covering_objects.base_object() is group
+    assert covering_object in covering_objects
     assert covered_objects.base_object() is symmetric
+    assert covered_object in covered_objects
+    assert kernel_object in kernels
     assert kernels.base_object() is sign.domain()
+    assert cokernel_object in cokernels
     assert cokernels.base_object() is sign.codomain()
 
 
