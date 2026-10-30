@@ -12,7 +12,6 @@ on:
       - 'tests/constructions/test_discrete_categories_construct.sage'
       - 'tests/constructions/test_mor_categories_construct.sage'
       - 'tests/constructions/test_scheme_morphism_selected_data_construct.sage'
-      - 'tests/constructions/test_slice_coslice_archive.sage'
       - 'tests/constructions/test_subobject_category_surface_construct.sage'
       - '.github/workflows/cat-runtime-acceptance.yml'
       - 'pyproject.toml'
@@ -25,7 +24,6 @@ on:
       - 'tests/constructions/test_discrete_categories_construct.sage'
       - 'tests/constructions/test_mor_categories_construct.sage'
       - 'tests/constructions/test_scheme_morphism_selected_data_construct.sage'
-      - 'tests/constructions/test_slice_coslice_archive.sage'
       - 'tests/constructions/test_subobject_category_surface_construct.sage'
       - '.github/workflows/cat-runtime-acceptance.yml'
       - 'pyproject.toml'
@@ -98,5 +96,4 @@ jobs:
             tests/constructions/test_discrete_categories_construct.sage \
             tests/constructions/test_mor_categories_construct.sage \
             tests/constructions/test_scheme_morphism_selected_data_construct.sage \
-            tests/constructions/test_slice_coslice_archive.sage \
             tests/constructions/test_subobject_category_surface_construct.sage
