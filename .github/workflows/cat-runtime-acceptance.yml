@@ -7,12 +7,26 @@ on:
     paths:
       - 'tests/constructions/test_cat_methods_construct.sage'
       - 'tests/constructions/test_categorical_constructions_construct.sage'
+      - 'tests/constructions/test_adjunction_composition_construct.sage'
+      - 'tests/constructions/test_adjunction_transformations_construct.sage'
+      - 'tests/constructions/test_discrete_categories_construct.sage'
+      - 'tests/constructions/test_mor_categories_construct.sage'
+      - 'tests/constructions/test_scheme_morphism_selected_data_construct.sage'
+      - 'tests/constructions/test_slice_coslice_archive.sage'
+      - 'tests/constructions/test_subobject_category_surface_construct.sage'
       - '.github/workflows/cat-runtime-acceptance.yml'
       - 'pyproject.toml'
   pull_request:
     paths:
       - 'tests/constructions/test_cat_methods_construct.sage'
       - 'tests/constructions/test_categorical_constructions_construct.sage'
+      - 'tests/constructions/test_adjunction_composition_construct.sage'
+      - 'tests/constructions/test_adjunction_transformations_construct.sage'
+      - 'tests/constructions/test_discrete_categories_construct.sage'
+      - 'tests/constructions/test_mor_categories_construct.sage'
+      - 'tests/constructions/test_scheme_morphism_selected_data_construct.sage'
+      - 'tests/constructions/test_slice_coslice_archive.sage'
+      - 'tests/constructions/test_subobject_category_surface_construct.sage'
       - '.github/workflows/cat-runtime-acceptance.yml'
       - 'pyproject.toml'
   workflow_dispatch:
@@ -78,4 +92,11 @@ jobs:
             --qc-history-dir .ai-review-ci/sage/pytest-history \
             -s --timeout=30 \
             tests/constructions/test_cat_methods_construct.sage \
-            tests/constructions/test_categorical_constructions_construct.sage
+            tests/constructions/test_categorical_constructions_construct.sage \
+            tests/constructions/test_adjunction_composition_construct.sage \
+            tests/constructions/test_adjunction_transformations_construct.sage \
+            tests/constructions/test_discrete_categories_construct.sage \
+            tests/constructions/test_mor_categories_construct.sage \
+            tests/constructions/test_scheme_morphism_selected_data_construct.sage \
+            tests/constructions/test_slice_coslice_archive.sage \
+            tests/constructions/test_subobject_category_surface_construct.sage
