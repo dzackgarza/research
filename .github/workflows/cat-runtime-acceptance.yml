@@ -1,6 +1,14 @@
 name: Cat construction runtime acceptance
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'tests/constructions/test_cat_methods_construct.sage'
+      - 'tests/constructions/test_categorical_constructions_construct.sage'
+      - '.github/workflows/cat-runtime-acceptance.yml'
+      - 'pyproject.toml'
   pull_request:
     paths:
       - 'tests/constructions/test_cat_methods_construct.sage'
