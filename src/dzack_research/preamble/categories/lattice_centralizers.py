@@ -1068,25 +1068,38 @@ class IsometryPrimitiveExtension:
         twisted_coinvariant_form = target_inclusion.codomain()
 
         invariant_automorphism = invariant_form.O()(invariant_automorphism)
-        images = {}
-        for label in coinvariant_form.module_generating_set():
-            element = coinvariant_form.module_generator(label)
-            twisted = twisted_coinvariant_form(element)
-            target_element = target_inverse(twisted)
-            source_element = glue_inverse(target_element)
-            invariant_class = source_inclusion(source_element)
-            moved_invariant_class = invariant_automorphism(invariant_class)
-            moved_source = source_inverse(moved_invariant_class)
-            moved_target = glue.forward()(moved_source)
-            moved_twisted = target_inclusion(moved_target)
-            images[label] = coinvariant_form(moved_twisted)
-        morphism = coinvariant_form.module_category().Mor(coinvariant_form, coinvariant_form)(images)
+        inverse_automorphism = invariant_automorphism.inverse()
+        group = coinvariant_form.O()
+        module_mor = coinvariant_form.module_category().Mor(
+            coinvariant_form, coinvariant_form
+        )
+
+        def conjugated_images(action):
+            images = {}
+            for label in coinvariant_form.module_generating_set():
+                element = coinvariant_form.module_generator(label)
+                twisted = twisted_coinvariant_form(element)
+                target_element = target_inverse(twisted)
+                source_element = glue_inverse(target_element)
+                invariant_class = source_inclusion(source_element)
+                moved_invariant_class = action(invariant_class)
+                moved_source = source_inverse(moved_invariant_class)
+                moved_target = glue.forward()(moved_source)
+                moved_twisted = target_inclusion(moved_target)
+                images[label] = coinvariant_form(moved_twisted)
+            return images
+
+        # Conjugation carries the already-certified inverse of the invariant
+        # automorphism to the inverse of the coinvariant action.  Construct
+        # both exact maps on the selected generators; do not solve a generic
+        # module inverse, which reconstructs finite presentations per call.
+        forward = module_mor(conjugated_images(invariant_automorphism))
+        inverse = module_mor(conjugated_images(inverse_automorphism))
         from dzack_research.preamble.categories.modules.framed.formed.torsion_form_modules import (
             _torsion_form_isometry,
         )
 
-        group = coinvariant_form.O()
-        isometry = _torsion_form_isometry(morphism, morphism.inverse(), quadratic=group.is_quadratic())
+        isometry = _torsion_form_isometry(forward, inverse, quadratic=group.is_quadratic())
         return group.from_morphism(isometry)
 
     def lift_coinvariant_extension_element(self, coinvariant_part):
