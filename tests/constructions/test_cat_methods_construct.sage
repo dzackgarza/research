@@ -266,7 +266,30 @@ def test_all_twenty_one_construction_accessors_are_owned_by_cat() -> None:
 
     groups = Groups()
     assert groups in Cat()
-    assert all(callable(getattr(groups, name, None)) for name in names)
+    methods = (
+        groups.Arrow,
+        groups.IsoArrow,
+        groups.core,
+        groups.Diagram,
+        groups.DirectedSystem,
+        groups.InverseSystem,
+        groups.Cone,
+        groups.Cocone,
+        groups.Product,
+        groups.Coproduct,
+        groups.Biproduct,
+        groups.DirectSum,
+        groups.TensorProduct,
+        groups.SliceOver,
+        groups.CosliceUnder,
+        groups.SubObject,
+        groups.SuperObject,
+        groups.CoveringObject,
+        groups.CoveredObject,
+        groups.Kernel,
+        groups.Cokernel,
+    )
+    assert all(callable(method) for method in methods)
     assert groups.SliceOver(Groups.C(2)) in Cat()
 
 
