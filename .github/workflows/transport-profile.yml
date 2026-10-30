@@ -31,6 +31,7 @@ jobs:
           test -x "$SAGE_BIN"
           echo "SAGE_BIN=$SAGE_BIN" >> "$GITHUB_ENV"
           sage_python="$($SAGE_BIN -c 'import sys; print(sys.executable)')"
+          echo "SAGE_PYTHON=$sage_python" >> "$GITHUB_ENV"
           uv pip install --quiet --python "$sage_python" "pytest>=9.1,<10" pyyaml "hypothesis>=6.165,<7" pytest-shard pytest-instafail PyNormaliz
           uv pip install --quiet --python "$sage_python" "sage-julia-bridge @ git+https://github.com/dzackgarza/sage-julia-bridge"
           uv pip install --quiet --python "$sage_python" --no-deps --editable "$GITHUB_WORKSPACE"
@@ -41,7 +42,7 @@ jobs:
       - name: Profile small and frozen Enriques transports
         run: |
           set -o pipefail
-          "$SAGE_BIN" scripts/profile_coinvariant_transport.py "$PORT_TEST_BOUNDARIES" 2>&1 | tee transport-profile.log
+          "$SAGE_PYTHON" scripts/profile_coinvariant_transport.py "$PORT_TEST_BOUNDARIES" 2>&1 | tee transport-profile.log
       - if: always()
         uses: actions/upload-artifact@v4
         with:
