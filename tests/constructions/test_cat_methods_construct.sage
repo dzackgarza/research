@@ -234,6 +234,42 @@ def test_cat_arrow_subcategories_classify_endomorphisms_isomorphisms_monos_and_e
     assert inclusion in injections
 
 
+def test_all_twenty_one_construction_accessors_are_owned_by_cat() -> None:
+    r"""The 21 construction names live on Cat.ParentMethods, not Sage's Category base."""
+    from sage.categories.category import Category as SageCategory
+
+    names = (
+        "Arrow",
+        "IsoArrow",
+        "core",
+        "Diagram",
+        "DirectedSystem",
+        "InverseSystem",
+        "Cone",
+        "Cocone",
+        "Product",
+        "Coproduct",
+        "Biproduct",
+        "DirectSum",
+        "TensorProduct",
+        "SliceOver",
+        "CosliceUnder",
+        "SubObject",
+        "SuperObject",
+        "CoveringObject",
+        "CoveredObject",
+        "Kernel",
+        "Cokernel",
+    )
+    assert all(name in vars(Cat.ParentMethods) for name in names)
+    assert all(name not in vars(SageCategory) for name in names)
+
+    groups = Groups()
+    assert groups in Cat()
+    assert all(callable(getattr(groups, name, None)) for name in names)
+    assert groups.SliceOver(Groups.C(2)) in Cat()
+
+
 def test_cat_slice_coslice_subobject_superobject_and_quotient_categories_retain_the_base() -> None:
     r"""Slice-like constructions remember the object over or under which their arrows are taken."""
     sets = Sets()

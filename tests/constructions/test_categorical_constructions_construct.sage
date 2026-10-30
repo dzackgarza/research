@@ -218,6 +218,88 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
     assert Cat() in Cat()
 
 
+def test_all_cat_construction_accessors_build_owned_categories() -> None:
+    r"""Each of the 21 Cat-carried accessors builds its selected category on the supplied data."""
+    groups = Groups()
+    group = Groups.C(2)
+    symmetric = Groups.S(3)
+    labels = Sets.Δ[1]
+    index = PosetCategory(labels, le=lambda left, right: int(left) <= int(right))
+    diagrams = groups.Diagram(index)
+    diagram = diagrams.constant_functor(group)
+    sign = symmetric.Mor(group)(
+        {
+            generator: (
+                group.group_generators()[0]
+                if generator.order() == 2
+                else group.one()
+            )
+            for generator in symmetric.group_generators()
+        }
+    )
+    modules = Modules(ZZ)
+    module = ZZ.free_module(1)
+
+    arrow = groups.Arrow()
+    iso_arrow = groups.IsoArrow()
+    core = groups.core()
+    directed = groups.DirectedSystem(index)
+    inverse = groups.InverseSystem(index)
+    cone = groups.Cone(diagram)
+    cocone = groups.Cocone(diagram)
+    product = groups.Product((group, group))
+    coproduct = groups.Coproduct((group, group))
+    biproduct = modules.Biproduct((module, module))
+    direct_sum = modules.DirectSum()
+    tensor_product = modules.TensorProduct((module, module))
+    slice_category = groups.SliceOver(group)
+    coslice_category = groups.CosliceUnder(group)
+    subobjects = groups.SubObject(symmetric)
+    superobjects = groups.SuperObject(group)
+    covering_objects = groups.CoveringObject(group)
+    covered_objects = groups.CoveredObject(symmetric)
+    kernels = groups.Kernel(sign)
+    cokernels = groups.Cokernel(sign)
+
+    constructions = (
+        arrow,
+        iso_arrow,
+        core,
+        diagrams,
+        directed,
+        inverse,
+        cone,
+        cocone,
+        product,
+        coproduct,
+        biproduct,
+        direct_sum,
+        tensor_product,
+        slice_category,
+        coslice_category,
+        subobjects,
+        superobjects,
+        covering_objects,
+        covered_objects,
+        kernels,
+        cokernels,
+    )
+    assert all(construction in Cat() for construction in constructions)
+    assert diagrams is Cat().Mor(index, groups)
+    assert diagram.domain() is index
+    assert diagram.codomain() is groups
+    assert directed.index_category() is index
+    assert inverse.base_index_category() is index
+    assert cone.diagram() is diagram
+    assert cocone.diagram() is diagram
+    assert slice_category.base_object() is group
+    assert coslice_category.base_object() is group
+    assert subobjects.base_object() is symmetric
+    assert superobjects.base_object() is group
+    assert covering_objects.base_object() is group
+    assert covered_objects.base_object() is symmetric
+
+
 def test_identity_and_inclusion_functors() -> None:
     identity = Sets().identity_functor()
     three = Sets.Δ[2]
