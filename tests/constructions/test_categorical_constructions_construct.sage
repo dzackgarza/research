@@ -353,7 +353,8 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
         group, lambda _index: groups.Mor(group, group).identity()
     )
     product_factor = product_construction.factor(product_cone)
-    assert product_construction.cone() in product
+    assert product_construction.cone() in product.diagram().Cones()
+    assert product_cone in product
     assert product_factor.apex_map().domain() is group
     assert product_factor.apex_map().codomain() is product_construction.object()
     for index_object in product.diagram().domain().objects():
@@ -370,7 +371,8 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
         group, lambda _index: groups.Mor(group, group).identity()
     )
     coproduct_factor = coproduct_construction.factor(coproduct_cocone)
-    assert coproduct_construction.cocone() in coproduct
+    assert coproduct_construction.cocone() in coproduct.diagram().Cocones()
+    assert coproduct_cocone in coproduct
     assert coproduct_factor.apex_map().domain() is coproduct_construction.object()
     assert coproduct_factor.apex_map().codomain() is group
     for index_object in coproduct.diagram().domain().objects():
@@ -380,29 +382,37 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
             == coproduct_cocone.costructure_morphism(index_object)
         )
 
-    biproduct_object = modules.biproduct((module, module))
+    module_two = ZZ.free_module(2)
+    biproduct_object = modules.biproduct((module, module_two))
     assert biproduct is biproduct_object.category()
     assert biproduct_object.biproduct_factor(0) is module
-    assert biproduct_object.biproduct_factor(1) is module
+    assert biproduct_object.biproduct_factor(1) is module_two
     assert (
         biproduct_object.projection(0) * biproduct_object.injection(0)
         == modules.Mor(module, module).identity()
     )
+    assert (
+        biproduct_object.projection(1) * biproduct_object.injection(1)
+        == modules.Mor(module_two, module_two).identity()
+    )
 
-    direct_sum_object = direct_sum.an_object()
+    direct_sum_object = direct_sum.verify_decomposition(
+        biproduct_object, (module, module_two)
+    )
     assert direct_sum.base_category() is modules
     assert direct_sum_object in direct_sum
-    assert direct_sum_object.summand(0) is direct_sum_object.summand(1)
+    assert direct_sum_object.summand(0) is module
+    assert direct_sum_object.summand(1) is module_two
     assert direct_sum_object.injection(0).codomain() is direct_sum_object
     assert direct_sum_object.projection(0).domain() is direct_sum_object
 
-    tensor_product_object = modules.tensor_product((module, module))
+    tensor_product_object = modules.tensor_product((module, module_two))
     assert tensor_product is tensor_product_object.category()
     assert tensor_product_object.tensor_factor(0) is module
-    assert tensor_product_object.tensor_factor(1) is module
+    assert tensor_product_object.tensor_factor(1) is module_two
     assert (
         tensor_product_object.pure_tensor(
-            module.module_generator(0), module.module_generator(0)
+            module.module_generator(0), module_two.module_generator(0)
         )
         in tensor_product_object
     )
