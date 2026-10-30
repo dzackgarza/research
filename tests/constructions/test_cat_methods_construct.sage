@@ -267,6 +267,9 @@ def test_all_twenty_one_construction_accessors_are_owned_by_cat() -> None:
 
     groups = OwnedGroups()
     assert groups in Cat()
+    sage_groups = Groups()
+    assert sage_groups in Cat()
+    assert all(callable(getattr(sage_groups, name, None)) for name in names)
     methods = (
         groups.Arrow,
         groups.IsoArrow,
