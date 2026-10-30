@@ -46,6 +46,11 @@ jobs:
           enable-cache: false
       - name: Install the Sage runtime dependencies
         run: |
+          echo 'export DIRENV_CONFIGURED_CORRECTLY=1' > "$HOME/.envrc"
+          set -a
+          source .envrc
+          set +a
+          mkdir -p "$TMPDIR"
           sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
           uv pip install --python "$sage_python" --editable . pytest pytest-timeout pytest-reportlog
           uv pip install --python "$sage_python" --reinstall \
@@ -56,8 +61,12 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}/src:${{ github.workspace }}/computations/experiments:${{ github.workspace }}/computations/archives:${{ github.workspace }}/tests/constructions
         run: |
+          echo 'export DIRENV_CONFIGURED_CORRECTLY=1' > "$HOME/.envrc"
+          set -a
+          source .envrc
+          set +a
           export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins:$PYTHONPATH"
-          mkdir -p tests/.report
+          mkdir -p "$TMPDIR" tests/.report
           sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
           "$sage_python" -c 'import sage.all, sys, pytest; sys.exit(pytest.main(sys.argv[1:]))' \
             -p qc_sage_session -p qc_xfail_issues -p qc_unique_inventory \
