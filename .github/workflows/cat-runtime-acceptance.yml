@@ -38,7 +38,7 @@ jobs:
           enable-cache: false
       - name: Install the Sage runtime dependencies
         run: |
-          sage_python="$("$SAGE_BIN" -python -c 'import sys; print(sys.executable)')"
+          sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
           uv pip install --python "$sage_python" --editable . pytest pytest-timeout pytest-reportlog
       - name: Install the Sage pytest plugins
         run: git clone --depth 1 https://github.com/dzackgarza/ai-review-ci.git "$HOME/ai-review-ci"
@@ -48,7 +48,7 @@ jobs:
         run: |
           export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins:$PYTHONPATH"
           mkdir -p tests/.report
-          sage_python="$("$SAGE_BIN" -python -c 'import sys; print(sys.executable)')"
+          sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
           "$sage_python" -c 'import sage.all, sys, pytest; sys.exit(pytest.main(sys.argv[1:]))' \
             -p qc_sage_session -p qc_xfail_issues -p qc_unique_inventory \
             tests/constructions/test_cat_methods_construct.sage \
