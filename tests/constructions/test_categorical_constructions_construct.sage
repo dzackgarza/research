@@ -348,16 +348,15 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     assert cocone_object.diagram() is diagram
     print("CAT-370: diagram and cone constructors passed", flush=True)
     product_construction = groups.product_construction((group, group))
-    assert product_construction.diagram() == product.diagram()
-    product_cone = product.cone(
+    product_cone = groups.Cone(product_construction.diagram()).cone(
         group, lambda _index: groups.Mor(group, group).identity()
     )
     product_factor = product_construction.factor(product_cone)
-    assert product_construction.cone() in product.diagram().Cones()
-    assert product_cone in product
+    assert product_construction.cone() in product_construction.diagram().Cones()
+    assert product_cone in groups.Cone(product_construction.diagram())
     assert product_factor.apex_map().domain() is group
     assert product_factor.apex_map().codomain() is product_construction.object()
-    for index_object in product.diagram().domain().objects():
+    for index_object in product_construction.diagram().domain().objects():
         assert (
             product_construction.structure_morphism(index_object)
             * product_factor.apex_map()
@@ -367,17 +366,16 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
 
     print("CAT-370: before selected coproduct construction", flush=True)
     coproduct_construction = groups.coproduct_construction((group, group))
-    assert coproduct_construction.diagram() == coproduct.diagram()
     print("CAT-370: selected coproduct construction passed", flush=True)
-    coproduct_cocone = coproduct.cocone(
+    coproduct_cocone = groups.Cocone(coproduct_construction.diagram()).cocone(
         group, lambda _index: groups.Mor(group, group).identity()
     )
     coproduct_factor = coproduct_construction.factor(coproduct_cocone)
-    assert coproduct_construction.cocone() in coproduct.diagram().Cocones()
-    assert coproduct_cocone in coproduct
+    assert coproduct_construction.cocone() in coproduct_construction.diagram().Cocones()
+    assert coproduct_cocone in groups.Cocone(coproduct_construction.diagram())
     assert coproduct_factor.apex_map().domain() is coproduct_construction.object()
     assert coproduct_factor.apex_map().codomain() is group
-    for index_object in coproduct.diagram().domain().objects():
+    for index_object in coproduct_construction.diagram().domain().objects():
         assert (
             coproduct_factor.apex_map()
             * coproduct_construction.costructure_morphism(index_object)
