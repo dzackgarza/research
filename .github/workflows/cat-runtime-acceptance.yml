@@ -1,0 +1,47 @@
+name: Cat construction runtime acceptance
+
+on:
+  pull_request:
+    paths:
+      - 'tests/constructions/test_cat_methods_construct.sage'
+      - 'tests/constructions/test_categorical_constructions_construct.sage'
+      - '.github/workflows/cat-runtime-acceptance.yml'
+      - 'pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cat-runtime:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    container:
+      image: ghcr.io/dzackgarza/sage:develop
+      options: --user root
+    env:
+      SAGE_BIN: /home/sage/sage/sage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trust the checkout in the container
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: false
+      - name: Install the Sage runtime dependencies
+        run: |
+          sage_python="$("$SAGE_BIN" -python -c 'import sys; print(sys.executable)')"
+          uv pip install --python "$sage_python" --editable . pytest pytest-timeout pytest-reportlog
+      - name: Install the Sage pytest plugins
+        run: git clone --depth 1 https://github.com/dzackgarza/ai-review-ci.git "$HOME/ai-review-ci"
+      - name: Execute the original Cat construction specimens
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src:${{ github.workspace }}/computations/experiments:${{ github.workspace }}/computations/archives:${{ github.workspace }}/tests/constructions
+        run: |
+          export PYTHONPATH="$HOME/ai-review-ci/tool-artifacts/pytest_plugins:$PYTHONPATH"
+          mkdir -p tests/.report
+          sage_python="$("$SAGE_BIN" -python -c 'import sys; print(sys.executable)')"
+          "$sage_python" -c 'import sage.all, sys, pytest; sys.exit(pytest.main(sys.argv[1:]))' \
+            -p qc_sage_session -p qc_xfail_issues -p qc_unique_inventory \
+            tests/constructions/test_cat_methods_construct.sage \
+            tests/constructions/test_categorical_constructions_construct.sage
