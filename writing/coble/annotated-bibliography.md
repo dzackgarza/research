@@ -36,9 +36,12 @@ Each link opens the named result, construction, or section in its attached Zoter
 
 **Dolgachev and Zhang. “Coble rational surfaces” (1999).** [Zotero record](zotero://select/library/items/TWQ9Q6JS).
 
-- [§1, Some preliminary results — PDF p. 2](zotero://open-pdf/library/items/JJQ3M4P9?page=2).
-- [§2, The elliptic case — PDF p. 5](zotero://open-pdf/library/items/JJQ3M4P9?page=5).
-- [§5, Coble sextics — PDF p. 18](zotero://open-pdf/library/items/JJQ3M4P9?page=18).
+- [Components and normal crossings of anti-bicanonical divisors — Lemma 1.4; PDF p. 3](zotero://open-pdf/library/items/JJQ3M4P9?page=3).
+- [Reduction to a minimal Coble surface by blowing down — Lemma 1.10; PDF p. 5](zotero://open-pdf/library/items/JJQ3M4P9?page=5).
+- [Elliptic and rational type relative to a chosen exceptional curve — §2.1; PDF p. 5](zotero://open-pdf/library/items/JJQ3M4P9?page=5).
+- [Mobile and fixed parts after contracting an exceptional curve — Lemmas 2.2–2.3; PDF p. 6](zotero://open-pdf/library/items/JJQ3M4P9?page=6).
+- [Minimal Coble surfaces from a singular nonmultiple fiber of an index-two Halphen surface — Theorem 2.5; PDF p. 7](zotero://open-pdf/library/items/JJQ3M4P9?page=7).
+- [Plane-sextic configurations for basic Coble surfaces of rational type — Theorem 5.4; PDF p. 19](zotero://open-pdf/library/items/JJQ3M4P9?page=19).
 
 ### CD12
 
