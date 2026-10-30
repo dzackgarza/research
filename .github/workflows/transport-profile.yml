@@ -24,10 +24,15 @@ jobs:
           enable-cache: false
       - name: Install the Sage-side test dependencies and both exact checkouts
         env:
-          SAGE_BIN: /home/sage/sage/sage
           PORT_REV: d9b04c748bd6433af1c549f5a1565ad6dd6a973e
         run: |
           set -euo pipefail
+          SAGE_BIN="$(command -v sage || true)"
+          if [[ -z "$SAGE_BIN" ]]; then
+            SAGE_BIN="$(find / -name sage -executable -print -quit 2>/dev/null || true)"
+          fi
+          test -x "$SAGE_BIN"
+          echo "SAGE_BIN=$SAGE_BIN" >> "$GITHUB_ENV"
           sage_python="$($SAGE_BIN -python -c 'import sys; print(sys.executable)')"
           uv pip install --quiet --python "$sage_python" "pytest>=9.1,<10" pyyaml "hypothesis>=6.165,<7" pytest-shard pytest-instafail PyNormaliz
           uv pip install --quiet --python "$sage_python" "sage-julia-bridge @ git+https://github.com/dzackgarza/sage-julia-bridge"
@@ -37,8 +42,6 @@ jobs:
           uv pip install --quiet --python "$sage_python" --no-deps --editable "$RUNNER_TEMP/sage-indefinite-port"
           echo "PORT_TEST_BOUNDARIES=$RUNNER_TEMP/sage-indefinite-port/tests/acceptance/test_boundaries.sage" >> "$GITHUB_ENV"
       - name: Profile small and frozen Enriques transports
-        env:
-          SAGE_BIN: /home/sage/sage/sage
         run: |
           set -o pipefail
           "$SAGE_BIN" -python scripts/profile_coinvariant_transport.py "$PORT_TEST_BOUNDARIES" 2>&1 | tee transport-profile.log
