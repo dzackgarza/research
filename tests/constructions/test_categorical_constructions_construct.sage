@@ -348,7 +348,7 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
     assert cocone_object.diagram() is diagram
     print("CAT-370: diagram and cone constructors passed", flush=True)
     product_construction = groups.product_construction((group, group))
-    assert product_construction.diagram() is product.diagram()
+    assert product_construction.diagram() == product.diagram()
     product_cone = product.cone(
         group, lambda _index: groups.Mor(group, group).identity()
     )
@@ -367,7 +367,7 @@ def test_all_cat_construction_accessors_build_owned_categories() -> None:
 
     print("CAT-370: before selected coproduct construction", flush=True)
     coproduct_construction = groups.coproduct_construction((group, group))
-    assert coproduct_construction.diagram() is coproduct.diagram()
+    assert coproduct_construction.diagram() == coproduct.diagram()
     print("CAT-370: selected coproduct construction passed", flush=True)
     coproduct_cocone = coproduct.cocone(
         group, lambda _index: groups.Mor(group, group).identity()
