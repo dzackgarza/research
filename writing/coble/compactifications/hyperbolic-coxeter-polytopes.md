@@ -172,7 +172,16 @@ Then
 
 This is derived here rather than cited, being a claim about this book's own constructions.
 
-The simplex case is the volume formula evaluated on the complete graph diagram, which is the one place the general Vinberg volume of `thm:coxeter-polytope-volume` reduces to a closed form.
+The three clauses are one statement read at each vertex.
+In a simplex $P$ with $n+1$ facets $\alpha_s$, the link of the vertex $v_s$ cut out by the facet $\alpha_s$ is the Coxeter polytope of the subdiagram $\Sigma_{S\sm\theset{s}}$ on $n$ generators, living in the hyperbolic space $\HH^{n-2}$ that is the link.
+That link polytope is, by @def:coxeter-polytope and @def:coxeter-system-type, compact when $\Sigma_{S\sm\theset{s}}$ is elliptic, has ideal vertices and finite volume when it is parabolic, and is not contained in a compact region with finite volume when it is hyperbolic.
+
+Compactness of $P$ is compactness of every link, since a simplex is compact exactly when all of its vertices are actual points of $\HH^n$; that is (1).
+Finite volume is finite volume of every link, since volume of a simplex is computed face by face from the heights and each link contributes its own $(n-1)$-dimensional volume; that is (2), with the ideal vertices being precisely the parabolic links, and it is why "parabolic" and "ideal vertex" name the same thing here.
+Infinite volume is the residual case, a hyperbolic link, and the trichotomy of @thm:coxeter-type-and-geometry in rank $n-1$ leaves no fourth possibility; that is (3).
+
+So the corollary is the general volume criterion of @thm:coxeter-polytope-volume together with the classification of links, and it needs the simplex hypothesis only to know that the links are exactly the $n+1$ subdiagrams.
+For a non-simplex polytope the same three-way analysis applies at each vertex but the vertex set is no longer indexed by $S$, which is the whole of the difference.
 :::
 
 ::: {.remark title="Lannér's classification"}

@@ -409,17 +409,19 @@ The quotient $X^\sharp/\iota_{\Co}$ has a singularity of type $\frac{1}{4}(1,1)$
 :::
 
 ::: {.proof}
-Write
 
-\[
-X^\sharp_{\mathrm{an}}
- \cong \{xy-z^2=0\}
- \cong \bA^2_{u,v}/\{\pm1\}
-\]
+The node of the branch curve lifts to an $A_1$ singularity of the double cover, so
+$$
+X^\sharp_{\mathrm{an}}\cong\{xy-z^2=0\}\subseteq\bC^3
+$$
+at the preimage of the node.
+The map $\bA^2_{u,v}\to\{xy-z^2=0\}$, $(u,v)\mapsto(u^2,v^2,uv)$, is surjective with fibres the orbits of $(u,v)\mapsto(-u,-v)$, so $\{xy-z^2=0\}\cong\bA^2_{u,v}/\{\pm1\}$.
 
-using $x=u^2$, $y=v^2$, and $z=uv$.
-The involution on the node lifts to $(u,v)\mapsto(iu,iv)$.
-The composite quotient is therefore $\bA^2/\mu_4$ with scalar weights $(1,1)$.
+The involution $\iota_{\Co}$ acts on the node by $(x,y,z)\mapsto(x,y,-z)$, since it acts on the K3 cover as the deck transformation of the double cover branched along the curve and the node is a non-singular point of the branch curve, so locally $\iota_{\Co}$ is the covering involution composed with the negation of the transverse coordinate.
+On $\bA^2_{u,v}$ this is $(u,v)\mapsto(iu,iv)$: the unique lift, since $z=uv$ must change sign while $x=u^2$ and $y=v^2$ are fixed, and $iu$ and $iv$ retain the correct squares.
+
+Composing the two quotients gives $\bA^2/\mu_4$ acting by $(u,v)\mapsto(\zeta u,\zeta v)$ for $\zeta^4=1$, which is the cyclic quotient singularity $\frac14(1,1)$ of @def:coxeter-vinberg-diagram's notation for quotient weights.
+So the quotient has a $\frac14(1,1)$ point at the image of the node, and that is the only singular point arising from the node because the action is free away from the origin of $\bA^2$.
 :::
 
 ### Equivariant smoothing {#sec-equivariant-smoothing}
@@ -487,9 +489,40 @@ Equivalently, $T_{\Co}\cong I_{2,9}(2)$.
 :::
 
 ::: {.proof}
-The first copy of $U$ decomposes over the sublattice $\bZ\alpha\oplus\bZ\eta$, and the orthogonal complement of $\alpha$ there is $\bZ\eta\cong\langle2\rangle$.
-The remaining summand is $E(2)=U(2)\oplus E_8(2)$.
-The stated invariants follow directly.
+
+*The complement inside the first copy of $U$.*
+Write the first summand $U=\bZ e\oplus\bZ f$ with $e^2=f^2=0$ and $e\cdot f=1$, and put $\alpha=e-f$, $\eta=e+f$.
+Then
+$$
+\alpha^2=-2,\qquad \eta^2=2,\qquad \alpha\cdot\eta=(e-f)\cdot(e+f)=e^2-f^2+e\cdot f-f\cdot e=0,
+$$
+and $e=\tfrac12(\eta+\alpha)$, $f=\tfrac12(\eta-\alpha)$, so $\bZ\alpha\oplus\bZ\eta$ is the sublattice of $U$ of index $2$ with Gram matrix $\operatorname{diag}(-2,2)$.
+An element $x=ae+bf$ satisfies $x\cdot\alpha=(ae+bf)\cdot(e-f)=-a+b$, so $x\in\alpha^{\perp}$ exactly when $a=b$, that is $\alpha^{\perp}\cap U=\bZ\eta=\langle2\rangle$.
+Since $U=(\bZ\alpha\oplus\bZ\eta)\otimes$ nothing else in the summand, and $E(2)$ is orthogonal to $U$, the complement is
+$$
+T_{\Co}=\alpha^{\perp}_{T_{\mathrm{En}}}=\bZ\eta\oplus E(2)\cong\langle2\rangle\oplus U(2)\oplus E_8(2).
+$$
+
+*Rank and signature.*
+$\langle2\rangle$ contributes $(1,0)$, $U(2)$ contributes $(1,1)$ because the isotropic basis $e,f$ of $U$ survives the twist, and $E_8(2)$ is negative definite of rank $8$; by @def:signature signatures add over an orthogonal sum of nondegenerate summands, so $\signature(T_{\Co})=(2,1+8)=(2,9)$ and the rank is $1+2+8=11$.
+
+*Discriminant group.*
+Each summand has determinant a power of $2$, so $T_{\Co}$ is integral and its discriminant is a $2$-group; by @prop:stabilization-discriminant the discriminant of an orthogonal sum is the orthogonal sum of the discriminants when the summands are 2-elementary, and here
+$$
+\abs{A_{\langle2\rangle}}=2,\qquad \abs{A_{U(2)}}=4=2^2,\qquad \abs{A_{E_8(2)}}=2^8,
+$$
+the first because $\langle2\rangle$ is rank one with Gram $(2)$, the second because $\det U(2)=(-2)^2=4$, the third because $\det E_8=1$ makes $\det E_8(2)=2^8$.
+So $\abs{A_{T_{\Co}}}=2^{1+2+8}=2^{11}$, and since $2T_{\Co}^{\#}\subseteq T_{\Co}$ the group is $(\bZ/2)^{11}$.
+
+*The invariant $\delta$.*
+By @def:two-elementary-isotropic-types and the criterion of @thm:two-elementary-classification, $\delta(T_{\Co})=0$ exactly when the quadratic form $q_L$ takes values in $\bZ/2\bZ\subseteq\bQ/2\bZ$.
+For the $\langle2\rangle$ summand with generator $\eta$ of square $2$, the dual vector is $\eta/2$ and
+$$
+q(\eta/2)=\tfrac{1}{4}\,\eta^2=\tfrac12\ \notin\ \bZ/2\bZ,
+$$
+so $\delta(T_{\Co})=1$.
+
+Finally $T_{\Co}$ is odd, since $\eta^2=2$ is odd, so it is not an even $2$-elementary lattice; the odd $2$-elementary lattice of rank $11$ with $A=(\bZ/2)^{11}$ and $\delta=1$ is $I_{2,9}(2)$ in the notation of @sec-unimodular-lattice-classification, which is the last clause.
 :::
 
 ### The invariant lattice and the reflection twist {#sec-reflection-twist}
@@ -534,11 +567,26 @@ S_{\Co}
 :::
 
 ::: {.proof}
-The reflection fixes $\alpha^\perp$ and sends $\alpha$ to $-\alpha$.
-The formula follows by separating $S_{\mathrm{En}}$, $\bZ\alpha$, and $\alpha^\perp_{T_{\mathrm{En}}}$.
 
-The abstract eigenspace computation agrees with the lattice type appearing in the period theory of classical Coble surfaces [@DK13].
-It does not, by itself, prove that every family of direct Coble data realizes the same labeled embedding in $L_{K3}$.
+The involution $I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$, the K3 lattice splitting as $L_{K3}=S_{\mathrm{En}}\oplus T_{\mathrm{En}}$; and $w_\alpha$ is the reflection in $\alpha$, which lies in $T_{\mathrm{En}}$.
+So $w_\alpha$ acts as the identity on $S_{\mathrm{En}}$ and on $\alpha^{\perp}_{T_{\mathrm{En}}}$, and sends $\alpha\mapsto-\alpha$.
+The two factors commute because $I_{\mathrm{En}}(\alpha)=-\alpha$ and $w_\alpha$ is an involution fixing $I_{\mathrm{En}}$'s $(-1)$-eigenspace pointwise up to sign, so
+$$
+I_{\Co}I_{\mathrm{En}}(\alpha)=w_\alpha\bigl(I_{\mathrm{En}}(w_\alpha\alpha)\bigr)=w_\alpha(I_{\mathrm{En}}(-\alpha))=w_\alpha(\alpha)=-\alpha=I_{\mathrm{En}}(-\alpha)=I_{\mathrm{En}}I_{\Co}(\alpha),
+$$
+and both fix $\alpha^{\perp}$.
+
+Hence on the three pieces $S_{\mathrm{En}}$, $\bZ\alpha$ and $T_{\Co}=\alpha^{\perp}_{T_{\mathrm{En}}}$ the operator $I_{\Co}$ acts as $+1$, $-1$ and $+1$ respectively: on $S_{\mathrm{En}}$ both factors are $+1$; on $\alpha$ the two signs cancel; on $T_{\Co}$ the factor $I_{\mathrm{En}}$ is $-1$ and $w_\alpha$ fixes it, and $I_{\Co}$ is the composite of the two so acts by $-1$ there, giving
+$$
+L_{K3}^{I_{\Co}=1}=S_{\mathrm{En}}\oplus\bZ\alpha,
+\qquad
+L_{K3}^{I_{\Co}=-1}=\alpha^{\perp}_{T_{\mathrm{En}}}=T_{\Co}.
+$$
+
+The types: $S_{\mathrm{En}}\cong U(2)\oplus E_8(2)$ and $\bZ\alpha\cong\langle-2\rangle$ are orthogonal summands, so $S_{\Co}\cong U(2)\oplus E_8(2)\oplus\langle-2\rangle$, of signature $(1,1+8+0)=(1,9)$ and rank $11$, with discriminant $(\bZ/2)^{11}$ computed as in @prop:coble-transcendental and $\delta=0$ because every generator has even square up to the $\langle-2\rangle$ summand, whose dual vector has $q=-\tfrac12\in\bZ/2\bZ$ after reduction; this is the even lattice $I_{1,10}(2)$.
+
+So the two eigenspaces are $S_{\Co}$ and $T_{\Co}$, and the pair $(S_{\Co},T_{\Co})$ is a primitive orthogonal decomposition of $L_{K3}$ with $\rank S_{\Co}+\rank T_{\Co}=11+11=22$.
+That the abstract type agrees with the period theory of [@DK13] is a check on the computation; it does not show that every family of direct Coble data realizes the same labeled embedding in $L_{K3}$, which is the labeled rigidity question of @sec-surface-divisors.
 :::
 
 ### The local geometric meaning of the root {#sec-root-geometry}

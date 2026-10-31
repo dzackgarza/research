@@ -41,9 +41,20 @@ Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
+The map is well defined and isometric: $h$ has square $2$ and $\tilde e+\tilde f$ has square $2$, since $\tilde e,\tilde f$ are the isotropic basis of $U$ with $\tilde e\cdot\tilde f=1$; and $\eta$ is the identity on $E_{10}(2)$, which is an orthogonal summand of both sides.
+So $\eta$ is a morphism of lattices of $\mathbf{Lat}_{\bZ}$, and it is injective because it is injective on each summand.
 
-Primitivity of the embedding of T_Co into T_En is checked through `prop:primitive-characterization`: the quotient is torsion-free, which is verified on the discriminant groups attached to the two lattices.
+For primitivity, by @prop:primitive-characterization it suffices that $\coker\eta$ be torsion-free, equivalently that $\eta(T_{\Co})$ be saturated in $T_{\En}$.
+Suppose $x\in T_{\En}$ has $mx\in\eta(T_{\Co})$ for some $m\geq1$; the claim is $x\in\eta(T_{\Co})$.
+
+Write $x=x_U+x_{E}$ with $x_U\in U$ and $x_E\in E_{10}(2)$, and $\eta(T_{\Co})=\bZ(\tilde e+\tilde f)\oplus E_{10}(2)$.
+From $mx\in\eta(T_{\Co})$, the $E_{10}$ component gives $mx_E\in E_{10}(2)$, so $x_E\in E_{10}(2)$, since $E_{10}(2)$ is a lattice and in particular saturated in itself as a summand.
+Then $mx_U\in\bZ(\tilde e+\tilde f)$.
+Write $x_U=a\tilde e+b\tilde f$; then $\tilde e+\tilde f$ generates a primitive rank-one sublattice of $U$, because the functional $U\to\bZ$ given by $\tilde e\mapsto1$, $\tilde f\mapsto0$ takes the value $1$ on $\tilde e+\tilde f$.
+A vector pairing to $1$ with a primitive vector witnesses that no integral multiple of it can be reached from a non-integral point, so $a=b$, and $x_U=a(\tilde e+\tilde f)\in\bZ(\tilde e+\tilde f)$.
+Hence $x\in\eta(T_{\Co})$.
+
+The only fact used about $E_{10}(2)$ is that it is a direct summand, so the same argument shows that adjoining a primitive rank-one summand preserves primitivity; the specific form of $E_{10}(2)$ enters only through that.
 :::
 
 ::: {.lemma #lem:sequence_of_embeddings}
@@ -66,6 +77,18 @@ $$
 
 and thus an embedding $\fco \injects \fttz$.
 :::
+
+::: {.proof}
+
+The diagonal map exhibited is isometric on each summand, and it is embedding of lattices by the same argument as @lem:primitive_embedding_eta: a primitive rank-one summand adjoined to a summand that is saturated on both sides stays primitive, the check being that the quotient is torsion-free summand by summand.
+
+Uniqueness up to $\Orth(\lkt)$ is the input from the source and not derived here: it is the rigidity statement of [@AEGS25] for the embedding chain, quoted at @thm:aegs-rigidity.
+What this lemma adds to that is the recognition that the abstract chain of the source is realized by the diagonal map on the two $E_8$ summands, so the chain can be written down in coordinates rather than referred to existentially.
+That coordinate form is what the cusp computations need, since they pick explicit isotropic vectors.
+
+The final clause passes to period domains: an embedding of lattices is an isometry of the associated symmetric spaces, and $\fco\embeds\fttz$ is the induced inclusion of period domains, which is how the boundary strata of the two compactifications are compared.
+:::
+
 
 ::: {.proof}
 
