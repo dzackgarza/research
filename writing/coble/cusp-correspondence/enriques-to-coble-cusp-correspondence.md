@@ -44,9 +44,10 @@ For the second, $\div_{T_\Co}(v)=2$ exactly when no integer $m>1$ divides every 
 Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism, and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$.
 So the family is indivisible exactly when $v\notin 2L=2T_\Co$.
 
-The distinction is not pedantic: $2\mid\div$ does not give $\div\in\{1,2\}$.
-The generator $h$ of the $\generators{2}$ summand has $h^2=2$ and $\div(h)=2$, but $(2h)^2=8$ and $2h$ pairs to $4$ with $h$, so $\div(2h)=4$: a vector pairing nontrivially with something whose divisibility is not $2$.
-Every vector the cusp computations use is primitive, which is why the weaker statement sufficed for them.
+The second clause is a hypothesis and cannot be dropped: pairing nontrivially with something does not force $\div=2$.
+The generator $h$ of the $\generators{2}$ summand has $h^2=2$ and $\div(h)=2$, but $(2h)^2=8$ and $2h$ pairs to $4$ with $h$, so $2h$ pairs nontrivially with something while $\div(2h)=4$.
+What $2\mid\div$ gives is only that the divisibility is even, and primitivity modulo $2$ is the missing hypothesis that isolates the value $2$.
+Every vector the cusp computations use is primitive, which is why the weaker hypothesis sufficed for them.
 :::
 
 ::: {.lemma #lem:divisibilityTcoOne}
