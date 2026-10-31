@@ -42,9 +42,13 @@ H = Graph({v: D.neighbors(v) for v in D})
 print("target degree sequence:", sorted(D.degree(), reverse=True))
 print("isomorphic to the affine E7 diagram:", G.is_isomorphic(H))
 
-# and the same check for the 11-node component as read, which is one edge short of unicyclic
-read_D = [(0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (0, 17), (6, 7), (17, 18), (19, 7)]
-nodes_D = (0, 1, 2, 3, 4, 5, 6, 7, 17, 18, 19)
+# and the same check for the 11-node component.  Corrected incidence: the crossings are not
+# edges, so the attachments are 0-18 and 6-19 (not 17-18 and 7-19), and the doubled edges are
+# 18-21 and 19-22 (not 18-22 and 19-21).  Affine D10 is a *tree*: ten undirected edges on
+# eleven vertices.  (Sage prints its Dynkin diagram directed, hence twenty arcs.)
+read_D = [(17, 0), (0, 1), (1, 2), (2, 3), (3, 4), (4, 5), (5, 6), (6, 7), (0, 18),
+          (6, 19)]
+nodes_D = (18, 17, 0, 1, 2, 3, 4, 5, 6, 7, 19)
 GD = Graph({v: [] for v in nodes_D})
 for a, b in read_D:
     GD.add_edge(a, b)
@@ -52,8 +56,9 @@ GD.relabel({v: i for i, v in enumerate(nodes_D)})
 shapeD = CartanType(["D", 10, 1])
 DD = shapeD.dynkin_diagram()
 HD = Graph({v: DD.neighbors(v) for v in DD})
-print("\ndecimal-D transcription:", GD.order(), "nodes,", GD.size(), "edges; degree sequence",
-      sorted(GD.degree(), reverse=True))
-print("affine D10 target:", DD.order(), "nodes,", DD.size(), "edges; degree sequence",
-      sorted(DD.degree(), reverse=True))
+print("\ntranscribed D10 component:", GD.order(), "nodes,", GD.size(), "undirected edges;",
+      "degree sequence", sorted(GD.degree(), reverse=True))
+print("affine D10 target:", DD.order(), "nodes,", DD.size(), "directed arcs =",
+      DD.size() // 2, "undirected edges; degree sequence",
+      sorted(d // 2 for d in DD.degree()), "undirected")
 print("isomorphic to the affine D10 diagram:", GD.is_isomorphic(HD))

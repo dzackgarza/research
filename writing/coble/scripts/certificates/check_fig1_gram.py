@@ -44,7 +44,7 @@ def build(extra_one=(), extra_two=(), drop=()):
 
 CHAINS = {
  "A~17": (list(range(18)), ("A",17)),
- "D~10": ([18,17]+list(range(7))+[19], ("D",10)),
+ "D~10": ([18,17]+list(range(8))+[19], ("D",10)),   # 18,17,0,1,...,7,19: eleven nodes
  "E~7":  (list(range(9,16))+[20], ("E",7)),
  "E~8^(1)": ([13,14,15,16,17,0,1,2,18], ("E",8)),
  "E~8^(2)": ([4,5,6,7,8,9,10,11,19], ("E",8)),
@@ -80,3 +80,22 @@ for name,(chain,typ) in CHAINS.items():
         ok=blockok(G2,chain,typ)
         if ok: hits.append(((a,b),ok))
     print(f"  {name:9} single extra edge inside the block that makes it affine:", hits[:6])
+
+# ------------------------------------ Lemma 4.7: the components' null vectors coincide in N
+solved = {}
+for name, (chain, typ) in CHAINS.items():
+    B = Matrix(ZZ, [[G[a, b] for b in chain] for a in chain])
+    k = B.kernel().basis_matrix()
+    a = [x for x in k[0]]; sc = min(abs(x) for x in a if x != 0); a = [int(x / sc) for x in a]
+    solved[name] = (chain, a)
+print("\nLemma 4.7 (lem:N-linear-rels): the square-zero vectors of the components coincide,")
+print("i.e. G(a_1 - a_2) = 0 in the presentation Z^24.")
+for left, right in [("D~10", "E~7"), ("E~8^(1)", "E~8^(2)"), ("E~8^(1)", "A~1"),
+                    ("D~16", "A~1*")]:
+    d = [0] * 24
+    for node, c in zip(*solved[left]):
+        d[node] += c
+    for node, c in zip(*solved[right]):
+        d[node] -= c
+    rel = G * vector(ZZ, d)
+    print(f"  n({left:8}) - n({right:6}): relation = {all(x == 0 for x in rel)}")

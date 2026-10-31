@@ -11,6 +11,6 @@ transcribed component: 8 nodes, 7 edges; degree sequence [3, 2, 2, 2, 2, 1, 1, 1
 target degree sequence: [6, 4, 4, 4, 4, 2, 2, 2]
 isomorphic to the affine E7 diagram: True
 
-decimal-D transcription: 11 nodes, 10 edges; degree sequence [2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1]
-affine D10 target: 11 nodes, 20 edges; degree sequence [6, 6, 4, 4, 4, 4, 4, 2, 2, 2, 2]
-isomorphic to the affine D10 diagram: False
+transcribed D10 component: 11 nodes, 10 undirected edges; degree sequence [3, 3, 2, 2, 2, 2, 2, 1, 1, 1, 1]
+affine D10 target: 11 nodes, 20 directed arcs = 10 undirected edges; degree sequence [1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3] undirected
+isomorphic to the affine D10 diagram: True
