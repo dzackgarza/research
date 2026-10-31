@@ -6,7 +6,7 @@ The lattice definitions used here are collected in [Lattices and discriminant fo
 
 ::: {.remark title="Role in Enriques moduli"}
 
-For an Enriques surface $Z$ the second integral cohomology carries a torsion summand,
+For an Enriques surface $Z$ the second integral cohomology $H^2(Z,\bZ)$ has a torsion summand,
 $$
 \NS(Z)\cong H^2(Z;\ZZ)\cong\ZZ^{10}\oplus\ZZ/2\ZZ,
 $$

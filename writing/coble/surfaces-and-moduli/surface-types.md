@@ -82,7 +82,7 @@ h^{1,1}(Z) = 10,
 h^{2,0}(Z) = h^{0,2}(Z) = 0,
 $$
 All remaining Hodge numbers vanish except $h^{0,0}(Z)=h^{2,2}(Z)=1$.
-The second integral cohomology carries a $2$-torsion summand,
+The second integral cohomology has a $2$-torsion summand,
 $$
 \NS(Z) \cong H^2(Z; \ZZ) \cong \ZZ^{10}\oplus \ZZ/2\ZZ
 ,

@@ -120,7 +120,7 @@ The KSBA moduli space $\oF_\Gamma$ provides a modular, proper, algebraic compact
 
 ::: {.remark title="Polarized Coble application"}
 
-The Coble-specific stable-pair package extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
+The Coble-specific stable-pair construction extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
 The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see @conj:ksba_semitoroidal_comparison.
 :::
 

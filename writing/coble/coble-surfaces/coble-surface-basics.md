@@ -30,7 +30,7 @@ Blowing up the singularities of $C$ yields a Coble surface with *smooth* anti-bi
 
 Following [@CD12 §1.4], a point set $\mathcal{P}=\theset{p_{1}, \ldots, p_{n}}$ of $\PP^{2}$ is called **Cremona special** if $n \geq 9$ and if the surface $S$ obtained by blowing up $\mathcal{P}$ is such that $\Aut^*(S)$, the image of $\Aut(S)$ in $\Orth(\Pic(S))$, has finite index in the infinite Weyl group $W_{S}$.
 The surface $S$ is then also called Cremona special.
-This condition of finiteness roughly expresses that $\Aut^*(X)$ is as large as possible.
+The index is finite, so $\Aut^*(S)$ and $W_S$ are commensurable.
 A point set is called *unnodal* if its blowup does not contain any $(-2)$-curves.
 In [@CD12], it is proved that a Cremona special complex rational surface is either an unnodal Halphen surface (with $n=9$) or an unnodal Coble surface (with $n=10$), that unnodal point sets define a Zariski open subset in the moduli space of point sets defining Halphen and Coble surfaces, and that Cremona special Halphen and Coble surfaces are precisely the unnodal ones.
 :::

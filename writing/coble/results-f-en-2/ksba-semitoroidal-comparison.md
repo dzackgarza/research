@@ -74,7 +74,7 @@ The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter t
 :::
 ::: {.warning}
 The source note is tagged as a proposition but reproduces no proof or proof reference for the descent/restriction itself (that $\semifan{F}_{\ram}$ restricts to $\normalize{B}$ and folds to the $\semifan{F}_k$); it is recorded here as a conjecture pending that argument.
-Within the settled degree-$2$ Enriques package [@AEGS25] this descent is expected to hold, and the statement may be upgraded to a proposition once the restriction-and-folding argument is written or cited.
+Within the settled degree-$2$ Enriques case [@AEGS25] this descent is expected to hold, and the statement may be upgraded to a proposition once the restriction-and-folding argument is written or cited.
 :::
 
 ## The polarized Coble analogue

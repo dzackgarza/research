@@ -26,7 +26,7 @@ Thus the enumeration of boundary components reduces to a purely lattice-theoreti
 
 ::: {.remark title="Scattone’s 1987 memoir"}
 
-Scattone's 1987 memoir [@Sca87] carries out this classification lattice-theoretically, with essentially no Hodge-theoretic machinery.
+Scattone's 1987 memoir [@Sca87] carries out this classification by lattice theory, without Hodge-theoretic input.
 Its three technical ingredients are:
 
 - **Discriminant-form analysis**: separating boundary components by their discriminant quadratic forms;

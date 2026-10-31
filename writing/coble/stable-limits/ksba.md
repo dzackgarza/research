@@ -65,7 +65,7 @@ Until root-orbit uniqueness is established for $\gent$, the polarized Coble locu
 
 ::: {.remark}
 
-Each branch carries its own arithmetic group.
+Each branch has its own arithmetic group.
 Fixing an admissible Coble root $\delta$ -- a primitive $(-2)$-vector in the polarized Enriques period lattice -- the group governing the corresponding branch is the image in $\Orth(\delta^\perp)$ of the stabilizer of $\bZ\delta$ inside $\gent$; this is the minimal group making the period-domain inclusion
 $$
 \bD(\delta^\perp) \injects \bD(\ten)
@@ -136,7 +136,7 @@ In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@H
 
 ::: {.remark}
 
-The local singularity package of the quarter-singularity conjecture (@conj:coble_quarter_singularity) is central to the program but remains unproved; it is precisely the input awaited by the slc and ampleness verifications above.
+The local singularity data of the quarter-singularity conjecture (@conj:coble_quarter_singularity) is central to the program but remains unproved; it is precisely the input awaited by the slc and ampleness verifications above.
 :::
 
 ## The restricted ramification semifan
