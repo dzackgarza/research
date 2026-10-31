@@ -56,3 +56,38 @@ Status.  Two of the four subdiagrams now stand on a validated structure -- A~17 
 isomorphism above.  The remaining source transcription is one incidence in the D10 component,
 plus the whole of the E~8^2 A~1 and D~16 A~1 components, whose figures have not been read yet.
 The vertex sets of all four are validated and in use.
+
+## The candidate Gram data, checked against the source's own Lemma 4.7
+
+A full candidate was supplied for the 24 roots: square -2; pairing 1 along the 18-cycle
+0..17 and at (0,18), (6,19), (12,20); pairing 2 at (18,21), (21,9), (19,22), (22,15), (20,23),
+(23,3); pairing 6 at (21,22), (22,23), (23,21); zero elsewhere. `check_fig1_gram.py` runs it
+against Table 1 of Sec. 4C and the Kac marks of the affine types, on the maintained baseline:
+
+    Gram symmetric, diagonal -2, rank 19 over QQ, kernel of dimension 5
+
+which is exactly what "the 24 roots generate N" requires. Then, component by component, the
+induced block must have the Kac marks of its type as its null vector:
+
+    A~17      marks [1 x 18]                          OK
+    E~7       [1,2,3,4,3,2,1,2]                       OK
+    E~8^(1)   [1,2,3,4,5,6,4,2,3]                     OK  <- the source's displayed vector
+    E~8^(2)   [2,4,6,5,4,3,2,1,3]                     OK
+    A~1       [1,1]                                   OK
+    D~16      [1,1,2,...,2,1,1]                       OK
+    A~1*      [1,1]                                   OK
+    D~10      no null vector: the induced block is nondegenerate
+
+The first E8 is the decisive one: the solved null vector is `[1,2,3,4,5,6,4,2,3]` on the chain
+13,14,15,16,17,0,1,2,18, which is the vector the article displays as
+n(E~8^(1)) = r_13 + 2r_14 + 3r_15 + 4r_16 + 5r_17 + 6r_0 + 4r_1 + 2r_2 + 3r_18.  Six of the
+seven components are therefore validated by the candidate.
+
+The D10 component is not: as the candidate stands its vertices {18, 17, 0, ..., 7, 19} carry
+only ten edges (a tree), so the block is nondegenerate and has no null vector, and a search over
+every single additional pairing-1 edge inside that block repairs nothing -- the failure is
+structural, not a missing edge. That matches the independent visual reading recorded above,
+which also came out one edge short there. So the remaining source question is the internal
+incidence of D10 (its two arms and where 17, 18, 19 attach), and it is the only thing standing
+between this candidate and a complete 24-root Gram matrix. Lemma 4.7's coincidence
+n(D10) = n(E7) is the check that will confirm the repair, and it cannot run until then.
