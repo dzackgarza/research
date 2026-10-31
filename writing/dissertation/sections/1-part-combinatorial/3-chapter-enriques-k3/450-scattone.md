@@ -34,13 +34,19 @@ $$
 Scattone shows that for squarefree $d$ (in particular, $d = 1$), there is exactly one $\Gamma_{2d}$-orbit of primitive isotropic lines in $T_{2d}$, so the Baily–Borel boundary of $F_2$ has a unique $0$-cusp.
 
 The 1-cusps are determined by the negative-definite lattices $\bdlattice{T}{2d, I} \definedas  I^{\perp T}/I$, for $I \subset T$ a primitive isotropic plane.
-Scattone showed that, up to isomorphism and the action of the arithmetic group, there are exactly four possible such lattices, characterized by their root sublattices:
+Alexeev--Engel--Thompson describe the $d=1$ case in the terms this chapter needs, citing Scattone for it: the boundary of $\bbcpt{F_2}$ consists of four curves meeting at a single point, the point is the Type $III$ boundary, and the curves correspond to four distinct orbits of rank $2$ primitive isotropic sublattices $J \subset h^\perp$; and, in their words, "for each of them, $J^\perp/J$ contains a finite index root sublattice, which can be used as a label for this $1$-cusp" [@AET23, §3B].
+The four labels are
 $$
-A_1 \oplus E_8^{\oplus 2}, \qquad E_7 \oplus D_{10}, \qquad A_1 \oplus D_{16}, \qquad A_{17}.
+A_{17}, \qquad D_{10}\oplus E_7, \qquad E_8^{\oplus 2}\oplus A_1, \qquad D_{16}\oplus A_1 .
 $$
-All four have rank $17$, since $I^{\perp T_2}/I$ has rank $21-2\cdot 2$ for a primitive isotropic plane $I$ in $T_2$ of rank $21$; their determinants are $2$, $8$, $8$ and $18$ respectively, which is $2d\cdot\div(I)^2$ for $\div(I) = 1, 2, 2, 3$.
-Three of them are visibly the orthogonal complement of $E_7$ inside a Niemeier lattice: $A_{17} \subset A_{17}E_7$, $D_{10}\oplus E_7 \subset D_{10}E_7^2$ and $A_1\oplus E_8^{\oplus 2} \subset E_8^3$, in each case with $E_7$ a component of the root system and the complement as displayed.
-The fourth, $A_1\oplus D_{16}$, is not of that form, and how Scattone obtains it is not settled here; the $d=1$ enumeration does not depend on it, the four lattices being given by their root sublattices.
+So the labels name root sublattices and not the boundary lattices: $J^\perp/J$ itself is what a $1$-cusp corresponds to, and each labelled lattice sits in it with finite index.
+
+Two things about $J^\perp/J$ follow without further input. It has rank $21-2\cdot 2 = 17$, since $J$ is maximal isotropic; and it is negative definite, again because $J$ is a maximal isotropic subspace of the space $h^\perp \otimes \RR$ of signature $(2,19)$.
+Its determinant is $\det R/k^2$, where $R$ is the labelled root lattice and $k = [J^\perp/J : R]$; so for each of the four orbits, $k$ and the determinant of the boundary lattice are a single unknown, and neither is determined by the label. The four labelled root lattices themselves are $A_1\oplus E_8^{\oplus 2}$, $E_7\oplus D_{10}$, $A_1\oplus D_{16}$ and $A_{17}$, of rank $17$, negative definite, and determinants $2$, $8$, $8$, $18$; this is computed exactly in `writing/coble/scripts/certificates/two_elementary_checks.py`, whose output is the file `certificate-output.txt` beside it.
+
+An index that must not be transferred here: for the Type $III$ stratum Alexeev--Engel--Thompson take $N = I^\perp/I = H\oplus E_8^{\oplus 2}\oplus A_1$ and $M = N^*$, and their Lemma 4.14 computes $M_G/R_G = \ZZ/6\ZZ$ for the $A_{17}$ root lattice inside $M$, and $\ZZ/2\ZZ$ for $A_{9}$, $A_{15}$, $D_{10}$, $D_{16}$ and others [@AET23, Prop. 4.13; @AET23, Lem. 4.14]. Those saturations live in $M = (I^\perp/I)^*$, the $0$-cusp's dual quotient, and not in the rank-$17$ lattice $J^\perp/J$ of a Type $II$ cusp, so no index for the four labels follows from them.
+
+Which lattice $J^\perp/J$ is, for each of the four orbits — equivalently the glue, or the index of the labelled root sublattice — is not settled here. Scattone's own account is on pp.~78--80 with Proposition 6.1.1, and p.~81 with \S6.2; those pages were pointed out to me and have not been read, so nothing in this chapter rests on them.
 Each of these possibilities labels a modular curve in the boundary of $\bbcpt{F_2}$, and the closure of each of these modular curves contains the unique $0$-cusp as every isotropic line is contained in some isotropic plane.
 
 #### Limiting mixed Hodge structures at the boundary

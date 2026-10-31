@@ -1,0 +1,61 @@
+blocks used by the table:
+  A(1)                                   rank= 1 det=     -2 a= 1 delta=1 sig=(0, 1)  OK
+  D(4)                                   rank= 4 det=      4 a= 2 delta=0 sig=(0, 4)  OK
+  D(6)                                   rank= 6 det=      4 a= 2 delta=1 sig=(0, 6)  OK
+  E(7)                                   rank= 7 det=     -2 a= 1 delta=1 sig=(0, 7)  OK
+  E(8)                                   rank= 8 det=      1 a= 0 delta=0 sig=(0, 8)  OK
+  E8(2)                                  rank= 8 det=    256 a= 8 delta=0 sig=(0, 8)  OK
+  E(10)                                  rank=10 det=     -1 a= 0 delta=0 sig=(1, 9)  OK
+  E10(2)                                 rank=10 det=  -1024 a=10 delta=0 sig=(1, 9)  OK
+  U                                      rank= 2 det=     -1 a= 0 delta=0 sig=(1, 1)  OK
+  U(2)                                   rank= 2 det=     -4 a= 2 delta=0 sig=(1, 1)  OK
+  I(2,9)(2)                              rank=11 det=  -2048 a=11 delta=1 sig=(2, 9)  OK
+
+Table 5.1 rows as printed in this book:
+  n=1 (delta=1): E10(2)+A(1)             rank=11 det=   2048 a=11 delta=1 sig=(1, 10)  OK
+  n=2 (delta=1): E8(2)+U+A(1)+A(1)       rank=12 det=  -1024 a=10 delta=1 sig=(1, 11)  OK
+  n=3 (delta=1): D(4)+D(4)+A(1)+A(1)+A(1)+U(2) rank=13 det=    512 a= 9 delta=1 sig=(1, 12)  OK
+  n=4 (delta=1): E(7)+A(1)+A(1)+A(1)+A(1)+A(1)+U(2) rank=14 det=   -256 a= 8 delta=1 sig=(1, 13)  OK
+  n=5 (delta=1): E(8)+A(1)+A(1)+A(1)+A(1)+A(1)+U(2) rank=15 det=    128 a= 7 delta=1 sig=(1, 14)  OK
+  n=6 (delta=1): E(10)+A(1)+A(1)+A(1)+A(1)+A(1)+A(1) rank=16 det=    -64 a= 6 delta=1 sig=(1, 15)  OK
+  n=7 (delta=1): E(8)+D(6)+A(1)+U(2)     rank=17 det=     32 a= 5 delta=1 sig=(1, 16)  OK
+  n=8 (delta=0): E(8)+D(8)+U(2)          rank=18 det=    -16 a= 4 delta=0 sig=(1, 17)  OK
+  n=8 (delta=1): E(10)+D(6)+A(1)+A(1)    rank=18 det=    -16 a= 4 delta=1 sig=(1, 17)  OK
+  n=9 (delta=1): E(10)+D(8)+A(1)         rank=19 det=      8 a= 3 delta=1 sig=(1, 18)  OK
+  n=10 (delta=1): E(10)+D(10)            rank=20 det=     -4 a= 2 delta=1 sig=(1, 19)  OK
+
+the two candidates for the source's row n=2:
+  source entry  E10(2)+A(1)+A(1)         rank=12 det=  -4096 a=12 delta=1 sig=(1, 11)  OK
+     ^ the source prints the invariant (12,10,1) beside that lattice; a = 12 contradicts it
+  this book       E8(2)+U+A(1)+A(1)      rank=12 det=  -1024 a=10 delta=1 sig=(1, 11)  OK
+
+complements: I_{2,10-n}(2) has rank 12-n, signature (2,10-n), a = 12-n:
+  I(2,9)(2)                              rank=11 det=  -2048 a=11 delta=1 sig=(2, 9)  OK
+  I(2,8)(2)                              rank=10 det=   1024 a=10 delta=1 sig=(2, 8)  OK
+  I(2,7)(2)                              rank= 9 det=   -512 a= 9 delta=1 sig=(2, 7)  OK
+  I(2,6)(2)                              rank= 8 det=    256 a= 8 delta=1 sig=(2, 6)  OK
+  I(2,5)(2)                              rank= 7 det=   -128 a= 7 delta=1 sig=(2, 5)  OK
+  I(2,4)(2)                              rank= 6 det=     64 a= 6 delta=1 sig=(2, 4)  OK
+  I(2,3)(2)                              rank= 5 det=    -32 a= 5 delta=1 sig=(2, 3)  OK
+  I(2,2)(2)                              rank= 4 det=     16 a= 4 delta=1 sig=(2, 2)  OK
+  I(2,1)(2)                              rank= 3 det=     -8 a= 3 delta=1 sig=(2, 1)  OK
+  I(2,0)(2)                              rank= 2 det=      4 a= 2 delta=1 sig=(2, 0)  OK
+  U(2)+U(2)  (the n=8, delta=0 row)      rank= 4 det=     16 a= 4 delta=0 sig=(2, 2)  OK
+
+twisting: a(L(2)) = rank L for unimodular L, and the failure at <2>:
+  E8(2)                                  rank= 8 det=    256 a= 8 delta=0 sig=(0, 8)  OK
+  E10(2)                                 rank=10 det=  -1024 a=10 delta=0 sig=(1, 9)  OK
+  U(2)                                   rank= 2 det=     -4 a= 2 delta=0 sig=(1, 1)  OK
+  <2>(2) = <4>: a = 1, not 2             rank= 1 det=      4 a= 1 delta=1 sig=(1, 0)  OK
+
+Scattone's four labels for d=1 are finite-index ROOT sublattices of J^perp/J
+(Alexeev-Engel-Thompson, bibliography key AET23; printed p.16 of arXiv:1903.09742v3,
+S3B). Their invariants:
+  A(1)+E(8)+E(8)         rank=17 det= -2 sig=(0, 17)  (index^2 in the quotient = det(root)/det(quotient))
+  E(7)+D(10)             rank=17 det= -8 sig=(0, 17)  (index^2 in the quotient = det(root)/det(quotient))
+  A(1)+D(16)             rank=17 det= -8 sig=(0, 17)  (index^2 in the quotient = det(root)/det(quotient))
+  A(17)                  rank=17 det=-18 sig=(0, 17)  (index^2 in the quotient = det(root)/det(quotient))
+  J^perp/J itself: rank 17, negative definite; its determinant and the index of
+  each root sublattice are NOT determined here -- see the text.
+
+ALL CHECKS PASSED
