@@ -1,5 +1,17 @@
 #!/usr/bin/env python3
-"""Exact certificates for the Coble lattice table and its complementary lattices.
+"""NOT A CERTIFICATE -- a bespoke reimplementation of lattice arithmetic.
+
+Nothing here counts as verification.  Quotient lattices, saturation, discriminant
+groups and overlattice enumeration belong to `sage-extensions`, whose semantic API
+(`primitive_isotropic_subobject`, `isotropic_reduction`, `discriminant_module`,
+`even_overlattice_inclusions`) is what a certified run must go through; this file
+reimplements a few of those operations in plain integers, and a passing run of it
+settles nothing.  Its results are unverified until they are reproduced through the
+library; `writing/dissertation/GAPS.md` records the environment blocker.  It is kept
+as a scratch computation, not as evidence.
+
+What follows describes what the script computes, not what it establishes.
+
 
 All arithmetic is exact (integers and rationals); no floating point and no genus
 heuristics. For an integral Gram matrix B of a nondegenerate lattice L the script

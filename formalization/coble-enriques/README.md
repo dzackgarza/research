@@ -1,9 +1,10 @@
 # Lean sources from the Coble corpus
 
 Migrated 2026-08-20 from `~/gitclones/lattice-research/lean/CobleResearchLean/`.
-Two files, kept as native Lean source. They are not built here: this repository
-has no Coble Lean project, and its only Lean tree
+Lean files kept as native source. They are not built here: this repository has no
+Coble Lean project, and its only Lean tree
 (`computations/experiments/lean_category_dsl_spike/`) is about the category DSL.
+Each file below says how it was checked.
 
 ## `NodeCriteria.lean` — proved, no `sorry`
 
@@ -38,3 +39,37 @@ lattices. The corrected mathematics, the claim's open status, and the owned
 surface on which it can be decided are in
 `notes/topics/isotropic-vector-orbits/tco-isotropic-plane-orbit-claim.md`.
 The file is kept only as the record of what was attempted.
+
+## `Splitting.lean` — proved, no `sorry`
+
+The integral orthogonal-splitting step the Scattone chapter needs. Nothing is at stake
+over $\mathbb{Q}$; the content is that the coefficients are integers, so that the
+complement is a genuine lattice and not a rational or scaled one.
+
+- `exists_mulVec_eq_of_unimodular`. If `M : Matrix κ κ ℤ` has `M.det = ±1`, then every
+  `r : κ → ℤ` is `M *ᵥ u` for some `u : κ → ℤ`. The witness is
+  `u = M.det • (M.adjugate *ᵥ r)`, integral because `M⁻¹ = ±M.adjugate` when
+  `M.det = ±1`.
+- `splits_of_unimodular`. If the restriction of an integral form `B` to the span of the
+  columns of `C` is unimodular, then every integral `x` is `C *ᵥ u` plus a vector
+  orthogonal to all the columns, with `u` integral. No index enters.
+- `det_eq_mul_of_unimodular_block_diagonal`. In a unimodular basis in which `B` is block
+  diagonal, `B.det` is the product of the two block determinants.
+- `det_hyperbolic4`, `det_two_hyperbolic4`. `U ⊕ U` has determinant `1`, which is the
+  hypothesis; the twice-scaled `2 • (U ⊕ U)` has determinant `16`, so a scaled pairing
+  satisfies no such hypothesis and its splitting is only over $\mathbb{Q}$.
+
+Every theorem depends on `[propext, Classical.choice, Quot.sound]` and on nothing else;
+the `#print axioms` output is at the end of the file. Checked with
+
+```
+/opt/lean/bin/lean formalization/coble-enriques/Splitting.lean
+```
+
+which needs `import Mathlib` on `LEAN_PATH` and prints five clean axiom lines.
+
+**Scope.** This file certifies the splitting and the determinant consequence. It does not
+certify which even overlattice of a given root lattice a particular $1$-cusp carries; that
+needs quotient-lattice and overlattice computations run through `sage-extensions`, and
+`writing/dissertation/GAPS.md` records, with reproducers, why that run is not possible in
+this container.
