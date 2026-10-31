@@ -278,6 +278,14 @@ T_{\mathrm{En}}\embeds T_{\mathrm{dP}}
 is unique up to $O(L_{K3})$.
 :::
 
+::: {.proof}
+
+This is [@AEGS25, §3] and is quoted rather than derived here.
+
+What the page uses is the consequence, so it is worth naming: uniqueness up to $O(L_{K3})$ means that every embedding of $T_{\mathrm{En}}$ into $L_{K3}$ extending the chosen one differs by an isometry of the ambient lattice, so no construction built from the chain can depend on a choice of primitive complement.
+That is the sense in which the statement is a model for the labeled rigidity the Coble problem needs: the label is the extra structure -- in this case the involution and the polarization -- and the question is whether it too is unique up to the stabilizer rather than only up to the full orthogonal group.
+:::
+
 This theorem is the model for the stronger labeled rigidity statement needed for the Coble problem.
 It prevents later constructions from depending on a hidden coordinate choice.
 
@@ -423,6 +431,15 @@ Its quotient is an Enriques surface.
 
 ::: {.proposition #prop:explicit-smoothing title="explicit Coble-to-Enriques smoothing"}
 The invariant $(4,4)$ family obtained by varying $a_{00}$ gives an explicit equivariant smoothing of the singular Coble quotient to Enriques quotients.
+:::
+
+::: {.proof}
+
+By @prop:local-quarter the singular quotient is $\bA^2/\mu_4$ of type $\frac14(1,1)$ at the image of the node, and the smoothing is the family obtained by restoring the constant term killed there.
+For $a_{00}\ne0$ the branch curve misses the four $\tau$-fixed points, so the K3 cover is smooth over the corresponding fibre and the involution $\iota_{\Co}$ acts on it without fixed points; a fixed-point-free involution on a K3 surface is Enriques by definition, so the quotient is Enriques and the fibre is smooth.
+Varying $a_{00}$ through $0$ gives a one-parameter family whose general fibre is that quotient and whose special fibre is the singular one, which is a smoothing, and the involution acts on the whole family, which is the equivariance.
+
+The proposition asserts existence of one mechanism and nothing more: it does not claim that every abstract smoothing of the K3 cover extends the node-fixing involution, and that gap is genuine rather than an omission -- an abstract smoothing need not be equivariant, and a non-equivariant one would not quotient to a family of Enriques surfaces at all.
 :::
 
 This proposition proves existence of one smoothing mechanism.
@@ -604,6 +621,18 @@ The class $L$ satisfies $L^2=2$ and $L\cdot C=0$.
 Hence $L$ is not ample on $\wV$.
 On a general one-node member it is nef and big and its only null curve is $C$.
 After contracting the full $L$-null configuration, its descent is ample.
+:::
+
+::: {.proof}
+
+Against the fixed curve: $\psi^*L=H$ and $\psi^*C=2E$, so $2\,L\cdot C=\psi^*L\cdot\psi^*C=H\cdot(2E)=2\,H\cdot E=0$, whence $L\cdot C=0$; and $L^2=\deg\psi\cdot H^2=\deg\psi\cdot4$, so $L^2=2$ exactly when $\psi$ has degree $2$, which it does, being the quotient by the involution $\iota_{\Co}$.
+
+Not ample: an ample class meets every curve positively, and $L\cdot C=0$ with $C$ a curve.
+
+Nef and big on a general one-node member: nef means $L\cdot D\geq0$ for every curve $D$, which holds because $L$ is pulled back from a polarization by the construction of $H=\pi^*\OO_Y(1,1)$ and $H^2=4>0$ makes it big.
+That $C$ is the only null curve is the content of the one-node computation and is where the hypothesis "general" is spent: the null curves of $L$ are the curves contracted by the linear system, and on the general member those are exactly the fibres over the node.
+
+Ampleness after contraction: a nef and big class whose null curves are all contracted is ample on the contraction, by the Nakai--Moishezon criterion applied to the pullback.
 :::
 
 The final sentence must be interpreted with care on intersections with other Heegner divisors: additional curves can become $L$-trivial.
@@ -1012,6 +1041,14 @@ Since scaling a form does not change its integral orthogonal group, $O(T_{\Co})=
 
 Standard transitivity results for indefinite odd unimodular forms imply the following [@Wall62; @DK13].
 
+::: {.proof}
+
+The cited transitivity is Wall's description of the orthogonal group of an indefinite odd unimodular lattice [@Wall62], applied to $I_{2,9}$ as in [@DK13].
+
+The reduction that makes the first line work is the one worth recording: $T_{\Co}$ is not unimodular, but it is $I_{2,9}(2)$ by @prop:coble-transcendental, and scaling a form by a unit does not change its orthogonal group, so $O(T_{\Co})=O(I_{2,9}(2))=O(I_{2,9})$ as groups acting on the same lattice.
+That is the step that puts the unpolarized Coble question inside Wall's classification of orbits in an odd unimodular lattice, rather than leaving it as a question about a non-unimodular form of type $(2,9)$.
+:::
+
 ::: {.theorem #thm:unpolarized-cusps title="unpolarized Coble cusps"}
 The quotient $O^+(T_{\Co})\backslash\bD_{\Co}$ has one orbit of primitive isotropic lines and one orbit of primitive isotropic planes.
 For representatives $e$ and $J$,
@@ -1021,6 +1058,17 @@ e^\perp/e\cong I_{1,8}(2),
 \qquad
 J^\perp/J\cong I_{0,7}(2).
 \]
+:::
+
+::: {.proof}
+
+This is [@Wall62; @DK13], by transitivity of $O^+(I_{2,9})$ on primitive isotropic lines and planes of the odd unimodular lattice, together with $O(T_{\Co})=O(I_{2,9})$ from the observation above.
+
+The two complements are computed rather than quoted, and they are what the rest of the section uses.
+For a primitive isotropic $e$ in a lattice $L$ of signature $(2,9)$, the quotient $e^\perp/e$ is a lattice of signature $(1,8)$ and inherits the discriminant form of $L$ up to the factor $1/p^2$ that $\div$-scaling forces; for $T_{\Co}=I_{2,9}(2)$ and $\div(e)=2$ it is $I_{1,8}(2)$, and for a primitive isotropic plane $J$ the quotient $J^\perp/J$ has signature $(0,7)$ and is $I_{0,7}(2)$.
+So the two boundary strata are single orbits and the lattices attached to them are as displayed.
+
+The scope of the statement is part of it: it is a statement about $O^+(T_{\Co})$ acting on $\bD_{\Co}$, and the arithmetic subgroup $\Gamma_{\Co,2}$ is strictly smaller, so the orbits for the polarized problem are a refinement of these and are not determined here.
 :::
 
 This theorem concerns the full orthogonal group.
@@ -1526,6 +1574,15 @@ The Heegner-restriction strategy uses the following standard toric fact.
 ::: {.lemma #lem:subtorus-normalization title="normalization of a subtorus closure"}
 Let $N\subset M$ be a saturated sublattice of cocharacter lattices, let $T_N\subset T_M$ be the corresponding subtorus, and let $X_\torfan$ be a toric variety for a fan $\torfan\subset M_\bR$.
 The normalization of the closure of $T_N$ in $X_\torfan$ is the toric variety associated with the induced fan $\torfan|_{N_\bR} =\{\sigma\intersect N_\bR:\sigma\in\torfan\}$, with the induced lattices saturated.
+:::
+
+::: {.proof}
+
+Cited as standard in toric geometry; the argument is short enough to record, and the saturation hypothesis is where it is used.
+
+The $T_M$-orbits of $X_\torfan$ correspond to the cones of $\torfan$, and the closure of $T_N$ meets exactly those orbits whose cone meets $N_\bR$ in a full-dimensional subset — that is, the closure is the union of the $T_N$-orbits indexed by the intersections $\sigma\cap N_\bR$.
+Each such intersection is a cone in $N_\bR$ because $\sigma$ is a cone and $N_\bR\subseteq M_\bR$ is a linear subspace, and the intersections are closed under taking faces, so they form the fan $\torfan|_{N_\bR}$.
+The toric variety of that fan is normal by construction, and it is the closure up to normalization; the two agree because $N$ is saturated in $M$, which is what makes $M/N$ torsion-free so that the intersections above are the faces of a genuine fan with saturated cones rather than only a rational polyhedral subdivision.
 :::
 
 This lemma is local and toric.
