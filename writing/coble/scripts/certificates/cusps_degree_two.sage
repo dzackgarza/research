@@ -158,15 +158,21 @@ RIM = (12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
 # kernel of the rim Gram matrix and is isotropic (rim_mulVec_marks, rim_marks_isotropic).
 A17_CUSP = dict(vertices=RIM, marks=tuple([1] * 18), label="A(17)")
 
-# The other three.  Their vertex subsets are the black nodes of the second, third and
-# fourth small figure, which have not been read off the figure yet; each has 19, 20 and
-# 19 nodes by the caption's types (D~10 E~7, E~8^2 A~1, D~16 A~1).  Nothing is inserted
-# by guesswork, and no label is turned into a lattice in its place.
-OPEN_CUSPS = {
-    "D~10 E~7": None,      # [1] Fig. 1, second small figure; 19 nodes
-    "D~16 A~1": None,      # [1] Fig. 1, fourth small figure; 19 nodes
+# The other three vertex subsets, transcribed from the e-print artwork of the same figure
+# by `read_fig1.py` (arXiv:1903.09742v3, fig-wD10wE7.pdf, fig-2wE8wA1.pdf,
+# fig-wD16wA1.pdf; the small figures' black nodes, matched to the labelled layout).  What
+# is verified is the vertex set and its size; the *marks* are attached to the affine
+# diagram's nodes and so need the induced graph, which the same artwork encodes in its
+# stroke widths and has not been read yet.  So these entries carry the vertex set only.
+VERTEX_SETS = {
+    "D~10 E~7":    (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20),
+    "E~8^2 A~1":   (0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 23),
+    "D~16 A~1":    (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 23),
 }
-#                    ("E~8^2 A~1" is the one computed above, as v = e; "A~17" is A17_CUSP.)
+assert [len(v) for v in VERTEX_SETS.values()] == [19, 20, 19]
+assert tuple(sorted(set(range(24)) - set(VERTEX_SETS["E~8^2 A~1"]))) == (3, 12, 21, 22)
+
+OPEN_CUSPS = {name: None for name in VERTEX_SETS}   # marks pending the induced graph
 
 # What each transcribed entry turns into, unchanged for all four:
 #
