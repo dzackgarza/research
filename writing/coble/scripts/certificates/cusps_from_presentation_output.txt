@@ -15,9 +15,7 @@ A~17: marks {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 
   discriminant module: order 2 invariants Invariant-factor family: [0 ↦ 2]
   label: rank 17 det -18 -> index^2 = det(label)/det(K) = 18 / 2 = 9
   K isometric to the label: False
-  even_overlattice_inclusions raised: JuliaWorkerError Julia bridge process exited unexpectedly
-ERROR: LoadError: ArgumentError: Package JSON [682c06a0-de6a-54ab-a142-c8b1cf79cde6] is required but does not seem to be installed:
- - Run `Pkg.instantiate()` 
+  label's even overlattice inclusions with K as codomain: 1
 
 D~10: marks {18: 1, 17: 1, 0: 2, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 1, 19: 1}
   multiset equals the Kac marks: True
@@ -27,9 +25,7 @@ D~10: marks {18: 1, 17: 1, 0: 2, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 1, 19: 1
   discriminant module: order 2 invariants Invariant-factor family: [0 ↦ 2]
   label: rank 17 det -8 -> index^2 = det(label)/det(K) = 8 / 2 = 4
   K isometric to the label: False
-  even_overlattice_inclusions raised: JuliaWorkerError Julia bridge process exited unexpectedly
-ERROR: LoadError: ArgumentError: Package JSON [682c06a0-de6a-54ab-a142-c8b1cf79cde6] is required but does not seem to be installed:
- - Run `Pkg.instantiate()` 
+  label's even overlattice inclusions with K as codomain: 2
 
 E~8^(1): marks {13: 1, 14: 2, 15: 3, 16: 4, 17: 5, 0: 6, 1: 4, 2: 2, 18: 3}
   multiset equals the Kac marks: True
@@ -38,11 +34,8 @@ E~8^(1): marks {13: 1, 14: 2, 15: 3, 16: 4, 17: 5, 0: 6, 1: 4, 2: 2, 18: 3}
   K = v^perp/Zv: rank 17 det -2 signature (0, 17) even True
   discriminant module: order 2 invariants Invariant-factor family: [0 ↦ 2]
   label: rank 17 det -2 -> index^2 = det(label)/det(K) = 2 / 2 = 1
-  K.is_isometric raised: JuliaWorkerError Julia bridge process exited unexpectedly
-ERROR: LoadError: ArgumentError: Package JSON [682c06a0-de6a-54ab-a142-c8b1cf79
-  even_overlattice_inclusions raised: JuliaWorkerError Julia bridge process exited unexpectedly
-ERROR: LoadError: ArgumentError: Package JSON [682c06a0-de6a-54ab-a142-c8b1cf79cde6] is required but does not seem to be installed:
- - Run `Pkg.instantiate()` 
+  K isometric to the label: True
+  label's even overlattice inclusions with K as codomain: 1
 
 D~16: marks {19: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 2, 10: 2, 11: 2, 12: 2, 13: 2, 14: 2, 15: 2, 16: 2, 17: 2, 0: 2, 1: 1, 18: 1}
   multiset equals the Kac marks: True
@@ -52,6 +45,4 @@ D~16: marks {19: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 2, 10: 2, 11: 2, 12: 2, 13: 2, 14
   discriminant module: order 2 invariants Invariant-factor family: [0 ↦ 2]
   label: rank 17 det -8 -> index^2 = det(label)/det(K) = 8 / 2 = 4
   K isometric to the label: False
-  even_overlattice_inclusions raised: JuliaWorkerError Julia bridge process exited unexpectedly
-ERROR: LoadError: ArgumentError: Package JSON [682c06a0-de6a-54ab-a142-c8b1cf79cde6] is required but does not seem to be installed:
- - Run `Pkg.instantiate()` 
+  label's even overlattice inclusions with K as codomain: 2

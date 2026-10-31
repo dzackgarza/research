@@ -61,16 +61,18 @@ What has since been settled is listed at the end, so that a reader can tell "res
   `module_morphisms.py:1665`) with `is_saturated := is_primitive` (`module_morphisms.py:1671`)
   -- and the calls that express the cusps are written out, unexecuted, in
   `writing/coble/scripts/certificates/cusps_degree_two.sage`.
-  The numbered-root Gram data is settled (the source incidence: rank 19, kernel 5, all eight
-  components carrying their Kac marks, Lemma 4.7's four coincidences as relations), and the four
-  cusp boundary lattices are computed on the maintained baseline from it: each has rank 17,
-  signature (0,17), is even, has determinant -2 and discriminant module Z/2, with the label of
-  index k = 1, 2, 3, 2 respectively.  What remains open is which even overlattice of the label
-  each boundary *is*, i.e. the glue: `even_overlattice_inclusions` and one `is_isometric` call
-  enter the Julia bridge and fail there with `Package JSON ... is required but does not seem to
-  be installed: Run Pkg.instantiate()`, which is a provisioning item for the shared image, not
-  a library defect.  `writing/coble/scripts/certificates/cusps_from_presentation.py` holds the
-  consumer and its transcript.
+  The numbered-root Gram data is settled, and the four cusp boundary lattices are computed on
+  the maintained baseline from it: each has rank 17, signature (0,17), is even, has determinant
+  -2 and discriminant module Z/2, with label index k = 3, 2, 1, 2.  The glue is settled for two
+  rows and open for two: for A_1 + E8^2 the boundary is the label (index 1, confirmed by
+  isometry), and for A_17 exactly one even overlattice of the label has it as codomain, so it is
+  determined; for D_10 + E_7 and for D_16 + A_1 there are exactly two such overlattices each,
+  and the inclusion data does not choose between the pair.  What would choose is a further
+  invariant the pair differ in -- an isometry class finer than the discriminant, or an
+  independent determination of the plane from the source -- and that is not in hand.
+  Reproducing any of this needs the image's launcher environment: with JULIA_DEPOT_PATH dropped
+  the Julia bridge dies on a missing JSON package, and with
+  JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: the overlattice calls run.
   The library targets the research image's Sage development baseline on Python 3.14. It was not
   run on this container's Sage 10.8 / Python 3.12, which is not a supported host: nothing about
   the library is thereby in question, and provisioning an environment, or changing the library,

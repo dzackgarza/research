@@ -56,14 +56,14 @@ Both steps are formalized in `formalization/coble-enriques/Splitting.lean`: `spl
 
 All four are computed on the maintained Sage baseline, from the numbered roots of the source itself: $P$ is the presentation with the 24 generators and their Gram matrix, $P\to P/\rad P = N$ its radical quotient, and each cusp's plane comes from the source's null vector through that projection. The four boundary lattices come out the same shape and differ in the index of the label:
 
-| cusp | label | $\det$ label | $J^\perp/J$ | $\det(J^\perp/J)$ | $A_{J^\perp/J}$ | $k$ |
-| --- | --- | --- | --- | --- | --- | --- |
-| $\tilde A_{17}$ | $A_{17}$ | $-18$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $3$ |
-| $\tilde D_{10}\tilde E_7$ | $D_{10}\oplus E_7$ | $-8$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $2$ |
-| $\tilde E_8^{\oplus 2}\tilde A_1$ | $E_8^{\oplus 2}\oplus A_1$ | $-2$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $1$ |
-| $\tilde D_{16}\tilde A_1$ | $D_{16}\oplus A_1$ | $-8$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $2$ |
+| cusp | label | $\det$ label | $J^\perp/J$ | $\det(J^\perp/J)$ | $A_{J^\perp/J}$ | $k$ | even overlattices of the label with $J^\perp/J$ as codomain |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| $\tilde A_{17}$ | $A_{17}$ | $-18$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $3$ | $1$ |
+| $\tilde D_{10}\tilde E_7$ | $D_{10}\oplus E_7$ | $-8$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $2$ | $2$ |
+| $\tilde E_8^{\oplus 2}\tilde A_1$ | $E_8^{\oplus 2}\oplus A_1$ | $-2$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $1$ | $1$ |
+| $\tilde D_{16}\tilde A_1$ | $D_{16}\oplus A_1$ | $-8$ | rank $17$, sig $(0,17)$ | $-2$ | $\ZZ/2$ | $2$ | $2$ |
 
-Every entry is negative definite and even, and the determinant is $-2$ in all four rows, which is the splitting lemma's prediction $\det(J^\perp/J) = \det(T_2)$ confirmed on the source data; the index that follows, $k = 1, 2, 2, 3$, is the one the lemma forces. The four scripts are `cusps_from_presentation.py`, `cusp_null_vectors.py`, `check_fig1_gram.py` and `read_fig1.py` in `writing/coble/scripts/certificates/`, with their transcripts beside them.
+Every entry is negative definite and even with determinant $-2$, which is the splitting lemma's prediction $\det(J^\perp/J)=\det(T_2)$ confirmed on the source data, and the index that follows is $k = 1,2,2,3$ as the lemma forces. The last column is the glue. For $\tilde E_8^{\oplus2}\tilde A_1$ the quotient *is* the label, index $1$, which the comparison of lattices confirms rather than assumes. For $\tilde A_{17}$ there is exactly one even overlattice of $A_{17}$ that has this quotient as codomain, so that boundary lattice is determined. For $\tilde D_{10}\tilde E_7$ and $\tilde D_{16}\tilde A_1$ there are exactly two such overlattices each, so those two boundaries are one of a pair and the inclusion data does not choose between them.
 
 That row is computed, not only argued, on the maintained Sage baseline: for $J = \generators{f_1, f_2}$ in $T_2 = U\oplus U\oplus E_8^{\oplus 2}\oplus \generators{-2}$, the library's isotropic reduction of $J$ gives a lattice of rank $17$, signature $(0,17)$ and determinant $-2$, negative definite and even, whose single even overlattice inclusion has index $1$ from the label $A_1\oplus E_8^{\oplus 2}$; its discriminant module has order $2$ and invariant factors $[2]$, so the nontriviality of the discriminant is not the same thing as a glue index. The script is `writing/coble/scripts/certificates/cusps_degree_two_run.py` with its transcript beside it.
 

@@ -4,6 +4,11 @@
         -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
         /repo/writing/coble/scripts/certificates/cusps_from_presentation.py
 
+Environment: run inside the image's launcher environment, which includes
+JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: .  Dropping that variable makes the Julia bridge
+fail on a missing JSON package (the depot is in /opt/julia-depot, not on the default path), and
+the overlattice calls below need the bridge.
+
 Consumer for sage-extensions at main a0b8cdd2 ("an integral lattice's radical quotient is taken
 at the lattice owner").  Construction, using only named public contracts:
 
