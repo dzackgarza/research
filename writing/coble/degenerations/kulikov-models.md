@@ -68,6 +68,13 @@ The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index
   These correspond to normal crossing varieties whose dual complex is a triangulation of $S^2$.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The limiting mixed Hodge structure of a Kulikov model is read off the nilpotent orbit of its monodromy, which is the content of the Clemens-Schmid sequence; the book uses only the resulting invariant, the type of the degeneration, which is determined by the nilpotent operator.
+:::
+
 ::: {.remark title="Attribution of the weight filtration"}
 
 The canonical monodromy weight filtration attached to the nilpotent operator $N = \log T$ is that of [@Sch73].

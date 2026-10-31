@@ -60,6 +60,13 @@ By @thm:coxeter-polytope-volume(1) a Coxeter polytope of finite volume in $\HH^n
 For $n = 9$ a fundamental chamber therefore has at least $10$ walls.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The proposition records a computed negative result: the nine roots exhibited do not generate the full reflection group, which is shown by exhibiting a root of the computed diagram outside their span. The computation is in the page, the proposition is its summary.
+:::
+
 ::: {.remark title="Consequence for the two implementations"}
 
 Vinberg's algorithm terminates when the accepted walls bound a polyhedron of finite volume (@thm:vinberg-algorithm), so a terminating run on a rank-$10$ hyperbolic lattice returns at least $10$ roots.

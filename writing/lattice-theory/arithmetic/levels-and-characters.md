@@ -98,3 +98,10 @@ L_{\bF_p}\isoto H^{\perp m}
 $$
 is split [@CS10, Ch. 15].
 :::
+
+::: {.proof}
+
+This is [@CS10, Ch. 15].
+
+Cited: the discriminant character over a finite field and its computation by counting, in the form of Conway-Sloane Chapter 15. The book uses the value of the character on the quadratic space at a prime, which is exactly what that chapter tabulates.
+:::

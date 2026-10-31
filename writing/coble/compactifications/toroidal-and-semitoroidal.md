@@ -51,6 +51,13 @@ $$
 as in @def:semitoroidal-compactification is isomorphic to a semitoroidal compactification [@AE23, Thm. 1].
 :::
 
+::: {.proof}
+
+This is [@AE23, Thm. 1].
+
+Cited: the tower of semitoroidal compactifications and the comparison morphisms between them, from Alexeev-Engel Theorem 1. The book uses the tower as the source of the morphisms it compares against KSBA.
+:::
+
 ::: {.remark title="Polarized Coble trace restriction"}
 
 The polarized Coble compactification program does not build a new semifan from scratch; it uses a Coble-specific restriction of the Enriques ramification semifan.
@@ -151,6 +158,13 @@ A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if,
 ::: {.theorem #thm:recognizable-semitoroidal}
 
 If $R$ is recognizable, then the normalization of the KSBA compactification $\oF^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mcf_R}$, defined by a specific semifan $\mcf_R$ [@AE23].
+:::
+
+::: {.proof}
+
+This is [@AE23].
+
+Cited: recognizability of a divisor implying the comparison morphism with the semitoroidal compactification, from Alexeev-Engel. The book applies it to the restricted ramification divisor, which is where the hypothesis is checked.
 :::
 
 ::: {.example #ex:recognizable-divisors}

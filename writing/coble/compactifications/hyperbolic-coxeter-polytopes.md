@@ -42,6 +42,13 @@ Let $(W,S)$, $\oC$ and $U$ be as in @def:tits-cone, and for $f\in \oC$ write $I(
 These are theorems of Tits, recorded in [@Bou08; @Hum90].
 :::
 
+::: {.proof}
+
+This is [@Bou08; @Hum90].
+
+Cited: the Tits representation and the description of the fundamental cone, in Bourbaki Chapter V and Humphreys. The book uses the cone only to state the chamber description of `def:coxeter-polytope`, which is the cited result read in its own notation.
+:::
+
 ::: {.remark}
 
 For a spherical Coxeter system $U = V^*$.
@@ -137,6 +144,13 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls and 
 These are Vinberg's criteria [@Vin67; @Vin85].
 :::
 
+::: {.proof}
+
+This is [@Vin67; @Vin85].
+
+Cited: Vinberg volumes of hyperbolic Coxeter polytopes, from the two papers named. The book quotes the compact and finite-volume criteria rather than re-deriving them, because they are used as a test on computed diagrams.
+:::
+
 ::: {.remark}
 
 Criterion (1) is the condition Vinberg's algorithm tests at each stage (@thm:vinberg-algorithm, step 4), and @prop:polytope-vertex-subdiagram converts it into a statement about the subdiagrams of $\Sigma$: the algorithm terminates when every vertex of the cone bounded by the accepted roots is accounted for by an elliptic subdiagram of rank $n$ or a parabolic subdiagram of rank $n-1$.
@@ -152,6 +166,13 @@ Then
 2. $\vol(P) < \infty$ if and only if every $\Sigma_{S\sm\theset{s}}$ is elliptic or parabolic, the ideal vertices being those $s$ for which $\Sigma_{S\sm\theset{s}}$ is parabolic;
 
 3. $\vol(P) = \infty$ if and only if some $\Sigma_{S\sm\theset{s}}$ is hyperbolic.
+:::
+
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The simplex case is the volume formula evaluated on the complete graph diagram, which is the one place the general Vinberg volume of `thm:coxeter-polytope-volume` reduces to a closed form.
 :::
 
 ::: {.remark title="Lannér's classification"}

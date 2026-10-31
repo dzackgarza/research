@@ -242,6 +242,13 @@ When $T$ is a nodal type, $\per_T$ is moreover an isomorphism of orbifolds onto 
 The description of the image restates, at the level of moduli spaces, the equisingular deformation theory of Urabe [@Ura88].
 :::
 
+::: {.proof}
+
+This is [@YZZ25 §3.1; §1, §3.2, §3.3, §6.2].
+
+Cited from Yu-Zheng-Zhang, in the sections named in the statement. The book uses the period map for the sextic locus only to place the Coble moduli problem inside it, so the statement is quoted rather than re-proved.
+:::
+
 ::: {.theorem #thm:git-equals-looijenga title="The GIT compactification is a Looijenga compactification"}
 
 Let $\Lambda_1 \definedas H^{\perp\lkt}$, of signature $(2,19)$ with $A_{\Lambda_1}\cong\ZZ/2$, and let $\Gamma_1$ be the arithmetic group of the degree-$2$ K3 moduli space $\Gamma_1\backslash D(\Lambda_1)$.
@@ -256,6 +263,13 @@ $$
 \wh{\mcm}_T \;\cong\; \overline{\Gamma_T\backslash D(Q)}^{\,\mch^{*}_T}
 $$
 between the GIT compactification of $\mcm_T$ and the Looijenga compactification of @def:looijenga-compactification applied to $\Gamma_T\backslash(D(Q) - \mch^{*}_T)$, compatibly with the corresponding statement of Shah and Looijenga for the whole space of sextics, $\overline{\mcm}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\mch_\infty}$ [@Sha80; @Loo02]; the two vertical maps of the resulting square are normalizations onto their images [@YZZ25 §4.2].
+:::
+
+::: {.proof}
+
+This is [@YZZ25 §4.1, §4.2; @Sha80; @Loo02].
+
+Cited: the identification of the geometric invariant theory quotient with Looijenga compactification, in the form of Yu-Zheng-Zhang Sections 4.1 and 4.2, building on Shah and Looijenga. The book uses the identification as the comparison between two compactifications it computes separately.
 :::
 
 ::: {.remark title="The arithmetic group as a normalizer"}

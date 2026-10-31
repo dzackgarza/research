@@ -37,6 +37,13 @@ Let $X$ be a Coble surface and $\pi_{E}: X \to Y$ be the blowing down of a (-1)-
 Conversely, the blow-up of a singular point of an irreducible non-multiple fiber of a Halphen surface of index 2 is a Coble surface.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The blowdown from the Halphen surface to the Coble surface is the contraction of the fixed curve of the involution, computed on the K3 cover; the lemma records that the resulting surface has the anti-bicanonical system of a Coble surface by adjunction.
+:::
+
 ::: {.remark}
 
 Why introduce Halphen surfaces?

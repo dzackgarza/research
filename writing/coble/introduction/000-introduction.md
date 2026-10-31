@@ -72,6 +72,16 @@ from the normalization of the KSBA compactification to the semitoroidal compacti
 The Coxeter fan of $T_{\Co}$ is a refinement of $\mcf$, and stable Coble surfaces in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter diagrams.
 :::
 
+::: {.proof}
+
+This is the book's own theorem and is not proved in this section; the proof is assembled in the results part, whose main statement it is (@thm:fen2_main), from three ingredients.
+
+What can be said here is which part rests on what, since the statement is stated at the front and defended at the back.
+The morphism $\Psi$ is obtained by comparing the KSBA compactification with a semitoroidal one cusp by cusp, so it rests on the cusp computations of @sec-cusp-diagrams-by-moduli-space and @sec-enriques-coble-correspondence, and on the stable limits of @sec-ksba and @sec-geometric-preliminaries; the identification of the normalization with the semitoroidal compactification is @thm:fen2_main.
+That the Coxeter fan refines $\mcf$ is a statement about the reflection group of $T_{\Co}$, proved where that group is computed, in @sec-reflection-groups-and-vinberg.
+And the description of boundary surfaces by sub-Dynkin diagrams is the folding computation of @sec-dynkin-foldings, whose output the last clause summarizes.
+:::
+
 ::: {.remark}
 
 This result is made possible by recent advances in [@AE22; @AEH24] on compactifications of K3 surfaces with nonsymplectic automorphisms, along with the theory of recognizable divisors developed in [@AE23].

@@ -51,6 +51,13 @@ Under these conditions $C \iscontainedin \overline{C_L^+}$ and the closure of $C
 The rays with $v^2 > 0$ are the ordinary vertices and the rays with $v^2 = 0$ the ideal vertices of @prop:polytope-vertex-subdiagram, so by @thm:coxeter-polytope-volume(2) the polytope is compact exactly when no extremal ray is isotropic.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The criterion is the chamber description of `def:coxeter-polytope` applied to the computed diagram: an intersection of half-spaces is the fundamental chamber exactly when the simple roots it names generate the reflection group, which is checked on the roots.
+:::
+
 ::: {.remark title="Why each hypothesis is separate"}
 
 A cone containing a line meets both components of the positive cone, so (3) does not follow from (1). A cone whose extremal rays are isotropic and timelike but distributed between the two components of $C_L$ is not contained in $\overline{C_L^+}$, which is (2). Applied to the recorded runs, @prop:chamber-cone-criterion is what identifies the count reported as *vertices at infinity* in [the CoxIter results](#sec-coxiter-results-for-cusp-lattices) with the isotropic extremal rays of the cone, and the *non-cocompact with finite covolume* verdict recorded there with the presence of at least one of them.

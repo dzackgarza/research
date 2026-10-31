@@ -39,6 +39,13 @@ which sends the generator $h$ of $\generators{2}$ to $\tilde e+\tilde f\in U$ an
 Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+Primitivity of the embedding of T_Co into T_En is checked through `prop:primitive-characterization`: the quotient is torsion-free, which is verified on the discriminant groups attached to the two lattices.
+:::
+
 ::: {.lemma #lem:sequence_of_embeddings}
 
 There is a sequence of primitive embeddings

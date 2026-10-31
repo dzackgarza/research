@@ -26,6 +26,13 @@ $$
 Thus $E_{10}(2)$ is $2$-elementary of type $(r,a,\delta)=\EnriquesInvariants$.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The invariants of the twist E_10(2) follow from the scaled-discriminant sequence of `prop:scaled-discriminant-ses` applied to the unimodular rank-10 lattice E_10: its discriminant group is 0, so the discriminant of the twist is E_10/2E_10, of order 2^10 and exponent 2.
+:::
+
 ## Degree $2d$ K3 lattices
 
 ::: {.definition #def:degree-2d-k3-lattice title="Degree $2d$ K3 lattices"}

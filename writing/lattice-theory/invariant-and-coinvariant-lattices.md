@@ -330,6 +330,13 @@ $$
 The involution restricts to the identity on the discriminant quadratic module $A_{T,q}$.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The corollary specializes `thm:unimodular-finite-group-gluing` to the case of a single involution, where the group ring is Z[t]/(t^2-1) and the two gluing classes are the two eigenspace lattices of `prop:involution_eigenspaces`.
+:::
+
 ::: {.example #ex:swap-involution-u2 title="Exchange of two hyperbolic planes"}
 Let $L=U\perp U$ and let $I$ exchange the two summands. The two eigensublattices are
 $$

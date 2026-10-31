@@ -267,6 +267,13 @@ Vinberg's algorithm constructs a fundamental chamber $P\iscontainedin\HH^n$ for 
 The algorithm terminates in finitely many steps if and only if $\Gamma$ has finite covolume in $\Orth(L)$.
 :::
 
+::: {.proof}
+
+This is [@Vin75].
+
+Cited: Vinberg algorithm and its termination criterion, from the original paper. The book applies it as a computational procedure and records the results in `sec-coxiter-results`, so the statement is quoted in the source form.
+:::
+
 ::: {.remark}
 
 The source note states step 3 as "discard those roots whose hyperplanes do not intersect $\tilde P$ transversely"; the explicit inequality $v\cdot r_i\geq 0$ recorded above is Vinberg's acceptance criterion for that condition in the algebraic-geometry sign convention [@Vin75].

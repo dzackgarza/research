@@ -1,4 +1,4 @@
-# Foldings of Dynkin diagrams
+# Foldings of Dynkin diagrams {#sec-dynkin-foldings}
 
 ::: {.remark title="Orientation"}
 
@@ -80,6 +80,13 @@ The folded roots $\beta_{[v]} \in \Phi\left( \tdp^{\generators{I}} \right)$ aris
 2. $v \in \Phi^4(\tdp)$ and $\beta_{[v]} \in \Phi(\ten)$; or
 
 3. $v \in \Phi^2(\tdp) \intersect I(v)^{\perp \tdp}$, and so $\beta_{[v]} \definedas v + I(v) \in \Phi^4(\ten)$ is the sum of orthogonal roots in $\Phi^2(\tdp)$.
+:::
+
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The folded diagram is computed from the involution by the recipe of `def:folded-root`: an orbit of roots under the involution is a single node of the folded diagram, and its bond order to another orbit is the number of simple reflections relating them. The lemma is that computation at the node in question.
 :::
 
 This criterion governs how roots in the boundary lattices at the $0$-cusps of $\fttz$ descend or combine when passing to the $I$-invariant sublattices corresponding to $\fentwo$.

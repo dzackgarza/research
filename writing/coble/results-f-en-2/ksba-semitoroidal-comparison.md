@@ -26,6 +26,13 @@ $$
 of semifans, one for each $0$-cusp of the Baily--Borel compactification $\bbcpt{\fentwo}$, and the right-hand side is the KSBA compactification.
 :::
 
+::: {.proof}
+
+This is [@AEGS25].
+
+Cited from AEGS, in the section the statement names. The book uses the comparison as the target of its own normalization theorem, so it is quoted.
+:::
+
 ::: {.remark title="Fan versus strict-semifan bookkeeping"}
 
 The five cusps of $\bbcpt{\fentwo}$ match Sterk's five $0$-cusps of the Enriques period space [@Ste91], one semifan per cusp.

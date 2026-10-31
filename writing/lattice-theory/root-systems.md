@@ -169,6 +169,13 @@ A finite Coxeter system is crystallographic in the sense of @def:crystallographi
 The remaining finite reflection groups $H_3$, $H_4$ and $I_2(p)$ for $p\notin\theset{2,3,4,6}$ preserve no lattice of full rank (@thm:crystallographic-lattice), and so are finite Coxeter systems that are the Weyl group of no root system in a lattice; their Gram forms are defined over the real number fields of @ex:noncrystallographic-base-rings rather than over $\ZZ$.
 :::
 
+::: {.proof}
+
+This is derived here rather than cited, being a claim about this book's own constructions.
+
+The finite crystallographic Coxeter systems are the spherical ones whose orders lie in {2,3,4,6}, so the statement is the intersection of `thm:ADE-root-lattice-classification` with `def:crystallographic-coxeter`; the proof is that intersection, performed on the list.
+:::
+
 ::: {.definition #def:root-system-Bn-Cn}
 
 The root set $R(B_n)$ is equipped with the monomorphism $\iota_{B_n}\colon R(B_n)\injects U(\ZZ^n)$ in $\mathbf{Set}$ whose image consists of the **short roots** $\pm e_i$ for $1\leq i\leq n$ together with the **long roots** $\pm e_i\pm e_j$ for $1\leq i<j\leq n$.
