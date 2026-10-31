@@ -52,30 +52,23 @@ What has since been settled is listed at the end, so that a reader can tell "res
   all four, and the index of the label is $1$, $2$, $2$, $3$. The lattice follows for
   $A_1\oplus E_8^{\oplus 2}$ and does not follow for the other three without a certified
   quotient and overlattice computation.
-  That computation cannot be run in this container, and the record is this: `sage-extensions`
-  is present at revision `441519c574cec12ada06ad586f6c3862fbca96d0` (clean checkout) and has
-  the operations the computation needs -- `primitive_isotropic_subobject` (`lattices.py:7312`),
-  `isotropic_reduction` (`lattices.py:5688`, `:8414`), `even_overlattice_inclusions`
-  (`lattices.py:5937`), `discriminant_module` (`lattices.py:5583`), `discriminant_projection`
-  (`lattices.py:5588`), `saturation` (`lattices.py:2990`), `is_primitive`
-  (`lattices.py:8379`, `module_morphisms.py:1665`) with `is_saturated := is_primitive`
-  (`module_morphisms.py:1671`) -- but it does not import here. Reproducers:
-  `PYTHONPATH=~/sage-extensions/src:~/sage-categories/src:~/tree-sitter-sage/src:~/sage-julia-bridge/src sage -c "from sage_extensions.all import *"`
-  stops at `sage_extensions/all.py:19` with `ModuleNotFoundError: tree_sitter_sage`, the
-  compiled extension not being installed; and the narrower
-  `sage -c "import sage_extensions.categories.lattices"` stops at the module-level
-  `ExactRealField()` of `rings/real.py:1078`, inside `rings/real.py:780` and
-  `categories/algebras/algebras.py:556` (`_algebra_from_native_ring`), which reaches
-  `categories/modules/native_modules.py:178` (`base_ring().free_module(1)`) and raises
-  `ValueError: base must be a subring of this ring` from Sage's own `Rings.free_module`.
-  The cause is the environment, not the lattice code: the library declares
-  `requires-python = ">=3.14"` and ships against the image whose `sage/VERSION.txt` is
-  `11.0.beta5`, while this container runs Sage 10.8 on Python 3.12, and the image cannot be
-  entered (no `chroot`, `proot` or `udocker` here). Until the computation runs there, nothing
-  about those three lattices is certified; in particular the enumeration in
-  `writing/coble/scripts/certificates/two_elementary_checks.py` is a bespoke reimplementation
-  of quotient, saturation and discriminant-group arithmetic, and no result of it counts as
-  verified. The same caution applies term by term to the
+  That computation has not been run. `sage-extensions` at revision
+  `441519c574cec12ada06ad586f6c3862fbca96d0` (clean checkout) has every operation it needs --
+  `primitive_isotropic_subobject` (`lattices.py:7312`), `isotropic_reduction`
+  (`lattices.py:5688`, `:8414`), `even_overlattice_inclusions` (`lattices.py:5937`),
+  `discriminant_module` (`lattices.py:5583`), `discriminant_projection` (`lattices.py:5588`),
+  `saturation` (`lattices.py:2990`), `is_primitive` (`lattices.py:8379`,
+  `module_morphisms.py:1665`) with `is_saturated := is_primitive` (`module_morphisms.py:1671`)
+  -- and the calls that express the cusps are written out, unexecuted, in
+  `writing/coble/scripts/certificates/cusps_degree_two.sage`.
+  The library targets the research image's Sage development baseline on Python 3.14. It was not
+  run on this container's Sage 10.8 / Python 3.12, which is not a supported host: nothing about
+  the library is thereby in question, and provisioning an environment, or changing the library,
+  belongs to the `sage` and `sage-extensions` projects rather than to this one. Until those
+  calls are run on the supported baseline, no result of them is verified -- and in particular
+  nothing in `writing/coble/scripts/certificates/two_elementary_checks.py` counts as verified,
+  since it reimplements quotient, saturation and discriminant-group arithmetic in plain
+  integers instead of going through the library. The same caution applies term by term to the
   nine items below. What the seven-item list is for is the analogue of the
   $d=1$ construction, where the four boundary lattices arise from $E_7$-complements in Niemeier
   lattices — and even there the bookkeeping is not uniform: at the level of root systems only

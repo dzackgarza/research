@@ -91,4 +91,22 @@ theorem det_two_hyperbolic4 : ((2 : ℤ) • hyperbolic4).det = 16 := by
 #print axioms Coble.det_hyperbolic4
 #print axioms Coble.det_two_hyperbolic4
 
+/-! ## The null vectors of `N = H ⊕ E₈² ⊕ A₁` in coordinates
+
+With `H = <e, f>`, a vector `e + n•f + w` is isotropic exactly when `w² = -2n`.  This is
+the parametrization of the null rays of `N` used to read the four one-cusps off the
+maximal parabolic subdiagrams of the Coxeter diagram, the `w = 0` case giving `v = e`
+and `J^⊥/J = E₈² ⊕ A₁`. -/
+
+/-- `e + n f + w` has square zero when `w² = -2n`, for the form on `H ⊕ W`. -/
+theorem isotropic_of_hyperbolic_parametrization {W : Type*} (bW : W → W → ℤ) (w : W) (n : ℤ)
+    (hw : bW w w = -2 * n) :
+    (fun (x y : ℤ × ℤ × W) => x.1 * y.2.1 + y.1 * x.2.1 + bW x.2.2 y.2.2)
+      (1, n, w) (1, n, w) = 0 := by
+  simp only
+  rw [hw]
+  ring
+
+#print axioms Coble.isotropic_of_hyperbolic_parametrization
+
 end Coble

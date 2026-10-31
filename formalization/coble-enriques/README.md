@@ -58,6 +58,10 @@ complement is a genuine lattice and not a rational or scaled one.
 - `det_hyperbolic4`, `det_two_hyperbolic4`. `U ⊕ U` has determinant `1`, which is the
   hypothesis; the twice-scaled `2 • (U ⊕ U)` has determinant `16`, so a scaled pairing
   satisfies no such hypothesis and its splitting is only over $\mathbb{Q}$.
+- `isotropic_of_hyperbolic_parametrization`. On $H \oplus W$ with $H = \langle e,f\rangle$,
+  the vector $e + nf + w$ is isotropic as soon as $w^2 = -2n$; this is the parametrization
+  of the null rays of $N = H \oplus E_8^{\oplus 2} \oplus A_1$ by which the four
+  one-cusps are read off the maximal parabolic subdiagrams of the Coxeter diagram.
 
 Every theorem depends on `[propext, Classical.choice, Quot.sound]` and on nothing else;
 the `#print axioms` output is at the end of the file. Checked with
