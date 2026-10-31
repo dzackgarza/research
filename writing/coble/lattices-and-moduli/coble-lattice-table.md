@@ -44,7 +44,8 @@ $$
 \mathrm{E}_{10}(2):\ (10,10),\qquad
 \mathrm{U}(2):\ (2,2),
 $$
-the $D_{2m}$ entries because $\det D_{2m}=4$ with $A_{D_{2m}}\cong(\bZ/2)^2$, and the twisted entries because twisting by $2$ multiplies the Gram matrix by $2$, so by @prop:scaled-discriminant-ses the discriminant group of $L(2)$ is $L/2L$ with $A_{L(2)}\cong(A_L)\oplus(L/2L)$.
+the $D_{2m}$ entries because $\det D_{2m}=4$ with $A_{D_{2m}}\cong(\bZ/2)^2$, and the twisted entries because every $L$ they twist is unimodular: for unimodular $L$, @prop:scaled-discriminant-ses gives $A_{L(2)}\cong L/2L\cong(\bZ/2)^{\rank L}$, so $a(L(2)) = \rank L$.
+In general only the exact sequence $0\to L/2L\to A_{L(2)}\to A_L\to 0$ holds and the splitting can fail: for $L = \generators{2}$ the lattice $L(2) = \generators{4}$ has discriminant group $\bZ/4$, not $(\bZ/2)^2$.
 Row by row this gives
 
 - $n=1$: $11,0+1+10=11$;
@@ -75,17 +76,18 @@ Which of the two printed entries is the error is not a matter of taste: the inva
 The last row prints $N = 20$, while the source's own $K_V^2 = 9 - N$ with $K_V^2 = -10$ forces $N = 19$; the table prints $19$, for the same reason.
 
 One row was for a time in the opposite situation.
-An earlier version of this table had rows $n=4$ and $n=5$ with $\mathrm{U}$ and $\mathrm{U}(2)$ interchanged relative to the source, which the printed invariants detect; the repair of that then replaced row $n=4$ by $\mathrm{D}_4^{\oplus 2}\oplus \mathrm{A}_1^{\oplus 4}\oplus \mathrm{U}$.
-That lattice has rank $14$, length $8$, signature $(1,13)$ and the same $\delta$, so by the uniqueness of the indefinite $2$-elementary lattice with given invariants [@Nik80] it is isometric to the source's $\mathrm{E}_7\oplus \mathrm{A}_1^{\oplus 5}\oplus \mathrm{U}(2)$; but it is not the source's decomposition, and a table that transcribes is not free to substitute an isometric lattice.
-Row $n=4$ now carries the source's entry.
+Rows $n=4$ and $n=5$ both carry $\mathrm{U}(2)$ in the source, and both are consistent with their invariants: $\mathrm{E}_7\oplus\mathrm{A}_1^{\oplus5}\oplus\mathrm{U}(2)$ has $a = 1+5+2 = 8$ and $\mathrm{E}_8\oplus\mathrm{A}_1^{\oplus5}\oplus\mathrm{U}(2)$ has $a = 0+5+2 = 7$.
+An earlier version of this table replaced row $n=4$ by $\mathrm{D}_4^{\oplus2}\oplus\mathrm{A}_1^{\oplus4}\oplus\mathrm{U}$, which has the same rank $14$, length $8$, signature $(1,13)$ and $\delta$, and is therefore isometric to the source's lattice by the uniqueness of the indefinite $2$-elementary lattice with given invariants [@Nik80] — but it is not the source's decomposition, and a table that transcribes is not free to substitute an isometric lattice.
 
 :::
 
-For the complement, $M$ is primitive in $\lkt$ of rank $22$ and signature $(3,19)$, so by @thm:orthogonal-decomposition $N$ has rank $22-(10+n)$ and signature $(3-1,19-(\rank M-1))$; the listed $I_{2,12-n}(2)$ has exactly that rank and signature, and $a(N)=12-n$ with the parity recorded in $\delta$.
+For the complement, $M$ is primitive in $\lkt$ of rank $22$ and signature $(3,19)$, so by @thm:orthogonal-decomposition $N$ has rank $22-(10+n) = 12-n$ and signature $(2,\,19-(9+n)) = (2,10-n)$.
+The lattice $\latI_{2,m}$ has rank $m+2$ and signature $(2,m)$, so the one of the listed shape with that rank is $\latI_{2,10-n}(2)$: it has rank $12-n$, signature $(2,10-n)$, and $a = 12-n$.
+The exception is the row with $\delta = 0$, where $N$ is not of that shape but $\mathrm{U}(2)^{\oplus 2}$: this is the row $n=8$, where $12-8 = 4$ is the rank of $\mathrm{U}(2)^{\oplus 2}$ and $(2,10-8) = (2,2)$ its signature, so the rank and signature formulas hold there too while the shape differs and the parity is $0$ rather than $1$.
+Equivalently, $\mathrm{U}(2)^{\oplus 2}$ is the only candidate of rank $4$ and signature $(2,2)$ available at that row, and it is not a twist of an indefinite odd unimodular lattice, which is why the complement changes shape exactly where $\delta$ changes.
 Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the fourth column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
 
-Two rows of the source table carry the twisted summand where the untwisted one is meant: with $\mathrm{U}(2)$ in place of $\mathrm{U}$ at $n=4$ the generator length would be $10$ rather than $8$, and with $\mathrm{U}$ in place of $\mathrm{U}(2)$ at $n=5$ it would be $5$ rather than $7$.
-The table above has them interchanged accordingly; every other row checks as printed.
+Every row of this table agrees with the invariants printed beside it in the source, with the two exceptions recorded above, where it is the source's printed summand decomposition rather than its printed invariants that is inconsistent.
 :::
 
 This table is reproduced in [@CDL25 Table 5.1, p.553].
