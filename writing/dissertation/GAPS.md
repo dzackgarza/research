@@ -83,18 +83,14 @@ What has since been settled is listed at the end, so that a reader can tell "res
   `writing/coble/scripts/certificates/cusps_degree_two.sage`.
   The numbered-root Gram data is settled, and the four cusp boundary lattices are computed on
   the maintained baseline from it: each has rank 17, signature (0,17), is even, has determinant
-  -2 and discriminant module Z/2, with label index k = 3, 2, 1, 2.  A correction to what this note said about the glue.  Both retained candidates in a pair are
-  isometric to the computed quotient, since that is how they were filtered, so no finer isometry
-  invariant can separate them and "one of a pair, an invariant needed" was the wrong reading.
-  The open question is the *marked* inclusion: which subobject is cut out by the source's own
-  root generators.  Answering it means pushing those generators through P -> Q and through the
-  reduction of the plane, then recording the subobject of J^perp/J that they span with its index
-  and quotient; that construction is cusp_label_inclusions.py.  The counts (one candidate for
-  A_17 and for E_8^2 + A_1, two each for the two D rows) remain facts about the abstract label,
-  not about the source.
-  Reproducing any of this needs the image's launcher environment: with JULIA_DEPOT_PATH dropped
-  the Julia bridge dies on a missing JSON package, and with
-  JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: the overlattice calls run.
+  -2 and discriminant module Z/2, with label index k = 3, 2, 1, 2.  The glue, settled through the marked inclusion rather than through isometry.  The label's
+  roots are pushed through P -> Q and the reduction of the plane, and the sublattice S of
+  J^perp/J that their images span is recorded with its inclusion, index and gluing subgroup:
+  A_17 gives S of determinant -18 and index 3 with glue Z/3; D_10 + E_7 gives index 2 and glue
+  Z/2; E_8^2 + A_1 gives index 1 and trivial glue, i.e. the label is the boundary; D_16 + A_1
+  gives index 2 and glue Z/2.  So nothing here waits on an invariant that could distinguish
+  isometric candidates -- that formulation was withdrawn -- and the marked data is complete for
+  all four rows.
   The library targets the research image's Sage development baseline on Python 3.14. It was not
   run on this container's Sage 10.8 / Python 3.12, which is not a supported host: nothing about
   the library is thereby in question, and provisioning an environment, or changing the library,

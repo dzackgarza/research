@@ -1,0 +1,39 @@
+python 3.14.10
+sage_extensions /repo/.scratch/se-repair/src/sage_extensions/__init__.py
+P: rank 24 det 0 | Q: rank 19 det 2
+
+=== A~17: marks on the source nodes {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1}
+  multiset equals the Kac marks: True
+  K: rank 17 det -2 sig (0, 17)
+  node -> image family retained for 18 roots
+  S = sublattice_from(images, saturate=False): rank 17 det -18
+  j = S.inclusion(): OwnedLatticeEmbeddingMor_with_category_with_category.ArrowType | primitive: False
+  [K : S]^2 = det(S)/det(K) = 18 / 2 = 9
+  j.gluing_subgroup(): OwnedJoinCategory.parent_class[_PresentedModule].ObjectType order 3 invariants Invariant-factor family: [0 ↦ 3]
+
+=== D~10: marks on the source nodes {18: 1, 17: 1, 0: 2, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 1, 19: 1}
+  multiset equals the Kac marks: True
+  K: rank 17 det -2 sig (0, 17)
+  node -> image family retained for 19 roots
+  S = sublattice_from(images, saturate=False): rank 17 det -8
+  j = S.inclusion(): OwnedLatticeEmbeddingMor_with_category_with_category.ArrowType | primitive: False
+  [K : S]^2 = det(S)/det(K) = 8 / 2 = 4
+  j.gluing_subgroup(): OwnedJoinCategory.parent_class[_PresentedModule].ObjectType order 2 invariants Invariant-factor family: [0 ↦ 2]
+
+=== E~8^(1): marks on the source nodes {13: 1, 14: 2, 15: 3, 16: 4, 17: 5, 0: 6, 1: 4, 2: 2, 18: 3}
+  multiset equals the Kac marks: True
+  K: rank 17 det -2 sig (0, 17)
+  node -> image family retained for 20 roots
+  S = sublattice_from(images, saturate=False): rank 17 det -2
+  j = S.inclusion(): OwnedLatticeEmbeddingMor_with_category_with_category.ArrowType | primitive: True
+  [K : S]^2 = det(S)/det(K) = 2 / 2 = 1
+  j.gluing_subgroup(): OwnedJoinCategory.parent_class[_PresentedModule].ObjectType order 1 invariants Invariant-factor family: []
+
+=== D~16: marks on the source nodes {19: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 2, 10: 2, 11: 2, 12: 2, 13: 2, 14: 2, 15: 2, 16: 2, 17: 2, 0: 2, 1: 1, 18: 1}
+  multiset equals the Kac marks: True
+  K: rank 17 det -2 sig (0, 17)
+  node -> image family retained for 19 roots
+  S = sublattice_from(images, saturate=False): rank 17 det -8
+  j = S.inclusion(): OwnedLatticeEmbeddingMor_with_category_with_category.ArrowType | primitive: False
+  [K : S]^2 = det(S)/det(K) = 8 / 2 = 4
+  j.gluing_subgroup(): OwnedJoinCategory.parent_class[_PresentedModule].ObjectType order 2 invariants Invariant-factor family: [0 ↦ 2]
