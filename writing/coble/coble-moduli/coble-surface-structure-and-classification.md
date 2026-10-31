@@ -88,8 +88,24 @@ $$
 $\CM(S)$ serves as the replacement for $\NS(S)$ in the Coble setting.
 :::
 
-This object appears nowhere in the project, which works throughout with $S_{\Co}$ and $T_{\Co}$ inside $\lkt$.
-Whether $\CM(S)$ relates to $S_{\Co}$, and whether it is the more natural home for the $\Gamma_{\Co}$ action, is not addressed in the source and looks worth settling.
+One computation about the defining data, since it decides what $\CM(S)$ can be.
+Since $|-2K_S|=\{D\}$ we have $D=-2K_S$, so $\tfrac12 D=-K_S\in\NS(S)$ and the lattice $L$ of the definition is $\NS(S)$ itself: the half-class adjoined is already integral.
+Equivalently $(B_1+\cdots+B_n)/2$ pairs with $B_i$ to $\tfrac12 B_i^2=-2$ and is the canonical class up to sign.
+So $\CM(S)$ is the orthogonal complement of the boundary configuration inside $\NS(S)$, and any relation between it and $S_{\Co}$ is a relation between two complements of different isotropic-free configurations in the same K3 lattice, not a statement about an enlarged $L$.
+
+::: {.question #qst:coble-mukai-naturality title="Is the Coble--Mukai lattice the natural home for the group action?"}
+
+Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\Co}$, and how are the two related?
+
+Neither the source nor this book answers this, and the questions that have to come first are concrete: the rank and signature of $\CM(S)$, whether the boundary configuration is primitive in $\NS(S)$, and whether the embedding $\CM(S)\hookrightarrow\NS(S)$ is primitive.
+Those determine what $\CM(S)$ is, and none of them is settled here.
+
+What can be said is why the question is not idle.
+$S_{\Co}\cong\generators{-2}\oplus E_{10}(2)$ is $2$-elementary, so $A_{S_{\Co}}=(\bZ/2)^{11}$ and the discriminant representation of @thm:two-elementary-surjectivity is surjective; the two mod-$2$ invariants $(r,a,\delta)$ that classify a $2$-elementary lattice are then the only handles on $\Orth(S_{\Co})$, and in the inert case $n_1=n_2=10$ they are the ones that take equal values.
+A complement of the boundary configuration inside $\NS(S)$ is not $2$-elementary in general -- the $B_i$ have square $-4$, so odd primes enter the discriminant of the boundary lattice and hence, by @prop:scaled-discriminant-ses, into the gluing between $\CM(S)$ and its complement.
+If $\Gamma_{\Co}$ acts on $\CM(S)$ compatibly with that gluing, the odd part of the discriminant group is an invariant the $2$-elementary data of $S_{\Co}$ cannot see, and it would be visible exactly where those data stop separating cases.
+Whether that is what happens is open.
+:::
 
 ## The Dolgachev-Zhang classification
 
