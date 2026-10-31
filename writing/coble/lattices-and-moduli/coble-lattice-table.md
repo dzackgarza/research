@@ -11,7 +11,7 @@ Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - 
 | 1 | 10 | -1 | $(11,11,1)$ | $\mathrm{E}_{10}(2) \oplus \mathrm{A}_{1}$ | $\latI_{2,9}(2)$ |
 | 2 | 11 | -2 | $(12,10,1)$ | $\mathrm{E}_{8}(2) \oplus \mathrm{U} \oplus \mathrm{A}_1^{\oplus 2}$ | $\latI_{2,8}(2)$ |
 | 3 | 12 | -3 | $(13,9,1)$ | $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 3} \oplus \mathrm{U}(2)$ | $\latI_{2,7}(2)$ |
-| 4 | 13 | -4 | $(14,8,1)$ | $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 4} \oplus \mathrm{U}$ | $\latI_{2,6}(2)$ |
+| 4 | 13 | -4 | $(14,8,1)$ | $\mathrm{E}_{7} \oplus \mathrm{A}_{1}^{\oplus 5} \oplus \mathrm{U}(2)$ | $\latI_{2,6}(2)$ |
 | 5 | 14 | -5 | $(15,7,1)$ | $\mathrm{E}_{8} \oplus \mathrm{A}_{1}^{\oplus 5} \oplus \mathrm{U}(2)$ | $\latI_{2,5}(2)$ |
 | 6 | 15 | -6 | $(16,6,1)$ | $\mathrm{E}_{10} \oplus \mathrm{A}_{1}^{\oplus 6}$ | $\latI_{2,4}(2)$ |
 | 7 | 16 | -7 | $(17,5,1)$ | $\mathrm{E}_{8} \oplus \mathrm{D}_{6} \oplus \mathrm{A}_{1} \oplus \mathrm{U}(2)$ | $\latI_{2,3}(2)$ |
@@ -38,6 +38,7 @@ $$
 $$
 $$
 \mathrm{A}_1:\ (1,1),\qquad
+\mathrm{E}_7:\ (7,1),\qquad
 \mathrm{D}_{2m}:\ (2m,2),\qquad
 \mathrm{E}_8(2):\ (8,8),\qquad
 \mathrm{E}_{10}(2):\ (10,10),\qquad
@@ -49,7 +50,7 @@ Row by row this gives
 - $n=1$: $11,0+1+10=11$;
 - $n=2$: $12$, $a=8+0+2=10$;
 - $n=3$: $13$, $a=2\cdot2+3+2=9$;
-- $n=4$: $14$, $a=2\cdot2+4+0=8$;
+- $n=4$: $14$, $a=1+5+2=8$;
 - $n=5$: $15$, $a=0+5+2=7$;
 - $n=6$: $16$, $a=0+6=6$;
 - $n=7$: $17$, $a=0+2+1+2=5$;
@@ -58,6 +59,24 @@ Row by row this gives
 - $n=10$: $20$, $a=0+2=2$.
 
 So $a=12-n$ in every row, and $\rank M=10+n$.
+
+::: {.remark title="What this table transcribes, and where it departs}
+
+The rows are those of Table 5.1, p. 553, of [@CDL25], in the author-hosted draft of that book; the published printing has not been consulted here.
+The source writes $\ell$ for the discriminant length where this book writes $a$, and $\mathrm{A}_1$ for what it elsewhere calls $\langle -2\rangle$.
+
+Two rows of the source print entries that contradict their own invariants, and the table above prints what the invariants force.
+The row $n=2$ prints $\mathrm{E}_{10}(2)\oplus \mathrm{A}_1^{\oplus 2}$, of length $12$ rather than the printed $10$; the lattice with those invariants is $\mathrm{E}_8(2)\oplus \mathrm{U}\oplus \mathrm{A}_1^{\oplus 2}$, which is printed here.
+The last row prints $N=20$, where $K_V^2 = 9 - N = -10$ forces $N = 19$; the table prints $19$.
+Both departures are from the printed entries, not from the printed invariants, and neither changes a lattice.
+
+One row was for a time in the opposite situation.
+An earlier version of this table had rows $n=4$ and $n=5$ with $\mathrm{U}$ and $\mathrm{U}(2)$ interchanged relative to the source, which the printed invariants detect; the repair of that then replaced row $n=4$ by $\mathrm{D}_4^{\oplus 2}\oplus \mathrm{A}_1^{\oplus 4}\oplus \mathrm{U}$.
+That lattice has rank $14$, length $8$, signature $(1,13)$ and the same $\delta$, so by the uniqueness of the indefinite $2$-elementary lattice with given invariants [@Nik80] it is isometric to the source's $\mathrm{E}_7\oplus \mathrm{A}_1^{\oplus 5}\oplus \mathrm{U}(2)$; but it is not the source's decomposition, and a table that transcribes is not free to substitute an isometric lattice.
+Row $n=4$ now carries the source's entry.
+
+:::
+
 For the complement, $M$ is primitive in $\lkt$ of rank $22$ and signature $(3,19)$, so by @thm:orthogonal-decomposition $N$ has rank $22-(10+n)$ and signature $(3-1,19-(\rank M-1))$; the listed $I_{2,12-n}(2)$ has exactly that rank and signature, and $a(N)=12-n$ with the parity recorded in $\delta$.
 Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the fourth column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
 
