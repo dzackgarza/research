@@ -46,16 +46,31 @@ What has since been settled is listed at the end, so that a reader can tell "res
   T_8 quotient and the root lattice whose containments enumerate the cusps would have to come
   from Scattone's ch. 5-6, which have not been read, and the seven-item list above should not be
   quoted until they are.
-  Scattone's own text for the degree-4 condition has not been retrieved here.  The memoir is
-  *On the compactification of moduli spaces for algebraic K3 surfaces*, Mem. Amer. Math. Soc. 70
-  (1987), no. 374, DOI 10.1090/memo/0374, with ch. 5 "Primitive isotropic sublattices of rank two"
-  and ch. 6 "Examples".  The publisher's page is restricted, which is not the same as the source
-  being unreadable: an institutional or author copy may well be obtainable, and a later primary
-  theorem may state the condition outright, so the passage should be sought there rather than
-  declared unavailable.  Until it is read, the degree-4 condition stays open and is not
-  extrapolated from degree 2; what degree 2 certifies is a genus (rank 17, signature (0,17),
-  even, determinant -2) plus a contained root lattice, and which genus and root lattice play that
-  role for T_8 is exactly what the passage has to say.
+  The degree-4 condition has an accessible primary source, and it is Laza--O'Grady, not Scattone
+  firsthand: *GIT stability of K3 surfaces of degree 4*, arXiv:1801.04845, where Appendix A treats
+  the D tower.  Their Sec. 2.1 sets Lambda_N = U^2 + D_{N-2} with D_N the negative definite Dynkin
+  lattice and D_1 the rank one lattice with generator of square -4, and F(N) = Gamma(N)\D^+(N)
+  with Gamma(N) = O^+(Lambda_N) if N is not 6 mod 8 and a subgroup of index 3 in O^+(Lambda_N) if
+  N is 6 mod 8.  Corollary A.5 identifies the image of alpha_N with the lattices in the genus of
+  D_{N-2}; Theorem A.6 says that for 1 <= n <= 18 a lattice in the genus of D_n is determined by
+  its root sublattice and lists them -- for n = 17 there are nine: D_17, D_9 + E_8, D_12 + D_5,
+  D_3 + (E_7)^2, A_15 + D_2, A_11 + E_6, (D_8)^2, D_16, (E_8)^2 -- and Remark A.7 credits the
+  cases n = 17 and 18 to Scattone [Sca87, Sec. 6.3] and Camere, with the method being the
+  embeddings of D_k into the Niemeier lattices, tabulated in Table 9.  Theorem A.12 and its table
+  then count the Type II components.
+
+  That is where the working notes' list comes from, and it is not the manuscript's case.  The
+  nine complements recorded above are the nine items of Theorem A.6 for n = 17, with D_1 = <-4>
+  among them: the rank-17 quotients of Lambda_18 = U^2 + D_16, whose discriminant is 4, for
+  saturated rank two isotropic J.  The manuscript's transcendental lattice is
+  T_{2d} = <-2d> + U^2 + E_8^2 of rank 21 and determinant -2d, so for the degree-4 case its
+  quotients have determinant -8, not -4, and Theorem A.6 is not their classification.  So the
+  seven-item Niemeier list and its nine complements identify a *distinction* rather than settle
+  the manuscript: they classify the D_{17}-genus case (hyperelliptic degree 4 in Laza--O'Grady's
+  normalization), while the degree-4 polarization <-8> needs its own count.  What has to be
+  checked before anything is quoted is exactly that: whether the manuscript's degree-4 cusps are
+  the Lambda_18 ones under a change of polarization, or a different list.
+
   The "Sigma versus N zero-cusp invariant" still does not resolve.  Inspected as asked: the
   introduction and historical context carry no such phrase, and the nearest textual home is the
   Enriques chapter's "The five cusps" section, where the five 0-cusps of F_{En,2} carry semifans
