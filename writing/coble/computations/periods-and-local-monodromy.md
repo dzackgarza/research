@@ -1,5 +1,4 @@
 ---
-title: Periods, Picard-Fuchs operators, and local monodromy of a one-parameter family
 unit: method
 status: partial
 tags:
@@ -198,4 +197,4 @@ The datum @cons:pf-from-jacobian consumes is a family $X\to S$ over a one-dimens
 Stated at that level the local monodromy is a question asked of the connection at a point of $S$, with the multiplicative Jordan decomposition read from the connection data.
 :::
 
-Related: [[kulikov-models]], [[open-problems]], [[computational-toolchain-and-recipe.md]].
+Related: [[kulikov-models]], [[open-problems]], [[computational-toolchain-and-recipe]].

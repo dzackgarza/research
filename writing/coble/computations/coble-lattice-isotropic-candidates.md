@@ -1,5 +1,4 @@
 ---
-title: Candidate isotropic vectors in T_Co and their transport to T_En and T_dP
 unit: computation
 status: partial
 tags:

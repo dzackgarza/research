@@ -1,5 +1,4 @@
 ---
-title: Integral-affine edge-length data for the Sterk cusps
 unit: computation
 status: partial
 tags:
@@ -37,7 +36,7 @@ $(18,0,0)$ is the lattice to which the Coble cusps are claimed to correspond, so
 ::: {.remark title="Recorded defect: a failing rank assertion"}
 
 Four consecutive "project-up" cells fail as saved, on `assert all_As.rank() == 10` while the printed rank is 11. This is an unresolved discrepancy, not a transient error, and it blocks the Sterk 4 and Sterk 5 plots.
-Whoever resumes this work should treat the rank-10 expectation itself as the thing under test: the $+1$-eigenspace ranks recorded in [[root-vectors-and-folded-sterk-diagrams.md]] are 12, 12, 12, 14, and the passage from those to a rank-10 image is the step that is failing.
+Whoever resumes this work should treat the rank-10 expectation itself as the thing under test: the $+1$-eigenspace ranks recorded in [[root-vectors-and-folded-sterk-diagrams]] are 12, 12, 12, 14, and the passage from those to a rank-10 image is the step that is failing.
 :::
 
 ## The plotting procedure
@@ -55,4 +54,4 @@ Whoever resumes this work should treat the rank-10 expectation itself as the thi
 5. Recentre at the centroid and call `restricted_automorphism_group(output="matrix")` to obtain $\Aut(P)$.
 :::
 
-Related: [[computational-toolchain-and-recipe.md]], [[coxiter-results-for-cusp-lattices.md]].
+Related: [[computational-toolchain-and-recipe]], [[coxiter-results-for-cusp-lattices]].

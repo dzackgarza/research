@@ -1,5 +1,4 @@
 ---
-title: CoxIter results for the Sterk cusps and the Coble/Enriques 0-cusp lattices
 unit: computation
 status: computed
 tags:

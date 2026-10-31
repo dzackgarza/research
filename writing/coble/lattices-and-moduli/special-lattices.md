@@ -1,6 +1,6 @@
 # K3 and Enriques lattice applications {#sec:k3-enriques-lattices}
 
-The lattice definitions used here are collected in [[special-lattices-and-transformations|Special lattices and arithmetic transformations]]. This chapter records only their roles in the K3, Enriques, and Coble constructions.
+The lattice definitions used here are collected in [Lattices and discriminant forms](#sec-lattices-discriminant) and [Basic invariants of a lattice](#sec-basic-invariants). This chapter records only their roles in the K3, Enriques, and Coble constructions.
 
 ## The Enriques lattice in geometry
 
@@ -21,7 +21,7 @@ The lattice $E_{10}$ is therefore the numerical lattice of an Enriques surface.
 
 ::: {.remark title="The Enriques period lattice"}
 
-The corresponding twist is $E_{10}(2)=U(2)\oplus E_8(2)$, whose $2$-elementary invariants are computed in the doubled-Enriques-lattice remark of [[special-lattices-and-transformations]].
+The corresponding twist is $E_{10}(2)=U(2)\oplus E_8(2)$, whose $2$-elementary invariants are computed in the doubled-Enriques-lattice proposition (@prop:doubled-enriques-lattice).
 This is the lattice denoted $\sen=E_{10}(2)$ in the lattice summary, and it recurs in the Coble tables as the base summand appearing alongside $U(2)$ and the root lattices; compare [[coble-lattice-table|the Coble lattice table]].
 :::
 
@@ -41,7 +41,7 @@ Thus the lattice $L_{\Kthree,2d}$ is the primitive period lattice for degree-$2d
 
 ::: {.remark}
 
-The Coble lattices of [[coble-lattice-table|the Coble lattice table]] are instances of @thm:2elementary-building-blocks.
+The Coble lattices of [[coble-lattice-table|the Coble lattice table]] are instances of @thm:two-elementary-hyperbolic-decomposition.
 For example, the table contains
 $$
 E_8(2)\oplus U\oplus A_1^{\oplus2}

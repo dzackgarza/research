@@ -1,5 +1,4 @@
 ---
-title: Sterk's simple-root counts and the computed Vinberg chambers
 unit: computation
 status: open
 tags:

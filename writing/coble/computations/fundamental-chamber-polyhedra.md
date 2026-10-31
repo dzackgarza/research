@@ -1,5 +1,4 @@
 ---
-title: The fundamental chamber as a polyhedral cone
 unit: method
 status: reusable
 tags:

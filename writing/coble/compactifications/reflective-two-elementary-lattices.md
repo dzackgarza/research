@@ -27,7 +27,7 @@ Reflectivity is a strong restriction: $a\leq r$ always, and a reflective lattice
 
 ::: {.definition #def:coeven-coodd title="Coeven and coodd lattices"}
 
-For a $2$-elementary lattice $S$, the **doubled dual** is $S^{\dagger}\definedas \dualof{S}(2)$, the dual lattice of @thm:dual-geometric-identification with its form scaled by $2$.
+For a $2$-elementary lattice $S$, the **doubled dual** is $S^{\dagger}\definedas \dualof{S}(2)$, the metric dual of @def:metric-dual with its form scaled by $2$.
 The lattice $S$ is **coeven** if $S^{\dagger}$ is even and **coodd** if $S^{\dagger}$ is odd; these are the cases $\delta = 0$ and $\delta = 1$ of the coparity invariant of the Lattice Theory section.
 A direct sum of $2$-elementary lattices is coeven if and only if every summand is.
 :::
@@ -93,7 +93,7 @@ This is [@Ale22 §2].
 
 ::: {.remark}
 
-@thm:two-elementary-hyperbolic-decomposition is the exhaustive form of the building-block statement of @thm:2elementary-building-blocks: in the $(-2)$-root translation, the negative definite summands available are exactly $A_1^{\oplus n}$, $D_{2m}$ for $2m\geq 4$, $E_7$, $E_8$ and $E_8(2)$.
+@thm:two-elementary-hyperbolic-decomposition is the exhaustive form of the building-block statement: in the $(-2)$-root translation, the negative definite summands available are exactly $A_1^{\oplus n}$, $D_{2m}$ for $2m\geq 4$, $E_7$, $E_8$ and $E_8(2)$.
 The lattices $D_{2m+1}$ and $E_6$ do not occur, their discriminant groups being $\ZZ/4\ZZ$ and $\ZZ/3\ZZ$, which are not $2$-elementary.
 Each entry of the Coble table is of this shape: for instance the $n = 1$ row is $S_\Co = \generators{-2}\oplus E_{10}(2) = U(2)\oplus\bigl(A_1\oplus E_8(2)\bigr)$, with hyperbolic summand $U(2)$ and definite part $A_1\oplus E_8(2)$.
 :::

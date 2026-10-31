@@ -1,5 +1,4 @@
 ---
-title: The computational toolchain and the recipe for a hyperbolic 2-elementary lattice
 unit: method
 status: reusable
 tags:

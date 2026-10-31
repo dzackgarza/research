@@ -1,5 +1,4 @@
 ---
-title: Explicit root vectors and the folded Sterk diagrams
 unit: computation
 status: computed
 tags:

@@ -1,5 +1,4 @@
 ---
-title: Lattice length table and Coxeter-Vinberg diagram conventions
 unit: reference
 status: reference
 tags:

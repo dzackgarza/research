@@ -1,5 +1,4 @@
 ---
-title: The Coble cusp correspondence and the morphism chain to F_(2,2,0)
 unit: research-program
 status: conjectural
 tags:
@@ -96,4 +95,4 @@ A Coble surface is **terminal** when it is not the image of any birational but n
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.
 :::
 
-Related: [[coble-families-research-program.md]], [[coble-lattice-isotropic-candidates]], [[adjacent-programs/halphen-index-2-moduli-program]].
+Related: [[coble-families-research-program]], [[coble-lattice-isotropic-candidates]], [[halphen-index-2-moduli-program]].

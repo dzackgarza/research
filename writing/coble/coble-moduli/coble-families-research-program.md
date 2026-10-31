@@ -1,5 +1,4 @@
 ---
-title: The research program for F_(Co,n) with 2 <= n <= 10
 unit: research-program
 status: conjectural
 tags:
@@ -70,4 +69,4 @@ into the moduli space of Enriques surfaces, constructed from $E_{10}(2)$-polariz
 Consequently the integral-affine structures, and hence the dlt and stable models, can be obtained by restricting the K3 boundary data of AE22. This is the mechanism that makes the whole family tractable at once, rather than one $n$ at a time.
 :::
 
-Related: [[cusp-correspondence-morphism-chain.md]], [[halphen-index-2-moduli-program]], [[nodal-enriques-moduli-program]].
+Related: [[cusp-correspondence-morphism-chain]], [[halphen-index-2-moduli-program]], [[nodal-enriques-moduli-program]].

@@ -1,5 +1,4 @@
 ---
-title: Structure and classification facts for Coble surfaces
 unit: reference
 status: source-backed
 tags:
@@ -157,4 +156,4 @@ The project states only that $\fco$ is rational "by relating it to a codimension
 The tangency condition above is what cuts out that subvariety.
 :::
 
-Related: [[coble-families-research-program.md]], [[halphen-index-2-moduli-program]], [[cusp-correspondence-morphism-chain.md]].
+Related: [[coble-families-research-program]], [[halphen-index-2-moduli-program]], [[cusp-correspondence-morphism-chain]].

@@ -1,5 +1,4 @@
 ---
-title: Moduli of index 2 Halphen and rational elliptic surfaces
 unit: research-program
 status: conjectural
 tags:

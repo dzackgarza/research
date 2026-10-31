@@ -1,5 +1,4 @@
 ---
-title: The nodal Enriques moduli program
 unit: research-program
 status: conjectural
 tags:
