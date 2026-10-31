@@ -17,7 +17,8 @@ project:
   post-render:
     - .assets/copy-resources.sh
 book:
-  title: Writing
+  title: "Coble and Enriques surfaces"
+  subtitle: "Lattices, compactifications, and cusps"
   repo-url: https://github.com/dzackgarza/research
   site-url: https://dzackgarza.github.io/research/
   search: true
@@ -34,7 +35,7 @@ book:
   # subject it is about. So a new page is placed by reading it -- never by
   # appending to a part or inserting beside a similar filename. Filename order is
   # unrelated to dependency order, and here it once produced the exact reverse of
-  # it. See writing/coble/AGENTS.md, "Where a new chapter goes".
+  # it.
   chapters:
     - index.md
     # Part 1. The landing page heads its own first group. Order is
@@ -100,9 +101,6 @@ book:
     # follows it. One reference still points forward, and it is named in the part
     # landing page: @sec-two-elementary-discriminant-classification cites
     # @thm:two-elementary-classification, which the next page states.
-    #
-    # special-lattices-and-transformations.md is deliberately unlisted: it is an
-    # empty placeholder, and it renders as a blank chapter whenever it is listed.
     - part: lattice-theory/index.md
       chapters:
         - lattice-theory/Lattices-and-Discriminant-Forms.md
@@ -233,8 +231,6 @@ book:
 #     coble/appendix-reference/coxeter-and-dynkin-diagrams.md, which is its page.
 #   coble/heegner-report/README.md
 #     the build instructions for the standalone report beside it.
-#   lattice-theory/special-lattices-and-transformations.md
-#     an empty placeholder; see the Lattice theory part above.
 # Assets that pandoc, rather than Quarto, opens must live in .assets/ -- see the
 # note beside `filters:` below. The two Coble bibliographies need no such
 # treatment: they sit inside a symlinked part, so both tools reach them the same way.

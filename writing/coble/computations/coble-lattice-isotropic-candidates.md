@@ -14,7 +14,7 @@ notes: >-
 
 ::: {.remark title="What open problem this addresses"}
 
-[[open-problems|Open problems]] records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\discriminantkernel{T}$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.
+[Open problems](#sec-open-problems) records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\discriminantkernel{T}$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.
 This note records the concrete candidate list and the machinery assembled to settle it.
 :::
 
@@ -88,4 +88,4 @@ Also recorded, from a separate OSCAR/Julia notebook, the $(r,a,\delta)$ invarian
 Here $\delta$ is computed as "some diagonal entry of the discriminant quadratic form is non-integral", citing AE22 Def.
 2.3 for coparity.
 
-Related: [[cusp-correspondence-morphism-chain|cusp-correspondence morphism chain]], [[computational-toolchain-and-recipe|computational toolchain and recipe]].
+Related: [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe).

@@ -1,4 +1,4 @@
-# Kulikov models and limiting mixed Hodge structures
+# Kulikov models and limiting mixed Hodge structures {#sec-kulikov-models}
 
 ::: {.remark}
 

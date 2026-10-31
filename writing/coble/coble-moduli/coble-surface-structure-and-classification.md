@@ -31,7 +31,7 @@ and if $E^2 = -4$ then $E$ is a component of $D$.
 :::
 
 This is the fact that makes the $(-4)$-curves intrinsic: they cannot occur away from the boundary.
-It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that governs the Coxeter diagrams in [[root-vectors-and-folded-sterk-diagrams]].
+It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that governs the Coxeter diagrams in [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams).
 
 ## Automorphisms
 
@@ -105,7 +105,7 @@ For a Coble surface $X$ the following are equivalent:
 
 ::: {.remark title="Why this matters for the Halphen program"}
 
-The project's [[halphen-surfaces|Halphen surfaces]] note records the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [[halphen-index-2-moduli-program]]. The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
+The project's [Halphen surfaces](#sec-halphen-surfaces) note records the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program). The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
 The Jacobian branch has no counterpart anywhere in the project.
 :::
 
@@ -126,7 +126,7 @@ If this characterization is used, that graph must be recovered from Dolgachev-Zh
 
 ## Dolgachev-Kondo geometry of the degree 2 polarization
 
-The project's [[geometric|geometric stable-limits note]] records the map $\phi_{ij}$ onto a quartic del Pezzo surface and the key fact that it is **never finite** in the Coble case.
+The project's [geometric stable-limits note](#sec-geometric-preliminaries) records the map $\phi_{ij}$ onto a quartic del Pezzo surface and the key fact that it is **never finite** in the Coble case.
 The following incidence data accompanying it is absent.
 
 ::: {.remark title="The branch geometry"}
@@ -156,4 +156,4 @@ The project states only that $\fco$ is rational "by relating it to a codimension
 The tangency condition above is what cuts out that subvariety.
 :::
 
-Related: [[coble-families-research-program]], [[halphen-index-2-moduli-program]], [[cusp-correspondence-morphism-chain]].
+Related: [The research program for $F_{\Co,n}$, $2 \leq n \leq 10$](#sec-coble-families-research-program), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program), [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain).

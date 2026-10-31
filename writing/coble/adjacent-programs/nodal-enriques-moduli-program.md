@@ -10,10 +10,10 @@ tags:
 # The nodal Enriques moduli program {#sec-nodal-enriques-moduli-program}
 
 ::: {.provenance title="Provenance"}
-[[ResearchStatement|Research statement]], section "Future Work / Nodal Enriques surfaces", together with the archived thesis outline and archived nodal-Enriques notes. Absent from the dissertation entirely.
+The research statement, section "Future Work / Nodal Enriques surfaces", together with the archived thesis outline and archived nodal-Enriques notes. Absent from the dissertation entirely.
 :::
 
-The lattices themselves are **already recorded** in [[nodal-enriques-lattices|Nodal Enriques lattices]]. This note records the research program and one discrepancy.
+The lattices themselves are **already recorded** in [Nodal Enriques lattices](#sec-nodal-enriques-lattices). This note records the research program and one discrepancy.
 
 ## Setting
 
@@ -58,7 +58,7 @@ Orbits under $\Orth(T_{\Nod})$ of isotropic vectors and planes can be classified
 ::: {.remark title="Why this needs genuinely new machinery"}
 
 $T_{\Nod}$ is **not 2-elementary**. The Sterk-Nikulin apparatus used here assumes 2-elementarity, so the classification of boundary components requires orbit techniques for non-2-elementary discriminant forms.
-This is the single structural obstruction distinguishing the nodal case from every other family in this program, including the Coble families of [[coble-families-research-program|the Coble families research program]], which are all 2-elementary.
+This is the single structural obstruction distinguishing the nodal case from every other family in this program, including the Coble families of [the Coble families research program](#sec-coble-families-research-program), which are all 2-elementary.
 :::
 
 ## Literature anchors recorded with the program
@@ -72,4 +72,4 @@ This is the single structural obstruction distinguishing the nodal case from eve
 
 - Dolgachev-Kondo (2013) show $F_{\Nod}$ is rational.
 
-Related: [[coble-families-research-program|Coble families research program]], [[halphen-index-2-moduli-program|Halphen index-2 moduli program]].
+Related: [Coble families research program](#sec-coble-families-research-program), [Halphen index-2 moduli program](#sec-halphen-index-2-moduli-program).

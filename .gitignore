@@ -42,6 +42,7 @@ writing/coble/papers/**/*.tmp
 writing/coble/papers/**/*.xref
 writing/coble/papers/**/*.4ct
 writing/coble/papers/**/*.4tc
+writing/coble/papers/**/*.bbl
 
 # `just docs-lint FILE` renders one page with pandoc's working directory at the
 # page, so the .html lands beside the prose. It is a throwaway: the book's real
@@ -65,3 +66,9 @@ writing/.book/rendered/
 # 1.6 MB of driver output that `latexmk -c` deletes, so tracking it means a
 # tracked file that the deck's own `just clean` removes.
 writing/talks/**/*.xdv
+
+# The research statement's build output. `make` writes it beside the source, and
+# the source is the record; the dated PDFs the repository does keep, the
+# dissertation's submitted copy and the Coble paper's builds, are named by date
+# and are not reproduced by any recipe.
+writing/research-statement/ResearchStatement.pdf

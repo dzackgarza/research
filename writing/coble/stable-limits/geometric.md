@@ -1,4 +1,4 @@
-# Geometric preliminaries
+# Geometric preliminaries {#sec-geometric-preliminaries}
 
 ::: {.remark}
 

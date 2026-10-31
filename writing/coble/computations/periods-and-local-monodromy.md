@@ -188,7 +188,7 @@ The limiting mixed Hodge structure of an arbitrary degeneration, the nearby- and
 
 ::: {.remark title="The K3 cover as a double cover"}
 
-The K3 cover of a Coble surface is the double cover of $\PP^2$ branched along the rational sextic $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$ ([[open-problems]]). Double covers of $\PP^2$ branched along a sextic are one of the classes @cons:lefschetz-periods handles directly, so a worked instance of $F$ is the entire input its periods and monodromy require, and the open problem asking for such an instance is what stands between this program and a period computation for its own surfaces.
+The K3 cover of a Coble surface is the double cover of $\PP^2$ branched along the rational sextic $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$ ([Open problems and technical gaps](#sec-open-problems)). Double covers of $\PP^2$ branched along a sextic are one of the classes @cons:lefschetz-periods handles directly, so a worked instance of $F$ is the entire input its periods and monodromy require, and the open problem asking for such an instance is what stands between this program and a period computation for its own surfaces.
 :::
 
 ::: {.remark title="The object the construction is a functor out of"}
@@ -197,4 +197,4 @@ The datum @cons:pf-from-jacobian consumes is a family $X\to S$ over a one-dimens
 Stated at that level the local monodromy is a question asked of the connection at a point of $S$, with the multiplicative Jordan decomposition read from the connection data.
 :::
 
-Related: [[kulikov-models]], [[open-problems]], [[computational-toolchain-and-recipe]].
+Related: [Kulikov models and limiting mixed Hodge structures](#sec-kulikov-models), [Open problems and technical gaps](#sec-open-problems), [Toolchain and recipe for a hyperbolic 2-elementary lattice](#sec-computational-toolchain-and-recipe).

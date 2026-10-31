@@ -12,5 +12,3 @@ The second run builds structure on those definitions: embeddings and orthogonal 
 The third run is arithmetic and classification: the genus and its discriminant forms, the unimodular and $2$-elementary classifications, the Miranda--Morrison obstruction, the definite case, root systems, and Coxeter systems.
 One reference points forward, and it is deliberate: the classification of $2$-elementary discriminant forms closes by naming the invariants of @thm:two-elementary-classification, which the part states further on.
 The book keeps one registry for the whole volume, so a forward reference resolves; it is recorded here because a reader following the part in order meets the two pages out of sequence.
-
-One page of the part is deliberately unlisted: `special-lattices-and-transformations.md` is an empty placeholder, and the invariants it would treat are stated where they are used.

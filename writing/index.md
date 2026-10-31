@@ -1,5 +1,6 @@
 ---
-title: Writing
+title: "Coble and Enriques surfaces"
+subtitle: "Lattices, compactifications, and cusps"
 number-sections: false
 ---
 

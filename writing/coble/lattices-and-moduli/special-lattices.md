@@ -22,7 +22,7 @@ The lattice $E_{10}$ is therefore the numerical lattice of an Enriques surface.
 ::: {.remark title="The Enriques period lattice"}
 
 The corresponding twist is $E_{10}(2)=U(2)\oplus E_8(2)$, whose $2$-elementary invariants are computed in the doubled-Enriques-lattice proposition (@prop:doubled-enriques-lattice).
-This is the lattice denoted $\sen=E_{10}(2)$ in the lattice summary, and it recurs in the Coble tables as the base summand appearing alongside $U(2)$ and the root lattices; compare [[coble-lattice-table|the Coble lattice table]].
+This is the lattice denoted $\sen=E_{10}(2)$ in the lattice summary, and it recurs in the Coble tables as the base summand appearing alongside $U(2)$ and the root lattices; compare [the Coble lattice table](#sec-coble-lattice-table).
 :::
 
 ## Degree $2d$ K3 periods
@@ -34,14 +34,14 @@ $$
 h^{\perp\lkt}\cong L_{\Kthree,2d}
 $$
 by @prop:degree-2d-k3-complement.
-Thus the lattice $L_{\Kthree,2d}$ is the primitive period lattice for degree-$2d$ polarized K3 surfaces; its Hodge-theoretic use is developed in [[k3-periods-and-monodromy|K3 periods and monodromy]].
+Thus the lattice $L_{\Kthree,2d}$ is the primitive period lattice for degree-$2d$ polarized K3 surfaces; its Hodge-theoretic use is developed in [K3 periods and monodromy](#sec:k3-periods-monodromy).
 :::
 
 ## Coble instances of the $2$-elementary building blocks
 
 ::: {.remark}
 
-The Coble lattices of [[coble-lattice-table|the Coble lattice table]] are instances of @thm:two-elementary-hyperbolic-decomposition.
+The Coble lattices of [the Coble lattice table](#sec-coble-lattice-table) are instances of @thm:two-elementary-hyperbolic-decomposition.
 For example, the table contains
 $$
 E_8(2)\oplus U\oplus A_1^{\oplus2}

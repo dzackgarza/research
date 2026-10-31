@@ -11,7 +11,7 @@ tags:
 # The Coble cusp correspondence and the morphism chain {#sec-cusp-correspondence-morphism-chain}
 
 ::: {.provenance title="Provenance"}
-[[ResearchStatement|Research statement]], sections "Current Work" and "Compact moduli spaces of Coble surfaces", together with the archived future-directions outline. Neither source is in the finished dissertation, which mentions Coble surfaces only once in passing.
+The research statement, sections "Current Work" and "Compact moduli spaces of Coble surfaces", together with the archived future-directions outline. Neither source is in the finished dissertation, which mentions Coble surfaces only once in passing.
 :::
 
 Statements below are the author's own claims of work in progress.
@@ -54,7 +54,7 @@ The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $\fentwo
 The Sterk cusp diagram was first given by Sterk (1991).
 :::
 
-The second identification is not recorded in [[open-problems|Open problems]], which states the cusp correspondence only in $(r,a,\delta)$ terms.
+The second identification is not recorded in [Open problems](#sec-open-problems), which states the cusp correspondence only in $(r,a,\delta)$ terms.
 It is a directly checkable cross-project claim and should be reconciled with the $(9,9,1)$ / $(7,7,1)$ Coble cusp data recorded there.
 
 ::: {.remark title="A cheap consistency check on the whole correspondence"}
@@ -78,7 +78,7 @@ The stated method for the $\Gamma_{\Co}$-orbit classification, where $\Gamma_{\C
 3. **Explicit construction of Eichler transformations** proving that vectors with prescribed numerical invariants lie in one $\Gamma_{\Co}$-orbit.
 
 This adapts Sterk's and Scattone's techniques to new lattices.
-Eichler transvections are not named as a tool in the current [[open-problems|Open problems]] note, which cites Sterk lifting and $\Orth(q_{T_{\Co}})$-orbits instead.
+Eichler transvections are not named as a tool in the current [Open problems](#sec-open-problems) note, which cites Sterk lifting and $\Orth(q_{T_{\Co}})$-orbits instead.
 :::
 
 ::: {.remark title="The GIT birational model"}
@@ -95,4 +95,4 @@ A Coble surface is **terminal** when it is not the image of any birational but n
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.
 :::
 
-Related: [[coble-families-research-program]], [[coble-lattice-isotropic-candidates]], [[halphen-index-2-moduli-program]].
+Related: [The research program for $F_{\Co,n}$, $2 \leq n \leq 10$](#sec-coble-families-research-program), [Candidate isotropic vectors in $T_{\Co}$](#sec-coble-lattice-isotropic-candidates), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program).
