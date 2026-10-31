@@ -174,6 +174,34 @@ assert tuple(sorted(set(range(24)) - set(VERTEX_SETS["E~8^2 A~1"]))) == (3, 12, 
 
 OPEN_CUSPS = {name: None for name in VERTEX_SETS}   # marks pending the induced graph
 
+# ---------------------------------------------------- mark recovery, via the root system
+#
+# The marks of an affine diagram are its null root, and the maintained way to get them is
+# Sage's root-system machinery, not a table written out by hand:
+#
+#     from sage.combinat.root_system.cartan_type import CartanType
+#     shape = CartanType(['D', 10, 1])          # the affine diagram, from AET's caption
+#     marks = shape.null_root()                 # {index: coefficient}
+#
+# What is still needed before those calls can run is the correspondence between the
+# affine diagram's nodes and the vertex labels of Fig. 1, i.e. the induced graph read off
+# the artwork.  The pipeline in `read_fig1.py` recovers the *vertices* (and reproduces the
+# 18-cycle for A~17), but on the other three its edge list carries strokes that are not
+# edges of G_cox -- for instance (0,18), (3,20), (9,18), (12,20) in the D~10 E~7 figure --
+# so an edge is not yet accepted as a diagram edge.  The cross-check that decides it is
+# against the edge set of the labelled `fig-Vinberg` artwork, which is the next
+# transcription step; until it is done, no mark is assigned and no null vector is formed
+# for those three cusps.
+#
+# Once the edge sets are settled, each cusp is assembled as
+#
+#     vertices, marks = ...                       # per cusp, from the two transcriptions
+#     v = sum(marks[i] * N.basis_vector(i) for i in vertices)
+#     J, boundary = cusp_plane(v, label_of[name])  # as for A~17 above
+#
+# with the isometry to the label and, if wanted, `boundary.discriminant_module()` in place
+# of any hand-rolled comparison of invariants.
+
 # What each transcribed entry turns into, unchanged for all four:
 #
 #     vertices, marks = OPEN_CUSPS[name]
