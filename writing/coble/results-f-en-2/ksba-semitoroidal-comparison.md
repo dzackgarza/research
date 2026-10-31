@@ -36,7 +36,7 @@ Cited from AEGS, in the section the statement names. The book uses the compariso
 ::: {.remark title="Fan versus strict-semifan bookkeeping"}
 
 The five cusps of $\bbcpt{\fentwo}$ match Sterk's five $0$-cusps of the Enriques period space [@Ste91], one semifan per cusp.
-Among the entries of $\semitorfan$, the even-indexed entries $\torfan_2, \torfan_4$ are honest fans, while the odd-indexed entries $\semifan{F}_1, \semifan{F}_3, \semifan{F}_5$ are semifans that are not fans, the irrelevant roots generating an infinite reflection group [@AE22; @AKSZ23].
+Among the entries of $\semitorfan$, the even-indexed entries $\torfan_2, \torfan_4$ are honest fans, while the odd-indexed entries $\semifan{F}_1, \semifan{F}_3, \semifan{F}_5$ are semifans that are not fans, the irrelevant roots generating an infinite reflection group [@AE22].
 :::
 
 ::: {.proof}

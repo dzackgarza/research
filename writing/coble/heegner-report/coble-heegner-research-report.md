@@ -104,7 +104,7 @@ The orthogonal group preserving a chosen component of the positive cone is denot
 For an even lattice $M$, its discriminant group and discriminant quadratic form are $A_M=M^*/M$ and $q_M:A_M\too \bQ/2\bZ$.
 
 A primitive embedding is an embedding whose cokernel is torsion free.
-The classification and gluing theory of even $2$-elementary lattices are used in the sense of Nikulin [@Nik79].
+The classification and gluing theory of even $2$-elementary lattices are used in the sense of Nikulin [@Nik80].
 
 ### Surface singularities and covers {#sec-surface-terminology}
 
@@ -134,7 +134,7 @@ In particular, an slc pair is tested by requiring the normalized pair with condu
 ### K3, Enriques, and Coble terminology {#sec-surface-classes}
 
 A K3 surface is a smooth projective surface $X$ with $K_X\sim0$ and $H^1(X,\mathcal O_X)=0$.
-An Enriques surface is a smooth projective surface $Z$ with $2K_Z\sim0$, $K_Z\not\sim0$, and $q(Z)=0$; see [@CD89; @CDL24].
+An Enriques surface is a smooth projective surface $Z$ with $2K_Z\sim0$, $K_Z\not\sim0$, and $q(Z)=0$; see [@CD89; @CDL25].
 
 The word **Coble surface** is used in two closely related senses in the literature.
 To remove ambiguity, this report uses the following notation.
@@ -182,7 +182,7 @@ For a lattice $T$ of signature $(2,n)$, a connected type-IV domain is
 
 If $\Gamma\subset O^+(T)$ is arithmetic, the quotient $\Gamma\backslash\bD(T)$ is a quasi-projective orthogonal modular variety.
 For a negative vector $r\in T$, the image of $\bD(T)\intersect r^\perp$ is a **Heegner divisor** or arrangement divisor.
-See [@BB66; @Loo03] for the compactification theory and [@Nik79; @Nam85] for the relevant Enriques lattice geometry.
+See [@BB66; @Loo03] for the compactification theory and [@Nik80; @Nam85] for the relevant Enriques lattice geometry.
 
 A primitive isotropic line in $T$ determines a zero-dimensional Baily--Borel boundary component, called a **$0$-cusp**. A primitive isotropic plane determines a one-dimensional boundary component, called a **$1$-cusp**. The arithmetic orbit, not merely the rational isotropic subspace, is part of the cusp datum.
 
@@ -1117,11 +1117,11 @@ The arithmetic group $\Gamma_e$, not the full orthogonal group of $\oT_e$, is th
 
 Since scaling a form does not change its integral orthogonal group, $O(T_{\Co})=O(I_{2,9})$.
 
-Standard transitivity results for indefinite odd unimodular forms imply the following [@Wall62; @DK13].
+Standard transitivity results for indefinite odd unimodular forms imply the following [@Wal62; @DK13].
 
 ::: {.proof}
 
-The cited transitivity is Wall's description of the orthogonal group of an indefinite odd unimodular lattice [@Wall62], applied to $I_{2,9}$ as in [@DK13].
+The cited transitivity is Wall's description of the orthogonal group of an indefinite odd unimodular lattice [@Wal62], applied to $I_{2,9}$ as in [@DK13].
 
 The reduction: $T_{\Co}$ is not unimodular, but it is $I_{2,9}(2)$ by @prop:coble-transcendental, and scaling a form by a unit does not change its orthogonal group, so $O(T_{\Co})=O(I_{2,9}(2))=O(I_{2,9})$ as groups acting on the same lattice.
 That is the step that puts the unpolarized Coble question inside Wall's classification of orbits in an odd unimodular lattice, rather than leaving it as a question about a non-unimodular form of type $(2,9)$.
@@ -1140,7 +1140,7 @@ J^\perp/J\cong I_{0,7}(2).
 
 ::: {.proof}
 
-This is [@Wall62; @DK13], by transitivity of $O^+(I_{2,9})$ on primitive isotropic lines and planes of the odd unimodular lattice, together with $O(T_{\Co})=O(I_{2,9})$ from the observation above.
+This is [@Wal62; @DK13], by transitivity of $O^+(I_{2,9})$ on primitive isotropic lines and planes of the odd unimodular lattice, together with $O(T_{\Co})=O(I_{2,9})$ from the observation above.
 
 The two complements are computed rather than quoted, and they are what the rest of the section uses.
 For a primitive isotropic $e$ in a lattice $L$ of signature $(2,9)$, the quotient $e^\perp/e$ is a lattice of signature $(1,8)$ and inherits the discriminant form of $L$ up to the factor $1/p^2$ that $\div$-scaling forces; for $T_{\Co}=I_{2,9}(2)$ and $\div(e)=2$ it is $I_{1,8}(2)$, and for a primitive isotropic plane $J$ the quotient $J^\perp/J$ has signature $(0,7)$ and is $I_{0,7}(2)$.
@@ -2520,9 +2520,9 @@ The following references indicate where the standard theories used in this repor
 
 - AEGS [@AEGS25] is the controlling model for the projective diagram, unique embedding chain, cusp folding, integral-affine quotient models, generalized Coxeter semifans, and the finite/no-further-coarsening step.
 
-- Nikulin [@Nik79] is the primary source for even $2$-elementary lattices, discriminant forms, and primitive embeddings.
+- Nikulin [@Nik80] is the primary source for even $2$-elementary lattices, discriminant forms, and primitive embeddings.
 
-- Namikawa [@Nam85] and Sterk [@Sterk91] control the Enriques period and cusp theory used in the Heegner strategy.
+- Namikawa [@Nam85] and Sterk [@Ste91] control the Enriques period and cusp theory used in the Heegner strategy.
 
 - Dolgachev--Kond\=o [@DK13] treat orthogonal modular descriptions of classical Coble surfaces.
 
