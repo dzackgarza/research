@@ -42,8 +42,9 @@ What has since been settled is listed at the end, so that a reader can tell "res
   lattice: at $d=1$ the four labels are root lattices of rank $17$ and determinants $2,8,8,18$,
   each sitting with finite index in the boundary lattice $J^\perp/J$ it labels, so a boundary
   lattice may be a proper overlattice of its label, and the glue subgroup is data the root
-  system does not carry — nor is it settled here which overlattice occurs for any of the four
-  (see [[450-scattone|Scattone boundary analysis]]). The same caution applies term by term to the
+  system does not carry; for one of the four the boundary lattice is the label itself, and for
+  the other three which overlattice occurs is not settled here (see
+  [[450-scattone|Scattone boundary analysis]]). The same caution applies term by term to the
   nine items below. What the seven-item list is for is the analogue of the
   $d=1$ construction, where the four boundary lattices arise from $E_7$-complements in Niemeier
   lattices — and even there the bookkeeping is not uniform: at the level of root systems only

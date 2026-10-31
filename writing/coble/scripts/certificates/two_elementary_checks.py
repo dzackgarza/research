@@ -13,6 +13,18 @@ columns of the adjugate, which is at most a few thousand elements per block.
 Signature is exact too: every block below is definite or a hyperbolic plane, and
 signatures add over orthogonal sums.
 
+Three further sections use the same arithmetic only:
+
+  * the boundary lattice J^perp/J of one of Scattone's four 1-cusps at degree two,
+    computed as the quotient of the orthogonal complement of an explicit isotropic
+    plane J in T_2 = <-2> + U + U + E8 + E8, with the saturation of the 19 vectors
+    checked by the gcd of their maximal minors;
+  * the even overlattices of each of the four labels, from the isotropic subgroups
+    of its discriminant group, which bound the index k = [J^perp/J : label];
+  * the relation |det(J^perp/J)| = 2i^2 for i = [T_2 : J + J' + J^perp/J] over a
+    complementary isotropic plane J', which with k^2 | det(label) leaves at most two
+    values of k for each label.
+
 Run: python3 two_elementary_checks.py
 """
 from fractions import Fraction
@@ -169,6 +181,58 @@ def describe(names):
     return inv
 
 
+def minors_index(rows, N):
+    """Index of the lattice spanned by `rows` (k vectors in Z^N) inside its
+    saturation, as the gcd of the maximal minors; 1 means the rows are primitive."""
+    from itertools import combinations
+    from math import gcd
+    k = len(rows)
+    g = 0
+    for cols in combinations(range(N), k):
+        M = [[rows[i][c] for c in cols] for i in range(k)]
+        g = gcd(g, abs(det(M)))
+        if g == 1:
+            return 1
+    return g
+
+
+def disc_group(B):
+    """A_L = L*/L as coefficient vectors mod |det L|, with the quadratic form q
+    reduced mod 2, and the zero class."""
+    n = len(B)
+    D = abs(det(B))
+    ad = adjugate(B)
+    gens = [[ad[i][j] % D for i in range(n)] for j in range(n)]
+    zero = tuple([0] * n)
+    seen, frontier = {zero}, [zero]
+    while frontier:
+        nxt = []
+        for x in frontier:
+            for g in gens:
+                y = tuple((x[i] + g[i]) % D for i in range(n))
+                if y not in seen:
+                    seen.add(y)
+                    nxt.append(y)
+        frontier = nxt
+    assert len(seen) == D, (len(seen), D)
+    q = {}
+    for x in seen:
+        v = Fraction(0)
+        for i in range(n):
+            for j in range(n):
+                v += Fraction(x[i] * B[i][j] * x[j], D * D)
+        q[x] = v % 2
+    return D, sorted(seen), q, zero
+
+
+def elem_order(x, D, zero):
+    k, y = 1, x
+    while y != zero:
+        y = tuple((y[i] + x[i]) % D for i in range(len(x)))
+        k += 1
+    return k
+
+
 FAIL = []
 
 
@@ -232,7 +296,80 @@ if __name__ == '__main__':
         inv = describe(nm)
         print(f"  {'+'.join(nm):22} rank={inv['rank']} det={inv['det']:>3} "
               f"sig={inv['sig']}  (index^2 in the quotient = det(root)/det(quotient))")
-    print("  J^perp/J itself: rank 17, negative definite; its determinant and the index of")
-    print("  each root sublattice are NOT determined here -- see the text.")
+    print("  J^perp/J itself: rank 17, negative definite. The two sections below")
+
+    print("\none of the four is settled. In T_2 = <-2> + U + U + E8 + E8, let e1 and e2 be")
+    print("the isotropic basis vectors of the two hyperbolic planes, and J = <e1, e2>:")
+    T2 = diag_sum([[-2]], U, U, E8, E8)
+    N = len(T2)
+
+    def ip(v, w, B):
+        return sum(v[i] * B[i][j] * w[j] for i in range(len(B)) for j in range(len(B)))
+
+    e1 = [1 if i == 1 else 0 for i in range(N)]
+    e2 = [1 if i == 3 else 0 for i in range(N)]
+    f1 = [1 if i == 2 else 0 for i in range(N)]
+    f2 = [1 if i == 4 else 0 for i in range(N)]
+    print(f"  (e1,e1) = {ip(e1, e1, T2)}, (e1,e2) = {ip(e1, e2, T2)}, (e1,f1) = {ip(e1, f1, T2)}"
+          f", (e2,f2) = {ip(e2, f2, T2)}")
+    print(f"  gcd of the 2x2 minors of (e1,e2) = {minors_index([e1, e2], N)}   (J is primitive)")
+    # every x has x.e1 = (coefficient of f1) and x.e2 = (coefficient of f2), so
+    # J^perp = <a, e1, e2, E8, E8>: 19 vectors, checked rather than asserted.
+    idx = [0, 1, 3] + list(range(5, N))
+    cand = [[1 if i == j else 0 for i in range(N)] for j in idx]
+    perp = all(ip(v, e1, T2) == 0 and ip(v, e2, T2) == 0 for v in cand)
+    sat = minors_index(cand, N)
+    print(f"  19 vectors <a, e1, e2, E8, E8> are perpendicular to J: {perp};"
+          f" gcd of their 19x19 minors = {sat}")
+    if not perp or sat != 1:
+        FAIL.append("J^perp saturation")
+    qbasis = [cand[0]] + cand[3:]
+    G = [[ip(v, w, T2) for w in qbasis] for v in qbasis]
+    block_ok = (G == diag_sum([[-2]], E8, E8))
+    # T_2 = J + <f1,f2> + J^perp/J with volume 1 iff the 21 vectors are a basis,
+    # which Gram determinants detect: det Gram(basis) = det T_2.
+    allv = [[1 if i == j else 0 for i in range(N)] for j in [1, 3, 2, 4, 0] + list(range(5, N))]
+    basis_ok = det([[ip(v, w, T2) for w in allv] for v in allv]) == det(T2)
+    if not block_ok or not basis_ok:
+        FAIL.append("J^perp/J")
+    print(f"  Gram of J^perp/J in the basis (a, E8, E8) is diag(-2, E8, E8): {block_ok};"
+          f" T_2 = J + <f1, f2> + J^perp/J with volume 1: {basis_ok}")
+
+    print("\neven overlattices of each label. k = [J^perp/J : label] divides the class")
+    print("group, and k^2 * 2i^2 = |det(label)| because |det(J^perp/J)| = 2i^2:")
+    print(f"  {'label':22}{'|det R|':>8} k allowed   |det J^perp/J| = 2i^2")
+    LAB = [('A(1)+E(8)+E(8)', ['A(1)', 'E(8)', 'E(8)']),
+           ('E(7)+D(10)', ['E(7)', 'D(10)']),
+           ('A(1)+D(16)', ['A(1)', 'D(16)']),
+           ('A(17)', ['A(17)'])]
+    EXPECT = {'A(1)+E(8)+E(8)': [1], 'E(7)+D(10)': [1, 2],
+              'A(1)+D(16)': [1, 2], 'A(17)': [1, 3]}
+    from math import isqrt
+    for nm, blocks in LAB:
+        B = diag_sum(*[block(b) for b in blocks])
+        detR = abs(det(B))
+        nrm, els, q, zero = disc_group(B)
+        ks = [1]
+        for k in range(2, 10):
+            if detR % (k * k):
+                continue
+            if any(x != zero and elem_order(x, nrm, zero) == k and q[x] == 0 for x in els):
+                ks.append(k)
+        if ks != EXPECT[nm]:
+            FAIL.append(f"k set {nm}")
+        cells = []
+        for k in ks:
+            half = Fraction(detR // (k * k), 2)
+            i = isqrt(int(half)) if half.denominator == 1 else -1
+            if i < 0 or i * i != half:
+                cells.append(f"k={k}: |det|={detR // (k * k)}, no integer i")
+            else:
+                cells.append(f"k={k}: |det|={detR // (k * k)} (i={i}, k*i={k * i})")
+        print(f"  {nm:22}{detR:>8}  {str(ks):11} " + "; ".join(cells))
+
+    print("\none of the four is settled completely: for E8^2 + A1 the plane J = U^2 of T_2")
+    print("has J^perp/J equal to the label itself (k = 1, i = 1). For the other three two")
+    print("values of k survive, and which occurs is not determined here. The index 6 of")
+    print("AET's Lemma 4.14 is in no case one of them.")
 
     print("\n" + ("ALL CHECKS PASSED" if not FAIL else f"FAILURES: {FAIL}"))
