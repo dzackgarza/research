@@ -5,6 +5,16 @@
 The embedding $\eta: \fco\to \fen$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in @fig-enriques-coble-correspondence.
 :::
 
+::: {.proof}
+
+The correspondence is computed cusp by cusp, and this is the statement that the computation succeeds; the individual comparisons are in the sections that follow and in @sec-cusp-diagrams-by-moduli-space.
+
+What makes the correspondence possible is that both compactifications are Baily--Borel, so a cusp of either is a $\Gamma$-orbit of a primitive isotropic subspace of the relevant lattice, of rank $1$ at a $0$-cusp and rank $2$ at a $1$-cusp.
+The embedding $\eta\colon\fco\to\fen$ is induced by the primitive embedding $T_{\Co}\embeds\ten$ of @sec-lattices, and it carries isotropic subspaces of $T_{\Co}$ to isotropic subspaces of $\ten$; the correspondence asserted is that the induced map on orbits is a bijection.
+That is checked by comparing the invariants that separate orbits -- divisibility and discriminant class, by @prop:coble-divisibility-discriminant -- at each cusp rather than by constructing an inverse, which is the method the following sections carry out.
+
+
+:::
 ::: {#fig-enriques-coble-correspondence .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 

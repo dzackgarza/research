@@ -1,4 +1,4 @@
-# Toroidal and semitoroidal compactifications
+# Toroidal and semitoroidal compactifications {#sec-toroidal-and-semitoroidal}
 
 ::: {.remark title="Orientation"}
 
