@@ -1,5 +1,10 @@
 # Research Repo Agent Policy
 
+Use the [shared math container](https://github.com/dzackgarza/ai-review-ci/blob/main/SAGE-CONTAINER.md#use-the-image)
+(`ghcr.io/dzackgarza/sage:develop`) for Lean/elan, Sage with mypy, GAP,
+Julia/Oscar, Macaulay2, and Singular. The guide covers image pull/run commands,
+CI use, and the host launchers.
+
 `AGENTS.md` is the always-in-context routing layer for this repo.
 Keep durable operational detail in memories (`mem:skills/...`) and load the remaining
 local skills on demand when their always-in-context description triggers matching.
