@@ -16,13 +16,24 @@ What has since been settled is listed at the end, so that a reader can tell "res
   dissertation tree also carried the parallel analysis for $F_4$, where
   $N \cong D_7$: the seven Niemeier lattices containing $D_7$
 
-  $$\tilde E_8^{3},\ \tilde E_8 \oplus \tilde D_{16},\ \tilde E_7^{2} \oplus \tilde D_{10},\ \tilde D_{12}^{2},\ \tilde D_8^{3},\ \tilde D_9 \oplus \tilde A_{15},\ \tilde E_6 \oplus \tilde D_7 \oplus \tilde A_{11}$$
+  $$\tilde D_{24},\ \tilde D_{16} \oplus \tilde E_8,\ \tilde D_{12}^{2},\ \tilde D_{10} \oplus \tilde E_7^{2},\ \tilde D_8^{3},\ \tilde D_9 \oplus \tilde A_{15},\ \tilde D_7 \oplus \tilde A_{11} \oplus \tilde E_6$$
 
   and their orthogonal complements, giving nine possibilities, among them
   $\tilde D_{17}$, $\tilde D_{12} \oplus \tilde D_5$,
   $\langle -4 \rangle \oplus \tilde D_8^{2}$,
   $\tilde A_1^{2} \oplus \tilde A_{15}$, and $\tilde E_6 \oplus \tilde A_{11}$.
-  The note observes that these can be recovered by running Vinberg's algorithm
+  The list above is corrected, and the correction is a check rather than a transcription: a
+  $D_7$ subdiagram is the trivalent tree with arm lengths $(1,1,4)$, which sits inside
+  $D_n$ exactly for $n\geq 7$ and inside no $A_n$ (a path) and no $E_n$ (arms
+  $(1,2,2)$, $(1,2,3)$, $(1,2,4)$, never two arms of length $1$). Of the $24$ Niemeier root
+  systems exactly seven contain a $D_n$ with $n\geq 7$, and they are the seven displayed.
+  The earlier version of this list carried $\tilde E_8^{3}$, which contains no $D_7$ at all,
+  and omitted $\tilde D_{24}$, which does; a $D_7$ inside $D_n$ is moreover an orthogonal
+  direct summand, so it is primitive, whereas a $D_7$ inside $E_8$ would have index $2$ in it.
+  The nine complements listed here and in the working notes have not been recomputed and
+  should not be quoted until they are.
+
+  The note observes that the complements can be recovered by running Vinberg's algorithm
   on $\langle -4 \rangle \oplus U \oplus E_8^{2}$, and that the resulting
   Coxeter diagram matches Scattone 1987, Figure 6.3.1, while differing from the
   one for $(18,2,0)$ in AET. Whether the thesis wants the degree 4 case is a
