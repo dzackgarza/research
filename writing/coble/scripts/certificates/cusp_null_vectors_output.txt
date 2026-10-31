@@ -1,0 +1,42 @@
+python 3.14.10
+Gram: rank 19 kernel 5
+
+A~17      18 nodes, extended node  0
+  null vector on the chain: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  square in the presentation: 0   Kac marks of the type: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]   same multiset: True
+
+D~10      11 nodes, extended node 17
+  null vector on the chain: [1, 1, 2, 2, 2, 2, 2, 2, 2, 1, 1]
+  square in the presentation: 0   Kac marks of the type: [1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2]   same multiset: True
+
+E~7        8 nodes, extended node 15
+  null vector on the chain: [1, 2, 3, 4, 3, 2, 1, 2]
+  square in the presentation: 0   Kac marks of the type: [1, 1, 2, 2, 2, 3, 3, 4]   same multiset: True
+
+E~8^(1)    9 nodes, extended node 13
+  null vector on the chain: [1, 2, 3, 4, 5, 6, 4, 2, 3]
+  square in the presentation: 0   Kac marks of the type: [1, 2, 2, 3, 3, 4, 4, 5, 6]   same multiset: True
+
+E~8^(2)    9 nodes, extended node 19
+  null vector on the chain: [2, 4, 6, 5, 4, 3, 2, 1, 3]
+  square in the presentation: 0   Kac marks of the type: [1, 2, 2, 3, 3, 4, 4, 5, 6]   same multiset: True
+
+A~1        2 nodes, extended node 20
+  null vector on the chain: [1, 1]
+  square in the presentation: 0   Kac marks of the type: [1, 1]   same multiset: True
+
+D~16      17 nodes, extended node 18
+  null vector on the chain: [1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1]
+  square in the presentation: 0   Kac marks of the type: [1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]   same multiset: True
+
+A~1*       2 nodes, extended node  3
+  null vector on the chain: [1, 1]
+  square in the presentation: 0   Kac marks of the type: [1, 1]   same multiset: True
+
+The four cusps, and Lemma 4.7 (the two components' nulls agree as classes in N):
+  D~10 E~7          : n(D~10) - n(E~7) is a relation: True
+  E~8^2 A~1         : n(E~8^(1)) - n(E~8^(2)) is a relation: True
+  E~8^2 A~1 (again) : n(E~8^(1)) - n(A~1) is a relation: True
+  D~16 A~1          : n(D~16) - n(A~1*) is a relation: True
+
+A~17 is a cusp on its own (m(does not share a subdiagram); its null is the rim sum.

@@ -56,7 +56,7 @@ Candidate Gram data, checked against the source's Lemma 4.7.  With square -2, pa
 the 18-cycle and at (0,18), (6,19), (12,20), pairing 2 at (18,21), (21,9), (19,22), (22,15),
 (20,23), (23,3) and pairing 6 at (21,22), (22,23), (23,21), `check_fig1_gram.py` reports:
 symmetric, diagonal -2, rank 19 over QQ, kernel of dimension 5 -- which is exactly what "the 24
-roots generate N" requires -- and every one of the seven affine components carries the Kac
+roots generate N" requires -- and every one of the eight connected components carries the Kac
 marks of its type:
 
     A~17      [1 x 18]                        D~10     [1,1,2,2,2,2,2,2,2,1,1]
@@ -72,6 +72,7 @@ r_13 + 2r_14 + 3r_15 + 4r_16 + 5r_17 + 6r_0 + 4r_1 + 2r_2 + 3r_18.  And Lemma 4.
     n(E~8^(1)) - n(A~1) = 0,  n(D~16) - n(A~1*) = 0.
 
 So the numbered-root Gram data is no longer a blocker: it is the candidate above, validated
-against the source's own Lemma 4.7 and against the Kac marks of the seven affine components.
+against the source's own Lemma 4.7 and against the Kac marks of all eight connected components,
+whose integral null vectors are computed in `cusp_null_vectors.py`.
 N is kept distinct from M = N^* of Lemma 4.14 throughout; the roots are a dependent generating
 family in rank 19, so the relations are vectors a in Z^24 with G a = 0.

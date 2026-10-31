@@ -14,7 +14,7 @@ subdiagram vertex by vertex with the extended node braced.
 
 The check: for each listed component, the induced Gram block must be the affine Cartan matrix
 of its type, i.e. its null vector must have the Kac marks of that type, taken from
-CartanType([letter, rank, 1]).a().  All seven components pass.  The first E8's solved null
+CartanType([letter, rank, 1]).a().  All eight components pass.  The first E8's solved null
 vector [1,2,3,4,5,6,4,2,3] is exactly the vector the source displays,
 n(E8^(1)) = r13+2r14+3r15+4r16+5r17+6r0+4r1+2r2+3r18, and Lemma 4.7 holds in the
 presentation: the four differences of component null vectors are relations, G(a1 - a2) = 0.
