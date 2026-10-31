@@ -45,6 +45,11 @@ Each one-parameter family in $\fentwo$ admits a unique extension, up to unique i
 That is, the KSBA compactification provides unique stable limits for degenerating families.
 :::
 
+::: {.proof}
+
+Properness and separatedness are the main theorems of KSBA theory for surfaces with numerically trivial canonical class [@Kol23], with the boundedness supplied by the fixed numerical polarization; the Deligne--Mumford property holds because a stable pair has no infinitesimal automorphisms, and the extension of one-parameter families is the valuative criterion, whose uniqueness is the separatedness of the stack.
+:::
+
 Pairs $(Z, L)$ as above parameterize the interior of the moduli problem, encoding the data of smooth numerically polarized Enriques surfaces of degree two.
 The KSBA compactification $\cpt{\fentwo}$ systematically includes stable degenerations: objects $(Z, \varepsilon R_Z)$ where $Z$ may acquire slc singularities and $R_Z$ encodes the polarization determined by the ramification divisor of $\idp$ on the K3 cover.
 We will develop further refinements of this construction -- such as the explicit realization of $\fentwo$ and its compactification as a Noether–Lefschetz locus in $\fttz$, and the construction of the semitoroidal boundary.

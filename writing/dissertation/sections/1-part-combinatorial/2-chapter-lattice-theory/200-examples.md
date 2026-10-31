@@ -244,6 +244,13 @@ Any indefinite unimodular lattice is determined up to isometry by its rank, inde
 The same is true for *definite* unimodular lattices $L$ with $\rank L \leq 8$.
 :::
 
+::: {.proof}
+
+This is the classification of unimodular forms by rank, index and parity [@MH73].
+For definite lattices of rank $\leq 8$ it is the same theorem: an even unimodular lattice exists only in rank divisible by $8$, so at most one rank is at issue and there the lattice is $E_8$.
+:::
+
+
 ::: {.theorem title="Classification of small unimodular lattices"}
 Let $L$ be *any* unimodular integral lattice, definite or indefinite, with $\rank_{\ZZ} L \leq 4$.
 Then either
@@ -252,6 +259,12 @@ Then either
 
 - $L$ is even and either $L \iso U$ or $U^{2}$.
 :::
+
+::: {.proof}
+
+A unimodular form of rank $n\leq 4$ is a direct sum of copies of $\langle 1\rangle$ and $\langle -1\rangle$ when it is odd, hence is $I_{p,q}$ for its signature; when it is even its rank is divisible by $8$, so the only possibilities are $U$ in rank $2$ and $U^{\oplus 2}$ in rank $4$, and both are unimodular [@MH73].
+:::
+
 
 #### K3 and Enriques Lattices
 

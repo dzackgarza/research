@@ -60,6 +60,12 @@ Then
   .$$
 :::
 
+::: {.proof}
+
+This is [@Nik79, Thm. 1.14.4], in its three cases: the weak case under the discriminant-length bound, the generic case where only the odd part of the discriminant counts, and the exceptional 2-adic case, in which existence is not automatic but is equivalent to the displayed decomposition of $q_S$.
+:::
+
+
 We note that this is not how @Nik79 originally states the theorem, but rather extracts the case that is more commonly used in applications for clarity.
 The generic case is both necessary and sufficient for the existence and uniqueness of a primitive embedding, The weak case, which uses the global invariant $\ell(A_S)$ is easier to check in practice, but only gives a sufficient condition and is thus strictly weaker than the generic case.
 This is because if $A$ is any finite abelian group, one can consider the primary decomposition $A = \bigoplus_p A_p$, and there is an inequality $\max_p \ell(A_p) \leq \ell(A) \leq \Sum_p \ell(A_p)$.
@@ -124,6 +130,13 @@ Then:
    .$$
 
 :::
+
+::: {.proof}
+
+This is [@PS24, Prop. 15.1.1].
+The index in (2) is computed by the snake lemma from the two inclusions $S\oplus T\iscontainedin L\iscontainedin S^*\oplus T^*$, and the anti-isometry in (3) is the gluing datum: $S\oplus T$ is a sublattice of $L$ of index $\abs{A_S} = \abs{A_T}$, so the two discriminant forms are identified up to sign.
+:::
+
 
 #### Gluing and Overlattices
 

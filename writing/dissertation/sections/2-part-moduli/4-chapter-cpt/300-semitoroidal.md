@@ -79,6 +79,11 @@ Then there exists a normal compactification $\semitorcpt{\FG}$ containing $\FG$ 
 Note that unlike for fans, strata corresponding to Type $\III$ cones of a semifan may have infinite stabilizer in $\Stab_\Gamma(\eta)$ -- however, the stratum is still a finite quotient of $L_{\eta, \sigma, \CCstar}$.
 :::
 
+::: {.proof}
+
+This is Looijenga's construction [@Loo03], stated in the form used here: the four properties are proved there for a compatible system of $\Gamma$-admissible semifans, and the closing note on Type $\III$ cones — that the stabilizer may be infinite while the stratum remains a finite quotient — is part of the statement.
+:::
+
 ::: {.definition
     title="{ Semitoroidal compactifications}"
 }
@@ -103,10 +108,21 @@ The following are equivalent:
 
 :::
 
+::: {.proof}
+
+This is [@AE23, Thm. 5.14].
+For $(2)\Rightarrow(1)$ refine the semifans to fans; for $(1)\Rightarrow(2)$ take the semifan whose cones are the images of the cones of maximal dimension of the toroidal fan.
+:::
+
 ::: {.theorem title="Recognition theorem for KSBA compactifications [@AE23, Theorem 9.1]"}
 Let $R$ be a recognizable divisor in the moduli space of $S$-polarized K3 surfaces (in the sense of [@AE23]) corresponding to the moduli space $F_{\Gamma}$, where $\Gamma$ is the appropriate arithmetic subgroup of $\Orth(T)$ and $T\definedas S^{\perp \lkt}$.
 Then there exists a unique semifan $\mcf_R$ such that the normalization morphism $\semifancpt{\FG}{\mcf_R} \to \ksbacpt{\FG}^R$ identifies $\semifancpt{F_M}{\mcf_R}$ as the normalization of the KSBA compactification $\ksbacpt{\FG}^R$ associated to $R$.
 The cones of $\mcf_R$ are precisely the maximal subsets in which the combinatorial type of slc stable pairs is constant as a function of the *monodromy invariant* $\lambda$.
+:::
+
+::: {.proof}
+
+This is the recognition theorem of [@AE23, Thm. 9.1], applied to the divisor $R$: recognizability is what makes the semifan unique, and the description of its cones by constancy of the combinatorial type of the stable pairs is part of the statement there.
 :::
 
 ::: {.remark}
@@ -192,6 +208,12 @@ There is a canonical poset morphism $\Psi\colon \theposet{P}_\Gamma \too \thepos
 The maximal element of $\theposet{P}_\Gamma$, where no nodes are omitted, corresponds to the Coxeter fan and thus the toroidal compactification.
 The minimal element, where all nodes are omitted at each cusp, corresponds to the Baily–Borel fan $\BBfan$ and thus $\bbcpt{\FG}$.
 Morphisms in $\theposet{P}_\Gamma$ corresponding to deleting more nodes correspond to coarsenings of the semifans and thus to proper birational morphisms between the corresponding semitoroidal compactifications.
+:::
+
+::: {.proof}
+
+Omitting walls from the Coxeter fan leaves a cone complex: the cones of the fan that survive still meet in common faces, so a tuple $(D_\eta)$ determines a semifan $\semifan{F}(D)$ at each $0$-cusp, and these form a compatible system because they are cut out of one global fan.
+Inclusion of subdiagrams corresponds to omitting fewer walls, hence to refinement of semifans, and refinement gives the morphisms of @prop:coxsemiposetmap's third sentence; the tuple with no node omitted reproduces the Coxeter fan, and the tuple with all nodes omitted gives the Baily--Borel fan $\BBfan$.
 :::
 
 ::: {.remark}

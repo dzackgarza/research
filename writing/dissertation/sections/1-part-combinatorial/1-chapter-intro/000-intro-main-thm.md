@@ -27,6 +27,11 @@ where $\normalize{(\wait)}$ denotes the normalization, the left-hand side is the
 The semifans $\torfan_2, \torfan_4$ are fans, while $\semifan{F}_1, \semifan{F}_2, \semifan{F}_3$ are strict semifans.
 :::
 
+::: {.proof}
+
+This is [@AEGS25, Thm. 1.1], transcribed into the notation of this chapter: the semifans are theirs, one for each of the five $0$-cusps classified in @sec:fent-zero-cusps.
+:::
+
 We note that the normalization is a technical condition that is often applied in the setting of KSBA compactifications, since the KSBA compactification is not guaranteed to be normal in general.
 Roughly speaking, this is due to the fact that its construction involves taking a Zariski closure, which can introduce non-normal points where degenerations are identified, leading to a non-separated stack.
 Since the normalization morphism is finite, birational, and relatively smooth in codimension one, this replacement restricts the worst singularities to lie in high codimension sub-loci and is thus a desirable tradeoff.

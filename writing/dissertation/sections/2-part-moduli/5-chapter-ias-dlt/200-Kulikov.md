@@ -108,6 +108,11 @@ N = \log(T) = (T-\id) - {1\over 2}(T-\id)^2 + \frac{1}{3}(T-\id)^3 - \cdots + \f
 where $n$ is the index of nilpotency [@Kul77], [@PP81].
 :::
 
+::: {.proof}
+
+This is the monodromy theorem in the semistable case [@Kul77; @PP81]: the local monodromy of a semistable family is unipotent, so $k = 1$ may be taken, and then $N = \log T$ is the displayed finite sum because $T-\id$ is nilpotent of index $n$.
+:::
+
 ::: {.definition title="Monodromy Around Singularities" #def:monodromy-singularities}
 Let $B$ be an integral affine manifold with singularities.
 The **monodromy** of $B$ around a singularity $p$ is the element of $\operatorname{Aff}(\ZZ^n)$ defined by parallel transport around a loop encircling $p$.
@@ -159,6 +164,11 @@ The geometric interpretations are as follows:
 - $\Gr_4^W$ arises from new cycles present in Type $\III$ degenerations.
 
 This filtration packages the mixed Hodge structure obtained from the Clemens–Schmid exact sequence and classifies degenerations according to their limit behavior by @Kul77.
+:::
+
+::: {.proof}
+
+This is [@Kul77]. The weight filtration of the limiting mixed Hodge structure is the monodromy weight filtration of $N$: with $N^2 = 0$ and $N\neq0$ it has length two, giving $W_0 = \ker N$, $W_2 = H^2$ and $W_4 = 0$, while $N^3 = 0$ with $N^2\neq0$ forces the third step to be nonzero as well.
 :::
 
 Degenerations with unipotent monodromy give rise to *monodromy invariants*, which we now describe.

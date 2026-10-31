@@ -22,21 +22,21 @@ By construction, $B$ is a closed subvariety of the projective stack $\cpt{\fttz}
 The KSBA stability of fibers is preserved under finite base change, giving the desired family.
 :::
 
-::: {.proposition
-    title="{Non-normality of the Noether–Lefschetz Locus}"
-    #prop:non-normality-nl-locus
+::: {.remark
+    title="{Mechanisms by which the Noether–Lefschetz locus can fail to be normal}"
+    #rmk:non-normality-nl-locus
 }
 Let $B \subset \mcm$ be a Noether–Lefschetz locus with compactification $\cpt{B} \subset \cpt{\mcm}$, and let $\Delta = \cpt{\mcm} \sm \mcm$ denote the boundary divisor.
-The failure of normality of $\cpt{B}$ along $\Delta$ arises through three mechanisms:
+The following three mechanisms are visible in the examples; they are recorded here rather than proved, and no claim is made that the list is exhaustive:
 
 - (1) There exist boundary divisors $D \subset \Delta$ such that the period map $\mathsf{P}: \mathcal{X} \to \mcm$ is not unramified over generic points of $D$; precisely, there exist points $x \in D$ for which the fiber $\mathsf{P}^{-1}(\mathsf{P}(x))$ contains multiple distinct analytic branches, so the local ring of $\cpt{B}$ at $x$ is not integrally closed.
       For example, if $D$ corresponds to a boundary component where the monodromy is not trivial, analytic local neighborhoods of $\cpt{B}$ near $x$ may be modeled by $\Spec \CC[u,v]/(uv)$ modulo a nontrivial group action.
 
-- (2) If irreducible components $D_i, D_j \subset \Delta$ meet nontransversely, so that the intersection $D_i \intersect D_j$ is singular or not snc, the locus $\cpt{B} \intersect (D_i \intersect D_j)$ acquires corresponding singularities, so that the local ring is not regular nor normal at such points, and normalization introduces ramification over this locus.
+- (2) If irreducible components $D_i, D_j \subset \Delta$ meet in a locus that is not a normal crossing, the normalization separates the branches over it, so the fiber of $\normalize{\cpt{B}} \to \cpt{B}$ is nontrivial there. Normality of $\cpt B$ is not by itself contradicted by a non-snc intersection of divisors, so this mechanism produces non-normality only together with a branch count, as in (1).
 
 - (3) For monodromy representations $\rho: \pi_1(\mcm) \rightarrow \mathrm{Aut}(H^2_{\mathrm{prim}})$ with nontrivial global monodromy group $\Gamma$ acting on the vanishing cohomology parametrized by $B$, nontrivial identifications occur in the image $\cpt{\mathrm{Im}(B)} \subset \cpt{\mcm}$ along boundary strata, so that the normalization of $\cpt{B}$ is a finite ramified cover branched along these loci, and the structure sheaf is not normal at points over such identifications.
 
-It follows that normalization of $\cpt{B}$ corresponds to resolving the branching and non-normal crossing behavior caused by failure of injectivity of the period map, singularities in the intersection of boundary divisors, and ramification induced by the global monodromy representation.
+Normalization addresses exactly these three: it separates the branches of (1), separates the crossing of (2), and quotients the identifications of (3).
 :::
 
 Let $\mathsf{P}: \fentwo \to \fttz$ denote the period map between the moduli stack of lattice-polarized K3 (or Enriques) surfaces and its image in the period domain, extended to suitable toroidal or semi-toric compactifications $\cpt{\fentwo} \to \cpt{\fttz}$ as established in @AEGS25. Both source and target are Deligne–Mumford stacks, locally of finite type over $\CC$.
