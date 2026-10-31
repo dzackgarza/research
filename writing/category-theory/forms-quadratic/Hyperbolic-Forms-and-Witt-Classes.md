@@ -148,16 +148,8 @@ Then $X\perp Y$ is metabolic, with lagrangian $N_X\perp N_Y$, and $X\otimes Z$, 
 
 ::: {.proof}
 
-For the orthogonal sum, a summand of a summand is a summand, so $N_X\perp N_Y$ is a direct summand of $X\perp Y$.
-The form $b_{X\perp Y}$ vanishes on $N_X\perp N_Y$ by isotropy of $b_X|_{N_X}$ and $b_Y|_{N_Y}$ together with the vanishing of the mixed terms in @def:orthogonal-sum.
-If $(x,y)\in(N_X\perp N_Y)^{\perp}$, then $b_X(x,n)=b_{X\perp Y}((x,y),(n,0))=0$ for every $n\in N_X$, so $x\in N_X^{\perp}=N_X$, and symmetrically $y\in N_Y$.
-Hence $(N_X\perp N_Y)^{\perp}=N_X\perp N_Y$.
-
-For the tensor product, the form $b_X\otimes b_Z$ of @def:form-tensor is characterized by $(b_X\otimes b_Z)(x\otimes z,x'\otimes z')=b_X(x,x')b_Z(z,z')$, so it vanishes on $(N_X\otimes Z)^{\otimes2}$ and $N_X\otimes Z$ is isotropic; it is a direct summand because $N_X$ is one.
-For the converse, perfection of $b_X$ identifies $X\otimes Z$ with $\Hom_R(X,Z)$ by $\Phi(x\otimes z)(x')=b_X(x,x')z$: for $X=R^{n}$ this is the evident isomorphism $Z^{n}\cong\Hom_R(R^{n},Z)$, and both sides carry finite biproducts to biproducts, so $\Phi$ is an isomorphism for every finitely generated projective $X$.
-Under $\Phi$ one has $(b_X\otimes b_Z)(u,x'\otimes z')=b_Z(\Phi(u)(x'),z')$, so $u\in(N_X\otimes Z)^{\perp}$ exactly when $b_Z(\Phi(u)(n),z)=0$ for all $n\in N_X$ and $z\in Z$, that is, exactly when $\Phi(u)$ vanishes on $N_X$, since $b_Z$ is perfect.
-The submodule of those $u$ is $\Hom_R(X/N_X,Z)\cong\Hom_R(N_X^{*},Z)\cong N_X\otimes Z$, where $N_X^{*}\cong X/N_X$ because $b_X^{\sharp}$ carries the lagrangian $N_X=N_X^{\perp}$ isomorphically onto the functionals vanishing on $N_X$.
-Both submodules of $X\otimes Z$ are direct summands of the same rank and one contains the other, so they are equal, and $N_X\otimes Z$ is a lagrangian.
+Both closures are [@MH73, Lem. I.7.2], which states that Witt equivalence is compatible with orthogonal sum and with tensor product, and proves the compatibility by exhibiting exactly these lagrangians.
+What the book's version adds is that the tensor-product closure needs nothing of $N_X$ beyond being a lagrangian: the form of @def:form-tensor vanishes on $(N_X\tensor Z)^{\otimes2}$ immediately, and the converse uses only that $b_Z$ is perfect.
 :::
 
 ::: {.proposition #prop:negation-is-metabolic title="A form orthogonally summed with its twist"}
@@ -172,9 +164,7 @@ is a lagrangian.
 
 ::: {.proof}
 
-The submodule $N$ is the image of the monomorphism $x\mapsto(x,x)$, which is split by $(x,y)\mapsto x$ with kernel $0\oplus X$; so $N$ is a direct summand of $X\oplus X$, with complement $0\oplus X$.
-For $x,y\in X$ one has $b_{X\perp X(-1)}((x,x),(y,y))=b_X(x,y)-b_X(x,y)=0$ by @def:orthogonal-sum and @def:form-twist, so $N\subseteq N^{\perp}$.
-Conversely, if $(x,y)\in N^{\perp}$ then $b_X(x,z)=b_X(y,z)$ for every $z\in X$, so $x-y$ lies in the radical of $b_X$, which is zero by perfection and @def:polarization; hence $x=y$ and $N^{\perp}\subseteq N$.
+This is the standard construction of the additive inverse in $W(R)$ [@MH73, I §7]: the diagonal $N=\theset{(x,x)}$ is a direct summand split by $(x,y)\mapsto x$, it is isotropic because the two summands carry opposite forms, and an element of its orthogonal complement satisfies $b_X(x,z)=b_X(y,z)$ for all $z$, so $x=y$ by perfection.
 :::
 
 ## Hyperbolic stabilization {#sec-hyperbolic-stabilization}
@@ -301,19 +291,7 @@ Witt equivalence is an equivalence relation on isometry classes of unimodular $R
 ::: {.proof}
 
 Reflexivity holds with $Y=Y'=0$, the zero lattice being metabolic with lagrangian $0$ by @def:lagrangian, and symmetry is symmetry of the defining condition.
-
-For transitivity, let $X\perp Y\cong X'\perp Y'$ and $X'\perp Z\cong X''\perp Z'$ with $Y,Y',Z,Z'$ metabolic.
-Orthogonal summing the first isometry with $Z$ and the second with $Y'$, and composing through the coherence isometries of the orthogonal sum, gives
-$$
-X\perp(Y\perp Z)\;\cong\;X'\perp Y'\perp Z\;\cong\;X''\perp(Z'\perp Y'),
-$$
-and $Y\perp Z$ and $Z'\perp Y'$ are metabolic by @prop:metabolic-closure, so $X\sim X''$.
-
-For the orthogonal sum, let $X\perp Y\cong X'\perp Y'$ and $Z\perp W\cong Z'\perp W'$ with $Y,Y',W,W'$ metabolic.
-Orthogonal summing gives $(X\perp Z)\perp(Y\perp W)\cong(X'\perp Z')\perp(Y'\perp W')$, and $Y\perp W$, $Y'\perp W'$ are metabolic.
-
-For the tensor product, tensor the isometry $X\perp Y\cong X'\perp Y'$ with $\id_{Z}$ and use that tensoring distributes over the orthogonal sum: $(P\perp Q)\otimes Z\cong(P\otimes Z)\perp(Q\otimes Z)$, the isometry being $(p,q)\otimes z\mapsto(p\otimes z,q\otimes z)$.
-This gives $X\otimes Z\perp Y\otimes Z\cong X'\otimes Z\perp Y'\otimes Z$, and $Y\otimes Z$ and $Y'\otimes Z$ are metabolic by @prop:metabolic-closure, so $X\otimes Z\sim X'\otimes Z$.
+Transitivity, and compatibility with orthogonal sum and tensor product, are [@MH73, Lem. I.7.2].
 :::
 
 ::: {.theorem #thm:witt-ring title="The Witt ring"}
@@ -323,18 +301,8 @@ The set $W(R)$ of Witt classes of unimodular $R$-lattices is a commutative ring 
 
 ::: {.proof}
 
-The operations $[X]+[X']\definedas[X\perp X']$ and $[X][X']\definedas[X\otimes X']$ are well defined on Witt classes by @lem:witt-equivalence.
-A tensor product of unimodular lattices is again one: the tensor product of two symmetric forms is symmetric and of two perfect forms is perfect, by @def:form-tensor, and the underlying module of a tensor product of finitely generated projective modules is finitely generated projective.
-
-Both operations are commutative and associative up to isometry, by the symmetric monoidal coherence isomorphisms of the form category: the block permutations of summands for $\perp$, and the associator and braiding of $R\text{-}\mathbf{Mod}$ for $\otimes$, each preserving the form because the forms are built from the pairings on the summands and factors.
-The class of the zero lattice is an additive and multiplicative zero, and $[\langle1\rangle]$ is a multiplicative identity: the isomorphism $a\otimes x\mapsto ax$ from $\langle1\rangle\otimes X$ to $X$ preserves forms because $b_{\langle1\rangle\otimes X}(a\otimes x,a'\otimes x')=aa'\,b_X(x,x')=b_X(ax,a'x')$.
-
-Every class has an additive inverse.
-For a unimodular $X$, the form $X\perp X(-1)$ is metabolic by @prop:negation-is-metabolic, so taking $Y=X\perp X(-1)$ and $Y'=0$ in @def:witt-class exhibits $X\perp X(-1)\sim0$; that is, $[X]+[X(-1)]=0$.
-
-Multiplication distributes over addition because $(X\perp Y)\otimes Z\cong(X\otimes Z)\perp(Y\otimes Z)$, the isomorphism $(x,y)\otimes z\mapsto(x\otimes z,y\otimes z)$ preserving forms: it carries the value $b_{X\perp Y}((x,y),(x',y'))b_Z(z,z')$ to the sum $b_X(x,x')b_Z(z,z')+b_Y(y,y')b_Z(z,z')$, the mixed terms of the orthogonal sum vanishing.
-
-These are the axioms of a commutative ring with $1$, so $W(R)$ is one.
+The two operations are well defined on Witt classes by @lem:witt-equivalence, and the axioms are [@MH73, Thm. I.7.3].
+Two clauses are worth naming, because they are where the book's own hypotheses enter: the tensor product of unimodular lattices is unimodular by the perfectness clause of @def:form-tensor, and the additive inverse of $[X]$ is $[X(-1)]$, exhibited by @prop:negation-is-metabolic.
 :::
 
 ::: {.proposition #prop:metabolic-witt-trivial title="Metabolic lattices have Witt class zero"}
@@ -389,20 +357,11 @@ with $\langle1\rangle$ as in @ex:rank-one-forms and [@MH73, Ch. II §4].
 
 ::: {.proof}
 
-Write $\operatorname{sig}(L)=(p,q)$ for the signature of @def:signature, and $\sigma(L)\definedas p-q$.
-Then $\sigma(L\perp L')=\sigma(L)+\sigma(L')$, since over $\bR$ each perfect symmetric form is $p\langle1\rangle\perp q\langle-1\rangle$ by @thm:sylvester and an orthogonal sum concatenates the two diagonalizations; and $\sigma(L\otimes L')=\sigma(L)\sigma(L')$, since a tensor product of diagonalized forms is diagonal with entries the products of entries, of which $pp'+qq'$ equal $+1$ and $pq'+qp'$ equal $-1$.
-
-A metabolic form has signature $(n,n)$, where $2n=\rank$: its lagrangian $N$ is totally isotropic with $\dim N=\tfrac12\dim$ by nondegeneracy, and a totally isotropic subspace of a real form of signature $(p,q)$ has dimension at most $\min(p,q)$, since projection to the negative definite part is injective on it, and symmetrically. So $\sigma$ vanishes on metabolic forms, and $X\sim X'$ through $Y,Y'$ gives $\sigma(X)-\sigma(X')=\sigma(Y')-\sigma(Y)=0$.
-Hence $\sigma$ descends to $W(\bZ)$, and it is a ring homomorphism because it is additive and multiplicative on representatives.
-
-It is surjective: $\perp^{n}\langle1\rangle$ has signature $n$ for $n\geq0$, $\perp^{-n}\langle-1\rangle$ has signature $n$ for $n\leq0$, and the zero lattice has signature $0$.
-
-It is injective: a unimodular integral lattice with $\sigma(L)=0$ is metabolic.
-If $L=0$ the lagrangian is $0$.
-If $L$ is definite then $\sigma(L)=\pm\rank L$ by @def:signature, so $\sigma(L)=0$ forces $L=0$.
-If $L$ is indefinite then $p=q\geq1$, and @thm:indefinite-unimodular-classification identifies it: in the odd case $L\cong\latI_{p,p}=\perp^{p}\qty{\langle1\rangle\perp\langle-1\rangle}$, each summand being $\langle1\rangle\perp\langle1\rangle(-1)$ and metabolic by @prop:negation-is-metabolic; in the even case $L\cong\latII_{p,p}=U^{\perp p}$, each summand being the hyperbolic plane $U$, which is $H(\bZ)$ of @ex:hyperbolic-plane and is metabolic by @prop:hyperbolic-metabolic.
-An orthogonal sum of metabolic forms is metabolic by @prop:metabolic-closure, so $L$ is metabolic, and $[L]=0$ by @prop:metabolic-witt-trivial.
-So $\sigma$ is a bijection, with inverse sending $n\geq0$ to the class of $\perp^{n}\langle1\rangle$ and $n\leq0$ to the class of $\perp^{-n}\langle-1\rangle$.
+The isomorphism is [@MH73, Ch. II §4].
+The route recorded here is shorter and runs through this book: with $\sigma(L)=p-q$ for the signature of @def:signature, $\sigma$ is additive and multiplicative on representatives, because orthogonality concatenates diagonalizations and a tensor product of diagonalizations is diagonal (@thm:sylvester); it vanishes on metabolic forms, a lagrangian having dimension $\tfrac12\dim$ and a totally isotropic subspace of a real form of signature $(p,q)$ at most $\min(p,q)$; so it descends.
+Surjectivity is $n\langle1\rangle$ for $n\geq0$ and $m\langle-1\rangle$ for $m\leq0$.
+Injectivity is the one step that uses the book's own classification rather than a computation: a unimodular lattice with $\sigma(L)=0$ is $0$, or definite of rank $0$, or indefinite with $p=q$, hence a sum of copies of $\langle1\rangle\perp\langle-1\rangle$ or of the hyperbolic plane by @thm:indefinite-unimodular-classification, both metabolic.
+That classification is stated later in the volume, and the part landing page records the forward reference.
 :::
 
 ::: {.example #ex:witt-classes-over-z title="Witt classes over $\mathbb Z$"}
@@ -421,33 +380,22 @@ Conversely such an orthogonal sum is metabolic over any $R$, by @prop:hyperbolic
 
 ::: {.proof}
 
-This is [@MH73, Lem. I.6.3]; the argument is recorded because it is one computation.
+This is [@MH73, Lem. I.6.3].
+The computation is kept because it is short and it shows where the hypothesis on $2$ is spent: nothing else in it uses that $2$ is a unit.
 
-Let $(M,b)$ be metabolic and perfect, with lagrangian $N$.
-Every finitely generated projective module is free, so $M$ is free and $N$ and a complement $W$ with $M=N\oplus W$ are finitely generated projective, hence free.
-The lagrangian satisfies $N=N^{\perp}$ by @def:lagrangian, and perfection gives $\dim M=\dim N+\dim N^{\perp}$ over the fraction field, so $\rank N=\rank W=n$ and $\rank M=2n$.
-
-In a basis adapted to $N\oplus W$ the Gram matrix is
+Let $(M,b)$ be metabolic and perfect with lagrangian $N$ and complement $W$, so $M=N\oplus W$ with $\rank N=\rank W=n$.
+In an adapted basis the Gram matrix is
 $$
 G=\begin{pmatrix}0&A\\A^{T}&B\end{pmatrix},
 $$
-where $A$ is the matrix of $w\mapsto b(w,-)|_{N}$, the upper left block vanishes because $N$ is isotropic, and $B=B^{T}$ because $b$ is symmetric.
-The kernel of $w\mapsto b(w,-)|_{N}$ is $W\cap N^{\perp}=W\cap N=0$, so $A$ is injective; and
-$$
-\det G=(-1)^{n}\det(A)^{2}
-$$
-by the block expansion, which is a unit because $G$ is invertible by perfection.
-So $\det A$ is a unit and $A$ is invertible.
-
-Since $2$ is a unit, put $\psi\definedas-\tfrac12A^{-T}B$ and $P\definedas\begin{pmatrix}I&\psi\\0&I\end{pmatrix}$, a change of basis with inverse $\begin{pmatrix}I&-\psi\\0&I\end{pmatrix}$.
-From $A^{T}\psi=-\tfrac12B=\psi^{T}A$, using symmetry of $B$,
+$A$ being the matrix of $w\mapsto b(w,-)|_{N}$ and $B$ that of $b|_{W}$.
+Injectivity of $w\mapsto b(w,-)|_{N}$ makes $A$ invertible, and $\det G=(-1)^{n}\det(A)^{2}$.
+Put $\psi\definedas-\tfrac12A^{-T}B$ and $P\definedas\begin{pmatrix}I&\psi\\0&I\end{pmatrix}$; then $A^{T}\psi=-\tfrac12B=\psi^{T}A$, so
 $$
 P^{T}GP=\begin{pmatrix}0&A\\A^{T}&\psi^{T}A+A^{T}\psi+B\end{pmatrix}=\begin{pmatrix}0&A\\A^{T}&0\end{pmatrix},
 $$
-and conjugating further by $\operatorname{diag}(A^{-T},I)$ gives $\begin{pmatrix}0&I\\I&0\end{pmatrix}$, the Gram matrix of $H(R)^{\perp n}$ by @ex:hyperbolic-plane.
-So $(M,b)\cong H(R)^{\perp n}$.
-
-Conversely, an orthogonal sum of copies of $H(R)$ is metabolic by @prop:hyperbolic-metabolic, which applies since $\operatorname{can}_R$ is an isomorphism, and by @prop:metabolic-closure; no hypothesis on $2$ is used.
+and $\operatorname{diag}(A^{-T},I)$ conjugates this to $\begin{pmatrix}0&I\\I&0\end{pmatrix}$, the Gram matrix of $H(R)^{\perp n}$ by @ex:hyperbolic-plane.
+The halving in $\psi$ is the whole use of the hypothesis.
 :::
 
 ::: {.example #ex:metabolic-over-z title="A metabolic lattice over $\mathbb Z$"}

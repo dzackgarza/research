@@ -27,28 +27,9 @@ is exact in $\mca$ [@Wei94, Thm. 1.2.3, Ex. 1.2.4].
 
 ::: {.proof}
 
-Let $f\colon C\to D$ be a chain map.
-
-*Additivity.*
-Degreewise sums of chain maps are chain maps, since the identities $f_{n-1}d^C_n=d^D_nf_n$ are linear; so $\Hom_{\mathbf{Ch}(\mca)}(C,D)$ is a subgroup of $\prod_n\Hom_{\mca}(C_n,D_n)$, and composition is bilinear for the same reason.
-The zero complex is a zero object, and the degreewise biproduct, with differential $d^C_n\oplus d^D_n$, is a biproduct of $C$ and $D$.
-
-*Kernels and cokernels.*
-Let $K_n\definedas\ker f_n$ and define $d^K_n\colon K_n\to K_{n-1}$ as the restriction of $d^C_n$.
-It is well defined: for $x\in K_n$ one has $f_{n-1}(d^C_nx)=d^D_nf_n(x)=0$, so $d^C_nx\in K_{n-1}$; and $d^K_nd^K_{n+1}=0$ because $d^C_nd^C_{n+1}=0$.
-The inclusion $K\to C$ is a chain map and is a kernel of $f$: a chain map $u\colon E\to C$ with $fu=0$ has $u_n(E_n)\iscontainedin\ker f_n$ for every $n$, giving a unique chain map $E\to K$ because the differentials of $K$ are those of $C$ restricted.
-The same argument with the induced maps on $\coker f_n$, which are well defined because $f$ intertwines the differentials, gives cokernels.
-
-*A $\mathbf{Ch}(\mca)$-morphism that is an isomorphism in every degree is an isomorphism.*
-Its degreewise inverse $g$ satisfies $d^D_ng_n = g_{n-1}d^C_n$, obtained by applying the inverse of the degreewise isomorphism to the identity $f_{n-1}d^C_n=d^D_nf_n$, so $g$ is a chain map and inverse to $f$.
-
-*The abelian axiom.*
-By @thm:canonical-factorization, $\operatorname{Coim}(f)=\coker(\ker f)$ and $\operatorname{Im}(f)=\ker(\coker f)$; by the two paragraphs above both are computed degreewise, so in degree $n$ they are $\operatorname{Coim}(f_n)$ and $\operatorname{Im}(f_n)$, and the canonical morphism between them is the degreewise canonical morphism, which is an isomorphism because $\mca$ is abelian.
-By the preceding paragraph it is an isomorphism of complexes, so $\mathbf{Ch}(\mca)$ is abelian in the sense of @def:abelian-category.
-
-*Exactness is degreewise.*
-A morphism $i$ is monic exactly when $\ker i=0$, that is, by the description of kernels, exactly when $\ker i_n=0$ for every $n$; dually $p$ is epic exactly when $\coker p_n=0$ for every $n$.
-So by @def:exact-complex the two-term complex is exact in $\mathbf{Ch}(\mca)$ exactly when $i_n$ is monic, $\operatorname{im}i_n=\ker p_n$ and $p_n$ is epic for every $n$, which is exactness of $0\to A_n\to B_n\to C_n\to0$ in $\mca$.
+This is [@Wei94, Thm. 1.2.3 and Ex. 1.2.4].
+The reason it transfers is that every construction involved is degreewise: kernels and cokernels of a chain map are taken in each degree with the restricted differentials, which are well defined because $f$ intertwines them, and $\operatorname{Coim}\to\operatorname{Im}$ is degreewise the isomorphism of the abelian base and hence, by the degreewise criterion for a chain map to be an isomorphism, one of complexes.
+Since kernels and cokernels are degreewise, monic, epic and exactness are checked in each degree, which is the second assertion.
 :::
 
 ## Homology and exactness {#sec-homology-and-exactness}
@@ -106,7 +87,7 @@ is exact [@Wei94, Thm. 1.3.1].
 
 ::: {.proof}
 
-The connecting morphism and its exactness are both produced by the snake lemma, applied to the square of rows
+This is [@Wei94, Thm. 1.3.1], and the proof is the snake lemma applied to
 ```tikzcd
 A_n/B_n(A) \arrow[r] \arrow[d, "d^A"] &
 B_n/B_n(B) \arrow[r] \arrow[d, "d^B"] &
@@ -115,31 +96,9 @@ Z_{n-1}(A) \arrow[r] &
 Z_{n-1}(B) \arrow[r] &
 Z_{n-1}(C) & {}
 ```
-of @thm:diagram-lemmas.
-
-The rows are exact.
-For the first, the third map is well defined because $g_n$ carries $B_n(B)$ onto $B_n(C)$, which is the chain-map identity $g_{n-1}d^B_n=d^C_ng_n$ read on boundaries; and its kernel is $f_n(A_n)+B_n(B)$, since $g_n^{-1}(B_n(C))$ consists of the $b$ with $g_nb=g_nd^Bb'$ for some $b'$, that is, with $b-d^Bb'\in\ker g_n=\operatorname{im}f_n$.
-Exactness of $A_n\to B_n\to C_n\to0$ in degree $n$ is @thm:chain-complexes-abelian with @def:exact-complex, so the quotient row is exact.
-
-For the second, $f$ and $g$ carry cycles to cycles, so the row is defined; if $b\in Z_{n-1}(B)$ has $gb=0$ then $b=fa$ for some $a\in A_{n-1}$ by exactness in degree $n-1$, and $a$ is a cycle because $f(d^Aa)=d^Bfa=d^Bb=0$ and $f$ is monic.
-So the second row is exact at $Z_{n-1}(B)$; neither row is asserted exact at its ends.
-
-The square commutes, because $d^A$, $d^B$ and $d^C$ cancel the boundary submodules and intertwine with $f$ and $g$.
-The snake lemma then supplies the connecting morphism $\del\colon H_n(C)\to H_{n-1}(A)$, since
-$$
-\ker\bigl(d^C\colon C_n/B_n(C)\to Z_{n-1}(C)\bigr)=H_n(C),
-\qquad
-\coker\bigl(d^A\colon A_n/B_n(A)\to Z_{n-1}(A)\bigr)=H_{n-1}(A),
-$$
-and the exact sequence it gives is
-$$
-H_n(A)\to H_n(B)\to H_n(C)\xrightarrow{\ \del\ }H_{n-1}(A)\to H_{n-1}(B)\to H_{n-1}(C),
-$$
-which is the displayed sequence in degree $n$.
-Applying the same construction to the translate $[n]$ of the whole diagram gives the sequence at every $n$ at once.
-
-Naturality is the functoriality of the snake lemma in the morphism of diagrams induced by a morphism of short exact sequences of complexes.
-The snake lemma is @thm:diagram-lemmas, stated in the first part of the book from [@Mac98, §VIII.4]; it is the one input of this theorem that this chapter does not derive, and everything else above is a check of its hypotheses in this setting.
+whose rows are exact by @thm:chain-complexes-abelian and whose two ends the snake lemma of @thm:diagram-lemmas identifies as $H_n(C)$ and $H_{n-1}(A)$.
+Applying it to the translate $[n]$ gives the sequence in every degree at once, and naturality is functoriality of the snake lemma.
+The snake lemma is thus the one input this chapter takes without deriving.
 :::
 
 ## Translation, truncation, and the mapping cone {#sec-translation-cone}
@@ -355,23 +314,10 @@ Every morphism $f'\colon M\to N$ lifts to a chain map $f\colon P\to Q$ with $\et
 
 ::: {.proof}
 
-*Existence of the lift.*
-Construct $f_n$ by induction on $n$, maintaining $d^Q_nf_n=f_{n-1}d^P_n$ for $n\geq1$ and $\eta f_0=f'\epsilon$.
-At $n=0$, the composite $f'\epsilon\colon P_0\to N$ has a lift along the epimorphism $\eta$, since $\eta$ is epic by exactness of the augmented complex of @def:resolution and $P_0$ is projective.
-At $n\geq1$, suppose $f_0,\dots,f_{n-1}$ are constructed.
-Then $d^Q_{n-1}f_{n-1}d^P_n=f_{n-2}d^P_{n-1}d^P_n=0$, so $f_{n-1}d^P_n$ lands in $\ker d^Q_{n-1}$, which is $\operatorname{im}d^Q_n$ by exactness of $Q$ in degree $n-1$; the morphism $Q_n\to\operatorname{im}d^Q_n$ is epic by definition of the image, and $P_n$ is projective, so there is $f_n\colon P_n\to Q_n$ lifting $f_{n-1}d^P_n$ along it, which is the required identity.
-
-*Any two lifts are homotopic.*
-Suppose $f$ and $g$ are lifts and construct $s_n\colon P_n\to Q_{n+1}$ with $f_n-g_n=d^Q_{n+1}s_n+s_{n-1}d^P_n$ by induction, starting with $s_{-1}=0$ on the degrees below $0$, where $P$ vanishes.
-Given $s_0,\dots,s_{n-1}$, put $h_n\definedas f_n-g_n-s_{n-1}d^P_n$.
-Then
-$$
-d^Q_nh_n=(f_{n-1}-g_{n-1})d^P_n-d^Q_ns_{n-1}d^P_n=d^Q_ns_{n-1}d^P_n+s_{n-2}d^P_{n-1}d^P_n-d^Q_ns_{n-1}d^P_n=0,
-$$
-using the induction hypothesis for $f_{n-1}-g_{n-1}$ and $d^Pd^P=0$.
-So $h_n$ lands in $\ker d^Q_n=\operatorname{im}d^Q_{n+1}$, and projectivity of $P_n$ lifts it to $s_n\colon P_n\to Q_{n+1}$, which is exactly the identity required at $n$.
-
-Only projectivity of the $P_n$, exactness of both augmented complexes, and additivity of $\mca$ are used; $Q$ need not be projective.
+This is [@Wei94, Thm. 2.2.6].
+The lift is built degree by degree: $f_0$ lifts $f'\epsilon$ along the epimorphism $\eta$ because $P_0$ is projective, and $f_n$ lifts $f_{n-1}d^P_n$ along $Q_n\twoheadrightarrow\operatorname{im}d^Q_n$ for the same reason, the composite landing in $\ker d^Q_{n-1}=\operatorname{im}d^Q_n$ by exactness of $Q$ and $d^Pd^P=0$.
+The homotopy is built by the same induction, from the observation that $d^Q_n\bigl(f_n-g_n-s_{n-1}d^P_n\bigr)=0$, so the difference lifts again.
+Only projectivity of the $P_n$, exactness of both augmented complexes and additivity are used; the $Q_n$ need not be projective, which is why the statement calls $Q$ a resolution and not a projective one.
 :::
 
 ::: {.definition #def:syzygy title="Syzygies"}
@@ -394,25 +340,10 @@ Every finitely generated graded $R$-module has a graded free resolution of lengt
 
 ::: {.proof}
 
-Write $\mathfrak m=(x_1,\dots,x_r)$, so that $R/\mathfrak m=k$ and $R$ is a graded local ring with maximal ideal $\mathfrak m$.
-
-*Finite graded resolutions exist.*
-A finitely generated graded module $M$ has a finite homogeneous generating set; the graded free module on it maps onto $M$ surjectively, and its kernel, the first syzygy, is again finitely generated and graded because $R$ is Noetherian, being a quotient of a polynomial ring over a field by @def:syzygy's description of the iterated kernels.
-Iterating gives a graded free resolution by finitely generated free modules, of some length.
-So the content of the theorem is the bound on the length.
-
-*The bound.*
-The Koszul complex $K(x_1,\dots,x_r)$, with terms the exterior powers $\Lambda^jR^r$ and differentials contracting against $(x_1,\dots,x_r)$, is a complex of free modules vanishing above degree $r$, and it is exact in positive degrees and has $H_0(K)=k$ because $x_1,\dots,x_r$ is a regular sequence on $R$ [@Eis95, Ch. 17].
-So $K(x)\to k$ is a free resolution of $k$ of length $r$.
-
-For a finitely generated graded $M$, the minimal graded free resolution of @def:minimal-resolution computes Tor: its differentials vanish after $\tensor_Rk$, so
-$$
-\Tor^R_i(M,k)\cong H_i\bigl(M\tensor_RK(x)\bigr)\cong F_i\tensor_Rk ,
-$$
-the first isomorphism because $K(x)$ is a free resolution of $k$ and Tor is computed by resolving either variable (@def:ext-tor).
-Since $K(x)$ vanishes above degree $r$, the right-hand side vanishes for $i>r$; hence $F_i\tensor_Rk=0$ for $i>r$, and $F_i=0$ for $i>r$ because $F_i$ is free, so the resolution has length at most $r$.
-
-Two inputs are cited rather than proved here: exactness of the Koszul complex on a regular sequence [@Eis95, Ch. 17], and the coincidence of the minimal resolution with the computation of Tor, which is the uniqueness clause of @def:minimal-resolution [@Eis95, Ch. 20].
+This is [@Eis95, Thm. 1.13].
+Two of its inputs are cited rather than derived here: exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Ch. 17], and the coincidence of the minimal resolution with the computation of Tor [@Eis95, Ch. 20].
+With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
+The existence of a finite graded resolution, by contrast, is derived here and needs only that $R$ is Noetherian.
 :::
 
 ::: {.definition #def:minimal-resolution title="Minimal free resolutions"}

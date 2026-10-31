@@ -184,14 +184,11 @@ Consequently, for $R$ with $4\cdot1_R\neq0$, no $t$-structure on a stable $\inft
 ::: {.proof}
 
 The first two clauses are the cited result [@Lur09, Def. 6.11 and Rmk. 6.12]: the heart of a $t$-structure is equivalent to the nerve of its homotopy category, and that homotopy category is abelian.
-
-For the consequence, let $\mcc$ be stable with a $t$-structure and suppose $\mcc^{\heartsuit}$ equivalent to $\mathrm N(\mcb)$, where $\mcb$ is $\mathcal B_{R,R}$, or $\mathbf{Lat}_R$ when $R$ is a Dedekind domain.
-By the preceding clause $\mcc^{\heartsuit}$ is also equivalent to $\mathrm N(\operatorname{Ho}\mcc^{\heartsuit})$, and $\operatorname{Ho}\mcc^{\heartsuit}$ is abelian.
-So $\mathrm N(\mcb)$ and the nerve of an abelian category are equivalent.
-
-The nerve is fully faithful from categories to $\infty$-categories, and the homotopy category of $\mathrm N(\mcb)$ is $\mcb$ [@nlab:nerve], so an equivalence of nerves is induced by an equivalence of ordinary categories, giving $\mcb\simeq\operatorname{Ho}\mcc^{\heartsuit}$.
-Being abelian is invariant under equivalence of categories: it is the existence of a zero object and binary biproducts, of kernels and cokernels, together with the isomorphism condition of @def:abelian-category, and an equivalence preserves and reflects each of these.
-Hence $\mcb$ is abelian, which @thm:form-not-additive forbids when $4\cdot1_R\neq0$.
+The consequence is a contrapositive and is recorded here because it is the reason the hypothheses of @sec-additive-hypotheses exclude the form categories.
+Suppose $\mcc^{\heartsuit}\simeq\mathrm N(\mcb)$ with $\mcb$ one of $\mathcal{B}_{R,R}$ or $\mathbf{Lat}_R$; by the first clause $\mcc^{\heartsuit}\simeq\mathrm N(\operatorname{Ho}\mcc^{\heartsuit})$ as well, so $\mathrm N(\mcb)$ is equivalent to the nerve of an abelian category.
+The nerve is fully faithful [@nlab:nerve], so that equivalence is induced by one of ordinary categories, giving $\mcb\simeq\operatorname{Ho}\mcc^{\heartsuit}$, and being abelian is invariant under equivalence.
+Then $\mcb$ would be abelian, which @thm:form-not-additive forbids when $4\cdot1_R\neq0$.
+The step that is cited rather than derived is the full faithfulness of the nerve; everything after it is a consequence of the first clause.
 :::
 
 In @sec-stable-duality a form is a morphism of an additive category, and the constructions above apply to that category.

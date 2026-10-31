@@ -336,16 +336,9 @@ is an isomorphism [@MH73, I §3.1].
 
 ::: {.proof}
 
-Write $b_T$ for the restricted form, which is symmetric and perfect by hypothesis, so that $b_T^{\sharp}\colon T\to\Hom_R(T,W)$ is an isomorphism by @def:polarization.
-Here $T^{\perp}$ is the right orthogonal complement of @def:orthogonal-complement, carrying the restricted form; it is not the nondegenerate reduction of @def:nondegenerate-reduction, which is defined only for a nondegenerate ambient lattice.
-The canonical morphism sends $(t,t')\mapsto\iota(t)+t'$.
-For $t'\in T^{\perp_b}$ and $t\in T$ one has $b(\iota(t),t')=0$ by @def:orthogonal-complement, and $b(t',\iota(t))=0$ by symmetry, so the cross terms vanish and the map is a morphism of bilinear modules from $T\perp T^\perp$.
-
-It is injective: if $\iota(t)+t'=0$ then $\iota(t)=-t'\in T\cap T^{\perp_b}$, and $T\cap T^{\perp_b}$ is the kernel of $b_T^{\sharp}$, which vanishes by perfection and injectivity of $\iota$.
-
-It is surjective: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ lies in $\Hom_R(T,W)$, so by perfection there is $t_0\in T$ with $b(t_0,\iota(t))=b(m,\iota(t))$ for every $t\in T$; then $b(\iota(t),m-\iota(t_0))=b(m,\iota(t))-b(t_0,\iota(t))=0$, so $m-\iota(t_0)\in T^{\perp_b}$ and $m$ is the image of $(t_0,m-\iota(t_0))$.
-
-A bijective morphism of bilinear modules is an isomorphism, and no hypothesis on $M$ was used: neither nondegeneracy nor freeness.
+This is [@MH73, I §3.1].
+The form of the argument worth recording is that it needs nothing of $M$: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ equals $b(t_0,\iota(t))$ for a unique $t_0\in T$ by perfectness of $b|_T$, and then $m-\iota(t_0)\in T^{\perp}$; injectivity is that $T\cap T^{\perp}$ is the kernel of the perfect form $b_T$.
+So the statement holds with $M$ an arbitrary bilinear module, not only a nondegenerate lattice, which is why the hypothesis names only $T$.
 :::
 
 ## Gram matrices and the determinant {#sec-gram-determinant}
@@ -364,12 +357,8 @@ Every family $(G_{ij})_{i,j\in I}$ in $R$ arises uniquely in this way.
 
 ::: {.proof}
 
-Both $v$ and $w$ are finite linear combinations, so $b(v,w)=\Sum_{i\in I}\Sum_{j\in I}a_ic_j\,b(e_i,e_j)$ is a finite sum of the displayed form, and bilinearity is what permits the rearrangement; this is the first claim.
-
-For the second, fix a family $G$ and define $b(v,w)\definedas\Sum_{i,j}a_ic_jG_{ij}$.
-The double sum has finitely many nonzero terms because $v$ and $w$ have finite support, so $b$ is well defined, and it is bilinear in $a$ and $c$; its Gram matrix is $G$ by the first claim applied to $v=e_i$ and $w=e_j$.
-Uniqueness: a bilinear form is determined by its values on pairs of basis vectors, since those values determine it on finite combinations as displayed.
-So the map from bilinear forms to families is a bijection.
+The first claim is bilinearity applied to two finite sums, and the second is that a bilinear form is determined by its values on pairs of basis vectors, with the displayed formula reconstructing it.
+This is the standard bijection between forms and matrices on a free module [@MH73, I §2.1]; it is stated for an arbitrary index set, which is what the finite support of the coordinates supplies.
 :::
 
 ::: {.proposition #prop:gram-congruence title="Congruence"}
@@ -385,16 +374,11 @@ and two Gram matrices present isomorphic forms exactly when they are congruent i
 
 ::: {.proof}
 
-The $j$-th column of $P$ holds the coordinates of $e'_j$, that is, $e'_j=\Sum_i P_{ij}e_i$.
-Then
+If $e'_j=\Sum_iP_{ij}e_i$ then
 $$
-G'_{ij}=b(e'_i,e'_j)=b\qty{\Sum_k P_{ki}e_k,\ \Sum_l P_{lj}e_l}=\Sum_{k,l}P_{ki}\,G_{kl}\,P_{lj}=(P^{\mathsf T}GP)_{ij}
+G'_{ij}=b(e'_i,e'_j)=\Sum_{k,l}P_{ki}\,G_{kl}\,P_{lj}=(P^{\mathsf T}GP)_{ij}
 $$
-by bilinearity, which is the displayed formula.
-
-Conversely, let $P$ be invertible and define $e'_j\definedas\Sum_iP_{ij}e_i$; invertibility of $P$ makes $e'$ a basis, since the equations $e'_j=\Sum_iP_{ij}e_i$ solve for $e$ through $P^{-1}$.
-The computation above shows that $G'=P^{\mathsf T}GP$ is the Gram matrix of the same form $b$ in the basis $e'$.
-So congruent matrices are the Gram matrices of one form in two bases, and by the same computation every pair of Gram matrices of one form in two bases is congruent, the change-of-basis matrix being invertible as it is a change of basis.
+by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases [@MH73, I §2.3].
 :::
 
 ::: {.definition #def:cartan-matrix title="The Cartan matrix"}
@@ -505,16 +489,7 @@ $$
 
 ::: {.proof}
 
-In the product basis,
-$$
-(b_M\tensor b_N)(e_i\tensor f_a,\ e_j\tensor f_b)=b_M(e_i,e_j)\,b_N(f_a,f_b)=(G_M)_{ij}(G_N)_{ab}
-$$
-by @def:form-tensor, so with the product basis ordered lexicographically by the pair of indices the Gram matrix is the Kronecker product $G_M\tensor G_N$.
-
-For the determinant, factor the Kronecker product as $G_M\tensor G_N=(G_M\tensor I_n)(I_m\tensor G_N)$, which is the defining property of the product of matrices in block form.
-The second factor $I_m\tensor G_N$ is block diagonal with $m$ diagonal blocks $G_N$, so its determinant is $\det(G_N)^{m}$.
-The first factor $G_M\tensor I_n$ becomes block diagonal with $n$ diagonal blocks $G_M$ after the permutation of the product basis that interchanges the two factors, and a permutation matrix has determinant $\pm1$ appearing on both sides of a conjugation, so $\det(G_M\tensor I_n)=\det(G_M)^{n}$.
-Multiplicativity of the determinant gives $\det(G_M\tensor G_N)=\det(G_M)^{n}\det(G_N)^{m}$, which is the asserted identity since the Gram matrices present $\det(b_M)$ and $\det(b_N)$ by @def:determinant-class.
+The Gram matrix is the Kronecker product because $(b_M\tensor b_N)(e_i\tensor f_a,e_j\tensor f_b)=b_M(e_i,e_j)b_N(f_a,f_b)$ by @def:form-tensor, and the determinant identity follows from $\det(A\tensor B)=\det(A)^{n}\det(B)^{m}$ [@MH73, I §5.3], which is the multiplicativity of the determinant applied to the factorization $A\tensor B=(A\tensor I_n)(I_m\tensor B)$.
 :::
 
 ::: {.definition #def:form-twist title="Twisting"}
@@ -574,38 +549,20 @@ For a nondegenerate form every component has radical dimension $0$ and is writte
 Let $F$ be an ordered field and let $b$ be a perfect symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
 Then $V\cong V^{+}\perp V^{-}$ with $b$ positive definite on $V^{+}$ and negative definite on $V^{-}$, and the two dimensions depend only on the isomorphism class of $(V,b)$: $\dim V^{+}$ is the greatest dimension of a positive definite subspace of $V$ [@MH73, III §2.5].
 So the signature of @def:signature is $(\dim V^{+},\dim V^{-},0)$ and $p+q=\dim V$.
-
-For a degenerate $b$, choose a complement $N$ to $\radic(V)$ in $V$.
-Every pairing involving $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$ and $b|_N$ is nondegenerate, hence perfect because $N$ is finite dimensional.
-Applying the above to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$, so $p+q+r=\dim V$ in every case.
+For a degenerate $b$ the same conclusions hold with $r=\dim\radic(V)$ nonzero, and $p+q+r=\dim V$.
 :::
 
 ::: {.proof}
 
-An ordered field has characteristic $0$, so $2$ is a unit and
+This is [@MH73, III §2.5].
+The one hypothesis of the book's that has to be spent is that an ordered field has characteristic $0$, hence $2$ is a unit and
 $$
 2\,b(u,v)=b(u+v,u+v)-b(u,u)-b(v,v).
 $$
+That identity is what guarantees a vector of nonzero square and hence, by @thm:orthogonal-decomposition, an orthogonal basis: without it a perfect symmetric form over a field of characteristic $2$ need have none, and the diagonalization argument does not start.
+Given an orthogonal basis, $V=V^{+}\perp V^{-}$ with the two summands definite, and $\dim V^{+}$ is maximal among positive definite subspaces because such a subspace meets $V^{-}$ only at $0$.
 
-*Perfect case.*
-Suppose first that $b$ is perfect.
-If $V\neq0$ then $b\neq0$, since $b=0$ would put every vector in the radical; so $b(u,v)\neq0$ for some $u,v$, and the displayed identity shows that one of $u$, $v$, $u+v$ has nonzero square.
-Take $u$ with $b(u,u)\neq0$; the line $L=\langle u\rangle$ has perfect restriction $b|_L$ because $b(u,u)$ is a unit, so @thm:orthogonal-decomposition gives $V=L\perp L^{\perp}$.
-The restriction to $L^{\perp}$ is perfect: if $x\in L^{\perp}$ pairs to zero with $L^{\perp}$ then it pairs to zero with $L$ as well, so $x$ lies in the radical of $b$, which is zero.
-Inducting on $\dim V$ gives an orthogonal basis $u_1,\dots,u_n$, that is, $b(u_i,u_j)=0$ for $i\neq j$.
-
-Let $V^{+}$ be the span of those $u_i$ with $b(u_i,u_i)>0$ and $V^{-}$ the span of those with $b(u_i,u_i)<0$.
-Orthogonality gives $V=V^{+}\perp V^{-}$ on the nose, and $b$ is positive definite on $V^{+}$ and negative definite on $V^{-}$: a vector there is $\Sum a_iu_i$ over $i$ in one index set, and $b(\Sum a_iu_i,\Sum a_iu_i)=\Sum a_i^{2}b(u_i,u_i)$ is a sum of terms of one sign, vanishing only when every coefficient does.
-So $(V,b)\cong(V^{+},b|_{V^{+}})\perp(V^{-},b|_{V^{-}})$ with the two summands definite of the stated signs.
-
-That $\dim V^{+}$ is the greatest dimension of a positive definite subspace: if $W$ is positive definite and $0\neq w\in W\cap V^{-}$, then $b(w,w)>0$ because $W$ is positive definite and $b(w,w)\leq0$ because $b$ is negative semidefinite on $V^{-}$, which is impossible; so $W\cap V^{-}=0$ and $\dim W\leq\dim V-\dim V^{-}=\dim V^{+}$, with equality for $W=V^{+}$.
-An isometry carries a positive definite subspace to a positive definite subspace of the same dimension, so $\dim V^{+}$ and $\dim V^{-}$ depend only on the isomorphism class, and the signature of @def:signature is $(\dim V^{+},\dim V^{-},0)$ by @def:signature, with $p+q=\dim V$.
-
-*Degenerate case.*
-Let $r=\dim\radic(V)>0$ and choose a complement $N$ of $\radic(V)$ in $V$.
-If $x\in\radic(V)$ then $b(x,-)=0$ by definition of the radical, and $b(-,x)=0$ by symmetry, so every pairing involving $\radic(V)$ vanishes and $V=\radic(V)\perp N$.
-The restriction $b|_N$ is perfect: if $x\in N$ pairs to zero with all of $N$, then it pairs to zero with $\radic(V)$ as well, so $x\in\radic(V)\cap N=0$.
-The perfect case applied to $N$ writes $N\cong V^{+}\perp V^{-}$, hence $V\cong V^{+}\perp V^{-}\perp\radic(V)$, and $p+q+r=\dim V$.
+The degenerate clause is not part of the cited statement and is derived here: for a complement $N$ of $\radic(V)$, every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
 :::
 
 ::: {.definition #def:definiteness title="Definiteness"}
@@ -624,7 +581,6 @@ Then $b$ is
 - *hyperbolic*, or of Lorentzian signature, if $n\geq2$ and $(p,q,r)=(1,n-1,0)$;
 
 - *parabolic* if $n\geq2$ and $(p,q,r)=(0,n-1,1)$.
-
 :::
 
 ::: {.convention}
@@ -670,26 +626,14 @@ Here $\dim S=2\,i(V)$ and $\dim A=\dim V-2\,i(V)$.
 
 ::: {.proof}
 
-*Existence and the dimensions.*
-Induct on $\dim V$. If $V$ has no isotropic vector it is anisotropic, and $S=0$, $A=V$ works.
-Otherwise choose $0\neq v$ with $b(v,v)=0$. By perfection $b(v,-)$ is a nonzero functional, so there is $w$ with $b(v,w)=\lambda\neq0$; replacing $w$ by $\lambda^{-1}w$ gives $b(v,w)=1$.
-Then $P\definedas\langle v,w\rangle$ has Gram matrix $\begin{pmatrix}0&1\\1&b(w,w)\end{pmatrix}$, whose determinant $-1$ is a unit, so $b|_P$ is perfect and @thm:orthogonal-decomposition gives $V=P\perp P^{\perp}$.
+This is [@MH73, III §1.1 and §1.7].
+Two of the clauses are worth recording, because they are where the book's hypotheses are doing work.
 
-The plane $P$ is split in the sense of @def:hyperbolic-plane: the line $\langle v\rangle$ is a direct summand of $P$, being the first summand of $P=\langle v\rangle\oplus\langle w\rangle$, and for $x=\alpha v+\beta w$ one has $b(v,x)=\beta$, so $\langle v\rangle^{\perp_P}=\langle v\rangle$ whatever the value of $b(w,w)$.
-The restriction to $P^{\perp}$ is perfect by the argument of @thm:sylvester, and $P^{\perp}$ has smaller dimension, so the induction hypothesis gives $P^{\perp}\cong S'\perp A$ with $S'$ split and $A$ anisotropic.
-Then $V\cong(P\perp S')\perp A$, and $P\perp S'$ is split: if $N'$ is a lagrangian of $S'$ then $\langle v\rangle\perp N'$ is a lagrangian of $P\perp S'$, being a direct summand of a direct summand, isotropic because each summand is, and with $(\langle v\rangle\perp N')^{\perp}=\langle v\rangle^{\perp}\perp N'^{\perp}=\langle v\rangle\perp N'$ by @def:orthogonal-sum.
-So $S\definedas P\perp S'$ and $A$ give the required decomposition.
+Existence does not need $2$ to be a unit: if $v$ is isotropic and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
+So the induction produces $S\perp A$ with $A$ anisotropic over any field.
 
-For the dimensions, $i(S)=\tfrac12\dim S$: a lagrangian of $S$ is totally isotropic, and its dimension is $\tfrac12\dim S$ since $\dim N+\dim N^{\perp_b}=\dim S$ for a perfect form and $N=N^{\perp_b}$, while $i(S)\leq\tfrac12\dim S$ by @def:witt-index.
-Also $i(A)=0$, a nonzero vector of a totally isotropic subspace having $b(x,x)=0$.
-
-That $i(V)=i(S)$ for $V=S\perp A$ with $A$ anisotropic is the second cited step [@MH73, III §1.2]: it is a consequence of Witt's extension theorem, which moves a maximal totally isotropic subspace into $S$, and it is not derived here.
-It fails without the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic, with $i=1$, while neither summand contains an isotropic vector, so the index is not additive over orthogonal sums in general.
-Granting it, $\dim S=2\,i(V)$ and $\dim A=\dim V-\dim S=\dim V-2\,i(V)$.
-
-*Uniqueness of $A$.*
-This is Witt's cancellation theorem [@MH73, III §1.7]: if $X\perp Z\cong Y\perp Z$ for perfect symmetric forms over a field then $X\cong Y$, applied to the two decompositions of $V$.
-It is the one step of this statement not derived above, and the reason is not bookkeeping: the standard proof splits a common rank-one summand off both sides, which needs a vector with nonzero square, and over a field of characteristic $2$ a symmetric form can have all squares zero.
+What is cited rather than derived is (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace [@MH73, III §1.2], and (ii) Witt cancellation for the uniqueness of $A$ [@MH73, III §1.7].
+Neither is bookkeeping: the first fails without the hypothesis on $A$, since $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic with index $1$ while neither summand contains an isotropic vector, and the standard proof of the second splits a rank-one summand off both sides, which needs a vector of nonzero square and so is not available in characteristic $2$.
 :::
 
 ::: {.example #ex:witt-index-over-Q title="Witt index and signature"}
