@@ -45,7 +45,7 @@ Every relatively minimal rational elliptic surface is Halphen of some index.
 In AE22, the case $S = \HalphenInvariants$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \definedas X/\iota$ is an index 2 Halphen pencil.
 More generally, by AE22 section 4C, the lattices $S = (10+n,\, 12-n,\, \delta)$ for $1\leq n\leq 9$ give index 2 Halphen K3 surfaces $X$ with an $I_{2k}$ fiber, and contracting the $(-1)$-curves in the special fiber yields index 2 Halphen pencils with an $I_k$ fiber.
 
-These are **precisely the lattices of @tbl:coble-lattices**, the ten Coble families of [[coble-families-research-program|the Coble families research program]].
+These are **precisely the lattices of [the Coble lattice table](#sec-coble-lattice-table)**, the ten Coble families of [[coble-families-research-program|the Coble families research program]].
 The lattice coincidence is the whole content of the conjecture: two geometrically different families of surfaces are attached to one line of Nikulin's triangle.
 :::
 

@@ -1,4 +1,4 @@
-,# Enriques to Coble correspondence
+# Enriques to Coble correspondence {#sec-enriques-coble-correspondence}
 
 ::: {.theorem #thm:cusp_correspondence}
 

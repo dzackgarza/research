@@ -1,4 +1,4 @@
-# Invariant and coinvariant lattices
+# Invariant and coinvariant lattices {#sec-invariant-coinvariant}
 
 ::: {.definition #def:invariant_coinvariant_lattices title="Invariants and coinvariants of integral group actions"}
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ and let $\rho\colon G\too\Orth(L)$ be an action of a finite group. The homomorphism $\rho$ makes $L$ a left module over the integral group ring $\bZ[G]$, with augmentation $\epsilon_G\colon\bZ[G]\too\bZ$ and augmentation ideal $J_G\definedas\ker(\epsilon_G)$.

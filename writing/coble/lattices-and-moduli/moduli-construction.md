@@ -1,4 +1,4 @@
-Ma# Constructions of the moduli space {#sec-moduli-construction}
+# Constructions of the moduli space {#sec-moduli-construction}
 
 We summarize the relevant moduli spaces:
 

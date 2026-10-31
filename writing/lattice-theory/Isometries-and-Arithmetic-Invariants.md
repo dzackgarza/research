@@ -202,57 +202,7 @@ Then $G_L=A^{\mathsf T}G_MA$ and $\abs{\det A}=[M:f(L)]$.
 Index $1$ holds exactly for the isometries.
 :::
 
-## Reflections {#sec-reflections}
-
-::: {.definition #def:reflection-in-a-vector title="Reflection in a vector"}
-
-Let $R$ be a Dedekind domain with fraction field $K$, let $L\in\mathbf{Lat}_R$, and let $v\in L$ be anisotropic.
-The *reflection in* $v$ is the endomorphism
-$$
-s_v\in\operatorname{End}_{K\text{-}\mathbf{Mod}}(L_K),
-\qquad
-s_v(x)=x-\frac{2\,\beta_{L_K}(x,v)}{\beta_L(v,v)}\,v,
-$$
-on the base change $L_K$ of @def:module-base-change.
-
-It sends $v$ to $-v$, fixes $v^{\perp L_K}$ pointwise, and squares to the identity.
-It preserves $\beta_{L_K}$: writing $c=2\beta_{L_K}(x,v)/\beta_L(v,v)$ and $d=2\beta_{L_K}(y,v)/\beta_L(v,v)$,
-$$
-\beta_{L_K}(x-cv,\;y-dv)
-=\beta_{L_K}(x,y)-d\,\beta_{L_K}(x,v)-c\,\beta_{L_K}(y,v)+cd\,\beta_L(v,v)
-=\beta_{L_K}(x,y),
-$$
-the last two terms cancelling the first two.
-So $s_v\in O(L_K)$.
-:::
-
-::: {.proposition #prop:reflection-integrality title="When a reflection is an isometry of $L$"}
-
-Keep the notation of @def:reflection-in-a-vector and define the pairing ideal by the image factorization
-$$
-I_v\definedas\operatorname{im}\qty{\beta_L(-,v)\colon U L\to R}\triangleleft R.
-$$
-Scalar extension induces
-$$
-\operatorname{bc}_{L,K}\colon
-\operatorname{End}_{R\text{-}\mathbf{Mod}}(U L)
-\too
-\operatorname{End}_{K\text{-}\mathbf{Mod}}(L_K),
-\qquad
-f\longmapsto f\tensor_R K.
-$$
-Since $U L$ is finite projective, $\operatorname{End}_{R\text{-}\mathbf{Mod}}(U L)$ is torsion-free, so $\operatorname{bc}_{L,K}$ is a monomorphism.
-Then
-$$
-s_v\in\operatorname{im}(\operatorname{bc}_{L,K})
-\quad\Longleftrightarrow\quad
-2I_v\injects\beta_L(v,v)R\injects R.
-$$
-Under this condition let $\widetilde s_v$ be the unique preimage.
-Faithfulness of scalar extension on these Hom-modules gives $\widetilde s_v^2=\id_L$ and $\widetilde s_v^*\beta_L=\beta_L$, hence $\widetilde s_v\in O(L)$.
-For $R=\bZ$, @def:lattice-basic-invariants gives $I_v=\div_L(v)\bZ$.
-In particular the condition holds when $\beta_L(v,v)\in\{\pm1,\pm2\}$; hence reflections in roots of square $-2$ lie in $O(L)$.
-:::
+Reflections and their integrality are treated in @sec-reflections, which carries the proofs.
 
 ## Matrix realizations
 
@@ -306,50 +256,8 @@ In an abelian category, the analogous cardinality of a cokernel is used only aft
 
 ## The Miranda--Morrison sequence
 
-::: {.theorem #thm:miranda-morrison title="The Miranda–Morrison exact sequence"}
-Let $L$ be an even indefinite lattice of rank at least $3$.
-In the notation of [@MM09, Thm. V.5.1], let $\delta_L\colon\Orth(A_{L,q})\too\operatorname{MM}(L)$ be the Miranda--Morrison connecting morphism and let $g(L)$ be the genus group.
-Then
-$$
-1\too\widetilde\Orth(L)
-\too\Orth(L)
-\xrightarrow{\rho_{L,q}}\Orth(A_{L,q})
-\xrightarrow{\delta_L}\operatorname{MM}(L)
-\too g(L)
-\too1
-$$
-is exact.
-If $K_L\injects\Sigma(L)$ denotes the pullback subgroup appearing in [@MM09, Thm. V.5.1], then
-$$
-1
-\too
-K_L\Sigma^\#(L)
-\too
-\Sigma(L)
-\too
-\operatorname{MM}(L)
-\too
-1
-$$
-is exact.
-Consequently the epi--mono factorization of @def:discriminant-rep satisfies
-$$
-I_{L,q}
-\isoto
-\ker(\delta_L)
-\injects
-\Orth(A_{L,q}).
-$$
-:::
-
-::: {.corollary #cor:nikulin-mm-vanishing title="Nikulin stable-range vanishing"}
-If $L$ satisfies the hypotheses of [@Nik80, Thm. 1.14.2], in particular $\rank L\geq\ell(A_L)+2$, then
-$$
-\operatorname{MM}(L)=0,
-\qquad
-g(L)=1.
-$$
-:::
+The exact sequence, the connecting morphism, and Nikulin's vanishing criterion are stated with their proofs in @sec-miranda-morrison, together with the obstruction and genus groups that their statements name.
+Only the genus itself is used here, and it is defined next.
 
 ::: {.definition #def:genus title="Genus and class set"}
 

@@ -123,6 +123,15 @@ $$
 The first isomorphism theorem gives the asserted short exact sequence.
 :::
 
+Consequently the epi--mono factorization of the discriminant representation of @def:discriminant-rep satisfies
+$$
+I_{L,q}
+\isoto
+\ker(\delta_L)
+\injects
+\Orth(A_{L,q}).
+$$
+
 ::: {.corollary #cor:nikulin-mm-vanishing title="Nikulin's criterion for vanishing obstructions"}
 
 Let $L$ be an even indefinite integral lattice of rank at least $3$. Write $\ell_p(A_L)$ for the length of its $p$-primary discriminant module and $q_{L,2}$ for its $2$-primary quadratic discriminant form. Assume

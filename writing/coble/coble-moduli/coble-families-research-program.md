@@ -10,7 +10,7 @@ tags:
 notes: |-
   Provenance: `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/research-statements/canonical/my_research_statement/ResearchStatement.md`, section "Future Work / Coble surfaces with $1\leq n\leq 10$ boundary components".
   Not in the dissertation.
-  The table of the ten lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogonal complements $N = M^\perp$ is **already recorded** in [[coble-lattice-table|the Coble lattice table]] (@tbl:coble-lattices), sourced from Cossec-Dolgachev-Liedtke, *Enriques Surfaces I*, Table 5.1, p. 553. This note records only the research program built on it, which is not recorded elsewhere.
+  The table of the ten lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogonal complements $N = M^\perp$ is **already recorded** in [[coble-lattice-table|the Coble lattice table]], sourced from Cossec-Dolgachev-Liedtke, *Enriques Surfaces I*, Table 5.1, p. 553. This note records only the research program built on it, which is not recorded elsewhere.
 ---
 
 # The research program for $F_{\Co,n}$, $2 \leq n \leq 10$ {#sec-coble-families-research-program}
@@ -62,7 +62,7 @@ These semifans are either refinements or coarsenings of the canonical Coxeter fa
 ::: {.remark title="Each family embeds into unpolarized Enriques moduli"}
 
 By *Enriques Surfaces I*, Prop.
-5.4.6, for each rank-$(10+n)$ lattice in @tbl:coble-lattices there is an embedding
+5.4.6, for each rank-$(10+n)$ lattice in [the Coble lattice table](#sec-coble-lattice-table) there is an embedding
 $$
 F_{\Co,n} \injects \fen
 $$

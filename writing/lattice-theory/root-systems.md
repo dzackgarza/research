@@ -1,4 +1,4 @@
-# Root systems and root lattices
+# Root systems and root lattices {#sec-root-systems}
 
 ::: {.convention #conv:root-sign title="Root-lattice sign convention"}
 The symbols $A_n,D_n,E_n$ denote negative-definite root lattices. Coordinate realizations below use the negative standard form $\beta(e_i,e_j)=-\delta_{ij}$ on $\bZ^n$ and $\bQ^n$. Their positive-definite Euclidean realizations are obtained by the twist $(-)(-1)$ of @def:form-twist. This twist preserves the underlying module, so $L[k]=L(-1)[-k]$ as sets of vectors and $\Orth(L)=\Orth(L(-1))$ as subgroups of $\Aut_\bZ(L)$.

@@ -130,7 +130,7 @@ $$
 so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
 For a nonsymplectic involution whose fixed locus is a single rational curve, the fixed-locus formula assigns the invariant lattice these same invariants $(r, a, \delta) = (11, 11, 1)$ [@CDL25 Def. 5.4.3, Eqn. 5.3.1], so $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
-Since $S_\Co \iscontainedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @prop:invariant_coinvariant_primitive the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
+Since $S_\Co \iscontainedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @thm:invariants-coinvariants-integral the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
 That the invariants $(11, 11, 1)_1$ determine the isometry class $\generators{2}\oplus\generators{-2}^{10}\cong\generators{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80].
 This derivation makes explicit the invariants stated by citation in @rmk:k3-cover-invariants.
 :::

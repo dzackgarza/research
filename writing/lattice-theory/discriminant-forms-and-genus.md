@@ -1,4 +1,4 @@
-# Discriminant forms and the genus
+# Discriminant forms and the genus {#sec-discriminant-genus}
 
 ::: {.convention #conv:discriminant-lattice-notation title="Discriminant-form notation"}
 
