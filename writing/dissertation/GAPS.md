@@ -16,20 +16,27 @@ What has since been settled is listed at the end, so that a reader can tell "res
   dissertation tree also carried the parallel analysis for $F_4$, where
   $N \cong D_7$: the seven Niemeier lattices containing $D_7$
 
-  $$\tilde D_{24},\ \tilde D_{16} \oplus \tilde E_8,\ \tilde D_{12}^{2},\ \tilde D_{10} \oplus \tilde E_7^{2},\ \tilde D_8^{3},\ \tilde D_9 \oplus \tilde A_{15},\ \tilde D_7 \oplus \tilde A_{11} \oplus \tilde E_6$$
+  $$\tilde E_8^{3},\ \tilde E_8 \oplus \tilde D_{16},\ \tilde E_7^{2} \oplus \tilde D_{10},\ \tilde D_{12}^{2},\ \tilde D_8^{3},\ \tilde D_9 \oplus \tilde A_{15},\ \tilde E_6 \oplus \tilde D_7 \oplus \tilde A_{11}$$
 
   and their orthogonal complements, giving nine possibilities, among them
   $\tilde D_{17}$, $\tilde D_{12} \oplus \tilde D_5$,
   $\langle -4 \rangle \oplus \tilde D_8^{2}$,
   $\tilde A_1^{2} \oplus \tilde A_{15}$, and $\tilde E_6 \oplus \tilde A_{11}$.
-  The list above is corrected, and the correction is a check rather than a transcription: a
-  $D_7$ subdiagram is the trivalent tree with arm lengths $(1,1,4)$, which sits inside
-  $D_n$ exactly for $n\geq 7$ and inside no $A_n$ (a path) and no $E_n$ (arms
-  $(1,2,2)$, $(1,2,3)$, $(1,2,4)$, never two arms of length $1$). Of the $24$ Niemeier root
-  systems exactly seven contain a $D_n$ with $n\geq 7$, and they are the seven displayed.
-  The earlier version of this list carried $\tilde E_8^{3}$, which contains no $D_7$ at all,
-  and omitted $\tilde D_{24}$, which does; a $D_7$ inside $D_n$ is moreover an orthogonal
-  direct summand, so it is primitive, whereas a $D_7$ inside $E_8$ would have index $2$ in it.
+  The list displayed is the one the working notes carried. It is unsettled, and a revision of
+  this note that replaced one of its items was wrong to do so; the list as it stands is neither
+  verified nor known to be complete.
+  Counting subdiagrams of one fixed simple-root diagram does not enumerate root embeddings: in
+  the model of $E_8$ whose roots are the $\pm e_i\pm e_j$ and the half-spinors, the simple roots
+  $e_1-e_2,\dots,e_6-e_7,e_6+e_7$ generate a $D_7$ inside the coordinates $1,\dots,7$, so $E_8$
+  does contain $D_7$, although $D_7$ is no subdiagram of the standard $E_8$ diagram.
+  Nor is $D_7$ an orthogonal direct summand of $D_n$ in the coordinate block: $D_7\oplus
+  D_{n-7}$ has index $2$ in $D_n$, since $D_n$ imposes one parity condition on the whole
+  coordinate vector and that block imposes two, so the gluing has to be kept and primitivity
+  checked rather than assumed.
+  Both points were got wrong in the previous revision of this note, which therefore does not
+  correct the list either: which lattice-theoretic condition on a Niemeier lattice these seven
+  items are meant to satisfy is still to be read off Scattone's construction, and until it is,
+  the degree-$4$ case is open and no replacement list should be quoted.
   The nine complements listed here and in the working notes have not been recomputed and
   should not be quoted until they are. What the seven-item list is for is the analogue of the
   $d=1$ construction, where the four boundary lattices arise from $E_7$-complements in Niemeier
