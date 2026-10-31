@@ -222,6 +222,35 @@ The reduction map sends $\Gamma$-orbits of primitive isotropic vectors to $\rho(
 The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in @thm:coble-heegner-finite-orbits, and the lift of that finite decomposition to primitive isotropic vectors of $T_\Co$ is open.
 :::
 
+::: {.lemma #lem:stable-orthogonal-not-transitive title="The stable orthogonal group is not transitive on isotropic lines"}
+
+Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be isotropic generators of the first hyperbolic summand of $B$, so that in $T_\Co$ they are primitive isotropic vectors with $e\cdot f = 2$.
+Then no $g\in\Gamma_\Co = \Orth^+(T_\Co)^*$ satisfies $g(\ZZ e) = \ZZ f$.
+So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the arithmetic group of $\fco$ is not, and $\overline{F_\Co}^{\bb}$ has at least two $0$-cusps.
+:::
+
+::: {.proof}
+
+By definition of the stable orthogonal group, $g$ acts trivially on $A_{T_\Co}$; and the identification $A_{T_\Co}\cong B/2B$ of @prop:twisted-unimodular-discriminant is $\Orth(B)$-equivariant, $g$ sending the class of $\tfrac12 x$ to the class of $\tfrac12 g(x)$ for $x\in B$.
+
+Suppose $g(\ZZ e) = \ZZ f$, so $g(e) = m f$ for some $m\in\ZZ$. Because $e$ is primitive and $g$ is an isometry, $g(e)$ is primitive, so $m = \pm1$.
+Now $\tfrac12 e\in T_\Co^*$, because $\beta_{T_\Co}\bigl(\tfrac12 e, B\bigr) = \beta_{B}(e,B)\subseteq\ZZ$; hence $g(\tfrac12 e) = \pm\tfrac12 f$ is again in $T_\Co^*$, and applying $g$ to the class of $\tfrac12 e$ gives the class of $\pm\tfrac12 f$.
+That class is the class of $\tfrac12 e$, since $g$ fixes every class, so $\tfrac12(e\mp f)\in T_\Co = B$, that is $e\mp f\in 2B$.
+But $e$ and $f$ are two elements of a $\ZZ$-basis of $B$, and the coordinates of $e - f$ on $e$ and $f$ are $1$ and $-1$, so $e\mp f\notin 2B$. Contradiction.
+:::
+
+::: {.remark}
+
+The number of $0$-cusps is a property of the pair $(T_\Co,\Gamma_\Co)$ and not of the lattice: with $\Orth^+(T_\Co)$ in place of $\Gamma_\Co$ it is one (@thm:unpolarized-cusps), and the group attached to $\fco$ is the stable one throughout (@sec-moduli-construction).
+
+The argument gives a lower bound and no upper one.
+Since $\Gamma_\Co$ fixes every class of $A_{T_\Co}$, two primitive isotropic vectors in different classes lie in different orbits, so the number of $\Gamma_\Co$-orbits is at least the number of classes of $A_{T_\Co}$ attained by primitive isotropic vectors.
+That number is the orbit of a single class under the image of $\Orth(T_\Co)$ in $\Orth(q_{T_\Co})$, and surjectivity of that image is not available at $r = a = 11$: the surjectivity of $\Orth(T)\too\Orth(q_T)$ quoted among the open problems holds for $r > a$.
+So the refinement is at least the two orbits of @lem:stable-orthogonal-not-transitive and may be much finer.
+
+What the finite calculation does determine is the other end: @thm:coble-isotropic-class-orbits shows the $527$ nonzero isotropic *classes* form a single orbit under $\Orth(q_{T_\Co})$, so the finiteness in $A_{T_\Co}$ is a statement about the finite group and not about the cusps of $\fco$.
+:::
+
 ## The Eichler criterion and its hypothesis
 
 ::: {.remark title="Why the Eichler criterion is unavailable for $T_\Co$"}

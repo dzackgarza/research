@@ -48,15 +48,16 @@ Existence and the eigenlattice description are settled by @prop:theta-co-exists:
 
 ::: {.question title="Open problem: enumeration of isotropic orbits by Sterk's technique"}
 
-How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth(T_\Co)$, $\Orth^{*}(T_\Co)$, and the arithmetic group $\Gamma_\Co$?
+How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth^{*}(T_\Co)$ and under the arithmetic group $\Gamma_\Co = \Orth^+(T_\Co)^*$?
+For $\Orth^+(T_\Co)$ the count is one (@thm:unpolarized-cusps); for the stable group it is at least two, the two isotropic generators of the $U(2)$ summand lying in distinct orbits (@lem:stable-orthogonal-not-transitive), so $\fco$ has at least two $0$-cusps rather than one.
 Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\div(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\div(v),\, \bar v \in A_T,\, v^2 = 0)$.
 The finite half is settled by @prop:coble-q-fibers and @thm:coble-isotropic-class-orbits: $A_{T_\Co}$ has $528$ isotropic classes, and $\Orth(q_{T_\Co})$ has two orbits of sizes $1$ and $527$. By @prop:coble-primitive-isotropic-classes every primitive isotropic vector of $T_\Co$ maps to the nonzero orbit. Under the degree-$2$ Enriques group, @thm:coble-heegner-finite-orbits gives the refinement $[1, 2, 120, 135, 270]$. The open work is the passage from these finite decompositions back to the lattice:
 
-- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and verify that exactly one $\Orth^{*}(T)$-orbit exists in divisibility $2$, the Eichler criterion being unavailable because $T_\Co$ contains no copy of $U$ (the Eichler criterion (@thm:eichler-criterion) and the remark following it);
+- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and determine how many $\Orth^{*}(T)$-orbits lie in divisibility $2$; there are at least two (@lem:stable-orthogonal-not-transitive), so the finite picture, in which every primitive isotropic vector maps to the single nonzero class, does not lift to a single orbit. The Eichler criterion is unavailable here because $T_\Co$ contains no copy of $U$ (the Eichler criterion (@thm:eichler-criterion) and the remark following it);
 
 - decide whether the four nonzero orbits of $\gent$-induced classes lift to four orbits of primitive isotropic vectors or to more, an integral parabolic stabilizer being permitted to have proper image in the finite one;
 
-- verify that the $\Orth(T)$-orbits coincide with the $\Gamma_\Co$-orbits, so that the Baily--Borel $0$-cusp is unique.
+- count the $\Gamma_\Co$-orbits themselves, and decide which of them carry the Coble stable limits. The $\Orth(T)$-orbits do not coincide with the $\Gamma_\Co$-orbits (@lem:stable-orthogonal-not-transitive), so the uniqueness of the Baily--Borel $0$-cusp fails for the arithmetic group of $\fco$; what is open is the decomposition, not whether it is trivial.
 
 By @lem:divisibilityAlwaysTwoTco, every primitive isotropic $v \in T_\Co$ has $\div_{T_\Co}(v) = 2$; this fixes the divisibility datum but not the orbit count.
 :::
@@ -75,7 +76,7 @@ The open work is to:
 
 - compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$). By @prop:theta-co-exists, $\theta$ already exists as a lattice isometry without a coordinate description, and @thm:coble-heegner-finite-orbits already determines the image of the resulting group in $\Orth(q_{T_\Co})$; what a generating set adds is the lattice group above that finite image;
 
-- verify the *uniqueness of the $1$-cusp for $\Gamma_\Co$*. For the full orthogonal group, @thm:unpolarized-cusps together with @prop:tco-split-maximal gives transitivity of $\Orth^+(T_\Co)$ on primitive isotropic planes and $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$. The residue is the subgroup statement, which does not follow from the full-group one.
+- determine the $\Gamma_\Co$-orbits of primitive isotropic *planes*, and with them the $1$-cusps of $\fco$. For the full orthogonal group, @thm:unpolarized-cusps together with @prop:tco-split-maximal gives transitivity of $\Orth^+(T_\Co)$ on primitive isotropic planes and $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$. The residue is the subgroup statement, which does not follow from the full-group one, and the separator that settles the $0$-cusp in @lem:stable-orthogonal-not-transitive has no plane analogue here: a plane is not an element of $T_\Co$, so the discriminant class of a vector does not descend to it. Even the number of orbits is therefore open.
 
 This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in @lem:1_cusp_correspondence.
 :::
