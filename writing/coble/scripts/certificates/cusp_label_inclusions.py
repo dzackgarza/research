@@ -5,16 +5,19 @@
         -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
         /repo/writing/coble/scripts/certificates/cusp_label_inclusions.py
 
-The question this answers is not which abstract overlattice of the label occurs -- both retained
-candidates in a pair are isometric to the computed quotient, so no isometry invariant can
-separate them -- but which inclusion is *marked*: the one cut out by the source's own root
-generators.  So each label root r_i of the component is pushed through
+The question is not which abstract overlattice of the label occurs -- the retained candidates in
+a pair are isometric to the computed quotient by construction, so no isometry invariant can
+separate them -- but which inclusion is *marked* by the source's own root generators.  Per node
+of the labelled component, with the public contracts only:
 
-    P -> Q = P/rad(P)        P.radical_quotient_projection()
-    Q ->> K = v^perp/<v>     the isotropic reduction of I = <v>
+    qroot   = proj(P.module_generator(node))              P ->> Q = P/rad(P)
+    lifted  = K.orthogonal_complement().inclusion().preimage(qroot)
+    image   = K.projection()(lifted)                      the image in K
+    S       = K.sublattice_from(images, saturate=False)   the span
+    j       = S.inclusion(),  j.gluing_subgroup()         the quotient inside A_S
 
-and the subobject of K that the images span is recorded with its index and quotient.  The
-retained maps are the library's own; no root is re-created as an abstract Cartan lattice here.
+The node -> image family is retained, so the marked inclusion is recorded with its index and its
+glue rather than inferred from a determinant ratio.
 """
 import sys
 
@@ -47,54 +50,52 @@ print("P: rank", P.module_rank(), "det", P.determinant(), "| Q: rank", Q.module_
       "det", Q.determinant())
 
 CUSPS = {
-    "A~17":    (list(range(18)), ("A", 17)),
-    "D~10":    ([18, 17] + list(range(8)) + [19], ("D", 10)),
-    "E~8^(1)": ([13, 14, 15, 16, 17, 0, 1, 2, 18], ("E", 8)),
-    "D~16":    ([19, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 18], ("D", 16)),
-}
-LABEL_NODES = {          # the roots whose images are the label: the component plus its partners
-    "A~17":    list(range(18)),
-    "D~10":    [18, 17] + list(range(8)) + [19] + list(range(9, 16)) + [20],
-    "E~8^(1)": [13, 14, 15, 16, 17, 0, 1, 2, 18] + [4, 5, 6, 7, 8, 9, 10, 11, 19] + [20, 23],
-    "D~16":    [19, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 18] + [3, 23],
+    "A~17":    (list(range(18)), ("A", 17), list(range(18))),
+    "D~10":    ([18, 17] + list(range(8)) + [19], ("D", 10),
+                [18, 17] + list(range(8)) + [19] + list(range(9, 16)) + [20]),
+    "E~8^(1)": ([13, 14, 15, 16, 17, 0, 1, 2, 18], ("E", 8),
+                [13, 14, 15, 16, 17, 0, 1, 2, 18] + list(range(4, 12)) + [19] + [20, 23]),
+    "D~16":    ([19, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 18], ("D", 16),
+                [19, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 0, 1, 18] + [3, 23]),
 }
 
-for name, (chain, typ) in CUSPS.items():
+for name, (chain, typ, label_nodes) in CUSPS.items():
     block = Matrix(ZZ, [[G24[a, b] for b in chain] for a in chain])
     basis = block.kernel().basis_matrix()
     a = [x for x in basis[0]]
     scale = min(abs(x) for x in a if x != 0)
     a = [x / scale for x in a]
     marks = {node: int(c) for node, c in zip(chain, a) if c}
-    print(f"\n=== {name}: marks {marks}")
-    w = P.linear_combination(marks)
-    v = proj(w)
+    print(f"\n=== {name}: marks on the source nodes {marks}")
+    print("  multiset equals the Kac marks:",
+          sorted(marks.values()) == sorted(CartanType([typ[0], typ[1], 1]).a().values()))
+    v = proj(P.linear_combination(marks))
     I = Q.primitive_isotropic_subobject(v)
     K = I.isotropic_reduction()
     print("  K: rank", K.module_rank(), "det", K.determinant(), "sig", K.signature_pair())
-    reduction = I.isotropic_quotient_projection()
-    images = []
-    for node in LABEL_NODES[name]:
-        x = proj(P.basis_vector(node))
-        try:
-            images.append(reduction(x))
-        except Exception as error:
-            print(f"  root r_{node} did not descend:", type(error).__name__, str(error)[:120])
-    print("  source root images in K:", len(images))
+    perp_inclusion = K.orthogonal_complement().inclusion()
+    images = {}
+    for node in label_nodes:
+        qroot = proj(P.module_generator(node))
+        lifted = perp_inclusion.preimage(qroot)
+        images[node] = K.projection()(lifted)
+    print("  node -> image family retained for", len(images), "roots")
     try:
-        S = K.subobject_on(tuple(images))
-        print("  spanned subobject: rank", S.module_rank(), "primitive", S.is_primitive())
+        S = K.sublattice_from(tuple(images.values()), saturate=False)
+        print("  S = sublattice_from(images, saturate=False): rank", S.module_rank(),
+              "det", S.determinant())
+        j = S.inclusion()
+        print("  j = S.inclusion():", type(j).__name__, "| primitive:", j.is_primitive())
         detK, detS = abs(K.determinant()), abs(S.determinant())
-        print("  det(K) =", detK, " det(S) =", detS, " -> index^2 =", detK // detS if detS else "?")
-        inc = S.inclusion()
-        print("  inclusion kept:", type(inc).__name__)
-        cok = inc.cokernel()
-        print("  quotient K/S:", type(cok).__name__, "order",
-              cok.cardinality() if hasattr(cok, "cardinality") else "n/a")
-        dm = S.discriminant_module()
-        print("  S discriminant module: order", dm.cardinality(), "invariants",
-              dm.invariant_factors())
-        print("  S is primitive in K:", inc.is_primitive())
+        print("  [K : S]^2 = det(S)/det(K) =", detS, "/", detK, "=",
+              detS // detK if detK else "?")
+        try:
+            g = j.gluing_subgroup()
+            print("  j.gluing_subgroup():", type(g).__name__,
+                  "order", g.cardinality() if hasattr(g, "cardinality") else g,
+                  "invariants", g.invariant_factors() if hasattr(g, "invariant_factors") else "")
+        except Exception as error:
+            print("  gluing_subgroup raised:", type(error).__name__, str(error)[:200])
     except Exception as error:
-        print("  subobject construction failed:", type(error).__name__)
+        print("  sublattice_from failed:", type(error).__name__)
         print("   full message:", error)
