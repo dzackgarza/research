@@ -14,7 +14,7 @@ These are realized by allowing the K3 cover of an Enriques surface to acquire an
 
 Separately, one can construct a Hodge-theoretic period domain directly using lattice theory.[^coble-note-2] Write $\abs{-2K_S} = \theset{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible components.
 By adjunction and the genus formula, $C_i\cong \PP^1$ and $C_i^2 = -4$, so $K_S^2 = -n$.
-Let $\Sigma$ be a sufficiently general Coble point set in $\PP^2$.
+Let $\Sigma$ be a sufficiently general Coble set of ten points in $\PP^2$.
 There are 10 irreducible families of K3s obtained as the double cover of $S$ branched over $C$, where the fixed locus of the deck transformation is comprised of $n$ smooth rational curves.
 Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - \abs{\Sigma}$.
 

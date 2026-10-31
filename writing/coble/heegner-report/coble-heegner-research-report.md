@@ -221,7 +221,7 @@ For small-coefficient polarized Calabi--Yau pairs, boundedness and independence 
 
 A toroidal compactification is defined by compatible rational polyhedral fans at the rational boundary components.
 A semitoroidal compactification is defined by compatible semifans; cones may have infinitely many rational generators [@Loo03; @AE23].
-A generalized Coxeter semifan is obtained from a Coxeter fan by removing the walls generated entirely by roots that are invisible to the stable-pair combinatorics [@AET23; @AEGS25].
+A generalized Coxeter semifan is obtained from a Coxeter fan by removing the walls generated entirely by roots that do not occur in the stable-pair combinatorics [@AET23; @AEGS25].
 
 ## The ambient AEGS framework {#sec-aegs-framework}
 

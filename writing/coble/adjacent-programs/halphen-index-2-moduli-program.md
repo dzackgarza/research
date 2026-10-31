@@ -60,7 +60,7 @@ The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
 That fiber can be used to construct a recognizable divisor $R$.
-This is the load-bearing conjecture: it is what supplies the $R$ the previous conjecture needs.
+This conjecture is what supplies the $R$ that the previous one needs.
 :::
 
 ## The stated starting point

@@ -334,7 +334,7 @@ For $m_{st}\in\theset{2,3}$ the entries $0$ and $1$ are already integral, and th
 ::: {.definition #def:coxeter-base-field}
 
 Let $M$ be a Coxeter matrix on $S$.
-Its **base field** is the subfield
+Its **field of definition** is the subfield
 $$
 K(M) \definedas \QQ\!\left(\, 2\cos(\pi/m_{st}) \;:\; s\neq t,\ m_{st} < \infty \,\right) \iscontainedin \RR
 ,

@@ -81,7 +81,7 @@ $|h_1 h_2| = \sqrt{h_1^2 h_2^2}\, w_{12}$ with $w_{12}$ from the table above.
 
 This project's [Reflection groups and Vinberg](#sec-reflection-groups-and-vinberg) note describes dotted edges in prose only; the tables above are the corresponding numerical conventions, and are what the reconstruction formula
 $$
-\langle v_i, v_j\rangle = \sqrt{v_i^2 v_j^2}\,\cos\!\left(\frac{\pi}{m_{ij}+2}\right)
+\langle v_i, v_j\rangle = \sqrt{\abs{v_i^2}\,\abs{v_j^2}}\,\cos\!\left(\frac{\pi}{m_{ij}}\right)
 $$
 of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams) depends on.
 
@@ -90,7 +90,7 @@ of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-f
 |  | Type II | Type III |
 | --- | --- | --- |
 | Boundary strata | 1-cusps, curves $C_i$ | 0-cusps, points $p_j$ |
-| Sublattice type | isotropic lines in $I^1(L)$ | isotropic planes in $I^2(L)$ |
+| Sublattice type | isotropic lines in $L$ | primitive isotropic planes in $L$ |
 | Subdiagram type | maximal parabolic | maximal elliptic |
 
 ## $E_8$ Gram matrix

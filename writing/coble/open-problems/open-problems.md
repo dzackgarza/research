@@ -40,7 +40,7 @@ $$
 \qquad
 \lkt^{-\theta} \cong S_\Co,
 $$
-and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as a functorial consequence of the lattice isometry (cf. @def:folded-root, @lem:root-folding-tdp, and @def:invariant_coinvariant_lattices). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
+and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as an immediate consequence of the lattice isometry (cf. @def:folded-root, @lem:root-folding-tdp, and @def:invariant_coinvariant_lattices). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
 Existence and the eigenlattice description are settled by @prop:theta-co-exists: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding and extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices. The open technical content is to *write down the $22\times 22$ matrix of $\theta_\Co$ on the standard basis of $U^{3}\oplus E_8^{2}$*, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.
 :::
 
@@ -68,7 +68,7 @@ $$
 \Gamma_\Co = \Stab_{\Orth(\ten)}(h_\Co) \intersect Z_{\Orth(\ten)}(\theta),
 $$
 where in the Enriques sector $h_\En = e + f\in U(2)$ is the degree-$2$ polarization vector of square $4$ on the K3 side (@prop:gamma-en-two-gluing), and $h_\Co\in K_S^{\perp\Pic(S)}\iscontainedin\Pic(S)$ is the degree-$2$ Coble polarization (@def:coble-polarization-classes), of square $2$ downstairs with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$.
-The class $h_\Co$ is not the plane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of $h_\En$.
+The class $h_\Co$ is not the hyperplane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of $h_\En$.
 A source-backed candidate for $\Gamma_\Co$, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ from @def:gamma-co-en; identifying the two is part of the open work below.
 An explicit representation of $\Gamma_\Co$ by *matrix generators* is presently a stub.
 The open work is to:
@@ -173,7 +173,7 @@ The open work is:
 ::: {.question #qst:regularized-theta title="Open problem: theta series of indefinite lattices"}
 
 For a positive-definite lattice the theta series $\theta_L(q) = \Sum_{v\in L} q^{v^2/2}$ converges and is a modular form.
-For an indefinite lattice each level set $L[k]$ can be infinite (see the Lattice Theory section), the series does not converge, and a regularization is required before any modular statement can be made.
+For an indefinite lattice the set of vectors of square $k$ can be infinite (see the Lattice Theory section), the series does not converge, and a regularization is required before any modular statement can be made.
 
 The open work is to define a regularized theta series for the hyperbolic lattices of this monograph, determine its transformation behaviour, and relate it to the lattice invariants --- discriminant form, genus, and the reflection group --- that the rest of this document computes.
 :::

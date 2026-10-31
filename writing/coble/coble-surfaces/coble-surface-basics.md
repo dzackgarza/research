@@ -23,7 +23,8 @@ This is the classical example studied in [@Cob19] and [@Cob29] -- the blowup $S$
 [@Cob19] shows, among other things, that there are finitely many $\Aut(S)$-orbits of smooth rational curves of negative self-intersection.
 
 Note that conversely, starting with such a plane sextic $\tilde C$, one can show that the proper transform $C$ of $\tilde C$ is in $\abs{-2K_S}$.
-Blowing up the singularities of $C$ yields a Coble surface with *smooth* anti-bicanonical divisor; such Coble surfaces are not the image of any birational but not biregular morphism from another Coble surface and are said to be **terminal**. We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface.
+We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface; the sources use *terminal* for the same condition.
+Blowing up the singularities of $C$ yields the minimal Coble surface of its birational class, with smooth anti-bicanonical divisor and no $(-1)$-curve left to blow down.
 :::
 
 ::: {.remark title="On the importance of Cobles"}

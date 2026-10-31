@@ -33,7 +33,7 @@ Depending on the nilpotency index of $N$, Kulikov models are classified into thr
 - **Type $\latI$** ($N = 0$): $\mcx_0$ is a smooth K3 surface.
 
 - **Type $\latII$** ($N^2 = 0$, $N \neq 0$): $\mcx_0$ is a chain of surfaces glued along elliptic curves.
-  The dual complex is an interval $\mathbf{IAD}^1$.
+  The dual complex is an interval.
 
 - **Type $\mathrm{III}$** ($N^3 = 0$, $N^2 \neq 0$): $\mcx_0$ is a union of rational surfaces glued along rational curves, forming an anticanonical cycle on each component.
   The dual complex is a sphere $\ias$.

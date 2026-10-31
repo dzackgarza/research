@@ -16,7 +16,7 @@ $$
 .
 $$
 
-Adjunction yields
+For the double cover branched along $B \in \abs{-2\mcl}$ the canonical bundle formula gives
 $$
 K_X = \pi^*(K_Y + \mcl)
 ,

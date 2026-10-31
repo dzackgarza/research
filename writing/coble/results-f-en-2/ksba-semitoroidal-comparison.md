@@ -36,7 +36,7 @@ Cited from AEGS, in the section the statement names. The book uses the compariso
 ::: {.remark title="Fan versus strict-semifan bookkeeping"}
 
 The five cusps of $\bbcpt{\fentwo}$ match Sterk's five $0$-cusps of the Enriques period space [@Ste91], one semifan per cusp.
-Among the entries of $\semitorfan$, the even-indexed entries $\torfan_2, \torfan_4$ are honest fans, while the odd-indexed entries $\semifan{F}_1, \semifan{F}_3, \semifan{F}_5$ are strict semifans (in the sense of @def:generalized-coxeter-semifan, i.e.\ with infinite irrelevant subgroup, so not locally finite).
+Among the entries of $\semitorfan$, the even-indexed entries $\torfan_2, \torfan_4$ are honest fans, while the odd-indexed entries $\semifan{F}_1, \semifan{F}_3, \semifan{F}_5$ are semifans that are not fans, the irrelevant roots generating an infinite reflection group [@AE22; @AKSZ23].
 :::
 
 ::: {.proof}
@@ -54,7 +54,7 @@ The source note states the reduction to Alexeev--Engel but does not carry out th
 ::: {.remark title="Role of the normalization"}
 
 The normalization $(-)^\nu$ is a technical condition standard in KSBA compactifications: taking a Zariski closure can introduce non-normal points where distinct degenerations are identified, producing a non-separated stack.
-Since the normalization morphism is finite, birational, and relatively smooth in codimension one, it confines the worst singularities to high-codimension sub-loci, which is what makes the isomorphism above an isomorphism of normal varieties.
+Since the normalization morphism is finite, birational, and an isomorphism in codimension one, it confines the worst singularities to high-codimension sub-loci, which is what makes the isomorphism above an isomorphism of normal varieties.
 :::
 
 ## Descent of semitoroidal data
@@ -81,5 +81,5 @@ Within the settled degree-$2$ Enriques case [@AEGS25] this descent is expected t
 
 ::: {.remark}
 
-The polarized Coble compactification records the same comparison as an open program rather than a theorem: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan (@conj:ksba_semitoroidal_comparison, @conj:restricted_ramification_semifan). Its extra difficulties are exactly the ones absent from the Enriques theorem above: branchwise root data, the ramification-semifan restriction identity, and the absence of moduli loss (@conj:no_moduli_loss).
+The polarized Coble compactification records the same comparison as an open program rather than a theorem: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan (@conj:ksba_semitoroidal_comparison, @conj:restricted_ramification_semifan). Its extra difficulties are exactly the ones absent from the Enriques theorem above: the root stabilizers of the branches, the ramification-semifan restriction identity, and the absence of moduli loss (@conj:no_moduli_loss).
 :::

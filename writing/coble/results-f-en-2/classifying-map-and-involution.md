@@ -67,16 +67,17 @@ The no-coarsening statement is moreover the same phenomenon as the no-moduli-los
 
 ::: {.theorem #thm:zariski_main_theorem title="Zariski's Main Theorem (classical)"}
 
-Let $f\colon X \to Y$ be a birational, finite morphism between normal varieties, with $Y$ proper.
-Then $f$ is an isomorphism.
+Let $f\colon X \to Y$ be a birational morphism of varieties.
+If $Y$ is normal, then $f$ maps $X$ isomorphically onto an open subset of $Y$; if in addition $f$ is proper, then $f$ is an isomorphism.
 :::
 
 ::: {.proof}
 
 This is Zariski's main theorem in its birational form, [@Har77, Ch. V, Prop. 5.2] and [@Mum70, §III.9].
 
-The form quoted is the classical one, weaker than the general statement: a birational finite morphism onto a normal variety is an isomorphism onto an open subset, and properness of the target upgrades that to an isomorphism, so normal plus proper is exactly what closes the gap.
-It promotes a birational finite map to an isomorphism, and the hypotheses to check are those two.
+The first assertion is the theorem. The second follows from the first because a proper morphism has closed image, so an image that is open is also closed, hence all of $Y$ when $Y$ is connected.
+The hypotheses to check are therefore birationality, normality of the target, and -- for the isomorphism rather than the open immersion -- properness of the map itself.
+A normalization is finite, so for the applications below properness is automatic and normality of the target carries the content.
 
 
 :::
@@ -92,17 +93,16 @@ For the Enriques compactification, the classifying map
 $$
 \phi\colon \normalize{B} \to \normksbacpt{\fentwo}
 $$
-is expected to satisfy the four hypotheses of Zariski's Main Theorem (@thm:zariski_main_theorem):
+is expected to satisfy the hypotheses of Zariski's Main Theorem (@thm:zariski_main_theorem):
 
 1. **Birational**: $\phi$ is an isomorphism on the interior $\fentwo$.
 
-2. **Finite**: by the proposed "no coarsening" semifan argument of the finiteness conjecture (@conj:classifying_map_finite).
+2. **Finite fibres**: by the proposed "no coarsening" semifan argument of the finiteness conjecture (@conj:classifying_map_finite).
 
-3. **Normal**: both spaces are normal by construction ($\normalize{B}$ as a normalization, $\normksbacpt{\fentwo}$ likewise).
-
-4. **Proper**: the KSBA moduli stacks are proper [@AEGS25; @Kol23a].
+3. **Normal target**: $\normksbacpt{\fentwo}$ is normal by construction, and $\normalize{B}$ is a normalization.
 
 Granting these, Zariski's Main Theorem would give that $\phi$ is an isomorphism, identifying the geometric KSBA limits with the explicitly constructible semitoroidal boundary.
+Properness of the target is not one of the hypotheses: it enters only through $\phi$ being a map of proper spaces, which it inherits from properness of the KSBA moduli stacks [@AEGS25; @Kol23a].
 :::
 
 ::: {.remark title="Status of the hypotheses"}

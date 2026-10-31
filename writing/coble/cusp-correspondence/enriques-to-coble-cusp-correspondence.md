@@ -25,7 +25,7 @@ We prove the cusp correspondence by comparing divisibilities of isotropic vector
 
 ::: {.lemma #lem:divisibilityAlwaysTwoTco}
 
-Every $v\in T_\Co$ has $\div_{T_\Co}(v)$ even; and $\div_{T_\Co}(v) = 2$ exactly when $v\notin 2T_\Co$, that is when $v$ is primitive modulo $2$.
+Every $v\in T_\Co$ has $\div_{T_\Co}(v)$ even; and $\div_{T_\Co}(v) = 2$ exactly when $\div_L(v) = 1$ for $L=\generators{1}\oplus E_{10}$, that is when the coordinates of $v$ have no common divisor.
 :::
 
 ::: {.proof}
@@ -40,13 +40,12 @@ So $T_\Co$ and $L$ have the same underlying $\bZ$-module and $\beta_{T_\Co}=2\,\
 For $v,x\in T_\Co$ then $\beta_{T_\Co}(v,x)=2\beta_L(v,x)$, so every value is even, whether or not $v$ pairs nontrivially with something: $\div_{T_\Co}(v)$ is even for every $v$.
 That is all the Gram-matrix argument establishes, and it is the first clause.
 
-For the second, $\div_{T_\Co}(v)=2$ exactly when no integer $m>1$ divides every value $\beta_L(v,x)$, since $\div_{T_\Co}=2\div_L$ and $\div_L$ is the generator of the ideal of values.
-Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism, and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$.
-So the family is indivisible exactly when $v\notin 2L=2T_\Co$.
+For the second, $\div_{T_\Co}(v)=2\div_L(v)$, so $\div_{T_\Co}(v)=2$ exactly when $\div_L(v)=1$, that is when no integer $m>1$ divides every value $\beta_L(v,x)$.
+Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism, and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$; so $\div_L(v)=1$ is the indivisibility of the functional $\beta_L(v,-)$, equivalently the primitivity of $v$ in $L$.
 
 The second clause is a hypothesis and cannot be dropped: pairing nontrivially with something does not force $\div=2$.
-The generator $h$ of the $\generators{2}$ summand has $h^2=2$ and $\div(h)=2$, but $(2h)^2=8$ and $2h$ pairs to $4$ with $h$, so $2h$ pairs nontrivially with something while $\div(2h)=4$.
-What $2\mid\div$ gives is only that the divisibility is even, and primitivity modulo $2$ is the missing hypothesis that isolates the value $2$.
+The generator $h$ of the $\generators{2}$ summand has $h^2=2$ and $\div(h)=2$, but $(2h)^2=8$ and $2h$ pairs to $4$ with $h$, so $\div(2h)=4$; and $\div(3h)=6$ with $3h$ not in $2T_\Co$, so neither "not in $2T_\Co$" nor "pairs nontrivially" characterizes divisibility $2$.
+What $2\mid\div$ gives is only that the divisibility is even, and $\div_L(v)=1$ is the hypothesis that isolates the value $2$.
 Every vector the cusp computations use is primitive, which is why the weaker hypothesis sufficed for them.
 :::
 

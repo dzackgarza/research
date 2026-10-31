@@ -12,7 +12,7 @@ As such, they are intimately tied to the theory of algebraic K3 surfaces equippe
 For a reduced plane sextic $C$, the double cover of $S$ branched along the proper transform of $C$ is a K3 surface $X$ which can be realized as a degeneration of the universal double cover of an Enriques surface, where $X$ acquires an $A_1$ singularity fixed by the Enriques involution.
 The resulting quotient has a quartic singularity whose resolution is an irreducible smooth rational curve $\tilde C$ satisfying $\tilde C^2 = -4$, and thus by [@Nue15 §3] is a Coble surface.
 
-We will be interested in Coble surfaces in the strong sense, where $\abs{-2K_S} = \theset{C_1 + \cdots + C_n}$ is a single reduced divisor comprised of $n$ disjoint smooth rational curves referred to as *boundary components* of $S$.
+We will be interested in the Coble surfaces for which $\abs{-2K_S}$ consists of the single reduced divisor $C_1 + \cdots + C_n$, comprised of $n$ disjoint smooth rational curves, the *boundary components* of $S$.
 It is known that $1\leq n\leq 10$, and for each such $n$, there is a moduli space $F_{\Co, n}$ of Coble surfaces with $n$ boundary components.
 When $n=1$, the moduli space $\fco \definedas F_{\Co, 1}$ of Coble surfaces can be described as a boundary divisor $\mch_{-2}$ in the 10-dimensional moduli space $F_{\En}$ of unpolarized Enriques surfaces, and thus $\fco$ is 9-dimensional.
 Moreover, $\fco$ was shown to be rational in [@DK13] via a comparison to a moduli space of cuspidal plane quintics.

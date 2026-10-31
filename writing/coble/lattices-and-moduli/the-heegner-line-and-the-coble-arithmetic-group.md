@@ -1,4 +1,4 @@
-# The Heegner line and the Coble arithmetic group {#sec-heegner-line}
+# The Heegner line and the stable orthogonal group {#sec-heegner-line}
 
 ::: {.remark}
 
@@ -81,7 +81,7 @@ By @thm:coble-heegner-line-unique, this divisor stays irreducible after passing 
 It is a statement about the negative vector $\delta$, and is independent of the count of $\gent$-orbits of primitive *isotropic* lines in $\ten$, of which there are five, one for each $0$-cusp of $\fentwo$ [@AEGS25 Cor. 3.12].
 :::
 
-## The Coble arithmetic group induced from the Enriques side
+## The stable orthogonal group induced from the Enriques side
 
 ::: {.definition #def:gamma-co-en title="The induced Coble subgroup"}
 
@@ -199,7 +199,7 @@ Both are statements in the finite quadratic space $A_{T_\Co}$.
 By @prop:coble-primitive-isotropic-classes, an integral parabolic stabilizer may have proper image in the finite one, so a finite orbit can split; hence neither decomposition yet classifies $\Gamma_\Co^\En(\delta)$-orbits of primitive isotropic *vectors* of $T_\Co$.
 :::
 
-## The Coble folding involution
+## The sign involution of the Coble primitive embedding
 
 ::: {.proposition #prop:theta-co-exists title="The sign involution of the Coble primitive embedding"}
 
@@ -232,7 +232,7 @@ For the last claim, an isometry commuting with an involution preserves its eigen
 
 ::: {.remark}
 
-By @prop:theta-co-exists, the folding involution $\theta$ is determined as a lattice isometry by the primitive embedding and the gluing anti-isometry.
+By @prop:theta-co-exists, the sign involution $\theta_\Co$ is determined as a lattice isometry by the primitive embedding and the gluing anti-isometry.
 What a matrix realization additionally supplies is a basis in which $\theta_\Co$, the polarization class, and the roots of the Coxeter diagram can be compared with one another.
 
 Combining @prop:theta-co-exists with @prop:gamma-en-two-gluing gives the Coble-side analogue: the restriction to $T_\Co$ of the centralizer of $\theta_\Co$ inside the stabilizer of a chosen polarization class $\tilde h_\Co\in S_\Co$ consists of those $g_T\in\Orth(T_\Co)$ for which some $g_S\in\Orth(S_\Co)$ satisfies $g_S(\tilde h_\Co) = \tilde h_\Co$ and $\bar g_T\circ\gamma_\Co = \gamma_\Co\circ\bar g_S$.

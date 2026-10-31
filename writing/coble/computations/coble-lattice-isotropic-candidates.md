@@ -42,11 +42,11 @@ $$
 
 Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` returning the minimum of $|\inner{v}{x}|$ over nonzero $x$, together with the full list of inner products.
 
-## The three-way parallel transport
+## The images under the embedding chain
 
 ::: {.construction title="Term-by-term transport along the embedding chain"}
 
-The same 18 vectors are transported term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
+The same 18 vectors are mapped term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
 
 - into $\ten = U \oplus U(2) \oplus E_8(2)$ by $h \mapsto e+f$;
 

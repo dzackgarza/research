@@ -81,24 +81,43 @@ Classifying all surfaces with this property is an open question recorded in the 
 
 With $B_1,\ldots,B_n$ the boundary components, set
 $$
-L \definedas \generators{\NS(S),\ \tfrac12 B_1 + \cdots + \tfrac12 B_n}_\ZZ,
+L \definedas \generators{\NS(S),\ \tfrac12 B_1,\ \ldots,\ \tfrac12 B_n}_\ZZ
+\iscontainedin \NS(S)_\QQ,
 \qquad
 \CM(S) \definedas \generators{B_1,\ldots,B_n}_\ZZ^{\perp L}.
 $$
+The half-classes are adjoined one at a time, so $L$ is an integral overlattice of $\NS(S)$ exactly when every $B_i$ is $2$-divisible, that is when $B_i \cdot D$ is even for every $D\in\NS(S)$; we assume this in what follows, and it is where the Coble boundary configuration earns the name.
 $\CM(S)$ serves as the replacement for $\NS(S)$ in the Coble setting.
 :::
 
-One computation about the defining data, since it decides what $\CM(S)$ can be.
-Since $|-2K_S|=\{D\}$ we have $D=-2K_S$, so $\tfrac12 D=-K_S\in\NS(S)$ and the lattice $L$ of the definition is $\NS(S)$ itself: the half-class adjoined is already integral.
-Equivalently $(B_1+\cdots+B_n)/2$ pairs with $B_i$ to $\tfrac12 B_i^2=-2$ and is the canonical class up to sign.
-So $\CM(S)$ is the orthogonal complement of the boundary configuration inside $\NS(S)$, and any relation between it and $S_{\Co}$ is a relation between two complements of different isotropic-free configurations in the same K3 lattice, not a statement about an enlarged $L$.
+Three computations about the defining data, since they decide what $\CM(S)$ can be.
+
+The index. One has $2\cdot\tfrac12 B_i = B_i \in \NS(S)$, and $\sum_i \tfrac12 B_i = \tfrac12(-2K_S) = -K_S\in\NS(S)$ because $|-2K_S|=\{D\}$ gives $D=-2K_S$; so $L/\NS(S)$ is an $\mathbb{F}_2$-vector space spanned by the $n$ classes of the $\tfrac12 B_i$ subject to the single relation $\sum_i[\tfrac12 B_i] = 0$, hence of dimension at most $n-1$, and of dimension exactly $n-1$ when the classes are independent:
+$$
+[L : \NS(S)] = 2^{\,n-1}.
+$$
+In particular $L = \NS(S)$ exactly when $n = 1$: then $\tfrac12 B_1 = -K_S$ is already integral, and the half-class adjoined carries nothing.
+
+The rank and signature. Since $L \iscontainedin \NS(S)_\QQ$ the two have the same rank $11$ and the same signature $(1,10)$.
+The $B_i$ are mutually orthogonal of square $-4$, so $\generators{B_1,\dots,B_n}_\ZZ$ is negative definite of rank $n$ and primitive in $L$; a primitive negative definite sublattice has orthogonal complement of
+$$
+\rank \CM(S) = 11 - n,
+\qquad
+\text{signature } \CM(S) = (1,\,10-n).
+$$
+At $n=1$ this is rank $10$ of signature $(1,9)$, the Enriques lattice $E_{10}$, and indeed $\CM(S) = K_S^{\perp \NS(S)}$ there, isometric to $S_\Co$.
+
+The embedding. $\CM(S)\hookrightarrow L$ is primitive, being an orthogonal direct summand, while $\CM(S)\hookrightarrow\NS(S)$ is not primitive once $n\geq 2$, since $L$ is strictly larger.
+So a relation between $\CM(S)$ and $S_\Co$ compares complements of different configurations inside the same K3 lattice, and the lattice to compare with $\Pic(X)$ of the K3 cover is $L$, not $\NS(S)$.
 
 ::: {.question #qst:coble-mukai-naturality title="Is the Coble--Mukai lattice the natural home for the group action?"}
 
 Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\Co}$, and how are the two related?
 
-Neither the source nor this book answers this, and the questions that have to come first are concrete: the rank and signature of $\CM(S)$, whether the boundary configuration is primitive in $\NS(S)$, and whether the embedding $\CM(S)\hookrightarrow\NS(S)$ is primitive.
-Those determine what $\CM(S)$ is, and none of them is settled here.
+Neither the source nor this book answers this.
+The prerequisites are settled above: $\CM(S)$ has rank $11-n$ and signature $(1,10-n)$, the boundary configuration is primitive in $L$ but not in $\NS(S)$ for $n\geq 2$, and $\CM(S)\hookrightarrow L$ is primitive while $\CM(S)\hookrightarrow\NS(S)$ is not.
+What remains open is whether the group acting on $\CM(S)$ is the stable orthogonal group of $L$ or the subgroup induced from $\NS(S)$.
+What the rank and signature do not determine is the discriminant form of $\CM(S)$ along the boundary, and that is where the group action lives.
 
 What can be said is why the question is not idle.
 $S_{\Co}\cong\generators{-2}\oplus E_{10}(2)$ is $2$-elementary, so $A_{S_{\Co}}=(\bZ/2)^{11}$ and the discriminant representation of @thm:two-elementary-surjectivity is surjective; the two mod-$2$ invariants $(r,a,\delta)$ that classify a $2$-elementary lattice are then the only handles on $\Orth(S_{\Co})$, and in the inert case $n_1=n_2=10$ they are the ones that take equal values.
