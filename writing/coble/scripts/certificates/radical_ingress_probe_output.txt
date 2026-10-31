@@ -1,0 +1,14 @@
+python 3.14.10
+P: rank 24 det 0 radical rank 5
+
+documented projection name:
+  has radical_quotient_projection: True
+  P.radical_quotient_projection failed: ValueError
+   full message: a formed-module component Integral lattice of rank 24 and signature (1, 18) -> Finitely presented module on 24 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 0, 1 ↦ 0, 2 ↦ 0, 3 ↦ 0, 4 ↦ 0, 5 ↦ 0, ...] (19 entries) must be a module map Free module on {0,...,23} over Integer Ring -> Finitely presented module on 24 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 0, 1 ↦ 0, 2 ↦ 0, 3 ↦ 0, 4 ↦ 0, 5 ↦ 0, ...] (19 entries), but Generic morphism:
+  From: Integral lattice of rank 24 and signature (1, 18)
+  To:   Finitely presented module on 24 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 0, 1 ↦ 0, 2 ↦ 0, 3 ↦ 0, 4 ↦ 0, 5 ↦ 0, ...] (19 entries) is Integral lattice of rank 24 and signature (1, 18) -> Finitely presented module on 24 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 0, 1 ↦ 0, 2 ↦ 0, 3 ↦ 0, 4 ↦ 0, 5 ↦ 0, ...] (19 entries)
+
+public ingress to the same quotient as a lattice:
+  IsotropicReductions(P.base_ring())(P.radical().inclusion()): OwnedJoinCategory.parent_class[_SparseFreeModuleParent].ObjectType
+  ingress failed: TypeError
+   full message: cannot form S^perp/S for Integral lattice of rank 19 and signature (1, 18): the isotropic reduction is taken of a sublattice with an inclusion into a lattice, but Integral lattice of rank 19 and signature (1, 18) is only an object of Category of infinite countable finitely generated nondegenerate even isotropic reductions over Integer Ring

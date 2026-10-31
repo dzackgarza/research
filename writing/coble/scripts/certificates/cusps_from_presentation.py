@@ -22,10 +22,19 @@ Where it stops, and the exact minimal failing call:
     AttributeError: 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no
     attribute 'primitive_isotropic_subobject'
 
-`radical_quotient()` returns a *presented module*, not a lattice, so the isotropic-subobject
-construction -- which is owned by `Lattices` -- is not reached from it.  That is the one API
-question this script leaves open for the library project; the trace is in the committed output
-beside it, and no quotient is hand-rolled here to get around it.
+`radical_quotient()` returns a presented module that *does* carry the descended form -- a
+presented module is not evidence that the form is missing, and the quotient object reports rank
+19, signature (1, 18), nondegenerate and even.  What is missing is the lattice specialization:
+the isotropic-subobject construction is owned by the lattice category and is not reached from
+the presented module.  That dispatch gap is assigned to the sage-extensions project, and
+`radical_ingress_probe.py` records the two exact entry points and their messages:
+
+  P.radical_quotient_projection()                       ValueError, formed-module component
+  IsotropicReductions(P.base_ring())(P.radical().inclusion())   constructs the rank-19 lattice
+      with the descended form, but .isotropic_reduction() raises TypeError: the object is only
+      in the isotropic-reductions category, not a represented subobject with an inclusion
+
+No quotient is hand-rolled here and no private machinery is used.
 """
 import sys
 

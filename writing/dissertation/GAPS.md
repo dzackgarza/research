@@ -61,6 +61,15 @@ What has since been settled is listed at the end, so that a reader can tell "res
   `module_morphisms.py:1665`) with `is_saturated := is_primitive` (`module_morphisms.py:1671`)
   -- and the calls that express the cusps are written out, unexecuted, in
   `writing/coble/scripts/certificates/cusps_degree_two.sage`.
+  The numbered-root Gram data is now settled (the candidate of the source incidence: rank 19,
+  kernel 5, all eight components carrying their Kac marks, Lemma 4.7's four coincidences as
+  relations), and the four cusp null vectors are in hand.  The four-cusp construction is blocked
+  at one library entry point: `P.radical_quotient_projection()` raises ValueError on the
+  formed-module component, and `IsotropicReductions(P.base_ring())(P.radical().inclusion())`
+  constructs the rank-19 lattice with the descended form but refuses `.isotropic_reduction()`
+  because the object is not a represented subobject.  That dispatch gap is assigned to the
+  sage-extensions project; `writing/coble/scripts/certificates/radical_ingress_probe.py` holds
+  both reproducers with their full messages.
   The library targets the research image's Sage development baseline on Python 3.14. It was not
   run on this container's Sage 10.8 / Python 3.12, which is not a supported host: nothing about
   the library is thereby in question, and provisioning an environment, or changing the library,
