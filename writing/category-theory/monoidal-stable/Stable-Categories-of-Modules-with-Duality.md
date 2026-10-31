@@ -138,6 +138,8 @@ The corresponding $\infty$-categorical constructions are @def:loops-suspension, 
 
 An $\infty$-category $\mcc$ is *stable* if it has a zero object, every morphism of $\mcc$ admits a kernel and a cokernel, and a triangle in $\mcc$ is exact if and only if it is coexact [@Lur09, Def. 2.9].
 The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences [@Lur09, §2].
+The hypothesis of the first is weaker than stability: it asks that $\mcc$ be pointed, admit cokernels, and have the suspension an equivalence.
+That hypothesis holds for every stable $\mcc$, and is in fact equivalent to stability, by [@Lur09, Rmk. 3.12], so the statement above is the corollary of the cited theorem that the book uses.
 :::
 
 For a pointed $\infty$-category $\mcc$ admitting the relevant finite limits and colimits, @sec-adjunctions gives
