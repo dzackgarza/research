@@ -1,0 +1,47 @@
+python 3.14.10
+sage_extensions /repo/.scratch/se-published/src/sage_extensions/__init__.py
+
+L with Gram [[-2]]: rank 1 det -2
+  discriminant object: OwnedJoinCategory.parent_class[_PresentedModule].ObjectType
+  module_rank: 0
+  cardinality: 2
+  invariant_factors: Invariant-factor family: [0 ↦ 2]
+  torsion_submodule raised: TypeError CategoricalIsomorphism.__init__() missing 1 required positional argument: 'inverse_computation'
+  discriminant_projection: OwnedModuleMor_with_category_with_category.ArrowType -> Finitely presented module on 1 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2]
+  projection is_surjective: True
+
+L with Gram [[-4]]: rank 1 det -4
+  discriminant object: OwnedJoinCategory.parent_class[_PresentedModule].ObjectType
+  module_rank: 0
+  cardinality: 4
+  invariant_factors: Invariant-factor family: [0 ↦ 4]
+  torsion_submodule raised: TypeError CategoricalIsomorphism.__init__() missing 1 required positional argument: 'inverse_computation'
+  discriminant_projection: OwnedModuleMor_with_category_with_category.ArrowType -> Finitely presented module on 1 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 4]
+  projection is_surjective: True
+
+L with Gram [[-8]]: rank 1 det -8
+  discriminant object: OwnedJoinCategory.parent_class[_PresentedModule].ObjectType
+  module_rank: 0
+  cardinality: 8
+  invariant_factors: Invariant-factor family: [0 ↦ 8]
+  torsion_submodule raised: TypeError CategoricalIsomorphism.__init__() missing 1 required positional argument: 'inverse_computation'
+  discriminant_projection: OwnedModuleMor_with_category_with_category.ArrowType -> Finitely presented module on 1 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 8]
+  projection is_surjective: True
+
+L with Gram [[2]]: rank 1 det 2
+  discriminant object: OwnedJoinCategory.parent_class[_PresentedModule].ObjectType
+  module_rank: 0
+  cardinality: 2
+  invariant_factors: Invariant-factor family: [0 ↦ 2]
+  torsion_submodule raised: TypeError CategoricalIsomorphism.__init__() missing 1 required positional argument: 'inverse_computation'
+  discriminant_projection: OwnedModuleMor_with_category_with_category.ArrowType -> Finitely presented module on 1 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2]
+  projection is_surjective: True
+
+L with Gram [[-2, 0], [0, -1]]: rank 2 det 2
+  discriminant object: OwnedJoinCategory.parent_class[_PresentedModule].ObjectType
+  module_rank: 0
+  cardinality: 2
+  invariant_factors: Invariant-factor family: [0 ↦ 2]
+  torsion_submodule order: 2
+  discriminant_projection: OwnedModuleMor_with_category_with_category.ArrowType -> Finitely presented module on 2 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2]
+  projection is_surjective: True

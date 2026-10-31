@@ -14,4 +14,6 @@ the label has 1 even overlattice inclusions
 quotient among them: 1
 index^2 = det(label)/det(boundary) = 1
 the boundary *is* the label (index 1): True
-isometry morphism available: True | discriminant modules: 0 0
+boundary: discriminant module of order 2 with invariant factors Invariant-factor family: [0 ↦ 2] | module rank 0
+label: discriminant module of order 2 with invariant factors Invariant-factor family: [0 ↦ 2] | module rank 0
+isometry morphism available: True

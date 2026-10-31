@@ -92,6 +92,11 @@ print("quotient among them:", len(found))
 index_squared = abs(label.determinant()) // abs(boundary.determinant())
 print("index^2 = det(label)/det(boundary) =", index_squared)
 print("the boundary *is* the label (index 1):", boundary.is_isometric(label))
-print("isometry morphism available:", hasattr(label, "isometry_to"),
-      "| discriminant modules:", boundary.discriminant_module().module_rank(),
-      label.discriminant_module().module_rank())
+# The discriminant group is *not* trivial just because its module rank is 0: Z/2 is a
+# torsion module.  Read its order and invariant factors.
+for name, L in (("boundary", boundary), ("label", label)):
+    A = L.discriminant_module()
+    print(f"{name}: discriminant module of order", A.cardinality(),
+          "with invariant factors", A.invariant_factors(),
+          "| module rank", A.module_rank())
+print("isometry morphism available:", hasattr(label, "isometry_to"))
