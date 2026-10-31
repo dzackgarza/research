@@ -58,10 +58,13 @@ Why the transcription is not in the source text
 -----------------------------------------------
 [1] print G_cox as a *figure* with the 24 vertex labels and the edge multiplicities
 (inner products 0, 1, 2, 6), and state that the 24 roots generate N, but they do not
-give the coordinates of the roots.  Recovering the four vertex subsets therefore means
-reading Fig. 1, exactly as `computations/scripts/sterk-enriques-cusps/
-sterk_cusp_diagrams.sage` does for Sterk's figures; that transcription is what
-OPEN_CUSPS records, and it is deliberately left empty rather than guessed.
+give the coordinates of the roots.  The vertex subsets are transcribed from the figure's
+own vector artwork (`read_fig1.py`) and recorded in VERTEX_SETS.  Two data are still
+missing, and both are needed before a null vector can be formed for three of the four
+cusps: the 24x24 Gram matrix of the roots (GRAM_GCOX), and the identification of each
+affine component's Cartan-type nodes with Fig. 1 labels.  They are left explicit rather
+than guessed, and no diagram label is ever used as a lattice coordinate: the roots are a
+family of 24 vectors in a rank 19 lattice.
 
 API.  The calls below are written against the documented methods of
 `sage_extensions.categories.lattices` at revision
@@ -75,51 +78,80 @@ API.  The calls below are written against the documented methods of
 `isotropic_quotient_projection` (:120), plus `parabolic_subgroup` (:145),
 `is_equivalent_to` (:306) and `transporter_witness_to` (:315); the lift along the
 projection is the library's own morphism `lift`, whose section contract is validated by
-`validate_lift` (`module_morphisms.py:589`).  Those are the names used below.
+`validate_lift` (`module_morphisms.py:589`).  Those are the names used below.  For the
+marks, `CartanType(...).a()` and `RootSystem(...).root_lattice().null_root()` are the
+verified accessors (see the marks section); `CartanType.null_root()` does not exist.
 """
 
 from sage.all import ZZ, block_diagonal_matrix, matrix  # noqa: F401
+from sage.combinat.root_system.cartan_type import CartanType
+from sage.combinat.root_system.root_system import RootSystem
 
 from sage_extensions.all import *  # noqa: F401,F403
 
-# ---------------------------------------------------------------- the lattices
+# ---------------------------------------------------------------- the two models of N
+#
+# Two different models of N = H + E8^2 + A1 are needed and they are not interchangeable.
+#
+# (a) The standard model: an explicit basis, H = <e, f> with e^2 = f^2 = 0, e.f = 1, and
+#     E8 negative definite.  This is the model in which the vector e is written down, i.e.
+#     the one cusp whose null vector does not come from the Coxeter diagram.
+#
+# (b) The root-family model: the 24 numbered roots r_0..r_23 of AET Fig. 1, as a *family*
+#     generating N.  The diagram gives their pairwise inner products and says they generate
+#     N, so the realization is the lattice spanned by 24 generators of a rank 19 lattice --
+#     24 vectors, not a basis, and the label i is an index into the family, never a basis
+#     coordinate.  Concretely: the free module on the r_i with Gram matrix GRAM_GCOX, modulo
+#     its radical; the library has to be asked for that lattice, not told coordinates.
+#
+# The script therefore never writes N.basis_vector(i) for a diagram label i.
 
-# AET's conventions: U = <e, f> with e^2 = f^2 = 0, e.f = 1, and E8 negative
-# definite.  T_2 = <-2> + U + U + E8 + E8 has rank 21, signature (2, 19), det -2.
 U = matrix(ZZ, [[0, 1], [1, 0]])
 E8_neg = -matrix(ZZ, CartanMatrix(["E", 8]).rows())          # negative definite
 T2 = Lattices(ZZ)(block_diagonal_matrix([matrix(ZZ, [[-2]]), U, U, E8_neg, E8_neg]))
-N = Lattices(ZZ)(block_diagonal_matrix([U, E8_neg, E8_neg, matrix(ZZ, [[-2]])]))
+N_standard = Lattices(ZZ)(block_diagonal_matrix([U, E8_neg, E8_neg, matrix(ZZ, [[-2]])]))
 
 assert T2.signature_pair() == (2, 19)          # the period lattice h^perp
 assert T2.det() == -2
-assert N.is_isometric(N)                        # N = H + E8^2 + A1, from [1] p. 17
+assert N_standard.module_rank() == 19 and abs(N_standard.det()) == 2
+
+# The Gram matrix of the 24 roots, in the labels 0..23 of Fig. 1.  NOT YET TRANSCRIBED: the
+# figure prints the diagram and the inner products 0, 1, 2, 6, and neither the article's
+# text nor the repository carries the matrix.  It is the one datum the family model needs.
+GRAM_GCOX = None
+
+if GRAM_GCOX is not None:
+    # the lattice spanned by the family: 24 generators with GRAM_GCOX, rank 19
+    N_family = Lattices(ZZ)(GRAM_GCOX)          # the span, with its Gram
+    assert N_family.module_rank() == 19
+    assert N_family.is_even()
+    # and it is the source's N, which is what licenses moving a null vector across
+    assert N_family.is_isometric(N_standard)
+    roots = [N_family.basis_vector(i) for i in range(24)]     # r_i, generators of N
 
 # ----------------------------------------------------------- the 0-cusp line I
 
-# I = <e_1>, the isotropic basis vector of the first hyperbolic summand.  The 0-cusp
-# is unique up to Gamma_2 by [1] Sec. 3B, so any primitive isotropic vector may be
-# taken as the representative; this one makes I^perp/I isometric to N by inspection.
+# I = <e_1>, the isotropic basis vector of the first hyperbolic summand.  The 0-cusp is
+# unique up to Gamma_2 by [1] Sec. 3B, so any primitive isotropic vector may represent it.
 I = T2.primitive_isotropic_subobject(T2.basis_vector(1))
 assert I.is_primitive() and I.is_saturated()    # is_saturated := is_primitive
 assert I.is_totally_isotropic() and I.module_rank() == 1
-I_perp = I.isotropic_perpendicular()            # I^perp, as a subobject of T_2
 proj = I.isotropic_quotient_projection()        # I^perp ->> I^perp/I
 zero_cusp_reduction = I.isotropic_reduction()   # the quotient lattice, with its form
 assert zero_cusp_reduction.is_nondegenerate()
-assert zero_cusp_reduction.is_isometric(N)      # so I^perp/I is the source's N
+assert zero_cusp_reduction.is_isometric(N_standard)   # so I^perp/I is the source's N
 
 # ------------------------------------------------------- the four 1-cusp planes
 
 def cusp_plane(null_vector, label):
-    r"""The plane J = I + Z*v_tilde for a null ray R_{>=0}v of N, and its quotient.
+    r"""The plane J = I + Z*v_tilde for a primitive isotropic v in N, and J^perp/J.
 
-    Retains both maps: the lift of `null_vector` to T_2 along the reduction of I, and
-    the reduction of the plane, so that J^perp/J is computed as the quotient of a
-    plane and compared with the label by isometry rather than by invariants.
+    The label is a finite-index sublattice of J^perp/J, not generally the whole of it, so
+    what is checked is that one of the even overlattices of the label *is* J^perp/J, with
+    the index recorded.  Isometry with the label itself is asserted only in the index-1
+    case; asserting it in general would be the error this contract exists to prevent.
     """
     assert null_vector.is_isotropic() and null_vector.is_primitive()
-    # the lift along the 0-cusp projection, through the library's own section contract
     lifted = proj.lift(null_vector.underlying_element())
     assert lifted is not None, (
         "the projection I^perp ->> I^perp/I returned no lift of this vector: either the "
@@ -128,16 +160,32 @@ def cusp_plane(null_vector, label):
     J = T2.primitive_isotropic_subobject(T2.basis_vector(1), lifted)
     assert J.is_primitive() and J.is_saturated()
     assert J.module_rank() == 2
+
     boundary = J.inclusion().isotropic_reduction()
     assert boundary.module_rank() == 17
     assert boundary.is_negative_definite()
-    # the finite diagram left by the affine one, i.e. the label
-    assert boundary.is_isometric(label), (boundary, label)
-    return J, boundary
+    # the determinant, forced by the splitting lemma (formalization/coble-enriques/
+    # Splitting.lean), and the index of the label inside the boundary
+    assert abs(boundary.det()) == abs(T2.det()) == 2
+    det_label = abs(label.det())
+    index_squared = det_label // abs(boundary.det())        # k^2 = det(label)/det(boundary)
+    # J^perp/J is an even overlattice of the label: one of the label's even overlattice
+    # inclusions has it as codomain.
+    inclusions = [inc for inc in label.even_overlattice_inclusions()
+                  if inc.codomain().is_isometric(boundary)]
+    assert inclusions, (
+        "J^perp/J is not an even overlattice of the label: the label is not a finite-index "
+        "sublattice of the boundary lattice of this cusp"
+    )
+    if index_squared == 1:
+        assert boundary.is_isometric(label)                  # the label is the boundary
+    return J, boundary, inclusions[0], index_squared
 
-
-# E8^2 + A1: v = e, the case fixed without the figure.  v^perp/<v> = E8^2 + A1.
-J_E8, B_E8 = cusp_plane(N.basis_vector(0), N)
+# E8^2 + A1: the one null vector that does not come from the diagram.  In the standard
+# model N = <e,f> + E8^2 + A1 the vector e is primitive isotropic and v^perp/Zv = E8^2 + A1,
+# which is the label of that cusp (marks 1, no Coxeter data needed).
+J_E8, B_E8, inc_E8, idx_E8 = cusp_plane(N_standard.basis_vector(0), N_standard)
+assert idx_E8 == 1
 
 # The vertex layout of [1] Fig. 1 (p. 22), rows top to bottom, as printed:
 #
@@ -149,79 +197,69 @@ J_E8, B_E8 = cusp_plane(N.basis_vector(0), N)
 #     17  18  23  19   7
 #      0   1   2   3   4   5   6
 #
-# The rim of the triangle, in cyclic order, is
-RIM = (12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11)
-# and the first of the four small figures beside Fig. 1 has exactly the rim black and the
-# six interior nodes 20, 22, 21, 23, 19, 18 white: an 18-cycle, i.e. an affine A17, whose
-# marks are all 1.  So the A~17 cusp's null vector is the sum of the eighteen rim roots.
-# `formalization/coble-enriques/CoxeterRim.lean` proves that this mark vector is in the
-# kernel of the rim Gram matrix and is isotropic (rim_mulVec_marks, rim_marks_isotropic).
-A17_CUSP = dict(vertices=RIM, marks=tuple([1] * 18), label="A(17)")
-
-# The other three vertex subsets, transcribed from the e-print artwork of the same figure
-# by `read_fig1.py` (arXiv:1903.09742v3, fig-wD10wE7.pdf, fig-2wE8wA1.pdf,
-# fig-wD16wA1.pdf; the small figures' black nodes, matched to the labelled layout).  What
-# is verified is the vertex set and its size; the *marks* are attached to the affine
-# diagram's nodes and so need the induced graph, which the same artwork encodes in its
-# stroke widths and has not been read yet.  So these entries carry the vertex set only.
+# The four vertex subsets, transcribed from the e-print artwork of the figure
+# (`read_fig1.py`: the small figures' black disks, matched to the printed node positions).
 VERTEX_SETS = {
-    "D~10 E~7":    (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20),
-    "E~8^2 A~1":   (0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 23),
-    "D~16 A~1":    (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 23),
+    "A~17":     tuple(range(18)),                                   # the rim, an 18-cycle
+    "D~10 E~7": (0, 1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 17, 18, 19, 20),
+    "E~8^2 A~1":(0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 23),
+    "D~16 A~1": (0, 1, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 23),
 }
-assert [len(v) for v in VERTEX_SETS.values()] == [19, 20, 19]
-assert tuple(sorted(set(range(24)) - set(VERTEX_SETS["E~8^2 A~1"]))) == (3, 12, 21, 22)
+assert [len(v) for v in VERTEX_SETS.values()] == [18, 19, 20, 19]
+assert set(range(24)) - set(VERTEX_SETS["A~17"]) == {18, 19, 20, 21, 22, 23}
 
-OPEN_CUSPS = {name: None for name in VERTEX_SETS}   # marks pending the induced graph
+# --------------------------------------------------------- marks, from the root system
+#
+# The marks are the Kac marks of the affine Cartan type, and both maintained accessors are
+# verified in the installed source, not guessed:
+#
+#   CartanType(["D", 10, 1]).a()                     indexed Kac marks (dict)
+#   RootSystem(["D", 10, 1]).root_lattice().null_root()   the null root as a root-lattice
+#                                                    element (docstring at
+#                                                    root_lattice_realizations.py:1349,
+#                                                    implemented as sum(a[k]*alpha[k]))
+#
+# CartanType.null_root() does not exist: CartanType carries a(), dynkin_diagram() and
+# cartan_matrix() (cartan_type.py:1607 ff.), and null_root belongs to the root lattice
+# realization.  So the call is
+#
+#     marks = CartanType(shape).a()                # {node index in the Cartan type: mark}
+#
+# and the node index is the one of the *Cartan type*, which has to be identified with the
+# Fig. 1 labels through the induced graph; it is not the Fig. 1 label itself.
+SHAPES = {"D~10 E~7": [["D", 10, 1], ["E", 7, 1]],   # the two components, per [1]'s caption
+          "E~8^2 A~1": [["E", 8, 1], ["E", 8, 1], ["A", 1, 1]],
+          "D~16 A~1": [["D", 16, 1], ["A", 1, 1]]}
 
-# ---------------------------------------------------- mark recovery, via the root system
-#
-# The marks of an affine diagram are its null root, and the maintained way to get them is
-# Sage's root-system machinery, not a table written out by hand:
-#
-#     from sage.combinat.root_system.cartan_type import CartanType
-#     shape = CartanType(['D', 10, 1])          # the affine diagram, from AET's caption
-#     marks = shape.null_root()                 # {index: coefficient}
-#
-# What is still needed before those calls can run is the correspondence between the
-# affine diagram's nodes and the vertex labels of Fig. 1, i.e. the induced graph read off
-# the artwork.  The pipeline in `read_fig1.py` recovers the *vertices* (and reproduces the
-# 18-cycle for A~17), but on the other three its edge list carries strokes that are not
-# edges of G_cox -- for instance (0,18), (3,20), (9,18), (12,20) in the D~10 E~7 figure --
-# so an edge is not yet accepted as a diagram edge.  The cross-check that decides it is
-# against the edge set of the labelled `fig-Vinberg` artwork, which is the next
-# transcription step; until it is done, no mark is assigned and no null vector is formed
-# for those three cusps.
-#
-# Once the edge sets are settled, each cusp is assembled as
-#
-#     vertices, marks = ...                       # per cusp, from the two transcriptions
-#     v = sum(marks[i] * N.basis_vector(i) for i in vertices)
-#     J, boundary = cusp_plane(v, label_of[name])  # as for A~17 above
-#
-# with the isometry to the label and, if wanted, `boundary.discriminant_module()` in place
-# of any hand-rolled comparison of invariants.
+# `CartanType(shape).dynkin_diagram()` is the maintained object to validate a transcribed
+# component against (cartan_type.py:1607; cartan_matrix() builds the Cartan matrix from it),
+# so a transcription is accepted only when its edge-labelled induced graph is isomorphic to
+# the diagram of the Cartan type it is claimed to be.
+MARKS = {name: [CartanType(s).a() for s in shapes] for name, shapes in SHAPES.items()}
+# A~17 is the one component whose correspondence needs no matching: a cycle, so its marks
+# are all 1, and CoxeterRim.lean proves that mark vector is null for the rim Gram matrix.
+MARKS["A~17"] = [{i: 1 for i in range(18)}]
 
-# What each transcribed entry turns into, unchanged for all four:
+# Assemble each cusp's null vector *in the family model*, through the root family, never
+# through basis coordinates:
 #
-#     vertices, marks = OPEN_CUSPS[name]
-#     v = sum(marks[i] * N.basis_vector(i) for i in vertices)   # null, primitive
-#     J, boundary = cusp_plane(v, label_of[name])
+#     for name, vertices in VERTEX_SETS.items():
+#         components = component_vertex_lists[name]           # from the induced graph
+#         v = N_family.zero()
+#         for comp_vertices, marks in zip(components, MARKS[name]):
+#             for node, mark in marks.items():
+#                 v += mark * roots[comp_vertices[node]]       # roots[i] = r_i, i = Fig.1 label
+#         J, boundary, inclusion, index = cusp_plane(v, label_lattice[name])
 #
-# and then the glue, if it is still wanted, is a question about `boundary` alone:
-#
-#     boundary.discriminant_module()          # A of J^perp/J, not of the label
-#     label.discriminant_projection()         # A_label -> A of J^perp/J, for the inclusion
-#     label.even_overlattice_inclusions()     # the candidate inclusions; one of them is
-#                                             # boundary, and the isometry above says which
-#
-# The last line is the only place where overlattices enter, and it enters as a check on
-# a computed quotient, not as a substitute for one.
+# The two data still missing for the last three cusps are exactly:
+#   * GRAM_GCOX, the 24x24 Gram matrix of the roots (inner products 0, 1, 2, 6), which the
+#     figure prints but which is not yet transcribed; and
+#   * component_vertex_lists, the identification of each affine component's Cartan-type
+#     nodes with Fig. 1 labels, which comes from the induced graph.
 
 # ---------------------------------------------------------------- consistency
 
 # The determinant is forced by the splitting lemma, independent of any of the above:
 # det(J^perp/J) = +-det(T_2) = +-2 for every primitive isotropic plane J of T_2
-# (formalization/coble-enriques/Splitting.lean).  So each of the four boundaries
-# computed here must satisfy
-assert abs(B_E8.det()) == 2
+# (formalization/coble-enriques/Splitting.lean).  So each of the four boundaries computed
+# here must satisfy the assertion inside cusp_plane.
