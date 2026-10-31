@@ -212,7 +212,8 @@ Morphisms in $\theposet{P}_\Gamma$ corresponding to deleting more nodes correspo
 
 ::: {.proof}
 
-Omitting walls from the Coxeter fan leaves a cone complex: the cones of the fan that survive still meet in common faces, so a tuple $(D_\eta)$ determines a semifan $\semifan{F}(D)$ at each $0$-cusp, and these form a compatible system because they are cut out of one global fan.
+Omitting walls from the Coxeter fan leaves the same data as a fan, with the cones that survive still meeting in common faces; what can fail after the omission is rational polyhedrality of the cones, and that is exactly what a semifan allows (@def:semitoroidal-compactification).
+So a tuple $(D_\eta)$ determines a semifan $\semifan{F}(D)$ at each $0$-cusp, and these form a compatible system because they are cut out of one global fan.
 Inclusion of subdiagrams corresponds to omitting fewer walls, hence to refinement of semifans, and refinement gives the morphisms of @prop:coxsemiposetmap's third sentence; the tuple with no node omitted reproduces the Coxeter fan, and the tuple with all nodes omitted gives the Baily--Borel fan $\BBfan$.
 :::
 

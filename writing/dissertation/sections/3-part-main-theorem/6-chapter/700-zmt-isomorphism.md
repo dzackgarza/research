@@ -3,22 +3,21 @@
 In this section, we apply Zariski’s Main Theorem to the classifying morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ constructed in previous sections, obtaining a precise modular isomorphism between the KSBA compactification and the explicit semitoroidal model described via folded ramification semifans.
 
 ::: {.theorem
-    title="Zariski's main theorem"
+    title="Finite birational maps onto a normal variety"
     #thm:zariski-main-theorem
 }
-Let $f: X \to Y$ be a birational morphism of varieties.
-
-1. If $f$ is quasi-finite and $Y$ is normal, then $f$ is an isomorphism of $X$ onto an open subset of $Y$.
-
-2. If in addition $f$ is proper, then $f$ is an isomorphism.
+Let $f: X \to Y$ be a finite birational morphism of varieties, with $Y$ normal.
+Then $f$ is an isomorphism.
 :::
 
 ::: {.proof}
 
-This is Zariski's main theorem in the birational form of [@Mum70, §III.9].
-The first assertion is the theorem; the second follows because a proper morphism has closed image, so an image that is open is also closed, hence all of $Y$ when $Y$ is connected.
-A finite morphism is proper and quasi-finite, so the finite case of the classical statement is the case in which both clauses apply at once: there normality of the target alone suffices.
-:::
+Since $f$ is finite it is affine, so locally $Y = \Spec A$ and $X = \Spec B$ with $B$ a finite $A$-module containing $A$; birationality identifies $\Frac B$ with $\Frac A = K$, so $B\iscontainedin K$ and $A\iscontainedin B\iscontainedin K$.
+Normality of $Y$ says $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B\iscontainedin A$ and $f$ is an isomorphism.
+
+This is the case of Zariski's main theorem that the classifying map uses, where $\phi$ is finite.
+The theorem in its classical form assumes quasi-finiteness of $f$ rather than finiteness and concludes only that $f$ is an isomorphism onto an open subset [@Har10a, §V.5]; properness of $f$ upgrades that to an isomorphism, and a finite morphism is proper, so the statement above is the special case.
+Normality of the source is a hypothesis of neither form.
 
 ::: {.lemma
     title="{Verification of Hypotheses for the Classifying Map}"

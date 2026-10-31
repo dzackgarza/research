@@ -65,19 +65,20 @@ The no-coarsening statement is moreover the same phenomenon as the no-moduli-los
 
 ## Zariski's Main Theorem and the classifying isomorphism
 
-::: {.theorem #thm:zariski_main_theorem title="Zariski's Main Theorem (classical)"}
+::: {.theorem #thm:zariski_main_theorem title="Finite birational maps onto a normal variety"}
 
-Let $f\colon X \to Y$ be a birational morphism of varieties.
-If $Y$ is normal, then $f$ maps $X$ isomorphically onto an open subset of $Y$; if in addition $f$ is proper, then $f$ is an isomorphism.
+Let $f\colon X \to Y$ be a finite birational morphism of varieties, with $Y$ normal.
+Then $f$ is an isomorphism.
 :::
 
 ::: {.proof}
 
-This is Zariski's main theorem in its birational form, [@Har77, Ch. V, Prop. 5.2] and [@Mum70, §III.9].
+A finite morphism is affine, so locally $Y = \Spec A$ and $X = \Spec B$ with $B$ a finite $A$-module containing $A$; birationality identifies $\Frac B$ with $\Frac A = K$, giving $A\iscontainedin B\iscontainedin K$.
+Since $Y$ is normal, $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B = A$.
 
-The first assertion is the theorem. The second follows from the first because a proper morphism has closed image, so an image that is open is also closed, hence all of $Y$ when $Y$ is connected.
-The hypotheses to check are therefore birationality, normality of the target, and -- for the isomorphism rather than the open immersion -- properness of the map itself.
-A normalization is finite, so for the applications below properness is automatic and normality of the target carries the content.
+This is the form the classifying map needs, and it is the case of Zariski's Main Theorem in which the map is finite.
+The classical statement assumes quasi-finiteness instead and concludes only that $f$ is an isomorphism onto an open subset [@Har10a, §V.5]; properness of $f$ upgrades that, and a finite morphism is proper.
+Normality of the source is a hypothesis of neither form, so the hypotheses to check below are birationality, finiteness, and normality of the target.
 
 
 :::

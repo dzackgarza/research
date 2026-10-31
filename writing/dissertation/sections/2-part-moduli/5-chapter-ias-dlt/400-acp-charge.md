@@ -68,7 +68,8 @@ This result provides a rigidity condition on the combinatorics of K3 degeneratio
 
 ::: {.proof}
 
-This is [@FM83, Thm. 2.2]. The consequence about non-toric components is that a toric anticanonical pair has charge zero, and charges are non-negative here, so at most $24$ components can be non-toric.
+The identity is [@FM83, Thm. 2.2].
+A toric anticanonical pair has charge zero, so the components that are not toric are precisely those carrying the total charge $24$; the bound on their number is a bound on the number of positive summands, and needs the individual charges of the components of a Type $\III$ Kulikov model to be non-negative, which is where [@Fri15] is used.
 :::
 
 ::: {.remark}

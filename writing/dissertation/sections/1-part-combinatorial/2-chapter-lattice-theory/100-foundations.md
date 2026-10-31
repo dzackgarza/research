@@ -40,8 +40,8 @@ Conversely, every $\QQ$-valued quadratic module $(L,q)$ determines a symmetric b
 
 ::: {.proof}
 
-Over $\QQ$ the factor $2$ is invertible, so $\beta_q(v,w) = \frac12\bigl(q(v+w)-q(v)-q(w)\bigr)$ is a symmetric form and $q_{\beta_q} = q$.
-In the other direction $\beta_{q_\beta}$ is the symmetric part $\frac12(\beta+\beta^{\mathsf{t}})$ of $\beta$; the two constructions are therefore inverse on symmetric forms, and a general $\beta$ contributes through its symmetric part alone.
+With the normalisation of @def:quadratic-form, $\beta_q(v,w) = q(v+w)-q(v)-q(w)$, one has $q_{\beta_q} = \beta_{q_\beta}$ composed the other way: $\beta_{q_\beta}(v,w) = \beta(v,w)$ for symmetric $\beta$, while $q_{\beta_q}(v) = q(2v)-2q(v) = 2q(v)$.
+So the two constructions are mutual inverses up to the factor $2$, which is inverted over $\QQ$: the symmetric part of $\beta$ is what $q_\beta$ sees, and halving $\beta_q$ recovers $q$.
 :::
 
 
@@ -197,8 +197,9 @@ For a sublattice $S \iscontainedin L$, the following are equivalent:
 
 ::: {.proof}
 
-Over the principal ideal domain $\ZZ$, $L/S$ is torsion-free exactly when $S$ is saturated in the sense displayed, and a finitely generated torsion-free $\ZZ$-module is free; so saturation, being a direct summand, and extending a basis of $S$ to one of $L$ are one condition.
-The remaining clauses are that condition transported by the pairing: $S_\QQ\intersect L = S$ says no element of $L\sm S$ becomes integral after clearing denominators, $(S^{\perp L})^{\perp L} = S$ says the same once $\beta$ identifies $L_\QQ$ with its dual (@thm:geometric-identification-dual), and lifting functionals is the dual of extending a basis for a free module, by the perfectness of $\beta$.
+Over the principal ideal domain $\ZZ$, $L/S$ is torsion-free exactly when $S$ is saturated, and a finitely generated torsion-free $\ZZ$-module is free; so saturation, being a direct summand, and extending a basis of $S$ to one of $L$ are one condition.
+$S_\QQ\intersect L = S$ is that condition again: an element of $L\sm S$ lies in $S_\QQ$ exactly when some nonzero multiple of it lies in $S$.
+For the last two clauses $L$ is required to be nondegenerate, which is the standing hypothesis of this chapter: then $\beta$ identifies $L_\QQ$ with its dual (@thm:geometric-identification-dual), and $S = (S^{\perp L})^{\perp L}$ as well as the lifting of integral functionals from $S$ to $L$ say that no element of $L\sm S$ is orthogonal to all of $S$, which is saturation of $S$ read in the dual.
 :::
 
 
@@ -335,7 +336,7 @@ For unimodular lattices like $U$ and $E_8$, the discriminant group is trivial, s
 
 Since $(L(m))^* = \frac1m\dualof{L}$, the discriminant group is $A_{L(m)} = \frac1m\dualof{L}/L = \dualof{L}/mL$, which contains $L/mL$ with quotient $\dualof{L}/L = A_L$; for $L$ unimodular $\dualof{L} = L$ and the inclusion is an isomorphism.
 An isometry preserves $\dualof{L}$ because integrality of the pairings characterises it (@thm:geometric-identification-dual), hence descends to $A_L$, and the exact sequence is the first isomorphism theorem for $\psi$.
-That $\psi$ is onto when $L$ is indefinite and $\ell(A_L)+2\leq\rank L$ is Nikulin's surjectivity theorem [@Nik79]; for unimodular $L$ both $A_L$ and $\psi$ are trivial, so the kernel is all of $\Orth(L)$.
+That $\psi$ is onto when $L$ is indefinite and $\ell(A_L)+2\leq\rank L$ is Nikulin's surjectivity theorem [@Nik80]; for unimodular $L$ both $A_L$ and $\psi$ are trivial, so the kernel is all of $\Orth(L)$.
 :::
 
 

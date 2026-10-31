@@ -246,8 +246,8 @@ The same is true for *definite* unimodular lattices $L$ with $\rank L \leq 8$.
 
 ::: {.proof}
 
-This is the classification of unimodular forms by rank, index and parity [@MH73].
-For definite lattices of rank $\leq 8$ it is the same theorem: an even unimodular lattice exists only in rank divisible by $8$, so at most one rank is at issue and there the lattice is $E_8$.
+This is the classification of unimodular forms by rank, index and parity [@MH73], together with the definite statement for rank $\leq 8$ which is proved there as well.
+The parity datum matters only for indefinite lattices of rank at least $8$: an even unimodular lattice exists only in ranks divisible by $8$, so below rank $8$ there is no even definite one, and in rank $8$ there is exactly one, $E_8$ itself.
 :::
 
 
@@ -262,7 +262,7 @@ Then either
 
 ::: {.proof}
 
-A unimodular form of rank $n\leq 4$ is a direct sum of copies of $\langle 1\rangle$ and $\langle -1\rangle$ when it is odd, hence is $I_{p,q}$ for its signature; when it is even its rank is divisible by $8$, so the only possibilities are $U$ in rank $2$ and $U^{\oplus 2}$ in rank $4$, and both are unimodular [@MH73].
+This is the same classification as the previous theorem, read off in low rank [@MH73]: an odd unimodular lattice of rank $\leq 4$ is $\langle 1\rangle^{\oplus p}\oplus\langle -1\rangle^{\oplus q}$, which is $I_{p,q}$, and an even unimodular one has rank divisible by $8$, so only $U$ in rank $2$ and $U^{\oplus 2}$ in rank $4$ occur.
 :::
 
 
