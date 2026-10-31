@@ -58,7 +58,17 @@ Each holds a fortiori for any subgroup of $\Orth(L)$, so a failure of any one of
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
+All three are invariance under an isometry, and none needs $v_i$ isotropic.
+
+(1) $\phi$ preserves the form, so $v_2^2=\phi(v_1)^2=v_1^2$.
+
+(2) $\phi$ induces an isomorphism of the dual lattices, so $\beta_{L}(\phi v_1,\phi x)=\beta_L(v_1,x)$ shows that the divisibility ideals of @def:lattice-divisibility agree, hence $\div_L(v_1)=\div_L(v_2)$ as positive generators of the same ideal.
+For the classes: $\phi$ carries $v_1/\div_L(v_1)$ to $v_2/\div_L(v_2)$ because it is linear and preserves the divisibility, and it passes to the quotient $A_L=L^\#/L$ because it maps $L$ to $L$; so the induced automorphism of $A_L$ sends $[v_1^*]$ to $[v_2^*]$ by @def:lattice-discriminant-class.
+
+(3) $\phi(v_1)=v_2$ gives $\phi(v_1^{\perp L})=v_2^{\perp L}$: if $x\perp v_1$ then $\beta(\phi x,v_2)=\beta(x,v_1)=0$, and conversely by applying $\phi^{-1}$.
+The restriction is an isometry onto, hence an isometry of lattices, so the complements are isometric and by @def:discriminant they have the same discriminant form.
+
+The last sentence is the practical content: each condition is a necessary condition on any orbit, so a pair failing one is separated by every subgroup of $\Orth(L)$ at once, and the computations of this page use that to discard candidates without knowing the group.
 
 The necessary conditions on an isotropic orbit are the invariants of `prop:coble-divisibility-discriminant` together with the building-theoretic restriction that an isotropic vector lies in a chamber of the Tits building determined by its class.
 :::
