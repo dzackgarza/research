@@ -63,6 +63,13 @@ $$
 In a simple-root basis the matrix of the restricted form is the negative of its simply-laced Cartan matrix; the connected components of the Dynkin diagram determine the orthogonal decomposition. Each indecomposable factor is uniquely determined up to isometry by its connected Dynkin diagram [@Bou08, Ch. VI; @Hum90, Chs. 1–2].
 :::
 
+::: {.proof}
+
+This is [@Bou08, Ch. VI; @Hum90, Chs. 1-2].
+
+Cited: the Cartan-Killing classification of connected positive definite Cartan matrices. The list of types and their diagrams is exactly the cited one, and the book uses it as the input to the folding computations rather than re-deriving it.
+:::
+
 ## The $ADE$ lattices
 
 The simply-laced root lattices $A_n$, $D_n$, $E_n$ have a single root length.

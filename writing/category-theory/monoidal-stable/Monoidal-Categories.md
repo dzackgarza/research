@@ -29,6 +29,13 @@ The category is *strict* when $\tensor$ is associative and unital on the nose an
 In a monoidal category, every diagram built from instances of $\alpha$, $\lambda$, $\varrho$, identities, and $\tensor$ commutes; equivalently, every monoidal category is monoidally equivalent to a strict one [@Mac98, §VII.2].
 :::
 
+::: {.proof}
+
+This is [@Mac98, §VII.2].
+
+Cited. Coherence for a monoidal category is Mac Lane 7.2, and the statement here is that every diagram of coherence isomorphisms commutes, in the form the book invokes when it cites associativity and unitality up to canonical isomorphism.
+:::
+
 Coherence is what licenses the notation $a_1\tensor\cdots\tensor a_n$ without parentheses.
 A construction that transports data along $\alpha$, $\lambda$, or $\varrho$ names the comparison it uses, in the sense of @sec-canonical-identification.
 

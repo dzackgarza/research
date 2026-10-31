@@ -367,6 +367,13 @@ $$
 The generation statement is Kneser's theorem, as stated in [@GHS08, Theorem 1.1]; the equality with the stable real kernel is [@GHS08, Corollary 1.2].
 :::
 
+::: {.proof}
+
+This is [@GHS08, Theorem 1.1; @GHS08, Corollary 1.2].
+
+Cited: Kneser generation and the identification with the stable real kernel, in the form of Gritsenko-Hulek-Sankaran Theorem 1.1 and Corollary 1.2. The hypotheses -- the lattice conditions listed in the statement -- are those the source requires, and the book uses the conclusion to pass between the algebraic and real spinor kernels.
+:::
+
 ::: {.corollary #cor:kneser-full-spinor-kernel title="Integral and rational lifts under the Kneser conditions"}
 
 Under the hypotheses of @thm:kneser-spinor-comparison,

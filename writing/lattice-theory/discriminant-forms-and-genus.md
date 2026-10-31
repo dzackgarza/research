@@ -138,6 +138,13 @@ $$
 
 For $R=\bZ$, every spinor genus of an indefinite lattice of rank at least $3$ contains one integral isometry class [@CS10, Ch. 15, Thm. 14].
 :::
+
+::: {.proof}
+
+This is [@CS10, Ch. 15, Thm. 14].
+
+Cited: the spinor class of a lattice in the class group, in the form of Conway-Sloane Chapter 15. The book needs only the existence of the invariant and its compatibility with orthogonal sum, both of which are in the cited theorem.
+:::
 ## Mass
 
 ::: {.definition #def:mass title="Mass of a lattice genus"}
@@ -178,6 +185,13 @@ n_+-n_-
 \pmod 8
 $$
 [@MH73, Appendix 4].
+:::
+
+::: {.proof}
+
+This is [@MH73, Appendix 4].
+
+Cited: Milgram (and, in this form, van der Blij) as presented in Milnor-Husemoller Appendix 4 -- the eighth-root-of-unity formula, the Brown invariant, and the congruence sigma = e mod 8. All three are the cited statement, and the book uses the congruence as an obstruction on the discriminant form.
 :::
 
 ::: {.corollary #cor:primitive-complement-signature title="Signature congruence for primitive complements"}
