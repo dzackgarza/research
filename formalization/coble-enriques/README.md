@@ -77,3 +77,28 @@ certify which even overlattice of a given root lattice a particular $1$-cusp car
 needs quotient-lattice and overlattice computations run through `sage-extensions`, and
 `writing/dissertation/GAPS.md` records, with reproducers, why that run is not possible in
 this container.
+
+## `CoxeterRim.lean` — proved, no `sorry`
+
+One of the four one-cusps at degree two, from the printed figure rather than from a label.
+Alexeev--Engel--Thompson's Figure 1 (p. 22) prints the Coxeter diagram `G_cox` of
+`N = H ⊕ E₈² ⊕ A₁` on 24 nodes in a triangular lattice; the first of the four small figures
+beside it has exactly the rim of that triangle black. The rim, in the cyclic order
+`12, 13, 14, 15, 16, 17, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11`, is an 18-cycle of single
+edges, hence an affine `A₁₇`, whose marks are all `1`.
+
+- `rimGRAM`: that 18 × 18 Gram matrix.
+- `rimMarks`: the all-ones mark vector.
+- `rim_mulVec_marks`, `rim_marks_isotropic`, `rim_marks_ne_zero`: the mark vector is in the
+  kernel of the rim form and is isotropic and nonzero, so the sum of the eighteen rim roots
+  spans a null ray of `N`.
+
+Both `#print axioms` lines read `[propext, Classical.choice, Quot.sound]`. Checked with
+
+```
+/opt/lean/bin/lean formalization/coble-enriques/CoxeterRim.lean
+```
+
+**Scope.** This certifies the arithmetic of the figure reading, not the cusp: primitivity of
+the sum in `N`, and the identification of `v^⊥/Zv` with `A₁₇`, are the library computation
+that is still pending, as is the reading of the other two subdiagrams' vertex sets.
