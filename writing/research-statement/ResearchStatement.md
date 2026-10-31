@@ -61,6 +61,11 @@ There is a complete classification of KSBA stable limits of such Enriques surfac
 Furthermore, the structure of \( \del \overline{F_{\mathrm{En}, 2}} \) can be read off of Coxeter diagrams in a straightforward manner.
 :::
 
+::: {.proof}
+
+This is [@AEGS25, Thm. 1.1], quoted here without proof.
+:::
+
 ## Past Work
 
 ### Compact moduli spaces of Enriques surfaces
