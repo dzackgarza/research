@@ -51,7 +51,9 @@ $$
 T_{\Co} \definedas S_{\Co}^{\perp \lkt} = (11, 11, 1)_2 \cong \latI_{2, 9}(2) \cong \generators{2} \oplus E_{10}(2)
 .
 $$
-The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space; the identifications above are derived in the section on period domains.
+Both displayed isomorphisms are checks rather than conventions: $\mathrm{I}_{2,9}(2)$ and $\generators{2}\oplus E_{10}(2)$ are both $2$-elementary of rank $11$, determinant $-2^{11}$, signature $(2,9)$ and $\delta = 1$ — the first because $\mathrm{I}_{2,9}$ is odd unimodular of rank $11$, the second because $\generators{2}$ contributes the odd type and the even unimodular summand of $E_{10}(2)$ does not — and an indefinite $2$-elementary lattice is determined by these invariants [@Nik80].
+Similarly $S_{\Co} = \mathrm{E}_{10}(2)\oplus\generators{-2}$ has rank $11$, determinant $2^{11}$, signature $(1,10)$ and $\delta = 1$, which is row $n=1$ of the table of @sec-coble-lattice-table with $N = \mathrm{I}_{2,9}(2)$ as its complement.
+The lattices $S_{\Co}$ and $T_{\Co}$ will be used to construct the Hodge-theoretic period domain for Coble surfaces, yielding a coarse space for the corresponding moduli space.
 :::
 
 ::: {.proposition #prop:double-cover-is-k3 title="The branched double cover is a K3 surface"}
