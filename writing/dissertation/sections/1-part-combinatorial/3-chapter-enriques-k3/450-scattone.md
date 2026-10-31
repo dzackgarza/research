@@ -34,10 +34,11 @@ $$
 Scattone shows that for squarefree $d$ (in particular, $d = 1$), there is exactly one $\Gamma_{2d}$-orbit of primitive isotropic lines in $T_{2d}$, so the Baily–Borel boundary of $F_2$ has a unique $0$-cusp.
 
 The 1-cusps are determined by the negative-definite lattices $\bdlattice{T}{2d, I} \definedas  I^{\perp T}/I$, for $I \subset T$ a primitive isotropic plane.
-Scattone showed that, up to isomorphism and the action of the arithmetic group, there are exactly four possible such lattices, each of rank $18$ and discriminant $2$, characterized by their root sublattices:
+Scattone showed that, up to isomorphism and the action of the arithmetic group, there are exactly four possible such lattices, characterized by their root sublattices:
 $$
 A_1 \oplus E_8^{\oplus 2}, \qquad E_7 \oplus D_{10}, \qquad A_1 \oplus D_{16}, \qquad A_{17}.
 $$
+All four have rank $17$, since $I^{\perp T_2}/I$ has rank $21-2\cdot 2$ for a primitive isotropic plane $I$ in $T_2$ of rank $21$; their determinants are $2$, $8$, $8$ and $18$ respectively, which is $2d\cdot\div(I)^2$ for $\div(I) = 1, 2, 2, 3$.
 Each of them is the orthogonal complement of $E_7$ inside a Niemeier lattice containing $E_7$ as a primitive sublattice, for the four Niemeier lattices whose complement has the stated type.
 Each of these possibilities labels a modular curve in the boundary of $\bbcpt{F_2}$, and the closure of each of these modular curves contains the unique $0$-cusp as every isotropic line is contained in some isotropic plane.
 
@@ -80,7 +81,7 @@ using discriminant–form methods, from which Scattone shows:
 
 - There is a single $\Gamma_{2}$-orbit of primitive isotropic lines $\eta$ in $T_2$, giving one 0-cusp (Type $\III$);
 
-- There are four $\Gamma_{2}$-orbits of primitive isotropic planes $I$ in $T_2$, whose corresponding boundary lattices $\bdlattice{T}{I}$ are the rank-18, negative-definite lattices listed above, yielding four Type $\II$ boundary curves;
+- There are four $\Gamma_{2}$-orbits of primitive isotropic planes $I$ in $T_2$, whose corresponding boundary lattices $\bdlattice{T}{I}$ are the rank-$17$, negative-definite lattices listed above, yielding four Type $\II$ boundary curves;
 
 - These four curves meet transversely at the unique Type $\III$ point.
 
@@ -97,7 +98,8 @@ The cusp diagram of $F_2$, the moduli space of degree 2 polarized K3 surfaces, w
 
 The general enumeration of $\bd\bbcpt{ F_{2d} }$ reduces to finite problems in the discriminant group $A_{T_{2d}}$: cusps can be classified by studying isotropic subgroups of the finite discriminant group $A_{T_{2d}} \definedas  (T_{2d})^*/T_{2d}$, and applying Nikulin's theorem that the genus of an even lattice is determined by its signature and the isomorphism class of its discriminant form [@Nik80]. The classification proceeds by associating to a primitive isotropic sublattice $I \subset T_{2d}$ an isotropic subgroup of $A_{T_{2d}}$.
 The problem of classifying orbits of such sublattices under the infinite group $\Gamma_{2d}$ is thereby reduced to classifying orbits of isotropic subgroups of the finite group $A_{T_{2d}}$ under the action of a subgroup of $\discriminantcokernel{A_{T_{2d}}}$.
-For the case $d=1$, the four isomorphism classes of the rank-18 lattice $\bdlattice{T}{I}$ are constructed by leveraging the classification of the 24 Niemeier lattices: each isometry class of $\bdlattice{T}{I}$ is realized as the orthogonal complement $E_7^\perp \subset M$, where $M$ is one of the Niemeier lattices that admit a primitive embedding of the $E_7$ root lattice [@Sca87]. This reduces the classification to a relatively well-known, finite set of possibilities.
+For the case $d=1$, the four isomorphism classes of the rank-$17$ lattice $\bdlattice{T}{I}$ are constructed by leveraging the classification of the $24$ Niemeier lattices: an isometry class of $\bdlattice{T}{I}$ is realized as the orthogonal complement $E_7^\perp \subset M$, where $M$ is a Niemeier lattice that admits a primitive embedding of the $E_7$ root lattice [@Sca87].
+At the level of root systems only three of the four are accounted for this way, since exactly three Niemeier root systems contain an $E_7$ subdiagram — $A_{17}E_7$, $D_{10}E_7^2$ and $E_8^3$ — and their complements are $A_{17}$, $D_{10}\oplus E_7$ and $A_1\oplus E_8^{\oplus2}$. The fourth lattice $A_1\oplus D_{16}$ does not arise from an $E_7$ subdiagram, $E_7$ being no subdiagram of $D_{16}$; how Scattone obtains it, and whether by an embedding of $E_7$ that is not a root subsystem, is not settled here and is not needed for the $d=1$ enumeration, which the four root sublattices already give.
 For general $d$, cusp enumeration becomes a number-theoretic problem, since structure of $A_{T_{2d}}$ is highly dependent on the arithetic properties of $d$ itself, including various the numbers of solutions to various congruences, as well as the prime factorization of $d$.
 @Sca87 uses these techniques to explicitly describe cusp diagrams for certain (sparse) families of values of $d$.
 For further details and the explicit Coxeter diagrams, see [@Sca87, §6.2] and [@AET23, Fig. 2].

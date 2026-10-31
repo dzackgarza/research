@@ -31,7 +31,13 @@ What has since been settled is listed at the end, so that a reader can tell "res
   and omitted $\tilde D_{24}$, which does; a $D_7$ inside $D_n$ is moreover an orthogonal
   direct summand, so it is primitive, whereas a $D_7$ inside $E_8$ would have index $2$ in it.
   The nine complements listed here and in the working notes have not been recomputed and
-  should not be quoted until they are.
+  should not be quoted until they are. What the seven-item list is for is the analogue of the
+  $d=1$ construction, where the four boundary lattices arise from $E_7$-complements in Niemeier
+  lattices — and even there the bookkeeping is not uniform: at the level of root systems only
+  three of the four come from an $E_7$ subdiagram (see [[450-scattone|Scattone boundary
+  analysis]]), the fourth needing an embedding that is not a root subsystem. So the
+  degree-$4$ case is incomplete, and the bound on what is missing is not a list but the
+  construction itself.
 
   The note observes that the complements can be recovered by running Vinberg's algorithm
   on $\langle -4 \rangle \oplus U \oplus E_8^{2}$, and that the resulting
