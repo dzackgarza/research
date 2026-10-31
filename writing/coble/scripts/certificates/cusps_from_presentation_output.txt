@@ -1,0 +1,42 @@
+python 3.14.10
+G24: rank 19 kernel 5
+P: rank 24 | det 0 | radical rank 5 | degenerate: True
+Q = P/rad(P): a OwnedJoinCategory.parent_class[_PresentedModule].ObjectType of rank 19 (its form lives on the reduction, not on the presented module)
+N: rank 19 det 2 signature (1, 18)
+N: the model the reductions below should match; compared per cusp.
+
+A~17: marks on the source nodes {0: 1, 1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1, 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 12: 1, 13: 1, 14: 1, 15: 1, 16: 1, 17: 1}
+  multiset equals the Kac marks of the type: True
+  P.linear_combination available: True
+  w is isotropic in P: True
+  projection taken as Q.presentation_projection()
+  image of w in Q: found
+  image is isotropic: True
+  Q.primitive_isotropic_subobject failed: AttributeError 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'primitive_isotropic_subobject'
+
+D~10: marks on the source nodes {18: 1, 17: 1, 0: 2, 1: 2, 2: 2, 3: 2, 4: 2, 5: 2, 6: 2, 7: 1, 19: 1}
+  multiset equals the Kac marks of the type: True
+  P.linear_combination available: True
+  w is isotropic in P: True
+  projection taken as Q.presentation_projection()
+  image of w in Q: found
+  image is isotropic: True
+  Q.primitive_isotropic_subobject failed: AttributeError 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'primitive_isotropic_subobject'
+
+E~8^(1): marks on the source nodes {13: 1, 14: 2, 15: 3, 16: 4, 17: 5, 0: 6, 1: 4, 2: 2, 18: 3}
+  multiset equals the Kac marks of the type: True
+  P.linear_combination available: True
+  w is isotropic in P: True
+  projection taken as Q.presentation_projection()
+  image of w in Q: found
+  image is isotropic: True
+  Q.primitive_isotropic_subobject failed: AttributeError 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'primitive_isotropic_subobject'
+
+D~16: marks on the source nodes {19: 1, 5: 1, 6: 2, 7: 2, 8: 2, 9: 2, 10: 2, 11: 2, 12: 2, 13: 2, 14: 2, 15: 2, 16: 2, 17: 2, 0: 2, 1: 1, 18: 1}
+  multiset equals the Kac marks of the type: True
+  P.linear_combination available: True
+  w is isotropic in P: True
+  projection taken as Q.presentation_projection()
+  image of w in Q: found
+  image is isotropic: True
+  Q.primitive_isotropic_subobject failed: AttributeError 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'primitive_isotropic_subobject'
