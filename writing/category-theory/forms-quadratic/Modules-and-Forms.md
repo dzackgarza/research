@@ -88,8 +88,6 @@ A basis is the case of a generating frame whose structure map is an isomorphism.
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
-
 A basis is structure and not a property: two bases of one module are related by an element of GL_n, which is a torsor and not a truth value. The proof is the argument of `def:property-structure-stuff` applied to the forgetful functor from modules-with-basis.
 :::
 

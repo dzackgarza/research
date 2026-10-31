@@ -76,7 +76,7 @@ Then $N$ is an equivalence between the category of simplicial objects of $\mca$ 
 ::: {.proof}
 
 This is [@Wei94, Thm. 8.4.1].
-What the normalization buys, and what is worth recording, is that the degenerate simplices are thrown away: the quotient of $X_n$ by the subspace spanned by the images of the degeneracy maps is canonically $N(X)_n$, so $N$ keeps exactly the information $d_0$ needs and no more [@Wei94, §8.3].
+Normalization throws away the degenerate simplices: the quotient of $X_n$ by the subspace spanned by the images of the degeneracy maps is canonically $N(X)_n$, so $N$ keeps exactly the information $d_0$ needs and no more [@Wei94, §8.3].
 Enough projectives is not used; the statement is for any abelian $\mca$.
 :::
 
@@ -210,7 +210,7 @@ The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{S
 
 ::: {.proof}
 
-The clauses are the cited items, and the citations are not interchangeable with the neighbouring ones, which is worth recording because two of them read differently in the source.
+The clauses are the cited items, and two of them read differently in the source.
 $\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is a definition, not a theorem, in [@Lur09, Def. 8.4]; $\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is then the case $\mcc=\mcs$ together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
 The universal property is stated in [@Lur09] as an equivalence $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ [@Lur09, Prop. 10.12], whose content is the same, and the paper's introduction draws the corollary in the form used here.
 Free generation by the sphere spectrum is [@Lur09, Cor. 15.6], whose statement is that evaluation on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.

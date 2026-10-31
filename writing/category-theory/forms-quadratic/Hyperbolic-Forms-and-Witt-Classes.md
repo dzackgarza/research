@@ -302,7 +302,7 @@ The set $W(R)$ of Witt classes of unimodular $R$-lattices is a commutative ring 
 ::: {.proof}
 
 The two operations are well defined on Witt classes by @lem:witt-equivalence, and the axioms are [@MH73, Thm. I.7.3].
-Two clauses are worth naming, because they are where the book's own hypotheses enter: the tensor product of unimodular lattices is unimodular by the perfectness clause of @def:form-tensor, and the additive inverse of $[X]$ is $[X(-1)]$, exhibited by @prop:negation-is-metabolic.
+Two clauses are where the hypotheses enter: the tensor product of unimodular lattices is unimodular by the perfectness clause of @def:form-tensor, and the additive inverse of $[X]$ is $[X(-1)]$, exhibited by @prop:negation-is-metabolic.
 :::
 
 ::: {.proposition #prop:metabolic-witt-trivial title="Metabolic lattices have Witt class zero"}

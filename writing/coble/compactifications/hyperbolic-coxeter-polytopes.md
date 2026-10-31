@@ -170,8 +170,6 @@ Then
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
-
 The three clauses are one statement read at each vertex.
 In a simplex $P$ with $n+1$ facets $\alpha_s$, the link of the vertex $v_s$ cut out by the facet $\alpha_s$ is the Coxeter polytope of the subdiagram $\Sigma_{S\sm\theset{s}}$ on $n$ generators, living in the hyperbolic space $\HH^{n-2}$ that is the link.
 That link polytope is, by @def:coxeter-polytope and @def:coxeter-system-type, compact when $\Sigma_{S\sm\theset{s}}$ is elliptic, has ideal vertices and finite volume when it is parabolic, and is not contained in a compact region with finite volume when it is hyperbolic.

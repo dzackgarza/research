@@ -67,7 +67,7 @@ Indeed a bounded $n$-dimensional polytope that is not a point has at least $n+1$
 
 With $n=9$ this gives at least $10$ facets, that is at least $10$ walls.
 So an output of nine roots is not the correct set of walls of any finite-volume chamber in $\HH^9$: whatever reflection group those nine roots generate, the chamber they bound is not finite-volume, and the missing wall is a root the algorithm would have to find.
-The comparison the page draws with @thm:vinberg-algorithm is exactly this: a terminating run on a rank-$10$ hyperbolic lattice must return at least ten roots.
+By @thm:vinberg-algorithm a terminating run on a rank-$10$ hyperbolic lattice returns at least ten roots.
 :::
 
 ::: {.remark title="Consequence for the two implementations"}

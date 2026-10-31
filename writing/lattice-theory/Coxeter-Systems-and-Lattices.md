@@ -40,7 +40,7 @@ unconditionally, with $A$ symmetric.
 By @def:cartan-matrix, $A_{ij}=2b(\alpha_i,\alpha_j)/b(\alpha_j,\alpha_j)$, and the normalizing factor is $b(\alpha_j,\alpha_j)=-2$ for every $j$, whatever the off-diagonal entries are.
 So $A_{ij}=-b(\alpha_i,\alpha_j)=-G_{ij}$, which is the displayed identity, and $A$ is symmetric because $b$ is.
 
-The consequence is worth stating because it is where this differs from the classical Cartan matrix of a non-simply-laced root system: there the roots have two lengths, the diagonal entries of $G$ differ, and $A$ is only symmetrizable, by $G_{ij}=d_jA_{ij}$ as in @def:cartan-matrix.
+This is where $A=-G$ differs from the classical Cartan matrix of a non-simply-laced root system: there the roots have two lengths, the diagonal entries of $G$ differ, and $A$ is only symmetrizable, by $G_{ij}=d_jA_{ij}$ as in @def:cartan-matrix.
 That case is the one of $B_n$, $C_n$, $F_4$ and $G_2$, and the specimen of @def:cartan-matrix has squares $-2$ and $-4$.
 The form here gives every simple root the same length, which is what forces the unconditional identity.
 :::
@@ -63,7 +63,7 @@ For $n=3$ the remaining possibility is signature $(1,2,0)$ [@Hum90, §6.7].
 
 The three clauses are [@Hum90, §6.4] (finite exactly when positive definite for the source's $B$, hence negative definite for $b=-2B$), [@Hum90, §2.6] (positive semidefinite and degenerate forces a one-dimensional radical, so the signature is $(0,n-1,1)$), and [@Hum90, §6.7] for the rank-three statement.
 
-The one step worth recording is that the middle clause is an *exclusive* alternative: for an irreducible system $b$ cannot be both semidefinite and indefinite, and the positive semidefinite degenerate case cannot have a radical of rank $\geq2$.
+The middle clause is an *exclusive* alternative: for an irreducible system $b$ cannot be both semidefinite and indefinite, and the positive semidefinite degenerate case cannot have a radical of rank $\geq2$.
 That is the content of [@Hum90, §2.6], and it is what makes the three names in @def:coxeter-system-type exhaust the connected diagrams up to the residual case of the last sentence.
 :::
 
@@ -83,7 +83,7 @@ The action of $W$ on the affine hyperplane $\{f\in V^{*}\mid f(\delta)=1\}$ is f
 
 This is [@Hum90, §2.6] for the radical and [@Hum90, §6.5] for the affine realization.
 
-Two of the clauses follow from @def:polarization and @def:signature rather than from the citation, and are what the page uses.
+Two of the clauses follow from @def:polarization and @def:signature rather than from the citation.
 Since $b$ is negative semidefinite with radical of rank $1$, the quotient $V/\radic(V)$ carries a well-defined form, which is nondegenerate and still negative semidefinite, hence negative definite, of dimension $n-1$.
 And $W$ fixes $\radic(V)$ pointwise because it preserves $b$ and $\delta$ spans the radical: for $w\in W$, $b(w\delta-\delta,\text{-})=b(w\delta,w\text{-})-b(\delta,\text{-})=0$, so $w\delta-\delta\in\radic(V)$, and the action of $W$ on the line $\radic(V)$ is trivial because the only orthogonal maps of a one-dimensional space over $\RR$ with $b(\delta,\delta)=0$ are the identity.
 :::

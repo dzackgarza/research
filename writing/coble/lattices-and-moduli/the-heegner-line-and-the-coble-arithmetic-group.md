@@ -177,8 +177,6 @@ With the notation of @prop:polarization-stabilizer-enriques and @lem:coble-heegn
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
-
 Finiteness of the orbits is finiteness of the class set in a fixed genus, which is `def:genus` together with the finiteness of the class number for a definite lattice of the relevant rank; the Coble-specific content is the identification of the relevant lattice as definite on the Heegner line.
 :::
 

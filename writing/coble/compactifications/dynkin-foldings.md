@@ -84,8 +84,6 @@ The folded roots $\beta_{[v]} \in \Phi\left( \tdp^{\generators{I}} \right)$ aris
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
-
 The folded diagram is computed from the involution by the recipe of `def:folded-root`: an orbit of roots under the involution is a single node of the folded diagram, and its bond order to another orbit is the number of simple reflections relating them. The lemma is that computation at the node in question.
 :::
 

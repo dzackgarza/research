@@ -282,7 +282,7 @@ is unique up to $O(L_{K3})$.
 
 This is [@AEGS25, §3] and is quoted rather than derived here.
 
-What the page uses is the consequence, so it is worth naming: uniqueness up to $O(L_{K3})$ means that every embedding of $T_{\mathrm{En}}$ into $L_{K3}$ extending the chosen one differs by an isometry of the ambient lattice, so no construction built from the chain can depend on a choice of primitive complement.
+Uniqueness up to $O(L_{K3})$ means that every embedding of $T_{\mathrm{En}}$ into $L_{K3}$ extending the chosen one differs by an isometry of the ambient lattice, so no construction built from the chain can depend on a choice of primitive complement.
 That is the sense in which the statement is a model for the labeled rigidity the Coble problem needs: the label is the extra structure -- in this case the involution and the polarization -- and the question is whether it too is unique up to the stabilizer rather than only up to the full orthogonal group.
 :::
 
@@ -1123,7 +1123,7 @@ Standard transitivity results for indefinite odd unimodular forms imply the foll
 
 The cited transitivity is Wall's description of the orthogonal group of an indefinite odd unimodular lattice [@Wall62], applied to $I_{2,9}$ as in [@DK13].
 
-The reduction that makes the first line work is the one worth recording: $T_{\Co}$ is not unimodular, but it is $I_{2,9}(2)$ by @prop:coble-transcendental, and scaling a form by a unit does not change its orthogonal group, so $O(T_{\Co})=O(I_{2,9}(2))=O(I_{2,9})$ as groups acting on the same lattice.
+The reduction: $T_{\Co}$ is not unimodular, but it is $I_{2,9}(2)$ by @prop:coble-transcendental, and scaling a form by a unit does not change its orthogonal group, so $O(T_{\Co})=O(I_{2,9}(2))=O(I_{2,9})$ as groups acting on the same lattice.
 That is the step that puts the unpolarized Coble question inside Wall's classification of orbits in an odd unimodular lattice, rather than leaving it as a question about a non-unimodular form of type $(2,9)$.
 :::
 

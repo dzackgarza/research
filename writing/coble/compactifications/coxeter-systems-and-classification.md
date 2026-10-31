@@ -276,7 +276,7 @@ unique up to scalar, and $\delta^2 = 0$ [@Bou08; @Hum90].
 
 That $\ker G[I,I]$ is one-dimensional with a generating vector of strictly positive coordinates is [@Bou08, Ch. VI §2.3, Proposition 6] and [@Hum90, §2.5]; the cited statement is for the positive semidefinite normalization, and invertibility of the sign change in @thm:coxeter-type-and-geometry preserves kernels, so the kernel is the same subspace here.
 
-Two clauses follow formally once the generators are known, and are recorded because the page uses them:
+Two clauses follow formally once the generators are known:
 $\delta^2 = \beta(\delta,\delta) = 0$, since $\delta$ lies in the kernel of the form;
 and the uniqueness up to scalar is the one-dimensionality, an irreducible euclidean diagram being connected so that its Gram form is not a direct sum.
 

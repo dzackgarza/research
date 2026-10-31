@@ -366,8 +366,6 @@ Passing from $C$ to a local hom-object therefore lowers the dimension of every c
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
-
 The claim is that the iterated internal hom is the mapping object out of the coproduct, which is the closed structure of the infinity-category universe applied twice. It follows from the adjunction characterizing the internal hom in `def:internal-hom` and the coproduct universal property, both already in this part.
 :::
 

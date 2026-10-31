@@ -87,7 +87,7 @@ Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determ
 
 ::: {.proof}
 
-This is [@Eic74] with the formulation of [@Sca87]; the proof records the two readings of the invariant, since the page uses both.
+This is [@Eic74] with the formulation of [@Sca87].
 
 The class $[v^*]\in A_L$ of @prop:coble-divisibility-discriminant determines $\div_L(v)$, because $\div_L(v)$ was shown above to be the order of $[v^*]$; so the pair $(\div_L, [v^*])$ listed first and the pair $(\div_L, v/\div_L\bmod L)$ listed second carry the same information, and the two phrasings of the criterion agree.
 What the criterion says is that for $L$ containing $U^2$ these invariants are complete: length and discriminant class together determine the orbit under the subgroup acting trivially on $A_L$, so no further invariant separates two primitive vectors of equal length and equal class.
@@ -112,7 +112,7 @@ where $E(L)$ is the **Eichler transvection group** and $\sim_{E(L)}$ denotes $E(
 ::: {.proof}
 
 This is [@Sca87, Ch. 1].
-The relation to @thm:scattone-eichler-criterion is worth recording, because the two are quoted side by side and are not the same statement: this one fixes the length $k$ and asks for equivalence under the transvection subgroup $E(L)$, whereas Eichler's criterion asks for equivalence under the full discriminant kernel.
+The relation to @thm:scattone-eichler-criterion: this one fixes the length $k$ and asks for equivalence under the transvection subgroup $E(L)$, whereas Eichler's criterion asks for equivalence under the full discriminant kernel.
 Since $E(L)\leq\discriminantkernel{L}$ by definition, equivalence under $E(L)$ implies equivalence under the kernel, so the criterion here is finer; the hypothesis $U^2$ is the same in both, being what makes the transvections act.
 :::
 
@@ -144,7 +144,7 @@ Then there exists an isometry $\phi\in\discriminantkernel{T}$ with $\phi(\eta_1)
 
 This is [@Ste91].
 
-The three hypotheses are not independent of the conclusion's strength, and the page relies on their being phrased exactly so: lengths alone would not separate the divisibility classes, and the congruence modulo $pT$ is what pins the discriminant class $[\eta^*]$ through @prop:coble-divisibility-discriminant, since $\eta/p$ differs from $\eta'/p$ by an element of $T$ precisely when the two agree modulo $pT$.
+The three hypotheses are not redundant. Lengths alone would not separate the divisibility classes, and the congruence modulo $pT$ is what pins the discriminant class $[\eta^*]$ through @prop:coble-divisibility-discriminant, since $\eta/p$ differs from $\eta'/p$ by an element of $T$ precisely when the two agree modulo $pT$.
 So the statement is a form of @thm:eichler-transvection adapted to isotropic vectors of arbitrary divisibility, where $E(T)$ is replaced by the discriminant kernel itself; that is why the conclusion is stated for $\discriminantkernel{T}$ and not for a transvection subgroup.
 :::
 

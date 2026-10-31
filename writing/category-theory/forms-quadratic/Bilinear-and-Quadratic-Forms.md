@@ -337,7 +337,7 @@ is an isomorphism [@MH73, I §3.1].
 ::: {.proof}
 
 This is [@MH73, I §3.1].
-The form of the argument worth recording is that it needs nothing of $M$: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ equals $b(t_0,\iota(t))$ for a unique $t_0\in T$ by perfectness of $b|_T$, and then $m-\iota(t_0)\in T^{\perp}$; injectivity is that $T\cap T^{\perp}$ is the kernel of the perfect form $b_T$.
+The argument needs nothing of $M$: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ equals $b(t_0,\iota(t))$ for a unique $t_0\in T$ by perfectness of $b|_T$, and then $m-\iota(t_0)\in T^{\perp}$; injectivity is that $T\cap T^{\perp}$ is the kernel of the perfect form $b_T$.
 So the statement holds with $M$ an arbitrary bilinear module, not only a nondegenerate lattice, which is why the hypothesis names only $T$.
 :::
 
@@ -627,7 +627,7 @@ Here $\dim S=2\,i(V)$ and $\dim A=\dim V-2\,i(V)$.
 ::: {.proof}
 
 This is [@MH73, III §1.1 and §1.7].
-Two of the clauses are worth recording, because they are where the book's hypotheses are doing work.
+Two of the clauses are where the hypotheses are spent.
 
 Existence does not need $2$ to be a unit: if $v$ is isotropic and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
 So the induction produces $S\perp A$ with $A$ anisotropic over any field.

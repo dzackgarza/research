@@ -33,7 +33,7 @@ and if $E^2 = -4$ then $E$ is a component of $D$.
 ::: {.proof}
 
 Cited: [@DZ99, §2] for the trichotomy of the norm.
-The proof block records why the trichotomy is three values and not more, since that is what the rest of the page uses.
+The trichotomy has three values; the argument is:
 
 Adjunction on the smooth rational curve $E$ gives $E^2 = -2 - E\cdot K_S$, so the possible values of $E^2$ are read off the intersection numbers of $E$ with $-K_S$.
 A Coble surface has $|-2K_S| = \{D\}$ with $D$ nonempty and $D$ a sum of $(-4)$-curves, so $-K_S = \tfrac12 D$ is not integral but $2(-K_S)=D$ is effective.
@@ -60,7 +60,7 @@ For general $C$, $H \cong W(E_{10})(2)$, the level 2 congruence subgroup.
 
 Cited: [@Dol88] for the description of $\Aut(S)$ through the action on $M_S$, and [@CDL25, Ch. 5] for the level 2 structure.
 
-What the statement adds to the citation is the reading of the two groups, and that is what the page uses.
+The two groups are read as follows.
 $\Aut(S)$ acts on $\Pic(S)$ preserving $K_S$ and the intersection form, hence on $M_S = K_S^{\perp\,\Pic(S)}$; that the resulting homomorphism is injective with finite image is the cited part, and the image is the group $H$.
 $\Orth(M_S)/\{\pm1\}\cong W(E_{10})$ identifies the *full* orthogonal group with the Coxeter group, so the quotient is by the central $\pm1$ and not by anything else; for general $C$ the finite-index subgroup $H$ is then the level 2 congruence subgroup of that $W(E_{10})$.
 The two statements are therefore consistent, and the difference between them is the difference between the full orthogonal group and the image of one particular surface's automorphism group.
@@ -150,7 +150,7 @@ For a Coble surface $X$ the following are equivalent:
 ::: {.proof}
 
 This is [@DZ99, Lem. 6.2].
-The mechanism, worth recording because it is used throughout the Coble literature: $|-2K_X|$ nonempty is the datum of a $\bZ/2$-cover, branched over a divisor in that class, and the condition that a member be reduced is what keeps the branch divisor smooth enough for the cover to have only ordinary double points.
+The mechanism: $|-2K_X|$ nonempty is the datum of a $\bZ/2$-cover, branched over a divisor in that class, and the condition that a member be reduced is what keeps the branch divisor smooth enough for the cover to have only ordinary double points.
 Without a reduced member the cover acquires worse singularities along the non-reduced part.
 :::
 

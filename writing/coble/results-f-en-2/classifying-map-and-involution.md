@@ -76,7 +76,7 @@ Then $f$ is an isomorphism.
 This is Zariski's main theorem in its birational form, [@Har77, Ch. V, Prop. 5.2] and [@Mum70, §III.9].
 
 The form quoted is the classical one, weaker than the general statement: a birational finite morphism onto a normal variety is an isomorphism onto an open subset, and properness of the target upgrades that to an isomorphism, so normal plus proper is exactly what closes the gap.
-The page uses it in exactly this form, to promote a birational finite map to an isomorphism, and the hypotheses it checks are those two.
+It promotes a birational finite map to an isomorphism, and the hypotheses to check are those two.
 
 
 :::
