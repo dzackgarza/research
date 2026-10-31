@@ -11,8 +11,8 @@ Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - 
 | 1 | 10 | -1 | $(11,11,1)$ | $\mathrm{E}_{10}(2) \oplus \mathrm{A}_{1}$ | $\latI_{2,9}(2)$ |
 | 2 | 11 | -2 | $(12,10,1)$ | $\mathrm{E}_{8}(2) \oplus \mathrm{U} \oplus \mathrm{A}_1^{\oplus 2}$ | $\latI_{2,8}(2)$ |
 | 3 | 12 | -3 | $(13,9,1)$ | $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 3} \oplus \mathrm{U}(2)$ | $\latI_{2,7}(2)$ |
-| 4 | 13 | -4 | $(14,8,1)$ | $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 4} \oplus \mathrm{U}(2)$ | $\latI_{2,6}(2)$ |
-| 5 | 14 | -5 | $(15,7,1)$ | $\mathrm{E}_{8} \oplus \mathrm{A}_{1}^{\oplus 5} \oplus \mathrm{U}$ | $\latI_{2,5}(2)$ |
+| 4 | 13 | -4 | $(14,8,1)$ | $\mathrm{D}_{4}^{\oplus 2} \oplus \mathrm{A}_{1}^{\oplus 4} \oplus \mathrm{U}$ | $\latI_{2,6}(2)$ |
+| 5 | 14 | -5 | $(15,7,1)$ | $\mathrm{E}_{8} \oplus \mathrm{A}_{1}^{\oplus 5} \oplus \mathrm{U}(2)$ | $\latI_{2,5}(2)$ |
 | 6 | 15 | -6 | $(16,6,1)$ | $\mathrm{E}_{10} \oplus \mathrm{A}_{1}^{\oplus 6}$ | $\latI_{2,4}(2)$ |
 | 7 | 16 | -7 | $(17,5,1)$ | $\mathrm{E}_{8} \oplus \mathrm{D}_{6} \oplus \mathrm{A}_{1} \oplus \mathrm{U}(2)$ | $\latI_{2,3}(2)$ |
 | 8 | 17 | -8 | $(18,4,0)$ | $\mathrm{E}_{8} \oplus \mathrm{D}_{8} \oplus \mathrm{U}(2)$ | $\mathrm{U}(2)^{\oplus 2}$ |
@@ -21,6 +21,49 @@ Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - 
 | 10 | 19 | -10 | $(20,2,1)$ | $\mathrm{E}_{10} \oplus \mathrm{D}_{10}$ | $\latI_{2,0}(2)$ |
 
 : Table of Coble lattices {#tbl-coble-lattices}
+
+::: {.proposition #prop:coble-table-invariants title="The table is internally consistent"}
+
+Each row of the table satisfies $\rank M = 10+n$, $a(M)=12-n$, and $K_S^2=-n$, where $a=\dim_{\bF_2}(A_M/2A_M)$ is the generator length of @def:p-elementary; and the orthogonal complement $N=M^{\perp\lkt}$ has rank $22-(10+n)=12-n$ and is as listed.
+
+:::
+
+::: {.proof}
+
+The invariants of an orthogonal sum are the sums of those of the summands: ranks add, and $A_M$ is the orthogonal sum of the $A_{M_i}$ by @def:discriminant, so $a$ adds.
+The summands needed are
+$$
+\rank,\ a\ \text{of}\ \ \mathrm{E}_8,\ \mathrm{E}_{10},\ \mathrm{U}:\ (8,0),\ (10,0),\ (2,0)
+\qquad\text{(all unimodular)},
+$$
+$$
+\mathrm{A}_1:\ (1,1),\qquad
+\mathrm{D}_{2m}:\ (2m,2),\qquad
+\mathrm{E}_8(2):\ (8,8),\qquad
+\mathrm{E}_{10}(2):\ (10,10),\qquad
+\mathrm{U}(2):\ (2,2),
+$$
+the $D_{2m}$ entries because $\det D_{2m}=4$ with $A_{D_{2m}}\cong(\bZ/2)^2$, and the twisted entries because twisting by $2$ multiplies the Gram matrix by $2$, so by @prop:scaled-discriminant-ses the discriminant group of $L(2)$ is $L/2L$ with $A_{L(2)}\cong(A_L)\oplus(L/2L)$.
+Row by row this gives
+
+- $n=1$: $11,0+1+10=11$;
+- $n=2$: $12$, $a=8+0+2=10$;
+- $n=3$: $13$, $a=2\cdot2+3+2=9$;
+- $n=4$: $14$, $a=2\cdot2+4+0=8$;
+- $n=5$: $15$, $a=0+5+2=7$;
+- $n=6$: $16$, $a=0+6=6$;
+- $n=7$: $17$, $a=0+2+1+2=5$;
+- $n=8$: $18$, $a=0+2+2=4$ and $a=0+2+2=4$ in the two rows;
+- $n=9$: $19$, $a=0+2+1=3$;
+- $n=10$: $20$, $a=0+2=2$.
+
+So $a=12-n$ in every row, and $\rank M=10+n$.
+For the complement, $M$ is primitive in $\lkt$ of rank $22$ and signature $(3,19)$, so by @thm:orthogonal-decomposition $N$ has rank $22-(10+n)$ and signature $(3-1,19-(\rank M-1))$; the listed $I_{2,12-n}(2)$ has exactly that rank and signature, and $a(N)=12-n$ with the parity recorded in $\delta$.
+Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the fourth column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
+
+Two rows of the source table carry the twisted summand where the untwisted one is meant: with $\mathrm{U}(2)$ in place of $\mathrm{U}$ at $n=4$ the generator length would be $10$ rather than $8$, and with $\mathrm{U}$ in place of $\mathrm{U}(2)$ at $n=5$ it would be $5$ rather than $7$.
+The table above has them interchanged accordingly; every other row checks as printed.
+:::
 
 This table is reproduced in [@CDL25 Table 5.1, p.553].
 The fixed point locus is described by [@CDL25 Eqn. 5.3.1]:
