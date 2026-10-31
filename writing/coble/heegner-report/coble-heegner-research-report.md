@@ -748,9 +748,27 @@ p_a(R_{\wV})=4.
 :::
 
 ::: {.proof}
-Pulling back $2L+K_{\wV}$ gives $2H-E=\wR$.
-Moreover, $\wR^2=(2H-E)^2=14$, so $R_{\wV}^2=7$.
-The remaining formulas follow from $C=-2K_{\wV}$, $R_{\wV}\cdot C=2$, and adjunction.
+Pulling back $2L+K_{\wV}$ gives $2H-E=\wR$, and $R_{\wV}=\psi_*\wR$ is the divisor on $\wV$ whose pullback is that class.
+
+For the self-intersection, $H=\pi^*\OO_Y(1,1)$ and $H\cdot E=0$ because $E$ is the exceptional curve of the minimal resolution of the $A_1$ point, hence contracts to a point of $Y$, so $\pi_*E=0$ and $H\cdot E=\OO_Y(1,1)\cdot\pi_*E=0$.
+So
+$$
+\wR^2=(2H-E)^2=4H^2-4\,H\cdot E+E^2=4\cdot4-0+E^2 .
+$$
+And $E^2=-2$ because $E$ is the exceptional curve of a minimal resolution of a node, so the calculation is $\wR^2=16-0-2=14$.
+Then $R_{\wV}^2=\wR^2/\deg\psi=14/2=7$, because $\psi$ is $2$-to-$1$ and self-intersections of divisors pulled back along a finite map of degree $d$ scale by $d$.
+
+For the remaining numbers: $C=\psi(E)$ has pullback $2E$, so $C^2=(2E)^2/2=4\cdot(-2)/2=-4$, consistent with $C=-2K_{\wV}$; and $R_{\wV}\cdot C=\wR\cdot\psi^*C/2=\wR\cdot2E/2=(2H-E)\cdot E=-E^2=2$.
+Adjunction on $C\cong\PP^1$ then gives $K_{\wV}\cdot C=-2-C^2=-2+4=2$, consistent with $C=-2K_{\wV}$; and since $C=-2K_{\wV}$ the canonical class against $R_{\wV}$ is
+$$
+K_{\wV}\cdot R_{\wV}=-\tfrac12\,C\cdot R_{\wV}=-\tfrac12\cdot2=-1 .
+$$
+Adjunction for $R_{\wV}$ gives
+$$
+2p_a(R_{\wV})-2=R_{\wV}^2+K_{\wV}\cdot R_{\wV}=7-1=6,
+\qquad\text{so } p_a(R_{\wV})=4,
+$$
+an integer, as the consistency check requires.
 
 The divisor $R_{\wV}$ is not the anti-bicanonical curve $C$.
 It is the divisor relevant to the KSBA polarization.

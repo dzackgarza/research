@@ -123,7 +123,11 @@ For the Coble lattices $\rank(S_\Co) = 11$, so $\dim_\CC D_{T_\Co} = 9$.
 
 ::: {.proof}
 
-The K3 lattice has rank $22$, so $\rank(T) = 22 - \rank(M)$, and $T$ has signature $(2, 20 - \rank(M))$; apply @prop:type-iv-dimension.
+The K3 lattice has rank $22$ and signature $(3,19)$, and the embedding is primitive, so by @thm:orthogonal-decomposition the lattice splits as $M\perp T$.
+Ranks add, so $\rank(T)=22-\rank(M)$.
+Signatures add too, by @def:signature applied to the orthogonal sum of the two real forms, so if $M$ has signature $(1,\rank(M)-1)$ then $T$ has signature $(3-1,\,19-(\rank(M)-1))=(2,\,20-\rank(M))$.
+The first index is $2$, so $T$ is of type IV in the sense of @prop:type-iv-dimension, whose dimension for a type IV lattice of signature $(2,m)$ is $m$; with $m=20-\rank(M)$ that is the displayed dimension.
+For $M=S_\Co$ of rank $11$ the complement has signature $(2,9)$, giving $\dim_\CC D_{T_\Co}=9$.
 :::
 
 Letting $E_{10} \definedas U \oplus E_8$, one can similarly consider the Enriques lattices $\sen := E_{10}(2)$ with $\ten = U \oplus E_{10}(2)$.
