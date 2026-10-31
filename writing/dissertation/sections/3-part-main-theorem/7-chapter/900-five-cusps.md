@@ -20,6 +20,10 @@ We recall some notation:
 - $\iota_{\En,\IA}$: the involution acting on the integral-affine sphere $\IAS^2$ $B(\ell)$ or the dual complex $\Gamma(\mcx_0)$ by folding.
 
 A dual complex $\Gamma(\mcx_0)$ or sphere $B(\ell)$ is said to be of *Enriques type* if and only if it admits such an involution $\iota_{\En, \IA}$.
+
+Two symbols that look alike are used in different senses here and are kept apart throughout the chapter: $\Gamma$ is the arithmetic subgroup of $\Orth(T)$ of @sec:group-actions, fixed once and for all, and $\Gamma(\mcx_0)$ is the dual complex of the central fibre, a topological space. The parenthesis carries the whole distinction; a dual complex is never written $\Gamma$ alone, and the group is never written with an argument.
+
+That there are five $0$-cusps is Sterk's count, not a convention of this chapter: for $L_- = H\oplus H(2)\oplus E_8(-2)$ the primitive isotropic vectors fall into five $\Gamma$-orbits, hence five $0$-cusps of the Baily--Borel compactification, and that is the enumeration the five subsections below run through. The transcription of his root data and the recomputation of the maximal parabolic subdiagrams are in `computations/scripts/sterk-enriques-cusps/sterk_cusp_diagrams.sage`.
 Let $(\mcz, \mcr_{\mcz})$ be a half-divisor model.
 If a component $V_i \subset \mcz_0$ is covered by two irreducible components of $\mcx_0$, then (up to normalization) $V_i$ is isomorphic to both components.
 If $V_i$ is instead covered by a single irreducible component $\widetilde{V}_i \subset \mcx_0$, then $\ienzero$ acts on $\widetilde{V}_i$ with exactly four fixed points, occurring as two pairs on double curves $\widetilde{D}_{ij}$, $\widetilde{D}_{ik}$.
@@ -37,7 +41,7 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 - **Boundary Type:** Maps to cusp $(10,10,0)_1$ of $\fen$, and $\Gamma(\mcz_0) = \RP^2$.
 
-- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, with symmetry $J$ given by $180^\circ$ rotation; invariant sublattice $\bar{\tdp}^{J=1} = U(2) \oplus E_8(2)$.
+- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, with symmetry $J$ given by $180^\circ$ rotation; invariant sublattice $\bar{\tdp}^{J=1} = U(2) \oplus E_8(2)$. Both lattices are checked against the maintained two-elementary API in `writing/coble/scripts/certificates/enriques_cusp_lattice_data.py`: $U(2)\oplus E_8^2$ has invariants $(18,2,0)$ and $U(2)\oplus E_8(2)$ has rank $10$ with invariants $(10,10,0)$, the invariant sublattice being the diagonal $E_8$ halved, of determinant $2^8$.
 
 - **Semifan Structure:** The irrelevant subgroup is infinite, noting that it contains the Weyl group of $\tilde A_1$ due to the presence of $r_9, r_{10}$ which are images of irrelevant roots in the corresponding K3 diagram, so $\mcf_1$ is a strict semifan and the compactification at this 0-cusp is strictly semitoroidal.
 

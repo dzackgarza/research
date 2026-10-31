@@ -46,16 +46,16 @@ What has since been settled is listed at the end, so that a reader can tell "res
   T_8 quotient and the root lattice whose containments enumerate the cusps would have to come
   from Scattone's ch. 5-6, which have not been read, and the seven-item list above should not be
   quoted until they are.
-  Scattone's own text, for the degree-4 condition, is not accessible from here.  The memoir is
+  Scattone's own text for the degree-4 condition has not been retrieved here.  The memoir is
   *On the compactification of moduli spaces for algebraic K3 surfaces*, Mem. Amer. Math. Soc. 70
-  (1987), no. 374, DOI 10.1090/memo/0374; ch. 5 is "Primitive isotropic sublattices of rank two"
-  and ch. 6 "Examples".  It is sold only as a print or DRM ebook (AMS, product MEMO/70/374), no
-  open copy was found, and the unofficial copies that a search returns were not used.  So the
-  degree-4 condition stays unread rather than extrapolated from the degree-2 case: what degree 2
-  certifies is a genus (rank 17, signature (0,17), even, determinant -2) together with a contained
-  root lattice, and which genus and which root lattice play that role for T_8 is exactly the
-  passage that has to be read.
-
+  (1987), no. 374, DOI 10.1090/memo/0374, with ch. 5 "Primitive isotropic sublattices of rank two"
+  and ch. 6 "Examples".  The publisher's page is restricted, which is not the same as the source
+  being unreadable: an institutional or author copy may well be obtainable, and a later primary
+  theorem may state the condition outright, so the passage should be sought there rather than
+  declared unavailable.  Until it is read, the degree-4 condition stays open and is not
+  extrapolated from degree 2; what degree 2 certifies is a genus (rank 17, signature (0,17),
+  even, determinant -2) plus a contained root lattice, and which genus and root lattice play that
+  role for T_8 is exactly what the passage has to say.
   The "Sigma versus N zero-cusp invariant" still does not resolve.  Inspected as asked: the
   introduction and historical context carry no such phrase, and the nearest textual home is the
   Enriques chapter's "The five cusps" section, where the five 0-cusps of F_{En,2} carry semifans
