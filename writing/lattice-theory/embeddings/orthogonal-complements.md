@@ -1,4 +1,4 @@
-# Orthogonal complements of lattice embeddings {#sec:lattice-orthogonal-complements}
+# Orthogonal complements of lattice embeddings {#sec-lattice-orthogonal-complements}
 
 The left and right orthogonal-complement kernels are defined in @def:orthogonal-complement.
 For $\iota_v\colon\generators{v}_{\bZ}\injects L$, write $\kappa_v\colon v^{\perp_L}\injects L$ for its right orthogonal-complement kernel.

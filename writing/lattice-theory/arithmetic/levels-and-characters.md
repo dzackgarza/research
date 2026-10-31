@@ -1,4 +1,4 @@
-# Levels, modularity, and discriminant characters {#sec:lattice-levels-characters}
+# Levels, modularity, and discriminant characters {#sec-lattice-levels-characters}
 
 ::: {.definition #def:lattice-level title="Arithmetic level"}
 

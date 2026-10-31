@@ -1,4 +1,4 @@
-# Classification of $2$-elementary discriminant forms {#sec:two-elementary-discriminant-classification}
+# Classification of $2$-elementary discriminant forms {#sec-two-elementary-discriminant-classification}
 
 ::: {.definition #def:twoelementary-finite-quadratic-generators title="The elementary quadratic forms"}
 Write $C_2\definedas\bZ/2\bZ$ and $W\definedas\tfrac12\bZ/2\bZ$. The following are nondegenerate finite quadratic modules with value module $W$ in the form category of @def:form-categories.

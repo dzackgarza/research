@@ -1,4 +1,4 @@
-# K3 and Enriques lattice examples {#sec:k3-enriques-lattice-examples}
+# K3 and Enriques lattice examples {#sec-k3-enriques-lattice-examples}
 
 ## The Enriques lattice $E_{10}$ and its twist
 

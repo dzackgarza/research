@@ -1,4 +1,4 @@
-# The Heegner line and the Coble arithmetic group {#sec:heegner-line}
+# The Heegner line and the Coble arithmetic group {#sec-heegner-line}
 
 ::: {.remark}
 

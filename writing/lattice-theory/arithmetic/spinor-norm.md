@@ -1,4 +1,4 @@
-# Determinant and spinor norm {#sec:lattice-spinor-norm}
+# Determinant and spinor norm {#sec-lattice-spinor-norm}
 
 ::: {.definition #def:spinor-norm title="Determinant and spinor-norm exact sequences"}
 

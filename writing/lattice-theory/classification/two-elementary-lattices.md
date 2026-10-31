@@ -1,4 +1,4 @@
-# Indefinite even $2$-elementary lattices {#sec:indefinite-two-elementary-lattices}
+# Indefinite even $2$-elementary lattices {#sec-indefinite-two-elementary-lattices}
 
 ::: {.definition #def:two-elementary-isotropic-types title="Primitive isotropic-vector types"}
 

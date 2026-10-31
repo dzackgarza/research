@@ -1,4 +1,4 @@
-# K3 and Enriques lattice applications {#sec:k3-enriques-lattices}
+# K3 and Enriques lattice applications {#sec-k3-enriques-lattices}
 
 The lattice definitions used here are collected in [Lattices and discriminant forms](#sec-lattices-discriminant) and [Basic invariants of a lattice](#sec-basic-invariants). This chapter records only their roles in the K3, Enriques, and Coble constructions.
 
@@ -34,7 +34,7 @@ $$
 h^{\perp\lkt}\cong L_{\Kthree,2d}
 $$
 by @prop:degree-2d-k3-complement.
-Thus the lattice $L_{\Kthree,2d}$ is the primitive period lattice for degree-$2d$ polarized K3 surfaces; its Hodge-theoretic use is developed in [K3 periods and monodromy](#sec:k3-periods-monodromy).
+Thus the lattice $L_{\Kthree,2d}$ is the primitive period lattice for degree-$2d$ polarized K3 surfaces; its Hodge-theoretic use is developed in [K3 periods and monodromy](#sec-k3-periods-monodromy).
 :::
 
 ## Coble instances of the $2$-elementary building blocks

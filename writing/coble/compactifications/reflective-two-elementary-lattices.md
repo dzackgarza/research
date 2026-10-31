@@ -1,4 +1,4 @@
-# Reflective two-elementary lattices {#sec:reflective-two-elementary}
+# Reflective two-elementary lattices {#sec-reflective-two-elementary}
 
 ::: {.remark title="Orientation"}
 

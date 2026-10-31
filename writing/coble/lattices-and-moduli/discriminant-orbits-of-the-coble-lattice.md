@@ -1,4 +1,4 @@
-# Discriminant orbits of the Coble lattice {#sec:discriminant-orbits}
+# Discriminant orbits of the Coble lattice {#sec-discriminant-orbits}
 
 ::: {.remark}
 

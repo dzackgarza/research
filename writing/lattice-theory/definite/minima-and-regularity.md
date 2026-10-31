@@ -1,4 +1,4 @@
-# Definite lattice theory {#sec:definite-lattice-theory}
+# Definite lattice theory {#sec-definite-lattice-theory}
 
 ::: {.proposition #prop:definite-finiteness title="Finiteness for definite lattices"}
 

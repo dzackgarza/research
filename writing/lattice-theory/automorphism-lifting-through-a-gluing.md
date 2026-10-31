@@ -1,4 +1,4 @@
-# Automorphism lifting through a gluing {#sec:automorphism-lifting}
+# Automorphism lifting through a gluing {#sec-automorphism-lifting}
 
 
 ## The discriminant representation
