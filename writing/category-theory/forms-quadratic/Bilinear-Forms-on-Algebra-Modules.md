@@ -75,14 +75,12 @@ The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and 
 The Gram matrix of a module bilinear form on a free module is @prop:gram-matrix-free-module, and its change under a change of basis is @prop:gram-congruence.
 For an algebra $A$ free as an $R$-module on $E$, both apply to $U(A)$ with the module basis $E$.
 
-::: {.proposition #prop:eval-via-algebra-map title="Evaluation through algebra generators"}
+::: {.remark}
 
-Let $S$ generate $A$ as a unital $R$-algebra, and let $v,w\in A$.
-Choose elements $f_v,f_w\in R\langle S\rangle$ with images $v,w$ under $R\langle S\rangle\to A$.
-Then $B(v,w)$ is the value of $B$ on those images.
-If $A$ is free on a module basis $E$, expand the images in $E$ and apply @prop:gram-matrix-free-module.
-The Gram matrix remains indexed by the module basis $E$.
-Algebra generators give expressions for the two elements of $A$ on which $B$ is evaluated.
+Let $S$ generate $A$ as a unital $R$-algebra and let $\pi\colon R\langle S\rangle\to A$ be the surjection of @def:algebra-generating-set.
+For $v,w\in A$ and any $f_v,f_w$ with $\pi(f_v)=v$ and $\pi(f_w)=w$ one has $B(v,w)=B(\pi f_v,\pi f_w)$, which is a restatement of $\pi f_v=v$ and carries no further information.
+So algebra generators supply *expressions* for the two arguments of $B$; they do not supply its values, and by @prop:generators-insufficient the values on a generating set do not determine the form.
+If $A$ is free on a module basis $E$, such an expression is expanded in $E$ and evaluated by @prop:gram-matrix-free-module, the Gram matrix being indexed by $E$ and not by $S$.
 :::
 
 ## Associative bilinear forms {#sec-associative-forms}
@@ -110,13 +108,21 @@ The following are equivalent:
 2. there exists an $R$-linear map $\eps\colon A\to R$ such that $B(x,y)=\eps(xy)$ for all $x,y\in A$.
 
 If these hold, then $\eps(x)=B(x,1_A)=B(1_A,x)$.
-
-Given (1), set $\eps(x)=B(x,1_A)$.
-Then $B(x,y)=B(x,y\cdot 1_A)=B(xy,1_A)=\eps(xy)$, and $B(1_A,y)=B(1_A,y\cdot 1_A)=B(y,1_A)$.
-Given (2), $B(xy,z)=\eps((xy)z)=\varepsilon(x(yz))=B(x,yz)$.
 :::
 
-The identification $\eps(x)=B(x,1_A)$ uses the unit of $A$.
+::: {.proof}
+
+From (1) to (2): set $\eps(x)\definedas B(x,1_A)$, which is $R$-linear in $x$.
+Associativity of $B$ in the form $B(xy,z)=B(x,yz)$ applied with $z=1_A$ gives $B(x,y)=B(xy,1_A)=\eps(xy)$.
+Applying it with $x=1_A$ gives $B(1_A,y)=B(1_A,y\,1_A)=B(y,1_A)=\eps(y)$, so the two readings agree.
+
+From (2) to (1): if $B(x,y)=\eps(xy)$ then $B(xy,z)=\eps((xy)z)=\eps(x(yz))=B(x,yz)$, which is associativity by @def:associative-bilinear-form.
+:::
+
+::: {.remark}
+
+The identification $\eps(x)=B(x,1_A)$ uses the unit of $A$: without $\eta$ there is no element $1_A$ to evaluate against, and $B(xy,z)=B(x,yz)$ need not be expressible as a single linear functional.
+:::
 
 ::: {.definition #def:frobenius-form title="Frobenius forms"}
 A linear form $\eps\colon A\to R$ is a *Frobenius form* when $(x,y)\mapsto\eps(xy)$ is perfect in the sense of @def:polarization: both adjoint maps $A\to\Hom_R(A,R)$ are isomorphisms [@nlab:frobenius_algebra].
@@ -131,9 +137,25 @@ $$
 =
 \Sum_k \mu^k_{jl} G_{ik}
 $$
-for all $i,j,l\in I$.
-Under @thm:associative-is-trace this is $G_{ij}=\eps(e_i e_j)=\Sum_k\mu^k_{ij}\eps(e_k)$.
-The linear form $\eps$ is determined by the family $(\eps(e_i))_{i\in I}$.
+for all $i,j,l\in I$, where $G_{ij}=B(e_i,e_j)$.
+:::
+
+::: {.proof}
+
+By @thm:associative-is-trace, $B$ is associative exactly when $B(x,y)=\eps(xy)$ for a linear form $\eps$, and then
+$$
+G_{ij}=B(e_i,e_j)=\eps\qty{\Sum_k\mu^k_{ij}e_k}=\Sum_k\mu^k_{ij}\eps(e_k),
+$$
+a finite sum by the support condition on $\mu$.
+So the Gram matrix is over-determined by the single family $\eps(e_k)_{k\in I}$, and $\eps$ is determined by that family because $E$ is a basis.
+
+The displayed identity is associativity evaluated on a triple of basis vectors: with $z=e_l$,
+$$
+B(e_ie_j,e_l)=\Sum_k\mu^k_{ij}B(e_k,e_l)=\Sum_k\mu^k_{ij}G_{kl},
+\qquad
+B(e_i,e_je_l)=\Sum_k\mu^k_{jl}B(e_i,e_k)=\Sum_k\mu^k_{jl}G_{ik},
+$$
+and $B(xy,z)=B(x,yz)$ for all $x,y,z$ is equivalent to its holding on the basis, since both sides are trilinear.
 :::
 
 ## Restriction to algebra generators {#sec-generators-do-not-determine}
@@ -149,8 +171,27 @@ The values of $B$ on $\operatorname{Span}_R\{1,x\}$ determine $\eps$ on $\{1,x,x
 :::
 
 ::: {.proposition #prop:generators-insufficient title="Algebra generators do not determine module bilinear forms"}
-The restriction of a module bilinear form on $U(A)$ to a finitely generated $R$-submodule does not determine the form on $U(A)$, unless $U(A)$ itself is finitely generated.
-The values of $B$ on pairs drawn from a finite algebra generating set therefore do not determine $B$.
+
+Suppose $U(A)$ is free on a basis $E$ that is not finite, and let $M\subseteq U(A)$ be a finitely generated submodule.
+Then there are distinct module bilinear forms on $U(A)$ that agree on $M\times M$.
+In particular the values of $B$ on pairs drawn from a finite algebra generating set do not determine $B$.
+:::
+
+::: {.proof}
+
+A finitely generated submodule of a free module is contained in the span of a finite subset $E_0\subseteq E$, since each of finitely many generators involves finitely many basis vectors; so it suffices to treat $M\subseteq\operatorname{Span}_R E_0$.
+Choose $e\in E\setminus E_0$.
+The forms
+$$
+B_1\definedas0,
+\qquad
+B_2(e,e)\definedas1,\quad B_2\text{ zero on every other pair of basis vectors},
+$$
+are distinct and both vanish on $M\times M$, because every element of $M$ is a combination of basis vectors in $E_0$ and the cross terms $B_2(e,\text{-})$ and $B_2(\text{-},e)$ vanish off $e$.
+Both are bilinear by @prop:gram-matrix-free-module, applied to their Gram matrices.
+
+A finite algebra generating set spans only finitely many basis vectors, so the same construction applies to the submodule it spans.
+The hypothesis that $E$ is infinite is what supplies $e\notin E_0$; when $U(A)$ is finitely generated the argument has no $e$ to choose, which is why the statement excludes that case.
 :::
 
 ## Algebra bilinear forms {#sec-algebra-morphisms-tensor}
@@ -169,16 +210,24 @@ $$
 $$
 An algebra bilinear form $\phi\colon A\tensor_R A\to R$ is therefore $\phi(a\tensor_R b)=\chi_L(a)\chi_R(b)$ for the pair of $R$-algebra homomorphisms $\chi_L,\chi_R\colon A\to R$ given by $\chi_L(a)=\phi(a\tensor_R 1_A)$ and $\chi_R(b)=\phi(1_A\tensor_R b)$.
 
-The same formulae classify algebra bilinear forms when $A$ is an object of $R\text{-}\mathbf{Alg}$.
-The tensor product is the monoidal tensor of @def:algebra-bilinear-form, and
+The same formulae classify algebra bilinear forms when $A$ is an object of $R\text{-}\mathbf{Alg}$, not necessarily commutative.
+:::
+
+::: {.proof}
+
+Write $\iota_L(a)\definedas a\tensor_R1_A$, $\iota_R(b)\definedas1_A\tensor_Rb$ and $\chi_L\definedas\phi\circ\iota_L$, $\chi_R\definedas\phi\circ\iota_R$; both are $R$-linear, and $\phi$ is an $R$-algebra homomorphism, so multiplicative and unital.
+
+The factorization $a\tensor_Rb=(a\tensor_R1_A)(1_A\tensor_Rb)=\iota_L(a)\iota_R(b)$ holds in $A\tensor_RA$ by the multiplication of @def:algebra-bilinear-form, hence
 $$
-\phi(a\tensor_R b)=\phi\bigl((a\tensor_R 1_A)(1_A\tensor_R b)\bigr)=\phi(a\tensor_R 1_A)\phi(1_A\tensor_R b),
+\phi(a\tensor_Rb)=\phi\bigl(\iota_L(a)\iota_R(b)\bigr)=\phi(\iota_L a)\phi(\iota_R b)=\chi_L(a)\chi_R(b).
 $$
+So $\phi$ is determined by the pair, and $\chi_L(1_A)=\phi(1_A\tensor_R1_A)=1_R$ by unitality of $\phi$.
+
+That each $\chi$ is itself multiplicative, which is what makes the classification a bijection onto pairs of algebra homomorphisms, uses the tensor product being that of $R\text{-}\mathbf{Alg}$ and the codomain $R$ being commutative:
 $$
-\chi_L(ab)=\phi(ab\tensor_R 1_A)=\phi\bigl((a\tensor_R 1_A)(b\tensor_R 1_A)\bigr)=\chi_L(a)\chi_L(b),
+\chi_L(ab)=\phi\bigl(ab\tensor_R1_A\bigr)=\phi\bigl(\iota_L(a)\iota_L(b)\bigr)=\phi(\iota_La)\phi(\iota_Lb)=\chi_L(a)\chi_L(b),
 $$
-with $\chi_L(1_A)=1_R$, and likewise for $\chi_R$.
-The codomain $R$ is commutative.
+and likewise for $\chi_R$; conversely a pair of $R$-algebra homomorphisms defines $\phi(a\tensor_Rb)\definedas\chi_L(a)\chi_R(b)$, which is multiplicative because both factors are and $R$ is commutative.
 :::
 
 ::: {.remark}
@@ -216,4 +265,13 @@ Each is determined by the image of the algebra generator $x$.
 ::: {.proposition #prop:character-gram title="Gram matrices from characters"}
 If $A$ is free on $E$, the Gram matrix of the module bilinear form $U(\phi)$ is $G_{ij}=\chi_L(e_i)\chi_R(e_j)$.
 If $A$ is generated as a unital $R$-algebra by a finite set $S$, each of $\chi_L$ and $\chi_R$ is determined by its values on $S$, subject to the relations of $A$.
+:::
+
+::: {.proof}
+
+The first sentence is @prop:characters-pair evaluated on a pair of basis vectors: $G_{ij}=U(\phi)(e_i,e_j)=\phi(e_i\tensor_Re_j)=\chi_L(e_i)\chi_R(e_j)$.
+So the Gram matrix of $U(\phi)$ is the rank-one matrix $\chi_L\chi_R^{\mathsf T}$ over the basis $E$, and in particular it has rank at most one whatever the size of $E$.
+
+For the second, a unital $R$-algebra homomorphism $\chi\colon A\to R$ out of a generated algebra is determined by its restriction to the generators, since $\chi$ is $R$-linear and multiplicative and every element of $A$ is a polynomial in $S$.
+Not every assignment extends: $\chi$ must kill the relations, which is exactly the content of the universal property of $R\langle S\rangle$ in @def:algebra-generating-set, and the assignments that extend are the homomorphisms $R\langle S\rangle/(\text{relations})\to R$.
 :::
