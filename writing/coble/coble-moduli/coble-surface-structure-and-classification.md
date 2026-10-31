@@ -58,7 +58,7 @@ For general $C$, $H \cong W(E_{10})(2)$, the level 2 congruence subgroup.
 
 ::: {.proof}
 
-Cited: [@Dol88] for the description of $\Aut(S)$ through the action on $M_S$, and [@CDL25, Ch. 5] for the level 2 structure.
+Cited: [@DO88] for the description of $\Aut(S)$ through the action on $M_S$, and [@CDL25, Ch. 5] for the level 2 structure.
 
 The two groups are read as follows.
 $\Aut(S)$ acts on $\Pic(S)$ preserving $K_S$ and the intersection form, hence on $M_S = K_S^{\perp\,\Pic(S)}$; that the resulting homomorphism is injective with finite image is the cited part, and the image is the group $H$.
