@@ -29,7 +29,19 @@ By [@CDL25 Def. 5.4.3, Eqn. 5.3.1], the ramification divisor $R$ is explicitly o
 
 3. $R$ is the sum of a single rational curve and $n-1$ other disjoint $(-2)$-curves otherwise.
 
-It is also known that $\delta=1$ unless $n=8$, cf. [@CDL25 Table 5.1].
+The first two cases cannot occur for a cover of a Coble surface: both carry $r = 10$, whereas $M$ has $r = 10+n$ with $1\leq n\leq 10$, so the third case is the only one, and the ramification divisor is never empty.
+The case distinction is quoted because it is the source's, taken from its statement for a general involution of a K3 surface, and reading the first two cases as available here would suggest that a Coble cover can be unramified.
+
+The discriminant length of $M$ is derived rather than tabulated: with $k$ the number of boundary components, so that $k = n$,
+$$
+a(M) \;=\; a(\latI_{1, N}(2)) - 2(k-1) \;=\; 21 - N \;=\; 12 - n
+\qquad (N = 9+n)
+$$
+[@CDL25 §5.4], which is where the second entry of the table comes from.
+The source uses $k$ twice in this passage and not for the same thing: in the ramification description (5.3.1) it is the number of $(-2)$-curves, which is $n-1$, while in the formula above it is the number of components, which is $n$; the value $21-N$ fixes the second reading, and $21-N = 12-n$ only for $N = 9+n$.
+
+For the parity invariant, $\delta = 1$ for every $n\neq 8$; at $n=8$ both values occur, [@CDL25] Table 5.1 carrying two rows there, $(18,4,0)$ with $M = \mathrm{E}_8\oplus \mathrm{D}_8\oplus \mathrm{U}(2)$ and $(18,4,1)$ with $M = \mathrm{E}_{10}\oplus \mathrm{D}_6\oplus \mathrm{A}_1^{\oplus 2}$.
+So for $n\neq 8$ every Coble surface of K3 type has $\delta = 1$, and for $n=8$ the two families differ exactly in $\delta$.
 Thus if $S$ is a terminal Coble surface of K3 type with $n=1$, the ramification locus of the K3 cover is a single smooth rational curve, and we obtain a lattice with invariants
 $$
 S_{\Co} \definedas (11, 11, 1)_1 \cong \generators{-2} \oplus E_{10}(2)
