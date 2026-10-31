@@ -558,7 +558,7 @@ $$
 so its Gram matrix is $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$, its form is perfect and even, and its signature over an ordered field is $(1,1,0)$.
 
 A perfect symmetric form $b$ on $M$ is *split* if $M$ has a direct summand $N$ with $N=N^{\perp_b}$ [@MH73, I §6.1].
-Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes [@MH73, I §6.3]; this applies to a field of characteristic other than $2$.
+Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic other than $2$.
 :::
 
 ::: {.definition #def:witt-index title="Witt index"}

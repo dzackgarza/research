@@ -10,5 +10,7 @@ The part is organized in three runs.
 The definitions come first: lattices and discriminant forms (@sec-lattices-discriminant), the norm, divisibility, and discriminant class of a vector (@sec-basic-invariants), and the local and level invariants that follow from them.
 The second run builds structure on those definitions: embeddings and orthogonal complements, isometries, reflections, spinor norms, Eichler transvections, and the lifting of automorphisms through a gluing.
 The third run is arithmetic and classification: the genus and its discriminant forms, the unimodular and $2$-elementary classifications, the Miranda--Morrison obstruction, the definite case, root systems, and Coxeter systems.
-One reference points forward, and it is deliberate: the classification of $2$-elementary discriminant forms closes by naming the invariants of @thm:two-elementary-classification, which the part states further on.
-The book keeps one registry for the whole volume, so a forward reference resolves; it is recorded here because a reader following the part in order meets the two pages out of sequence.
+Two references point forward, and both are deliberate.
+The classification of $2$-elementary discriminant forms closes by naming the invariants of @thm:two-elementary-classification, which the part states further on.
+And @thm:indefinite-unimodular-classification, stated here, is used by the Witt ring of $\bZ$ in the forms part that precedes this one, because injectivity of the signature is exactly the statement that a signature-zero unimodular lattice is Witt-trivial, and over $\bZ$ that is the classification.
+The book keeps one registry for the whole volume, so a forward reference resolves; both are recorded here because a reader following the parts in order meets the two pages out of sequence.
