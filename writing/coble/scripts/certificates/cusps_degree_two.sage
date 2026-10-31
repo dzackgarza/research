@@ -106,10 +106,13 @@ from sage_extensions.all import *  # noqa: F401,F403
 #
 # The script therefore never writes N.basis_vector(i) for a diagram label i.
 
-U = matrix(ZZ, [[0, 1], [1, 0]])
-E8_neg = -matrix(ZZ, CartanMatrix(["E", 8]).rows())          # negative definite
-T2 = Lattices(ZZ)(block_diagonal_matrix([matrix(ZZ, [[-2]]), U, U, E8_neg, E8_neg]))
-N_standard = Lattices(ZZ)(block_diagonal_matrix([U, E8_neg, E8_neg, matrix(ZZ, [[-2]])]))
+U_gram = [[0, 1], [1, 0]]
+A1_gram = [[-2]]
+E8_gram = [[-int(x) for x in row] for row in CartanMatrix(["E", 8]).rows()]
+U_lattice, A1_lattice, E8_neg_lattice = (Lattices(ZZ)(U_gram), Lattices(ZZ)(A1_gram),
+                                        Lattices(ZZ)(E8_gram))
+T2 = U_lattice + U_lattice + E8_neg_lattice + E8_neg_lattice + A1_lattice
+N_standard = U_lattice + E8_neg_lattice + E8_neg_lattice + A1_lattice
 
 assert T2.signature_pair() == (2, 19)          # the period lattice h^perp
 assert T2.det() == -2
@@ -182,10 +185,13 @@ def cusp_plane(null_vector, label):
     return J, boundary, inclusions[0], index_squared
 
 # E8^2 + A1: the one null vector that does not come from the diagram.  In the standard
-# model N = <e,f> + E8^2 + A1 the vector e is primitive isotropic and v^perp/Zv = E8^2 + A1,
-# which is the label of that cusp (marks 1, no Coxeter data needed).
-J_E8, B_E8, inc_E8, idx_E8 = cusp_plane(N_standard.basis_vector(0), N_standard)
-assert idx_E8 == 1
+# model N = <e,f> + E8^2 + A1 the vector e is primitive isotropic and v^perp/Zv = E8^2 + A1.
+# The label is that rank-17 lattice, NOT N: N is the 0-cusp quotient H + E8^2 + A1, of rank
+# 19, and conflating the two is exactly the error the boundary contract above guards against.
+LABEL_E8 = E8_neg_lattice + E8_neg_lattice + A1_lattice          # E8^2 + A1, rank 17
+J_E8, B_E8, inc_E8, idx_E8 = cusp_plane(N_standard.basis_vector(0), LABEL_E8)
+assert idx_E8 == 1                          # executed on the maintained baseline: see
+                                           # cusps_degree_two_run.py and its output
 
 # The vertex layout of [1] Fig. 1 (p. 22), rows top to bottom, as printed:
 #
