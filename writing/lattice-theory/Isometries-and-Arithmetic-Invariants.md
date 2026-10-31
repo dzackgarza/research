@@ -175,6 +175,20 @@ If $b_M$ is perfect, then $[f^*]_{B_M\leftarrow B_N}=G_M^{-1}A^{\mathsf T}G_N$.
 When $M=N$, $B_M=B_N=B$, and $f\in\operatorname{End}_{R\text{-}\mathbf{Mod}}(M)$, one has $f\in O(M)$ exactly when $A^{\mathsf T}G_MA=G_M$; in that case $A^{-1}=G_M^{-1}A^{\mathsf T}G_M$.
 :::
 
+::: {.proof}
+
+Let $x\in M$ have coordinate column $u$ and $f(x)$ have column $Au$.
+The adjoint of @def:adjoint-morphism is characterized by $b_N(fx,y)=b_M(x,f^{*}y)$, so writing $v$ for the column of $y$ and $B$ for the matrix of $f^{*}$,
+$$
+(Au)^{\mathsf T}G_Nv=u^{\mathsf T}G_M(Bv)\quad\text{for all }u,v,
+$$
+since $G_M,G_N$ are symmetric and so the pairing is their transpose taken either way.
+As $u,v$ range over the standard columns this gives $A^{\mathsf T}G_N=G_MB$, and $G_M$ is invertible because $b_M$ is perfect and $M$ is free, so $B=G_M^{-1}A^{\mathsf T}G_N$.
+
+For the isometry criterion: $f\in O(M)$ means $f^{*}=f^{-1}$, which in coordinates is $G_M^{-1}A^{\mathsf T}G_M=A^{-1}$, equivalent to $A^{\mathsf T}G_MA=G_M$ after multiplying by $G_M$ on the left.
+The displayed inverse is the same identity solved for $A^{-1}$.
+:::
+
 ::: {.definition #def:similarity title="Similarity morphisms"}
 
 For $(M,b_M),(N,b_N)\in\mathcal B_{R,W}$ and $\lambda\in R$, define
@@ -202,6 +216,17 @@ Then $G_L=A^{\mathsf T}G_MA$ and $\abs{\det A}=[M:f(L)]$.
 Index $1$ holds exactly for the isometries.
 :::
 
+::: {.proof}
+
+$Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective with $L,M$ of equal rank, so $\rank Q_f=0$ over the domain $\bZ$.
+
+For the matrix identity, apply the adjoint formula of @prop:adjoint-matrix: the morphism $G_L=A^{\mathsf T}G_MA$ is the coordinate statement of $f^{*}b_M=b_L$, which is what makes $f$ a morphism of $\mathbf{Lat}_\bZ$.
+Then $\det G_L=\det(A)^{2}\det G_M$, and by @def:determinant-class $\det b_L$ and $\det b_M$ are the classes of these determinants up to squares of units, so $\det(b_L)=\det(b_M)[M:f(L)]^{2}$ once $\abs{\det A}=[M:f(L)]$ is known.
+That last equality is the index formula for a map of free $\bZ$-modules of equal rank: $Q_f\cong\bZ^{n}/A\bZ^{n}$, of order $\abs{\det A}$.
+
+Index $1$ is $\abs{\det A}=1$, that is $A\in\GL_n(\bZ)$, that is $A$ invertible over $\bZ$; and $G_L=A^{\mathsf T}G_MA$ with $A$ invertible is exactly $f\in O(L)$ by @prop:adjoint-matrix.
+:::
+
 Reflections and their integrality are treated in @sec-reflections, which carries the proofs.
 
 ## Matrix realizations
@@ -221,6 +246,16 @@ $$
 \Aut\qty{(\bZ/d\bZ)^n}
 \cong\GL_n(\bZ/d\bZ).
 $$
+:::
+
+::: {.proof}
+
+Conjugation by the coordinate isomorphism is an isomorphism of groups, and it carries $f$ to a matrix $A$; $f$ preserves $b_L$ exactly when $A^{\mathsf T}G_LA=G_L$ by @prop:adjoint-matrix, and $f$ invertible exactly when $A\in\GL_n(R)$.
+The determinant of $G_L$ is a unit, since $L$ is nondegenerate and free, so the condition forces $\det(A)^{2}=1$ and $A$ is indeed invertible — the constraint does not have to be imposed separately, which is why the displayed set is a group and not a subset with a condition on determinants.
+Changing the basis replaces $G_L$ by $P^{\mathsf T}G_LP$ for $P$ the change-of-basis matrix, by @prop:gram-congruence, so the subgroup is carried to a conjugate one.
+
+For the endomorphism ring, $\Hom_\bZ(\bZ/d_j\bZ,\bZ/d_i\bZ)\cong\bZ/d_i\bZ$ with the morphism determined by the image of $1$, which must be killed by $d_j$; that is the condition $d_j a_{ij}=0$ in $\bZ/d_i\bZ$, and composition is matrix multiplication under it.
+The automorphisms of a finite module are the units of its endomorphism ring, and for a product of copies of one $\bZ/d\bZ$ the endomorphism ring is $M_n(\bZ/d\bZ)$, whose units are by definition $\GL_n(\bZ/d\bZ)$.
 :::
 
 ## Isometries of a degenerate form {#sec-degenerate-isometries}
@@ -244,6 +279,19 @@ $$
 \rtimes\qty{\Aut_{R\text{-}\mathbf{Mod}}(\radic(M))\times\Orth(M^{\mathrm{nd}})}.
 $$
 The subgroup fixing $\radic(M)$ pointwise is the inverse image of $\{\id_{\radic(M)}\}\times\Orth(M^{\mathrm{nd}})$ under the projection to $\Aut_{R\text{-}\mathbf{Mod}}(\radic(M))\times\Orth(M^{\mathrm{nd}})$.
+:::
+
+::: {.proof}
+
+$M^{\mathrm{nd}}$ is the cokernel of the radical and $s_M$ a section of it, by @def:nondegenerate-reduction and @thm:radical-splits; that $\rho_M\perp s_M$ is an isometry is the vanishing of every pairing involving $\radic(M)$ in @def:polarization.
+
+An isometry $g$ preserves the radical: if $x\in\radic(M)$ then $b(gx,y)=b(x,g^{-1}y)=0$ for all $y$, so $gx\in\radic(M)$.
+In the decomposition its matrix is therefore block upper triangular with entries $a=g|_{\radic(M)}$, $d$ the induced map on $M^{\mathrm{nd}}$ and $\varphi$ the remaining block, and $a$ is invertible because $g$ is.
+
+Conversely a block $\begin{pmatrix}a&\varphi\\0&d\end{pmatrix}$ with $a,d$ invertible preserves the form: on a pair of vectors in $\radic(M)\perp M^{\mathrm{nd}}$ the cross terms vanish and the radical component is isotropic, so only $d$ is tested, and $d\in\Orth(M^{\mathrm{nd}})$ is the hypothesis.
+The multiplication law of block upper triangular matrices is $(\varphi,a,d)(\varphi',a',d')=(\varphi a'+d\varphi',\,aa',\,dd')$, which exhibits the semidirect product with the normal subgroup of those with $a=\id$ and $d=\id$, isomorphic to $\Hom_R(M^{\mathrm{nd}},\radic(M))$ additively.
+
+Fixing $\radic(M)$ pointwise is $a=\id$, and fixing it also as a set is what the block form already encodes; so the subgroup in question is the inverse image stated, which is $\Hom(M^{\mathrm{nd}},\radic(M))\rtimes\Orth(M^{\mathrm{nd}})$.
 :::
 
 ## Index
