@@ -30,6 +30,17 @@ $$
 and if $E^2 = -4$ then $E$ is a component of $D$.
 :::
 
+::: {.proof}
+
+Cited: [@DZ99, §2] for the trichotomy of the norm.
+The proof block records why the trichotomy is three values and not more, since that is what the rest of the page uses.
+
+Adjunction on the smooth rational curve $E$ gives $E^2 = -2 - E\cdot K_S$, so the possible values of $E^2$ are read off the intersection numbers of $E$ with $-K_S$.
+A Coble surface has $|-2K_S| = \{D\}$ with $D$ nonempty and $D$ a sum of $(-4)$-curves, so $-K_S = \tfrac12 D$ is not integral but $2(-K_S)=D$ is effective.
+For $E$ not a component of $D$ the intersection $E\cdot D$ is a nonnegative even integer, $E\cdot K_S = -\tfrac12 E\cdot D$, and $E^2 = -2+\tfrac12 E\cdot D$; the values $E\cdot D = 0, 2$ give $E^2 = -2, -1$, and $E\cdot D\geq4$ would give $E^2\geq0$, contradicting negativity.
+For $E$ a component of $D$ one has $D = E + D'$ with $D'$ effective and not containing $E$, and $E^2 = -4$ is the value forced by the classification of the components of $D$.
+:::
+
 This is the fact that makes the $(-4)$-curves intrinsic: they cannot occur away from the boundary.
 It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that governs the Coxeter diagrams in [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams).
 
@@ -43,6 +54,16 @@ $$
 \Orth(M_S)/\theset{\pm1} \cong W(E_{10}).
 $$
 For general $C$, $H \cong W(E_{10})(2)$, the level 2 congruence subgroup.
+:::
+
+::: {.proof}
+
+Cited: [@Dol88] for the description of $\Aut(S)$ through the action on $M_S$, and [@CDL25, Ch. 5] for the level 2 structure.
+
+What the statement adds to the citation is the reading of the two groups, and that is what the page uses.
+$\Aut(S)$ acts on $\Pic(S)$ preserving $K_S$ and the intersection form, hence on $M_S = K_S^{\perp\,\Pic(S)}$; that the resulting homomorphism is injective with finite image is the cited part, and the image is the group $H$.
+$\Orth(M_S)/\{\pm1\}\cong W(E_{10})$ identifies the *full* orthogonal group with the Coxeter group, so the quotient is by the central $\pm1$ and not by anything else; for general $C$ the finite-index subgroup $H$ is then the level 2 congruence subgroup of that $W(E_{10})$.
+The two statements are therefore consistent, and the difference between them is the difference between the full orthogonal group and the image of one particular surface's automorphism group.
 :::
 
 The project's introduction records $\Aut(S)\cong W(E_{10})$ for general $C$; the refinement to the level 2 congruence subgroup, and the quotient statement for $\Orth(M_S)$, are the sharper forms.
@@ -94,6 +115,13 @@ Let $X$ be a Coble surface with $M^2 = 0$.
 - If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface by blowing up a singular point of one fibre $F$ and at least one singular point, with infinitely near points, on another fibre $F_1$, then $X$ is of K3 type **if and only if** each of $F$ and $F_1$ has type $I_n$, $\II$, $\III$ or $\IV$.
 :::
 
+::: {.proof}
+
+This is [@DZ99, Thm. 6.5], stated here with its hypotheses spelled out because the page's use of it depends on them: $M^2 = 0$ is required, and in each branch the surface must be obtained by exactly the blowups described, at singular points of the stated fibres.
+
+The list $I_n, \II, \III, \IV$ is the list of fibre types whose Kodaira type is not multiple, i.e. the fibre is reduced; a fibre of type $I_n^*$, $\II^*$, $\III^*$ or $\IV^*$ is not, and that is the content of the criterion, not an additional condition.
+:::
+
 ::: {.lemma title="Dolgachev-Zhang Lem. 6.2"}
 
 For a Coble surface $X$ the following are equivalent:
@@ -101,6 +129,13 @@ For a Coble surface $X$ the following are equivalent:
 1. $|-2K_X|$ contains a reduced divisor;
 
 2. there is a double cover $\tilde X \to X$ with $\tilde X$ a K3 surface having at worst ordinary double points.
+:::
+
+::: {.proof}
+
+This is [@DZ99, Lem. 6.2].
+The mechanism, worth recording because it is used throughout the Coble literature: $|-2K_X|$ nonempty is the datum of a $\bZ/2$-cover, branched over a divisor in that class, and the condition that a member be reduced is what keeps the branch divisor smooth enough for the cover to have only ordinary double points.
+Without a reduced member the cover acquires worse singularities along the non-reduced part.
 :::
 
 ::: {.remark title="Why this matters for the Halphen program"}
@@ -121,8 +156,16 @@ A normal rational surface $\bar X$ with at worst quotient singularities such tha
 A terminal Coble surface is the minimal resolution of a **maximum** rational log Enriques surface of index 2. Conversely, the minimal resolution $X$ of a rational log Enriques surface $\bar X$ of index 2 is a Coble surface with $h^0(-2K_X) = 1$, whose unique member $D \in |-2K_X|$ is reduced and each of whose connected components is either a single $(-4)$-curve or a linear chain with a prescribed dual graph.
 :::
 
-The dual graph is a hand-drawn figure in the source and did not survive.
-If this characterization is used, that graph must be recovered from Dolgachev-Zhang.
+::: {.proof}
+
+Cited: [@DZ99, §3] for both directions.
+
+The characterization is a minimal-resolution statement and its content is which surfaces resolve to a terminal Coble.
+Resolving a rational log Enriques surface of index 2 replaces the quotient singularities by configurations of rational curves, and terminality of the resolution is exactly the condition that no $(-1)$-curve remains, which is what forces each connected component of the exceptional divisor to be a single $(-4)$-curve or a chain of the stated shape.
+The converse direction is the same computation read backwards, together with $h^0(-2K_X)=1$: on a Coble surface $|-2K_X|$ is a single member, so the resolution contributes no further sections.
+
+The dual graph of the chains is a hand-drawn figure in the source and was not transcribed here; it must be recovered from [@DZ99, §3] before the characterization is used.
+:::
 
 ## Dolgachev-Kondo geometry of the degree 2 polarization
 
