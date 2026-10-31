@@ -66,9 +66,13 @@ The rows are those of Table 5.1, p. 553, of [@CDL25], in the author-hosted draft
 The source writes $\ell$ for the discriminant length where this book writes $a$, and $\mathrm{A}_1$ for what it elsewhere calls $\langle -2\rangle$.
 
 Two rows of the source print entries that contradict their own invariants, and the table above prints what the invariants force.
-The row $n=2$ prints $\mathrm{E}_{10}(2)\oplus \mathrm{A}_1^{\oplus 2}$, of length $12$ rather than the printed $10$; the lattice with those invariants is $\mathrm{E}_8(2)\oplus \mathrm{U}\oplus \mathrm{A}_1^{\oplus 2}$, which is printed here.
-The last row prints $N=20$, where $K_V^2 = 9 - N = -10$ forces $N = 19$; the table prints $19$.
-Both departures are from the printed entries, not from the printed invariants, and neither changes a lattice.
+
+The row $n=2$ prints $\mathrm{E}_{10}(2)\oplus \mathrm{A}_1^{\oplus 2}$.
+Twisting a unimodular lattice multiplies its discriminant group by its own mod-$2$ reduction, so $a(L(2)) = \rank L$ for $L$ unimodular, by @prop:scaled-discriminant-ses; hence that lattice has $a = 10 + 2 = 12$, against the printed $(12,10,1)$.
+The lattice with the printed invariants is $\mathrm{E}_8(2)\oplus \mathrm{U}\oplus \mathrm{A}_1^{\oplus 2}$, of $a = 8 + 0 + 2 = 10$, and it is printed here.
+Which of the two printed entries is the error is not a matter of taste: the invariant is derived in the paragraph preceding the table, from $a(M) = a(\mathrm{I}_{1,N}(2)) - 2(n-1) = 12 - n$, while the summand decomposition is not, so it is the decomposition that is wrong.
+
+The last row prints $N = 20$, while the source's own $K_V^2 = 9 - N$ with $K_V^2 = -10$ forces $N = 19$; the table prints $19$, for the same reason.
 
 One row was for a time in the opposite situation.
 An earlier version of this table had rows $n=4$ and $n=5$ with $\mathrm{U}$ and $\mathrm{U}(2)$ interchanged relative to the source, which the printed invariants detect; the repair of that then replaced row $n=4$ by $\mathrm{D}_4^{\oplus 2}\oplus \mathrm{A}_1^{\oplus 4}\oplus \mathrm{U}$.

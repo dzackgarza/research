@@ -14,6 +14,13 @@ $$
 $$
 For a general Coble surface $\Pic(X)$ itself is $2$-elementary with these invariants, so the two agree generically, while a special surface can carry more classes.
 The distinction matters wherever a statement is made about one of them: $M$ is defined by the cover and needs no genericity, whereas the identification $\Pic(X) = M$ is a statement about the general member.
+
+Three lattices of the same rank $10+n$ are therefore in play, in a chain of inclusions,
+$$
+f^*\Pic(S) \;=\; \latI_{1, N}(2) \;\iscontainedin\; M \;=\; \Pic(X)_0 \;\iscontainedin\; \Pic(X),
+$$
+and each inclusion can be strict: the first because $M$ adds the classes of the $f^{-1}(C_i)$, the second because a special Coble surface may have Picard number above $10+n$.
+Only the outer lattice is the one a lattice-polarized moduli problem sees; the table of @sec-coble-lattice-table lists the middle one, and every statement about it is a statement about the cover, valid without genericity.
 By [@CDL25 Def. 5.4.3, Eqn. 5.3.1], the ramification divisor $R$ is explicitly of one of the following forms:
 
 1. $R=\emptyset$ if $(r,a,\delta) = \EnriquesInvariants$,
