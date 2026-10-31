@@ -37,6 +37,26 @@ What has since been settled is listed at the end, so that a reader can tell "res
   correct the list either: which lattice-theoretic condition on a Niemeier lattice these seven
   items are meant to satisfy is still to be read off Scattone's construction, and until it is,
   the degree-$4$ case is open and no replacement list should be quoted.
+  What the certified degree-2 data now says about the shape of the condition.  The four
+  boundary lattices computed from the source presentation are one genus: rank 17, signature
+  (0,17), even, determinant -2, discriminant module Z/2.  The sentence above, that the four are
+  "the four lattices of the genus G(1) containing A_17", is therefore the kind of statement the
+  degree-4 case needs -- a genus plus a root lattice contained with finite index -- and not a
+  list of complements.  It is not yet reproduced for degree 4: the genus of the corresponding
+  T_8 quotient and the root lattice whose containments enumerate the cusps would have to come
+  from Scattone's ch. 5-6, which have not been read, and the seven-item list above should not be
+  quoted until they are.
+  Also still to be located by name: the "Sigma versus N zero-cusp invariant" that earlier notes
+  deferred.  A search of the dissertation and the Coble tree for F_\Sigma, \Sigma-cusp and
+  zero-cusp invariant finds only the fan symbols \Sigma(\eta) and \Sigma_J and the 0-cusp
+  discussion in the cusp chapter, so the item as named names nothing in the present text; it
+  needs the original reference to be identified before anything is asserted about it.
+  Acceptance of the glue, when it is done, must keep the source-root images and the maintained
+  inclusion and index maps -- the actual inclusion whose codomain is the computed quotient, with
+  its index -- rather than resting on an isometry-class match or a determinant ratio.  For
+  degree 2 that is in hand for all four rows (one inclusion for A_17 and for E_8^2 + A_1, two
+  each for the two D rows, the quotient being determined in the first two cases and one of a
+  pair in the others).
   The nine complements listed here and in the working notes have not been recomputed and
   should not be quoted until they are. What a complement names is a root system and not a
   lattice: at $d=1$ the four labels are root lattices of rank $17$ and determinants $2,8,8,18$,
