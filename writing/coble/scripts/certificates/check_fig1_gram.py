@@ -14,11 +14,16 @@ subdiagram vertex by vertex with the extended node braced.
 
 The check: for each listed component, the induced Gram block must be the affine Cartan matrix
 of its type, i.e. its null vector must have the Kac marks of that type, taken from
-CartanType([letter, rank, 1]).a().  Result, as run: six of the seven components pass,
-including the first E8 --- whose solved null vector [1,2,3,4,5,6,4,2,3] is exactly the vector
-the source displays, n(E8^(1)) = r13+2r14+3r15+4r16+5r17+6r0+4r1+2r2+3r18.  The D~10 block
-fails, and no single extra pairing-1 edge inside that block repairs it, so the internal
-incidence of D~10 in the candidate is wrong rather than incomplete.
+CartanType([letter, rank, 1]).a().  All seven components pass.  The first E8's solved null
+vector [1,2,3,4,5,6,4,2,3] is exactly the vector the source displays,
+n(E8^(1)) = r13+2r14+3r15+4r16+5r17+6r0+4r1+2r2+3r18, and Lemma 4.7 holds in the
+presentation: the four differences of component null vectors are relations, G(a1 - a2) = 0.
+
+Correction to an earlier version of this file: its D~10 node list was
+[18,17]+list(range(7))+[19], which omits node 7 and gives ten nodes.  Table 1 and Lemma 4.5 say
+[18,17,0,...,6,7,19], i.e. range(8), eleven nodes.  That was a transcription bug here, not a
+property of the source data, and with it fixed the D~10 block is degenerate with the Kac marks
+of affine D10, as it must be.  The supplied Gram edges were not altered.
 """
 from itertools import combinations
 from sage.all import ZZ, Matrix, vector
