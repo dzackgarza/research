@@ -83,13 +83,15 @@ What has since been settled is listed at the end, so that a reader can tell "res
   `writing/coble/scripts/certificates/cusps_degree_two.sage`.
   The numbered-root Gram data is settled, and the four cusp boundary lattices are computed on
   the maintained baseline from it: each has rank 17, signature (0,17), is even, has determinant
-  -2 and discriminant module Z/2, with label index k = 3, 2, 1, 2.  The glue is settled for two
-  rows and open for two: for A_1 + E8^2 the boundary is the label (index 1, confirmed by
-  isometry), and for A_17 exactly one even overlattice of the label has it as codomain, so it is
-  determined; for D_10 + E_7 and for D_16 + A_1 there are exactly two such overlattices each,
-  and the inclusion data does not choose between the pair.  What would choose is a further
-  invariant the pair differ in -- an isometry class finer than the discriminant, or an
-  independent determination of the plane from the source -- and that is not in hand.
+  -2 and discriminant module Z/2, with label index k = 3, 2, 1, 2.  A correction to what this note said about the glue.  Both retained candidates in a pair are
+  isometric to the computed quotient, since that is how they were filtered, so no finer isometry
+  invariant can separate them and "one of a pair, an invariant needed" was the wrong reading.
+  The open question is the *marked* inclusion: which subobject is cut out by the source's own
+  root generators.  Answering it means pushing those generators through P -> Q and through the
+  reduction of the plane, then recording the subobject of J^perp/J that they span with its index
+  and quotient; that construction is cusp_label_inclusions.py.  The counts (one candidate for
+  A_17 and for E_8^2 + A_1, two each for the two D rows) remain facts about the abstract label,
+  not about the source.
   Reproducing any of this needs the image's launcher environment: with JULIA_DEPOT_PATH dropped
   the Julia bridge dies on a missing JSON package, and with
   JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: the overlattice calls run.
