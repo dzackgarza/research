@@ -39,9 +39,27 @@ Conversely, the blow-up of a singular point of an irreducible non-multiple fiber
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
+Let $C$ be the anti-bicanonical curve of the Coble surface $X$, so that $|-2K_X|=\{C\}$ and $C$ is a sum of $(-4)$-curves.
 
-The blowdown from the Halphen surface to the Coble surface is the contraction of the fixed curve of the involution, computed on the K3 cover; the lemma records that the resulting surface has the anti-bicanonical system of a Coble surface by adjunction.
+*$C$ passes through $y_0$. *
+The curve $C$ is the fixed curve of the involution on the K3 cover, and $E$ is a $(-1)$-curve disjoint from $C$: a curve meeting $C$ would meet $-2K_X$ positively and, being a $(-1)$-curve, would have to be a component of $|-2K_X|$, which is a sum of $(-4)$-curves.
+So $E$ contracts and $C$ maps to a curve $F=\pi_E(C)$ on $Y$ passing through $y_0=\pi_E(E)$, which is therefore a singular point of $F$.
+
+*The anti-bicanonical class.*
+By adjunction for the blowup, $K_X=\pi_E^*(K_Y)+E$ and $C=\pi_E^*(F)-mE$ where $m=C\cdot E$ is the multiplicity of $F$ at $y_0$.
+From $-2K_X=C$,
+$$
+-2\pi_E^*K_Y-2E=\pi_E^*F-mE,
+$$
+which forces $m=2$ and $F=-2K_Y$: so $F\in|-2K_Y|$, the point $y_0$ is a double point of $F$, and $\pi_E^*(F)=C+2E$.
+
+*$F$ is the non-multiple fibre and $Y$ is Halphen of index $2$.*
+Since $C^2=-4$ and $C\cdot E=0$, the projection formula gives $F^2=\pi_E^*F\cdot\pi_E^*F=C^2+4E^2=-4-4=-8$; and $F$ is connected because $C$ is, the fibers of $\pi_E$ other than $E$ being points.
+So $F$ is an irreducible curve of arithmetic genus $1$ — adjunction, $2p_a-2=F^2+K_Y\cdot F=-8-F^2/2=-8+4=-4$, giving $p_a=1$ — and its self-intersection is $0$ on the elliptic fibration obtained by completing $|-2K_Y|=|F|$ to a pencil.
+Hence $F$ is a fibre of the Halphen fibration, and it is non-multiple because $2F$ is not a member of $|-2K_Y|$: it is $2$ times the unique member, so the fibration has index $2$ and $F$ is its non-multiple fibre.
+
+*Conversely.*
+If $F$ is an irreducible non-multiple fibre of a Halphen fibration of index $2$ on $Y$ and $y_0\in F$ is a singular point, then $\pi_E$ the blowup of $y_0$ has $K_X=\pi^*K_Y+E$ and $|-2K_X|\ni\pi^*F-2E$; the proper transform $\pi^*F-2E$ has square $F^2-4=-4$ and arithmetic genus $1$ by adjunction, so it is a $(-4)$-curve, and the surface $X$ has an effective anti-bicanonical divisor with those properties: a Coble surface.
 :::
 
 ::: {.remark}

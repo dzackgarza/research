@@ -62,9 +62,12 @@ For $n = 9$ a fundamental chamber therefore has at least $10$ walls.
 
 ::: {.proof}
 
-This is derived here rather than cited, being a claim about this book's own constructions.
+By @thm:coxeter-polytope-volume(1), a Coxeter polytope of finite volume in $\HH^n_L$ has, in the projective model, closure equal to the convex hull of finitely many points of the boundary $\bd\HH^n_L$; in particular it is a bounded polytope in an affine chart and has at least $n+1$ facets.
+Indeed a bounded $n$-dimensional polytope that is not a point has at least $n+1$ facets, since a vertex is the intersection of at least $n$ facets in a simple polytope and a bounded polytope has a vertex, or, equivalently, since with $k\leq n$ facets the polytope spans an affine subspace of dimension at most $k-1$.
 
-The proposition records a computed negative result: the nine roots exhibited do not generate the full reflection group, which is shown by exhibiting a root of the computed diagram outside their span. The computation is in the page, the proposition is its summary.
+With $n=9$ this gives at least $10$ facets, that is at least $10$ walls.
+So an output of nine roots is not the correct set of walls of any finite-volume chamber in $\HH^9$: whatever reflection group those nine roots generate, the chamber they bound is not finite-volume, and the missing wall is a root the algorithm would have to find.
+The comparison the page draws with @thm:vinberg-algorithm is exactly this: a terminating run on a rank-$10$ hyperbolic lattice must return at least ten roots.
 :::
 
 ::: {.remark title="Consequence for the two implementations"}

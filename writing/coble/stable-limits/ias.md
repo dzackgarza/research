@@ -1,4 +1,4 @@
-# Integral affine structures
+# Integral affine structures {#sec-ias-degenerations}
 
 ::: {.remark}
 

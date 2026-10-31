@@ -1004,8 +1004,20 @@ O^+(T_{\Co})
 :::
 
 ::: {.proof}
-Every isometry of $T_{\Co}$ fixes the characteristic class $\eta/2$, hence preserves the gluing subgroup and extends to the index-$2$ overlattice.
-The two extensions differ by the root reflection $w_\alpha$.
+
+The exact sequence is the one relating the two orthogonal groups through the index-$2$ overlattice: $T_{\En}$ contains $T_{\Co}=\alpha^{\perp}_{T_{\En}}$ as a sublattice of index $2$, so restriction of an isometry of $T_{\En}$ preserving $\bZ\alpha$ gives one of $T_{\Co}$.
+
+*Surjectivity.*
+An isometry $g\in O^+(T_{\Co})$ preserves the discriminant form $q_{T_{\Co}}$, since $A_{T_{\Co}}$ is computed from $T_{\Co}$ alone; and by @prop:coble-transcendental the characteristic class is the generator $\eta/2$ of the $\langle2\rangle$ summand's discriminant, of $q$-value $\tfrac12$.
+The isometry $g$ fixes every element of the discriminant group only if it acts trivially there, which is not the case in general; what it does preserve is the distinguished class $[\eta/2]$, because the $\langle2\rangle$ summand is the unique rank-one summand whose generator has square $2$ up to sign, and $g$ permutes summands of that shape.
+So $g$ preserves the gluing subgroup $H$ of @thm:nikulin-gluing determined by the primitive vector $\eta$, and hence extends to the overlattice: by the gluing criterion, isometries of the two summands preserving $H$ glue to an isometry of the overlattice.
+The two choices of sign of the action on the $\langle2\rangle$ line are the two extensions.
+
+*The kernel.*
+The kernel of the restriction is the subgroup of $\Stab_{O^+(T_{\En})}(\bZ\alpha)$ acting trivially on $\alpha^{\perp}$.
+Such an isometry preserves $\alpha$ (the stabilizer condition) and the whole of $T_{\Co}$, and acts trivially there; it therefore acts by a scalar on the rank-one complement $\bZ\alpha$, and being an isometry with $\alpha^2=-2$ the only scalars are $\pm1$.
+The scalar $+1$ is the identity, and the scalar $-1$ is the reflection $w_\alpha$ in the root $\alpha$.
+So the kernel is $\langle w_\alpha\rangle$, of order $2$.
 
 This lemma is a lattice statement.
 It does not identify the degree-$2$ monodromy group and does not solve the integral isotropic-subspace lifting problem.
