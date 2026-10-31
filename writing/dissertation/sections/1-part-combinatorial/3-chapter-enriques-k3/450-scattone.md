@@ -5,8 +5,6 @@ We give an overview here of various methods in the literature for similar moduli
 
 #### $\ftd$: Degree 2d Polarized K3 Surfaces (Scattone's Description)
 
-\todo{Separate the Hodge-theoretic work}
-
 Let $\lkt$ denote the K3 lattice, and let $h \in \lkt$ be a primitive vector of square $2d > 0$.
 The lattice orthogonal to the polarization is defined as
 $$
@@ -25,7 +23,7 @@ $$
 is the coarse moduli space parametrizing degree $2d$ polarized K3 surfaces.
 
 The Baily–Borel compactification $\bbcpt{\ftd}$ is projective, and its boundary strata correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic sublattices of $T_{2d}$ of ranks $1$ and $2$.
-More precisely, $0$-cusps are in correspondence with orbits of primitive isotropic planes up to the action of $\Gamma_{2d}$.
+More precisely, $0$-cusps are in correspondence with orbits of primitive isotropic lines and $1$-cusps with orbits of primitive isotropic planes, up to the action of $\Gamma_{2d}$.
 The incidence relations between cusps are set by lattice inclusions: any $0$-cusp (an isotropic line) is contained in the closure of all $1$-cusps (isotropic planes) in which it lies.
 
 As a concrete and illustrative case, set $d = 1$.
@@ -40,10 +38,12 @@ Scattone showed that, up to isomorphism and the action of the arithmetic group, 
 $$
 A_1 \oplus E_8^{\oplus 2}, \qquad E_7 \oplus D_{10}, \qquad A_1 \oplus D_{16}, \qquad A_{17}.
 $$
-These emerge as orthogonal complements to embeddings of $E_7$ into the four Niemeier lattices $U$ of rank $24$ that admit such sublattices.
+Each of them is the orthogonal complement of $E_7$ inside a Niemeier lattice containing $E_7$ as a primitive sublattice, for the four Niemeier lattices whose complement has the stated type.
 Each of these possibilities labels a modular curve in the boundary of $\bbcpt{F_2}$, and the closure of each of these modular curves contains the unique $0$-cusp as every isotropic line is contained in some isotropic plane.
 
-The structure of $\bd \bbcpt{\ftd}$ can be studied through the asymptotic behavior of the period map, governed by limiting mixed Hodge structures and their associated monodromy operators, following the work of @FS86. For a one-parameter degeneration $\mcx \to \Delta$ of polarized degree $2d$ K3 surfaces over a punctured disk $\Delta^*$, the unipotent monodromy operator $T \in O(T_{2d})$ determines the degeneration structure.
+#### Limiting mixed Hodge structures at the boundary
+
+The cusp enumeration above is lattice-theoretic. That those cusps are the ones the period map reaches, and what Hodge-theoretic data each carries, is a separate matter, governed by the asymptotics of the period map and by limiting mixed Hodge structures, following @FS86. For a one-parameter degeneration $\mcx \to \Delta$ of polarized degree $2d$ K3 surfaces over a punctured disk $\Delta^*$, the unipotent monodromy operator $T \in O(T_{2d})$ determines the degeneration structure.
 Its nilpotent logarithm $N = \log T \in \Endo(T_{2d, \QQ })$ induces the canonical monodromy weight filtration $\incfiltration{W}$ on $T_{2d, \QQ}$, uniquely characterized by the properties $N(W_k) \iscontainedin W_{k-2}$ for all $k$, and that for each $j > 0$, the maps $N^j: \Gr^W_{k+j} \to \Gr^W_{k-j}$ are isomorphisms.
 Schmid's Nilpotent Orbit Theorem establishes that the period map asymptotically approaches a nilpotent orbit, defining a limiting Hodge filtration $\decfiltration{F^{\lim}}$ on $T_{2d, \CC}$ which, together with $\incfiltration{W}$, constitutes the limiting mixed Hodge structure (LMHS). This framework provides the connection between geometric degenerations and arithmetic lattice structures.
 
@@ -72,7 +72,7 @@ The unique 0-cusp $\eta$ correspond to a Type $\III$ component, and thus a degen
 The geometric inclusion of the 0-cusp in the closure of each 1-cusp reflects the lattice-theoretic fact that any primitive isotropic plane $I$ contains the primitive isotropic line $\eta$, all up to $\Gamma_{T_{2d}}$-invariance.
 This incidence structure is encoded combinatorially in the Coxeter diagram of the lattice $\bdlattice{T}{2d, \eta}$ associated to the 0-cusp, whose maximal parabolic subdiagrams are in bijection with the possible isomorphism classes of the lattices $\bdlattice{T}{I}$ for the adjacent 1-cusps.
 
-The cusps in $\bbcpt{F_2}$ are obtained by classifying primitive isotropic sublattices of the lattice\
+The cusps in $\bbcpt{F_2}$ are obtained by classifying primitive isotropic sublattices of the lattice
 $$
 T_{2} \definedas \generators{-2}\oplus U^{\oplus2}\oplus E_{8}^{\oplus2}
 $$
@@ -95,9 +95,9 @@ The cusp diagram of $F_2$, the moduli space of degree 2 polarized K3 surfaces, w
 
 :::
 
-The general enumeration of $\bd\bbcpt{ F_{2d} }$ reduces to finite problems in the discriminant group $A_{T_{2d}}$: cusps can be classified by studying isotropic subgroups of the finite discriminant group $A_{T_{2d}} \definedas  (T_{2d})^*/T_{2d}$, and applying Nikulin's theorem that the genus of an even lattice is determined by its signature and the isomorphism class of its discriminant form [Nikulin 1980]. The classification proceeds by associating to a primitive isotropic sublattice $I \subset T_{2d}$ an isotropic subgroup of $A_{T_{2d}}$.
+The general enumeration of $\bd\bbcpt{ F_{2d} }$ reduces to finite problems in the discriminant group $A_{T_{2d}}$: cusps can be classified by studying isotropic subgroups of the finite discriminant group $A_{T_{2d}} \definedas  (T_{2d})^*/T_{2d}$, and applying Nikulin's theorem that the genus of an even lattice is determined by its signature and the isomorphism class of its discriminant form [@Nik80]. The classification proceeds by associating to a primitive isotropic sublattice $I \subset T_{2d}$ an isotropic subgroup of $A_{T_{2d}}$.
 The problem of classifying orbits of such sublattices under the infinite group $\Gamma_{2d}$ is thereby reduced to classifying orbits of isotropic subgroups of the finite group $A_{T_{2d}}$ under the action of a subgroup of $\discriminantcokernel{A_{T_{2d}}}$.
-For the case $d=1$, he four isomorphism classes of the rank-18 lattice $\bdlattice{T}{I}$ are constructed by leveraging the classification of the 24 Niemeier lattices: each isometry class of $\bdlattice{T}{I}$ is realized as the orthogonal complement $E_7^\perp \subset M$, where $M$ is one of the Niemeier lattices that admit a primitive embedding of the $E_7$ root lattice [Scattone 1987]. This reduces the classification to a relatively well-known, finite set of possibilities.
+For the case $d=1$, the four isomorphism classes of the rank-18 lattice $\bdlattice{T}{I}$ are constructed by leveraging the classification of the 24 Niemeier lattices: each isometry class of $\bdlattice{T}{I}$ is realized as the orthogonal complement $E_7^\perp \subset M$, where $M$ is one of the Niemeier lattices that admit a primitive embedding of the $E_7$ root lattice [@Sca87]. This reduces the classification to a relatively well-known, finite set of possibilities.
 For general $d$, cusp enumeration becomes a number-theoretic problem, since structure of $A_{T_{2d}}$ is highly dependent on the arithetic properties of $d$ itself, including various the numbers of solutions to various congruences, as well as the prime factorization of $d$.
 @Sca87 uses these techniques to explicitly describe cusp diagrams for certain (sparse) families of values of $d$.
 For further details and the explicit Coxeter diagrams, see [@Sca87, §6.2] and [@AET23, Fig. 2].

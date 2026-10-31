@@ -6,7 +6,7 @@ What has since been settled is listed at the end, so that a reader can tell "res
 
 ## Unfinished text
 
-- One `\todo` marker remains, in [[450-scattone|Scattone boundary analysis]]: `\todo{Separate the Hodge-theoretic work}`.
+- None. The last one, `\todo{Separate the Hodge-theoretic work}` in [[450-scattone|Scattone boundary analysis]], is resolved: the lattice-theoretic cusp enumeration and the limiting mixed Hodge structures at the boundary are now separate subsections, and the second opens by saying what it adds that the first does not supply.
 
 ## Possibly missing content
 
