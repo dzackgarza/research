@@ -25,7 +25,7 @@ We prove the cusp correspondence by comparing divisibilities of isotropic vector
 
 ::: {.lemma #lem:divisibilityAlwaysTwoTco}
 
-Every $v\in T_\Co$ has $\div_{T_\Co}(v)$ even; and $\div_{T_\Co}(v) = 2$ exactly when $\div_L(v) = 1$ for $L=\generators{1}\oplus E_{10}$, that is when the coordinates of $v$ have no common divisor.
+Every $v\in T_\Co$ has $\div_{T_\Co}(v)$ even; and $\div_{T_\Co}(v) = 2$ exactly when $\div_L(v) = 1$ for $L=\generators{1}\oplus E_{10}$, that is when $v$ is primitive in $L$, equivalently when its coordinates in a $\ZZ$-basis of $L$ have no common divisor.
 :::
 
 ::: {.proof}
@@ -41,7 +41,11 @@ For $v,x\in T_\Co$ then $\beta_{T_\Co}(v,x)=2\beta_L(v,x)$, so every value is ev
 That is all the Gram-matrix argument establishes, and it is the first clause.
 
 For the second, $\div_{T_\Co}(v)=2\div_L(v)$, so $\div_{T_\Co}(v)=2$ exactly when $\div_L(v)=1$, that is when no integer $m>1$ divides every value $\beta_L(v,x)$.
-Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism, and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$; so $\div_L(v)=1$ is the indivisibility of the functional $\beta_L(v,-)$, equivalently the primitivity of $v$ in $L$.
+Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism, and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$; so $\div_L(v)=1$ is the indivisibility of the functional $\beta_L(v,-)$, equivalently the primitivity of $v$ in $L$, and in coordinates it is the statement that the gcd of the coordinates of $v$ is one.
+Unimodularity is what makes these three conditions one.
+Evaluated in a $\ZZ$-basis with Gram matrix $G$, the divisibility is the gcd of the entries of $Gv$, which is the gcd of the coordinates of $v$ exactly when $G$ is unimodular; the two gcds are then related by the adjugate, whose entries are integral.
+The gcd of the coordinates is itself basis-independent, since one $\ZZ$-basis of $L$ changes to another by a unimodular matrix.
+For a form that is not unimodular the identification fails, and the rank-one lattice $\generators{2}$ shows both directions failing: its generator is primitive and has divisibility $2$, while $3$ is not primitive and has divisibility $6$.
 
 The second clause is a hypothesis and cannot be dropped: pairing nontrivially with something does not force $\div=2$.
 The generator $h$ of the $\generators{2}$ summand has $h^2=2$ and $\div(h)=2$, but $(2h)^2=8$ and $2h$ pairs to $4$ with $h$, so $\div(2h)=4$; and $\div(3h)=6$ with $3h$ not in $2T_\Co$, so neither "not in $2T_\Co$" nor "pairs nontrivially" characterizes divisibility $2$.
