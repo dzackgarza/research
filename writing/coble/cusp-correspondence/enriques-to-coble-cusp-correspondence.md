@@ -25,30 +25,28 @@ We prove the cusp correspondence by comparing divisibilities of isotropic vector
 
 ::: {.lemma #lem:divisibilityAlwaysTwoTco}
 
-Any $v\in T_\Co$ satisfies $\div_{T_\Co}(v) = 2$ if there exists any $v'\in T_\Co$ for which $v\cdot v' \neq 0$.
+Every $v\in T_\Co$ has $\div_{T_\Co}(v)$ even; and $\div_{T_\Co}(v) = 2$ exactly when $v\notin 2T_\Co$, that is when $v$ is primitive modulo $2$.
 :::
 
 ::: {.proof}
 
-Let $M_{T_\Co}$ be the Gram matrix for $T_\Co$, and note that since
-
+Write $T_\Co=L(2)$ for $L\definedas\generators{1}\oplus E_{10}$, which is unimodular: this is the identity
 $$
-T_\Co = \generators{2} \oplus E_{10}(2) = \qty{\generators{1} \oplus E_{10}}(2)
-,
+T_\Co=\generators{2}\oplus E_{10}(2)=\qty{\generators{1}\oplus E_{10}}(2)
 $$
+of @prop:coble-transcendental, and twisting by a unit does not change the underlying module.
+So $T_\Co$ and $L$ have the same underlying $\bZ$-module and $\beta_{T_\Co}=2\,\beta_L$.
 
-every entry in $M_{T_\Co}$ is 2-divisible.
-Thus one can write $M_{T_\Co} = 2A$ for some integral matrix $A$.
-Letting $v' \in T_\Co$ be any other vector not orthogonal to $v$, we have
+For $v,x\in T_\Co$ then $\beta_{T_\Co}(v,x)=2\beta_L(v,x)$, so every value is even, whether or not $v$ pairs nontrivially with something: $\div_{T_\Co}(v)$ is even for every $v$.
+That is all the Gram-matrix argument establishes, and it is the first clause.
 
-$$
-v\cdot v' = \inner{v}{M_{T_\Co}v'} = \inner{v}{2 Av'}
-= 2\inner{v}{Av'} \neq 0
-,
-$$
+For the second, $\div_{T_\Co}(v)=2$ exactly when no integer $m>1$ divides every value $\beta_L(v,x)$, since $\div_{T_\Co}=2\div_L$ and $\div_L$ is the generator of the ideal of values.
+Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism, and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$.
+So the family is indivisible exactly when $v\notin 2L=2T_\Co$.
 
-where $\inner{\cdot}{\cdot}$ is the standard Euclidean inner product.
-Thus 2 divides $v\cdot v'$, and since $\div_{T_\Co}(v) \in \theset{1, 2}$ for any $v \in T_\Co$, the result follows.
+The distinction is not pedantic: $2\mid\div$ does not give $\div\in\{1,2\}$.
+The generator $h$ of the $\generators{2}$ summand has $h^2=2$ and $\div(h)=2$, but $(2h)^2=8$ and $2h$ pairs to $4$ with $h$, so $\div(2h)=4$: a vector pairing nontrivially with something whose divisibility is not $2$.
+Every vector the cusp computations use is primitive, which is why the weaker statement sufficed for them.
 :::
 
 ::: {.lemma #lem:divisibilityTcoOne}
