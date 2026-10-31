@@ -77,9 +77,35 @@ What has since been settled is listed at the end, so that a reader can tell "res
   sentence rather than its moduli definition, identified degree 4 with T_8, and called the
   difference a change of polarization.  All four were wrong; the determinant comparison alone
   settles that the n = 18 lattice is not T_4, and the isometry above settles that the n = 17 one
-  is.  What remains genuinely open is narrower: Theorem A.12's count of Type II components against
-  the number the working notes assert, and whether the manuscript's statement is about the nine
-  lattices or about the cusps realize them.
+  is.  The count, and the two things it is a count of.  Laza--O'Grady's Sec. A.3 defines, for J in
+  I_2(Lambda_N) -- rank two *saturated* isotropic -- the map alpha_N from their group's orbits,
+  tilde Gamma^xi_N \ I_2(Lambda_N), to isomorphism classes of negative definite lattices of rank
+  N - 2, by [J] -> [J^perp/J]; this is well defined because tilde Gamma^xi_N < O(Lambda_N) and
+  O(Lambda_N)-equivalent J give isomorphic quotients.  Proposition A.4 gives the dichotomy for
+  saturated J: either Lambda_N -> Hom(J, Z) is surjective, in which case J sits in U + U and
+  J^perp/J lies in the genus of D_{N-2}, or its image has index two, in which case J sits in
+  U + U(2) and J^perp/J is even, negative definite and unimodular -- and the second case cannot
+  occur when N is not 2 mod 8.  Proposition A.11 says alpha_N is injective for N not 6 mod 8
+  (with N = 14 the one exception), and Theorem A.12 draws the consequence: for N not 2 mod 8 the
+  Type II components are uniquely labelled by the lattices in the genus of D_{N-2} listed in
+  Theorem A.6.  For N = 19, which is 3 mod 8, all of that applies, so there are exactly nine Type
+  II components, in bijection with the nine lattices.
+
+  Two distinctions have to survive that sentence.  First, nine quotient-lattice classes is not the
+  same statement as nine Gamma-orbits of primitive isotropic planes: it is nine orbits for the
+  source's group, and the bijection with lattices is Proposition A.11's injectivity, not an
+  identity of counts for an arbitrary group.  Second, the source's group is not the manuscript's
+  by default.  Laza--O'Grady set Gamma(N) = O^+(Lambda_N) unless N = 6 mod 8, where it is a
+  subgroup of index 3, and their alpha_N is defined on orbits of tilde Gamma^xi_N, a subgroup of
+  O(Lambda_N); AET's Gamma_{2d}, which the manuscript follows, is the spinor norm one subgroup of
+  the stabilizer of h, not the full isometry group.  So before Theorem A.12 can be applied to the
+  manuscript the two groups have to be matched, with the saturation hypothesis on J checked in the
+  manuscript's normalization too.  The isometry T_4 = Lambda_19 identifies the lattices and says
+  nothing about the groups; that comparison is the open step, not a change of polarization.
+
+  Cusp 2 of the Enriques chapter is checked alongside cusp 1 in enriques_cusp_lattice_data.py:
+  U + E8^2 has rank 18, determinant -1 and two-elementary invariants (18,0,0), the quoted value,
+  and U + E8(2) has rank 10 with invariants (10,8,0).
 
   The "Sigma versus N zero-cusp invariant" still does not resolve.  Inspected as asked: the
   introduction and historical context carry no such phrase, and the nearest textual home is the
