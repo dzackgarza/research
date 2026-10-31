@@ -60,3 +60,8 @@ writing/.book/rendered/
 # under these paths is an input to a later session.
 .tmp/
 .tmp-*
+
+# xdvipdfmx intermediate left by the xelatex pass over a talk's slides. It is
+# 1.6 MB of driver output that `latexmk -c` deletes, so tracking it means a
+# tracked file that the deck's own `just clean` removes.
+writing/talks/**/*.xdv
