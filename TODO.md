@@ -197,24 +197,22 @@ hypothesis in each case:
    which is the untwisted statement. Minimal semantic handoff: an explicit isometry constructor on
    torsion quadratic forms (twisted variant included), and the engine fix behind the call above.
 2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
-   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **Obstructed, and not only for a
-   sample of markings.** Proved about the input: $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is
-   saturated, since $S_\En=C(2)$ with $C=U\oplus E_8(-1)$ even unimodular (@prop:polarization-stabilizer-enriques)
-   gives $S_\En^\#=\tfrac12C$ with integral squares, so no $(x+\tfrac12\delta)$ is integral. Computed about
-   the complements: for $\tilde h_\Co = 2e+f_1+f_2$ from $h_\Co=(H+E_1)+(H+E_2)$ and for a second, mixed
-   isotropic marking, the complements of $\tilde h_\Co$ and of $h$ are not isometric — equal rank,
-   determinant $2048$, signature $(0,10)$, discriminant order $2048$, but $18$ vectors of square $-2$
-   against $2$ — `is_isometric_to` returning a verified negative, the two markings giving isometric
-   complements. Covering all markings: every admissible $h_\Co=F_1+F_2$ spans $U=\langle F_1,F_2\rangle$
-   of determinant $-1$, so $\Pic(S)=U\perp U^\perp$ with both summands unimodular and
-   $U^\perp\cong\langle-1\rangle^9$ (unique odd unimodular negative definite rank $9$), so all admissible
-   pairs are one $\Orth(\Pic(S))$-orbit; and since $f^*D\cdot f^*D'=2D\cdot D'$, the conjugation
-   $f^*\varphi f^{*-1}$ carries one marking to the other inside $\Orth(S_\Co)$. The owner checks those
-   inputs: both pairs unimodular, their complements of rank $9$, determinant $-1$, signature $(0,9)$ and
-   isometric to $\langle-1\rangle^9$ (`computations/reports/coble_labeled_embedding.py`). So no
-   admissible marking admits the labeled isometry; the polarization coordinates are verified against
-   @def:coble-polarization-classes and @prop:coble-invariant-lattice in the same run. A20 item 1, the
-   comparison of the finite images, is untouched.
+   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **Open, and marking-dependent**;
+   an earlier round's claim that it covers every admissible marking is withdrawn. Established:
+   $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is saturated (proof: $S_\En=C(2)$ with
+   $C=U\oplus E_8(-1)$ even unimodular gives $S_\En^\#=\tfrac12C$ with integral squares, so no
+   $(x+\tfrac12\delta)$ is integral); for the marking $\tilde h_\Co=2e+f_1+f_2$ from
+   $h_\Co=(H+E_1)+(H+E_2)$ the complements are not isometric ($18$ roots against $2$, equal rank,
+   determinant, signature and discriminant order; `is_isometric_to` returns a verified negative); but
+   admissibility does not pin the marking — $\langle-1\rangle^9$ and $E_8(-1)\oplus\langle-1\rangle$ are
+   both odd unimodular negative definite of rank $9$ and are **not** isometric ($18$ against $2$ vectors
+   of square $-1$), both ambients $U\oplus\langle-1\rangle^9$ and $U\oplus E_8(-1)\oplus\langle-1\rangle$
+   are $I_{1,10}$, and for a marking of the second type, obtained by transporting the $U$ basis with the
+   owner's `isometry_to`, the complement **is** isometric to the Heegner one
+   (`computations/reports/coble_labeled_embedding.py`). So the necessary condition can hold, and the
+   comparison's answer depends on the marking. Remaining: which markings arise from Coble surfaces
+   (@prob:coble-rigidity, geometric), and for those that pass, the marked-pair extension over $\lkt$ via
+   `isometry_extends`. A20 item 1 is untouched by all of it.
 3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
    @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
 
@@ -227,30 +225,29 @@ should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This
 than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
 coordinate-independent. Still open, and it is a Coble-to-Coble statement.
 
-The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement. It is
-obstructed, for every admissible marking, and the three steps are of different kinds
-(`computations/reports/coble_labeled_embedding.py`):
-*Input construction, proved.* $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is saturated: the
-hypotheses are $S_\En = C(2)$ with $C = U\oplus E_8(-1)$ even unimodular (@prop:polarization-stabilizer-enriques),
-so $S_\En^\# = \tfrac12 C$, and $C$ even, so squares in $\tfrac12C$ are integral; an overlattice would
-adjoin $(x+\tfrac12\delta)$ of square $x^2-\tfrac12$, never integral.
-*Complement computation, at the owner.* With $\Pic(S) = I_{1,10}$ and
-$h_\Co = (H+E_1)+(H+E_2)$ satisfying @def:coble-polarization-classes, whose pullback is
-$\tilde h_\Co = 2e+f_1+f_2$ of square $4$, the complements of $\tilde h_\Co$ in $S_\Co$ and of $h$ in
-$\langle S_\En,\delta\rangle$ are not isometric — same rank $10$, determinant $2048$, signature $(0,10)$,
-discriminant order $2048$, but $18$ vectors of square $-2$ against $2$ — and `is_isometric_to` returns a
+The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement, and it is
+**open and marking-dependent** (`computations/reports/coble_labeled_embedding.py`):
+*Input construction, proved.* $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is saturated:
+$S_\En = C(2)$ with $C = U\oplus E_8(-1)$ even unimodular (@prop:polarization-stabilizer-enriques) gives
+$S_\En^\# = \tfrac12 C$, and $C$ even makes squares in $\tfrac12C$ integral, so an overlattice would need
+$(x+\tfrac12\delta)$ of square $x^2-\tfrac12$, never integral.
+*Complement computation, at the owner.* For the marking $\tilde h_\Co = 2e+f_1+f_2$ from
+$h_\Co = (H+E_1)+(H+E_2)$ (coordinates verified against @def:coble-polarization-classes and
+@prop:coble-invariant-lattice), the complements of $\tilde h_\Co$ in $S_\Co$ and of $h$ in
+$\langle S_\En,\delta\rangle$ are not isometric — equal rank $10$, determinant $2048$, signature
+$(0,10)$, discriminant order $2048$, but $18$ roots against $2$ — with `is_isometric_to` returning a
 verified negative.
-*Exhaustiveness over markings, proved.* Every admissible $h_\Co = F_1+F_2$ spans $U=\langle F_1,F_2\rangle$
-of determinant $-1$, so $\Pic(S) = U\perp U^\perp$ is an orthogonal direct sum with both summands
-unimodular, $U^\perp$ has rank $9$, signature $(0,9)$, and is $\langle-1\rangle^9$, the unique odd
-unimodular negative definite lattice of that rank; so an isometry of $\Pic(S)$ carries any admissible pair
-to any other. Since $f^*D\cdot f^*D' = 2D\cdot D'$, the conjugate $f^*\varphi f^{*-1}$ is an isometry of
-$S_\Co$ carrying $f^*h_\Co$ to $f^*\varphi(h_\Co)$, so all admissible markings are one $\Orth(S_\Co)$-orbit
-and have isometric complements. The owner confirms the inputs of this step for the two pairs used
-(unimodular spans; complements of rank $9$, determinant $-1$, signature $(0,9)$, isometric to
-$\langle-1\rangle^9$).
-So no admissible marking admits the labeled isometry, and the two groups cannot be compared by
-transporting one labeling to the other. A20 item 1, the comparison of the finite images, is untouched.
+*Marking dependence, and the withdrawal of an earlier claim.* An earlier version concluded that this
+covers every admissible marking, from the uniqueness of the odd unimodular negative definite rank-$9$
+lattice. That is false: $\langle-1\rangle^9$ and $E_8(-1)\oplus\langle-1\rangle$ are both odd unimodular
+negative definite of rank $9$ and are not isometric ($18$ against $2$ vectors of square $-1$); both
+$U\oplus\langle-1\rangle^9$ and $U\oplus E_8(-1)\oplus\langle-1\rangle$ are $I_{1,10}$, so $\Pic(S)$
+carries $U$-splittings of both types; and for a marking of the second type — the $U$ basis transported by
+the owner's `isometry_to` — the pullback's complement **is** isometric to the Heegner one. So the
+necessary condition can hold.
+Remaining: which markings arise from Coble surfaces (@prob:coble-rigidity, a geometric question) and, for
+those that pass, the marked-pair extension over $\lkt$ tested with `isometry_extends`. A20 item 1 is
+untouched.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The

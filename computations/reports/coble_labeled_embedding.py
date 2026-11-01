@@ -6,8 +6,10 @@ so the lattice used in section 2 is the actual <S_En, delta> and not a model of 
 two-line argument from S_En = C(2) with C even unimodular, with the owner confirming the hypothesis);
 and that two independent markings of the Coble polarization give isometric complements (section 1.1).
 With those, the negative of section 3 is a statement about the two labeled pairs constructed here, not
-about a model, and by the orbit argument of section 1.0 it covers every admissible marking: section 4.1
-records what that argument needs and section 1.0 checks its inputs at the owner.  What is also not built is L_K3 and the extension of any isometry over it (section 4.2); that
+about a model and about the marking it uses, NOT about every admissible marking: section 1.0 shows that
+admissibility does not pin the marking, and that a marking of the other U-splitting type passes the very
+test that fails for this one.  A21 is therefore open, and the obstruction concerns the marking, not the
+comparison.  What is also not built is L_K3 and the extension of any isometry over it (section 4.2); that
 matters for a *positive* verdict, not for the negative one, which needs only the complement test.
 
 The statement asked for.  A20(2) needs an isometry psi of L_K3 carrying the *Coble-labeled* structure
@@ -112,6 +114,7 @@ print('   h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is
 # ---------------------------------------------------------------- 1. the Coble marked pair
 S_CO_GRAM = block_diagonal_matrix(matrix(ZZ, [[2]]), -2 * matrix.identity(ZZ, 10))
 S_Co = Lattices(ZZ)([list(row) for row in S_CO_GRAM.rows()])
+Sco_ring = S_Co.base_ring()
 s_basis = [S_Co.basis_vector(i) for i in range(S_Co.rank())]
 e = s_basis[0]
 f1, f2 = s_basis[1], s_basis[2]
@@ -122,41 +125,49 @@ print('  e^2 = %d, f_i^2 = %d, h~_Co^2 = %d, div(h~_Co) = %d'
       % (e.q(), f1.q(), h_tilde.q(), S_Co.div(h_tilde)))
 assert h_tilde.q() == 4
 
-# ---------------------------------------------------------------- 1.0 one orbit of admissible markings
-# An admissible numerical polarization is h_Co = F_1 + F_2 with F_i isotropic and F_1.F_2 = 1 in
-# Pic(S) = I_{1,10}.  The pair spans U = <F_1, F_2>, of determinant F_1^2 F_2^2 - (F_1.F_2)^2 = -1, so U
-# is unimodular and Pic(S) = U perp U^perp is an orthogonal direct sum; U^perp is therefore unimodular
-# too, and of rank 9, signature (0,9).  The odd unimodular negative definite lattice of rank 9 is
-# unique, < -1 >^9, so every admissible pair gives an isometry U perp U^perp -> U' perp U'^perp carrying
-# one pair to the other.  Hence all admissible h_Co lie in one O(Pic(S))-orbit, and since
-# f^* phi f^{*-1} is an isometry of S_Co for phi in O(Pic(S)) -- (f^*D).(f^*D') = 2 D.D' makes the
-# scaling cancel -- all admissible markings h~_Co = f^*h_Co lie in one O(S_Co)-orbit.  The inputs of
-# that argument are checked here.
-print('1.0 one orbit of admissible markings')
-negative_nine = Lattices(ZZ)([list(row) for row in (-matrix.identity(ZZ, 9)).rows()])
-print('    < -1 >^9: rank %d, det %s, signature %s'
-      % (negative_nine.rank(), negative_nine.determinant(), negative_nine.signature_pair()))
-pairs = {
-    'F_1 = H + E_1, F_2 = H + E_2':
-        (H_class + exc[0], H_class + exc[1]),
-    'F_1 = 2H + E_1 + E_2 + E_3 + E_4, F_2 = H + E_1':
-        (2 * H_class + exc[0] + exc[1] + exc[2] + exc[3], H_class + exc[0]),
-}
-complements_Pic = {}
-for label, (G1, G2) in pairs.items():
-    assert G1.q() == 0 and G2.q() == 0 and G1.b(G2) == 1, label
-    span = PicS.sublattice_from([G1, G2])
-    comp = PicS.orthogonal_complement(span)
-    complements_Pic[label] = comp
-    print('    %s: |det <F_1,F_2>| = %s, complement rank %d, det %s, signature %s'
-          % (label, abs(int(span.determinant())), comp.rank(), comp.determinant(), comp.signature_pair()))
-    assert abs(int(span.determinant())) == 1
-    assert abs(int(comp.determinant())) == 1
-    assert comp.is_isometric_to(negative_nine), 'the complement is not < -1 >^9'
-labels = list(complements_Pic)
-print('    the two complements are isometric: %s'
-      % complements_Pic[labels[0]].is_isometric_to(complements_Pic[labels[1]]))
-print('    so the two admissible pairs are one O(Pic(S))-orbit, and the two markings one O(S_Co)-orbit')
+# ---------------------------------------------------------------- 1.0 admissibility does not pin the marking
+# An earlier version of this script argued that all admissible markings are one O(S_Co)-orbit, from the
+# unimodularity of U = <F_1,F_2> and the claimed uniqueness of the odd unimodular negative definite
+# lattice of rank 9.  That claim is false and the argument is withdrawn: there are at least two such
+# lattices, and both occur as complements of U-splittings of Pic(S).  What replaces it is the pair of
+# statements below, and the consequence that the comparison's answer depends on the marking.
+print('1.0 admissibility does not pin the marking')
+neg9 = Lattices(ZZ)([list(row) for row in (-matrix.identity(ZZ, 9)).rows()])
+e8m1 = Lattices(ZZ)([list(row) for row in block_diagonal_matrix(E8, matrix(ZZ, [[-1]])).rows()])
+for name, lat in (('<-1>^9', neg9), ('E8(-1) + <-1>', e8m1)):
+    print('    %s: rank %d, det %s, even %s, vectors of square -1: %d'
+          % (name, lat.rank(), lat.determinant(), lat.is_even(),
+             len(list(lat.vectors_of_square_and_divisibility(-1, 1)))))
+print('    the two are isometric: %s' % neg9.is_isometric_to(e8m1))
+assert neg9.is_isometric_to(e8m1) is False
+PIC_B_GRAM = block_diagonal_matrix(U, E8, matrix(ZZ, [[-1]]))
+PicB = Lattices(ZZ)([list(row) for row in PIC_B_GRAM.rows()])
+print('    U + <-1>^9 and U + E8(-1) + <-1> are odd unimodular of signature (1,10): %s %s'
+      % (PicS.signature_pair(), PicB.signature_pair()))
+print('    hence both are I_{1,10}, and it carries U-splittings with both complement types: %s'
+      % PicS.is_isometric_to(PicB))
+assert PicS.is_isometric_to(PicB) is True
+psi = PicB.isometry_to(PicS)
+F1_two, F2_two = psi(PicB.basis_vector(0)), psi(PicB.basis_vector(1))
+print('    a second-type admissible pair in the book\'s coordinates: F_1^2 = %d, F_2^2 = %d, F_1.F_2 = %d'
+      % (F1_two.q(), F2_two.q(), F1_two.b(F2_two)))
+assert F1_two.q() == 0 and F2_two.q() == 0 and F1_two.b(F2_two) == 1
+comp_two = PicS.orthogonal_complement(PicS.sublattice_from([F1_two, F2_two]))
+print('    its complement has %d vectors of square -1, i.e. it is E8(-1) + <-1>, not <-1>^9'
+      % len(list(comp_two.vectors_of_square_and_divisibility(-1, 1))))
+h_Co_two = F1_two + F2_two
+print('    h_Co = F_1 + F_2: square %d, div %d' % (h_Co_two.q(), PicS.div(h_Co_two)))
+assert h_Co_two.q() == 2
+coordinates = h_Co_two.to_vector()
+pullback_terms = {int(label): Sco_ring(int(coordinates(label)))
+                  for label in coordinates.support().domain()}
+h_tilde_two = S_Co.linear_combination(pullback_terms)
+print('    its pullback h~ has square %d and divisibility %d' % (h_tilde_two.q(), S_Co.div(h_tilde_two)))
+assert h_tilde_two.q() == 4
+comp_two_S = S_Co.orthogonal_complement(h_tilde_two.sublattice())
+print('    complement of that marking: rank %d, det %s, signature %s, roots %d'
+      % (comp_two_S.rank(), comp_two_S.determinant(), comp_two_S.signature_pair(),
+         len(list(comp_two_S.roots()))))
 
 # ---------------------------------------------------------------- 1.1 a second admissible marking
 # h_Co = F_1 + F_2 admits isotropic pairs outside the a = 1 family used above; the geometric
@@ -216,8 +227,10 @@ for name, comp, vector in (('Coble', comp_Coble, h_tilde), ('Heegner', comp_Heeg
 # ---------------------------------------------------------------- the owner's verified decision
 print('')
 print('3. the comparison')
-print('two markings of the Coble polarization give isometric complements: %s'
+print('the two markings of section 1 give isometric complements: %s'
       % comp_Coble.is_isometric_to(comp_Coble_alt))
+print('the marking of section 1.0 does not behave like them: its complement is isometric to the Heegner')
+print('one: %s' % comp_two_S.is_isometric_to(comp_Heegner))
 print('isometry decision of the two complements, by L.is_isometric_to:')
 try:
     decision = comp_Coble.is_isometric_to(comp_Heegner)
@@ -230,10 +243,10 @@ except Exception as exc:
 # ---------------------------------------------------------------- 4. what remains open
 print('')
 print('4. what is still not established, and what it would take')
-print('   4.1 the markings: covered by the orbit argument of section 1.0, whose inputs are checked there')
-print('       (unimodular spans, complements of rank 9, det -1, signature (0,9), isometric to <-1>^9).')
-print('       The one external input is the uniqueness of the odd unimodular negative definite lattice of')
-print('       rank 9, which is classical and cited rather than recomputed.')
+print('   4.1 the markings: not settled, and the answer depends on them.  Section 1.0 constructs an')
+print('       admissible marking whose complement IS isometric to the Heegner one, so the necessary')
+print('       condition can hold.  Which markings arise from actual Coble surfaces is geometric data, the')
+print('       subject of prob:coble-rigidity, not a lattice classification.')
 print('   4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built')
 print('       here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a')
 print('       POSITIVE verdict, not for the negative one, which rests on the complement test alone.')
@@ -249,15 +262,16 @@ if decided is False:
     print('  3. the two polarization complements are not isometric: rank 10, det 2048, signature (0,10)')
     print('     and discriminant group of order 2048 on both sides, but 18 roots against 2, with')
     print('     is_isometric_to returning a verified negative.')
-    print('  1.0 every admissible marking lies in one O(S_Co)-orbit, by the splitting Pic(S) = U perp U^perp')
-    print('     with U and U^perp unimodular, U^perp of rank 9, signature (0,9), and the uniqueness of')
-    print('     <-1>^9.  So the negative covers every admissible marking: an isometry psi with')
-    print('     psi(T_Co^Coble) = T_Co^Heegner and psi(h~_Co) = h does not exist.  4.2 concerns only a')
-    print('     positive verdict and is moot.')
+    print('  1.0 the negative does NOT cover every admissible marking: admissibility does not pin the')
+    print('     marking.  <-1>^9 and E8(-1) + <-1> are both odd unimodular negative definite of rank 9')
+    print('     and are not isometric, and I_{1,10} carries U-splittings with both complement types; for')
+    print('     the second type the pullback marking has a complement isometric to the Heegner one.  The')
+    print('     answer depends on the marking, and the obstruction concerns the marking of sections 1 and')
+    print('     3 only.')
 elif decided is True:
     print('  3. the complements ARE isometric: the marked-pair isometry and its extension over L_K3 are')
     print('     the remaining obligations (4.2).')
 else:
     print('  3. UNDECIDED; nothing is concluded.')
-print('OK: coordinates verified, saturation proved, complements compared, and the verdict carried to all')
-print('    admissible markings by the orbit argument whose inputs section 1.0 checks')
+print('OK: coordinates verified, saturation proved, complements compared for three markings, and the')
+print('    dependence of the verdict on the marking recorded -- A21 is open, not obstructed')

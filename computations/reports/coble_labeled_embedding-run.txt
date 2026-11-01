@@ -11,12 +11,17 @@ provenance
    h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is the vector used below
 S_Co = <2> + <-2>^10: rank 11, det 2048, signature (1, 10)
   e^2 = 2, f_i^2 = -2, h~_Co^2 = 4, div(h~_Co) = 2
-1.0 one orbit of admissible markings
-    < -1 >^9: rank 9, det -1, signature (0, 9)
-    F_1 = H + E_1, F_2 = H + E_2: |det <F_1,F_2>| = 1, complement rank 9, det -1, signature (0, 9)
-    F_1 = 2H + E_1 + E_2 + E_3 + E_4, F_2 = H + E_1: |det <F_1,F_2>| = 1, complement rank 9, det -1, signature (0, 9)
-    the two complements are isometric: True
-    so the two admissible pairs are one O(Pic(S))-orbit, and the two markings one O(S_Co)-orbit
+1.0 admissibility does not pin the marking
+    <-1>^9: rank 9, det -1, even False, vectors of square -1: 18
+    E8(-1) + <-1>: rank 9, det -1, even False, vectors of square -1: 2
+    the two are isometric: False
+    U + <-1>^9 and U + E8(-1) + <-1> are odd unimodular of signature (1,10): (1, 10) (1, 10)
+    hence both are I_{1,10}, and it carries U-splittings with both complement types: True
+    a second-type admissible pair in the book's coordinates: F_1^2 = 0, F_2^2 = 0, F_1.F_2 = 1
+    its complement has 2 vectors of square -1, i.e. it is E8(-1) + <-1>, not <-1>^9
+    h_Co = F_1 + F_2: square 2, div 1
+    its pullback h~ has square 4 and divisibility 2
+    complement of that marking: rank 10, det 2048, signature (0, 10), roots 2
    second marking: F~_1^2 = 0, F~_2^2 = 0, F~_1.F~_2 = 2
    h~' = F~_1 + F~_2: square 4
    its complement: rank 10, det 2048, signature (0, 10), roots 18
@@ -34,15 +39,17 @@ Heegner: complement of the polarization has rank 10, det 2048, signature (0, 10)
     |A_complement| = 2048
 
 3. the comparison
-two markings of the Coble polarization give isometric complements: True
+the two markings of section 1 give isometric complements: True
+the marking of section 1.0 does not behave like them: its complement is isometric to the Heegner
+one: True
 isometry decision of the two complements, by L.is_isometric_to:
   is_isometric_to returned False
 
 4. what is still not established, and what it would take
-   4.1 the markings: covered by the orbit argument of section 1.0, whose inputs are checked there
-       (unimodular spans, complements of rank 9, det -1, signature (0,9), isometric to <-1>^9).
-       The one external input is the uniqueness of the odd unimodular negative definite lattice of
-       rank 9, which is classical and cited rather than recomputed.
+   4.1 the markings: not settled, and the answer depends on them.  Section 1.0 constructs an
+       admissible marking whose complement IS isometric to the Heegner one, so the necessary
+       condition can hold.  Which markings arise from actual Coble surfaces is geometric data, the
+       subject of prob:coble-rigidity, not a lattice classification.
    4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built
        here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a
        POSITIVE verdict, not for the negative one, which rests on the complement test alone.
@@ -57,10 +64,11 @@ SUMMARY
   3. the two polarization complements are not isometric: rank 10, det 2048, signature (0,10)
      and discriminant group of order 2048 on both sides, but 18 roots against 2, with
      is_isometric_to returning a verified negative.
-  1.0 every admissible marking lies in one O(S_Co)-orbit, by the splitting Pic(S) = U perp U^perp
-     with U and U^perp unimodular, U^perp of rank 9, signature (0,9), and the uniqueness of
-     <-1>^9.  So the negative covers every admissible marking: an isometry psi with
-     psi(T_Co^Coble) = T_Co^Heegner and psi(h~_Co) = h does not exist.  4.2 concerns only a
-     positive verdict and is moot.
-OK: coordinates verified, saturation proved, complements compared, and the verdict carried to all
-    admissible markings by the orbit argument whose inputs section 1.0 checks
+  1.0 the negative does NOT cover every admissible marking: admissibility does not pin the
+     marking.  <-1>^9 and E8(-1) + <-1> are both odd unimodular negative definite of rank 9
+     and are not isometric, and I_{1,10} carries U-splittings with both complement types; for
+     the second type the pullback marking has a complement isometric to the Heegner one.  The
+     answer depends on the marking, and the obstruction concerns the marking of sections 1 and
+     3 only.
+OK: coordinates verified, saturation proved, complements compared for three markings, and the
+    dependence of the verdict on the marking recorded -- A21 is open, not obstructed
