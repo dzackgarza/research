@@ -6,7 +6,7 @@ $$
 \begin{aligned}
 \fen &= \bD(\ten)/\Orth^+(\ten)^* &
 \fentwo &= \bD(\ten)/\gent \\
-F^K_{\En} &= \bD(\ten)/\Gamma_{\En} \\
+F^K_{\En} &= \bD(\ten)/\Gamma^K_{\En} \\
 \fco &= \bD(T_\Co) / \Orth^+(T_\Co)^* &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
@@ -17,7 +17,7 @@ where
 $$
 \begin{aligned}
 \gent &= \Orth(\ten) \intersect \Orth(\tdp) \iscontainedin \Orth(\lkt) \\
-\Gamma_{\En} &= \Orth(\ten), \qquad \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten} \\
+\Gamma^K_{\En} &= \Orth(\ten), \qquad \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten} \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(\ten)}(T_\Co) \iscontainedin \Orth(\ten) \\
 F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
 F_{\Nod, 2} &= ???
@@ -26,10 +26,13 @@ $$
 
 Three quotients of one period domain appear here and they are not the same space, so no statement about cusps passes between them for free.
 The *stable* quotient is $\fen = \bD(\ten)/\Orth^+(\ten)^*$, by the discriminant kernel inside the component-preserving group; it is the group this book's moduli problem uses.
-The *unpolarized* quotient is $F^K_{\En} = \bD(\ten)/\Gamma_{\En}$ with $\Gamma_{\En} = \Orth(\ten)$, which is [@AEGS25]'s $\overline{F^K_{\En}}^{\bb}$, and the cusp diagram usually quoted for the unpolarized Enriques space -- two $0$-cusps distinguished by divisibility and two $1$-cusps, $(10,10,0)_1$, $(10,8,0)_1$, $(8,8,0)_0$, $(8,6,0)_0$ -- is the cusp diagram of *that* quotient [@AEGS25, §2].
-The *polarized* quotient is $\fentwo = \bD(\ten)/\gent$ with $\gent = \Gamma_{\En}\intersect\Gamma_{\dP}$, the twisted group whose period space carries five $0$-cusps [@AEGS25, §3].
-Because $\Orth^+(\ten)^*\subseteq\Orth^+(\ten)\subseteq\Gamma_{\En}$, the stable orbits are the finest and the $\Gamma_{\En}$-orbits the coarsest, so a cusp count made for one of these groups is not a cusp count for another: importing the two-cusp classification of $F^K_{\En}$ into the stable quotient $\fen$ would be exactly the silent change of group that the comparison below must avoid, and the passage from one to the other is not known here.
-The same three-way distinction has to be kept on the Coble side, where $\fco$ is the stable quotient and $F_{\Co,2}$ the polarized one. 
+The *unpolarized* quotient is $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$ with $\Gamma^K_{\En} = \Orth(\ten)$, which is [@AEGS25]'s $\overline{F^K_{\En}}^{\bb}$, and the cusp diagram usually quoted for the unpolarized Enriques space -- two $0$-cusps distinguished by divisibility and two $1$-cusps, $(10,10,0)_1$, $(10,8,0)_1$, $(8,8,0)_0$, $(8,6,0)_0$ -- is the cusp diagram of *that* quotient [@AEGS25, §2].
+The *polarized* quotient is $\fentwo = \bD(\ten)/\gent$ with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, the twisted group whose period space carries five $0$-cusps [@AEGS25, §3].
+Because $\Orth^+(\ten)^*\subseteq\Orth^+(\ten)\subseteq\Gamma^K_{\En}$, the stable orbits are the finest and the $\Gamma^K_{\En}$-orbits the coarsest, so a cusp count made for one of these groups is not a cusp count for another: importing the two-cusp classification of $F^K_{\En}$ into the stable quotient $\fen$ would be exactly the silent change of group that the comparison below must avoid, and the passage from one to the other is not known here.
+The superscript is not decoration: $\Gamma^K_{\En} = \Orth(\ten)$ is [@AEGS25]'s $\Gamma_{\mathrm{Enr}}$, the full group and the outer term of the chain above, whereas $\Gamma_\En$ without it denotes the stable subgroup $\Orth^+(\ten)^*$ throughout this book (@sec-heegner-line, @thm:normalization, @def:gamma-co-en).
+Writing $\Gamma_\En$ for $\Orth(\ten)$ would conflate the two ends of that chain, and a quotient by one of them is the quotient by the other only for the orbit problems in which the difference happens to be invisible.
+The same three-way distinction has to be kept on the Coble side, where $\fco$ is the stable quotient and $F_{\Co,2}$ the polarized one.
+The relation there between the stable Coble group $\Gamma_\Co = \Orth^+(T_\Co)^*$ and the two groups obtained from the Enriques and the Coble markings is @sec-gamma-co-comparison: neither marked group is the stable one, each contains it with finite index, and the difference is a finite subgroup of $\Orth(A_{T_\Co}, q_{T_\Co})$.
 
 where $\tdp$ is described in [@AEGS25].
 Note that we implicitly use the embedding $\eta\colon T_\Co\injects\ten$ of @lem:primitive_embedding_eta.

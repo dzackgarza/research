@@ -28,15 +28,27 @@ whether it separates is undecided. $A_{T_\Co}$ has $23\,715$ two-dimensional tot
 subspaces, so the invariant is far from constant but no computation has been made.
 
 **A3. Explicit generators of $\Gamma_\Co$.** The book calls the matrix representation "a stub".
-$\Gamma_\Co$ is defined as $\operatorname{Stab}_{\Orth(\ten)}(h_\Co)\cap Z_{\Orth(\ten)}(\theta)$,
-and a source-backed candidate $\Gamma_\Co^\En(\delta)$ exists from the Heegner line; whether the two
-coincide is itself open. A1, A2 and A4 all wait on this.
+$\Gamma_\Co$ is defined as $\Orth^+(T_\Co)^*$, the discriminant kernel; the Coble-side description is
+the centralizer-stabilizer group $\Gamma^\theta_\Co$ of @prop:gamma-co-in-theta-centralizer, which
+contains $\Gamma_\Co$ with finite index, and a second overgroup $\Gamma_\Co^\En(\delta)$ comes from the
+Heegner line (@prop:gamma-co-in-heegner-group). The earlier formula wrote that intersection inside
+$\Orth(\ten)$, where neither $h_\Co$ nor $\theta$ lives; it is now formed inside $\Orth(\lkt)$ and
+pushed to $T_\Co$. Whether either overgroup equals $\Gamma_\Co$ is a finite discriminant question
+(A4). A1, A2 and A4 all wait on the generators, which are also the missing input for comparing them.
 
-**A4. $\Gamma_\Co = \widetilde O^+(T_\Co)$?** The book defines $\Gamma_\Co=\Orth^+(T_\Co)^*$ and
-separately $\widetilde O^+(L)=\ker(\rho_L,\chi_{\mathrm{sp}})$, and never says they coincide. They do,
-by substitution — but the book also defines $\Gamma_\Co$ twice in incompatible ways (once as the
-discriminant kernel, once as the stabilizer of $h_\Co$ cut by $\theta$), so the question of whether
-those two definitions agree is real and is not settled anywhere.
+**A4. $\Gamma_\Co = \widetilde O^+(T_\Co)$, and are the two definitions of $\Gamma_\Co$ one group?**
+First half settled and written down (@sec-gamma-co-comparison): $\Gamma_\Co=\Orth^+(T_\Co)^*$ and
+$\widetilde\Orth^+(L)=\ker(\rho_L,\chi_{\mathrm{sp}})$ coincide for $L=T_\Co$, because the book defines
+$\Orth^+(L)=\Theta_{\mathbb{R}}(L)$ and $\widetilde\Orth^+(L)$ as the pullback of
+$\widetilde\Orth(L)=\ker\rho_L$ along it; that is a substitution and carries no arithmetic content.
+Second half settled as far as it can be: the "second definition" was ill-typed, and its correction
+$\Gamma^\theta_\Co$ contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$, as does the
+Heegner group $\Gamma^{\mathrm{Hdg}}_\Co$, whose index over $\Gamma_\Co$ is
+$\abs{\rho_{T_\Co}(\Stab_{\gent}(\ZZ\delta))}\le\abs{W(E_8)}=696\,729\,600$
+(@prop:gamma-co-in-heegner-group, @prop:gamma-co-in-theta-centralizer). So the two definitions agree
+exactly when a finite subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ is trivial. **Open:** compute those two
+finite subgroups — the missing input is explicit generators for $\gent$ (A3), after which it is a
+computation in a finite group of order $46\,998\,591\,897\,600$ and needs no geometry.
 
 **A5. Coble root-orbit uniqueness under $\gent$** (@qst:coble_root_orbit_uniqueness). Namikawa gives
 it for the full Enriques group; the polarized problem needs the finite-index subgroup $\gent$, for
@@ -113,12 +125,27 @@ transcription of the vectors; recomputing the two complements settles the rest. 
 the example: Algorithm 2.3 of the same paper is the published route to A1.
 
 **A20. The four arithmetic groups are not known to coincide** (@prob:group-identification, the
-research report's §"Four arithmetic groups that must not be conflated"). The report defines
-$\Gamma^{\mathrm{geom}}_{\Co,2}$, $\Gamma^{\mathrm{dir}}_{\Co,2}$, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$
-and $\Gamma^{\mathrm{cong}}_{\Co,2}$ — geometric monodromy, labeled centralizer image, Heegner
-stabilizer image, and the congruence preimage — and proves no two equal. Each equality needs a
-separate argument: global Torelli, labeled embedding comparison, discriminant-form gluing. The report
-states the trap plainly: defining one of them to be "the group for which the desired semifan works"
+research report's §"Four arithmetic groups that must not be conflated"). Reduced, not closed. Proved
+(@sec-gamma-co-comparison): $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ contains $\Gamma_\Co$ as the kernel of its
+action on $A_{T_\Co}$, with quotient $\rho_{T_\Co}(\Stab_{\gent}(\ZZ\delta))$ of order
+$\le\abs{W(E_8)}=696\,729\,600$; the Coble-side centralizer group $\Gamma^\theta_\Co$ likewise; and
+$\Gamma^{\mathrm{cong}}_{\Co,2}$ is a genuine overgroup of $\ker\rho_{T_\Co}$ whose quotient
+$\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ is nontrivial, so **it is not $\Gamma_\Co$** — the four-group
+problem cannot be an identification with the book's $\Gamma_\Co$, only an equality among four
+overgroups of it, and the report's framing was wrong on that point. What remains, with the exact
+missing hypothesis in each case:
+
+1. $\Gamma^{\mathrm{Hdg}}$ vs $\Gamma^{\mathrm{cong}}$: compare two subgroups of the finite group
+   $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for $\gent\subset\Orth(\ten)$ (A3) and for
+   the Coble-side centralizer. A finite computation, no geometry in it.
+2. $\Gamma^{\mathrm{dir}}$ vs the other two: needs an isometry of $\lkt$ carrying the Coble-labeled
+   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$, i.e. labeled rigidity (A21,
+   @prob:coble-rigidity). No computation in $T_\Co$ suffices: the two primitive embeddings of $T_\Co$
+   in $\lkt$ are different embeddings, and matching invariants are not an isometry.
+3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
+   @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
+
+The report's trap stands: defining one of them to be "the group for which the desired semifan works"
 is circular. Every other Coble statement inherits whichever group it was stated for.
 
 **A21. Labeled Coble rigidity** (@prob:coble-rigidity). Two labeled tuples

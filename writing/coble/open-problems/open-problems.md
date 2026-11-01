@@ -67,17 +67,27 @@ By @lem:divisibilityAlwaysTwoTco, every primitive isotropic $v \in T_\Co$ has $\
 
 ::: {.remark title="Open problem: explicit generators of $\Gamma_\Co$ and uniqueness of the 1-cusp"}
 
-The arithmetic group governing the Coble locus is the stabilizer of the polarization $h_\Co$ inside $\Orth(\ten)$, cut further by the horizontal folding involution $\theta$,
+The Coble-side description of the arithmetic group is the centralizer of the horizontal folding involution, cut by the polarization.
+That centralizer cannot be taken inside $\Orth(\ten)$: the polarization $h_\Co\in K_S^{\perp\Pic(S)}\iscontainedin\Pic(S)$ is a class on the Coble surface, of square $2$, with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$ (@def:coble-polarization-classes), and $\theta_\Co$ is an isometry of $\lkt$, so the group has to be formed in $\Orth(\lkt)$ and then pushed to $T_\Co$.
+With $\theta_\Co$ the sign involution of @prop:theta-co-exists, whose eigenspaces are $T_\Co$ and $S_\Co$, put
 $$
-\Gamma_\Co = \Stab_{\Orth(\ten)}(h_\Co) \intersect Z_{\Orth(\ten)}(\theta),
+\Gamma^\theta_\Co \definedas
+\im\Bigl(
+Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)
+\;\too\;
+\Orth^+(T_\Co)
+\Bigr),
 $$
-where in the Enriques sector $h_\En = e + f\in U(2)$ is the degree-$2$ polarization vector of square $4$ on the K3 side (@prop:gamma-en-two-gluing), and $h_\Co\in K_S^{\perp\Pic(S)}\iscontainedin\Pic(S)$ is the degree-$2$ Coble polarization (@def:coble-polarization-classes), of square $2$ downstairs with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$.
-The class $h_\Co$ is not the hyperplane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of $h_\En$.
-A source-backed candidate for $\Gamma_\Co$, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ from @def:gamma-co-en; identifying the two is part of the open work below.
+which is the group of @prop:gamma-co-in-theta-centralizer.
+An earlier version of this item placed both operations inside $\Orth(\ten)$, where neither object lives.
+The class $h_\Co$ is not the hyperplane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of the Enriques vector $h_\En = e + f\in U(2)$ of @prop:gamma-en-two-gluing.
+$\Gamma^\theta_\Co$ is not $\Gamma_\Co$: by @prop:gamma-co-in-theta-centralizer, $\Gamma_\Co$ is the kernel of the action of $\Gamma^\theta_\Co$ on $A_{T_\Co}$, and the two groups agree exactly when that finite image is trivial, which is not known.
+A second candidate, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en; by @prop:gamma-co-in-heegner-group it too contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$.
+Comparing the two candidates with *each other*, rather than each with $\Gamma_\Co$, requires an isometry of $\lkt$ carrying the Coble-labeled structure to the Enriques-labeled one, which is @prob:coble-rigidity: both are extensions of the same $\Gamma_\Co$ by subgroups of the finite group $\Orth(A_{T_\Co},q_{T_\Co})$, and it is those finite subgroups that such an isometry would have to match (@sec-gamma-co-comparison).
 An explicit representation of $\Gamma_\Co$ by *matrix generators* is presently a stub.
 The open work is to:
 
-- compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$). By @prop:theta-co-exists, $\theta$ already exists as a lattice isometry without a coordinate description, and @thm:coble-heegner-finite-orbits already determines the image of the resulting group in $\Orth(q_{T_\Co})$; what a generating set adds is the lattice group above that finite image;
+- compute the stabilizer/centralizer intersection in the Coble (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for the group above, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$). By @prop:theta-co-exists, $\theta$ already exists as a lattice isometry without a coordinate description, and @thm:coble-heegner-finite-orbits already determines the image of the *Enriques-side* group in $\Orth(q_{T_\Co})$; what a generating set adds is the lattice group above that finite image, and the corresponding finite image for the Coble-side group $\Gamma^\theta_\Co$ has not been computed at all, so the two finite subgroups still have to be compared;
 
 - determine the $\Gamma_\Co$-orbits of primitive isotropic *planes*, and with them the $1$-cusps of $\fco$. For the full orthogonal group the transitivity is now a theorem of this book rather than a citation: @thm:plane-transitivity-tco proves that $\Orth^+(T_\Co)$ acts transitively on primitive isotropic planes, by splitting the unimodular model $B=\latI_{2,9}=\latI_{1,1}\perp\latI_{1,8}$ at a line and lifting isometries of the quotient as $\id\perp\varphi$ with the component read off @def:period-component-character. The boundary lattice of the exhibited plane is computed at the owner as well: $J^{\perp T_\Co}/J$ has rank $7$, signature $(0,7)$, determinant $-2^7$ and type $(7,7,1)$, i.e. $\latI_{0,7}(2)\cong A_1^{\oplus 7}$, in `computations/reports/one_cusp_plane_quotient.py`.
   The residue is the subgroup statement, which does not follow from the full-group one. What the earlier version of this item got wrong is that it declared a plane to have no discriminant invariant, on the ground that "a plane is not an element of $T_\Co$". The invariant exists, and the first repair of this item then named the wrong object: a plane's datum is not the dual of its restricted form, nor the *type* of anything, but the subspace
@@ -272,5 +282,5 @@ The problems above share a small set of concrete starting data, recorded here fo
 
 - **Sterk orbit lift.** For the $2$-elementary $T_\Co$, an orbit is determined by the tuple $(\div(v),\, \bar v \in A_{T_\Co},\, v^2 = 0)$, reducing the search to $\bF_2$-vector-space orbits under $\Orth(q_{T_\Co})$.
 
-- **$\Gamma_\Co$ generators.** Computed as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co = f^{*}h_\Co$, of square $4$.
+- **$\Gamma_\Co$ generators.** Not known; the matrix representation is a stub. The candidate description is the image in $\Orth^+(T_\Co)$ of the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta_\Co)$ and with the stabilizer of the primitive vector $\tilde h_\Co = f^{*}h_\Co$, of square $4$ (@prop:gamma-co-in-theta-centralizer), whose eigenspace formulation is the one that can be written down at present.
 :::

@@ -59,7 +59,7 @@ Compare the equivariant-triangulation question (@qst:equivariant_triangulation).
 ::: {.remark}
 
 The stable limits below compactify the polarized Coble locus, which we realize inside the moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces: one takes the Coble Heegner divisor cut out inside $\fentwo$ and normalizes it.
-Because the polarized arithmetic group $\gent$ has finite index in the full Enriques group $\Gamma_\En$, a single unpolarized root orbit can split into several polarized orbits.
+Because the polarized arithmetic group $\gent$ has finite index in the full Enriques group $\Gamma^K_\En$, a single unpolarized root orbit can split into several polarized orbits.
 Until root-orbit uniqueness is established for $\gent$, the polarized Coble locus is therefore described as the union of the quotients $\bD(\delta^{\perp})/\Stab_{\gent}(\delta)$, one for each orbit of admissible Coble roots, rather than as a single global quotient.
 :::
 
@@ -77,7 +77,9 @@ Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], th
 ::: {.remark #rmk:gamma-co-2-two-definitions title="The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors"}
 
 These notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; @sec-moduli-construction defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
-These agree, and the bridge is $T_\Co \cong \delta^{\perp \ten}$ above.
+The bridge $T_\Co \cong \delta^{\perp \ten}$ identifies the two only after restriction to $T_\Co$, because the ambient groups differ: the first lives in $\gent$, which is a proper subgroup of $\Orth(\ten)$, while the second is taken in the full group $\Gamma^K_\En = \Orth(\ten)$.
+The restriction of $\Stab_{\gent}(\ZZ\delta)$ to $T_\Co$ is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en, and its relation to the stable group $\Gamma_\Co$ is @prop:gamma-co-in-heegner-group: it contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$ and is larger by a finite subgroup.
+So the identification of complements settles the line-versus-vector question below and does not by itself identify the two arithmetic groups.
 
 An isometry of $\ten$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so $\Stab(\delta) \iscontainedin \Stab(T_\Co)$.
 Conversely an isometry preserving $T_\Co$ preserves its orthogonal complement in $\ten$, which is the rank-one lattice $\generators{\delta}$, so it sends $\delta \mapsto \pm\delta$.
@@ -97,7 +99,7 @@ Two routes to an affirmative answer are available: an arithmetic double-coset co
 :::
 
 ::: {.warning}
-The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full Enriques group $\Gamma_\En$.
+The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full Enriques group $\Gamma^K_\En$.
 It does not settle the corresponding question for the finite-index subgroup $\gent$, which is what the polarized problem needs.
 :::
 

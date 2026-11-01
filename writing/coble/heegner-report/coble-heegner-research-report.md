@@ -976,6 +976,18 @@ Each equality requires a separate argument: global Torelli and parallel transpor
 
 Defining one of these groups to be “the group for which the desired semifan works” is circular.
 
+::: {.remark title="What the four-group problem reduces to"}
+
+Two of the four are explicitly built over the stable group $\Gamma_\Co = \Orth^+(T_\Co)^*$ and differ from it by a finite subgroup of $\Orth(A_{T_\Co}, q_{T_\Co})$.
+$\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group of @prop:gamma-co-in-heegner-group, the root $\alpha$ fixed above being the vector $\delta$ of @lem:coble-heegner-vector and $\Gamma_{\mathrm{En},2}$ being $\gent$: it contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$, and its quotient is a subgroup of $\Orth(A_{T_\Co}, q_{T_\Co})$ of order at most $\abs{W(E_8)}$.
+$\Gamma^{\mathrm{cong}}_{\Co,2}$ is by definition the full preimage of a subgroup $P$ under $\rho_{T_\Co}$ — the $P$ defined above, made a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ by the identity on $\ZZ\tfrac12\zeta$ — so its kernel is $\ker\rho_{T_\Co}$.
+Since $P$ is nontrivial — it contains the swap of the two isotropic classes of $A_{U(2)}$ — the congruence group is *not* the stable group, and the four-group identification cannot be an identification with $\Gamma_\Co$: what it asserts is that four overgroups of $\Gamma_\Co$ coincide, which is a statement about subgroups of one finite quadratic space and nothing more.
+
+The other two are not of that kind.
+$\Gamma^{\mathrm{dir}}_{\Co,2}$ is the image of a centralizer in $\Orth(L_{K3})$ of the labeled Coble datum, and comparing it with $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ needs an isometry of $L_{K3}$ carrying the Coble-labeled primitive embedding to the Enriques-labeled one and $\tilde h_\Co$ to $h$; that is @prob:coble-rigidity, which is exactly what @warn:isometry-rigidity warns cannot be replaced by an abstract lattice isometry.
+$\Gamma^{\mathrm{geom}}_{\Co,2}$ is a monodromy group of a moduli stack, and no lattice computation reaches it: it needs the direct global Torelli and direct monodromy theorems, @prob:B24 and @prob:B25.
+:::
+
 ### A lattice-theoretic stabilizer sequence {#sec-stabilizer-sequence}
 
 There is a useful pure lattice calculation.
@@ -1008,10 +1020,11 @@ O^+(T_{\Co})
 The exact sequence is the one relating the two orthogonal groups through the index-$2$ overlattice: $T_{\En}$ contains $T_{\Co}=\alpha^{\perp}_{T_{\En}}$ as a sublattice of index $2$, so restriction of an isometry of $T_{\En}$ preserving $\bZ\alpha$ gives one of $T_{\Co}$.
 
 *Surjectivity.*
-An isometry $g\in O^+(T_{\Co})$ preserves the discriminant form $q_{T_{\Co}}$, since $A_{T_{\Co}}$ is computed from $T_{\Co}$ alone; and by @prop:coble-transcendental the characteristic class is the generator $\eta/2$ of the $\langle2\rangle$ summand's discriminant, of $q$-value $\tfrac12$.
-The isometry $g$ fixes every element of the discriminant group only if it acts trivially there, which is not the case in general; what it does preserve is the distinguished class $[\eta/2]$, because the $\langle2\rangle$ summand is the unique rank-one summand whose generator has square $2$ up to sign, and $g$ permutes summands of that shape.
+An isometry $g\in O^+(T_{\Co})$ preserves the discriminant form $q_{T_{\Co}}$, since $A_{T_{\Co}}$ is computed from $T_{\Co}$ alone.
+To extend it must also fix the gluing class $[\eta/2]$, and it does: by @prop:coble-discriminant-group the discriminant representation of $\Orth(T_{\Co})$ factors through the isomorphism $\Orth(A_{T_{\Co}}, q_{T_{\Co}})\iso\Orth(A^0, q_{T_{\Co}}|_{A^0})$, where $A^0$ is the index-$2$ subgroup carrying the classes of integral $q$-value, and injectivity of that restriction together with the orthogonality of the decomposition $A_{T_{\Co}} = \ZZ\overline{h}\perp A^0$ forces the image of $\overline{h} = [\eta/2]$ to be $\overline{h}$ itself.
+An earlier version of this proof argued from the $q$-value instead, which does not single the class out: the classes of $q$-value $\tfrac12$ modulo $\ZZ$ are exactly the coset $\overline{h} + A^0$, of order $2^{10}$, so fixing $\overline{h}$ is a genuine condition and not a formality — only the restriction isomorphism above shows that it holds for every isometry.
 So $g$ preserves the gluing subgroup $H$ of @thm:nikulin-gluing determined by the primitive vector $\eta$, and hence extends to the overlattice: by the gluing criterion, isometries of the two summands preserving $H$ glue to an isometry of the overlattice.
-The two choices of sign of the action on the $\langle2\rangle$ line are the two extensions.
+The two choices of sign of the action on the line $\ZZ\alpha$ are the two extensions, and both lie in $O^+(T_{\En})$ because $\alpha$ is negative and the positive plane is untouched.
 
 *The kernel.*
 The kernel of the restriction is the subgroup of $\Stab_{O^+(T_{\En})}(\bZ\alpha)$ acting trivially on $\alpha^{\perp}$.
