@@ -1,7 +1,7 @@
 ### The Five Cusps {#sec:five-cusps}
 
 This section provides an explicit, case-by-case analysis of the five 0-cusps of $\fentwo$, describing the structure of the corresponding semifans, dual complexes, integral-affine data, and involution symmetries arising in the boundary of the KSBA compactification, as described in @AEGS25. The semifans $\semifan{F}_k$ are defined by intersecting the ambient ramification semifan $\semifan{F}_{\ram}(\tdp)$ with the Enriques lattice subspace $\ten$, for each lattice polarization $\tdp$ occurring at a cusp.
-By @sec:five-cusps, the resulting collection $\semifans{F} = \{\semifan{F}_k\}_{k=1}^{5}$ consists of generalized Coxeter semifans governing the semitoroidal structure at each cusp.
+By @sec:five-cusps, the resulting collection $\semifans{F} = \{\semifan{F}_k\}_{k=1}^{5}$ consists of generalized Coxeter semifans governing the semitoroidal structure at each cusp; the symbol $\semifan{F}_k$ is the one used throughout, and no other is.
 Each semifan encodes the stratified boundary behavior of the compactification via its rays (corresponding to degenerations of Types $\II$ and $\III$) and the folding symmetries inherited from involutions on the integral-affine structures.
 Let $(\mcz, \mcr_{\mcz}) \to (C,0)$ be a half-divisor model for $F_{\En,2}$ as in Proposition 4.5. The following facts hold for each such degeneration:
 
@@ -43,7 +43,7 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 - **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, with symmetry $J$ given by $180^\circ$ rotation; invariant sublattice $\bar{\tdp}^{J=1} = U(2) \oplus E_8(2)$. Both lattices are checked against the maintained two-elementary API in `writing/coble/scripts/certificates/enriques_cusp_lattice_data.py`: $U(2)\oplus E_8^2$ has invariants $(18,2,0)$ and $U(2)\oplus E_8(2)$ has rank $10$ with invariants $(10,10,0)$, the invariant sublattice being the diagonal $E_8$ halved, of determinant $2^8$.
 
-- **Semifan Structure:** The irrelevant subgroup is infinite, noting that it contains the Weyl group of $\tilde A_1$ due to the presence of $r_9, r_{10}$ which are images of irrelevant roots in the corresponding K3 diagram, so $\mcf_1$ is a strict semifan and the compactification at this 0-cusp is strictly semitoroidal.
+- **Semifan Structure:** The irrelevant subgroup is infinite, noting that it contains the Weyl group of $\tilde A_1$ due to the presence of $r_9, r_{10}$ which are images of irrelevant roots in the corresponding K3 diagram, so $\semifan{F}_1$ is a strict semifan and the compactification at this 0-cusp is strictly semitoroidal.
 
 - **Rays in the Coxeter compactification:** 4 Type $\II$ rays corresponding to the 4 elliptic subdiagrams above; 4 type $\III$ rays corresponding to maximal parabolic subdiagrams; a total of 8 rays.
 
@@ -63,7 +63,7 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 - **Lattice Data:** $\bar{\tdp} = (18,0,0)_1 = U \oplus E_8^2$, $J$ is a vertical reflection; the invariant sublattice is $U \oplus E_8(2)$.
 
-- **Semifan Structure:** The irrelevant subgroup is $S_2$, thus $\Sigma_2$ is a fan, giving a toroidal compactification over this cusp.
+- **Semifan Structure:** The irrelevant subgroup is $S_2$, thus $\semifan{F}_2$ is a fan, giving a toroidal compactification over this cusp.
 
 - **Rays in the Coxeter compactification:** 2 Type $\II$, 8 Type $\III$; 10 total.
 
@@ -83,7 +83,7 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 - **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is diagonal reflection followed by $\alpha_{20}$ reflection; $\bar{\tdp}^{J=1} = U(2)\oplus E_8(2)$.
 
-- **Semifan Structure:** The Irrelevant subgroup is infinite since it again contains $W(\tilde A_1)$ due to the presence of $r_{10}, r_{11}$, so $\mcf_3$ is strictly semitoroidal.
+- **Semifan Structure:** The Irrelevant subgroup is infinite since it again contains $W(\tilde A_1)$ due to the presence of $r_{10}, r_{11}$, so $\semifan{F}_3$ is strictly semitoroidal.
 
 - **Rays in the Coxeter compactification:** 3 Type $\II$, 15 Type $\III$; 18 total.
 
@@ -104,7 +104,7 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 - **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is horizontal reflection; $\bar{\tdp}^{J=1} = U(2)\oplus E_8(2)$.
 
-- **Semifan Structure:** The irrelevant subgroup is $W(A_1)\times W(A_1) \cong S_2^2$ which is finite, and thus $\Sigma_4$ is a fan and the compactification is toroidal.
+- **Semifan Structure:** The irrelevant subgroup is $W(A_1)\times W(A_1) \cong S_2^2$ which is finite, and thus $\semifan{F}_4$ is a fan and the compactification is toroidal.
 
 - **Rays in the Coxeter compactification:** 4 Type $\II$, 12 Type $\III$; 16 total.
 
@@ -126,7 +126,7 @@ In particular, we exhibit orbit representatives of the maximal elliptic subdiagr
 
 - **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is composition of eight commuting reflections $\alpha_1,\ldots,\alpha_{15}$; $\bar{\tdp}^{J=1} = U(2)\oplus E_8(2)$.
 
-- **Semifan Structure:** The irrelevant subgroup contains $W(\tilde A_1)$ due to $r_{12}, r_{13}$, thus $\mcf_5$ is a semifan and this yields a semitoroidal compactification.
+- **Semifan Structure:** The irrelevant subgroup contains $W(\tilde A_1)$ due to $r_{12}, r_{13}$, thus $\semifan{F}_5$ is a semifan and this yields a semitoroidal compactification.
 
 - **Rays in the Coxeter compactification:** 5 Type $\II$, 17 Type $\III$; 22 total.
 

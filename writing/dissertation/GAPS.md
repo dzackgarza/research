@@ -103,9 +103,18 @@ What has since been settled is listed at the end, so that a reader can tell "res
   manuscript's normalization too.  The isometry T_4 = Lambda_19 identifies the lattices and says
   nothing about the groups; that comparison is the open step, not a change of polarization.
 
-  Cusp 2 of the Enriques chapter is checked alongside cusp 1 in enriques_cusp_lattice_data.py:
-  U + E8^2 has rank 18, determinant -1 and two-elementary invariants (18,0,0), the quoted value,
-  and U + E8(2) has rank 10 with invariants (10,8,0).
+  The five Enriques cusps' lattice data are checked as one unit in
+  enriques_cusp_lattice_data.py.  Cusps 1, 3, 4 and 5 all quote T-bar = (18,2,0)_1 = U(2) + E8^2
+  with invariant sublattice U(2) + E8(2); cusp 2 quotes (18,0,0)_1 = U + E8^2 with U + E8(2).  The
+  maintained two-elementary API gives (18,2,0) and (10,10,0) for the first pair and (18,0,0) and
+  (10,8,0) for the second, matching the text in all five subsections.
+
+  Two things the audit did not settle and does not claim.  The boundary labels (10,10,0)_1 and
+  (10,8,0)_1 are the manuscript's Enriques-cusp invariants and were not recomputed here from
+  L_- = H + H(2) + E8(-2); they need the five isotropic orbits and their quotients, which is the
+  Sterk transcription's job.  And the arithmetic-group comparison stays open exactly as recorded
+  above: Laza--O'Grady's group and the manuscript's Gamma have not been matched, so no count is
+  transferred between them, in the Enriques chapter or elsewhere.
 
   The "Sigma versus N zero-cusp invariant" still does not resolve.  Inspected as asked: the
   introduction and historical context carry no such phrase, and the nearest textual home is the
