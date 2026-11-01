@@ -18,22 +18,27 @@ h: h^2 = 2 in C, h^2 = 4 in S
   |W(E8)| = 696729600; G equals it: True
   Gamma_Co = O^+(T) cap ker(rho_T) constructed as an owned object: IntersectionSubgroups.parent_class
   sigma in Gamma_Co: False
-  congruence preimage rho^{-1}(P) constructed; sigma in it: True
-  so sigma lies in rho^{-1}(P) and not in Gamma_Co: Gamma_Co is strictly inside the preimage
+  rho^{-1}(<rho(sigma)>) constructed as an owned object; sigma in it: True
+  so sigma lies in rho^{-1}(<rho(sigma)>) and not in Gamma_Co; with <rho(sigma)> <= P the same
+  element lies in rho^{-1}(P), which is the block argument and not a computation of P here
   x = zeta + a_1: q(x) = -2, div(x) = 2
   its reflection in O_plus: True; in ker(rho_T): True; hence in Gamma_Co: True
-  T.roots() declined, as designed for an indefinite lattice: cannot run a definite-lattice algorithm on Integral lattice of rank 11 and signature (2, 9)
+  possible reflective squares, from possible_root_lengths() (divisors of 2 exp A_L): [1, 2, 4]
+  T.roots() refused, per its definite-lattice contract: cannot run a definite-lattice algorithm on Integral lattice of rank 11 and signature (2, 9)
+  no conclusion about generation by reflections is drawn from that refusal:
+  reflective_root_locus is documented as possibly infinite for an indefinite lattice, and
+  root_module_generating_set is a semi-decision for L = Z Phi(L), not for O^+(L) = <reflections>.
 
 SUMMARY
   (a) the nine reflections generate the integral stabilizer O(K) = Stab_{O(S)}(h), |O(K)| =
       1393459200 = 2|W(E8)|, completeness decided by the owner subgroup comparison;
   (b) their images generate G <= O(A_S) with |G| = 696729600 = |W(E8)|, which is the order
       thm:coble-heegner-finite-orbits (1) asserts and TODO B2 records as unproved;
-  (c) Gamma_Co, its congruence preimage and the witness containment are owned objects, and the
-      witness lies in the preimage and not in Gamma_Co;
-  (d) zeta + a_1 is a (-2)-vector of T and its reflection is in Gamma_Co, so
-      reflections of T give integral elements of Gamma_Co; that they generate it is the
-      completeness theorem prob:coxeter-completeness and B32--B34 record as open, and the
-      roots of an indefinite lattice are not an enumerable owner object.
+  (c) Gamma_Co as an owned object, and rho^{-1}(<rho(sigma)>) for the cyclic subgroup the witness
+      generates; rho(sigma) in P is the block argument, and P itself is not built here;
+  (d) zeta + a_1 is a (-2)-vector of T and its reflection is in Gamma_Co; that is one element,
+      not a generating statement.  roots() is definite-only by contract and root_module_generating_set
+      is a semi-decision, so neither settles generation by reflections, whose obligation is
+      prob:coxeter-completeness and B32--B34, open.
 OK: integral generators of the stabilizer and its finite image verified at the owner;
     generators of Gamma_Co itself remain the named open obligation, with the handoff stated.
