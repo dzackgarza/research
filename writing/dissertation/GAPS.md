@@ -157,6 +157,26 @@ What has since been settled is listed at the end, so that a reader can tell "res
   than by the coarser Coxeter-order group of the owner's own orbit methods.  That run
   (computations/reports/sterk_owner_subdiagrams.py) is in progress.
 
+  The semifan and irrelevant-subgroup statements, audited against the retained root maps, keep
+  source verification apart from computed acceptance.  The five statements name the roots that are
+  supposed to witness an affine A~1 inside the irrelevant part: cusp 1 by r_9, r_10; cusp 3 by
+  r_10, r_11; cusp 5 by r_12, r_13; cusp 4 instead asserts that W(A_1) x W(A_1) is finite; cusp 2
+  that the irrelevant subgroup is S_2.  What the retained data settle is only the first of them:
+  in the script's a-indexing the pair (a9, a10) of the first representative has norms -4, -4 and
+  pairing 4, i.e. cos^2 = 1, so those two roots span an affine A~1 and the sentence for cusp 1 is
+  consistent.  The pairs named for cusps 3 and 5, (a10, a11) and (a12, a13), are *not edges* in
+  the corresponding diagrams at all, so under this indexing they cannot witness an affine A~1 --
+  which is not yet a refutation, because the manuscript's r-indices may follow its own figure
+  assets rather than the script's a-labels.  Nothing here verifies the finiteness or infinitude of
+  any irrelevant subgroup: that needs the semifan construction, which the Sterk script does not
+  implement and which is therefore not computed at all.
+
+  So, separated: the Type II counts are *computed and accepted*; the lattice data are *computed and
+  accepted*; the Type III counts are waiting on the owner enumeration (job jmvx3lwga, not
+  restarted); the semifan/irrelevant-subgroup statements are *source claims only*, one of them
+  corroborated at the level of named roots and two of them not reconcilable until the manuscript's
+  root labelling is matched to the script's.
+
   The representative-to-subsection matching does not come from the counts: cusps 1 and 4 both have
   four Type II orbits, so the count vector cannot order them.  The matching is read off the
   manuscript's displayed subdiagram vertex sets -- cusp 1's four are
