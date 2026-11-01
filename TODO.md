@@ -414,6 +414,22 @@ correctly at a second location in the book.
 - *C23.* `:250` contradicts `:54–55` on parity; `:200` writes $w_1,\dots,w_p$ for a rank-$p+q$ lattice;
   `:307` writes "signature $(2,0)$" and reuses $U$ for $U_1$.
 
+**C27. There are two Coble lattice tables, and the one in `tables/` is stale.**
+`coble/tables/coble-lattices.md` row $n=4$ prints $D_4^{\oplus2}\oplus A_1^{\oplus4}\oplus U(2)$ beside
+$(14,8,1)$, but that lattice has discriminant length $2+2+4+2=10$; row $n=5$ prints
+$E_8\oplus A_1^{\oplus5}\oplus U$ beside $(15,7,1)$, but $a=0+5+0=5$. Both contradict the invariants
+printed in the same row. `coble/lattices-and-moduli/coble-lattice-table.md:14,:15` has the correct
+entries, and that chapter's own remark records these two forms as the *superseded* versions — which is
+how they survived: the correction was made in one table and not in the other, and nothing cross-references
+the two. A reader who finds `tables/` first has no way to know it is the wrong one.
+
+**C28. The GIT model of $\fco$ is stated with the wrong dimension, twice.**
+`research-statement/ResearchStatement.md:111` says $\fco$ "is birational to the moduli space of Coble
+surfaces with $n=1$ boundary component constructed as a GIT quotient $(\PP^2)^{10}\sslash \PGL_3$".
+That quotient has dimension $20-8=12$; $\fco$ has dimension $9$. The same claim appears at
+`coble/coble-moduli/cusp-correspondence-morphism-chain.md`, where it is offered as "an independent
+handle on the dimension $9$" — it cannot be, the two numbers differing by $3$.
+
 **C24–C26. Three bibliography errors, one of them widespread.** These are citation defects, not
 typographic ones: each names a different work from the one that carries the claim.
 
