@@ -31,6 +31,14 @@ M = S_En + <delta> = U(2) + E8(2) + <-2>: rank 11, det 2048, signature (1, 10)
     C = U + E8(-1): rank 10, determinant -1, even True, signature (1, 9)
     hence S_En^# = (1/2)C and every square in it is an integer, so no (x + delta)/2 is integral
     M = S_En + Z delta is saturated; section 2 used the actual lattice, not a model of it
+1.0.2 the second-type marked pair at class level
+    Psi(h~): square 4, divisibility 2
+    [Psi(h~)/2] and [h/2]: q values [1] in Fraction Field of Integer Ring / (2)Integer Ring and [1] in Fraction Field of Integer Ring / (2)Integer Ring
+    O(A_M)-orbit of [Psi(h~)/2] has 496 classes; [h/2] lies in it: True
+    necessary condition at the discriminant level: True
+    NOT sufficient for the marked-pair isometry: the Dawes criterion of
+    thm:coble-heegner-line-unique needs an indefinite complement, and a positive vector in
+    signature (1,10) has a negative definite one.  The vector-level question stays open here.
 Coble: complement of the polarization has rank 10, det 2048, signature (0, 10)
     roots (square -2 vectors) in the complement: 18
     |A_complement| = 2048

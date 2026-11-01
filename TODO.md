@@ -211,8 +211,12 @@ hypothesis in each case:
    owner's `isometry_to`, the complement **is** isometric to the Heegner one
    (`computations/reports/coble_labeled_embedding.py`). So the necessary condition can hold, and the
    comparison's answer depends on the marking. Remaining: which markings arise from Coble surfaces
-   (@prob:coble-rigidity, geometric), and for those that pass, the marked-pair extension over $\lkt$ via
-   `isometry_extends`. A20 item 1 is untouched by all of it.
+   (@prob:coble-rigidity, geometric), and for those that pass, the marked-pair question. For the
+   second-type marking the discriminant-level condition holds as well — the class of $\Psi(\tilde h)/2$
+   lies in the $\Orth(A)$-orbit of $h/2$, of size $496$ — but that does not give vector-level
+   equivalence: the criterion of @thm:coble-heegner-line-unique needs an indefinite complement and a
+   positive vector in signature $(1,10)$ has a negative definite one, so the marked-pair isometry has to
+   be decided directly from the complement isometry and the gluing. A20 item 1 is untouched by all of it.
 3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
    @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
 

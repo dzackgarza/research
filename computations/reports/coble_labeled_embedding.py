@@ -214,6 +214,29 @@ assert abs(int(C.determinant())) == 1 and C.is_even()
 print('    hence S_En^# = (1/2)C and every square in it is an integer, so no (x + delta)/2 is integral')
 print('    M = S_En + Z delta is saturated; section 2 used the actual lattice, not a model of it')
 
+# ---------------------------------------------------------------- 1.0.2 the marked pair, at class level
+# The marked-pair question for the second-type marking: is there an isometry of M carrying Psi(h~) to h?
+# Both vectors have square 4 and divisibility 2, so the discriminant-level condition is the orbit of
+# their half-classes under O(A_M).  It holds.  That is necessary and, for this pair, not sufficient to
+# apply the book's Dawes criterion (thm:coble-heegner-line-unique), whose hypotheses include an indefinite
+# complement: the complement of a positive vector in a lattice of signature (1,10) is negative definite.
+print('1.0.2 the second-type marked pair at class level')
+Psi = S_Co.isometry_to(M)
+w = Psi(h_tilde_two)
+print('    Psi(h~): square %d, divisibility %d' % (w.q(), M.div(w)))
+c_w = M.discriminant_class(M.primitive_dual(w))
+c_h = M.discriminant_class(M.primitive_dual(h))
+A_M = M.discriminant_group()
+O_AM = A_M.orthogonal_group()
+print('    [Psi(h~)/2] and [h/2]: q values %s and %s' % (c_w.q(), c_h.q()))
+orbit = O_AM.orbit(c_w)
+print('    O(A_M)-orbit of [Psi(h~)/2] has %d classes; [h/2] lies in it: %s'
+      % (len(orbit), c_h in orbit))
+print('    necessary condition at the discriminant level: %s' % (c_h in orbit))
+print('    NOT sufficient for the marked-pair isometry: the Dawes criterion of')
+print('    thm:coble-heegner-line-unique needs an indefinite complement, and a positive vector in')
+print('    signature (1,10) has a negative definite one.  The vector-level question stays open here.')
+
 # ---------------------------------------------------------------- 3. the comparison
 comp_Coble = S_Co.orthogonal_complement(h_tilde.sublattice())
 comp_Heegner = M.orthogonal_complement(h.sublattice())
