@@ -32,7 +32,8 @@ Because $\Orth^+(\ten)^*\subseteq\Orth^+(\ten)\subseteq\Gamma^K_{\En}$, the stab
 The superscript is not decoration: $\Gamma^K_{\En} = \Orth(\ten)$ is [@AEGS25]'s $\Gamma_{\mathrm{Enr}}$, the full group and the outer term of the chain above, whereas $\Gamma_\En$ without it denotes the stable subgroup $\Orth^+(\ten)^*$ throughout this book (@sec-heegner-line, @thm:normalization, @def:gamma-co-en).
 Writing $\Gamma_\En$ for $\Orth(\ten)$ would conflate the two ends of that chain, and a quotient by one of them is the quotient by the other only for the orbit problems in which the difference happens to be invisible.
 The same three-way distinction has to be kept on the Coble side, where $\fco$ is the stable quotient and $F_{\Co,2}$ the polarized one.
-The relation there between the stable Coble group $\Gamma_\Co = \Orth^+(T_\Co)^*$ and the two groups obtained from the Enriques and the Coble markings is @sec-gamma-co-comparison: neither marked group is the stable one, each contains it with finite index, and the difference is a finite subgroup of $\Orth(A_{T_\Co}, q_{T_\Co})$.
+The relation there between the stable Coble group $\Gamma_\Co = \Orth^+(T_\Co)^*$ and the two groups obtained from the Enriques and the Coble markings is @sec-gamma-co-comparison: each marked group contains the stable one as the kernel of its action on $A_{T_\Co}$, hence with finite index, and is determined by $\Gamma_\Co$ together with an explicit subgroup of the finite group $\Orth(A_{T_\Co}, q_{T_\Co})$.
+Whether either inclusion is strict is an open question about that finite subgroup, and it is not decided by the subgroup being nontrivial: strictness requires an element of the marked group acting nontrivially on $A_{T_\Co}$, which is an integral statement about the lattice.
 
 where $\tdp$ is described in [@AEGS25].
 Note that we implicitly use the embedding $\eta\colon T_\Co\injects\ten$ of @lem:primitive_embedding_eta.

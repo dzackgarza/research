@@ -69,20 +69,22 @@ By @lem:divisibilityAlwaysTwoTco, every primitive isotropic $v \in T_\Co$ has $\
 
 The Coble-side description of the arithmetic group is the centralizer of the horizontal folding involution, cut by the polarization.
 That centralizer cannot be taken inside $\Orth(\ten)$: the polarization $h_\Co\in K_S^{\perp\Pic(S)}\iscontainedin\Pic(S)$ is a class on the Coble surface, of square $2$, with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$ (@def:coble-polarization-classes), and $\theta_\Co$ is an isometry of $\lkt$, so the group has to be formed in $\Orth(\lkt)$ and then pushed to $T_\Co$.
-With $\theta_\Co$ the sign involution of @prop:theta-co-exists, whose eigenspaces are $T_\Co$ and $S_\Co$, put
+With $\theta_\Co$ the sign involution of @prop:theta-co-exists, whose eigenspaces are $T_\Co$ and $S_\Co$, the group is
 $$
 \Gamma^\theta_\Co \definedas
-\im\Bigl(
-Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)
-\;\too\;
-\Orth^+(T_\Co)
-\Bigr),
+\theset{\;
+\varphi\in\Orth^+(T_\Co)
+\;\middle|\;
+\exists\, g\in Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)
+\ \text{with}\ \restrictionof{g}{T_\Co} = \varphi
+\;}
+,
 $$
-which is the group of @prop:gamma-co-in-theta-centralizer.
+the part of the image of that intersection lying in $\Orth^+(T_\Co)$, which is the group of @prop:gamma-co-in-theta-centralizer; the component condition is imposed there because the intersection may contain isometries acting on the wrong component of $T_\Co$.
 An earlier version of this item placed both operations inside $\Orth(\ten)$, where neither object lives.
 The class $h_\Co$ is not the hyperplane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of the Enriques vector $h_\En = e + f\in U(2)$ of @prop:gamma-en-two-gluing.
-$\Gamma^\theta_\Co$ is not $\Gamma_\Co$: by @prop:gamma-co-in-theta-centralizer, $\Gamma_\Co$ is the kernel of the action of $\Gamma^\theta_\Co$ on $A_{T_\Co}$, and the two groups agree exactly when that finite image is trivial, which is not known.
-A second candidate, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en; by @prop:gamma-co-in-heegner-group it too contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$.
+$\Gamma^\theta_\Co$ contains $\Gamma_\Co$, and by @prop:gamma-co-in-theta-centralizer $\Gamma_\Co$ is exactly the kernel of its action on $A_{T_\Co}$; whether the inclusion is *strict* is the triviality of that finite image, and it is open, no element of $\Gamma^\theta_\Co$ acting nontrivially on $A_{T_\Co}$ having been exhibited.
+A second candidate, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en; by @prop:gamma-co-in-heegner-group it too contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$, and whether that inclusion is strict is open for the same reason.
 Comparing the two candidates with *each other*, rather than each with $\Gamma_\Co$, requires an isometry of $\lkt$ carrying the Coble-labeled structure to the Enriques-labeled one, which is @prob:coble-rigidity: both are extensions of the same $\Gamma_\Co$ by subgroups of the finite group $\Orth(A_{T_\Co},q_{T_\Co})$, and it is those finite subgroups that such an isometry would have to match (@sec-gamma-co-comparison).
 An explicit representation of $\Gamma_\Co$ by *matrix generators* is presently a stub.
 The open work is to:

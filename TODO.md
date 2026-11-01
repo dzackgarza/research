@@ -46,9 +46,14 @@ $\Gamma^\theta_\Co$ contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\
 Heegner group $\Gamma^{\mathrm{Hdg}}_\Co$, whose index over $\Gamma_\Co$ is
 $\abs{\rho_{T_\Co}(\Stab_{\gent}(\ZZ\delta))}\le\abs{W(E_8)}=696\,729\,600$
 (@prop:gamma-co-in-heegner-group, @prop:gamma-co-in-theta-centralizer). So the two definitions agree
-exactly when a finite subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ is trivial. **Open:** compute those two
-finite subgroups — the missing input is explicit generators for $\gent$ (A3), after which it is a
-computation in a finite group of order $46\,998\,591\,897\,600$ and needs no geometry.
+exactly when a finite subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ is trivial. The numerical bound
+$696\,729\,600$ is proved from @prop:polarization-stabilizer-enriques alone — the stabilizer there has
+order $2\abs{W(E_8)}$ and its reduction has $\id_U\oplus(-\id_{E_8})$ in the kernel — and the
+*equality* of the image with $\abs{W(E_8)}$, with the orbit lengths, is B2's unverified computation
+and is used nowhere in the new propositions. **Open:** compute those two finite subgroups — the
+missing input is explicit generators for $\gent$ (A3), after which it is a computation in a finite
+group of order $46\,998\,591\,897\,600$ and needs no geometry. Strictness of the two inclusions is
+open; by contrast the congruence group is *proved* strictly larger, see A20.
 
 **A5. Coble root-orbit uniqueness under $\gent$** (@qst:coble_root_orbit_uniqueness). Namikawa gives
 it for the full Enriques group; the polarized problem needs the finite-index subgroup $\gent$, for
@@ -128,12 +133,17 @@ the example: Algorithm 2.3 of the same paper is the published route to A1.
 research report's §"Four arithmetic groups that must not be conflated"). Reduced, not closed. Proved
 (@sec-gamma-co-comparison): $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ contains $\Gamma_\Co$ as the kernel of its
 action on $A_{T_\Co}$, with quotient $\rho_{T_\Co}(\Stab_{\gent}(\ZZ\delta))$ of order
-$\le\abs{W(E_8)}=696\,729\,600$; the Coble-side centralizer group $\Gamma^\theta_\Co$ likewise; and
-$\Gamma^{\mathrm{cong}}_{\Co,2}$ is a genuine overgroup of $\ker\rho_{T_\Co}$ whose quotient
-$\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ is nontrivial, so **it is not $\Gamma_\Co$** — the four-group
-problem cannot be an identification with the book's $\Gamma_\Co$, only an equality among four
-overgroups of it, and the report's framing was wrong on that point. What remains, with the exact
-missing hypothesis in each case:
+$\le\abs{W(E_8)}=696\,729\,600$ (from @prop:polarization-stabilizer-enriques, not from B2); the
+Coble-side centralizer group $\Gamma^\theta_\Co$ likewise; and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is a
+genuine overgroup of $\ker\rho_{T_\Co}$ whose quotient $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ is
+nontrivial. Nontriviality of that quotient does not by itself give strictness — a preimage exceeds the
+kernel only if some element of the quotient is realised by an integral isometry — but here one is
+exhibited: the transposition of the two isotropic generators of the $U(2)$ summand is the reflection
+$s_{e'-f'}$, of spinor norm $[2]=1$, hence in $\Orth^+(T_\Co)$, and it fixes the class $\eta/2$ while
+moving $1024$ of the $2048$ classes (`computations/reports/coble_swap_isometry.py`). So
+$\Gamma^{\mathrm{cong}}_{\Co,2}$ **strictly** contains $\Gamma_\Co$, while strictness for
+$\Gamma^{\mathrm{Hdg}}$ and $\Gamma^\theta_\Co$ is open. What remains, with the exact missing
+hypothesis in each case:
 
 1. $\Gamma^{\mathrm{Hdg}}$ vs $\Gamma^{\mathrm{cong}}$: compare two subgroups of the finite group
    $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for $\gent\subset\Orth(\ten)$ (A3) and for
@@ -339,7 +349,11 @@ honest statement is not "verify $r>a$" but "settle the genus of a $2$-elementary
 
 **B2. Whether $[1,2,120,135,270]$ is the $G_\Co$ decomposition.** Asserted; the order
 $696\,729\,600$ and the four lengths are unproved. Consistency with $[1,255,272]$ and the index $136$
-is a check on the claim and not a proof of it. Waits on A3.
+is a check on the claim and not a proof of it. Waits on A3. Not used by
+@prop:gamma-co-in-heegner-group: the index bound proved there is $\le\abs{W(E_8)}$, and it comes from
+@prop:polarization-stabilizer-enriques (order $2\abs{W(E_8)}$ of the stabilizer, with
+$\id_U\oplus(-\id_{E_8})$ in the kernel of its reduction), so the propositions of
+@sec-gamma-co-comparison do not depend on this entry — only the sharper equality would.
 
 **B3. Whether $[1,255,272]$ are orbits of the stated stabilizer.** The three parts are known to
 partition the $528$ isotropic classes; that they are the orbits of the stabilizer of the polarization
