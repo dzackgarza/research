@@ -200,6 +200,22 @@ compactification by AEH21; and that the semifans refine or coarsen the Coxeter f
 observation is that the ten lattices $(10+n, 12-n, \delta)$ are exactly the $g=0$ row of Nikulin's
 triangle.
 
+**A33. Three of the ten Coble families admit no Coxeter chamber at all.** Alexeev's classification,
+recorded in the reflective-two-elementary chapter, shows that the even $2$-elementary lattices
+$(17,5,1)$, $(18,4,1)$ and $(19,3,1)$ — rows $n=7,8,9$ of the Coble table — are not reflective, while
+every other lattice on the line $r+a=22$ is. For those three, $W_r$ has infinite index in $\Orth(S)$,
+Vinberg's algorithm does not terminate, there is no finite Coxeter diagram to fold, and the toroidal
+compactification from a Coxeter fan is unavailable. The same theorem gives a second consequence: by
+`thm:k3-automorphism-sequence`, $\Aut(X)$ is finite exactly when $S_X$ is two-reflective, so the K3
+covers in those three families have infinite automorphism groups. Any programme for the $n\geq2$
+families (A32) has to say what replaces the reflection data there.
+
+**A34. Dolgachev–Zhang's open classification.** The coble-moduli chapter records, from the source, that
+classifying all surfaces with finitely many smooth rational negative curves up to automorphism is open.
+For Coble surfaces the finiteness itself is Coble's theorem; the classification of all such surfaces is
+not.
+
+
 
 
 ## B. Open here, decidable by a derivation
@@ -269,6 +285,13 @@ the calibration is not retained and that $245$ is incompatible with the $(-2)$-c
 labels should not survive anywhere in the book, including in a chapter that explains why they were
 discarded.
 
+**C9. One lattice written with two types.** The Scattone method chapter calls $T_\Co$ "the
+transcendental lattice $(11,11,1)_1$"; `lattices.md` and every other chapter have
+$T_\Co = (11,11,1)_2$, and $S_\Co = (11,11,1)_1$. The two lattices share the triple and differ in the
+sign of the form, which is exactly the confusion the chapter's own next sentence guards against. It is
+one character in one place, but it is in the paragraph that warns against confusing the two lattices.
+
+
 
 
 ## A note on what is not in this list
@@ -279,16 +302,17 @@ recorded in [GAPS](writing/dissertation/GAPS.md), which is the audit trail and n
 
 ## Coverage of this list
 
-Read in full for this list: the open-problems chapter; `coble/lattices-and-moduli` (lattice table,
-moduli basics, discriminant orbits, K3 periods and monodromy, normalization); `coble/computations`
-(isotropic candidates, toolchain, CoxIter results, chamber polyhedra, isotropic orbits and Tits
-buildings, lattice algorithms, periods and local monodromy); `coble/stable-limits`;
-`coble/degenerations`; the Heegner research report (all 2 620 lines); `coble/cusp-correspondence`;
-`coble/coble-moduli`; `coble/introduction`.
+Read in full for this list, all of `writing/coble` except its last file: the open-problems chapter;
+`lattices-and-moduli` (all six); `computations` (all); `stable-limits`; `degenerations`;
+`cusp-correspondence`; `coble-moduli`; `introduction`; `surfaces-and-moduli` (all four); the Heegner
+research report (all 2 620 lines); and `compactifications` except `coxeter-systems-and-classification.md`
+(scattone-cusp-method, reflective-two-elementary-lattices, hyperbolic-coxeter-polytopes,
+reflection-groups-and-vinberg, toroidal-and-semitoroidal, dynkin-foldings).
 
-Not yet read at this depth: `coble/compactifications` (seven files, ~1 790 lines),
-`coble/surfaces-and-moduli` (four files, ~590), `lattice-theory` (25 files, ~24 500 words), and the
-`dissertation` tree (44 files, ~94 000 words) except where cited above. The list above is therefore
-complete for the chapters read and incomplete for the corpus.
+Not yet read at this depth: `compactifications/coxeter-systems-and-classification.md` (~409 lines),
+`lattice-theory` (25 files, ~24 500 words), and the `dissertation` tree (44 files, ~94 000 words)
+except where cited above. The list above is therefore complete for `coble` bar one file, and
+incomplete for the corpus as a whole.
+
 
 
