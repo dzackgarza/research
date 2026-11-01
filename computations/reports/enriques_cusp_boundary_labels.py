@@ -57,10 +57,10 @@ for (name, vector), expected in zip(REPRESENTATIVES, EXPECTED):
     K = v.isotropic_reduction()
     invariants = EvenTwoElementaryLattices(K.base_ring())(K).two_elementary_invariants()
     elapsed = time.time() - start
-    computed = (int(K.module_rank()), int(invariants.a()), int(invariants.delta())) \
-        if hasattr(invariants, 'a') else None
+    computed = tuple(int(value) for value in invariants)   # two_elementary_invariants gives (r, a, delta)
     print('%-20s K = v^perp/Zv: rank %2d, det %7s, signature %s'
           % (name, K.module_rank(), K.determinant(), K.signature_pair()))
     print('%-20s two_elementary_invariants: %s   (%.2fs)'
           % ('', invariants, elapsed))
-    print('%-20s chapter says (r, a, delta) = %s' % ('', expected))
+    assert computed == expected, (name, computed, expected)
+    print('%-20s chapter says (r, a, delta) = %s   AGREE' % ('', expected))

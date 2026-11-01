@@ -519,6 +519,36 @@ What has since been settled is listed at the end, so that a reader can tell "res
   maintained two-elementary API gives (18,2,0) and (10,10,0) for the first pair and (18,0,0) and
   (10,8,0) for the second, matching the text in all five subsections.
 
+  The semifan claims, resolved as source statements with their hypotheses.  They are
+  Alexeev--Engel--Garza--Schaffler's, not something this repository proves, and the chapter now
+  carries the citations: Definition 5.4 (a folded root is irrelevant if it is the fold of an
+  irrelevant root of Figure 5, i.e. of a root not on the boundary of the square or the triangle),
+  Lemma 5.5 (the semifans are the generalized Coxeter fans with those roots), Lemma 5.6 (the
+  irrelevant subgroup is S_2 at cusp 2 and S_2^2 at cusp 4, finite, and infinite at cusps 1, 3 and 5
+  -- the cones there have infinitely many generators), Lemma 5.7 (toroidal over 0-cusps 2 and 4 and
+  their adjacent 1-cusps and over 1-cusp 35, strictly semitoroidal elsewhere), and Lemma 5.8 (the
+  deletion rule -- discard subgraphs with a connected component entirely of irrelevant vertices --
+  giving 2+0, 2+7, 2+7, 4+7, 3+0, which are the chapter's semitoroidal rows exactly).  Also
+  Lemma 5.2: the Coxeter-compactification counts 4+4, 2+8, 3+15, 4+12, 5+17 are that lemma's, its
+  proof being a direct enumeration of maximal parabolic and rank-nine elliptic subdiagrams.  The
+  affinity with the computations recorded above is exact -- the independent labelled-orbit
+  enumeration gives 4/2/3/4/5 parabolic and 4/8/15/12/17 rank-nine elliptic orbits -- so the
+  chapter's numbers are corroborated as well as cited.
+  The diagram-to-arithmetic bridge is in the source too, §5.1: by [Ste91] the groups induced on
+  e^perp/e are Gamma_k = Aut(G_r^k) x| W(G_r^k).  The action used in this book's computations is
+  Aut(G) on the Gram-labelled diagram, and it gives the lemma's numbers; what is *not* established
+  here is that Aut(G) acting on subdiagrams is the same quotient as Gamma_k acting on the fan --
+  the reflection factor must be seen to move no subdiagram class.  That is the precise remaining
+  step, and it is a statement about the two actions rather than a computation to be invented.
+  No semifan implementation was written, and none is needed for the claims as they stand.
+
+  The "Sigma versus N" note is not in the repository.  Searched: the whole tree for the phrase and
+  for "zero-cusp invariant", for the glyph and the macro in markdown and text, the vault plans under
+  .scratch/vault, the inbox, INTENT.md and the ultramath reports.  What turns up is unrelated
+  (a ruled surface Sigma_4 in the Morrison--Flowerpot material, a Sigma in INTENT.md's algebra).  So
+  the item stays unlocated: there is no original note to interpret, and nothing is asserted about
+  what it meant.
+
   The five Enriques boundary types, computed.  What this note recorded as unsettled -- the
   boundary labels (10,10,0)_1 and (10,8,0)_1, which "need the five isotropic orbits and their
   quotients" -- is now computed: for each of Sterk's five representatives v of the Gamma_{En}-orbits
