@@ -1,32 +1,32 @@
 cusp 1  irrelevant roots ['r8', 'r9', 'r10', 'r11']
-   labelled action |Aut| =  4, irrelevant set invariant: True (1 distinct images)
+   labelled action |Aut| =  4; every element preserves the signed Gram; every generator preserves the irrelevant set
    Type II  :  6 of  9 maximal componentwise-affine subdiagrams of form rank 8 survive -> 2 orbits   [Lemma 5.3 list 4, Lemma 5.8 2]
    Type III :   0 of  14 maximal elliptic subdiagrams of rank 9 survive ->  0 orbits   [Lemma 5.3 list 4, Lemma 5.8 0]
-   AGREES with Lemma 5.8
+   ASSERTED: (2, 0) == Lemma 5.8's (2, 0)
 
 cusp 2  irrelevant roots ['r9']
-   labelled action |Aut| =  1, irrelevant set invariant: True (1 distinct images)
+   labelled action |Aut| =  1; every element preserves the signed Gram; every generator preserves the irrelevant set
    Type II  :  2 of  2 maximal componentwise-affine subdiagrams of form rank 8 survive -> 2 orbits   [Lemma 5.3 list 2, Lemma 5.8 2]
    Type III :   7 of   8 maximal elliptic subdiagrams of rank 9 survive ->  7 orbits   [Lemma 5.3 list 8, Lemma 5.8 7]
-   AGREES with Lemma 5.8
+   ASSERTED: (2, 7) == Lemma 5.8's (2, 7)
 
 cusp 3  irrelevant roots ['r9', 'r10', 'r11']
-   labelled action |Aut| =  2, irrelevant set invariant: True (1 distinct images)
+   labelled action |Aut| =  2; every element preserves the signed Gram; every generator preserves the irrelevant set
    Type II  :  3 of  4 maximal componentwise-affine subdiagrams of form rank 8 survive -> 2 orbits   [Lemma 5.3 list 3, Lemma 5.8 2]
    Type III :  14 of  29 maximal elliptic subdiagrams of rank 9 survive ->  7 orbits   [Lemma 5.3 list 15, Lemma 5.8 7]
-   AGREES with Lemma 5.8
+   ASSERTED: (2, 7) == Lemma 5.8's (2, 7)
 
 cusp 4  irrelevant roots ['r9', 'r10']
-   labelled action |Aut| =  2, irrelevant set invariant: True (1 distinct images)
+   labelled action |Aut| =  2; every element preserves the signed Gram; every generator preserves the irrelevant set
    Type II  :  5 of  5 maximal componentwise-affine subdiagrams of form rank 8 survive -> 4 orbits   [Lemma 5.3 list 4, Lemma 5.8 4]
    Type III :  12 of  21 maximal elliptic subdiagrams of rank 9 survive ->  7 orbits   [Lemma 5.3 list 12, Lemma 5.8 7]
-   AGREES with Lemma 5.8
+   ASSERTED: (4, 7) == Lemma 5.8's (4, 7)
 
 cusp 5  irrelevant roots ['r8', 'r9', 'r10', 'r11', 'r12', 'r13']
-   labelled action |Aut| =  8, irrelevant set invariant: True (1 distinct images)
+   labelled action |Aut| =  8; every element preserves the signed Gram; every generator preserves the irrelevant set
    Type II  : 10 of 13 maximal componentwise-affine subdiagrams of form rank 8 survive -> 3 orbits   [Lemma 5.3 list 5, Lemma 5.8 3]
    Type III :   0 of 102 maximal elliptic subdiagrams of rank 9 survive ->  0 orbits   [Lemma 5.3 list 17, Lemma 5.8 0]
-   AGREES with Lemma 5.8
+   ASSERTED: (3, 0) == Lemma 5.8's (3, 0)
 
 rays: 13 Type II + 21 Type III = 34, counted per cusp as Lemma 5.8 states them
 Lemma 5.8's own total, 6 + 21 = 27, counts divisors rather than rays: as in Lemma 5.3, where the 18 Type II rays are 9 divisors because a Type II divisor can pass through several 0-cusps.  The per-cusp ray counts are what is compared above, and they agree at all five.
