@@ -519,6 +519,13 @@ What has since been settled is listed at the end, so that a reader can tell "res
   maintained two-elementary API gives (18,2,0) and (10,10,0) for the first pair and (18,0,0) and
   (10,8,0) for the second, matching the text in all five subsections.
 
+  The degree-two glue sentences in the chapter, reconciled with its own table.  Two sentences there
+  still said the boundary lattices were "not settled" and that the overlattice was undetermined,
+  which contradicted the marked-inclusion paragraph above them that records S, its index and its
+  gluing subgroup for all four rows.  They now say what the table certifies (the marked inclusion,
+  not a reading of the discriminant form) and what is not claimed (that an isometry class of
+  J^perp/J follows from discriminant data alone), which is the formulation GAPS withdrew to earlier.
+
   The rank rule behind the Type III counts, from the source.  AET's Theorem 4.3 is an order
   reversing bijection between the faces of the fundamental chamber and the elliptic and maximal
   parabolic subdiagrams, under which a Type III cone of dimension d corresponds to an elliptic
