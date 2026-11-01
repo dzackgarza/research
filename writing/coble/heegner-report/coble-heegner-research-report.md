@@ -1176,15 +1176,26 @@ index and type under $r-\abs{\fs}\geq4$ -- which the James argument corroborates
 which is not a reading of Wall. And $r-\abs{\fs}=4$ does not reach the rank-two case of James' inequality,
 which would need $2(2+1)=6$.
 
-So the plane-transitivity claim is an **open source obligation**: what is missing is a citation, or an
-argument, for transitivity of $\Orth(I_{2,9})$ on primitive isotropic *planes*. Until it is found, the
-statements that use it are supported only at the planes actually exhibited -- the plane $J$ of the cusp
-correspondence and its image -- and not as statements that every such plane lies in one orbit. No
-replacement is invented here.
+So the plane-transitivity obligation recorded in earlier revisions is discharged, by an argument rather than
+by a citation. What no argument here supplies is the $\Gamma_{\Co}$-analogue of either half: the arithmetic
+group is strictly smaller and its orbits on lines and planes are strictly finer, which is a separate
+question and is not determined here.
 
 Both are statements about $O(T_{\Co})=O(I_{2,9})$, by the observation above; the exceptional case $I_{2,2}$,
 where a characteristic isotropic vector does exist and line transitivity fails, shows why the congruence in
 the line argument is doing real work (computations/reports/james_characteristic_counterexample.py).
+
+*The component.* What the two halves above give is transitivity under $\Orth$, and the theorem asserts it
+for $\Orth^+$. The step is the same in the two and happens at a primitive isotropic
+line: split $B=P'\perp M'$ at the target line $l'$ by @cor:hyperbolic-splitting, and put
+$\sigma'=\id_{P'}\perp(-\id_{M'})$, which fixes $l'$ pointwise and has
+$\chi_{\mathrm{per},B}(\sigma')=(+1)\cdot\chi_{\mathrm{per},M'}(-\id_{M'})=-1$ by the product formula
+@thm:plane-transitivity-tco derives from @def:period-component-character, so a transiting isometry that
+lands in the wrong component is corrected by multiplying it by $\sigma'$ on the left. The Lorentzian
+shortcut does not transfer: $-g$ has the same action on lines as $g$, but for signature $(2,9)$ the centre
+$-\id$ is *inside* $\Orth^+$, its determinant on the positive plane being $(-1)^2=+1$, so it cannot move
+anything between components. With lines transitive under $\Orth^+(B)$, primitive isotropic *vectors* are too:
+a transiting $g$ sends $v$ to $\pm v'$, and $-\id\in\Orth^+$ supplies the sign.
 
 The two complements are computed rather than quoted, and they are what the rest of the section uses.
 For a primitive isotropic $e$ in a lattice $L$ of signature $(2,9)$, the quotient $e^\perp/e$ is a lattice of signature $(1,8)$ and inherits the discriminant form of $L$ up to the factor $1/p^2$ that $\div$-scaling forces; for $T_{\Co}=I_{2,9}(2)$ and $\div(e)=2$ it is $I_{1,8}(2)$, and for a primitive isotropic plane $J$ the quotient $J^\perp/J$ has signature $(0,7)$ and is $I_{0,7}(2)$.

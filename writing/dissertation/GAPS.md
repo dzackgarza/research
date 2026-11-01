@@ -1337,6 +1337,44 @@ What has since been settled is listed at the end, so that a reader can tell "res
   not only the index-two root lattice -- and fixes e.  That is the check Lemma 3.10 makes necessary
   and it is not done here, because the citation above already carries the claim.
 
+  The plane obligation, discharged internally -- and the two slips that came with the discharge.  The entry
+  above records plane transitivity for I_{2,9} as an open source obligation, and that entry is now
+  superseded: thm:plane-transitivity-tco proves transitivity of Orth^+(T_Co) on primitive isotropic planes
+  from the split unimodular model, with the isotropic reduction l^perp/l = I_{1,8} computed at the owner in
+  computations/reports/split_quotient_I18.py, the lift phi |-> id_P perp phi shown surjective, and the
+  component read off def:period-component-character rather than assumed.  Two steps of that proof needed
+  fixing, and both are of the kind that reads as correct until the placement is checked.  First, the
+  component step: the element that moves a transiting isometry into Orth^+ has to fix the *target*, and
+  id_P perp (-id_M) built at the source fixes the source line while carrying the target line away; with
+  sigma' = id_{P'} perp (-id_{M'}) at the target chi_per(sigma') = (+1)(-1) = -1, and chi_per being a
+  character, sigma' g carries l to sigma'(l') = l'.  It is the product and not a conjugate; the last step
+  had the same slip, writing id_P perp phi into the stabilizer of l' where the splitting in force is the one
+  at l', and it is now id_{P'} perp phi.  Second, thm:unpolarized-cusps still ended by calling plane
+  transitivity an open source obligation, in the same proof block whose *Planes* half cites the theorem that
+  proves it; that paragraph is gone, replaced by the statement that the obligation is discharged by an
+  argument rather than a citation and that the Gamma_Co-analogue of either half is untouched.
+  The same theorem's Orth^+ claim had no proof, and that is item 5 of the handover's open list, now closed.
+  The line half is Wall and James, both Orth-statements, and the Lorentzian shortcut -- multiply by -id,
+  which fixes every line -- does not transfer: in signature (2,9) the centre -id is *inside* Orth^+, its
+  determinant on the positive plane being (-1)^2 = +1.  The proof now carries the target-side step, at a
+  primitive isotropic line, for both halves, and it records the consequence that for (2,9) line transitivity
+  gives transitivity on primitive isotropic *vectors* too, since -id supplies the sign -- which is what the
+  downstream citations of thm:unpolarized-cusps assert, and which stays false in (1,8), the case where
+  prop:rank-nine-line-transitivity keeps the vector statement open.
+  The plane's own invariant, and the formula that was wrong in the first draft of the correction.  The
+  open-problems item that had declared a plane to have no discriminant invariant now says which invariant it
+  has, and the first version of that correction named the wrong object: J^vee/J for the *restricted* form is
+  infinite, since b vanishes on J and the dual condition is then vacuous.  What is finite, and what an
+  isometry does preserve, is the subgroup that J cuts out of A_{T_Co}, namely (T_Co^vee cap J_Q)/J with
+  T_Co^vee = {x : b(x,T_Co) in Z}, together with the form induced on J^{perp T_Co}/J (that second one is the
+  quotient computed at the owner, not a dual).  For the exhibited plane J = <e', 2h + a_1 + a_2> every
+  primitive vector has divisibility 2, so that subgroup is (Z/2)^2 inside A_{T_Co} of order 2048, with zero
+  pairing, while J^{perp T_Co}/J = I_{0,7}(2); the two halves are computed in
+  computations/reports/plane_gluing_subgroup.py -- integral linear algebra in Fractions, no Sage, so the
+  certificate does not share a code path with the maintained isotropic quotient -- and in
+  computations/reports/one_cusp_plane_quotient.py.  Whether these invariants separate the Gamma_Co-orbits of
+  planes remains open, and the number of 1-cusps of F_Co with it.
+
 ## Structure
 
 - The submitted LaTeX had four subsection headings in Part II that the Markdown never had, so this is a long-standing divergence, not a regression.

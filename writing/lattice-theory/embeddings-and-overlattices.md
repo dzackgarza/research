@@ -540,25 +540,27 @@ why the line statement for the ambient $(2,9)$ lattice is proved here from the s
 Now let $J,J'$ be primitive isotropic planes. Choose primitive isotropic lines $l\subset J$ and $l'\subset J'$,
 which are primitive in $B$ since $J,J'$ are. Line transitivity for the *ambient* group is not the
 $(1,8)$ statement and is obtained here directly: split $B=P\perp M=P'\perp M'$ at $l$ and $l'$; the
-complements are both $\latI_{1,8}$, so an isometry of $B$ carries $l$ to $l'$, and if the one obtained fails
-to lie in $\Orth^+(B)$ then $\sigma=\id_P\perp(-\id_M)$ --- which fixes $P$ pointwise and has
-$\chi_{\mathrm{per},B}(\sigma) = (+1)(-1) = -1$ --- conjugates it into $\Orth^+(B)$ while fixing $l$. So
+complements are both $\latI_{1,8}$, so an isometry $g$ of $B$ carries $l$ to $l'$. If $g\notin\Orth^+(B)$,
+multiply it on the left by the same construction at the *target*: $\sigma'=\id_{P'}\perp(-\id_{M'})$ fixes
+$P'$, hence $l'\subset P'$, pointwise, and $\chi_{\mathrm{per},B}(\sigma')=(+1)(-1)=-1$ by the formula above;
+$\chi_{\mathrm{per},B}$ being the character @prop:period-spinor-character identifies it with,
+$\chi_{\mathrm{per},B}(\sigma'g)=(-1)(-1)=+1$ and $\sigma'g$ carries $l$ to $\sigma'(l')=l'$. So
 some $g\in\Orth^+(B)$ carries $l$ to $l'$. Then $g(J)$ and $J'$ are two isotropic planes through $l'$, hence
 correspond to two isotropic lines of $l'^{\perp B}/l'\cong\latI_{1,8}$, and by line transitivity there
 (again @prop:rank-nine-line-transitivity, whose type analysis shows a single class because
 $\latI_{1,8}$ has no characteristic isotropic vector: a characteristic vector of $\latI_{p,q}$ has odd
-coordinates and square $\equiv p-q$, and $1-8=-7\equiv1\pmod 8$) there is $\varphi\in\Orth^+(M)$ carrying one
-to the other. Its extension $\id_P\perp\varphi$ lies in $\Stab_{\Orth^+(B)}(l')$ and carries $g(J)$ to $J'$,
-so $(\id_P\perp\varphi)\circ g$ carries $J$ to $J'$.
+coordinates and square $\equiv p-q$, and $1-8=-7\equiv1\pmod 8$) there is $\varphi\in\Orth^+(M')$ carrying one
+to the other. Its extension $\id_{P'}\perp\varphi$ lies in $\Stab_{\Orth^+(B)}(l')$ and carries $g(J)$ to $J'$,
+so $(\id_{P'}\perp\varphi)\circ g$ carries $J$ to $J'$.
 :::
 
 A remark on the component, since it is the step most easily got wrong. For signature $(2,9)$ the
 centre $-\id$ is *inside* $\Orth^+$: it acts on the positive plane with determinant $(-1)^2=+1$, so it
 preserves each component of the period domain, and it therefore cannot be used to move a transiting isometry
 into $\Orth^+$ --- although it fixes every line. The element that does that job here is
-$\id_P\perp(-\id_M)$ in the splitting, with character $-1$; and the element that does *not* preserve the
-component of $T_\Co$ is likewise not $-\id$ but any isometry acting with determinant $-1$ on the positive
-plane.
+the same construction at the target line, $\id_{P'}\perp(-\id_{M'})$, with character $-1$; and the element
+that does *not* preserve the component of $T_\Co$ is likewise not $-\id$ but any isometry acting with
+determinant $-1$ on the positive plane.
 
 Two scoping remarks. The characteristic-vector statement above is used only for $\latI_{1,8}$, where
 $p-q\equiv1\pmod8$; it is false in general --- in $\latI_{1,1}$ the vector $(1,1)$ is characteristic and
