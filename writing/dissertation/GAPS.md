@@ -1468,6 +1468,50 @@ What has since been settled is listed at the end, so that a reader can tell "res
   and preserves q on all 528 classes never ran.  The [1, 255, 272] entry above therefore stays a computed
   claim with a checked partition and an unchecked generator-invariance step; it is not closed.
 
+  The acceptance route for the Heegner generator checks, audited but not changed.  The capped run's last block
+  asserted two properties of each of the 1984 stabilizer generators: that it fixes the polarization class, and
+  that it preserves q on all 528 isotropic classes.  What the maintained layer offers for those two, read at
+  provider c546077d rather than guessed from the element type:
+    * the group and its action.  T.discriminant_quadratic_form() gives the torsion form module; its
+      orthogonal_group() is TorsionFormOrthogonalGroup (torsion_form_modules.py:1195), whose generators come
+      from the engine group (OSCAR's normal-form algorithm for the 2-primary part, GAP's GO for odd elementary
+      parts: _engine_orthogonal_group, line 1752).  element_action() (line 1512) is
+      _torsion_form_element_action (line 678): the G-set FiniteGSets(G)(form.elements(), lambda g, x: g(x)),
+      i.e. the action IS application of the isometry's forward map.  Restriction to a subgroup goes through
+      GObjects.restrict_action (g_objects.py:1645) and FiniteGSets(H)(points, action), whose validator
+      validate_point_closure (g_sets.py:269) proves the point set is stable under the H-generators.
+      stabilizer_of_element (1538) and subgroup_on (1523) give the stabilizer and generated subgroups.
+    * the q-preservation law.  TorsionFormIsometry.validate_form_preservation
+      (torsion_form_modules.py:192) checks q on module_generators() together with all pairwise sums.  That is
+      a complete test and not a sample: for a quadratic form with polar b, q on a generating set and on the
+      pairwise sums determines q on every element, by q(x+y) = q(x) + q(y) + b(x,y) and bilinearity of b.  So
+      the law, when run, is stronger than testing the 528 isotropic classes, since it covers the whole module.
+    * what the element's TYPE establishes, which is nothing.  TorsionFormAutomorphism.__init__ (1116) calls the
+      base initializer without check=True, and validation.validator runs its law only when check or
+      strict_checking() is on; accepts (used by _to_engine) is the inherited structural predicate
+      (mor_categories.py:1066), not a form test.  So admission to the group does not by itself certify
+      q-preservation, and the forward map is moreover transported through the normalization isometry
+      (_transported_map, _from_engine, 1326-1375), which is itself built with the default unchecked
+      construction.  q-preservation therefore rests on the engine's contract for the 2-primary orthogonal
+      group, plus the normalization isometry being genuine, and neither is asserted inside the provider.
+    * the proposal, for review and NOT applied: keep the fixity check per generator; replace the 528-point
+      q-scan by validate_form_preservation() per generator (66 probes, complete on the module, ~1.3e5 module
+      evaluations against 1.05e6); wrap the rerun in strict_checking(True) so the normalization isometries and
+      the subgroup's element constructions validate; and validate_point_closure() on the H-set, which the
+      current restrict() helper in heegner_orbit_checks.py does not do.  A public subgroup-containment
+      predicate (H <= Stab of the polarization) would be the cheapest form of the fixity check, and it does not
+      exist: _engine_subgroup_contains is private.  The verifier is unchanged pending that review.
+  Downstream uses of the new criterion, corrected.  The Heegner chapter said the arithmetic group "is strictly
+  smaller and its orbits on lines and planes are strictly finer".  On lines that is right and now cites
+  lem:stable-orthogonal-not-transitive; on planes the number of orbits is open, and strictness on lines does
+  not imply it.  The same paragraph now also says that properness of a subgroup does not by itself give
+  strictness, with prop:discriminant-kernel-orbits as the counterexample.  The discriminant-orbits remark that
+  "the passage runs the other way and is not automatic" now names the criterion and the two failures it can
+  have (refinement without strictness, and strict refinement).  And the index 136 of thm:coble-heegner-
+  finite-orbits now yields the four stabilizer indices 136n/m = 1, 135, 64, 72 for the fine orbits of sizes
+  2, 270, 120, 135 inside the coarse orbits of sizes 272, 272, 255, 255 -- integers, and at most 136 as
+  [S_x : (G_Co)_x] <= [S : G_Co] forces, which is a second independent check on the two orbit lists.
+
 ## Structure
 
 - The submitted LaTeX had four subsection headings in Part II that the Markdown never had, so this is a long-standing divergence, not a regression.
