@@ -500,8 +500,49 @@ Conway--Sloane and cross-checked against OEIS A054911. It is not a new hypothesi
 was looked up: the earlier version of this proposition carried it as an assumption only because the lookup
 had not been made.
 
-What is *not* addressed at all: primitive isotropic **planes**, a statement about subspaces rather than
-vectors or lines.
+::: {.theorem #thm:plane-transitivity-tco title="Primitive isotropic planes of $T_\Co$"}
+
+$\Orth^+(T_\Co)$ acts transitively on the primitive isotropic planes of $T_\Co$.
+:::
+
+::: {.proof}
+
+Work in the unimodular model, where the group is the same one. By @prop:tco-as-twist $T_\Co=B(2)$ with
+$B=\latI_{2,9}$, and twisting preserves the module, isometries and isotropy, so $\Orth^+(T_\Co)=\Orth^+(B)$
+as subgroups of $\GL(B)$ and the primitive isotropic *planes* of the two are the same set.
+
+Let $l$ be a primitive isotropic line of $B$ and split $B=P\perp M$ with $P=\latI_{1,1}$ by
+@cor:hyperbolic-splitting; then $M\cong\latI_{1,8}$ by @thm:indefinite-unimodular-classification, and
+$l^\perp/l\cong M$ --- the check is that for $l=\ZZ(v+w)$ in $P=\diag(1,-1)$ one has
+$l^{\perp B}=l\perp M$, which is computed at the owner in
+`computations/reports/split_quotient_I18.py`: $l^\perp/l$ has rank $9$, signature $(1,8)$ and determinant
+$\pm1$. So isotropic planes through $l$ correspond to primitive isotropic lines of $M\cong\latI_{1,8}$.
+
+Every isometry of $M$ extends to $B$ as $\id_P\perp\varphi$, which fixes $P$ pointwise and hence fixes $l$;
+and it lies in $\Orth^+(B)$ when $\varphi\in\Orth^+(M)$, because the positive cone of an orthogonal sum of
+two indefinite lattices is preserved by a pair of cone-preserving factors: for $x=x_P+x_M$ with
+$x^2>0$ the summands' signs are what the cone records, and $\varphi$ preserves them on the $M$ side while
+$\id_P$ does on the $P$ side. So the restriction
+$$\Stab_{\Orth^+(B)}(l)\longrightarrow\Orth^+\bigl(l^{\perp B}/l\bigr)$$
+is *surjective* in this model, with no discriminant condition: the lifting is $\varphi\mapsto\id_P\perp\varphi$.
+
+Now let $J,J'$ be primitive isotropic planes. Choose primitive isotropic lines $l\subset J$ and $l'\subset J'$,
+which are primitive in $B$ since $J,J'$ are; by @prop:rank-nine-line-transitivity applied to $B$, an element
+$g\in\Orth^+(B)$ carries $l$ to $l'$. Then $g(J)$ and $J'$ are two isotropic planes through $l'$, hence
+correspond to two isotropic lines of $l'^{\perp B}/l'\cong\latI_{1,8}$, and by line transitivity there
+(again @prop:rank-nine-line-transitivity, whose type analysis shows a single class because
+$\latI_{1,8}$ has no characteristic isotropic vector: a characteristic vector of $\latI_{p,q}$ has odd
+coordinates and square $\equiv p-q$, and $1-8=-7\equiv1\pmod 8$) there is $\varphi\in\Orth^+(M)$ carrying one
+to the other. Its extension $\id_P\perp\varphi$ lies in $\Stab_{\Orth^+(B)}(l')$ and carries $g(J)$ to $J'$,
+so $(\id_P\perp\varphi)\circ g$ carries $J$ to $J'$.
+:::
+
+Two scoping remarks. The characteristic-vector statement above is used only for $\latI_{1,8}$, where
+$p-q\equiv1\pmod8$; it is false in general --- in $\latI_{1,1}$ the vector $(1,1)$ is characteristic and
+isotropic, since $1-1\equiv0\pmod8$ --- so the correct general form is that no primitive isotropic vector of
+$\latI_{p,q}$ is characteristic when $p-q\not\equiv0\pmod8$, and nothing here asserts more.
+And the transitivity proved is for the full component-preserving group of the unpolarized lattice; the
+arithmetic subgroup $\Gamma_\Co$ is strictly smaller and its orbits are finer, which is a different question.
 
 The same splitting *is* available for $T_\Co$, by untwisting, and the earlier claim that
 non-unimodularity obstructs it is withdrawn. Write $T_\Co = B(2)$ with $B=\latI_{2,9}$ unimodular
