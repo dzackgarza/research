@@ -949,6 +949,21 @@ What has since been settled is listed at the end, so that a reader can tell "res
   nothing about whether the two orbit sets coincide.  The manuscript's symbol Gamma in the
   five-cusps chapter is that twisted group, and it is fixed there silently enough to be worth
   writing down.
+  Written out, the book has four of these and they differ only in the subscript.  $\Gamma_{\En,2}$ --
+  the dissertation's macro, which renders as $\Gamma_{\En,2}$ against AEGS25's script $\Gamma_\En$ --
+  is the twisted group on $\ten$ that the period quotient uses; the coble chapters say of it exactly
+  the two things AEGS25 say of theirs, that it is of finite index in the full Enriques group
+  $\Gamma_\En$ and that it is the stabilizer of $\ten$ in $\Gamma_\dP$.  $\Gamma_{\En,2,e}$ is the
+  cusp group, i.e. the $\Gamma_k$ of the next paragraph, and differs from $\Gamma_{\En,2}$ only by
+  the $e$.  $\Gamma_{2d}$ is the degree-$2d$ K3 group of the Scattone chapter, settled in an earlier
+  entry as the stable orthogonal group $\widetilde O^+(T_{2d})$.  $\Gamma_\Co$ is the Heegner
+  chapter's subgroup of $\Orth(A_{T_\Co}, q)$.  A bare $\Gamma$ belongs to the hypotheses of the cusp
+  correspondence and should not be read as any one of the four.
+  A citation to check before submission: the chapter cites the ray-count lemma as Lemma 5.2 of
+  AEGS25, while in the retained e-print the same statement is the third lemma of its §5.1
+  (lem:rays-toroidal-comp, printed as 5.3); the e-print and the published version number the lemmas
+  differently, and the published numbering has to be read off the version of record rather than
+  inferred here.
   The cusp group.  For primitive isotropic e in T_En, AEGS25's Definition puts the stabilizer in an
   exact sequence 0 -> U_e -> Stab_{script-Gamma_En}(e) -> Gamma_{En,2,e} -> 0, where U_e is the
   unipotent subgroup acting trivially on e^perp/e = T~_En.  Read off: the domain is the stabilizer of
