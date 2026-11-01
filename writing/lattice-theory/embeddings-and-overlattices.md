@@ -408,6 +408,14 @@ Let $L'$ be a maximal $U^{\oplus2}$-decomposable lattice of signature $(2,n)$.
 Both statements are in [@Daw22 §3.1]: Algorithm 3.3 constructs $\tau(x,y)$ from the
 two displayed hyperbolic summands, and the Attwell-Duval criterion gives the second
 orbit statement.
+
+A caveat on the hypothesis, since the theorem above is stated without one. Dawes' setup assumes *even*
+lattices from §1.1 onward, and the theorem as stated here carries no parity hypothesis. For even maximal
+$U^{\oplus2}$-decomposable lattices the citation is direct. For an odd such lattice --- and the Coble
+chapter applies the theorem precisely to $B = U\oplus U\oplus\latI_{0,7}\cong\latI_{2,9}$, which is odd
+--- the even-lattice statement does not cover it as it stands: either the parity hypothesis belongs in the
+statement, or the odd case needs its own argument. Nothing in this book supplies the latter, and the
+applications to $B$ inherit the gap.
 :::
 
 

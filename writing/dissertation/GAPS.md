@@ -1050,10 +1050,33 @@ What has since been settled is listed at the end, so that a reader can tell "res
   arguments and do not rest on that transcript.
   The exact image locus is therefore: the Gamma_En-orbits of primitive isotropic vectors of T_En that
   meet eta(T_Co) and have divisibility 2 -- nonempty, containing the two distinct classes of
-  eta(v_1) = eta(e') and eta(f') (v_1 is e', so those are two examples, not three), and disjoint from
-  the divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of
-  image vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example
-  already used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.  Whether every divisibility-2 Gamma_En-orbit
+  eta(v_1) = eta(e') and eta(f') (v_1 is e', so those are two examples, not three), and disjoint from the
+  divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of image
+  vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example already
+  used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.
+  The subgroup-descent citation, audited before it is used, and the exact gap.  The manuscript's route to
+  the same-mod-2 fibre question is the reduction map v |-> v* in A_{T_Co} and the finite orbit
+  decomposition, with the descent from rho(Gamma_Co)-orbits on the finite group to Gamma_Co-orbits on
+  primitive vectors attributed to [@Daw22].  That attribution does not hold as written, and it fails on
+  both presentations of the lattice.  Dawes assumes even lattices from §1.1, and the split-maximal
+  stabilizer results of his §3.1 and §3.2 assume a U^{oplus2} decomposition; T_Co is even but is not
+  U^{oplus2}-decomposable -- the Eichler remark in the same section proves T_Co contains no copy of U --
+  while the odd B = U + U + I_{0,7} has the decomposition but lies outside the parity hypothesis.  So
+  neither lattice satisfies both hypotheses, and no descent is available for Gamma_Co from that source.
+  The same mismatch sits one level down, in the book's own theorem: thm:split-maximal-isotropic-
+  transitivity is stated without a parity hypothesis, proved by citation to Dawes §3.1, and applied in
+  this chapter to the odd B, so it now carries an explicit caveat and the applications to B inherit the
+  gap.  What survives is one-directional: since Gamma_Co fixes every class of A_{T_Co}, vectors in
+  different classes lie in different orbits, so the finite count is a lower bound for the integral one
+  and never an upper one.
+  Consequence for the cusp correspondence, stated rather than glossed: the mod-2 invariant of
+  prop:cusp-map-separates-mod-two is the discriminant class v*, since for divisibility 2 the class of v/2
+  is v*, so the fibre question is a question about the group studied in the discriminant-orbits section
+  and not a new invariant; and injectivity is *not* concluded, because lifting a rho(Gamma_Co)-orbit back
+  to a Gamma_Co-orbit is precisely the step the audited theorem would have supplied.  Surjectivity onto
+  the divisibility-2 locus is a further, independent question, stated in the chapter as: does some
+  Gamma_En element carry a divisibility-2 primitive isotropic w~ into eta(T_Co) = k^perp, equivalently is
+  beta(w~, gamma^{-1}k) = 0 for some (-2)-vector in the Gamma_En-orbit of k.  Neither implies the other.  Whether every divisibility-2 Gamma_En-orbit
   meets eta(T_Co) is the same open question as injectivity seen from the target.  All of this is about
   rank-1 isotropic lines, i.e. 0-cusps; the rank-2 (plane, 1-cusp) fibre is a separate question and
   nothing here is asserted about it.
