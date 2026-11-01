@@ -1140,7 +1140,25 @@ J^\perp/J\cong I_{0,7}(2).
 
 ::: {.proof}
 
-This is [@Wal62; @DK13], by transitivity of $O^+(I_{2,9})$ on primitive isotropic lines and planes of the odd unimodular lattice, together with $O(T_{\Co})=O(I_{2,9})$ from the observation above.
+The two halves of the statement rest on different sources and are attributed separately.
+
+*Lines.* Transitivity on primitive isotropic lines of $I_{2,9}$ follows from James' integral Witt theorem
+[@Jam68, Theorem, p. 303] applied directly to the odd unimodular lattice: an isometry between primitive
+sublattices extends when $r-|s|\geq2(r(J)+1)$, which for rank-one $J$ reads $11-7=4\geq4$, provided it
+preserves characteristic status --- and here the clause is vacuous, since a characteristic vector of
+$I_{p,q}$ has odd coordinates and square $\equiv p-q\equiv-7\equiv1\pmod 8$, never $0$. So no isotropic
+line is characteristic and any two are isometric. This is the argument of
+@prop:odd-unimodular-rank-one-transitivity, and it is a full-$O$ statement, as Wall's [@Wal62] is; the
+component-preserving refinement is not part of either.
+
+*Planes.* Transitivity on primitive isotropic planes is cited to [@Wal62; @DK13] and is not verified here:
+$r-|s|=4$ does not reach the plane case ($2(2+1)=6$), so James' theorem does not cover it, and the
+hypothesis under which Wall's transitivity governs planes of an odd unimodular lattice should be read off
+[@Wal62] at the point of use rather than inferred from the line case.
+
+Both are statements about $O(T_{\Co})=O(I_{2,9})$, by the observation above; the exceptional case $I_{2,2}$,
+where a characteristic isotropic vector does exist and line transitivity fails, shows why the congruence in
+the line argument is doing real work (computations/reports/james_characteristic_counterexample.py).
 
 The two complements are computed rather than quoted, and they are what the rest of the section uses.
 For a primitive isotropic $e$ in a lattice $L$ of signature $(2,9)$, the quotient $e^\perp/e$ is a lattice of signature $(1,8)$ and inherits the discriminant form of $L$ up to the factor $1/p^2$ that $\div$-scaling forces; for $T_{\Co}=I_{2,9}(2)$ and $\div(e)=2$ it is $I_{1,8}(2)$, and for a primitive isotropic plane $J$ the quotient $J^\perp/J$ has signature $(0,7)$ and is $I_{0,7}(2)$.
