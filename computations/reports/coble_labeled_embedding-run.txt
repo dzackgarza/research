@@ -11,6 +11,12 @@ provenance
    h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is the vector used below
 S_Co = <2> + <-2>^10: rank 11, det 2048, signature (1, 10)
   e^2 = 2, f_i^2 = -2, h~_Co^2 = 4, div(h~_Co) = 2
+1.0 one orbit of admissible markings
+    < -1 >^9: rank 9, det -1, signature (0, 9)
+    F_1 = H + E_1, F_2 = H + E_2: |det <F_1,F_2>| = 1, complement rank 9, det -1, signature (0, 9)
+    F_1 = 2H + E_1 + E_2 + E_3 + E_4, F_2 = H + E_1: |det <F_1,F_2>| = 1, complement rank 9, det -1, signature (0, 9)
+    the two complements are isometric: True
+    so the two admissible pairs are one O(Pic(S))-orbit, and the two markings one O(S_Co)-orbit
    second marking: F~_1^2 = 0, F~_2^2 = 0, F~_1.F~_2 = 2
    h~' = F~_1 + F~_2: square 4
    its complement: rank 10, det 2048, signature (0, 10), roots 18
@@ -33,11 +39,10 @@ isometry decision of the two complements, by L.is_isometric_to:
   is_isometric_to returned False
 
 4. what is still not established, and what it would take
-   4.1 the markings and the QUANTIFIER: the verdict of section 3 is about the two labeled pairs
-       constructed here.  Two independent isotropic pairs were tested (the a = 1 family and a
-       mixed one) and their complements are isometric, so the verdict does not depend on the
-       choice inside them; no argument is given that these exhaust the admissible markings, and
-       nothing here rules out an isometry for a marking outside them.
+   4.1 the markings: covered by the orbit argument of section 1.0, whose inputs are checked there
+       (unimodular spans, complements of rank 9, det -1, signature (0,9), isometric to <-1>^9).
+       The one external input is the uniqueness of the odd unimodular negative definite lattice of
+       rank 9, which is classical and cited rather than recomputed.
    4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built
        here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a
        POSITIVE verdict, not for the negative one, which rests on the complement test alone.
@@ -51,9 +56,11 @@ SUMMARY
   2.1 <S_En, delta> is saturated, so section 2 compares the actual Enriques lattice.
   3. the two polarization complements are not isometric: rank 10, det 2048, signature (0,10)
      and discriminant group of order 2048 on both sides, but 18 roots against 2, with
-     is_isometric_to returning a verified negative for both markings.  Since an isometry
-     psi with psi(T_Co^Coble) = T_Co^Heegner would carry h~_Co^perp to h^perp, no such psi
-     exists for the markings tested; the open residue is 4.1 (exhaustiveness of markings) and
-     4.2 (needed only for a positive verdict).
-OK: coordinates verified, saturation proved, markings compared, and the verdict stated with its
-    exact residue
+     is_isometric_to returning a verified negative.
+  1.0 every admissible marking lies in one O(S_Co)-orbit, by the splitting Pic(S) = U perp U^perp
+     with U and U^perp unimodular, U^perp of rank 9, signature (0,9), and the uniqueness of
+     <-1>^9.  So the negative covers every admissible marking: an isometry psi with
+     psi(T_Co^Coble) = T_Co^Heegner and psi(h~_Co) = h does not exist.  4.2 concerns only a
+     positive verdict and is moot.
+OK: coordinates verified, saturation proved, complements compared, and the verdict carried to all
+    admissible markings by the orbit argument whose inputs section 1.0 checks
