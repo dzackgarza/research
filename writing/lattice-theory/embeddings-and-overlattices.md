@@ -454,6 +454,47 @@ $B$ has $4$; and any statement about the image of a prescribed arithmetic subgro
 is a different question with its own sources. Each of those needs its own argument, and the Coble chapter's
 uses are labelled accordingly.
 
+::: {.proposition #prop:rank-nine-line-transitivity title=\"Primitive isotropic vectors of $\latI_{1,8}$ and of its twist\"}
+
+Let $L$ be $\latI_{1,8}$, or $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$. Then $\Orth(L)$ acts
+transitively on primitive isotropic vectors, and so does $\Orth^+(L)$. The same holds for $\latI_{1,n}$ and
+$\latI_{1,n}(2)$ with $n\geq1$, the complements being $\latI_{0,n}$.
+:::
+
+::: {.proof}
+
+Twisting by $2$ preserves the underlying $\ZZ$-module, the isometry group as a subgroup of $\GL_9(\ZZ)$, and
+isotropy, so it suffices to treat $L=\latI_{1,8}$.
+
+Let $v$ be primitive isotropic. Since $L$ is unimodular, $\beta(v,-)\colon L\to\ZZ$ is surjective ---
+unimodularity identifies $L$ with $L^*$ and primitivity of $v$ makes the corresponding functional primitive
+--- so there is $w$ with $\beta(v,w)=1$. Then $P=\generators{v,w}$ is a rank-two unimodular hyperbolic
+sublattice, and by @cor:hyperbolic-splitting $L = P\perp M$ with $M$ unimodular of signature $(0,7)$. Rank
+$7$ forces $M$ odd, since an even unimodular lattice has rank divisible by $8$, and the odd unimodular
+negative-definite lattice of rank $7$ is $\latI_{0,7}$; this uniqueness is the one classical input the
+argument uses, and it is the standard classification of odd unimodular forms in rank $\leq8$.
+
+So every primitive isotropic $v$ lies in a hyperbolic summand whose complement is $\latI_{0,7}$. Given
+$v,w$ and $v',w'$ as above, the assignment $v\mapsto v'$, $w\mapsto w'$ is an isometry of $P$ onto $P'$,
+the complements are isometric by that uniqueness, and the two together give $g\in\Orth(L)$ with
+$g(v)=v'$. This proves the $\Orth$-statement.
+
+For the component, an element of $\Orth(L)\setminus\Orth^+(L)$ fixing $v$ is needed, and one can be written
+down in the splitting $L=P\perp M$: for $t\in\ZZ$ put
+$$\sigma_t\colon\quad v\mapsto v,\qquad w\mapsto w+tv,\qquad m\mapsto -m\ \ (m\in M).$$
+Each $\sigma_t$ is an isometry --- the images of $v$ and $w+tv$ have the same squares and pairings, and both
+are orthogonal to $M$ --- and each fixes $v$. A positive vector of $L$ has the shape $\alpha v+\beta w$ with
+$\alpha\beta>0$, and $\sigma_t$ sends it to $\beta w+(\alpha+\beta t)v$, whose product of coefficients is
+$\beta(\alpha+\beta t)$; choosing $t$ with $\beta(\alpha+\beta t)<0$ makes $\sigma_t$ reverse the positive
+ray, so $\sigma_t\in\Orth(L)\setminus\Orth^+(L)$. Then for any $g$ with $g(v)=v'$, the product
+$g\sigma_t$ lies in $\Orth^+(L)$ (a product of two elements outside the component subgroup) and still
+carries $v$ to $v'$.
+:::
+
+What this does *not* give: transitivity on primitive isotropic *planes*, which is a statement about
+subspaces rather than vectors and is not a corollary of the argument above; and any statement about a
+proper arithmetic subgroup, whose orbits are finer than those of $\Orth(L)$.
+
 ## Finiteness of embedding orbits
 
 ::: {.proposition #prop:embedding-finiteness title="Finiteness of primitive-embedding orbits into an even unimodular lattice"}

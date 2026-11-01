@@ -1187,7 +1187,21 @@ What has since been settled is listed at the end, so that a reader can tell "res
   not about the kernel of the discriminant map, and no constraint of that kind is derived here.
   Neither cited theorem reaches $\latI_{1,8}(2)$: its $r-\abs{\fs}$ is $9-7 = 2$, below the $4$ both Wall
   and James require.
-  The middle ingredient is now settled as far as the discriminant can settle it, and no further.
+  The middle ingredient is now *proved*, by an argument developed here rather than by a source with a rank
+  condition: prop:rank-nine-line-transitivity shows that Orth(I_{1,8}) -- and Orth^+(I_{1,8}), and the same
+  for the twist -- acts transitively on primitive isotropic vectors.  The proof is the splitting argument:
+  for primitive isotropic v in the unimodular lattice, beta(v,-) is surjective, so v lies in a unimodular
+  hyperbolic plane P, which splits L = P perp M by cor:hyperbolic-splitting with M unimodular of signature
+  (0,7); rank 7 forces M odd, and the odd unimodular negative-definite rank-7 lattice is I_{0,7}.  The one
+  classical input is that last uniqueness of odd unimodular forms in rank <= 8, flagged in the proof rather
+  than hidden.  The component statement needs an element of Orth \ Orth^+ fixing v, and one is written down:
+  sigma_t sends v to v, w to w+tv, M to -M, is an isometry for every t, and reverses the positive ray for a
+  suitable t; composing with it puts any transiting isometry into Orth^+.  So obligation (A) is closed, for
+  both O and O^+, and the manifold of "two unresolved statements" is now one.
+  What is *not* obtained: plane transitivity, which is a statement about subspaces and not a corollary of
+  the vector argument, and nothing about proper arithmetic subgroups.
+  The earlier position on this ingredient, kept for the record, was that it was settled only as far as the
+  discriminant can settle it:
   computations/reports/line_transitivity_I18_2.py computes, at provider c546077d, the maintained orbit
   partition of Orth(q) on the 512 classes of $A$ for $\latI_{1,8}(2)$, rank 9, signature (1,8), determinant
   512: six orbits of sizes 1, 1, 120, 120, 135, 135, of which two lie in the isotropic classes, of sizes
