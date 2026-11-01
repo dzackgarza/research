@@ -73,6 +73,46 @@ minus_h_plus = L19.Aut()(lambda label: ((-1 if label in (0, 1, 2, 3) else 1)
 assert minus_h_plus(e1) == -e1 and minus_h_plus(e2) == -e2
 measure('Lambda_19: -1 on H = U + U, +1 on L', L19, L19_GRAM, minus_h_plus, basis19[2], True)
 
+# ------------------------------------- the component character, on O(H) not on the centre
+# Lemma A.10(1) of arXiv:1801.04845 supplies, for every J in I_2(U + U), an element of
+# O(U + U) \ O^+(U + U) fixing J; extended by the identity on L it is an element of O(Lambda_19)
+# outside O^+(Lambda_19) fixing J, and it is in the discriminant kernel because H is unimodular.
+# The concrete candidate is -1 on ONE hyperbolic summand, +1 on the other and on L.  The central
+# -id is *not* this element: on a type IV lattice with two positive directions it acts as -1 on
+# the whole positive plane, hence with determinant (-1)^2 = +1, so it lies in O^+ -- and it is
+# outside the discriminant kernel, since A_{Lambda_19} = Z/4 and -1 acts on it non-trivially.
+import numpy as np
+
+one_u_minus = L19.Aut()(lambda label: ((-1 if label in (0, 1) else 1)
+                                       * L19.module_generator(label)))
+assert one_u_minus(e1) == -e1 and one_u_minus(f1) == -f1
+assert one_u_minus(e2) == e2 and one_u_minus(basis19[4]) == basis19[4]
+# J = <e_1, e_2> is carried to itself as a sublattice: e_1 to -e_1 and e_2 to e_2.
+measure('-1 on one U, +1 on the other U and on L', L19, L19_GRAM, one_u_minus, basis19[0], True)
+
+central_minus = L19.Aut()(lambda label: -L19.module_generator(label))
+measure('central -id on Lambda_19', L19, L19_GRAM, central_minus, basis19[0], False)
+
+
+def orientation_on_positive(eigenspace_gram, label):
+    """det of the isometry on the positive plane: (-1)^(number of positive -1-eigenspace lines)."""
+    eigenvalues = np.linalg.eigvalsh(np.array([[float(entry) for entry in row]
+                                               for row in eigenspace_gram.rows()]))
+    positive = int((eigenvalues > 1e-8).sum())
+    print('%-46s -1-eigenspace signature: (%d positive, %d negative) -> det on P = %+d'
+          % (label, positive, int((eigenvalues < -1e-8).sum()), (-1) ** positive))
+    return (-1) ** positive
+
+
+ONE_U = matrix(ZZ, [[0, 1], [1, 0]])
+WHOLE = L19_GRAM
+for label, gram in (('-1 on one U', ONE_U), ('central -id', WHOLE)):
+    determinant = orientation_on_positive(gram, label)
+    if label == '-1 on one U':
+        assert determinant == -1, 'the one-U element must reverse the positive orientation'
+    else:
+        assert determinant == 1, 'the central -id must preserve it'
+
 # ---------------------------------------------------------------- T_4
 t4_root = T4.basis_vector(0)
 assert t4_root.q() == -4

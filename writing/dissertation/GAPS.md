@@ -213,32 +213,50 @@ What has since been settled is listed at the end, so that a reader can tell "res
   isometry acting identically on L lies in the discriminant kernel, and this uniformly in J and in
   the class of L -- no gluing case arises.  Two characters have to be kept apart on this
   stabilizer, and neither is settled by the central -id alone.
-  The component character.  -id_{Lambda_19} lies in O(Lambda_19) and not in O^+(Lambda_19) and
-  maps every sublattice onto itself, so the O/O^+ quotient is invisible on I_2; that is the step
-  the central -id supplies and it is all it supplies.  Inside O^+, -id on H with +1 on L is an
-  element of O^+(Lambda_19) cap O~(Lambda_19) cap Stab(J) -- measured in the stable group above --
-  so the stabilizer meets O~^+ for every J, but its spinor norm is c^4 * (2 * -2)^2 = 1 and it
-  therefore does not separate the spinor coset.
+  The component character, and what the centre does and does not do.  The positive plane of a
+  lattice of signature (2,19) is two-dimensional, so the central -id acts on it with determinant
+  (-1)^2 = +1: it lies in O^+(Lambda_19), and it is *not* in the discriminant kernel, since
+  A_{Lambda_19} = Z/4 and -1 acts on it non-trivially.  Both were measured: on the -1-eigenspace,
+  which is the whole lattice, the signature is (2,19) and det on P is +1; and
+  isometry.discriminant_morphism() moves a class.  So the centre generates O^+/O~^+, which is
+  Laza--O'Grady's Prop. 1.2.3(1) and its proof, and an earlier sentence in this note that put -id
+  in O \ O^+ was wrong and is withdrawn.  The component quotient is not reached by the centre at
+  all: it is reached by Lemma A.10(1), which supplies for every J in I_2(U + U) an element of
+  O(U + U) \ O^+(U + U) fixing J.  The concrete candidate is -1 on ONE hyperbolic summand, +1 on
+  the other and on L, and it was measured: it fixes J = <e_1, e_2> as a sublattice (e_1 to -e_1,
+  e_2 to e_2), it lies in the discriminant kernel because it acts identically on L, its
+  -1-eigenspace is that rank-2 hyperbolic summand with signature (1,1), so det on P is -1 and it
+  lies outside O^+, and its spinor character is c^2 * 2 * (-2) = -4c^2 -- the class of -1 for
+  c = 1/2 and for c = 1, non-trivial under either.
+  What that settles, by the source's own count of fibres.  With G = O^+(Lambda_19) and
+  H = O~^+(Lambda_19) = O^+ cap O~, Remark A.9 gives the fibre of O~^+\I_2 -> O^+\I_2 the size
+  [G : H] / [Stab_G(J) : Stab_H(J)].  The index is 2, and the stabilizer ratio is 2 as well: the
+  element of Lemma A.10(1) lies in O~ \ O^+, so multiplying it by the central -id gives an element
+  of O^+ \ O~ fixing J.  The fibre is therefore a singleton, and
+  O~^+-orbits on I_2 = O^+-orbits on I_2 = nine, with the nine of Theorem A.12.  The same element,
+  being in O~ and outside O^+, gives O~-orbits = O~^+-orbits as well, so all four groups
+  O, O^+, O~, O~^+ have one orbit set here, and the -id of Lemma A.10 is what carries it -- not the
+  centre.
   The spinor character.  A (-2)-root r of L lies in J^perp, so rho_r fixes J pointwise; it is in
   O^+ because r^2 < 0, in the discriminant kernel by the criterion above, and its spinor norm is
-  c * (-2).  That single family of elements settles every orbit at once: in a normalization where
-  c * (-2) is a non-square -- O'Meara's c = 1, giving the class of -2 -- Stab_{O~^+}(J) meets the
-  non-trivial coset for *every* J, so no orbit splits and the Gamma-orbits on I_2 are the nine.
-  In Gritsenko--Hulek--Sankaran's normalization c = -1/2 the value is 1, the argument is silent,
-  and whether ker(sn) cap O~^+ is proper is not decided here.
-  So the comparison closes under one of the two standard normalizations and stays open under the
-  other, and which one AET intend is not in their text.  That is a question about their convention,
-  not about a group chosen here, and Gamma is left as they define it.
+  c * (-2).  Whether that separates anything depends on the value: it is 1 for c = -1/2 and the
+  class of -2 for c = 1.  AET's Sec. 3A fixes neither the multiplier nor a squareclass field, and
+  the two conventions are not interchangeable, so the Gamma side is not decided by choosing one
+  here.  What is decided is the shape of the answer: Gamma = ker(sn) cap O~^+ has index at most two
+  in O~^+, so its orbits refine the nine by at most two, and the refinement is absent exactly when
+  the spinor norm vanishes on O~^+ -- one statement about the generation of O~^+, since each
+  (-2)-root reflection satisfies it under c = -1/2 and the question is whether they generate.
+  Until that is settled from AET's own convention, no claim of nine Gamma-orbits is made.
 
   So the nine-lattice statement stands exactly as far as it was established: for the group the
   source's period space is divided by -- and, by the -id step, equally for O^+(Lambda_19) -- the
   degree-four space has nine Type II boundary components, labelled by the nine lattices in the
   genus of D_17 (Cor. A.5, Prop. A.11, Thm A.12 and its table, with A.6(9) listing them).  For the
-  manuscript's Gamma it is nine under the normalization in which a (-2)-root reflection has
-  non-trivial spinor norm, uniformly over the nine orbits, and undecided under the other until
-  AET's normalization is fixed; no claim of nine Gamma-orbits is made without naming the
-  convention.  The earlier sentence that the comparison was the open step is withdrawn, as is the
-  plan of settling it by a case search over gluings; the isometry T_4 = Lambda_19 was a change of
+  manuscript's Gamma it is at most a twofold refinement of the nine and is nine exactly when the
+  spinor norm vanishes on O~^+, which is where AET's own convention has to be read; no claim of
+  nine Gamma-orbits is made here.  The earlier sentence that the comparison was the open step is
+  withdrawn, as is the plan of settling it by a case search over gluings, and so is the sentence
+  that placed the central -id outside O^+.  The isometry T_4 = Lambda_19 was a change of
   coordinates and never a change of polarization.
 
   The Sterk construction has been run against the five subsections, on the shared image with its

@@ -1,6 +1,10 @@
 Lambda_19: reflection in the (-2)-root a_1     q(r) =  -2   fixes A_L (morphism): True    in stable group: True 
 Lambda_19: reflection in a_16 + a_17 of square -4 q(r) =  -4   fixes A_L (morphism): False   in stable group: False
 Lambda_19: -1 on H = U + U, +1 on L            q(r) =   0   fixes A_L (morphism): True    in stable group: True 
+-1 on one U, +1 on the other U and on L        q(r) =   0   fixes A_L (morphism): True    in stable group: True 
+central -id on Lambda_19                       q(r) =   0   fixes A_L (morphism): False   in stable group: False
+-1 on one U                                    -1-eigenspace signature: (1 positive, 1 negative) -> det on P = -1
+central -id                                    -1-eigenspace signature: (2 positive, 19 negative) -> det on P = +1
 T_4: reflection in the <-4> generator          q(r) =  -4   fixes A_L (morphism): False   in stable group: False
 
 The arithmetic and the owner agree on every case: a (-2)-root reflection is in the
