@@ -33,10 +33,11 @@ isometry decision of the two complements, by L.is_isometric_to:
   is_isometric_to returned False
 
 4. what is still not established, and what it would take
-   4.1 the markings: h~_Co is taken over the classes realized by h_Co = F_1 + F_2.  Two independent
-       isotropic pairs were tested (the a = 1 family and a mixed one) and their complements are
-       isometric, so the verdict below does not depend on the choice inside them; no argument is
-       given that these exhaust the realizable markings.
+   4.1 the markings and the QUANTIFIER: the verdict of section 3 is about the two labeled pairs
+       constructed here.  Two independent isotropic pairs were tested (the a = 1 family and a
+       mixed one) and their complements are isometric, so the verdict does not depend on the
+       choice inside them; no argument is given that these exhaust the admissible markings, and
+       nothing here rules out an isometry for a marking outside them.
    4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built
        here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a
        POSITIVE verdict, not for the negative one, which rests on the complement test alone.

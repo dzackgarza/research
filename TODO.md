@@ -185,16 +185,21 @@ hypothesis in each case:
    $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for $\gent\subset\Orth(\ten)$ (A3) and for
    the Coble-side centralizer. A finite computation, no geometry in it.
 2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
-   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **Obstructed.** Such an isometry would
-   carry $\tilde h_\Co^{\perp S_\Co}$ to $h^{\perp\langle S_\En,\delta\rangle}$, and those are not
-   isometric: equal rank $10$, determinant $2048$, signature $(0,10)$ and discriminant order $2048$, but
-   $18$ vectors of square $-2$ against $2$, with `is_isometric_to` returning a verified negative, and the
-   two markings of $\tilde h_\Co$ tested giving isometric complements
-   (`computations/reports/coble_labeled_embedding.py`). The Enriques side needs no saturation: $S_\En=C(2)$
-   with $C$ even unimodular gives $S_\En^\#=\tfrac12C$ with integral squares, so no $(x+\tfrac12\delta)$ is
-   integral and $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$. The retained polarization coordinates
-   are verified against @def:coble-polarization-classes and @prop:coble-invariant-lattice in the same run.
-   Residue: whether every admissible marking of $h_\Co=F_1+F_2$ lies among the classes tested.
+   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. Obstructed **for the labeled pairs
+   constructed so far, not in general**. Proved about the input: $\langle S_\En,\delta\rangle =
+   S_\En\oplus\ZZ\delta$ is already saturated, since $S_\En=C(2)$ with $C$ even unimodular gives
+   $S_\En^\#=\tfrac12C$ with integral squares, so no $(x+\tfrac12\delta)$ is integral. Computed about the
+   complements: for $\tilde h_\Co = 2e+f_1+f_2$ from $h_\Co=(H+E_1)+(H+E_2)$ and for a second, mixed
+   isotropic marking, the complements of $\tilde h_\Co$ and of $h$ are not isometric — equal rank,
+   determinant $2048$, signature $(0,10)$, discriminant order $2048$, but $18$ vectors of square $-2$
+   against $2$ — with `is_isometric_to` returning a verified negative and the two markings giving
+   isometric complements (`computations/reports/coble_labeled_embedding.py`). The polarization
+   coordinates are verified in the same run against @def:coble-polarization-classes and
+   @prop:coble-invariant-lattice. **What is not done:** @def:coble-polarization-classes fixes
+   $h_\Co=F_1+F_2$ numerically and not the lattice class of its pullback, so ruling out *all* admissible
+   markings needs an exhaustiveness or transport argument (every marking realizes a complement isometric
+   to one tested, or $\Orth(S_\Co)$ carries them there), which is not supplied. The comparison of the
+   finite images is untouched by this and is item 1.
 3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
    @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
 
@@ -207,24 +212,25 @@ should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This
 than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
 coordinate-independent. Still open, and it is a Coble-to-Coble statement.
 
-The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement, and it is now
-settled negatively, on two legs that are both established rather than assumed
-(`computations/reports/coble_labeled_embedding.py`).
-*The polarization coordinates and the saturation.* With $\Pic(S) = I_{1,10}$ as
-@prop:coble-invariant-lattice fixes it, $h_\Co = (H+E_1)+(H+E_2)$ satisfies
-@def:coble-polarization-classes ($F_i^2=0$, $F_1\cdot F_2=1$, $h_\Co^2=2$) and its pullback is
-$\tilde h_\Co = 2e+f_1+f_2$ of square $4$. The Enriques side needs no saturation: $S_\En = C(2)$ with
-$C = U\oplus E_8(-1)$ even unimodular, so $S_\En^\# = \tfrac12 C$ has integral squares and no
-$(x+\tfrac12\delta)$ is integral, whence $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$.
-*The complement invariant.* An isometry carrying $T_\Co^{\mathrm{Coble}}$ to $T_\Co$ and $\tilde h_\Co$ to
-$h$ would carry $\tilde h_\Co^{\perp S_\Co}$ to $h^{\perp\langle S_\En,\delta\rangle}$. These are not
-isometric: same rank $10$, determinant $2048$, signature $(0,10)$ and discriminant group of order $2048$,
-but $18$ vectors of square $-2$ against $2$. The owner returns a verified negative through
-`is_isometric_to`, and the two markings tested — the isotropic pair of the definition and a mixed one —
-give isometric complements, so the verdict does not depend on that choice.
-So no ambient isometry identifies the two labelings, and the two groups cannot be compared by
-transportation; A20 item 1 (comparison of the finite images) is untouched by this. Residue: whether every
-admissible marking of $h_\Co = F_1+F_2$ lies among the classes tested.
+The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement. It is
+obstructed **for the labeled pairs constructed so far, and not in general**
+(`computations/reports/coble_labeled_embedding.py`), and the two halves of that are kept apart:
+*Input construction, proved.* $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is saturated: the
+hypotheses are $S_\En = C(2)$ with $C = U\oplus E_8(-1)$ even unimodular (@prop:polarization-stabilizer-enriques),
+so $S_\En^\# = \tfrac12 C$, and $C$ even, so squares in $\tfrac12C$ are integral; an overlattice would
+adjoin $(x+\tfrac12\delta)$ of square $x^2-\tfrac12$, never integral.
+*Complement computation, on the pairs built.* With $\Pic(S) = I_{1,10}$ as @prop:coble-invariant-lattice
+fixes it, $h_\Co = (H+E_1)+(H+E_2)$ satisfies @def:coble-polarization-classes and pulls back to
+$\tilde h_\Co = 2e+f_1+f_2$ of square $4$; for that marking and for a second, mixed isotropic one, the
+complements of $\tilde h_\Co$ in $S_\Co$ and of $h$ in $\langle S_\En,\delta\rangle$ are not isometric —
+same rank $10$, determinant $2048$, signature $(0,10)$, discriminant order $2048$, but $18$ vectors of
+square $-2$ against $2$ — the owner returning a verified negative, and the two markings giving
+isometric complements.
+*What that does not settle.* The quantifier is over those pairs. @def:coble-polarization-classes fixes
+$h_\Co = F_1+F_2$ numerically, not the lattice class of its pullback, so A21 as quantified over
+admissible markings needs an exhaustiveness or transport argument — that every marking realizes a
+complement isometric to one tested, or that $\Orth(S_\Co)$ carries them there — and none is given.
+Nothing here bears on A20 item 1, the comparison of the finite images.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The

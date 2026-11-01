@@ -5,10 +5,12 @@ STATUS.  Three things are established here, in this order: the retained polariza
 so the lattice used in section 2 is the actual <S_En, delta> and not a model of it (section 2.1, a
 two-line argument from S_En = C(2) with C even unimodular, with the owner confirming the hypothesis);
 and that two independent markings of the Coble polarization give isometric complements (section 1.1).
-With those, the negative of section 3 is a statement about the comparison as the book states it for the
-markings arising from h_Co = F_1 + F_2, not about a model.  What is still not built is L_K3 and the
-extension of any isometry over it (section 4); that matters for a *positive* verdict, not for the
-negative one, which needs only the complement test.
+With those, the negative of section 3 is a statement about the two labeled pairs constructed here, not
+about a model and not about every admissible marking: the quantifier is section 4.1, and
+def:coble-polarization-classes fixes h_Co = F_1 + F_2 numerically without fixing the lattice class of its
+pullback, so an exhaustiveness or transport argument over markings is the missing prerequisite for the
+latter.  What is also not built is L_K3 and the extension of any isometry over it (section 4.2); that
+matters for a *positive* verdict, not for the negative one, which needs only the complement test.
 
 The statement asked for.  A20(2) needs an isometry psi of L_K3 carrying the *Coble-labeled* structure
 to the *Enriques-labeled* one and the retained polarization to h:
@@ -194,10 +196,11 @@ except Exception as exc:
 # ---------------------------------------------------------------- 4. what remains open
 print('')
 print('4. what is still not established, and what it would take')
-print('   4.1 the markings: h~_Co is taken over the classes realized by h_Co = F_1 + F_2.  Two independent')
-print('       isotropic pairs were tested (the a = 1 family and a mixed one) and their complements are')
-print('       isometric, so the verdict below does not depend on the choice inside them; no argument is')
-print('       given that these exhaust the realizable markings.')
+print('   4.1 the markings and the QUANTIFIER: the verdict of section 3 is about the two labeled pairs')
+print('       constructed here.  Two independent isotropic pairs were tested (the a = 1 family and a')
+print('       mixed one) and their complements are isometric, so the verdict does not depend on the')
+print('       choice inside them; no argument is given that these exhaust the admissible markings, and')
+print('       nothing here rules out an isometry for a marking outside them.')
 print('   4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built')
 print('       here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a')
 print('       POSITIVE verdict, not for the negative one, which rests on the complement test alone.')
