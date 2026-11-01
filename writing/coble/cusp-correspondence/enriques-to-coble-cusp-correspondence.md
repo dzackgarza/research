@@ -22,9 +22,25 @@ and restriction is a left inverse: $\mathrm{res}\circ\mathrm{Ext} = \id$. Three 
 Consequently $\eta$ is $\Gamma_\Co$-equivariant --- $\eta(\varphi v) = \mathrm{Ext}(\varphi)\,\eta(v)$ for every $v$ --- and the object map induces a well-defined map of orbit sets
 $$\Gamma_\Co\backslash\{\text{primitive isotropic objects of }T_\Co\}\ \longrightarrow\ \Gamma_\En\backslash\{\text{primitive isotropic objects of }\ten\}.$$
 
-The other two are the open part, and they are logically independent of the equivariance just obtained.
-*Injectivity*: two $\Gamma_\Co$-orbits may be carried into one $\Gamma_\En$-orbit, so nothing above separates them; the fibre computation of @thm:normalization controls the fibres of the period map but not the orbit decomposition on either side.
-*Surjectivity*: nothing here produces an Enriques cusp from an arbitrary Coble one, nor shows that every $\Gamma_\En$-orbit of isotropic objects meeting the image comes from the Coble side.
+The second is not open any more: surjectivity fails, and it fails for an invariant reason.
+::: {.proposition #prop:cusp-map-not-onto}
+
+The orbit map $\Phi$ is not surjective. The divisibility-$1$ Enriques $0$-cusp, of boundary lattice $(10,10,0)_1$, has empty fibre: no primitive isotropic vector of $T_\Co$ is carried into a $\Gamma_\En$-translate of it.
+:::
+
+::: {.proof}
+
+Divisibility is an isometry invariant, so it is constant on $\Gamma_\En$-orbits, and [@AEGS25, §2] distinguish the two $0$-cusps of the Enriques diagram by it --- $(10,10,0)_1$ at divisibility $1$ and $(10,8,0)_1$ at divisibility $2$. So it suffices to show that $\div_\ten(\eta(v))$ is even for every primitive isotropic $v\in T_\Co$.
+
+Two identities. First, $\ten = \eta(T_\Co) + \ZZ\tilde e$, so
+$$\div_\ten(\eta(v)) = \gcd\bigl(\div_{T_\Co}(v),\ \beta_\ten(\eta(v),\tilde e)\bigr), \qquad \beta_\ten(\eta(v),\tilde e) = \tfrac12\beta_{T_\Co}(v,h),$$
+the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Second, both entries of the gcd are even. $\div_{T_\Co}$ is even for every vector, since the Gram of $T_\Co$ is even entrywise; and if $v = ah + y$ with $y$ in the $U(2)\oplus E_8(2)$ block, then $v^2 = 2a^2 + y^2$ with $y^2\equiv0 \pmod 4$, that block being twice an even lattice, so $v$ isotropic forces $a^2$ even and $a$ even. Hence $\div_\ten(\eta(v))$ is even, and being a primitive vector of a $2$-elementary lattice it is $2$.
+
+So the image lies in the divisibility-$2$ classes, and the $(10,10,0)_1$ cusp is missed.
+The identities and the two parity facts are checked on the representatives in `computations/reports/coble_enriques_cusp_orbit_map.py`, which also reproduces the two boundary lattices by the maintained two-elementary route: $\tilde e^{\perp\ten}/\tilde e\cong(10,10,0)_1$ of determinant $-1024$, and $\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1$ of determinant $-256$.
+:::
+
+What remains open is injectivity alone: two $\Gamma_\Co$-orbits may be carried into one $\Gamma_\En$-orbit, and the fibre over a target cusp is the double-coset set $\Gamma_\Co\backslash Y/\Stab_{\Gamma_\En}(\tilde w)$ with $Y = \{\gamma : \gamma^{-1}\tilde w\in\eta(T_\Co)\}$, which nothing computed here separates. So $\Phi$ is neither known to be injective nor a bijection, and it is provably not surjective: the correspondence between the two $0$-cusp diagrams is an injection at best, and the figure's arrow from $(9,9,1)_1$ to $(10,8,0)_1$ is the whole of the $0$-cusp correspondence on these groups.
 On the Coble side the decomposition is itself open (@lem:stable-orthogonal-not-transitive leaves at least two $0$-cusps, and @sec-coble-lattice-isotropic-candidates counts the finite picture without lifting it), which is why the correspondence in this section stays at the level of the displayed representatives.
 
 *Which space the cusps belong to.* The objects above live in the ambient quotient $\bD(\ten)/\Gamma_\En$, and the orbit sets compared are its Baily--Borel boundary strata. They are not the boundary strata of the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma_\En$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $k$, and $k^2 = -2$, so the whole Coble period domain lies in $\mch_{-2}$ and its image lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$, meeting no open complement of it. The cusp diagram whose boundary lattices are matched below is the one of that ambient quotient, and its two $0$-cusps and two $1$-cusps are [@AEGS25, §2]'s for $F^K_\En = \bD(\ten)/\Gamma_\En$ with $\Gamma_\En = \Orth(\ten)$; the stable orbits are finer, so identifying the stable and $F^K_\En$ cusps is a separate question, and a third quotient, the polarized $F_{\En,2}$ with its five $0$-cusps [@AEGS25, §3], is not used here at all.

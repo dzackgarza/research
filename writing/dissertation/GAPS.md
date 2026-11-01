@@ -1026,15 +1026,22 @@ What has since been settled is listed at the end, so that a reader can tell "res
   Gamma_Co\I(T_Co) -> Gamma_En\I(T_En).  That is the first step and it is now written down in the
   chapter.
   What it does not give, kept separate as instructed: injectivity (two Gamma_Co-orbits may be carried
-  into one Gamma_En-orbit; the fibre count of thm:normalization controls fibres of the period map, not
-  orbit decompositions) and surjectivity (nothing produces an Enriques cusp from an arbitrary Coble
-  one).  Nor does it identify the groups: the Enriques side of the cusp diagram is F^K_En with
-  Gamma_En = O(T_En) [@AEGS25, Sec. 2], while the stable quotient's orbits are finer, and the
-  polarized F_En,2 with its five 0-cusps is a third quotient.  On the Coble side the orbit
-  decomposition is open in the book's own terms (lem:stable-orthogonal-not-transitive gives at least
-  two 0-cusps; the finite picture at A_{T_Co} has not been lifted).  So the correspondence stands at
-  the displayed representatives with the equivariant map between orbit sets now defined, and the
-  matching-group theorem that would make it a bijection is the remaining obligation.
+  into one Gamma_En-orbit; the fibre over a target cusp is the double-coset set
+  Gamma_Co\Y/Stab_{Gamma_En}(w~) with Y = {gamma : gamma^{-1}w~ in eta(T_Co)}, and nothing computed
+  separates its elements), and -- this is now settled, negatively -- surjectivity.  The orbit map is
+  not onto: every primitive isotropic v of T_Co has div_En(eta(v)) even, hence 2, so the
+  divisibility-1 Enriques 0-cusp of boundary lattice (10,10,0)_1 has empty fibre.  The two identities
+  behind that are div_En(eta(v)) = gcd(div_Co(v), beta_Co(v,h)/2) coming from T_En = eta(T_Co) + Z e~
+  with beta_En(eta(v),e~) = beta_Co(v,h)/2, and the evenness of both entries: div_Co is even because the
+  Gram of T_Co is even entrywise, and beta_Co(v,h)/2 = a is even for isotropic v = a h + y because
+  U(2) + E8(2) is twice an even lattice, so y^2 = 0 mod 4 forces a^2 even.  Both are verified on the two
+  representatives, with the boundary lattices reproduced by the maintained two-elementary route --
+  (10,10,0) of determinant -1024 at e~ and (10,8,0) of determinant -256 at eta(v_1) -- in
+  computations/reports/coble_enriques_cusp_orbit_map.py.  So a bijection on cusps is refuted rather
+  than open, the difficulty being injectivity; the correspondence on 0-cusps is injective at best and
+  meets the Enriques diagram in one of its two 0-cusps.  AEGS25's two-cusp count being for
+  F^K_En (Gamma_En = O(T_En)) and not for the stable quotient remains a separate mismatch, unchanged by
+  this computation and not to be closed by it.
   Two prose corrections went with it.  The target of the map is the ambient quotient
   B(T_En)/Gamma_En and not the moduli space F_En = (B(T_En) minus H_{-2})/Gamma_En of
   moduli-construction.md: every period of T_Co is orthogonal to k and k^2 = -2, so the image lies in
