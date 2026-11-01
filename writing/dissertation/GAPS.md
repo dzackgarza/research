@@ -892,9 +892,21 @@ What has since been settled is listed at the end, so that a reader can tell "res
   chapters, and prop:degree-2d-k3-lattice's U^3 + E8^2 = II_{3,19} follows the Coble reading.  No
   number above depends on the choice: with E8 taken positive definite, T_Co gets signature (10,1)
   and the four fibers and the 528 are unchanged, which the certificate checks by counting both.  It
-  The two orbits on the 528 classes: the order reproduced, the decomposition blocked, and the blocker
-  published rather than routed around.  thm:coble-isotropic-class-orbits is *not* accepted here as
-  computed.  What the pinned library does give, on the same T_Co as the 528 itself, is the order:
+  The two orbits on the 528 classes: accepted at the maintained action, after the blocker was published
+  and repaired.  The obstruction recorded below was a library performance defect -- the orbit partition
+  did not materialise -- and it has since been fixed by the library owner: at sage-extensions provider
+  9dc89ac1d9e4ab074da8872386aaf5b9df290f63, exported read-only from the image's clone into
+  .scratch/se-provider and bound per process (no rootfs write, no hand closure), D.orbits() materialises
+  the partition of the 2048 classes in about thirty seconds.  computations/reports/
+  coble_isotropic_orbits.py now checks the theorem on it, with the trap stated because it is easy to fall
+  into: the partition has six orbits of sizes 1, 1, 496, 496, 527, 527, and the two 527's do NOT both
+  consist of isotropic classes.  Classifying every orbit by the value of q gives (1, 0), (1, 1/2),
+  (496, 1), (496, 3/2), (527, 0) and (527, 1/2); restricting explicitly to D.isotropic_elements() leaves
+  exactly two orbits, of sizes 1 and 527, whose union is the whole isotropic set.  So the claimed {0} and
+  one orbit of 527 hold, the group order 46,998,591,897,600 is reproduced, and the T_Co type (11,11,1)
+  with it.  The paragraphs that follow record how the blocker was isolated, and are kept for that.
+  The earlier state, when the partition did not materialise, was this: thm:coble-isotropic-class-orbits
+  was *not* accepted as computed.  What the pinned library does give, on the same T_Co as the 528 itself, is the order:
   computations/reports/se_orbit_partition_repro.py builds B = <1> + U + E8(-1), twists to T_Co, takes
   the discriminant quadratic form (2048 classes) and the orthogonal group the library returns for it,
   and reports |Orth| = 46,998,591,897,600 = 2^21*3^5*5^2*7*17*31, which is prop:coble-discriminant-
