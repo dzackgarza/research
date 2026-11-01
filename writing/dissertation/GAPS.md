@@ -157,19 +157,32 @@ What has since been settled is listed at the end, so that a reader can tell "res
   than by the coarser Coxeter-order group of the owner's own orbit methods.  That run
   (computations/reports/sterk_owner_subdiagrams.py) is in progress.
 
-  The semifan and irrelevant-subgroup statements, audited against the retained root maps, keep
-  source verification apart from computed acceptance.  The five statements name the roots that are
-  supposed to witness an affine A~1 inside the irrelevant part: cusp 1 by r_9, r_10; cusp 3 by
-  r_10, r_11; cusp 5 by r_12, r_13; cusp 4 instead asserts that W(A_1) x W(A_1) is finite; cusp 2
-  that the irrelevant subgroup is S_2.  What the retained data settle is only the first of them:
-  in the script's a-indexing the pair (a9, a10) of the first representative has norms -4, -4 and
-  pairing 4, i.e. cos^2 = 1, so those two roots span an affine A~1 and the sentence for cusp 1 is
-  consistent.  The pairs named for cusps 3 and 5, (a10, a11) and (a12, a13), are *not edges* in
-  the corresponding diagrams at all, so under this indexing they cannot witness an affine A~1 --
-  which is not yet a refutation, because the manuscript's r-indices may follow its own figure
-  assets rather than the script's a-labels.  Nothing here verifies the finiteness or infinitude of
-  any irrelevant subgroup: that needs the semifan construction, which the Sterk script does not
-  implement and which is therefore not computed at all.
+  The semifan and irrelevant-subgroup statements, audited against the *retained figure
+  numbering* -- which is not the Sterk script's a-indexing and had to be found first.  The diagram
+  objects live in the pandoc configuration, not in this repository:
+  figures/objects/coxeter/sterk-cusp-{1,3,4,5}.tikz and vinberg-10-8-0.tikz in the .pandoc
+  checkout, drawn through styles/macros/tikz/constructors/dzg-coxeter.tex.  Each states its
+  provenance and its numbering: "Roots: dzack_research.preamble.sterk, Sterk.sterk_roots()[Sterk_k],
+  the folds of the (18,2,0) roots under J_k ... Root i is the (i+1)-th root there and is labelled
+  r_i, as in 900-five-cusps.md".  So the manuscript's r_i is the object's root i, and the objects
+  also fix the correspondence: cusp 1 is "Sterk 1991, diagram I", cusp 3 diagram III, cusp 4
+  diagram IV, cusp 5 diagram V, and vinberg-10-8-0 is "the Coxeter diagram of the 0-cusp eta_2
+  (Sterk's diagram II)".
+
+  With that numbering the three named-root statements check out, and my earlier "these pairs are
+  not edges" conclusion is withdrawn -- it compared the manuscript's r-indices with the Sterk
+  script's unrelated a-labels.  From the object files themselves: cusp 1 has "8-9-10-11 bold
+  (inner products 4)", so r_9 . r_10 = 4 with both norms -4 and the pair spans an affine A~1, as
+  the text says; cusp 3 has "10-11 bold"; cusp 5 has "12-13 bold".  All three statements are
+  therefore consistent with the retained figure data.  What is still not computed is the finiteness
+  or infinitude of any irrelevant subgroup, i.e. the semifan statements proper: the Sterk script
+  does not implement the semifan construction, and nothing here substitutes for it.
+
+  The representative-to-subsection matching is settled by source, not by counts: each object names
+  its Sterk diagram number and its root family, and the root counts agree with the script's five
+  representatives in the order 3.3.7, 3.3.9, 3.3.10, 3.3.11, 3.3.12 as 12, 10, 12, 11, 14.  Cusp 1
+  is diagram I (12 roots), cusp 2 diagram II (10), cusp 3 diagram III (12), cusp 4 diagram IV (11),
+  cusp 5 diagram V (14).
 
   So, separated: the Type II counts are *computed and accepted*; the lattice data are *computed and
   accepted*; the Type III counts are waiting on the owner enumeration (job jmvx3lwga, not
