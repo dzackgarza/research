@@ -41,7 +41,7 @@ import sys
 
 from sage.all import Graph, QQ, ZZ
 
-from sage_extensions.all import CoxeterDiagrams, Lattices
+from sage_extensions.all import CoxeterDiagrams, Lattices, Sterk
 
 SOURCE = '/repo/computations/scripts/sterk-enriques-cusps/sterk_cusp_diagrams.sage'
 COXETER_OBJECTS = os.environ.get(
@@ -256,6 +256,32 @@ def figure_sterk_2():
     return [object_norms[v] for v in order], object_weights
 
 
+def maintained_vertex_data(number):
+    """The maintained diagram's r_i data, its vertices read as the figure's integers.
+
+    Sterk.diagrams() names its vertices r_0..r_{n-1}, which is the manuscript's numbering;
+    this returns the root norm of each r_i and the Coxeter weight of each pair, keyed by the
+    integer i, so that an object's r_i and the library's r_i can be compared directly.
+    """
+    diagram = Sterk.diagrams()['Sterk_%d' % number]
+    vertices = tuple(diagram.index_set())
+    norms, weights = {}, {}
+    for vertex in vertices:
+        norms[int(str(vertex)[1:])] = int(diagram.root(vertex).q())
+    for i, left in enumerate(vertices):
+        for right in vertices[i + 1:]:
+            entry = diagram.coxeter_entry(left, right)
+            if entry.is_countably_infinite():
+                weight = 'infinity'
+            elif int(entry) != 2:
+                weight = int(entry)
+            else:
+                continue
+            a, b = int(str(left)[1:]), int(str(right)[1:])
+            weights[(min(a, b), max(a, b))] = weight
+    return norms, weights
+
+
 def main():
     definitions = load_definitions(SOURCE)
     table = displayed_sets(CUSPS_FILE)
@@ -273,6 +299,18 @@ def main():
         else:
             figure_side = figure_diagram(os.path.join(COXETER_OBJECTS, OBJECTS[number]))
         assert len(figure_side[0]) == n, (number, len(figure_side[0]), n)
+        if number != 2:
+            # The object's r_i and the maintained diagram's r_i are one family: check that
+            # the parsed object carries exactly the maintained norm and Coxeter data at
+            # every index, so that a statement proved of the library's vertices is a
+            # statement about the displayed ones.  Cusp 2's object is drawn in an order of
+            # its own -- its header publishes the permutation -- so it is compared there by
+            # construction in figure_sterk_2(), not index by index here.
+            library_norms, library_weights = maintained_vertex_data(number)
+            assert figure_side[0] == [library_norms[i] for i in range(n)], \
+                ('%s: the object and the maintained diagram disagree on a root norm' % name)
+            assert figure_side[1] == library_weights, \
+                ('%s: the object and the maintained diagram disagree on a Coxeter weight' % name)
         # the two sides agree on what a vertex is before any map is searched
         assert sorted(script_side[0]) == sorted(figure_side[0]), \
             ('%s: norm multisets differ' % name, sorted(script_side[0]), sorted(figure_side[0]))

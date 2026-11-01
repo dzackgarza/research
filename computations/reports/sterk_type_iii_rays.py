@@ -17,7 +17,13 @@ Two root families are compared, and neither is transported by position or count:
 
 The two are matched as angle-labelled graphs -- vertices carry their root norm,
 edges their Coxeter weight, the sign of a pairing dropped as a Coxeter diagram
-drops it -- and the transport is reported with the ambiguity it retains.
+drops it -- and then the retained transport is *re*-checked on the signed Gram: every
+entry b(a_i, a_j) must equal b(r_phi(i), r_phi(j)), signs and magnitudes, not only
+the norm and the Coxeter order.  The angle labelling cannot see that: b and -b give
+one Coxeter weight, and so do 2 and 4 between roots of unequal length, so a map that
+preserves norms and weights need not preserve a single signed pairing.  The signed
+check is what makes the transport a lattice-isometry statement rather than a
+diagram statement, and the number of coset elements that pass it is reported.
 
 The subdiagrams are the owner's: CoxeterDiagrams.maximal_elliptic_subdiagrams()
 decides ellipticity and maximality on vertex sets (sage-extensions
@@ -123,6 +129,28 @@ def transport(source, target, label):
     return phi, aut.order()
 
 
+def maintained_signed_gram(diagram):
+    """The maintained diagram's root Gram, signed, over ZZ.
+
+    The retained tensor's entries are owned scalars, which do not coerce into QQ but
+    do convert to ZZ; the row order is ``diagram.index_set()``.
+    """
+    gram = diagram.root_gram_tensor()
+    n = int(diagram.cardinality())
+    return [[int(gram[i, j]) for j in range(n)] for i in range(n)]
+
+
+def preserves_signed_gram(matrix, signed, phi, position):
+    """Whether ``phi`` carries every signed pairing of ``matrix`` to the maintained one.
+
+    ``phi`` maps a script index to a maintained vertex label, ``position`` that label to
+    its index in the maintained Gram.
+    """
+    n = matrix.nrows()
+    return all(matrix[i, j] == signed[position[phi[i]]][position[phi[j]]]
+               for i in range(n) for j in range(n))
+
+
 def orbits(action, sets):
     remaining, reps = list(sets), []
     while remaining:
@@ -152,14 +180,31 @@ def main():
             name)
         assert len(set(phi.values())) == n
 
+        # The angle labelling is blind to signs and to the magnitude 2 versus 4 between
+        # roots of unequal length, so the transport is re-decided on the signed Gram.
+        signed = maintained_signed_gram(maintained)
+        position = {vertex: index for index, vertex in enumerate(maintained.index_set())}
+        assert sorted(position) == sorted(set(phi.values()))
+        script_graph, script_partition = angle_graph(range(n), M)
+        script_action = script_graph.automorphism_group(
+            partition=script_partition, edge_labels=True, algorithm='sage')
+        candidates = [{v: phi[g(v)] for v in range(n)} for g in script_action]
+        passing = [candidate for candidate in candidates
+                   if preserves_signed_gram(M, signed, candidate, position)]
+        assert passing, ('%s: no element of the transport coset preserves the signed Gram' % name)
+        phi = passing[0]
+
         script_sets = [frozenset(int(vertex) for vertex in diagram.index_set())
                        for diagram in script.maximal_elliptic_subdiagrams(connected=False)]
         maintained_sets = [frozenset(diagram.index_set())
                            for diagram in maintained.maximal_elliptic_subdiagrams(connected=False)]
         assert len(script_sets) == len(maintained_sets), (name, len(script_sets), len(maintained_sets))
-        transported = {frozenset(phi[int(vertex)] for vertex in candidate) for candidate in script_sets}
+        # Every coset representative carries the script's sets onto the same maintained
+        # sets, the owner's enumeration being invariant under the diagram's symmetries.
+        transported = {frozenset(phi[int(vertex)] for vertex in candidate)
+                       for candidate in script_sets}
         assert transported == set(maintained_sets), \
-            '%s: the owner\'s maximal elliptic sets are not carried by the transport' % name
+            '%s: the owner\'s maximal elliptic sets are not carried by the signed transport' % name
 
         diagram_of = {}
         for candidate in maintained_sets:
@@ -188,7 +233,9 @@ def main():
         print('   rank 9: %d subdiagrams, |Aut| = %d, orbits %2d  (manuscript %2d)%s'
               % (len(rays), action.order(), len(reps), MANUSCRIPT[number - 1],
                  '' if len(reps) == MANUSCRIPT[number - 1] else '  *** MISMATCH'))
-        print('   transport a_{i+1} -> library vertex, up to %d relabellings:' % ambiguity)
+        print('   transport a_{i+1} -> library vertex: %d of the %d angle-preserving maps '
+              'preserve every signed pairing' % (len(passing), ambiguity))
+        print('   a signed transport, determined up to %d relabellings:' % len(passing))
         print('      %s' % [phi[i] for i in range(n)])
         for representative in reps:
             ordered = sorted(representative, key=lambda vertex: int(str(vertex)[1:]))

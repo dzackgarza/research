@@ -119,10 +119,15 @@ What has since been settled is listed at the end, so that a reader can tell "res
   reproduced with its named representatives, so the *structures* behind the ray counts are now
   machine output rather than assertion.  But the chapter's counts are 4/4, 2/8, 3/15, 4/12, 5/17
   (Type II/III in the Coxeter compactification), and matching those to the five rows above is not
-  a lookup: cusp 1's four Type III rays correspond to the four *types* among the nine maximal
-  parabolic subdiagrams of v = e (E8, E7 + A1, D8, A7 + A1), i.e. to orbits under the diagram's
-  symmetries rather than to the subdiagrams themselves, and the same reduction has to be done for
-  the other four before any of the counts is confirmed or corrected.  Nor is the correspondence
+  a lookup: the counts are orbit counts under the diagram's symmetries rather than counts of
+  subdiagrams, and that reduction had to be done at all five cusps.  The Type III side of it was
+  got wrong here, and the sentence that stood in this place is corrected: those rays are not among
+  the maximal *parabolic* subdiagrams at all -- they are the elliptic subdiagrams of rank 9, as the
+  rank-9 paragraph below records.  The nine maximal parabolic subdiagrams of v = e and their four
+  orbits (E8, E7 + A1, D8, A7 + A1) are cusp 1's four Type *II* rays; its Type III rays are a
+  separate four, elliptic.
+
+  Nor is the correspondence
   between the manuscript's five cusps and Sterk's five representatives yet written down: the
   manuscript distinguishes cusp 1 by the label (10,10,0) and the others by (10,8,0), which does
   not by itself order them.
@@ -222,6 +227,17 @@ What has since been settled is listed at the end, so that a reader can tell "res
   sterk_type_iii_rays-run.txt; anything that needs both numbering systems can now be read in
   either, with that residual ambiguity stated rather than resolved.
 
+  The transport is checked on the signed Gram and not only on the diagram.  Norm and Coxeter
+  weight do not pin a pairing down: b and -b give one weight, and between roots of unequal length
+  the magnitudes 2 and 4 do too, so an angle-preserving map need not preserve a single signed
+  pairing.  Each retained transport is therefore required to carry every entry of the
+  reconstruction's Gram to the maintained diagram's -- signs and magnitudes, the full matrix and
+  not its norms and angles -- and sterk_type_iii_rays.py reports how many of the angle-preserving
+  coset elements do so: 4 of 4 at cusp 1, 1 of 1 at cusp 2, 2 of 2 at cusp 3, 2 of 2 at cusp 4
+  and 8 of 8 at cusp 5.  So the transport is an isometry of the two Gram matrices and not only of
+  their Coxeter diagrams, and the statement survives passing from the reconstruction's roots to
+  the library's.  This was a missing check, not a found mismatch: adding it changes no count.
+
   With that numbering the three named-root statements check out, and my earlier "these pairs are
   not edges" conclusion is withdrawn -- it compared the manuscript's r-indices with the Sterk
   script's unrelated a-labels.  From the object files themselves: cusp 1 has "8-9-10-11 bold
@@ -247,7 +263,11 @@ What has since been settled is listed at the end, so that a reader can tell "res
   is_parabolic() asks for nullity exactly one, while the chapter's Type II subdiagrams include
   disconnected ones (E~7 + A~1, A~7 + A~1, B~4 + B~4) whose nullity is one per component, so
   maximal_parabolic_subdiagrams() does not reproduce those counts and the reconstruction script's
-  enumeration stays the one that does.
+  enumeration stays the one that does, for now: the missing public call -- a per-component affine
+  predicate, negative semidefinite with one null direction per connected component and rank nodes
+  minus components, and a subset-decided enumerator taking that rank beside the elliptic one -- has
+  been routed to sage-extensions, and when it lands the Type II counts can be recomputed under
+  maintained semantics and the two routes compared.
 
   The displayed subdiagrams, read from the chapter itself and transported through that map.  Cusp
   1 draws {0,1,2,4,5,6,7,8,11}, {0,1,3,4,5,6,7,8,10,11}, {0,1,2,3,5,6,7,8,11} and
