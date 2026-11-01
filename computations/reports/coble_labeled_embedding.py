@@ -1,4 +1,11 @@
-"""A21: the labeled embedding comparison of the retained Coble polarization with h.
+"""A21: the labeled embedding comparison -- what can be checked now, and what cannot.
+
+STATUS.  This script does not decide A21 and does not produce a counterexample to it.  It checks one
+premise of the comparison at the owner (the retained polarization coordinates, section 0) and reports
+the outcome of the comparison *on the modelled inputs it builds* (sections 2-3), which is conditional
+on two premises it does not establish.  The premises are named in section 4.  The verified negative
+recorded in section 3 is a statement about those models and is upgraded to a statement about A21 only
+when sections 4.1-4.2 are discharged.
 
 The statement asked for.  A20(2) needs an isometry psi of L_K3 carrying the *Coble-labeled* structure
 to the *Enriques-labeled* one and the retained polarization to h:
@@ -73,7 +80,31 @@ print('')
 U = matrix(ZZ, [[0, 1], [1, 0]])
 E8 = -CartanMatrix(['E', 8])
 
-# ---------------------------------------------------------------- the Coble marked pair
+# ---------------------------------------------------------------- 0. the polarization coordinates
+# prop:coble-invariant-lattice fixes Pic(S) = <H, E_1, ..., E_10> = I_{1,10} with H^2 = 1 and
+# E_i^2 = -1, all orthogonal, and its proof fixes f^*D . f^*D' = 2 D.D'.  def:coble-polarization-classes
+# takes h_Co = F_1 + F_2 with F_i^2 = 0, F_1.F_2 = 1 in the non-degenerate case.  Sections 0.1-0.2 check
+# that such classes exist, that h_Co has the stated square, and that its pullback is the vector used
+# below.
+PIC_GRAM = block_diagonal_matrix(matrix(ZZ, [[1]]), -matrix.identity(ZZ, 10))
+PicS = Lattices(ZZ)([list(row) for row in PIC_GRAM.rows()])
+p_basis = [PicS.basis_vector(i) for i in range(PicS.rank())]
+H_class, exc = p_basis[0], p_basis[1:]
+print('0. the retained polarization, from its definition')
+print('   Pic(S) = I_{1,10}: rank %d, det %s, signature %s'
+      % (PicS.rank(), PicS.determinant(), PicS.signature_pair()))
+F1 = H_class + exc[0]
+F2 = H_class + exc[1]
+print('   F_1 = H + E_1, F_2 = H + E_2: F_1^2 = %d, F_2^2 = %d, F_1.F_2 = %d'
+      % (F1.q(), F2.q(), F1.b(F2)))
+assert F1.q() == 0 and F2.q() == 0 and F1.b(F2) == 1
+h_Co = F1 + F2
+print('   h_Co = F_1 + F_2: h_Co^2 = %d, div(h_Co) = %d' % (h_Co.q(), PicS.div(h_Co)))
+assert h_Co.q() == 2
+print('   the book\'s pullback formula f^*D . f^*D\' = 2 D.D\' doubles coordinates and form, so')
+print('   h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is the vector used below')
+
+# ---------------------------------------------------------------- 1. the Coble marked pair
 S_CO_GRAM = block_diagonal_matrix(matrix(ZZ, [[2]]), -2 * matrix.identity(ZZ, 10))
 S_Co = Lattices(ZZ)([list(row) for row in S_CO_GRAM.rows()])
 s_basis = [S_Co.basis_vector(i) for i in range(S_Co.rank())]
@@ -86,7 +117,7 @@ print('  e^2 = %d, f_i^2 = %d, h~_Co^2 = %d, div(h~_Co) = %d'
       % (e.q(), f1.q(), h_tilde.q(), S_Co.div(h_tilde)))
 assert h_tilde.q() == 4
 
-# ---------------------------------------------------------------- the Heegner marked pair
+# ---------------------------------------------------------------- 2. the Heegner marked pair (MODELLED)
 M_GRAM = block_diagonal_matrix(matrix(ZZ, [[-2]]), 2 * U, 2 * E8)
 M = Lattices(ZZ)([list(row) for row in M_GRAM.rows()])
 m_basis = [M.basis_vector(i) for i in range(M.rank())]
@@ -98,7 +129,7 @@ print('  delta^2 = %d, delta.h = %d, h^2 = %d, div(h) = %d'
       % (delta.q(), delta.b(h), h.q(), M.div(h)))
 assert h.q() == 4 and delta.b(h) == 0
 
-# ---------------------------------------------------------------- the polarization complements
+# ---------------------------------------------------------------- 3. the comparison, on the modelled inputs
 comp_Coble = S_Co.orthogonal_complement(h_tilde.sublattice())
 comp_Heegner = M.orthogonal_complement(h.sublattice())
 for name, comp, vector in (('Coble', comp_Coble, h_tilde), ('Heegner', comp_Heegner, h)):
@@ -110,6 +141,7 @@ for name, comp, vector in (('Coble', comp_Coble, h_tilde), ('Heegner', comp_Heeg
 
 # ---------------------------------------------------------------- the owner's verified decision
 print('')
+print('3. the comparison, on the modelled inputs only')
 print('isometry decision of the two complements, by L.is_isometric_to:')
 try:
     decision = comp_Coble.is_isometric_to(comp_Heegner)
@@ -119,21 +151,36 @@ except Exception as exc:
     print('  UNDECIDED: %s: %s' % (type(exc).__name__, str(exc)[:400]))
     decided = None
 
+# ---------------------------------------------------------------- 4. the premises
+print('')
+print('4. premises this verdict is conditional on')
+print('   4.1 the Enriques side is modelled by M = S_En + <delta> unsatured.  The actual lattice is')
+print('       M = <S_En, delta> saturated in L_K3, and its saturation is governed by the gluing')
+print('       anti-isometry gamma of cons:embedding-gluing-data, which the book supplies as a')
+print('       construction and not as explicit matrices.  A different gamma gives a different M,')
+print('       possibly with a different polarization complement.')
+print('   4.2 the Coble marking is the isotropic pair F_1 = H + E_1, F_2 = H + E_2 of Pic(S), checked in')
+print('       section 0 to satisfy the definition.  Other isotropic pairs of Pic(S) realize h_Co as')
+print('       well; inside the family used they lie in one O(S_Co)-orbit, but the family is not proved')
+print('       to be the only one.')
+print('   4.3 neither L_K3 nor the two embeddings are built, so nothing here tests the extension of any')
+print('       isometry over the ambient lattice.')
 print('')
 print('SUMMARY')
+print('  0. the retained polarization coordinates are verified against def:coble-polarization-classes')
+print('     and prop:coble-invariant-lattice at the owner: h_Co = 2H + E_1 + E_2, h_Co^2 = 2, and its')
+print('     pullback is 2f^*H + f^*E_1 + f^*E_2 of square 4.')
 if decided is False:
-    print('  OBSTRUCTION: the complements of the two polarizations are not isometric, so no isometry of')
-    print('  L_K3 carries h~_Co to h with these markings, and A20(2) cannot be closed by a labeled isometry.')
-    print('  The invariant recorded above is the complement lattice itself (rank, determinant, signature,')
-    print('  roots, discriminant group), not a single number, so the obstruction is stated as a lattice.')
+    print('  3. CONDITIONAL: for the modelled inputs the two polarization complements are not isometric')
+    print('     (both rank 10, det 2048, signature (0,10), |A| = 2048; 18 roots against 2), and')
+    print('     is_isometric_to returns False.  This is NOT yet a counterexample to A21: it is a')
+    print('     statement about M = S_En + <delta> unsaturated and the marking of 4.2.')
 elif decided is True:
-    print('  NECESSARY CONDITION MET, not yet A21: the complements are isometric.  Still owed are the')
-    print('  marked-pair isometry h~_Co -> h (the discriminant/gluing condition of Nikulin) and its')
-    print('  extension over L_K3 built as the gluing overlattice, through isometry_extends.')
+    print('  3. CONDITIONAL POSITIVE: for the modelled inputs the complements are isometric; the marked')
+    print('     pair isometry and its extension over L_K3 are still owed (4.3).')
 else:
-    print('  UNDECIDED: the owner has no exact classification for this pair.  Nothing is concluded, and the')
-    print('  handoff is an isometry decision for definite lattices of rank 10 with 2-power discriminant.')
-print('  Scope: M = S_En + <delta> unsatured, the Coble marking h~_Co = 2e + f_1 + f_2 (unique up to')
-print('  O(S_Co) within the a = 1 family of isotropic pairs), and the complements compared rather than the')
-print('  marked pairs or the ambient L_K3.  Nothing is claimed for other markings or for a saturated M.')
-print('OK: the comparison was made and its outcome recorded, whatever it is')
+    print('  3. UNDECIDED for the modelled inputs; nothing is concluded.')
+print('  To promote either verdict to A21 the premises 4.1-4.3 have to be discharged with the gluing')
+print('  and saturation built as maintained semantic constructions, and the extension tested by')
+print('  isometry_extends.  Until then A21 is open and no obstruction is recorded.')
+print('OK: one premise verified, one comparison reported as conditional, no obstruction claimed')

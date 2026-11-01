@@ -185,15 +185,19 @@ hypothesis in each case:
    $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for $\gent\subset\Orth(\ten)$ (A3) and for
    the Coble-side centralizer. A finite computation, no geometry in it.
 2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
-   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **That route is closed.** With the
-   retained markings the two polarization complements are not isometric — both rank $10$, determinant
-   $2048$, signature $(0,10)$, discriminant group of order $2048$, but $18$ vectors of square $-2$
-   against $2$ — and the owner returns a verified negative (`is_isometric_to`, in
-   `computations/reports/coble_labeled_embedding.py`). So no ambient isometry transports the Coble
-   labeling to the Enriques one, and the equality of the two groups, if true, has to be decided by
-   comparing their images in the finite group $\Orth(A_{T_\Co},q_{T_\Co})$ (item 1) or by another
-   argument. The obstruction is stated for the retained markings and with $\langle S_\En,\delta\rangle$
-   unsatured; other markings of the Coble polarization are not excluded by it.
+   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. Still open, with one premise tested
+   and the comparison itself conditional. Tested at the owner: the necessary condition that the two
+   polarization complements be isometric fails *for the inputs built so far* — the retained marking
+   $\tilde h_\Co = 2e+f_1+f_2$, verified against @def:coble-polarization-classes and
+   @prop:coble-invariant-lattice, against the complement of $h$ in $S_\En\oplus\ZZ\delta$ — both
+   complements of rank $10$, determinant $2048$, signature $(0,10)$, discriminant group of order $2048$,
+   with $18$ vectors of square $-2$ against $2$, `is_isometric_to` returning a verified negative
+   (`computations/reports/coble_labeled_embedding.py`). That is **not** a counterexample to the
+   comparison: the Enriques side is modelled unsaturated, whereas $\langle S_\En,\delta\rangle$ is
+   saturated in $\lkt$ under the gluing anti-isometry of @cons:embedding-gluing-data, which the book
+   gives as a construction and not as matrices, and other isotropic pairs in $\Pic(S)$ realize $h_\Co$
+   as well. To close the item: build $\lkt$ and both embeddings through the gluing, redo the comparison
+   on the saturated lattice, and test the extension with `isometry_extends`.
 3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
    @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
 
@@ -207,20 +211,23 @@ than uniqueness of the primitive embedding of $S_\Co$, and without it no direct 
 coordinate-independent. Still open, and it is a Coble-to-Coble statement.
 
 The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement, and it is
-settled negatively. Asked for: an isometry of $L_{K3}$ carrying the Coble labeling to the Enriques one
-with $\tilde h_\Co\mapsto h$. Needed for it, and refuted: an isometry of the two polarization
-complements. With the markings these chapters fix —
-$\tilde h_\Co = 2e+f_1+f_2\in S_\Co = \generators{2}\oplus\generators{-2}^{10}$ from the isotropic pair
-$F_i^2=0$, $F_1\cdot F_2=2$, unique up to $\Orth(S_\Co)$ within that family, and
-$\langle S_\En,\delta\rangle = U(2)\oplus E_8(2)\oplus\generators{-2}$ with $\delta$ primitive and no
-saturation — the complements both have rank $10$, determinant $2048$, signature $(0,10)$ and
-discriminant group of order $2048$, and are not isometric: $18$ vectors of square $-2$ against $2$.
-The owner's `is_isometric_to` returns a verified negative
-(`computations/reports/coble_labeled_embedding.py`). So no ambient isometry identifies the labelings,
-and the two groups cannot be compared by transportation. What is *not* excluded: another marking of
-the Coble polarization outside the isotropic family used, a saturated $\langle S_\En,\delta\rangle$
-(which would replace the tested complement by a sublattice of finite index of it), or equality of the
-groups as subgroups of $\Orth(T_\Co)$ without any ambient isometry — that last is A20 item 1.
+still open, with one premise verified and one tested conditionally. Verified at the owner
+(`computations/reports/coble_labeled_embedding.py`, section 0): the retained polarization coordinates.
+With $\Pic(S) = I_{1,10} = \generators{H, E_1,\ldots,E_{10}}$ as @prop:coble-invariant-lattice fixes it
+and $h_\Co = (H+E_1)+(H+E_2)$ satisfying @def:coble-polarization-classes ($F_i^2 = 0$, $F_1\cdot F_2=1$,
+$h_\Co^2 = 2$), the pullback formula of that proposition gives $\tilde h_\Co = 2e+f_1+f_2$ of square
+$4$, which is the vector the comparison uses. Tested conditionally: whether the complements of the two
+polarizations are isometric, a necessary condition for the labeled isometry. For the inputs built so
+far they are not — both rank $10$, determinant $2048$, signature $(0,10)$, discriminant group of order
+$2048$, and $18$ vectors of square $-2$ against $2$, with `is_isometric_to` returning a verified
+negative. **That is not a counterexample to the comparison.** The Enriques side there is modelled by
+$S_\En\oplus\ZZ\delta$ unsaturated, while the actual lattice is $\langle S_\En,\delta\rangle$ saturated in
+$L_{K3}$ under the gluing anti-isometry of @cons:embedding-gluing-data — a construction in the book,
+not explicit matrices — and other isotropic pairs in $\Pic(S)$ realize $h_\Co$ too.
+To close A21's Enriques half: build $L_{K3}$ and both embeddings through the gluing and saturation as
+maintained semantic constructions, redo the comparison there, and test the extension with
+`isometry_extends`. What is *not* excluded by anything here: equality of the two groups as subgroups of
+$\Orth(T_\Co)$ without any ambient isometry, which is A20 item 1.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The

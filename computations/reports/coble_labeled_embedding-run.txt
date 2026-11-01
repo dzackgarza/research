@@ -3,6 +3,12 @@ provenance
   Sage: 11.0.beta5
   image rootfs: $HOME/sage-image/rootfs, mounted read-only; repo bound at /repo
 
+0. the retained polarization, from its definition
+   Pic(S) = I_{1,10}: rank 11, det 1, signature (1, 10)
+   F_1 = H + E_1, F_2 = H + E_2: F_1^2 = 0, F_2^2 = 0, F_1.F_2 = 1
+   h_Co = F_1 + F_2: h_Co^2 = 2, div(h_Co) = 1
+   the book's pullback formula f^*D . f^*D' = 2 D.D' doubles coordinates and form, so
+   h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is the vector used below
 S_Co = <2> + <-2>^10: rank 11, det 2048, signature (1, 10)
   e^2 = 2, f_i^2 = -2, h~_Co^2 = 4, div(h~_Co) = 2
 M = S_En + <delta> = U(2) + E8(2) + <-2>: rank 11, det 2048, signature (1, 10)
@@ -14,15 +20,32 @@ Heegner: complement of the polarization has rank 10, det 2048, signature (0, 10)
     roots (square -2 vectors) in the complement: 2
     |A_complement| = 2048
 
+3. the comparison, on the modelled inputs only
 isometry decision of the two complements, by L.is_isometric_to:
   is_isometric_to returned False
 
+4. premises this verdict is conditional on
+   4.1 the Enriques side is modelled by M = S_En + <delta> unsatured.  The actual lattice is
+       M = <S_En, delta> saturated in L_K3, and its saturation is governed by the gluing
+       anti-isometry gamma of cons:embedding-gluing-data, which the book supplies as a
+       construction and not as explicit matrices.  A different gamma gives a different M,
+       possibly with a different polarization complement.
+   4.2 the Coble marking is the isotropic pair F_1 = H + E_1, F_2 = H + E_2 of Pic(S), checked in
+       section 0 to satisfy the definition.  Other isotropic pairs of Pic(S) realize h_Co as
+       well; inside the family used they lie in one O(S_Co)-orbit, but the family is not proved
+       to be the only one.
+   4.3 neither L_K3 nor the two embeddings are built, so nothing here tests the extension of any
+       isometry over the ambient lattice.
+
 SUMMARY
-  OBSTRUCTION: the complements of the two polarizations are not isometric, so no isometry of
-  L_K3 carries h~_Co to h with these markings, and A20(2) cannot be closed by a labeled isometry.
-  The invariant recorded above is the complement lattice itself (rank, determinant, signature,
-  roots, discriminant group), not a single number, so the obstruction is stated as a lattice.
-  Scope: M = S_En + <delta> unsatured, the Coble marking h~_Co = 2e + f_1 + f_2 (unique up to
-  O(S_Co) within the a = 1 family of isotropic pairs), and the complements compared rather than the
-  marked pairs or the ambient L_K3.  Nothing is claimed for other markings or for a saturated M.
-OK: the comparison was made and its outcome recorded, whatever it is
+  0. the retained polarization coordinates are verified against def:coble-polarization-classes
+     and prop:coble-invariant-lattice at the owner: h_Co = 2H + E_1 + E_2, h_Co^2 = 2, and its
+     pullback is 2f^*H + f^*E_1 + f^*E_2 of square 4.
+  3. CONDITIONAL: for the modelled inputs the two polarization complements are not isometric
+     (both rank 10, det 2048, signature (0,10), |A| = 2048; 18 roots against 2), and
+     is_isometric_to returns False.  This is NOT yet a counterexample to A21: it is a
+     statement about M = S_En + <delta> unsaturated and the marking of 4.2.
+  To promote either verdict to A21 the premises 4.1-4.3 have to be discharged with the gluing
+  and saturation built as maintained semantic constructions, and the extension tested by
+  isometry_extends.  Until then A21 is open and no obstruction is recorded.
+OK: one premise verified, one comparison reported as conditional, no obstruction claimed
