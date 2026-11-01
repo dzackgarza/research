@@ -1,4 +1,11 @@
-"""Orbits of maximal parabolic and maximal elliptic subdiagrams, under the labelled symmetries.
+"""Orbits of the maximal parabolic subdiagrams under the labelled symmetries (Type II only).
+
+SUPERSEDED for the elliptic side: the elliptic enumeration here was a local checker that
+maximalized within a rank cap, which made two "independent" readings identical by construction
+and tested nothing, and its cap was wrong besides (a Type III ray in rank 10 needs elliptic rank
+9, not 8).  Use computations/reports/sterk_owner_subdiagrams.py, which takes the subdiagrams from
+CoxeterDiagrams().maximal_elliptic_subdiagrams(connected=False).  The parabolic/Type II part here
+stands: its orbits were verified against the manuscript and are reproduced there.
 
     JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: \
     $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \
@@ -46,7 +53,7 @@ def orbits(group, sets):
     return reps
 
 
-def elliptic_of_rank(M, rank):
+def _retired_elliptic_of_rank(M, rank):
     """Subsets of exactly `rank` vertices whose restriction is negative definite."""
     n = M.nrows()
     good = []
@@ -59,7 +66,7 @@ def elliptic_of_rank(M, rank):
     return good
 
 
-def maximal_elliptic(M, rank):
+def _retired_maximal_elliptic(M, rank):
     """Inclusion-maximal subsets whose restriction is negative definite, of size <= rank."""
     n = M.nrows()
     good = []
@@ -81,13 +88,13 @@ for name, build in CUSPS:
     aut = G.automorphism_group(partition=partition, edge_labels=True, algorithm="sage")
     maxp = [frozenset(i for c in comps for i in c) for S, comps in
             maximal_parabolic_subdiagrams(M, rank=8)]
-    maxe = maximal_elliptic(M, rank=8)
+    maxe = _retired_maximal_elliptic(M, rank=8)
     key = name.split()[0]
     print("%-30s roots %2d  norm classes %s  |Aut| %d" %
           (name, M.nrows(), [len(c) for c in partition], aut.order()))
     print("   parabolic subdiagrams %2d -> orbits %2d   (manuscript Type II  %d)"
           % (len(maxp), len(orbits(aut, maxp)), MANUSCRIPT[key][0]))
-    e8 = elliptic_of_rank(M, 8)
+    e8 = _retired_elliptic_of_rank(M, 8)
     print("   elliptic of rank 8: %4d -> orbits %3d   | inclusion-maximal elliptic: %3d -> "
           "orbits %2d   (manuscript Type III %d)"
           % (len(e8), len(orbits(aut, e8)), len(maxe), len(orbits(aut, maxe)),

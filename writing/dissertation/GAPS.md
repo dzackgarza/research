@@ -127,12 +127,11 @@ What has since been settled is listed at the end, so that a reader can tell "res
   manuscript distinguishes cusp 1 by the label (10,10,0) and the others by (10,8,0), which does
   not by itself order them.
 
-  The reduction is done, on the maintained API's labelled action on the original vertices
+  The reduction is done on the maintained API's labelled action on the original vertices
   (G.add_vertices(range(n)) first, so no source root is only a partition member; vertices carry
   their norm through the partition, edges their labels; algorithm="sage" named explicitly, since
-  this image's default Bliss backend segfaults on the smallest input).  The run is
-  computations/reports/sterk_labelled_orbits.py with its transcript, and it verifies half the
-  chapter's counts and contradicts the other half:
+  this image's default Bliss backend segfaults on the smallest input).  It verifies the Type II
+  counts and says nothing yet about the Type III ones:
 
     representative                roots  |Aut|  parabolic orbits  manuscript Type II
     3.3.7   v = e                 12     4      4                 4     verified
@@ -141,22 +140,28 @@ What has since been settled is listed at the end, so that a reader can tell "res
     3.3.11  v = 2e' + f' + abar_1 11     2      4                 4     verified
     3.3.12  v = 2e + 2f + abar_1  14     8      5                 5     verified
 
-    representative                elliptic of rank 8  orbits  manuscript Type III
-    3.3.7   v = e                 114                 35       4      NOT reproduced
-    3.3.9   v = e'                 45                 45       8      NOT reproduced
-    3.3.10  v = e' + f' + abar_8  164                 84      15      NOT reproduced
-    3.3.11  v = 2e' + f' + abar_1 125                 65      12      NOT reproduced
-    3.3.12  v = 2e + 2f + abar_1  600                 88      17      NOT reproduced
+  A claim of "Type III does not reproduce" was made here and is withdrawn.  It came from a
+  selection error, not from the manuscript: v^perp/Zv has signature (1,9) and rank 10, and by
+  AET's Theorem 4.3 the cone dimension is the ambient rank minus the elliptic rank, so a Type III
+  *ray* (dimension one) needs elliptic rank 10 - 1 = 9, while rank 8 counts two-dimensional cones;
+  parabolic rank 8 stays right for the Type II rays.  The numbers I compared (35, 45, 84, 65, 88
+  against 4, 8, 15, 12, 17) were therefore orbits of the wrong-rank subdiagrams, and the agreement
+  between my two readings was tautological besides: the local maximal_elliptic(M, rank=8)
+  discarded subsets larger than 8 before testing maximality, so "rank exactly 8" and
+  "inclusion-maximal within rank 8" were the same set by construction and tested nothing.
 
-  So the Type II counts hold, and with them the representative-to-cusp order; the Type III counts
-  do not, and the gap is large rather than marginal.  Two readings were tested and give the same
-  numbers: negative definite principal submatrices of rank exactly 8, and inclusion-maximal ones.
-  Hence the manuscript's Type III numbers are not the orbits of elliptic subdiagrams under the
-  diagram's own labelled symmetries.  What they could be is either an orbit count under a larger
-  group -- the stabilizer Gamma_v rather than the diagram automorphisms, which this environment
-  cannot compute -- or a different class of subdiagram, or an error inherited from the earlier
-  draft.  Until one of those is settled the chapter's Type III claims are marked unverified, and the
-  Type II ones stand as verified.
+  The local checker is retired.  The Type III count is taken from the owner's enumeration instead,
+  CoxeterDiagrams().from_roots(labelled root family) followed by
+  maximal_elliptic_subdiagrams(connected=False), which is maximality by inclusion with no rank cap,
+  and its vertex sets are then acted on by the same verified full-Gram graph automorphisms rather
+  than by the coarser Coxeter-order group of the owner's own orbit methods.  That run
+  (computations/reports/sterk_owner_subdiagrams.py) is in progress.
+
+  The representative-to-subsection matching does not come from the counts: cusps 1 and 4 both have
+  four Type II orbits, so the count vector cannot order them.  The matching is read off the
+  manuscript's displayed subdiagram vertex sets -- cusp 1's four are
+  {0,1,2,4,5,6,7,8,11}, {0,1,3,4,5,6,7,8,10,11}, {0,1,2,3,5,6,7,8,11} and {0,1,2,3,4,5,6,7,9,10} in
+  the figure's indexing -- and compared with the owner-returned sets, independently of any count.
 
   So the chapter unit is not closed.  The actionable step is exact and needs no new source:
   reduce each representative's maximal parabolic subdiagrams to orbits under the symmetry group
