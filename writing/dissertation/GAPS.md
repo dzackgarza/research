@@ -371,6 +371,30 @@ What has since been settled is listed at the end, so that a reader can tell "res
   is diagram I (12 roots), cusp 2 diagram II (10), cusp 3 diagram III (12), cusp 4 diagram IV (11),
   cusp 5 diagram V (14).
 
+  The Type II counts, now computed at the owner.  sage-extensions
+  2a1babbbc530430f1836707d6f2a4e8ad7a458ee publishes the complete caller query:
+  is_componentwise_affine() accepts every nonempty subdiagram all of whose connected components are
+  affine -- a single affine component included -- and maximal_componentwise_affine_subdiagrams()
+  decides maximality over that whole family *before* any cap, with form_rank() the geometric rank
+  (vertices less nullity) and max_rank still the vertex-count cap.  Computations/reports/
+  sterk_type_ii_rays.py runs that query on the five cusp families and filters to form_rank() == 8
+  explicitly, because a cap is not an equality: it returns 9, 2, 4, 5 and 13 maximal componentwise-
+  affine subdiagrams, all of geometric rank 8 at these five cusps, and their orbit counts under the
+  labelled action are 4, 2, 3, 4 and 5, the chapter's list in all five entries.  Each cusp's
+  transport was re-decided on the signed Gram (4 of 4, 1 of 1, 2 of 2, 2 of 2 and 8 of 8 coset
+  elements pass), and the two families -- the reconstruction's a_i Gram and Sterk.diagrams()'s r_i --
+  are asserted to give the same rank-eight maximal unions element for element under it.  So the
+  Type II numbers are no longer local-checker output: they are the owner's, and they agree with the
+  provisional enumeration they replace.  The provisional numbers stay in the record as
+  sterk-cusp-diagrams-run.txt, and sterk_figure_labels.py no longer calls the reconstruction's
+  enumeration at all.
+
+  Two properties of the query, recorded so that a reader does not repeat the hazard: the family
+  includes a single affine component, so a connected affine subdiagram is in it -- is_parabolic_union(),
+  which needs at least two components, would have missed exactly those; and max_rank caps the vertex
+  count, not the geometric rank, so max_rank=8 is not the rank-eight condition and is not passed
+  anywhere in these two scripts.
+
   So, separated: the Type II counts are *computed and accepted*, from the reconstruction script's
   per-component enumeration of rank-8 semidefinite subdiagrams together with the labelled action;
   the lattice data are *computed and accepted*; the Type III counts are *computed and accepted* as
@@ -396,11 +420,8 @@ What has since been settled is listed at the end, so that a reader can tell "res
   is a different parameter from the library's max_rank; computations/reports/sterk_figure_labels.py
   calls it with 8 in that sense, and the two ought not to be read as the same thing.
 
-  The route is a single caller query, being completed in the library: all nonempty
-  componentwise-affine induced subdiagrams, the connected cases included, maximal under inclusion
-  first and then filtered by the explicit form rank.  Until it is consumed the Type II numbers are
-  not recomputed by any other means; in particular no second local subset checker is written for
-  them here.
+  That query has since landed -- see the paragraph below on the owner computation -- and the
+  provisional enumeration it replaces is kept only as the record of what was checked before it.
 
   The displayed subdiagrams, read from the chapter itself and transported through that map.  Cusp
   1 draws {0,1,2,4,5,6,7,8,11}, {0,1,3,4,5,6,7,8,10,11}, {0,1,2,3,5,6,7,8,11} and

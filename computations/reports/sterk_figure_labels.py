@@ -354,18 +354,17 @@ def main():
                   % (displayed, [i + 1 for i in sorted(wanted)], len(wanted), rank,
                      inertia, kind))
         if os.environ.get('STERK_REPS'):
-            # The Type II rays are the orbits of the maximal parabolic subdiagrams.
-            # The rank passed here is the reconstruction script's own, the *geometric*
-            # rank nodes minus components, so rank 8 means nine vertices in a single
-            # affine component.  It is not the library's max_rank, which bounds vertex
-            # count, and no max_rank is passed anywhere in this file.
-            # The enumeration is the reconstruction script's own -- a local per-component
-            # semidefinite test, not maintained-API output -- which is what the Type II
-            # counts were computed from and what they carry as provenance until the
-            # library's componentwise-affine query is consumed; the orbits are taken under
-            # the same labelled action as everywhere else.
-            found = [frozenset(vertex for component in components for vertex in component)
-                     for _, components in definitions['maximal_parabolic_subdiagrams'](M, 8)]
+            # The Type II rays are the orbits of the maximal componentwise-affine
+            # subdiagrams of geometric rank eight.  The query is the owner's --
+            # maximal_componentwise_affine_subdiagrams(max_form_rank=8) of
+            # sage-extensions 2a1babbbc530430f1836707d6f2a4e8ad7a458ee, whose family
+            # includes a single affine component and whose maximality is decided over
+            # the whole family before any cap -- and the cap is not an equality, so the
+            # results are filtered to form_rank() == 8, the geometric rank vertices minus
+            # nullity.  max_rank, the owner's vertex-count cap, is not passed here.
+            owner = list(D.maximal_componentwise_affine_subdiagrams(max_form_rank=8))
+            found = [frozenset(int(vertex) for vertex in subdiagram.index_set())
+                     for subdiagram in owner if int(subdiagram.form_rank()) == 8]
             action = Gs.automorphism_group(partition=ps, edge_labels=True, algorithm='sage')
             reps, remaining = [], list(found)
             while remaining:
@@ -373,7 +372,7 @@ def main():
                 reps.append(representative)
                 orbit = {frozenset(g(v) for v in representative) for g in action}
                 remaining = [other for other in remaining if other not in orbit]
-            print('   maximal parabolic subdiagrams %d -> %d orbits; representatives'
+            print('   maximal componentwise-affine subdiagrams of form rank 8: %d -> %d orbits'
                   % (len(found), len(reps)))
             for position, representative in enumerate(reps, start=1):
                 vertices = sorted(representative)
