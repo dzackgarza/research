@@ -1,67 +1,33 @@
-"""A21: the labeled embedding comparison -- what can be checked now, and what cannot.
+"""A21: the Coble-to-Enriques comparison, at the level the sources actually fix.
 
-STATUS.  Three things are established here, in this order: the retained polarization coordinates
-(section 0, owner-checked against the cited definitions); that the Enriques side needs no saturation,
-so the lattice used in section 2 is the actual <S_En, delta> and not a model of it (section 2.1, a
-two-line argument from S_En = C(2) with C even unimodular, with the owner confirming the hypothesis);
-and that two independent markings of the Coble polarization give isometric complements (section 1.1).
-With those, the negative of section 3 is a statement about the two labeled pairs constructed here, not
-about a model and about the marking it uses, NOT about every admissible marking: section 1.0 shows that
-admissibility does not pin the marking, and that a marking of the other U-splitting type passes the very
-test that fails for this one.  A21 is therefore open, and the obstruction concerns the marking, not the
-comparison.  What is also not built is L_K3 and the extension of any isometry over it (section 4.2); that
-matters for a *positive* verdict, not for the negative one, which needs only the complement test.
+    JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: \
+    PYTHONPATH=/repo/.scratch/se-provider-c546/src \
+    $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \
+        -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
+    /repo/computations/reports/coble_labeled_embedding.py
 
-The statement asked for.  A20(2) needs an isometry psi of L_K3 carrying the *Coble-labeled* structure
-to the *Enriques-labeled* one and the retained polarization to h:
+What is compared, and at what level.  The comparison A21 asks for is between *labeled* tuples
+(heegner report, sec-labeled-lattice-data): L_K3 with commuting nonsymplectic involutions I_Co and
+I_dP, a degree-4 class H fixed by both, a root alpha with alpha^2 = -2 and H.alpha = 0 fixed by I_Co,
+and a chamber in which alpha is effective and H is nef and big.  None of those labels is constructed
+here.  What is done is the coarser *unlabelled* comparison of the two polarizations inside their
+Picard and Enriques lattices, which is a necessary condition for the labeled comparison and not a
+substitute for it.
 
-    psi(T_Co^{Coble}) = T_Co^{Heegner},      psi(h~_Co) = h,
+The defining source for admissibility.  polarizations-and-loci.md fixes K_S = -3H + Sum_i E_i and puts
+the degree-2 numerical polarization h_Co inside K_S^perp (def:coble-polarization-classes);
+prop:canonical-perp-is-e10 gives the criterion: D = aH - Sum_i b_i E_i lies in K_S^perp exactly when
+Sum_i b_i = 3a.  Section 0.1 verifies that criterion on the vector it uses, which the square and
+pairing checks alone do not.
 
-where T_Co^{Coble} = S_Co^{perp L_K3}, T_Co^{Heegner} = delta^{perp T_En} inside T_En, so that
-psi(S_Co) = (T_Co^{Heegner})^{perp} = <S_En, delta> and psi(h~_Co) = h.
+The comparison, section 3.  An isometry carrying the Coble labeling to the Enriques one with
+h~_Co -> h would carry h~_Co^{perp S_Co} to h^{perp <S_En, delta>}; the two complements are compared
+with the owner's is_isometric_to, whose contract is a verified boolean.
 
-The marked data are the book's, fixed here and not varied:
-
-  Coble:    S_Co = <2> + <-2>^{10} = I_{1,10}(2) = (11,11,1)_1   (prop:coble-invariant-lattice),
-            basis e = f^*H (e^2 = 2) and f_i = f^*E_i (f_i^2 = -2), and
-            h~_Co = f^*h_Co = F~_1 + F~_2 with F~_i^2 = 0, F~_1.F~_2 = 2 (def:coble-polarization-classes,
-            with f^*D . f^*D' = 2 D.D' from the proof of prop:coble-invariant-lattice).  In these
-            coordinates h~_Co = 2e + f_1 + f_2 up to the sign of one f_i, which the isometry
-            f_i -> -f_i of S_Co absorbs, so the marked pair (S_Co, h~_Co) is the data.
-  Enriques: M = (T_Co^{Heegner})^{perp} = <S_En, delta> with S_En = U(2) + E8(2) = C(2),
-            C = U + E8(-1), h = e + f in the U(2) summand, h^2 = 4 (prop:gamma-en-two-gluing), and
-            delta the (-2)-vector of lem:coble-heegner-vector orthogonal to S_En.  This script models
-            M by S_En + <delta> on the nose, and says below what the saturation would change.
-
-A necessary condition, and where the owner decides it.  Both h~_Co and h are primitive vectors of
-square 4, so an isometry of the marked pairs restricts to an isometry of the orthogonal complements
-h~_Co^{perp} and h^{perp}; if those complements are not isometric, no psi exists with these markings.
-The complements are built by owner operations (v.sublattice() for the rank-one subobject and
-orthogonal_complement for its perp), their cheap invariants are printed, and the decision is
-L.is_isometric_to, whose contract is a *verified boolean* and which raises rather than returning a
-false negative when no exact classification decides the pair.  A False is an obstruction, an exception
-is recorded as undecided, and a True is only a necessary condition met -- the marked-pair isometry and
-its extension over L_K3 are then the next obligation (Nikulin's criterion, the owner's
-isometry_extends / isometry_extension on the ambient gluing).
-
-Scope of the obstruction, stated exactly.  Three things bound it and none of them is silently assumed:
-
-  * the Heegner side is modelled by M = S_En + <delta> on the nose, i.e. with delta primitive in
-    <S_En, delta> and no saturation gain in L_K3.  If the saturation of S_En + <delta> is larger, the
-    complement tested here is replaced by a sublattice of finite index of it and the comparison has to
-    be redone; that is an open side condition, not a conclusion;
-  * the Coble marking tested is h~_Co = 2e + f_1 + f_2, coming from F~_i = e + f_i (i = 1, 2) for the
-    isotropic pair.  Every admissible pair in the a = 1 family, h~_Co = 2e + f_i +- f_j with i != j,
-    lies in one O(S_Co)-orbit -- permute the f's and change signs -- so within that family the marked
-    pair is unique.  Whether some isotropic pair outside that family realizes h_Co = F_1 + F_2 as well
-    is a separate question this script does not settle;
-  * the complements are compared, not the marked pairs, and not the ambient L_K3.  A matching
-    complement isometry would still owe the marked-pair condition and its extension; a mismatching one
-    already obstructs, which is the case here.
-
-What this script does not do: it does not build L_K3 as the gluing overlattice of either decomposition,
-and it does not claim that a matching complement isometry extends.  Those are the phase-two
-obligations, stated in the summary and in TODO A21.
+What earlier versions of this script got wrong, and section 1 records: they used the classes H + E_1
+and 2H + E_1 + ... , which are not in K_S^perp (H + E_1 is four steps away from it), so the negative
+they produced was about non-admissible markings and said nothing about A21; and they treated an
+unlabelled isometry of Pic(S) as though it were the labeled comparison.
 
 Provenance is printed before anything is computed.
 """
@@ -84,217 +50,124 @@ print('')
 
 U = matrix(ZZ, [[0, 1], [1, 0]])
 E8 = -CartanMatrix(['E', 8])
-C_GRAM = block_diagonal_matrix(U, E8)          # C = U + E8(-1), even unimodular, signature (1,9)
-C = Lattices(ZZ)([list(row) for row in C_GRAM.rows()])
 
-# ---------------------------------------------------------------- 0. the polarization coordinates
-# prop:coble-invariant-lattice fixes Pic(S) = <H, E_1, ..., E_10> = I_{1,10} with H^2 = 1 and
-# E_i^2 = -1, all orthogonal, and its proof fixes f^*D . f^*D' = 2 D.D'.  def:coble-polarization-classes
-# takes h_Co = F_1 + F_2 with F_i^2 = 0, F_1.F_2 = 1 in the non-degenerate case.  Sections 0.1-0.2 check
-# that such classes exist, that h_Co has the stated square, and that its pullback is the vector used
-# below.
-PIC_GRAM = block_diagonal_matrix(matrix(ZZ, [[1]]), -matrix.identity(ZZ, 10))
-PicS = Lattices(ZZ)([list(row) for row in PIC_GRAM.rows()])
-p_basis = [PicS.basis_vector(i) for i in range(PicS.rank())]
-H_class, exc = p_basis[0], p_basis[1:]
-print('0. the retained polarization, from its definition')
-print('   Pic(S) = I_{1,10}: rank %d, det %s, signature %s'
+PicS = Lattices(ZZ)([list(row) for row in
+                     block_diagonal_matrix(matrix(ZZ, [[1]]), -matrix.identity(ZZ, 10)).rows()])
+S_Co = Lattices(ZZ)([list(row) for row in
+                     block_diagonal_matrix(matrix(ZZ, [[2]]), -2 * matrix.identity(ZZ, 10)).rows()])
+M = Lattices(ZZ)([list(row) for row in
+                  block_diagonal_matrix(matrix(ZZ, [[-2]]), 2 * U, 2 * E8).rows()])
+
+p = [PicS.basis_vector(i) for i in range(PicS.rank())]
+H_class, exc = p[0], p[1:]
+S_Co_ring = S_Co.base_ring()
+
+# ---------------------------------------------------------------- 0.1 admissibility
+print('0.1 admissibility, from the defining source')
+K_S = -3 * H_class + sum(exc, PicS.zero())
+print('    Pic(S) = I_{1,10}: rank %d, det %s, signature %s'
       % (PicS.rank(), PicS.determinant(), PicS.signature_pair()))
-F1 = H_class + exc[0]
-F2 = H_class + exc[1]
-print('   F_1 = H + E_1, F_2 = H + E_2: F_1^2 = %d, F_2^2 = %d, F_1.F_2 = %d'
-      % (F1.q(), F2.q(), F1.b(F2)))
-assert F1.q() == 0 and F2.q() == 0 and F1.b(F2) == 1
+print('    K_S = -3H + Sum E_i: square %d, divisibility %d' % (K_S.q(), PicS.div(K_S)))
+F1 = 3 * H_class - sum(exc[:9], PicS.zero())            # 3H - E_1 - ... - E_9
+F2 = 3 * H_class - sum(exc[:8], PicS.zero()) - exc[9]   # 3H - E_1 - ... - E_8 - E_10
+for name, F in (('F_1 = 3H - E_1 - ... - E_9', F1), ('F_2 = 3H - E_1 - ... - E_8 - E_10', F2)):
+    print('    %s: square %d, D.K_S = %d, divisibility %d'
+          % (name, F.q(), F.b(K_S), PicS.div(F)))
+    assert F.q() == 0 and F.b(K_S) == 0
+print('    F_1.F_2 = %d' % F1.b(F2))
+assert F1.b(F2) == 1
 h_Co = F1 + F2
-print('   h_Co = F_1 + F_2: h_Co^2 = %d, div(h_Co) = %d' % (h_Co.q(), PicS.div(h_Co)))
-assert h_Co.q() == 2
-print('   the book\'s pullback formula f^*D . f^*D\' = 2 D.D\' doubles coordinates and form, so')
-print('   h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is the vector used below')
+print('    h_Co = F_1 + F_2: square %d, h_Co.K_S = %d, divisibility %d'
+      % (h_Co.q(), h_Co.b(K_S), PicS.div(h_Co)))
+assert h_Co.q() == 2 and h_Co.b(K_S) == 0
 
-# ---------------------------------------------------------------- 1. the Coble marked pair
-S_CO_GRAM = block_diagonal_matrix(matrix(ZZ, [[2]]), -2 * matrix.identity(ZZ, 10))
-S_Co = Lattices(ZZ)([list(row) for row in S_CO_GRAM.rows()])
-Sco_ring = S_Co.base_ring()
-s_basis = [S_Co.basis_vector(i) for i in range(S_Co.rank())]
-e = s_basis[0]
-f1, f2 = s_basis[1], s_basis[2]
-h_tilde = 2 * e + f1 + f2
-print('S_Co = <2> + <-2>^10: rank %d, det %s, signature %s'
-      % (S_Co.rank(), S_Co.determinant(), S_Co.signature_pair()))
-print('  e^2 = %d, f_i^2 = %d, h~_Co^2 = %d, div(h~_Co) = %d'
-      % (e.q(), f1.q(), h_tilde.q(), S_Co.div(h_tilde)))
+# prop:canonical-perp-is-e10's criterion on this vector: D = aH - Sum b_i E_i with Sum b_i = 3a.
+coords = [int(h_Co.to_vector()(i)) for i in range(PicS.rank())]
+a = coords[0]
+b_list = [-value for value in coords[1:]]
+print('    in the form aH - Sum b_i E_i: a = %d, Sum b_i = %d, 3a = %d, D^2 = %d'
+      % (a, sum(b_list), 3 * a, a * a - sum(value * value for value in b_list)))
+assert sum(b_list) == 3 * a, 'the criterion of prop:canonical-perp-is-e10 fails'
+
+# ---------------------------------------------------------------- 0.2 the pullback
+print('')
+print('0.2 the pullback marking')
+h_tilde = S_Co.linear_combination({i: S_Co_ring(coords[i]) for i in range(11) if coords[i]})
+print('    f^*D . f^*D\' = 2 D.D\' (prop:coble-invariant-lattice): same coordinates, doubled form, so')
+print('    h~_Co has square %d and divisibility %d' % (h_tilde.q(), S_Co.div(h_tilde)))
 assert h_tilde.q() == 4
+comp_Coble = S_Co.orthogonal_complement(h_tilde.sublattice())
+print('    its complement: rank %d, det %s, signature %s, roots %d'
+      % (comp_Coble.rank(), comp_Coble.determinant(), comp_Coble.signature_pair(),
+         len(list(comp_Coble.roots()))))
 
-# ---------------------------------------------------------------- 1.0 admissibility does not pin the marking
-# An earlier version of this script argued that all admissible markings are one O(S_Co)-orbit, from the
-# unimodularity of U = <F_1,F_2> and the claimed uniqueness of the odd unimodular negative definite
-# lattice of rank 9.  That claim is false and the argument is withdrawn: there are at least two such
-# lattices, and both occur as complements of U-splittings of Pic(S).  What replaces it is the pair of
-# statements below, and the consequence that the comparison's answer depends on the marking.
-print('1.0 admissibility does not pin the marking')
-neg9 = Lattices(ZZ)([list(row) for row in (-matrix.identity(ZZ, 9)).rows()])
-e8m1 = Lattices(ZZ)([list(row) for row in block_diagonal_matrix(E8, matrix(ZZ, [[-1]])).rows()])
-for name, lat in (('<-1>^9', neg9), ('E8(-1) + <-1>', e8m1)):
-    print('    %s: rank %d, det %s, even %s, vectors of square -1: %d'
-          % (name, lat.rank(), lat.determinant(), lat.is_even(),
-             len(list(lat.vectors_of_square_and_divisibility(-1, 1)))))
-print('    the two are isometric: %s' % neg9.is_isometric_to(e8m1))
-assert neg9.is_isometric_to(e8m1) is False
-PIC_B_GRAM = block_diagonal_matrix(U, E8, matrix(ZZ, [[-1]]))
-PicB = Lattices(ZZ)([list(row) for row in PIC_B_GRAM.rows()])
-print('    U + <-1>^9 and U + E8(-1) + <-1> are odd unimodular of signature (1,10): %s %s'
-      % (PicS.signature_pair(), PicB.signature_pair()))
-print('    hence both are I_{1,10}, and it carries U-splittings with both complement types: %s'
-      % PicS.is_isometric_to(PicB))
-assert PicS.is_isometric_to(PicB) is True
-psi = PicB.isometry_to(PicS)
-F1_two, F2_two = psi(PicB.basis_vector(0)), psi(PicB.basis_vector(1))
-print('    a second-type admissible pair in the book\'s coordinates: F_1^2 = %d, F_2^2 = %d, F_1.F_2 = %d'
-      % (F1_two.q(), F2_two.q(), F1_two.b(F2_two)))
-assert F1_two.q() == 0 and F2_two.q() == 0 and F1_two.b(F2_two) == 1
-comp_two = PicS.orthogonal_complement(PicS.sublattice_from([F1_two, F2_two]))
-print('    its complement has %d vectors of square -1, i.e. it is E8(-1) + <-1>, not <-1>^9'
-      % len(list(comp_two.vectors_of_square_and_divisibility(-1, 1))))
-h_Co_two = F1_two + F2_two
-print('    h_Co = F_1 + F_2: square %d, div %d' % (h_Co_two.q(), PicS.div(h_Co_two)))
-assert h_Co_two.q() == 2
-coordinates = h_Co_two.to_vector()
-pullback_terms = {int(label): Sco_ring(int(coordinates(label)))
-                  for label in coordinates.support().domain()}
-h_tilde_two = S_Co.linear_combination(pullback_terms)
-print('    its pullback h~ has square %d and divisibility %d' % (h_tilde_two.q(), S_Co.div(h_tilde_two)))
-assert h_tilde_two.q() == 4
-comp_two_S = S_Co.orthogonal_complement(h_tilde_two.sublattice())
-print('    complement of that marking: rank %d, det %s, signature %s, roots %d'
-      % (comp_two_S.rank(), comp_two_S.determinant(), comp_two_S.signature_pair(),
-         len(list(comp_two_S.roots()))))
+# ---------------------------------------------------------------- 1. what the earlier classes were
+print('')
+print('1. the classes an earlier version of this script used were not admissible')
+for name, F in (('H + E_1', H_class + exc[0]),
+                ('2H + E_1 + E_2 + E_3 + E_4', 2 * H_class + sum(exc[:4], PicS.zero()))):
+    print('    %s: square %d, D.K_S = %d (admissible only if that is 0)' % (name, F.q(), F.b(K_S)))
+    assert F.b(K_S) != 0
+print('    so the negative those classes produced concerns non-admissible markings and is not evidence')
+print('    about A21.  H + E_1 is the class that gave the earlier h~ = 2e + f_1 + f_2 with 18 roots.')
 
-# ---------------------------------------------------------------- 1.1 a second admissible marking
-# h_Co = F_1 + F_2 admits isotropic pairs outside the a = 1 family used above; the geometric
-# description fixes no single family, so a second one is tested.  F~_1 = 2e + f_1+..+f_4 and
-# F~_2 = e + f_1 are isotropic with pairing 2, so h~' = F~_1 + F~_2 is an admissible marking.
-F1_alt = 2 * e + f1 + f2 + s_basis[3] + s_basis[4]
-F2_alt = e + f1
-print('   second marking: F~_1^2 = %d, F~_2^2 = %d, F~_1.F~_2 = %d'
-      % (F1_alt.q(), F2_alt.q(), F1_alt.b(F2_alt)))
-assert F1_alt.q() == 0 and F2_alt.q() == 0 and F1_alt.b(F2_alt) == 2
-h_tilde_alt = F1_alt + F2_alt
-print('   h~\' = F~_1 + F~_2: square %d' % h_tilde_alt.q())
-assert h_tilde_alt.q() == 4
-comp_Coble_alt = S_Co.orthogonal_complement(h_tilde_alt.sublattice())
-print('   its complement: rank %d, det %s, signature %s, roots %d'
-      % (comp_Coble_alt.rank(), comp_Coble_alt.determinant(),
-         comp_Coble_alt.signature_pair(), len(list(comp_Coble_alt.roots()))))
-
-# ---------------------------------------------------------------- 2. the Heegner marked pair
-M_GRAM = block_diagonal_matrix(matrix(ZZ, [[-2]]), 2 * U, 2 * E8)
-M = Lattices(ZZ)([list(row) for row in M_GRAM.rows()])
-m_basis = [M.basis_vector(i) for i in range(M.rank())]
-delta = m_basis[0]
-h = m_basis[1] + m_basis[2]
-print('M = S_En + <delta> = U(2) + E8(2) + <-2>: rank %d, det %s, signature %s'
+# ---------------------------------------------------------------- 2. the Enriques side
+print('')
+print('2. the Enriques side')
+h = M.basis_vector(1) + M.basis_vector(2)
+print('    M = S_En + <delta> = U(2) + E8(2) + <-2>: rank %d, det %s, signature %s'
       % (M.rank(), M.determinant(), M.signature_pair()))
-print('  delta^2 = %d, delta.h = %d, h^2 = %d, div(h) = %d'
-      % (delta.q(), delta.b(h), h.q(), M.div(h)))
-assert h.q() == 4 and delta.b(h) == 0
-
-# ---------------------------------------------------------------- 2.1 no saturation of <S_En, delta>
-# M = <S_En, delta> could a priori be an overlattice of S_En + Z delta, index 2, obtained by adjoining
-# (x + delta)/2 for some x in S_En^#.  It cannot: S_En = C(2) with C even unimodular, so
-# S_En^# = (1/2)C and for x = v/2 the square is x^2 = 2 (v/2)^2_C = v^2_C / 2, an integer because C is
-# even; then (x + delta/2)^2 = x^2 - 1/2 is not an integer, so no such half-vector is integral and
-# S_En + Z delta is already saturated.  The hypothesis of that argument is checked here.
-print('  saturation of <S_En, delta>: hypothesis check')
-print('    C = U + E8(-1): rank %d, determinant %s, even %s, signature %s'
-      % (C.rank(), C.determinant(), C.is_even(), C.signature_pair()))
+print('    h = e + f: square %d, h.delta = %d, divisibility %d'
+      % (h.q(), h.b(M.basis_vector(0)), M.div(h)))
+C = Lattices(ZZ)([list(row) for row in block_diagonal_matrix(U, E8).rows()])
+print('    C = U + E8(-1): det %s, even %s' % (C.determinant(), C.is_even()))
 assert abs(int(C.determinant())) == 1 and C.is_even()
-assert M_GRAM == block_diagonal_matrix(matrix(ZZ, [[-2]]), 2 * C_GRAM), \
-    'the S_En block of M is not 2*C'
-assert abs(int(C.determinant())) == 1 and C.is_even()
-print('    hence S_En^# = (1/2)C and every square in it is an integer, so no (x + delta)/2 is integral')
-print('    M = S_En + Z delta is saturated; section 2 used the actual lattice, not a model of it')
-
-# ---------------------------------------------------------------- 1.0.2 the marked pair, at class level
-# The marked-pair question for the second-type marking: is there an isometry of M carrying Psi(h~) to h?
-# Both vectors have square 4 and divisibility 2, so the discriminant-level condition is the orbit of
-# their half-classes under O(A_M).  It holds.  That is necessary and, for this pair, not sufficient to
-# apply the book's Dawes criterion (thm:coble-heegner-line-unique), whose hypotheses include an indefinite
-# complement: the complement of a positive vector in a lattice of signature (1,10) is negative definite.
-print('1.0.2 the second-type marked pair at class level')
-Psi = S_Co.isometry_to(M)
-w = Psi(h_tilde_two)
-print('    Psi(h~): square %d, divisibility %d' % (w.q(), M.div(w)))
-c_w = M.discriminant_class(M.primitive_dual(w))
-c_h = M.discriminant_class(M.primitive_dual(h))
-A_M = M.discriminant_group()
-O_AM = A_M.orthogonal_group()
-print('    [Psi(h~)/2] and [h/2]: q values %s and %s' % (c_w.q(), c_h.q()))
-orbit = O_AM.orbit(c_w)
-print('    O(A_M)-orbit of [Psi(h~)/2] has %d classes; [h/2] lies in it: %s'
-      % (len(orbit), c_h in orbit))
-print('    necessary condition at the discriminant level: %s' % (c_h in orbit))
-print('    NOT sufficient for the marked-pair isometry: the Dawes criterion of')
-print('    thm:coble-heegner-line-unique needs an indefinite complement, and a positive vector in')
-print('    signature (1,10) has a negative definite one.  The vector-level question stays open here.')
+print('    so S_En^# = (1/2)C has integral squares, no (x + delta/2) is integral, and')
+print('    <S_En, delta> = S_En + Z delta is saturated: this section compares the actual lattice')
+comp_Heegner = M.orthogonal_complement(h.sublattice())
+print('    its polarization complement: rank %d, det %s, signature %s, roots %d'
+      % (comp_Heegner.rank(), comp_Heegner.determinant(), comp_Heegner.signature_pair(),
+         len(list(comp_Heegner.roots()))))
 
 # ---------------------------------------------------------------- 3. the comparison
-comp_Coble = S_Co.orthogonal_complement(h_tilde.sublattice())
-comp_Heegner = M.orthogonal_complement(h.sublattice())
-for name, comp, vector in (('Coble', comp_Coble, h_tilde), ('Heegner', comp_Heegner, h)):
-    print('%s: complement of the polarization has rank %d, det %s, signature %s'
-          % (name, comp.rank(), comp.determinant(), comp.signature_pair()))
-    roots = list(comp.roots())
-    print('    roots (square -2 vectors) in the complement: %d' % len(roots))
-    print('    |A_complement| = %d' % comp.discriminant_group().cardinality())
-
-# ---------------------------------------------------------------- the owner's verified decision
 print('')
-print('3. the comparison')
-print('the two markings of section 1 give isometric complements: %s'
-      % comp_Coble.is_isometric_to(comp_Coble_alt))
-print('the marking of section 1.0 does not behave like them: its complement is isometric to the Heegner')
-print('one: %s' % comp_two_S.is_isometric_to(comp_Heegner))
-print('isometry decision of the two complements, by L.is_isometric_to:')
+print('3. the comparison of the complements, owner-decided')
 try:
     decision = comp_Coble.is_isometric_to(comp_Heegner)
-    print('  is_isometric_to returned %s' % decision)
-    decided = decision
+    print('   is_isometric_to returned %s' % decision)
 except Exception as exc:
-    print('  UNDECIDED: %s: %s' % (type(exc).__name__, str(exc)[:400]))
-    decided = None
+    print('   UNDECIDED: %s: %s' % (type(exc).__name__, str(exc)[:300]))
+    decision = None
 
-# ---------------------------------------------------------------- 4. what remains open
+# ---------------------------------------------------------------- 4. what remains
 print('')
-print('4. what is still not established, and what it would take')
-print('   4.1 the markings: not settled, and the answer depends on them.  Section 1.0 constructs an')
-print('       admissible marking whose complement IS isometric to the Heegner one, so the necessary')
-print('       condition can hold.  Which markings arise from actual Coble surfaces is geometric data, the')
-print('       subject of prob:coble-rigidity, not a lattice classification.')
-print('   4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built')
-print('       here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a')
-print('       POSITIVE verdict, not for the negative one, which rests on the complement test alone.')
-print('   4.3 the Coble side uses S_Co = I_{1,10}(2) as prop:coble-invariant-lattice gives it; nothing')
-print('       here depends on a choice of Coble surface beyond the discarded data of section 0.')
+print('4. what this does not do')
+print('   4.1 the labels.  A21 compares tuples (L_K3, I_Co, I_dP, H, alpha, C): commuting')
+print('       nonsymplectic involutions, H^2 = 4 fixed by both, alpha^2 = -2 with H.alpha = 0 fixed')
+print('       by I_Co, and a chamber with alpha effective and H nef and big (heegner report,')
+print('       sec-labeled-lattice-data).  None is built here, so this is an unlabelled comparison of')
+print('       polarizations, necessary for the labeled one and not a substitute for it.')
+print('   4.2 the marked pair.  Matching complements is necessary, not sufficient, for an isometry')
+print('       carrying h~_Co to h.  The criterion of thm:coble-heegner-line-unique needs an indefinite')
+print('       complement and a positive vector in signature (1,10) has a negative definite one, so the')
+print('       vector-level question has to be decided directly.')
+print('   4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is')
+print('       extended over it with isometry_extends and no chamber is transported.')
 print('')
 print('SUMMARY')
-print('  0. the retained polarization coordinates are verified against def:coble-polarization-classes')
-print('     and prop:coble-invariant-lattice at the owner: h_Co = 2H + E_1 + E_2, h_Co^2 = 2, pullback')
-print('     2f^*H + f^*E_1 + f^*E_2 of square 4.')
-print('  2.1 <S_En, delta> is saturated, so section 2 compares the actual Enriques lattice.')
-if decided is False:
-    print('  3. the two polarization complements are not isometric: rank 10, det 2048, signature (0,10)')
-    print('     and discriminant group of order 2048 on both sides, but 18 roots against 2, with')
-    print('     is_isometric_to returning a verified negative.')
-    print('  1.0 the negative does NOT cover every admissible marking: admissibility does not pin the')
-    print('     marking.  <-1>^9 and E8(-1) + <-1> are both odd unimodular negative definite of rank 9')
-    print('     and are not isometric, and I_{1,10} carries U-splittings with both complement types; for')
-    print('     the second type the pullback marking has a complement isometric to the Heegner one.  The')
-    print('     answer depends on the marking, and the obstruction concerns the marking of sections 1 and')
-    print('     3 only.')
-elif decided is True:
-    print('  3. the complements ARE isometric: the marked-pair isometry and its extension over L_K3 are')
-    print('     the remaining obligations (4.2).')
+print('  0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to')
+print('      K_S = -3H + Sum E_i with F_1.F_2 = 1, so h_Co = F_1 + F_2 lies in K_S^perp with h_Co^2 = 2,')
+print('      matching the criterion Sum b_i = 3a of prop:canonical-perp-is-e10 (a = 6, sum 18).')
+print('  0.2 its pullback has square 4; the polarization complement has rank 10, det 2048, sig (0,10).')
+print('  1. the classes earlier versions used (H + E_1, 2H + ...) are not in K_S^perp, so the negative')
+print('      they gave is about non-admissible markings and A21 was never obstructed by it.')
+if decision is True:
+    print('  3. the two complements ARE isometric: the necessary condition holds for this admissible')
+    print('      marking, and what is owed is 4.1-4.3.')
+elif decision is False:
+    print('  3. the complements are not isometric, so no labeled isometry exists even before the labels')
+    print('      are imposed; that would obstruct A21 for this marking.')
 else:
-    print('  3. UNDECIDED; nothing is concluded.')
-print('OK: coordinates verified, saturation proved, complements compared for three markings, and the')
-print('    dependence of the verdict on the marking recorded -- A21 is open, not obstructed')
+    print('  3. the owner could not decide the pair; nothing is concluded.')
+print('OK: admissibility verified against its defining source, the comparison decided at the owner, and')
+print('    its relation to A21 stated')

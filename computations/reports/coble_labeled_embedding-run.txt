@@ -3,80 +3,58 @@ provenance
   Sage: 11.0.beta5
   image rootfs: $HOME/sage-image/rootfs, mounted read-only; repo bound at /repo
 
-0. the retained polarization, from its definition
-   Pic(S) = I_{1,10}: rank 11, det 1, signature (1, 10)
-   F_1 = H + E_1, F_2 = H + E_2: F_1^2 = 0, F_2^2 = 0, F_1.F_2 = 1
-   h_Co = F_1 + F_2: h_Co^2 = 2, div(h_Co) = 1
-   the book's pullback formula f^*D . f^*D' = 2 D.D' doubles coordinates and form, so
-   h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is the vector used below
-S_Co = <2> + <-2>^10: rank 11, det 2048, signature (1, 10)
-  e^2 = 2, f_i^2 = -2, h~_Co^2 = 4, div(h~_Co) = 2
-1.0 admissibility does not pin the marking
-    <-1>^9: rank 9, det -1, even False, vectors of square -1: 18
-    E8(-1) + <-1>: rank 9, det -1, even False, vectors of square -1: 2
-    the two are isometric: False
-    U + <-1>^9 and U + E8(-1) + <-1> are odd unimodular of signature (1,10): (1, 10) (1, 10)
-    hence both are I_{1,10}, and it carries U-splittings with both complement types: True
-    a second-type admissible pair in the book's coordinates: F_1^2 = 0, F_2^2 = 0, F_1.F_2 = 1
-    its complement has 2 vectors of square -1, i.e. it is E8(-1) + <-1>, not <-1>^9
-    h_Co = F_1 + F_2: square 2, div 1
-    its pullback h~ has square 4 and divisibility 2
-    complement of that marking: rank 10, det 2048, signature (0, 10), roots 2
-   second marking: F~_1^2 = 0, F~_2^2 = 0, F~_1.F~_2 = 2
-   h~' = F~_1 + F~_2: square 4
-   its complement: rank 10, det 2048, signature (0, 10), roots 18
-M = S_En + <delta> = U(2) + E8(2) + <-2>: rank 11, det 2048, signature (1, 10)
-  delta^2 = -2, delta.h = 0, h^2 = 4, div(h) = 2
-  saturation of <S_En, delta>: hypothesis check
-    C = U + E8(-1): rank 10, determinant -1, even True, signature (1, 9)
-    hence S_En^# = (1/2)C and every square in it is an integer, so no (x + delta)/2 is integral
-    M = S_En + Z delta is saturated; section 2 used the actual lattice, not a model of it
-1.0.2 the second-type marked pair at class level
-    Psi(h~): square 4, divisibility 2
-    [Psi(h~)/2] and [h/2]: q values [1] in Fraction Field of Integer Ring / (2)Integer Ring and [1] in Fraction Field of Integer Ring / (2)Integer Ring
-    O(A_M)-orbit of [Psi(h~)/2] has 496 classes; [h/2] lies in it: True
-    necessary condition at the discriminant level: True
-    NOT sufficient for the marked-pair isometry: the Dawes criterion of
-    thm:coble-heegner-line-unique needs an indefinite complement, and a positive vector in
-    signature (1,10) has a negative definite one.  The vector-level question stays open here.
-Coble: complement of the polarization has rank 10, det 2048, signature (0, 10)
-    roots (square -2 vectors) in the complement: 18
-    |A_complement| = 2048
-Heegner: complement of the polarization has rank 10, det 2048, signature (0, 10)
-    roots (square -2 vectors) in the complement: 2
-    |A_complement| = 2048
+0.1 admissibility, from the defining source
+    Pic(S) = I_{1,10}: rank 11, det 1, signature (1, 10)
+    K_S = -3H + Sum E_i: square -1, divisibility 1
+    F_1 = 3H - E_1 - ... - E_9: square 0, D.K_S = 0, divisibility 1
+    F_2 = 3H - E_1 - ... - E_8 - E_10: square 0, D.K_S = 0, divisibility 1
+    F_1.F_2 = 1
+    h_Co = F_1 + F_2: square 2, h_Co.K_S = 0, divisibility 1
+    in the form aH - Sum b_i E_i: a = 6, Sum b_i = 18, 3a = 18, D^2 = 2
 
-3. the comparison
-the two markings of section 1 give isometric complements: True
-the marking of section 1.0 does not behave like them: its complement is isometric to the Heegner
-one: True
-isometry decision of the two complements, by L.is_isometric_to:
-  is_isometric_to returned False
+0.2 the pullback marking
+    f^*D . f^*D' = 2 D.D' (prop:coble-invariant-lattice): same coordinates, doubled form, so
+    h~_Co has square 4 and divisibility 2
+    its complement: rank 10, det 2048, signature (0, 10), roots 2
 
-4. what is still not established, and what it would take
-   4.1 the markings: not settled, and the answer depends on them.  Section 1.0 constructs an
-       admissible marking whose complement IS isometric to the Heegner one, so the necessary
-       condition can hold.  Which markings arise from actual Coble surfaces is geometric data, the
-       subject of prob:coble-rigidity, not a lattice classification.
-   4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built
-       here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a
-       POSITIVE verdict, not for the negative one, which rests on the complement test alone.
-   4.3 the Coble side uses S_Co = I_{1,10}(2) as prop:coble-invariant-lattice gives it; nothing
-       here depends on a choice of Coble surface beyond the discarded data of section 0.
+1. the classes an earlier version of this script used were not admissible
+    H + E_1: square 0, D.K_S = -4 (admissible only if that is 0)
+    2H + E_1 + E_2 + E_3 + E_4: square 0, D.K_S = -10 (admissible only if that is 0)
+    so the negative those classes produced concerns non-admissible markings and is not evidence
+    about A21.  H + E_1 is the class that gave the earlier h~ = 2e + f_1 + f_2 with 18 roots.
+
+2. the Enriques side
+    M = S_En + <delta> = U(2) + E8(2) + <-2>: rank 11, det 2048, signature (1, 10)
+    h = e + f: square 4, h.delta = 0, divisibility 2
+    C = U + E8(-1): det -1, even True
+    so S_En^# = (1/2)C has integral squares, no (x + delta/2) is integral, and
+    <S_En, delta> = S_En + Z delta is saturated: this section compares the actual lattice
+    its polarization complement: rank 10, det 2048, signature (0, 10), roots 2
+
+3. the comparison of the complements, owner-decided
+   is_isometric_to returned True
+
+4. what this does not do
+   4.1 the labels.  A21 compares tuples (L_K3, I_Co, I_dP, H, alpha, C): commuting
+       nonsymplectic involutions, H^2 = 4 fixed by both, alpha^2 = -2 with H.alpha = 0 fixed
+       by I_Co, and a chamber with alpha effective and H nef and big (heegner report,
+       sec-labeled-lattice-data).  None is built here, so this is an unlabelled comparison of
+       polarizations, necessary for the labeled one and not a substitute for it.
+   4.2 the marked pair.  Matching complements is necessary, not sufficient, for an isometry
+       carrying h~_Co to h.  The criterion of thm:coble-heegner-line-unique needs an indefinite
+       complement and a positive vector in signature (1,10) has a negative definite one, so the
+       vector-level question has to be decided directly.
+   4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is
+       extended over it with isometry_extends and no chamber is transported.
 
 SUMMARY
-  0. the retained polarization coordinates are verified against def:coble-polarization-classes
-     and prop:coble-invariant-lattice at the owner: h_Co = 2H + E_1 + E_2, h_Co^2 = 2, pullback
-     2f^*H + f^*E_1 + f^*E_2 of square 4.
-  2.1 <S_En, delta> is saturated, so section 2 compares the actual Enriques lattice.
-  3. the two polarization complements are not isometric: rank 10, det 2048, signature (0,10)
-     and discriminant group of order 2048 on both sides, but 18 roots against 2, with
-     is_isometric_to returning a verified negative.
-  1.0 the negative does NOT cover every admissible marking: admissibility does not pin the
-     marking.  <-1>^9 and E8(-1) + <-1> are both odd unimodular negative definite of rank 9
-     and are not isometric, and I_{1,10} carries U-splittings with both complement types; for
-     the second type the pullback marking has a complement isometric to the Heegner one.  The
-     answer depends on the marking, and the obstruction concerns the marking of sections 1 and
-     3 only.
-OK: coordinates verified, saturation proved, complements compared for three markings, and the
-    dependence of the verdict on the marking recorded -- A21 is open, not obstructed
+  0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to
+      K_S = -3H + Sum E_i with F_1.F_2 = 1, so h_Co = F_1 + F_2 lies in K_S^perp with h_Co^2 = 2,
+      matching the criterion Sum b_i = 3a of prop:canonical-perp-is-e10 (a = 6, sum 18).
+  0.2 its pullback has square 4; the polarization complement has rank 10, det 2048, sig (0,10).
+  1. the classes earlier versions used (H + E_1, 2H + ...) are not in K_S^perp, so the negative
+      they gave is about non-admissible markings and A21 was never obstructed by it.
+  3. the two complements ARE isometric: the necessary condition holds for this admissible
+      marking, and what is owed is 4.1-4.3.
+OK: admissibility verified against its defining source, the comparison decided at the owner, and
+    its relation to A21 stated

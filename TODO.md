@@ -197,26 +197,22 @@ hypothesis in each case:
    which is the untwisted statement. Minimal semantic handoff: an explicit isometry constructor on
    torsion quadratic forms (twisted variant included), and the engine fix behind the call above.
 2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
-   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **Open, and marking-dependent**;
-   an earlier round's claim that it covers every admissible marking is withdrawn. Established:
-   $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is saturated (proof: $S_\En=C(2)$ with
-   $C=U\oplus E_8(-1)$ even unimodular gives $S_\En^\#=\tfrac12C$ with integral squares, so no
-   $(x+\tfrac12\delta)$ is integral); for the marking $\tilde h_\Co=2e+f_1+f_2$ from
-   $h_\Co=(H+E_1)+(H+E_2)$ the complements are not isometric ($18$ roots against $2$, equal rank,
-   determinant, signature and discriminant order; `is_isometric_to` returns a verified negative); but
-   admissibility does not pin the marking — $\langle-1\rangle^9$ and $E_8(-1)\oplus\langle-1\rangle$ are
-   both odd unimodular negative definite of rank $9$ and are **not** isometric ($18$ against $2$ vectors
-   of square $-1$), both ambients $U\oplus\langle-1\rangle^9$ and $U\oplus E_8(-1)\oplus\langle-1\rangle$
-   are $I_{1,10}$, and for a marking of the second type, obtained by transporting the $U$ basis with the
-   owner's `isometry_to`, the complement **is** isometric to the Heegner one
-   (`computations/reports/coble_labeled_embedding.py`). So the necessary condition can hold, and the
-   comparison's answer depends on the marking. Remaining: which markings arise from Coble surfaces
-   (@prob:coble-rigidity, geometric), and for those that pass, the marked-pair question. For the
-   second-type marking the discriminant-level condition holds as well — the class of $\Psi(\tilde h)/2$
-   lies in the $\Orth(A)$-orbit of $h/2$, of size $496$ — but that does not give vector-level
-   equivalence: the criterion of @thm:coble-heegner-line-unique needs an indefinite complement and a
-   positive vector in signature $(1,10)$ has a negative definite one, so the marked-pair isometry has to
-   be decided directly from the complement isometry and the gluing. A20 item 1 is untouched by all of it.
+   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **Open, and only an unlabelled
+   necessary condition has been tested.** Established: $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$
+   is saturated ($S_\En=C(2)$, $C$ even unimodular $\Rightarrow S_\En^\#=\tfrac12C$ has integral squares, so
+   no $(x+\tfrac12\delta)$ is integral); and for an *admissible* polarization — one inside $K_S^\perp$ per
+   @def:coble-polarization-classes, verified against the criterion $\sum_i b_i = 3a$ of
+   @prop:canonical-perp-is-e10 with $F_1 = 3H-(E_1+\dots+E_9)$, $F_2 = 3H-(E_1+\dots+E_8+E_{10})$,
+   $h_\Co = F_1+F_2$ of square $2$ — the two polarization complements agree (rank $10$, determinant
+   $2048$, signature $(0,10)$, $2$ roots, `is_isometric_to` returns `True`). So the necessary condition
+   does not obstruct; the earlier negative, produced from $H+E_1$ ($D\cdot K_S = -4$) and from classes
+   reached by an unlabelled $\Pic(S)$ isometry, was about non-admissible markings and is withdrawn.
+   What remains: (i) the labels — A21 compares tuples $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha,
+   \mathcal C)$ per the research report's @sec-labeled-lattice-data, and an unlabelled Picard-lattice
+   isometry is not that comparison; (ii) the marked-pair isometry carrying $\tilde h_\Co$ to $h$, which
+   @thm:coble-heegner-line-unique does not decide here because the complement is definite; (iii) the
+   extension over $\lkt$ by `isometry_extends` and the transport of the chamber.
+   A20 item 1 is untouched.
 3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
    @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
 
@@ -229,29 +225,28 @@ should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This
 than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
 coordinate-independent. Still open, and it is a Coble-to-Coble statement.
 
-The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement, and it is
-**open and marking-dependent** (`computations/reports/coble_labeled_embedding.py`):
-*Input construction, proved.* $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is saturated:
-$S_\En = C(2)$ with $C = U\oplus E_8(-1)$ even unimodular (@prop:polarization-stabilizer-enriques) gives
-$S_\En^\# = \tfrac12 C$, and $C$ even makes squares in $\tfrac12C$ integral, so an overlattice would need
-$(x+\tfrac12\delta)$ of square $x^2-\tfrac12$, never integral.
-*Complement computation, at the owner.* For the marking $\tilde h_\Co = 2e+f_1+f_2$ from
-$h_\Co = (H+E_1)+(H+E_2)$ (coordinates verified against @def:coble-polarization-classes and
-@prop:coble-invariant-lattice), the complements of $\tilde h_\Co$ in $S_\Co$ and of $h$ in
-$\langle S_\En,\delta\rangle$ are not isometric — equal rank $10$, determinant $2048$, signature
-$(0,10)$, discriminant order $2048$, but $18$ roots against $2$ — with `is_isometric_to` returning a
-verified negative.
-*Marking dependence, and the withdrawal of an earlier claim.* An earlier version concluded that this
-covers every admissible marking, from the uniqueness of the odd unimodular negative definite rank-$9$
-lattice. That is false: $\langle-1\rangle^9$ and $E_8(-1)\oplus\langle-1\rangle$ are both odd unimodular
-negative definite of rank $9$ and are not isometric ($18$ against $2$ vectors of square $-1$); both
-$U\oplus\langle-1\rangle^9$ and $U\oplus E_8(-1)\oplus\langle-1\rangle$ are $I_{1,10}$, so $\Pic(S)$
-carries $U$-splittings of both types; and for a marking of the second type — the $U$ basis transported by
-the owner's `isometry_to` — the pullback's complement **is** isometric to the Heegner one. So the
-necessary condition can hold.
-Remaining: which markings arise from Coble surfaces (@prob:coble-rigidity, a geometric question) and, for
-those that pass, the marked-pair extension over $\lkt$ tested with `isometry_extends`. A20 item 1 is
-untouched.
+The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement and is
+**open**; only its unlabelled necessary condition has been tested
+(`computations/reports/coble_labeled_embedding.py`):
+*Admissibility, verified against the defining source.* With $K_S = -3H+\Sum_i E_i$
+(@prop:canonical-perp-is-e10) and its criterion $\Sum_i b_i = 3a$ for $D = aH - \Sum_i b_i E_i$, the
+classes $F_1 = 3H-(E_1+\dots+E_9)$ and $F_2 = 3H-(E_1+\dots+E_8+E_{10})$ are isotropic, orthogonal to
+$K_S$, and satisfy $F_1\cdot F_2 = 1$, so $h_\Co = F_1+F_2$ lies in $K_S^\perp$ with $a = 6$,
+$\Sum_i b_i = 18$ and $h_\Co^2 = 2$; its pullback has square $4$.
+*The necessary condition, owner-decided.* The complements of $\tilde h_\Co$ in $S_\Co$ and of $h$ in
+$\langle S_\En,\delta\rangle$ — the latter already saturated, since $S_\En^\# = \tfrac12C$ with $C$ even
+unimodular has integral squares — both have rank $10$, determinant $2048$, signature $(0,10)$ and $2$
+roots, and `is_isometric_to` returns `True`. So the comparison is not obstructed at this level, and the
+obstruction reported in an earlier round — computed from $H+E_1$, which satisfies $D\cdot K_S = -4$, and
+from classes reached by an unlabelled $\Pic(S)$ isometry — is withdrawn as being about inadmissible
+markings.
+*What is missing.* (i) The labels: A21's tuple $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$,
+with commuting nonsymplectic involutions, $H^2=4$ fixed by both, $\alpha^2=-2$, $H\cdot\alpha=0$, $\alpha$
+fixed by $I_\Co$, and a chamber with $\alpha$ effective and $H$ nef and big (research report,
+@sec-labeled-lattice-data) — an unlabelled Picard-lattice isometry is not this comparison. (ii) The
+marked-pair isometry carrying $\tilde h_\Co$ to $h$: matching complements is necessary, and
+@thm:coble-heegner-line-unique does not decide it here, its hypothesis being an indefinite complement.
+(iii) The extension over $\lkt$ by `isometry_extends` and the transport of the chamber.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The
