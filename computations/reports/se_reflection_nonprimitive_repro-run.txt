@@ -1,0 +1,12 @@
+a is primitive, q(a) = -2; root = 2a, q(root) = -8
+is_integral_reflection_vector, a:     True
+is_integral_reflection_vector, 2a:   False
+reflection(a) built; it is an involution: True
+reflection(2a) raised ValueError:
+   2 b(x, r)/b(r, r) is not in Integer Ring for every x, so 2*e_4 is not an integral reflection vector
+reflection(a) satisfies x -> x + b(x,a) a on every basis vector: True
+generators x with b(x,a) odd, i.e. with a half-integral scalar for r = 2a: [5]
+
+So the refused map is an integral, well-defined isometry, rejected on the strength of a
+scalar that is not itself integral.  The defect is conservative -- a false negative -- and
+belongs to sage-extensions; nothing in this repository depends on the refused case.

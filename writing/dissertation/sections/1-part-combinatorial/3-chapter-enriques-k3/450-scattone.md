@@ -15,7 +15,7 @@ The Type $\IV$ Hermitian symmetric period domain for $T_{2d}$,
 $$
 \halfpd{T_{2d}} = \theset{ [\omega] \in \PP(T_{2d, \CC} ) \st (\omega, \omega) = 0,\, (\omega, \bar{\omega}) > 0 },
 $$
-admits a natural right action by the arithmetic group $\Gamma_{2d} \subset \Orth^+(T_{2d})$, the image of the subgroup of $\Orth(\lkt)$ consisting of the isometries that fix $h$ and have spinor norm $1$ [@AET23, §3A]. With the spinor norm in the normalisation whose kernel $\Orth^+$ is [@GHS08, §1], restriction and extension across the primitive splitting $\lkt = \ZZ h \oplus T_{2d}$ identify $\Gamma_{2d}$ with the stable orthogonal group $\widetilde{\Orth}^+(T_{2d})$: an isometry of $T_{2d}$ extends over the splitting exactly when it acts trivially on the discriminant, and the spinor norm of the extension agrees with that of its restriction, the line $\ZZ h$ being positive definite and fixed pointwise.
+admits a natural right action by the arithmetic group $\Gamma_{2d} \subset \Orth^+(T_{2d})$, the image of the subgroup of $\Orth(\lkt)$ consisting of the isometries that fix $h$ and have spinor norm $1$ [@AET23, §3A]. With the spinor norm in the normalisation whose kernel $\Orth^+$ is [@GHS08, §1], restriction to $h^\perp$ and extension across the discriminant gluing identify $\Gamma_{2d}$ with the stable orthogonal group $\widetilde{\Orth}^+(T_{2d})$. The gluing has to be named, because $\ZZ h \oplus T_{2d}$ is not $\lkt$: it has index $2d$ and determinant $(2d)^2$, with $A_{T_{2d}} \cong A_{\ZZ h} \cong \ZZ/2d$, and $\lkt$ is recovered by adjoining the graph of an anti-isometry of those discriminant groups. An isometry of $T_{2d}$ therefore extends over $\lkt$ fixing $h$ exactly when it acts trivially on $A_{T_{2d}}$, and the spinor norm of the extension agrees with that of its restriction, the line $\ZZ h$ being positive definite and fixed pointwise.
 The arithmetic quotient
 $$
 \ftd \definedas  \dmodgamma{ \halfpd{T_{2d}} }{ \Gamma_{2d} }
@@ -40,6 +40,18 @@ $$
 A_{17}, \qquad D_{10}\oplus E_7, \qquad E_8^{\oplus 2}\oplus A_1, \qquad D_{16}\oplus A_1 .
 $$
 So the labels name root sublattices and not the boundary lattices: $J^\perp/J$ itself is what a $1$-cusp corresponds to, and each labelled lattice sits in it with finite index.
+
+#### The Degree-Four Case
+
+Everything above is stated for a general $d$; at $d = 2$ the arithmetic of the cusps can be carried through, and the answer is again a finite labelled list. Here $h^2 = 4$, so
+$$
+T_4 = \generators{-4} \oplus U^{\oplus 2} \oplus E_8^{\oplus 2},
+$$
+of rank $21$ and signature $(2,19)$, and $\Gamma_4$ is the subgroup of $\Orth^+(T_4)$ fixed by the definition above, namely the stable orthogonal group $\widetilde{\Orth}^+(T_4)$. That lattice is isometric to $\Lambda_{19} = U^{\oplus 2} \oplus D_{17}$, and the isometry is decided rather than assumed in `computations/reports/t4_group_comparison.py`, which also records that both lattices have determinant $-4$ and discriminant module $\ZZ/4$; the two are not equal as sublattices of $\lkt$, and the discriminant module is what the comparison is transported along.
+
+The boundary is then the one Laza--O'Grady compute for quartic surfaces. Their Proposition A.4 splits every rank two saturated isotropic sublattice $J \subset \Lambda_{19}$ off a unimodular $U \oplus U$, with $J^\perp/J$ in the genus of $D_{17}$; Corollary A.5 identifies the image of the map $[J] \mapsto [J^\perp/J]$ with that genus, Proposition A.11 makes it injective at $N = 19$, and Theorem A.12 with its table gives nine Type II components [@LO21, App. A]. Since $\Gamma_4$ is the stable orthogonal group and the stable orthogonal group has the same orbits on primitive isotropic sublattices as the full orthogonal group --- the central $-1$ lies in $\Orth^+$, fixes every such sublattice setwise, and the component quotient is met by the element of their Lemma A.10(1), which fixes $J$ and reverses the orientation of the positive plane --- the $1$-cusps of $\bbcpt{F_4}$ are nine, in bijection with the nine lattices in the genus of $D_{17}$, which their Theorem A.6 lists by root sublattice. Unlike the degree two labels, these are the boundary lattices themselves: Proposition A.4 produces $J^\perp/J$ as one of the nine.
+
+Two certificates back the parts that are computed rather than cited: `computations/reports/t4_discriminant_action.py` measures which isometries act trivially on the discriminant module --- the reflection in a primitive vector of square $-2$ does, one of square $-4$ does not, and the elements of the two orbit arguments above lie where the argument needs them --- and `computations/reports/t4_group_comparison.py` records the isometry and the discriminant data it is transported along.
 
 Alexeev--Engel--Thompson say what a cusp is, not only what its label is. The Coxeter diagram $G_{\text{cox}}$ of $N = H\oplus E_8^{\oplus 2}\oplus A_1$ is drawn on 24 roots, and up to $S_3$ it has exactly four maximal parabolic subdiagrams, the affine $\tilde A_{17}$, $\tilde D_{10}\tilde E_7$, $\tilde E_8^{\oplus 2}\tilde A_1$ and $\tilde D_{16}\tilde A_1$ of their Figure 1 [@AET23, Lem. 4.5]. By their Theorem 4.3 each of these corresponds to a null ray $\RR_{\ge 0}v$ of $N$ with $v^2 = 0$, and the $1$-cusp is the cone over that ray: with $I$ the unique $0$-cusp line and $\tilde v\in I^\perp$ a lift of $v$,
 $$
