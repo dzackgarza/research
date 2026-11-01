@@ -1151,10 +1151,19 @@ line is characteristic and any two are isometric. This is the argument of
 @prop:odd-unimodular-rank-one-transitivity, and it is a full-$O$ statement, as Wall's [@Wal62] is; the
 component-preserving refinement is not part of either.
 
-*Planes.* Transitivity on primitive isotropic planes is cited to [@Wal62; @DK13] and is not verified here:
-$r-|s|=4$ does not reach the plane case ($2(2+1)=6$), so James' theorem does not cover it, and the
-hypothesis under which Wall's transitivity governs planes of an odd unimodular lattice should be read off
-[@Wal62] at the point of use rather than inferred from the line case.
+Wall's own theorem is the general statement behind the line case, and it is a theorem about *vectors*.
+It determines the transitivity class of a vector of an odd unimodular lattice under its orthogonal group by
+the four invariants norm, divisor, index and type (ordinary or characteristic), under the restriction
+$r(L)-\abs{\fs(L)}\geq4$ [@Wal62]. For a primitive isotropic vector of $I_{2,9}$ the invariants are
+$(0,\ 1,\ 1,\ \text{ordinary})$: norm $0$, divisor $1$ and index $1$ because the lattice is unimodular,
+and ordinary by the congruence above. So there is exactly one class, which is the line half of the
+statement; James' extension theorem is the special case of this that gives the isometry explicitly.
+
+*Planes.* The plane half does **not** follow from Wall's theorem as stated, and it is not verified here.
+That theorem classifies vectors; $r-\abs{\fs}=4$ does not reach the rank-two case of James' inequality
+($2(2+1)=6$); and transitivity on primitive isotropic *planes* is a statement about the action on
+subspaces, which needs its own source. It is cited to [@Wal62; @DK13] and the citation is left as one to
+check at the point of use, not as one this section has read.
 
 Both are statements about $O(T_{\Co})=O(I_{2,9})$, by the observation above; the exceptional case $I_{2,2}$,
 where a characteristic isotropic vector does exist and line transitivity fails, shows why the congruence in
