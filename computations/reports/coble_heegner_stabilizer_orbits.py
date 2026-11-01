@@ -29,8 +29,12 @@ What is not done, and must not be substituted.  The full orthogonal group is not
 the stabilizer, the polarization is not changed to make a count come out, and the zero class is kept
 separate from the 527 nonzero ones throughout.
 """
+import os
 import sys
 import time
+
+sys.path.insert(0, '/repo/computations/reports')
+from heegner_orbit_checks import check_generators, check_partition, restrict
 
 # line-buffered so a long run reports its phase instead of nothing (the first copy's transcript was
 # empty for exactly this reason)
@@ -106,23 +110,14 @@ print('restricted the ambient action through H -> G: %s' % type(restricted_actio
       flush=True)
 
 start = time.time()
-isotropic_action = FiniteGSets(subgroup)(isotropic, lambda h, x: restricted_action.act(h, x))
-restricted = [frozenset(orbit.points()) for orbit in isotropic_action.orbits()]
+restricted = restrict(G, subgroup, isotropic)
 print('the restricted action gives %d orbits on the %d isotropic classes (%.1fs)'
       % (len(restricted), len(isotropic), time.time() - start), flush=True)
 isotropic_set = set(isotropic)
-sizes = sorted(len(orbit) for orbit in restricted)
-print('orbits inside the isotropic classes: %d, of sizes %s' % (len(restricted), sizes))
-assert sizes == [1, 255, 272], sizes
-assert sum(sizes) == 528
-assert set().union(*[set(orbit) for orbit in restricted]) == isotropic_set, 'not a cover'
-total = sum(len(orbit) for orbit in restricted)
-assert total == 528, 'orbits are not disjoint'
-singleton = [orbit for orbit in restricted if len(orbit) == 1][0]
 zero_element = D.zero() if hasattr(D, 'zero') else polarization - polarization
-assert zero_element + zero_element == zero_element, 'the zero element is not idempotent under addition'
-assert set(singleton) == {zero_element}, 'the singleton orbit is not the zero class'
-print('the singleton orbit is exactly {D.zero()}: asserted, not inferred')
+sizes = check_partition(restricted, isotropic_set, zero_element, [1, 255, 272])
+print('check_partition: disjoint, covering, one singleton equal to {D.zero()}, sizes %s   AGREE'
+      % sizes, flush=True)
 
 # 3. the returned stabilizer must actually fix the chosen class and preserve q.
 generators = list(stabilizer.group_generators())
