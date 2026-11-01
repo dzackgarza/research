@@ -6,6 +6,7 @@ $$
 \begin{aligned}
 \fen &= \bD(\ten)/\Orth^+(\ten)^* &
 \fentwo &= \bD(\ten)/\gent \\
+F^K_{\En} &= \bD(\ten)/\Gamma_{\En} \\
 \fco &= \bD(T_\Co) / \Orth^+(T_\Co)^* &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
@@ -16,11 +17,19 @@ where
 $$
 \begin{aligned}
 \gent &= \Orth(\ten) \intersect \Orth(\tdp) \iscontainedin \Orth(\lkt) \\
+\Gamma_{\En} &= \Orth(\ten), \qquad \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten} \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(\ten)}(T_\Co) \iscontainedin \Orth(\ten) \\
 F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
 F_{\Nod, 2} &= ???
 \end{aligned}
 $$
+
+Three quotients of one period domain appear here and they are not the same space, so no statement about cusps passes between them for free.
+The *stable* quotient is $\fen = \bD(\ten)/\Orth^+(\ten)^*$, by the discriminant kernel inside the component-preserving group; it is the group this book's moduli problem uses.
+The *unpolarized* quotient is $F^K_{\En} = \bD(\ten)/\Gamma_{\En}$ with $\Gamma_{\En} = \Orth(\ten)$, which is [@AEGS25]'s $\overline{F^K_{\En}}^{\bb}$, and the cusp diagram usually quoted for the unpolarized Enriques space -- two $0$-cusps distinguished by divisibility and two $1$-cusps, $(10,10,0)_1$, $(10,8,0)_1$, $(8,8,0)_0$, $(8,6,0)_0$ -- is the cusp diagram of *that* quotient [@AEGS25, §2].
+The *polarized* quotient is $\fentwo = \bD(\ten)/\gent$ with $\gent = \Gamma_{\En}\intersect\Gamma_{\dP}$, the twisted group whose period space carries five $0$-cusps [@AEGS25, §3].
+Because $\Orth^+(\ten)^*\subseteq\Orth^+(\ten)\subseteq\Gamma_{\En}$, the stable orbits are the finest and the $\Gamma_{\En}$-orbits the coarsest, so a cusp count made for one of these groups is not a cusp count for another: importing the two-cusp classification of $F^K_{\En}$ into the stable quotient $\fen$ would be exactly the silent change of group that the comparison below must avoid, and the passage from one to the other is not known here.
+The same three-way distinction has to be kept on the Coble side, where $\fco$ is the stable quotient and $F_{\Co,2}$ the polarized one. 
 
 where $\tdp$ is described in [@AEGS25].
 Note that we implicitly use the embedding $\eta\colon T_\Co\injects\ten$ of @lem:primitive_embedding_eta.
@@ -123,7 +132,7 @@ For the Coble lattices $\rank(S_\Co) = 11$, so $\dim_\CC D_{T_\Co} = 9$.
 
 ::: {.proof}
 
-The K3 lattice has rank $22$ and signature $(3,19)$, and the embedding is primitive, so by @thm:orthogonal-decomposition the lattice splits as $M\perp T$.
+The K3 lattice has rank $22$ and signature $(3,19)$. The embedding is primitive, which gives a splitting over $\mathbb{Q}$ and not over $\mathbb{Z}$: $M$ and $T$ span $\lkt\otimes\QQ$ orthogonally, so their ranks and signatures add, while $M\oplus T$ has index $|\det M| = |\det T|$ in $\lkt$ and the integral statement is the gluing $A_M\cong A_T$ rather than a direct sum (the same point as in @sec-enriques-coble-correspondence, where the corresponding inclusion for $T_\Co\subset\ten$ is treated). Orthogonal decomposition over $\mathbb{Z}$ needs the embedded form to be perfect (@thm:orthogonal-decomposition), which $M = S_\Co$ is not: its determinant is $2^{11}$.
 Ranks add, so $\rank(T)=22-\rank(M)$.
 Signatures add too, by @def:signature applied to the orthogonal sum of the two real forms, so if $M$ has signature $(1,\rank(M)-1)$ then $T$ has signature $(3-1,\,19-(\rank(M)-1))=(2,\,20-\rank(M))$.
 The first index is $2$, so $T$ is of type IV in the sense of @prop:type-iv-dimension, whose dimension for a type IV lattice of signature $(2,m)$ is $m$; with $m=20-\rank(M)$ that is the displayed dimension.

@@ -2,23 +2,29 @@
 
 ::: {.theorem #thm:cusp_correspondence}
 
-The embedding $\eta: \fco\to \fen$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in @fig-enriques-coble-correspondence.
+Let $\eta\colon T_\Co\injects\ten$ be the primitive embedding, $v_1, v_2$ the isotropic vectors of @lem:divisibilityTcoOne and $\tilde J = \generators{\eta(v_1), \eta(v_2)}$. Then $\tilde J$ is an isotropic plane, $\eta(v_1)$ is isotropic with $\div_\ten(\eta(v_1)) = 2$, and
+$$\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1, \qquad \tilde J^{\perp\ten}/\tilde J\cong(8,6,0)_0,$$
+the boundary lattices of the $0$-cusp $(10,8,0)_1$ and the $1$-cusp $(8,6,0)_0$ of the Enriques cusp diagram; while
+$$v_1^{\perp T_\Co}/v_1\cong(9,9,1)_1, \qquad J^{\perp T_\Co}/J\cong(7,7,1)_0$$
+are the corresponding Coble boundary lattices.
 :::
 
 ::: {.proof}
 
-The correspondence is computed cusp by cusp, and this is the statement that the computation succeeds; the individual comparisons are in the sections that follow and in @sec-cusp-diagrams-by-moduli-space.
+What is proved is a statement about isotropic *objects* and the boundary lattices attached to them, and it is proved at the displayed vectors in the lemmas below. It is not a statement about orbit sets, and the difference is not a formality: a cusp is an orbit, and identifying the boundary lattice at one vector of each orbit does not identify the two orbit sets, since distinct orbits can carry isometric boundary lattices -- which is exactly the possibility left open on the Coble side by @lem:stable-orthogonal-not-transitive and by the orbit count in @sec-coble-lattice-isotropic-candidates.
 
-What makes the correspondence possible is that both compactifications are Baily--Borel, so a cusp of either is a $\Gamma$-orbit of a primitive isotropic subspace of the relevant lattice, of rank $1$ at a $0$-cusp and rank $2$ at a $1$-cusp.
-The embedding $\eta\colon\fco\to\fen$ is induced by the primitive embedding $T_{\Co}\embeds\ten$ of @sec-lattices, and it carries isotropic subspaces of $T_{\Co}$ to isotropic subspaces of $\ten$; the correspondence asserted is that the induced map on orbits is a bijection.
-That is checked by comparing the invariants that separate orbits -- divisibility and discriminant class, by @prop:coble-divisibility-discriminant -- at each cusp rather than by constructing an inverse, which is the method the following sections carry out.
+Three things would be needed for a bijection on orbits, and none is available here.
+First, a map on orbits has to be defined: for a fixed arithmetic group $\Gamma_\Co$ on $T_\Co$ one needs, for every $g\in\Gamma_\Co$, an isometry $\tilde g$ of $\ten$ with $\tilde g\eta = \eta g$, i.e. an extension of $g$ across the primitive embedding, and the extensions must respect the group on the Enriques side. Nothing in this section constructs that homomorphism; the computations below are all at single vectors.
+Second, even with it, injectivity on orbits must be shown -- two $\Gamma_\Co$-orbits can map into one orbit on the Enriques side whenever the extension exists on a larger group -- and surjectivity likewise.
+Third, the group on the Enriques side is not the stable one, and it is not silently changed here. The book's $\fen$ is the quotient by $\Orth^+(\ten)^*$ (@sec-moduli-construction), whereas the cusp diagram whose boundary lattices are matched below -- two $0$-cusps and two $1$-cusps -- is [@AEGS25]'s for $F^K_\En = \bD(\ten)/\Gamma_\En$ with $\Gamma_\En = \Orth(\ten)$. The stable orbits are finer than the $\Gamma_\En$-orbits, so identifying the cusps of $\fen$ with those of $F^K_\En$ is itself open, and a third quotient, the polarized $F_{\En,2}$ with its five $0$-cusps [@AEGS25, §3], is not the one used here either. What is established below is therefore the correspondence at the level of $F^K_\En$'s cusps and of the Coble boundary lattices, at the displayed representatives.
 
+The method is divisibility and discriminant class, by @prop:coble-divisibility-discriminant, at each cusp -- which is what the following sections carry out -- and it is a method for comparing objects' boundary lattices, not for comparing orbit sets.
 
 :::
 ::: {#fig-enriques-coble-correspondence .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 
-Cusp correspondence $\fco \to \fen$.
+Cusp correspondence between the boundary lattices of $\fco$ and the cusps $(10,10,0)_1$, $(10,8,0)_1$, $(8,8,0)_0$, $(8,6,0)_0$ of the Enriques diagram of $F^K_\En$.
 :::
 
 We prove the cusp correspondence by comparing divisibilities of isotropic vectors at the corresponding 0-cusps and 1-cusps in both moduli spaces.
@@ -115,13 +121,13 @@ $$
 } \cong U \oplus E_{8}(2) \cong (10,8,0)_1.
 $$
 
-Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$; by the divisibility calculation (@lem:divisibilityTcoOne) $\mathrm{div}_{\ten}(w_1) = 2$.
-Since the divisibility of the isotropic vector at the Enriques 0-cusp $(10, 8, 0)_1$ is also 2 and the two Enriques 0-cusps are distinguished by divisibility, the correspondence follows.
+Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$, which the divisibility calculation (@lem:divisibilityTcoOne) gives as $2$; divisibility is also what distinguishes the two Enriques $0$-cusps, $(10,10,0)_1$ at divisibility $1$ and $(10,8,0)_1$ at divisibility $2$ [@AEGS25, §2].
+So $\eta(v_1)$ sits at the $(10,8,0)_1$ cusp, and that is the matching asserted: at the representatives, not between orbit sets, for which see @thm:cusp_correspondence.
 :::
 
 ::: {.lemma #lem:1_cusp_correspondence}
 
-The 1-cusp $(7,7,1)_0$ in $\fco$ maps to the 1-cusp $(8, 6, 0)_0$ in $\fen$.
+The isotropic plane $\tilde J = \generators{\eta(v_1), \eta(v_2)}$ lies at the Enriques $1$-cusp $(8,6,0)_0$, while $J = \generators{v_1, v_2}$ lies at the Coble $1$-cusp $(7,7,1)_0$: the $1$-cusp correspondence at these representatives.
 :::
 
 ::: {.proof}
