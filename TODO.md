@@ -49,10 +49,11 @@ preamble is a two-file re-export of `sage_extensions.all`, so none of that work 
 
 ## Verification debt
 
-8. **The coarse decomposition $[1,255,272]$** is partition-checked and generator-unchecked. The run
-   stopped after `stabilizer generators: 1984`, before the block asserting that each generator fixes
-   the polarization class and preserves $q$. Do not rerun the exhaustive loop as written; the
-   maintained alternative is in [GAPS](writing/dissertation/GAPS.md), awaiting review.
+8. **The coarse decomposition $[1,255,272]$ has a partition certificate but no stabilizer certificate.** The
+   chapter asserts three orbit lengths under the finite stabilizer of the polarization class; what is
+   checked is that they partition the $528$ isotropic classes, and what is not is that the group
+   realizing them is the stabilizer it is claimed to be. Until that is settled the three numbers are
+   computed rather than proved, and the chapter says so.
 
 9. **Ste91's source group.** `thm:orbit-classification-sterk` and the proof of Lemma 4.2.1 in
    `475-our-cusps.md` quote the paper, which is not in this tree; the corpus has no match and both
