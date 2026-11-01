@@ -103,6 +103,36 @@ What has since been settled is listed at the end, so that a reader can tell "res
   manuscript's normalization too.  The isometry T_4 = Lambda_19 identifies the lattices and says
   nothing about the groups; that comparison is the open step, not a change of polarization.
 
+  The Sterk construction has been run against the five subsections, on the shared image with its
+  OCI environment (JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot:) and the canonical
+  sage-extensions, and its transcript is kept at computations/reports/sterk-cusp-diagrams-run.txt.
+  It works through five named isotropic representatives and, for each, the roots of
+  v^perp/Zv and the maximal parabolic subdiagrams:
+
+    v = e                    12 roots    9 maximal parabolic subdiagrams
+    v = e'                   10 roots    2
+    v = e' + f' + abar_8     12 roots    4
+    v = 2e' + f' + abar_1    11 roots    5
+    v = 2e + 2f + abar_1     14 roots   13
+
+  What that does and does not settle for the chapter's claims.  The subdiagram arithmetic is
+  reproduced with its named representatives, so the *structures* behind the ray counts are now
+  machine output rather than assertion.  But the chapter's counts are 4/4, 2/8, 3/15, 4/12, 5/17
+  (Type II/III in the Coxeter compactification), and matching those to the five rows above is not
+  a lookup: cusp 1's four Type III rays correspond to the four *types* among the nine maximal
+  parabolic subdiagrams of v = e (E8, E7 + A1, D8, A7 + A1), i.e. to orbits under the diagram's
+  symmetries rather than to the subdiagrams themselves, and the same reduction has to be done for
+  the other four before any of the counts is confirmed or corrected.  Nor is the correspondence
+  between the manuscript's five cusps and Sterk's five representatives yet written down: the
+  manuscript distinguishes cusp 1 by the label (10,10,0) and the others by (10,8,0), which does
+  not by itself order them.
+
+  So the chapter unit is not closed.  The actionable step is exact and needs no new source:
+  reduce each representative's maximal parabolic subdiagrams to orbits under the symmetry group
+  the chapter fixes, and match the five representatives to the five subsections by their quoted
+  elliptic subdiagram lists -- cusp 1's four are displayed in the text and can be compared with
+  the script's output vertex by vertex.
+
   The five Enriques cusps' lattice data are checked as one unit in
   enriques_cusp_lattice_data.py.  Cusps 1, 3, 4 and 5 all quote T-bar = (18,2,0)_1 = U(2) + E8^2
   with invariant sublattice U(2) + E8(2); cusp 2 quotes (18,0,0)_1 = U + E8^2 with U + E8(2).  The
