@@ -1,0 +1,96 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552
+  preamble source root: /repo/.scratch/se-provider-c546/src (bound read-only at /repo)
+  engine source root in the traceback: /repos/sage-indefinite-port/src (inside the image)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, read-only; repository bound at /repo
+  sage_extensions package file: /repo/.scratch/se-provider-c546/src/sage_extensions/__init__.py
+
+construction: Lattices(ZZ)(Gram of <2> + U(2) + E8(2))
+  rank 11, determinant -2048, signature (2, 9), even True
+call: L.discriminant_representation_is_surjective()
+  raised; full traceback follows
+------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "computations/reports/coble_tco_surjectivity_specimen.py", line 53, in <module>
+    print('  returned %s' % L.discriminant_representation_is_surjective())
+                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "sage/misc/cachefunc.pyx", line 2328, in sage.misc.cachefunc.CachedMethodCallerNoArgs.__call__
+    self.cache = f(self._instance)
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/lattices.py", line 3243, in discriminant_representation_is_surjective
+    image = self.discriminant_image()
+  File "sage/misc/cachefunc.pyx", line 2328, in sage.misc.cachefunc.CachedMethodCallerNoArgs.__call__
+    self.cache = f(self._instance)
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/lattices.py", line 3238, in discriminant_image
+    return self.Aut().discriminant_image()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/lattice_morphisms.py", line 3019, in discriminant_image
+    generating_subgroup = self.subgroup(tuple(self.group_generators()))
+                                              ~~~~~~~~~~~~~~~~~~~~~^^
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/group/groups.py", line 5438, in group_generators
+    return self.selected_group_resolution().generators(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/group/groups.py", line 5416, in selected_group_resolution
+    return self.selected_resolution(OwnedGroups())
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/abstract_categories/objects.py", line 383, in selected_resolution
+    resolution = selected.realize()
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/abstract_categories/objects.py", line 116, in realize
+    return self._resolution_factory()
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/group/groups.py", line 999, in selected_resolution
+    generators = generating_set()
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/abstract_categories/arrow_categories.py", line 2379, in <lambda>
+    lambda: self.core_category().base_category()._core_automorphism_generators(self)
+            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/lattices.py", line 1849, in _core_automorphism_generators
+    return core_mor._computed_group_generators()
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "sage/misc/cachefunc.pyx", line 2328, in sage.misc.cachefunc.CachedMethodCallerNoArgs.__call__
+    self.cache = f(self._instance)
+  File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/lattice_morphisms.py", line 3590, in _computed_group_generators
+    for generator in automorphism_group_generators(category, lattice)
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/marked_lattices.py", line 111, in automorphism_group_generators
+    generators = RECURSION.orthogonal_group_generators(marked)
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/recursive.py", line 356, in orthogonal_group_generators
+    generators = self._generation_step(profile.signed_view)
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/recursive.py", line 370, in _generation_step
+    vector = model.splitting_vector()
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/eichler.py", line 1040, in splitting_vector
+    representative = self.one_representative(square)
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/eichler.py", line 965, in one_representative
+    for coset in envelope.right_coset_transversal():
+                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "sage/misc/cachefunc.pyx", line 2328, in sage.misc.cachefunc.CachedMethodCallerNoArgs.__call__
+    self.cache = f(self._instance)
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/eichler.py", line 488, in right_coset_transversal
+    coset_space = self.stabilizer_of_lattice().right_cosets()
+                  ~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "sage/misc/cachefunc.pyx", line 2328, in sage.misc.cachefunc.CachedMethodCallerNoArgs.__call__
+    self.cache = f(self._instance)
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/eichler.py", line 464, in stabilizer_of_lattice
+    generators = tuple(_isometry_from_row_matrix(rational_envelope, generator) for generator in OrbitCoverModel.source_generator_matrices(self.model))
+                 ^^^^^
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/eichler.py", line 464, in <genexpr>
+    generators = tuple(_isometry_from_row_matrix(rational_envelope, generator) for generator in OrbitCoverModel.source_generator_matrices(self.model))
+                       ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/eichler.py", line 74, in _isometry_from_row_matrix
+    return checked_row_isometry(lattice, lattice, rows)
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/recursive.py", line 154, in _isometry_from_row_matrix
+    source_coordinates = tuple(int(coordinates(label)) for label in source_labels)
+                         ^^^^^
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/recursive.py", line 154, in <genexpr>
+    source_coordinates = tuple(int(coordinates(label)) for label in source_labels)
+                               ~~~^^^^^^^^^^^^^^^^^^^^
+TypeError: int() argument must be a string, a bytes-like object or a real number, not 'OwnedJoinCategory.element_class'
+------------------------------------------------------------------------------
+
+control specimens, same call, same session:
+  S_Co = <2> + <-2>^10                       -> True
+  M = S_En + <delta> = U(2) + E8(2) + <-2>   -> True
+
+handoff: expected semantic operation is discriminant_representation_is_surjective() for the
+2-elementary indefinite lattice T_Co, i.e. surjectivity of O(L) -> O(A_L) read off the
+discriminant reduction sequence; the mathematical content is thm:two-elementary-surjectivity,
+which the manuscript states as a theorem independently of this runtime failure.

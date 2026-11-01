@@ -184,18 +184,50 @@ hypothesis in each case:
 1. $\Gamma^{\mathrm{Hdg}}$ vs $\Gamma^{\mathrm{cong}}$: compare two subgroups of the finite group
    $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for the $\delta$-stabilizer inside $\gent$
    (A3) and for the Coble-side centralizer. A finite computation once those exist, no geometry in it.
-   Blocked upstream, on two owner capabilities, with specimens recorded
-   ($S_\En = U(2)\oplus E_8(2)$, $T_\En = U\oplus U(2)\oplus E_8(2)$, pin as elsewhere):
-   `T_En.discriminant_representation_is_surjective()` raises
-   `TypeError: int() argument must be … not 'OwnedJoinCategory.element_class'` from
-   `sage_indefinite_port.indefinite.eichler._isometry_from_row_matrix`, so the T-side realisation of a
-   prescribed discriminant isometry — what materialises the gluing $\gamma$ of
-   @cons:embedding-gluing-data and the partners of the nine stabilizer generators — is not available;
-   the same call on $S_\En$ returns `True`. And torsion forms offer `is_isometric_to` but no
-   `isometry_to`, so no explicit anti-isometry $A_{S_\En}\to A_{T_\En}$ with
-   $q_{T_\En}\circ\gamma = -q_{S_\En}$ can be produced; `A_S.is_isometric_to(A_T)` returns `True`,
-   which is the untwisted statement. Minimal semantic handoff: an explicit isometry constructor on
-   torsion quadratic forms (twisted variant included), and the engine fix behind the call above.
+   Blocked upstream, on two owner capabilities. Both now have exact specimens; nothing is patched or
+   worked around in research.
+
+   *(a) `discriminant_representation_is_surjective()` raises on $T_\Co$.* Minimal construction and call,
+   in `computations/reports/coble_tco_surjectivity_specimen.py` with the full traceback in its `-run.txt`:
+   ```
+   L = Lattices(ZZ)(Gram of <2> + U(2) + E8(2))      # rank 11, det -2048, signature (2,9), even
+   L.discriminant_representation_is_surjective()      # raises
+   ```
+   The call chain, frame by frame: `lattices.py:3243 discriminant_representation_is_surjective` →
+   `lattices.py:3238 discriminant_image` → `lattice_morphisms.py:3019 discriminant_image` →
+   `groups.py:5438 group_generators` → `groups.py:5416 selected_group_resolution` →
+   `objects.py:383 selected_resolution` → `objects.py:116 realize` → `groups.py:999 selected_resolution`
+   → `arrow_categories.py:2379 _core_automorphism_generators` → `lattices.py:1849
+   _core_automorphism_generators` → `lattice_morphisms.py:3590 _computed_group_generators` →
+   `sage_indefinite_port/indefinite/marked_lattices.py:111 automorphism_group_generators` →
+   `recursive.py:356 orthogonal_group_generators` → `recursive.py:370 _generation_step` →
+   `eichler.py:1040 splitting_vector` → `eichler.py:965 one_representative` →
+   `eichler.py:488 right_coset_transversal` → `eichler.py:464 stabilizer_of_lattice` →
+   `eichler.py:74 _isometry_from_row_matrix` → `recursive.py:154 _isometry_from_row_matrix`, which fails
+   at
+   ```
+   source_coordinates = tuple(int(coordinates(label)) for label in source_labels)
+   TypeError: int() argument must be a string, a bytes-like object or a real number,
+   not 'OwnedJoinCategory.element_class'
+   ```
+   Controls in the same session: the identical call returns `True` for $S_\Co = \generators{2}\oplus
+   \generators{-2}^{10}$ and for $M = S_\En\oplus\ZZ\delta$, both rank $11$, det $2048$, signature
+   $(1,10)$. So the failure is specific to the indefinite Eichler generator route, not to the predicate,
+   the rank or the discriminant order. The recorded instance is $T_\Co$; $T_\En$ fails identically.
+   Provenance declared in the specimen: preamble source root `/repo/.scratch/se-provider-c546/src` at pin
+   `c546077dce79a76eb32e92d080aa9c44e4c67552`, engine source root `/repos/sage-indefinite-port/src`
+   inside the image, Sage 11.0.beta5, rootfs mounted read-only, repository bound at `/repo`.
+   Expected semantic operation for sage-extensions: `discriminant_representation_is_surjective()` (or
+   `O(L).group_generators()`) for a $2$-elementary indefinite lattice, i.e. the generator route through
+   the Eichler splitting model made to accept the owned coordinate labels it is handed. The mathematical
+   content is @thm:two-elementary-surjectivity, which the manuscript states as a theorem and keeps
+   separate from this runtime failure.
+
+   *(b) Torsion forms have `is_isometric_to` but no explicit isometry constructor*, so no anti-isometry
+   $A_{S_\En}\to A_{T_\En}$ with $q_{T_\En}\circ\gamma = -q_{S_\En}$ can be produced explicitly;
+   `A_S.is_isometric_to(A_T)` returns `True`, which is the untwisted statement. Expected operation: an
+   explicit isometry constructor on torsion quadratic forms, twisted variant included.
+
 2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
    datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. The *unlabelled* comparison of the two
    polarizations is now settled in the affirmative: for an admissible $h_\Co\in K_S^\perp$, verified
@@ -248,8 +280,9 @@ the same complement $T_\Co$, the composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ i
 $\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
 (@thm:two-elementary-surjectivity), and $ (\psi,\phi)$ then extends over $L_{K3}$ by @thm:nikulin-gluing.
 Owner status of that input: surjective for $S_\Co$ and for $M$ (owner-verified), undecided for $T_\Co$,
-where the indefinite Eichler machinery raises the same `TypeError` recorded in A20 item 1 — so that step
-rests on the book's theorem, not on an owner computation. Not built: $L_{K3}$ and the two embeddings, so
+where the indefinite Eichler machinery raises the same `TypeError` — recorded with its full traceback,
+minimal construction and provenance under A20 item 1 — so that step rests on the book's theorem, not on an
+owner computation. Not built: $L_{K3}$ and the two embeddings, so
 no isometry object exists, and the chamber is not transported.
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The
