@@ -482,11 +482,16 @@ $P'$ exists ($P\cong P'\cong\latI_{1,1}$) and an isometry of $M$ onto $M'$ by th
 together give $g\in\Orth(L)$ carrying the line $\ZZ v$ to the line $\ZZ v'$. So $\Orth(L)$ is transitive on
 lines.
 
-For $\Orth^+(L)$ no construction is needed here: $-\id_L$ fixes every line and lies in
-$\Orth(L)\setminus\Orth^+(L)$, because it reverses the positive cone, which for signature $(1,8)$ has two
-components interchanged by $-1$. So for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ already lies in
-$\Orth^+(L)$, or $(-g)$ does --- $-g$ fixes every line as well --- and $\Orth^+(L)$ is transitive on lines
-too.
+For $\Orth^+(L)$ the component question is settled by the definition and not by a picture:
+@def:period-component-character defines the period character $\chi_{\mathrm{per}}$ of a signature-$(2,n)$
+lattice as the action on the two components of the domain of *oriented positive-definite two-planes*, and
+@prop:period-spinor-character identifies it with the real spinor character. For the Lorentzian $\latI_{1,8}$
+the positive-definite part is a line, the same two components are the two halves of the positive cone, and
+$-\id_L$ negates that line, so $\chi_{\mathrm{per}}(-\id_L) = -1$: $-\id_L$ fixes every line and lies in
+$\Orth(L)\setminus\Orth^+(L)$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ is already in
+$\Orth^+(L)$, or $(-g)$ is --- $-g$ fixes every line as well --- and $\Orth^+(L)$ is transitive on lines
+too. (This is a statement about signature $(1,8)$; it does not transplant, and the paragraph after
+@thm:plane-transitivity-tco records why.)
 :::
 
 Two things this does **not** establish, and an earlier draft of this proposition got both wrong.
@@ -518,17 +523,27 @@ $l^{\perp B}=l\perp M$, which is computed at the owner in
 `computations/reports/split_quotient_I18.py`: $l^\perp/l$ has rank $9$, signature $(1,8)$ and determinant
 $\pm1$. So isotropic planes through $l$ correspond to primitive isotropic lines of $M\cong\latI_{1,8}$.
 
-Every isometry of $M$ extends to $B$ as $\id_P\perp\varphi$, which fixes $P$ pointwise and hence fixes $l$;
-and it lies in $\Orth^+(B)$ when $\varphi\in\Orth^+(M)$, because the positive cone of an orthogonal sum of
-two indefinite lattices is preserved by a pair of cone-preserving factors: for $x=x_P+x_M$ with
-$x^2>0$ the summands' signs are what the cone records, and $\varphi$ preserves them on the $M$ side while
-$\id_P$ does on the $P$ side. So the restriction
+Every isometry of $M$ extends to $B$ as $\id_P\perp\varphi$, which fixes $P$ pointwise and hence fixes $l$.
+Its component is computed from @def:period-component-character rather than assumed: $B$ has signature $(2,9)$,
+so its period domain is the space of *oriented positive-definite two-planes*, and the positive plane of
+$B=P\perp M$ is $E_P\oplus E_M$ with $E_P$, $E_M$ the positive lines of the two factors. An isometry
+$\id_P\perp\varphi$ acts on it by $\id$ on $E_P$ and by $\varphi$ on $E_M$, so
+$$\chi_{\mathrm{per},B}(\id_P\perp\varphi) \;=\; (+1)\cdot\chi_{\mathrm{per},M}(\varphi),$$
+the sign being the determinant on the oriented plane. Hence $\id_P\perp\varphi\in\Orth^+(B)$ exactly when
+$\varphi\in\Orth^+(M)$, and the restriction
 $$\Stab_{\Orth^+(B)}(l)\longrightarrow\Orth^+\bigl(l^{\perp B}/l\bigr)$$
 is *surjective* in this model, with no discriminant condition: the lifting is $\varphi\mapsto\id_P\perp\varphi$.
+Note that $-\id_B$ is *inside* $\Orth^+(B)$, since $\det$ on the positive plane is $(-1)^2=+1$; the
+component-reversing element used for the $\latI_{1,8}$ statement above therefore does not transfer, which is
+why the line statement for the ambient $(2,9)$ lattice is proved here from the splitting instead.
 
 Now let $J,J'$ be primitive isotropic planes. Choose primitive isotropic lines $l\subset J$ and $l'\subset J'$,
-which are primitive in $B$ since $J,J'$ are; by @prop:rank-nine-line-transitivity applied to $B$, an element
-$g\in\Orth^+(B)$ carries $l$ to $l'$. Then $g(J)$ and $J'$ are two isotropic planes through $l'$, hence
+which are primitive in $B$ since $J,J'$ are. Line transitivity for the *ambient* group is not the
+$(1,8)$ statement and is obtained here directly: split $B=P\perp M=P'\perp M'$ at $l$ and $l'$; the
+complements are both $\latI_{1,8}$, so an isometry of $B$ carries $l$ to $l'$, and if the one obtained fails
+to lie in $\Orth^+(B)$ then $\sigma=\id_P\perp(-\id_M)$ --- which fixes $P$ pointwise and has
+$\chi_{\mathrm{per},B}(\sigma) = (+1)(-1) = -1$ --- conjugates it into $\Orth^+(B)$ while fixing $l$. So
+some $g\in\Orth^+(B)$ carries $l$ to $l'$. Then $g(J)$ and $J'$ are two isotropic planes through $l'$, hence
 correspond to two isotropic lines of $l'^{\perp B}/l'\cong\latI_{1,8}$, and by line transitivity there
 (again @prop:rank-nine-line-transitivity, whose type analysis shows a single class because
 $\latI_{1,8}$ has no characteristic isotropic vector: a characteristic vector of $\latI_{p,q}$ has odd
@@ -536,6 +551,14 @@ coordinates and square $\equiv p-q$, and $1-8=-7\equiv1\pmod 8$) there is $\varp
 to the other. Its extension $\id_P\perp\varphi$ lies in $\Stab_{\Orth^+(B)}(l')$ and carries $g(J)$ to $J'$,
 so $(\id_P\perp\varphi)\circ g$ carries $J$ to $J'$.
 :::
+
+A remark on the component, since it is the step most easily got wrong. For signature $(2,9)$ the
+centre $-\id$ is *inside* $\Orth^+$: it acts on the positive plane with determinant $(-1)^2=+1$, so it
+preserves each component of the period domain, and it therefore cannot be used to move a transiting isometry
+into $\Orth^+$ --- although it fixes every line. The element that does that job here is
+$\id_P\perp(-\id_M)$ in the splitting, with character $-1$; and the element that does *not* preserve the
+component of $T_\Co$ is likewise not $-\id$ but any isometry acting with determinant $-1$ on the positive
+plane.
 
 Two scoping remarks. The characteristic-vector statement above is used only for $\latI_{1,8}$, where
 $p-q\equiv1\pmod8$; it is false in general --- in $\latI_{1,1}$ the vector $(1,1)$ is characteristic and
