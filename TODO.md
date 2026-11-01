@@ -27,14 +27,28 @@ is known. The candidate separator is the subspace $\bar J\subseteq A_{T_\Co}$ a 
 whether it separates is undecided. $A_{T_\Co}$ has $23\,715$ two-dimensional totally isotropic
 subspaces, so the invariant is far from constant but no computation has been made.
 
-**A3. Explicit generators of $\Gamma_\Co$.** The book calls the matrix representation "a stub".
-$\Gamma_\Co$ is defined as $\Orth^+(T_\Co)^*$, the discriminant kernel; the Coble-side description is
-the centralizer-stabilizer group $\Gamma^\theta_\Co$ of @prop:gamma-co-in-theta-centralizer, which
-contains $\Gamma_\Co$ with finite index, and a second overgroup $\Gamma_\Co^\En(\delta)$ comes from the
-Heegner line (@prop:gamma-co-in-heegner-group). The earlier formula wrote that intersection inside
-$\Orth(\ten)$, where neither $h_\Co$ nor $\theta$ lives; it is now formed inside $\Orth(\lkt)$ and
-pushed to $T_\Co$. Whether either overgroup equals $\Gamma_\Co$ is a finite discriminant question
-(A4). A1, A2 and A4 all wait on the generators, which are also the missing input for comparing them.
+**A3. Explicit generators of $\Gamma_\Co$.** Split, and the split is now sharp.
+*Done, verified at the owner* (`computations/reports/coble_stabilizer_generators.py`): the integral
+stabilizer of the degree-$2$ polarization. With $S_\En = C(2)$, $h = u_0+w_0$ and
+$h^{\perp C} \cong \generators{-2}\oplus E_8(-1)$, the nine reflections in $u_0-w_0$ and in the eight
+simple roots of $E_8(-1)$ generate $\Orth(h^{\perp C})$ — completeness decided by the owner's own
+subgroup comparison, $\abs{\Orth(h^{\perp C})} = 1\,393\,459\,200 = 2\abs{W(E_8)}$ — and by
+@prop:polarization-stabilizer-enriques those nine are generators of $\Stab_{\Orth(S_\En)}(h)$. Their
+images under the discriminant representation generate $G \leq \Orth(A_{S_\En}, q_{S_\En})$ with
+$\abs{G} = 696\,729\,600 = \abs{W(E_8)}$, the order @thm:coble-heegner-finite-orbits (1) asserts (B2,
+whose order half this settles; its orbit lengths are untouched).
+*Done, partly*: $\Gamma_\Co$ and its congruence preimage are owned subgroup objects
+(`T.stable_orthogonal_group().intersection(T.O_plus())` and
+`T.Aut().discriminant_preimage(P)`), and a genuine integral element of $\Gamma_\Co$ is exhibited:
+$\zeta+a_1\in T_\Co$ has square $-2$, so its reflection lies in
+$\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \Gamma_\Co$, confirmed by the owner's membership test.
+*Remaining*: generators of $\Gamma_\Co$ itself. The reflections of $T_\Co$ in its $(-2)$-vectors are in
+$\Gamma_\Co$, but $T_\Co$ is indefinite and has infinitely many of them, and root enumeration is a
+definite-lattice operation of the owner, so that set is not a finite object; completeness is a
+Vinberg-type theorem, recorded as required and open in the research report (@prob:coxeter-completeness,
+B32–B34). Semantic handoff if the owner wants the capability: one operation returning generators, or a
+finite-index certificate, for an intersection of predicate subgroups of $\Orth(L)$ of a $\ZZ$-lattice.
+Nothing in research may substitute a locally implemented group algorithm for it.
 
 **A4. $\Gamma_\Co = \widetilde O^+(T_\Co)$, and are the two definitions of $\Gamma_\Co$ one group?**
 First half settled and written down (@sec-gamma-co-comparison): $\Gamma_\Co=\Orth^+(T_\Co)^*$ and
@@ -351,13 +365,17 @@ same chapter elsewhere relies on exactly this gap ("surjectivity is not availabl
 So the justification for reading orbit questions off the discriminant form is *not* in place, and the
 honest statement is not "verify $r>a$" but "settle the genus of a $2$-elementary lattice at $r=a$".
 
-**B2. Whether $[1,2,120,135,270]$ is the $G_\Co$ decomposition.** Asserted; the order
-$696\,729\,600$ and the four lengths are unproved. Consistency with $[1,255,272]$ and the index $136$
-is a check on the claim and not a proof of it. Waits on A3. Not used by
-@prop:gamma-co-in-heegner-group: the index bound proved there is $\le\abs{W(E_8)}$, and it comes from
+**B2. Whether $[1,2,120,135,270]$ is the $G_\Co$ decomposition.** Half settled. The order
+$696\,729\,600$ is now verified at the owner: the nine integral generators of
+$\Stab_{\Orth(S_\En)}(h)$ (A3) have discriminant images generating a subgroup of
+$\Orth(A_{S_\En}, q_{S_\En})$ of exactly that order
+(`computations/reports/coble_stabilizer_generators.py`). The four orbit lengths are still unproved;
+consistency with $[1,255,272]$ and the index $136$ is a check on the claim and not a proof of it.
+Waits on A3 for the integral generators of $\gent$ itself. Not used by
+@prop:gamma-co-in-heegner-group for its bound, which comes from
 @prop:polarization-stabilizer-enriques (order $2\abs{W(E_8)}$ of the stabilizer, with
 $\id_U\oplus(-\id_{E_8})$ in the kernel of its reduction), so the propositions of
-@sec-gamma-co-comparison do not depend on this entry — only the sharper equality would.
+@sec-gamma-co-comparison do not depend on the orbit lengths — only their sharpening would.
 
 **B3. Whether $[1,255,272]$ are orbits of the stated stabilizer.** The three parts are known to
 partition the $528$ isotropic classes; that they are the orbits of the stabilizer of the polarization
