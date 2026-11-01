@@ -1066,7 +1066,19 @@ What has since been settled is listed at the end, so that a reader can tell "res
   divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of image
   vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example already
   used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.
-  The odd-lattice justification, sourced.  The transitivity the Coble chapter needs for the odd
+  The odd-lattice justification, sourced -- and narrowed once, because the first version was too broad.
+  The proposition was stated for every unimodular L with r - |s| >= 4, and that is false: James extends
+  only isometries that preserve characteristic status, and isometries preserve it always, so transitivity
+  fails as soon as both a characteristic and an ordinary isotropic vector exist.  I_{2,2} is the
+  counterexample -- r - |s| = 4 - 0 = 4, with c = (1,1,1,1) characteristic of square 0 and v = (1,0,1,0)
+  ordinary of square 0 -- and it is verified with the maintained lattice operations in
+  computations/reports/james_characteristic_counterexample.py.  What makes B = I_{2,9} different is a
+  congruence, not the rank inequality: a characteristic vector of I_{p,q} has odd coordinates and square
+  p - q mod 8, which is 1 mod 8 for I_{2,9} and 0 mod 8 for I_{2,2}, so in B no characteristic vector is
+  isotropic and the clause is vacuous.  The proposition is now stated for B alone, the universal claim
+  "no isotropic vector is characteristic" is gone, and the two statements it does not give -- O^+, and
+  planes, and stable-level descent -- remain separate.
+  The sourced statement itself.  The transitivity the Coble chapter needs for the odd
   B = I_{2,9} has a primary source that no even-lattice hypothesis obstructs: James' integral Witt theorem
   [@Jam68, Theorem, p. 303], which takes L *unimodular* -- no parity assumption -- and extends an isometry
   between primitive sublattices J, K of ranks with r(L) - |s(L)| >= 2(r(J)+1) exactly when it preserves

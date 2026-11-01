@@ -13,16 +13,17 @@ The claim.  the-heegner-line-and-the-coble-arithmetic-group.md states that the f
 Stab_{Orth(q_{T_Co})}(1/2 h~_Co) of the class of the transported polarization has order 94,755,225,600
 and acts on the same 528 isotropic classes with orbit lengths [1, 255, 272].
 
-Which class, derived rather than fitted.  The manuscript's polarization is the transported class
-1/2 h~_Co, where h~_Co = f^* h_Co has square 4 (open-problems, "Polarization basis"); under the
-discriminant quadratic form's convention q(1/2 x) = x^2/4 this gives q = 4/4 = 1.  Along the gluing
-anti-isometry A_{S_Co} -> A_{T_Co} the value changes sign, and -1 = 1 in QQ/2ZZ, so the value is 1 on
-either side of the gluing.  So q = 1 is computed from the construction and not chosen; what the
-manuscript does not distinguish is *which* class of value 1, and that choice is immaterial exactly when
-Orth(q) is transitive on the value-1 fiber, which is asserted here (one orbit of size 496, checked before
-anything is concluded) so that the stabilizers of any two such classes are conjugate and their orbit
-lengths agree.  The counts that follow -- 496, 94,755,225,600, [1, 255, 272] -- are assertions to be
-tested, never inputs selecting the class.
+Which class, and what the chosen element is.  The manuscript's polarization is h_Co = F_1 + F_2 of
+square 2, whose pullback h~_Co = f^* h_Co has square 4; the half-class 1/2 h~_Co is dual, and under the
+discriminant convention q(1/2 x) = x^2/4 it has q = 4/4 = 1.  The gluing anti-isometry A_{S_Co} ->
+A_{T_Co} sends q to -q, and -1 = 1 in QQ/2ZZ, so the value is 1 on either side.  What this file selects is
+therefore a *representative of the conjugacy class of stabilizers* of value-1 classes, NOT the specific
+geometric transported class: the transport from A_{S_Co} to A_{T_Co} is not constructed here, and no
+statement below should be read as being about that particular class.  The choice inside the fiber is
+immaterial exactly when Orth(q) is transitive on it, which is asserted here -- one orbit of size 496,
+checked before anything is concluded -- so the stabilizers of any two value-1 classes are conjugate and
+their orbit lengths agree.  The counts that follow -- 496, 94,755,225,600, [1, 255, 272] -- are
+assertions to be tested, never inputs selecting the class.
 
 What is not done, and must not be substituted.  The full orthogonal group is not used as a stand-in for
 the stabilizer, the polarization is not changed to make a count come out, and the zero class is kept
@@ -93,7 +94,21 @@ assert set().union(*[set(orbit) for orbit in restricted]) == isotropic_set, 'not
 total = sum(len(orbit) for orbit in restricted)
 assert total == 528, 'orbits are not disjoint'
 singleton = [orbit for orbit in restricted if len(orbit) == 1][0]
-print('the singleton orbit is the zero class: %s' % (list(singleton)[0] == min(isotropic_set, key=lambda x: 0 if D.q(x) == zero_value and str(x) == str(list(singleton)[0]) else 1)))
+zero_element = D.zero() if hasattr(D, 'zero') else polarization - polarization
+assert zero_element + zero_element == zero_element, 'the zero element is not idempotent under addition'
+assert set(singleton) == {zero_element}, 'the singleton orbit is not the zero class'
+print('the singleton orbit is exactly {D.zero()}: asserted, not inferred')
+
+# 3. the returned stabilizer must actually fix the chosen class and preserve q.
+generators = list(stabilizer.group_generators())
+print('stabilizer generators: %d' % len(generators))
+assert generators
+for generator in generators:
+    assert generator(polarization) == polarization, 'a stabilizer generator moves the chosen class'
+for generator in generators:
+    for x in isotropic:
+        assert D.q(generator(x)) == D.q(x), 'a stabilizer generator does not preserve q on the isotropic set'
+print('every stabilizer generator fixes the chosen class and preserves q on the 528 isotropic classes')
 print()
 print('claimed [1, 255, 272]   computed %s   AGREE' % sizes)
 print('the three orbits are disjoint, cover the 528 isotropic classes, and every element has q = 0:')

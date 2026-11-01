@@ -420,31 +420,39 @@ only through that theorem.
 
 For the odd case there is a separate result, and it is weaker in three ways at once.
 
-::: {.proposition #prop:odd-unimodular-rank-one-transitivity title="Odd unimodular lattices: primitive isotropic vectors, full orthogonal group"}
+::: {.proposition #prop:odd-unimodular-rank-one-transitivity title=\"The odd lattice $B = \\latI_{2,9}$: primitive isotropic vectors, full orthogonal group\"}
 
-Let $L$ be a unimodular lattice of signature $(p,q)$ with $p,q\geq1$ and $r(L)-\abs{\fs(L)}\geq4$. Then
-$\Orth(L)$ acts transitively on the primitive isotropic vectors of $L$. In particular $B=\latI_{2,9}$,
-where $r-\abs{\fs}=11-7=4$, has $\Orth(B)$ transitive on primitive isotropic vectors.
+$\\Orth(\\latI_{2,9})$ acts transitively on the primitive isotropic vectors of $\\latI_{2,9}$.
 :::
 
 ::: {.proof}
 
 James' integral Witt theorem [@Jam68, Theorem, p. 303]: for $L$ unimodular, an isometry between primitive
-sublattices $J$, $K$ with $r(L)-\abs{\fs(L)}\geq2(r(J)+1)$ extends to an isometry of $L$ if and only if
-it carries characteristic vectors to characteristic vectors. For a primitive rank-one $J$ the inequality
-reads $r(L)-\abs{\fs(L)}\geq4$, which is the hypothesis. Given two primitive isotropic vectors $v,w$,
-the isometry $\langle v\rangle\to\langle w\rangle$, $v\mapsto w$, therefore extends provided neither
-line is characteristic, and no isotropic vector is: a characteristic vector of $\latI_{p,q}$ has all
-coordinates odd in the standard basis, so its square is $\equiv p-q\pmod 8$, while an isotropic vector
-has square $0$. For $B=\latI_{2,9}$ that reads $\equiv-7\equiv1\pmod 8$, so the clause is vacuous.
+sublattices $J$, $K$ with $r(L)-\\abs{\\fs(L)}\\geq2(r(J)+1)$ extends to an isometry of $L$ if and only
+if it carries characteristic vectors to characteristic vectors. For $B=\\latI_{2,9}$ one has
+$r-\\abs{\\fs}=11-7=4=2(1+1)$, so the inequality holds for a primitive rank-one $J$ with equality, and
+it is the only hypothesis besides the characteristic clause. Given two primitive isotropic vectors $v$,
+$w$, the isometry $\\langle v\\rangle\\to\\langle w\\rangle$, $v\\mapsto w$, therefore extends provided
+neither line is characteristic. Neither is: a characteristic vector of $\\latI_{p,q}$ has all coordinates
+odd in the standard basis, so its square is $\\equiv p-q\\pmod 8$; for $\\latI_{2,9}$ that is
+$\\equiv-7\\equiv1\\pmod 8$, while an isotropic vector has square $0$. Hence both $v$ and $w$ are
+non-characteristic, the clause is vacuous, and the isometry extends.
 :::
 
-What this does **not** give, and what must not be promoted from it: the component-preserving subgroup,
-since the theorem produces an element of $\Orth(L)$ and says nothing about which component of
-$\Orth(L)/\Orth^+(L)$ it lies in; primitive isotropic *planes*, where the inequality would require
-$2(2+1)=6$ and $B$ has $4$; and any statement about the image of a prescribed arithmetic subgroup in
-$\Orth(q_L)$, which is a different question with its own sources. Each of those needs its own argument,
-and the Coble chapter's uses are labelled accordingly.
+Why the statement cannot be generalised to \"every unimodular $L$ with $r-\\abs{\\fs}\\geq4$\", which is
+what an earlier version of this proposition said. The congruence above is special to $B$, and without it
+characteristic isotropic vectors can exist: $\\latI_{2,2}$ has $r-\\abs{\\fs}=4-0=4$ and carries both
+$c=(1,1,1,1)$, which is characteristic of square $0$, and $v=(1,0,1,0)$, which is not characteristic and
+also of square $0$. Isometries preserve characteristic status, so no isometry carries one to the other and
+$\\Orth(\\latI_{2,2})$ is *not* transitive on primitive isotropic vectors. Both vectors and both status
+checks are in `computations/reports/james_characteristic_counterexample.py`.
+
+What the $B$ statement does **not** give, and what must not be promoted from it: the component-preserving
+subgroup, since the theorem produces an element of $\\Orth(L)$ and says nothing about its image in
+$\\Orth(L)/\\Orth^+(L)$; primitive isotropic *planes*, where the inequality would require $2(2+1)=6$ and
+$B$ has $4$; and any statement about the image of a prescribed arithmetic subgroup in $\\Orth(q_L)$, which
+is a different question with its own sources. Each of those needs its own argument, and the Coble chapter's
+uses are labelled accordingly.
 
 ## Finiteness of embedding orbits
 
