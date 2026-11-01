@@ -1,0 +1,13 @@
+T_2: rank 21, determinant -2, signature (2, 19)
+A_{T_2}: Finitely presented module on 21 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2]
+elements: 21
+q on the non-zero element: -1/4 (in Q/2Z)
+so {0} is the only isotropic subgroup of A_{T_2}, one class, while the Baily-Borel
+boundary of F_2 has four 1-cusps [@AET23, Sec. 3B]
+eta a primitive isotropic line: eta^perp/eta rank 19, determinant 2, signature (1, 18)
+   a Type IV domain needs signature (2,n); (1,18) is not one, and the Baily-Borel
+   Type III stratum at such a cusp is a point
+I a primitive isotropic plane: I^perp/I rank 17, determinant -2, signature (0, 17), negative definite True
+
+So the discriminant group of T_2 cannot index the four plane orbits, and the line quotient
+is not a Type IV object: the chapter states neither as a reduction any more.

@@ -155,17 +155,20 @@ What has since been settled is listed at the end, so that a reader can tell "res
   dzack_research.preamble.categories fails against the preamble checkout the image carries.
 
   The splitting, correctly stated.  Lambda_K3 is unimodular and h is primitive of square 2d > 0,
-  so Lambda_K3 and Zh + T_{2d}, with T_{2d} = h^perp, are *not* equal: det(Zh + T_{2d}) = (2d)^2
-  and the index is 2d, which the certificate reproduces (T_4 has determinant -4 while Lambda_K3 is
-  unimodular).  What holds is an orthogonal decomposition over Q, Lambda_QQ = Qh + T_{2d,QQ}, and
+  so Lambda_K3 and Zh + T_{2d}, with T_{2d} = h^perp, are *not* equal: det(Zh + T_{2d}) = -(2d)^2
+  in signature (3,19), of absolute value (2d)^2, and the index is 2d, against the unimodular
+  determinant +-1; the certificate reproduces the mismatch (T_4 has determinant -4 and Zh the
+  determinant +4, while Lambda_K3 is unimodular).  What holds is an orthogonal decomposition over Q, Lambda_QQ = Qh + T_{2d,QQ}, and
   integrally a finite-index gluing: A_{T_{2d}} = Z/2d = A_{Zh}, and Lambda_K3 is obtained from
   Zh + T_{2d} by adjoining the graph of an anti-isometry gamma: A_{Zh} -> A_{T_{2d}} of discriminant
   forms.  An isometry g of Lambda_K3 fixing h restricts to T_{2d}, and an isometry g_T of T_{2d}
-  extends to Lambda_K3 fixing h exactly when g_T x id on A_{T} + A_{Zh} preserves that graph.  Since
-  g_T acts on A_{Zh} as the identity and Aut(Z/2d) = {+1, -1}, preservation of the graph means
-  g_T acts *trivially* on A_T -- acting by -1 would send gamma to -gamma.  So the image of
-  restriction is exactly O~(T_{2d}) = ker(O(T_{2d}) -> O(A_{T_{2d}})), which is the discriminant
-  kernel and not the whole of O(T_{2d}); no splitting was needed for this, only the gluing.
+  extends to Lambda_K3 fixing h exactly when g_T x id on A_{T} + A_{Zh} preserves that graph.  The
+  graph is the image of gamma, so it is preserved exactly when g_T o gamma = gamma, and gamma is an
+  isomorphism onto A_T: hence g_T is the identity on A_T.  (No appeal to the automorphism group of
+  Z/2d is made or needed -- that group is {+1, -1} only for 2d = 4, 6 and a few others, and is
+  larger for 2d = 12, so a claim phrased through it would have been false as stated.)  So the image
+  of restriction is exactly O~(T_{2d}) = ker(O(T_{2d}) -> O(A_{T_{2d}})), the discriminant kernel
+  and not the whole of O(T_{2d}); no splitting was needed for this, only the gluing.
 
   The spinor norm and the component.  For g with g(h) = h, g = id_{Qh} + g|_T on Lambda_QQ, a
   factorization of g|_T into m reflections is one of g, and the multiplier enters both sides the
@@ -217,7 +220,9 @@ What has since been settled is listed at the end, so that a reader can tell "res
   on I_2 are one and the same set of orbits.
   (iii) The count.  For N = 19, Prop. A.11's injectivity and Cor. A.5 give the image of alpha_19 as
   the genus of D_17, and Theorem A.12 with Table 8 gives nine Type II components; A.6(9) lists the
-  nine, each described by its rank-17 root sublattice.  Hence there are nine orbits, and by the two
+  nine by root sublattice -- six of rank 17 (D_17, D_9 + E_8, D_12 + D_5, D_3 + (E_7)^2,
+  A_15 + D_2, A_11 + E_6) and three of rank 16 (D_16, (E_8)^2, (D_8)^2), which complete to rank 17
+  as overlattices of the root lattice plus D_1 = <-4>.  Hence there are nine orbits, and by the two
   steps above they are the orbits of Gamma_{2d} as well.
 
   The next open gap, named and not yet done.  The nine labels of Theorem A.6(9) are quoted from the
@@ -238,6 +243,22 @@ What has since been settled is listed at the end, so that a reader can tell "res
   real component character; that the central -id lies outside O^+; that a (-4)-vector can be a
   witness; and the plan of settling anything by a search over gluings.  The isometry T_4 = Lambda_19
   is a change of coordinates, never a change of polarization.
+
+  The general cusp mechanism corrected, and two chapter statements retired.  The section claimed
+  that cusp enumeration reduces to isotropic subgroups of the discriminant group A_{T_{2d}}.  At
+  d = 1 it does not: A_{T_2} = Z/2, its non-zero element has q = -1/4 in Q/2Z, so {0} is the only
+  isotropic subgroup -- one class -- while the Baily-Borel boundary of F_2 has four 1-cusps
+  (AET Sec. 3B).  What classifies the orbits is the quotient lattice J = I^perp/I together with the
+  gluing of J back into T_{2d}: for a plane, Prop. A.4 puts I inside a unimodular U + U with
+  T_{2d} = (U + U) + L, so J = L and A_{T_{2d}} = A_L, the gluing being the isometry class of the
+  embedding; at d = 1 the four quotients are pairwise non-isometric, and at d = 4 nine classes in a
+  single genus give nine orbits (Prop. A.11 injectivity), so neither the discriminant group nor the
+  genus is the classifier.  The chapter now says that.  The second retirement is the Type III
+  sentence: the Baily-Borel stratum at a 0-cusp is a point (AET Sec. 3B), and eta^perp/eta for a
+  primitive isotropic line has rank 19 and signature (1,18), which is not a Type IV signature, so
+  no period domain is attached to it; the boundary point, the weight-two Hodge structure on the
+  graded piece, and the toroidal data (which at a Type III cusp is nothing) are now kept apart in
+  the chapter.  Both facts are computed in computations/reports/cusp_mechanism_audit.py.
 
   The Sterk construction has been run against the five subsections, on the shared image with its
   OCI environment (JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot:) and the canonical
@@ -479,9 +500,11 @@ What has since been settled is listed at the end, so that a reader can tell "res
   Two things the audit did not settle and does not claim.  The boundary labels (10,10,0)_1 and
   (10,8,0)_1 are the manuscript's Enriques-cusp invariants and were not recomputed here from
   L_- = H + H(2) + E8(-2); they need the five isotropic orbits and their quotients, which is the
-  Sterk transcription's job.  And the arithmetic-group comparison stays open exactly as recorded
-  above: Laza--O'Grady's group and the manuscript's Gamma have not been matched, so no count is
-  transferred between them, in the Enriques chapter or elsewhere.
+  Sterk transcription's job.  The arithmetic-group comparison, recorded here as open when this
+  paragraph was written, is settled above: the manuscript's Gamma_{2d} is Laza--O'Grady's stable
+  orthogonal group, and the nine Type II components of the degree-four space are its orbits on
+  primitive isotropic planes, so that count does transfer.  Nothing in the Enriques chapter depends
+  on it either way.
 
   The "Sigma versus N zero-cusp invariant" still does not resolve.  Inspected as asked: the
   introduction and historical context carry no such phrase, and the nearest textual home is the
@@ -508,9 +531,10 @@ What has since been settled is listed at the end, so that a reader can tell "res
   (`splits_of_unimodular`, `det_eq_mul_of_unimodular_block_diagonal`); since $J\oplus J'
   \cong U^{\oplus 2}$ for AET's complementary isotropic plane, $\det(J^\perp/J) = \pm 2$ for
   all four, and the index of the label is $1$, $2$, $2$, $3$. The lattice follows for
-  $A_1\oplus E_8^{\oplus 2}$ and does not follow for the other three without a certified
-  quotient and overlattice computation.
-  That computation has not been run. `sage-extensions` at revision
+  $A_1\oplus E_8^{\oplus 2}$ and did not follow for the other three without a certified quotient
+  and overlattice computation.  That computation has since been run, and its result is recorded
+  below under the marked inclusion; the paragraph that follows describes the state before it, and
+  is kept only for the API inventory it lists, `sage-extensions` at revision
   `441519c574cec12ada06ad586f6c3862fbca96d0` (clean checkout) has every operation it needs --
   `primitive_isotropic_subobject` (`lattices.py:7312`), `isotropic_reduction`
   (`lattices.py:5688`, `:8414`), `even_overlattice_inclusions` (`lattices.py:5937`),
