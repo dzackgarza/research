@@ -189,37 +189,57 @@ What has since been settled is listed at the end, so that a reader can tell "res
   index at most two in O~^+(T_{2d}), whichever normalization is intended, and nothing below needs
   to know which.  No normalization is chosen here to make an identification come out.
 
-  Membership in the discriminant kernel is measured, not inferred from divisibility.  The
-  reflection in the generator of the <-4> summand of T_4 = <-4> + U^2 + E8^2 is integral -- the
-  library constructs it and refuses any vector for which 2b(x, r)/b(r, r) is non-integral -- and
-  its pairing with the lattice is (-4, 0, ..., 0), so its divisibility is 4 and even.  It is
-  nevertheless NOT in the discriminant kernel:
-  computations/reports/t4_discriminant_action.py moves the dual basis by the contragredient and
-  compares images under Lattices.discriminant_projection(), and it sends the dual generator w_0 of
-  that summand to the other class of A_{T_4} = Z/4, i.e. it acts by -1.  The criterion proposed
-  earlier in this note -- that a (-4)-vector of even divisibility is a witness in the discriminant
-  kernel, hence in the right coset -- is therefore withdrawn: divisibility decides neither
-  membership nor coset.  The same measurement on the same API gives what the comparison does use:
-  in Lambda_19, -1 on the first hyperbolic summand and the reflection in the sum of the last two
-  D_17 simple roots both lie in the discriminant kernel, while the (-2)-root a_1 does not.  Those
-  two are the elements the plane <e_1, e_2> is settled with, and they are settled by measurement.
+  Which reflections lie in the discriminant kernel, by arithmetic and then by measurement.  For an
+  integral reflection rho_r in a vector r, the difference rho_r(x) - x is the integer multiple
+  -2b(x, r)/b(r, r) of r, so rho_r fixes A_L exactly when b(x, r) lies in (|b(r, r)|/2)Z for every
+  x in the metric dual; since b(w_i, r) is the i-th coordinate of r, the criterion is that every
+  coordinate of r be divisible by |b(r, r)|/2.  A (-2)-root therefore always qualifies, which is
+  Laza--O'Grady's Example 1.2.2(2) with the sign made explicit, while a (-4)-vector does not
+  unless it lies in 2L, which no even lattice allows.  Measured through the owner's own morphism --
+  isometry.discriminant_morphism(), the action packaged by Lattices.discriminant_representation(),
+  with Lattices.stable_orthogonal_group() as the kernel -- the four cases come out: the (-2)-root
+  a_1 of Lambda_19 fixes A_{Lambda_19} and lies in the stable group; a_16 + a_17, of square -4, does
+  not; -1 on H = U + U with +1 on the negative definite part is in it; and the generator of T_4's
+  <-4> summand is not.  Two earlier statements in this note are corrected accordingly.  The
+  report that the (-2)-root lay *outside* the kernel was an artefact of a transposed contragredient
+  in the test file, and the library was right; it is recorded here as a defect of that file, not of
+  the library, and no arithmetic conclusion is changed to accommodate it.  And the proposed
+  witness "a (-4)-vector of even divisibility" is withdrawn: divisibility gives neither membership
+  nor coset, and no (-4)-vector is a witness at all.
 
-  What remains of the comparison, and what it is not.  Eight of the nine orbits are open, and they
-  are not to be settled by a case search over candidates whose membership is assumed from
-  divisibility: what the coset question needs first is the normalization of the spinor norm that
-  AET intend, which their text does not fix, and with it the single statement of whether
-  ker(sn) cap O~^+ is proper.  Since Gamma is kept as AET define it, that is a question about
-  their convention and not about a group chosen here.  Until it is answered the count for the
-  manuscript's Gamma is nine or more, with the orbit of <e_1, e_2> the one that is settled.
+  The stabilizer, uniformly, from the source's own splitting.  By Prop. A.4 every saturated
+  isotropic plane J of Lambda_19 sits in a sublattice H = U + U with Lambda_19 = H + L, L negative
+  definite of rank 17 in the genus of D_17.  Since H is unimodular, A_{Lambda_19} = A_L, so *every*
+  isometry acting identically on L lies in the discriminant kernel, and this uniformly in J and in
+  the class of L -- no gluing case arises.  Two characters have to be kept apart on this
+  stabilizer, and neither is settled by the central -id alone.
+  The component character.  -id_{Lambda_19} lies in O(Lambda_19) and not in O^+(Lambda_19) and
+  maps every sublattice onto itself, so the O/O^+ quotient is invisible on I_2; that is the step
+  the central -id supplies and it is all it supplies.  Inside O^+, -id on H with +1 on L is an
+  element of O^+(Lambda_19) cap O~(Lambda_19) cap Stab(J) -- measured in the stable group above --
+  so the stabilizer meets O~^+ for every J, but its spinor norm is c^4 * (2 * -2)^2 = 1 and it
+  therefore does not separate the spinor coset.
+  The spinor character.  A (-2)-root r of L lies in J^perp, so rho_r fixes J pointwise; it is in
+  O^+ because r^2 < 0, in the discriminant kernel by the criterion above, and its spinor norm is
+  c * (-2).  That single family of elements settles every orbit at once: in a normalization where
+  c * (-2) is a non-square -- O'Meara's c = 1, giving the class of -2 -- Stab_{O~^+}(J) meets the
+  non-trivial coset for *every* J, so no orbit splits and the Gamma-orbits on I_2 are the nine.
+  In Gritsenko--Hulek--Sankaran's normalization c = -1/2 the value is 1, the argument is silent,
+  and whether ker(sn) cap O~^+ is proper is not decided here.
+  So the comparison closes under one of the two standard normalizations and stays open under the
+  other, and which one AET intend is not in their text.  That is a question about their convention,
+  not about a group chosen here, and Gamma is left as they define it.
 
   So the nine-lattice statement stands exactly as far as it was established: for the group the
   source's period space is divided by -- and, by the -id step, equally for O^+(Lambda_19) -- the
   degree-four space has nine Type II boundary components, labelled by the nine lattices in the
   genus of D_17 (Cor. A.5, Prop. A.11, Thm A.12 and its table, with A.6(9) listing them).  For the
-  manuscript's Gamma the count is nine or more: the refinement is ruled out on one of the nine
-  orbits and open on the other eight, so no claim of nine Gamma-orbits is made here.  The earlier
-  sentence that the comparison was the open step is withdrawn; the isometry T_4 = Lambda_19 was a
-  change of coordinates and never a change of polarization.
+  manuscript's Gamma it is nine under the normalization in which a (-2)-root reflection has
+  non-trivial spinor norm, uniformly over the nine orbits, and undecided under the other until
+  AET's normalization is fixed; no claim of nine Gamma-orbits is made without naming the
+  convention.  The earlier sentence that the comparison was the open step is withdrawn, as is the
+  plan of settling it by a case search over gluings; the isometry T_4 = Lambda_19 was a change of
+  coordinates and never a change of polarization.
 
   The Sterk construction has been run against the five subsections, on the shared image with its
   OCI environment (JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot:) and the canonical

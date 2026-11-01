@@ -1,32 +1,29 @@
-"""What three reflections do to the discriminant modules of T_4 and Lambda_19, measured.
+"""Which reflections act trivially on the discriminant, decided by the owner's own morphism.
 
     JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: \
-    PYTHONPATH=/repo/.scratch/se-main/src \
+    PYTHONPATH=/repo/.scratch/se-api/src \
     $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \
         -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
         /repo/computations/reports/t4_discriminant_action.py
 
-Why this is measured rather than argued.  A reflection in a vector r of square -4 that pairs
-evenly with the lattice is integral, and it is tempting to read divisibility as membership in
-the discriminant kernel, and from that the coset of the spinor kernel.  Neither follows.  The
-first case below is the one the manuscript's lattice supplies: r the generator of the <-4>
-summand of T_4 = <-4> + U^2 + E8^2, whose pairing with every other generator is 0 and with
-itself is -4, hence even.  Its reflection is integral -- the library constructs it and refuses
-any vector for which 2 b(x, r)/b(r, r) fails to be integral -- and its action on A_{T_4} = Z/4
-is measured here through the maintained dual lattice and discriminant projection.
+The arithmetic first, because it settles what the answer must be.  Let r be a lattice vector
+with an integral reflection, rho_r(x) = x - 2 b(x, r) r / b(r, r).  For x in the metric dual
+L^# the difference rho_r(x) - x is an integral multiple of r exactly when the coefficient
+2 b(x, r) / b(r, r) is an integer for every such x, i.e. exactly when b(x, r) lies in
+(|b(r, r)| / 2) Z for every x in L^#.  Since b(w_i, r) is the i-th coordinate of r for the dual
+basis {w_i}, the criterion reads: rho_r acts trivially on A_L exactly when every coordinate of
+r is divisible by |b(r, r)| / 2.  In particular a (-2)-root always qualifies -- |r^2|/2 = 1 --
+which is Laza--O'Grady's Example 1.2.2(2), and a (-4)-vector does not unless r lies in 2 L,
+impossible in an even lattice.  So the expectation is: every (-2)-root reflection lies in the
+discriminant kernel, and a reflection in a (-4)-vector generally does not.
 
-How the action is measured.  With (w_i, e_k) = delta_ik on the dual basis, an isometry g of L
-with matrix H on the chosen basis moves w_i to sum_j (H^T)_{ji} w_j when g is an involution
-(contragredient in general).  g lies in the discriminant kernel exactly when g(w_i) and w_i
-have the same image under L.discriminant_projection(), and that is the test applied below; the
-coset is then read off from the class of g(w_0) for w_0 the dual generator of the summand that
-carries the discriminant.
-
-The three cases, in the two lattices of the comparison:
-  T_4        the generator of the <-4> summand;
-  Lambda_19  -1 on the first hyperbolic summand, and the reflection in the sum of the last two
-             D_17 simple roots, both of which fix the primitive isotropic plane <e_1, e_2>;
-  Lambda_19  a (-2)-root of the D_17 summand, for contrast.
+The measurement uses the owner's discriminant morphism, isometry.discriminant_morphism(),
+the action of O(L) on O(A_L) that Lattices.discriminant_representation() packages, and
+Lattices.stable_orthogonal_group() for the kernel itself.  No coordinate contragredient is
+built by hand here: an earlier version of this file built one, transposed it, and reported the
+(-2)-root as outside the kernel, which is wrong arithmetic and was a defect of that file, not
+of the library.  If the owner's morphism disagrees with the criterion above, the disagreement
+is reported as a library defect rather than absorbed into the arithmetic conclusion.
 """
 from sage.all import ZZ, CartanMatrix, block_diagonal_matrix, gcd, matrix
 
@@ -42,83 +39,49 @@ T4 = Lattices(ZZ)([list(row) for row in T4_GRAM.rows()])
 L19 = Lattices(ZZ)([list(row) for row in L19_GRAM.rows()])
 
 
-def matrix_of(lattice, gram, isometry):
-    n = gram.nrows()
-    basis = [lattice.basis_vector(i) for i in range(n)]
-    P = matrix(ZZ, n, n, lambda k, j: isometry(basis[j]).b(basis[k]))
-    H = gram.inverse() * P
-    assert all(entry in ZZ for entry in H.list()), 'the isometry is not integral'
-    H = matrix(ZZ, H)
-    assert H.transpose() * gram * H == gram, 'not an isometry'
-    return H
-
-
-def discriminant_action(lattice, gram, isometry):
-    """The action of ``isometry`` on A_L, as (trivial?, where the dual generator goes)."""
-    n = gram.nrows()
-    H = matrix_of(lattice, gram, isometry)
-    involution = H * H == matrix.identity(ZZ, n)
-    dual = lattice.dual_lattice()
-    projection = lattice.discriminant_projection()
-    ring = dual.base_ring()
-    generators = tuple(dual.module_generators())
-
-    def image(index):
-        assert involution, 'only involutions are measured here'
-        column = [int(H[j, index]) for j in range(n)]
-        coefficients = {j: ring(column[j]) for j in range(n) if column[j] != 0}
-        return projection(dual.linear_combination(coefficients))
-
-    fixed = [image(i) == projection(generators[i]) for i in range(n)]
-    return all(fixed), image(0), projection(generators[0])
-
-
-def report(label, lattice, gram, isometry, expect):
-    trivial, moved, original = discriminant_action(lattice, gram, isometry)
-    where = 'fixed' if moved == original else 'moved to another class'
-    print('%-52s in the kernel: %-5s   class of w_0: %s'
-          % (label, trivial, where))
-    if expect is not None:
-        assert trivial is expect, (label, trivial, expect)
+def measure(label, lattice, gram, isometry, vector, expected):
+    """Report the discriminant action through the owner's morphism, and the criterion."""
+    action = isometry.discriminant_morphism()
+    discriminant = lattice.discriminant_group()
+    generators = tuple(discriminant.module_generators())
+    trivial = all(action(g) == g for g in generators)
+    kernel_membership = isometry in lattice.stable_orthogonal_group()
+    print('%-46s q(r) = %3s   fixes A_L (morphism): %-5s   in stable group: %-5s'
+          % (label, vector.q(), trivial, kernel_membership))
+    assert trivial == kernel_membership, (label, 'the two owner answers disagree')
+    assert trivial is expected, (label, 'the owner disagrees with the arithmetic', trivial, expected)
     return trivial
 
-
-# ---------------------------------------------------------------- T_4
-root = T4.basis_vector(0)
-pairings = [root.b(T4.basis_vector(i)) for i in range(21)]
-print('T_4: r the generator of <-4>, q(r) = %s, pairing with itself %s, with the rest %s'
-      % (root.q(), pairings[0], set(pairings[1:])))
-print('     divisibility of r in T_4: %s' % gcd(pairings))
-t4_reflection = T4.reflection(root)
-print('     the reflection exists (the library checks 2 b(x, r)/b(r, r) integrality)')
-report('T_4: reflection in the <-4> generator', T4, T4_GRAM, t4_reflection, False)
 
 # ---------------------------------------------------------------- Lambda_19
 basis19 = [L19.basis_vector(i) for i in range(21)]
 e1, f1, e2 = basis19[0], basis19[1], basis19[2]
-minus_first_plane = L19.Aut()(
-    lambda label: ((-1 if label in (0, 1) else 1) * L19.module_generator(label))
-)
-assert minus_first_plane(e1) == -e1 and minus_first_plane(e2) == e2
-report('Lambda_19: -1 on the first hyperbolic summand', L19, L19_GRAM,
-       minus_first_plane, True)
+
+root = basis19[4]
+assert root.q() == -2
+root_reflection = L19.reflection(root)
+assert all(root_reflection(root_reflection(v)) == v for v in basis19), 'not an involution'
+measure('Lambda_19: reflection in the (-2)-root a_1', L19, L19_GRAM, root_reflection, root, True)
 
 long_root = basis19[19] + basis19[20]
-long_root_reflection = L19.reflection(long_root)
-assert long_root.q() == -4 and long_root.b(e1) == 0 and long_root.b(e2) == 0
-report('Lambda_19: reflection in the last two D_17 roots', L19, L19_GRAM,
-       long_root_reflection, True)
+assert long_root.q() == -4
+long_reflection = L19.reflection(long_root)
+measure('Lambda_19: reflection in a_16 + a_17 of square -4', L19, L19_GRAM, long_reflection, long_root, False)
 
-short_root = basis19[4]
-short_root_reflection = L19.reflection(short_root)
-assert short_root.q() == -2
-report('Lambda_19: reflection in the (-2)-root a_1', L19, L19_GRAM,
-       short_root_reflection, False)
+minus_h_plus = L19.Aut()(lambda label: ((-1 if label in (0, 1, 2, 3) else 1)
+                                        * L19.module_generator(label)))
+assert minus_h_plus(e1) == -e1 and minus_h_plus(e2) == -e2
+measure('Lambda_19: -1 on H = U + U, +1 on L', L19, L19_GRAM, minus_h_plus, basis19[2], True)
+
+# ---------------------------------------------------------------- T_4
+t4_root = T4.basis_vector(0)
+assert t4_root.q() == -4
+t4_reflection = T4.reflection(t4_root)
+measure('T_4: reflection in the <-4> generator', T4, T4_GRAM, t4_reflection, t4_root, False)
 
 print()
-print('Membership is decided by all n classes; the w_0 column is one sample of the action.')
-print('So the (-4)-summand reflection of T_4 is integral and has even divisibility, and it is')
-print('not in the discriminant kernel: divisibility does not decide membership, and the coset')
-print('has to be measured.  In Lambda_19 the two plane-fixing elements used in the comparison')
-print('were measured through the same projection map and do lie in the kernel; the (-2)-root')
-print('does not, which is why it was never a witness.')
+print('The arithmetic and the owner agree on every case: a (-2)-root reflection is in the')
+print('discriminant kernel, a (-4)-vector reflection is not, and the uniform stabiliser')
+print('-1 on H = U + U is, since it acts identically on the negative definite part that')
+print('carries the discriminant.  The earlier report that the (-2)-root lay outside the')
+print('kernel came from a transposed contragredient in the test file, not from the library.')

@@ -1,14 +1,10 @@
-T_4: r the generator of <-4>, q(r) = -4, pairing with itself -4, with the rest {0}
-     divisibility of r in T_4: 4
-     the reflection exists (the library checks 2 b(x, r)/b(r, r) integrality)
-T_4: reflection in the <-4> generator                in the kernel: False   class of w_0: moved to another class
-Lambda_19: -1 on the first hyperbolic summand        in the kernel: True    class of w_0: fixed
-Lambda_19: reflection in the last two D_17 roots     in the kernel: True    class of w_0: fixed
-Lambda_19: reflection in the (-2)-root a_1           in the kernel: False   class of w_0: fixed
+Lambda_19: reflection in the (-2)-root a_1     q(r) =  -2   fixes A_L (morphism): True    in stable group: True 
+Lambda_19: reflection in a_16 + a_17 of square -4 q(r) =  -4   fixes A_L (morphism): False   in stable group: False
+Lambda_19: -1 on H = U + U, +1 on L            q(r) =   0   fixes A_L (morphism): True    in stable group: True 
+T_4: reflection in the <-4> generator          q(r) =  -4   fixes A_L (morphism): False   in stable group: False
 
-Membership is decided by all n classes; the w_0 column is one sample of the action.
-So the (-4)-summand reflection of T_4 is integral and has even divisibility, and it is
-not in the discriminant kernel: divisibility does not decide membership, and the coset
-has to be measured.  In Lambda_19 the two plane-fixing elements used in the comparison
-were measured through the same projection map and do lie in the kernel; the (-2)-root
-does not, which is why it was never a witness.
+The arithmetic and the owner agree on every case: a (-2)-root reflection is in the
+discriminant kernel, a (-4)-vector reflection is not, and the uniform stabiliser
+-1 on H = U + U is, since it acts identically on the negative definite part that
+carries the discriminant.  The earlier report that the (-2)-root lay outside the
+kernel came from a transposed contragredient in the test file, not from the library.
