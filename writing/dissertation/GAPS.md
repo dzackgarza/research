@@ -534,6 +534,38 @@ What has since been settled is listed at the end, so that a reader can tell "res
   exactly the rank AEGS25's Lemma 5.2 enumerates and exactly the rank the computation above used.
   The chapter now cites both where it states the rank.
 
+  The semifan provenance, carried as far as the sources allow.  The e-print of AEGS25 is retained
+  at .scratch/refs/aegs_src, and its figure numbering can now be read off en.tex instead of guessed:
+  Figure 5 of the paper is fig-k3-cusps-circled.pdf, captioned "Coxeter diagrams for (18,2,0)_1 and
+  (18,0,0)_1" -- the diagrams whose non-boundary roots Definition 5.4 calls irrelevant -- and its
+  Figures 7 and 8 are fig-cusp2.pdf ("Folded diagram for cusp 2") and fig-cusps1345.pdf ("Folded
+  diagrams for cusps 1, 3, 4, 5"), which are the diagrams the pandoc objects sterk-cusp-{1,3,4,5}
+  and vinberg-10-8-0 transcribe in the manuscript's r-numbering.  The folded side is therefore
+  retained in full: the library's Sterk.sterk_roots() records every folded root as an explicit sum
+  of the K3 roots, e.g. Sterk_1's r_9 = v21, r_10 = v22, r_8 = v17 + v19, r_11 = v18 + v20, and
+  Sterk_3's r_10, r_11 as orbit sums of v20, v18.
+  What cannot yet be done, stated exactly: the correspondence between Figure 5's printed root
+  numbers and the library's v1,...,v22 (or w1,...,w19) is not recorded anywhere in the repository,
+  so the irrelevant subset of each *folded* diagram -- which is what Definition 5.4 transports --
+  cannot be recomputed here, and with it neither can Lemma 5.6's S_2 and S_2^2 cases be checked
+  independently nor Lemma 5.8's deletion counts be re-derived.  The labels are text in the artwork
+  (pdftotext returns 6, 7, 8, ..., 21 from fig-k3-cusps-circled.pdf), but the circling and the
+  square/triangle boundary membership are vector strokes; the same technique used for AET's Figure 1
+  in writing/coble/scripts/certificates/read_fig1.py would read them, and that reading is the
+  concrete next step rather than a library matter.
+  What is verified without that correspondence: the three labelled pairs the manuscript names are
+  affine A_1's (b = 4 with both squares -4, from the retained assets), which is what makes the
+  irrelevant subgroup infinite at cusps 1, 3 and 5 once those roots are known to be irrelevant; the
+  rank rule of AET Thm. 4.3 gives the rank-9 elliptic class that both AEGS25 Lemma 5.2 and the
+  certificate enumerate; and the orbit counts agree with Lemma 5.2's numbers.
+  The Gamma_k bridge, as far as it goes: by [Ste91] the groups induced on e^perp/e are
+  Gamma_k = Aut(G_r^k) x| W(G_r^k) [AEGS25, Sec. 5.1].  The action computed here is Aut(G) on the
+  Gram-labelled diagram, and it reproduces Lemma 5.2's counts exactly; what a reader of the source
+  is entitled to ask, and what is not yet shown here, is that Aut(G) on subdiagram classes is the
+  same quotient as Gamma_k on the fan -- equivalently, that the reflection factor W(G_r^k) moves no
+  subdiagram class.  That is a statement about two actions, and it is the one piece of the bridge
+  left open.
+
   The semifan claims, resolved as source statements with their hypotheses.  They are
   Alexeev--Engel--Garza--Schaffler's, not something this repository proves, and the chapter now
   carries the citations: Definition 5.4 (a folded root is irrelevant if it is the fold of an
