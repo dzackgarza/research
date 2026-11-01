@@ -107,7 +107,7 @@ print('restricted the ambient action through H -> G: %s' % type(restricted_actio
 
 start = time.time()
 isotropic_action = FiniteGSets(subgroup)(isotropic, lambda h, x: restricted_action.act(h, x))
-restricted = [frozenset(orbit) for orbit in isotropic_action.orbits()]
+restricted = [frozenset(orbit.points()) for orbit in isotropic_action.orbits()]
 print('the restricted action gives %d orbits on the %d isotropic classes (%.1fs)'
       % (len(restricted), len(isotropic), time.time() - start), flush=True)
 isotropic_set = set(isotropic)
