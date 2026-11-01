@@ -390,6 +390,48 @@ initial nor terminal. Whether $*\amalg*$ is initial or terminal is irrelevant: a
 initial and terminal, the initial object here is $\varnothing$, the terminal one is $*$, and the argument
 needed is that they are not equivalent.
 
+**C16–C23. Eight defects in the worked examples of the lattice chapter.** All in
+`dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/200-examples.md`, each stated
+correctly at a second location in the book.
+
+- *C16.* `:123` describes the half-integer roots of $F_4$ as those with an even number of minus signs.
+  That gives $8$, and with $8+24$ integral roots totals $40$, not $48$; and the file's own
+  $\alpha_4=\tfrac12(e_1-e_2-e_3-e_4)$ has three minus signs and is excluded by the description. The
+  correct statement is `root-systems.md`, `def:root-system-F4`.
+- *C17.* `:157–166` says $D_n^+\not\cong D_n^-$ for even $n$ and two lines later that $D_8^+\cong E_8$;
+  both $D_8^\pm$ are even unimodular of rank $8$, hence both are $E_8$, so the file contradicts itself
+  on one page. The construction is also not closed for odd $n$, and $D_n^\pm$ is not integral for
+  $n\equiv2\pmod 4$. Correct form at `root-systems.md:248`.
+- *C18.* `:168–189` negates $G_{E_8}^{-1}$ and the fundamental weights relative to the file's own
+  positive-definite convention, so that $\beta(w_1,\alpha_1)=-1$.
+- *C19.* The $E_8$ sign is unresolved across the file: `:60–62` and `:102` declare one convention,
+  `:235` and `:274–290` the other, and under the declared one $\Lambda_{K3}$ has signature $(19,3)$.
+- *C20.* `:68` defines a simple system by $\Z_{\ge0}\Phi=R(L)$, which is impossible — $-\alpha_1$ is a root.
+- *C21.* `:250` and `:265` prove both classification theorems from "an even unimodular lattice exists
+  only in ranks divisible by $8$", which $U$, $U^2$ and $\Lambda_{K3}$ refute.
+- *C22.* `:114–115`: $v_8^2=8$ cannot generate $A_1$, and a single vector cannot generate $A_2$; the
+  index $q$ in "$q\le i\le n$" at `:119` is never defined.
+- *C23.* `:250` contradicts `:54–55` on parity; `:200` writes $w_1,\dots,w_p$ for a rank-$p+q$ lattice;
+  `:307` writes "signature $(2,0)$" and reuses $U$ for $U_1$.
+
+**C24–C26. Three bibliography errors, one of them widespread.** These are citation defects, not
+typographic ones: each names a different work from the one that carries the claim.
+
+- *C24.* `@Kol23` is Kollár's *Arthur Byron Coble, 1878–1966*, a biography; the book carrying KSBA
+  theory is `@Kol23a` (*Families of Varieties of General Type*). `@Kol23` is cited for KSBA claims at
+  nine sites: `400-ksba-functor.md:34`, `heegner-report:131, 219, 2593`, `000-part-1.md:32`,
+  `100-historical-context.md:15`, `100-defining-fen2.md:50`, `700-zmt-isomorphism.md:39`,
+  `ResearchStatement.md:11`.
+- *C25.* `@Loo03` is *Compactifications Defined by Arrangements. I. The Ball Quotient Case* and
+  `@Loo02` is *…II. Locally Symmetric Varieties of Type IV*; `300-semitoroidal.md:7, 65, 75, 84` and
+  `heegner-report:185, 223` cite `Loo03` for the Type IV theory, which is in `Loo02`. The Heegner
+  bibliography additionally keys Part II as `Loo03`, so the same key names two different papers across
+  the two bibliographies.
+- *C26.* `@AE23a` is *The Flex Divisor of a K3 Surface*; the tower theorem it is cited for is in
+  `@AE23`, *Compact Moduli of K3 Surfaces*. Sites: `000-part-2.md:40` `[@AE23a, Thm. 5.14]`,
+  `5-chapter-ias-dlt/000-intro.md:55`, `4-chapter-cpt/000-ksba.md:55`.
+
+
 
 
 
@@ -416,8 +458,14 @@ Not yet read at this depth: `writing/lattice-theory`'s remaining subdirectories;
 (enriched/ and the remaining forms chapters).
 
 Categories C11–C15 and the audit of `writing/category-theory/algebraic-structures` and
-`foundations` came from `ultramath` swarm `smvy0k5df`, member m3, whose findings were checked against
-the files before entry.
+`foundations` came from `ultramath` swarm `smvy0k5df`, member m3; C16–C23 from members m5 and m7,
+who audited `200-examples.md` independently and agreed on every finding I checked; C24–C26 from
+member m6. Every item was checked at the cited lines before entry.
+
+Two directions of the swarm went unexecuted because the members assigned them did other, useful work
+instead: the research-statement/part-intro pass, and the cross-chapter consistency pass that produced
+C6, C9, C10 and A38/A40 by hand. The inconsistency hunt is the largest remaining gap in this audit.
+
 
 
 
