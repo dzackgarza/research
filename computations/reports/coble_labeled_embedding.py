@@ -29,6 +29,16 @@ and 2H + E_1 + ... , which are not in K_S^perp (H + E_1 is four steps away from 
 they produced was about non-admissible markings and said nothing about A21; and they treated an
 unlabelled isometry of Pic(S) as though it were the labeled comparison.
 
+Two further corrections are recorded in comments rather than in the printed output, so that the
+committed log remains the record of the run that produced it.  Section 2's printed argument against
+half-vectors covers only the case b = 2 of a denominator b, and an earlier text derived it from an
+index-2 overlattice, which is wrong: [L_K3 : S_En + T_En] = |A_{S_En}| = 2^10, not 2.  The general
+identity M = T_Co^perp = S_En + Z delta is proved by determinants -- det T_Co = 2^11,
+det(T_Co^perp) = det T_Co in the unimodular L_K3, det(S_En + Z delta) = 2^10 * 2 = 2^11, containment --
+and is verified in computations/reports/coble_embedding_index.py.  And section 3.4's involution check is
+made on the abstract orthogonal sum S_Co perp T_Co, rank 22, determinant -2^22, signature (3,19); it is
+not a morphism of L_K3, which is not built here.
+
 Provenance is printed before anything is computed.
 """
 import sys
@@ -112,6 +122,11 @@ print('    so the negative those classes produced concerns non-admissible markin
 print('    about A21.  H + E_1 is the class that gave the earlier h~ = 2e + f_1 + f_2 with 18 roots.')
 
 # ---------------------------------------------------------------- 2. the Enriques side
+# NOTE (comment only, not printed): the half-vector argument below is the b = 2 case of a denominator b.
+# The general identity M = T_Co^perp = S_En + Z delta is by determinants -- det T_Co = 2^11,
+# det(T_Co^perp) = det T_Co, det(S_En + Z delta) = 2^10 * 2 = 2^11, containment -- verified in
+# computations/reports/coble_embedding_index.py.  It uses no index-[L_K3 : S_En + T_En] assertion; that
+# index is |A_{S_En}| = 2^10 and not 2.
 print('')
 print('2. the Enriques side')
 h = M.basis_vector(1) + M.basis_vector(2)
@@ -231,6 +246,55 @@ print('    for the extension therefore rests on thm:two-elementary-surjectivity 
 print('    theorem, not an owner computation -- and on Nikulin\'s gluing criterion for the extension')
 print('    itself.  L_K3 is the unique even unimodular lattice of signature (3,19).')
 
+# ---------------------------------------------------------------- 3.4 the Coble involution label
+# NOTE (comment only, not printed): the isometry checked here is of the abstract orthogonal sum
+# S_Co perp T_Co (rank 22, determinant -2^22, signature (3,19)), not of L_K3, which is not built.  It
+# verifies the component behaviour of the pair (+id_{S_Co}, -id_{T_Co}), not an ambient morphism.
+# prop:theta-co-exists gives theta_Co with (+1)-eigenspace T_Co and (-1)-eigenspace S_Co, and its
+# existence is gluing-independent: both discriminant forms are 2-elementary, so the pair
+# (+id_{S_Co}, -id_{T_Co}) acts trivially on A_{S_Co} (+) A_{T_Co} and therefore preserves EVERY isotropic
+# gluing subgroup, hence extends over L_K3 for any gamma_Co.  So the label I_Co := -theta_Co -- +1 on
+# S_Co, -1 on T_Co -- needs no gluing data, and it fixes H = h~_Co because H lies in S_Co.  What is
+# checked here: the 2-elementaryness of both discriminant forms, and the action of the pair on H inside
+# the orthogonal direct sum S_Co (+) T_Co.
+print('')
+print('3.4 the Coble involution label')
+GRAM_T = block_diagonal_matrix(matrix(ZZ, [[2]]), 2 * U, 2 * E8)
+T_Co = Lattices(ZZ)([list(row) for row in GRAM_T.rows()])
+A_S = S_Co.discriminant_group()
+A_T = T_Co.discriminant_group()
+print('    |A_{S_Co}| = %s, |A_{T_Co}| = %s' % (A_S.cardinality(), A_T.cardinality()))
+for name, form in (('A_{S_Co}', A_S), ('A_{T_Co}', A_T)):
+    try:
+        print('    %s is 2-elementary: %s' % (name, form.is_p_elementary(2)))
+    except Exception as exc:
+        print('    %s exponent %s (is_p_elementary raised %s)'
+              % (name, form.exponent(), type(exc).__name__))
+D = Lattices(ZZ)([list(row) for row in
+                  block_diagonal_matrix(block_diagonal_matrix(matrix(ZZ, [[2]]), -2 * matrix.identity(ZZ, 10)),
+                                        GRAM_T).rows()])
+print('    S_Co (+) T_Co as an owner lattice: rank %d, det %s, signature %s'
+      % (D.rank(), D.determinant(), D.signature_pair()))
+# the pair as an owner isometry of S_Co (+) T_Co, built through the isometry group of the lattice
+images = {i: D.basis_vector(i) for i in range(11)}
+images.update({11 + i: -D.basis_vector(11 + i) for i in range(11)})
+try:
+    pair = D.O()(lambda label: images[int(label)])
+    h_in_D = D.linear_combination({i: D.base_ring()(coords[i]) for i in range(11) if coords[i]})
+    image = pair(h_in_D)
+    print('    the pair (+id_{S_Co}, -id_{T_Co}) as an owner isometry of S_Co (+) T_Co:')
+    print('      it fixes a basis vector of the T_Co summand up to sign and H pointwise: %s'
+          % (image == h_in_D))
+    print('      image of the first T_Co basis vector: %s' % (pair(D.basis_vector(11)) == -D.basis_vector(11)))
+except Exception as exc:
+    print('    owner isometry construction failed: %s: %s' % (type(exc).__name__, str(exc)[:140]))
+print('    the pair (+id_{S_Co}, -id_{T_Co}) acts trivially on A_{S_Co} (+) A_{T_Co} because both forms')
+print('    are 2-elementary, so it preserves every isotropic gluing subgroup and extends over L_K3 by')
+print('    thm:nikulin-gluing for any gamma_Co: that is prop:theta-co-exists, and it is why the label')
+print('    I_Co := -theta_Co needs no gluing data.  Its action on H = h~_Co is the action of +id_{S_Co}.')
+print('    Still not established: that the retained EFFECTIVE root is the one computed in 3.2 (a chamber')
+print('    statement), and the del Pezzo involution I_dP, which the sources do not give as lattice data.')
+
 # ---------------------------------------------------------------- 4. what remains
 print('')
 print('4. what this does not do')
@@ -247,8 +311,9 @@ print('   4.3 the ambient: section 3.3 states the extension argument and what it
 print('       pair decided here, thm:two-elementary-surjectivity for T_Co, Nikulin\'s gluing criterion,')
 print('       and the uniqueness of the even unimodular lattice of signature (3,19).  Not done: building')
 print('       L_K3 and the two embeddings, so the extension is an argument rather than an object, and the')
-print('       chamber is not transported.  The involutions reduce to the same gluing datum: I_Co needs')
-print('       gamma_Co of cons:embedding-gluing-data, I_dP is not lattice data in the sources at all.')
+print('       chamber is not transported.  I_Co = -theta_Co needs no gluing data at all (3.4); I_dP is not')
+print('       lattice data in the sources.  Nothing here promotes modelled lattice data to the retained')
+print('       geometric labels.')
 print('')
 print('SUMMARY')
 print('  0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to')

@@ -72,6 +72,21 @@ provenance
     theorem, not an owner computation -- and on Nikulin's gluing criterion for the extension
     itself.  L_K3 is the unique even unimodular lattice of signature (3,19).
 
+3.4 the Coble involution label
+    |A_{S_Co}| = 2048, |A_{T_Co}| = 2048
+    A_{S_Co} exponent 2 (is_p_elementary raised AttributeError)
+    A_{T_Co} exponent 2 (is_p_elementary raised AttributeError)
+    S_Co (+) T_Co as an owner lattice: rank 22, det -4194304, signature (3, 19)
+    the pair (+id_{S_Co}, -id_{T_Co}) as an owner isometry of S_Co (+) T_Co:
+      it fixes a basis vector of the T_Co summand up to sign and H pointwise: True
+      image of the first T_Co basis vector: True
+    the pair (+id_{S_Co}, -id_{T_Co}) acts trivially on A_{S_Co} (+) A_{T_Co} because both forms
+    are 2-elementary, so it preserves every isotropic gluing subgroup and extends over L_K3 by
+    thm:nikulin-gluing for any gamma_Co: that is prop:theta-co-exists, and it is why the label
+    I_Co := -theta_Co needs no gluing data.  Its action on H = h~_Co is the action of +id_{S_Co}.
+    Still not established: that the retained EFFECTIVE root is the one computed in 3.2 (a chamber
+    statement), and the del Pezzo involution I_dP, which the sources do not give as lattice data.
+
 4. what this does not do
    4.1 the labels.  A21 compares tuples (L_K3, I_Co, I_dP, H, alpha, C): commuting
        nonsymplectic involutions, H^2 = 4 fixed by both, alpha^2 = -2 with H.alpha = 0 fixed
@@ -86,8 +101,9 @@ provenance
        pair decided here, thm:two-elementary-surjectivity for T_Co, Nikulin's gluing criterion,
        and the uniqueness of the even unimodular lattice of signature (3,19).  Not done: building
        L_K3 and the two embeddings, so the extension is an argument rather than an object, and the
-       chamber is not transported.  The involutions reduce to the same gluing datum: I_Co needs
-       gamma_Co of cons:embedding-gluing-data, I_dP is not lattice data in the sources at all.
+       chamber is not transported.  I_Co = -theta_Co needs no gluing data at all (3.4); I_dP is not
+       lattice data in the sources.  Nothing here promotes modelled lattice data to the retained
+       geometric labels.
 
 SUMMARY
   0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to
