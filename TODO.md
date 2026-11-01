@@ -257,10 +257,14 @@ classes $F_1 = 3H-(E_1+\dots+E_9)$ and $F_2 = 3H-(E_1+\dots+E_8+E_{10})$ are iso
 $K_S$, and satisfy $F_1\cdot F_2 = 1$, so $h_\Co = F_1+F_2$ lies in $K_S^\perp$ with $a = 6$,
 $\Sum_i b_i = 18$ and $h_\Co^2 = 2$; its pullback has square $4$.
 
-*Saturation and complements.* $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is already saturated
-($S_\En^\# = \tfrac12C$ with $C$ even unimodular has integral squares, so no $(x+\tfrac12\delta)$ is
-integral). Both polarization complements have rank $10$, determinant $2048$, signature $(0,10)$ and $2$
-roots, and `is_isometric_to` returns `True`.
+*Complements, and the complement identity by determinants.* $M = T_\Co^{\perp\lkt}$ equals
+$S_\En\oplus\ZZ\delta$ because $\det T_\Co = 2^{11}$, $\det(T_\Co^{\perp\lkt}) = \det T_\Co$ in the
+unimodular $\lkt$, and $\det(S_\En\oplus\ZZ\delta) = 2^{10}\cdot 2 = 2^{11}$ with containment. The
+embedding indices are $[\lkt : S_\En\oplus T_\En] = \abs{A_{S_\En}} = 2^{10}$ and
+$[\lkt : S_\Co\oplus T_\Co] = 2^{11}$, both read off the discriminant orders of the gluing
+anti-isometries; an earlier version asserted index $2$ for the Enriques side without a source, and that
+is withdrawn (`computations/reports/coble_embedding_index.py`). Both polarization complements have rank
+$10$, determinant $2048$, signature $(0,10)$ and $2$ roots, and `is_isometric_to` returns `True`.
 
 *The marked pair, decided.* By Nikulin an isometry carrying $\tilde h_\Co$ to $h$ exists iff some isometry
 $\tilde h_\Co^{\perp}\to h^{\perp}$ carries the glue class of one to that of the other, both classes having
@@ -277,7 +281,8 @@ discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserve
 subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
 an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber
 (nef-cone geometry), and $I_{\mathrm{dP}}$ (not lattice data in the sources). (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
-the same complement $T_\Co$, the composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
+the same complement $T_\Co$ (with $M = S_\En\oplus\ZZ\delta$ by the determinant identity above), the
+composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
 $\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
 (@thm:two-elementary-surjectivity), and $ (\psi,\phi)$ then extends over $L_{K3}$ by @thm:nikulin-gluing.
 Owner status of that input: surjective for $S_\Co$ and for $M$ (owner-verified), undecided for $T_\Co$,
