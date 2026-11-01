@@ -209,64 +209,21 @@ hypothesis in each case:
    reached by an unlabelled $\Pic(S)$ isometry, was about non-admissible markings and is withdrawn.
    What remains: (i) the labels — A21 compares tuples $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha,
    \mathcal C)$ per the research report's @sec-labeled-lattice-data, and an unlabelled Picard-lattice
-   isometry is not that comparison. Of the tuple, the distinguished root is settled: the complement of
-   $\tilde h_\Co$ has exactly two vectors of square $-2$ (root system $A_1$), and that root line is
-   $\alpha$ with $\alpha^2=-2$, $H\cdot\alpha=0$, lying in $S_\Co$ and hence fixed by $I_\Co=-\theta_\Co$;
-   missing are $-\theta_\Co$ itself (needs $\gamma_\Co$ from @cons:embedding-gluing-data as data),
-   $I_{\mathrm{dP}}$ (not lattice data in the sources), and the chamber (nef-cone geometry);
-   (ii) the marked-pair isometry carrying $\tilde h_\Co$ to $h$, which
-   @thm:coble-heegner-line-unique does not decide here because the complement is definite; (iii) the
-   extension over $\lkt$ by `isometry_extends` and the transport of the chamber.
-   A20 item 1 is untouched.
-3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
-   @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
-
-The report's trap stands: defining one of them to be "the group for which the desired semifan works"
-is circular. Every other Coble statement inherits whichever group it was stated for.
-
-**A21. Labeled Coble rigidity** (@prob:coble-rigidity). Two labeled tuples
-$(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$ arising from the projective construction
-should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This is strictly stronger
-than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
-coordinate-independent. Still open, and it is a Coble-to-Coble statement.
-
-The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement and is
-**open**; only its unlabelled necessary condition has been tested
-(`computations/reports/coble_labeled_embedding.py`):
-*Admissibility, verified against the defining source.* With $K_S = -3H+\Sum_i E_i$
-(@prop:canonical-perp-is-e10) and its criterion $\Sum_i b_i = 3a$ for $D = aH - \Sum_i b_i E_i$, the
-classes $F_1 = 3H-(E_1+\dots+E_9)$ and $F_2 = 3H-(E_1+\dots+E_8+E_{10})$ are isotropic, orthogonal to
-$K_S$, and satisfy $F_1\cdot F_2 = 1$, so $h_\Co = F_1+F_2$ lies in $K_S^\perp$ with $a = 6$,
-$\Sum_i b_i = 18$ and $h_\Co^2 = 2$; its pullback has square $4$.
-*The necessary condition, owner-decided.* The complements of $\tilde h_\Co$ in $S_\Co$ and of $h$ in
-$\langle S_\En,\delta\rangle$ — the latter already saturated, since $S_\En^\# = \tfrac12C$ with $C$ even
-unimodular has integral squares — both have rank $10$, determinant $2048$, signature $(0,10)$ and $2$
-roots, and `is_isometric_to` returns `True`. So the comparison is not obstructed at this level, and the
-obstruction reported in an earlier round — computed from $H+E_1$, which satisfies $D\cdot K_S = -4$, and
-from classes reached by an unlabelled $\Pic(S)$ isometry — is withdrawn as being about inadmissible
-markings.
-*What is missing.* (i) The labels: A21's tuple $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$,
-with commuting nonsymplectic involutions, $H^2=4$ fixed by both, $\alpha^2=-2$, $H\cdot\alpha=0$, $\alpha$
-fixed by $I_\Co$, and a chamber with $\alpha$ effective and $H$ nef and big (research report,
-@sec-labeled-lattice-data) — an unlabelled Picard-lattice isometry is not this comparison. (ii) The
-marked-pair isometry carrying $\tilde h_\Co$ to $h$. By Nikulin it exists iff some isometry
-$\tilde h_\Co^{\perp}\to h^{\perp}$ carries the glue class of one to that of the other, both classes
-having order $2$ so the sign on $\ZZ v/4$ is irrelevant; @thm:coble-heegner-line-unique does not decide
-it, its hypothesis being an indefinite complement while a positive vector in signature $(1,10)$ has a
-definite one. Assembled at the owner: the complements are isometric; both glue subgroups have order $2$,
-from `S_Co.glue_map` and `M.glue_map`; $\abs{\Orth(\tilde h_\Co^{\perp})} = 2\,786\,918\,400$ with $22$
-generators, whose image in $\Orth(A)$ has order $696\,729\,600$. **Blocked at one missing semantic operation, now pinned down.** There is no owner decision for
-"are two primitive vectors in one $\Orth(L)$-orbit" in signature $(1,n)$ — equivalently
-`is_isometric_to` for lattices with a distinguished primitive vector. The nearest operation,
-`L.are_in_one_stable_orbit(left, right)`, is Eichler's criterion and requires an even lattice with a
-represented decomposition containing two copies of $U$; $\tilde h_\Co^{\perp}$ is definite and $S_\Co$ has
-signature $(1,10)$, so neither qualifies. The same gap shows up concretely: `O(A).subgroup(generators)`
-has no `orbit` method, while the full form's `O(A).orbit(x)` exists and is used in the same report.
-Expected operations, stated exactly: vector-orbit (or marked-pair) isometry decision in signature
-$(1,n)$, and the induced action of a subgroup of $\Orth(A)$ on the finite quadratic form. A second,
-smaller piece: the glue classes live in the complements' discriminant forms with the $(-1)$ twist that
-`glue_map` records ($A(-1)$), with no owner operation composing a glue map with an isometry's
-discriminant map.
+   isometry is not that comparison. Of the tuple, only existence of the root is established: the
+   complement of $\tilde h_\Co$ has exactly one root line (root system $A_1$), so a root $\alpha$ with
+   $\alpha^2=-2$, $H\cdot\alpha=0$ exists and is unique up to sign — but which of the two is the
+   *retained effective* root is a chamber question, and the representative `roots_K[0]` is an abstract
+   choice. Still missing: effectivity and the chamber (nef-cone geometry), $-\theta_\Co$ (needs
+   $\gamma_\Co$ from @cons:embedding-gluing-data as data; its action on $H$ is unchecked at the level of
+   a morphism), and $I_{\mathrm{dP}}$ (not lattice data in the sources);
+   (ii) the marked-pair isometry carrying $\tilde h_\Co$ to $h$ — **decided in the affirmative**. By
+   Nikulin it exists iff some isometry $\tilde h_\Co^{\perp}\to h^{\perp}$ carries the glue class of one to
+   that of the other, both classes having order $2$; through the represented action of
+   $\Orth(\tilde h_\Co^{\perp})$ (order $2\,786\,918\,400$, $22$ generators, image of order
+   $696\,729\,600$ in $\Orth(A)$) restricted along the subgroup inclusion, the glue class of $S_\Co$ and
+   the transport of that of $M$ lie in one orbit, decided by `in_same_orbit`
+   (`computations/reports/coble_labeled_embedding.py`, section 3.1). So the two polarized lattices are
+   matched by an isometry carrying $\tilde h_\Co$ to $h$.
 (iii) The extension over $\lkt$ by `isometry_extends` and the transport of the chamber.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant

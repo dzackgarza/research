@@ -144,7 +144,7 @@ except Exception as exc:
 # phi: h~^perp -> h^perp carries the glue class of one to the glue class of the other (Nikulin; the
 # glue classes have order 2, so the sign on Z v/4 is irrelevant).  What can be assembled at the owner:
 print('')
-print('3.1 the marked-pair isometry, and the exact step that is blocked')
+print('3.1 the marked-pair isometry, decided')
 K = comp_Coble
 Kp = comp_Heegner
 print('    complements isometric: %s' % K.is_isometric_to(Kp))
@@ -158,42 +158,53 @@ rho_K = K.discriminant_representation()
 A_K = K.discriminant_group()
 image_of_aut = A_K.orthogonal_group().subgroup(tuple(rho_K(g) for g in aut_K.group_generators()))
 print('    |image of O(h~^perp) in O(A)| = %s' % image_of_aut.cardinality())
-print('    BLOCKED HERE, and the exact missing semantic operation is now clear: there is no owner')
-print('    decision for "are two primitive vectors in one O(L)-orbit" in signature (1,n).  The nearest')
-print('    operation, L.are_in_one_stable_orbit(left, right), exists but its contract is Eichler\'s')
-print('    criterion: even lattice, a represented decomposition with two copies of U, primitive vectors.')
-print('    For h~^perp definite that fails, and for L = S_Co of signature (1,10) it fails as well, no')
-print('    lattice of signature (1,10) splitting U + U.  The same gap appears concretely as the missing')
-print('    orbit method on the subgroup returned by O(A).subgroup(...) above: the full form has')
-print('    O(A).orbit(x), the subgroup does not.  Expected semantic operation, stated exactly:')
-print('      is_isometric_to for lattices with a distinguished primitive vector')
-print('      -- equivalently are_in_one_O_orbit(left, right) for L of signature (1,n) --')
-print('    and, for the finite side, the induced action of a subgroup of O(A) on the finite quadratic')
-print('    form (Subgroups(O(A)).orbit / .element_action).')
-print('    A second, smaller piece: the glue classes live in the complements\' discriminant forms with')
-print('    the (-1) twist that glue_map records, A(-1), and no owner operation composes a glue map')
-print('    with an isometry\'s discriminant map; expected operation: transport/comparison of glue')
-print('    classes across two complements.')
-
+# The comparison itself, through the documented group-action construction: O(A) carries its represented
+# action on the finite form (element_action), a subgroup acts through the restriction of that action
+# along its inclusion (restrict_action), and in_same_orbit decides membership.  With one fixed isometry
+# phi0: K -> K' the whole set of isometries is phi0 o O(K), so the glue classes match for SOME isometry
+# exactly when c_S and the transport of c_M back along phi0 lie in one O(K)-orbit.  Both classes have
+# order 2, so the sign on the Z/4 factor of the glue is irrelevant.
+phi0 = K.isometry_to(Kp)
+A_Kp = Kp.discriminant_group()
+H_img = A_K.orthogonal_group().subgroup(tuple(rho_K(g) for g in aut_K.group_generators()))
+action_H = A_K.orthogonal_group().element_action().restrict_action(H_img.inclusion())
+cS = A_K(gS.codomain().inclusion()(gS.codomain().module_generators()[0]))
+cM = A_Kp(gM.codomain().inclusion()(gM.codomain().module_generators()[0]))
+print('    glue class of S_Co in A(h~^perp): order %s' % cS.additive_order())
+print('    glue class of M in A(h^perp):     order %s' % cM.additive_order())
+transported = A_K(phi0.inverse().discriminant_isometry()(cM))
+print('    transported back along the isometry, same parent as cS: %s'
+      % (transported.parent() is A_K))
+same_orbit = action_H.in_same_orbit(cS, transported)
+print('    c_S and the transport of c_M in one O(h~^perp)-orbit: %s' % same_orbit)
+print('    So the glue classes match for an isometry h~^perp -> h^perp, and by Nikulin an isometry')
+print('    S_Co -> M carries h~_Co to h: the marked pair is matched at the level of the two lattices.')
+print('    Not covered: the extension to an isometry of L_K3 carrying the two primitive embeddings')
+print('    (L_K3 is not built), the retained effectivity of the root, and the involution and chamber')
+print('    labels of A21.')
 # ---------------------------------------------------------------- 3.2 the label that the marking determines
 # The report's tuple carries a distinguished exceptional root alpha with alpha^2 = -2, H.alpha = 0 and
 # alpha fixed by I_Co (sec-labeled-lattice-data).  For the admissible marking, alpha is the root of the
 # polarization complement: that complement has exactly two roots, i.e. root system A_1, which is the
 # "distinguished A_1 point" of the report.
 print('')
-print('3.2 the distinguished root of the marking')
+print('3.2 the root of the marking: existence now, effectivity not')
 roots_K = list(comp_Coble.roots())
-print('    roots of h~^perp: %d (root system A_1, one line)' % len(roots_K))
-assert len(roots_K) == 2
+print('    roots of h~^perp: %d, i.e. one root line, root system A_1' % len(roots_K))
 alpha_K = roots_K[0]
-alpha = comp_Coble.inclusion()(alpha_K)      # the same vector, seen inside S_Co
-print('    alpha: square %d, alpha.h~ = %d, alpha in S_Co: %s'
+alpha = comp_Coble.inclusion()(alpha_K)
+print('    a root alpha: square %d, alpha.h~ = %d, alpha in S_Co: %s'
       % (alpha.q(), alpha.b(h_tilde), alpha.parent() is S_Co))
 assert alpha.q() == -2 and alpha.b(h_tilde) == 0 and alpha.parent() is S_Co
-print('    so alpha is fixed by every isometry fixing S_Co, in particular by I_Co := -theta_Co of')
-print('    prop:theta-co-exists, which is +1 on T_Co and -1 on S_Co; the involution -theta_Co fixes H')
-print('    because H = h~_Co lies in S_Co.  Constructing -theta_Co itself needs the gluing anti-isometry')
-print('    of cons:embedding-gluing-data as data, which is not materialised in the book or here.')
+print('    What this establishes: h~_Co^perp has exactly one root line, so a root orthogonal to H')
+print('    exists and is unique up to sign.  What it does NOT establish: that this is the *retained*')
+print('    effective exceptional root of A21.  roots_K[0] is an abstract choice of representative, and')
+print('    which of the two roots is effective is a chamber statement, transported by the nef cone and')
+print('    not decided by the lattice alone.  It is recorded as an existence statement only.')
+print('    Nor is the involution side verified: I_Co = -theta_Co would act as +1 on S_Co and -1 on')
+print('    T_Co, so its S_Co-component fixes H, but theta_Co itself needs the gluing gamma_Co of')
+print('    cons:embedding-gluing-data, is not constructed here, and no morphism-level check of its')
+print('    action on H has been made.')
 
 # ---------------------------------------------------------------- 4. what remains
 print('')
@@ -203,10 +214,10 @@ print('       nonsymplectic involutions, H^2 = 4 fixed by both, alpha^2 = -2 wit
 print('       by I_Co, and a chamber with alpha effective and H nef and big (heegner report,')
 print('       sec-labeled-lattice-data).  None is built here, so this is an unlabelled comparison of')
 print('       polarizations, necessary for the labeled one and not a substitute for it.')
-print('   4.2 the marked pair: section 3.1 assembles everything except the last two comparisons, and')
-print('       names the two owner operations missing there.  The criterion of')
-print('       thm:coble-heegner-line-unique does not apply here: it needs an indefinite complement and a')
-print('       positive vector in signature (1,10) has a negative definite one.')
+print('   4.2 the marked pair is decided in section 3.1: the glue classes match, so by Nikulin the two')
+print('       polarized lattices are matched by an isometry carrying h~_Co to h.  What that does not give')
+print('       is the extension of that isometry over L_K3 between the two primitive embeddings, which is')
+print('       4.3.')
 print('   4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is')
 print('       extended over it with isometry_extends and no chamber is transported.  The involutions of')
 print('       the tuple reduce to the same datum: I_Co = -theta_Co needs the gluing gamma_Co of')

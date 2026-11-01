@@ -34,35 +34,33 @@ provenance
 3. the comparison of the complements, owner-decided
    is_isometric_to returned True
 
-3.1 the marked-pair isometry, and the exact step that is blocked
+3.1 the marked-pair isometry, decided
     complements isometric: True
     glue subgroup of h~^perp: order 2; of h^perp: order 2
     |O(h~^perp)| = 2786918400, generators 22
     |image of O(h~^perp) in O(A)| = 696729600
-    BLOCKED HERE, and the exact missing semantic operation is now clear: there is no owner
-    decision for "are two primitive vectors in one O(L)-orbit" in signature (1,n).  The nearest
-    operation, L.are_in_one_stable_orbit(left, right), exists but its contract is Eichler's
-    criterion: even lattice, a represented decomposition with two copies of U, primitive vectors.
-    For h~^perp definite that fails, and for L = S_Co of signature (1,10) it fails as well, no
-    lattice of signature (1,10) splitting U + U.  The same gap appears concretely as the missing
-    orbit method on the subgroup returned by O(A).subgroup(...) above: the full form has
-    O(A).orbit(x), the subgroup does not.  Expected semantic operation, stated exactly:
-      is_isometric_to for lattices with a distinguished primitive vector
-      -- equivalently are_in_one_O_orbit(left, right) for L of signature (1,n) --
-    and, for the finite side, the induced action of a subgroup of O(A) on the finite quadratic
-    form (Subgroups(O(A)).orbit / .element_action).
-    A second, smaller piece: the glue classes live in the complements' discriminant forms with
-    the (-1) twist that glue_map records, A(-1), and no owner operation composes a glue map
-    with an isometry's discriminant map; expected operation: transport/comparison of glue
-    classes across two complements.
+    glue class of S_Co in A(h~^perp): order 2
+    glue class of M in A(h^perp):     order 2
+    transported back along the isometry, same parent as cS: True
+    c_S and the transport of c_M in one O(h~^perp)-orbit: True
+    So the glue classes match for an isometry h~^perp -> h^perp, and by Nikulin an isometry
+    S_Co -> M carries h~_Co to h: the marked pair is matched at the level of the two lattices.
+    Not covered: the extension to an isometry of L_K3 carrying the two primitive embeddings
+    (L_K3 is not built), the retained effectivity of the root, and the involution and chamber
+    labels of A21.
 
-3.2 the distinguished root of the marking
-    roots of h~^perp: 2 (root system A_1, one line)
-    alpha: square -2, alpha.h~ = 0, alpha in S_Co: True
-    so alpha is fixed by every isometry fixing S_Co, in particular by I_Co := -theta_Co of
-    prop:theta-co-exists, which is +1 on T_Co and -1 on S_Co; the involution -theta_Co fixes H
-    because H = h~_Co lies in S_Co.  Constructing -theta_Co itself needs the gluing anti-isometry
-    of cons:embedding-gluing-data as data, which is not materialised in the book or here.
+3.2 the root of the marking: existence now, effectivity not
+    roots of h~^perp: 2, i.e. one root line, root system A_1
+    a root alpha: square -2, alpha.h~ = 0, alpha in S_Co: True
+    What this establishes: h~_Co^perp has exactly one root line, so a root orthogonal to H
+    exists and is unique up to sign.  What it does NOT establish: that this is the *retained*
+    effective exceptional root of A21.  roots_K[0] is an abstract choice of representative, and
+    which of the two roots is effective is a chamber statement, transported by the nef cone and
+    not decided by the lattice alone.  It is recorded as an existence statement only.
+    Nor is the involution side verified: I_Co = -theta_Co would act as +1 on S_Co and -1 on
+    T_Co, so its S_Co-component fixes H, but theta_Co itself needs the gluing gamma_Co of
+    cons:embedding-gluing-data, is not constructed here, and no morphism-level check of its
+    action on H has been made.
 
 4. what this does not do
    4.1 the labels.  A21 compares tuples (L_K3, I_Co, I_dP, H, alpha, C): commuting
@@ -70,10 +68,10 @@ provenance
        by I_Co, and a chamber with alpha effective and H nef and big (heegner report,
        sec-labeled-lattice-data).  None is built here, so this is an unlabelled comparison of
        polarizations, necessary for the labeled one and not a substitute for it.
-   4.2 the marked pair: section 3.1 assembles everything except the last two comparisons, and
-       names the two owner operations missing there.  The criterion of
-       thm:coble-heegner-line-unique does not apply here: it needs an indefinite complement and a
-       positive vector in signature (1,10) has a negative definite one.
+   4.2 the marked pair is decided in section 3.1: the glue classes match, so by Nikulin the two
+       polarized lattices are matched by an isometry carrying h~_Co to h.  What that does not give
+       is the extension of that isometry over L_K3 between the two primitive embeddings, which is
+       4.3.
    4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is
        extended over it with isometry_extends and no chamber is transported.  The involutions of
        the tuple reduce to the same datum: I_Co = -theta_Co needs the gluing gamma_Co of
