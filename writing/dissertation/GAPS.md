@@ -1066,6 +1066,32 @@ What has since been settled is listed at the end, so that a reader can tell "res
   divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of image
   vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example already
   used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.
+  The corpus-first search, done for the obligations recorded here, with its result scoped.  Before
+  recording the remaining items as gaps, the formalization corpus was queried as AGENTS.md requires
+  (search the formalization corpus first, always on), through its API at
+  https://formalization-corpus.dzackgarza.com/api/search, on four questions: Witt extension for isometries
+  of primitive sublattices; transitivity on primitive isotropic vectors under an orthogonal group; the
+  stable orthogonal group as a discriminant kernel; characteristic vectors of quadratic forms modulo two;
+  and the splitting of even unimodular lattices by a hyperbolic plane.  What came back was roadmaps and
+  index files rather than formal theorems -- TauCetiRoadmap's IntegralLattices/Suggested and
+  QuadraticFormInvariants/Suggested, Mathlib.lean's index, and TauCeti's Cancellation.lean and
+  Modular.lean as the closest real material -- so on the corpus as currently indexed there is no formal
+  statement of James' integral Witt theorem, of the split-maximal isotropic transitivity, or of the image
+  of a stable orthogonal group in the orthogonal group of its discriminant form.  Per the same rule this
+  is a dated, scoped negative -- not found at the index the corpus holds -- and not a claim that nobody
+  has formalized them; and for lattice theory over rings the corpus explicitly defers to the literature,
+  which is where the citations here point (James for the odd rank-one case, Dawes for the even split
+  case, Nikulin for the gluing).
+  What the project's own formalization does already carry, and what the prose now cites rather than
+  restating: formalization/coble-enriques/Splitting.lean has splits_of_unimodular and
+  det_eq_mul_of_unimodular_block_diagonal, i.e. the correct-hypothesis form of the orthogonal splitting
+  -- unimodularity of the restricted Gram, not primitivity -- which is exactly the point at
+  moduli-construction.md where the integral splitting of a primitive embedding was corrected; and
+  IsotropicPlanes.lean has the objects of the cusp statements themselves, IsIsotropic, IsIsotropicPlane,
+  IsPrimitivePlane, O_T_Co and SameOrbit.  So the definitions the cusp correspondence works with are
+  already formalized in this repository and are cited there; the two items that remain open -- the plane
+  statement for B and the stable-level stabilizer image -- are open for want of a source theorem, not for
+  want of a definition.
   The odd-lattice justification, sourced -- and narrowed once, because the first version was too broad.
   The proposition was stated for every unimodular L with r - |s| >= 4, and that is false: James extends
   only isometries that preserve characteristic status, and isometries preserve it always, so transitivity
