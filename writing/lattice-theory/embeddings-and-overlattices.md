@@ -456,9 +456,8 @@ uses are labelled accordingly.
 
 ::: {.proposition #prop:rank-nine-line-transitivity title="Primitive isotropic lines of $\latI_{1,8}$ and of its twist"}
 
-Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$, and assume that
-the odd unimodular negative-definite lattice of rank $7$ is unique up to isometry. Then $\Orth(L)$ and
-$\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $L$.
+Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$. Then $\Orth(L)$
+and $\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $L$.
 :::
 
 ::: {.proof}
@@ -469,8 +468,16 @@ suffices to treat $L=\latI_{1,8}$.
 Let $v$ be primitive isotropic. By @cor:hyperbolic-splitting --- which needs a primitive isotropic vector in
 a unimodular lattice and, $L$ being odd, produces the *odd* hyperbolic plane $\latI_{1,1}$, not $U$ ---
 $L = P\perp M$ with $P=\latI_{1,1}$ hyperbolic and $M$ unimodular of signature $(0,7)$. Rank $7$ forces $M$
-odd, since an even unimodular lattice has rank divisible by $8$, so by the hypothesis $M\cong\latI_{0,7}$
-for every such $v$. Given $v$ and $v'$ with splittings $P\perp M$ and $P'\perp M'$, an isometry of $P$ onto
+odd, since an even unimodular lattice has rank divisible by $8$, and the odd definite unimodular lattice in
+each rank $1\leq n\leq7$ is unique by @thm:definite-unimodular-class-numbers and the first row of
+@tbl-unimodular-definite-class-numbers; the theorem covers the negative-definite sign too, by the sign twist
+it records. So $M\cong\latI_{0,7}$ for every such $v$, and the complements of two primitive isotropic
+vectors are isometric.
+
+A note on the type of $v$, since James and Wall classify by it: no primitive isotropic vector of
+$\latI_{1,8}$ is characteristic. A characteristic vector of $\latI_{p,q}$ has all coordinates odd, hence
+square $\equiv p-q\equiv1-8\equiv1\pmod 8$, while an isotropic vector has square $0$; so the class of
+primitive isotropic vectors carries no type split, and the line statement has one orbit and not two. Given $v$ and $v'$ with splittings $P\perp M$ and $P'\perp M'$, an isometry of $P$ onto
 $P'$ exists ($P\cong P'\cong\latI_{1,1}$) and an isometry of $M$ onto $M'$ by the hypothesis, and the two
 together give $g\in\Orth(L)$ carrying the line $\ZZ v$ to the line $\ZZ v'$. So $\Orth(L)$ is transitive on
 lines.
@@ -487,13 +494,25 @@ Two things this does **not** establish, and an earlier draft of this proposition
 $-g$ sends $v$ to $-v'$, not to $v'$, and the element of $\Orth\setminus\Orth^+$ that an earlier draft
 proposed --- $v\mapsto v$, $w\mapsto w+tv$, $M\mapsto -M$ --- is not an isometry at all, since
 $(w+tv)^2 = 2t$ for $v^2=w^2=0$, $(v,w)=1$. The vector-level statement is open.
-*The rank-$7$ input.* Uniqueness of the odd unimodular negative-definite lattice in rank $7$ is assumed
-above and not proved or cited here; it is the standard classification of odd unimodular forms in low rank,
-and a primary source for it is owed rather than implied. Without it the argument identifies the complements
-only up to isometry of an unknown class.
+*The rank-$7$ input, now cited rather than assumed.* The uniqueness used above is the book's own
+@thm:definite-unimodular-class-numbers with the table row $1\leq n\leq7$ (one odd class), sourced there to
+Conway--Sloane and cross-checked against OEIS A054911. It is not a new hypothesis and was not one before it
+was looked up: the earlier version of this proposition carried it as an assumption only because the lookup
+had not been made.
 
 What is *not* addressed at all: primitive isotropic **planes**, a statement about subspaces rather than
 vectors or lines.
+
+The lifting question that plane transitivity then needs, stated for the actual ambient group. Let
+$l\subset T_\Co$ be a primitive isotropic line and consider restriction
+$$\Stab_{\Orth^+(T_\Co)}(l)\longrightarrow\Orth^+\bigl(l^{\perp T_\Co}/l\bigr),$$
+whose target is $\latI_{1,8}(2)$, where lines are transitive by the proposition above. Plane transitivity
+would follow if the image of this restriction met the coset carrying one isotropic line of the quotient to
+any other. Note that the splitting argument used above does *not* apply to $T_\Co$ itself: $T_\Co$ has
+determinant $2^{11}$ and is not unimodular, so @cor:hyperbolic-splitting is unavailable there, and the
+restriction is a genuinely different map from the one a unimodular splitting would give. That is the
+precise open point, and it is a statement about the full component-preserving group and its stabilizer --
+not about a discriminant kernel, which no argument here has produced.
 What this does *not* give: transitivity on primitive isotropic *planes*, which is a statement about
 subspaces rather than vectors and is not a corollary of the argument above; and any statement about a
 proper arithmetic subgroup, whose orbits are finer than those of $\Orth(L)$.
