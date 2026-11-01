@@ -868,9 +868,42 @@ What has since been settled is listed at the end, so that a reader can tell "res
   chapters, and prop:degree-2d-k3-lattice's U^3 + E8^2 = II_{3,19} follows the Coble reading.  No
   number above depends on the choice: with E8 taken positive definite, T_Co gets signature (10,1)
   and the four fibers and the 528 are unchanged, which the certificate checks by counting both.  It
-  changes only what a reader may read into a symbol, so the repair is one convention statement plus
-  the (-1)'s rather than an arithmetic correction, and choosing between the two global readings is
-  the author's, not this audit's.
+  The two orbits on the 528 classes: the order reproduced, the decomposition blocked, and the blocker
+  published rather than routed around.  thm:coble-isotropic-class-orbits is *not* accepted here as
+  computed.  What the pinned library does give, on the same T_Co as the 528 itself, is the order:
+  computations/reports/se_orbit_partition_repro.py builds B = <1> + U + E8(-1), twists to T_Co, takes
+  the discriminant quadratic form (2048 classes) and the orthogonal group the library returns for it,
+  and reports |Orth| = 46,998,591,897,600 = 2^21*3^5*5^2*7*17*31, which is prop:coble-discriminant-
+  group's number exactly.
+  What it does not give is the orbit decomposition, and the reason is a library performance defect,
+  published in that file as a minimal specimen.  orthogonal_group().element_action().orbits() returns
+  its object at once and is lazy; materialising it -- len(...) or list(...), the partition of the
+  2048-point set -- did not return in over thirty minutes, and since
+  TorsionFormOrthogonalGroup.orbit(x) is defined as element_action().orbits().orbit_of(x), there is
+  no public single-orbit call either.  The pieces it is built from are cheap, timed in the same
+  transcript: the discriminant form 3.3 s, the element enumeration 14 s, the group 0.01 s, its order
+  38 s, its four generators 0.29 s, the represented action 1 s, one generator applied to one point
+  immediate, and the closure of one orbit under those generators 3.3 s for 527 of the 528 singular
+  classes.
+  The repeated path, from frames captured inside the call: _orbits -> __iter__ ->
+  _cardinality_decision -> _richcmp_ -> _decided_orbit_relation -> in_same_orbit ->
+  _orbit_relation_decision -> _orbit_labels.  _orbit_labels is not a lookup but a recomputation, and
+  two stacks show its two halves -- one at g_sets.py:370 in _permutation_from_point_map ->
+  permutation_group(images), building permutation-group elements through GAP, and one at
+  g_sets.py:359 in group_generators -> selected_group_resolution -> _computed_group_generators ->
+  _engine_group -> finite_form_isometry_group, resolving the group through the Julia bridge.  So each
+  pairwise relation decision over the point set rebuilds the permutation image of the group and can
+  re-enter the group construction, where four generators are already in hand.  Memoising
+  _orbit_labels, or closing orbits under the retained generators, would make the partition usable at
+  this size; neither is done from this repository, and the specimen with its timings is the handover
+  to the sage-extensions project.
+  The theorem does not wait on it: its proof is Witt's extension theorem applied to two nonzero
+  singular vectors of the nondegenerate plus-type form in dimension 10, and no step of that argument
+  is computational.  What stays open is the computational support.  A draft of it along the closure
+  route -- the library's group, generators, action and q, with only the closure loop written out --
+  reaches one orbit of 527, and is deliberately not committed and not cited until the maintained
+  action returns or the library owner rules on the route; the source claim is left standing on its
+  proof in the meantime.
 
 
 ## Structure

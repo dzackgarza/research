@@ -1,0 +1,43 @@
+D = T.discriminant_quadratic_form()                      3.32s
+    A_T has 2048 classes
+elements()                                              13.87s
+G = D.orthogonal_group()                                 0.01s
+G.order()                                               37.74s
+G.group_generators()                                     0.29s
+A = G.element_action()                                   1.02s
+    |G| = 46998591897600, 4 generators
+one generator applied to one point                       0.00s
+closure of one orbit under the retained generators       3.29s   (527 of 528 singular classes)
+A.orbits() returns its object                           0.000s   (it is lazy: nothing is decided yet)
+materialising it -- len(...) -- bounded at 120 s
+Timeout (0:02:00)!
+Thread 0x000073b0c65ff6c0 [Thread-1 (_drai] (most recent call first):
+  File "/repos/sage-julia-bridge/src/sage_julia_bridge/interface.py", line 279 in _drain_stderr
+  File "/workspace/nucleus/work/home/sage-image/rootfs/opt/uv-python/cpython-3.14.10-linux-x86_64-gnu/lib/python3.14/threading.py", line 1025 in run
+  File "/workspace/nucleus/work/home/sage-image/rootfs/opt/uv-python/cpython-3.14.10-linux-x86_64-gnu/lib/python3.14/threading.py", line 1083 in _bootstrap_inner
+  File "/workspace/nucleus/work/home/sage-image/rootfs/opt/uv-python/cpython-3.14.10-linux-x86_64-gnu/lib/python3.14/threading.py", line 1045 in _bootstrap
+
+Thread 0x000073b14f155780 [sage] (most recent call first):
+  File "/sage/.venv/lib/python3.14/site-packages/sage/groups/perm_gps/permgroup.py", line 932 in _element_constructor_
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/groups.py", line 1359 in _from_engine
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/groups.py", line 1405 in _element_constructor_
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/groups.py", line 1384 in __call__
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 1224 in _permutation_from_point_map
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 1282 in <lambda>
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/groups.py", line 2975 in __call__
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 370 in <genexpr>
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 370 in _orbit_labels
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 384 in _orbit_relation_decision
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_objects.py", line 1477 in in_same_orbit
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 853 in _decided_orbit_relation
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 900 in _richcmp_
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 957 in _orbits
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/group/g_sets.py", line 962 in __iter__
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/sets/set_categories.py", line 2259 in _cardinality_decision
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/sets/set_categories.py", line 2356 in cardinality
+  File "/repo/.scratch/se-api/src/sage_extensions/categories/sets/set_categories.py", line 2521 in __len__
+  File "/repo/computations/reports/se_orbit_partition_repro.py", line 142 in <module>
+  File "/sage/.venv/lib/python3.14/site-packages/sage/cli/run_file_cmd.py", line 54 in run
+  File "/sage/.venv/lib/python3.14/site-packages/sage/cli/__init__.py", line 54 in main
+  File "/sage/.venv/bin/sage", line 9 in <module>
+len(A.orbits())                                        125.00s   (AlarmInterrupt: abandoned)
