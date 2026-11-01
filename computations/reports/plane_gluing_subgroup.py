@@ -166,3 +166,70 @@ print('the induced form on (Z/2)^2 is zero: the gluing is isotropic')
 
 print('OK: J^perp/J = I_{0,7}(2) (one_cusp_plane_quotient.py) and the gluing subgroup'
       ' (Z/2)^2 <= A_{T_Co} are the plane\'s invariants')
+
+# ---------------------------------------------------------------------------------------------------
+# The other exhibited plane of the book: prop:tco-split-maximal takes T_Co = B(2) with
+# B = U + U + I_{0,7} and J spanned by isotropic generators of the two hyperbolic summands, a plane in
+# the presentation T_Co = U(2) + U(2) + A_1^7.  The two planes are different subspaces, but both are
+# primitive isotropic planes of a lattice of signature (2,9), hence in one Orth^+ orbit by
+# thm:plane-transitivity-tco; the gluing computed here is the check that the invariant agrees, and the
+# reason it cannot be the thing that separates the two Gamma_Co orbits if they differ.
+m = 11
+G2 = [[0] * m for _ in range(m)]
+for block in range(2):                          # U(2) + U(2)
+    base = 2 * block
+    G2[base][base + 1] = G2[base + 1][base] = 2
+for k in range(7):                              # A_1^7 = I_{0,7}(2)
+    G2[4 + k][4 + k] = -2
+assert all(G2[i][j] == G2[j][i] for i in range(m) for j in range(m))
+assert all(G2[i][i] % 2 == 0 for i in range(m))
+assert abs(det_int(G2)) == 2048, 'the second presentation is not T_Co: |A| should be 2048'
+print()
+print('second presentation T_Co = U(2) + U(2) + A_1^7: rank 11, even, |det| = %d' % abs(det_int(G2)))
+
+
+def pairing2(c):
+    return [sum(G2[i][j] * c[j] for j in range(m)) for i in range(m)]
+
+
+def divisibility2(c):
+    return reduce(gcd, (abs(x) for x in pairing2(c) if x != 0), 0)
+
+
+def b2(c1, c2):
+    return sum(c1[i] * G2[i][j] * c2[j] for i in range(m) for j in range(m))
+
+
+u1 = [1, 0] + [0] * 9   # isotropic generator of the first U(2)
+u2 = [0, 0, 1, 0] + [0] * 7  # isotropic generator of the second U(2)
+print('  J = <u_1, u_2>: squares %d, %d; product %d (isotropic)'
+      % (b2(u1, u1), b2(u2, u2), b2(u1, u2)))
+assert (b2(u1, u1), b2(u1, u2), b2(u2, u2)) == (0, 0, 0)
+print('  divisibilities: div(u_1) = %d, div(u_2) = %d' % (divisibility2(u1), divisibility2(u2)))
+assert (divisibility2(u1), divisibility2(u2)) == (2, 2)
+
+COL1b, COL2b = pairing2(u1), pairing2(u2)
+
+
+def in_dual2(alpha, beta):
+    alpha, beta = Fraction(alpha), Fraction(beta)
+    return all((alpha * COL1b[i] + beta * COL2b[i]).denominator == 1 for i in range(m))
+
+
+members = sorted({(Fraction(p, 2) % 1, Fraction(q, 2) % 1)
+                  for p in range(-2, 3) for q in range(-2, 3) if in_dual2(Fraction(p, 2), Fraction(q, 2))})
+quarter = sorted({(Fraction(p, 4) % 1, Fraction(q, 4) % 1)
+                  for p in range(-4, 5) for q in range(-4, 5) if in_dual2(Fraction(p, 4), Fraction(q, 4))})
+print('  T_Co^vee cap (1/2)J, modulo J: %d elements; at (1/4): %d' % (len(members), len(quarter)))
+assert len(members) == 4 and set(members) == set(quarter)
+for p, q in quarter:
+    for a, c in quarter:
+        val = b2([Fraction(p) * u1[i] + Fraction(q) * u2[i] for i in range(m)],
+                 [Fraction(a) * u1[i] + Fraction(c) * u2[i] for i in range(m)]) % 1
+        assert val == 0, 'the second plane\'s gluing is not isotropic'
+print('  the gluing subgroup is again (Z/2)^2 with zero pairing')
+print('both planes exhibited in the book cut out (Z/2)^2 <= A_{T_Co}, each in the presentation the book')
+print('  uses for it; so the invariant agrees on the two, and by thm:plane-transitivity-tco it must,')
+print('  they being one Orth^+ orbit.  What it could separate is Gamma_Co-orbits, and for these two')
+print('  planes it cannot witness a difference even if their Gamma_Co-orbits are distinct.')
+

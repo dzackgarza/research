@@ -316,7 +316,9 @@ We apply @thm:orbit-classification-sterk: since
 
 - $v \equiv e \bmod \ten$,
 
-we have $v \sim_{\Orth^{*}\left(\ten\right)} e$ and thus $v \sim_{\gent} e$.
+we have $v \sim_{\discriminantkernel{\ten}} e$.
+The statement above is under $\gent$ and not under the kernel, and the passage between the two is not formal: two groups' orbits on the same set need not agree, and @thm:orbit-classification-sterk compares $\gent$ with nothing.
+What supplies the stated form is the source itself, [@Ste91, Lem. 4.2.1], which is quoted here rather than rederived; the argument above proves the kernel case, which is the weaker orbit statement (its orbits are coarser than or equal to those of any subgroup, so the implication runs from the subgroup to the kernel and not back).
 :::
 
 The divisibility 2 vectors require a slightly finer analysis, but this quickly reduces to studying the large (but finite) discriminant group $A_{\ten}$: [@Ste91, §4.2.2] first uses the fact that there is a decomposition $$A_{\ten} = A\oplus B \definedas {1\over 2}U/U \oplus {1\over 2}E_8/E_8$$ and if $\div_{\ten}(\eta) = k \geq 2$ then $\eta/k \in \dualof{\ten}$ induces a nontrivial class in $A_{\ten}$.

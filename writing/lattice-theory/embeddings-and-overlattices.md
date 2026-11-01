@@ -540,7 +540,9 @@ why the line statement for the ambient $(2,9)$ lattice is proved here from the s
 Now let $J,J'$ be primitive isotropic planes. Choose primitive isotropic lines $l\subset J$ and $l'\subset J'$,
 which are primitive in $B$ since $J,J'$ are. Line transitivity for the *ambient* group is not the
 $(1,8)$ statement and is obtained here directly: split $B=P\perp M=P'\perp M'$ at $l$ and $l'$; the
-complements are both $\latI_{1,8}$, so an isometry $g$ of $B$ carries $l$ to $l'$. If $g\notin\Orth^+(B)$,
+complements are both $\latI_{1,8}$, so $P\cong P'$ and $M\cong M'$ and an isometry $g$ of $B$ carries
+$l$ to $l'$ --- $\psi\perp\vartheta$, with $\psi$ the isometry of $\latI_{1,1}$ interchanging its two
+isotropic lines. If $g\notin\Orth^+(B)$,
 multiply it on the left by the same construction at the *target*: $\sigma'=\id_{P'}\perp(-\id_{M'})$ fixes
 $P'$, hence $l'\subset P'$, pointwise, and $\chi_{\mathrm{per},B}(\sigma')=(+1)(-1)=-1$ by the formula above;
 $\chi_{\mathrm{per},B}$ being the character @prop:period-spinor-character identifies it with,

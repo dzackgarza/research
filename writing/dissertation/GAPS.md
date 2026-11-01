@@ -1375,6 +1375,40 @@ What has since been settled is listed at the end, so that a reader can tell "res
   computations/reports/one_cusp_plane_quotient.py.  Whether these invariants separate the Gamma_Co-orbits of
   planes remains open, and the number of 1-cusps of F_Co with it.
 
+  The subgroup conventions, audited where one symbol was doing two jobs -- plus one defect that is not a
+  convention.  Three things.
+  First, undefined notation.  open-problems.md and 475-our-cusps.md wrote Orth^*(T) for the discriminant
+  kernel, a symbol defined nowhere in the tree; the defined object is \discriminantkernel{L} = ker(psi) for
+  psi: Orth(L) -> Orth(A_L), introduced in the lattice-theory foundations and used everywhere else.  Both
+  sites now say \discriminantkernel.  The macros themselves are not in the markdown at all: they live in
+  writing/.book/.assets/mathjax-macros.html, where \gent is Gamma_{En,2} and \discriminantkernel{#1} renders
+  as Orth^{discker}(#1) -- that file is where a later reader should look, and where the dissertation's
+  pandoc build takes them from too.
+  Second, the two-group question at the open problem is now stated so that it can be answered.  For T_Co,
+  Gamma_Co = Orth^+(T_Co) cap ker, and chi_per takes values in {+1,-1}, so [ker : Gamma_Co] <= 2 and the two
+  orbit counts agree exactly when the kernel holds no component-reversing element.  Counts may be fed from
+  one group to the other in one direction only: lem:stable-orthogonal-not-transitive uses nothing but
+  triviality on A_{T_Co}, so its non-transitivity holds for the whole kernel, while an orbit statement for
+  the kernel says nothing about Gamma_Co.
+  Third, the defect.  475-our-cusps.md's proof of Ste91's Lemma 4.2.1 -- divisibility-one vectors form one
+  orbit -- ran "v ~_{ker(T_En)} e and thus v ~_{gent} e", with gent = Gamma_{En,2} the twisted group of the
+  period quotient.  That implication is invalid as it stands: a subgroup's orbits refine the ambient group's,
+  so kernel-equivalence does not descend to the twisted group, and thm:orbit-classification-sterk, quoted
+  from Ste91's Cor. 3.3, compares Gamma_{En,2} with nothing.  The proposition cites Ste91 Lemma 4.2.1
+  directly, so the statement is presumably the source's and the derivation was what went wrong; the proof now
+  derives the kernel statement explicitly and says that the stated form is quoted from the source.  What
+  would close it is Ste91's Lemma 4.2.1 as printed, naming its group: the paper is not retained here (no copy
+  of Ste91 under .scratch/refs), so this is a scoped gap rather than a refutation -- and if Sterk's lemma is
+  stated for the twisted group, the alternative repair is to restate thm:orbit-classification-sterk with the
+  group Cor. 3.3 actually produces.
+  The second exhibited plane's gluing, computed.  prop:tco-split-maximal's plane, spanned by isotropic
+  generators of the two hyperbolic summands of B = U + U + I_{0,7}, carries the same gluing datum as the cusp
+  correspondence's plane: both generators have divisibility 2 and the subgroup cut out of A_{T_Co} is
+  (Z/2)^2 with zero pairing, now computed in both presentations in plane_gluing_subgroup.py.  The agreement is
+  forced by thm:plane-transitivity-tco, the two being one Orth^+ orbit, so it is a check that the invariant is
+  an invariant rather than a separator for this pair: on these two planes it cannot witness a Gamma_Co
+  difference even if one exists.
+
 ## Structure
 
 - The submitted LaTeX had four subsection headings in Part II that the Markdown never had, so this is a long-standing divergence, not a regression.

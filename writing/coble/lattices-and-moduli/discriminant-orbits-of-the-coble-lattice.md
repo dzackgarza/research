@@ -75,6 +75,8 @@ Twisting by $2$ and reading off invariants gives $\latI_{1,8}(2) = (9,9,1)$ of s
 
 Since $\Orth^+(T_\Co) = \Orth^+(B)$ and both isotropy and primitivity are unchanged by the twist, @prop:tco-split-maximal places $T_\Co$ under @thm:split-maximal-isotropic-transitivity; @thm:unpolarized-cusps gives the corresponding full-group cusp classification, and the computation above identifies its two boundary lattices with the Coble cusp invariants $(9,9,1)_1$ and $(7,7,1)_0$ used in the cusp correspondence.
 The $1$-cusp lattice $\latI_{0,7}(2)\cong A_1^{\oplus 7}$ is negative definite of rank $7$, consistent with Witt index $2$ in signature $(2,9)$: $11 - 2\cdot 2 = 7$.
+The gluing datum of the plane is computed too: every primitive vector of $J$ has divisibility $2$, so the subgroup $J$ cuts out of $A_{T_\Co}$ is $(\ZZ/2)^2$ with zero pairing, and the plane $\generators{e',\,2h+\alpha_1+\alpha_2}$ of the cusp correspondence cuts out the same subgroup in its own presentation of $T_\Co$ (`computations/reports/plane_gluing_subgroup.py`).
+The agreement is forced and is not a coincidence to build on: both are primitive isotropic planes of a lattice of signature $(2,9)$, hence one orbit under $\Orth^+$ by @thm:plane-transitivity-tco, so no isometry invariant can tell them apart. What such an invariant could separate is $\Gamma_\Co$-orbits, and on these two planes it cannot witness a difference; whether they lie in one is open with the count of $1$-cusps, at @sec-open-problems.
 :::
 
 ## The discriminant form of $T_\Co$
