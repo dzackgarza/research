@@ -127,16 +127,35 @@ What has since been settled is listed at the end, so that a reader can tell "res
   manuscript distinguishes cusp 1 by the label (10,10,0) and the others by (10,8,0), which does
   not by itself order them.
 
-  Attempting that reduction hit a runtime failure before producing a single line, and the failure
-  is in the image's Sage rather than in the mathematics: computations/reports/sterk_labelled_orbits.py
-  loads the Sterk script and asks for the automorphism group of each labelled diagram (edge labels
-  encoded as intermediate vertices, vertices partitioned by norm, so that norms and edge labels are
-  preserved and the group is not the unlabelled one), and the run dies with an unhandled SIGSEGV
-  inside cysignals, preceded by `cysignals failed to execute cysignals-CSI: No such file or
-  directory`; nothing is printed, so the crash is inside the load/first automorphism call.  The
-  plain Sterk run on the same image is fine, so this is a defect of the Sage build's cysignals/nauty
-  path with these graphs, to be repaired in the shared image project.  The reproducer and its
-  transcript are at computations/reports/sterk_labelled_orbits.py and -run.txt.
+  The reduction is done, and its result confirms the manuscript's Type II counts.  The action
+  used is the maintained API's labelled one -- automorphism_group(edge_labels=True,
+  partition=<classes of equal norm>) -- so norms and edge labels are preserved and no unlabelled
+  group is substituted; the run is computations/reports/sterk_labelled_orbits.py with its
+  transcript.  Orbits of the maximal parabolic subdiagrams, against the manuscript's Type II
+  numbers in the same order:
+
+    3.3.7   v = e                 |Aut| = 4   9 subdiagrams -> 4 orbits   (manuscript: 4)
+    3.3.9   v = e'                |Aut| = 1   2            -> 2          (2)
+    3.3.10  v = e' + f' + abar_8  |Aut| = 2   4            -> 3          (3)
+    3.3.11  v = 2e' + f' + abar_1 |Aut| = 2   5            -> 4          (4)
+    3.3.12  v = 2e + 2f + abar_1  |Aut| = 8  13            -> 5          (5)
+
+  Every count agrees, which also fixes the representative-to-cusp matching: the five Sterk
+  representatives are cusps 1 to 5 in this order.  It follows that in this chapter Type II rays are
+  the orbits of maximal *parabolic* subdiagrams, as AET's Theorem 4.3 has it, and the sentence in
+  cusp 1 which attributed the four Type II rays to the elliptic subdiagrams and the Type III rays to
+  the parabolic ones had the two swapped; it is corrected, and the section's introduction now names
+  both orbit families.  The Type III numbers (4, 8, 15, 12, 17) are then the orbits of maximal
+  elliptic subdiagrams, which the Sterk script does not compute -- it enumerates parabolic ones
+  only -- so that half remains to be produced.
+
+  One environment fact, recorded without diagnosing it: the default canonization backend of this
+  image segfaults on the smallest possible input.  Graph([[0,1],[1,2]]).automorphism_group() dies
+  with SIGSEGV inside sage/graphs/bliss.cpython-314-x86_64-linux-gnu.so at __libc_free, which is
+  the canonicalization/Bliss ABI defect the image project already has reproduced and under
+  publication; the same call with algorithm="sage" returns 2, and every orbit count above was
+  computed that way.  The precise call and trace are in computations/reports/ if they are needed for
+  comparison.
 
   So the chapter unit is not closed.  The actionable step is exact and needs no new source:
   reduce each representative's maximal parabolic subdiagrams to orbits under the symmetry group

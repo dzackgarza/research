@@ -1,36 +1,208 @@
-------------------------------------------------------------------------
-/sage/.venv/lib/python3.14/site-packages/cysignals/signals.cpython-314-x86_64-linux-gnu.so(+0x86e5) [0x7bbe2d0966e5]
-/sage/.venv/lib/python3.14/site-packages/cysignals/signals.cpython-314-x86_64-linux-gnu.so(+0x8786) [0x7bbe2d096786]
-/sage/.venv/lib/python3.14/site-packages/cysignals/signals.cpython-314-x86_64-linux-gnu.so(+0x8b54) [0x7bbe2d096b54]
-/lib/x86_64-linux-gnu/libc.so.6(+0x3fd70) [0x7bbe2ed9bd70]
-/lib/x86_64-linux-gnu/libc.so.6(__libc_free+0x22) [0x7bbe2edfefe2]
-/sage/.venv/lib/python3.14/site-packages/sage/graphs/bliss.cpython-314-x86_64-linux-gnu.so(+0xfc7a) [0x7bbdb521bc7a]
-/sage/.venv/lib/python3.14/site-packages/sage/graphs/bliss.cpython-314-x86_64-linux-gnu.so(+0x137f7) [0x7bbdb521f7f7]
-/sage/.venv/bin/python(PyObject_Vectorcall+0x70) [0x1818a70]
-/sage/.venv/bin/python() [0x187a8eb]
-/sage/.venv/bin/python() [0x1855b91]
-/sage/.venv/bin/python(PyEval_EvalCode+0xa6) [0x189b67c]
-/sage/.venv/bin/python() [0x1b1b803]
-/sage/.venv/bin/python() [0x1856ce3]
-/sage/.venv/bin/python() [0x1855b91]
-/sage/.venv/bin/python(PyEval_EvalCode+0xa6) [0x189b67c]
-/sage/.venv/bin/python() [0x18e2351]
-/sage/.venv/bin/python() [0x1a7048d]
-/sage/.venv/bin/python() [0x1a702c1]
-/sage/.venv/bin/python() [0x1984486]
-/sage/.venv/bin/python() [0x19843d4]
-/sage/.venv/bin/python() [0x19842e3]
-/sage/.venv/bin/python(Py_RunMain+0x40c) [0x1984f0c]
-/sage/.venv/bin/python() [0x1984ad6]
-/sage/.venv/bin/python() [0x198492c]
-/lib/x86_64-linux-gnu/libc.so.6(+0x29ca8) [0x7bbe2ed85ca8]
-/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x85) [0x7bbe2ed85d65]
-/sage/.venv/bin/python(_start+0x29) [0x19fab29]
-------------------------------------------------------------------------
-cysignals failed to execute cysignals-CSI: No such file or directory
-------------------------------------------------------------------------
-Unhandled SIGSEGV: A segmentation fault occurred.
-This probably occurred because a *compiled* module has a bug
-in it and is not properly wrapped with sig_on(), sig_off().
-Python will now terminate.
-------------------------------------------------------------------------
+====================================================================
+3.3.7   v = e  -- 12 roots, norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -4]
+   a1  a3   (.)=2    cos^2=1/4    
+   a1  a11  (.)=2    cos^2=1/4    
+   a2  a4   (.)=2    cos^2=1/4    
+   a2  a12  (.)=4    cos^2=1      infinity
+   a3  a4   (.)=2    cos^2=1/4    
+   a4  a5   (.)=2    cos^2=1/4    
+   a5  a6   (.)=2    cos^2=1/4    
+   a6  a7   (.)=2    cos^2=1/4    
+   a7  a8   (.)=2    cos^2=1/4    
+   a8  a10  (.)=2    cos^2=1/4    
+   a8  a11  (.)=2    cos^2=1/4    
+   a9  a10  (.)=4    cos^2=1      infinity
+   a9  a12  (.)=4    cos^2=1      infinity
+   maximal parabolic subdiagrams of rank 8: 9
+      E~8                          [[1, 2, 3, 4, 5, 6, 7, 8, 10]]
+      E~7 + A~1                    [[1, 2, 3, 4, 5, 6, 7, 11], [9, 10]]
+      E~8                          [[1, 2, 3, 4, 5, 6, 8, 10, 11]]
+      D~8                          [[1, 2, 3, 4, 5, 7, 8, 10, 11]]
+      E~8                          [[1, 2, 3, 4, 6, 7, 8, 10, 11]]
+      E~7 + A~1                    [[1, 3, 5, 6, 7, 8, 10, 11], [2, 12]]
+      E~8                          [[1, 2, 4, 5, 6, 7, 8, 10, 11]]
+      A~7 + A~1                    [[1, 3, 4, 5, 6, 7, 8, 11], [9, 12]]
+      D~8                          [[2, 3, 4, 5, 6, 7, 8, 10, 11]]
+====================================================================
+3.3.9   v = e'  -- 10 roots, norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -2]
+   a1  a3   (.)=2    cos^2=1/4    
+   a2  a4   (.)=2    cos^2=1/4    
+   a3  a4   (.)=2    cos^2=1/4    
+   a4  a5   (.)=2    cos^2=1/4    
+   a5  a6   (.)=2    cos^2=1/4    
+   a6  a7   (.)=2    cos^2=1/4    
+   a7  a8   (.)=2    cos^2=1/4    
+   a8  a9   (.)=2    cos^2=1/4    
+   a9  a10  (.)=2    cos^2=1/2    
+   maximal parabolic subdiagrams of rank 8: 2
+      E~8                          [[1, 2, 3, 4, 5, 6, 7, 8, 9]]
+      B~8                          [[2, 3, 4, 5, 6, 7, 8, 9, 10]]
+====================================================================
+3.3.10  v = e' + f' + abar_8  -- 12 roots, norms [-4, -4, -4, -4, -4, -4, -4, -2, -4, -4, -4, -2]
+   a1  a3   (.)=2    cos^2=1/4    
+   a1  a11  (.)=2    cos^2=1/4    
+   a2  a4   (.)=2    cos^2=1/4    
+   a3  a4   (.)=2    cos^2=1/4    
+   a4  a5   (.)=2    cos^2=1/4    
+   a5  a6   (.)=2    cos^2=1/4    
+   a6  a7   (.)=2    cos^2=1/4    
+   a7  a12  (.)=2    cos^2=1/2    
+   a8  a10  (.)=2    cos^2=1/2    
+   a8  a11  (.)=2    cos^2=1/2    
+   a9  a10  (.)=4    cos^2=1      infinity
+   a9  a12  (.)=2    cos^2=1/2    
+   maximal parabolic subdiagrams of rank 8: 4
+      E~7 + A~1                    [[1, 2, 3, 4, 5, 6, 7, 11], [9, 10]]
+      B~6 + C~2                    [[1, 2, 3, 4, 5, 8, 11], [7, 9, 12]]
+      B~8                          [[1, 3, 4, 5, 6, 7, 8, 11, 12]]
+      B~6 + C~2                    [[2, 3, 4, 5, 6, 7, 12], [8, 10, 11]]
+====================================================================
+3.3.11  v = 2e' + f' + abar_1  -- 11 roots, norms [-4, -4, -4, -4, -4, -4, -4, -2, -4, -2, -4]
+   a1  a3   (.)=2    cos^2=1/4    
+   a2  a3   (.)=2    cos^2=1/4    
+   a2  a10  (.)=2    cos^2=1/2    
+   a3  a4   (.)=2    cos^2=1/4    
+   a4  a5   (.)=2    cos^2=1/4    
+   a5  a6   (.)=2    cos^2=1/4    
+   a6  a7   (.)=2    cos^2=1/4    
+   a7  a9   (.)=2    cos^2=1/4    
+   a7  a11  (.)=2    cos^2=1/4    
+   a8  a11  (.)=2    cos^2=1/2    
+   maximal parabolic subdiagrams of rank 8: 5
+      B~8                          [[1, 2, 3, 4, 5, 6, 7, 8, 11]]
+      D~8                          [[1, 2, 3, 4, 5, 6, 7, 9, 11]]
+      B~4 + B~4                    [[1, 2, 3, 4, 10], [6, 7, 8, 9, 11]]
+      B~8                          [[2, 3, 4, 5, 6, 7, 8, 10, 11]]
+      B~8                          [[2, 3, 4, 5, 6, 7, 9, 10, 11]]
+====================================================================
+3.3.12  v = 2e + 2f + abar_1  -- 14 roots, norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -2, -2, -2, -2]
+   a1  a2   (.)=2    cos^2=1/4    
+   a1  a10  (.)=2    cos^2=1/4    
+   a2  a3   (.)=2    cos^2=1/4    
+   a2  a14  (.)=2    cos^2=1/2    
+   a3  a4   (.)=2    cos^2=1/4    
+   a4  a5   (.)=2    cos^2=1/4    
+   a4  a12  (.)=2    cos^2=1/2    
+   a5  a6   (.)=2    cos^2=1/4    
+   a6  a8   (.)=2    cos^2=1/4    
+   a6  a13  (.)=2    cos^2=1/2    
+   a7  a9   (.)=4    cos^2=1      infinity
+   a7  a13  (.)=2    cos^2=1/2    
+   a7  a14  (.)=2    cos^2=1/2    
+   a8  a10  (.)=2    cos^2=1/4    
+   a9  a11  (.)=2    cos^2=1/2    
+   a9  a12  (.)=2    cos^2=1/2    
+   a10 a11  (.)=2    cos^2=1/2    
+   maximal parabolic subdiagrams of rank 8: 13
+      A~7 + A~1                    [[1, 2, 3, 4, 5, 6, 8, 10], [7, 9]]
+      B~8                          [[1, 2, 3, 4, 5, 6, 10, 11, 13]]
+      B~6 + C~2                    [[1, 2, 3, 4, 10, 11, 12], [6, 7, 13]]
+      B~8                          [[1, 2, 3, 4, 6, 8, 10, 12, 13]]
+      B~3 + B~3 + B~2              [[1, 2, 3, 14], [5, 6, 8, 13], [9, 11, 12]]
+      B~8                          [[1, 2, 4, 5, 6, 8, 10, 12, 14]]
+      B~4 + B~4                    [[1, 2, 10, 11, 14], [4, 5, 6, 12, 13]]
+      B~6 + C~2                    [[1, 2, 6, 8, 10, 13, 14], [4, 9, 12]]
+      B~3 + B~3 + B~2              [[1, 8, 10, 11], [3, 4, 5, 12], [7, 13, 14]]
+      B~8                          [[2, 3, 4, 5, 6, 8, 10, 11, 14]]
+      B~6 + C~2                    [[2, 3, 4, 5, 6, 13, 14], [9, 10, 11]]
+      B~4 + B~4                    [[2, 3, 4, 12, 14], [6, 8, 10, 11, 13]]
+      C~2 + B~6                    [[2, 7, 14], [4, 5, 6, 8, 10, 11, 12]]
+
+====================================================================
+V13: is u(Sigma_0) primitive for each maximal parabolic component?
+--- 3.3.7   v = e
+    E~8                    NOT primitive, content 2
+    E~7                    NOT primitive, content 2
+    A~1                    primitive
+    E~8                    NOT primitive, content 2
+    D~8                    NOT primitive, content 2
+    E~8                    NOT primitive, content 2
+    E~7                    NOT primitive, content 2
+    A~1                    primitive
+    E~8                    NOT primitive, content 2
+    A~7                    primitive
+    A~1                    NOT primitive, content 2
+    D~8                    NOT primitive, content 2
+--- 3.3.9   v = e'
+    E~8                    NOT primitive, content 2
+    B~8                    primitive
+--- 3.3.10  v = e' + f' + abar_8
+    E~7                    NOT primitive, content 2
+    A~1                    NOT primitive, content 2
+    B~6                    primitive
+    C~2                    primitive
+    B~8                    primitive
+    B~6                    primitive
+    C~2                    primitive
+--- 3.3.11  v = 2e' + f' + abar_1
+    B~8                    primitive
+    D~8                    NOT primitive, content 2
+    B~4                    primitive
+    B~4                    primitive
+    B~8                    primitive
+    B~8                    primitive
+--- 3.3.12  v = 2e + 2f + abar_1
+    A~7                    NOT primitive, content 2
+    A~1                    NOT primitive, content 2
+    B~8                    primitive
+    B~6                    primitive
+    C~2                    primitive
+    B~8                    primitive
+    B~3                    primitive
+    B~3                    primitive
+    B~2                    primitive
+    B~8                    primitive
+    B~4                    primitive
+    B~4                    primitive
+    B~6                    primitive
+    C~2                    primitive
+    B~3                    primitive
+    B~3                    primitive
+    B~2                    primitive
+    B~8                    primitive
+    B~6                    primitive
+    C~2                    primitive
+    B~4                    primitive
+    B~4                    primitive
+    C~2                    primitive
+    B~6                    primitive
+
+====================================================================
+AG19: the Witt index of L_- over Q, hence the Q-rank of SO(L_- x Q)
+    signature (n+, n-, n0) = (2, 10, 0), det = 1024
+    <e, e'> is totally isotropic over Q of dimension 2
+    so 2 <= Witt index <= min(n+, n-) = 2
+    Witt index = 2, so r_Q(SO(L_- x Q)) = 2 and dim Delta_Q = 1
+
+====================================================================
+A2: the rank conditions of Nikulin 1.14.2 and Scattone 3.3.1 on L_-
+    elementary divisors > 1: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+    A(L_-) = Z/2 + Z/2 + Z/2 + Z/2 + Z/2 + Z/2 + Z/2 + Z/2 + Z/2 + Z/2, so l(A_p) = {2: 10}, rank = 12
+    Nikulin (a): rk >= l(A_p) + 2 holds at every odd p
+    Nikulin (b): hypothesis rk = l(A_2) reads 12 = 10, false, so (b) is vacuous
+    => Nikulin 1.14.2 applies to L_-
+    Scattone 3.3.1 asks rk > l(A) + 2, i.e. 12 > 12: false
+    => A2 rests on Nikulin's condition, not on Scattone's
+3.3.7   v = e                  |Aut| = 4    parabolic subdiagrams  9 -> orbits  4   (manuscript Type III: 4)
+      representative: [1, 2, 3, 4, 5, 6, 7, 8, 10]
+      representative: [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]
+      representative: [1, 2, 3, 4, 5, 7, 8, 10, 11]
+      representative: [1, 3, 4, 5, 6, 7, 8, 9, 11, 12]
+3.3.9   v = e'                 |Aut| = 1    parabolic subdiagrams  2 -> orbits  2   (manuscript Type III: 8)
+      representative: [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      representative: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+3.3.10  v = e' + f' + abar_8   |Aut| = 2    parabolic subdiagrams  4 -> orbits  3   (manuscript Type III: 15)
+      representative: [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]
+      representative: [1, 2, 3, 4, 5, 7, 8, 9, 11, 12]
+      representative: [1, 3, 4, 5, 6, 7, 8, 11, 12]
+3.3.11  v = 2e' + f' + abar_1  |Aut| = 2    parabolic subdiagrams  5 -> orbits  4   (manuscript Type III: 12)
+      representative: [1, 2, 3, 4, 5, 6, 7, 8, 11]
+      representative: [1, 2, 3, 4, 5, 6, 7, 9, 11]
+      representative: [1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
+      representative: [2, 3, 4, 5, 6, 7, 8, 10, 11]
+3.3.12  v = 2e + 2f + abar_1   |Aut| = 8    parabolic subdiagrams 13 -> orbits  5   (manuscript Type III: 17)
+      representative: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      representative: [1, 2, 3, 4, 5, 6, 10, 11, 13]
+      representative: [1, 2, 3, 4, 6, 7, 10, 11, 12, 13]
+      representative: [1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14]
+      representative: [1, 2, 4, 5, 6, 10, 11, 12, 13, 14]
