@@ -207,7 +207,7 @@
 
 ### Type III, Kulikov, and mixed Hodge structures
 
-- [§1, p. 15: Arithmetic of Type III degenerations](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf#page=15>) [@FS86] [Open in Zotero](zotero://select/library/items/SJ4KSYF7).
+- [§1, p. 15: Type-III K3 monodromy has nilpotent logarithm $N$ with $W_0=\operatorname{im}N^2$ and $W_2=\ker N^2$](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf#page=15>) [@FS86] [Open in Zotero](zotero://select/library/items/SJ4KSYF7).
 - [§3, p. 10: Degenerations of K3 and Enriques surfaces](<file:///home/dzack/Zotero/storage/RAVU7VWH/local-write-api-1781870775597-RLBWHHMT.pdf#page=10>) [@Kul77] [Open in Zotero](zotero://select/library/items/RLBWHHMT).
 - [§5, p. 28: Semistable degenerations with $2K\sim0$ are birational to smooth, elliptic-cycle, elliptic-chain, or polyhedral models](<file:///home/dzack/Zotero/storage/I3UT2AJN/%5BMorrison%201981%5D%20Semistable%20degenerations%20of%20Enriques%E2%80%99%20and%20hyperelliptic%20surfaces.pdf#page=28>) [@Mor81] [Open in Zotero](zotero://select/library/items/Y4SDD52V).
 - [§5.1, p. 47: Integral points in the generic monodromy cone are realized by Type-III degenerations](<file:///home/dzack/Zotero/storage/GDDUCP98/%5BEngel%202021%5D%20Smoothings%20and%20rational%20double%20point%20adjacencies%20for%20cusp%20singularities.pdf#page=47>) [@EF21] [Open in Zotero](zotero://select/library/items/TJKX8XQG).
@@ -215,7 +215,7 @@
 - [§8, p. 41: Kulikov models with involution](<file:///home/dzack/Zotero/storage/94VRWP8H/%5BAlexeev%202022%5D%20Compactifications%20of%20moduli%20spaces%20of%20K3%20surfaces%20with%20a%20nonsymplectic%20involution.pdf#page=41>) [@AE22] [Open in Zotero](zotero://select/library/items/NJUBQSDQ).
 - [§3.1, p. 30: Triple-point tori give a common homology class used to compute Type-III monodromy](<file:///home/dzack/Zotero/storage/GDDUCP98/%5BEngel%202021%5D%20Smoothings%20and%20rational%20double%20point%20adjacencies%20for%20cusp%20singularities.pdf#page=30>) [@EF21] [Open in Zotero](zotero://select/library/items/TJKX8XQG).
 - [§5, p. 35: Polarized mixed Hodge structures](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf#page=35>) [@FS86] [Open in Zotero](zotero://select/library/items/SJ4KSYF7).
-- [§3, p. 25: The mixed Hodge structure on the singular fiber](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf#page=25>) [@FS86] [Open in Zotero](zotero://select/library/items/SJ4KSYF7).
+- [Proposition 3.1, p. 25: A class in the kernel of the extension homomorphism $\psi:L\to\mathbf C^*$ comes from a unique Cartier divisor on the Type-III central fiber](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf#page=25>) [@FS86] [Open in Zotero](zotero://select/library/items/SJ4KSYF7).
 - [Definition 2.1, p. 15: A Type-III anticanonical degeneration has a normal-crossing central fiber and locally trivial boundary family](<file:///home/dzack/Zotero/storage/GDDUCP98/%5BEngel%202021%5D%20Smoothings%20and%20rational%20double%20point%20adjacencies%20for%20cusp%20singularities.pdf#page=15>) [@EF21] [Open in Zotero](zotero://select/library/items/TJKX8XQG).
 
 ### Integral-affine surfaces
