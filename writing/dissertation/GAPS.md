@@ -258,7 +258,20 @@ What has since been settled is listed at the end, so that a reader can tell "res
   primitive isotropic line has rank 19 and signature (1,18), which is not a Type IV signature, so
   no period domain is attached to it; the boundary point, the weight-two Hodge structure on the
   graded piece, and the toroidal data (which at a Type III cusp is nothing) are now kept apart in
-  the chapter.  Both facts are computed in computations/reports/cusp_mechanism_audit.py.
+  the chapter, with a correction made in turn: the Type III point has no Baily-Borel stratum of
+  positive dimension, but it does carry fan data, and AET construct it -- for a 0-cusp I the lattice
+  I^perp/I has signature (1,18) and the fan is supported on the rational closure of its positive
+  cone (Sec. 3C), realised for the unique 0-cusp of F_2 as the Coxeter fan (Sec. 4A, 4C).  The
+  earlier sentence in this note that the toroidal data at a Type III cusp is "nothing" was wrong and
+  is withdrawn; what the 0-cusp does not contribute is a divisor.  Both facts are computed in
+  computations/reports/cusp_mechanism_audit.py, and that certificate was itself rewritten: it now
+  takes A through the owned discriminant module, enumerates its two elements with the module's own
+  element enumeration, and evaluates the retained discriminant_quadratic_form() in its own codomain
+  -- an earlier version counted the 21 module generators of the embedding as elements and
+  hand-divided a Gram entry, and is retired.  Laza--O'Grady's Prop. A.4 is quoted in the chapter
+  only inside its own hypotheses (Lambda_N = U^2 + D_{N-2}, 3 <= N, I a rank two saturated
+  isotropic, case (1) surjectivity, excluded second case for N not 2 mod 8), and only for the
+  degree-four case, where T_4 = Lambda_19 and 19 = 3 mod 8; it is not asserted for a general T_{2d}.
 
   The Sterk construction has been run against the five subsections, on the shared image with its
   OCI environment (JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot:) and the canonical
