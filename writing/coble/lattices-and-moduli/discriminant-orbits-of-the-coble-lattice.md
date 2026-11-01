@@ -144,6 +144,7 @@ The remaining fiber sizes are $2^{10} - 528 = 496$.
 The counts $\#A_{E_{10}(2)} = 1024$, $\#I^0 = 528$ and $\#I^1 = 496$ tabulated in the reference tables are exactly the numbers $2^{10}$, $N_0$ and $2^{10} - N_0$ appearing in this proof, and the summand counts $\#I^0(U(2)) = 3$, $\#I^0(E_8(2)) = 136$ are the two zero-counts used to identify the type.
 The isotropic classes of $A_{T_\Co}$ and of $A_{E_{10}(2)}$ therefore coincide as sets: a class $\varepsilon\bar v + \bar y$ is isotropic only if $\varepsilon = 0$, because $q_{T_\Co}(\bar v) = \tfrac12\notin\ZZ$ while $q_{E_{10}(2)}$ is $\ZZ$-valued.
 This is the invariant $\delta = 1$ of $T_\Co$ read off from a distinguished class.
+Both the four fiber sizes and the two summand zero-counts are reproduced from the lattice itself in `computations/reports/coble_528_isotropic_classes.py`: $B$ is assembled from the Cartan matrix of $E_8$ and the hyperbolic plane, twisted to $T_\Co$, and its discriminant quadratic form counted, the lattice counted being checked to be the one this chapter means by its signature $(2,9)$ and its $2$-elementary type $(11,11,1)$.
 :::
 
 ## The isometry group of the discriminant form

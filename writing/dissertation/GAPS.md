@@ -805,6 +805,43 @@ What has since been settled is listed at the end, so that a reader can tell "res
   one for $(18,2,0)$ in AET. Whether the thesis wants the degree 4 case is a
   completeness decision, not a loss: the content is in Scattone.
 
+  The 528 isotropic classes of A_{T_Co}, counted, which closes the item this audit inherited open.
+  It had been left with two failed routes behind it: a hand-assembled E8 Cartan matrix of
+  determinant 12, so that the lattice counted was not E8, and an abstract formula for an
+  11-dimensional mod-2 form with a radical of rank 1 giving 2^10 +- 2^5 = 1056 or 992, which is not
+  the chapter's number.  The chapter's number stands.
+  computations/reports/coble_528_isotropic_classes.py builds B = <1> + U + E8(-1) from the Cartan
+  matrix of E8 and the hyperbolic plane, twists it with the library's twist to T_Co = B(2) =
+  <2> + U(2) + E8(-2), and reads the discriminant quadratic form the library computes for it: 2048
+  classes, the four fibers of q of sizes 528, 528, 496 and 496, isotropic 528 of which 527 are
+  nonzero -- prop:coble-q-fibers in all four entries.  That the lattice counted is this chapter's
+  and not merely one of rank 11 is asserted too: rank 11, determinant -2^11, signature (2,9), and
+  two_elementary_invariants (11,11,1), which is the Coble lattice table's row and open-problems'
+  T_Co.  The summands are counted the same way, E8(-2) with 136 zeros of 256 classes and U(2) with 3
+  of 4, and the convolution 3*136 + 1*120 = 528 that the proposition's proof uses is asserted.
+  Where the 2^10 +- 2^5 formula went wrong: it belongs to a mod-2 quadratic form on an 11-dimensional
+  space whose polar form has a radical of rank 1, and q_{T_Co} is not that object.  Its value group
+  is (1/2)Z/2Z, the class of the <2> summand carries 1/2 and so separates the classes into two even
+  fibers and two odd ones, and what is left to count is one nondegenerate plus-type form in
+  dimension 10, i.e. 2^9 + 2^4 = 528.  The two descriptions agree term by term: the fibers are
+  N_0, N_0, 2^10 - N_0, 2^10 - N_0 with N_0 = 528.
+  The sign of E8, which the computation had to settle and the book does not state uniformly.
+  def:enriques-lattice declares E_10 = U + E_8 with E_8 *negative definite*, and that is what makes
+  U + E_8 be II_{1,9} of signature (1,9), B of signature (2,9) and T_Co of signature (2,9); the
+  certificate writes the same lattice on the positive-definite root lattice, as U + E8(-1) and
+  <2> + U(2) + E8(-2), and asserts signature (2,9), so the two readings agree on this side of the
+  book.  They do not agree on the other: the Enriques chapter's L_- = H + H(2) + E8(-2) has
+  signature (2,10) only if E8 there is the positive-definite root lattice, which is what
+  enriques_cusp_boundary_labels.py uses (-2*Cartan(E8)) and what makes its quotients come out (1,9),
+  while under the declared negative-definite reading the twist E8(-2) would be positive definite and
+  L_- would have signature (10,2).  So the bare symbol E8 denotes opposite lattices in the two
+  chapters, and prop:degree-2d-k3-lattice's U^3 + E8^2 = II_{3,19} follows the Coble reading.  No
+  number above depends on the choice: with E8 taken positive definite, T_Co gets signature (10,1)
+  and the four fibers and the 528 are unchanged, which the certificate checks by counting both.  It
+  changes only what a reader may read into a symbol, so the repair is one convention statement plus
+  the (-1)'s rather than an arithmetic correction, and choosing between the two global readings is
+  the author's, not this audit's.
+
 
 ## Structure
 
