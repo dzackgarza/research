@@ -1089,6 +1089,26 @@ What has since been settled is listed at the end, so that a reader can tell "res
   bound -- raised once, at launch, not extended in flight, and it will not be extended further.  Its own
   transcript is empty for a defect of this harness, not of the library: the prints were block-buffered to
   the redirect, and the script now line-buffers so that any later run reports its phase.
+  The copy's outcome, 2364 s of its 10800 s bound: it verified the class and the order twice over and then
+  hit a *missing API*, not a stall.  Recorded in order: |Orth(A_T_Co, q)| = 46,998,591,897,600; 496 classes
+  of value q = 1; the chosen class doubles to zero; its Orbit-orbit has 496 classes in 13.3 s, giving
+  stabilizer order 94,755,225,600; stabilizer_of_element returns that same order in 2254.7 s; 528
+  isotropic classes; 1984 stabilizer generators, and rebuilding them inside Orth(q) reproduces the order
+  94,755,225,600.  Then subgroup.orbits() raises AttributeError, and so does the G-set stabilizer's: the
+  subgroup returned by subgroup_on is a _GroupEngine object without an orbit method.
+  The owner handoff, stated exactly, since this is the only thing blocking the decomposition: for the full
+  group the repair gave TorsionFormOrthogonalGroup.orbits() and orbit(x); for a *subgroup* there is no
+  counterpart.  stabilizer_of_element(x) returns a G-set stabilizer with order() and group_generators()
+  but no orbits(); G.subgroup_on(generators) returns a group whose order() is correct and which likewise
+  has no orbits(); and TorsionFormOrthogonalGroup.element_action() -- the object whose orbits() the repair
+  made usable -- has no subgroup analogue.  What is needed is either an orbit method on a subgroup of the
+  formed-module orthogonal group, or stabilizer_of_element returning an object that carries the module
+  action.  Cost data for the owner: the full partition of 2048 classes takes about 30 s and one orbit
+  13 s, while stabilizer_of_element alone takes about 2255 s on a group of order 4.7e13, so the missing
+  piece is not the expensive one.
+  Until that lands the two decompositions of thm:coble-heegner-finite-orbits stay unaccepted, and the
+  order 94,755,225,600 with the value-1 fiber being a single 496-orbit are the two facts that *are*
+  established.
   What can be measured about the running copy without a stack sampler (py-spy and gdb are absent and
   /proc/<pid>/syscall is unreadable): the sage process is in state R with bursts at about 100% CPU (80 to
   490 ticks per five-second window), while its Julia bridge is in state S and gained *zero* CPU ticks over

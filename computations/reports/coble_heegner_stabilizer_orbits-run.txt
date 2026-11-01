@@ -1,0 +1,36 @@
+|Orth(A_{T_Co}, q)| = 46998591897600, classes 2048
+the claimed stabilizer order divides it, with quotient 496
+classes of value q = 1: 496   (prop:coble-q-fibers says 496)
+chosen class 1/2 h~_Co: q = 1, doubling gives the zero class: True
+its Orbit-orbit has 496 classes (13.3s), so the stabilizer has order 94755225600
+Stab_{Orth(q)}(1/2 h~_Co) has order 94755225600 (2254.7s)
+isotropic classes: 528
+stabilizer generators: 1984
+rebuilt as a subgroup of Orth(q): order 94755225600
+Traceback (most recent call last):
+  File "sage/structure/category_object.pyx", line 858, in sage.structure.category_object.CategoryObject.getattr_from_category
+    return self._cached_methods[name]
+KeyError: 'orbits'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/sage/.venv/bin/sage", line 9, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/sage/.venv/lib/python3.14/site-packages/sage/cli/__init__.py", line 54, in main
+    return RunFileCmd(options).run()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/sage/.venv/lib/python3.14/site-packages/sage/cli/run_file_cmd.py", line 54, in run
+    eval(compile(open(input_file, 'rb').read(), input_file, 'exec'), sage_globals())
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/computations/reports/coble_heegner_stabilizer_orbits.py", line 93, in <module>
+    restricted = [frozenset(orbit) for orbit in full_partition if set(orbit) <= isotropic_set]
+                          ^^^^^^^^^^^^^^^
+  File "sage/structure/category_object.pyx", line 852, in sage.structure.category_object.CategoryObject.__getattr__
+    return self.getattr_from_category(name)
+  File "sage/structure/category_object.pyx", line 867, in sage.structure.category_object.CategoryObject.getattr_from_category
+    attr = getattr_from_other_class(self, cls, name)
+  File "sage/cpython/getattr.pyx", line 362, in sage.cpython.getattr.getattr_from_other_class
+    raise AttributeError(dummy_error_message)
+AttributeError: 'OwnedJoinCategory.parent_class[_GroupEngine].ObjectType' object has no attribute 'orbits'
