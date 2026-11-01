@@ -1,0 +1,12 @@
+I_(1,8)(2): rank 9, signature (1, 8), det 512, |A| = 512
+|Orth(q)| = 348364800
+classes: 512, isotropic classes: 136
+Orth(q) orbits on all classes: 6, sizes [1, 1, 120, 120, 135, 135]
+orbits contained in the isotropic classes: 2, sizes [1, 135]
+
+the two orbits are {0} and the 135 nonzero isotropic classes.
+a primitive isotropic vector has divisibility 2, so v/2 is not in L and its class is nonzero:
+the zero class-orbit is not attained by any primitive vector, and every primitive isotropic
+vector has its class in the SINGLE 135-element orbit.  So the discriminant imposes no separation
+here, and line transitivity in I_(1,8)(2) is NOT decided by it: what is missing is the
+Eichler-type step at r - |s| = 2, which neither Wall nor James provides.

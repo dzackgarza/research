@@ -1182,10 +1182,23 @@ What has since been settled is listed at the end, so that a reader can tell "res
   two-elementary lattice $\latI_{1,8}(2)$ of rank $9$ and signature $(1,8)$, and conversely.  So plane
   transitivity would follow from three ingredients: line transitivity in $L = \latI_{2,9}$ (which is
   established, by Wall's vector invariants and James), line transitivity in $\latI_{1,8}(2)$, and the
-  lifting of isometries of $l^\perp/l$ to isometries of $L$ fixing $l$, which is a discriminant-kernel
-  question and not automatic.  Neither cited theorem reaches $\latI_{1,8}(2)$: its $r-\abs{\fs}$ is
-  $9-7 = 2$, below the $4$ both Wall and James require.  So the obligation is now three named statements
-  rather than one, and the middle one is the concrete target.
+  lifting of isometries of $l^\perp/l$ to isometries of $L$ fixing $l$.  The third is *not* asserted to be
+  a discriminant-kernel condition: the question is about the full orthogonal group and its stabilizer,
+  not about the kernel of the discriminant map, and no constraint of that kind is derived here.
+  Neither cited theorem reaches $\latI_{1,8}(2)$: its $r-\abs{\fs}$ is $9-7 = 2$, below the $4$ both Wall
+  and James require.
+  The middle ingredient is now settled as far as the discriminant can settle it, and no further.
+  computations/reports/line_transitivity_I18_2.py computes, at provider c546077d, the maintained orbit
+  partition of Orth(q) on the 512 classes of $A$ for $\latI_{1,8}(2)$, rank 9, signature (1,8), determinant
+  512: six orbits of sizes 1, 1, 120, 120, 135, 135, of which two lie in the isotropic classes, of sizes
+  *1 and 135* -- the zero class and the 135 nonzero ones.  The distinction matters and a first reading of
+  that output was wrong because of it: a primitive isotropic vector of $\latI_{1,8}(2)$ has divisibility
+  2, so $v/2$ is outside $L$ and its class is nonzero, hence the zero class-orbit is not attained by any
+  primitive vector and every primitive isotropic vector has its class in the single 135-element orbit.
+  The discriminant therefore separates *nothing* among the vectors in question and cannot decide line
+  transitivity in $\latI_{1,8}(2)$ either way.  So the obligation stands as exactly two statements -- the
+  Eichler-type step at $r-\abs{\fs}=2$, and the lifting -- and the first has been shown not to be
+  reachable from the discriminant alone.
   What the sources therefore support is the line half only, and the plane half is marked in the chapter as
   an open source obligation: the statements that use it are supported at the planes actually exhibited --
   J and its image in the cusp correspondence -- and not as a claim that every primitive isotropic plane of
