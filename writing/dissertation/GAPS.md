@@ -166,24 +166,51 @@ What has since been settled is listed at the end, so that a reader can tell "res
   c = 1 had it been in the kernel -- and it is why the reconciliation above had to be made
   explicit rather than assumed.  The other eight orbits are not checked.
 
-  Which group's orbits the source counts, made explicit.  Appendix A.1 of arXiv:1801.04845 says the
-  Type-II boundary components of F_Λ(Gamma) are in bijection with Gamma\I_2(Λ), and then sets the
-  task as enumerating the orbits of Gamma~^xi_N, the discriminant kernel inside Gamma^xi_N; for
-  N = 19, which is odd, Gamma^xi_19 = O^+(Lambda_19) and Gamma~^xi_19 = O~^+(Lambda_19), so the
-  group in the appendix, the group in (2.1.2) and the stable orthogonal group are one and the same
-  here, and the -id step is not even needed for that identification -- it is needed only to pass to
-  O^+(Lambda_19), which is what a reader of the manuscript's Gamma would compare with.
+  The notation, reconciled from the definitions and not from the tildes.  In arXiv:1607.01324 the
+  decoration is an element xi of A_Lambda of square 1 mod 2Z (Def. 1.1.2), and the group is
+  Gamma^xi := {phi in O^+(Lambda) : phi(xi) = xi} (Def. 1.2.1).  The stable orthogonal subgroup is
+  defined in the same passage as the kernel of O(Lambda) -> O(A_Lambda), and the two are put
+  together as O~^+(Lambda) < Gamma^xi < O^+(Lambda) (1.2.2), with the indices in Prop. 1.2.3.
+  arXiv:1612.07432 uses the same stable group, spelled O~^+(Lambda') := O~(Lambda') cap
+  O^+(Lambda') with O~(Lambda') the stable orthogonal group (Sec. 2.3).  So a tilde on O marks the
+  discriminant kernel, while a tilde on Gamma would mark something else, and 1801.04845 does not
+  define its Gamma~^xi_N anywhere I can read: the single occurrence is "Since Gamma~^xi_N < O(Lambda_N),
+  we have a well-defined map", so all that the source fixes is that it is a subgroup of O(Lambda_N)
+  attached to xi -- neither that it is O~^+ nor that it is O^+.  What is used below is therefore not
+  an identification of names.  For N = 19 the decoration is unique (Rmk 1.1.3), so the xi-condition
+  is vacuous and Gamma^xi_19 = O^+(Lambda_19) by Prop. 1.2.3(2); any subgroup of O(Lambda_19)
+  between O~^+(Lambda_19) and O(Lambda_19) has the same orbit set on I_2, because -id lies in
+  O(Lambda_19) and maps every sublattice onto itself.  The -id step is what carries the argument
+  from one of these groups to the next, and it is a statement about planes setwise, not about
+  vectors and not an equality of groups.
+  AET's Gamma_{2d} is a fourth object -- the spinor-norm-one subgroup of the stabilizer of h in
+  O(Lambda_K3) -- and AET do not say which normalization of the spinor norm they mean.  That is why
+  the bridge is stated as an upper bound: ker(sn_T) cap O~^+(T_{2d}) is one of the two subgroups of
+  index at most two in O~^+(T_{2d}), whichever normalization is intended, and nothing below needs
+  to know which.  No normalization is chosen here to make an identification come out.
 
-  What is left of the comparison, stated as a lattice question.  For a primitive isotropic plane J,
-  the orbit of J under the spinor kernel and under the discriminant kernel agree as soon as
-  Stab_{O~^+}(J) contains one element of non-trivial spinor norm, and a reflection in a vector
-  r in J^perp of square -4 with even divisibility is such an element whenever it exists: it is
-  integral, it lies in the discriminant kernel, it fixes J, and its spinor norm is c*(-4).  So the
-  eight unchecked orbits are settled by exhibiting, in each class M of the genus of D_17, a plane J
-  with J^perp/J = M whose orthogonal complement contains a (-4)-vector of even divisibility.  That
-  is a lattice construction per class -- the nine lattices are listed by root lattice in Theorem
-  A.6, but their gluing data is not printed there and has to be built -- and it is the next concrete
-  step here; nothing about it is assumed above.
+  Membership in the discriminant kernel is measured, not inferred from divisibility.  The
+  reflection in the generator of the <-4> summand of T_4 = <-4> + U^2 + E8^2 is integral -- the
+  library constructs it and refuses any vector for which 2b(x, r)/b(r, r) is non-integral -- and
+  its pairing with the lattice is (-4, 0, ..., 0), so its divisibility is 4 and even.  It is
+  nevertheless NOT in the discriminant kernel:
+  computations/reports/t4_discriminant_action.py moves the dual basis by the contragredient and
+  compares images under Lattices.discriminant_projection(), and it sends the dual generator w_0 of
+  that summand to the other class of A_{T_4} = Z/4, i.e. it acts by -1.  The criterion proposed
+  earlier in this note -- that a (-4)-vector of even divisibility is a witness in the discriminant
+  kernel, hence in the right coset -- is therefore withdrawn: divisibility decides neither
+  membership nor coset.  The same measurement on the same API gives what the comparison does use:
+  in Lambda_19, -1 on the first hyperbolic summand and the reflection in the sum of the last two
+  D_17 simple roots both lie in the discriminant kernel, while the (-2)-root a_1 does not.  Those
+  two are the elements the plane <e_1, e_2> is settled with, and they are settled by measurement.
+
+  What remains of the comparison, and what it is not.  Eight of the nine orbits are open, and they
+  are not to be settled by a case search over candidates whose membership is assumed from
+  divisibility: what the coset question needs first is the normalization of the spinor norm that
+  AET intend, which their text does not fix, and with it the single statement of whether
+  ker(sn) cap O~^+ is proper.  Since Gamma is kept as AET define it, that is a question about
+  their convention and not about a group chosen here.  Until it is answered the count for the
+  manuscript's Gamma is nine or more, with the orbit of <e_1, e_2> the one that is settled.
 
   So the nine-lattice statement stands exactly as far as it was established: for the group the
   source's period space is divided by -- and, by the -id step, equally for O^+(Lambda_19) -- the
