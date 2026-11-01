@@ -409,13 +409,29 @@ Both statements are in [@Daw22 §3.1]: Algorithm 3.3 constructs $\tau(x,y)$ from
 two displayed hyperbolic summands, and the Attwell-Duval criterion gives the second
 orbit statement.
 
-A caveat on the hypothesis, since the theorem above is stated without one. Dawes' setup assumes *even*
-lattices from §1.1 onward, and the theorem as stated here carries no parity hypothesis. For even maximal
-$U^{\oplus2}$-decomposable lattices the citation is direct. For an odd such lattice --- and the Coble
-chapter applies the theorem precisely to $B = U\oplus U\oplus\latI_{0,7}\cong\latI_{2,9}$, which is odd
---- the even-lattice statement does not cover it as it stands: either the parity hypothesis belongs in the
-statement, or the odd case needs its own argument. Nothing in this book supplies the latter, and the
-applications to $B$ inherit the gap.
+A caveat on the hypothesis, and how the odd case is covered. Dawes' setup assumes *even* lattices from
+§1.1 onward, and the theorem above carries no parity hypothesis. For even maximal $U^{\oplus2}$-decomposable
+lattices the citation is direct. For an odd such lattice --- and the Coble chapter applies the theorem
+precisely to $B = U\oplus U\oplus\latI_{0,7}\cong\latI_{2,9}$, which is odd --- the even-lattice statement
+does not cover it, and the odd case is supplied by a different theorem rather than by an adjustment of
+scale.
+
+James' integral Witt theorem [@Jam68, Theorem, p. 303]: let $\varphi\colon J\to K$ be an isometry between
+primitive sublattices of a *unimodular* lattice $L$ --- the paper assumes no parity --- with
+$$r(L) - \abs{\fs(L)} \geq 2\,(r(J) + 1).$$
+Then $\varphi$ extends to an isometry of $L$ if and only if it carries characteristic vectors to
+characteristic vectors. For $B = \latI_{2,9}$ one has $r - \abs{\fs} = 11 - 7 = 4$, and a primitive
+rank-one $J$ requires $2(1+1) = 4$: the inequality holds with equality. The characteristic clause is
+vacuous here, because no primitive isotropic vector of $B$ is characteristic: a characteristic vector of
+$\latI_{p,q}$ has all coordinates odd in the standard basis, hence square $\equiv p - q \pmod 8$, so in
+$\latI_{2,9}$ its square is $\equiv -7 \equiv 1 \pmod 8$, while an isotropic vector has square $0$. So
+every isometry between two primitive isotropic lines of $B$ extends, and $\Orth(B)$ is transitive on
+primitive isotropic vectors by [@Jam68] directly.
+
+What this does not give, and what therefore stays separate: rank-two $J$, where the inequality would
+require $2(2+1) = 6 > 4$, so the statement about primitive isotropic *planes* is not covered by the same
+application; and nothing at all about which subgroup of $\Orth(q)$ a given integral group maps onto,
+which is the descent question of its own.
 :::
 
 

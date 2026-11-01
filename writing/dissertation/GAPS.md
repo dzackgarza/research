@@ -1066,7 +1066,22 @@ What has since been settled is listed at the end, so that a reader can tell "res
   divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of image
   vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example already
   used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.
-  The odd-lattice justification, carried as far as it goes, and where it stops.  The B = I_{2,9}
+  The odd-lattice justification, sourced.  The transitivity the Coble chapter needs for the odd
+  B = I_{2,9} has a primary source that no even-lattice hypothesis obstructs: James' integral Witt theorem
+  [@Jam68, Theorem, p. 303], which takes L *unimodular* -- no parity assumption -- and extends an isometry
+  between primitive sublattices J, K of ranks with r(L) - |s(L)| >= 2(r(J)+1) exactly when it preserves
+  characteristic vectors.  The paper has been read at the statement: the definitions of primitive
+  (divisor 1), of characteristic (a.b = b^2 mod 2 for all b), and the theorem are as quoted, and the
+  theorem is an "if and only if" on the characteristic clause.  For B: r - |s| = 11 - 7 = 4 and a
+  primitive rank-one J needs 2(1+1) = 4, so the inequality holds with equality; the clause is vacuous
+  because a characteristic vector of I_{p,q} has all coordinates odd, hence square = p - q mod 8, which in
+  I_{2,9} is -7 = 1 mod 8, while an isotropic vector has square 0.  So Orth(B) is transitive on primitive
+  isotropic vectors by that theorem, and the earlier caveat -- that the even-lattice results do not cover
+  the odd B -- is now a caveat with a replacement rather than a gap.  Two limits are kept: rank-two J
+  would need 6 > 4, so nothing is claimed for primitive isotropic *planes*; and the theorem says nothing
+  about the image of an integral group in Orth(q), which is the stable/level-2 descent question and stays
+  open exactly as recorded in the preceding paragraph.
+  The odd-lattice question as it stood before that source was found.  The B = I_{2,9}
   transitivity question is bypassed rather than transferred: what the fibre/image criterion needs is not
   Orth^+(B)-transitivity but the Gamma_En-orbit of the (-2)-vector k inside T_En, and that is a finite
   orbit problem, so the criterion is decidable without any even-lattice theorem.  In closed form: w~ is
