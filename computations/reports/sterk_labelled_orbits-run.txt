@@ -183,26 +183,18 @@ A2: the rank conditions of Nikulin 1.14.2 and Scattone 3.3.1 on L_-
     => Nikulin 1.14.2 applies to L_-
     Scattone 3.3.1 asks rk > l(A) + 2, i.e. 12 > 12: false
     => A2 rests on Nikulin's condition, not on Scattone's
-3.3.7   v = e                  |Aut| = 4    parabolic subdiagrams  9 -> orbits  4   (manuscript Type III: 4)
-      representative: [1, 2, 3, 4, 5, 6, 7, 8, 10]
-      representative: [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]
-      representative: [1, 2, 3, 4, 5, 7, 8, 10, 11]
-      representative: [1, 3, 4, 5, 6, 7, 8, 9, 11, 12]
-3.3.9   v = e'                 |Aut| = 1    parabolic subdiagrams  2 -> orbits  2   (manuscript Type III: 8)
-      representative: [1, 2, 3, 4, 5, 6, 7, 8, 9]
-      representative: [2, 3, 4, 5, 6, 7, 8, 9, 10]
-3.3.10  v = e' + f' + abar_8   |Aut| = 2    parabolic subdiagrams  4 -> orbits  3   (manuscript Type III: 15)
-      representative: [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]
-      representative: [1, 2, 3, 4, 5, 7, 8, 9, 11, 12]
-      representative: [1, 3, 4, 5, 6, 7, 8, 11, 12]
-3.3.11  v = 2e' + f' + abar_1  |Aut| = 2    parabolic subdiagrams  5 -> orbits  4   (manuscript Type III: 12)
-      representative: [1, 2, 3, 4, 5, 6, 7, 8, 11]
-      representative: [1, 2, 3, 4, 5, 6, 7, 9, 11]
-      representative: [1, 2, 3, 4, 6, 7, 8, 9, 10, 11]
-      representative: [2, 3, 4, 5, 6, 7, 8, 10, 11]
-3.3.12  v = 2e + 2f + abar_1   |Aut| = 8    parabolic subdiagrams 13 -> orbits  5   (manuscript Type III: 17)
-      representative: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-      representative: [1, 2, 3, 4, 5, 6, 10, 11, 13]
-      representative: [1, 2, 3, 4, 6, 7, 10, 11, 12, 13]
-      representative: [1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14]
-      representative: [1, 2, 4, 5, 6, 10, 11, 12, 13, 14]
+3.3.7   v = e                  roots 12  norm classes [12]  |Aut| 4
+   parabolic subdiagrams  9 -> orbits  4   (manuscript Type II  4)
+   elliptic of rank 8:  114 -> orbits  35   | inclusion-maximal elliptic: 114 -> orbits 35   (manuscript Type III 4)
+3.3.9   v = e'                 roots 10  norm classes [9, 1]  |Aut| 1
+   parabolic subdiagrams  2 -> orbits  2   (manuscript Type II  2)
+   elliptic of rank 8:   45 -> orbits  45   | inclusion-maximal elliptic:  45 -> orbits 45   (manuscript Type III 8)
+3.3.10  v = e' + f' + abar_8   roots 12  norm classes [10, 2]  |Aut| 2
+   parabolic subdiagrams  4 -> orbits  3   (manuscript Type II  3)
+   elliptic of rank 8:  164 -> orbits  84   | inclusion-maximal elliptic: 164 -> orbits 84   (manuscript Type III 15)
+3.3.11  v = 2e' + f' + abar_1  roots 11  norm classes [9, 2]  |Aut| 2
+   parabolic subdiagrams  5 -> orbits  4   (manuscript Type II  4)
+   elliptic of rank 8:  125 -> orbits  65   | inclusion-maximal elliptic: 125 -> orbits 65   (manuscript Type III 12)
+3.3.12  v = 2e + 2f + abar_1   roots 14  norm classes [10, 4]  |Aut| 8
+   parabolic subdiagrams 13 -> orbits  5   (manuscript Type II  5)
+   elliptic of rank 8:  600 -> orbits  88   | inclusion-maximal elliptic: 600 -> orbits 88   (manuscript Type III 17)

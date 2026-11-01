@@ -127,35 +127,36 @@ What has since been settled is listed at the end, so that a reader can tell "res
   manuscript distinguishes cusp 1 by the label (10,10,0) and the others by (10,8,0), which does
   not by itself order them.
 
-  The reduction is done, and its result confirms the manuscript's Type II counts.  The action
-  used is the maintained API's labelled one -- automorphism_group(edge_labels=True,
-  partition=<classes of equal norm>) -- so norms and edge labels are preserved and no unlabelled
-  group is substituted; the run is computations/reports/sterk_labelled_orbits.py with its
-  transcript.  Orbits of the maximal parabolic subdiagrams, against the manuscript's Type II
-  numbers in the same order:
+  The reduction is done, on the maintained API's labelled action on the original vertices
+  (G.add_vertices(range(n)) first, so no source root is only a partition member; vertices carry
+  their norm through the partition, edges their labels; algorithm="sage" named explicitly, since
+  this image's default Bliss backend segfaults on the smallest input).  The run is
+  computations/reports/sterk_labelled_orbits.py with its transcript, and it verifies half the
+  chapter's counts and contradicts the other half:
 
-    3.3.7   v = e                 |Aut| = 4   9 subdiagrams -> 4 orbits   (manuscript: 4)
-    3.3.9   v = e'                |Aut| = 1   2            -> 2          (2)
-    3.3.10  v = e' + f' + abar_8  |Aut| = 2   4            -> 3          (3)
-    3.3.11  v = 2e' + f' + abar_1 |Aut| = 2   5            -> 4          (4)
-    3.3.12  v = 2e + 2f + abar_1  |Aut| = 8  13            -> 5          (5)
+    representative                roots  |Aut|  parabolic orbits  manuscript Type II
+    3.3.7   v = e                 12     4      4                 4     verified
+    3.3.9   v = e'                10     1      2                 2     verified
+    3.3.10  v = e' + f' + abar_8  12     2      3                 3     verified
+    3.3.11  v = 2e' + f' + abar_1 11     2      4                 4     verified
+    3.3.12  v = 2e + 2f + abar_1  14     8      5                 5     verified
 
-  Every count agrees, which also fixes the representative-to-cusp matching: the five Sterk
-  representatives are cusps 1 to 5 in this order.  It follows that in this chapter Type II rays are
-  the orbits of maximal *parabolic* subdiagrams, as AET's Theorem 4.3 has it, and the sentence in
-  cusp 1 which attributed the four Type II rays to the elliptic subdiagrams and the Type III rays to
-  the parabolic ones had the two swapped; it is corrected, and the section's introduction now names
-  both orbit families.  The Type III numbers (4, 8, 15, 12, 17) are then the orbits of maximal
-  elliptic subdiagrams, which the Sterk script does not compute -- it enumerates parabolic ones
-  only -- so that half remains to be produced.
+    representative                elliptic of rank 8  orbits  manuscript Type III
+    3.3.7   v = e                 114                 35       4      NOT reproduced
+    3.3.9   v = e'                 45                 45       8      NOT reproduced
+    3.3.10  v = e' + f' + abar_8  164                 84      15      NOT reproduced
+    3.3.11  v = 2e' + f' + abar_1 125                 65      12      NOT reproduced
+    3.3.12  v = 2e + 2f + abar_1  600                 88      17      NOT reproduced
 
-  One environment fact, recorded without diagnosing it: the default canonization backend of this
-  image segfaults on the smallest possible input.  Graph([[0,1],[1,2]]).automorphism_group() dies
-  with SIGSEGV inside sage/graphs/bliss.cpython-314-x86_64-linux-gnu.so at __libc_free, which is
-  the canonicalization/Bliss ABI defect the image project already has reproduced and under
-  publication; the same call with algorithm="sage" returns 2, and every orbit count above was
-  computed that way.  The precise call and trace are in computations/reports/ if they are needed for
-  comparison.
+  So the Type II counts hold, and with them the representative-to-cusp order; the Type III counts
+  do not, and the gap is large rather than marginal.  Two readings were tested and give the same
+  numbers: negative definite principal submatrices of rank exactly 8, and inclusion-maximal ones.
+  Hence the manuscript's Type III numbers are not the orbits of elliptic subdiagrams under the
+  diagram's own labelled symmetries.  What they could be is either an orbit count under a larger
+  group -- the stabilizer Gamma_v rather than the diagram automorphisms, which this environment
+  cannot compute -- or a different class of subdiagram, or an error inherited from the earlier
+  draft.  Until one of those is settled the chapter's Type III claims are marked unverified, and the
+  Type II ones stand as verified.
 
   So the chapter unit is not closed.  The actionable step is exact and needs no new source:
   reduce each representative's maximal parabolic subdiagrams to orbits under the symmetry group

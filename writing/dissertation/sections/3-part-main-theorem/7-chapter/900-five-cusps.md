@@ -28,7 +28,7 @@ Let $(\mcz, \mcr_{\mcz})$ be a half-divisor model.
 If a component $V_i \subset \mcz_0$ is covered by two irreducible components of $\mcx_0$, then (up to normalization) $V_i$ is isomorphic to both components.
 If $V_i$ is instead covered by a single irreducible component $\widetilde{V}_i \subset \mcx_0$, then $\ienzero$ acts on $\widetilde{V}_i$ with exactly four fixed points, occurring as two pairs on double curves $\widetilde{D}_{ij}$, $\widetilde{D}_{ik}$.
 We conclude this chapter with an analysis of the actual combinatorial data at each of the five zero cusps.
-In particular, we exhibit orbit representatives of the maximal elliptic subdiagrams of each Coxeter diagram under diagram symmetries, which are in bijection with Type $\III$ cones, and the corresponding orbits of maximal parabolic subdiagrams, which are the Type $\II$ rays:
+In particular, we exhibit orbit representatives of the maximal parabolic subdiagrams of each Coxeter diagram under diagram symmetries, which are the Type $\II$ rays -- a count reproduced below for all five cusps -- and the corresponding elliptic subdiagrams, which are in bijection with the Type $\III$ cones:
 
 #### Cusp 1
 
