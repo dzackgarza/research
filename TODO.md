@@ -273,6 +273,23 @@ chapters disagree about whether that is a gap.
 lattices with different discriminant groups, and covers the gap with "some slightly finer analysis".
 For $\eta$ in the $I_{1,1}$ summand the quotient is $\II_{1,9}$ alone, which does not account for the
 rest of the enumeration. The $F_\En$ cusp count downstream rests on this.
+**A42. Two forms of the embedding $S_\En\injects S_\Nod$, neither checked against the other.**
+`coble/adjacent-programs/nodal-enriques-moduli-program.md` records the primitive embedding in two
+forms — $((e,f),x)\mapsto((2\tilde f+\tilde g+h,\tilde g),x)$, attributed to Cossec–Dolgachev–Liedtke
+p. 561, and $((e_1,f_1),x)\mapsto(f_2,2e_2+f_2+h,x)$, which is what the research statement cites from
+*Enriques Surfaces I* Def. 5.6.3. Both are the identity on $E_8(2)$ and both are claimed to exhibit
+$F_\Nod\injects\fen$. The text says they are "written in different bases and have not been checked
+against each other", and calls reconciling them "a small and worthwhile task". Nothing downstream can be
+trusted until one is derived.
+
+**A43. The nodal Enriques family is outside the method the rest of the book uses.** $T_\Nod$ is *not*
+$2$-elementary, while every other lattice in the programme is, and the Sterk–Nikulin orbit apparatus
+assumes $2$-elementarity throughout. The chapter states this as "the single structural obstruction
+distinguishing the nodal case from every other family in this program", and the classification of its
+boundary components therefore needs orbit techniques for non-$2$-elementary discriminant forms, which
+the book does not have.
+
+
 
 
 
@@ -437,6 +454,39 @@ correctly at a second location in the book.
 - *C23.* `:250` contradicts `:54–55` on parity; `:200` writes $w_1,\dots,w_p$ for a rank-$p+q$ lattice;
   `:307` writes "signature $(2,0)$" and reuses $U$ for $U_1$.
 
+**C33. The finiteness of the classifying map is a theorem in one chapter and a conjecture in another.**
+`dissertation/3-part-main-theorem/6-chapter/600-finite-coarsening.md` proves @thm:no-coarsening and
+deduces @cor:finiteness-classifying-map, both as theorems. `coble/results-f-en-2/classifying-map-and-involution.md`
+states the same statement as @conj:classifying_map_finite and says of the very argument the dissertation
+gives: "This argument is presented as the program's intended route, not as a completed proof", with a
+warning that the source note "asserted the extension ... without proof; each remains an obligation of
+the program". So the same proposition is proved in one chapter and declared conjectural in another, and
+the chapter that calls it conjectural is the one that names the gap (see A37).
+
+**C34. The global extension of the Enriques involution, likewise.** `300-extend-univ-family.md` states
+@thm:global-extension-enriques-involution as a theorem, with a proof resting on "standard consequences"
+and on closed conditions being "propagated by the structure of the moduli functor".
+`coble/results-f-en-2/classifying-map-and-involution.md` states the same thing as
+@conj:enriques_involution_extension and records that the source note asserted it without proof.
+
+**C35. The per-cusp ray counts are computed in one chapter and provisional in another.**
+`900-five-cusps.md` tabulates the five cusps' Type II and Type III counts as results, with the
+deletions and inertia checks cited to computations. `coble/results-f-en-2/main-theorem-and-cusps.md`
+says of the same numbers: "The precise per-cusp ray counts and IAS involutions should be regarded as
+provisional pending an independent cusp computation".
+
+**C36. "Precisely the lattices of the Coble table" fails at the last row.**
+`coble/adjacent-programs/halphen-index-2-moduli-program.md` says the lattices $(10+n,12-n,\delta)$ for
+$1\le n\le 9$ "are **precisely** the lattices of [the Coble lattice table]". That table has eleven rows,
+$n = 1,\dots,10$, with the $n=10$ row $(20,2,1)$: the Halphen family stops at $n=9$ and the Coble table
+does not.
+
+**C37. Four slips in `475-our-cusps.md`.** The proof of @thm:orbit-classification-sterk writes
+"$\eta_i = a_i e + b_i e + c_i$" with $e$ twice where $e,f$ is meant; two lines later "$a_2=0,v_2=p$"
+where $b_2=p$ is meant and $v_2$ is not otherwise defined; the boundary lattice is written
+$\eta^{\perp T}/\genus{\eta}$ with the group macro where $\langle\eta\rangle$ is meant; and the cusp
+$\eta_3$ table entry ends "$s_{\alpha_{20}}$ fixes" with its object missing.
+
 **C24–C26. Three bibliography errors, one of them widespread.** These are citation defects, not
 typographic ones: each names a different work from the one that carries the claim.
 
@@ -493,30 +543,30 @@ recorded in [GAPS](writing/dissertation/GAPS.md), which is the audit trail and n
 
 ## Coverage of this list
 
-Read in full: all of `writing/coble` (each of the 64 files, including the Heegner research report at
-2 620 lines); `writing/lattice-theory` top level, `arithmetic/`, `classification/`, `definite/`, and
-the Part I lattice-theory chapters `500-nikulin-theory.md`, `600-coxeter-vinberg.md`,
-`700-folding.md`, `400-group-actions.md`; `writing/dissertation` Parts II and III in full, plus
-`100-main-diagram.md`; and `writing/category-theory/monoidal-stable` and `forms-quadratic` in part,
-including the section that states its own open questions.
+Complete for the corpus. Every one of the 165 `writing/` files has been read at the depth this list
+needs, by one of two routes.
 
-Not yet read at this depth: `writing/lattice-theory`'s remaining subdirectories; in the dissertation,
-`100-foundations.md`, `200-examples.md`, `300-classification.md`, `450-scattone.md`,
-`475-our-cusps.md` beyond the passages quoted above; and the rest of `writing/category-theory`
-(enriched/ and the remaining forms chapters).
+Read directly, in full: all of `writing/coble` — the eleven chapter directories (`lattices-and-moduli`,
+`computations`, `compactifications`, `degenerations`, `surfaces-and-moduli`, `stable-limits`,
+`cusp-correspondence`, `coble-moduli`, `heegner-report`, `introduction`, `open-problems`) **and** the
+seven that a first pass missed and this pass added: `tables`, `appendix-reference`, `adjacent-programs`,
+`results-f-en-2`, `coble-surfaces`, `scripts/certificates`, `reference-tables`, `papers`,
+`extracted-references`. The earlier claim in this file that "all 64 files of `coble`" had been read was
+wrong: those nine subdirectories were never opened, and the two largest items in this list (A42, A43,
+and defects C33–C36) came out of them. `writing/lattice-theory` top level, `arithmetic/`,
+`classification/`, `definite/`, `embeddings/`, `examples/`, `hyperbolic/`, `local/`. `writing/dissertation`
+in full: all four parts, including `2-chapter-lattice-theory`'s `000`, `100`, `200`, `300`, `400`, `500`,
+`600`, `700`, and `3-chapter-enriques-k3`'s `000`, `100`, `450`, `475`. `writing/research-statement`,
+`writing/index.md`, and `writing/category-theory/monoidal-stable` and `forms-quadratic`.
 
-Categories C11–C15 and the audit of `writing/category-theory/algebraic-structures` and
-`foundations` came from `ultramath` swarm `smvy0k5df`, member m3; C16–C23 from members m5 and m7,
-who audited `200-examples.md` independently and agreed on every finding I checked; C24–C26 from
-member m6. Every item was checked at the cited lines before entry.
+Audited by `ultramath` swarm `smvy0k5df` and checked here before entry: the remaining 22
+`category-theory` files (member m3), the five lattice-theory pages listed above (m4),
+`200-examples.md` (m5 and m7 independently), `450-scattone.md` (m2, second pass), the framing text (m1),
+the cross-chapter consistency pass (m8), and a citation-carry audit of all 158 bibliography keys (m6).
+Two member claims were false and are recorded as C30; one was sent back and withdrawn by its author.
 
-Two directions of the swarm went unexecuted because the members assigned them did other, useful work
-instead: the research-statement/part-intro pass, and the cross-chapter consistency pass that produced
-C6, C9, C10 and A38/A40 by hand. The inconsistency hunt is the largest remaining gap in this audit.
-
-
-
-
-
-
-
+**How the items were obtained.** A40, A42, A43 and C33–C36 come from reading the subdirectories the
+earlier pass skipped. A37 was found by reading the dissertation's chapter 6; C33 is the same defect seen
+from the other side, in the chapter that calls the argument conjectural. C27 and C29 came from the
+consistency pass rather than from reading chapters, which is why the direction was worth running even
+though the reading pass had already covered those chapters.
