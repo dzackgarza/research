@@ -6,6 +6,11 @@ central -id on Lambda_19                       q(r) =   0   fixes A_L (morphism)
 -1 on one U                                    -1-eigenspace signature: (1 positive, 1 negative) -> det on P = -1
 central -id                                    -1-eigenspace signature: (2 positive, 19 negative) -> det on P = +1
 T_4: reflection in the <-4> generator          q(r) =  -4   fixes A_L (morphism): False   in stable group: False
+r = 2a with a^2 = -2: q(a) = -2, q(2a) = -8, and 2b(x,2a)/b(2a,2a) (2a) = 2b(x,a)/b(a,a) a,
+so rho_{2a} and rho_a are the same map while their |q|/2 differ by a factor 4: the
+criterion is for primitive r only.
+the library builds rho_{2a}: False  (False is its integrality test on the scalar coefficient,
+not on the image; rho_a itself is built and measured above, and they are one map)
 
 The arithmetic and the owner agree on every case: a (-2)-root reflection is in the
 discriminant kernel, a (-4)-vector reflection is not, and the uniform stabiliser

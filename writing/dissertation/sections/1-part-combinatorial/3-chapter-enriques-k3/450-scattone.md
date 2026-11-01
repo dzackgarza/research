@@ -15,7 +15,7 @@ The Type $\IV$ Hermitian symmetric period domain for $T_{2d}$,
 $$
 \halfpd{T_{2d}} = \theset{ [\omega] \in \PP(T_{2d, \CC} ) \st (\omega, \omega) = 0,\, (\omega, \bar{\omega}) > 0 },
 $$
-admits a natural right action by the arithmetic group $\Gamma_{2d} \subset \Orth^+(T_{2d})$, the image of the subgroup of $\Orth(\lkt)$ consisting of the isometries that fix $h$ and have spinor norm $1$ [@AET23, §3A]. Equivalently, by restriction and extension across the primitive splitting $\lkt = \ZZ h \oplus T_{2d}$, it is the kernel of the spinor norm inside the discriminant kernel $\widetilde{\Orth}(T_{2d})$, and so sits in that kernel with index at most $2$.
+admits a natural right action by the arithmetic group $\Gamma_{2d} \subset \Orth^+(T_{2d})$, the image of the subgroup of $\Orth(\lkt)$ consisting of the isometries that fix $h$ and have spinor norm $1$ [@AET23, §3A]. With the spinor norm in the normalisation whose kernel $\Orth^+$ is [@GHS08, §1], restriction and extension across the primitive splitting $\lkt = \ZZ h \oplus T_{2d}$ identify $\Gamma_{2d}$ with the stable orthogonal group $\widetilde{\Orth}^+(T_{2d})$: an isometry of $T_{2d}$ extends over the splitting exactly when it acts trivially on the discriminant, and the spinor norm of the extension agrees with that of its restriction, the line $\ZZ h$ being positive definite and fixed pointwise.
 The arithmetic quotient
 $$
 \ftd \definedas  \dmodgamma{ \halfpd{T_{2d}} }{ \Gamma_{2d} }

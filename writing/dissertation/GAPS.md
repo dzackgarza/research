@@ -124,9 +124,24 @@ What has since been settled is listed at the end, so that a reader can tell "res
 
       Gamma_{2d} = {g in O~^+(T_{2d}) : sn_T(g) = 1},
 
-  an index-one-or-two subgroup of the discriminant kernel.  That is the reconciliation of the
-  spinor convention: the spinor condition is a *condition on* the discriminant kernel, not an
-  unrelated group, and it costs at most a factor two.
+  and the spinor norm has to be the one AET's period-group definition uses.  Gritsenko--Hulek--
+  Sankaran, Abelianisation of orthogonal groups, Sec. 1 p. 3 [@GHS08], distinguish two objects:
+  O^+ = ker(sn_R), the kernel of the *real* spinor norm, and O' = SO cap ker(sn_Q), the intersection
+  of the special orthogonal group with the kernel of the *rational* one, with sn_K of a reflection
+  given by [-r^2/2] in K^times / (K^times)^2.  These are different groups and the rational kernel
+  need not have index at most two -- an earlier version of this note assumed it did, and that is
+  withdrawn.  AET ask for the spinor-norm-one subgroup of the stabilizer, in the same breath as
+  saying that the period domain is a component associated to O^+(2,19); under the real normalisation
+  O^+ *is* that kernel, so the condition is the component condition, and
+  ker(sn_R) cap O~^+ = O~^+ by definition.  Hence
+
+      Gamma_{2d} = O~^+(T_{2d}),
+
+  not merely a subgroup of index at most two: the isometry of the stabilizer of h is in Gamma_{2d}
+  exactly when its restriction to T_{2d} lies in the stable orthogonal group.  The same reading is
+  what Laza--O'Grady's Prop. 1.2.3 records, where -1 lies in Gamma^xi for every N and -1 lies in
+  O~ only when N is even, so that for N = 19 odd the centre generates O^+/O~^+ and sits inside
+  O^+, not outside it.
 
   The transport is canonical, which is what makes "under the retained isometry" unambiguous.  O~ is
   the kernel of the map to the discriminant module; an isometry T_4 -> Lambda_19 carries that
@@ -184,18 +199,31 @@ What has since been settled is listed at the end, so that a reader can tell "res
   from one of these groups to the next, and it is a statement about planes setwise, not about
   vectors and not an equality of groups.
   AET's Gamma_{2d} is a fourth object -- the spinor-norm-one subgroup of the stabilizer of h in
-  O(Lambda_K3) -- and AET do not say which normalization of the spinor norm they mean.  That is why
-  the bridge is stated as an upper bound: ker(sn_T) cap O~^+(T_{2d}) is one of the two subgroups of
-  index at most two in O~^+(T_{2d}), whichever normalization is intended, and nothing below needs
-  to know which.  No normalization is chosen here to make an identification come out.
+  O(Lambda_K3) -- and it is identified with O~^+(T_{2d}) above, under the real normalisation of the
+  spinor norm that their period-group definition uses [@GHS08, Sec. 1].  The rational normalisation
+  would give O' instead, a different group, and comparing the class of -2 with a real component
+  character is exactly the mistake to avoid; nothing below mixes the two.
 
   Which reflections lie in the discriminant kernel, by arithmetic and then by measurement.  For an
-  integral reflection rho_r in a vector r, the difference rho_r(x) - x is the integer multiple
-  -2b(x, r)/b(r, r) of r, so rho_r fixes A_L exactly when b(x, r) lies in (|b(r, r)|/2)Z for every
-  x in the metric dual; since b(w_i, r) is the i-th coordinate of r, the criterion is that every
-  coordinate of r be divisible by |b(r, r)|/2.  A (-2)-root therefore always qualifies, which is
-  Laza--O'Grady's Example 1.2.2(2) with the sign made explicit, while a (-4)-vector does not
-  unless it lies in 2L, which no even lattice allows.  Measured through the owner's own morphism --
+  integral reflection rho_r in a *primitive* vector r, the difference rho_r(x) - x is the integer
+  multiple -2b(x, r)/b(r, r) of r, so rho_r fixes A_L exactly when b(x, r) lies in (|b(r, r)|/2)Z
+  for every x in the metric dual; for r primitive the values b(x, r) run over all of Z, so the
+  condition is |b(r, r)| = 2 and nothing else.  A primitive (-2)-root therefore always qualifies,
+  which is Laza--O'Grady's Example 1.2.2(2) with the sign made explicit, while a primitive
+  (-4)-vector never does.  Primitivity cannot be dropped, and an earlier phrasing of this criterion
+  did drop it: r = 2a with a^2 = -2 spans the line of a and gives the same reflection, rho_{2a} =
+  rho_a, while |q(2a)|/2 = 4, so a coordinate test applied to r itself calls one and the same
+  reflection trivial for a and non-trivial for 2a.  The script exhibits that pair and tests the
+  reflections of primitive vectors in each case.
+
+  One API observation for the library owner, and not an error in any answer: the maintained
+  reflection() refuses r = 2a, because it tests the scalar 2b(x,r)/b(r,r) for integrality and here
+  that scalar is half-integral, while the image x - (2b(x,r)/b(r,r)) r is integral because r is
+  twice a primitive vector.  The check is conservative on non-primitive vectors -- a false negative
+  rather than a wrong value -- and nothing here works around it: the primitive cases are the ones
+  measured, and the pair is used only to show why the criterion needs its hypothesis.
+
+  Measured through the owner's own morphism --
   isometry.discriminant_morphism(), the action packaged by Lattices.discriminant_representation(),
   with Lattices.stable_orthogonal_group() as the kernel -- the four cases come out: the (-2)-root
   a_1 of Lambda_19 fixes A_{Lambda_19} and lies in the stable group; a_16 + a_17, of square -4, does
@@ -237,24 +265,20 @@ What has since been settled is listed at the end, so that a reader can tell "res
   being in O~ and outside O^+, gives O~-orbits = O~^+-orbits as well, so all four groups
   O, O^+, O~, O~^+ have one orbit set here, and the -id of Lemma A.10 is what carries it -- not the
   centre.
-  The spinor character.  A (-2)-root r of L lies in J^perp, so rho_r fixes J pointwise; it is in
-  O^+ because r^2 < 0, in the discriminant kernel by the criterion above, and its spinor norm is
-  c * (-2).  Whether that separates anything depends on the value: it is 1 for c = -1/2 and the
-  class of -2 for c = 1.  AET's Sec. 3A fixes neither the multiplier nor a squareclass field, and
-  the two conventions are not interchangeable, so the Gamma side is not decided by choosing one
-  here.  What is decided is the shape of the answer: Gamma = ker(sn) cap O~^+ has index at most two
-  in O~^+, so its orbits refine the nine by at most two, and the refinement is absent exactly when
-  the spinor norm vanishes on O~^+ -- one statement about the generation of O~^+, since each
-  (-2)-root reflection satisfies it under c = -1/2 and the question is whether they generate.
-  Until that is settled from AET's own convention, no claim of nine Gamma-orbits is made.
+  The spinor character, once it is the right one.  A (-2)-root r of L lies in J^perp, so rho_r
+  fixes J pointwise; it is in O^+ because r^2 < 0, and in the discriminant kernel by the primitive
+  criterion above.  Under the real normalisation its spinor norm is 1 by construction, so it says
+  nothing further -- but nothing further is needed: with Gamma_{2d} = O~^+(T_{2d}) there is no
+  coset left to meet.  The rational value [-r^2/2] = [-1] belongs to the other object O' and is not
+  compared with the component character here.
 
   So the nine-lattice statement stands exactly as far as it was established: for the group the
   source's period space is divided by -- and, by the -id step, equally for O^+(Lambda_19) -- the
   degree-four space has nine Type II boundary components, labelled by the nine lattices in the
   genus of D_17 (Cor. A.5, Prop. A.11, Thm A.12 and its table, with A.6(9) listing them).  For the
-  manuscript's Gamma it is at most a twofold refinement of the nine and is nine exactly when the
-  spinor norm vanishes on O~^+, which is where AET's own convention has to be read; no claim of
-  nine Gamma-orbits is made here.  The earlier sentence that the comparison was the open step is
+  manuscript's Gamma it is nine as well, because Gamma_{2d} = O~^+(T_{2d}) and the orbit sets of
+  O~^+ and of O^+ on I_2 coincide; the earlier "nine or more" is withdrawn along with the index-two
+  language that produced it.  The earlier sentence that the comparison was the open step is
   withdrawn, as is the plan of settling it by a case search over gluings, and so is the sentence
   that placed the central -id outside O^+.  The isometry T_4 = Lambda_19 was a change of
   coordinates and never a change of polarization.

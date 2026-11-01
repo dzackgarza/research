@@ -6,16 +6,19 @@
         -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
         /repo/computations/reports/t4_discriminant_action.py
 
-The arithmetic first, because it settles what the answer must be.  Let r be a lattice vector
-with an integral reflection, rho_r(x) = x - 2 b(x, r) r / b(r, r).  For x in the metric dual
+The arithmetic first, because it settles what the answer must be.  Let r be a *primitive* lattice
+vector with an integral reflection, rho_r(x) = x - 2 b(x, r) r / b(r, r).  For x in the metric dual
 L^# the difference rho_r(x) - x is an integral multiple of r exactly when the coefficient
 2 b(x, r) / b(r, r) is an integer for every such x, i.e. exactly when b(x, r) lies in
-(|b(r, r)| / 2) Z for every x in L^#.  Since b(w_i, r) is the i-th coordinate of r for the dual
-basis {w_i}, the criterion reads: rho_r acts trivially on A_L exactly when every coordinate of
-r is divisible by |b(r, r)| / 2.  In particular a (-2)-root always qualifies -- |r^2|/2 = 1 --
-which is Laza--O'Grady's Example 1.2.2(2), and a (-4)-vector does not unless r lies in 2 L,
-impossible in an even lattice.  So the expectation is: every (-2)-root reflection lies in the
-discriminant kernel, and a reflection in a (-4)-vector generally does not.
+(|b(r, r)| / 2) Z for every x in L^#.  For r primitive the values b(x, r), x in L^#, run over all
+of Z -- that is what primitivity means for the functional b(., r) -- so the condition is
+|b(r, r)| = 2 and nothing else: a reflection acts trivially on the discriminant exactly for the
+primitive vectors of square +2 or -2, which is Laza--O'Grady's Example 1.2.2(2), and a primitive
+(-4)-vector is never such a vector.  The primitivity cannot be dropped: r = 2 a with a^2 = -2 spans
+the same line as a and gives the *same* reflection, rho_{2a} = rho_a, and yet |q(2a)|/2 = 4, so a
+criterion phrased in the coordinates of r itself would call the same reflection trivial for a and
+non-trivial for 2a.  The script below therefore tests the reflection of a primitive vector in each
+case and records the non-primitive example separately, as the reason the hypothesis is there.
 
 The measurement uses the owner's discriminant morphism, isometry.discriminant_morphism(),
 the action of O(L) on O(A_L) that Lattices.discriminant_representation() packages, and
@@ -118,6 +121,30 @@ t4_root = T4.basis_vector(0)
 assert t4_root.q() == -4
 t4_reflection = T4.reflection(t4_root)
 measure('T_4: reflection in the <-4> generator', T4, T4_GRAM, t4_reflection, t4_root, False)
+
+# ------------------------------------------------- the primitivity hypothesis, exhibited
+# r = 2a with a^2 = -2 spans the line of a and defines the *same* reflection, since
+# x - 2b(x,2a)/b(2a,2a) (2a) = x - (2b(x,a)/b(a,a)) a.  The pair is the reason the criterion is
+# stated for primitive r: |q(2a)|/2 = 4 while |q(a)|/2 = 1, so a test reading the coordinates of r
+# itself would call one and the same reflection trivial for a and non-trivial for 2a.
+a = basis19[4]
+twice = 2 * a
+assert a.q() == -2 and twice.q() == -8 and twice.q() == 4 * a.q()
+print('r = 2a with a^2 = -2: q(a) = %s, q(2a) = %s, and 2b(x,2a)/b(2a,2a) (2a) = 2b(x,a)/b(a,a) a,'
+      % (a.q(), twice.q()))
+print('so rho_{2a} and rho_a are the same map while their |q|/2 differ by a factor 4: the')
+print('criterion is for primitive r only.')
+# The library refuses to *build* rho_{2a}: it tests the scalar 2b(x,r)/b(r,r) for integrality,
+# which is half-integral here for x with b(x,a) odd, although the image ... + b(x,a) a is integral.
+# That is conservative for non-primitive vectors and is recorded rather than worked around.
+try:
+    L19.reflection(twice)
+    built = True
+except ValueError:
+    built = False
+print('the library builds rho_{2a}: %s  (False is its integrality test on the scalar coefficient,'
+      % built)
+print('not on the image; rho_a itself is built and measured above, and they are one map)')
 
 print()
 print('The arithmetic and the owner agree on every case: a (-2)-root reflection is in the')
