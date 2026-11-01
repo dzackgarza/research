@@ -32,11 +32,14 @@ graph with the squares as a vertex labelling and the pairings as edge labels; it
 What follows from it, and is also asserted.  With the transport fixed, the folding that
 Sterk.sterk_roots() records -- each folded root as an explicit sum of the K3 roots -- reads the
 irrelevant set of Definition 5.4 off the figure: a folded root is irrelevant exactly when all of its
-constituents sit on interior roots (16..21 in the square, {1, 19} in the triangle).  The constituents
-are recovered here by solving for the coefficients in the library's own root family and checking the
-reconstruction exactly, rather than by copying the library's expressions.  The five sets that come out
-are asserted equal to the ones this audit has been using, which is what makes their provenance the
-figure plus the fold data rather than a fit to the counts they later feed.
+constituents sit on interior roots (16..21 in the square, {1, 19} in the triangle).  The fold is
+transcribed into FOLD below, from the library's own expressions including their asserted expansions of
+orbit_sum, and each of the 59 entries is asserted equal to the library's root vector, so a
+mis-transcription fails rather than passing quietly.  Solving for the coefficients instead is not an
+option here and was tried: the v-family has rank 18 of 22, so the coefficients of a folded root in it
+are not determined and solve_right returns a non-integral solution.  The five sets that come out are
+asserted equal to the ones this audit has been using, which is what makes their provenance the figure
+plus the fold data rather than a fit to the counts they later feed.
 """
 from sage.all import Graph
 

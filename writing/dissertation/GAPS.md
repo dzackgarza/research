@@ -959,11 +959,21 @@ What has since been settled is listed at the end, so that a reader can tell "res
   entry as the stable orthogonal group $\widetilde O^+(T_{2d})$.  $\Gamma_\Co$ is the Heegner
   chapter's subgroup of $\Orth(A_{T_\Co}, q)$.  A bare $\Gamma$ belongs to the hypotheses of the cusp
   correspondence and should not be read as any one of the four.
-  A citation to check before submission: the chapter cites the ray-count lemma as Lemma 5.2 of
-  AEGS25, while in the retained e-print the same statement is the third lemma of its §5.1
-  (lem:rays-toroidal-comp, printed as 5.3); the e-print and the published version number the lemmas
-  differently, and the published numbering has to be read off the version of record rather than
-  inferred here.
+  The lemma numbers, reconciled against the version of record.  The retained e-print's source order
+  and the published numbering disagree by one in Section 3: assembling the e-print's numbered
+  environments puts the cusp-lattice lemma (lem:cusps1345) at 3.9, where the published text prints it
+  as Lemma 3.10, with its companions at 3.9 (the cusp-2 diagram, lem:cusp2) and 3.11 (the lift,
+  lem:lift).  In Section 5 the two agree -- the ray-count lemma is Lemma 5.2 in the printed text,
+  which is what the chapter cites, and 5.5 to 5.8 there are the statements the chapter cites as 5.6
+  to 5.8 -- so the chapter's citations stand as written and the numbers used in GAPS are the printed
+  ones: 3.10 for the cusp lattices and their index-two root sublattices, 5.2 for the ray counts.
+  Reading the printed text also turns up the source of Lemma 5.7's 1-cusp half, which was recorded
+  above as resting on an examination of the maximal parabolic diagrams at the 1-cusps and not done
+  here: that examination is Lemma 3.13 of the same paper, which identifies the 1-cusps of F_En,2 with
+  the maximal parabolic subdiagrams of the Coxeter diagrams of U + E_8^2 and U(2) + E_8^2 symmetric
+  under one of the five involutions of Lemma 3.10.  So that half is a citation too, and no
+  computation of 1-cusps is owed; what is owed is reading it against the printed lemma when the
+  chapter next states the 1-cusp counts.
   The cusp group.  For primitive isotropic e in T_En, AEGS25's Definition puts the stabilizer in an
   exact sequence 0 -> U_e -> Stab_{script-Gamma_En}(e) -> Gamma_{En,2,e} -> 0, where U_e is the
   unipotent subgroup acting trivially on e^perp/e = T~_En.  Read off: the domain is the stabilizer of
@@ -987,20 +997,34 @@ What has since been settled is listed at the end, so that a reader can tell "res
     * the Heegner chapter's Gamma_Co acting on the 528 isotropic classes of A_{T_Co}: a subgroup of
       the orthogonal group of a discriminant form, so neither of the above, and it should never be
       written Gamma without its subscript.
-  What the bridge rests on, and the one step left.  Given Gamma_k = Aut lt W, every count here is
-  exactly a Gamma_k-count: W permutes the chambers of the fan, so every ray is W-equivalent to one in
-  a fixed chamber, and what remains of Gamma_k on that chamber is its Aut factor permuting the
-  simple roots, i.e. permuting subdiagrams.  That is the chapter's argument, and it is an argument
-  only by virtue of Sterk's formula -- which AEGS25 cite to Sterk and the chapter cites to Sterk
-  through AEGS25, and which is not checked here because Sterk's paper is not retained in this
-  repository.  What is not in doubt either way is the containment Aut(G_r^k) <= O(T~_En): an
-  automorphism of the Gram-labelled diagram permutes a spanning set of root vectors, so its matrix is
-  integral with integral inverse and it is an isometry of T~_En.  Whether it lies in the image of the
-  stabilizer, i.e. in Gamma_k, is exactly what the formula asserts.  That is the one step a
-  computation could add, and it is bounded: for each of the five diagrams and each of its at most 8
-  automorphisms, lift the induced permutation through the roots of T_En orthogonal to e and check
-  that it preserves T_En and fixes e.  No orbits and no large groups are involved, and it is not done
-  here.
+  What the bridge rests on, and why the citation closes it.  Given Gamma_k = Aut lt W, every count
+  here is exactly a Gamma_k-count: W permutes the chambers of the fan, so every ray is W-equivalent to
+  one in a fixed chamber, and what remains of Gamma_k on that chamber is its Aut factor permuting the
+  simple roots, i.e. permuting subdiagrams.  That is the chapter's argument.  It needs the formula,
+  and the formula is stated by AEGS25 for exactly the group this book uses: their Definition of the
+  cusp group -- the exact sequence with kernel U_e and image Gamma_{En,2,e} -- and their section
+  5.1, which writes Gamma_k = Aut(G_r^k) lt W(G_r^k) for the induced group on e^perp/e and cites
+  Sterk.  Since the source audit above identifies the book's Gamma with that polarized Gamma_{En,2},
+  the bridge is closed by citation and no independent lift is required of this repository.
+  What must *not* be used to close it, and why the obvious argument fails.  It is tempting to say that
+  Aut(G_r^k) lies in O(T~_En) because an automorphism of the Gram-labelled diagram permutes a
+  rationally spanning set of root vectors, so its matrix is integral with integral inverse.  That
+  argument is wrong here, and AEGS25's Lemma 3.10 is where it fails: in all five cases the folded
+  roots generate an index-two sublattice of the fixed lattice T~_En = T~_dP^{J=1}, not the lattice
+  itself.  A permutation of the roots therefore preserves the index-two root lattice and says nothing
+  about the full boundary lattice; passing to it requires showing the glue of the index-two overlattice
+  is preserved, which is a different and stronger statement.  So the containment is not established by
+  spanning, and this paragraph records it as unproved rather than as an oversight.  The same lemma
+  also fixes the lattices the chapter displays: U(2) + E_8(2) at cusp 1 and U + E_8(2) at cusps 3, 4
+  and 5 (U + E_8(2) at cusp 2 by their cusp-2 lemma), which is what the computed quotient invariants
+  say independently -- (10,10,0) at cusp 1 and (10,8,0) at the other four, in
+  computations/reports/enriques_cusp_boundary_labels.py.  The chapter had U(2) + E_8(2) at cusps 3, 4
+  and 5, contradicting both the lemma and those invariants, and the three displays are corrected to
+  U + E_8(2) with the lemma cited.  If the lift question is ever wanted on its own, it is bounded: for
+  each of the five diagrams and each of its at most 8 automorphisms, lift the induced permutation
+  through the roots of T_En orthogonal to e, and check that it preserves the *full* boundary lattice --
+  not only the index-two root lattice -- and fixes e.  That is the check Lemma 3.10 makes necessary
+  and it is not done here, because the citation above already carries the claim.
 
 ## Structure
 

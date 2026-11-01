@@ -82,7 +82,7 @@ The semitoroidal rows below are the same two lists with the deletion rule of [@A
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
-- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is diagonal reflection followed by $\alpha_{20}$ reflection; $\bar{\tdp}^{J=1} = U(2)\oplus E_8(2)$.
+- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is diagonal reflection followed by $\alpha_{20}$ reflection; $\bar{\tdp}^{J=1} = U\oplus E_8(2)$, of invariants $(10,8,0)_1$, the $U$ arising from half the isotropic vector of the $\tilde A_1(2)$ factor together with the root disjoint from $(E_7A_1)(2)$ [@AEGS25, Lem. 3.10].
 
 - **Semifan Structure:** The Irrelevant subgroup is infinite since it again contains $W(\tilde A_1)$ due to the presence of $r_{10}, r_{11}$, so $\semifan{F}_3$ is strictly semitoroidal [@AEGS25, Lem. 5.6, Lem. 5.7].
 
@@ -103,7 +103,7 @@ The semitoroidal rows below are the same two lists with the deletion rule of [@A
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
-- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is horizontal reflection; $\bar{\tdp}^{J=1} = U(2)\oplus E_8(2)$.
+- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is horizontal reflection; $\bar{\tdp}^{J=1} = U\oplus E_8(2)$ [@AEGS25, Lem. 3.10].
 
 - **Semifan Structure:** The irrelevant subgroup is $W(A_1)\times W(A_1) \cong S_2^2$ which is finite, and thus $\semifan{F}_4$ is a fan and the compactification is toroidal [@AEGS25, Lem. 5.6, Lem. 5.7].
 
@@ -125,7 +125,7 @@ The semitoroidal rows below are the same two lists with the deletion rule of [@A
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
 
-- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is composition of eight commuting reflections $\alpha_1,\ldots,\alpha_{15}$; $\bar{\tdp}^{J=1} = U(2)\oplus E_8(2)$.
+- **Lattice Data:** $\bar{\tdp} = (18,2,0)_1 = U(2)\oplus E_8^2$, $J$ is composition of eight commuting reflections $\alpha_1,\ldots,\alpha_{15}$; $\bar{\tdp}^{J=1} = U\oplus E_8(2)$ [@AEGS25, Lem. 3.10].
 
 - **Semifan Structure:** The irrelevant subgroup contains $W(\tilde A_1)$ due to $r_{12}, r_{13}$, thus $\semifan{F}_5$ is a semifan and this yields a semitoroidal compactification [@AEGS25, Lem. 5.6, Lem. 5.7].
 
