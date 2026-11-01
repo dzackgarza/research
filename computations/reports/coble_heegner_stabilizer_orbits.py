@@ -29,7 +29,12 @@ What is not done, and must not be substituted.  The full orthogonal group is not
 the stabilizer, the polarization is not changed to make a count come out, and the zero class is kept
 separate from the 527 nonzero ones throughout.
 """
+import sys
 import time
+
+# line-buffered so a long run reports its phase instead of nothing (the first copy's transcript was
+# empty for exactly this reason)
+sys.stdout.reconfigure(line_buffering=True)
 
 from sage.all import CartanMatrix, ZZ, block_diagonal_matrix, matrix
 

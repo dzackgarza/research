@@ -1066,6 +1066,40 @@ What has since been settled is listed at the end, so that a reader can tell "res
   divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of image
   vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example already
   used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.
+  The Heegner orbit decompositions: what the chapter proves, what it computes, and the state of the
+  verification.  thm:coble-heegner-finite-orbits states three things: the image G of the integral
+  stabilizer in Orth(A_S_En, q) has order |W(E_8)| = 696,729,600; the transported group G_Co has that
+  order and acts on the 528 isotropic classes of A_T_Co with orbit lengths [1, 2, 120, 135, 270]; and the
+  full stabilizer Stab_{Orth(q_T_Co)}(1/2 h~_Co) has order 94,755,225,600 and acts with [1, 255, 272].
+  Its proof establishes only finiteness -- that is what the proof paragraph says -- and the remark records
+  the three numerical assertions as "exact computations in the finite quadratic space A_T_Co ~ B/2B,
+  carried out by stabilizing the four fibers of Q inside GL(B/2B) and then computing orbits on Q^{-1}(0)".
+  So the orbit lengths are computed claims awaiting their certificate, not proved statements, and that is
+  the status to read them with.
+  The arithmetic consistency checks in that theorem can be, and are, made without any orbit computation:
+  1 + 2 + 120 + 135 + 270 = 528 and 1 + 255 + 272 = 528, so each decomposition refines the 527 nonzero
+  isotropic classes plus the zero class as @thm:coble-isotropic-class-orbits requires; the index relation
+  136 * 696,729,600 = 94,755,225,600 holds; and 496 * 94,755,225,600 = 46,998,591,897,600 is the order of
+  Orth(A_T_Co, q) reproduced by the maintained action.  What is *not* yet checked is the decomposition
+  itself, under either group.
+  The verification run, its bound, and its phase evidence.  The first copy was launched with a 2400 s
+  bound; the call stabilizer_of_element alone took 2013 s of it, so even had the subsequent API existed
+  there was no budget for the orbits, and the copy died on an AttributeError because the object returned
+  is a G-set stabilizer without an orbit method.  The current copy was therefore launched with a 3 h
+  bound -- raised once, at launch, not extended in flight, and it will not be extended further.  Its own
+  transcript is empty for a defect of this harness, not of the library: the prints were block-buffered to
+  the redirect, and the script now line-buffers so that any later run reports its phase.
+  What can be measured about the running copy without a stack sampler (py-spy and gdb are absent and
+  /proc/<pid>/syscall is unreadable): the sage process is in state R with bursts at about 100% CPU (80 to
+  490 ticks per five-second window), while its Julia bridge is in state S and gained *zero* CPU ticks over
+  the same windows with RSS flat at 1.8 GB.  So the run is not in repeated construction or engine
+  admission, and it is not deadlocked: it is spending its time in Python, in the first step after the
+  stabilizer (group_generators, subgroup_on, or the subgroup's orbit partition).  There is consequently
+  no engine-admission handoff to publish; the only owner-facing facts already established are the 2013 s
+  cost of stabilizer_of_element and the missing orbit method on its return value, both recorded above.
+  Known phases from the completed copy: q = 1 for the chosen class plus its doubling to zero, 13 s for the
+  496-element Orbit-orbit, and 2013 s for the stabilizer's order -- all reproduced in this copy before the
+  step it is now in.
   The corpus-first search, done for the obligations recorded here, with its result scoped.  Before
   recording the remaining items as gaps, the formalization corpus was queried as AGENTS.md requires
   (search the formalization corpus first, always on), through its API at
