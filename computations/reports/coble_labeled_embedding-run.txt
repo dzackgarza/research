@@ -11,8 +11,15 @@ provenance
    h_Co = 2H + E_1 + E_2 pulls back to 2 f^*H + f^*E_1 + f^*E_2, which is the vector used below
 S_Co = <2> + <-2>^10: rank 11, det 2048, signature (1, 10)
   e^2 = 2, f_i^2 = -2, h~_Co^2 = 4, div(h~_Co) = 2
+   second marking: F~_1^2 = 0, F~_2^2 = 0, F~_1.F~_2 = 2
+   h~' = F~_1 + F~_2: square 4
+   its complement: rank 10, det 2048, signature (0, 10), roots 18
 M = S_En + <delta> = U(2) + E8(2) + <-2>: rank 11, det 2048, signature (1, 10)
   delta^2 = -2, delta.h = 0, h^2 = 4, div(h) = 2
+  saturation of <S_En, delta>: hypothesis check
+    C = U + E8(-1): rank 10, determinant -1, even True, signature (1, 9)
+    hence S_En^# = (1/2)C and every square in it is an integer, so no (x + delta)/2 is integral
+    M = S_En + Z delta is saturated; section 2 used the actual lattice, not a model of it
 Coble: complement of the polarization has rank 10, det 2048, signature (0, 10)
     roots (square -2 vectors) in the complement: 18
     |A_complement| = 2048
@@ -20,32 +27,32 @@ Heegner: complement of the polarization has rank 10, det 2048, signature (0, 10)
     roots (square -2 vectors) in the complement: 2
     |A_complement| = 2048
 
-3. the comparison, on the modelled inputs only
+3. the comparison
+two markings of the Coble polarization give isometric complements: True
 isometry decision of the two complements, by L.is_isometric_to:
   is_isometric_to returned False
 
-4. premises this verdict is conditional on
-   4.1 the Enriques side is modelled by M = S_En + <delta> unsatured.  The actual lattice is
-       M = <S_En, delta> saturated in L_K3, and its saturation is governed by the gluing
-       anti-isometry gamma of cons:embedding-gluing-data, which the book supplies as a
-       construction and not as explicit matrices.  A different gamma gives a different M,
-       possibly with a different polarization complement.
-   4.2 the Coble marking is the isotropic pair F_1 = H + E_1, F_2 = H + E_2 of Pic(S), checked in
-       section 0 to satisfy the definition.  Other isotropic pairs of Pic(S) realize h_Co as
-       well; inside the family used they lie in one O(S_Co)-orbit, but the family is not proved
-       to be the only one.
-   4.3 neither L_K3 nor the two embeddings are built, so nothing here tests the extension of any
-       isometry over the ambient lattice.
+4. what is still not established, and what it would take
+   4.1 the markings: h~_Co is taken over the classes realized by h_Co = F_1 + F_2.  Two independent
+       isotropic pairs were tested (the a = 1 family and a mixed one) and their complements are
+       isometric, so the verdict below does not depend on the choice inside them; no argument is
+       given that these exhaust the realizable markings.
+   4.2 the ambient lattice and the extension: L_K3 and the two primitive embeddings are not built
+       here, so no isometry is extended over L_K3 with isometry_extends.  That is needed for a
+       POSITIVE verdict, not for the negative one, which rests on the complement test alone.
+   4.3 the Coble side uses S_Co = I_{1,10}(2) as prop:coble-invariant-lattice gives it; nothing
+       here depends on a choice of Coble surface beyond the discarded data of section 0.
 
 SUMMARY
   0. the retained polarization coordinates are verified against def:coble-polarization-classes
-     and prop:coble-invariant-lattice at the owner: h_Co = 2H + E_1 + E_2, h_Co^2 = 2, and its
-     pullback is 2f^*H + f^*E_1 + f^*E_2 of square 4.
-  3. CONDITIONAL: for the modelled inputs the two polarization complements are not isometric
-     (both rank 10, det 2048, signature (0,10), |A| = 2048; 18 roots against 2), and
-     is_isometric_to returns False.  This is NOT yet a counterexample to A21: it is a
-     statement about M = S_En + <delta> unsaturated and the marking of 4.2.
-  To promote either verdict to A21 the premises 4.1-4.3 have to be discharged with the gluing
-  and saturation built as maintained semantic constructions, and the extension tested by
-  isometry_extends.  Until then A21 is open and no obstruction is recorded.
-OK: one premise verified, one comparison reported as conditional, no obstruction claimed
+     and prop:coble-invariant-lattice at the owner: h_Co = 2H + E_1 + E_2, h_Co^2 = 2, pullback
+     2f^*H + f^*E_1 + f^*E_2 of square 4.
+  2.1 <S_En, delta> is saturated, so section 2 compares the actual Enriques lattice.
+  3. the two polarization complements are not isometric: rank 10, det 2048, signature (0,10)
+     and discriminant group of order 2048 on both sides, but 18 roots against 2, with
+     is_isometric_to returning a verified negative for both markings.  Since an isometry
+     psi with psi(T_Co^Coble) = T_Co^Heegner would carry h~_Co^perp to h^perp, no such psi
+     exists for the markings tested; the open residue is 4.1 (exhaustiveness of markings) and
+     4.2 (needed only for a positive verdict).
+OK: coordinates verified, saturation proved, markings compared, and the verdict stated with its
+    exact residue
