@@ -1,0 +1,20 @@
+cusp 1  irrelevant ['r8', 'r9', 'r10', 'r11']
+   induced: 4 nodes, 1 components [('r8', 'r9', 'r10', 'r11')], inertia (n+, n-, n0) = (3, 1, 0), form rank 4
+   indefinite (n- = 1): infinite   [expected infinite]
+
+cusp 2  irrelevant ['r9']
+   induced: 1 nodes, 1 components [('r9',)], inertia (n+, n-, n0) = (1, 0, 0), form rank 1
+   elliptic: the subgroup is finite   [expected S_2]
+
+cusp 3  irrelevant ['r9', 'r10', 'r11']
+   induced: 3 nodes, 2 components [('r10', 'r11'), ('r9',)], inertia (n+, n-, n0) = (2, 0, 1), form rank 2
+   affine: infinite (null directions 1)   [expected infinite]
+
+cusp 4  irrelevant ['r9', 'r10']
+   induced: 2 nodes, 2 components [('r9',), ('r10',)], inertia (n+, n-, n0) = (2, 0, 0), form rank 2
+   elliptic: the subgroup is finite   [expected S_2 x S_2]
+
+cusp 5  irrelevant ['r8', 'r9', 'r10', 'r11', 'r12', 'r13']
+   induced: 6 nodes, 1 components [('r8', 'r9', 'r10', 'r11', 'r12', 'r13')], inertia (n+, n-, n0) = (5, 1, 0), form rank 6
+   indefinite (n- = 1): infinite   [expected infinite]
+
