@@ -264,11 +264,13 @@ What has since been settled is listed at the end, so that a reader can tell "res
   cone (Sec. 3C), realised for the unique 0-cusp of F_2 as the Coxeter fan (Sec. 4A, 4C).  The
   earlier sentence in this note that the toroidal data at a Type III cusp is "nothing" was wrong and
   is withdrawn; what the 0-cusp does not contribute is a divisor.  Both facts are computed in
-  computations/reports/cusp_mechanism_audit.py, and that certificate was itself rewritten: it now
-  takes A through the owned discriminant module, enumerates its two elements with the module's own
-  element enumeration, and evaluates the retained discriminant_quadratic_form() in its own codomain
-  -- an earlier version counted the 21 module generators of the embedding as elements and
-  hand-divided a Gram entry, and is retired.  Laza--O'Grady's Prop. A.4 is quoted in the chapter
+  computations/reports/cusp_mechanism_audit.py, and that certificate was itself rewritten twice.  The object is the formed finite module
+  D = T.discriminant_quadratic_form(), which is A_L *with* its quadratic form; D(x) coerces an
+  element and is not the form, so the value is D.q(x), with values in D.quadratic_value_module()
+  (QQ/2Z here, Nikulin's convention mod 2Z, nothing hand-divided), and isotropy is asked of the
+  same object through D.isotropic_elements().  Earlier versions counted the 21 module generators of
+  the embedding as elements, hand-divided a Gram entry, and called the module as if it were the
+  form -- mistakes of mine as consumer, not library defects -- and those versions are retired.  Laza--O'Grady's Prop. A.4 is quoted in the chapter
   only inside its own hypotheses (Lambda_N = U^2 + D_{N-2}, 3 <= N, I a rank two saturated
   isotropic, case (1) surjectivity, excluded second case for N not 2 mod 8), and only for the
   degree-four case, where T_4 = Lambda_19 and 19 = 3 mod 8; it is not asserted for a general T_{2d}.

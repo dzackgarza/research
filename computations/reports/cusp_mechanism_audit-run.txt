@@ -1,12 +1,14 @@
 T_2: rank 21, determinant -2, signature (2, 19)
-A_{T_2} = (T_2)^*/T_2 : Finitely presented module on 21 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2]
-A has 2 elements
-the quadratic form takes values in Finitely presented module on 21 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2]
-   0 -> 0   (isotropic)
-   -[0] -> -[0]
-isotropic elements: 1 of 2, so the isotropic subgroups number one
-one class from the discriminant group, against four 1-cusps of F_2 [@AET23, Sec. 3B]
+D = A_{T_2} with its quadratic form: Finitely presented module on 21 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2]
+the values live in Fraction Field of Integer Ring / (2)Integer Ring
+cardinality of A_{T_2}: 2
+   0 -> q = [0] in Fraction Field of Integer Ring / (2)Integer Ring   (isotropic)
+   -[0] -> q = [(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring
+isotropic elements: 1
+the form is anisotropic: True
+so the only isotropic subgroup of A_{T_2} is {0}, one class, against the four 1-cusps
+of F_2 [@AET23, Sec. 3B]
 eta a primitive isotropic line: eta^perp/eta rank 19, determinant 2, signature (1, 18)
-   (1,18) is not a Type IV signature, and the Baily-Borel Type III stratum is a point;
-   the fan that AET put at that point lives on the rational closure of this cone
+   (1,18) is not a Type IV signature; the Baily-Borel Type III stratum is a point, and
+   the fan that AET put at that point lives on this lattice
 I a primitive isotropic plane: I^perp/I rank 17, determinant -2, signature (0, 17), negative definite True
