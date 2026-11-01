@@ -356,6 +356,41 @@ chapter is the one that defines the filtration, so a reader has no other source 
 same line's $W_0 = \ker(N)$ is not the monodromy-weight convention either, in which the lowest
 nonzero step is $\operatorname{im}(N)$.
 
+**C11. Two definitions of subobject, and the second is the one the lattice part uses.**
+`foundations/Categorical-Foundations.md:40` defines a subobject as a monomorphism $m\colon X\to Y$, "the
+datum is the arrow $m$, not merely the domain $X$", while `foundations/Elements-and-Containment.md:24`
+defines it as an *isomorphism class* of monomorphisms. Both carry distinct labels (`def:subcategory`,
+`def:subobject-relation`), neither refers to the other, and the lattice-theory notion of a primitive
+subobject is built on the second. One of the two should be the definition and the other a derived remark.
+
+**C12. "Chain equivalence" is used four times and defined nowhere, and is equated with
+quasi-isomorphism, which is false.** `algebraic-structures/Chain-Complexes.md:237` asserts that a chain
+map is a chain equivalence exactly when it is a quasi-isomorphism. For complexes of $R$-modules that is
+false: the acyclic complex $\ZZ/4\xrightarrow{2}\ZZ/4$ is quasi-isomorphic to $0$ but not contractible,
+multiplication by $2$ on $\Hom(\ZZ/4,\ZZ/4)$ not being an isomorphism. No projectivity or boundedness is
+assumed at `:180`. This is not cosmetic, because `Stable-Categories-of-Modules-with-Duality.md:105`
+defines an $n$-dimensional Poincaré complex by requiring $\phi_0$ to be a *chain equivalence*, so the
+equation with quasi-isomorphism weakens the defining condition of the book's own Poincaré complex, and
+the term itself appears at four sites and is defined at none of them.
+
+**C13. A citation that does not carry its claim.** `coble/heegner-report/coble-heegner-research-report.md:510`
+cites `@prop:stabilization-discriminant` for "the discriminant of an orthogonal sum is the orthogonal sum
+of the discriminants". That proposition states only $A_{S(L)}\cong A_L$ for hyperbolic stabilization. The
+result used is `@prop:discriminant-orthogonal-sum`, whose title is "Discriminants of orthogonal sums".
+
+**C14. A double dual used without statement.** The proof of the perfect-linking theorem at
+`forms-quadratic/Torsion-Pairings-and-Linking-Forms.md:83` uses $(L^\#)^\# = L$ to conclude that the
+adjoint of the discriminant pairing has zero kernel. The book states the metric-dual identities for
+orthogonal sums and twists (`rem:dual-lattice-properties`) and not the double dual, so the step has no
+premise on the page.
+
+**C15. A true conclusion drawn from an irrelevant premise.** `foundations/Higher-Categories-and-Universes.md:488`
+concludes that $\mathbf{Cat}_{\infty,\infty}$ has no zero object from the fact that $*\amalg*$ is neither
+initial nor terminal. Whether $*\amalg*$ is initial or terminal is irrelevant: a zero object must be both
+initial and terminal, the initial object here is $\varnothing$, the terminal one is $*$, and the argument
+needed is that they are not equivalent.
+
+
 
 
 
@@ -379,6 +414,11 @@ Not yet read at this depth: `writing/lattice-theory`'s remaining subdirectories;
 `100-foundations.md`, `200-examples.md`, `300-classification.md`, `450-scattone.md`,
 `475-our-cusps.md` beyond the passages quoted above; and the rest of `writing/category-theory`
 (enriched/ and the remaining forms chapters).
+
+Categories C11–C15 and the audit of `writing/category-theory/algebraic-structures` and
+`foundations` came from `ultramath` swarm `smvy0k5df`, member m3, whose findings were checked against
+the files before entry.
+
 
 
 
