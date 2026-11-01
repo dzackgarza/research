@@ -98,10 +98,10 @@ cost of finding maximal parabolic subdiagrams, Galois invariance of their count,
 rank, arithmeticity from the diagram, exact covolumes in odd dimension, and a regularized theta
 series for an indefinite lattice.
 
-**A18. The autonomous Coble compactification.** The research report states about sixty "required
-theorem" targets (B2.1–B7.1, C1–C5 and the A-series lemmas) for deriving the compactification
-without appeal to the Enriques programme. Not enumerated individually here; they are one programme,
-and most are stated sharply enough in the report to be worked.
+**A18. The autonomous Coble programme.** The research report states the full chain of "required
+theorems" for deriving the compactification: A1–A8 for the Heegner strategy, B2.1–B7.1 for the
+autonomous strategy, C1–C5 for the reflection-folding route. They are enumerated at A31 below, where
+the ones carrying independent mathematical content are separated out.
 
 **A19. Dawes' Example 2.2 disagrees with the in-tree computation** (@qst:dawes-example-22). The
 paper concludes $v_1\sim v_2$ in $U\oplus A_3$; the computation returns $v_1\not\sim v_2$ because
@@ -111,6 +111,95 @@ tooling artefact — it lies in the paper's conclusion, the transcription, or th
 complements. The squares are consistent with the stated Gram matrices, which clears the
 transcription of the vectors; recomputing the two complements settles the rest. This matters beyond
 the example: Algorithm 2.3 of the same paper is the published route to A1.
+
+**A20. The four arithmetic groups are not known to coincide** (@prob:group-identification, the
+research report's §"Four arithmetic groups that must not be conflated"). The report defines
+$\Gamma^{\mathrm{geom}}_{\Co,2}$, $\Gamma^{\mathrm{dir}}_{\Co,2}$, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$
+and $\Gamma^{\mathrm{cong}}_{\Co,2}$ — geometric monodromy, labeled centralizer image, Heegner
+stabilizer image, and the congruence preimage — and proves no two equal. Each equality needs a
+separate argument: global Torelli, labeled embedding comparison, discriminant-form gluing. The report
+states the trap plainly: defining one of them to be "the group for which the desired semifan works"
+is circular. Every other Coble statement inherits whichever group it was stated for.
+
+**A21. Labeled Coble rigidity** (@prob:coble-rigidity). Two labeled tuples
+$(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$ arising from the projective construction
+should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This is strictly stronger
+than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
+coordinate-independent.
+
+**A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
+$(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The
+report gives a dimension count ($12-1-2=9$) and one explicit polynomial, and says both are
+insufficient: this needs irreducibility at the level of the arithmetic group and recovery of the K3
+cover and both involutions from the Coble datum.
+
+**A23. Equivalence of the resolved-cover and singular-pair moduli stacks**
+(@prob:cover-singular-equivalence), compatible with base change and automorphisms. This is the
+replacement for silently identifying a Heegner period point with a geometric Coble pair.
+
+**A24. Integral cusp lifting** (@prob:cusp-lifting), and this one now has its finite half in hand.
+The report records the finite computation: four orbits of nonzero singular vectors in a
+$10$-dimensional plus-type $\mathbb F_2$-space, of sizes $135, 2, 270, 120$, and five orbits of
+totally singular planes, of sizes $1575, 270, 9450, 3780, 8640$. The four vector sizes are exactly
+the fine Heegner list $[1,2,120,135,270]$ — so B2's numbers are a finite $O(A)$ computation that
+exists, and the open content is precisely the identification of that finite group with the image of
+the integral parabolic stabilizer. The report's own warning says the two are not interchangeable:
+a finite $O(A)$ orbit calculation does not classify cusps without a lifting theorem.
+
+**A25. Coble Vinberg and root completeness at every polarized $0$-cusp**
+(@prob:coxeter-completeness). The report's diagnosis: the four candidate wall-slice arrangements
+$G^2_{\mathrm{slice}},\dots,G^5_{\mathrm{slice}}$ have $1,3,3,9$ maximal parabolic faces, and those
+counts *disagree* with the finite-shadow orbit counts — so chamber completeness, arithmetic diagram
+automorphisms and finite-orbit calibration must all be settled before boundary strata are enumerated.
+A list of vectors or a Gram computation is not a Coxeter theorem.
+
+**A26. The degeneration chain for the direct Coble theory** — four required theorems that stand or
+fall together: integral-affine realization (@prob:affine-realization), algebraic extension of the two
+involutions to divisor models (@prob:algebraic-extension), the dlt quotient (@prob:dlt-quotient), the
+stable contraction by relative Proj (@prob:stable-proj), and the component classification
+(@prob:component-classification). The report notes the Coble case cannot be obtained by substituting
+the Coble involution into the Enriques tables, because the resolved Coble involution has a fixed
+curve.
+
+**A27. The direct semifan and semitoroidal restriction** (@prob:direct-semifan,
+@prob:restricted-semifan). The subtorus lemma is local and toric; the report lists seven separate
+statements needed before "intersect the AEGS semifans" is a compactification theorem rather than a
+candidate construction. `warn:restrict-semifan` says the same in one line.
+
+**A28. The two target theorems** (@prob:autonomous-theorem, @prob:comparison-theorem). Target A is
+the autonomous Coble compactification; Target B is the comparison with the Enriques Heegner divisor,
+which is the theorem the problem actually asks for. Target A does not imply Target B.
+
+**A29. "The Coble $0$-cusp is Sterk cusp 2" is a conjecture that no chapter reconciles.** The
+morphism-chain note states it and says in the same paragraph that it "is not recorded in open
+problems" and "should be reconciled with the $(9,9,1)$ / $(7,7,1)$ Coble cusp data". It also records
+the consistency check that would test it: the dissertation proves Sterk cusp 1 is
+$\mathbb{RP}^2$-type and cusps 2–5 are $\mathbb D^2$-type, and the author separately claims Coble
+degenerations are $\mathbb D^2$-type, so the conjecture *implies* the independently derived claim.
+That check is described as "currently unexercised".
+
+**A30. Is the Coble–Mukai lattice the natural home for the group action?**
+(@qst:coble-mukai-naturality). $\mathrm{CM}(S)$ has rank $11-n$ and signature $(1,10-n)$; the
+boundary configuration is primitive in $L$ but not in $\NS(S)$ for $n\geq2$. Whether the group acting
+on $\mathrm{CM}(S)$ is the stable orthogonal group of $L$ or the subgroup induced from $\NS(S)$ is
+open, and the odd part of the discriminant — invisible to the $2$-elementary invariants of $S_\Co$ —
+is where it would show.
+
+**A31. The strategy lemmas.** The report's Strategy A states eight required lemmas (A1–A8: root-orbit
+and embedded-component, root-marked universal family, Coble-pair identification, generic
+reconstruction, arithmetic cusp lifting, local toroidal normalization, semitoroidal compatibility, no
+further coarsening); Strategy B states twenty-three (B2.1–B7.1) reproducing the AEGS chain
+autonomously; Strategy C states five (C1–C5) for the reflection-folding route. Each is stated sharply
+in the report at the given label. Strategy C is explicitly demoted: the earlier attempt "produced
+wall-slice diagrams rather than Coxeter diagrams".
+
+**A32. The $n\geq 2$ programme.** Three conjectures for $F_{\Co,n}$: that the Baily–Borel boundaries
+of all ten families are computable by the $n=1$ techniques; that the ramification locus of the K3 cover
+is a recognizable divisor in the Alexeev–Engel sense, which would give a semitoroidal
+compactification by AEH21; and that the semifans refine or coarsen the Coxeter fans. The organizing
+observation is that the ten lattices $(10+n, 12-n, \delta)$ are exactly the $g=0$ row of Nikulin's
+triangle.
+
 
 
 ## B. Open here, decidable by a derivation
@@ -167,6 +256,20 @@ correspondence sections rely on"; the open-problems chapter says the two $\Orth^
 have quotient invariants $(9,9,1)$ and so "are not separated by the invariants of the boundary
 lattice". Both cannot be the operative claim. One of them is the correct one and the other should go.
 
+**C7. A Gram entry the report corrects and the figure transcription may not.** The research report
+records, twice and as a warning, that the black nodes $\alpha_{20}$ and $\alpha_{21}$ of the square
+ambient diagram have inner product $4$ and not $2$, and that "any computation based on the latter
+value has the wrong rank" — the rank comes out $20$ instead of $18$. Any transcription of Sterk's
+Figure 5 that used $2$ for that bond carries the wrong lattice. The two computations should be
+reconciled and the surviving value stated once.
+
+**C8. A discarded calibration is still cited by label.** The report's appendix retains the seven
+finite orbit labels $245, 34, 45, 35^{(2)}, 35^{(6)}, 55^{(2)}, 55^{(6)}$ and says explicitly that
+the calibration is not retained and that $245$ is incompatible with the $(-2)$-class obstruction. The
+labels should not survive anywhere in the book, including in a chapter that explains why they were
+discarded.
+
+
 
 ## A note on what is not in this list
 
@@ -179,12 +282,13 @@ recorded in [GAPS](writing/dissertation/GAPS.md), which is the audit trail and n
 Read in full for this list: the open-problems chapter; `coble/lattices-and-moduli` (lattice table,
 moduli basics, discriminant orbits, K3 periods and monodromy, normalization); `coble/computations`
 (isotropic candidates, toolchain, CoxIter results, chamber polyhedra, isotropic orbits and Tits
-buildings, lattice algorithms, periods and local monodromy); `coble/stable-limits`; `coble/degenerations`.
+buildings, lattice algorithms, periods and local monodromy); `coble/stable-limits`;
+`coble/degenerations`; the Heegner research report (all 2 620 lines); `coble/cusp-correspondence`;
+`coble/coble-moduli`; `coble/introduction`.
 
-Not yet read at this depth: the Heegner research report (16 500 words, and the source of A18's
-programme), `coble/cusp-correspondence` beyond its problem blocks, `coble/compactifications`,
-`coble/surfaces-and-moduli`, `coble/coble-moduli`, the `lattice-theory` and `dissertation` trees
-except where cited above. The list above is therefore complete for the chapters read and incomplete
-for the corpus; treating it as final before the remainder is read would repeat the mistake it was
-written to correct.
+Not yet read at this depth: `coble/compactifications` (seven files, ~1 790 lines),
+`coble/surfaces-and-moduli` (four files, ~590), `lattice-theory` (25 files, ~24 500 words), and the
+`dissertation` tree (44 files, ~94 000 words) except where cited above. The list above is therefore
+complete for the chapters read and incomplete for the corpus.
+
 
