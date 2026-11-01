@@ -562,6 +562,20 @@ What has since been settled is listed at the end, so that a reader can tell "res
   which is S_2, exactly Lemma 5.6's verdict.  Figure 7 corroborates the folding rather than the
   count: its left panel is the triangle with the two interior leaves, its right panel the quotient of
   10 vertices in which those two leaves are identified -- which is what w18 + w19 is.
+  The transport, checked against the figure's incidences rather than against counts.  On the triangle
+  side: alpha_1 = w18 = a2 is attached to w3 = a4, which is the printed edge alpha_1 - alpha_4, and
+  alpha_19 = w19 = b2 is attached to w15 = b4, which is the printed edge alpha_19 - alpha_16.  On the
+  square side, with alpha_i = v_{i+1}: v18 = alpha_17 branches to v5 = alpha_4, matching alpha_17 -
+  alpha_4; v20 = alpha_19 branches to v13 = alpha_12, matching alpha_19 - alpha_12; and v17 = alpha_16
+  and v19 = alpha_18 attach to v1 = alpha_0 and v9 = alpha_8, matching alpha_16 - alpha_0 and
+  alpha_18 - alpha_8.  So the two transports are fixed by the figure's own adjacency, on both panels,
+  at more points than a count could fake.  The full Gram check is still to be run once the runtime
+  hold is released; what is done here is the incidence part.
+
+  The candidate irrelevant sets these transports produce, in the manuscript's r-numbering, are
+  therefore: cusp 1 {r_8, r_9, r_10, r_11}; cusp 2 {r_9}; cusp 3 {r_9, r_10, r_11}; cusp 4 {r_9, r_10};
+  cusp 5 {r_8, ..., r_13}.
+
   What the transport rests on, and what it does not.  The square identification alpha_i = v_{i+1} and
   the triangle one above are supported by incidences of the figure, not by counts: the bold edge
   alpha_20 - alpha_21 is the manuscript's affine A_1 pair r_9, r_10 at cusp 1 (v21, v22), the
@@ -598,8 +612,13 @@ What has since been settled is listed at the end, so that a reader can tell "res
   irrelevant subgroup infinite at cusps 1, 3 and 5 once those roots are known to be irrelevant; the
   rank rule of AET Thm. 4.3 gives the rank-9 elliptic class that both AEGS25 Lemma 5.2 and the
   certificate enumerate; and the orbit counts agree with Lemma 5.2's numbers.
-  The Gamma_k bridge, as far as it goes: by [Ste91] the groups induced on e^perp/e are
-  Gamma_k = Aut(G_r^k) x| W(G_r^k) [AEGS25, Sec. 5.1].  The action computed here is Aut(G) on the
+  The Gamma_k bridge, as far as it goes, and phrased the way the source supports.  By [Ste91] the
+  groups induced on e^perp/e are Gamma_k = Aut(G_r^k) x| W(G_r^k) [AEGS25, Sec. 5.1].  The passage
+  from Gamma_k-orbits of rays to Aut(G_r^k)-orbits of subdiagrams is not that W fixes subdiagrams --
+  it does not act on them at all -- but that W permutes the chambers of the fan, so every ray has a
+  representative in the fundamental chamber, after which the residual ambiguity is Aut(G_r^k)
+  permuting the subdiagrams.  That is what Lemma 5.2 enumerates, and it is why the two computations
+  can be compared at all.  The action computed here is Aut(G) on the
   Gram-labelled diagram, and it reproduces Lemma 5.2's counts exactly; what a reader of the source
   is entitled to ask, and what is not yet shown here, is that Aut(G) on subdiagram classes is the
   same quotient as Gamma_k on the fan -- equivalently, that the reflection factor W(G_r^k) moves no
