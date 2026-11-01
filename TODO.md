@@ -215,6 +215,22 @@ classifying all surfaces with finitely many smooth rational negative curves up t
 For Coble surfaces the finiteness itself is Coble's theorem; the classification of all such surfaces is
 not.
 
+**A35. Do the integral-affine data determine the stable limit?** @conj:classification-ia-data states
+that for a fixed monodromy invariant $\lambda$ the combinatorial type $(\Gamma(\mcx_0), R_{\IA})$
+determines the KSBA stable limit $(\overline{\mcx}_0, \epsilon\overline{\mcr}_0)$, and that this type
+is locally constant in families. The dissertation itself records that only the converse is established
+— from the divisor model to the data — and that the forward direction "does not follow from properness
+of the KSBA functor or from the invariance of dual complexes under PL homeomorphism, and is not
+available in the literature as far as this thesis can determine". This is the hinge the whole
+divisor-model method turns on: without it, computing $B(\lambda)$ computes a candidate, not the limit.
+
+**A36. Describe the semifan of a recognizable divisor.** The toroidal chapter states that describing
+$\semifan{F}_R$ for a recognizable divisor $R$ is "currently a widely open problem", and that it is open
+even for the rational-curve divisor $R_{\rcop}^{\,}$, where the semifan is characterised only as the
+coarsest subdivision on which the combinatorial type of stable pairs is constant. The Enriques case is
+available only because @AE22 supply the ramification-locus semifans explicitly.
+
+
 
 
 
@@ -291,6 +307,14 @@ $T_\Co = (11,11,1)_2$, and $S_\Co = (11,11,1)_1$. The two lattices share the tri
 sign of the form, which is exactly the confusion the chapter's own next sentence guards against. It is
 one character in one place, but it is in the paragraph that warns against confusing the two lattices.
 
+**C10. The Type II weight filtration says $W_2 = H^2$ and $W_4 = 0$.** `200-Kulikov.md` lists, for
+$N^2 = 0$, "$W_0 = \ker(N)$; $W_2 = H^2$; $W_4 = 0$". The filtration is increasing, so $W_4\supseteq
+W_2$; if $W_2 = H^2$ then $W_4 = H^2$. The entry is either a sign error or a transposition, and the
+chapter is the one that defines the filtration, so a reader has no other source to fall back on. The
+same line's $W_0 = \ker(N)$ is not the monodromy-weight convention either, in which the lowest
+nonzero step is $\operatorname{im}(N)$.
+
+
 
 
 
@@ -302,17 +326,17 @@ recorded in [GAPS](writing/dissertation/GAPS.md), which is the audit trail and n
 
 ## Coverage of this list
 
-Read in full for this list, all of `writing/coble` except its last file: the open-problems chapter;
-`lattices-and-moduli` (all six); `computations` (all); `stable-limits`; `degenerations`;
-`cusp-correspondence`; `coble-moduli`; `introduction`; `surfaces-and-moduli` (all four); the Heegner
-research report (all 2 620 lines); and `compactifications` except `coxeter-systems-and-classification.md`
-(scattone-cusp-method, reflective-two-elementary-lattices, hyperbolic-coxeter-polytopes,
-reflection-groups-and-vinberg, toroidal-and-semitoroidal, dynkin-foldings).
+Read in full: all of `writing/coble` (each of the 64 files, including the Heegner research report at
+2 620 lines); `writing/lattice-theory` top level and the `arithmetic/`, `classification/` and
+`definite/` subdirectories; and, in `writing/dissertation`, Part III (chapters 6 and 7), Part II
+(chapters 4 and 5), and `700-folding.md`, `400-group-actions.md`.
 
-Not yet read at this depth: `compactifications/coxeter-systems-and-classification.md` (~409 lines),
-`lattice-theory` (25 files, ~24 500 words), and the `dissertation` tree (44 files, ~94 000 words)
-except where cited above. The list above is therefore complete for `coble` bar one file, and
-incomplete for the corpus as a whole.
+Not yet read at this depth: `writing/lattice-theory`'s remaining subdirectories; in
+`writing/dissertation`, Part I's `100-foundations.md`, `200-examples.md`, `300-classification.md`,
+`500-nikulin-theory.md`, `600-coxeter-vinberg.md`, `100-main-diagram.md`, `450-scattone.md`,
+`475-our-cusps.md` beyond the passages quoted above, and `6-chapter/500-descent-semitor.md`,
+`600-finite-coarsening.md`; and all of `writing/category-theory` (26 files, ~32 000 words).
+
 
 
 
