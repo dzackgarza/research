@@ -169,22 +169,33 @@ What has since been settled is listed at the end, so that a reader can tell "res
   diagram IV, cusp 5 diagram V, and vinberg-10-8-0 is "the Coxeter diagram of the 0-cusp eta_2
   (Sterk's diagram II)".
 
-  The exact label correspondence, from the referenced ordered root family.  The objects take their
-  roots from `Sterk.sterk_roots()` in archives/preamble/sterk.sage:227, whose tuples are ordered and
-  whose entries are closed forms in the (18,2,0) roots v_i.  Zero-based, r_i is the (i+1)-th entry:
+  The exact label correspondence, from the canonical ordered root family.  The objects are the
+  pinned pandoc configuration, pandoc-config@a84f0becc5b777cf193b1ca6466cd4922556f5fa, and they
+  read their roots from the maintained library rather than from the archived preamble:
+  sage-extensions/src/sage_extensions/sterk.py:240-281.  That block orders the five configurations
+  explicitly and, zero-based, gives
 
-    Sterk_1  r_9  = v_21                     r_10 = v_22
-    Sterk_3  r_10 = reflect(v_20)            r_11 = reflect(v_18),   reflect(v_20) = v_22 + v_20
-    Sterk_5  r_12 = v_21                     r_13 = v_22
+    Sterk_1  r_9  = v_21                    r_10 = v_22
+    Sterk_3  r_10 = orbit_sum(v_20)         r_11 = orbit_sum(v_18)
+    Sterk_5  r_12 = v_21                    r_13 = v_22
 
-  where reflect(x) = x + b(v_22, x)/2 * v_22 is the preamble's own partial reflection, asserted
-  there to be an involution on v_20 and v_18.  So the pairs the manuscript names are specific roots
-  in closed form: (v_21, v_22) for cusp 1, (v_22 + v_20, v_22 + v_18) for cusp 3, and (v_21, v_22)
-  again for cusp 5.  The object files mark exactly those index pairs with the infinity weight -- 
-  cusp 1 "8-9-10-11 bold (inner products 4)", cusp 3 \coxeteredges{infinity}{10/11}, cusp 5
-  \coxeteredges{infinity}{12/13} -- so b(r_i, r_j) = 4 with both norms -4 at each named pair, which
-  is an affine A~1.  The manuscript's named pairs are therefore present in its own diagram source
-  and are not to be reinterpreted through the Sterk script's a-numbering.
+  with orbit_sum the folded orbit sum used for the two Sterk_3 roots; an earlier version of this
+  note called it reflect, after the archived preamble, and that name is wrong for the maintained
+  source.  So the pairs the manuscript names are particular roots of these ordered configurations:
+  (v_21, v_22) for cusp 1, (orbit_sum(v_20), orbit_sum(v_18)) for cusp 3, (v_21, v_22) again for
+  cusp 5.  The assets mark exactly those index pairs with the infinity weight -- cusp 1 "8-9-10-11
+  bold (inner products 4)", cusp 3 \coxeteredges{infinity}{10/11}, cusp 5
+  \coxeteredges{infinity}{12/13} -- so b(r_i, r_j) = 4 with both norms -4 at each named pair, an
+  affine A~1.  The manuscript's named pairs are present in its own diagram source and are not to be
+  reinterpreted through the Sterk script's a-numbering.
+
+  Two orderings must not be confused, and the assets say so themselves: vinberg-10-8-0.tikz 5-11
+  maps the folded Sterk_2 indices 0..9 to diagram vertices 1, 3, 4, 5, 6, 7, 8, 9, 10, 2, and the
+  library exposes sterks_in_TEn() and sterk5_in_U_E8_2() in orderings of their own.  No transport
+  from those orderings to the separate Sterk script's a-indices appears in that file, so the
+  script-to-manuscript label map is *not* established and must not be read off positions.  Anything
+  that needs both numbering systems -- for instance comparing the script's subdiagram lists with the
+  objects' edge lists -- waits on that map.
 
   With that numbering the three named-root statements check out, and my earlier "these pairs are
   not edges" conclusion is withdrawn -- it compared the manuscript's r-indices with the Sterk
