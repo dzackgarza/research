@@ -39,15 +39,22 @@ provenance
     glue subgroup of h~^perp: order 2; of h^perp: order 2
     |O(h~^perp)| = 2786918400, generators 22
     |image of O(h~^perp) in O(A)| = 696729600
-    BLOCKED HERE, exactly: the subgroup object returned by subgroup(...) of O(A) has no orbit
-    method -- dir() offers none, while the full group O(A) does (OA.orbit(x) is used above) --
-    so the orbit of the glued class under the image of O(h~^perp) cannot be computed.  Expected
-    semantic operation: the induced action of a subgroup of O(A) on the finite quadratic form,
-    i.e. Subgroups(O(A)).orbit(element) / .element_action(), closing the comparison
-      phi0.discriminant_morphism()(glue class of S_Co)  ==  glue class of M
-    over the finite group.  Second missing piece: a comparison of glue classes that live in the
-    discriminant forms of the two complements with the (-1) twist of glue_map recorded -- the maps
-    land in A(-1) and no owner operation composes them with an isometry discriminant map.
+    BLOCKED HERE, and the exact missing semantic operation is now clear: there is no owner
+    decision for "are two primitive vectors in one O(L)-orbit" in signature (1,n).  The nearest
+    operation, L.are_in_one_stable_orbit(left, right), exists but its contract is Eichler's
+    criterion: even lattice, a represented decomposition with two copies of U, primitive vectors.
+    For h~^perp definite that fails, and for L = S_Co of signature (1,10) it fails as well, no
+    lattice of signature (1,10) splitting U + U.  The same gap appears concretely as the missing
+    orbit method on the subgroup returned by O(A).subgroup(...) above: the full form has
+    O(A).orbit(x), the subgroup does not.  Expected semantic operation, stated exactly:
+      is_isometric_to for lattices with a distinguished primitive vector
+      -- equivalently are_in_one_O_orbit(left, right) for L of signature (1,n) --
+    and, for the finite side, the induced action of a subgroup of O(A) on the finite quadratic
+    form (Subgroups(O(A)).orbit / .element_action).
+    A second, smaller piece: the glue classes live in the complements' discriminant forms with
+    the (-1) twist that glue_map records, A(-1), and no owner operation composes a glue map
+    with an isometry's discriminant map; expected operation: transport/comparison of glue
+    classes across two complements.
 
 3.2 the distinguished root of the marking
     roots of h~^perp: 2 (root system A_1, one line)

@@ -255,14 +255,18 @@ having order $2$ so the sign on $\ZZ v/4$ is irrelevant; @thm:coble-heegner-line
 it, its hypothesis being an indefinite complement while a positive vector in signature $(1,10)$ has a
 definite one. Assembled at the owner: the complements are isometric; both glue subgroups have order $2$,
 from `S_Co.glue_map` and `M.glue_map`; $\abs{\Orth(\tilde h_\Co^{\perp})} = 2\,786\,918\,400$ with $22$
-generators, whose image in $\Orth(A)$ has order $696\,729\,600$. **Blocked at two exact operations.** The
-object returned by `O(A).subgroup(generators)` has no `orbit` method — the full form's `O(A).orbit(x)`
-exists and is used in the same report — so the orbit of the glued class under the image of
-$\Orth(\tilde h_\Co^{\perp})$ cannot be computed; expected semantic operation: the induced action of a
-subgroup of $\Orth(A)$ on the finite quadratic form (`Subgroups(O(A)).orbit` / `.element_action`). And the
-glue classes live in the discriminant forms of the two complements with the $(-1)$ twist that `glue_map`
-records ($A(-1)$), with no owner operation composing a glue map with an isometry's discriminant map;
-expected operation: transport/comparison of glue classes across two complements.
+generators, whose image in $\Orth(A)$ has order $696\,729\,600$. **Blocked at one missing semantic operation, now pinned down.** There is no owner decision for
+"are two primitive vectors in one $\Orth(L)$-orbit" in signature $(1,n)$ — equivalently
+`is_isometric_to` for lattices with a distinguished primitive vector. The nearest operation,
+`L.are_in_one_stable_orbit(left, right)`, is Eichler's criterion and requires an even lattice with a
+represented decomposition containing two copies of $U$; $\tilde h_\Co^{\perp}$ is definite and $S_\Co$ has
+signature $(1,10)$, so neither qualifies. The same gap shows up concretely: `O(A).subgroup(generators)`
+has no `orbit` method, while the full form's `O(A).orbit(x)` exists and is used in the same report.
+Expected operations, stated exactly: vector-orbit (or marked-pair) isometry decision in signature
+$(1,n)$, and the induced action of a subgroup of $\Orth(A)$ on the finite quadratic form. A second,
+smaller piece: the glue classes live in the complements' discriminant forms with the $(-1)$ twist that
+`glue_map` records ($A(-1)$), with no owner operation composing a glue map with an isometry's
+discriminant map.
 (iii) The extension over $\lkt$ by `isometry_extends` and the transport of the chamber.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
