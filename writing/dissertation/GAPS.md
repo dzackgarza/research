@@ -512,6 +512,15 @@ What has since been settled is listed at the end, so that a reader can tell "res
   maintained two-elementary API gives (18,2,0) and (10,10,0) for the first pair and (18,0,0) and
   (10,8,0) for the second, matching the text in all five subsections.
 
+  The Niemeier-complement description of the four degree-two lattices is withdrawn rather than
+  repaired.  The chapter now says which support it uses (AET's four labels, and the boundary
+  lattices computed with their marked inclusions) and which it does not (reading each class as an
+  E_7-complement in a Niemeier lattice), and why not: a complement is not a root sublattice of a
+  fixed diagram, the witness being D_7 inside E_8 in the half-spinor model, so deleting nodes
+  enumerates neither the embeddings nor their complements.  Three of the four still read visibly as
+  complements; D_16 + A_1 does not, and closing that would mean exhibiting primitive embeddings,
+  which is not done here and which nothing in the chapter depends on.
+
   Two things the audit did not settle and does not claim.  The boundary labels (10,10,0)_1 and
   (10,8,0)_1 are the manuscript's Enriques-cusp invariants and were not recomputed here from
   L_- = H + H(2) + E8(-2); they need the five isotropic orbits and their quotients, which is the
