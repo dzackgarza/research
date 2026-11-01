@@ -206,6 +206,31 @@ print('    T_Co, so its S_Co-component fixes H, but theta_Co itself needs the gl
 print('    cons:embedding-gluing-data, is not constructed here, and no morphism-level check of its')
 print('    action on H has been made.')
 
+# ---------------------------------------------------------------- 3.3 the ambient extension
+# The two primitive embeddings have the same complement: S_Co^{perp L_K3} = T_Co and, by construction,
+# M = T_Co^{perp L_K3}.  With psi the marked-pair isometry, the composite
+# gamma_En . psi . gamma_Co^{-1} is an isometry of the finite form A_{T_Co}, realised by an integral
+# isometry of T_Co when O(T_Co) -> O(A_{T_Co}) is surjective; then (psi, phi) preserves the gluing
+# subgroup and extends over L_K3 by Nikulin.  Surjectivity is a theorem for 2-elementary lattices
+# (thm:two-elementary-surjectivity); the owner's own decision over the three lattices involved:
+print('')
+print('3.3 the ambient extension, and what the owner can and cannot verify')
+for name, lat in (('S_Co', S_Co), ('M = S_En + <delta>', M),
+                  ('T_Co = <2> + U(2) + E8(2)', Lattices(ZZ)([list(row) for row in
+                      block_diagonal_matrix(matrix(ZZ, [[2]]), 2 * U, 2 * E8).rows()]))):
+    try:
+        answer = lat.discriminant_representation_is_surjective()
+        print('    %-26s det %s signature %s: O(L) -> O(A) surjective: %s'
+              % (name, lat.determinant(), lat.signature_pair(), answer))
+    except Exception as exc:
+        print('    %-26s det %s signature %s: owner undecided, %s: %s'
+              % (name, lat.determinant(), lat.signature_pair(), type(exc).__name__, str(exc)[:110]))
+print('    So two of the three are owner-verified and the third, T_Co, is the lattice for which the')
+print('    indefinite Eichler machinery fails (the same failure recorded for A20 item 1).  The argument')
+print('    for the extension therefore rests on thm:two-elementary-surjectivity for T_Co -- a book')
+print('    theorem, not an owner computation -- and on Nikulin\'s gluing criterion for the extension')
+print('    itself.  L_K3 is the unique even unimodular lattice of signature (3,19).')
+
 # ---------------------------------------------------------------- 4. what remains
 print('')
 print('4. what this does not do')
@@ -218,11 +243,12 @@ print('   4.2 the marked pair is decided in section 3.1: the glue classes match,
 print('       polarized lattices are matched by an isometry carrying h~_Co to h.  What that does not give')
 print('       is the extension of that isometry over L_K3 between the two primitive embeddings, which is')
 print('       4.3.')
-print('   4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is')
-print('       extended over it with isometry_extends and no chamber is transported.  The involutions of')
-print('       the tuple reduce to the same datum: I_Co = -theta_Co needs the gluing gamma_Co of')
-print('       cons:embedding-gluing-data, I_dP is not given as lattice data by the sources at all, and')
-print('       the chamber is nef-cone geometry, not a lattice computation.')
+print('   4.3 the ambient: section 3.3 states the extension argument and what it rests on -- the marked')
+print('       pair decided here, thm:two-elementary-surjectivity for T_Co, Nikulin\'s gluing criterion,')
+print('       and the uniqueness of the even unimodular lattice of signature (3,19).  Not done: building')
+print('       L_K3 and the two embeddings, so the extension is an argument rather than an object, and the')
+print('       chamber is not transported.  The involutions reduce to the same gluing datum: I_Co needs')
+print('       gamma_Co of cons:embedding-gluing-data, I_dP is not lattice data in the sources at all.')
 print('')
 print('SUMMARY')
 print('  0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to')

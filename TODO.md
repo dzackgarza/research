@@ -243,9 +243,14 @@ $H\cdot\alpha=0$ exists and is unique up to sign, but which of the two is the *r
 a chamber question and `roots_K[0]` is an abstract choice. Still missing: effectivity and the chamber
 (nef-cone geometry), $-\theta_\Co$ (needs $\gamma_\Co$ from @cons:embedding-gluing-data as data, and its
 action on $H$ is unchecked at the level of a morphism), and $I_{\mathrm{dP}}$ (not lattice data in the
-sources). (ii) The ambient extension: $L_{K3}$ with the two primitive embeddings is not built, so the
-isometry is not extended over it with `isometry_extends`, and the chamber is not transported; that needs
-$\gamma_\Co$ and $\gamma$ as matrices, which is a book-level obligation and not a lattice computation.
+sources). (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
+the same complement $T_\Co$, the composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
+$\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
+(@thm:two-elementary-surjectivity), and $ (\psi,\phi)$ then extends over $L_{K3}$ by @thm:nikulin-gluing.
+Owner status of that input: surjective for $S_\Co$ and for $M$ (owner-verified), undecided for $T_\Co$,
+where the indefinite Eichler machinery raises the same `TypeError` recorded in A20 item 1 — so that step
+rests on the book's theorem, not on an owner computation. Not built: $L_{K3}$ and the two embeddings, so
+no isometry object exists, and the chamber is not transported.
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The
 report gives a dimension count ($12-1-2=9$) and one explicit polynomial, and says both are
