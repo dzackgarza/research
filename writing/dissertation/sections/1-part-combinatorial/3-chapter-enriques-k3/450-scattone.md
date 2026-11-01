@@ -15,7 +15,7 @@ The Type $\IV$ Hermitian symmetric period domain for $T_{2d}$,
 $$
 \halfpd{T_{2d}} = \theset{ [\omega] \in \PP(T_{2d, \CC} ) \st (\omega, \omega) = 0,\, (\omega, \bar{\omega}) > 0 },
 $$
-admits a natural right action by the arithmetic group $\Gamma_{2d} \subset \Orth^+(T_{2d})$, the intersection of the original orthogonal group with the subgroup stabilizing $h$ (and, if necessary, a choice of connected component).
+admits a natural right action by the arithmetic group $\Gamma_{2d} \subset \Orth^+(T_{2d})$, the image of the subgroup of $\Orth(\lkt)$ consisting of the isometries that fix $h$ and have spinor norm $1$ [@AET23, §3A]. Equivalently, by restriction and extension across the primitive splitting $\lkt = \ZZ h \oplus T_{2d}$, it is the kernel of the spinor norm inside the discriminant kernel $\widetilde{\Orth}(T_{2d})$, and so sits in that kernel with index at most $2$.
 The arithmetic quotient
 $$
 \ftd \definedas  \dmodgamma{ \halfpd{T_{2d}} }{ \Gamma_{2d} }
