@@ -250,6 +250,18 @@ from intersecting the hyperplane arrangements". The research report states the o
 is a theorem (A27). Two chapters of the same book therefore take opposite positions on whether
 semitoroidal restriction is formal, and the dissertation's version is the one carrying the theorem.
 
+**A39. Three open questions in the category-theory part.** The section `sec-open-statements` of
+`Monoidal-Stable/Stable-Categories-of-Modules-with-Duality.md` states, and says are not proved in the
+book: (i) whether the hyperbolic stabilization $S=F_{H(R)}$ of $\mathbf{Lat}_R$ can be inverted into a
+pointed $\infty$-category — that is, whether there are $\mcc$ and $\iota\colon\mathbf{Lat}_R^{\simeq}\to
+\mcc^{\simeq}$ with $\iota\circ S\simeq\Sigma\circ\iota$; (ii) whether any symmetric monoidal structure on
+a category built from $\mathbf{Lat}_R$, other than $\perp$, has an invertible object of nonzero Witt
+class; and (iii) whether the discriminant construction factors through the $\epsilon$-quadratic Poincaré
+complexes over $\Z$, and through which functor. The first two are sharpened by @thm:invertible-summand,
+which proves that on $\mathbf{Lat}_R$ itself the two demands — invertibility and moving the Witt class —
+are incompatible.
+
+
 
 
 
@@ -348,15 +360,17 @@ recorded in [GAPS](writing/dissertation/GAPS.md), which is the audit trail and n
 ## Coverage of this list
 
 Read in full: all of `writing/coble` (each of the 64 files, including the Heegner research report at
-2 620 lines); `writing/lattice-theory` top level and the `arithmetic/`, `classification/` and
-`definite/` subdirectories; and, in `writing/dissertation`, Part III (chapters 6 and 7), Part II
-(chapters 4 and 5), and `700-folding.md`, `400-group-actions.md`.
+2 620 lines); `writing/lattice-theory` top level, `arithmetic/`, `classification/`, `definite/`, and
+the Part I lattice-theory chapters `500-nikulin-theory.md`, `600-coxeter-vinberg.md`,
+`700-folding.md`, `400-group-actions.md`; `writing/dissertation` Parts II and III in full, plus
+`100-main-diagram.md`; and `writing/category-theory/monoidal-stable` and `forms-quadratic` in part,
+including the section that states its own open questions.
 
-Not yet read at this depth: `writing/lattice-theory`'s remaining subdirectories; in
-`writing/dissertation`, Part I's `100-foundations.md`, `200-examples.md`, `300-classification.md`,
-`500-nikulin-theory.md`, `600-coxeter-vinberg.md`, `100-main-diagram.md`, `450-scattone.md`,
-`475-our-cusps.md` beyond the passages quoted above, and `6-chapter/500-descent-semitor.md`,
-`600-finite-coarsening.md`; and all of `writing/category-theory` (26 files, ~32 000 words).
+Not yet read at this depth: `writing/lattice-theory`'s remaining subdirectories; in the dissertation,
+`100-foundations.md`, `200-examples.md`, `300-classification.md`, `450-scattone.md`,
+`475-our-cusps.md` beyond the passages quoted above; and the rest of `writing/category-theory`
+(enriched/ and the remaining forms chapters).
+
 
 
 
