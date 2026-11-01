@@ -1096,7 +1096,15 @@ What has since been settled is listed at the end, so that a reader can tell "res
   isotropic classes; 1984 stabilizer generators, and rebuilding them inside Orth(q) reproduces the order
   94,755,225,600.  Then subgroup.orbits() raises AttributeError, and so does the G-set stabilizer's: the
   subgroup returned by subgroup_on is a _GroupEngine object without an orbit method.
-  The interface question is resolved, and the handoff is therefore not a request for a new contract: a
+  The route, as published: provider c546077dce79a76eb32e92d080aa9c44e4c67552 carries the restriction
+  interface and a subgroup-action regression, and the maintained form of it is
+  elements = G.element_action(); inclusion = H.inclusion(); restricted = elements.restrict_action(inclusion),
+  with restricted.act(h, x) = elements.act(inclusion(h), x).  The isotropic subset is then presented
+  explicitly, FiniteGSets(H)(D.isotropic_elements(), lambda h, x: h(x)), and no H.orbits convenience is
+  needed.  The certificate is rewritten to that route -- the earlier FiniteGSets call went through plain
+  element application rather than the maintained act -- and it is pinned to c546077d, exported read-only
+  into .scratch/se-provider-c546 beside the earlier export so that the finished copy is not disturbed.
+  The earlier interface finding, kept: a
   subgroup object does not carry an orbit partition, and the object that does is the subgroup's *action*
   on the module, obtained by restricting the ambient action through the inclusion H -> G.  The interface
   constructs exactly that from an action map, FiniteGSets(H)(point_set, action) with action(h, x) = h(x),

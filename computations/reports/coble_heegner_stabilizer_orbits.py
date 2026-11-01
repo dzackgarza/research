@@ -1,12 +1,12 @@
 """The [1, 255, 272] decomposition of the 528 isotropic classes under the polarization stabilizer.
 
     JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: \
-    PYTHONPATH=/repo/.scratch/se-provider/src \
+    PYTHONPATH=/repo/.scratch/se-provider-c546/src \
     $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \
         -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
     /repo/computations/reports/coble_heegner_stabilizer_orbits.py
 
-sage-extensions at provider 9dc89ac1d9e4ab074da8872386aaf5b9df290f63, exported read-only from the
+sage-extensions at provider c546077dce79a76eb32e92d080aa9c44e4c67552 (and 9dc89ac1 earlier), exported read-only from the
 image's clone into .scratch/se-provider and bound per process; no rootfs write and no hand closure.
 
 The claim.  the-heegner-line-and-the-coble-arithmetic-group.md states that the finite stabilizer
@@ -95,9 +95,19 @@ subgroup = G.subgroup_on(list(stabilizer.group_generators()))
 print('stabilizer rebuilt inside Orth(q): order %d' % int(subgroup.order()), flush=True)
 assert int(subgroup.order()) == CLAIMED_STABILIZER_ORDER
 
+# The maintained restriction route, as published in provider c546077d:
+#   elements = G.element_action(); inclusion = H.inclusion(); restricted = elements.restrict_action(inclusion)
+# with restricted.act(h, x) = elements.act(inclusion(h), x).  The isotropic subset is presented explicitly
+# through FiniteGSets(H)(points, action); no H.orbits convenience is needed or used.
+elements = G.element_action()
+inclusion = subgroup.inclusion()
+restricted_action = elements.restrict_action(inclusion)
+print('restricted the ambient action through H -> G: %s' % type(restricted_action).__name__,
+      flush=True)
+
 start = time.time()
-restricted_action = FiniteGSets(subgroup)(isotropic, lambda h, x: h(x))
-restricted = [frozenset(orbit) for orbit in restricted_action.orbits()]
+isotropic_action = FiniteGSets(subgroup)(isotropic, lambda h, x: restricted_action.act(h, x))
+restricted = [frozenset(orbit) for orbit in isotropic_action.orbits()]
 print('the restricted action gives %d orbits on the %d isotropic classes (%.1fs)'
       % (len(restricted), len(isotropic), time.time() - start), flush=True)
 isotropic_set = set(isotropic)
