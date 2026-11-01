@@ -1,0 +1,12 @@
+L_-: rank 12, determinant 1024, signature computed below
+Lattices(ZZ)(L_- Gram)                           0.04s
+   rank 12, determinant 1024, signature (2, 10)
+the representative v = e as a lattice element    0.00s
+v.is_primitive()                                 0.22s
+   q(v) = 0 (isotropic), primitive: True
+v.sublattice()                                   0.03s
+v.orthogonal_complement()                        0.63s
+v^perp module_rank                               0.00s
+   v^perp: rank 11
+v.isotropic_reduction()  [lattice quotient]      0.89s
+   v^perp/Zv: rank 10, determinant -1024, signature (1, 9)

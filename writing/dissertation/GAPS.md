@@ -246,14 +246,17 @@ What has since been settled is listed at the end, so that a reader can tell "res
 
   The general cusp mechanism corrected, and two chapter statements retired.  The section claimed
   that cusp enumeration reduces to isotropic subgroups of the discriminant group A_{T_{2d}}.  At
-  d = 1 it does not: A_{T_2} = Z/2, its non-zero element has q = -1/4 in Q/2Z, so {0} is the only
-  isotropic subgroup -- one class -- while the Baily-Borel boundary of F_2 has four 1-cusps
+  d = 1 it does not: A_{T_2} = Z/2, and its non-zero element is not isotropic -- the retained form
+  D.q, evaluated in D.quadratic_value_module() = Q/2Z, does not vanish on it -- so {0} is the only
+  isotropic subgroup, one class, while the Baily-Borel boundary of F_2 has four 1-cusps
   (AET Sec. 3B).  What classifies the orbits is the quotient lattice J = I^perp/I together with the
-  gluing of J back into T_{2d}: for a plane, Prop. A.4 puts I inside a unimodular U + U with
-  T_{2d} = (U + U) + L, so J = L and A_{T_{2d}} = A_L, the gluing being the isometry class of the
-  embedding; at d = 1 the four quotients are pairwise non-isometric, and at d = 4 nine classes in a
-  single genus give nine orbits (Prop. A.11 injectivity), so neither the discriminant group nor the
-  genus is the classifier.  The chapter now says that.  The second retirement is the Type III
+  gluing of J back into T_{2d}; at d = 1 the four quotients are pairwise non-isometric, and at
+  d = 2 nine classes in a single genus give nine orbits (Prop. A.11 injectivity), so neither the
+  discriminant group nor the genus is the classifier.  The splitting that makes J = L and
+  A_{T_{2d}} = A_L is Prop. A.4's and is quoted only inside its hypotheses (Lambda_N = U^2 +
+  D_{N-2}, 3 <= N, I a rank two saturated isotropic sublattice, case (1) surjectivity, second case
+  excluded for N not 2 mod 8); in this book it is used only for T_4 = Lambda_19 with
+  19 = 3 mod 8.  The chapter now says that.  The second retirement is the Type III
   sentence: the Baily-Borel stratum at a 0-cusp is a point (AET Sec. 3B), and eta^perp/eta for a
   primitive isotropic line has rank 19 and signature (1,18), which is not a Type IV signature, so
   no period domain is attached to it; the boundary point, the weight-two Hodge structure on the
@@ -263,7 +266,11 @@ What has since been settled is listed at the end, so that a reader can tell "res
   I^perp/I has signature (1,18) and the fan is supported on the rational closure of its positive
   cone (Sec. 3C), realised for the unique 0-cusp of F_2 as the Coxeter fan (Sec. 4A, 4C).  The
   earlier sentence in this note that the toroidal data at a Type III cusp is "nothing" was wrong and
-  is withdrawn; what the 0-cusp does not contribute is a divisor.  Both facts are computed in
+  is withdrawn, and so is the sentence that replaced it, that the 0-cusp contributes no divisor:
+  rays of the fan inside the open positive cone give toric divisors over the Type III point, and
+  the null rays are the ones whose strata the open set V_I does not fully contain (AET Sec. 3C),
+  the strata themselves being AET's torus quotients of elliptic subdiagrams and j-line fibre
+  products of maximal parabolic ones (Prop. 4.13).  Both facts are computed in
   computations/reports/cusp_mechanism_audit.py, and that certificate was itself rewritten twice.  The object is the formed finite module
   D = T.discriminant_quadratic_form(), which is A_L *with* its quadratic form; D(x) coerces an
   element and is not the form, so the value is D.q(x), with values in D.quadratic_value_module()
@@ -511,6 +518,25 @@ What has since been settled is listed at the end, so that a reader can tell "res
   with invariant sublattice U(2) + E8(2); cusp 2 quotes (18,0,0)_1 = U + E8^2 with U + E8(2).  The
   maintained two-elementary API gives (18,2,0) and (10,10,0) for the first pair and (18,0,0) and
   (10,8,0) for the second, matching the text in all five subsections.
+
+  The five Enriques boundary types, computed.  What this note recorded as unsettled -- the
+  boundary labels (10,10,0)_1 and (10,8,0)_1, which "need the five isotropic orbits and their
+  quotients" -- is now computed: for each of Sterk's five representatives v of the Gamma_{En}-orbits
+  of primitive isotropic vectors in L_- = H + H(2) + E8(-2), K = v^perp/Zv has rank 10 and
+  signature (1,9), and its two-elementary invariants are (10,10,0) for v = e and (10,8,0) for the
+  other four, matching the chapter's labels in all five rows (determinants -1024 and -256
+  respectively).  The route is the retained one -- v.isotropic_reduction() for the quotient and
+  EvenTwoElementaryLattices(K.base_ring())(K).two_elementary_invariants() for the type -- and the
+  certificate is computations/reports/enriques_cusp_boundary_labels.py.
+
+  The earlier six-minute stall was my call, not the library's.  A step-by-step timing certificate
+  (computations/reports/enriques_quotient_timing.py, sixty-second alarm per step) shows the lattice
+  building in 0.04 s, v.is_primitive() in 0.22 s, v.sublattice() in 0.03 s,
+  v.orthogonal_complement() in 0.63 s and v.isotropic_reduction() -- the whole kernel, cokernel,
+  Smith, lift and Gram evaluation -- in 0.89 s, returning rank 10, determinant -1024, signature
+  (1,9).  So no orbit enumeration, no Julia call and no dual-hash bottleneck is involved on this
+  route, and no library defect or owner gap is claimed: the stalled call was the subobject wrapper
+  around the same reduction, and it is simply not used.
 
   The Niemeier-complement description of the four degree-two lattices is withdrawn rather than
   repaired.  The chapter now says which support it uses (AET's four labels, and the boundary
