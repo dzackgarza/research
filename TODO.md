@@ -272,10 +272,11 @@ two polarized lattices are matched by an isometry carrying $\tilde h_\Co$ to $h$
 *What is missing.* (i) The labels. Of the tuple only existence of the root is established: the complement
 of $\tilde h_\Co$ has exactly one root line ($A_1$), so a root $\alpha$ with $\alpha^2=-2$,
 $H\cdot\alpha=0$ exists and is unique up to sign, but which of the two is the *retained effective* root is
-a chamber question and `roots_K[0]` is an abstract choice. Still missing: effectivity and the chamber
-(nef-cone geometry), $-\theta_\Co$ (needs $\gamma_\Co$ from @cons:embedding-gluing-data as data, and its
-action on $H$ is unchecked at the level of a morphism), and $I_{\mathrm{dP}}$ (not lattice data in the
-sources). (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
+a chamber question and `roots_K[0]` is an abstract choice. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
+discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
+subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
+an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber
+(nef-cone geometry), and $I_{\mathrm{dP}}$ (not lattice data in the sources). (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
 the same complement $T_\Co$, the composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
 $\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
 (@thm:two-elementary-surjectivity), and $ (\psi,\phi)$ then extends over $L_{K3}$ by @thm:nikulin-gluing.
