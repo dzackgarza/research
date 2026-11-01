@@ -146,6 +146,26 @@ for name, element in (('e~ (div 1)', bill), ('eta(v_1) (div 2)', w1)):
           % (name, quotient.module_rank(), int(quotient.determinant()),
              tuple(int(x) for x in invariants)))
 
+# The image criterion, in closed form.  w~ lies in the image iff some gamma in Gamma_En carries it into
+# k^perp, i.e. iff beta(w~, gamma^{-1}k) = 0: iff w~ is orthogonal to some (-2)-vector in the Gamma_En
+# orbit of k.  The (-2)-vectors of T_En are the solutions of 2ab + y^2 = -2 with y in U(2) + E8(2), so
+# the candidate set is finite and the criterion is decidable; but the necessary condition "orthogonal to
+# SOME (-2)-vector" is not sufficient, and the following candidate shows how weakly it excludes.
+candidate = make(ten, {0: 2, 2: 1})                 # 2e~ + e~'
+witness = make(ten, {0: 1, 1: -1, 3: 1})            # e~ - f~ + f~'
+print()
+print('candidate w~ = 2e~ + e~\': isotropic %s, div %d' % (int(candidate.b(candidate)) == 0,
+                                                          int(ten.div(candidate))))
+assert int(candidate.b(candidate)) == 0 and int(ten.div(candidate)) == 2
+print('   witness k\' = e~ - f~ + f~\': square %d, beta(k\', w~) = %d'
+      % (int(witness.b(witness)), int(witness.b(candidate))))
+assert int(witness.b(witness)) == -2 and int(witness.b(candidate)) == 0
+quotient = candidate.isotropic_reduction()
+invariants = EvenTwoElementaryLattices(quotient.base_ring())(quotient).two_elementary_invariants()
+print('   so w~ passes the necessary condition; its boundary lattice is rank %2d, det %5s, (r,a,delta) %s'
+      % (quotient.module_rank(), int(quotient.determinant()), tuple(int(x) for x in invariants)))
+print('   nothing here decides whether k\' lies in the Gamma_En orbit of k, which is what the criterion needs')
+
 # Separability: e' and f' are incongruent mod 2, so their target classes differ (proved separately;
 # here the coordinate parity is read off the library's own coordinates).
 ep_t, fp_t = make(ten, {2: 1}), make(ten, {3: 1})

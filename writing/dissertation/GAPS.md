@@ -1054,6 +1054,21 @@ What has since been settled is listed at the end, so that a reader can tell "res
   divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of image
   vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example already
   used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.
+  The odd-lattice justification, carried as far as it goes, and where it stops.  The B = I_{2,9}
+  transitivity question is bypassed rather than transferred: what the fibre/image criterion needs is not
+  Orth^+(B)-transitivity but the Gamma_En-orbit of the (-2)-vector k inside T_En, and that is a finite
+  orbit problem, so the criterion is decidable without any even-lattice theorem.  In closed form: w~ is
+  in the image iff some gamma in Gamma_En carries it into k^perp, iff beta(w~, gamma^{-1}k) = 0, iff w~
+  is orthogonal to a (-2)-vector in the Gamma_En-orbit of k; the (-2)-vectors of T_En are the solutions of
+  2ab + y^2 = -2 with y in the U(2) + E8(2) block, a finite set, since y^2 is a multiple of 4 and the
+  U-coordinates satisfy a fixed Diophantine condition per y.  The necessary condition "orthogonal to some
+  (-2)-vector" is NOT sufficient, and the candidate 2e~ + e~' shows it: it is primitive isotropic of
+  divisibility 2 with the same boundary lattice type (10,8,0) as eta(v_1), and it is orthogonal to the
+  (-2)-vector e~ - f~ + f~', so the cheap test does not exclude it.  Whether that vector lies in the
+  Gamma_En-orbit of k is exactly what is not decided here: an earlier draft of this argument claimed no
+  such vector existed, on the mistaken identity beta(k', 2e~ + e~') = 2b (it is 2b + beta(y, e~')), and
+  that claim was withdrawn before publication.  So the transcript records the criterion and the witness,
+  not a conclusion.
   The subgroup-descent citation, audited before it is used, and the exact gap.  The manuscript's route to
   the same-mod-2 fibre question is the reduction map v |-> v* in A_{T_Co} and the finite orbit
   decomposition, with the descent from rho(Gamma_Co)-orbits on the finite group to Gamma_Co-orbits on
