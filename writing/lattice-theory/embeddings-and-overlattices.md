@@ -390,9 +390,9 @@ This is the decomposition result recorded in [@Daw22 §3.1], where it is attribu
 Attwell-Duval; for smaller $n$, see also [@Nik80 Cor. 1.13.5].
 :::
 
-::: {.theorem #thm:split-maximal-isotropic-transitivity title="Isotropic transitivity for a maximal $U^{\oplus2}$-decomposable lattice"}
+::: {.theorem #thm:split-maximal-isotropic-transitivity title="Isotropic transitivity for an even maximal $U^{\oplus2}$-decomposable lattice"}
 
-Let $L'$ be a maximal $U^{\oplus2}$-decomposable lattice of signature $(2,n)$.
+Let $L'$ be an *even* maximal $U^{\oplus2}$-decomposable lattice of signature $(2,n)$.
 
 1. For any $x,y\in L'^{\mathrm{prim}}[0]$ there exists
    $\tau(x,y)\in\Orth^+(L')$ with $\tau(x,y)x=y$; hence $\Orth^+(L')$ acts
@@ -409,31 +409,42 @@ Both statements are in [@Daw22 §3.1]: Algorithm 3.3 constructs $\tau(x,y)$ from
 two displayed hyperbolic summands, and the Attwell-Duval criterion gives the second
 orbit statement.
 
-A caveat on the hypothesis, and how the odd case is covered. Dawes' setup assumes *even* lattices from
-§1.1 onward, and the theorem above carries no parity hypothesis. For even maximal $U^{\oplus2}$-decomposable
-lattices the citation is direct. For an odd such lattice --- and the Coble chapter applies the theorem
-precisely to $B = U\oplus U\oplus\latI_{0,7}\cong\latI_{2,9}$, which is odd --- the even-lattice statement
-does not cover it, and the odd case is supplied by a different theorem rather than by an adjustment of
-scale.
-
-James' integral Witt theorem [@Jam68, Theorem, p. 303]: let $\varphi\colon J\to K$ be an isometry between
-primitive sublattices of a *unimodular* lattice $L$ --- the paper assumes no parity --- with
-$$r(L) - \abs{\fs(L)} \geq 2\,(r(J) + 1).$$
-Then $\varphi$ extends to an isometry of $L$ if and only if it carries characteristic vectors to
-characteristic vectors. For $B = \latI_{2,9}$ one has $r - \abs{\fs} = 11 - 7 = 4$, and a primitive
-rank-one $J$ requires $2(1+1) = 4$: the inequality holds with equality. The characteristic clause is
-vacuous here, because no primitive isotropic vector of $B$ is characteristic: a characteristic vector of
-$\latI_{p,q}$ has all coordinates odd in the standard basis, hence square $\equiv p - q \pmod 8$, so in
-$\latI_{2,9}$ its square is $\equiv -7 \equiv 1 \pmod 8$, while an isotropic vector has square $0$. So
-every isometry between two primitive isotropic lines of $B$ extends, and $\Orth(B)$ is transitive on
-primitive isotropic vectors by [@Jam68] directly.
-
-What this does not give, and what therefore stays separate: rank-two $J$, where the inequality would
-require $2(2+1) = 6 > 4$, so the statement about primitive isotropic *planes* is not covered by the same
-application; and nothing at all about which subgroup of $\Orth(q)$ a given integral group maps onto,
-which is the descent question of its own.
+The hypotheses are those of the source, and the two are needed separately. Dawes' setup assumes *even*
+lattices from §1.1 onward, and §3.1 supplies both the construction of $\tau(x,y)$ from the two hyperbolic
+summands and the Attwell--Duval criterion for the second statement. So the theorem above carries evenness
+and the $U^{\oplus2}$ decomposition, and neither can be dropped in favour of the other: an odd
+$U^{\oplus2}$-decomposable lattice has the splitting but not the parity, and an even maximal lattice of
+signature $(2,n)$ with $n\geq5$ has the parity and, by @thm:maximal-splits-for-large-n, the splitting
+only through that theorem.
 :::
 
+For the odd case there is a separate result, and it is weaker in three ways at once.
+
+::: {.proposition #prop:odd-unimodular-rank-one-transitivity title="Odd unimodular lattices: primitive isotropic vectors, full orthogonal group"}
+
+Let $L$ be a unimodular lattice of signature $(p,q)$ with $p,q\geq1$ and $r(L)-\abs{\fs(L)}\geq4$. Then
+$\Orth(L)$ acts transitively on the primitive isotropic vectors of $L$. In particular $B=\latI_{2,9}$,
+where $r-\abs{\fs}=11-7=4$, has $\Orth(B)$ transitive on primitive isotropic vectors.
+:::
+
+::: {.proof}
+
+James' integral Witt theorem [@Jam68, Theorem, p. 303]: for $L$ unimodular, an isometry between primitive
+sublattices $J$, $K$ with $r(L)-\abs{\fs(L)}\geq2(r(J)+1)$ extends to an isometry of $L$ if and only if
+it carries characteristic vectors to characteristic vectors. For a primitive rank-one $J$ the inequality
+reads $r(L)-\abs{\fs(L)}\geq4$, which is the hypothesis. Given two primitive isotropic vectors $v,w$,
+the isometry $\langle v\rangle\to\langle w\rangle$, $v\mapsto w$, therefore extends provided neither
+line is characteristic, and no isotropic vector is: a characteristic vector of $\latI_{p,q}$ has all
+coordinates odd in the standard basis, so its square is $\equiv p-q\pmod 8$, while an isotropic vector
+has square $0$. For $B=\latI_{2,9}$ that reads $\equiv-7\equiv1\pmod 8$, so the clause is vacuous.
+:::
+
+What this does **not** give, and what must not be promoted from it: the component-preserving subgroup,
+since the theorem produces an element of $\Orth(L)$ and says nothing about which component of
+$\Orth(L)/\Orth^+(L)$ it lies in; primitive isotropic *planes*, where the inequality would require
+$2(2+1)=6$ and $B$ has $4$; and any statement about the image of a prescribed arithmetic subgroup in
+$\Orth(q_L)$, which is a different question with its own sources. Each of those needs its own argument,
+and the Coble chapter's uses are labelled accordingly.
 
 ## Finiteness of embedding orbits
 

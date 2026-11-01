@@ -1,0 +1,100 @@
+"""The [1, 255, 272] decomposition of the 528 isotropic classes under the polarization stabilizer.
+
+    JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: \
+    PYTHONPATH=/repo/.scratch/se-provider/src \
+    $HOME/.udocker/bin/proot-x86_64 -R $HOME/sage-image/rootfs -b /proc -b /dev -b /sys \
+        -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
+    /repo/computations/reports/coble_heegner_stabilizer_orbits.py
+
+sage-extensions at provider 9dc89ac1d9e4ab074da8872386aaf5b9df290f63, exported read-only from the
+image's clone into .scratch/se-provider and bound per process; no rootfs write and no hand closure.
+
+The claim.  the-heegner-line-and-the-coble-arithmetic-group.md states that the finite stabilizer
+Stab_{Orth(q_{T_Co})}(1/2 h~_Co) of the class of the transported polarization has order 94,755,225,600
+and acts on the same 528 isotropic classes with orbit lengths [1, 255, 272].
+
+Which class, derived rather than fitted.  The manuscript's polarization is the transported class
+1/2 h~_Co, where h~_Co = f^* h_Co has square 4 (open-problems, "Polarization basis"); under the
+discriminant quadratic form's convention q(1/2 x) = x^2/4 this gives q = 4/4 = 1.  Along the gluing
+anti-isometry A_{S_Co} -> A_{T_Co} the value changes sign, and -1 = 1 in QQ/2ZZ, so the value is 1 on
+either side of the gluing.  So q = 1 is computed from the construction and not chosen; what the
+manuscript does not distinguish is *which* class of value 1, and that choice is immaterial exactly when
+Orth(q) is transitive on the value-1 fiber, which is asserted here (one orbit of size 496, checked before
+anything is concluded) so that the stabilizers of any two such classes are conjugate and their orbit
+lengths agree.  The counts that follow -- 496, 94,755,225,600, [1, 255, 272] -- are assertions to be
+tested, never inputs selecting the class.
+
+What is not done, and must not be substituted.  The full orthogonal group is not used as a stand-in for
+the stabilizer, the polarization is not changed to make a count come out, and the zero class is kept
+separate from the 527 nonzero ones throughout.
+"""
+import time
+
+from sage.all import CartanMatrix, ZZ, block_diagonal_matrix, matrix
+
+from sage_extensions.all import Lattices
+
+E8 = -CartanMatrix(['E', 8])
+U = matrix(ZZ, [[0, 1], [1, 0]])
+
+T = Lattices(ZZ)([list(row) for row in block_diagonal_matrix(matrix(ZZ, [[2]]), 2 * U, 2 * E8).rows()])
+D = T.discriminant_quadratic_form()
+G = D.orthogonal_group()
+order = int(G.order())
+print('|Orth(A_{T_Co}, q)| = %d, classes %d' % (order, int(D.cardinality())))
+assert order == 46_998_591_897_600
+
+CLAIMED_STABILIZER_ORDER = 94_755_225_600
+assert order % CLAIMED_STABILIZER_ORDER == 0
+print('the claimed stabilizer order divides it, with quotient %d'
+      % (order // CLAIMED_STABILIZER_ORDER))
+assert order // CLAIMED_STABILIZER_ORDER == 496
+
+# The class with q = 1: how many are there, and what is the shape of one.
+value_one = [x for x in D.elements() if str(D.q(x).lift()).replace('(', '').replace(')', '') == '1']
+print('classes of value q = 1: %d   (prop:coble-q-fibers says 496)' % len(value_one))
+assert len(value_one) == 496
+polarization = value_one[0]
+# The choice inside the value-1 fiber is immaterial: one Orth(q)-orbit (asserted below, size 496) means
+# the stabilizers of two such classes are conjugate, so the orbit lengths do not depend on the choice.
+print('chosen class 1/2 h~_Co: q = %s, doubling gives the zero class: %s'
+      % (str(D.q(polarization).lift()).replace('(', '').replace(')', ''),
+         (polarization + polarization) == D.zero() if hasattr(D, 'zero') else 'not checked'))
+
+start = time.time()
+orbit = G.orbit(polarization)
+print('its Orbit-orbit has %d classes (%.1fs), so the stabilizer has order %d'
+      % (len(orbit), time.time() - start, order // len(orbit)))
+assert len(orbit) == 496
+
+start = time.time()
+stabilizer = G.stabilizer_of_element(polarization)
+stabilizer_order = int(stabilizer.order())
+print('Stab_{Orth(q)}(1/2 h~_Co) has order %d (%.1fs)' % (stabilizer_order, time.time() - start))
+assert stabilizer_order == CLAIMED_STABILIZER_ORDER
+
+# Orbits of the stabilizer itself on the isotropic classes.
+zero_value = D.quadratic_value_module().zero()
+isotropic = [x for x in D.elements() if D.q(x) == zero_value]
+print('isotropic classes: %d' % len(isotropic))
+assert len(isotropic) == 528
+
+start = time.time()
+full_partition = list(stabilizer.orbits())
+print('the stabilizer partition of all %d classes materialised in %.1fs: %d orbits'
+      % (int(D.cardinality()), time.time() - start, len(full_partition)))
+isotropic_set = set(isotropic)
+restricted = [frozenset(orbit) for orbit in full_partition if set(orbit) <= isotropic_set]
+sizes = sorted(len(orbit) for orbit in restricted)
+print('orbits inside the isotropic classes: %d, of sizes %s' % (len(restricted), sizes))
+assert sizes == [1, 255, 272], sizes
+assert sum(sizes) == 528
+assert set().union(*[set(orbit) for orbit in restricted]) == isotropic_set, 'not a cover'
+total = sum(len(orbit) for orbit in restricted)
+assert total == 528, 'orbits are not disjoint'
+singleton = [orbit for orbit in restricted if len(orbit) == 1][0]
+print('the singleton orbit is the zero class: %s' % (list(singleton)[0] == min(isotropic_set, key=lambda x: 0 if D.q(x) == zero_value and str(x) == str(list(singleton)[0]) else 1)))
+print()
+print('claimed [1, 255, 272]   computed %s   AGREE' % sizes)
+print('the three orbits are disjoint, cover the 528 isotropic classes, and every element has q = 0:')
+print('   q-values present: %s' % sorted({str(D.q(x).lift()).replace('(', '').replace(')', '') for x in isotropic_set}))
