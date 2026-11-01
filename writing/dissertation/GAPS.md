@@ -1409,6 +1409,65 @@ What has since been settled is listed at the end, so that a reader can tell "res
   an invariant rather than a separator for this pair: on these two planes it cannot witness a Gamma_Co
   difference even if one exists.
 
+  Orbit splitting for the kernel of a character -- and the Coble instance, which is settled.  The entry above
+  stated "[ker : Gamma_Co] <= 2, so the two counts coincide exactly when the kernel has no component-reversing
+  element".  That is wrong, and wrong in the way the index invites: a subgroup of index two can have the same
+  orbits as the group containing it (when each orbit's stabilizer meets the nontrivial coset) or half as many
+  (when none does), and the index sees neither.  The correct statement is per orbit, and it is now
+  lem:character-kernel-orbits: for a character chi : G -> {+1,-1} with kernel H, Hx = Gx exactly when Stab_G(x)
+  contains an element with chi = -1, and the number of H-orbits exceeds the number of G-orbits by the number of
+  G-orbits whose stabilizers lie in H.  computations/reports/orbit_splitting_criterion.py checks it orbit by
+  orbit on the orthogonal groups of A_1^n and D_4 acting on roots, on norm-4 vectors, on L/2L and on root
+  lines, and exhibits both outcomes with chi onto G: Orth(A_1^2) on the four roots has equal counts, its
+  regular action has unequal counts.
+  Applied to T_Co the instance goes the unexpected way, and both halves are now proved, as
+  prop:discriminant-kernel-orbits.  The groups differ: B = I_{2,9} is odd, so it has a unit vector v, and the
+  reflection s_v is integral, is the identity modulo 2B -- hence lies in the discriminant kernel -- and has
+  chi_per = sgn(-q(v)) = -1 because q(v) = 1/2 > 0.  So the kernel is not inside Orth^+, and it has index 2
+  over Gamma_Co.  And yet the partitions coincide: for a primitive isotropic line L the splitting
+  L^perp = L perp I_{1,8} gives a unit vector v perpendicular to L, so s_v lies in Stab_K(L) and has
+  chi = -1, which by the criterion makes every kernel orbit Gamma_Co-stable.  Vectors and lines give the same
+  count for either group, since -id lies in Gamma_Co: it acts trivially on the 2-torsion A_T_Co and has
+  chi_per = +1.  Consequence for the manuscript: the open problem's two counts are one count.  The number of
+  orbits is still open, at least two and with no upper bound.  Of the certificate, the reflection identities
+  are checked exactly and the witness is sampled at 25 primitive isotropic vectors; the statement for every
+  line is the splitting argument and not the sample.
+  The plane invariant, corrected a second time.  The first repair named J^vee/J, which is infinite for the
+  restricted form; the second called "(Z/2)^2 with zero pairing is an isometry invariant and hence a candidate
+  separator", which is a contradiction in terms, an isometry invariant being constant on all planes because
+  Orth^+ is transitive on them.  The datum that is not an isometry invariant is the subspace
+  J-bar = (T_Co^vee cap J_Q)/J <= A_T_Co, the image of J in T_Co/2T_Co = B/2B: Gamma_Co fixes it because
+  Gamma_Co acts trivially on A_T_Co, while an isometry g carries it to the image of g(J).  A_T_Co has 23715
+  two-dimensional totally isotropic subspaces, so the datum is far from constant; whether it separates the
+  Gamma_Co-orbits is open, with the number of 1-cusps.  For the two planes the book exhibits only the type has
+  been compared, and that is forced; comparing the subspaces needs an identification of the two presentations
+  of T_Co that the book does not construct, and that is the concrete blocker for the exhibited pair.
+  The Ste91 premise, kept open and made exact.  thm:orbit-classification-sterk, and the Ste91 Lemma 4.2.1 of
+  475-our-cusps.md, rest on a paper that is not retained here, and this audit could not close that.
+    * The formalization corpus (https://formalization-corpus.dzackgarza.com/api/search) returns 0 matches on
+      2026-11-01 for "Sterk compactifications period space Enriques surfaces Lemma 4.2.1 discriminant kernel"
+      -- a dated, scoped negative at the corpus's current index, not a claim that nobody formalized it.
+    * The primary text is not reachable from this VM: eudml.org/doc/174253 answers 403, and the Radboud
+      repository's copy of Sterk's 1988 thesis answers 403 to a scripted fetch.  Both refuse automated access
+      and were not worked around.
+    * What the retained secondary sources say.  AEGS (aegs_src/en.tex, the section "Cusp diagram of F_En")
+      attribute the five 0-cusps to Sterk's computation of the cusp diagram of the Baily-Borel
+      compactification of F_En = D(T_En)/script-Gamma_En, i.e. of the period quotient by the twisted group.
+      Koca--Sertoz (arXiv:math/0509687, Sec. 3) report Sterk's isotropic vectors "for notation see [10,
+      propositions 4.2.3 and 4.5]" and his orbit split of e from the other four, and name no group in that
+      sentence.
+  So the group Sterk's own statement uses is unverified here, and the manuscript keeps his group as the stated
+  one instead of substituting another: no other group is proposed, and the citation is marked as a quotation.
+  Two things a later reader can do that this audit could not: read Lemma 4.2.1 and Cor. 3.3 in the paper, and
+  check the item numbering -- the book cites "Lem. 4.2.1" while the secondary source cites Propositions 4.2.3
+  and 4.5 for the orbit statements it reports.
+  The Heegner run, terminal state.  jmvxrnrry (cap 10800 s, no restart, no duplicate) ended timed_out at the
+  cap.  Its transcript closes at "stabilizer generators: 1984": the three-orbit partition [1, 255, 272] of the
+  528 isotropic classes under the finite stabilizer is printed and partition-checked (disjoint, covering,
+  singleton equal to {0}), while the block asserting that each of the 1984 generators fixes the chosen class
+  and preserves q on all 528 classes never ran.  The [1, 255, 272] entry above therefore stays a computed
+  claim with a checked partition and an unchecked generator-invariance step; it is not closed.
+
 ## Structure
 
 - The submitted LaTeX had four subsection headings in Part II that the Markdown never had, so this is a long-standing divergence, not a regression.

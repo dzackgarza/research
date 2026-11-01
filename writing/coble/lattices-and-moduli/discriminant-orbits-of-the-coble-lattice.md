@@ -75,8 +75,9 @@ Twisting by $2$ and reading off invariants gives $\latI_{1,8}(2) = (9,9,1)$ of s
 
 Since $\Orth^+(T_\Co) = \Orth^+(B)$ and both isotropy and primitivity are unchanged by the twist, @prop:tco-split-maximal places $T_\Co$ under @thm:split-maximal-isotropic-transitivity; @thm:unpolarized-cusps gives the corresponding full-group cusp classification, and the computation above identifies its two boundary lattices with the Coble cusp invariants $(9,9,1)_1$ and $(7,7,1)_0$ used in the cusp correspondence.
 The $1$-cusp lattice $\latI_{0,7}(2)\cong A_1^{\oplus 7}$ is negative definite of rank $7$, consistent with Witt index $2$ in signature $(2,9)$: $11 - 2\cdot 2 = 7$.
-The gluing datum of the plane is computed too: every primitive vector of $J$ has divisibility $2$, so the subgroup $J$ cuts out of $A_{T_\Co}$ is $(\ZZ/2)^2$ with zero pairing, and the plane $\generators{e',\,2h+\alpha_1+\alpha_2}$ of the cusp correspondence cuts out the same subgroup in its own presentation of $T_\Co$ (`computations/reports/plane_gluing_subgroup.py`).
-The agreement is forced and is not a coincidence to build on: both are primitive isotropic planes of a lattice of signature $(2,9)$, hence one orbit under $\Orth^+$ by @thm:plane-transitivity-tco, so no isometry invariant can tell them apart. What such an invariant could separate is $\Gamma_\Co$-orbits, and on these two planes it cannot witness a difference; whether they lie in one is open with the count of $1$-cusps, at @sec-open-problems.
+The gluing datum of the plane is computed too: every primitive vector of $J$ has divisibility $2$, so $J$ cuts out of $A_{T_\Co}$ the two-dimensional subspace $\bar J$ that is its image in $T_\Co/2T_\Co\cong B/2B$, and the plane $\generators{e',\,2h+\alpha_1+\alpha_2}$ of the cusp correspondence cuts out, in its own presentation, the subspace spanned by the images of $e'$ and $\alpha_1+\alpha_2$ (`computations/reports/plane_gluing_subgroup.py`).
+Both are $(\ZZ/2)^2$ with zero pairing, and that is forced rather than informative: the two planes are primitive isotropic planes of a lattice of signature $(2,9)$, hence one $\Orth^+$ orbit by @thm:plane-transitivity-tco, so every *isometry* invariant of the pair $(T_\Co,J)$ — in particular the isomorphism type of $\bar J$ with its form — is the same for all planes.
+The datum that can separate $\Gamma_\Co$-orbits is the subspace itself and not its type: $\Gamma_\Co$ acts trivially on $A_{T_\Co}$, so $\bar J$ is $\Gamma_\Co$-invariant, while an isometry $g$ carries it to $\overline{g(J)}$, so $\bar J$ is *not* an isometry invariant. Comparing the two exhibited subspaces would require identifying the two presentations of $T_\Co$, which this book does not construct; so nothing is claimed about whether the two exhibited planes lie in one $\Gamma_\Co$-orbit, and the count of $1$-cusps of $\fco$ stays open with it (@sec-open-problems).
 :::
 
 ## The discriminant form of $T_\Co$
@@ -257,6 +258,50 @@ That number is the orbit of a single class under the image of $\Orth(T_\Co)$ in 
 So the refinement is at least the two orbits of @lem:stable-orthogonal-not-transitive and may be much finer.
 
 What the finite calculation does determine is the other end: @thm:coble-isotropic-class-orbits shows the $527$ nonzero isotropic *classes* form a single orbit under $\Orth(q_{T_\Co})$, so the finiteness in $A_{T_\Co}$ is a statement about the finite group and not about the cusps of $\fco$.
+:::
+
+::: {.lemma #lem:character-kernel-orbits title="Orbits of a group and of the kernel of a character"}
+
+Let a group $G$ act on a set $X$, let $\chi\colon G\to\{\pm1\}$ be a homomorphism and $H=\ker\chi$. Then for $x\in X$
+$$
+Hx = Gx \quad\Longleftrightarrow\quad \Stab_G(x)\not\subseteq H,
+$$
+and therefore
+$$
+\#(H\backslash X) \;=\; \#(G\backslash X) \;+\; \#\bigl\{G\text{-orbits } O : \Stab_G(x)\subseteq H \text{ for } x\in O\bigr\},
+$$
+the added term counting the $G$-orbits that are unions of exactly two $H$-orbits.
+In particular an index $[G:H]\leq2$ constrains the two partitions only through the stabilizers: it gives $Hx\subseteq Gx$ and no equality in either direction, and whether the counts agree is decided orbit by orbit, not by the group.
+:::
+
+::: {.proof}
+
+The target of $\chi$ is abelian, so $\chi$ is constant on conjugacy classes, conjugates of $\Stab_G(x)$ have the same image, and "$\Stab_G(x)\subseteq H$" is a property of the orbit.
+
+Suppose first that $s\in\Stab_G(x)$ has $\chi(s)=-1$, and let $\sigma\in G$ have $\chi(\sigma)=-1$; then $\chi(\sigma s^{-1}) = (-1)(-1) = +1$, so $\sigma s^{-1}\in H$ and $\sigma x = (\sigma s^{-1})sx = (\sigma s^{-1})x\in Hx$, whence $Gx = Hx\cup H\sigma x = Hx$. Conversely if $Gx = Hx$ then $\sigma x\in Hx$, say $\sigma x = hx$ with $h\in H$, and $h^{-1}\sigma\in\Stab_G(x)$ has $\chi = (-1)(-1) = -1$.
+
+Since $[G:H]\leq2$, $G = H\cup\sigma H$ for any $\sigma$ with $\chi(\sigma)=-1$ when $\chi$ is nontrivial, so every $G$-orbit is $Hx\cup H\sigma x$, and these two are either equal or disjoint: one or two $H$-orbits. It is one exactly when $\Stab_G(x)\not\subseteq H$. Summing the number of $H$-orbits over the $G$-orbits gives the displayed identity.
+
+The last sentence is not a formality: `computations/reports/orbit_splitting_criterion.py` checks the criterion orbit by orbit on the orthogonal groups of $A_1^{\oplus n}$ and $D_4$ acting on roots, on norm-$4$ vectors, on $L/2L$ and on root lines, and it exhibits both outcomes with $\chi$ onto $G$ — $\Orth(A_1^{\oplus2})$ on the four roots has equal counts, its regular action has unequal counts.
+:::
+
+::: {.proposition #prop:discriminant-kernel-orbits title="The discriminant kernel and the stable group have the same isotropic orbits"}
+
+Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the discriminant kernel and $\Gamma_\Co=\Orth^+(T_\Co)\intersect K$. Then
+
+1. $K\neq\Gamma_\Co$, and $[K:\Gamma_\Co]=2$;
+2. $K$ and $\Gamma_\Co$ have the same orbits on the primitive isotropic vectors of $T_\Co$, and the same orbits on the primitive isotropic lines.
+
+The number of orbits is not determined here: it is at least two (@lem:stable-orthogonal-not-transitive) and no upper bound follows from anything in this section.
+:::
+
+::: {.proof}
+
+*The groups differ.* $B$ is odd, so it has a unit vector $v$ with $v^2=1$, and the reflection $s_v(x) = x-2(x,v)v$ is integral and orthogonal. Modulo $2B$ it is the identity, so $s_v\in K$; and by the reflection computation of @prop:period-spinor-character, $\chi_{\mathrm{per}}(s_v) = \operatorname{sgn}(-q(v)) = -1$, because $q(v) = \tfrac12 > 0$ and $v$ is a positive vector. So $\chi_{\mathrm{per}}$ is nontrivial on $K$, which is therefore not contained in $\Orth^+$, and $[K:\Gamma_\Co]=2$ since $\chi_{\mathrm{per}}$ takes values in $\{\pm1\}$.
+
+*The orbits agree.* By @lem:character-kernel-orbits it is enough to find, for each primitive isotropic $x$, an element of $\Stab_K(x)$ with character $-1$. Put $L=\ZZ x$; then $L^{\perp}=L\perp M$ with $M\cong\latI_{1,8}$, the splitting of @thm:plane-transitivity-tco whose quotient is computed at the owner in `computations/reports/split_quotient_I18.py`. Now $\latI_{1,8}\cong\latI_{1,1}\perp\latI_{0,7}$ has a unit vector $v$, and $v\perp L$, so $s_v$ fixes $x$ and fixes $L$ pointwise while lying in $K$ with $\chi_{\mathrm{per}}(s_v)=-1$ by the computation above. Hence every $K$-orbit is $\Gamma_\Co$-stable and the two partitions coincide.
+
+*Vectors and lines.* The map from vector-orbits to line-orbits is surjective always, and injective here because $-\id\in\Gamma_\Co$: it acts trivially on $A_{T_\Co}$, which is $2$-torsion, and $\chi_{\mathrm{per}}(-\id)=+1$, its determinant on the positive plane being $(-1)^2$. So each line-orbit carries exactly one vector-orbit for either group.
 :::
 
 ## The Eichler criterion and its hypothesis
