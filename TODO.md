@@ -182,8 +182,20 @@ $\Gamma^{\mathrm{Hdg}}$ and $\Gamma^\theta_\Co$ is open and no witness is propos
 hypothesis in each case:
 
 1. $\Gamma^{\mathrm{Hdg}}$ vs $\Gamma^{\mathrm{cong}}$: compare two subgroups of the finite group
-   $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for $\gent\subset\Orth(\ten)$ (A3) and for
-   the Coble-side centralizer. A finite computation, no geometry in it.
+   $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for the $\delta$-stabilizer inside $\gent$
+   (A3) and for the Coble-side centralizer. A finite computation once those exist, no geometry in it.
+   Blocked upstream, on two owner capabilities, with specimens recorded
+   ($S_\En = U(2)\oplus E_8(2)$, $T_\En = U\oplus U(2)\oplus E_8(2)$, pin as elsewhere):
+   `T_En.discriminant_representation_is_surjective()` raises
+   `TypeError: int() argument must be … not 'OwnedJoinCategory.element_class'` from
+   `sage_indefinite_port.indefinite.eichler._isometry_from_row_matrix`, so the T-side realisation of a
+   prescribed discriminant isometry — what materialises the gluing $\gamma$ of
+   @cons:embedding-gluing-data and the partners of the nine stabilizer generators — is not available;
+   the same call on $S_\En$ returns `True`. And torsion forms offer `is_isometric_to` but no
+   `isometry_to`, so no explicit anti-isometry $A_{S_\En}\to A_{T_\En}$ with
+   $q_{T_\En}\circ\gamma = -q_{S_\En}$ can be produced; `A_S.is_isometric_to(A_T)` returns `True`,
+   which is the untwisted statement. Minimal semantic handoff: an explicit isometry constructor on
+   torsion quadratic forms (twisted variant included), and the engine fix behind the call above.
 2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
    datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **Obstructed, and not only for a
    sample of markings.** Proved about the input: $\langle S_\En,\delta\rangle = S_\En\oplus\ZZ\delta$ is
