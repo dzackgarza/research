@@ -1,0 +1,7 @@
+v_1: square 0, divisibility 2 (a basis vector, so primitive)
+v_2: square 0, divisibility 2 (a basis vector, so primitive)
+K = v_1^perp/v_1: rank 9, signature (1, 8), det 512   (1.0s)
+J^perp/J via primitive_isotropic_subobject + isotropic_reduction   (0.6s)
+   rank 7, signature (0, 7), det -128, two_elementary (7, 7, 1)
+   A_1^7 reference:  rank 7, signature (0, 7), det -128, two_elementary (7, 7, 1)
+   the exhibited plane reproduces I_{0,7}(2) = A_1^7 = (7,7,1)

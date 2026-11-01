@@ -1159,8 +1159,13 @@ $(0,\ 1,\ 1,\ \text{ordinary})$: norm $0$, divisor $1$ and index $1$ because the
 and ordinary by the congruence above. So there is exactly one class, which is the line half of the
 statement; James' extension theorem is the special case of this that gives the isometry explicitly.
 
-*Planes.* The plane half has no verified source, and the earlier citation to [@Wal62; @DK13] does not
-supply one. The two references are not in the same evidential position and should not be reported as
+*Planes.* Transitivity on primitive isotropic planes is proved in this book, at
+@thm:plane-transitivity-tco: it follows from the split unimodular model $B=\latI_{2,9}=\latI_{1,1}\perp
+\latI_{1,8}$, in which planes through a line are the isotropic lines of the quotient, every isometry of the
+quotient lifts as $\id\perp\varphi$ with the component character computed from
+@def:period-component-character, and lines are transitive there. The earlier citation to
+[@Wal62; @DK13] supplied neither half of that, and the paragraph below records what it does and does not
+contain. The two references are not in the same evidential position and should not be reported as
 though they were. Dolgachev--Kondo [@DK13] (arXiv:1201.6093) was inspected directly: it is about rationality
 of moduli spaces, it introduces $O(L)$, $O(A_L)$ and $O(L)^*$ in its §2 and the period domains in §3, and
 the words *isotropic*, *transitivity* and *orbit* do not occur in it at all, so it contains no orbit
