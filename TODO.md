@@ -230,6 +230,27 @@ even for the rational-curve divisor $R_{\rcop}^{\,}$, where the semifan is chara
 coarsest subdivision on which the combinatorial type of stable pairs is constant. The Enriques case is
 available only because @AE22 supply the ramification-locus semifans explicitly.
 
+**A37. The finiteness of the classifying map rests on an unproved semifan comparison.**
+@lem:semifan-comparison states that $\phi$ is finite if and only if every KSBA semifan $\semifan{G}_k$
+equals the constructed $\semifan{F}_k$, and @thm:no-coarsening is its discharge. But the lemma's proof
+already assumes what it must show — "the crux is that given any coarsening ... points corresponding to
+distinct degenerations would thus be glued together in the target, thus $\phi$ is finite if and only if
+no such coarsening occurs" — and @thm:no-coarsening argues from @def:maximality-degenerations, a notion
+of "maximal" degeneration introduced there for the purpose, by asserting that "maximality is a complete
+moduli invariant — distinct configurations cannot be identified", which is not proved and is the very
+point at issue. So the finiteness of $\phi$, on which the identification of the KSBA and semitoroidal
+compactifications depends, is asserted through a definition and a claim about KSBA theory that no source
+is cited for.
+
+**A38. The restriction of the ambient semifan is taken as formal.** @prop:restriction-semifans asserts
+that $\normalize{B}$ is *isomorphic* to the semitoroidal compactification for the restricted semifan
+$\semifan{F}_B$, on the ground that "the restriction of the polyhedral structure follows functorially
+from intersecting the hyperplane arrangements". The research report states the opposite as a warning
+(@warn:restrict-semifan) and lists seven separate statements needed before "intersect the AEGS semifans"
+is a theorem (A27). Two chapters of the same book therefore take opposite positions on whether
+semitoroidal restriction is formal, and the dissertation's version is the one carrying the theorem.
+
+
 
 
 
