@@ -414,22 +414,6 @@ correctly at a second location in the book.
 - *C23.* `:250` contradicts `:54–55` on parity; `:200` writes $w_1,\dots,w_p$ for a rank-$p+q$ lattice;
   `:307` writes "signature $(2,0)$" and reuses $U$ for $U_1$.
 
-**C27. There are two Coble lattice tables, and the one in `tables/` is stale.**
-`coble/tables/coble-lattices.md` row $n=4$ prints $D_4^{\oplus2}\oplus A_1^{\oplus4}\oplus U(2)$ beside
-$(14,8,1)$, but that lattice has discriminant length $2+2+4+2=10$; row $n=5$ prints
-$E_8\oplus A_1^{\oplus5}\oplus U$ beside $(15,7,1)$, but $a=0+5+0=5$. Both contradict the invariants
-printed in the same row. `coble/lattices-and-moduli/coble-lattice-table.md:14,:15` has the correct
-entries, and that chapter's own remark records these two forms as the *superseded* versions — which is
-how they survived: the correction was made in one table and not in the other, and nothing cross-references
-the two. A reader who finds `tables/` first has no way to know it is the wrong one.
-
-**C28. The GIT model of $\fco$ is stated with the wrong dimension, twice.**
-`research-statement/ResearchStatement.md:111` says $\fco$ "is birational to the moduli space of Coble
-surfaces with $n=1$ boundary component constructed as a GIT quotient $(\PP^2)^{10}\sslash \PGL_3$".
-That quotient has dimension $20-8=12$; $\fco$ has dimension $9$. The same claim appears at
-`coble/coble-moduli/cusp-correspondence-morphism-chain.md`, where it is offered as "an independent
-handle on the dimension $9$" — it cannot be, the two numbers differing by $3$.
-
 **C24–C26. Three bibliography errors, one of them widespread.** These are citation defects, not
 typographic ones: each names a different work from the one that carries the claim.
 
@@ -447,11 +431,36 @@ typographic ones: each names a different work from the one that carries the clai
   `@AE23`, *Compact Moduli of K3 Surfaces*. Sites: `000-part-2.md:40` `[@AE23a, Thm. 5.14]`,
   `5-chapter-ias-dlt/000-intro.md:55`, `4-chapter-cpt/000-ksba.md:55`.
 
+**C27. There are two Coble lattice tables, and the one in `tables/` is stale.**
+`coble/tables/coble-lattices.md` row $n=4$ prints $D_4^{\oplus2}\oplus A_1^{\oplus4}\oplus U(2)$ beside
+$(14,8,1)$, but that lattice has discriminant length $2+2+4+2=10$; row $n=5$ prints
+$E_8\oplus A_1^{\oplus5}\oplus U$ beside $(15,7,1)$, but $a=0+5+0=5$. Both contradict the invariants
+printed in the same row. `coble/lattices-and-moduli/coble-lattice-table.md:14,:15` has the correct
+entries, and that chapter's own remark records these two forms as the *superseded* versions — which is
+how they survived: the correction was made in one table and not in the other, and nothing cross-references
+the two. A reader who finds `tables/` first has no way to know it is the wrong one.
 
+**C28. The GIT model of $\fco$ is stated with the wrong dimension, twice.**
+`research-statement/ResearchStatement.md:111` says $\fco$ "is birational to the moduli space of Coble
+surfaces with $n=1$ boundary component constructed as a GIT quotient $(\PP^2)^{10}\sslash \PGL_3$".
+That quotient has dimension $20-8=12$; $\fco$ has dimension $9$. The same claim appears at
+`coble/coble-moduli/cusp-correspondence-morphism-chain.md`, where it is offered as "an independent
+handle on the dimension $9$" — it cannot be, the two numbers differing by $3$.
 
+**C29. Semifan ray counts and Coxeter ray counts are mislabelled as each other.** The remark
+"Consistency with the dissertation" in `coble/computations/coxiter-results-for-cusp-lattices.md:42` says
+"the dissertation records for these cusps only the ray counts of the semifans (Cusp 1: 4 Type II + 4 Type
+III; Cusp 2: 2 + 8; Cusp 3: 3 + 15)". Those are the *Coxeter* counts: `900-five-cusps.md` gives the
+semifan counts as $2+0$, $2+7$, $2+7$, $4+7$, $3+0$, and the Coxeter counts as $4+4$, $2+8$, $3+15$,
+$4+12$, $5+17$. The remark therefore compares its own CoxIter numbers against the wrong column, and its
+conclusion — "which is a different quantity from any entry above" — is drawn from the mislabelling.
 
-
-
+**C30. Two false positives from the swarm, recorded so they are not re-derived.** Member m2 reported that
+`scattone-cusp-method.md:174` calls the four degree-2 boundary lattices the root lattices $A_{17}$ etc.;
+the sentence reads "distinguished by their root sublattices:", and `450-scattone.md:41-42` says the same
+thing. Member m4 reported that `475-our-cusps.md:227` enumerates the five $0$-cusps by
+$\Orth(\ten)$-orbits; the sentence names $\gent$-orbits. Neither is a defect, and both were rejected
+after reading the sources.
 
 ## A note on what is not in this list
 
