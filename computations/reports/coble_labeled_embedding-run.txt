@@ -49,6 +49,14 @@ provenance
     discriminant forms of the two complements with the (-1) twist of glue_map recorded -- the maps
     land in A(-1) and no owner operation composes them with an isometry discriminant map.
 
+3.2 the distinguished root of the marking
+    roots of h~^perp: 2 (root system A_1, one line)
+    alpha: square -2, alpha.h~ = 0, alpha in S_Co: True
+    so alpha is fixed by every isometry fixing S_Co, in particular by I_Co := -theta_Co of
+    prop:theta-co-exists, which is +1 on T_Co and -1 on S_Co; the involution -theta_Co fixes H
+    because H = h~_Co lies in S_Co.  Constructing -theta_Co itself needs the gluing anti-isometry
+    of cons:embedding-gluing-data as data, which is not materialised in the book or here.
+
 4. what this does not do
    4.1 the labels.  A21 compares tuples (L_K3, I_Co, I_dP, H, alpha, C): commuting
        nonsymplectic involutions, H^2 = 4 fixed by both, alpha^2 = -2 with H.alpha = 0 fixed
@@ -60,7 +68,10 @@ provenance
        thm:coble-heegner-line-unique does not apply here: it needs an indefinite complement and a
        positive vector in signature (1,10) has a negative definite one.
    4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is
-       extended over it with isometry_extends and no chamber is transported.
+       extended over it with isometry_extends and no chamber is transported.  The involutions of
+       the tuple reduce to the same datum: I_Co = -theta_Co needs the gluing gamma_Co of
+       cons:embedding-gluing-data, I_dP is not given as lattice data by the sources at all, and
+       the chamber is nef-cone geometry, not a lattice computation.
 
 SUMMARY
   0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to

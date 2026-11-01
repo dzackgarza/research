@@ -168,6 +168,26 @@ print('    over the finite group.  Second missing piece: a comparison of glue cl
 print('    discriminant forms of the two complements with the (-1) twist of glue_map recorded -- the maps')
 print('    land in A(-1) and no owner operation composes them with an isometry discriminant map.')
 
+# ---------------------------------------------------------------- 3.2 the label that the marking determines
+# The report's tuple carries a distinguished exceptional root alpha with alpha^2 = -2, H.alpha = 0 and
+# alpha fixed by I_Co (sec-labeled-lattice-data).  For the admissible marking, alpha is the root of the
+# polarization complement: that complement has exactly two roots, i.e. root system A_1, which is the
+# "distinguished A_1 point" of the report.
+print('')
+print('3.2 the distinguished root of the marking')
+roots_K = list(comp_Coble.roots())
+print('    roots of h~^perp: %d (root system A_1, one line)' % len(roots_K))
+assert len(roots_K) == 2
+alpha_K = roots_K[0]
+alpha = comp_Coble.inclusion()(alpha_K)      # the same vector, seen inside S_Co
+print('    alpha: square %d, alpha.h~ = %d, alpha in S_Co: %s'
+      % (alpha.q(), alpha.b(h_tilde), alpha.parent() is S_Co))
+assert alpha.q() == -2 and alpha.b(h_tilde) == 0 and alpha.parent() is S_Co
+print('    so alpha is fixed by every isometry fixing S_Co, in particular by I_Co := -theta_Co of')
+print('    prop:theta-co-exists, which is +1 on T_Co and -1 on S_Co; the involution -theta_Co fixes H')
+print('    because H = h~_Co lies in S_Co.  Constructing -theta_Co itself needs the gluing anti-isometry')
+print('    of cons:embedding-gluing-data as data, which is not materialised in the book or here.')
+
 # ---------------------------------------------------------------- 4. what remains
 print('')
 print('4. what this does not do')
@@ -181,7 +201,10 @@ print('       names the two owner operations missing there.  The criterion of')
 print('       thm:coble-heegner-line-unique does not apply here: it needs an indefinite complement and a')
 print('       positive vector in signature (1,10) has a negative definite one.')
 print('   4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is')
-print('       extended over it with isometry_extends and no chamber is transported.')
+print('       extended over it with isometry_extends and no chamber is transported.  The involutions of')
+print('       the tuple reduce to the same datum: I_Co = -theta_Co needs the gluing gamma_Co of')
+print('       cons:embedding-gluing-data, I_dP is not given as lattice data by the sources at all, and')
+print('       the chamber is nef-cone geometry, not a lattice computation.')
 print('')
 print('SUMMARY')
 print('  0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to')

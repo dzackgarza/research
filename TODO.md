@@ -209,7 +209,12 @@ hypothesis in each case:
    reached by an unlabelled $\Pic(S)$ isometry, was about non-admissible markings and is withdrawn.
    What remains: (i) the labels — A21 compares tuples $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha,
    \mathcal C)$ per the research report's @sec-labeled-lattice-data, and an unlabelled Picard-lattice
-   isometry is not that comparison; (ii) the marked-pair isometry carrying $\tilde h_\Co$ to $h$, which
+   isometry is not that comparison. Of the tuple, the distinguished root is settled: the complement of
+   $\tilde h_\Co$ has exactly two vectors of square $-2$ (root system $A_1$), and that root line is
+   $\alpha$ with $\alpha^2=-2$, $H\cdot\alpha=0$, lying in $S_\Co$ and hence fixed by $I_\Co=-\theta_\Co$;
+   missing are $-\theta_\Co$ itself (needs $\gamma_\Co$ from @cons:embedding-gluing-data as data),
+   $I_{\mathrm{dP}}$ (not lattice data in the sources), and the chamber (nef-cone geometry);
+   (ii) the marked-pair isometry carrying $\tilde h_\Co$ to $h$, which
    @thm:coble-heegner-line-unique does not decide here because the complement is definite; (iii) the
    extension over $\lkt$ by `isometry_extends` and the transport of the chamber.
    A20 item 1 is untouched.
