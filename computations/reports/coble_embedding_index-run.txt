@@ -1,0 +1,30 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, read-only; repo bound at /repo
+
+the four lattices, from their defining sources
+  S_En = U(2) + E8(2)          rank 10, det    -1024, signature (1, 9)    [sen in prop:gamma-en-two-gluing]
+  T_En = U + U(2) + E8(2)      rank 12, det     1024, signature (2, 10)   [ten in lem:coble-heegner-vector]
+  S_Co = <2> + <-2>^10         rank 11, det     2048, signature (1, 10)   [prop:coble-invariant-lattice]
+  T_Co = <2> + U(2) + E8(2)    rank 11, det    -2048, signature (2, 9)    [lem:coble-heegner-vector]
+
+discriminant groups (the gluing is between the full groups, so the index is their order)
+  |A_{S_En}| = 1024, |A_{T_En}| = 1024   -> [L_K3 : S_En + T_En] = 1024
+  |A_{S_Co}| = 2048, |A_{T_Co}| = 2048   -> [L_K3 : S_Co + T_Co] = 2048
+  so the Enriques index is 1024 = 2^10, not 2; the Coble index is 2048 = 2^11
+
+the complement identity M = T_Co^perp = S_En + Z delta, by determinants
+  det(S_En + Z delta) = det(S_En) * delta^2 = 1024 * 2 = 2048
+  det(T_Co) = 2048, and for a primitive T_Co in the unimodular L_K3, det(T_Co^perp) = det(T_Co)
+  the two determinants agree and S_En + Z delta is contained in T_Co^perp, so the containment is
+  an equality: M = S_En + Z delta.  No saturation step and no index-2 assumption is used.
+
+SUMMARY
+  [L_K3 : S_En + T_En] = 2^10 = 1024 and [L_K3 : S_Co + T_Co] = 2^11 = 2048, both read off the
+  discriminant orders of the gluing anti-isometries of prop:gamma-en-two-gluing and
+  prop:theta-co-exists; the earlier "index 2" was wrong and is removed.
+  M = T_Co^perp equals S_En + Z delta because det(S_En + Z delta) = 2^10 * 2 = 2^11 = det(T_Co)
+  and the containment holds.  That replaces the saturation argument that assumed an index-2
+  overlattice.
+OK: indices and the complement identity verified by determinants at the owner
