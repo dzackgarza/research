@@ -503,16 +503,30 @@ had not been made.
 What is *not* addressed at all: primitive isotropic **planes**, a statement about subspaces rather than
 vectors or lines.
 
-The lifting question that plane transitivity then needs, stated for the actual ambient group. Let
-$l\subset T_\Co$ be a primitive isotropic line and consider restriction
-$$\Stab_{\Orth^+(T_\Co)}(l)\longrightarrow\Orth^+\bigl(l^{\perp T_\Co}/l\bigr),$$
-whose target is $\latI_{1,8}(2)$, where lines are transitive by the proposition above. Plane transitivity
-would follow if the image of this restriction met the coset carrying one isotropic line of the quotient to
-any other. Note that the splitting argument used above does *not* apply to $T_\Co$ itself: $T_\Co$ has
-determinant $2^{11}$ and is not unimodular, so @cor:hyperbolic-splitting is unavailable there, and the
-restriction is a genuinely different map from the one a unimodular splitting would give. That is the
-precise open point, and it is a statement about the full component-preserving group and its stabilizer --
-not about a discriminant kernel, which no argument here has produced.
+The same splitting *is* available for $T_\Co$, by untwisting, and the earlier claim that
+non-unimodularity obstructs it is withdrawn. Write $T_\Co = B(2)$ with $B=\latI_{2,9}$ unimodular
+(@prop:tco-as-twist). Twisting by $2$ preserves the underlying module, takes isometries to isometries and
+preserves isotropy, so $\Orth(T_\Co)=\Orth(B)$ as subgroups of $\GL(B)$ and the primitive isotropic lines
+and planes of the two are the same sets. Splitting the unimodular $B$ at a primitive isotropic line $l$
+gives $B=\latI_{1,1}\perp M$ with $M$ unimodular of signature $(1,8)$, hence $M\cong\latI_{1,8}$ by
+@thm:indefinite-unimodular-classification; twisting that splitting distributes over the orthogonal sum and
+gives
+$$T_\Co = \latI_{1,1}(2)\perp\latI_{1,8}(2) = U(2)\perp U(2)\perp\latI_{0,7}(2),$$
+using $\latI_{1,8}=\latI_{1,1}\perp\latI_{0,7}$ again. The two presentations $\generators{2}\oplus U(2)\oplus E_8(2)$
+and $U(2)\oplus U(2)\oplus\latI_{0,7}(2)$ agree in rank $11$, in signature $(2,9)$, in determinant $-2^{11}$
+and in two-elementary type $(11,11,1)$ with $\abs{A}=2048$, which is checked in
+`computations/reports/scaled_splitting_invariants.py`. The quotient $l^{\perp T_\Co}/l\cong\latI_{1,8}(2)$ is one of the factors, and its
+primitive isotropic lines are transitive by the proposition above.
+
+So the plane question moves into the unimodular lattice, where the tools do apply: it is equivalent to
+transitivity of $\Orth^+(B)=\Orth^+(T_\Co)$ on primitive isotropic *planes* of $B=\latI_{2,9}$, and planes
+through a fixed line $l$ correspond to primitive isotropic lines of $l^{\perp B}/l\cong\latI_{1,8}$, where
+lines are transitive by the proposition above and where no primitive isotropic vector is characteristic, so
+there is one class of lines and not two. What plane transitivity needs beyond that is that the restriction
+$$\Stab_{\Orth^+(T_\Co)}(l)\longrightarrow\Orth^+\bigl(l^{\perp T_\Co}/l\bigr)$$
+meet the cosets that move one isotropic line of the quotient to another -- a statement about the full
+component-preserving group and its stabilizer in a unimodular ambient lattice, not about a discriminant
+kernel, and no discriminant-kernel constraint is claimed here.
 What this does *not* give: transitivity on primitive isotropic *planes*, which is a statement about
 subspaces rather than vectors and is not a corollary of the argument above; and any statement about a
 proper arithmetic subgroup, whose orbits are finer than those of $\Orth(L)$.
