@@ -406,7 +406,8 @@ result used is `@prop:discriminant-orthogonal-sum`, whose title is "Discriminant
 `forms-quadratic/Torsion-Pairings-and-Linking-Forms.md:83` uses $(L^\#)^\# = L$ to conclude that the
 adjoint of the discriminant pairing has zero kernel. The book states the metric-dual identities for
 orthogonal sums and twists (`rem:dual-lattice-properties`) and not the double dual, so the step has no
-premise on the page.
+premise on the page. That page is deliberately unlisted (see C38), so the gap is not published —
+but it is the same page whose unlisted status has a different cause.
 
 **C15. A true conclusion drawn from an irrelevant premise.** `foundations/Higher-Categories-and-Universes.md:488`
 concludes that $\mathbf{Cat}_{\infty,\infty}$ has no zero object from the fact that $*\amalg*$ is neither
@@ -504,14 +505,16 @@ typographic ones: each names a different work from the one that carries the clai
   `@AE23`, *Compact Moduli of K3 Surfaces*. Sites: `000-part-2.md:40` `[@AE23a, Thm. 5.14]`,
   `5-chapter-ias-dlt/000-intro.md:55`, `4-chapter-cpt/000-ksba.md:55`.
 
-**C27. There are two Coble lattice tables, and the one in `tables/` is stale.**
-`coble/tables/coble-lattices.md` row $n=4$ prints $D_4^{\oplus2}\oplus A_1^{\oplus4}\oplus U(2)$ beside
-$(14,8,1)$, but that lattice has discriminant length $2+2+4+2=10$; row $n=5$ prints
-$E_8\oplus A_1^{\oplus5}\oplus U$ beside $(15,7,1)$, but $a=0+5+0=5$. Both contradict the invariants
-printed in the same row. `coble/lattices-and-moduli/coble-lattice-table.md:14,:15` has the correct
-entries, and that chapter's own remark records these two forms as the *superseded* versions — which is
-how they survived: the correction was made in one table and not in the other, and nothing cross-references
-the two. A reader who finds `tables/` first has no way to know it is the wrong one.
+**C27. A stale duplicate of the Coble lattice table is still in the tree.** `coble/tables/coble-lattices.md`
+row $n=4$ prints $D_4^{\oplus2}\oplus A_1^{\oplus4}\oplus U(2)$ beside $(14,8,1)$, whose discriminant
+length is $2+2+4+2=10$; row $n=5$ prints $E_8\oplus A_1^{\oplus5}\oplus U$ beside $(15,7,1)$, whose $a$
+is $5$. `coble/lattices-and-moduli/coble-lattice-table.md` has the correct rows and records those two
+forms as superseded. **Severity corrected on re-reading:** the build config already unlists the fragment
+— `writing/.book/_quarto.yml:225` comments it out and the note beside it says "an untitled table fragment
+that no chapter includes. The same table stands, in full and as a chapter at
+`coble/lattices-and-moduli/coble-lattice-table.md`; **keep one of the two**". So a reader never meets the
+wrong table; what remains is an unresolved housekeeping item the book has already marked. Recorded
+because a first report of it called it a live contradiction, which overstated it.
 
 **C28. The GIT model of $\fco$ is stated with the wrong dimension, twice.**
 `research-statement/ResearchStatement.md:111` says $\fco$ "is birational to the moduli space of Coble
@@ -535,6 +538,17 @@ thing. Member m4 reported that `475-our-cusps.md:227` enumerates the five $0$-cu
 $\Orth(\ten)$-orbits; the sentence names $\gent$-orbits. Neither is a defect, and both were rejected
 after reading the sources.
 
+**C38. Two pages cannot be published because three declarations they use do not exist.**
+`writing/.book/_quarto.yml` unlists `category-theory/forms-quadratic/Pairings-and-Perfect-Duality.md`
+and `forms-quadratic/Torsion-Pairings-and-Linking-Forms.md`, and records the reason: the first "names
+`@def:dualizable-object`, `@prop:projective-dualizable` and `@prop:orthogonal-galois-connection`, and no
+page declares any of the three", so listing it "publishes three references that render as nothing", and
+the second "builds on that page; it is listed once the three blocks exist". Checked: no file in
+`writing/` declares any of the three, while `Pairings-and-Perfect-Duality.md:63,:90` cites two of them.
+So the missing mathematics is three definitions and propositions in the duality part of the
+category-theory foundations, and until they are written two finished pages of the book are excluded from
+the build by design.
+
 ## A note on what is not in this list
 
 Certificates are not mathematics. Several claims in the book are true-as-computed and unproved; they
@@ -549,9 +563,11 @@ needs, by one of two routes.
 Read directly, in full: all of `writing/coble` — the eleven chapter directories (`lattices-and-moduli`,
 `computations`, `compactifications`, `degenerations`, `surfaces-and-moduli`, `stable-limits`,
 `cusp-correspondence`, `coble-moduli`, `heegner-report`, `introduction`, `open-problems`) **and** the
-seven that a first pass missed and this pass added: `tables`, `appendix-reference`, `adjacent-programs`,
-`results-f-en-2`, `coble-surfaces`, `scripts/certificates`, `reference-tables`, `papers`,
-`extracted-references`. The earlier claim in this file that "all 64 files of `coble`" had been read was
+nine that a first pass missed and this pass added: `tables` (both files), `appendix-reference` (both),
+`adjacent-programs` (both), `results-f-en-2` (all three), `coble-surfaces` (all three),
+`scripts/certificates`, `reference-tables`, `papers/README.md`, `extracted-references`. Also read:
+`writing/.book/_quarto.yml`'s chapter list and its deliberately-unlisted register, which is what makes
+the published/unpublished distinction below checkable. The earlier claim in this file that "all 64 files of `coble`" had been read was
 wrong: those nine subdirectories were never opened, and the two largest items in this list (A42, A43,
 and defects C33–C36) came out of them. `writing/lattice-theory` top level, `arithmetic/`,
 `classification/`, `definite/`, `embeddings/`, `examples/`, `hyperbolic/`, `local/`. `writing/dissertation`
@@ -564,6 +580,12 @@ Audited by `ultramath` swarm `smvy0k5df` and checked here before entry: the rema
 `200-examples.md` (m5 and m7 independently), `450-scattone.md` (m2, second pass), the framing text (m1),
 the cross-chapter consistency pass (m8), and a citation-carry audit of all 158 bibliography keys (m6).
 Two member claims were false and are recorded as C30; one was sent back and withdrawn by its author.
+
+**Read is not the same as published.** `_quarto.yml` deliberately unlists five pages, each with a
+recorded reason. That matters for severity: the stale Coble table (C27) and the missing double dual
+(C14) are on unlisted files, so a reader never meets either; they are housekeeping items the book has
+already marked, not contradictions in the text. C38 is the case where the unlisting itself is the
+defect.
 
 **How the items were obtained.** A40, A42, A43 and C33–C36 come from reading the subdirectories the
 earlier pass skipped. A37 was found by reading the dissertation's chapter 6; C33 is the same defect seen
