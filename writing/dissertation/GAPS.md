@@ -151,11 +151,30 @@ What has since been settled is listed at the end, so that a reader can tell "res
   "inclusion-maximal within rank 8" were the same set by construction and tested nothing.
 
   The local checker is retired.  The Type III count is taken from the owner's enumeration instead,
-  CoxeterDiagrams().from_roots(labelled root family) followed by
   maximal_elliptic_subdiagrams(connected=False), which is maximality by inclusion with no rank cap,
-  and its vertex sets are then acted on by the same verified full-Gram graph automorphisms rather
-  than by the coarser Coxeter-order group of the owner's own orbit methods.  That run
-  (computations/reports/sterk_owner_subdiagrams.py) is in progress.
+  and its vertex sets are acted on by the labelled automorphisms of the diagram rather than by the
+  coarser Coxeter-order group of the owner's own orbit methods.  Removing the local rank cap did
+  not by itself fix the count, because maximality by inclusion is still not the right *selection*
+  at these cusps: the maximal elliptic subdiagrams occur in two ranks, and the chapter's Type III
+  rays are only those of rank 9.  For the five cusps in Sterk's order the owner returns
+  44, 9, 34, 29 and 132 maximal elliptic subdiagrams, of which 30, 1, 5, 8 and 30 have elliptic
+  rank 8 and 14, 8, 29, 21 and 102 have rank 9.  A Type III *ray* needs rank 9 because
+  v^perp/Zv has rank 10 and signature (1,9) and the cone dimension is the ambient rank minus the
+  elliptic rank (AET, Thm 4.3); a rank-8 elliptic subdiagram spans a two-dimensional cone and is
+  not a ray.  So the mixed-rank orbit counts 15, 9, 18, 17 were that selection error, not a
+  contradiction of the chapter, and the run that produced them
+  (computations/reports/sterk_owner_subdiagrams.py, background job jmvx3lwga) is superseded; it
+  stopped at the fifth cusp and its output is kept as it stood.
+
+  With rank 9 selected the counts are 14, 8, 29, 21, 102 subdiagrams and 4, 8, 15, 12, 17 orbits
+  under the labelled action, which is the chapter's list exactly, at all five cusps and in all
+  five entries.  That is computations/reports/sterk_type_iii_rays.py with transcript
+  sterk_type_iii_rays-run.txt, and it runs on the maintained rooted diagrams
+  (Sterk.diagrams(), vertices r_0..r_{n-1}) as well as on the reconstruction's own root family,
+  the two being carried into one another set for set.  The enumeration is also cheap now:
+  sage-extensions 6ce8cdeb2b6d579c766f30f41811f482d333ae3c decides inertia and maximality on
+  vertex sets and constructs only the survivors, so the five diagrams take tens of seconds where
+  building every induced diagram took about half an hour.
 
   The semifan and irrelevant-subgroup statements, audited against the *retained figure
   numbering* -- which is not the Sterk script's a-indexing and had to be found first.  The diagram
@@ -191,11 +210,17 @@ What has since been settled is listed at the end, so that a reader can tell "res
 
   Two orderings must not be confused, and the assets say so themselves: vinberg-10-8-0.tikz 5-11
   maps the folded Sterk_2 indices 0..9 to diagram vertices 1, 3, 4, 5, 6, 7, 8, 9, 10, 2, and the
-  library exposes sterks_in_TEn() and sterk5_in_U_E8_2() in orderings of their own.  No transport
-  from those orderings to the separate Sterk script's a-indices appears in that file, so the
-  script-to-manuscript label map is *not* established and must not be read off positions.  Anything
-  that needs both numbering systems -- for instance comparing the script's subdiagram lists with the
-  objects' edge lists -- waits on that map.
+  library exposes sterks_in_TEn() and sterk5_in_U_E8_2() in orderings of their own.  The transport
+  from the separate Sterk script's a-indices to the manuscript's r_i is nevertheless established,
+  and not by position or by count: it is the isomorphism of the two angle-labelled graphs -- root
+  norm on the vertex, Coxeter weight on the edge, the sign of a pairing dropped as the diagram
+  drops it -- and it is determined up to the diagram's own labelled automorphism group, of order
+  4, 1, 2, 2, 8 at cusps 1 to 5, and no further.  Two independent readings of the r-side agree on
+  the same map at every cusp: the parsed tikz objects, whose r_i is root i of the ordered family,
+  and Sterk.diagrams(), which names its vertices r_0..r_{n-1} and is generated from that same
+  family.  The maps are in computations/reports/sterk_figure_labels-run.txt and
+  sterk_type_iii_rays-run.txt; anything that needs both numbering systems can now be read in
+  either, with that residual ambiguity stated rather than resolved.
 
   With that numbering the three named-root statements check out, and my earlier "these pairs are
   not edges" conclusion is withdrawn -- it compared the manuscript's r-indices with the Sterk
@@ -212,23 +237,46 @@ What has since been settled is listed at the end, so that a reader can tell "res
   is diagram I (12 roots), cusp 2 diagram II (10), cusp 3 diagram III (12), cusp 4 diagram IV (11),
   cusp 5 diagram V (14).
 
-  So, separated: the Type II counts are *computed and accepted*; the lattice data are *computed and
-  accepted*; the Type III counts are waiting on the owner enumeration (job jmvx3lwga, not
-  restarted); the semifan/irrelevant-subgroup statements are *source claims only*, one of them
-  corroborated at the level of named roots and two of them not reconcilable until the manuscript's
-  root labelling is matched to the script's.
+  So, separated: the Type II counts are *computed and accepted*, from the reconstruction script's
+  per-component enumeration of rank-8 semidefinite subdiagrams together with the labelled action;
+  the lattice data are *computed and accepted*; the Type III counts are *computed and accepted* as
+  the orbits of the rank-9 elliptic subdiagrams; and the semifan/irrelevant-subgroup statements
+  remain *source claims only*, one of them corroborated at the level of named roots, because
+  nothing here implements the semifan construction -- the labelling obstacle is gone, the
+  construction is not.  The owner's predicate is not a substitute for the Type II convention:
+  is_parabolic() asks for nullity exactly one, while the chapter's Type II subdiagrams include
+  disconnected ones (E~7 + A~1, A~7 + A~1, B~4 + B~4) whose nullity is one per component, so
+  maximal_parabolic_subdiagrams() does not reproduce those counts and the reconstruction script's
+  enumeration stays the one that does.
 
-  The representative-to-subsection matching does not come from the counts: cusps 1 and 4 both have
-  four Type II orbits, so the count vector cannot order them.  The matching is read off the
-  manuscript's displayed subdiagram vertex sets -- cusp 1's four are
-  {0,1,2,4,5,6,7,8,11}, {0,1,3,4,5,6,7,8,10,11}, {0,1,2,3,5,6,7,8,11} and {0,1,2,3,4,5,6,7,9,10} in
-  the figure's indexing -- and compared with the owner-returned sets, independently of any count.
+  The displayed subdiagrams, read from the chapter itself and transported through that map.  Cusp
+  1 draws {0,1,2,4,5,6,7,8,11}, {0,1,3,4,5,6,7,8,10,11}, {0,1,2,3,5,6,7,8,11} and
+  {0,1,2,3,4,5,6,7,9,10} in the figure's indexing, and each of the four is a maximal parabolic
+  subdiagram, one from each of the four Type II orbits.  So the sentence that called them "the four
+  elliptic subdiagrams displayed above" was wrong about the pictures: they are parabolic, and the
+  four Type III orbits are the rank-9 elliptic subdiagrams, which the pictures do not show.  The
+  sentence now attributes the display to the Type II orbits and states the Type III counting rule
+  instead of pointing at the pictures.
 
-  So the chapter unit is not closed.  The actionable step is exact and needs no new source:
-  reduce each representative's maximal parabolic subdiagrams to orbits under the symmetry group
-  the chapter fixes, and match the five representatives to the five subsections by their quoted
-  elliptic subdiagram lists -- cusp 1's four are displayed in the text and can be compared with
-  the script's output vertex by vertex.
+  As the chapter stood, 14 of the 18 displayed sets over the five cusps were maximal parabolic
+  subdiagrams and covered the orbits one for one -- cusp 1 four of four, cusp 2 two of two, cusp 3
+  one of three, cusp 4 four of four, cusp 5 three of five -- and the four that were not have been
+  replaced by computed orbit representatives of the orbits their cusp had left uncovered.  The four
+  were cusp 3's second (ten nodes, indefinite) and third (eight nodes, of rank 7), and cusp 5's
+  second (ten nodes, indefinite) and third (eleven nodes, indefinite).  The change is forced by type
+  and node count and not by the choice of transport: a maximal parabolic subdiagram is negative
+  semidefinite with one null direction per component, and no relabelling carries an indefinite set
+  to one.  With the four replaced, all 18 are maximal parabolic subdiagrams and each cusp's
+  displayed sets cover its Type II orbits exactly once.  The displayed sets are read from the
+  chapter by the certificate rather than copied into it, so the two cannot drift apart unnoticed.
+
+  What the chapter unit still does not claim.  The five cusps' identification with Sterk's five
+  representatives is source-settled (each object names its diagram number and its root family, the
+  root counts 12, 10, 12, 11, 14 agreeing in the order 3.3.7, 3.3.9, 3.3.10, 3.3.11, 3.3.12), but
+  the Type II and Type III counts are orbit counts under the *diagram's* labelled symmetries, which
+  is what the chapter says they are counted by, and whether those orbits are the Gamma-orbits of
+  the chapter's fans is the group comparison recorded above and stays open.  The semifan statements
+  are untouched and remain source claims.
 
   The five Enriques cusps' lattice data are checked as one unit in
   enriques_cusp_lattice_data.py.  Cusps 1, 3, 4 and 5 all quote T-bar = (18,2,0)_1 = U(2) + E8^2

@@ -1,0 +1,80 @@
+displayed sets read from the manuscript: {1: [[0, 1, 2, 4, 5, 6, 7, 8, 11], [0, 1, 3, 4, 5, 6, 7, 8, 10, 11], [0, 1, 2, 3, 5, 6, 7, 8, 11], [0, 1, 2, 3, 4, 5, 6, 7, 9, 10]], 2: [[1, 2, 3, 4, 5, 6, 7, 8, 9], [2, 3, 4, 5, 6, 7, 8, 9, 10]], 3: [[1, 2, 3, 4, 5, 6, 7, 9, 10, 11], [0, 1, 3, 4, 5, 6, 7, 8, 9, 10], [0, 1, 2, 3, 4, 5, 6, 7, 8]], 4: [[1, 2, 3, 4, 5, 6, 7, 9, 10], [0, 1, 2, 3, 4, 5, 6, 7, 10], [0, 1, 2, 3, 4, 5, 6, 7, 8], [0, 1, 2, 3, 5, 6, 7, 8, 9, 10]], 5: [[0, 1, 2, 3, 4, 5, 6, 7, 12, 13], [0, 1, 2, 3, 4, 5, 6, 8, 11], [0, 2, 3, 4, 5, 6, 8, 9, 11, 12], [0, 2, 3, 4, 6, 7, 8, 9, 10, 11], [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12]]}
+======================================================================
+3.3.7   v = e                   |Aut| = 4, so the map is determined up to 4 relabellings
+   script a_{i+1} -> manuscript vertex 0..11
+   one representative: [0, 11, 1, 2, 3, 4, 5, 6, 9, 8, 7, 10]
+      displayed [0, 1, 2, 4, 5, 6, 7, 8, 11]                 -> a[1, 2, 3, 4, 6, 7, 8, 10, 11]           9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+      displayed [0, 1, 3, 4, 5, 6, 7, 8, 10, 11]             -> a[1, 2, 3, 5, 6, 7, 8, 10, 11, 12]      10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+      displayed [0, 1, 2, 3, 5, 6, 7, 8, 11]                 -> a[1, 2, 3, 4, 5, 7, 8, 10, 11]           9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 9, 10]              -> a[1, 3, 4, 5, 6, 7, 8, 9, 11, 12]       10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+   maximal parabolic subdiagrams 9 -> 4 orbits; representatives
+      orbit 1: a[1, 2, 3, 4, 5, 6, 7, 8, 10] = manuscript [0, 1, 2, 3, 4, 5, 6, 8, 11]
+      orbit 2: a[1, 2, 3, 4, 5, 6, 7, 9, 10, 11] = manuscript [0, 1, 2, 3, 4, 5, 7, 8, 9, 11]
+      orbit 3: a[1, 2, 3, 4, 5, 7, 8, 10, 11] = manuscript [0, 1, 2, 3, 5, 6, 7, 8, 11]
+      orbit 4: a[1, 3, 4, 5, 6, 7, 8, 9, 11, 12] = manuscript [0, 1, 2, 3, 4, 5, 6, 7, 9, 10]
+      displayed [0, 1, 2, 4, 5, 6, 7, 8, 11]                 covers orbit [1]
+      displayed [0, 1, 3, 4, 5, 6, 7, 8, 10, 11]             covers orbit [2]
+      displayed [0, 1, 2, 3, 5, 6, 7, 8, 11]                 covers orbit [3]
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 9, 10]              covers orbit [4]
+======================================================================
+3.3.9   v = e'                  |Aut| = 1, so the map is determined up to 1 relabellings
+   script a_{i+1} -> manuscript vertex 0..9
+   one representative: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+      displayed [1, 2, 3, 4, 5, 6, 7, 8, 9]                  -> a[1, 2, 3, 4, 5, 6, 7, 8, 9]             9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+      displayed [2, 3, 4, 5, 6, 7, 8, 9, 10]                 -> a[2, 3, 4, 5, 6, 7, 8, 9, 10]            9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+   maximal parabolic subdiagrams 2 -> 2 orbits; representatives
+      orbit 1: a[1, 2, 3, 4, 5, 6, 7, 8, 9] = manuscript [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      orbit 2: a[2, 3, 4, 5, 6, 7, 8, 9, 10] = manuscript [2, 3, 4, 5, 6, 7, 8, 9, 10]
+      displayed [1, 2, 3, 4, 5, 6, 7, 8, 9]                  covers orbit [1]
+      displayed [2, 3, 4, 5, 6, 7, 8, 9, 10]                 covers orbit [2]
+======================================================================
+3.3.10  v = e' + f' + abar_8    |Aut| = 2, so the map is determined up to 2 relabellings
+   script a_{i+1} -> manuscript vertex 0..11
+   one representative: [6, 9, 5, 4, 3, 2, 1, 8, 10, 11, 7, 0]
+      displayed [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]             -> a[1, 2, 3, 4, 5, 6, 7, 9, 10, 11]       10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+      displayed [0, 1, 3, 4, 5, 6, 7, 8, 9, 10]              -> a[1, 2, 3, 4, 5, 7, 8, 9, 11, 12]       10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 8]                  -> a[1, 3, 4, 5, 6, 7, 8, 11, 12]           9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+   maximal parabolic subdiagrams 4 -> 3 orbits; representatives
+      orbit 1: a[1, 2, 3, 4, 5, 6, 7, 9, 10, 11] = manuscript [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]
+      orbit 2: a[1, 2, 3, 4, 5, 7, 8, 9, 11, 12] = manuscript [0, 1, 3, 4, 5, 6, 7, 8, 9, 10]
+      orbit 3: a[1, 3, 4, 5, 6, 7, 8, 11, 12] = manuscript [0, 1, 2, 3, 4, 5, 6, 7, 8]
+      displayed [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]             covers orbit [1]
+      displayed [0, 1, 3, 4, 5, 6, 7, 8, 9, 10]              covers orbit [2]
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 8]                  covers orbit [3]
+======================================================================
+3.3.11  v = 2e' + f' + abar_1   |Aut| = 2, so the map is determined up to 2 relabellings
+   script a_{i+1} -> manuscript vertex 0..10
+   one representative: [9, 1, 2, 3, 4, 5, 6, 8, 10, 0, 7]
+      displayed [1, 2, 3, 4, 5, 6, 7, 9, 10]                 -> a[1, 2, 3, 4, 5, 6, 7, 9, 11]            9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 10]                 -> a[2, 3, 4, 5, 6, 7, 9, 10, 11]           9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 8]                  -> a[2, 3, 4, 5, 6, 7, 8, 10, 11]           9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+      displayed [0, 1, 2, 3, 5, 6, 7, 8, 9, 10]              -> a[1, 2, 3, 4, 6, 7, 8, 9, 10, 11]       10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+   maximal parabolic subdiagrams 5 -> 4 orbits; representatives
+      orbit 1: a[1, 2, 3, 4, 5, 6, 7, 8, 11] = manuscript [1, 2, 3, 4, 5, 6, 7, 8, 9]
+      orbit 2: a[1, 2, 3, 4, 5, 6, 7, 9, 11] = manuscript [1, 2, 3, 4, 5, 6, 7, 9, 10]
+      orbit 3: a[1, 2, 3, 4, 6, 7, 8, 9, 10, 11] = manuscript [0, 1, 2, 3, 5, 6, 7, 8, 9, 10]
+      orbit 4: a[2, 3, 4, 5, 6, 7, 8, 10, 11] = manuscript [0, 1, 2, 3, 4, 5, 6, 7, 8]
+      displayed [1, 2, 3, 4, 5, 6, 7, 9, 10]                 covers orbit [2]
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 10]                 covers orbit [1]
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 8]                  covers orbit [4]
+      displayed [0, 1, 2, 3, 5, 6, 7, 8, 9, 10]              covers orbit [3]
+======================================================================
+3.3.12  v = 2e + 2f + abar_1    |Aut| = 8, so the map is determined up to 8 relabellings
+   script a_{i+1} -> manuscript vertex 0..13
+   one representative: [5, 4, 3, 2, 1, 0, 12, 7, 13, 6, 11, 9, 8, 10]
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 12, 13]             -> a[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]        10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+      displayed [0, 1, 2, 3, 4, 5, 6, 8, 11]                 -> a[1, 2, 3, 4, 5, 6, 10, 11, 13]          9 nodes, rank 8, (n+,n-,n0)=(8, 0, 1)  negative semidefinite, 1 null direction(s)
+      displayed [0, 2, 3, 4, 5, 6, 8, 9, 11, 12]             -> a[1, 2, 3, 4, 6, 7, 10, 11, 12, 13]     10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+      displayed [0, 2, 3, 4, 6, 7, 8, 9, 10, 11]             -> a[2, 3, 4, 6, 8, 10, 11, 12, 13, 14]    10 nodes, rank 8, (n+,n-,n0)=(8, 0, 2)  negative semidefinite, 2 null direction(s)
+      displayed [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12]         -> a[1, 3, 4, 5, 7, 8, 10, 11, 12, 13, 14] 11 nodes, rank 8, (n+,n-,n0)=(8, 0, 3)  negative semidefinite, 3 null direction(s)
+   maximal parabolic subdiagrams 13 -> 5 orbits; representatives
+      orbit 1: a[1, 2, 3, 4, 5, 6, 7, 8, 9, 10] = manuscript [0, 1, 2, 3, 4, 5, 6, 7, 12, 13]
+      orbit 2: a[1, 2, 3, 4, 5, 6, 10, 11, 13] = manuscript [0, 1, 2, 3, 4, 5, 6, 8, 11]
+      orbit 3: a[1, 2, 3, 4, 6, 7, 10, 11, 12, 13] = manuscript [0, 2, 3, 4, 5, 6, 8, 9, 11, 12]
+      orbit 4: a[1, 2, 3, 5, 6, 8, 9, 11, 12, 13, 14] = manuscript [0, 1, 3, 4, 5, 7, 8, 9, 10, 11, 13]
+      orbit 5: a[1, 2, 4, 5, 6, 10, 11, 12, 13, 14] = manuscript [0, 1, 2, 4, 5, 6, 8, 9, 10, 11]
+      displayed [0, 1, 2, 3, 4, 5, 6, 7, 12, 13]             covers orbit [1]
+      displayed [0, 1, 2, 3, 4, 5, 6, 8, 11]                 covers orbit [2]
+      displayed [0, 2, 3, 4, 5, 6, 8, 9, 11, 12]             covers orbit [3]
+      displayed [0, 2, 3, 4, 6, 7, 8, 9, 10, 11]             covers orbit [5]
+      displayed [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12]         covers orbit [4]

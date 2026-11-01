@@ -28,7 +28,7 @@ Let $(\mcz, \mcr_{\mcz})$ be a half-divisor model.
 If a component $V_i \subset \mcz_0$ is covered by two irreducible components of $\mcx_0$, then (up to normalization) $V_i$ is isomorphic to both components.
 If $V_i$ is instead covered by a single irreducible component $\widetilde{V}_i \subset \mcx_0$, then $\ienzero$ acts on $\widetilde{V}_i$ with exactly four fixed points, occurring as two pairs on double curves $\widetilde{D}_{ij}$, $\widetilde{D}_{ik}$.
 We conclude this chapter with an analysis of the actual combinatorial data at each of the five zero cusps.
-In particular, we exhibit orbit representatives of the maximal parabolic subdiagrams of each Coxeter diagram under diagram symmetries, which are the Type $\II$ rays -- a count reproduced below for all five cusps -- and the corresponding elliptic subdiagrams, which are in bijection with the Type $\III$ cones:
+In particular, we exhibit orbit representatives of the maximal parabolic subdiagrams of each Coxeter diagram under diagram symmetries, which are the Type $\II$ rays, and the corresponding elliptic subdiagrams, which are in bijection with the Type $\III$ cones. Both counts are reproduced below for all five cusps, as the orbit counts of the one and of the other under the labelled symmetries of the diagram; the enumeration, the orbits, and the transport between this numbering and the reconstruction of Sterk's root data are in `computations/reports/sterk_type_iii_rays.py`:
 
 #### Cusp 1
 
@@ -45,7 +45,7 @@ In particular, we exhibit orbit representatives of the maximal parabolic subdiag
 
 - **Semifan Structure:** The irrelevant subgroup is infinite, noting that it contains the Weyl group of $\tilde A_1$ due to the presence of $r_9, r_{10}$ which are images of irrelevant roots in the corresponding K3 diagram, so $\semifan{F}_1$ is a strict semifan and the compactification at this 0-cusp is strictly semitoroidal.
 
-- **Rays in the Coxeter compactification:** 4 Type $\II$ rays, corresponding to the four orbits of maximal parabolic subdiagrams, which counted with labels are the nine subdiagrams of the diagram of $v = e$ reduced by its symmetry group of order $4$; 4 Type $\III$ rays, corresponding to the four elliptic subdiagrams displayed above; a total of 8 rays..
+- **Rays in the Coxeter compactification:** 4 Type $\II$ rays, corresponding to the four orbits of maximal parabolic subdiagrams, which counted with labels are the nine subdiagrams of the diagram of $v = e$ reduced by its symmetry group of order $4$; the four subdiagrams displayed above are one representative of each of these orbits. 4 Type $\III$ rays, corresponding to the four orbits of elliptic subdiagrams of rank $9$: here $v^\perp/\ZZ v$ has rank $10$ and signature $(1,9)$, so an elliptic subdiagram has rank at most $9$, and a Type $\III$ ray is one of these maximal negative definite subsystems. The total is 8 rays.
 
 - **Rays in the Semitoroidal compactification:** 2 Type $\II$ rays, 0 Type $\III$ rays; a total of 2 rays.
   These correspond to subdiagrams for the Coxeter compactification above, where any subdiagram which has a connected component of irrelevant roots is removed.
@@ -75,8 +75,8 @@ In particular, we exhibit orbit representatives of the maximal parabolic subdiag
 
 \begin{tikzpicture}
 \pic[root labels, subdiagram={1,2,3,4,5,6,7,9,10,11}] (A) at (0,0) {object=coxeter/sterk-cusp-3};
-\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,8,9}] (B) at (6.5,0) {object=coxeter/sterk-cusp-3};
-\pic[root labels, subdiagram={0,3,4,5,7,8,9,11}] (C) at (13,0) {object=coxeter/sterk-cusp-3};
+\pic[root labels, subdiagram={0,1,3,4,5,6,7,8,9,10}] (B) at (6.5,0) {object=coxeter/sterk-cusp-3};
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,8}] (C) at (13,0) {object=coxeter/sterk-cusp-3};
 \end{tikzpicture}
 
 - **Boundary Type:** Maps to cusp $(10,8,0)_1$; $\Gamma(\mcz_0) = \DD^2$.
@@ -116,8 +116,8 @@ In particular, we exhibit orbit representatives of the maximal parabolic subdiag
 
 \begin{tikzpicture}
 \pic[root labels, subdiagram={0,1,2,3,4,5,6,7,12,13}] (A) at (0,0) {object=coxeter/sterk-cusp-5};
-\pic[root labels, subdiagram={0,1,2,3,4,5,6,7,9,10}] (B) at (6,0) {object=coxeter/sterk-cusp-5};
-\pic[root labels, subdiagram={0,1,2,4,6,7,9,10,11,12,13}] (C) at (12,0) {object=coxeter/sterk-cusp-5};
+\pic[root labels, subdiagram={0,1,2,3,4,5,6,8,11}] (B) at (6,0) {object=coxeter/sterk-cusp-5};
+\pic[root labels, subdiagram={0,2,3,4,5,6,8,9,11,12}] (C) at (12,0) {object=coxeter/sterk-cusp-5};
 \pic[root labels, subdiagram={0,2,3,4,6,7,8,9,10,11}] (D) at (4,6) {object=coxeter/sterk-cusp-5};
 \pic[root labels, subdiagram={1,2,3,5,6,7,8,9,10,11,12}] (E) at (10,6) {object=coxeter/sterk-cusp-5};
 \end{tikzpicture}
