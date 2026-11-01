@@ -354,10 +354,15 @@ def main():
                   % (displayed, [i + 1 for i in sorted(wanted)], len(wanted), rank,
                      inertia, kind))
         if os.environ.get('STERK_REPS'):
-            # The Type II rays are the orbits of the maximal parabolic subdiagrams
-            # (rank 8: nine nodes for an affine component, by Vinberg's convention).
-            # The enumeration is the reconstruction script's own, which is what the
-            # accepted Type II counts were computed from; the orbits are taken under
+            # The Type II rays are the orbits of the maximal parabolic subdiagrams.
+            # The rank passed here is the reconstruction script's own, the *geometric*
+            # rank nodes minus components, so rank 8 means nine vertices in a single
+            # affine component.  It is not the library's max_rank, which bounds vertex
+            # count, and no max_rank is passed anywhere in this file.
+            # The enumeration is the reconstruction script's own -- a local per-component
+            # semidefinite test, not maintained-API output -- which is what the Type II
+            # counts were computed from and what they carry as provenance until the
+            # library's componentwise-affine query is consumed; the orbits are taken under
             # the same labelled action as everywhere else.
             found = [frozenset(vertex for component in components for vertex in component)
                      for _, components in definitions['maximal_parabolic_subdiagrams'](M, 8)]
