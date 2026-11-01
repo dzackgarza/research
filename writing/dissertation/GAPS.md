@@ -1166,6 +1166,23 @@ What has since been settled is listed at the end, so that a reader can tell "res
   already formalized in this repository and are cited there; the two items that remain open -- the plane
   statement for B and the stable-level stabilizer image -- are open for want of a source theorem, not for
   want of a definition.
+  The plane-transitivity claim: an open source obligation, with the evidence.  thm:unpolarized-cusps
+  asserts transitivity of O(I_{2,9}) on primitive isotropic lines *and planes*, citing [@Wal62; @DK13].
+  The two citations were checked and neither carries the plane half.  Dolgachev--Kondo [@DK13] is
+  arXiv:1201.6093, on the rationality of the Coble and nodal-Enriques moduli spaces: its §2 introduces
+  O(L), O(A_L) and O(L)^*, its §3 the period domains, and the words "isotropic", "transitivity" and "orbit"
+  do not occur anywhere in the text -- zero occurrences, not few -- so it contains no orbit statement at
+  all.  Wall [@Wal62] is not in the retained corpus and Math. Annalen is not freely available; its content
+  as the literature records it is a classification of *vectors* by norm, divisor, index and type under
+  r - |s| >= 4, which is the line half and says nothing about subspaces.  James' inequality does not reach
+  the case at hand either: rank-two J needs 2(2+1) = 6 against r - |s| = 4.
+  What the sources therefore support is the line half only, and the plane half is marked in the chapter as
+  an open source obligation: the statements that use it are supported at the planes actually exhibited --
+  J and its image in the cusp correspondence -- and not as a claim that every primitive isotropic plane of
+  I_{2,9} lies in one orbit.  No replacement is invented; the next step is to find a source or an argument
+  for subspace transitivity, and the formalization corpus was queried for one
+  ("isotropic plane transitivity orthogonal group lattice") without a hit on this statement, which is a
+  scoped negative at the corpus's current index.
   The odd-lattice justification, sourced -- and narrowed once, because the first version was too broad.
   The proposition was stated for every unimodular L with r - |s| >= 4, and that is false: James extends
   only isometries that preserve characteristic status, and isometries preserve it always, so transitivity

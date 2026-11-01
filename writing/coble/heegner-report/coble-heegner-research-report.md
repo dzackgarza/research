@@ -1159,11 +1159,21 @@ $(0,\ 1,\ 1,\ \text{ordinary})$: norm $0$, divisor $1$ and index $1$ because the
 and ordinary by the congruence above. So there is exactly one class, which is the line half of the
 statement; James' extension theorem is the special case of this that gives the isometry explicitly.
 
-*Planes.* The plane half does **not** follow from Wall's theorem as stated, and it is not verified here.
-That theorem classifies vectors; $r-\abs{\fs}=4$ does not reach the rank-two case of James' inequality
-($2(2+1)=6$); and transitivity on primitive isotropic *planes* is a statement about the action on
-subspaces, which needs its own source. It is cited to [@Wal62; @DK13] and the citation is left as one to
-check at the point of use, not as one this section has read.
+*Planes.* The plane half has no verified source, and the earlier citation to [@Wal62; @DK13] does not
+supply one. Checked rather than inferred: Dolgachev--Kondo [@DK13] (arXiv:1201.6093) is about rationality of
+moduli spaces; it introduces $O(L)$, $O(A_L)$ and $O(L)^*$ in its §2 and the period domains in §3, but the
+words *isotropic*, *transitivity* and *orbit* do not occur in it at all, so it contains no orbit statement
+for vectors or planes. Wall's theorem [@Wal62] classifies vectors by norm, divisor, index and type under
+$r-\abs{\fs}\geq4$, and says nothing about subspaces; its full text is not available here (Math. Annalen is
+not in the retained corpus, and the statement above is the one the literature records, corroborated by the
+James argument which does not need it). And $r-\abs{\fs}=4$ does not reach the rank-two case of James'
+inequality, which would need $2(2+1)=6$.
+
+So the plane-transitivity claim is an **open source obligation**: what is missing is a citation, or an
+argument, for transitivity of $\Orth(I_{2,9})$ on primitive isotropic *planes*. Until it is found, the
+statements that use it are supported only at the planes actually exhibited -- the plane $J$ of the cusp
+correspondence and its image -- and not as statements that every such plane lies in one orbit. No
+replacement is invented here.
 
 Both are statements about $O(T_{\Co})=O(I_{2,9})$, by the observation above; the exceptional case $I_{2,2}$,
 where a characteristic isotropic vector does exist and line transitivity fails, shows why the congruence in
