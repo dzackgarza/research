@@ -519,6 +519,14 @@ What has since been settled is listed at the end, so that a reader can tell "res
   maintained two-elementary API gives (18,2,0) and (10,10,0) for the first pair and (18,0,0) and
   (10,8,0) for the second, matching the text in all five subsections.
 
+  The rank rule behind the Type III counts, from the source.  AET's Theorem 4.3 is an order
+  reversing bijection between the faces of the fundamental chamber and the elliptic and maximal
+  parabolic subdiagrams, under which a Type III cone of dimension d corresponds to an elliptic
+  subdiagram of rank 19 - d and a Type II ray to a maximal parabolic subdiagram with 17 vertices;
+  in the rank-10 quotient of an Enriques cusp that reads 10 - 1 = 9 for a Type III ray, which is
+  exactly the rank AEGS25's Lemma 5.2 enumerates and exactly the rank the computation above used.
+  The chapter now cites both where it states the rank.
+
   The semifan claims, resolved as source statements with their hypotheses.  They are
   Alexeev--Engel--Garza--Schaffler's, not something this repository proves, and the chapter now
   carries the citations: Definition 5.4 (a folded root is irrelevant if it is the fold of an
