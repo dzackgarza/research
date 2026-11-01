@@ -9,11 +9,14 @@ engines that every issue body cites are in the library, which `pyproject.toml` t
 `src/dzack_research/preamble/categories/lattices.py:1444`, a path that does not exist here, and at
 the retained pin line 1444 of the real file is not the site it names.
 
-That programme is factored out to
-[docs/issue-migration/sage-extensions.md](docs/issue-migration/sage-extensions.md), which carries
-the evidence, the seven cluster bodies to post upstream, and the full leaf mapping from source
-identifier to the `research` issue that currently carries it. Those issues stay open here as
-pointers until their clusters close upstream.
+That programme is factored out and posted upstream: the seven clusters are now
+[issues #7--#13 of `dzackgarza/sage-extensions`](https://github.com/dzackgarza/sage-extensions/issues),
+one per former milestone, each carrying that milestone's source identifiers.
+[docs/issue-migration/sage-extensions.md](docs/issue-migration/sage-extensions.md) records the
+evidence, the per-cluster issue number, and the full leaf mapping from source identifier to the
+`research` issue that still carries it. The `research` issues stay open here as pointers until
+their clusters close upstream; #482 is the example of why they should not be worked here -- it
+cites a path this repository does not contain.
 
 ## What this repository owns
 

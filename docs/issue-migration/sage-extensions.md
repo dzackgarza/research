@@ -2,7 +2,7 @@
 
 Every row of the former `TODO.md` described work on what is now the `sage-extensions`
 library, tracked in this repository. This file records the factoring, the evidence for it,
-and the issue bodies to post upstream. Nothing here is this repository's work.
+and the issue bodies, which are now posted upstream. Nothing here is this repository's work.
 
 ## Why this is not `research` work
 
@@ -35,24 +35,27 @@ Scale: **134 leaf issues** under **7 cluster parents**.
 
 ## The seven clusters
 
-| Former `TODO.md` section | `research` issue | Leaves | Proposed `sage-extensions` title |
-| --- | --- | --- | --- |
-| M1 — Shared correctness and daily mathematical constructions | #417 | 52 | Phase: shared correctness and daily mathematical constructions |
-| Reusable lattice and group computations | #415 | 2 | Phase: reusable lattice and group computations |
-| Specialized port computation and acceptance | #416 | 3 | Phase: specialized port computation and acceptance |
-| M4 — Required mathematical expansion | #420 | 49 | Phase: required mathematical expansion |
-| M2 — API review and retained core closure | #418 | 15 | Phase: API review and retained core closure |
-| M3 — Complete mathematical acceptance | #419 | 7 | Phase: complete mathematical acceptance |
-| M5 — Optional research extensions | #421 | 6 | Phase: optional research extensions |
+Posted 2026-11-01 on `dzackgarza/sage-extensions`. The cluster numbers are the live issues; the
+`research` issues stay open as pointers until their cluster closes.
 
-## Issue bodies to post upstream
+| Former `TODO.md` section | `research` issue | Leaves | `sage-extensions` issue |
+| --- | --- | --- | --- |
+| M1 — Shared correctness and daily mathematical constructions | #417 | 52 | [#7](https://github.com/dzackgarza/sage-extensions/issues/7) |
+| Reusable lattice and group computations | #415 | 2 | [#8](https://github.com/dzackgarza/sage-extensions/issues/8) |
+| Specialized port computation and acceptance | #416 | 3 | [#9](https://github.com/dzackgarza/sage-extensions/issues/9) |
+| M4 — Required mathematical expansion | #420 | 49 | [#10](https://github.com/dzackgarza/sage-extensions/issues/10) |
+| M2 — API review and retained core closure | #418 | 15 | [#11](https://github.com/dzackgarza/sage-extensions/issues/11) |
+| M3 — Complete mathematical acceptance | #419 | 7 | [#12](https://github.com/dzackgarza/sage-extensions/issues/12) |
+| M5 — Optional research extensions | #421 | 6 | [#13](https://github.com/dzackgarza/sage-extensions/issues/13) |
+
+## Issue bodies as posted
 
 Each body keeps the source identifiers, so a leaf closed upstream can be traced back to the
 `research` issue that named it. Acceptance criteria stay in the existing issue bodies, which
 are already written against the library and need no rewriting; the migration is of owner,
 not of contract.
 
-### Phase: shared correctness and daily mathematical constructions
+### Phase: shared correctness and daily mathematical constructions  — posted as [#7](https://github.com/dzackgarza/sage-extensions/issues/7)
 
 ```markdown
 Migrated from dzackgarza/research#417 (`M1 — Shared correctness and daily mathematical constructions`).
@@ -116,7 +119,7 @@ Source identifiers carried by this cluster (52):
 - `partially-ordered-sets-have-monotone-maps` (was dzackgarza/research#442)
 ```
 
-### Phase: reusable lattice and group computations
+### Phase: reusable lattice and group computations  — posted as [#8](https://github.com/dzackgarza/sage-extensions/issues/8)
 
 ```markdown
 Migrated from dzackgarza/research#415 (`Reusable lattice and group computations`).
@@ -130,7 +133,7 @@ Source identifiers carried by this cluster (2):
 - `port-configurations-cones-and-integral-lifts` (was dzackgarza/research#423)
 ```
 
-### Phase: specialized port computation and acceptance
+### Phase: specialized port computation and acceptance  — posted as [#9](https://github.com/dzackgarza/sage-extensions/issues/9)
 
 ```markdown
 Migrated from dzackgarza/research#416 (`Specialized port computation and acceptance`).
@@ -145,7 +148,7 @@ Source identifiers carried by this cluster (3):
 - `port-handoff-frozen-acceptance` (was dzackgarza/research#426)
 ```
 
-### Phase: required mathematical expansion
+### Phase: required mathematical expansion  — posted as [#10](https://github.com/dzackgarza/sage-extensions/issues/10)
 
 ```markdown
 Migrated from dzackgarza/research#420 (`M4 — Required mathematical expansion`).
@@ -206,7 +209,7 @@ Source identifiers carried by this cluster (49):
 - `geometric-cards-store-betti-numbers` (was dzackgarza/research#530)
 ```
 
-### Phase: API review and retained core closure
+### Phase: API review and retained core closure  — posted as [#11](https://github.com/dzackgarza/sage-extensions/issues/11)
 
 ```markdown
 Migrated from dzackgarza/research#418 (`M2 — API review and retained core closure`).
@@ -233,7 +236,7 @@ Source identifiers carried by this cluster (15):
 - `minimal-api-freeze` (was dzackgarza/research#493)
 ```
 
-### Phase: complete mathematical acceptance
+### Phase: complete mathematical acceptance  — posted as [#12](https://github.com/dzackgarza/sage-extensions/issues/12)
 
 ```markdown
 Migrated from dzackgarza/research#419 (`M3 — Complete mathematical acceptance`).
@@ -252,7 +255,7 @@ Source identifiers carried by this cluster (7):
 - `extended-mathematics-session` (was dzackgarza/research#550)
 ```
 
-### Phase: optional research extensions
+### Phase: optional research extensions  — posted as [#13](https://github.com/dzackgarza/sage-extensions/issues/13)
 
 ```markdown
 Migrated from dzackgarza/research#421 (`M5 — Optional research extensions`).
