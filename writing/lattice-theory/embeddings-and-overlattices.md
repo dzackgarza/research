@@ -454,43 +454,46 @@ $B$ has $4$; and any statement about the image of a prescribed arithmetic subgro
 is a different question with its own sources. Each of those needs its own argument, and the Coble chapter's
 uses are labelled accordingly.
 
-::: {.proposition #prop:rank-nine-line-transitivity title=\"Primitive isotropic vectors of $\latI_{1,8}$ and of its twist\"}
+::: {.proposition #prop:rank-nine-line-transitivity title="Primitive isotropic lines of $\latI_{1,8}$ and of its twist"}
 
-Let $L$ be $\latI_{1,8}$, or $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$. Then $\Orth(L)$ acts
-transitively on primitive isotropic vectors, and so does $\Orth^+(L)$. The same holds for $\latI_{1,n}$ and
-$\latI_{1,n}(2)$ with $n\geq1$, the complements being $\latI_{0,n}$.
+Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$, and assume that
+the odd unimodular negative-definite lattice of rank $7$ is unique up to isometry. Then $\Orth(L)$ and
+$\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $L$.
 :::
 
 ::: {.proof}
 
-Twisting by $2$ preserves the underlying $\ZZ$-module, the isometry group as a subgroup of $\GL_9(\ZZ)$, and
-isotropy, so it suffices to treat $L=\latI_{1,8}$.
+Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\ZZ)$ and isotropy, so it
+suffices to treat $L=\latI_{1,8}$.
 
-Let $v$ be primitive isotropic. Since $L$ is unimodular, $\beta(v,-)\colon L\to\ZZ$ is surjective ---
-unimodularity identifies $L$ with $L^*$ and primitivity of $v$ makes the corresponding functional primitive
---- so there is $w$ with $\beta(v,w)=1$. Then $P=\generators{v,w}$ is a rank-two unimodular hyperbolic
-sublattice, and by @cor:hyperbolic-splitting $L = P\perp M$ with $M$ unimodular of signature $(0,7)$. Rank
-$7$ forces $M$ odd, since an even unimodular lattice has rank divisible by $8$, and the odd unimodular
-negative-definite lattice of rank $7$ is $\latI_{0,7}$; this uniqueness is the one classical input the
-argument uses, and it is the standard classification of odd unimodular forms in rank $\leq8$.
+Let $v$ be primitive isotropic. By @cor:hyperbolic-splitting --- which needs a primitive isotropic vector in
+a unimodular lattice and, $L$ being odd, produces the *odd* hyperbolic plane $\latI_{1,1}$, not $U$ ---
+$L = P\perp M$ with $P=\latI_{1,1}$ hyperbolic and $M$ unimodular of signature $(0,7)$. Rank $7$ forces $M$
+odd, since an even unimodular lattice has rank divisible by $8$, so by the hypothesis $M\cong\latI_{0,7}$
+for every such $v$. Given $v$ and $v'$ with splittings $P\perp M$ and $P'\perp M'$, an isometry of $P$ onto
+$P'$ exists ($P\cong P'\cong\latI_{1,1}$) and an isometry of $M$ onto $M'$ by the hypothesis, and the two
+together give $g\in\Orth(L)$ carrying the line $\ZZ v$ to the line $\ZZ v'$. So $\Orth(L)$ is transitive on
+lines.
 
-So every primitive isotropic $v$ lies in a hyperbolic summand whose complement is $\latI_{0,7}$. Given
-$v,w$ and $v',w'$ as above, the assignment $v\mapsto v'$, $w\mapsto w'$ is an isometry of $P$ onto $P'$,
-the complements are isometric by that uniqueness, and the two together give $g\in\Orth(L)$ with
-$g(v)=v'$. This proves the $\Orth$-statement.
-
-For the component, an element of $\Orth(L)\setminus\Orth^+(L)$ fixing $v$ is needed, and one can be written
-down in the splitting $L=P\perp M$: for $t\in\ZZ$ put
-$$\sigma_t\colon\quad v\mapsto v,\qquad w\mapsto w+tv,\qquad m\mapsto -m\ \ (m\in M).$$
-Each $\sigma_t$ is an isometry --- the images of $v$ and $w+tv$ have the same squares and pairings, and both
-are orthogonal to $M$ --- and each fixes $v$. A positive vector of $L$ has the shape $\alpha v+\beta w$ with
-$\alpha\beta>0$, and $\sigma_t$ sends it to $\beta w+(\alpha+\beta t)v$, whose product of coefficients is
-$\beta(\alpha+\beta t)$; choosing $t$ with $\beta(\alpha+\beta t)<0$ makes $\sigma_t$ reverse the positive
-ray, so $\sigma_t\in\Orth(L)\setminus\Orth^+(L)$. Then for any $g$ with $g(v)=v'$, the product
-$g\sigma_t$ lies in $\Orth^+(L)$ (a product of two elements outside the component subgroup) and still
-carries $v$ to $v'$.
+For $\Orth^+(L)$ no construction is needed here: $-\id_L$ fixes every line and lies in
+$\Orth(L)\setminus\Orth^+(L)$, because it reverses the positive cone, which for signature $(1,8)$ has two
+components interchanged by $-1$. So for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ already lies in
+$\Orth^+(L)$, or $(-g)$ does --- $-g$ fixes every line as well --- and $\Orth^+(L)$ is transitive on lines
+too.
 :::
 
+Two things this does **not** establish, and an earlier draft of this proposition got both wrong.
+*Vectors rather than lines.* Transitivity on primitive isotropic **vectors** by $\Orth^+$ is not obtained:
+$-g$ sends $v$ to $-v'$, not to $v'$, and the element of $\Orth\setminus\Orth^+$ that an earlier draft
+proposed --- $v\mapsto v$, $w\mapsto w+tv$, $M\mapsto -M$ --- is not an isometry at all, since
+$(w+tv)^2 = 2t$ for $v^2=w^2=0$, $(v,w)=1$. The vector-level statement is open.
+*The rank-$7$ input.* Uniqueness of the odd unimodular negative-definite lattice in rank $7$ is assumed
+above and not proved or cited here; it is the standard classification of odd unimodular forms in low rank,
+and a primary source for it is owed rather than implied. Without it the argument identifies the complements
+only up to isometry of an unknown class.
+
+What is *not* addressed at all: primitive isotropic **planes**, a statement about subspaces rather than
+vectors or lines.
 What this does *not* give: transitivity on primitive isotropic *planes*, which is a statement about
 subspaces rather than vectors and is not a corollary of the argument above; and any statement about a
 proper arithmetic subgroup, whose orbits are finer than those of $\Orth(L)$.

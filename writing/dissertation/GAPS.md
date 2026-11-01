@@ -1187,8 +1187,22 @@ What has since been settled is listed at the end, so that a reader can tell "res
   not about the kernel of the discriminant map, and no constraint of that kind is derived here.
   Neither cited theorem reaches $\latI_{1,8}(2)$: its $r-\abs{\fs}$ is $9-7 = 2$, below the $4$ both Wall
   and James require.
-  The middle ingredient is now *proved*, by an argument developed here rather than by a source with a rank
-  condition: prop:rank-nine-line-transitivity shows that Orth(I_{1,8}) -- and Orth^+(I_{1,8}), and the same
+  The middle ingredient is *not* accepted.  The first version of prop:rank-nine-line-transitivity claimed
+  transitivity on primitive isotropic *vectors* for Orth and Orth^+, and both halves of that are withdrawn.
+  The component-switching map it used -- v |-> v, w |-> w + tv, M |-> -M in the splitting L = P perp M --
+  is not an isometry: with v^2 = w^2 = 0 and (v,w) = 1 one has (w + tv)^2 = 2t, so Gram preservation fails
+  for every t != 0.  That is checked exactly in computations/reports/sigma_t_not_an_isometry.py and its
+  transcript, not argued in prose.  What survives is the *line* statement, and for the component it needs no
+  construction at all: -id fixes every line and lies in Orth \ Orth^+, since it interchanges the two
+  components of the positive cone in signature (1,8), so Orth and Orth^+ have the same orbits on lines.  The
+  vector-level statement under Orth^+ is left open, and the target of the manuscript's cusp statements is
+  lines (Baily-Borel cusps are orbits of primitive isotropic lines), not vectors.
+  Two further points from the audit of the splitting step.  The corollary used is cor:hyperbolic-splitting,
+  whose hypotheses are a nondegenerate unimodular lattice with a primitive isotropic vector, and which for
+  odd L produces the odd hyperbolic plane I_{1,1} and not U; the proof now says so.  And the rank-7 input --
+  uniqueness of the odd unimodular negative-definite lattice in rank 7 -- is *assumed* in the proposition
+  rather than cited: it is the low-rank classification of odd unimodular forms, and a primary source is owed.
+  The earlier, unaccepted version: prop:rank-nine-line-transitivity shows that Orth(I_{1,8}) -- and Orth^+(I_{1,8}), and the same
   for the twist -- acts transitively on primitive isotropic vectors.  The proof is the splitting argument:
   for primitive isotropic v in the unimodular lattice, beta(v,-) is surjective, so v lies in a unimodular
   hyperbolic plane P, which splits L = P perp M by cor:hyperbolic-splitting with M unimodular of signature

@@ -1,0 +1,7 @@
+(v,v) = 0, (v,w) = 1, (w,w) = 0
+t=0: sigma_t(w) = w + 0v has square  0, an isometry would need 0   AGREE
+t=1: sigma_t(w) = w + 1v has square  2, an isometry would need 0   *** NOT AN ISOMETRY
+t=2: sigma_t(w) = w + 2v has square  4, an isometry would need 0   *** NOT AN ISOMETRY
+
+so v |-> v, w |-> w + tv is an isometry only for t = 0, and the earlier claim that it switches
+the component is withdrawn: (w + tv)^2 = 2t, not 0.
