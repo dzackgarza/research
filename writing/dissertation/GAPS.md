@@ -534,6 +534,31 @@ What has since been settled is listed at the end, so that a reader can tell "res
   exactly the rank AEGS25's Lemma 5.2 enumerates and exactly the rank the computation above used.
   The chapter now cites both where it states the rank.
 
+  The irrelevant sets, now computed for four of the five cusps.  AEGS25's Figure 5 is read off the
+  e-print artwork: the square panel (the (18,2,0) diagram) has vertices 0-15 on its boundary and
+  16-21 in its interior, and Definition 5.4's irrelevant roots are the non-boundary ones.  With the
+  retained fold data from Sterk.sterk_roots() -- every folded root written as a sum of the K3 roots
+  -- and the identification v_i = figure vertex i-1 (which three independent agreements support: the
+  manuscript's named pairs at cusps 1, 3 and 5 all land in the interior), the folded roots whose
+  constituents are all non-boundary are, at cusp 1, the four entries r_8, r_9, r_10, r_11 (folding
+  figure vertices {16,18}, {20}, {21}, {17,19}); at cusp 3, r_9, r_10, r_11 ({16,18}, {19}, {17});
+  at cusp 4, r_9, r_10 ({16,19}, {17,18}); at cusp 5, r_8 to r_13 ({16}, ..., {21}).  The
+  computation is computations/reports/sterk_irrelevant_roots.py.
+  What that settles, against the retained labelled diagrams: at cusp 1 the four irrelevant roots are
+  joined by the bold edges 8-9-10-11, so their Gram is indefinite and W_irr is infinite, which is
+  Lemma 5.6's claim there; at cusp 3 the two roots r_10, r_11 are joined by the bold edge 10-11 while
+  r_9 is orthogonal to both, so W_irr contains an affine A_1 factor and is infinite; at cusp 5 the
+  bold edge 12-13 again gives an affine A_1 factor and infinitude; at cusp 4 the two irrelevant roots
+  r_9 and r_10 are joined by no edge of the labelled diagram, so they are orthogonal and
+  W_irr = S_2 x S_2, which is Lemma 5.6's S_2^2 there.  So three of the five finiteness verdicts and
+  one of the two finiteness verdicts are now checked against the labelled data, and the manuscript's
+  named pairs are inside the computed sets in each case.
+  What is still open: cusp 2, whose diagram is the triangle panel and whose folded roots are the
+  library's w1..w19 rather than v1..v22 -- Figure 5's triangle has interior vertices {17,19}, but the
+  match from that numbering to the w-numbering is not recorded, so the single irrelevant root that
+  Lemma 5.6's S_2 needs there is not yet identified.  And Lemma 5.8's deletion counts have not been
+  re-derived: they need the irrelevant sets at all five cusps together with the subgraph lists.
+
   The semifan provenance, carried as far as the sources allow.  The e-print of AEGS25 is retained
   at .scratch/refs/aegs_src, and its figure numbering can now be read off en.tex instead of guessed:
   Figure 5 of the paper is fig-k3-cusps-circled.pdf, captioned "Coxeter diagrams for (18,2,0)_1 and
