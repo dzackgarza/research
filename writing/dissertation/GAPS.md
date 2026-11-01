@@ -1049,8 +1049,11 @@ What has since been settled is listed at the end, so that a reader can tell "res
   in computations/reports/coble_enriques_cusp_orbit_map.py; the two propositions above are all-vector
   arguments and do not rest on that transcript.
   The exact image locus is therefore: the Gamma_En-orbits of primitive isotropic vectors of T_En that
-  meet eta(T_Co) and have divisibility 2 -- nonempty, containing the distinct classes of eta(v_1), eta(e')
-  and eta(f'), and disjoint from the divisibility-1 classes.  Whether every divisibility-2 Gamma_En-orbit
+  meet eta(T_Co) and have divisibility 2 -- nonempty, containing the two distinct classes of
+  eta(v_1) = eta(e') and eta(f') (v_1 is e', so those are two examples, not three), and disjoint from
+  the divisibility-1 classes.  The divisibility-2 hypothesis in the separation argument is a property of
+  image vectors only: a primitive isotropic vector of T_En can have divisibility 1, e~ being the example
+  already used for nonsurjectivity, so the argument must start from x = eta(v) and cannot be run on T_En.  Whether every divisibility-2 Gamma_En-orbit
   meets eta(T_Co) is the same open question as injectivity seen from the target.  All of this is about
   rank-1 isotropic lines, i.e. 0-cusps; the rank-2 (plane, 1-cusp) fibre is a separate question and
   nothing here is asserted about it.
