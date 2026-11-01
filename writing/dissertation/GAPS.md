@@ -1176,6 +1176,16 @@ What has since been settled is listed at the end, so that a reader can tell "res
   as the literature records it is a classification of *vectors* by norm, divisor, index and type under
   r - |s| >= 4, which is the line half and says nothing about subspaces.  James' inequality does not reach
   the case at hand either: rank-two J needs 2(2+1) = 6 against r - |s| = 4.
+  The reduction the obligation now has, so that the next attempt is targeted rather than a survey.  Plane
+  transitivity decomposes along an isotropic line: if $l\subset J$ is a primitive isotropic line of a
+  primitive isotropic plane $J$, then $J/l$ is an isotropic line in $l^\perp/l$, which here is the
+  two-elementary lattice $\latI_{1,8}(2)$ of rank $9$ and signature $(1,8)$, and conversely.  So plane
+  transitivity would follow from three ingredients: line transitivity in $L = \latI_{2,9}$ (which is
+  established, by Wall's vector invariants and James), line transitivity in $\latI_{1,8}(2)$, and the
+  lifting of isometries of $l^\perp/l$ to isometries of $L$ fixing $l$, which is a discriminant-kernel
+  question and not automatic.  Neither cited theorem reaches $\latI_{1,8}(2)$: its $r-\abs{\fs}$ is
+  $9-7 = 2$, below the $4$ both Wall and James require.  So the obligation is now three named statements
+  rather than one, and the middle one is the concrete target.
   What the sources therefore support is the line half only, and the plane half is marked in the chapter as
   an open source obligation: the statements that use it are supported at the planes actually exhibited --
   J and its image in the cusp correspondence -- and not as a claim that every primitive isotropic plane of

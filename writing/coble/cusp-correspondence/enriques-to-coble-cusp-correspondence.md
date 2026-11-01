@@ -208,7 +208,8 @@ The isotropic plane $\tilde J = \generators{\eta(v_1), \eta(v_2)}$ lies at the E
 
 ::: {.proof}
 
-By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$. It remains to identify the isomorphism type of the image $\tilde J^{\perp \ten}/\tilde J$ in $\ten$.
+Nothing here uses transitivity of $\Orth^+(T_\Co)$ on primitive isotropic planes, and the lemma does not assert it: both boundary lattices are computed at the exhibited planes. For $J = \generators{v_1, v_2}$ the quotient $J^{\perp T_\Co}/J$ has rank $7$ and is computed below to be $\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$, and the statement about $\tilde J$ is likewise about the exhibited image. What the global statement would add is a different claim -- that *every* primitive isotropic plane of $T_\Co$ lies in the orbit of $J$, and correspondingly that $(7,7,1)_0$ names the only Coble $1$-cusp -- and that claim is not made here; it is an open source obligation, recorded at @thm:unpolarized-cusps, and restricting to exhibited planes neither establishes it nor is claimed to.
+It remains to identify the isomorphism type of the image $\tilde J^{\perp \ten}/\tilde J$ in $\ten$.
 One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $\ten$ respectively.
 By [@AE22 Prop. 5.5, Lem. 5.9], it suffices to show
 

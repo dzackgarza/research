@@ -1160,14 +1160,16 @@ and ordinary by the congruence above. So there is exactly one class, which is th
 statement; James' extension theorem is the special case of this that gives the isometry explicitly.
 
 *Planes.* The plane half has no verified source, and the earlier citation to [@Wal62; @DK13] does not
-supply one. Checked rather than inferred: Dolgachev--Kondo [@DK13] (arXiv:1201.6093) is about rationality of
-moduli spaces; it introduces $O(L)$, $O(A_L)$ and $O(L)^*$ in its §2 and the period domains in §3, but the
-words *isotropic*, *transitivity* and *orbit* do not occur in it at all, so it contains no orbit statement
-for vectors or planes. Wall's theorem [@Wal62] classifies vectors by norm, divisor, index and type under
-$r-\abs{\fs}\geq4$, and says nothing about subspaces; its full text is not available here (Math. Annalen is
-not in the retained corpus, and the statement above is the one the literature records, corroborated by the
-James argument which does not need it). And $r-\abs{\fs}=4$ does not reach the rank-two case of James'
-inequality, which would need $2(2+1)=6$.
+supply one. The two references are not in the same evidential position and should not be reported as
+though they were. Dolgachev--Kondo [@DK13] (arXiv:1201.6093) was inspected directly: it is about rationality
+of moduli spaces, it introduces $O(L)$, $O(A_L)$ and $O(L)^*$ in its §2 and the period domains in §3, and
+the words *isotropic*, *transitivity* and *orbit* do not occur in it at all, so it contains no orbit
+statement for vectors or planes. Wall [@Wal62] was **not** inspected: its full text is not available here,
+Math. Annalen being neither in the retained corpus nor freely accessible, and what this section records of
+it is the secondary description the literature carries -- a classification of vectors by norm, divisor,
+index and type under $r-\abs{\fs}\geq4$ -- which the James argument corroborates from the other side but
+which is not a reading of Wall. And $r-\abs{\fs}=4$ does not reach the rank-two case of James' inequality,
+which would need $2(2+1)=6$.
 
 So the plane-transitivity claim is an **open source obligation**: what is missing is a citation, or an
 argument, for transitivity of $\Orth(I_{2,9})$ on primitive isotropic *planes*. Until it is found, the
