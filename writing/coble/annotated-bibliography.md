@@ -6,7 +6,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### CDL25
 
-**Cossec, Dolgachev, and Liedtke. *Enriques Surfaces I*.** [PDF](<file:///home/dzack/Zotero/storage/IPZVZIB4/%5BCossec%202024%5D%20Enriques%20surfaces%20I.pdf>). The attached PDF is the April 2024 draft.
+[@CDL25] [PDF](<file:///home/dzack/Zotero/storage/IPZVZIB4/%5BCossec%202024%5D%20Enriques%20surfaces%20I.pdf>). The attached PDF is the April 2024 draft.
 
 - [Coble moduli of K3 type — §5.4; PDF p. 566](<file:///home/dzack/Zotero/storage/IPZVZIB4/%5BCossec%202024%5D%20Enriques%20surfaces%20I.pdf#page=566>).
 - [Odd-lattice model for the Enriques orthogonal group — Lemma 5.4.1; PDF p. 567](<file:///home/dzack/Zotero/storage/IPZVZIB4/%5BCossec%202024%5D%20Enriques%20surfaces%20I.pdf#page=567>).
@@ -17,7 +17,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### DK25
 
-**Dolgachev and Kondō. *Enriques Surfaces II*.** [PDF](<file:///home/dzack/Zotero/storage/V3WS4ENC/%5BDolgachev%202024%5D%20Enriques%20Surfaces%20II.pdf>). Links refer to the attached draft.
+[@DK25] [PDF](<file:///home/dzack/Zotero/storage/V3WS4ENC/%5BDolgachev%202024%5D%20Enriques%20Surfaces%20II.pdf>). Links refer to the attached draft.
 
 - [Canonical K3 cover of a terminal Coble surface of K3 type — Proposition 9.1.1; PDF p. 294](<file:///home/dzack/Zotero/storage/V3WS4ENC/%5BDolgachev%202024%5D%20Enriques%20Surfaces%20II.pdf#page=294>).
 - [Plane-sextic models of Coble surfaces — Proposition 9.1.3; PDF p. 294](<file:///home/dzack/Zotero/storage/V3WS4ENC/%5BDolgachev%202024%5D%20Enriques%20Surfaces%20II.pdf#page=294>).
@@ -34,7 +34,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### DZ99
 
-**Dolgachev and Zhang. “Coble rational surfaces” (1999).** [PDF](<file:///home/dzack/Zotero/storage/JJQ3M4P9/%5BDolgachev%201999%5D%20Coble%20rational%20surfaces.pdf>).
+[@DZ99] [PDF](<file:///home/dzack/Zotero/storage/JJQ3M4P9/%5BDolgachev%201999%5D%20Coble%20rational%20surfaces.pdf>).
 
 - [Components and normal crossings of anti-bicanonical divisors — Lemma 1.4; PDF p. 3](<file:///home/dzack/Zotero/storage/JJQ3M4P9/%5BDolgachev%201999%5D%20Coble%20rational%20surfaces.pdf#page=3>).
 - [Reduction to a minimal Coble surface by blowing down — Lemma 1.10; PDF p. 5](<file:///home/dzack/Zotero/storage/JJQ3M4P9/%5BDolgachev%201999%5D%20Coble%20rational%20surfaces.pdf#page=5>).
@@ -45,14 +45,14 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### CD12
 
-**Cantat and Dolgachev. “Rational surfaces with a large group of automorphisms” (2012).** [PDF](<file:///home/dzack/Zotero/storage/NHGMTEJQ/%5BCantat%202012%5D%20Rational%20surfaces%20with%20a%20large%20group%20of%20automorphisms.pdf>).
+[@CD12] [PDF](<file:///home/dzack/Zotero/storage/NHGMTEJQ/%5BCantat%202012%5D%20Rational%20surfaces%20with%20a%20large%20group%20of%20automorphisms.pdf>).
 
 - [§2, Halphen surfaces — PDF p. 6](<file:///home/dzack/Zotero/storage/NHGMTEJQ/%5BCantat%202012%5D%20Rational%20surfaces%20with%20a%20large%20group%20of%20automorphisms.pdf#page=6>).
 - [§3, Coble surfaces — PDF p. 14](<file:///home/dzack/Zotero/storage/NHGMTEJQ/%5BCantat%202012%5D%20Rational%20surfaces%20with%20a%20large%20group%20of%20automorphisms.pdf#page=14>).
 
 ### DK13
 
-**Dolgachev and Kondō. “The rationality of the moduli spaces of Coble surfaces and of nodal Enriques surfaces” (2013).** [PDF](<file:///home/dzack/Zotero/storage/SQFRQXB8/%5BDolgachev%202013%5D%20The%20rationality%20of%20the%20moduli%20spaces%20of%20Coble%20surfaces%20and%20of%20nodal%20Enriques%20surfaces.pdf>).
+[@DK13] [PDF](<file:///home/dzack/Zotero/storage/SQFRQXB8/%5BDolgachev%202013%5D%20The%20rationality%20of%20the%20moduli%20spaces%20of%20Coble%20surfaces%20and%20of%20nodal%20Enriques%20surfaces.pdf>).
 
 - [Nodal Enriques moduli as an arithmetic period quotient — Proposition 3.1; PDF p. 4](<file:///home/dzack/Zotero/storage/SQFRQXB8/%5BDolgachev%202013%5D%20The%20rationality%20of%20the%20moduli%20spaces%20of%20Coble%20surfaces%20and%20of%20nodal%20Enriques%20surfaces.pdf#page=4>).
 - [Coble moduli as an arithmetic period quotient — Proposition 3.2; PDF p. 5](<file:///home/dzack/Zotero/storage/SQFRQXB8/%5BDolgachev%202013%5D%20The%20rationality%20of%20the%20moduli%20spaces%20of%20Coble%20surfaces%20and%20of%20nodal%20Enriques%20surfaces.pdf#page=5>).
@@ -65,13 +65,13 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### AD18
 
-**Allcock and Dolgachev. “The tetrahedron and automorphisms of Enriques and Coble surfaces of Hessian type” (2018).** [PDF](<file:///home/dzack/Zotero/storage/ZB73RI2S/%5BAllcock%202018%5D%20The%20tetrahedron%20and%20automorphisms%20of%20Enriques%20and%20Coble%20surfaces%20of%20Hessian%20type.pdf>).
+[@AD18] [PDF](<file:///home/dzack/Zotero/storage/ZB73RI2S/%5BAllcock%202018%5D%20The%20tetrahedron%20and%20automorphisms%20of%20Enriques%20and%20Coble%20surfaces%20of%20Hessian%20type.pdf>).
 
 - [Lemma 2.2 and the surrounding construction — PDF p. 6](<file:///home/dzack/Zotero/storage/ZB73RI2S/%5BAllcock%202018%5D%20The%20tetrahedron%20and%20automorphisms%20of%20Enriques%20and%20Coble%20surfaces%20of%20Hessian%20type.pdf#page=6>).
 
 ### PS20
 
-**Peters and Sterk. “On K3 double planes covering Enriques surfaces” (2020).** [PDF](<file:///home/dzack/Zotero/storage/JUN7Z2SD/local-write-api-1781873239211-R7C9C75I.pdf>).
+[@PS20] [PDF](<file:///home/dzack/Zotero/storage/JUN7Z2SD/local-write-api-1781873239211-R7C9C75I.pdf>).
 
 - [§2.2, Involutions on K3 surfaces and on the K3 lattice — PDF p. 5](<file:///home/dzack/Zotero/storage/JUN7Z2SD/local-write-api-1781873239211-R7C9C75I.pdf#page=5>).
 - [§2.4, Moduli of nodal Enriques surfaces — PDF p. 7](<file:///home/dzack/Zotero/storage/JUN7Z2SD/local-write-api-1781873239211-R7C9C75I.pdf#page=7>).
@@ -79,7 +79,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### GH15
 
-**Gritsenko and Hulek. “Moduli of polarized Enriques surfaces” (2015).** [PDF](<file:///home/dzack/Zotero/storage/85R28K3T/%5BGritsenko%202015%5D%20Moduli%20of%20polarized%20Enriques%20surfaces.pdf>).
+[@GH15] [PDF](<file:///home/dzack/Zotero/storage/85R28K3T/%5BGritsenko%202015%5D%20Moduli%20of%20polarized%20Enriques%20surfaces.pdf>).
 
 - [§3, Moduli spaces of numerically polarized Enriques surfaces — PDF p. 6](<file:///home/dzack/Zotero/storage/85R28K3T/%5BGritsenko%202015%5D%20Moduli%20of%20polarized%20Enriques%20surfaces.pdf#page=6>).
 - [§4, Moduli spaces of polarized Enriques surfaces — PDF p. 11](<file:///home/dzack/Zotero/storage/85R28K3T/%5BGritsenko%202015%5D%20Moduli%20of%20polarized%20Enriques%20surfaces.pdf#page=11>).
@@ -88,7 +88,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Nik80
 
-**Nikulin. “Integral symmetric bilinear forms and some of their applications” (1980).** [PDF](<file:///home/dzack/Zotero/storage/ZDV4WZ5M/%5BNikulin%201980%5D%20INTEGRAL%20SYMMETRIC%20BILINEAR%20FORMS%20AND%20SOME%20OF%20THEIR%20APPLICATIONS.pdf>).
+[@Nik80] [PDF](<file:///home/dzack/Zotero/storage/ZDV4WZ5M/%5BNikulin%201980%5D%20INTEGRAL%20SYMMETRIC%20BILINEAR%20FORMS%20AND%20SOME%20OF%20THEIR%20APPLICATIONS.pdf>).
 
 - [Even overlattices from isotropic subgroups of the discriminant form — Proposition 1.4.1; PDF p. 9](<file:///home/dzack/Zotero/storage/ZDV4WZ5M/%5BNikulin%201980%5D%20INTEGRAL%20SYMMETRIC%20BILINEAR%20FORMS%20AND%20SOME%20OF%20THEIR%20APPLICATIONS.pdf#page=9>).
 - [Isomorphism classes of overlattices — Proposition 1.4.2; PDF p. 9](<file:///home/dzack/Zotero/storage/ZDV4WZ5M/%5BNikulin%201980%5D%20INTEGRAL%20SYMMETRIC%20BILINEAR%20FORMS%20AND%20SOME%20OF%20THEIR%20APPLICATIONS.pdf#page=9>).
@@ -101,7 +101,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Dol96
 
-**Dolgachev. “Mirror symmetry for lattice polarized K3 surfaces” (1996).** [PDF](<file:///home/dzack/Zotero/storage/XMHCVQDH/%5BDolgachev%201996%5D%20Mirror%20symmetry%20for%20lattice%20polarized%20K3%20surfaces.pdf>).
+[@Dol96] [PDF](<file:///home/dzack/Zotero/storage/XMHCVQDH/%5BDolgachev%201996%5D%20Mirror%20symmetry%20for%20lattice%20polarized%20K3%20surfaces.pdf>).
 
 - [§1, Lattice polarized K3 surfaces — PDF p. 3](<file:///home/dzack/Zotero/storage/XMHCVQDH/%5BDolgachev%201996%5D%20Mirror%20symmetry%20for%20lattice%20polarized%20K3%20surfaces.pdf#page=3>).
 - [§3, The period map — PDF p. 8](<file:///home/dzack/Zotero/storage/XMHCVQDH/%5BDolgachev%201996%5D%20Mirror%20symmetry%20for%20lattice%20polarized%20K3%20surfaces.pdf#page=8>).
@@ -109,14 +109,14 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### AE25
 
-**Alexeev and Engel. “On lattice-polarized K3 surfaces” (2025).** [PDF](<file:///home/dzack/Zotero/storage/JKI4QZJB/%5BAlexeev%202025%5D%20On%20lattice-polarized%20K3%20surfaces.pdf>).
+[@AE25] [PDF](<file:///home/dzack/Zotero/storage/JKI4QZJB/%5BAlexeev%202025%5D%20On%20lattice-polarized%20K3%20surfaces.pdf>).
 
 - [§4, Quasipolarized moduli — PDF p. 5](<file:///home/dzack/Zotero/storage/JKI4QZJB/%5BAlexeev%202025%5D%20On%20lattice-polarized%20K3%20surfaces.pdf#page=5>).
 - [§5, ADE moduli — PDF p. 11](<file:///home/dzack/Zotero/storage/JKI4QZJB/%5BAlexeev%202025%5D%20On%20lattice-polarized%20K3%20surfaces.pdf#page=11>).
 
 ### AN06
 
-**Alexeev and Nikulin. *Del Pezzo and K3 Surfaces* (2006).** [PDF](<file:///home/dzack/Zotero/storage/NSGWX3VG/Del%20Pezzo%20and%20K3%20Surfaces%20-%20Valery%20Alexeev.pdf>).
+[@AN06] [PDF](<file:///home/dzack/Zotero/storage/NSGWX3VG/Del%20Pezzo%20and%20K3%20Surfaces%20-%20Valery%20Alexeev.pdf>).
 
 - [§2.3, The lattice and its main invariants — PDF p. 43](<file:///home/dzack/Zotero/storage/NSGWX3VG/Del%20Pezzo%20and%20K3%20Surfaces%20-%20Valery%20Alexeev.pdf#page=43>).
 - [§2.6, Finding the fixed locus — PDF p. 57](<file:///home/dzack/Zotero/storage/NSGWX3VG/Del%20Pezzo%20and%20K3%20Surfaces%20-%20Valery%20Alexeev.pdf#page=57>).
@@ -124,7 +124,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### GHS08
 
-**Gritsenko, Hulek, and Sankaran. “Abelianisation of orthogonal groups and the fundamental group of modular varieties” (2008).** [PDF](<file:///home/dzack/Zotero/storage/MPUIXKPU/%5BGritsenko%202008%5D%20Abelianisation%20of%20orthogonal%20groups%20and%20the%20fundamental%20group%20of%20modular%20varieties.pdf>).
+[@GHS08] [PDF](<file:///home/dzack/Zotero/storage/MPUIXKPU/%5BGritsenko%202008%5D%20Abelianisation%20of%20orthogonal%20groups%20and%20the%20fundamental%20group%20of%20modular%20varieties.pdf>).
 
 - [§3.1, Eichler transvections — PDF p. 8](<file:///home/dzack/Zotero/storage/MPUIXKPU/%5BGritsenko%202008%5D%20Abelianisation%20of%20orthogonal%20groups%20and%20the%20fundamental%20group%20of%20modular%20varieties.pdf#page=8>).
 - [§3.3, The group of unimodular transvections — PDF p. 10](<file:///home/dzack/Zotero/storage/MPUIXKPU/%5BGritsenko%202008%5D%20Abelianisation%20of%20orthogonal%20groups%20and%20the%20fundamental%20group%20of%20modular%20varieties.pdf#page=10>).
@@ -133,7 +133,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Sca87
 
-**Scattone. *On the Compactification of Moduli Spaces for Algebraic K3 Surfaces* (1987).** [PDF](<file:///home/dzack/Zotero/storage/D7P5WW7M/local-write-api-1782660352223-RXX9TQMQ-ON_THE_COMPACTIFICATION_OF_MOD_microfilm.pdf>).
+[@Sca87] [PDF](<file:///home/dzack/Zotero/storage/D7P5WW7M/local-write-api-1782660352223-RXX9TQMQ-ON_THE_COMPACTIFICATION_OF_MOD_microfilm.pdf>).
 
 - [Baily–Borel boundary components for polarized K3 periods — §2.1; PDF p. 24](<file:///home/dzack/Zotero/storage/D7P5WW7M/local-write-api-1782660352223-RXX9TQMQ-ON_THE_COMPACTIFICATION_OF_MOD_microfilm.pdf#page=24>).
 - [Number of zero-dimensional cusps for polarized K3 moduli — Theorem 4.0.1; PDF p. 70](<file:///home/dzack/Zotero/storage/D7P5WW7M/local-write-api-1782660352223-RXX9TQMQ-ON_THE_COMPACTIFICATION_OF_MOD_microfilm.pdf#page=70>).
@@ -147,7 +147,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Ste91
 
-**Sterk. “Compactifications of the period space of Enriques surfaces. I” (1991).** [PDF](<file:///home/dzack/Zotero/storage/USRNMNIP/%5BSterk%201991%5D%20Compactifications%20of%20the%20period%20space%20of%20Enriques%20surfaces.%20I.pdf>).
+[@Ste91] [PDF](<file:///home/dzack/Zotero/storage/USRNMNIP/%5BSterk%201991%5D%20Compactifications%20of%20the%20period%20space%20of%20Enriques%20surfaces.%20I.pdf>).
 
 - [§3, Arithmetical results — PDF p. 8](<file:///home/dzack/Zotero/storage/USRNMNIP/%5BSterk%201991%5D%20Compactifications%20of%20the%20period%20space%20of%20Enriques%20surfaces.%20I.pdf#page=8>).
 - [§4.2, Zero-dimensional boundary components — PDF p. 15](<file:///home/dzack/Zotero/storage/USRNMNIP/%5BSterk%201991%5D%20Compactifications%20of%20the%20period%20space%20of%20Enriques%20surfaces.%20I.pdf#page=15>).
@@ -155,7 +155,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Daw22
 
-**Dawes. “Orbits in lattices” (2022).** [PDF](<file:///home/dzack/Zotero/storage/JVD9AUQ5/%5BDawes%202022%5D%20Orbits%20in%20lattices.pdf>).
+[@Daw22] [PDF](<file:///home/dzack/Zotero/storage/JVD9AUQ5/%5BDawes%202022%5D%20Orbits%20in%20lattices.pdf>).
 
 - [§2, Orbits of vectors — PDF p. 5](<file:///home/dzack/Zotero/storage/JVD9AUQ5/%5BDawes%202022%5D%20Orbits%20in%20lattices.pdf#page=5>).
 - [§3, Algorithms for Tits buildings and isotropic vectors — PDF p. 10](<file:///home/dzack/Zotero/storage/JVD9AUQ5/%5BDawes%202022%5D%20Orbits%20in%20lattices.pdf#page=10>).
@@ -163,7 +163,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### SH23
 
-**Dutour Sikirić and Hulek. “Moduli of polarized Enriques surfaces—computational aspects” (2023).** [PDF](<file:///home/dzack/Zotero/storage/ZQ6EXCC6/%5BSikiri%C4%87%202023%5D%20Moduli%20of%20polarized%20Enriques%20surfaces%20%E2%80%93%20computational%20aspects.pdf>).
+[@SH23] [PDF](<file:///home/dzack/Zotero/storage/ZQ6EXCC6/%5BSikiri%C4%87%202023%5D%20Moduli%20of%20polarized%20Enriques%20surfaces%20%E2%80%93%20computational%20aspects.pdf>).
 
 - [§3.6, The Tits building — PDF p. 22](<file:///home/dzack/Zotero/storage/ZQ6EXCC6/%5BSikiri%C4%87%202023%5D%20Moduli%20of%20polarized%20Enriques%20surfaces%20%E2%80%93%20computational%20aspects.pdf#page=22>).
 - [§3.7.1, The degree-two case — PDF p. 23](<file:///home/dzack/Zotero/storage/ZQ6EXCC6/%5BSikiri%C4%87%202023%5D%20Moduli%20of%20polarized%20Enriques%20surfaces%20%E2%80%93%20computational%20aspects.pdf#page=23>).
@@ -171,27 +171,27 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Vin72
 
-**Vinberg. “The groups of units of certain quadratic forms” (1972).** [PDF](<file:///home/dzack/Zotero/storage/V5ABHR58/local-write-api-1782642386837-GroupsUnits.pdf>).
+[@Vin72] [PDF](<file:///home/dzack/Zotero/storage/V5ABHR58/local-write-api-1782642386837-GroupsUnits.pdf>).
 
 - [§2, Discrete groups generated by reflections — PDF p. 7](<file:///home/dzack/Zotero/storage/V5ABHR58/local-write-api-1782642386837-GroupsUnits.pdf#page=7>).
 - [§3, Maximum subgroups generated by reflections — PDF p. 11](<file:///home/dzack/Zotero/storage/V5ABHR58/local-write-api-1782642386837-GroupsUnits.pdf#page=11>).
 
 ### Vin85
 
-**Vinberg. “Hyperbolic groups of reflections” (1985).** [PDF](<file:///home/dzack/Zotero/storage/F8KDYEYJ/Vinberg%20-%201985%20-%20Hyperbolic%20groups%20of%20reflections.pdf>).
+[@Vin85] [PDF](<file:///home/dzack/Zotero/storage/F8KDYEYJ/Vinberg%20-%201985%20-%20Hyperbolic%20groups%20of%20reflections.pdf>).
 
 - [Chapter I, §3, Combinatorial structure from the Gram matrix — PDF p. 17](<file:///home/dzack/Zotero/storage/F8KDYEYJ/Vinberg%20-%201985%20-%20Hyperbolic%20groups%20of%20reflections.pdf#page=17>).
 - [Chapter I, §4, Boundedness and finite-volume criteria — PDF p. 21](<file:///home/dzack/Zotero/storage/F8KDYEYJ/Vinberg%20-%201985%20-%20Hyperbolic%20groups%20of%20reflections.pdf#page=21>).
 
 ### Ale22
 
-**Alexeev. “Reflective hyperbolic 2-elementary lattices, K3 surfaces and hyperkähler varieties” (2022).** [PDF](<file:///home/dzack/Zotero/storage/7F7RU87H/%5BAlexeev%202022%5D%20Reflective%20hyperbolic%202-elementary%20lattices,%20K3%20surfaces%20and%20hyperkahler%20varieties.pdf>).
+[@Ale22] [PDF](<file:///home/dzack/Zotero/storage/7F7RU87H/%5BAlexeev%202022%5D%20Reflective%20hyperbolic%202-elementary%20lattices,%20K3%20surfaces%20and%20hyperkahler%20varieties.pdf>).
 
 - [§3, Coxeter diagrams and maximal parabolic subdiagrams — PDF p. 6](<file:///home/dzack/Zotero/storage/7F7RU87H/%5BAlexeev%202022%5D%20Reflective%20hyperbolic%202-elementary%20lattices,%20K3%20surfaces%20and%20hyperkahler%20varieties.pdf#page=6>).
 
 ### AE22
 
-**Alexeev and Engel. “Compactifications of moduli spaces of K3 surfaces with a nonsymplectic involution” (2022).** [PDF](<file:///home/dzack/Zotero/storage/94VRWP8H/%5BAlexeev%202022%5D%20Compactifications%20of%20moduli%20spaces%20of%20K3%20surfaces%20with%20a%20nonsymplectic%20involution.pdf>).
+[@AE22] [PDF](<file:///home/dzack/Zotero/storage/94VRWP8H/%5BAlexeev%202022%5D%20Compactifications%20of%20moduli%20spaces%20of%20K3%20surfaces%20with%20a%20nonsymplectic%20involution.pdf>).
 
 - [Heegner relations between involution moduli spaces — §4F; PDF p. 19](<file:///home/dzack/Zotero/storage/94VRWP8H/%5BAlexeev%202022%5D%20Compactifications%20of%20moduli%20spaces%20of%20K3%20surfaces%20with%20a%20nonsymplectic%20involution.pdf#page=19>).
 - [Characteristic and ordinary isotropic discriminant classes — Definition 5.1 and Lemma 5.2; PDF p. 21](<file:///home/dzack/Zotero/storage/94VRWP8H/%5BAlexeev%202022%5D%20Compactifications%20of%20moduli%20spaces%20of%20K3%20surfaces%20with%20a%20nonsymplectic%20involution.pdf#page=21>).
@@ -209,26 +209,26 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### BB66
 
-**Baily and Borel. “Compactification of arithmetic quotients of bounded symmetric domains” (1966).** [PDF](<file:///home/dzack/Zotero/storage/DEJ8UBVN/%5BBaily,%20Jr.%201966%5D%20Compactification%20of%20arithmetic%20quotients%20of%20bounded%20symmetric%20domains.pdf>).
+[@BB66] [PDF](<file:///home/dzack/Zotero/storage/DEJ8UBVN/%5BBaily,%20Jr.%201966%5D%20Compactification%20of%20arithmetic%20quotients%20of%20bounded%20symmetric%20domains.pdf>).
 
 - [§3, Rational boundary components — PDF p. 29](<file:///home/dzack/Zotero/storage/DEJ8UBVN/%5BBaily,%20Jr.%201966%5D%20Compactification%20of%20arithmetic%20quotients%20of%20bounded%20symmetric%20domains.pdf#page=29>).
 - [§10, Analytic structure and projective embeddings of the compactification — PDF p. 79](<file:///home/dzack/Zotero/storage/DEJ8UBVN/%5BBaily,%20Jr.%201966%5D%20Compactification%20of%20arithmetic%20quotients%20of%20bounded%20symmetric%20domains.pdf#page=79>).
 
 ### KK72
 
-**Kiernan and Kobayashi. “Satake compactification and extension of holomorphic mappings” (1972).** [PDF](<file:///home/dzack/Zotero/storage/RJTDSW4G/%5BKiernan%201972%5D%20Satake%20compactification%20and%20extension%20of%20holomorphic%20mappings.pdf>).
+[@KK72] [PDF](<file:///home/dzack/Zotero/storage/RJTDSW4G/%5BKiernan%201972%5D%20Satake%20compactification%20and%20extension%20of%20holomorphic%20mappings.pdf>).
 
 - [§5, Extension theorems — PDF p. 9](<file:///home/dzack/Zotero/storage/RJTDSW4G/%5BKiernan%201972%5D%20Satake%20compactification%20and%20extension%20of%20holomorphic%20mappings.pdf#page=9>).
 
 ### AMRT10
 
-**Ash, Mumford, Rapoport, and Tai. *Smooth Compactifications of Locally Symmetric Varieties*, second edition (2010).** [PDF](<file:///home/dzack/Zotero/storage/4EKT3T4B/local-write-api-1781947941203-zotero_attach_AB3STGX5.pdf>).
+[@AMRT10] [PDF](<file:///home/dzack/Zotero/storage/4EKT3T4B/local-write-api-1781947941203-zotero_attach_AB3STGX5.pdf>).
 
 - [Chapter III, §1, Tube domains and compactification of their cusps — PDF p. 109](<file:///home/dzack/Zotero/storage/4EKT3T4B/local-write-api-1781947941203-zotero_attach_AB3STGX5.pdf#page=109>).
 
 ### Loo02
 
-**Looijenga. “Compactifications defined by arrangements II: locally symmetric varieties of type IV.”** [PDF](<file:///home/dzack/Zotero/storage/BC55UPDX/%5BLooijenga%202002%5D%20Compactifications%20defined%20by%20arrangements%20II%20-%20locally%20symmetric%20varieties%20of%20type%20IV.pdf>). The attachment is the 2002 version.
+[@Loo02] [PDF](<file:///home/dzack/Zotero/storage/BC55UPDX/%5BLooijenga%202002%5D%20Compactifications%20defined%20by%20arrangements%20II%20-%20locally%20symmetric%20varieties%20of%20type%20IV.pdf>). The attachment is the 2002 version.
 
 - [§1A–B, Isotropic planes and lines — PDF pp. 7](<file:///home/dzack/Zotero/storage/BC55UPDX/%5BLooijenga%202002%5D%20Compactifications%20defined%20by%20arrangements%20II%20-%20locally%20symmetric%20varieties%20of%20type%20IV.pdf#page=7>) and [8](<file:///home/dzack/Zotero/storage/BC55UPDX/%5BLooijenga%202002%5D%20Compactifications%20defined%20by%20arrangements%20II%20-%20locally%20symmetric%20varieties%20of%20type%20IV.pdf#page=8>).
 - [§4, Semitoric extension of certain tube domains — PDF p. 16](<file:///home/dzack/Zotero/storage/BC55UPDX/%5BLooijenga%202002%5D%20Compactifications%20defined%20by%20arrangements%20II%20-%20locally%20symmetric%20varieties%20of%20type%20IV.pdf#page=16>).
@@ -237,7 +237,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### AE23
 
-**Alexeev and Engel. “Compact moduli of K3 surfaces” (2023).** [PDF](<file:///home/dzack/Zotero/storage/WW77H8QS/%5BAlexeev%202023%5D%20Compact%20moduli%20of%20K3%20surfaces.pdf>).
+[@AE23] [PDF](<file:///home/dzack/Zotero/storage/WW77H8QS/%5BAlexeev%202023%5D%20Compact%20moduli%20of%20K3%20surfaces.pdf>).
 
 - [Arithmetic compactifications of K3 period spaces — §5; PDF p. 12](<file:///home/dzack/Zotero/storage/WW77H8QS/%5BAlexeev%202023%5D%20Compact%20moduli%20of%20K3%20surfaces.pdf#page=12>).
 - [Recognizability and extension in monodromy families — Proposition 8.1; PDF p. 25](<file:///home/dzack/Zotero/storage/WW77H8QS/%5BAlexeev%202023%5D%20Compact%20moduli%20of%20K3%20surfaces.pdf#page=25>).
@@ -254,7 +254,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### AEH24
 
-**Alexeev, Engel, and Han. “Compact moduli of K3 surfaces with a nonsymplectic automorphism” (2024).** [PDF](<file:///home/dzack/Zotero/storage/URNR4MW8/local-write-api-1782660018609-78ZHA45V-2110.13834.pdf>).
+[@AEH24] [PDF](<file:///home/dzack/Zotero/storage/URNR4MW8/local-write-api-1782660018609-78ZHA45V-2110.13834.pdf>).
 
 - [Stable slc pair conventions and moduli — Definition 3.1 and Theorem 3.2; PDF p. 6](<file:///home/dzack/Zotero/storage/URNR4MW8/local-write-api-1782660018609-78ZHA45V-2110.13834.pdf#page=6>).
 - [Admissible semifans and compatibility at isotropic planes — Definitions 3.17–3.18; PDF p. 9](<file:///home/dzack/Zotero/storage/URNR4MW8/local-write-api-1782660018609-78ZHA45V-2110.13834.pdf#page=9>).
@@ -266,7 +266,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### AET23
 
-**Alexeev, Engel, and Thompson. “Stable pair compactification of moduli of K3 surfaces of degree 2” (2023).** [PDF](<file:///home/dzack/Zotero/storage/CU5QMF4K/%5BAlexeev%202023%5D%20Stable%20pair%20compactification%20of%20moduli%20of%20K3%20surfaces%20of%20degree%202.pdf>).
+[@AET23] [PDF](<file:///home/dzack/Zotero/storage/CU5QMF4K/%5BAlexeev%202023%5D%20Stable%20pair%20compactification%20of%20moduli%20of%20K3%20surfaces%20of%20degree%202.pdf>).
 
 - [§2, Kulikov models and integral-affine spheres — PDF p. 5](<file:///home/dzack/Zotero/storage/CU5QMF4K/%5BAlexeev%202023%5D%20Stable%20pair%20compactification%20of%20moduli%20of%20K3%20surfaces%20of%20degree%202.pdf#page=5>).
 - [§4, The Coxeter fan and compactifications — PDF p. 21](<file:///home/dzack/Zotero/storage/CU5QMF4K/%5BAlexeev%202023%5D%20Stable%20pair%20compactification%20of%20moduli%20of%20K3%20surfaces%20of%20degree%202.pdf#page=21>).
@@ -275,7 +275,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### AEGS25
 
-**Alexeev, Engel, Garza, and Schaffler. “Compact moduli of Enriques surfaces of degree 2” (2025).** [PDF](<file:///home/dzack/Zotero/storage/JB2YRBN3/Alexeev%20et%20al.%20-%202025%20-%20Compact%20moduli%20of%20Enriques%20surfaces%20of%20degree%202.pdf>).
+[@AEGS25] [PDF](<file:///home/dzack/Zotero/storage/JB2YRBN3/Alexeev%20et%20al.%20-%202025%20-%20Compact%20moduli%20of%20Enriques%20surfaces%20of%20degree%202.pdf>).
 
 - [Enriques, del Pezzo, and Nikulin lattice involutions — Definition 2.3; PDF p. 6](<file:///home/dzack/Zotero/storage/JB2YRBN3/Alexeev%20et%20al.%20-%202025%20-%20Compact%20moduli%20of%20Enriques%20surfaces%20of%20degree%202.pdf#page=6>).
 - [Primitive embedding chain for the period construction — Lemma 2.4; PDF p. 6](<file:///home/dzack/Zotero/storage/JB2YRBN3/Alexeev%20et%20al.%20-%202025%20-%20Compact%20moduli%20of%20Enriques%20surfaces%20of%20degree%202.pdf#page=6>).
@@ -302,7 +302,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Kol23a
 
-**Kollár. *Families of Varieties of General Type* (2023).** [PDF](<file:///home/dzack/Zotero/storage/SIYEIMZQ/Families%20of%20Varieties%20of%20General%20Type%20-%20Kollar.pdf>).
+[@Kol23a] [PDF](<file:///home/dzack/Zotero/storage/SIYEIMZQ/Families%20of%20Varieties%20of%20General%20Type%20-%20Kollar.pdf>).
 
 - [§2.1, Locally stable families — PDF p. 67](<file:///home/dzack/Zotero/storage/SIYEIMZQ/Families%20of%20Varieties%20of%20General%20Type%20-%20Kollar.pdf#page=67>).
 - [§2.4, Stable families — PDF p. 92](<file:///home/dzack/Zotero/storage/SIYEIMZQ/Families%20of%20Varieties%20of%20General%20Type%20-%20Kollar.pdf#page=92>).
@@ -311,20 +311,20 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Kul77
 
-**Kulikov. “Degenerations of K3 surfaces and Enriques surfaces” (1977).** [PDF](<file:///home/dzack/Zotero/storage/RAVU7VWH/local-write-api-1781870775597-RLBWHHMT.pdf>).
+[@Kul77] [PDF](<file:///home/dzack/Zotero/storage/RAVU7VWH/local-write-api-1781870775597-RLBWHHMT.pdf>).
 
 - [§3, Degenerations of K3 and Enriques surfaces — PDF p. 10](<file:///home/dzack/Zotero/storage/RAVU7VWH/local-write-api-1781870775597-RLBWHHMT.pdf#page=10>).
 
 ### PP81
 
-**Persson and Pinkham. “Degeneration of surfaces with trivial canonical bundle” (1981).** [PDF](<file:///home/dzack/Zotero/storage/MCV6ZYPY/local-write-api-1781872721563-44X5RP5M.pdf>).
+[@PP81] [PDF](<file:///home/dzack/Zotero/storage/MCV6ZYPY/local-write-api-1781872721563-44X5RP5M.pdf>).
 
 - [§1, Preliminaries and the contraction criterion — PDF p. 7](<file:///home/dzack/Zotero/storage/MCV6ZYPY/local-write-api-1781872721563-44X5RP5M.pdf#page=7>).
 - [§6, The proof — PDF p. 20](<file:///home/dzack/Zotero/storage/MCV6ZYPY/local-write-api-1781872721563-44X5RP5M.pdf#page=20>).
 
 ### Mor81
 
-**Morrison. “Semistable degenerations of Enriques' and hyperelliptic surfaces” (1981).** [PDF](<file:///home/dzack/Zotero/storage/I3UT2AJN/%5BMorrison%201981%5D%20Semistable%20degenerations%20of%20Enriques%E2%80%99%20and%20hyperelliptic%20surfaces.pdf>).
+[@Mor81] [PDF](<file:///home/dzack/Zotero/storage/I3UT2AJN/%5BMorrison%201981%5D%20Semistable%20degenerations%20of%20Enriques%E2%80%99%20and%20hyperelliptic%20surfaces.pdf>).
 
 - [§3, Surfaces with an effective anti-bicanonical divisor — PDF p. 10](<file:///home/dzack/Zotero/storage/I3UT2AJN/%5BMorrison%201981%5D%20Semistable%20degenerations%20of%20Enriques%E2%80%99%20and%20hyperelliptic%20surfaces.pdf#page=10>).
 - [§5, Degenerations of surfaces with twice the canonical class trivial — PDF p. 28](<file:///home/dzack/Zotero/storage/I3UT2AJN/%5BMorrison%201981%5D%20Semistable%20degenerations%20of%20Enriques%E2%80%99%20and%20hyperelliptic%20surfaces.pdf#page=28>).
@@ -332,21 +332,21 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Ols04
 
-**Olsson. “Semistable degenerations and period spaces for polarized K3 surfaces” (2004).** [PDF](<file:///home/dzack/Zotero/storage/J4UA3DYD/local-write-api-1782469131861-B99KVK3J.pdf>).
+[@Ols04] [PDF](<file:///home/dzack/Zotero/storage/J4UA3DYD/local-write-api-1782469131861-B99KVK3J.pdf>).
 
 - [§2, Canonical log structures on semistable schemes — PDF p. 8](<file:///home/dzack/Zotero/storage/J4UA3DYD/local-write-api-1782469131861-B99KVK3J.pdf#page=8>).
 - [§4, The log Picard functor: general definition and representability — PDF p. 17](<file:///home/dzack/Zotero/storage/J4UA3DYD/local-write-api-1782469131861-B99KVK3J.pdf#page=17>).
 
 ### KM98
 
-**Kollár and Mori. *Birational Geometry of Algebraic Varieties* (1998).** [PDF](<file:///home/dzack/Zotero/storage/D3SS5USG/%5BKoll%C3%A1r%201998%5D%20Birational%20Geometry%20of%20Algebraic%20Varieties.pdf>).
+[@KM98] [PDF](<file:///home/dzack/Zotero/storage/D3SS5USG/%5BKoll%C3%A1r%201998%5D%20Birational%20Geometry%20of%20Algebraic%20Varieties.pdf>).
 
 - [§2.3, Singularities in the minimal model program — PDF p. 58](<file:///home/dzack/Zotero/storage/D3SS5USG/%5BKoll%C3%A1r%201998%5D%20Birational%20Geometry%20of%20Algebraic%20Varieties.pdf#page=58>).
 - [§4.1, Log canonical surface singularities — PDF p. 122](<file:///home/dzack/Zotero/storage/D3SS5USG/%5BKoll%C3%A1r%201998%5D%20Birational%20Geometry%20of%20Algebraic%20Varieties.pdf#page=122>).
 
 ### FS86
 
-**Friedman and Scattone. “Type III degenerations of K3 surfaces” (1986).** [PDF](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf>).
+[@FS86] [PDF](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf>).
 
 - [§1, Arithmetic of Type III degenerations — PDF p. 15](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf#page=15>).
 - [§3, The mixed Hodge structure on the singular fiber — PDF p. 25](<file:///home/dzack/Zotero/storage/2C5KR524/Friedman%20and%20Scattone%20-%201986%20-%20Type%20Iii%20Degenerations%20Of%20K3%20Surfaces.pdf#page=25>).
@@ -354,14 +354,14 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Eng18
 
-**Engel. “Looijenga's conjecture via integral-affine geometry” (2018).** [PDF](<file:///home/dzack/Zotero/storage/XBI79KM3/%5BEngel%202014%5D%20Looijenga's%20conjecture%20via%20integral-affine%20geometry.pdf>).
+[@Eng18] [PDF](<file:///home/dzack/Zotero/storage/XBI79KM3/%5BEngel%202014%5D%20Looijenga's%20conjecture%20via%20integral-affine%20geometry.pdf>).
 
 - [§3, Integral-affine surfaces and Type III anticanonical pairs — PDF p. 8](<file:///home/dzack/Zotero/storage/XBI79KM3/%5BEngel%202014%5D%20Looijenga's%20conjecture%20via%20integral-affine%20geometry.pdf#page=8>).
 - [§4, Surgeries on integral-affine surfaces — PDF p. 13](<file:///home/dzack/Zotero/storage/XBI79KM3/%5BEngel%202014%5D%20Looijenga's%20conjecture%20via%20integral-affine%20geometry.pdf#page=13>).
 
 ### EF21
 
-**Engel and Friedman. “Smoothings and rational double point adjacencies for cusp singularities” (2021).** [PDF](<file:///home/dzack/Zotero/storage/GDDUCP98/%5BEngel%202021%5D%20Smoothings%20and%20rational%20double%20point%20adjacencies%20for%20cusp%20singularities.pdf>).
+[@EF21] [PDF](<file:///home/dzack/Zotero/storage/GDDUCP98/%5BEngel%202021%5D%20Smoothings%20and%20rational%20double%20point%20adjacencies%20for%20cusp%20singularities.pdf>).
 
 - [§2, Type III degenerations — PDF p. 15](<file:///home/dzack/Zotero/storage/GDDUCP98/%5BEngel%202021%5D%20Smoothings%20and%20rational%20double%20point%20adjacencies%20for%20cusp%20singularities.pdf#page=15>).
 - [§3, Monodromy — PDF p. 30](<file:///home/dzack/Zotero/storage/GDDUCP98/%5BEngel%202021%5D%20Smoothings%20and%20rational%20double%20point%20adjacencies%20for%20cusp%20singularities.pdf#page=30>).
@@ -369,14 +369,14 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Fri15
 
-**Friedman. “On the geometry of anticanonical pairs” (2015).** [PDF](<file:///home/dzack/Zotero/storage/JWKCB2V5/%5BFriedman%202015%5D%20On%20the%20geometry%20of%20anticanonical%20pairs.pdf>).
+[@Fri15] [PDF](<file:///home/dzack/Zotero/storage/JWKCB2V5/%5BFriedman%202015%5D%20On%20the%20geometry%20of%20anticanonical%20pairs.pdf>).
 
 - [§3, Moduli: deformations and the period map — PDF p. 17](<file:///home/dzack/Zotero/storage/JWKCB2V5/%5BFriedman%202015%5D%20On%20the%20geometry%20of%20anticanonical%20pairs.pdf#page=17>).
 - [§4, The ample cone and nef divisors — PDF p. 26](<file:///home/dzack/Zotero/storage/JWKCB2V5/%5BFriedman%202015%5D%20On%20the%20geometry%20of%20anticanonical%20pairs.pdf#page=26>).
 
 ### AT17
 
-**Alexeev and Thompson. “ADE surfaces and their moduli.”** [PDF](<file:///home/dzack/Zotero/storage/SWZZXUS2/%5BAlexeev%202017%5D%20ADE%20surfaces%20and%20their%20moduli.pdf>). The attachment uses the 2017 preprint key; project notes also cite this work as AT21.
+[@AT17] [PDF](<file:///home/dzack/Zotero/storage/SWZZXUS2/%5BAlexeev%202017%5D%20ADE%20surfaces%20and%20their%20moduli.pdf>). The attachment uses the 2017 preprint key; project notes also cite this work as AT21.
 
 - [§2, Log del Pezzo index-two pairs and their double covers — PDF p. 5](<file:///home/dzack/Zotero/storage/SWZZXUS2/%5BAlexeev%202017%5D%20ADE%20surfaces%20and%20their%20moduli.pdf#page=5>).
 - [§5, Moduli of ADE pairs — PDF p. 24](<file:///home/dzack/Zotero/storage/SWZZXUS2/%5BAlexeev%202017%5D%20ADE%20surfaces%20and%20their%20moduli.pdf#page=24>).
@@ -387,7 +387,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### YZZ25
 
-**Yu, Zheng, and Zhong. “Moduli spaces of sextic curves with simple singularities and their compactifications” (2025).** [PDF](<file:///home/dzack/Zotero/storage/GCXFSSRK/Yu%20et%20al.%20-%202025%20-%20Moduli%20spaces%20of%20sextic%20curves%20with%20simple%20singularities%20and%20their%20compactifications.pdf>).
+[@YZZ25] [PDF](<file:///home/dzack/Zotero/storage/GCXFSSRK/Yu%20et%20al.%20-%202025%20-%20Moduli%20spaces%20of%20sextic%20curves%20with%20simple%20singularities%20and%20their%20compactifications.pdf>).
 
 - [§2, ADE sextic curves and K3 surfaces — PDF p. 4](<file:///home/dzack/Zotero/storage/GCXFSSRK/Yu%20et%20al.%20-%202025%20-%20Moduli%20spaces%20of%20sextic%20curves%20with%20simple%20singularities%20and%20their%20compactifications.pdf#page=4>).
 - [§3, Occult period map and global Torelli — PDF p. 6](<file:///home/dzack/Zotero/storage/GCXFSSRK/Yu%20et%20al.%20-%202025%20-%20Moduli%20spaces%20of%20sextic%20curves%20with%20simple%20singularities%20and%20their%20compactifications.pdf#page=6>).
@@ -397,14 +397,14 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Zan20
 
-**Zanardini. “Explicit constructions of Halphen pencils” (2020).** [PDF](<file:///home/dzack/Zotero/storage/SMAI4P9V/%5BZanardini%202020%5D%20Explicit%20constructions%20of%20Halphen%20pencils.pdf>).
+[@Zan20] [PDF](<file:///home/dzack/Zotero/storage/SMAI4P9V/%5BZanardini%202020%5D%20Explicit%20constructions%20of%20Halphen%20pencils.pdf>).
 
 - [§3.1, Halphen pencils — PDF p. 7](<file:///home/dzack/Zotero/storage/SMAI4P9V/%5BZanardini%202020%5D%20Explicit%20constructions%20of%20Halphen%20pencils.pdf#page=7>).
 - [§6, Constructions of Halphen pencils of index two — PDF p. 25](<file:///home/dzack/Zotero/storage/SMAI4P9V/%5BZanardini%202020%5D%20Explicit%20constructions%20of%20Halphen%20pencils.pdf#page=25>).
 
 ### Zan23
 
-**Zanardini. “Stability of pencils of plane sextics and Halphen pencils of index two” (2023).** [PDF](<file:///home/dzack/Zotero/storage/5ERJNJUQ/%5BZanardini%202023%5D%20Stability%20of%20pencils%20of%20plane%20sextics%20and%20Halphen%20pencils%20of%20index%20two.pdf>).
+[@Zan23] [PDF](<file:///home/dzack/Zotero/storage/5ERJNJUQ/%5BZanardini%202023%5D%20Stability%20of%20pencils%20of%20plane%20sextics%20and%20Halphen%20pencils%20of%20index%20two.pdf>).
 
 - [§2, Stability of pencils of plane sextics — PDF p. 3](<file:///home/dzack/Zotero/storage/5ERJNJUQ/%5BZanardini%202023%5D%20Stability%20of%20pencils%20of%20plane%20sextics%20and%20Halphen%20pencils%20of%20index%20two.pdf#page=3>).
 - [§4, Stability of Halphen pencils of index two — PDF p. 12](<file:///home/dzack/Zotero/storage/5ERJNJUQ/%5BZanardini%202023%5D%20Stability%20of%20pencils%20of%20plane%20sextics%20and%20Halphen%20pencils%20of%20index%20two.pdf#page=12>).
@@ -413,7 +413,7 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ### Gar24
 
-**Garza. “Complete moduli spaces of Coble surfaces.”** [PDF](<file:///home/dzack/Zotero/storage/9UWFSMEY/local-write-api-1782660084230-9YBRZ6AU-CoblePaper_v2024-07-18.pdf>). Links refer to the attached 2024 manuscript.
+[@Gar24] [PDF](<file:///home/dzack/Zotero/storage/9UWFSMEY/local-write-api-1782660084230-9YBRZ6AU-CoblePaper_v2024-07-18.pdf>). Links refer to the attached 2024 manuscript.
 
 - [§2, Coble surfaces — PDF p. 4](<file:///home/dzack/Zotero/storage/9UWFSMEY/local-write-api-1782660084230-9YBRZ6AU-CoblePaper_v2024-07-18.pdf#page=4>).
 - [§3, Lattice theory — PDF p. 5](<file:///home/dzack/Zotero/storage/9UWFSMEY/local-write-api-1782660084230-9YBRZ6AU-CoblePaper_v2024-07-18.pdf#page=5>).
@@ -422,4 +422,4 @@ The links open attached PDFs in the system viewer. **PDF pages** count from the 
 
 ## Reference awaiting a PDF link
 
-**Loo85 — Looijenga. “Semi-toric partial compactifications I.”** [Zotero record](zotero://select/library/items/QUCV2EVG). PDF attachment unavailable as of 2026-10-30.
+[@Loo85] [Zotero record](zotero://select/library/items/QUCV2EVG). PDF attachment unavailable as of 2026-10-30.
