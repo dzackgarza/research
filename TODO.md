@@ -138,11 +138,15 @@ Coble-side centralizer group $\Gamma^\theta_\Co$ likewise; and $\Gamma^{\mathrm{
 genuine overgroup of $\ker\rho_{T_\Co}$ whose quotient $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ is
 nontrivial. Nontriviality of that quotient does not by itself give strictness — a preimage exceeds the
 kernel only if some element of the quotient is realised by an integral isometry — but here one is
-exhibited: the transposition of the two isotropic generators of the $U(2)$ summand is the reflection
-$s_{e'-f'}$, of spinor norm $[2]=1$, hence in $\Orth^+(T_\Co)$, and it fixes the class $\eta/2$ while
-moving $1024$ of the $2048$ classes (`computations/reports/coble_swap_isometry.py`). So
+proposed and its required properties are verified through the owner's operations:
+`computations/reports/coble_congruence_witness.py` builds the transposition of the two isotropic
+generators of the $U(2)$ summand as `Lattices.reflection(e' - f')`, decides its membership in `O_plus`
+and in `stable_orthogonal_group` with those groups, takes the classes with `discriminant_class` of
+`primitive_dual`, and computes the action with `discriminant_morphism`, finding $\sigma\in\Orth^+(T_\Co)$,
+$\sigma\notin\ker\rho$, $q([e'/2]) = q([f'/2]) = 0$, $q([\zeta/2]) = 1/2$,
+$b([e'/2],[f'/2]) = 1/2$, and $|A_{T_\Co}| = 2048 = |\det T_\Co|$. So
 $\Gamma^{\mathrm{cong}}_{\Co,2}$ **strictly** contains $\Gamma_\Co$, while strictness for
-$\Gamma^{\mathrm{Hdg}}$ and $\Gamma^\theta_\Co$ is open. What remains, with the exact missing
+$\Gamma^{\mathrm{Hdg}}$ and $\Gamma^\theta_\Co$ is open and no witness is proposed for either. What remains, with the exact missing
 hypothesis in each case:
 
 1. $\Gamma^{\mathrm{Hdg}}$ vs $\Gamma^{\mathrm{cong}}$: compare two subgroups of the finite group
