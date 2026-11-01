@@ -1,61 +1,57 @@
 # Open work in this repository
 
-Research and exposition obligations that nothing in the tree has closed. The preamble and library
-programme that used to live here is posted upstream as
-[`sage-extensions` #7--#13](https://github.com/dzackgarza/sage-extensions/issues); this repository's
-preamble is a two-file re-export of `sage_extensions.all`, so none of that work belongs here.
+Writing and mathematics only. An item belongs here if it is a hole in the prose or a question of
+mathematics the book needs settled. Code, tooling, the library, the build, and the state of any
+computation do not belong here; library work is upstream
+([`sage-extensions` #7--#13](https://github.com/dzackgarza/sage-extensions/issues)) and computation
+status lives in [GAPS](writing/dissertation/GAPS.md).
 
-## Unfinished text in the book
+Each item states what is missing from the mathematics or the text, and what writing it would take.
 
-1. **`F_{\Nod,2}` is undefined.** `moduli-construction.md` lists it beside $F_{\Nod}$ in a display of
-   moduli spaces and gives `???` as its definition. Either it is a quotient of $\mathbf D(T_\Nod)$ by a
-   named group, in which case it should be written, or the row should go. The same display's
-   $\Gamma_{\Co,2}=\operatorname{Stab}_{\Orth(\ten)}(T_\Co)$ is written but not characterised beyond
-   that, and the question block under it says so.
+## Holes in the prose
 
-2. **The map $F_{\Co,2}\to\fco$ in the tower diagram, marked `?`.** It is undetermined for the stated
-   reason: no explicit description of $\Gamma_{\Co,2}$ is known, and the prose records that degree-$2$
-   polarized Coble surfaces appear nowhere in the earlier literature. Closing it means either
-   describing $\Gamma_{\Co,2}$ or removing the arrow and saying why the tower stops there. A `?` in a
-   commutative diagram is the one place a reader cannot tell conjecture from typo.
+1. **`F_{\Nod,2}` is undefined.** The display of moduli spaces in `moduli-construction.md` gives it as
+   `???` beside $F_\Nod$. Either it is $\mathbf D(T_\Nod)$ modulo a group that should be named, or the
+   row does not belong.
+
+2. **The tower diagram carries a `?`.** The map $F_{\Co,2}\to\fco$ is undetermined because
+   $\Gamma_{\Co,2}$ has no explicit description, and degree-$2$ polarized Coble surfaces appear nowhere
+   in the earlier literature. Either $\Gamma_{\Co,2}$ is described, or the arrow goes and the text says
+   why the tower stops. A `?` inside a commutative diagram is the one place a reader cannot tell
+   conjecture from typo.
+
+3. **One group, two names.** The book writes $\Gamma_\Co=\Orth^+(T_\Co)^*$, spells the star out as the
+   discriminant kernel in `moduli-construction.md`, and defines
+   $\widetilde O^+(L)=\ker(\rho_L,\chi_{\mathrm{sp}})$ in `clifford-lifting-and-spinor-obstructions.md`.
+   These are the same group by substitution and the book never says so, leaving a reader unable to tell
+   whether the equality is asserted or assumed.
 
 ## Open mathematics
 
-3. **Identify the two names of one group.** `lattices.md` defines
-   $\Gamma_\Co \definedas \Orth^+(T_\Co)^*$, `moduli-construction.md` spells the star out as the
-   discriminant kernel, and `clifford-lifting-and-spinor-obstructions.md` defines
-   $\widetilde O^+(L)=\ker(\rho_L,\chi_{\mathrm{sp}})$. They are the same group by substitution, and
-   the book never says so. A reader cannot tell whether the equality is asserted or assumed.
+4. **Primitive isotropic planes of $T_\Co$ under $\Gamma_\Co$.** How many orbits, equivalently whether
+   $\fco$ has one $1$-cusp or several. $\Orth^+(T_\Co)$ is transitive, by `thm:plane-transitivity-tco`.
+   For $\Gamma_\Co$ the candidate separator is the subspace a plane cuts out of $A_{T_\Co}$, and
+   whether it separates is undecided. A generating set for $\Gamma_\Co$ is not known, which is what
+   either route to the count needs.
 
-4. **The number of $\Gamma_\Co$-orbits of primitive isotropic planes**, equivalently whether $\fco$
-   has one $1$-cusp or several. The full-group statement is `thm:plane-transitivity-tco`. The
-   candidate separator is the subspace a plane cuts out of $A_{T_\Co}$; whether it separates is
-   undecided. Nothing in the tree gives a generating set for $\Gamma_\Co$, which is what an orbit
-   computation would need.
+5. **The decomposition $[1,2,120,135,270]$ is asserted and not proved.** It is claimed to be the orbit
+   decomposition of the $528$ isotropic classes under $G_\Co$, and nothing in the book establishes that
+   $G_\Co$ has order $696\,729\,600$ or that its orbits have those lengths. The claim is consistent with
+   the proved coarser list and the index $136$, which is a check and not a proof.
 
-5. **The fine Heegner decomposition $[1,2,120,135,270]$ under $G_\Co$** has no certificate. It needs
-   the image of $G_\Co$ in $\Orth(q_{T_\Co})$, which needs $\Gamma_\Co$'s generators reduced through
-   the gluing identification the book lists as open. The two lists and the index $136$ are
-   cross-checked against each other, so a computation contradicting one is immediately visible.
+6. **The decomposition $[1,255,272]$ is half proved.** Its three parts are known to partition the $528$
+   isotropic classes; that they are the orbits of the stabilizer of the polarization class is not
+   established. Until then the three numbers are computed rather than proved, and the chapter says so.
 
-6. **The $\Gamma_\Co$-lifting in the cusp correspondence** --- the strong form of
-   `rmk:descent-of-an-equivariant-inclusion`, a homomorphism rather than pointwise orbit
-   compatibility. The weak form is proved; the strong form is what equivariance and stabilizer
-   comparison use.
+7. **$\Gamma_\Co$ acts on the cusp correspondence only weakly.** `rmk:descent-of-an-equivariant-inclusion`
+   proves pointwise orbit compatibility and needs a homomorphism for equivariance and for comparing
+   stabilizers. The strong form is missing.
 
-7. **Vector-level transitivity under $\Orth^+(\latI_{1,8})$**, left open by
-   `prop:rank-nine-line-transitivity`. For signature $(2,9)$ it does follow, because $-\id$ lies
-   inside $\Orth^+$ there and supplies the sign; the $(1,8)$ case is the one where that fails.
+8. **Vector-level transitivity for $\latI_{1,8}$.** `prop:rank-nine-line-transitivity` leaves open
+   whether $\Orth^+(\latI_{1,8})$ is transitive on primitive isotropic vectors, not only on lines. For
+   signature $(2,9)$ it follows, since $-\id$ lies in $\Orth^+$ there and supplies the sign; the $(1,8)$
+   case is where that fails.
 
-## Verification debt
-
-8. **The coarse decomposition $[1,255,272]$ has a partition certificate but no stabilizer certificate.** The
-   chapter asserts three orbit lengths under the finite stabilizer of the polarization class; what is
-   checked is that they partition the $528$ isotropic classes, and what is not is that the group
-   realizing them is the stabilizer it is claimed to be. Until that is settled the three numbers are
-   computed rather than proved, and the chapter says so.
-
-9. **Ste91's source group.** `thm:orbit-classification-sterk` and the proof of Lemma 4.2.1 in
-   `475-our-cusps.md` quote the paper, which is not in this tree; the corpus has no match and both
-   eudml and the Radboud repository refuse automated access. The book keeps the source's group as
-   stated and marks the item number unconfirmed. Closing it needs the paper.
+9. **Ste91's group.** `thm:orbit-classification-sterk` and the proof of Lemma 4.2.1 in `475-our-cusps.md`
+   rest on a theorem whose group the book cannot confirm, the paper being unavailable. The chapter keeps
+   the source's group as stated and flags the item number as unconfirmed. Settling it needs the source.
