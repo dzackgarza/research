@@ -139,6 +139,35 @@ except Exception as exc:
     print('   UNDECIDED: %s: %s' % (type(exc).__name__, str(exc)[:300]))
     decision = None
 
+# ---------------------------------------------------------------- 3.1 the marked-pair isometry
+# Necessary and sufficient data: an isometry of the two polarizations exists iff some isometry
+# phi: h~^perp -> h^perp carries the glue class of one to the glue class of the other (Nikulin; the
+# glue classes have order 2, so the sign on Z v/4 is irrelevant).  What can be assembled at the owner:
+print('')
+print('3.1 the marked-pair isometry, and the exact step that is blocked')
+K = comp_Coble
+Kp = comp_Heegner
+print('    complements isometric: %s' % K.is_isometric_to(Kp))
+gS = S_Co.glue_map(h_tilde.sublattice(), K)
+gM = M.glue_map(h.sublattice(), Kp)
+print('    glue subgroup of h~^perp: order %s; of h^perp: order %s'
+      % (gS.codomain().cardinality(), gM.codomain().cardinality()))
+aut_K = K.Aut()
+print('    |O(h~^perp)| = %s, generators %d' % (aut_K.cardinality(), len(list(aut_K.group_generators()))))
+rho_K = K.discriminant_representation()
+A_K = K.discriminant_group()
+image_of_aut = A_K.orthogonal_group().subgroup(tuple(rho_K(g) for g in aut_K.group_generators()))
+print('    |image of O(h~^perp) in O(A)| = %s' % image_of_aut.cardinality())
+print('    BLOCKED HERE, exactly: the subgroup object returned by subgroup(...) of O(A) has no orbit')
+print('    method -- dir() offers none, while the full group O(A) does (OA.orbit(x) is used above) --')
+print('    so the orbit of the glued class under the image of O(h~^perp) cannot be computed.  Expected')
+print('    semantic operation: the induced action of a subgroup of O(A) on the finite quadratic form,')
+print('    i.e. Subgroups(O(A)).orbit(element) / .element_action(), closing the comparison')
+print('      phi0.discriminant_morphism()(glue class of S_Co)  ==  glue class of M')
+print('    over the finite group.  Second missing piece: a comparison of glue classes that live in the')
+print('    discriminant forms of the two complements with the (-1) twist of glue_map recorded -- the maps')
+print('    land in A(-1) and no owner operation composes them with an isometry discriminant map.')
+
 # ---------------------------------------------------------------- 4. what remains
 print('')
 print('4. what this does not do')
@@ -147,10 +176,10 @@ print('       nonsymplectic involutions, H^2 = 4 fixed by both, alpha^2 = -2 wit
 print('       by I_Co, and a chamber with alpha effective and H nef and big (heegner report,')
 print('       sec-labeled-lattice-data).  None is built here, so this is an unlabelled comparison of')
 print('       polarizations, necessary for the labeled one and not a substitute for it.')
-print('   4.2 the marked pair.  Matching complements is necessary, not sufficient, for an isometry')
-print('       carrying h~_Co to h.  The criterion of thm:coble-heegner-line-unique needs an indefinite')
-print('       complement and a positive vector in signature (1,10) has a negative definite one, so the')
-print('       vector-level question has to be decided directly.')
+print('   4.2 the marked pair: section 3.1 assembles everything except the last two comparisons, and')
+print('       names the two owner operations missing there.  The criterion of')
+print('       thm:coble-heegner-line-unique does not apply here: it needs an indefinite complement and a')
+print('       positive vector in signature (1,10) has a negative definite one.')
 print('   4.3 the ambient.  L_K3 and the two primitive embeddings are not built, so no isometry is')
 print('       extended over it with isometry_extends and no chamber is transported.')
 print('')

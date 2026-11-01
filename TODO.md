@@ -244,8 +244,20 @@ markings.
 with commuting nonsymplectic involutions, $H^2=4$ fixed by both, $\alpha^2=-2$, $H\cdot\alpha=0$, $\alpha$
 fixed by $I_\Co$, and a chamber with $\alpha$ effective and $H$ nef and big (research report,
 @sec-labeled-lattice-data) — an unlabelled Picard-lattice isometry is not this comparison. (ii) The
-marked-pair isometry carrying $\tilde h_\Co$ to $h$: matching complements is necessary, and
-@thm:coble-heegner-line-unique does not decide it here, its hypothesis being an indefinite complement.
+marked-pair isometry carrying $\tilde h_\Co$ to $h$. By Nikulin it exists iff some isometry
+$\tilde h_\Co^{\perp}\to h^{\perp}$ carries the glue class of one to that of the other, both classes
+having order $2$ so the sign on $\ZZ v/4$ is irrelevant; @thm:coble-heegner-line-unique does not decide
+it, its hypothesis being an indefinite complement while a positive vector in signature $(1,10)$ has a
+definite one. Assembled at the owner: the complements are isometric; both glue subgroups have order $2$,
+from `S_Co.glue_map` and `M.glue_map`; $\abs{\Orth(\tilde h_\Co^{\perp})} = 2\,786\,918\,400$ with $22$
+generators, whose image in $\Orth(A)$ has order $696\,729\,600$. **Blocked at two exact operations.** The
+object returned by `O(A).subgroup(generators)` has no `orbit` method — the full form's `O(A).orbit(x)`
+exists and is used in the same report — so the orbit of the glued class under the image of
+$\Orth(\tilde h_\Co^{\perp})$ cannot be computed; expected semantic operation: the induced action of a
+subgroup of $\Orth(A)$ on the finite quadratic form (`Subgroups(O(A)).orbit` / `.element_action`). And the
+glue classes live in the discriminant forms of the two complements with the $(-1)$ twist that `glue_map`
+records ($A(-1)$), with no owner operation composing a glue map with an isometry's discriminant map;
+expected operation: transport/comparison of glue classes across two complements.
 (iii) The extension over $\lkt$ by `isometry_extends` and the transport of the chamber.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
