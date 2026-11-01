@@ -1,0 +1,28 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, mounted read-only; repo bound at /repo
+
+S_Co = <2> + <-2>^10: rank 11, det 2048, signature (1, 10)
+  e^2 = 2, f_i^2 = -2, h~_Co^2 = 4, div(h~_Co) = 2
+M = S_En + <delta> = U(2) + E8(2) + <-2>: rank 11, det 2048, signature (1, 10)
+  delta^2 = -2, delta.h = 0, h^2 = 4, div(h) = 2
+Coble: complement of the polarization has rank 10, det 2048, signature (0, 10)
+    roots (square -2 vectors) in the complement: 18
+    |A_complement| = 2048
+Heegner: complement of the polarization has rank 10, det 2048, signature (0, 10)
+    roots (square -2 vectors) in the complement: 2
+    |A_complement| = 2048
+
+isometry decision of the two complements, by L.is_isometric_to:
+  is_isometric_to returned False
+
+SUMMARY
+  OBSTRUCTION: the complements of the two polarizations are not isometric, so no isometry of
+  L_K3 carries h~_Co to h with these markings, and A20(2) cannot be closed by a labeled isometry.
+  The invariant recorded above is the complement lattice itself (rank, determinant, signature,
+  roots, discriminant group), not a single number, so the obstruction is stated as a lattice.
+  Scope: M = S_En + <delta> unsatured, the Coble marking h~_Co = 2e + f_1 + f_2 (unique up to
+  O(S_Co) within the a = 1 family of isotropic pairs), and the complements compared rather than the
+  marked pairs or the ambient L_K3.  Nothing is claimed for other markings or for a saturated M.
+OK: the comparison was made and its outcome recorded, whatever it is

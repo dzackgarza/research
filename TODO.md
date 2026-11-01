@@ -37,9 +37,12 @@ subgroup comparison, $\abs{\Orth(h^{\perp C})} = 1\,393\,459\,200 = 2\abs{W(E_8)
 images under the discriminant representation generate $G \leq \Orth(A_{S_\En}, q_{S_\En})$ with
 $\abs{G} = 696\,729\,600 = \abs{W(E_8)}$, the order @thm:coble-heegner-finite-orbits (1) asserts (B2,
 whose order half this settles; its orbit lengths are untouched).
-*Done, partly*: $\Gamma_\Co$ and its congruence preimage are owned subgroup objects
-(`T.stable_orthogonal_group().intersection(T.O_plus())` and
-`T.Aut().discriminant_preimage(P)`), and a genuine integral element of $\Gamma_\Co$ is exhibited:
+*Done, partly*: $\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ is an owned subgroup object
+(`T.stable_orthogonal_group().intersection(T.O_plus())`), and so is the congruence preimage of the
+*cyclic* subgroup the witness generates, `T.Aut().discriminant_preimage(<rho(sigma)>)` — not of the
+prescribed $P$; that $\rho(\sigma)\in P$ is the block argument of @sec-gamma-co-comparison, and
+building $P$ as an object is a separate missing capability (A20 item 1). A genuine integral element of
+$\Gamma_\Co$ is exhibited:
 $\zeta+a_1\in T_\Co$ has square $-2$, so its reflection lies in
 $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \Gamma_\Co$, confirmed by the owner's membership test.
 *Remaining*: generators of $\Gamma_\Co$ itself. The reflections of $T_\Co$ in its $(-2)$-vectors lie in
@@ -181,10 +184,16 @@ hypothesis in each case:
 1. $\Gamma^{\mathrm{Hdg}}$ vs $\Gamma^{\mathrm{cong}}$: compare two subgroups of the finite group
    $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for $\gent\subset\Orth(\ten)$ (A3) and for
    the Coble-side centralizer. A finite computation, no geometry in it.
-2. $\Gamma^{\mathrm{dir}}$ vs the other two: needs an isometry of $\lkt$ carrying the Coble-labeled
-   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$, i.e. labeled rigidity (A21,
-   @prob:coble-rigidity). No computation in $T_\Co$ suffices: the two primitive embeddings of $T_\Co$
-   in $\lkt$ are different embeddings, and matching invariants are not an isometry.
+2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
+   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. **That route is closed.** With the
+   retained markings the two polarization complements are not isometric — both rank $10$, determinant
+   $2048$, signature $(0,10)$, discriminant group of order $2048$, but $18$ vectors of square $-2$
+   against $2$ — and the owner returns a verified negative (`is_isometric_to`, in
+   `computations/reports/coble_labeled_embedding.py`). So no ambient isometry transports the Coble
+   labeling to the Enriques one, and the equality of the two groups, if true, has to be decided by
+   comparing their images in the finite group $\Orth(A_{T_\Co},q_{T_\Co})$ (item 1) or by another
+   argument. The obstruction is stated for the retained markings and with $\langle S_\En,\delta\rangle$
+   unsatured; other markings of the Coble polarization are not excluded by it.
 3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
    @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
 
@@ -195,7 +204,23 @@ is circular. Every other Coble statement inherits whichever group it was stated 
 $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$ arising from the projective construction
 should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This is strictly stronger
 than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
-coordinate-independent.
+coordinate-independent. Still open, and it is a Coble-to-Coble statement.
+
+The *Coble-to-Enriques* comparison that A20(2) had cited it for is a different statement, and it is
+settled negatively. Asked for: an isometry of $L_{K3}$ carrying the Coble labeling to the Enriques one
+with $\tilde h_\Co\mapsto h$. Needed for it, and refuted: an isometry of the two polarization
+complements. With the markings these chapters fix —
+$\tilde h_\Co = 2e+f_1+f_2\in S_\Co = \generators{2}\oplus\generators{-2}^{10}$ from the isotropic pair
+$F_i^2=0$, $F_1\cdot F_2=2$, unique up to $\Orth(S_\Co)$ within that family, and
+$\langle S_\En,\delta\rangle = U(2)\oplus E_8(2)\oplus\generators{-2}$ with $\delta$ primitive and no
+saturation — the complements both have rank $10$, determinant $2048$, signature $(0,10)$ and
+discriminant group of order $2048$, and are not isometric: $18$ vectors of square $-2$ against $2$.
+The owner's `is_isometric_to` returns a verified negative
+(`computations/reports/coble_labeled_embedding.py`). So no ambient isometry identifies the labelings,
+and the two groups cannot be compared by transportation. What is *not* excluded: another marking of
+the Coble polarization outside the isotropic family used, a saturated $\langle S_\En,\delta\rangle$
+(which would replace the tested complement by a sublattice of finite index of it), or equality of the
+groups as subgroups of $\Orth(T_\Co)$ without any ambient isometry — that last is A20 item 1.
 
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The
