@@ -268,6 +268,13 @@ coincides with the corresponding Grothendieck group $K_0$ of the category of suc
 lattice-theory chapter proves the *monoid* statement (@thm:2elementary-decomposition) and is silent on
 the group completion. So the presentation is known and the $K_0$ identification is not, and the two
 chapters disagree about whether that is a gap.
+**A41. A bijection across different discriminants is asserted without proof.**
+`450-scattone.md:191-198` uses a bijection $T_\En/\Orth(T_\En)\cong K/\Orth(K)$ between cusp sets of two
+lattices with different discriminant groups, and covers the gap with "some slightly finer analysis".
+For $\eta$ in the $I_{1,1}$ summand the quotient is $\II_{1,9}$ alone, which does not account for the
+rest of the enumeration. The $F_\En$ cusp count downstream rests on this.
+
+
 
 
 
@@ -389,6 +396,22 @@ concludes that $\mathbf{Cat}_{\infty,\infty}$ has no zero object from the fact t
 initial nor terminal. Whether $*\amalg*$ is initial or terminal is irrelevant: a zero object must be both
 initial and terminal, the initial object here is $\varnothing$, the terminal one is $*$, and the argument
 needed is that they are not equivalent.
+
+**C31. The mirror-move theorem's hypothesis excludes the only lattice it is applied to.**
+`450-scattone.md:227` states the algorithm for "a $2$-elementary, nondegenerate, even **unimodular**
+lattice of signature $(2,n)$". A unimodular $2$-elementary lattice has $a=\dim_{\F_2}A_L=0$, so in the
+even/ordinary and even/characteristic rows of the mirror move $a$ never leaves $0$; yet at `:299` the
+algorithm is applied to $T_\En$ and returns $(10,10,0)_1$ and $(10,8,0)_1$, that is $a=10$. The
+hypothesis under which the theorem is used is "even indefinite $2$-elementary", not unimodular, so the
+section proves it for a class its own application is not in.
+
+**C32. $(r,a,\delta)$ is claimed to determine a lattice for which it does not.**
+`450-scattone.md:277` says the boundary lattice $\bar T_I$ of a $1$-cusp "is determined up to isometry
+by invariants $(r_2,a_2,\delta_2)$". That classification holds for $2$-elementary lattices only in the
+*indefinite* case (`300-classification.md` restates Nikulin 3.6.2), while $\bar T_I=I^{\perp}/I$ at a
+$1$-cusp is negative definite. The next clause of the same sentence concedes the point — "distinct
+$\Gamma$-orbits of $1$-cusps are distinguished by their root lattices" — and `:146` puts nine orbits in
+one genus of rank $17$, which on the first clause would be one isometry class and hence one cusp.
 
 **C16–C23. Eight defects in the worked examples of the lattice chapter.** All in
 `dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/200-examples.md`, each stated
