@@ -19,16 +19,31 @@ object map v |-> eta(v) therefore descends to
 which is the map of 0-cusp sets; the 1-cusp version replaces vectors by primitive isotropic planes.
 This file decides whether Phi is onto.
 
-The fibre, stated before anything is computed.  Over a primitive isotropic w~ in T_En, Phi^{-1}([w~])
-consists of the Gamma_Co-orbits of those v with eta(v) in Gamma_En w~, that is of the v for which
-gamma^{-1}(w~) lies in eta(T_Co) for some gamma in Gamma_En.  So
+The fibre, stated before anything is computed, and for the 0-cusp map only: v and v' are isotropic
+*vectors*, i.e. rank-1 isotropic lines, and the rank-2 (plane, 1-cusp) fibre is a separate question not
+treated here.  Over a primitive isotropic w~ in T_En, Phi^{-1}([w~]) consists of the Gamma_Co-orbits of
+those v with eta(v) in Gamma_En w~, that is of the v for which gamma^{-1}(w~) lies in eta(T_Co) for some
+gamma in Gamma_En.  With the left action convention gamma.x = gamma x, put
 
-    Phi^{-1}([w~])  =  Gamma_Co \\ Y / Stab_{Gamma_En}(w~),      Y = {gamma in Gamma_En : gamma^{-1}w~ in eta(T_Co)},
+    Y = {gamma in Gamma_En : gamma^{-1}w~ in eta(T_Co)},   v_gamma = eta^{-1}(gamma^{-1}w~),
 
-a union of double cosets, and it is nonempty exactly when the Gamma_En-orbit of w~ meets eta(T_Co) --
-equivalently, for the fixed embedding, when some primitive isotropic v of T_Co has eta(v) isometric
-into that orbit.  None of that double coset is enumerated below.  What decides surjectivity is an
-invariant of the target orbit that every image vector is forced to take.
+so that the fibre is the double-coset set
+
+    Phi^{-1}([w~])  =  Stab_{Gamma_En}(w~) \\ Y / Ext(Gamma_Co),
+
+with the stabilizer acting on the LEFT and Ext(Gamma_Co) on the RIGHT.  Both actions preserve Y: on the
+left, (h gamma)^{-1}w~ = gamma^{-1}w~ because h fixes w~, so the left action leaves v_gamma unchanged;
+on the right, (gamma Ext(phi))^{-1}w~ = Ext(phi)^{-1} eta(v_gamma) = eta(phi^{-1} v_gamma), so the right
+action moves the source vector inside its Gamma_Co-orbit, which is the ambiguity to quotient out.  The
+reversed expression Gamma_Co \\ Y / Stab is not an action of a subgroup in the written order and is not
+used.  The set is nonempty exactly when the Gamma_En-orbit of w~ meets eta(T_Co).  None of it is
+enumerated below; what decides surjectivity, and then separability, are invariants of the target orbit
+that every image vector is forced to take.
+
+The groups are the stable ones throughout: Gamma_Co = Orth^+(T_Co)^* and Gamma_En = Orth^+(T_En)^*.  The
+discriminant argument for separability uses Gamma_En inside the discriminant kernel, which holds for the
+stable group by definition and fails for AEGS25's Gamma^K_En = Orth(T_En); nothing here is claimed for
+the latter.
 
 The obstruction.  Divisibility is invariant under isometries, hence constant on Gamma_En-orbits, and
 AEGS25 §2 distinguish the two 0-cusps of the Enriques diagram by it.  Every primitive isotropic v in
@@ -130,6 +145,20 @@ for name, element in (('e~ (div 1)', bill), ('eta(v_1) (div 2)', w1)):
     print('   %-18s boundary lattice: rank %2d, det %5s, two_elementary (r,a,delta) = %s'
           % (name, quotient.module_rank(), int(quotient.determinant()),
              tuple(int(x) for x in invariants)))
+
+# Separability: e' and f' are incongruent mod 2, so their target classes differ (proved separately;
+# here the coordinate parity is read off the library's own coordinates).
+ep_t, fp_t = make(ten, {2: 1}), make(ten, {3: 1})
+difference = ep_t - fp_t
+vector = difference.to_vector()
+coefficients = vector.parent()._selected_module_coefficients(vector)
+coordinates = [int(coefficients.get(index, 0)) for index in sorted(coefficients)]
+print()
+print('e~\' and f~\' both have divisibility %d in T_En' % (int(ten.div(ep_t)),))
+assert int(ten.div(ep_t)) == 2 and int(ten.div(fp_t)) == 2
+print('the coordinates of e~\' - f~\' are %s, so the difference is not in 2*T_En:' % coordinates)
+print('   the two target classes are distinct, since Gamma_En acts trivially on the discriminant group')
+assert any(value % 2 for value in coordinates)
 
 print()
 print('div_En(eta(v)) is even for every primitive isotropic v of T_Co, hence 2;')

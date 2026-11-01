@@ -20,6 +20,10 @@ U(2) + E8(2) is twice an even lattice, so y^2 = 0 mod 4 for every y in that bloc
    e~ (div 1)         boundary lattice: rank 10, det -1024, two_elementary (r,a,delta) = (10, 10, 0)
    eta(v_1) (div 2)   boundary lattice: rank 10, det  -256, two_elementary (r,a,delta) = (10, 8, 0)
 
+e~' and f~' both have divisibility 2 in T_En
+the coordinates of e~' - f~' are [1, -1], so the difference is not in 2*T_En:
+   the two target classes are distinct, since Gamma_En acts trivially on the discriminant group
+
 div_En(eta(v)) is even for every primitive isotropic v of T_Co, hence 2;
 div(e~) = 1, and divisibility is an isometry invariant, so no Gamma_En-translate of any eta(v)
 can be e~: the divisibility-1 cusp lies outside the image and Phi is NOT SURJECTIVE.

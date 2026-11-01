@@ -40,7 +40,46 @@ So the image lies in the divisibility-$2$ classes, and the $(10,10,0)_1$ cusp is
 The identities and the two parity facts are checked on the representatives in `computations/reports/coble_enriques_cusp_orbit_map.py`, which also reproduces the two boundary lattices by the maintained two-elementary route: $\tilde e^{\perp\ten}/\tilde e\cong(10,10,0)_1$ of determinant $-1024$, and $\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1$ of determinant $-256$.
 :::
 
-What remains open is injectivity alone: two $\Gamma_\Co$-orbits may be carried into one $\Gamma_\En$-orbit, and the fibre over a target cusp is the double-coset set $\Gamma_\Co\backslash Y/\Stab_{\Gamma_\En}(\tilde w)$ with $Y = \{\gamma : \gamma^{-1}\tilde w\in\eta(T_\Co)\}$, which nothing computed here separates. So $\Phi$ is neither known to be injective nor a bijection, and it is provably not surjective: the correspondence between the two $0$-cusp diagrams is an injection at best, and the figure's arrow from $(9,9,1)_1$ to $(10,8,0)_1$ is the whole of the $0$-cusp correspondence on these groups.
+*The fibre, with the two actions on the correct sides.* Fix the left action convention, $\gamma\cdot x = \gamma x$. The fibre of $\Phi$ over the target class $[\tilde w]$ consists of the source classes $[v]$ with $\gamma\eta(v) = \tilde w$ for some $\gamma\in\Gamma_\En$, so put
+$$Y = \{\gamma\in\Gamma_\En : \gamma^{-1}\tilde w\in\eta(T_\Co)\}, \qquad v_\gamma \definedas \eta^{-1}\bigl(\gamma^{-1}\tilde w\bigr),$$
+and the fibre is the double-coset set
+$$\Phi^{-1}\bigl([\tilde w]\bigr) = \Stab_{\Gamma_\En}(\tilde w)\,\backslash\, Y\, /\, \mathrm{Ext}(\Gamma_\Co).$$
+Both actions preserve $Y$, and the sides are not interchangeable. On the left, $h\in\Stab_{\Gamma_\En}(\tilde w)$ sends $\gamma$ to $h\gamma$ and $(h\gamma)^{-1}\tilde w = \gamma^{-1}h^{-1}\tilde w = \gamma^{-1}\tilde w$, so $v_{h\gamma} = v_\gamma$: the left action does not change the source vector at all. On the right, $\varphi\in\Gamma_\Co$ sends $\gamma$ to $\gamma\,\mathrm{Ext}(\varphi)$, and
+$$\bigl(\gamma\,\mathrm{Ext}(\varphi)\bigr)^{-1}\tilde w = \mathrm{Ext}(\varphi)^{-1}\gamma^{-1}\tilde w = \mathrm{Ext}\bigl(\varphi^{-1}\bigr)\eta(v_\gamma) = \eta\bigl(\varphi^{-1}v_\gamma\bigr),$$
+so $v_{\gamma \mathrm{Ext}(\varphi)} = \varphi^{-1}v_\gamma$: the right action moves the source vector inside its $\Gamma_\Co$-orbit, which is exactly the ambiguity the fibre has to quotient out. There is nothing to quotient on the left beyond removing the redundant $\gamma$'s that produce the same $v_\gamma$; putting $\Gamma_\Co$ on the left and the stabilizer on the right is the reversed expression and would not be a subgroup of $\Gamma_\En\times\Gamma_\Co$ acting on $Y$ in the written order.
+Conversely, if $[v_\gamma] = [v_{\gamma'}]$, say $v_{\gamma'} = \varphi v_\gamma$, then $\gamma'^{-1}\tilde w = \eta(\varphi v_\gamma) = \mathrm{Ext}(\varphi)\gamma^{-1}\tilde w$, that is $\gamma \mathrm{Ext}(\varphi)^{-1}\gamma'^{-1}\in\Stab_{\Gamma_\En}(\tilde w)$, which gives $\gamma' \in \Stab_{\Gamma_\En}(\tilde w)\,\gamma\,\mathrm{Ext}(\Gamma_\Co)$. So the double cosets of the displayed set are exactly the source cusp classes lying over $[\tilde w]$, and the fibre is empty exactly when $Y$ is.
+
+Two scope limits are worth stating before the next step.
+This is the fibre of the *0-cusp* map: $v$ and $v'$ are isotropic vectors, i.e. rank-$1$ isotropic lines, and the rank-$2$ analogue --- primitive isotropic planes, the $1$-cusps --- has its own fibre, obtained by replacing $v$ by a plane throughout, which is not treated here and about which nothing below should be read.
+And the group on the Enriques side above is the stable one, $\Gamma_\En\definedas\Orth^+(\ten)^*$ throughout, as in @thm:normalization; AEGS25's group $\Gamma^K_\En\definedas\Orth(\ten)$, whose cusp diagram is the one with two $0$-cusps, is a different and larger group, and is written with the superscript $K$ whenever it appears.
+
+What remains open is injectivity of the $0$-cusp map alone, and the discriminant reduces it to one class.
+::: {.proposition #prop:cusp-map-separates-mod-two}
+
+Let $v, v'$ be primitive isotropic vectors of $T_\Co$. If $\eta(v)$ and $\eta(v')$ lie in the same $\Gamma_\En$-orbit, then $v\equiv v'\pmod{2T_\Co}$.
+The statement is about the stable group and does not hold for $\Gamma^K_\En = \Orth(\ten)$: an isometry outside the discriminant kernel can move $\bar x$, and nothing below is claimed for it.
+:::
+
+::: {.proof}
+
+In general, if $\gamma x = x'$ for $x, x'\in\ten$ primitive isotropic with $\gamma\in\Gamma_\En$, then $\div_\ten(x) = \div_\ten(x') = 2$ by @prop:cusp-map-not-onto, and the class
+$$\bar x \definedas \tfrac12 x \bmod \ten \in A_\ten = \ten^\vee/\ten$$
+is defined, isotropic because $x^2 = 0$. Applying $\gamma$: $\gamma(x/2) = x'/2$, and $\gamma$ acts trivially on $A_\ten$ because $\Gamma_\En\subseteq\discriminantkernel{\ten}$ by definition, so $\bar x = \overline{x'}$, i.e. $\tfrac12(x - x')\in\ten$, i.e. $x\equiv x'\pmod{2\ten}$. For $x = \eta(v)$, $x' = \eta(v')$ this reads $v\equiv v'\pmod{2T_\Co}$, since $\eta(T_\Co)$ is primitive in $\ten$ and therefore $2\ten\intersect\eta(T_\Co) = 2\eta(T_\Co)$.
+:::
+
+So the map separates any two source classes whose representatives are incongruent mod $2$, and a fibre contains representatives from one class in $T_\Co/2T_\Co$ only: injectivity can fail only among vectors that are congruent mod $2$, i.e. among $(-2)$-translates of one another, and that is the residue of the injectivity question.
+
+A concrete consequence, and a check that the two known Coble $0$-cusps are not collapsed. By @lem:stable-orthogonal-not-transitive the two isotropic generators $e'$, $f'$ of the $U(2)$ summand of $T_\Co$ lie in different $\Gamma_\Co$-orbits. Their images $\tilde e'$, $\tilde f'$ have divisibility $2$ in $\ten$, and $e' - f'$ has an odd coordinate in the $\ten$-basis, so $e'\not\equiv f'\pmod{2T_\Co}$ and the two target classes are distinct by the proposition. So $\Phi$ is injective on the two Coble $0$-cusps the book already knows, and the divergence between the two $0$-cusp diagrams is not a collapse.
+
+The exact image locus, then: the image of $\Phi$ is the set of $\Gamma_\En$-orbits of primitive isotropic vectors of $\ten$ that both meet $\eta(T_\Co)$ and have divisibility $2$. It is nonempty --- $\eta(v_1)$ lies in it --- and it contains at least the two distinct classes of $\tilde e'$ and $\tilde f'$; the divisibility-$1$ classes are excluded outright by @prop:cusp-map-not-onto. What is not known is whether every divisibility-$2$ $\Gamma_\En$-orbit mixes $\eta(T_\Co)$; that is the same residue as injectivity, seen from the target.
+
+So $\Phi$ is not known to be a bijection and is proved not to be one: not surjective (@prop:cusp-map-not-onto), and injective only up to the mod-$2$ refinement (@prop:cusp-map-separates-mod-two).
+
+Two maps have been in play and only one of them is a correspondence of cusps.
+The *type map* is what the lemmas of this section compute and what @fig-enriques-coble-correspondence draws: at the displayed representatives, the boundary lattice of the Coble cusp is matched with the boundary lattice of an Enriques cusp, $(9,9,1)_1$ with $(10,8,0)_1$ and $(7,7,1)_0$ with $(8,6,0)_0$. Its arrow records a matching of boundary-lattice types and nothing more.
+The *orbit map* on the stable groups is $\Phi$: it is defined and $\Gamma_\Co$-equivariant, it is not onto (@prop:cusp-map-not-onto), and it is injective only up to @prop:cusp-map-separates-mod-two.
+The first does not imply the second, and the figure should be read as the type map.
+For the full group $\Gamma^K_\En$ the orbit statement is a third thing again: its orbits are coarser than the stable ones, its two $0$-cusps are classified, and how the stable cusps sit over that diagram --- counting them, and matching them with the Coble ones --- is not settled here.
 On the Coble side the decomposition is itself open (@lem:stable-orthogonal-not-transitive leaves at least two $0$-cusps, and @sec-coble-lattice-isotropic-candidates counts the finite picture without lifting it), which is why the correspondence in this section stays at the level of the displayed representatives.
 
 *Which space the cusps belong to.* The objects above live in the ambient quotient $\bD(\ten)/\Gamma_\En$, and the orbit sets compared are its Baily--Borel boundary strata. They are not the boundary strata of the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma_\En$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $k$, and $k^2 = -2$, so the whole Coble period domain lies in $\mch_{-2}$ and its image lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$, meeting no open complement of it. The cusp diagram whose boundary lattices are matched below is the one of that ambient quotient, and its two $0$-cusps and two $1$-cusps are [@AEGS25, §2]'s for $F^K_\En = \bD(\ten)/\Gamma_\En$ with $\Gamma_\En = \Orth(\ten)$; the stable orbits are finer, so identifying the stable and $F^K_\En$ cusps is a separate question, and a third quotient, the polarized $F_{\En,2}$ with its five $0$-cusps [@AEGS25, §3], is not used here at all.

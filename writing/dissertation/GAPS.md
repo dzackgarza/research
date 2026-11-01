@@ -1025,23 +1025,40 @@ What has since been settled is listed at the end, so that a reader can tell "res
   it, eta(phi v) = Ext(phi) eta(v), so the object map descends to a map of orbit sets
   Gamma_Co\I(T_Co) -> Gamma_En\I(T_En).  That is the first step and it is now written down in the
   chapter.
-  What it does not give, kept separate as instructed: injectivity (two Gamma_Co-orbits may be carried
-  into one Gamma_En-orbit; the fibre over a target cusp is the double-coset set
-  Gamma_Co\Y/Stab_{Gamma_En}(w~) with Y = {gamma : gamma^{-1}w~ in eta(T_Co)}, and nothing computed
-  separates its elements), and -- this is now settled, negatively -- surjectivity.  The orbit map is
-  not onto: every primitive isotropic v of T_Co has div_En(eta(v)) even, hence 2, so the
-  divisibility-1 Enriques 0-cusp of boundary lattice (10,10,0)_1 has empty fibre.  The two identities
-  behind that are div_En(eta(v)) = gcd(div_Co(v), beta_Co(v,h)/2) coming from T_En = eta(T_Co) + Z e~
-  with beta_En(eta(v),e~) = beta_Co(v,h)/2, and the evenness of both entries: div_Co is even because the
-  Gram of T_Co is even entrywise, and beta_Co(v,h)/2 = a is even for isotropic v = a h + y because
-  U(2) + E8(2) is twice an even lattice, so y^2 = 0 mod 4 forces a^2 even.  Both are verified on the two
-  representatives, with the boundary lattices reproduced by the maintained two-elementary route --
-  (10,10,0) of determinant -1024 at e~ and (10,8,0) of determinant -256 at eta(v_1) -- in
-  computations/reports/coble_enriques_cusp_orbit_map.py.  So a bijection on cusps is refuted rather
-  than open, the difficulty being injectivity; the correspondence on 0-cusps is injective at best and
-  meets the Enriques diagram in one of its two 0-cusps.  AEGS25's two-cusp count being for
-  F^K_En (Gamma_En = O(T_En)) and not for the stable quotient remains a separate mismatch, unchanged by
-  this computation and not to be closed by it.
+  The 0-cusp orbit map: fibre, image, and the two things settled.  With Phi: Gamma_Co\I(T_Co) ->
+  Gamma_En\I(T_En), v |-> [eta(v)], and the stable groups fixed on both sides (Gamma_Co =
+  Orth^+(T_Co)^*, Gamma_En = Orth^+(T_En)^*; AEGS25's larger Gamma^K_En = Orth(T_En) is a different
+  group and now written with the K), the fibre over a target class [w~] is the double-coset set
+  Stab_{Gamma_En}(w~) \ Y / Ext(Gamma_Co) with Y = {gamma : gamma^{-1}w~ in eta(T_Co)} -- stabilizer on
+  the LEFT, Ext(Gamma_Co) on the RIGHT, the two actions being v_{h gamma} = v_gamma and
+  v_{gamma Ext(phi)} = phi^{-1}v_gamma, with the converse giving the double cosets exactly.  The earlier
+  Gamma_Co\Y/Stab was the reversed expression and is gone; nothing derives from it.
+  Two results on the 0-cusp map, both by all-vector arguments rather than by sampling.  Surjectivity
+  fails: every primitive isotropic v of T_Co has div_En(eta(v)) even, hence 2, so the divisibility-1
+  cusp with boundary lattice (10,10,0)_1 is missed (prop:cusp-map-not-onto).  And injectivity is
+  reduced: because a Gamma_En element acts trivially on A_T_En, the class
+  x-bar = x/2 in A_T_En of a divisibility-2 vector is Gamma_En-invariant, so eta(v) and eta(v') in one
+  Gamma_En-orbit force v = v' mod 2T_Co (prop:cusp-map-separates-mod-two); a fibre therefore draws its
+  representatives from a single class in T_Co/2T_Co, and the residue of the injectivity question is one
+  mod-2 class.  The same argument separates the two Coble 0-cusps the book knows: e' and f', the
+  isotropic generators of the U(2) summand, are in different Gamma_Co-orbits (@lem:stable-orthogonal-
+  not-transitive) and incongruent mod 2, so their images are distinct -- Phi does not collapse them.
+  What is a finite check and what is not: the divisibility identity
+  div_En(eta(v)) = gcd(div_Co(v), beta_Co(v,h)/2), the evenness of both entries, the mod-4 vanishing
+  that forces a even, and the class separation of e' and f' are verified on and for the representatives
+  in computations/reports/coble_enriques_cusp_orbit_map.py; the two propositions above are all-vector
+  arguments and do not rest on that transcript.
+  The exact image locus is therefore: the Gamma_En-orbits of primitive isotropic vectors of T_En that
+  meet eta(T_Co) and have divisibility 2 -- nonempty, containing the distinct classes of eta(v_1), eta(e')
+  and eta(f'), and disjoint from the divisibility-1 classes.  Whether every divisibility-2 Gamma_En-orbit
+  meets eta(T_Co) is the same open question as injectivity seen from the target.  All of this is about
+  rank-1 isotropic lines, i.e. 0-cusps; the rank-2 (plane, 1-cusp) fibre is a separate question and
+  nothing here is asserted about it.
+  Finally, the two maps must not be conflated in the manuscript: the arrow of the correspondence figure
+  records a matching of boundary-lattice *types* at the displayed representatives, which is what the
+  lemmas prove, while the stable cusp-orbit map is Phi, defined and equivariant, not onto, and injective
+  only up to the mod-2 refinement.  The chapter now says so, and no bijection claim survives anywhere:
+  the original statement is refuted, not merely weakened.
   Two prose corrections went with it.  The target of the map is the ambient quotient
   B(T_En)/Gamma_En and not the moduli space F_En = (B(T_En) minus H_{-2})/Gamma_En of
   moduli-construction.md: every period of T_Co is orthogonal to k and k^2 = -2, so the image lies in
