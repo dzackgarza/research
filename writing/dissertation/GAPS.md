@@ -127,6 +127,17 @@ What has since been settled is listed at the end, so that a reader can tell "res
   manuscript distinguishes cusp 1 by the label (10,10,0) and the others by (10,8,0), which does
   not by itself order them.
 
+  Attempting that reduction hit a runtime failure before producing a single line, and the failure
+  is in the image's Sage rather than in the mathematics: computations/reports/sterk_labelled_orbits.py
+  loads the Sterk script and asks for the automorphism group of each labelled diagram (edge labels
+  encoded as intermediate vertices, vertices partitioned by norm, so that norms and edge labels are
+  preserved and the group is not the unlabelled one), and the run dies with an unhandled SIGSEGV
+  inside cysignals, preceded by `cysignals failed to execute cysignals-CSI: No such file or
+  directory`; nothing is printed, so the crash is inside the load/first automorphism call.  The
+  plain Sterk run on the same image is fine, so this is a defect of the Sage build's cysignals/nauty
+  path with these graphs, to be repaired in the shared image project.  The reproducer and its
+  transcript are at computations/reports/sterk_labelled_orbits.py and -run.txt.
+
   So the chapter unit is not closed.  The actionable step is exact and needs no new source:
   reduce each representative's maximal parabolic subdiagrams to orbits under the symmetry group
   the chapter fixes, and match the five representatives to the five subsections by their quoted

@@ -1,0 +1,36 @@
+------------------------------------------------------------------------
+/sage/.venv/lib/python3.14/site-packages/cysignals/signals.cpython-314-x86_64-linux-gnu.so(+0x86e5) [0x7bbe2d0966e5]
+/sage/.venv/lib/python3.14/site-packages/cysignals/signals.cpython-314-x86_64-linux-gnu.so(+0x8786) [0x7bbe2d096786]
+/sage/.venv/lib/python3.14/site-packages/cysignals/signals.cpython-314-x86_64-linux-gnu.so(+0x8b54) [0x7bbe2d096b54]
+/lib/x86_64-linux-gnu/libc.so.6(+0x3fd70) [0x7bbe2ed9bd70]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_free+0x22) [0x7bbe2edfefe2]
+/sage/.venv/lib/python3.14/site-packages/sage/graphs/bliss.cpython-314-x86_64-linux-gnu.so(+0xfc7a) [0x7bbdb521bc7a]
+/sage/.venv/lib/python3.14/site-packages/sage/graphs/bliss.cpython-314-x86_64-linux-gnu.so(+0x137f7) [0x7bbdb521f7f7]
+/sage/.venv/bin/python(PyObject_Vectorcall+0x70) [0x1818a70]
+/sage/.venv/bin/python() [0x187a8eb]
+/sage/.venv/bin/python() [0x1855b91]
+/sage/.venv/bin/python(PyEval_EvalCode+0xa6) [0x189b67c]
+/sage/.venv/bin/python() [0x1b1b803]
+/sage/.venv/bin/python() [0x1856ce3]
+/sage/.venv/bin/python() [0x1855b91]
+/sage/.venv/bin/python(PyEval_EvalCode+0xa6) [0x189b67c]
+/sage/.venv/bin/python() [0x18e2351]
+/sage/.venv/bin/python() [0x1a7048d]
+/sage/.venv/bin/python() [0x1a702c1]
+/sage/.venv/bin/python() [0x1984486]
+/sage/.venv/bin/python() [0x19843d4]
+/sage/.venv/bin/python() [0x19842e3]
+/sage/.venv/bin/python(Py_RunMain+0x40c) [0x1984f0c]
+/sage/.venv/bin/python() [0x1984ad6]
+/sage/.venv/bin/python() [0x198492c]
+/lib/x86_64-linux-gnu/libc.so.6(+0x29ca8) [0x7bbe2ed85ca8]
+/lib/x86_64-linux-gnu/libc.so.6(__libc_start_main+0x85) [0x7bbe2ed85d65]
+/sage/.venv/bin/python(_start+0x29) [0x19fab29]
+------------------------------------------------------------------------
+cysignals failed to execute cysignals-CSI: No such file or directory
+------------------------------------------------------------------------
+Unhandled SIGSEGV: A segmentation fault occurred.
+This probably occurred because a *compiled* module has a bug
+in it and is not properly wrapped with sig_on(), sig_off().
+Python will now terminate.
+------------------------------------------------------------------------
