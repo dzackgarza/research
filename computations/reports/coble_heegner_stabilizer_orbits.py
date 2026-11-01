@@ -85,12 +85,22 @@ isotropic = [x for x in D.elements() if D.q(x) == zero_value]
 print('isotropic classes: %d' % len(isotropic))
 assert len(isotropic) == 528
 
+# A subgroup object does not carry an orbit partition.  The needed object is its ACTION on the module,
+# obtained by restricting the ambient action through the inclusion H -> G; the interface constructs that
+# from an action map with FiniteGSets(H)(points, action), and it accepts a proper subset of the module.
+# Both facts are verified on a small form in se_subgroup_action_route.py, not assumed here.
+from sage_extensions.categories.group.g_sets import FiniteGSets
+
+subgroup = G.subgroup_on(list(stabilizer.group_generators()))
+print('stabilizer rebuilt inside Orth(q): order %d' % int(subgroup.order()), flush=True)
+assert int(subgroup.order()) == CLAIMED_STABILIZER_ORDER
+
 start = time.time()
-full_partition = list(stabilizer.orbits())
-print('the stabilizer partition of all %d classes materialised in %.1fs: %d orbits'
-      % (int(D.cardinality()), time.time() - start, len(full_partition)))
+restricted_action = FiniteGSets(subgroup)(isotropic, lambda h, x: h(x))
+restricted = [frozenset(orbit) for orbit in restricted_action.orbits()]
+print('the restricted action gives %d orbits on the %d isotropic classes (%.1fs)'
+      % (len(restricted), len(isotropic), time.time() - start), flush=True)
 isotropic_set = set(isotropic)
-restricted = [frozenset(orbit) for orbit in full_partition if set(orbit) <= isotropic_set]
 sizes = sorted(len(orbit) for orbit in restricted)
 print('orbits inside the isotropic classes: %d, of sizes %s' % (len(restricted), sizes))
 assert sizes == [1, 255, 272], sizes

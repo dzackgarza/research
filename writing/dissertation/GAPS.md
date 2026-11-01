@@ -1096,7 +1096,19 @@ What has since been settled is listed at the end, so that a reader can tell "res
   isotropic classes; 1984 stabilizer generators, and rebuilding them inside Orth(q) reproduces the order
   94,755,225,600.  Then subgroup.orbits() raises AttributeError, and so does the G-set stabilizer's: the
   subgroup returned by subgroup_on is a _GroupEngine object without an orbit method.
-  The owner handoff, stated exactly, since this is the only thing blocking the decomposition: for the full
+  The interface question is resolved, and the handoff is therefore not a request for a new contract: a
+  subgroup object does not carry an orbit partition, and the object that does is the subgroup's *action*
+  on the module, obtained by restricting the ambient action through the inclusion H -> G.  The interface
+  constructs exactly that from an action map, FiniteGSets(H)(point_set, action) with action(h, x) = h(x),
+  and it accepts a proper subset of the module -- so the isotropic-only partition, which is what the
+  chapter's decompositions need, is expressible without any subgroup orbit method.  Both facts are checked
+  at a scale that costs seconds in computations/reports/se_subgroup_action_route.py: on the order-4
+  discriminant form of U(2), H = G.subgroup_on(generators) has no orbits() and no element_action(),
+  FiniteGSets(H)(subset, lambda h, x: h(x)) constructs, and its orbits() returns the partition on a
+  three-element subset ([1, 2]) and on all four classes ([1, 2, 1]).  So H.orbits() and an inherited
+  element_action() were the wrong calls, not a missing capability, and this paragraph records that rather
+  than filing a contract request that the interface already answers.
+  The earlier handoff, kept for the record of what was looked for: for the full
   group the repair gave TorsionFormOrthogonalGroup.orbits() and orbit(x); for a *subgroup* there is no
   counterpart.  stabilizer_of_element(x) returns a G-set stabilizer with order() and group_generators()
   but no orbits(); G.subgroup_on(generators) returns a group whose order() is correct and which likewise
