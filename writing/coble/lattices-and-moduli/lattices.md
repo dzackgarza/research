@@ -124,16 +124,16 @@ This follows from [@KK72 §5, Thm.2].
 
 ::: {.theorem #thm:normalization}
 
-$\fco$ is the normalization of a closed subvariety of $\fen$.
+$\fco$ is the normalization of a closed subvariety of the ambient period quotient $\bD(\ten)/\Gamma_\En$, namely of its Heegner divisor $\mch_{-2}/\Gamma_\En$; not of $\fen$, which is the complement of that divisor (@sec-moduli-construction).
 :::
 
 ::: {.proof}
 
 Write $\Gamma_\Co\definedas\Orth^+(T_\Co)^*$ and $\Gamma_\En\definedas\Orth^+(T_\En)^*$, and let
 $$
-f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En = \fen
+f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En
 $$
-be the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta. The argument has four steps: a gluing computation that identifies the stabilizer of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
+be the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta. The target is the ambient period quotient and not the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma_\En$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $k = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f$ lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$ and meets no open complement of it. Conflating the two would make the map land outside its own target. The argument has four steps: a gluing computation that identifies the stabilizer of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
 
 The gluing datum.
 Put $K\definedas \eta(T_\Co)^{\perp T_\En}$.
@@ -216,22 +216,13 @@ The proof above replaces that detour by the direct gluing computation, which is 
 
 ::: {.remark #rmk:descent-of-an-equivariant-inclusion title="What the stabilizer statement has to supply"}
 
-The stabilizer step of @thm:normalization is one instance of a general criterion for descending a map to a pair of quotients.
-Let $f\colon A\injects B$ be an inclusion of sets, and let $G_A$ and $G_B$ be groups acting on $A$ and on $B$.
-Then $f$ descends to a map of orbit spaces
-$$
-\bar f\colon G_A\backslash A \to G_B\backslash B
-$$
-precisely when every element of $G_A$ acts on $A$ as the restriction of some element of $G_B$ preserving $f(A)$, that is when
-$$
-\im\bigl(G_A\to\Aut(A)\bigr)
-\;\iscontainedin\;
-\im\bigl(\Stab_{G_B}(f(A))\to\Aut(f(A))\bigr)
-.
-$$
-For the case at hand, $A = \bD(T_\Co)$ with $G_A = \Orth^+(T_\Co)^*$ and $B = \bD(T_\En)$ with $G_B = \Orth^+(T_\En)^*$, so what is needed is that every isometry of $T_\Co$ in $G_A$ extends to an isometry of $T_\En$ preserving $T_\Co$.
-The criterion is a containment, not an equality: for a general pair of groups the stabilizer of $f(A)$ in $G_B$ may restrict to a group strictly larger than the image of $G_A$ without obstructing the descent.
-What a strictly larger restriction costs is injectivity, since two $G_A$-orbits may then be identified in $G_B\backslash B$.
-The gluing computation in the proof above rules that out here: the restriction of $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $\Orth^+(T_\Co)^*$, so the containment is an equality and the only source of non-injectivity left is a point of $\bD(T_\Co)$ lying on a second translate $\inverseof{g}(T_\Co)$.
-That is what the fibre count controls.
+The stabilizer step of @thm:normalization is one instance of a criterion for descending a map to a pair of quotients, and the criterion has a weak form and a strong one that are worth separating.
+Let $f\colon A\injects B$ be an inclusion of sets, with groups $G_A$ and $G_B$ acting on $A$ and on $B$.
+A map of orbit sets $\bar f\colon G_A\backslash A\too G_B\backslash B$ is well defined as soon as $f$ carries orbits into orbits: for every $x\in A$ and every $g_A\in G_A$ there must be some $g_B\in G_B$, allowed to depend on both $x$ and $g_A$, with $g_B f(x) = f(g_A x)$.
+That is all a set-theoretic descent needs, and it is strictly weaker than an equivariance statement.
+The strong form is a uniform assignment, for instance a homomorphism $G_A\too G_B$ with $f\circ g_A = g_B\circ f$ for all $g_A$ at once.
+It is not necessary for $\bar f$ to exist, but it is what the geometric statements here use: it makes $f$ equivariant rather than merely orbit-compatible, it is what identifies quotients rather than just producing a map between them, and it is what any comparison of stabilizers or of orbit decompositions has to stand on.
+For the case at hand, $A = \bD(T_\Co)$ with $G_A = \Orth^+(T_\Co)^*$ and $B = \bD(T_\En)$ with $G_B = \Orth^+(T_\En)^*$, and what the gluing computation above supplies is the strong form, with equality: restriction of $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $G_A$, so $g_A\mapsto\id_K\oplus g_A$ is a genuine homomorphism and $f$ is $G_A$-equivariant, not merely orbit-compatible.
+It is worth naming what that map is, since the weak form would not have given it: the kernel of restriction is $\{1, s_k\}$, where $s_k$ is the reflection in the $(-2)$-vector $k = \tilde e - \tilde f$ --- it fixes $T_\Co$ pointwise and negates $k$ --- so restriction is two-to-one on the stabilizer and the equivariant assignment is its section, the extension fixing $k$.
+Equality of the images does not give injectivity of $\bar f$: two $G_A$-orbits may still be carried into one $G_B$-orbit, and it is the point of $\bD(T_\Co)$ lying on a second translate $\inverseof{g}(T_\Co)$ that the fibre count has to control.
 :::

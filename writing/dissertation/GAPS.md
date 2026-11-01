@@ -1006,7 +1006,46 @@ What has since been settled is listed at the end, so that a reader can tell "res
   5.1, which writes Gamma_k = Aut(G_r^k) lt W(G_r^k) for the induced group on e^perp/e and cites
   Sterk.  Since the source audit above identifies the book's Gamma with that polarized Gamma_{En,2},
   the bridge is closed by citation and no independent lift is required of this repository.
-  What must *not* be used to close it, and why the obvious argument fails.  It is tempting to say that
+  The equivariance obligation at the Coble-Enriques cusps, and its resolution.  The cusp
+  correspondence first asserted a bijection of Gamma-orbits and was then downgraded to a statement
+  about representatives, with the equivariance recorded as an open obligation: for every
+  phi in Gamma_Co, an isometry phi~ of T_En with phi~ eta = eta phi.  That obligation was already
+  discharged in the book, and the downgrade was a cross-chapter contradiction rather than a missing
+  theorem: the stabilizer step of thm:normalization proves both directions, and the cusp proof now
+  cites it instead of claiming the homomorphism absent.  The exact content, with the kernel checked
+  because that is where it is easy to be wrong: K = T_Co^{perp T_En} = Z k with k = e~ - f~ and
+  k^2 = -2; the gluing group is H = <(h/2, k/2)> in A_{T_Co} + A_K, of order 2 and isotropic because
+  q(h/2) + q_K(k/2) = 1/2 - 1/2 = 0; every phi in Gamma_Co preserves H as phi + id_K, since phi-bar is
+  the identity on A_{T_Co}, and so extends to T_En by thm:automorphism-lifting-criterion, and the
+  extension lies in Gamma_En.  Hence Ext: Gamma_Co -> Stab_{Gamma_En}(T_Co), phi |-> the extension
+  fixing k.  Ext is injective, restriction is a left inverse, and restriction is not injective: its
+  kernel is {1, s_k}, the reflection in the (-2)-vector k, which fixes T_Co pointwise and negates k.
+  So the stabilizer of the vector k is Ext(Gamma_Co) and the stabilizer of the line Z k is
+  Ext(Gamma_Co) x <s_k>; the equivariant assignment is the section fixing k, not restriction.  With
+  it, eta(phi v) = Ext(phi) eta(v), so the object map descends to a map of orbit sets
+  Gamma_Co\I(T_Co) -> Gamma_En\I(T_En).  That is the first step and it is now written down in the
+  chapter.
+  What it does not give, kept separate as instructed: injectivity (two Gamma_Co-orbits may be carried
+  into one Gamma_En-orbit; the fibre count of thm:normalization controls fibres of the period map, not
+  orbit decompositions) and surjectivity (nothing produces an Enriques cusp from an arbitrary Coble
+  one).  Nor does it identify the groups: the Enriques side of the cusp diagram is F^K_En with
+  Gamma_En = O(T_En) [@AEGS25, Sec. 2], while the stable quotient's orbits are finer, and the
+  polarized F_En,2 with its five 0-cusps is a third quotient.  On the Coble side the orbit
+  decomposition is open in the book's own terms (lem:stable-orthogonal-not-transitive gives at least
+  two 0-cusps; the finite picture at A_{T_Co} has not been lifted).  So the correspondence stands at
+  the displayed representatives with the equivariant map between orbit sets now defined, and the
+  matching-group theorem that would make it a bijection is the remaining obligation.
+  Two prose corrections went with it.  The target of the map is the ambient quotient
+  B(T_En)/Gamma_En and not the moduli space F_En = (B(T_En) minus H_{-2})/Gamma_En of
+  moduli-construction.md: every period of T_Co is orthogonal to k and k^2 = -2, so the image lies in
+  the Heegner divisor H_{-2}/Gamma_En and in no open complement of it -- thm:normalization's statement
+  and proof now say "closed subvariety of the ambient quotient, namely of its Heegner divisor" instead
+  of "of F_En", which as F_En is defined was false.  And rmk:descent-of-an-equivariant-inclusion
+  overstated what descent needs: a set map of orbit spaces exists as soon as orbits are carried into
+  orbits, pointwise, with no uniform assignment; a homomorphism is sufficient and stronger, and it is
+  the strong form the geometry uses (equivariance, comparison of stabilizers).  The remark now
+  separates the two and says which one the theorem supplies.
+  What must *not* be used to close the Gamma_k bridge, and why the obvious argument fails.  It is tempting to say that
   Aut(G_r^k) lies in O(T~_En) because an automorphism of the Gram-labelled diagram permutes a
   rationally spanning set of root vectors, so its matrix is integral with integral inverse.  That
   argument is wrong here, and AEGS25's Lemma 3.10 is where it fails: in all five cases the folded
