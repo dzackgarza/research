@@ -549,6 +549,60 @@ So the missing mathematics is three definitions and propositions in the duality 
 category-theory foundations, and until they are written two finished pages of the book are excluded from
 the build by design.
 
+## Authored texts outside the markdown corpus
+
+The corpus is not only `.md`. `writing/` also holds authored talks and drafts, and they are inventoried
+here so that "all of `writing/`" means something.
+
+| text | size | status | contribution |
+| --- | --- | --- | --- |
+| `talks/2026-07 PCRM/pcrm_pres.tex` | 2 266 words | read in full | claims reconciled below; no open problem absent from the list |
+| `talks/2026-07 PCRM/SCU Presentation.tex` | 799 words | read in full | an earlier draft of the same talk, most frame titles literally "TBD", ending before the Coble results; no claim that `pcrm_pres.tex` does not also make |
+| `coble/reference/coble-paper-2026-07-24.pdf` | 87 pp | contents read, key sections checked | the LaTeX draft of *this same book*: its contents correspond section for section to the `coble` tree, and its section 4K is `lattices-and-moduli/moduli-construction.md`, including the `F_{\Nod,2}=???` and the `?` arrow of C1 and C2. No claim outside the markdown corpus found |
+| `coble/reference/coble-paper-outline.pdf` | 2 pp | read in full | an outline naming Main Theorems A–E; each corresponds to an item already in the list (A7/A28 for A, A2/A8 and `thm:cusp_correspondence` for B, A13/A31 for C, A26 for D) |
+| `coble/reference/halphen-surfaces-2026-05-16.pdf` | 3 pp | read in full | a Halphen-surface draft; its content is `adjacent-programs/halphen-index-2-moduli-program.md` and the Halphen note, with no open problem not already listed |
+| `coble/reference/coble-cusps-2024-06-22.pdf` | 4 pp | read | a diagram sketch, no prose claim |
+| `talks/2026-07 PCRM DZG_final.pdf` | 36 pp | read | the rendered `pcrm_pres.tex`, dated June 2026 |
+| `coble/papers/**` | ~140 000 words of `.tex` | not authored here | deposited third-party sources (AE22, ABE22, AB19, YZZ25, Kim20, AE23a, AET23, AEGS23) |
+
+Figure and asset directories (`svg-inkscape`, `tikz`, `*.jpg`, `.assets`, `.book`) hold no prose.
+
+### What the talk claims, and how they stand
+
+Reconciled against the list; a difference is recorded as a difference in the text, not as a mathematical
+error, because the talk is a dated document and the book is the current one.
+
+*Still current, and consistent with the book.* The definitional frames; "75 possibilities" for a
+nonsymplectic involution (the book cites the same count); AE22's Theorem 9.10 that 50 of those 75 cases
+have a semifan tower isomorphic to the normalized KSBA compactification; the theorem that
+$v_0^{\perp}/v_0\cong\generators{2}\oplus E_8(2)\cong(9,9,1)_1$ for the unique
+$v_0\in T_\Co[0]/\Orth^+(T_\Co)$; and a conditional theorem on $\Gamma_{T_\Co,2}$, stated under the
+explicit hypothesis that the orbit $\delta$ stays unique in $T_\En[2]/\Gamma_{\En,2}$ — which is the
+hypothesis the book now records as open (A1, A20).
+
+*Open problems the talk states, all still open in the book.* KSBA = semitoroidal for $\fco$ with an
+explicit semifan and effectively computable stable models (A7, A26, A28); the quarter-singularity stable
+pair $(Y,\frac{1+\epsilon}{2}C+\epsilon\Ram(\idp))$ (A6); the orbit and group identification that the
+conditional theorem above assumes (A1, A20, A31).
+
+*Superseded by the book, and not errors.* The talk conjectures, marked "**pending computation**", that
+$\bd\bbcpt{F_{\Co,2}}$ has **four** $0$-cusps; the book leaves that count open and knows only a lower
+bound of two. The talk's sketch of the proof — distinct $\bar v_i$ in $A_{T_\Co}$, lift, then argue
+non-splitting — is precisely the subgroup-descent step the book now records as unavailable for these
+groups, so the talk is where the route was proposed and the book is where it was found not to close. The
+talk also states `thm:normalization`'s target as a closed subvariety of $F_{\En,2}$, which the book later
+corrected to the ambient quotient $\mathbf D(T_\En)/\Gamma_\En$ and its Heegner divisor.
+
+*Draft slips in the talk, not in the book.* The type is printed $(11,11,11)_1$ and $(11,11,11)_2$ in one
+frame and correctly $(11,11,1)$ in the next; the citations say `Nik79` where the book uses `Nik79a`/`Nik80`,
+and `Ste95a`, a key the book does not use.
+
+*One corroboration.* The talk states the Coble dimension correctly — "$F_\Co\subseteq(\PP^2)^{10}/\PGL_3$,
+and there are 3 discriminant conditions, so $\dim F_\Co=12-3$ agrees with $\dim F_{\I_{1,10}(2)}=11-2$" —
+which is the statement `research-statement/ResearchStatement.md:111` and
+`coble/coble-moduli/cusp-correspondence-morphism-chain.md` lost. That makes C28 drift from a correct
+statement rather than a live disagreement, and the talk is a third place carrying the correct form.
+
 ## A note on what is not in this list
 
 Certificates are not mathematics. Several claims in the book are true-as-computed and unproved; they
@@ -580,6 +634,11 @@ Audited by `ultramath` swarm `smvy0k5df` and checked here before entry: the rema
 `200-examples.md` (m5 and m7 independently), `450-scattone.md` (m2, second pass), the framing text (m1),
 the cross-chapter consistency pass (m8), and a citation-carry audit of all 158 bibliography keys (m6).
 Two member claims were false and are recorded as C30; one was sent back and withdrawn by its author.
+
+**Scope.** "All of `writing/`" is read to mean all authored prose: the 165 `.md` files, the two authored
+`.tex` talks, and the authored drafts deposited as PDF under `coble/reference/`. Deposited third-party
+sources under `coble/papers/` are the literature the book cites, not the book; figures and build assets
+carry no prose. The table above records each named text and what it contributed.
 
 **Read is not the same as published.** `_quarto.yml` deliberately unlists five pages, each with a
 recorded reason. That matters for severity: the stale Coble table (C27) and the missing double dual
