@@ -81,8 +81,23 @@ except Exception as error:
     print('class number of the genus of D_17: not computable on this image (%s)'
           % type(error).__name__)
 
-# -------------------------------- the plane, and two reflections compared
-e1, f1 = L19.basis_vector(0), L19.basis_vector(1)      # the first hyperbolic plane
+# ------------------------------------------------------ the primitive isotropic plane
+# Lambda_19 = U_1 + U_2 + D_17 with U_i = <e_i, f_i>, e_i^2 = f_i^2 = 0, e_i . f_i = 1.
+# An isotropic *plane* needs two isotropic vectors that are orthogonal to each other, so
+# <e_1, f_1> will not do -- e_1 . f_1 = 1.  The plane used is J = <e_1, e_2>, the span of
+# one isotropic basis vector of each hyperbolic summand.
+e1, e2 = L19.basis_vector(0), L19.basis_vector(2)
+f1 = L19.basis_vector(1)
+assert e1.q() == 0 and e2.q() == 0 and e1.b(e2) == 0, 'J is not isotropic'
+print('J = <e_1, e_2>: squares %s, %s and pairing %s' % (e1.q(), e2.q(), e1.b(e2)))
+print('J is primitive: its vectors are two standard basis vectors of Lambda_19, so the')
+print('sublattice they span is a direct summand, and every isotropic plane considered below')
+print('contains J or is carried to it by an isometry of Lambda_19.')
+# J^perp = J + D_17 and J^perp/J = D_17, the case of Laza--O'Grady Prop. A.4(1) with L = D_17.
+for i in range(4, 21):
+    assert e1.b(L19.basis_vector(i)) == 0 and e2.b(L19.basis_vector(i)) == 0
+assert e1.b(f1) == 1, 'e_1 . f_1 = 1, which is why <e_1, f_1> is not an isotropic plane'
+
 root_a, root_b = L19.basis_vector(4), L19.basis_vector(6)   # D_17 simple roots 1 and 3
 print('roots: a_1^2 = %s, a_3^2 = %s, a_1 . a_3 = %s'
       % (root_a.q(), root_b.q(), root_a.b(root_b)))
@@ -90,16 +105,17 @@ short = root_a                                          # square -2
 long = root_a + root_b                                  # square -4, orthogonal to the plane
 for vector, label in ((short, 'a_1'), (long, 'a_1 + a_3')):
     assert vector.q() in (-2, -4), (label, vector.q())
-    assert vector.b(e1) == 0 and vector.b(f1) == 0, label
+    assert vector.b(e1) == 0 and vector.b(e2) == 0, label
 
-# First witness: -1 on a hyperbolic direct summand containing the plane, +1 elsewhere.
-# It lies in the discriminant kernel because it acts on the D_17 summand, where the
-# discriminant lives, identically; and it fixes the plane, as a sublattice, setwise
-# without fixing its vectors.
+# First witness: -1 on the first hyperbolic summand, +1 elsewhere.  It lies in the
+# discriminant kernel because it acts on the D_17 summand, where the discriminant lives,
+# identically; and it carries J = <e_1, e_2> to itself as a sublattice -- e_1 to -e_1 and
+# e_2 to e_2 -- without fixing the vectors of J.
 minus_plane = L19.Aut()(
     lambda label: ((-1 if label in (0, 1) else 1) * L19.module_generator(label))
 )
 assert minus_plane(e1) == -e1 and minus_plane(f1) == -f1
+assert minus_plane(e2) == e2
 
 # The spinor norm.  Lattices.spinor_norm() cannot be called on a ZZ-lattice on this image
 # -- it wants Frac(R) in OwnedNumberFields(), and QQ is not registered there -- so the two
@@ -119,7 +135,7 @@ print('e_1 + f_1 has square %s and e_1 - f_1 has square %s; their composite is t
 print('plane, so its spinor norm is c^2 * 2 * (-2) = -4c^2, the class of -1 for c = 1/2 and')
 print('for c = 1: non-trivial either way.')
 rho_short = L19.reflection(short)
-assert rho_short(e1) == e1 and rho_short(f1) == f1
+assert rho_short(e1) == e1 and rho_short(e2) == e2
 print('a_1 is a single reflection of square -2: spinor norm c * (-2), trivial for c = 1/2 and')
 print('the class of -2 for c = 1 -- so a (-2)-root does not separate the two groups under the')
 print('normalization this literature uses, and the witnesses are a (-4)-vector and the -1 of the')
@@ -135,7 +151,7 @@ for i in range(4, 21):
         candidate_root = L19.basis_vector(i) + L19.basis_vector(j)
         if candidate_root.q() != -4:
             continue
-        if candidate_root.b(e1) or candidate_root.b(f1):
+        if candidate_root.b(e1) or candidate_root.b(e2):
             continue
         try:
             candidate_reflection = L19.reflection(candidate_root)
@@ -153,7 +169,7 @@ if long_choice is None:
     print('the -1 of the plane carries the argument alone.')
 else:
     long_root, rho_long, nodes = long_choice
-    assert rho_long(e1) == e1 and rho_long(f1) == f1
+    assert rho_long(e1) == e1 and rho_long(e2) == e2
     print('it fixes the plane and is a single reflection of square -4: spinor norm c * (-4),')
     print('the class of 2 for c = 1/2 and of -1 for c = 1, non-trivial either way.')
 
@@ -192,7 +208,7 @@ print('a_1 has divisibility %s in Lambda_19 -- odd -- and its reflection lies in
       % divisibility)
 print('discriminant kernel: %s, so a (-2)-root of this summand is not a witness at all;'
       % acts_trivially_on_discriminant(matrix_of(rho_short)))
-print('-1 on the plane\'s hyperbolic summand lies in the discriminant kernel: %s'
+print('-1 on the first hyperbolic summand lies in the discriminant kernel: %s'
       % acts_trivially_on_discriminant(H_minus))
 assert acts_trivially_on_discriminant(H_minus)
 if long_choice is not None:
@@ -200,8 +216,9 @@ if long_choice is not None:
           % acts_trivially_on_discriminant(matrix_of(rho_long)))
 
 print()
-print('So the stabilizer of this primitive isotropic plane contains an element of the')
-print('discriminant kernel whose spinor norm is not one -- the -1 of the plane, and, when it')
-print('exists, the (-4)-vector reflection.  For either group the spinor kernel and the whole')
-print('discriminant kernel therefore have one and the same orbit through this plane: the')
-print('spinor condition refines no orbit here.')
+print('So the stabilizer of this primitive isotropic plane contains elements of the')
+print('discriminant kernel whose spinor norm is not one -- -1 on the first hyperbolic summand,')
+print('and the (-4)-vector reflection found above.  The spinor kernel and the whole discriminant')
+print('kernel therefore have one and the same orbit through this plane: the spinor condition')
+print('refines no orbit here, and the refinement question is settled for this one of the nine')
+print('orbits only.')

@@ -145,14 +145,19 @@ What has since been settled is listed at the end, so that a reader can tell "res
   Since Gamma_{2d} sits in the discriminant kernel with index at most two, its orbits on I_2 refine
   the source's nine by at most a factor two, and an orbit is a single Gamma-orbit exactly when the
   stabilizer of one of its planes meets the non-trivial coset, i.e. contains a discriminant-kernel
-  element whose spinor norm is not one.  For the standard plane J = <e_1, f_1> of Lambda_19 =
-  U^2 + D_17 such an element is exhibited and checked in t4_group_comparison.py: -id on that
-  hyperbolic summand and +1 elsewhere lies in the discriminant kernel -- its action on
-  A_{Lambda_19} = Z/4 is trivial, by the contragredient criterion -- and has spinor norm
-  c^2 * 2 * (-2), the class of -1 under either normalization, its factorization into the
-  reflections in e_1 + f_1 and e_1 - f_1 being checked against the element itself; and the
-  reflection in the sum of the last two D_17 simple roots, a vector of square -4 orthogonal to J,
-  is a second witness, integral and in the discriminant kernel, with spinor norm c * (-4).
+  element whose spinor norm is not one.  For the primitive isotropic plane J = <e_1, e_2> of Lambda_19 = U_1 + U_2 + D_17 -- the span of
+  one isotropic basis vector of each hyperbolic summand, so that J^perp/J = D_17 is the case of
+  Prop. A.4(1) with L = D_17 -- such an element is exhibited and checked in
+  t4_group_comparison.py: -id on the first hyperbolic summand and +1 elsewhere lies in the
+  discriminant kernel -- its action on A_{Lambda_19} = Z/4 is trivial, by the contragredient
+  criterion -- and has spinor norm c^2 * 2 * (-2), the class of -1 under either normalization, its
+  factorization into the reflections in e_1 + f_1 and e_1 - f_1 being checked against the element
+  itself; and the reflection in the sum of the last two D_17 simple roots, a vector of square -4
+  orthogonal to J, is a second witness, integral and in the discriminant kernel, with spinor norm
+  c * (-4).  The plane must be <e_1, e_2> and not <e_1, f_1>: an isotropic *plane* needs two
+  isotropic vectors orthogonal to each other, and e_1 . f_1 = 1, so the span of a hyperbolic pair
+  is not one; the first version of this certificate used <e_1, f_1> and was wrong about that,
+  though the two witnesses it checked do fix <e_1, e_2> as well.
   A (-2)-root of that summand is no witness at all, and not for a spinor reason: its divisibility
   in Lambda_19 is odd, so its reflection does not even act trivially on the discriminant.  That is
   where the convention bites -- the same reflection would have been a witness under O'Meara's
