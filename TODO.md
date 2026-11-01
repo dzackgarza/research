@@ -103,6 +103,16 @@ theorem" targets (B2.1–B7.1, C1–C5 and the A-series lemmas) for deriving the
 without appeal to the Enriques programme. Not enumerated individually here; they are one programme,
 and most are stated sharply enough in the report to be worked.
 
+**A19. Dawes' Example 2.2 disagrees with the in-tree computation** (@qst:dawes-example-22). The
+paper concludes $v_1\sim v_2$ in $U\oplus A_3$; the computation returns $v_1\not\sim v_2$ because
+the complements have different discriminants. Unequal discriminants refute equivalence under
+$\Orth(L)$ and every subgroup, whatever isometry test runs downstream, so the disagreement is not a
+tooling artefact — it lies in the paper's conclusion, the transcription, or the computed
+complements. The squares are consistent with the stated Gram matrices, which clears the
+transcription of the vectors; recomputing the two complements settles the rest. This matters beyond
+the example: Algorithm 2.3 of the same paper is the published route to A1.
+
+
 ## B. Open here, decidable by a derivation
 
 **B1. Genus uniqueness of $T_\Co$.** This is where the chapter's own argument fails, and it matters
@@ -145,8 +155,36 @@ which is the real residue.
 check that a surface is $F_4$ with part of its toric boundary, and `divisor-and-dlt-models.md` asks
 whether a Kulikov comparison is intended. Neither is a research problem.
 
+**C5. A lemma whose proof assumes the theorem it feeds.** `lem:divisibilityTcoOne` is used to derive
+the cusp correspondence, and its proof assumes a unique $\Gamma_\Co$-orbit of isotropic vectors of
+$T_\Co$ — which is A1, the enumeration that the same section leaves open. The chapter records this
+in passing; it should be stated where the lemma is used, because as it stands the cusp-correspondence
+argument is circular: it consumes the very count it is meant to support.
+
+**C6. Two chapters disagree about whether the invariants separate the $S_\Co$ orbits.** The
+computations page says the Odd/Even-ordinary/Even-characteristic trichotomy "is what the cusp
+correspondence sections rely on"; the open-problems chapter says the two $\Orth^+(S_\Co)$-orbits both
+have quotient invariants $(9,9,1)$ and so "are not separated by the invariants of the boundary
+lattice". Both cannot be the operative claim. One of them is the correct one and the other should go.
+
+
 ## A note on what is not in this list
 
 Certificates are not mathematics. Several claims in the book are true-as-computed and unproved; they
 appear above only where the *mathematical* statement is at stake (B2, B3). Their evidential status is
 recorded in [GAPS](writing/dissertation/GAPS.md), which is the audit trail and not a problem list.
+
+## Coverage of this list
+
+Read in full for this list: the open-problems chapter; `coble/lattices-and-moduli` (lattice table,
+moduli basics, discriminant orbits, K3 periods and monodromy, normalization); `coble/computations`
+(isotropic candidates, toolchain, CoxIter results, chamber polyhedra, isotropic orbits and Tits
+buildings, lattice algorithms, periods and local monodromy); `coble/stable-limits`; `coble/degenerations`.
+
+Not yet read at this depth: the Heegner research report (16 500 words, and the source of A18's
+programme), `coble/cusp-correspondence` beyond its problem blocks, `coble/compactifications`,
+`coble/surfaces-and-moduli`, `coble/coble-moduli`, the `lattice-theory` and `dissertation` trees
+except where cited above. The list above is therefore complete for the chapters read and incomplete
+for the corpus; treating it as final before the remainder is read would repeat the mistake it was
+written to correct.
+
