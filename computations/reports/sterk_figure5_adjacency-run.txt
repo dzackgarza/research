@@ -1,0 +1,14 @@
+square   22 roots: all 231 pairs asserted (25 nonzero), consistent with the table under 8 transports
+triangle 19 roots: all 171 pairs asserted (18 nonzero), consistent with the table under 2 transports
+
+the fold, in printed Figure 5 labels, with multiplicity:
+  cusp 1 (square): [{2: 1, 10: 1}, {3: 1, 11: 1}, {4: 1, 12: 1}, {5: 1, 13: 1}, {6: 1, 14: 1}, {7: 1, 15: 1}, {8: 1, 0: 1}, {9: 1, 1: 1}, {16: 1, 18: 1}, {20: 1}, {21: 1}, {17: 1, 19: 1}]
+      irrelevant by Definition 5.4: [8, 9, 10, 11]   used in the audit: [8, 9, 10, 11]   AGREE
+  cusp 2 (triangle): [{2: 1, 18: 1}, {3: 1, 17: 1}, {4: 1, 16: 1}, {5: 1, 15: 1}, {6: 1, 14: 1}, {7: 1, 13: 1}, {8: 1, 12: 1}, {9: 1, 11: 1}, {10: 1}, {1: 1, 19: 1}]
+      irrelevant by Definition 5.4: [9]   used in the audit: [9]   AGREE
+  cusp 3 (square): [{12: 1}, {13: 1, 11: 1}, {14: 1, 10: 1}, {15: 1, 9: 1}, {0: 1, 8: 1}, {1: 1, 7: 1}, {2: 1, 6: 1}, {3: 1, 5: 1}, {4: 1}, {16: 1, 18: 1}, {21: 1, 19: 2}, {21: 1, 17: 2}]
+      irrelevant by Definition 5.4: [9, 10, 11]   used in the audit: [9, 10, 11]   AGREE
+  cusp 4 (square): [{14: 1}, {15: 1, 13: 1}, {0: 1, 12: 1}, {1: 1, 11: 1}, {2: 1, 10: 1}, {3: 1, 9: 1}, {4: 1, 8: 1}, {5: 1, 7: 1}, {6: 1}, {16: 1, 19: 1}, {17: 1, 18: 1}]
+      irrelevant by Definition 5.4: [9, 10]   used in the audit: [9, 10]   AGREE
+  cusp 5 (square): [{15: 1, 0: 2, 1: 1}, {1: 1, 2: 2, 3: 1}, {3: 1, 4: 2, 5: 1}, {5: 1, 6: 2, 7: 1}, {7: 1, 8: 2, 9: 1}, {9: 1, 10: 2, 11: 1}, {11: 1, 12: 2, 13: 1}, {13: 1, 14: 2, 15: 1}, {16: 1}, {17: 1}, {18: 1}, {19: 1}, {20: 1}, {21: 1}]
+      irrelevant by Definition 5.4: [8, 9, 10, 11, 12, 13]   used in the audit: [8, 9, 10, 11, 12, 13]   AGREE
