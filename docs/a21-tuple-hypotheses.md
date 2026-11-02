@@ -231,6 +231,44 @@ contradicting the genus-0 fixed curve forced on the K3. That comparison was made
 different surfaces and is withdrawn: the Lefschetz constraint applies to involutions of
 $\widetilde X$, and $\overline W$ is a curve on $X$.
 
+### Density, and what the citation covers
+
+[@CD12], Remark 3.3: unnodal Coble sets form a Zariski open subset of all Coble sets, whence an
+unnodal Coble surface is a general one. That is openness; the conditions (i)–(v) of Theorem 3.2
+supply nonemptiness classically. Density in the Coble locus then needs irreducibility of that
+locus, which the passage does not state. The **one-node** members of `@prop:quasipolarization`
+are a different locus: nothing in [@CD12] gives nonemptiness, density or a degeneration argument
+for its intersection with the unnodal open set. The chamber obligation of the direct-projective
+construction is therefore not discharged by the citation.
+
+### The lift: criterion, order, lattice
+
+Double-cover criterion: for $\pi$ branched along $B$ with $\OO_S(B) = \mathcal{L}^{\otimes 2}$, an
+automorphism $\tau$ of $S$ lifts to $\widetilde{X}$ iff $\tau(B) = B$ and
+$\tau^*\mathcal{L} \cong \mathcal{L}$. Here $B = \mathfrak{C}$ and
+$\mathcal{L} = \OO_S(-K_S)$, since $\OO_S(\mathfrak{C}) = \OO_S(-2K_S)$. First condition:
+$\mathfrak{C} = \phi'^{-1}(E_q)$ and $\tau$ is fibrewise over $\mathsf{D}'$. Second: [@CD12]
+(proof of Theorem 3.5) uses $f_1, f_2, K_S$ as $\tau$-invariant, so $\tau^*\OO_S(-K_S) \cong
+\OO_S(-K_S)$. A lift $\tilde\tau$ commuting with $I_\Co$ exists.
+
+Order: $\tilde\tau^2$ preserves every fibre of $\pi$, so $\tilde\tau^2 \in \{\mathrm{id}, I_\Co\}$ —
+order 2 or 4 — and the case is decided by the action of $\tau$ on the normal direction to
+$\mathfrak{C}$ at a fixed point; DK13 §8 supplies two such points ($\overline W \cap \mathfrak{C}$)
+but not the normal action.
+
+Invariant lattice: on $\pi^*\Pic(S)$ the lift acts as $\tau$, i.e.
+$\mathrm{id}_U \oplus (-\mathrm{id}_{E_8})$ on $\Pic(S)\otimes\QQ$ ([@CD12] (16)); on the
+$\pi$-anti-invariant part by a sign fixed by the same linearization. Neither source states it.
+
+### No identification asserted
+
+$H = \pi_{\mathrm{dP}}^*\OO(1,1)$ and $L$ (with $\psi^*L = H$) are classes of the
+direct-projective construction, $H^2 = 4$, $L^2 = 2$; $h$ and $\mathfrak{C}$ are classes of the
+cited model, $h^2 = 2$, $\mathfrak{C}^2 = -4$, $h\cdot\mathfrak{C} = 0$. The parallel
+($L^2 = h^2 = 2$, $L\cdot C = h\cdot\mathfrak{C} = 0$) is consistent with an identification and
+does not demonstrate one; a marking carrying one set of classes to the other would, and none is
+produced here.
+
 ### What the sources leave open, precisely
 
 $\mathfrak{C} = \phi'^{-1}(R)$ for the $(-2)$-curve $R$ over $q$, and $\tau$ is fibrewise over
