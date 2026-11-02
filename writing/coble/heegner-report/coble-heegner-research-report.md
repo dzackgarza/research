@@ -642,6 +642,8 @@ Any two tuples $\mathfrak L_{\Co,2}$ arising from the direct projective construc
 This is stronger than uniqueness of a primitive embedding of $S_{\Co}$ into $L_{K3}$.
 It is the Coble analogue of the AEGS embedding-rigidity lemma and is needed before any direct period quotient can be declared coordinate independent.
 
+**The hypothesis of that problem is empty, and this is where the answer is recorded.** A tuple needs an involution $I_{\mathrm{dP}}$ of the cover commuting with $I_\Co$ and fixing $H$, and there is none. In the rank-one case the involution is $-\id$ on $H^{\perp S_\Co}$, which contains the authored root $\alpha$, so it sends $\alpha\mapsto-\alpha$ and no automorphism can reverse the class of an effective curve (@prop:no-rank-one-automorphism); in the rank-two case the slot is forced to be $\langle f^*F_1,f^*F_2\rangle$, and its involution reverses the same class (@cor:no-del-pezzo-involution-coble-cover). The two cases are exhaustive by @prop:del-pezzo-placement, so no tuple arises and no two are to be compared: the rigidity statement asks for a comparison of an empty family. What this does *not* touch is the Enriques side, where [@AEGS25]'s $I_{\mathrm{dP}}$ is lattice data; the consequence is that the two sides cannot be compared at the level of del Pezzo involutions, the Coble one having none.
+
 ### The embedded comparison chain {#sec-embedded-chain}
 
 The Heegner strategy uses the chain

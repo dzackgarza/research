@@ -150,36 +150,28 @@ The pair `S_Co + T_Co -> L_K3` with index `2^{11}` is the graph of an anti-isome
    admits a unimodular overlattice with the full graph gluing, so the index `2^{11}` stated for
    `L_K3` is consistent with the pair, and the gluing datum exists up to isometry.
 
-2. **The explicit arrow is blocked, at a located call.** `normal_form_isometry()` returns the
-   normal-form-to-original morphism, so it does give `NF(A_{S_Co}) -> A_{S_Co}` and
-   `NF(A_{T_Co}(-1)) -> A_{T_Co}(-1)`. Composing them to get `A_{S_Co} -> A_{T_Co}(-1)` fails:
+2. **The explicit arrow: was blocked at a located call, now available at a later pin.**
+   `normal_form_isometry()` returns the normal-form-to-original morphism, `NF(A_{S_Co}) -> A_{S_Co}`
+   and `NF(A_{T_Co}(-1)) -> A_{T_Co}(-1)`, and at pin `c546077d` the composite could not be formed:
+   `f.domain() is g.domain()` returned `False` because the two normal forms are built per form, so
+   `f.inverse().then(g)` — correctly directed, since `then` is `other ∘ self` — was refused by the
+   documented domain/codomain test, the multiplicative and at-sign products raised `TypeError` on
+   `CategoricalIsomorphism`, and `isometry_to` existed at the lattice level only.
 
-   * `f.domain() is g.domain()` returns `False`: the two normal forms are constructed per form
-     and are distinct objects, so no arrow `NF(A_{S_Co}) -> NF(A_{T_Co}(-1))` is available to
-     compose with;
-   * consequently the correctly-directed `f.inverse().then(g)` is refused — `then` is
-     `other ∘ self` and requires `other.domain() is self.codomain()` — with
-     `ValueError: cannot compose Morphism from Finitely presented module ...`;
-   * the multiplicative and at-sign products raise
-     `TypeError: unsupported operand type(s) for *: 'CategoricalIsomorphism' and
-     'CategoricalIsomorphism'`;
-   * `f.then(g)`, the reverse direction, is refused for the same documented reason and its
-     refusal says nothing about the provider.
+   Those refusals are superseded. Maintained `sage-extensions` at main
+   `6ad7a5ea396da6e758ee28f3dea10a35baee0266` provides the constructor at the level of torsion
+   quadratic forms, `gamma = DS.isometry_to(DT.twist(-1))`, and its published test
+   `tests/forms/test_the_coble_anti_isometry.sage` runs on the original Coble inputs and verifies
+   the exact typed source and target, the quadratic values on generators and on pair sums, all
+   pairwise bilinear values, the untwisted sign, and inverses and compositions. The earlier record
+   here — the executed refusals, with their tracebacks — is kept as what it was, a record at that
+   pin, and it is no longer read as a missing capability.
 
-   These are failures **under the documented contract**, executed in the script and reported
-   with the tracebacks Python produced. The routes attempted were these, each by an actual
-   call — this is not an exhaustive search of the provider's capabilities, and it is not
-   claimed as one: `then` is guarded by object identity (`mor_categories.py:637`), `normal_form` is
-   recomputed per call (`form_modules.py:2736`, `torsion_form_modules.py:1014`),
-   `reframing_isometry` re-presents one form on new generators (`form_modules.py:2630`),
-   `equip_quadratic_form` sits on a pure module (`pure/modules.py:1980`), `isometry_to` exists
-   at the lattice level only (`lattices.py:4373`), and the call
-   `A_{S_Co}.isometry_to(A_{T_Co}(-1))` is refused with its own traceback, recorded in the run
-   log. The request to the owner is therefore precise: an isometry constructor between two
-   isometric torsion quadratic forms (or a normal form published once per isometry class), with
-   the runnable specimen committed beside this note. An earlier version of this note asserted
-   that "no isometry constructor ... is available at this pin" without any such call; that
-   assertion is withdrawn and replaced by the executed record. That is A20 item 1(b).
+   It is also not on the critical path, and that is a mathematical statement rather than a
+   scheduling one: `@prop:rank-one-slot` quantifies over the anti-isometry (every odd class of
+   `A_{T_Co}` contains a vector of square `-1`, so the slot exists whatever `gamma_Co` is), and
+   `@prop:no-rank-one-automorphism` uses no gluing at all (`alpha` lies in `S_Co` and
+   `2t = 2b - H` lies in `T_Co`).
 
 `glue_map` is the operation that returns the anti-isometry in the form the book wants, but its
 docstring requires the two primitive orthogonal subobjects *inside* the ambient lattice, which
