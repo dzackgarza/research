@@ -318,8 +318,9 @@ The source hypotheses used are [@DK13, §3] for the model and the ten classes, @
 
 ::: {.corollary #cor:no-del-pezzo-involution-coble-cover title="The isometry carried by the two isotropic summands is not geometric"}
 
-The isometry $\phi$ of @prop:coble-cover-marking is not the action of any automorphism of $X$: there is no marking, that is, no isometry $H^2(X,\ZZ)\iso\lkt$, under which $\phi$ becomes $\iota^*$ for some $\iota\in\Aut(X)$.
-Indeed $\alpha$ is orthogonal to $f^*F_1$ and $f^*F_2$, so $\phi(\alpha) = -\alpha$; while $\alpha = [R]$ is the class of the ramification curve and is effective, $-\alpha$ is the class of no effective divisor, so an automorphism — which carries effective classes to effective classes — cannot have this action.
+In the marking of @prop:coble-cover-marking — the one that names the classes $e_0,\dots,e_{10}$ on $X$ — the isometry $\phi$ is not the action of an automorphism of $X$ on $H^2(X,\ZZ)$.
+Indeed $\alpha$ is orthogonal to $f^*F_1$ and $f^*F_2$, so $\phi(\alpha) = -\alpha$; in this marking $\alpha = [R]$ is the class of the ramification curve and is effective, while $-\alpha$ is the class of no effective divisor, and an automorphism carries effective classes to effective classes, so no $\iota\in\Aut(X)$ has $\iota^* = \phi$ under this identification.
+The scope is this marking: the argument uses the effectivity of the class named $\alpha$, which is a fact about the construction and not about an arbitrary isometry of $H^2(X,\ZZ)$ with $\lkt$.
 This excludes $\phi$, and only $\phi$; what it does not exclude is the subject of the next remark.
 :::
 
