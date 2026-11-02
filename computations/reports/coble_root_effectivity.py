@@ -29,21 +29,36 @@ earlier version of this report said: -K_S is a perfectly integral *class* (the c
 statement about a divisor representative, not about the class) but it is *ineffective* by definition; and
 the model is ten nodes of a sextic, not ten points on a cubic.
 
-What decides it.  The double cover pushes forward as f_* O_X = O_S (+) O_S(K_S): the branch divisor is
-B = f^*C of class -2K_S (DK13's model, the proper transform of the sextic through the ten nodes, class
-6H - 2 Sum E_i), so the covering is Spec_S(O_S (+) O_S(K_S)) with the algebra structure from a section of
--B = 2K_S.  Projection formula, for a class L' of S:
+What decides it, from the double-cover construction itself.  Two divisors must not be confused.  The
+*branch* divisor is the plane sextic C inside S, of class [C] = 6H - 2 Sum E_i = -2K_S (DK13 section 3:
+S is the blowup at the ten nodes of C, so the strict transform has those multiplicities).  The
+*ramification* divisor is R = the reduced preimage f^{-1}(C) inside X, and it is R, not C, that lives on
+X.  For a double cover branched along C the pullback relation is
 
-    H^0(X, f^*L') = H^0(S, L') (+) H^0(S, L' + K_S).
+    f^*[C] = 2[R],
 
-With L' = -K_S this reads H^0(S, -K_S) (+) H^0(S, O_S) = 0 (+) C, because |-K_S| is empty by the Coble
-definition and S is rational so h^0(O_S) = 1.  Hence h^0(X, alpha) = 1 > 0: alpha IS effective, and the
-section is the anti-invariant one -- the covering coordinate -- not a section of -K_S downstairs.  So the
-retained effective root is +alpha = 3f^*H - Sum f^*E_i, with the sign fixed.
+the coefficient 2 being the ramification index along R (and the strict transform of C in S is smooth, so
+R is reduced).  With [C] = -2K_S this gives
 
-What that does not settle: whether H = h~_Co is nef and big, which is the other half of the chamber
-condition, and which is a statement about the divisor f^*h_Co on X and not about its class alone.  Nor
-does any of this identify I_dP with the del Pezzo involution of the cover.
+    [R] = f^*[C]/2 = f^*(-K_S) = alpha,
+
+so alpha is the class of the *ramification curve*: an effective divisor, geometrically exhibited, not a
+cohomological count.  That is a source-supported argument, using only DK13's model and the standard
+f^*[C] = 2[R] of a double cover.
+
+The three statements reconciled.  (i) 2 alpha = f^*[C] = 2[R] is effective, being twice the effective
+divisor R.  (ii) Exactly one of +-alpha is effective, and it is +alpha, because alpha = [R] with R
+nonempty: if -alpha were also effective, -alpha = [R'] for some effective R', so R + R' would be a
+principal divisor with both terms effective and nonnegative, forcing R = R' = 0, a contradiction.  (iii)
+The sign is therefore *not* unresolved: the retained effective root is +alpha = 3f^*H - Sum f^*E_i.  An
+earlier version left it open and offered a cohomological count (h^0(X, alpha) = h^0(S,-K_S) +
+h^0(S,O_S) = 1, from f_* O_X = O_S (+) O_S(K_S)); that count is correct but it is a count, and the
+ramification divisor is the actual witness.
+
+What remains open is separate: whether H = h~_Co = f^*h_Co is nef and big -- a property of the divisor,
+not of its class -- and the identification of AEGS's I_dP with the del Pezzo involution of the cover.
+The coordinate computation above (the two roots and their preimages) is what it is and certifies no
+effectivity by itself.
 """
 import sys
 
@@ -106,13 +121,14 @@ print('  class upstairs.')
 print('')
 print('SUMMARY')
 print('  Coordinates: the two roots are +-(3f^*H - Sum f^*E_i), with preimages +-(3H - Sum E_i) = -+K_S.')
-print('  Definition, [@DK13] section 3: a Coble surface has |-K_S| = empty and |-2K_S| nonempty, the model')
-print('  being the blowup at the ten nodes of an irreducible plane sextic.  So -K_S is an integral class')
-print('  that is ineffective, and the configuration is not ten points on a cubic.')
-print('  Effectivity of the root, decided by the double-cover pushforward: f_* O_X = O_S (+) O_S(K_S), so')
-print('  H^0(X, alpha) = H^0(S, -K_S) + H^0(S, O_S) = 0 + 1 = 1, and alpha is effective.  The retained')
-print('  effective root is +alpha, with the sign fixed.')
-print('  Still open: whether H = h~_Co is nef and big, the other half of the chamber condition; and the')
-print('  identification of I_dP with the del Pezzo involution of the cover.')
-print('  H in the report\'s tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S).')
-print('OK: the retained root is identified and shown effective; the chamber\'s nef-and-big half is left open')
+print('  Definition, [@DK13] section 3: |-K_S| = empty, |-2K_S| nonempty, S the blowup at the ten nodes of')
+print('  the plane sextic C, so that [C] = 6H - 2 Sum E_i = -2K_S.')
+print('  Branch downstairs, ramification upstairs: the branch divisor is C in S; the ramification divisor')
+print('  is R = f^{-1}(C) in X, and f^*[C] = 2[R].  Hence [R] = f^*[C]/2 = f^*(-K_S) = alpha: alpha is')
+print('  the class of the ramification curve, so it is effective with a geometric witness.')
+print('  2alpha = f^*[C] = 2[R] is therefore effective as twice R; exactly one of +-alpha is effective,')
+print('  and it is +alpha, since -alpha = [R\'] with R\' effective would make R + R\' principal with both')
+print('  terms effective, forcing both to vanish.  The sign is resolved: the retained root is +alpha.')
+print('  Still open, and separate: whether H = h~_Co = f^*h_Co is nef and big; and the identification of')
+print('  I_dP with the del Pezzo involution of the cover.  The coordinate check above certifies neither.')
+print('OK: the retained root identified and shown effective by its ramification divisor; sign resolved')

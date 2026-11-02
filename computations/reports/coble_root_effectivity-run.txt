@@ -18,13 +18,14 @@ the root line of h~_Co^perp (2 vectors):
 
 SUMMARY
   Coordinates: the two roots are +-(3f^*H - Sum f^*E_i), with preimages +-(3H - Sum E_i) = -+K_S.
-  Definition, [@DK13] section 3: a Coble surface has |-K_S| = empty and |-2K_S| nonempty, the model
-  being the blowup at the ten nodes of an irreducible plane sextic.  So -K_S is an integral class
-  that is ineffective, and the configuration is not ten points on a cubic.
-  Effectivity of the root, decided by the double-cover pushforward: f_* O_X = O_S (+) O_S(K_S), so
-  H^0(X, alpha) = H^0(S, -K_S) + H^0(S, O_S) = 0 + 1 = 1, and alpha is effective.  The retained
-  effective root is +alpha, with the sign fixed.
-  Still open: whether H = h~_Co is nef and big, the other half of the chamber condition; and the
-  identification of I_dP with the del Pezzo involution of the cover.
-  H in the report's tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S).
-OK: the retained root is identified and shown effective; the chamber's nef-and-big half is left open
+  Definition, [@DK13] section 3: |-K_S| = empty, |-2K_S| nonempty, S the blowup at the ten nodes of
+  the plane sextic C, so that [C] = 6H - 2 Sum E_i = -2K_S.
+  Branch downstairs, ramification upstairs: the branch divisor is C in S; the ramification divisor
+  is R = f^{-1}(C) in X, and f^*[C] = 2[R].  Hence [R] = f^*[C]/2 = f^*(-K_S) = alpha: alpha is
+  the class of the ramification curve, so it is effective with a geometric witness.
+  2alpha = f^*[C] = 2[R] is therefore effective as twice R; exactly one of +-alpha is effective,
+  and it is +alpha, since -alpha = [R'] with R' effective would make R + R' principal with both
+  terms effective, forcing both to vanish.  The sign is resolved: the retained root is +alpha.
+  Still open, and separate: whether H = h~_Co = f^*h_Co is nef and big; and the identification of
+  I_dP with the del Pezzo involution of the cover.  The coordinate check above certifies neither.
+OK: the retained root identified and shown effective by its ramification divisor; sign resolved

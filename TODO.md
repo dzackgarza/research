@@ -269,17 +269,18 @@ two polarized lattices are matched by an isometry carrying $\tilde h_\Co$ to $h$
 *What is missing.* (i) The labels. The root is identified at coordinate level only: the two vectors of
 $\tilde h_\Co^{\perp}$ are $\pm(3f^*H-\Sum_i f^*E_i)$, whose preimages in $\Pic(S)$ are
 $\pm(3H-\Sum_i E_i) = \mp K_S$, a $(-1)$-class, by @prop:coble-invariant-lattice's dictionary
-(`computations/reports/coble_root_effectivity.py`). **Effectivity, settled by the double-cover pushforward.** The primary source is [@DK13, §3]
+(`computations/reports/coble_root_effectivity.py`). **Effectivity, settled by the ramification divisor.** [@DK13, §3]
 (`references/literature/lattice-research/dolgachev_kondo_2013.md`): a Coble surface is a smooth rational
-projective surface with $\abs{-K_S} = \emptyset$ and $\abs{-2K_S}\neq\emptyset$, the classical model
-being the blowup at the ten *nodes of an irreducible plane sextic*. So $-K_S$ is an integral class that is
-ineffective, and the configuration is not ten points on a cubic. The root's effectivity comes from the
-cover, not from $S$: the branch divisor is $f^*C$, of class $-2K_S$, so
-$f_*\mathcal{O}_X = \mathcal{O}_S\oplus\mathcal{O}_S(K_S)$ and, by the projection formula,
-$h^0(X,\alpha) = h^0(S,-K_S) + h^0(S,\mathcal{O}_S) = 0 + 1 = 1$. Hence $\alpha$ is effective, the
-section being the anti-invariant covering coordinate, and the retained effective root is
-$+\alpha = 3f^*H-\Sum_i f^*E_i$ with the sign fixed (`computations/reports/coble_root_effectivity.py`).
-The tuple's $H$ is the degree-$4$ class $\tilde h_\Co$, not the plane-line class of square $1$.
+projective surface with $\abs{-K_S} = \emptyset$ and $\abs{-2K_S}\neq\emptyset$, namely the blowup at the
+ten nodes of an irreducible plane sextic $C$; so $-K_S$ is an integral class that is ineffective, and the
+configuration is not ten points on a cubic. Branch and ramification are distinct: the branch divisor is
+$C\subset S$ with $[C] = 6H-2\Sum_iE_i = -2K_S$, the ramification divisor is $R = f^{-1}(C)\subset X$, and
+a double cover satisfies $f^*[C] = 2[R]$. Hence $[R] = \tfrac12f^*[C] = f^*(-K_S) = \alpha$: $\alpha$ is
+the class of the ramification curve, effective with a geometric witness. The sign is fixed too, $-\alpha$
+being $[R']$ for no effective $R'$ (else $R+R'$ principal with both terms effective and nonnegative), so the
+retained root is $+\alpha = 3f^*H-\Sum_i f^*E_i$, and $2\alpha = f^*[C] = 2[R]$ is effective as twice $R$ —
+the three statements are consistent. The coordinate check certifies none of this; it only fixes the two
+roots and their preimages. The tuple's $H$ is the degree-$4$ class $\tilde h_\Co$, not the plane-line class.
 **Still open in the chamber:** whether $H = f^*h_\Co$ is nef and big — a statement about the divisor, not
 about its class. The chamber obligation therefore stays open, with these source conditions named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
 discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
