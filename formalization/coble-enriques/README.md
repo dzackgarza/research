@@ -129,7 +129,15 @@ nonzero element of `C` has positive pairing with a fixed `A` (`0 < B x A`), then
 the signature: `f` involutive, form-preserving, `S`-stable, its fixed points in `S` on the
 line `ℚ H`; `α ∈ S` orthogonal to `H`; `α` in the cone `C` and nonzero; and `C` preserved.
 
-Both `#print axioms` lines on the three theorems read
+**`rank_two_narrowing`.** The rank-two case, reduced to one integer. With `S'` the whole
+hyperbolic plane `⟨a₁, a₂⟩`, `H = ±(a₁ + a₂)`, and `α = p • (a₁ - a₂) + β` with `β` orthogonal
+to the plane, the expansion of `B α α` has no cross terms, so `β² = -2 + 4p²`; negative
+semi-definiteness of `β`'s direction gives `p² ≤ 1/2`, and since `α · a₁ = -2p` is an integer
+the rank-two case is one of `α · a₁ ∈ {-1, 0, 1}`. Which one is a property of the pair
+`(α, S')` on the surface and not of the lattice; the manuscript's `prop:rank-two-slot-boundary`
+says where it is known and where it is not.
+
+Both `#print axioms` lines on the four theorems read
 `[propext, Classical.choice, Quot.sound]`. Checked with
 
 ```
@@ -142,8 +150,8 @@ this container); exit 0, no diagnostics.
 **Scope, and what stays a premise.** What is checked is the logic that consumes the
 geometric inputs: that an automorphism of the surface preserves effectivity, that the
 authored class `α` is effective, that a projective surface carries an ample class `A`, and
-that the induced action of `I_dP` is an integral isometry commuting with `I_Co` with fixed
-lattice on `S_Co` exactly `ℤ H`. Those are hypotheses here, not theorems; the sources for
+that the induced action of `I_dP` is an integral isometry commuting with `I_Co` with the stated fixed lattice, and that `H^⊥ ∩ S` is negative definite — on a K3 that
+follows from `I_Co` being nonsymplectic and `H^2 > 0`, and it enters here as a hypothesis. Those are hypotheses here, not theorems; the sources for
 them are the authored bullets of the tuple, `prop:coble-invariant-lattice`,
 `prop:del-pezzo-placement` and the owner computations, and the manuscript's premise ledger
 (`rmk:a21-premises`) says which source supplies which.

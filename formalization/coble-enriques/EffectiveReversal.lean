@@ -105,3 +105,41 @@ theorem no_automorphism_reverses_root
     (slot_reverses_root B g hg hiso S hS H α hH hgH hfix hαS hHα)
 
 end Coble
+
+namespace Coble
+
+variable {V : Type*} [AddCommGroup V] [Module ℚ V]
+
+/-- **The rank-two reduction.**  In the rank-two case the slot's invariant lattice is the whole
+hyperbolic plane `⟨a₁, a₂⟩`, `H = ±(a₁ + a₂)`, and writing `α = p • (a₁ - a₂) + β` with `β`
+orthogonal to the plane, the negative definiteness of `β`'s direction bounds `p`: the integer
+`α · a₁ = -2p` can only be `-1`, `0` or `1`.  So the rank-two case is one integer away from the
+same conclusion, and that integer is what the identification of the two constructions would fix. -/
+theorem rank_two_narrowing
+    (B : LinearMap.BilinForm ℚ V) (hsym : ∀ x y, B x y = B y x)
+    (a1 a2 α β : V) (p : ℚ)
+    (h11 : B a1 a1 = 0) (h22 : B a2 a2 = 0) (h12 : B a1 a2 = 2)
+    (hα : α = p • (a1 - a2) + β)
+    (hβ1 : B β a1 = 0) (hβ2 : B β a2 = 0)
+    (hα2 : B α α = -2) (hneg : B β β ≤ 0) :
+    p ^ 2 ≤ 1 / 2 := by
+  have h21 : B a2 a1 = 2 := by rw [hsym a2 a1, h12]
+  have hdiff : B (a1 - a2) (a1 - a2) = -4 := by
+    rw [LinearMap.BilinForm.sub_left, LinearMap.BilinForm.sub_right,
+      LinearMap.BilinForm.sub_right, h11, h22, h12, h21]
+    norm_num
+  have hcross : B (a1 - a2) β = 0 := by
+    have e1 : B a1 β = 0 := by rw [hsym a1 β, hβ1]
+    have e2 : B a2 β = 0 := by rw [hsym a2 β, hβ2]
+    rw [LinearMap.BilinForm.sub_left, e1, e2]
+    norm_num
+  have hback : B β (a1 - a2) = 0 := by rw [hsym, hcross]
+  have hexp : B α α = p ^ 2 * (-4) + B β β := by
+    rw [hα, LinearMap.BilinForm.add_left, LinearMap.BilinForm.smul_left,
+      LinearMap.BilinForm.add_right, LinearMap.BilinForm.add_right,
+      LinearMap.BilinForm.smul_right, LinearMap.BilinForm.smul_right,
+      hdiff, hcross, hback]
+    ring
+  nlinarith
+
+end Coble
