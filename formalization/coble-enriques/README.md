@@ -102,3 +102,48 @@ Both `#print axioms` lines read `[propext, Classical.choice, Quot.sound]`. Check
 **Scope.** This certifies the arithmetic of the figure reading, not the cusp: primitivity of
 the sum in `N`, and the identification of `v^⊥/Zv` with `A₁₇`, are the library computation
 that is still pending, as is the reading of the other two subdiagrams' vertex sets.
+
+## `EffectiveReversal.lean` — proved, no `sorry`
+
+The two logical steps of the negative answer to A21, and their composite. They are
+linear algebra plus one positivity statement, so they are formalized here rather than
+argued in prose only.
+
+**`slot_reverses_root`.** Let `B` be a `ℚ`-bilinear form on `V`, `f` an involution
+preserving `B` (`∀ x y, B (f x) (f y) = B x y`), `S` an `f`-stable submodule, `H a ∈ V`
+with `B H H ≠ 0`, `f H = H`, `a ∈ S`, `B a H = 0`, and suppose the fixed points of `f` in
+`S` all lie on the line `ℚ H`. Then `f a = -a`.
+
+The proof uses only the `ℚ`-eigenspace decomposition of an involution: `f a + a` is fixed
+by `f` and lies in `S`, hence on the line; pairing it with `H` kills the `f a` term
+because `f` is an isometry fixing `H`, so the coefficient vanishes since `B H H ≠ 0`.
+**No integral splitting of `S` is used** — in the Coble case the fixed and anti-fixed
+lattices span an index-2 sublattice, which is why the operator argument was the one that
+could be made.
+
+**`not_preserves_effectivity_of_reversal`.** If a map preserves a cone `C`, and every
+nonzero element of `C` has positive pairing with a fixed `A` (`0 < B x A`), then no element
+`α ∈ C`, `α ≠ 0`, is sent to `-α`. Positivity is used once in each direction.
+
+**`no_automorphism_reverses_root`.** The two together, with every hypothesis of both in
+the signature: `f` involutive, form-preserving, `S`-stable, its fixed points in `S` on the
+line `ℚ H`; `α ∈ S` orthogonal to `H`; `α` in the cone `C` and nonzero; and `C` preserved.
+
+Both `#print axioms` lines on the three theorems read
+`[propext, Classical.choice, Quot.sound]`. Checked with
+
+```
+/opt/lean/bin/lean formalization/coble-enriques/EffectiveReversal.lean
+```
+
+Lean 4.33.1 against the Mathlib build under `/opt/mathlib` (`LEAN_PATH` as configured in
+this container); exit 0, no diagnostics.
+
+**Scope, and what stays a premise.** What is checked is the logic that consumes the
+geometric inputs: that an automorphism of the surface preserves effectivity, that the
+authored class `α` is effective, that a projective surface carries an ample class `A`, and
+that the induced action of `I_dP` is an integral isometry commuting with `I_Co` with fixed
+lattice on `S_Co` exactly `ℤ H`. Those are hypotheses here, not theorems; the sources for
+them are the authored bullets of the tuple, `prop:coble-invariant-lattice`,
+`prop:del-pezzo-placement` and the owner computations, and the manuscript's premise ledger
+(`rmk:a21-premises`) says which source supplies which.

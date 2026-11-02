@@ -108,12 +108,25 @@ print('they are exactly f^*F_1 and f^*F_2: %s' % (found == expected,))
 assert found == expected, 'the solution set is not the published pair'
 
 print('')
+print('the authored root against the two isotropic summands')
+alpha = S.linear_combination({0: 3, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1,
+                              9: -1, 10: -1})
+print('  alpha = 3e_0 - (e_1 + ... + e_10) : q(alpha) = %s, alpha.H = %s'
+      % (int(alpha.q()), int(S.b(alpha, H))))
+for name, a in (('f^*F_1', F1), ('f^*F_2', F2)):
+    print('  alpha.%s = %s' % (name, int(S.b(alpha, a))))
+assert int(alpha.q()) == -2 and int(S.b(alpha, H)) == 0
+assert int(S.b(alpha, F1)) == 0 and int(S.b(alpha, F2)) == 0
+print('  so alpha lies in the anti-invariant part of the slot: the operator that is +1 on')
+print('  <f^*F_1, f^*F_2> and -1 on its complement sends alpha to -alpha.')
+print('')
 print('CONCLUSION')
 print('  The only isotropic classes of S_Co pairing 2 against H are f^*F_1 and f^*F_2.')
 print('  They are the two members of one pair, H - f^*F_1 = f^*F_2, so they span one primitive')
 print('  U(2) = <f^*F_1, f^*F_2> containing H: inside S_Co the del Pezzo slot has a single')
 print('  placement, and the corollary about that candidate covers the rank-two case entirely.')
-print('  Not claimed here: any statement about automorphisms, Kaehler cones, the chamber or')
-print('  effectivity, and nothing about the case where the slot meets S_Co only in <H>.')
+print('  Also computed: the authored root is orthogonal to both summands, so the rank-two slot')
+print('  reverses it.  Not claimed here: any statement about automorphisms, Kaehler cones, the')
+print('  chamber or effectivity, and nothing about the case where the slot meets S_Co only in <H>.')
 print('')
 print('OK: the rank-two placement is unique, by a complete definite-fibre enumeration')

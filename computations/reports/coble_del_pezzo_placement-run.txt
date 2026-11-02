@@ -12,12 +12,20 @@ solution classes a of S_Co with a^2 = 0 and a.H = 2: 2
    [3, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0]
 they are exactly f^*F_1 and f^*F_2: True
 
+the authored root against the two isotropic summands
+  alpha = 3e_0 - (e_1 + ... + e_10) : q(alpha) = -2, alpha.H = 0
+  alpha.f^*F_1 = 0
+  alpha.f^*F_2 = 0
+  so alpha lies in the anti-invariant part of the slot: the operator that is +1 on
+  <f^*F_1, f^*F_2> and -1 on its complement sends alpha to -alpha.
+
 CONCLUSION
   The only isotropic classes of S_Co pairing 2 against H are f^*F_1 and f^*F_2.
   They are the two members of one pair, H - f^*F_1 = f^*F_2, so they span one primitive
   U(2) = <f^*F_1, f^*F_2> containing H: inside S_Co the del Pezzo slot has a single
   placement, and the corollary about that candidate covers the rank-two case entirely.
-  Not claimed here: any statement about automorphisms, Kaehler cones, the chamber or
-  effectivity, and nothing about the case where the slot meets S_Co only in <H>.
+  Also computed: the authored root is orthogonal to both summands, so the rank-two slot
+  reverses it.  Not claimed here: any statement about automorphisms, Kaehler cones, the
+  chamber or effectivity, and nothing about the case where the slot meets S_Co only in <H>.
 
 OK: the rank-two placement is unique, by a complete definite-fibre enumeration
