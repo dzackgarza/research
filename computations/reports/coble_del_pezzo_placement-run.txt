@@ -19,6 +19,12 @@ the authored root against the two isotropic summands
   so alpha lies in the anti-invariant part of the slot: the operator that is +1 on
   <f^*F_1, f^*F_2> and -1 on its complement sends alpha to -alpha.
 
+the pairings of the root with the whole invariant lattice
+  div_{S_Co}(alpha) = 2
+  ideality: alpha.x is even for every x in S_Co, since alpha = -f^*K_S and S_Co = f^*Pic(S),
+  so alpha.x = -2 (K_S . F) for x = f^*F.  The divisibility is exactly 2, because
+  alpha/2 is not in S_Co: (alpha/2)^2 = -1/2 is not an integer and S_Co is even.
+
 CONCLUSION
   The only isotropic classes of S_Co pairing 2 against H are f^*F_1 and f^*F_2.
   They are the two members of one pair, H - f^*F_1 = f^*F_2, so they span one primitive
