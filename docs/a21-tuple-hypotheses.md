@@ -71,10 +71,15 @@ conditions do not constrain the placement of `$\sdp$` relative to `$\alpha$`.
 * The case `$A = \ZZ H$` (the del Pezzo slot meeting `$\Pic$` only in `$\langle H\rangle$`) is
   **not excluded** by the stated constraints. No witness for it is exhibited anywhere in the
   repository, so "not excluded" is all that may be said.
-* Nor is uniqueness claimed in the rank-two case: the placement problem there is finite
-  (`a\mapsto a-H/2` lands in the negative definite `$H^{\perp}\cap S_\Co^\#$`), and a search over
-  `$|a_0|\le 24$` returns only the published pair, but the norm-`$(-1)$` enumeration that would
-  settle it has not been run.
+* Uniqueness in the rank-two case is settled, and by an integral computation rather than by a
+  search: the change of variable is `$y = 2a - H$`, which is a bijection from
+  `$\{a\in S_\Co : a^2 = 0,\ a\cdot H = 2\}$` onto
+  `$\{y\in H^{\perp S_\Co} : y^2 = -4,\ y\equiv H \pmod{2S_\Co}\}$`. The dual-lattice form
+  `$a\mapsto a-H/2$` used in an earlier version of this note lands in `$S_\Co^\#$`, which is not
+  an integral lattice, so the provider's definite-fibre enumeration over `$\ZZ$` does not reach
+  it; `$H^{\perp S_\Co}$` is integral and negative definite, and the fibre there is complete.
+  The run is `computations/reports/coble_del_pezzo_placement.py`: `242` elements in the
+  `$(-4)$`-fibre, exactly two of them congruent to `$H$`, namely `$f^*F_1$` and `$f^*F_2$`.
 
 ## The completeness contract of the enumeration, at the pin
 
@@ -266,5 +271,31 @@ produced here.
 $\mathfrak{C} = \phi'^{-1}(R)$ for the $(-2)$-curve $R$ over $q$, and $\tau$ is fibrewise over
 $\mathsf D'$, so $\tau$ preserves $\mathfrak{C}$; the double cover $\widetilde X \to X$ branched
 along a $\tau$-invariant divisor therefore carries a lift $\tilde\tau$ commuting with $I_\Co$.
-Whether $\tilde\tau$ is an $I_{\mathrm{dP}}$ for the tuple — quotient a Del Pezzo surface,
-invariant lattice $U(2)$ — is stated in neither source, and is not asserted anywhere here.
+Whether $\tilde\tau$ is an $I_{\mathrm{dP}}$ for the tuple is stated in neither source.
+
+## What the local model settles about the tuple's $I_{\mathrm{dP}}$, and the status of A21
+
+One half of that last question is answered, not by a source but by the local model of the
+construction itself, and the answer is *negative for the label*: on
+$X^\sharp = \{z^2 = f(x,y)\}$ over $\mathbf P^1\times\mathbf P^1$ the two involutions are
+$\iota_{\mathrm{dP}}(x,y,z) = (x,y,-z)$ and $\iota_\Co(x,y,z) = (-x,-y,-z)$, and after
+resolving a node of the branch curve the lift of $\iota_{\mathrm{dP}}$ fixes the normalization
+of that branch curve, of Euler characteristic $2k-16$ for $k$ nodes, whence its invariant rank is
+$k+2$ — see `@prop:local-operators` and `@prop:del-pezzo-type-on-the-resolution` in
+`writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md`. Since
+$k = 0$ makes $\mathrm{Fix}(I_\Co)$ empty and the quotient Enriques, every Coble member of the
+construction has $k\ge1$ and invariant rank $\ge3$; and the authored root is the exceptional
+curve over a singular $\tau$-fixed point, which both involutions preserve. Two things follow for
+the ledger in this file, and they are the reason the surrounding paragraphs are scoped as they
+are:
+
+* the label `$S_{\mathrm{dP}}\cong U(2)$` of `@prop:del-pezzo-placement`,
+  `@prop:no-rank-one-automorphism` and `@prop:rank-two-slot-boundary` is *not* the type of the
+  del Pezzo involution this construction produces, so those results do not close A21;
+* the rejection of the authored tuple asserted in earlier rounds is withdrawn, and A21 is open
+  for the tuples of the construction: what is missing is the saturation of
+  `$\pi^*\Pic(\mathbf P^1\times\mathbf P^1)\perp\bigoplus\ZZ D_g$` in
+  `$S_{\mathrm{dP}}$` (containment with equal rank is not equality), the same for `$S_\Co$`,
+  and the geometry of the slot on this tuple — in particular whether $H$ and the root span
+  `$S_\Co\cap S_{\mathrm{dP}}$`, and the chamber obligation, which the later sections of this
+  file record as undischarged.
