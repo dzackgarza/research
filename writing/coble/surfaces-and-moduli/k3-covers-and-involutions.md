@@ -98,3 +98,45 @@ del Pezzo, Enriques, and Nikulin involutions on $\lkt = U^3 \oplus E_8^2$. For
 the Nikulin involution the invariant and coinvariant lattices are written
 $L_{\Nik}^{+}$ and $L_{\Nik}^{-}$; each complementary pair has
 ranks summing to $22 = \rank\lkt$. {#tbl-k3-cover-coinvariant-lattices}
+
+## Two constraints on involutions of a K3
+
+The lattice decompositions above describe the abstract involutions of $\lkt$.
+Whether a given K3 surface carries one of them as an automorphism is a separate question, and for two of the statements made elsewhere in the book it is a decidable one.
+The first is a necessary condition on the invariant lattice of a del Pezzo involution, which is what the Coble tuple's del Pezzo slot has to satisfy (@prop:coble-cover-marking).
+The second records exactly which hypothesis makes a product of two involutions an involution again, since that is what the symplectic character of a product depends on.
+
+::: {.proposition #prop:del-pezzo-invariant-has-no-roots title="The del Pezzo invariant lattice contains no class of square $-2$"}
+
+Let $X$ be a K3 surface and let $\iota\in\Aut(X)$ be an involution whose invariant lattice is $H^2(X,\ZZ)^{\iota}\cong\sdp = U(2)$.
+Then $H^2(X,\ZZ)^{\iota}$ contains no class of square $-2$, and consequently $\iota$ fixes no smooth rational curve on $X$.
+:::
+
+::: {.proof}
+
+With isotropic generators $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
+:::
+
+::: {.remark title="What this does and does not rule out"}
+
+The condition is necessary and not sufficient: the anti-invariant lattice $T_\dp$ may contain classes of square $-2$, so the lemma constrains which rational curves an involution with invariant lattice $U(2)$ can fix, and says nothing against the existence of such an involution.
+A surface carrying ten pairwise disjoint rational curves is therefore not excluded by it a priori — and it is excluded by nothing else here either, since the involution may move the curves rather than fix them; the double cover of $\PP^1\times\PP^1$ branched along a $(4,4)$ curve with ten nodes carries a del Pezzo involution together with the ten $(-2)$-curves over the nodes, which the involution fixes.
+:::
+
+::: {.proposition #prop:product-of-involutions title="When a product of involutions is an involution"}
+
+Let $X$ be a K3 surface and let $\iota,\iota'\in\Aut(X)$ be involutions.
+Then $\iota\iota'$ is an involution if and only if $\iota$ and $\iota'$ commute.
+If they commute and a generator $\sigma$ of $H^{2,0}(X)$ satisfies $\iota^*\sigma = \iota'^*\sigma = -\sigma$, then $(\iota\iota')^*\sigma = +\sigma$, so $\iota\iota'$ is symplectic.
+:::
+
+::: {.proof}
+
+If $\iota\iota'$ is an involution then $\iota\iota'\iota\iota' = \id$, and multiplying on the left by $\iota$ and on the right by $\iota'$, both of which are their own inverses, gives $\iota'\iota = \iota\iota'$.
+Conversely $(\iota\iota')^2 = \iota\iota'\iota\iota' = \iota^2\iota'^2 = \id$ whenever the two commute, and then $(\iota\iota')^*\sigma = \iota^*\iota'^*\sigma = \iota^*(-\sigma) = \sigma$.
+:::
+
+::: {.remark title="Why the order has to be stated"}
+The two halves of the proposition are an equivalence, so for a product of two involutions the order and the commutation of the factors are not independent data: the symplectic character of the product is a consequence of commutation together with the nonsymplectic character of both factors, and without commutation it is simply false, not merely unproved.
+A tuple that lists a commuting pair of nonsymplectic involutions and then, as a further property, the symplectic character of their product, lists a consequence as though it were a condition; and a tuple that lists the symplectic character while leaving commutation open asserts something that does not follow.
+:::

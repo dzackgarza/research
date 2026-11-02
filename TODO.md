@@ -239,7 +239,9 @@ is circular. Every other Coble statement inherits whichever group it was stated 
 $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$ arising from the projective construction
 should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This is strictly stronger
 than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
-coordinate-independent. Still open, and it is a Coble-to-Coble statement.
+coordinate-independent. Still open, and it is a Coble-to-Coble statement; its del Pezzo slot is a lattice isometry
+rather than the action of an automorphism of the cover, which is a proved restriction on the tuple and not a
+weakening of the conjugacy question (@cor:no-del-pezzo-involution-coble-cover).
 
 The *Coble-to-Enriques* comparison that A20(2) cites it for is a different statement, and its unlabelled
 part is settled affirmatively (`computations/reports/coble_labeled_embedding.py`).
@@ -294,17 +296,26 @@ here: AEGS `def:involutions` gives $I_{\mathrm{dP}}(v,u,u',e,e') = (-v,u',u,-e,-
 $S_{\mathrm{dP}} = \Delta(U) = U(2)$ and $T_{\mathrm{dP}} = U\oplus\Delta^-(U)\oplus E_8^2$, and the owner
 confirms those eigenspaces act by $+1$ and $-1$ and that AEGS's Enriques pair is the book's
 $S_\En, T_\En$ with $[L : S_\En\oplus T_\En] = 2^{10}$
-(`computations/reports/coble_aegs_involutions.py`). What remains is a *labeling* statement, not lattice
-data: that this $I_{\mathrm{dP}}$ is the del Pezzo involution of the Coble K3 cover, i.e. that it commutes
-with $I_\Co$ and fixes $H$. (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
+(`computations/reports/coble_aegs_involutions.py`). What was a *labeling* statement is now decided, negatively and by a forced marking rather
+than by a missing one: [@DK13, section 3] names the classes $e_0 = f^*H$ and $e_i = f^*E_i$, which are classes
+in the basis this book already uses, so $M_X = f^*\Pic(S) = S_\Co$ and $N_X = T_\Co$ by rank and determinant;
+in that basis $H = 6e_0-2\Sum_{i\le8}e_i-e_9-e_{10}$ and $\alpha = 3e_0-\Sum_{i=1}^{10}e_i$. The
+isometry that the tuple's conditions pick out — $+1$ on the primitive $U(2)$ spanned by $f^*F_1$, $f^*F_2$,
+which contains $H$, and $-1$ on its complement — sends $\alpha$ to $-\alpha$, and $\alpha$ is effective while
+$-\alpha$ is not, so no automorphism of the cover acts as it does. Hence @cor:no-del-pezzo-involution-coble-cover, and the
+del Pezzo slot of the tuple is a lattice label. The lattice pair does exist and commutes — $f^*F_1$, $f^*F_2$
+span a primitive $U(2)\subset S_\Co$ containing $H$, and $+1$ there with $-1$ on the complement is an
+integral isometry of $L_{K3}$ commuting with $I_\Co$ — so the tuple is realizable at the level of lattices and
+not on the surface. (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
 the same complement $T_\Co$ (with $M = S_\En\oplus\ZZ\delta$ by the determinant identity above), the
 composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
 $\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
 (@thm:two-elementary-surjectivity), and $ (\psi,\phi)$ then extends over $L_{K3}$ by @thm:nikulin-gluing.
-Owner status of that input: surjective for $S_\Co$ and for $M$ (owner-verified), undecided for $T_\Co$,
-where the indefinite Eichler machinery raises the same `TypeError` — recorded with its full traceback,
-minimal construction and provenance under A20 item 1 — so that step rests on the book's theorem, not on an
-owner computation. Not built: $L_{K3}$ and the two embeddings, so
+Owner status of that input: surjective for $S_\Co$ and for $M$ (owner-verified); for $T_\Co$ the
+indefinite Eichler machinery raised the same `TypeError` at the pinned provider and returns `True` on the
+later provider recorded under A20 item 1, so what stands is a pinned-provider failure that a later provider
+does not reproduce — traceback, minimal construction and provenance kept there — and that step rests on the
+book's theorem, not on an owner computation. Not built: $L_{K3}$ and the two embeddings, so
 no isometry object exists, and the chamber is not transported.
 **A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
 $(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The
