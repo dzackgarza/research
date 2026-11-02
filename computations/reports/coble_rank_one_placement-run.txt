@@ -1,19 +1,91 @@
 provenance
   provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552   Sage: 11.0.beta5
 
-H^perp cap S_Co: rank 10
-system: v(H) = 2 and v = 0 on a basis of H^perp cap S_Co; matrix rank 11
-Smith diagonal of the system: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
-an integral v exists (commutation compatible): True
-  v (values on e_0..e_10) = [6, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1]
-S-prime = S_Co + Z b : rank 12, det -2048, signature (1, 11), |A| 2048
-  -q_{S'} realisable by an even lattice of signature (2, 8) : True
+(A) the operator on S_Co
+  S_Co = <2> + <-2>^10 : rank 11, det 2048, sig (1, 10)
+  H = 6e_0 - 2(e_1+...+e_8) - e_9 - e_10 : H^2 = 4, H primitive True
+  divisibility ideal b(H, S_Co) = Ideal (2) of Integer Ring
+  div_{S_Co}(H) = 2
+  so (x.H)/2 is an integer for every x in S_Co, while H/2 is not in S_Co.
+  L.reflection(H) exists: integral because 2 div(H)/H^2 = 1
+  phi := -s_H is an element of S.Aut() : True
+  phi(H) == H : True        phi^2 == id : True
+  phi(v) + v on the generators of S_Co (each a multiple of H):
+    e_0 : 36*e_0 - 12*e_1 - 12*e_2 - 12*e_3 - 12*e_4 - 12*e_5 - 12*e_6 - 12*e_7 - 12*e_8 - 6*e_9 - 6*e_10
+    e_1 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_2 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_3 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_4 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_5 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_6 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_7 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_8 : 12*e_0 - 4*e_1 - 4*e_2 - 4*e_3 - 4*e_4 - 4*e_5 - 4*e_6 - 4*e_7 - 4*e_8 - 2*e_9 - 2*e_10
+    e_9 : 6*e_0 - 2*e_1 - 2*e_2 - 2*e_3 - 2*e_4 - 2*e_5 - 2*e_6 - 2*e_7 - 2*e_8 - e_9 - e_10
+    e_10 : 6*e_0 - 2*e_1 - 2*e_2 - 2*e_3 - 2*e_4 - 2*e_5 - 2*e_6 - 2*e_7 - 2*e_8 - e_9 - e_10
+  H^perp cap S_Co : rank 10, det 2048
+  det(Z H + (H^perp cap S_Co)) / det(S_Co) = 4 * 2048 / 2048 = 4
+  index of Z H + (H^perp cap S_Co) in S_Co : 2 -- the lattice does NOT split along
+  the eigenspaces of phi, although phi itself is integral.
+
+(B) A_{T_Co} and the classes of square -1
+  T_Co = U(2) + U(2) + <-2>^7 : rank 11, det -2048, sig (2, 9), even True, 2-elementary True
+  |A_{T_Co}| = 2048, class q-value census: {'[0] in Fraction Field of Integer Ring / (2)Integer Ring': 528, '[(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring': 496, '[1] in Fraction Field of Integer Ring / (2)Integer Ring': 496, '[(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring': 528}
+  classes of odd q-value (a lift of odd square): 496
+  cross-check: the recorded Heegner run counts 496 classes of value q = 1 in A_{T_Co},
+  and this census reproduces 496 odd classes.
+
+  classes reached by a tau with div(tau) = 2 : 2047 of 2048
+  witnesses found in each case:
+    c_0 = 1 : lam = p e_1                                256
+    c_0 = c_1 = c_2 = c_3 = 0, k = 2 : lam = 0           21
+    c_0 = c_1 = c_2 = c_3 = 0, k = 6 : lam = e_0 + e_1 + e_j 7
+    c_1 = 1 : lam = p e_0                                120
+    c_2 = 1 : lam = p e_3                                64
+    c_3 = 1 : lam = p e_2                                28
+  odd classes with a tau of square -4 and the prescribed class : 496 / 496
+  Adding lam in T_Co leaves the class of tau/2 unchanged, so each of the 496 odd
+  classes contains a vector of square exactly -1.
+
+  the class of H/2 in A_{S_Co} : 6*[0] + 2*[1] + 2*[2] + 2*[3] + 2*[4] + 2*[5] + 2*[6] + 2*[7] + 2*[8] + [9] + [10], its square [1] in Fraction Field of Integer Ring / (2)Integer Ring
+  every anti-isometry A_{S_Co} -> A_{T_Co} carries it to a class of square -1, which
+  is odd whichever sign the anti-isometry carries, oddness being invariant under
+  q -> -q.  So the class the gluing presents is among the 496 above, whatever
+  gamma_Co is.
+
+(C) the involution with (+1)-eigenspace <H_M, b_M>, in the model T_Co
+  H_M = e_0 + e_1 : square 4 ; b_M = e_1 : square 0, b_M.H_M = 2
+  J := 2 proj - id is an element of T.Aut() : True
+  J^2 == id : True
+  J(H_M) == H_M : True      J(b_M) == b_M : True
+  <H_M, b_M> : rank 2, det -4  (= U(2))
+  generators moved by J : 9 ; on each of them J(v) + v is orthogonal to <H_M, b_M>: True
+
+(D) the classification invariants of the coinvariant lattices
+  U(2), the invariant lattice rank  2, det -4, sig (1, 1), 2-elementary True, |A| 4, delta = 0
+     value census: {'[0] in Fraction Field of Integer Ring / (2)Integer Ring': 3, '[1] in Fraction Field of Integer Ring / (2)Integer Ring': 1}
+  T_dP = U(2) + U + E8^2     rank 20, det 4, sig (2, 18), 2-elementary True, |A| 4, delta = 0
+     value census: {'[0] in Fraction Field of Integer Ring / (2)Integer Ring': 3, '[1] in Fraction Field of Integer Ring / (2)Integer Ring': 1}
+  By thm:two-elementary-classification an indefinite even 2-elementary lattice is
+  determined by (p, q), a and delta.  The complement of <H,b> in L_K3 has the disc
+  form of U(2) up to sign, so the invariants printed for U(2); T_dP has those printed
+  for T_dP; the two agree, so the complements are isometric and J is conjugate to I_dP
+  in Orth(L_K3).
 
 CONCLUSION
-  A primitive U(2) containing H, meeting S_Co in <H> and preserved by the involution with
-  (+1)-eigenspace U(2) -- i.e. commuting with I_Co -- exists at the lattice level:
-  S-prime is even of signature (1,11) with |A| = 2048, and Nikulin Thm. 1.10.1 gives a
-  complement of signature (2,8) with the dual discriminant form, so S-prime + T is the even
-  unimodular lattice of signature (3,19), which is L_K3.
-  NOT claimed: that this involution is realized by an automorphism, or anything about the
-  chamber or the effectivity of alpha.
+  (1) div_{S_Co}(H) = 2, so phi(x) = -x + ((x.H)/2)H is an integral isometry of S_Co
+      with (+1)-eigenspace exactly Z H; the eigenspaces span only an index-2
+      sublattice, so the operator is integral while the lattice does not split.
+  (2) Every class of A_{T_Co} of odd q-value contains a vector of square -1: all 496
+      are certified by an explicit tau with tau^2 = -4.  The gluing class of [H/2] is
+      odd for every anti-isometry, so t in T_Co tensor Q with t^2 = -1 and the glued
+      class exists, and b = H/2 + t is isotropic in L_K3 with b.H = 2 and b orthogonal
+      to H^{perp} cap S_Co.
+  (3) The involution with (+1)-eigenspace <H,b> is integral (projection formula, checked
+      in the model), fixes H, commutes with I_Co, and its invariant lattice is U(2),
+      meeting S_Co in Z H.
+
+  NOT claimed: that an automorphism of a K3 surface realises it; the chamber (h_Co
+  nef, H nef and big); the effectivity of alpha.  L_K3 and the overlattice are not
+  constructed here: the existence of b is an argument in the manuscript that uses the
+  gluing of the Coble primitive embedding, and this file supplies the arithmetic
+  inputs to it.
