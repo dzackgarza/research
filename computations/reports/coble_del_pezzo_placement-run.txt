@@ -1,0 +1,23 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, mounted read-only; repo bound at /repo
+
+S_Co = <2> + <-2>^10 ; H = 6e_0 - 2(e_1+...+e_8) - e_9 - e_10, q(H) = 4
+H^perp cap S_Co: rank 10, determinant 2048
+  definite: True
+the norm-(-4) fibre of H^perp cap S_Co: cardinality 242
+solution classes a of S_Co with a^2 = 0 and a.H = 2: 2
+   [3, -1, -1, -1, -1, -1, -1, -1, -1, 0, -1]
+   [3, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0]
+they are exactly f^*F_1 and f^*F_2: True
+
+CONCLUSION
+  The only isotropic classes of S_Co pairing 2 against H are f^*F_1 and f^*F_2.
+  They are the two members of one pair, H - f^*F_1 = f^*F_2, so they span one primitive
+  U(2) = <f^*F_1, f^*F_2> containing H: inside S_Co the del Pezzo slot has a single
+  placement, and the corollary about that candidate covers the rank-two case entirely.
+  Not claimed here: any statement about automorphisms, Kaehler cones, the chamber or
+  effectivity, and nothing about the case where the slot meets S_Co only in <H>.
+
+OK: the rank-two placement is unique, by a complete definite-fibre enumeration
