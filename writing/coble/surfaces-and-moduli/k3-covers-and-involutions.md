@@ -102,9 +102,8 @@ ranks summing to $22 = \rank\lkt$. {#tbl-k3-cover-coinvariant-lattices}
 ## Two constraints on involutions of a K3
 
 The lattice decompositions above describe the abstract involutions of $\lkt$.
-Whether a given K3 surface carries one of them as an automorphism is a separate question, and for two of the statements made elsewhere in the book it is a decidable one.
-The first is a necessary condition on the invariant lattice of a del Pezzo involution, which is what the Coble tuple's del Pezzo slot has to satisfy (@prop:coble-cover-marking).
-The second records exactly which hypothesis makes a product of two involutions an involution again, since that is what the symplectic character of a product depends on.
+Whether a given K3 surface carries one of them as an automorphism is a separate question.
+Two statements used elsewhere in the book are refined here: a necessary condition on the invariant lattice of a del Pezzo involution, which any representative of the Coble tuple's del Pezzo slot has to satisfy (@prop:coble-cover-marking), and the exact hypothesis under which a product of two involutions is again an involution, which is what any claim about the symplectic character of such a product has to carry.
 
 ::: {.proposition #prop:del-pezzo-invariant-has-no-roots title="The del Pezzo invariant lattice contains no class of square $-2$"}
 
@@ -119,24 +118,27 @@ With isotropic generators $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors
 
 ::: {.remark title="What this does and does not rule out"}
 
-The condition is necessary and not sufficient: the anti-invariant lattice $T_\dp$ may contain classes of square $-2$, so the lemma constrains which rational curves an involution with invariant lattice $U(2)$ can fix, and says nothing against the existence of such an involution.
-A surface carrying ten pairwise disjoint rational curves is therefore not excluded by it a priori — and it is excluded by nothing else here either, since the involution may move the curves rather than fix them; the double cover of $\PP^1\times\PP^1$ branched along a $(4,4)$ curve with ten nodes carries a del Pezzo involution together with the ten $(-2)$-curves over the nodes, which the involution fixes.
+The condition is necessary and not sufficient, and the hypothesis is that the invariant lattice *is* $\sdp$, of rank $2$: an involution whose invariant lattice merely contains $\sdp$ is not covered.
+It says nothing against the existence of such an involution, because the anti-invariant lattice can itself contain classes of square $-2$: in $\tdp = U\oplus U(2)\oplus E_8^2$ the sum of $E+F$ for a hyperbolic basis of $U$, of square $2$, and of a vector of $U(2)$ of square $-4$ has square $-2$; the lemma constrains which rational curves are *fixed* and not which curves the surface carries.
 :::
 
 ::: {.proposition #prop:product-of-involutions title="When a product of involutions is an involution"}
 
 Let $X$ be a K3 surface and let $\iota,\iota'\in\Aut(X)$ be involutions.
 Then $\iota\iota'$ is an involution if and only if $\iota$ and $\iota'$ commute.
-If they commute and a generator $\sigma$ of $H^{2,0}(X)$ satisfies $\iota^*\sigma = \iota'^*\sigma = -\sigma$, then $(\iota\iota')^*\sigma = +\sigma$, so $\iota\iota'$ is symplectic.
+If a generator $\sigma$ of $H^{2,0}(X)$ satisfies $\iota^*\sigma = \iota'^*\sigma = -\sigma$, then $(\iota\iota')^*\sigma = +\sigma$; with commutation as well, $\iota\iota'$ is therefore a symplectic involution.
+The two conclusions are different claims: the second alone does not give the order.
 :::
 
 ::: {.proof}
 
 If $\iota\iota'$ is an involution then $\iota\iota'\iota\iota' = \id$, and multiplying on the left by $\iota$ and on the right by $\iota'$, both of which are their own inverses, gives $\iota'\iota = \iota\iota'$.
-Conversely $(\iota\iota')^2 = \iota\iota'\iota\iota' = \iota^2\iota'^2 = \id$ whenever the two commute, and then $(\iota\iota')^*\sigma = \iota^*\iota'^*\sigma = \iota^*(-\sigma) = \sigma$.
+Conversely $(\iota\iota')^2 = \iota\iota'\iota\iota' = \iota^2\iota'^2 = \id$ whenever the two commute, the middle step being the only place commutation is used.
+Independently of commutation, $(\iota\iota')^* = \iota'^*\circ\iota^*$, so $(\iota\iota')^*\sigma = \iota'^*(\iota^*\sigma) = \iota'^*(-\sigma) = \sigma$: the factor $H^{2,0}(X)$ is one dimensional and each involution acts on it by a scalar, so the product acts by $(-1)(-1) = +1$ whatever the order of composition.
 :::
 
 ::: {.remark title="Why the order has to be stated"}
-The two halves of the proposition are an equivalence, so for a product of two involutions the order and the commutation of the factors are not independent data: the symplectic character of the product is a consequence of commutation together with the nonsymplectic character of both factors, and without commutation it is simply false, not merely unproved.
-A tuple that lists a commuting pair of nonsymplectic involutions and then, as a further property, the symplectic character of their product, lists a consequence as though it were a condition; and a tuple that lists the symplectic character while leaving commutation open asserts something that does not follow.
+For a product of two involutions, being an involution and being symplectic are two different properties and the first is a hypothesis of the second as a statement about involutions.
+The action on $H^{2,0}$ is forced by the nonsymplectic character of the factors and needs no commutation; the order is exactly equivalent to commutation.
+So a tuple that lists a commuting pair of nonsymplectic involutions and then, separately, the symplectic character of their product, lists a consequence as though it were a condition; and a tuple that lists the symplectic character while leaving commutation open records a property of a product that need not be an involution at all.
 :::

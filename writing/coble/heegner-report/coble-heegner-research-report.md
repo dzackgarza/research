@@ -84,7 +84,7 @@ There are two conceptually different ways to organize the proof.
 1. **Heegner-restriction strategy.** Begin with the AEGS Enriques moduli problem and regard the Coble locus as the normalization of a fixed $(-2)$-Heegner component.
    The principal new work is to justify passage to arithmetic quotients, normalize the boundary restriction, solve the cusp lifting problem, identify the restricted semifans, and prove that the resulting KSBA family loses no moduli.
 
-2. **Autonomous Coble strategy.** Define a direct moduli problem of K3 covers with a Coble involution, a compatible del Pezzo involution, a degree-$4$ class, and a distinguished exceptional root. The compatibility cannot be that both are automorphisms of the cover: on the Coble covers of [@DK13, section 3] the distinguished root $\alpha$ is the class of the ramification curve, hence effective, and a del Pezzo involution whose invariant lattice contains the degree-$4$ class has that root in its anti-invariant part, so it would carry the effective class $\alpha$ to the ineffective $-\alpha$. The del Pezzo slot is therefore a lattice datum of the comparison, not an involution of the Coble K3; see @cor:no-del-pezzo-involution-coble-cover in the lattice chapter.
+2. **Autonomous Coble strategy.** Define a direct moduli problem of K3 covers with a Coble involution, a compatible del Pezzo involution, a degree-$4$ class, and a distinguished exceptional root. The compatibility cannot require both to be automorphisms of the cover. On the Coble covers of [@DK13, section 3] the distinguished root $\alpha$ is the class of the ramification curve and is effective, and the representative of the del Pezzo slot carried by the two isotropic summands of the polarization — whose invariant lattice contains the degree-$4$ class and which is orthogonal to $\alpha$ — carries $\alpha$ to $-\alpha$, the class of no effective divisor. For that representative the slot is a lattice datum of the comparison and not an involution of the Coble K3 (@cor:no-del-pezzo-involution-coble-cover in the lattice chapter). Whether another admissible invariant lattice is realized by an automorphism is open, and nothing here rules it out.
    Reproduce direct analogues of the AEGS period, cusp, Vinberg, integral-affine, dlt, recognizable-divisor, and semitoroidal theorems.
    Only after this independent theory is complete does one prove that it agrees with the Enriques Heegner construction.
 
@@ -617,15 +617,15 @@ The relevant datum is a labeled tuple
 
 where
 
-- $I_{\Co}$ and $I_{\mathrm{dP}}$ are commuting nonsymplectic involutions *of the lattice* $L_{K3}$, with $I_{\mathrm{dP}}$ not required to be the action of an automorphism of the Coble cover — the one the tuple's conditions pick out is not, by @cor:no-del-pezzo-involution-coble-cover;
+- $I_{\Co}$ and $I_{\mathrm{dP}}$ are commuting nonsymplectic involutions *of the lattice* $L_{K3}$, with $I_{\mathrm{dP}}$ not required to be the action of an automorphism of the Coble cover: the representative carried by the two isotropic summands is not, by @cor:no-del-pezzo-involution-coble-cover, and whether any other admissible invariant lattice is realized is open;
 
 - $H^2=4$ is fixed by both involutions;
 
 - $\alpha^2=-2$, $H\cdot\alpha=0$, and $\alpha$ is fixed by $I_{\Co}$;
 
-- $\mcc$ is the chosen positive/nef chamber: $H$ is nef and big in it exactly when the downstairs class $h_\Co$ is nef, bigness then being automatic from $h_\Co^2 = 2>0$ (@prop:nef-big-finite-cover), and the nefness of $h_\Co$ is the missing premise that no source supplies;
+- $\mcc$ is the chosen positive/nef chamber: $H$ is nef and big in it exactly when the downstairs class $h_\Co$ is nef, bigness of $H$ then being automatic from $H^2 = 4>0$ (@prop:nef-big-finite-cover), and the nefness of $h_\Co$ is the missing premise that no source supplies;
 
-- the product $I_{\Co}I_{\mathrm{dP}}$ is an involution, and it is symplectic whenever both factors are realized as nonsymplectic automorphisms of one surface: for commuting involutions the order of the product is equivalent to commutation, and the symplectic character is then a consequence (@prop:product-of-involutions). Listed as a condition it is redundant given the first bullet, and it is unavailable on the Coble cover, where $I_{\mathrm{dP}}$ is only a lattice isometry.
+- the product $I_{\Co}I_{\mathrm{dP}}$ is an involution, and it is symplectic whenever both factors are realized as nonsymplectic automorphisms of one surface: for commuting involutions the order of the product is equivalent to commutation, and the symplectic character is then a consequence (@prop:product-of-involutions). Listed as a condition it is redundant given the first bullet, and it is unavailable for a factor that is only a lattice isometry, as the representative above is.
 
 ::: {.problem #prob:coble-rigidity title="Required theorem (labeled Coble rigidity)"}
 Any two tuples $\mathfrak L_{\Co,2}$ arising from the direct projective construction are conjugate by an element of $O(L_{K3})$ preserving the labels, the degree-$4$ class, the effective root, and the chosen chamber.
@@ -857,7 +857,7 @@ with the following properties.
 
 3. $\iota_{\Co}$ is a nonsymplectic involution whose divisorial fixed locus is $\mce$.
 
-4. $\iota_{\mathrm{dP}}$ is a commuting nonsymplectic involution whose divisorial fixed locus is the ramification divisor $\mcr$; this is a requirement on the tuples of the moduli problem, and the classical Coble covers do not meet it with the polarization $U(2)$ — the del Pezzo slot there is a lattice isometry (@cor:no-del-pezzo-involution-coble-cover), so the requirement is part of what the problem imposes and not a property read off those covers.
+4. $\iota_{\mathrm{dP}}$ is a commuting nonsymplectic involution whose divisorial fixed locus is the ramification divisor $\mcr$; this is a requirement on the tuples of the moduli problem, and the representative that the polarization $U(2)$ supplies on a classical Coble cover is not an automorphism but a lattice isometry (@cor:no-del-pezzo-involution-coble-cover), so the requirement is part of what the problem imposes and not a property read off those covers.
 
 5. $\mch$ is a relatively nef and big line bundle with $\mch_s^2=4$ and $\mch_s\cdot\mce_s=0$.
 
@@ -1860,7 +1860,7 @@ The restriction of the AEGS stable pair to the generic Heegner point is precisel
 :::
 
 ::: {.problem #prob:A4 title="A4. Generic reconstruction lemma"}
-A general stable Coble pair recovers its canonical K3 cover, the distinguished $A_1$ point, the degree-$4$ class, the del Pezzo lattice isometry, and the Heegner period point; the del Pezzo slot is recovered as a lattice isometry rather than as an automorphism of the cover (@cor:no-del-pezzo-involution-coble-cover).
+A general stable Coble pair recovers its canonical K3 cover, the distinguished $A_1$ point, the degree-$4$ class, the del Pezzo lattice isometry, and the Heegner period point; the del Pezzo slot is recovered as a lattice isometry, at least for the representative carried by the two isotropic summands, which no automorphism realizes (@cor:no-del-pezzo-involution-coble-cover); whether another admissible choice is geometric is open.
 Consequently the restricted finite map is generically injective.
 :::
 

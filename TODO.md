@@ -239,9 +239,10 @@ is circular. Every other Coble statement inherits whichever group it was stated 
 $(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$ arising from the projective construction
 should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This is strictly stronger
 than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
-coordinate-independent. Still open, and it is a Coble-to-Coble statement; its del Pezzo slot is a lattice isometry
-rather than the action of an automorphism of the cover, which is a proved restriction on the tuple and not a
-weakening of the conjugacy question (@cor:no-del-pezzo-involution-coble-cover).
+coordinate-independent. Still open, and it is a Coble-to-Coble statement; the representative of its del Pezzo slot carried by the
+two isotropic summands is a lattice isometry rather than the action of an automorphism of the cover, which is a
+proved restriction on that representative and not a weakening of the conjugacy question
+(@cor:no-del-pezzo-involution-coble-cover).
 
 The *Coble-to-Enriques* comparison that A20(2) cites it for is a different statement, and its unlabelled
 part is settled affirmatively (`computations/reports/coble_labeled_embedding.py`).
@@ -307,10 +308,12 @@ obstruction uses only that polarization $U(2)$ — the one whose complement cont
 primitive $U(2)\subset S_\Co$ containing $H$ would have $\alpha\not\perp U(2)$ and escape it. Since any such
 isometry is $-\id$ on the transcendental lattice, i.e. a Hodge isometry for every member of the family, the
 remaining question is exactly whether it preserves the Kähler cone, and it is not decided by the lattice.
-What is *not* an obstruction: the ten disjoint $(-2)$-curves. An involution with invariant lattice $U(2)$ fixes
-no smooth rational curve (@prop:del-pezzo-invariant-has-no-roots) and may move them; the double cover of
-$\PP^1\times\PP^1$ branched along a $(4,4)$ curve with ten nodes carries both the ten curves and a del Pezzo
-involution, whose invariant lattice on the resolution is $U(2)\oplus\langle-2\rangle^{10}$, not $U(2)$. Hence @cor:no-del-pezzo-involution-coble-cover, and the
+What is *not* an obstruction, and what a withdrawn argument got wrong: the ten disjoint $(-2)$-curves. An
+involution with invariant lattice exactly $U(2)$ fixes no smooth rational curve
+(@prop:del-pezzo-invariant-has-no-roots), so it may move the curves, and the existence of ten disjoint curves
+does not show that an arbitrary involution permutes that chosen set — the withdrawn argument assumed exactly
+that. The anti-invariant lattice can itself contain $(-2)$-classes, $T_\dp$ among them, so the lemma does not
+obstruct the existence of such an involution. Hence @cor:no-del-pezzo-involution-coble-cover, and the
 del Pezzo slot of the tuple is a lattice label. The lattice pair does exist and commutes — $f^*F_1$, $f^*F_2$
 span a primitive $U(2)\subset S_\Co$ containing $H$, and $+1$ there with $-1$ on the complement is an
 integral isometry of $L_{K3}$ commuting with $I_\Co$ — so the tuple is realizable at the level of lattices and
