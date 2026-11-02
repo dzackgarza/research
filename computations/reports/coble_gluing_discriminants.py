@@ -95,7 +95,8 @@ attempt('D_S.isometry_to(D_T(-1)) [the constructor the gluing would need]',
         lambda: DS.isometry_to(DTm))
 
 print('')
-print('search record for a documented transport between two isometric torsion forms')
+print('the routes attempted, each by the call above -- not an exhaustive search of the')
+print('  provider capabilities:')
 print('  then                                  mor_categories.py:637-644, "other o self", requires')
 print('                                        other.domain() is self.codomain()')
 print('  normal_form = p_adic_jordan_form      form_modules.py:2736-2742 and 3709-3713; computed')

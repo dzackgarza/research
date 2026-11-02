@@ -167,8 +167,9 @@ The pair `S_Co + T_Co -> L_K3` with index `2^{11}` is the graph of an anti-isome
      refusal says nothing about the provider.
 
    These are failures **under the documented contract**, executed in the script and reported
-   with the tracebacks Python produced. The candidate constructors were also searched and
-   called: `then` is guarded by object identity (`mor_categories.py:637`), `normal_form` is
+   with the tracebacks Python produced. The routes attempted were these, each by an actual
+   call — this is not an exhaustive search of the provider's capabilities, and it is not
+   claimed as one: `then` is guarded by object identity (`mor_categories.py:637`), `normal_form` is
    recomputed per call (`form_modules.py:2736`, `torsion_form_modules.py:1014`),
    `reframing_isometry` re-presents one form on new generators (`form_modules.py:2630`),
    `equip_quadratic_form` sits on a pure module (`pure/modules.py:1980`), `isometry_to` exists

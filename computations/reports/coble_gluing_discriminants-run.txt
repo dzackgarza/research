@@ -79,7 +79,8 @@ attempt: D_S.isometry_to(D_T(-1)) [the constructor the gluing would need]
         raise AttributeError(dummy_error_message)
     AttributeError: 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'isometry_to'
 
-search record for a documented transport between two isometric torsion forms
+the routes attempted, each by the call above -- not an exhaustive search of the
+  provider capabilities:
   then                                  mor_categories.py:637-644, "other o self", requires
                                         other.domain() is self.codomain()
   normal_form = p_adic_jordan_form      form_modules.py:2736-2742 and 3709-3713; computed
