@@ -358,6 +358,13 @@ What a decision would require is the del Pezzo involution itself on the Coble co
 The problem that remains is therefore an embedding problem with two geometric obligations attached: determine the primitive $U(2)$-sublattices of $L_{K3}$ containing $H$ and nested with $S_\Co$, up to $\Orth(L_{K3})$ stabilizing $H$ and $S_\Co$, and for each decide whether it is realized by an automorphism — the chamber condition that $h_\Co$ be nef and $H$ nef and big, and the effectivity of $\alpha$, both being properties of the realization and not of the placement.
 :::
 
+::: {.remark title="Inside $S_\Co$ the placement problem is finite"}
+For a candidate with $\sdp\subseteq S_\Co$ the isotropic classes $a\in S_\Co$ with $a\cdot H = 2$ are what have to be listed, and the map $a\mapsto\tilde a \definedas a - H/2$ sends them injectively to the vectors of square $-1$ in $H^{\perp}\cap S_\Co^\#$: indeed $\tilde a^2 = 0-2+1 = -1$ and $\tilde a\cdot H = 2-2 = 0$, and $a$ is recovered from $\tilde a$ by adding $H/2$.
+That lattice is negative definite, because $H^2 = 4>0$, so the set is finite — the placement problem inside $S_\Co$ is a finite enumeration and not an orbit problem with infinitely many candidates.
+A search over $|a_0|\le 24$ returns exactly two solutions, $f^*F_1$ and $f^*F_2$; these are the two members of one pair, $\widetilde{H-a} = -\tilde a$, so at that height there is one unordered pair and it is the published candidate.
+Listing the norm-$(-1)$ vectors of $H^{\perp}\cap S_\Co^\#$ would settle the question inside $S_\Co$ outright; it is not done here, and no uniqueness is claimed for the rank-$2$ case, nor is the rank-$1$ case decided.
+:::
+
 
 ## Which of the arithmetic groups is $\Gamma_\Co$ {#sec-gamma-co-comparison}
 
