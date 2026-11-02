@@ -302,7 +302,15 @@ in the basis this book already uses, so $M_X = f^*\Pic(S) = S_\Co$ and $N_X = T_
 in that basis $H = 6e_0-2\Sum_{i\le8}e_i-e_9-e_{10}$ and $\alpha = 3e_0-\Sum_{i=1}^{10}e_i$. The
 isometry that the tuple's conditions pick out — $+1$ on the primitive $U(2)$ spanned by $f^*F_1$, $f^*F_2$,
 which contains $H$, and $-1$ on its complement — sends $\alpha$ to $-\alpha$, and $\alpha$ is effective while
-$-\alpha$ is not, so no automorphism of the cover acts as it does. Hence @cor:no-del-pezzo-involution-coble-cover, and the
+$-\alpha$ is not, so no automorphism of the cover acts as it does. Residual, stated exactly: the
+obstruction uses only that polarization $U(2)$ — the one whose complement contains $\alpha$ — and a different
+primitive $U(2)\subset S_\Co$ containing $H$ would have $\alpha\not\perp U(2)$ and escape it. Since any such
+isometry is $-\id$ on the transcendental lattice, i.e. a Hodge isometry for every member of the family, the
+remaining question is exactly whether it preserves the Kähler cone, and it is not decided by the lattice.
+What is *not* an obstruction: the ten disjoint $(-2)$-curves. An involution with invariant lattice $U(2)$ fixes
+no smooth rational curve (@prop:del-pezzo-invariant-has-no-roots) and may move them; the double cover of
+$\PP^1\times\PP^1$ branched along a $(4,4)$ curve with ten nodes carries both the ten curves and a del Pezzo
+involution, whose invariant lattice on the resolution is $U(2)\oplus\langle-2\rangle^{10}$, not $U(2)$. Hence @cor:no-del-pezzo-involution-coble-cover, and the
 del Pezzo slot of the tuple is a lattice label. The lattice pair does exist and commutes — $f^*F_1$, $f^*F_2$
 span a primitive $U(2)\subset S_\Co$ containing $H$, and $+1$ there with $-1$ on the complement is an
 integral isometry of $L_{K3}$ commuting with $I_\Co$ — so the tuple is realizable at the level of lattices and
