@@ -23,6 +23,7 @@ Consequently $\eta$ is $\Gamma_\Co$-equivariant --- $\eta(\varphi v) = \mathrm{E
 $$\Gamma_\Co\backslash\{\text{primitive isotropic objects of }T_\Co\}\ \longrightarrow\ \Gamma_\En\backslash\{\text{primitive isotropic objects of }\ten\}.$$
 
 The second is not open any more: surjectivity fails, and it fails for an invariant reason.
+
 ::: {.proposition #prop:cusp-map-not-onto}
 
 The orbit map $\Phi$ is not surjective. The divisibility-$1$ Enriques $0$-cusp, of boundary lattice $(10,10,0)_1$, has empty fibre: no primitive isotropic vector of $T_\Co$ is carried into a $\Gamma_\En$-translate of it.
@@ -54,6 +55,7 @@ This is the fibre of the *0-cusp* map: $v$ and $v'$ are isotropic vectors, i.e. 
 And the group on the Enriques side above is the stable one, $\Gamma_\En\definedas\Orth^+(\ten)^*$ throughout, as in @thm:normalization; AEGS25's group $\Gamma^K_\En\definedas\Orth(\ten)$, whose cusp diagram is the one with two $0$-cusps, is a different and larger group, and is written with the superscript $K$ whenever it appears.
 
 What remains open is injectivity of the $0$-cusp map alone, and the discriminant reduces it to one class.
+
 ::: {.proposition #prop:cusp-map-separates-mod-two}
 
 Let $v, v'$ be primitive isotropic vectors of $T_\Co$. If $\eta(v)$ and $\eta(v')$ lie in the same $\Gamma_\En$-orbit, then $v\equiv v'\pmod{2T_\Co}$.
