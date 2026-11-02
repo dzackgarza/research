@@ -1,0 +1,29 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  source for the involutions: AEGS en.tex, def:involutions and the eigenlattice display after it
+
+L = U^3 + E8^2: rank 22, det -1, signature (3, 19), even True
+  I_dP   is an isometry of L (by construction) and an involution: True
+  I_enr  is an isometry of L (by construction) and an involution: True
+  I_nik  is an isometry of L (by construction) and an involution: True
+  I_nik = I_dP o I_enr: True
+  S_dP  = Delta(U)                         acts by +1 on all its basis vectors: True; rank 2, det -4, signature (1, 1)
+  T_dP  = U + Delta^-(U) + E8^2            acts by -1 on all its basis vectors: True; rank 20, det 4, signature (2, 18)
+  S_enr = Delta(U) + Delta(E8)             acts by +1 on all its basis vectors: True; rank 10, det -1024, signature (1, 9)
+  T_enr = U + Delta^-(U) + Delta^-(E8)     acts by -1 on all its basis vectors: True; rank 12, det 1024, signature (2, 10)
+
+  AEGS's Enriques pair versus the book's S_En = U(2) + E8(2), T_En = U + U(2) + E8(2):
+    S_enr isometric to S_En: True
+    T_enr isometric to T_En: True
+    |A_{S_enr}| = 1024, |A_{T_enr}| = 1024, so [L : S_enr + T_enr] = 1024 = 2^10
+
+SUMMARY
+  AEGS def:involutions is lattice data, and the owner confirms it: I_dP, I_enr, I_nik are
+  involutions of L = U^3 + E8^2, I_nik = I_dP o I_enr, and the four stated eigenspaces act by
+  +1 and -1 as AEGS say.  AEGS's Enriques pair is the book's S_En, T_En, and the index of
+  S_enr + T_enr in L is |A_{S_enr}| = 2^10, which is the figure used in the embedding argument.
+  An earlier note in this repository said the sources give I_dP no lattice data; that is
+  withdrawn.  What remains a labeling statement: identifying this I_dP with the del Pezzo
+  involution of the Coble K3 cover, i.e. its commutation with I_Co and the fixity of H.
+OK: the involutions and their eigenspaces verified at the owner, from the defining source

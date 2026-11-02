@@ -187,42 +187,35 @@ hypothesis in each case:
    Blocked upstream, on two owner capabilities. Both now have exact specimens; nothing is patched or
    worked around in research.
 
-   *(a) `discriminant_representation_is_surjective()` raises on $T_\Co$.* Minimal construction and call,
-   in `computations/reports/coble_tco_surjectivity_specimen.py` with the full traceback in its `-run.txt`:
-   ```
-   L = Lattices(ZZ)(Gram of <2> + U(2) + E8(2))      # rank 11, det -2048, signature (2,9), even
-   L.discriminant_representation_is_surjective()      # raises
-   ```
-   The call chain, frame by frame: `lattices.py:3243 discriminant_representation_is_surjective` →
-   `lattices.py:3238 discriminant_image` → `lattice_morphisms.py:3019 discriminant_image` →
-   `groups.py:5438 group_generators` → `groups.py:5416 selected_group_resolution` →
-   `objects.py:383 selected_resolution` → `objects.py:116 realize` → `groups.py:999 selected_resolution`
-   → `arrow_categories.py:2379 _core_automorphism_generators` → `lattices.py:1849
-   _core_automorphism_generators` → `lattice_morphisms.py:3590 _computed_group_generators` →
-   `sage_indefinite_port/indefinite/marked_lattices.py:111 automorphism_group_generators` →
-   `recursive.py:356 orthogonal_group_generators` → `recursive.py:370 _generation_step` →
-   `eichler.py:1040 splitting_vector` → `eichler.py:965 one_representative` →
-   `eichler.py:488 right_coset_transversal` → `eichler.py:464 stabilizer_of_lattice` →
-   `eichler.py:74 _isometry_from_row_matrix` → `recursive.py:154 _isometry_from_row_matrix`, which fails
-   at
-   ```
-   source_coordinates = tuple(int(coordinates(label)) for label in source_labels)
-   TypeError: int() argument must be a string, a bytes-like object or a real number,
-   not 'OwnedJoinCategory.element_class'
-   ```
-   Controls in the same session: the identical call returns `True` for $S_\Co = \generators{2}\oplus
-   \generators{-2}^{10}$ and for $M = S_\En\oplus\ZZ\delta$, both rank $11$, det $2048$, signature
-   $(1,10)$. So the failure is specific to the indefinite Eichler generator route, not to the predicate,
-   the rank or the discriminant order. The recorded instance is $T_\Co$; $T_\En$ fails identically.
-   Provenance declared in the specimen: preamble source root `/repo/.scratch/se-provider-c546/src` at pin
-   `c546077dce79a76eb32e92d080aa9c44e4c67552`, engine source root `/repos/sage-indefinite-port/src`
-   inside the image, Sage 11.0.beta5, rootfs mounted read-only, repository bound at `/repo`.
-   Expected semantic operation for sage-extensions: `discriminant_representation_is_surjective()` (or
-   `O(L).group_generators()`) for a $2$-elementary indefinite lattice, i.e. the generator route through
-   the Eichler splitting model made to accept the owned coordinate labels it is handed. The mathematical
-   content is @thm:two-elementary-surjectivity, which the manuscript states as a theorem and keeps
-   separate from this runtime failure.
-
+   *(a) `discriminant_representation_is_surjective()` on $T_\Co$: a pinned-provider failure, not
+   reproduced on a later provider.* The historical record stands: at provider `c546077d`, Sage
+   11.0.beta5, the call raises, with the traceback in
+   `computations/reports/coble_tco_surjectivity_specimen-run.txt` — from `lattices.py:3243` through
+   `discriminant_image`, `group_generators`, `selected_group_resolution`, the automorphism-generator
+   route and `sage_indefinite_port`'s `eichler.py`, failing in `recursive.py:154` at
+   `int(coordinates(label))` with `TypeError: … not 'OwnedJoinCategory.element_class'`. The same
+   specimen returns `True` for $S_\Co$ and $M$ at that pin, so the failure was specific to the
+   indefinite Eichler generator route.
+   *Later-provider evidence, from the port.* `dzackgarza/sage-indefinite-port@fd63f677`, files
+   `.tmp/probe-tco-specimen.py`, `.tmp/log-tco-current.txt`, `.tmp/acceptance-coverage.md`: the
+   specimen reproduced verbatim from this repository at `a145cea4` — same construction
+   `Lattices(ZZ)([list(row) for row in GRAM.rows()])`, giving rank 11, determinant $-2048$, signature
+   $(2,9)$, even — returns `True` under provider `565fc6b9929ba1c7a131d38b6135443bcce64093`
+   with Sage 11.0.beta5 and a 6144 MiB guard, with both controls `True`; `child waited=0
+   shell_code=0 samples=867`, wall about 29 minutes, peak tree RSS 4239 MiB (julia 3306, python 1161),
+   host low-water 9071 MiB. The old-pin site now reads through `_integer` (port commit `ab140b70`), so
+   no repair is needed for this operation and none was made.
+   *Provenance caveat, kept as published.* The log header prints the port engine revision as
+   `44dc4d6c3e1261ec3c32b933392e9c29fa3917f8:87fbf863c413…`; the coverage document's provenance note
+   records that the executed working tree is commit `06bc9562` with src
+   `965041fd64e6cad6d0a7f4cebff69ef28f06b0f5` — that is `87fbf863` plus one repair — while its line 184
+   still prints the pre-commit pair. The row is therefore tied to the working-tree content, not to the
+   hash its header echoes.
+   *What this does and does not establish.* It shows the pinned runtime failure does not reproduce on a
+   later provider. It is not retroactive validation of the pinned run, it is not a $T_\En$ rerun, and it
+   establishes nothing about generator completeness, about equality of any of the arithmetic groups, or
+   about any other A20 or A21 obligation: the mathematical content of the step remains
+   @thm:two-elementary-surjectivity, cited as a theorem. Nothing was rerun here for the bookkeeping.
    *(b) Torsion forms have `is_isometric_to` but no explicit isometry constructor*, so no anti-isometry
    $A_{S_\En}\to A_{T_\En}$ with $q_{T_\En}\circ\gamma = -q_{S_\En}$ can be produced explicitly;
    `A_S.is_isometric_to(A_T)` returns `True`, which is the untwisted statement. Expected operation: an
@@ -280,7 +273,14 @@ a chamber question and `roots_K[0]` is an abstract choice. $I_\Co = -\theta_\Co$
 discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
 subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
 an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber
-(nef-cone geometry), and $I_{\mathrm{dP}}$ (not lattice data in the sources). (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
+(nef-cone geometry), and $I_{\mathrm{dP}}$ — which *is* lattice data in the primary source, contrary to an earlier note
+here: AEGS `def:involutions` gives $I_{\mathrm{dP}}(v,u,u',e,e') = (-v,u',u,-e,-e')$ with eigenspaces
+$S_{\mathrm{dP}} = \Delta(U) = U(2)$ and $T_{\mathrm{dP}} = U\oplus\Delta^-(U)\oplus E_8^2$, and the owner
+confirms those eigenspaces act by $+1$ and $-1$ and that AEGS's Enriques pair is the book's
+$S_\En, T_\En$ with $[L : S_\En\oplus T_\En] = 2^{10}$
+(`computations/reports/coble_aegs_involutions.py`). What remains is a *labeling* statement, not lattice
+data: that this $I_{\mathrm{dP}}$ is the del Pezzo involution of the Coble K3 cover, i.e. that it commutes
+with $I_\Co$ and fixes $H$. (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
 the same complement $T_\Co$ (with $M = S_\En\oplus\ZZ\delta$ by the determinant identity above), the
 composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
 $\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
