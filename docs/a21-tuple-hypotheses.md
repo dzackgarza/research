@@ -189,3 +189,52 @@ Not claimed, and corrected from an earlier round: having the gluing does not by 
 embedding or automorphism questions finite. Making them finite needs a reduction theorem — a
 definite fibre or a finite quotient of the non-definite one — and chamber criteria, none of
 which is supplied here.
+
+## The Coble-side degree-2 polarization: primary source read
+
+[@DK13, §8] cites its reference [3] for the map given by $|2h|$; [3] is S. Cantat and
+I. Dolgachev, *Rational surfaces with a large group of automorphisms* (arXiv:1106.0930; JAMS 25
+(2012) 863–905), the repository's `CD12`. The passage was read at source, not through DK13's
+summary:
+
+* $h = F_1 + F_2$ with $F_i \in |f_i|$ half-fibres of Halphen fibrations of index 2, $h^2 = 2$;
+* `|2h| = |2F_1 + 2F_2|` has no base points and defines $\phi_h : X \to \mathbb{P}^4$ — Lemma 3.7,
+  whose proof (Lemma 3.8, Remark) uses only the intersection properties of $f_1, f_2, K_X$ and
+  $|f_i| = \{F_i\}$;
+* the image is a surface of degree 4 and $\phi_h$ is 2-to-1 (Lemma 3.9), a four-nodal quartic Del
+  Pezzo (Lemma 3.10);
+* unnodal Coble sets are Zariski open among Coble sets, so an unnodal Coble surface is a *general*
+  one (Remark 3.3); the criterion is Theorem 3.2 (i)–(v);
+* a Coble surface has no $(-n)$-curves for $n \ge 3$ except the unique curve in $|-2K_X|$, of
+  self-intersection $-4$ (§3.2).
+
+So the nefness of the degree-2 class in the unnodal, i.e. generic, case is a theorem of the
+primary source. It does **not** cover the "general one-node member" statement of
+`@prop:quasipolarization`, which is about a degenerate model, so the chamber obligation of the
+direct-projective construction is not discharged by it.
+
+### Domains: which involution acts where
+
+| map / involution | domain | codomain | fixed locus |
+| --- | --- | --- | --- |
+| $\pi$ | K3 $\widetilde X$ | Coble surface $X$ | — |
+| $I_\Co$ (deck of $\pi$) | $\widetilde X$ | $\widetilde X$ | $R = \pi^{-1}(\mathfrak{C})$, genus 0 in the §3 model |
+| $\phi_h$ (given by $|2h|$) | $X$ | $\mathsf D \subset \mathbb{P}^4$ | — |
+| $\tau$ (deck of $\phi': X \to \mathsf D'$, $\mathsf D'$ = $\mathsf D$ blown up at $q = \phi_h(\mathfrak{C})$) | $X$ | $X$ | genus-4 curve $\overline W$ plus three isolated points |
+
+$\tau^* = \mathrm{id}_H \oplus (-\mathrm{id}_{E_8})$ on $\operatorname{Pic}(X) \otimes \mathbb{Q}$
+(CD12, proof of Theorem 3.5, equation (16)); $\mathfrak{C}$ is contracted to the node $q$ because
+$h \cdot \mathfrak{C} = h \cdot (-2K_X) = 0$.
+
+The earlier note in this file recorded DK13 §8's "genus 4 plus three isolated points" as
+contradicting the genus-0 fixed curve forced on the K3. That comparison was made across two
+different surfaces and is withdrawn: the Lefschetz constraint applies to involutions of
+$\widetilde X$, and $\overline W$ is a curve on $X$.
+
+### What the sources leave open, precisely
+
+$\mathfrak{C} = \phi'^{-1}(R)$ for the $(-2)$-curve $R$ over $q$, and $\tau$ is fibrewise over
+$\mathsf D'$, so $\tau$ preserves $\mathfrak{C}$; the double cover $\widetilde X \to X$ branched
+along a $\tau$-invariant divisor therefore carries a lift $\tilde\tau$ commuting with $I_\Co$.
+Whether $\tilde\tau$ is an $I_{\mathrm{dP}}$ for the tuple — quotient a Del Pezzo surface,
+invariant lattice $U(2)$ — is stated in neither source, and is not asserted anywhere here.
