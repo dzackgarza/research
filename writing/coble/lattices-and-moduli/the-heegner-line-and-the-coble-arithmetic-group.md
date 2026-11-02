@@ -499,6 +499,11 @@ Then:
 (4) $x = -x$ and $y = -y$ give $x = y = 0$; then $z = -z$ gives $z = 0$ and $f(0,0) = 0$. Since $f(-x,-y) = f(x,y)$, every monomial of odd total degree has coefficient $0$, so the lowest-order part at the origin is even and $f$ vanishes there to order at least $2$; with nondegenerate quadratic part that is an $A_1$ point. For the last sentence: at an isolated fixed point $d\iota$ has no eigenvalue $1$, so being an involution it equals $-\id$ and $\iota^*\omega = \det(d\iota)\,\omega = +\omega$ there, against $\iota^*\omega = -\omega$.
 :::
 
+::: {.remark #rmk:product-eight-points title="The product involution, and what it checks about the local model"}
+
+The product $\rho = \iota_\Co\iota_{\mathrm{dP}}$ is symplectic (part 2 of @prop:local-operators), so a symplectic involution of a K3 and hence fixed at isolated points only, and at exactly eight of them: $\rho(x,y,z) = (-x,-y,z)$, so its fixed points are the points over the four $\tau$-fixed points of $Y$, where $z^2 = f$. Over a fixed point at which $f\ne0$ there are two, $z = \pm\sqrt f$; over one at which $f = 0$ the single point is the node, which the resolution replaces by the two points $[1:\pm i:0]$ of @prop:del-pezzo-type-on-the-resolution, part 2. So the count is $2\cdot4 = 8$ in the fixed-point-free case of $I_\Co$ and $2\cdot3+2 = 8$ with one node, and by the formula of @prop:tuple-of-the-construction $\rk S_\rho = \tfrac12(8+20) = 14$. The local model therefore reproduces the global number, which is what a local computation of a global invariant should do; and $S_\Co\cap S_{\mathrm{dP}}\subseteq S_\rho$ because a class fixed by both involutions is fixed by their product, so the rank $3$ of the intersection sits inside a rank $14$ lattice as it must.
+:::
+
 ::: {.proposition #prop:del-pezzo-type-on-the-resolution title="The invariant type of the lifted del Pezzo involution on the resolution"}
 
 Let $\widehat X\to X^\sharp$ be the minimal resolution of the node at $p$, $D$ the exceptional $(-2)$-curve, and $\widehat\iota_{\mathrm{dP}}$, $\widehat\iota_\Co$ the lifts. Then:
