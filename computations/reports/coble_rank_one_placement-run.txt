@@ -1,0 +1,19 @@
+provenance
+  provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552   Sage: 11.0.beta5
+
+H^perp cap S_Co: rank 10
+system: v(H) = 2 and v = 0 on a basis of H^perp cap S_Co; matrix rank 11
+Smith diagonal of the system: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2]
+an integral v exists (commutation compatible): True
+  v (values on e_0..e_10) = [6, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1]
+S-prime = S_Co + Z b : rank 12, det -2048, signature (1, 11), |A| 2048
+  -q_{S'} realisable by an even lattice of signature (2, 8) : True
+
+CONCLUSION
+  A primitive U(2) containing H, meeting S_Co in <H> and preserved by the involution with
+  (+1)-eigenspace U(2) -- i.e. commuting with I_Co -- exists at the lattice level:
+  S-prime is even of signature (1,11) with |A| = 2048, and Nikulin Thm. 1.10.1 gives a
+  complement of signature (2,8) with the dual discriminant form, so S-prime + T is the even
+  unimodular lattice of signature (3,19), which is L_K3.
+  NOT claimed: that this involution is realized by an automorphism, or anything about the
+  chamber or the effectivity of alpha.
