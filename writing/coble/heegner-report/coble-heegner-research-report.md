@@ -617,7 +617,7 @@ The relevant datum is a labeled tuple
 
 where
 
-- $I_{\Co}$ and $I_{\mathrm{dP}}$ are commuting nonsymplectic involutions *of the lattice* $L_{K3}$, with $I_{\mathrm{dP}}$ not required to be the action of an automorphism of the Coble cover: the representative carried by the two isotropic summands is not, by @cor:no-del-pezzo-involution-coble-cover, and whether any other admissible invariant lattice is realized is open;
+- $I_{\Co}$ and $I_{\mathrm{dP}}$ are commuting nonsymplectic involutions *of the lattice* $L_{K3}$, with $I_{\mathrm{dP}}$ not required to be the action of an automorphism of the Coble cover: the representative carried by the two isotropic summands is not, by @cor:no-del-pezzo-involution-coble-cover, and whether any other admissible invariant lattice is realized is open; the definition does not select among those invariant lattices at all (@prop:del-pezzo-placement);
 
 - $H^2=4$ is fixed by both involutions;
 

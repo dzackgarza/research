@@ -334,6 +334,30 @@ For any admissible choice — an operator integral on $\lkt$ whose $(+1)$-eigens
 Nor is the obstruction of the cruder kind that the ten curves $f^{-1}(E_i)$ might suggest: an involution whose invariant lattice is $\sdp$ fixes no smooth rational curve, since $\sdp$ contains no class of square $-2$ (@prop:del-pezzo-invariant-has-no-roots), and it may simply move them. What obstructs $\phi$ is narrower: its anti-invariant part is the rank-$9$ lattice $N$, which contains the effective class $\alpha$ of square $-2$, and $\phi$ reverses that class.
 :::
 
+::: {.proposition #prop:del-pezzo-placement title="What the tuple fixes about the del Pezzo slot"}
+
+Let $\psi$ be an involution of $\lkt$ whose invariant lattice is $\sdp\cong U(2)$, and suppose $H\in\sdp$.
+Then $H$ splits as $a+b$ for a hyperbolic basis $a,b$ of $\sdp$, and there are exactly two isotropic classes $a'\in\sdp$ with $a'\cdot H = 2$, namely $a$ and $b$; so the decomposition of $H$ into isotropic classes carries no information beyond the sublattice $\sdp$ itself.
+If $\psi$ also commutes with $I_\Co$, then $\psi$ preserves $S_\Co$, that lattice is the direct sum of $S_\Co\cap\sdp$ and $S_\Co\cap\sdp^{\perp\lkt}$, and $\rank_\ZZ(S_\Co\cap\sdp)$ is $1$ or $2$, the value $2$ occurring exactly when $\sdp\subseteq S_\Co$ — in which case $\sdp$ is a primitive $U(2)$ inside $S_\Co$ containing $H$.
+:::
+
+::: {.proof}
+
+In a hyperbolic basis $a,b$ of $U(2)$ write $H = pa+qb$, so $H^2 = 4pq = 4$ and $(p,q) = (1,1)$ or $(-1,-1)$, giving $H = \pm(a+b)$.
+Choose the hyperbolic basis so that $H = a+b$, replacing $(a,b)$ by $(-a,-b)$ if necessary. For an isotropic $a' = \lambda a+\mu b$ one has $(a')^2 = 4\lambda\mu = 0$ and $a'\cdot H = 2(\lambda+\mu)$, so $a'\cdot H = 2$ forces $\lambda\mu = 0$ and $\lambda+\mu = 1$, that is $(\lambda,\mu) = (1,0)$ or $(0,1)$: exactly two solutions, $a$ and $b$, and their sum is $H$.
+Two involutions commute exactly when each preserves the other's eigenspaces, so $\psi(S_\Co) = S_\Co$; then $x\in S_\Co$ splits as $x^{+}+x^{-}$ along the eigenspaces of $\psi$, both parts lie in $S_\Co$, and $S_\Co = (S_\Co\cap\sdp)\oplus(S_\Co\cap\sdp^{\perp\lkt})$. Since $H\in S_\Co\cap\sdp$ and $\rank_\ZZ\sdp = 2$, that rank is $1$ or $2$.
+:::
+
+::: {.remark title="The tuple does not fix the placement, and no source does"}
+
+Read as a definition, the tuple constrains $I_{\mathrm{dP}}$ in three ways: its invariant lattice is a primitive $\sdp\cong U(2)$ in $L_{K3}$, that lattice contains $H$, and the involution commutes with $I_\Co$ — the further condition that $I_\Co I_{\mathrm{dP}}$ be an involution is commutation again (@prop:product-of-involutions).
+Nothing in the tuple relates $\sdp$ to $\alpha$: the condition on $\alpha$ is that $I_\Co$ fix it, which holds because $\alpha\in S_\Co$ and says nothing about $I_{\mathrm{dP}}$; and the chamber constrains the classes $H$ and $\alpha$, the same classes for every placement.
+So the content of the tuple at this slot is a primitive $U(2)$ in $L_{K3}$ containing $H$ and nested with $S_\Co$, with nothing in the definition deciding which one, nor even whether $\sdp$ lies in $S_\Co$ or meets it only in $\langle H\rangle$; the second alternative is not excluded, and no example of it is constructed here.
+@cor:no-del-pezzo-involution-coble-cover excludes one placement, the one whose anti-invariant part contains $\alpha$; that is a statement about that placement and not a conclusion about the tuple.
+What a decision would require is the del Pezzo involution itself on the Coble cover, that is, a marking in which $I_\Co$ and an involution with invariant lattice $\sdp$ are realized on one surface. [@AEGS25, def:involutions] defines $I_{\mathrm{dP}}$ on $L_{K3}$ together with the Enriques and Nikulin involutions, so its $\sdp = \Delta(U)$ is described relative to the Enriques structure; [@DK13, §3] supplies the Coble side, $M_X = S_\Co$ with its ten classes and $N_X = T_\Co$, and carries no del Pezzo involution. Neither source relates $\sdp$ to $S_\Co$ on one surface, and the tuple conjoins data from the two: the missing datum is exactly that relation.
+The problem that remains is therefore an embedding problem with two geometric obligations attached: determine the primitive $U(2)$-sublattices of $L_{K3}$ containing $H$ and nested with $S_\Co$, up to $\Orth(L_{K3})$ stabilizing $H$ and $S_\Co$, and for each decide whether it is realized by an automorphism — the chamber condition that $h_\Co$ be nef and $H$ nef and big, and the effectivity of $\alpha$, both being properties of the realization and not of the placement.
+:::
+
 
 ## Which of the arithmetic groups is $\Gamma_\Co$ {#sec-gamma-co-comparison}
 
