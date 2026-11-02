@@ -857,7 +857,7 @@ with the following properties.
 
 3. $\iota_{\Co}$ is a nonsymplectic involution whose divisorial fixed locus is $\mce$.
 
-4. $\iota_{\mathrm{dP}}$ is a commuting nonsymplectic involution whose divisorial fixed locus is the ramification divisor $\mcr$.
+4. $\iota_{\mathrm{dP}}$ is a commuting nonsymplectic involution whose divisorial fixed locus is the ramification divisor $\mcr$; this is a requirement on the tuples of the moduli problem, and the classical Coble covers do not meet it with the polarization $U(2)$ — the del Pezzo slot there is a lattice isometry (@cor:no-del-pezzo-involution-coble-cover), so the requirement is part of what the problem imposes and not a property read off those covers.
 
 5. $\mch$ is a relatively nef and big line bundle with $\mch_s^2=4$ and $\mch_s\cdot\mce_s=0$.
 
