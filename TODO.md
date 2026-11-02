@@ -317,7 +317,14 @@ obstruct the existence of such an involution. Hence @cor:no-del-pezzo-involution
 del Pezzo slot of the tuple is a lattice label. The lattice pair does exist and commutes — $f^*F_1$, $f^*F_2$
 span a primitive $U(2)\subset S_\Co$ containing $H$, and $+1$ there with $-1$ on the complement is an
 integral isometry of $L_{K3}$ commuting with $I_\Co$ — so the tuple is realizable at the level of lattices and
-not on the surface. (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
+not on the surface. Certified on the two summands by the owner's operations in
+`computations/reports/coble_del_pezzo_slot_operator.py` (+ `-run.txt`): the operator is built from its images
+and accepted by the isometry constructor, the pairing, the involution, $\phi(H) = H$, $\phi(\alpha) = -\alpha$
+and both eigenspaces are checked on lattice elements, $\rho(\phi)$ and $\rho(-\id_{T_\Co})$ are checked to fix
+every discriminant generator, and both discriminant groups are checked to have exponent $2$ — the exponent,
+not $q(-x) = q(x)$, is what makes $-\id$ an identity on $A_{T_\Co}$. $L_{K3}$ and the gluing are *not* built
+there: the extension is @thm:automorphism-lifting-criterion applied to those verified hypotheses, and it is
+recorded as such. (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
 the same complement $T_\Co$ (with $M = S_\En\oplus\ZZ\delta$ by the determinant identity above), the
 composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
 $\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
