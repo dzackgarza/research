@@ -366,9 +366,20 @@ The problem that remains is an embedding problem with the authored geometric obl
 :::
 
 ::: {.remark title="The rank-two placement is unique"}
-For a candidate with $\sdp\subseteq S_\Co$, the classes to list are the isotropic $a\in S_\Co$ with $a\cdot H = 2$, and inside $S_\Co$ there are exactly two: $f^*F_1$ and $f^*F_2$. They are the two members of one pair, $H - f^*F_1 = f^*F_2$, so they span a single primitive $U(2)$ containing $H$: a del Pezzo slot lying in $S_\Co$ is forced to be $\langle f^*F_1,f^*F_2\rangle$, and @cor:no-del-pezzo-involution-coble-cover then covers the rank-two case entirely.
+For a candidate with $\sdp\subseteq S_\Co$ the classes to list are the isotropic $a\in S_\Co$ with $a\cdot H = 2$, and inside $S_\Co$ there are exactly two, $f^*F_1$ and $f^*F_2$.
+That suffices because every primitive $U(2)$ inside $S_\Co$ containing $H$ contains one of them: by @prop:del-pezzo-placement its hyperbolic basis sums to $H$, so both generators lie in $S_\Co$ and pair $2$ against $H$; the enumerated set is $\{f^*F_1,f^*F_2\}$; these are the two members of one pair, $H - f^*F_1 = f^*F_2$, so containing one gives both; and two lattices of rank two that contain one another coincide.
+Hence a del Pezzo slot lying in $S_\Co$ is forced to be $\langle f^*F_1,f^*F_2\rangle$, and @cor:no-del-pezzo-involution-coble-cover covers the rank-two case entirely.
 The argument is a bijection onto a *definite* fibre, which is what makes the enumeration exhaustive rather than bounded. The map $a\mapsto y\definedas 2a-H$ carries the solutions onto the $y\in H^{\perp}\cap S_\Co$ with $y^2 = -4$ and $y\equiv H \pmod{2S_\Co}$: indeed $(2a-H)^2 = 4a^2-4a\cdot H+H^2 = -4$ when $a^2 = 0$ and $a\cdot H = 2$, and conversely for such a $y$ one has $(y+H)^2 = y^2+H^2 = 0$ and $(y+H)\cdot H = H^2 = 4$, so $a = (y+H)/2$ is isotropic and pairs $2$ against $H$. The complement $H^{\perp}\cap S_\Co$ is negative definite because $H^2 = 4>0$, so its norm-$(-4)$ fibre is finite and the owner's fibre operation returns all of it: $242$ elements, of which exactly the two congruent to $H$ modulo $2S_\Co$ give solutions (`computations/reports/coble_del_pezzo_placement.py`).
 What this does not decide is the case $A = \ZZ H$, where the slot meets $S_\Co$ only in $\langle H\rangle$: not excluded by the abstract conditions, and no witness for it is constructed here.
+:::
+
+::: {.remark title="The rank-one case: its exact formulation, and the two inputs it needs"}
+When $\sdp$ is not contained in $S_\Co$, @prop:del-pezzo-placement gives $A = S_\Co\cap\sdp = \ZZ H$, and the same bijection formulates the question in $L_{K3}$ instead of $S_\Co$: an isotropic $b\in L_{K3}$ with $b\cdot H = 2$ corresponds to $y = 2b-H\in H^{\perp}\cap L_{K3}$ of square $-4$ with $y\equiv H \pmod{2L_{K3}}$, and the slot meets $S_\Co$ only in $\langle H\rangle$ exactly when $y\notin S_\Co\otimes\QQ$.
+That formulation cannot be run on what is in hand, for two reasons.
+First, $H^{\perp}\cap L_{K3}$ has signature $(2,19)$ — $L_{K3}$ has signature $(3,19)$ and $H^2 = 4>0$ — so it is indefinite, and the provider's exhaustive fibre enumeration, which is what made the rank-two computation a certificate, does not apply to it; what replaces it is an orbit problem on a non-definite fibre, or a shell inside a definite sublattice, neither of which is set up here.
+Second, testing $y\notin S_\Co\otimes\QQ$ requires $S_\Co$ placed inside $L_{K3}$, that is the gluing anti-isometry $\gamma_\Co$ of @prop:coble-invariant-lattice in machine-readable form; the repository does not carry it, and the book states it only as the graph of an anti-isometry.
+Neither gap is a reason to think the case is empty or occupied: that the abstract conditions do not exclude it is not evidence that a primitive $U(2)$ realizing it exists, and no such lattice is constructed here.
+On top of the embedding question the authored tuple asks for automorphisms, and those obligations are untouched by all of the above: realizability by an automorphism of the cover, the chamber condition that $h_\Co$ be nef with $H$ nef and big, and the effectivity of $\alpha$.
 :::
 
 

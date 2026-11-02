@@ -75,3 +75,57 @@ conditions do not constrain the placement of `$\sdp$` relative to `$\alpha$`.
   (`a\mapsto a-H/2` lands in the negative definite `$H^{\perp}\cap S_\Co^\#$`), and a search over
   `$|a_0|\le 24$` returns only the published pair, but the norm-`$(-1)$` enumeration that would
   settle it has not been run.
+
+## The completeness contract of the enumeration, at the pin
+
+The rank-two result rests on one provider guarantee, so it is recorded here verbatim rather
+than paraphrased. At provider pin `c546077dce79a76eb32e92d080aa9c44e4c67552`, file
+`sage_extensions/categories/lattices.py`, `elements_of_norm` begins at line 6902, and its
+docstring says:
+
+> "Return the full norm fibre, retaining finite integral enumeration.
+> For definite integral lattices the existing finite square-shell computation supplies every
+> point, so exhausting this fibre terminates, including at norm zero. Nonzero fibres of split
+> nondegenerate binary integral forms also retain their complete finite divisor enumeration. …
+> Other fibres use the general equalizer locus; no enumeration is inferred over an uncountable
+> coefficient ring."
+
+and the branch that implements it, at lines 6932–6939, is
+
+```python
+value = self.value_module()(value)
+if (
+    self.base_ring() is _owned_integers()
+    and self.module_rank().is_finite()
+    and (self.module_rank() == 0 or self.is_definite())
+):
+    return self.vectors_of_square(value).domain()
+```
+
+So: over `ZZ`, at finite rank, on a lattice for which `is_definite()` is `True`, the returned
+object is the *complete* square-shell fibre, enumerated. On anything else — in particular on
+the indefinite `S_Co^#` — the return is the general equalizer locus, which is not a list of
+points and is not exhaustive. That is why the earlier probe could not have been a certificate,
+and why the witness checks `is_definite() is True` on `H^\perp\cap S_Co` before enumerating.
+
+The witness `computations/reports/coble_del_pezzo_placement.py` prints, in order: the rank and
+determinant of the complement (10 and 2048), `definite: True`, the cardinality of the norm
+`(-4)` fibre (242), and the two solutions.
+
+## Why the enumeration covers every contained primitive U(2)
+
+The enumeration lists the isotropic `a` of `S_Co` with `a.H = 2`. It covers the primitive
+`U(2)`-sublattices of `S_Co` containing `H` by the following chain, which is stated in the
+manuscript at `@prop:del-pezzo-placement` and in the remark that follows it:
+
+1. if `N` is a `U(2)` inside `S_Co` containing `H`, then `H` splits in `N` as `a + b` over a
+   hyperbolic basis, so `a, b` lie in `S_Co` and `a.H = 2`;
+2. the enumerated set is `{f^*F_1, f^*F_2}`, so `N` contains one of them;
+3. `H - f^*F_1 = f^*F_2`, so containing one gives both, hence `N` contains
+   `<f^*F_1, f^*F_2>`;
+4. both lattices have rank two, so `N = <f^*F_1, f^*F_2>`.
+
+Nothing in that chain needs the enumerated `a` to be primitive, and nothing needs `N` to be
+primitive beyond rank equality. Step 3 is the only place where the specific shape of the
+solution set is used: had the two solutions not been a pair summing to `H`, the conclusion
+would not follow.
