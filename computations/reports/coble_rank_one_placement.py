@@ -42,6 +42,11 @@ What is computed.  Three statements, each on its own.
     (square 4) and b_M = e_1 (isotropic, b_M.H_M = 2), the involution with (+1)-eigenspace
     <H_M, b_M> is integral and is an isometry.
 
+(F) The effectivity obstruction.  Every admissible slot fixes H and is -id on H^perp cap S_Co, so
+    it reverses the authored root alpha, which is an effective (-2)-class; an automorphism cannot
+    reverse an effective class.  The script checks the three lattice facts this uses:
+    alpha^2 = -2, alpha.H = 0, and the operator of part (A) acting on alpha as -id.
+
 (E) What the involution asks of the surface.  J is a Hodge isometry of a member exactly when
     its (-1)-vector t is orthogonal to that member's period, i.e. when 2t is algebraic.  The
     script prints the shape of the orthogonal complement of 2t in T_Co for two witnesses of
@@ -235,6 +240,23 @@ print('  generators moved by J : %d ; on each of them J(v) + v is orthogonal to 
          all(HM.b(J(T.module_generator(l)) + T.module_generator(l)) == ZZ(0)
              and bM.b(J(T.module_generator(l)) + T.module_generator(l)) == ZZ(0)
              for l in moved)))
+print('')
+
+# ---------------------------------------------------------------------------------------
+# (F) the effectivity obstruction: the slot reverses the authored root
+# ---------------------------------------------------------------------------------------
+print('(F) the authored root alpha, and the operator on it')
+alpha = S.linear_combination({0: 3, 1: -1, 2: -1, 3: -1, 4: -1, 5: -1, 6: -1, 7: -1, 8: -1,
+                              9: -1, 10: -1})
+print('  alpha = 3e_0 - (e_1 + ... + e_10) : square %s, alpha.H = %s, primitive %s'
+      % (S.q(alpha), alpha.b(H), alpha.is_primitive()))
+assert S.q(alpha) == -2 and alpha.b(H) == 0
+print('  phi(alpha) + alpha = %s' % ((phi(alpha) + alpha),))
+print('  phi(alpha) == -alpha : %s' % (phi(alpha) == -alpha,))
+print('  So the integral involution of S_Co with (+1)-eigenspace Z H negates alpha, and no')
+print('  automorphism can negate the class of an effective curve: the degree against an ample')
+print('  class changes sign.  Every admissible slot has b - H/2 perpendicular to S_Co, hence')
+print('  b perpendicular to alpha, hence the same conclusion on the whole of L_K3.')
 print('')
 
 # ---------------------------------------------------------------------------------------

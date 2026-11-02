@@ -60,6 +60,15 @@ provenance
   <H_M, b_M> : rank 2, det -4  (= U(2))
   generators moved by J : 9 ; on each of them J(v) + v is orthogonal to <H_M, b_M>: True
 
+(F) the authored root alpha, and the operator on it
+  alpha = 3e_0 - (e_1 + ... + e_10) : square -2, alpha.H = 0, primitive True
+  phi(alpha) + alpha = 0
+  phi(alpha) == -alpha : True
+  So the integral involution of S_Co with (+1)-eigenspace Z H negates alpha, and no
+  automorphism can negate the class of an effective curve: the degree against an ample
+  class changes sign.  Every admissible slot has b - H/2 perpendicular to S_Co, hence
+  b perpendicular to alpha, hence the same conclusion on the whole of L_K3.
+
 (E) the orthogonal complement of 2t in T_Co, for two witnesses
   2t = e_4 + e_5    square -4, div 2 ; (2t)^perp cap T_Co : rank 10, det 2048, sig (2, 8)
   2t = e_9 + e_10   square -4, div 2 ; (2t)^perp cap T_Co : rank 10, det 2048, sig (2, 8)
