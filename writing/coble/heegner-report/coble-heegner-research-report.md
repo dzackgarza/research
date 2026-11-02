@@ -84,11 +84,13 @@ There are two conceptually different ways to organize the proof.
 1. **Heegner-restriction strategy.** Begin with the AEGS Enriques moduli problem and regard the Coble locus as the normalization of a fixed $(-2)$-Heegner component.
    The principal new work is to justify passage to arithmetic quotients, normalize the boundary restriction, solve the cusp lifting problem, identify the restricted semifans, and prove that the resulting KSBA family loses no moduli.
 
-2. **Autonomous Coble strategy.** Define a direct moduli problem of K3 covers with a Coble involution, a compatible del Pezzo involution, a degree-$4$ class, and a distinguished exceptional root. The compatibility cannot simply require both to be automorphisms of the cover: the representative of the del Pezzo slot considered next is not one. On the Coble covers of [@DK13, section 3] the distinguished root $\alpha$ is the class of the ramification curve and is effective, and the representative of the del Pezzo slot carried by the two isotropic summands of the polarization — whose invariant lattice contains the degree-$4$ class and which is orthogonal to $\alpha$ — carries $\alpha$ to $-\alpha$, the class of no effective divisor. For that representative the slot is a lattice datum of the comparison and not an involution of the Coble K3 (@cor:no-del-pezzo-involution-coble-cover in the lattice chapter). Whether another admissible invariant lattice is realized by an automorphism is open, and nothing here rules it out.
+2. **Autonomous Coble strategy.** Define a direct moduli problem of K3 covers with a Coble involution, a commuting del Pezzo involution, a degree-$4$ class, and a distinguished exceptional root.
    Reproduce direct analogues of the AEGS period, cusp, Vinberg, integral-affine, dlt, recognizable-divisor, and semitoroidal theorems.
    Only after this independent theory is complete does one prove that it agrees with the Enriques Heegner construction.
 
 The second strategy avoids using the Enriques compactification as a black box, but it creates a separate comparison theorem at the end.
+
+The second strategy asks for a *commuting del Pezzo involution* on the Coble covers, and that is a geometric requirement: an involution of the surface. What the lattice records is weaker, and the two must not be conflated. On the covers of [@DK13, section 3] the distinguished root $\alpha$ is the class of the ramification curve and is effective; the lattice candidate carried by the two isotropic summands of the polarization is orthogonal to $\alpha$ and carries it to $-\alpha$, so that candidate is not the action of an automorphism in the marking of the construction (@cor:no-del-pezzo-involution-coble-cover). That is a statement about one lattice candidate. It does not show that no commuting del Pezzo involution exists, and no source exhibits one; the geometric requirement is retained as authored and is not replaced by the lattice statement.
 The first strategy uses more existing geometry, but it requires careful normalization and monodromy arguments that cannot be replaced by the phrase “restrict the semifan.”
 
 ## Terminology, notation, and standard background {#sec-terminology}
@@ -617,15 +619,21 @@ The relevant datum is a labeled tuple
 
 where
 
-- $I_{\Co}$ and $I_{\mathrm{dP}}$ are commuting nonsymplectic involutions *of the lattice* $L_{K3}$, with $I_{\mathrm{dP}}$ not required to be the action of an automorphism of the Coble cover: the representative carried by the two isotropic summands is not, by @cor:no-del-pezzo-involution-coble-cover, and whether any other admissible invariant lattice is realized is open; the definition does not select among those invariant lattices at all (@prop:del-pezzo-placement);
+- $I_{\Co}$ and $I_{\mathrm{dP}}$ are commuting nonsymplectic involutions;
 
 - $H^2=4$ is fixed by both involutions;
 
 - $\alpha^2=-2$, $H\cdot\alpha=0$, and $\alpha$ is fixed by $I_{\Co}$;
 
-- $\mcc$ is the chosen positive/nef chamber: $H$ is nef and big in it exactly when the downstairs class $h_\Co$ is nef, bigness of $H$ then being automatic from $H^2 = 4>0$ (@prop:nef-big-finite-cover), and the nefness of $h_\Co$ is the missing premise that no source supplies;
+- $\mcc$ is the chosen positive/nef chamber in which $\alpha$ is effective and $H$ is nef and big;
 
-- the product $I_{\Co}I_{\mathrm{dP}}$ is an involution, and it is symplectic whenever both factors are realized as nonsymplectic automorphisms of one surface: for commuting involutions the order of the product is equivalent to commutation, and the symplectic character is then a consequence (@prop:product-of-involutions). Listed as a condition it is redundant given the first bullet, and it is unavailable for a factor that is only a lattice isometry, as the representative above is.
+- the product $I_{\Co}I_{\mathrm{dP}}$ has the required symplectic character.
+
+**The geometric reading, and a weaker abstract reading kept separate.** The bullets are the authored conditions and they are geometric: $I_{\Co}$ and $I_{\mathrm{dP}}$ are involutions of the K3 cover, $H$ and $\alpha$ are classes on it, and $\mcc$ is a chamber in $H$'s cone. Nothing in them is a statement about a lattice alone. A *weaker* reading asks only for lattice data: an involution of $L_{K3}$ with invariant lattice $\sdp = U(2)$, containing $H$, commuting with $I_{\mathrm{dP}}$'s counterpart $I_{\Co}$. The results below belong to that weaker reading and are labelled so: @prop:del-pezzo-placement says which placements of $\sdp$ the weaker conditions leave open, and @cor:no-del-pezzo-involution-coble-cover excludes one of them as the action of an automorphism in the marking of the construction. Neither is a statement about the authored tuple, and neither closes it.
+
+**What the authored conditions do not relate.** Of the five bullets, three mention $I_{\mathrm{dP}}$ (the first, second and fifth) and two mention $\alpha$ (the third and fourth); none mentions both, so no authored condition relates $I_{\mathrm{dP}}$ to $\alpha$. The condition on $\alpha$ is that $I_{\Co}$ fix it, and the chamber condition is on the class $H$. That is a property of the authored list as it stands, checked against the text at `a145cea4a5` (see `docs/a21-tuple-hypotheses.md` for the before/after table).
+
+**On the fourth and fifth bullets.** The fourth is a definition of the chosen chamber, not an assertion that $H$ is nef and big on any particular surface: $H$ is nef and big in $\mcc$ exactly when the downstairs class $h_\Co$ is nef, bigness of $H$ then being automatic from $H^2=4>0$ (@prop:nef-big-finite-cover), and the nefness of $h_\Co$ is the premise no source in the repository supplies. The fifth is a consequence rather than independent data once the first bullet's commutation is granted: for commuting involutions the product is an involution, and it acts on the one-dimensional $H^{2,0}$ by $(-1)(-1) = +1$ (@prop:product-of-involutions). Recorded here as information about the authored list, not as a rewrite of it.
 
 ::: {.problem #prob:coble-rigidity title="Required theorem (labeled Coble rigidity)"}
 Any two tuples $\mathfrak L_{\Co,2}$ arising from the direct projective construction are conjugate by an element of $O(L_{K3})$ preserving the labels, the degree-$4$ class, the effective root, and the chosen chamber.
