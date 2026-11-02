@@ -60,6 +60,13 @@ provenance
   <H_M, b_M> : rank 2, det -4  (= U(2))
   generators moved by J : 9 ; on each of them J(v) + v is orthogonal to <H_M, b_M>: True
 
+(E) the orthogonal complement of 2t in T_Co, for two witnesses
+  2t = e_4 + e_5    square -4, div 2 ; (2t)^perp cap T_Co : rank 10, det 2048, sig (2, 8)
+  2t = e_9 + e_10   square -4, div 2 ; (2t)^perp cap T_Co : rank 10, det 2048, sig (2, 8)
+  t^perp cap T_Co equals (2t)^perp cap T_Co because x.t = 0 iff x.(2t) = 0, so a class
+  with t^2 = -1 leaves a rank-10 complement of signature (2,8): the periods orthogonal
+  to t form a nonempty divisor of the period domain, not the whole of it.
+
 (D) the classification invariants of the coinvariant lattices
   U(2), the invariant lattice rank  2, det -4, sig (1, 1), 2-elementary True, |A| 4, delta = 0
      value census: {'[0] in Fraction Field of Integer Ring / (2)Integer Ring': 3, '[1] in Fraction Field of Integer Ring / (2)Integer Ring': 1}

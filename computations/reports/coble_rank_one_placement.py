@@ -42,6 +42,12 @@ What is computed.  Three statements, each on its own.
     (square 4) and b_M = e_1 (isotropic, b_M.H_M = 2), the involution with (+1)-eigenspace
     <H_M, b_M> is integral and is an isometry.
 
+(E) What the involution asks of the surface.  J is a Hodge isometry of a member exactly when
+    its (-1)-vector t is orthogonal to that member's period, i.e. when 2t is algebraic.  The
+    script prints the shape of the orthogonal complement of 2t in T_Co for two witnesses of
+    square -4: rank and signature, which is what makes that Noether--Lefschetz condition a
+    proper divisor rather than a wall.
+
 (D) The invariants that put J in the conjugacy class of AEGS's I_dP.  The coinvariant
     lattice of J is the orthogonal complement of a U(2) in a unimodular lattice, so its
     discriminant form is that of U(2) up to sign; the script prints the invariants of U(2)
@@ -229,6 +235,20 @@ print('  generators moved by J : %d ; on each of them J(v) + v is orthogonal to 
          all(HM.b(J(T.module_generator(l)) + T.module_generator(l)) == ZZ(0)
              and bM.b(J(T.module_generator(l)) + T.module_generator(l)) == ZZ(0)
              for l in moved)))
+print('')
+
+# ---------------------------------------------------------------------------------------
+# (E) the orthogonal complement of the (-4)-class 2t in T_Co
+# ---------------------------------------------------------------------------------------
+print('(E) the orthogonal complement of 2t in T_Co, for two witnesses')
+for label, w in (('e_4 + e_5', basis[4] + basis[5]), ('e_9 + e_10', basis[9] + basis[10])):
+    line_w = T.primitive_sublattice_from([w])
+    C = T.orthogonal_complement(line_w)
+    print('  2t = %-12s square %s, div %s ; (2t)^perp cap T_Co : rank %d, det %s, sig %s'
+          % (label, T.q(w), T.div(w), C.module_rank(), C.determinant(), C.signature()))
+print('  t^perp cap T_Co equals (2t)^perp cap T_Co because x.t = 0 iff x.(2t) = 0, so a class')
+print('  with t^2 = -1 leaves a rank-10 complement of signature (2,8): the periods orthogonal')
+print('  to t form a nonempty divisor of the period domain, not the whole of it.')
 print('')
 
 # ---------------------------------------------------------------------------------------
