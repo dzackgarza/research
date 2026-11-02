@@ -29,12 +29,21 @@ earlier version of this report said: -K_S is a perfectly integral *class* (the c
 statement about a divisor representative, not about the class) but it is *ineffective* by definition; and
 the model is ten nodes of a sextic, not ten points on a cubic.
 
-What that leaves.  alpha = f^*(-K_S) is the pullback of an ineffective class, and the pullback of an
-ineffective class can still be effective, so nothing follows either way about whether alpha is effective
-on X.  What the source does pin is 2 alpha: 2 alpha = 6f^*H - 2 Sum f^*E_i = f^*C, and f^*C is the branch
-divisor of the double cover, hence effective.  Whether alpha itself is effective is a question about the
-K3 cover, not about Pic(S), and it is left open here.  H is not involved: the report's H is the degree-4
-class h~_Co, not the plane-line class of Pic(S).
+What decides it.  The double cover pushes forward as f_* O_X = O_S (+) O_S(K_S): the branch divisor is
+B = f^*C of class -2K_S (DK13's model, the proper transform of the sextic through the ten nodes, class
+6H - 2 Sum E_i), so the covering is Spec_S(O_S (+) O_S(K_S)) with the algebra structure from a section of
+-B = 2K_S.  Projection formula, for a class L' of S:
+
+    H^0(X, f^*L') = H^0(S, L') (+) H^0(S, L' + K_S).
+
+With L' = -K_S this reads H^0(S, -K_S) (+) H^0(S, O_S) = 0 (+) C, because |-K_S| is empty by the Coble
+definition and S is rational so h^0(O_S) = 1.  Hence h^0(X, alpha) = 1 > 0: alpha IS effective, and the
+section is the anti-invariant one -- the covering coordinate -- not a section of -K_S downstairs.  So the
+retained effective root is +alpha = 3f^*H - Sum f^*E_i, with the sign fixed.
+
+What that does not settle: whether H = h~_Co is nef and big, which is the other half of the chamber
+condition, and which is a statement about the divisor f^*h_Co on X and not about its class alone.  Nor
+does any of this identify I_dP with the del Pezzo involution of the cover.
 """
 import sys
 
@@ -96,14 +105,14 @@ print('  class upstairs.')
 
 print('')
 print('SUMMARY')
-print('  Decided, under prop:coble-invariant-lattice\'s dictionary: the two roots are')
-print('  +-(3f^*H - Sum f^*E_i), whose preimages in Pic(S) are +-(3H - Sum E_i) = -+K_S.')
-print('  Source definitions, from [@DK13] section 3 (references/literature/lattice-research/')
-print('  dolgachev_kondo_2013.md): a Coble surface has |-K_S| = empty and |-2K_S| nonempty, and the')
-print('  classical model is the blow-up at the ten nodes of an irreducible plane sextic.  So -K_S is an')
-print('  integral class that is ineffective by definition, and the model is not ten points on a cubic.')
-print('  Not decided, and not decidable from Pic(S): whether alpha = f^*(-K_S) is effective on the K3')
-print('  cover.  2 alpha = f^*C is the branch divisor, hence effective; alpha itself is a (-2)-class on X')
-print('  with either it or its negative effective, and which one is a property of the cover.')
+print('  Coordinates: the two roots are +-(3f^*H - Sum f^*E_i), with preimages +-(3H - Sum E_i) = -+K_S.')
+print('  Definition, [@DK13] section 3: a Coble surface has |-K_S| = empty and |-2K_S| nonempty, the model')
+print('  being the blowup at the ten nodes of an irreducible plane sextic.  So -K_S is an integral class')
+print('  that is ineffective, and the configuration is not ten points on a cubic.')
+print('  Effectivity of the root, decided by the double-cover pushforward: f_* O_X = O_S (+) O_S(K_S), so')
+print('  H^0(X, alpha) = H^0(S, -K_S) + H^0(S, O_S) = 0 + 1 = 1, and alpha is effective.  The retained')
+print('  effective root is +alpha, with the sign fixed.')
+print('  Still open: whether H = h~_Co is nef and big, the other half of the chamber condition; and the')
+print('  identification of I_dP with the del Pezzo involution of the cover.')
 print('  H in the report\'s tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S).')
-print('OK: coordinates identified; the definition applied as stated; effectivity of the upstairs root left open')
+print('OK: the retained root is identified and shown effective; the chamber\'s nef-and-big half is left open')

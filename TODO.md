@@ -269,20 +269,19 @@ two polarized lattices are matched by an isometry carrying $\tilde h_\Co$ to $h$
 *What is missing.* (i) The labels. The root is identified at coordinate level only: the two vectors of
 $\tilde h_\Co^{\perp}$ are $\pm(3f^*H-\Sum_i f^*E_i)$, whose preimages in $\Pic(S)$ are
 $\pm(3H-\Sum_i E_i) = \mp K_S$, a $(-1)$-class, by @prop:coble-invariant-lattice's dictionary
-(`computations/reports/coble_root_effectivity.py`). **Effectivity is not settled, and two earlier readings of it were wrong.** The primary source in the
-repository is [@DK13, §3] (`references/literature/lattice-research/dolgachev_kondo_2013.md`): a Coble
-surface is a smooth rational projective surface with $\abs{-K_S} = \emptyset$ and
-$\abs{-2K_S}\neq\emptyset$, the classical example being the blowup of the plane at the ten *nodes of an
-irreducible plane sextic*. So $-K_S$ is an integral *class* — half-divisor coefficients say nothing about
-class integrality — but it is ineffective by definition, and the configuration is not ten points on a
-cubic; the archived note's $\abs{-2K_S} = \{D\}$ with $(-4)$-curves is a further statement attributed
-there to DZ99 §2 and does not replace the definition. What that leaves: $\alpha = f^*(-K_S)$ is the
-pullback of an ineffective class, and a pullback of an ineffective class may still be effective, so
-nothing follows for $\alpha$ either way from $\abs{-K_S} = \emptyset$; what the source pins is
-$2\alpha = f^*C$, the branch divisor, which is effective. Since $\alpha$ is a $(-2)$-class on the K3
-cover, exactly one of $\pm\alpha$ is effective and which one is a property of the cover. The tuple's
-$H$ is the degree-$4$ class $\tilde h_\Co$, not the plane-line class of square $1$, and no substitution
-between them is made. The chamber obligation therefore stays open, with these source conditions named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
+(`computations/reports/coble_root_effectivity.py`). **Effectivity, settled by the double-cover pushforward.** The primary source is [@DK13, §3]
+(`references/literature/lattice-research/dolgachev_kondo_2013.md`): a Coble surface is a smooth rational
+projective surface with $\abs{-K_S} = \emptyset$ and $\abs{-2K_S}\neq\emptyset$, the classical model
+being the blowup at the ten *nodes of an irreducible plane sextic*. So $-K_S$ is an integral class that is
+ineffective, and the configuration is not ten points on a cubic. The root's effectivity comes from the
+cover, not from $S$: the branch divisor is $f^*C$, of class $-2K_S$, so
+$f_*\mathcal{O}_X = \mathcal{O}_S\oplus\mathcal{O}_S(K_S)$ and, by the projection formula,
+$h^0(X,\alpha) = h^0(S,-K_S) + h^0(S,\mathcal{O}_S) = 0 + 1 = 1$. Hence $\alpha$ is effective, the
+section being the anti-invariant covering coordinate, and the retained effective root is
+$+\alpha = 3f^*H-\Sum_i f^*E_i$ with the sign fixed (`computations/reports/coble_root_effectivity.py`).
+The tuple's $H$ is the degree-$4$ class $\tilde h_\Co$, not the plane-line class of square $1$.
+**Still open in the chamber:** whether $H = f^*h_\Co$ is nef and big — a statement about the divisor, not
+about its class. The chamber obligation therefore stays open, with these source conditions named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
 discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
 subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
 an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber

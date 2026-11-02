@@ -17,14 +17,14 @@ the root line of h~_Co^perp (2 vectors):
   class upstairs.
 
 SUMMARY
-  Decided, under prop:coble-invariant-lattice's dictionary: the two roots are
-  +-(3f^*H - Sum f^*E_i), whose preimages in Pic(S) are +-(3H - Sum E_i) = -+K_S.
-  Source definitions, from [@DK13] section 3 (references/literature/lattice-research/
-  dolgachev_kondo_2013.md): a Coble surface has |-K_S| = empty and |-2K_S| nonempty, and the
-  classical model is the blow-up at the ten nodes of an irreducible plane sextic.  So -K_S is an
-  integral class that is ineffective by definition, and the model is not ten points on a cubic.
-  Not decided, and not decidable from Pic(S): whether alpha = f^*(-K_S) is effective on the K3
-  cover.  2 alpha = f^*C is the branch divisor, hence effective; alpha itself is a (-2)-class on X
-  with either it or its negative effective, and which one is a property of the cover.
+  Coordinates: the two roots are +-(3f^*H - Sum f^*E_i), with preimages +-(3H - Sum E_i) = -+K_S.
+  Definition, [@DK13] section 3: a Coble surface has |-K_S| = empty and |-2K_S| nonempty, the model
+  being the blowup at the ten nodes of an irreducible plane sextic.  So -K_S is an integral class
+  that is ineffective, and the configuration is not ten points on a cubic.
+  Effectivity of the root, decided by the double-cover pushforward: f_* O_X = O_S (+) O_S(K_S), so
+  H^0(X, alpha) = H^0(S, -K_S) + H^0(S, O_S) = 0 + 1 = 1, and alpha is effective.  The retained
+  effective root is +alpha, with the sign fixed.
+  Still open: whether H = h~_Co is nef and big, the other half of the chamber condition; and the
+  identification of I_dP with the del Pezzo involution of the cover.
   H in the report's tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S).
-OK: coordinates identified; the definition applied as stated; effectivity of the upstairs root left open
+OK: the retained root is identified and shown effective; the chamber's nef-and-big half is left open
