@@ -167,11 +167,18 @@ The pair `S_Co + T_Co -> L_K3` with index `2^{11}` is the graph of an anti-isome
      refusal says nothing about the provider.
 
    These are failures **under the documented contract**, executed in the script and reported
-   with the tracebacks Python produced. What they establish is that this route does not
-   produce the arrow; they do **not** establish that the provider has no constructor for it,
-   and no such claim is made. The trace is what would go to the owner. That is A20 item 1(b).
-   An earlier version of this note asserted that "no isometry constructor ... is available at
-   this pin"; that assertion was not verified under the correct contract and is withdrawn.
+   with the tracebacks Python produced. The candidate constructors were also searched and
+   called: `then` is guarded by object identity (`mor_categories.py:637`), `normal_form` is
+   recomputed per call (`form_modules.py:2736`, `torsion_form_modules.py:1014`),
+   `reframing_isometry` re-presents one form on new generators (`form_modules.py:2630`),
+   `equip_quadratic_form` sits on a pure module (`pure/modules.py:1980`), `isometry_to` exists
+   at the lattice level only (`lattices.py:4373`), and the call
+   `A_{S_Co}.isometry_to(A_{T_Co}(-1))` is refused with its own traceback, recorded in the run
+   log. The request to the owner is therefore precise: an isometry constructor between two
+   isometric torsion quadratic forms (or a normal form published once per isometry class), with
+   the runnable specimen committed beside this note. An earlier version of this note asserted
+   that "no isometry constructor ... is available at this pin" without any such call; that
+   assertion is withdrawn and replaced by the executed record. That is A20 item 1(b).
 
 `glue_map` is the operation that returns the anti-isometry in the form the book wants, but its
 docstring requires the two primitive orthogonal subobjects *inside* the ambient lattice, which

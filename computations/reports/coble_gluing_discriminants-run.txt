@@ -56,8 +56,55 @@ attempt: f.then(g)              [wrong direction; refusal is correct]
         ...<2 lines>...
         )
     ValueError: cannot compose Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] and then Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]: the codomain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the first is not the domain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the second
+attempt: D_S.isometry_to(D_T(-1)) [the constructor the gluing would need]
+  FAILED, traceback:
+    Traceback (most recent call last):
+      File "sage/structure/category_object.pyx", line 858, in sage.structure.category_object.CategoryObject.getattr_from_category
+        return self._cached_methods[name]
+    KeyError: 'isometry_to'
+    
+    During handling of the above exception, another exception occurred:
+    
+    Traceback (most recent call last):
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
+        arrow = thunk()
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 95, in <lambda>
+        lambda: DS.isometry_to(DTm))
+                ^^^^^^^^^^^^^^
+      File "sage/structure/category_object.pyx", line 852, in sage.structure.category_object.CategoryObject.__getattr__
+        return self.getattr_from_category(name)
+      File "sage/structure/category_object.pyx", line 867, in sage.structure.category_object.CategoryObject.getattr_from_category
+        attr = getattr_from_other_class(self, cls, name)
+      File "sage/cpython/getattr.pyx", line 362, in sage.cpython.getattr.getattr_from_other_class
+        raise AttributeError(dummy_error_message)
+    AttributeError: 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'isometry_to'
+
+search record for a documented transport between two isometric torsion forms
+  then                                  mor_categories.py:637-644, "other o self", requires
+                                        other.domain() is self.codomain()
+  normal_form = p_adic_jordan_form      form_modules.py:2736-2742 and 3709-3713; computed
+                                        per call by _p_adic_jordan_form
+                                        (torsion_form_modules.py:1014), so two equal forms
+                                        get distinct normal-form objects
+  reframing_isometry / regenerate       form_modules.py:2630-2645: re-presents the SAME
+                                        form on new generators, not a bridge between two
+  isometry_to                           lattices.py:4373, lattice level only
+  is_isomorphic / is_anti_isometric     form_modules.py:2760, 2773, 3733: predicates
+  equip_quadratic_form                  pure/modules.py:1980, on a pure module, so it needs
+                                        a linear identification of the two underlying
+                                        modules, which would be a local algorithm
 
 RESULT: none of the attempted constructions produced a composite.
   Each refusal is shown with its own traceback above.
+
+requested operation, for the library owner
+  An isometry constructor at the level of torsion quadratic forms: given D1, D2 with
+  D1.is_isomorphic(D2) True, return a CategoricalIsomorphism with domain D1 and
+  codomain D2 -- e.g. D1.isometry_to(D2), or isometry_between(D1, D2).  The gluing needs
+  the twisted case only: gamma = D1.isometry_to(D2.twist(-1)), after which the check
+  q_D2(gamma x) = -q_D1(x) on generators is what this script already performs whenever
+  an arrow exists.  An alternative that also suffices: a normal form published once per
+  isometry class, so that normal_form_isometry() for two equal forms has the same domain
+  object and the guards of `then` are satisfied without an explicit bridge.
 
 Not claimed: anything about L_K3, about automorphisms, or about the chamber.
