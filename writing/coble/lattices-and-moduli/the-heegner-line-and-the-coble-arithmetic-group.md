@@ -559,17 +559,20 @@ $B$ is open because the node condition is the vanishing of the coefficient of $x
 (4) The exceptional divisor of the blow-up of a smooth subscheme is the projectivized normal bundle, so a $\PP^1$-bundle over $B$ when the centre is a smooth section; its fibre is $D_b$, of square $-2$, and $\pi$ contracts it, so $\mathcal H_b\cdot\mathcal D_b = 0$. The classes of a flat family of divisors are flat sections of $R^2\widehat\pi_*\ZZ$.
 :::
 
-::: {.proposition #prop:one-node-connected title="The one-node parameter space is nonempty and connected"}
+::: {.proposition #prop:one-node-connected title="The one-node locus is path-connected: any two members lie on a pencil meeting the bad strata in finitely many points"}
 
-Let $B$ be the parameter space of @prop:one-node-family. Then $B$ is a nonempty Zariski-open subset of the projective hyperplane $\set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau\cong\PP^{12}$, hence connected and path-connected.
+Let $H = \set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau$, of dimension $11$ since evaluation at $p$ is a nonzero functional, and let $B\subset H$ be the members whose branch curve is smooth away from $p$ and has a nondegenerate node at $p$, exactly the locus of @prop:one-node-family. Then $B$ is nonempty, and for any $f_0,f_1\in B$ the pencil through them meets the complement of $B$ in at most finitely many points, so $f_0$ and $f_1$ lie in one path-connected subfamily of $B$.
 :::
 
 ::: {.proof}
 
-Let $H\definedas\set{f(p)=0}$, of dimension $11$ because evaluation at $p$ is a nonzero linear functional on the invariant system.
-Put $E\definedas\Omega^1_Y\otimes\OO_Y(4,4)$. Every $f\in H$ gives a section $df$ of $E$, and its zero scheme $Z_f$ is the Jacobian scheme of $\set{f=0}$, whose local length at a point is the Milnor number of the singularity there. The bundle $E$ has rank $2$, so $Z_f$ is $0$-dimensional exactly when $f$ has isolated singularities; call this open locus $H_{\mathrm{iso}}$. If $Z_f$ is $0$-dimensional, the Koszul complex of the cosection $df$ is an exact resolution of $\OO_{Z_f}$ by vector bundles, whose Euler characteristic is independent of $f$; and since $Z_f$ is $0$-dimensional one has $h^1(\OO_{Z_f}) = 0$ and $H^0(\OO_{Z_f})$ is the sum of the local Milnor numbers. So the total Milnor number $\tau(f)$ is *constant* on $H_{\mathrm{iso}}$.
+Write $\ell\subset\abs{\OO_Y(4,4)}$ for the projective line through $f_0$ and $f_1$; it lies in $H$ because vanishing at $p$ is linear. Its base locus contains $p$, and it meets $C_{f_0}\cap C_{f_1}$. The conditions a member can fail to meet $B$ are, one by one, closed conditions on $\ell$ that are not identically satisfied:
+- a shared base point $q\ne p$: "singular at $q$" is a closed linear evaluation condition, and it cannot hold for every member of the pencil, since $f_0$ is not singular at $q$;
+- degeneracy of the quadratic part at $p$: this is the vanishing of a determinant of five coefficients, closed on $\ell$, and $f_0$ does not satisfy it;
+- a singularity away from the base locus: by Bertini's theorem for pencils on a smooth variety, a general member of $\ell$ has no singularity outside the base locus, so the set of such $t$ is a closed proper subset.
 
-A point of $Z_f$ of length $1$ is a reduced point with ideal the maximal ideal, which is exactly a node with nondegenerate quadratic part: $\tau$ counts nodes. Every $f\in H$ is singular at $p$: $\tau$-invariance kills the linear terms, and $f(p)=0$ already puts $f$ on the curve, so $\mu_p\ge1$. The polynomial of @sec-explicit-curve is an element of $H$, its quadratic part $x^2+xy+2y^2$ is nondegenerate with discriminant $-7$, and the Gröbner-basis verification recorded at @sec-computational-record records no other singleton singular point; so it lies in $H_{\mathrm{iso}}$ with $\tau = 1$. Constancy then forces $\tau = 1$ on all of $H_{\mathrm{iso}}$, and every member of $H_{\mathrm{iso}}$ has exactly one singularity, a nondegenerate node, at $p$. Hence $B = H_{\mathrm{iso}}$, and the locus $\set{f=0}$ singular in codimension $1$ of the zero scheme is closed, so $H_{\mathrm{iso}}$ is open in $H$; the example supplies nonemptiness, and a nonempty Zariski-open subset of the irreducible variety $\PP^{11}$ is connected and path-connected.
+Each of those closed loci is therefore a finite subset of $\ell$, as is their union.
+The example of @sec-explicit-curve, with $x^2+xy+2y^2$ of discriminant $-7$ at $p$ and, as the Gröbner-basis verification at @sec-computational-record records, no other singular point, supplies $B\ne\varnothing$, and a line with its bad points finite is what makes any two members of $B$ reachable inside $B$, since a punctured projective line is connected. The smooth proper family of @prop:one-node-family then runs over any connected smooth curve of $B$, and @thm:one-node-transport applies to any two members of $B$, not only to pairs from a subfamily.
 :::
 
 ::: {.theorem #thm:a21-labels title="The labels of any two tuples of the one-node direct-projective construction are conjugate"}
@@ -583,9 +586,24 @@ $$\gamma S_{\Co} = S'_{\Co},\qquad \gamma S_{\mathrm{dP}} = S'_{\mathrm{dP}},\qq
 By @prop:one-node-connected both parameter points lie in one connected $B$, so they are joined by a path; the family of @prop:one-node-family is smooth and proper over $B$ with $\mathcal H$ and $\mathcal D$ flat; @thm:one-node-transport applied to the path gives the conclusion.
 :::
 
+::: {.problem #prob:effective-cone-agreement title="Required theorem (chamber clause of labeled Coble rigidity)"}
+
+For any two tuples of the direct projective construction arising from one-node members, with $\gamma$ the conjugating isometry of @thm:a21-labels, there are no effective classes of square $-2$ of the second member outside $\gamma\Delta$ that cut the transported chamber; equivalently, by @lem:face-at-H and @prop:chamber-conditional, the effective cones of the two members agree under $\gamma$.
+:::
+
+The condition is used exactly in @prop:chamber-conditional's form: outside it, @thm:a21-labels closes the labels, so this is the only ingredient kept out of the conclusion by hypothesis.
+The tuple's chamber is the chamber containing the Kähler cone (@rmk:chamber-not-transported), so this is a statement about the effective cones of the members — a comparison of Picard lattices — and not one the family's cohomological transport can shortcut.
+
+::: {.problem #prob:twist-identification title="Required theorem (the construction's involution pair is the reflection twist)"}
+
+For one tuple of the direct projective construction arising from a one-node member, with the data of @prop:tuple-of-the-construction, the pair $(I_\Co, I_{\mathrm{dP}})$ is conjugate in $\Orth(\lkt)$ to the twist pair of @cons:reflection-twist, with $H$ mapping to a class of the same type and $\alpha$ to $\pm$(the twist's root).
+:::
+
+By @thm:a21-labels the tuple has a single conjugacy class, so one identification of one tuple with the twist suffices for all members. The twist's invariant lattice is computed integrally at @prop:coble-eigenspaces; the construction's involution's invariant lattice has rank $k+10$ (@prop:tuple-of-the-construction) with the containment and saturation cautions of @rmk:a21-open. No equality of lattice types is asserted anywhere here, and neither this problem nor @prob:effective-cone-agreement is a hypothesis used elsewhere.
+
 ::: {.remark #rmk:a21-resolution title="What remains of A21 after the labels"}
 
-By @thm:a21-labels the three label clauses of A21 hold for the whole one-node locus of the construction — for every pair, not only for pairs of a subfamily. The fourth clause, the chamber, is a separate condition and is not implied: by @prop:chamber-conditional it holds exactly when no effective root of the second member outside the transported set cuts the transported chamber, and in particular whenever the two effective cones agree. So the full conclusion of @prob:coble-rigidity is settled within any connected subfamily over which the effective $(-2)$-classes agree, and the content that does not follow from the construction and its family is precisely that agreement — a statement about periods, not about the local system. That is the one condition left in the original problem, stated as a hypothesis (@prop:chamber-conditional), and it is the missing theorem the full rigidity needs, not a missing computation.
+By @thm:a21-labels the three label clauses of A21 hold for the whole one-node locus of the construction — for every pair, not only for pairs of a subfamily. The fourth clause, the chamber, is a separate condition and is not implied: by @prop:chamber-conditional it holds exactly when no effective root of the second member outside the transported set cuts the transported chamber, and in particular whenever the two effective cones agree. So the full conclusion of @prob:coble-rigidity is settled within any connected subfamily over which the effective $(-2)$-classes agree, and the content that does not follow from the construction and its family is precisely that agreement — a statement about periods, not about the local system (@prob:effective-cone-agreement). Separately, and on the lattice side: the labels' type is the twist datum of @cons:reflection-twist (which @prop:coble-eigenspaces now computes integrally), and identifying the tuple's involution pair with that twist is the labelled-lattice identification recorded at @rmk:a21-open — also open, and also not a local-system statement (@prob:twist-identification). These are the two conditions of the original problem that remain, each named with its hypothesis.
 :::
 
 ::: {.theorem #thm:one-node-transport title="What parallel transport gives: the lattice labels, not the chamber"}
