@@ -281,12 +281,15 @@ being $[R']$ for no effective $R'$ (else $R+R'$ principal with both terms effect
 retained root is $+\alpha = 3f^*H-\Sum_i f^*E_i$, and $2\alpha = f^*[C] = 2[R]$ is effective as twice $R$ —
 the three statements are consistent. The coordinate check certifies none of this; it only fixes the two
 roots and their preimages. The tuple's $H$ is the degree-$4$ class $\tilde h_\Co$, not the plane-line class.
-**Still open in the chamber:** whether $H = f^*h_\Co$ is nef and big — a statement about the divisor, not
-about its class. The chamber obligation therefore stays open, with these source conditions named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
+**Still open in the chamber:** the nefness of $h_\Co$, which is a question about a class and not a separate
+question about $H$: nefness and bigness are numerical, and for the finite cover $f$ the pullback
+$H = f^*h_\Co$ is nef and big exactly when $h_\Co$ is, bigness then following from $h_\Co^2 = 2 > 0$.
+@def:coble-polarization-classes requires only $F_i^2 = 0$, $F_1\cdot F_2 = 1$ of the isotropic summands,
+so nefness is a premise that no source here supplies. The chamber obligation stays open with that premise
+named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
 discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
 subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
-an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber
-(nef-cone geometry), and $I_{\mathrm{dP}}$ — which *is* lattice data in the primary source, contrary to an earlier note
+an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: the chamber's nefness premise and the labeling of $I_{\mathrm{dP}}$ — which *is* lattice data in the primary source, contrary to an earlier note
 here: AEGS `def:involutions` gives $I_{\mathrm{dP}}(v,u,u',e,e') = (-v,u',u,-e,-e')$ with eigenspaces
 $S_{\mathrm{dP}} = \Delta(U) = U(2)$ and $T_{\mathrm{dP}} = U\oplus\Delta^-(U)\oplus E_8^2$, and the owner
 confirms those eigenspaces act by $+1$ and $-1$ and that AEGS's Enriques pair is the book's
