@@ -472,7 +472,7 @@ Of the del Pezzo involution only $S'\cong U(2)$ is used, and of $H$ only $H^2 = 
 ::: {.proof}
 
 $S$ is even because $H^2(\widetilde X,\bZ)$ is, and it has signature $(1,\cdot)$: $\iota$ is nonsymplectic, so it acts as $-\id$ on $H^{2,0}\oplus H^{0,2}$, and a Kähler class can be averaged over $\set{\id,\iota}$ to an invariant one.
-Hence $H$, of positive square, spans the positive part, and $H^{\perp S}$ is negative definite, the orthogonal complement of a non-isotropic vector being nondegenerate.
+Hence $H$, of positive square, spans a maximal positive definite subspace, and $H^{\perp S}$ is negative definite, the orthogonal complement of a non-isotropic vector being nondegenerate.
 $\iota'$ commutes with $\iota$, so it preserves $S$, and $A \definedas S\cap S'$ is the fixed lattice of $\iota'$ in $S$; it is saturated in $S$ because both factors are saturated in $H^2(\widetilde X,\bZ)$.
 By hypothesis $\rk A = 1$ and $H\in A$, so $A = \ZZ H$: $H$ is primitive in $S$, since $H/2\in S$ would give $(H/2)^2 = 1$, odd in an even lattice.
 Therefore $\iota'$ is $+\id$ on $\ZZ H$ and $-\id$ on $H^{\perp S}$, which is its $(-1)$-eigenspace in $S$.
@@ -498,6 +498,7 @@ Decompose $\alpha$ over $\bQ$ as $\alpha = (pa_1+qa_2)+\beta$ with $\beta\perp S
 $\beta$ lies in $S\otimes\bQ$ and is orthogonal to $H$, so $\beta^2\le0$ by (the proof of) @prop:no-rank-one-automorphism, giving $p^2\le\tfrac12$; and $\alpha\cdot a_1 = -2p$ is an integer because both classes lie in the lattice, leaving $\alpha\cdot a_1\in\set{-1,0,1}$.
 Since $\iota'$ is $\id$ on $S'$ and $-\id$ on $S'^{\perp}$, $\iota'(\alpha) = p(a_1-a_2)-\beta$, which equals $-\alpha$ exactly when $p = 0$, that is exactly when $\alpha\cdot a_1 = 0$; the effectivity argument then applies verbatim.
 Parts 3 and 4 record what the lattice does not decide: the vanishing is a property of the pair $(\alpha, S')$ on the surface, known in one marking and not known in the other, and no argument in this book supplies it for the direct-projective classes.
+The signature $(1,1)$ of $S'$ does *not* shorten this, although it looks as if it should: one might expect the invariant Kähler class to force $H$ to be ample. It does not, because the positive cone of a $(1,1)$ form is $2$-dimensional and an invariant nef class can lie on the edge of $\mathcal K_X\cap(S'\otimes\bR)$; in $U(2)$ itself, $H+e_0$ and $H+2e_0$ are independent classes of positive square while $H-e_0$ is isotropic, so the invariant positive classes are not a single ray. The vanishing $\alpha\cdot a_1 = 0$ is therefore a genuine geometric obstruction and not a consequence of the signature.
 :::
 
 ::: {.remark #rmk:a21-premises title="What the negative answer uses, premise by premise, and which of it is marking-free"}
