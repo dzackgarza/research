@@ -1,0 +1,22 @@
+provenance
+  provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552   Sage: 11.0.beta5
+
+S_Co = <2> + <-2>^10        : rank 11, |det| 2048, |A| 2048
+T_Co = <2> + U(2) + E8(2)   : rank 11, |det| 2048, |A| 2048
+  type of A_{S_Co}: OwnedJoinCategory.parent_class[_PresentedModule].ObjectType
+  methods naming isometry/twist/quadratic on it: ['_preamble_quadratic_value_module', '_torsion_form_is_quadratic', 'associated_quadratic_form', 'correlation_isomorphism', 'equip_quadratic_form', 'is_anti_isometric', 'is_isometric_to', 'is_isomorphic', 'normal_form_isometry', 'quadratic_forms', 'quadratic_map', 'quadratic_map_from_morphism']
+
+the anti-isometry question: is q_{S_Co} isometric to -q_{T_Co}?
+  D_S.is_anti_isometric(D_T) -> True
+  (equivalently D_S.is_isometric_to(D_T.twist(-1)) -> True)
+
+CONCLUSION
+  The two discriminant forms are anti-isometric, so S_Co + T_Co does admit a
+  unimodular overlattice with the full graph gluing, and the index 2^11 of L_K3 is
+  compatible with the pair.  What is still not in hand is the explicit arrow.
+  The block was located: normal_form_isometry()
+  builds NF(D_S) -> D_S and NF(D_T(-1)) -> D_T(-1), but composing them fails because
+  the two normal forms are distinct objects -- f.then(g) raises ValueError and
+  f*g / f@g raise TypeError -- so no canonical identification of the normal forms,
+  and no isometry constructor between abstract torsion quadratic forms, is available
+  at this pin.  That is A20 item 1(b), now with exact calls and traces.

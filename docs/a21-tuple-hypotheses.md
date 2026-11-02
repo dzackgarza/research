@@ -129,3 +129,41 @@ Nothing in that chain needs the enumerated `a` to be primitive, and nothing need
 primitive beyond rank equality. Step 3 is the only place where the specific shape of the
 solution set is used: had the two solutions not been a pair summing to `H`, the conclusion
 would not follow.
+
+## The gluing: what is in hand, and where the explicit arrow is blocked
+
+The pair `S_Co + T_Co -> L_K3` with index `2^{11}` is the graph of an anti-isometry
+`gamma_Co : A_{S_Co} -> A_{T_Co}`, and an anti-isometry is an isometry
+`A_{S_Co} -> A_{T_Co}(-1)`. Two facts were established at the pin
+(`computations/reports/coble_gluing_discriminants.py`, `-run.txt`, 19 s, exit 0):
+
+1. **The forms are anti-isometric.**
+   `A_{S_Co}.is_anti_isometric(A_{T_Co})` returns `True`; equivalently
+   `A_{S_Co}.is_isometric_to(A_{T_Co}.twist(-1))` returns `True`. Both discriminant groups have
+   order `2048`. By Nikulin's gluing correspondence (`@thm:nikulin-gluing`) the pair therefore
+   admits a unimodular overlattice with the full graph gluing, so the index `2^{11}` stated for
+   `L_K3` is consistent with the pair, and the gluing datum exists up to isometry.
+
+2. **The explicit arrow is blocked, at a located call.** `normal_form_isometry()` returns the
+   normal-form-to-original morphism, so it does give `NF(A_{S_Co}) -> A_{S_Co}` and
+   `NF(A_{T_Co}(-1)) -> A_{T_Co}(-1)`. Composing them to get `A_{S_Co} -> A_{T_Co}(-1)` fails:
+
+   * `f.then(g)` raises `ValueError: cannot compose Morphism from Finitely presented module ...`
+     — the two normal forms are constructed separately and are distinct objects, so the
+     domains do not match;
+   * `f * g` and the at-sign product raise
+     `TypeError: unsupported operand type(s) for *: 'CategoricalIsomorphism' and
+     'CategoricalIsomorphism'`.
+
+   What is missing is therefore not the existence of the arrow but either a canonical
+   identification of the two normal forms or an isometry constructor between abstract torsion
+   quadratic forms. That is A20 item 1(b), now with the exact calls and traces.
+
+`glue_map` is the operation that returns the anti-isometry in the form the book wants, but its
+docstring requires the two primitive orthogonal subobjects *inside* the ambient lattice, which
+is the object being built; it is not a substitute for the constructor above.
+
+Not claimed, and corrected from an earlier round: having the gluing does not by itself make the
+embedding or automorphism questions finite. Making them finite needs a reduction theorem — a
+definite fibre or a finite quotient of the non-definite one — and chamber criteria, none of
+which is supplied here.

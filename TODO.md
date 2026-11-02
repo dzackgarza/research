@@ -301,14 +301,41 @@ $S_\En, T_\En$ with $[L : S_\En\oplus T_\En] = 2^{10}$
 than by a missing one: [@DK13, section 3] names the classes $e_0 = f^*H$ and $e_i = f^*E_i$, which are classes
 in the basis this book already uses, so $M_X = f^*\Pic(S) = S_\Co$ and $N_X = T_\Co$ by rank and determinant;
 in that basis $H = 6e_0-2\Sum_{i\le8}e_i-e_9-e_{10}$ and $\alpha = 3e_0-\Sum_{i=1}^{10}e_i$. The
-isometry that the tuple's conditions pick out — $+1$ on the primitive $U(2)$ spanned by $f^*F_1$, $f^*F_2$,
+isometry in question — $+1$ on the primitive $U(2)$ spanned by $f^*F_1$, $f^*F_2$, the only one inside $S_\Co$ by the
+enumeration recorded below —
 which contains $H$, and $-1$ on its complement — sends $\alpha$ to $-\alpha$, and $\alpha$ is effective while
-$-\alpha$ is not, so no automorphism of the cover acts as it does. Residual, stated exactly: the
-obstruction uses only that polarization $U(2)$ — the one whose complement contains $\alpha$ — and a different
-primitive $U(2)\subset S_\Co$ containing $H$ would have $\alpha\not\perp U(2)$ and escape it. Since any such
-isometry is $-\id$ on the transcendental lattice, i.e. a Hodge isometry for every member of the family, the
-remaining question is exactly whether it preserves the Kähler cone, and it is not decided by the lattice.
-**What the tuple does and does not fix at this slot, decided.** `@prop:del-pezzo-placement`: any $H\in\sdp\cong U(2)$ with $H^2 = 4$ splits as $a+b$ over a hyperbolic basis, and there are exactly two isotropic classes of $\sdp$ pairing $2$ against $H$, so the decomposition of $H$ carries no information beyond the sublattice; and commutation with $I_\Co$ forces $S_\Co = (S_\Co\cap\sdp)\oplus(S_\Co\cap\sdp^{\perp\lkt})$ with $\rk(S_\Co\cap\sdp)\in\{1,2\}$, the value $2$ exactly when $\sdp\subseteq S_\Co$. The tuple's conditions on $I_{\mathrm{dP}}$ are then three and no more — primitive $U(2)$ containing $H$, commuting with $I_\Co$ — the involution condition on the product being commutation again. So the definition does not select a placement, not even between rank $1$ and rank $2$ intersection with $S_\Co$, and the published corollary excludes one placement rather than the tuple. Missing datum, and where it would come from: a marking realizing $I_\Co$ and an involution with invariant lattice $\sdp$ on one surface. [@AEGS25, def:involutions] describes $\sdp = \Delta(U)$ relative to the Enriques structure and never a Coble one; [@DK13, section 3] gives the Coble side with no del Pezzo involution; nothing relates the two on one surface. Remaining problem, with its obligations: classify primitive $U(2)$-sublattices of $L_{K3}$ containing $H$ and nested with $S_\Co$ up to the stabilizer of $H$ and $S_\Co$, and for each decide realizability — the chamber ($h_\Co$ nef, $H$ nef and big) and the effectivity of $\alpha$ being properties of the realization, not of the placement. Finite half: for a candidate inside $S_\Co$ the classes to list are $a$ isotropic with $a\cdot H = 2$, and $a\mapsto a - H/2$ maps them injectively to the norm-$(-1)$ vectors of $H^{\perp}\cap S_\Co^\#$, which is negative definite and so has finitely many — a finite enumeration, not an orbit problem. A search over $|a_0|\le 24$ returns only $f^*F_1$ and $f^*F_2$, one unordered pair; listing the norm-$(-1)$ vectors (the maintained operation is `elements_of_norm(-1)` on that lattice) would settle the rank-$2$ case, and it is not done yet.
+$-\alpha$ is not, so no automorphism of the cover acts as it does. That is the whole of the rank-two case, not one candidate among several:
+`computations/reports/coble_del_pezzo_placement.py` enumerates the isotropic classes of $S_\Co$ pairing $2$
+against $H$ on the negative definite complement $H^{\perp}\cap S_\Co$ — complete, since the provider's
+`elements_of_norm` returns the whole square fibre on definite lattices — and finds exactly $f^*F_1$ and
+$f^*F_2$. So every primitive $U(2)$ inside $S_\Co$ containing $H$ contains one of them, hence both, hence is
+their span: there is no other contained placement for $\alpha$ to escape to. An earlier version of this
+paragraph supposed there might be, which was wrong. What is *not* decided is the case where the slot is not
+contained in $S_\Co$ at all (see below), and every geometric question: any admissible isometry is $-\id$ on a
+complement containing the transcendental lattice, hence a Hodge isometry for every member of the family, and
+the remaining question is whether it preserves the Kähler cone.
+**What the authored tuple requires at this slot, and what the abstract reading adds.** The authored five
+hypotheses are authoritative and geometric (quoted in `docs/a21-tuple-hypotheses.md` with the baseline commit):
+commuting nonsymplectic involutions, $H^2 = 4$ fixed by both, $\alpha^2 = -2$ with $H\cdot\alpha = 0$ and
+$\alpha$ fixed by $I_\Co$, the chamber $\mcc$ in which $\alpha$ is effective and $H$ is nef and big, and the
+product's symplectic character; and the problem is stated for tuples "arising from the direct projective
+construction". A weaker, purely lattice reading asks for an involution of $L_{K3}$ with invariant lattice
+$\sdp\cong U(2)$, containing $H$, commuting with $I_\Co$; that reading is what is analysed in the manuscript and
+it is labelled as such throughout — the geometric requirement is not replaced by it.
+Under the abstract reading, `@prop:del-pezzo-placement` gives what is true integrally: with
+$A = S_\Co\cap\sdp$ and $B = S_\Co\cap\sdp^{\perp\lkt}$ one has $S_\Co\otimes\QQ = A_\QQ\oplus B_\QQ$ and
+$2S_\Co\subseteq A\oplus B\subseteq S_\Co$, so the sum has index a power of $2$ and is not in general all of
+$S_\Co$; $A$ is primitive with $\ZZ H\subseteq A$ and $\rk A\in\{1,2\}$, rank $1$ forcing $A = \ZZ H$ and rank
+$2$ meaning $\sdp\subseteq S_\Co$. No authored condition relates $I_{\mathrm{dP}}$ to $\alpha$: of the five
+bullets, three mention $I_{\mathrm{dP}}$ and two mention $\alpha$, and none mentions both.
+Decided since: if the slot is contained in $S_\Co$ it is the published candidate, uniquely (below, certified);
+and the two discriminant forms are anti-isometric, so the pair does admit a unimodular overlattice with the full
+graph gluing (`computations/reports/coble_gluing_discriminants.py`: `A_{S_\Co}.is_anti_isometric(A_{T_\Co})`
+returns True). Not in hand: the explicit anti-isometry — `normal_form_isometry()` builds
+$NF(A_{S_\Co})\to A_{S_\Co}$ and $NF(A_{T_\Co}(-1))\to A_{T_\Co}(-1)$, but `f.then(g)` raises ValueError on the
+mismatched normal forms and `f*g`, `f@g` raise TypeError, so there is no canonical identification of the two
+normal forms and no isometry constructor between abstract torsion quadratic forms at this pin (A20 item 1(b),
+now with exact calls).
 
 *The finite check, now done and certified.* The naive route — `elements_of_norm` on the dual $S_\Co^\#$ — targets an indefinite lattice whose norm-$(-1)$ fibre is infinite, and it is not a certificate; that call was made once, capped, and abandoned. The correct object is integral: $a\mapsto y\coloneq 2a-H$ is a bijection from $\{a\in S_\Co : a^2 = 0,\ a\cdot H = 2\}$ onto $\{y\in H^{\perp}\cap S_\Co : y^2 = -4,\ y\equiv H \pmod{2S_\Co}\}$, and $H^{\perp}\cap S_\Co$ is negative definite ($H^2 = 4>0$), so the owner's fibre operation enumerates it completely. `computations/reports/coble_del_pezzo_placement.py` (+ `-run.txt`) builds the complement through `primitive_sublattice_from` and `orthogonal_complement`, checks `is_definite()`, takes the norm-$(-4)$ fibre — $242$ elements — and finds exactly two congruent to $H$ modulo $2S_\Co$, giving $f^*F_1$ and $f^*F_2$: **inside $S_\Co$ the placement is unique**, so the corollary covers the whole rank-$2$ case. The completeness contract it relies on is quoted verbatim, with the provider file and line numbers, in `docs/a21-tuple-hypotheses.md`; the covering argument — every primitive $U(2)$ inside $S_\Co$ containing $H$ contains one of the two enumerated classes, hence both, hence equals the span — is recorded there and in the manuscript remark.
 What this leaves is the case $A = \ZZ H$, and every geometric obligation of the authored tuple. The rank-one case has an exact formulation and two missing inputs: the same bijection puts the question inside $H^{\perp}\cap L_{K3}$, which has signature $(2,19)$ and is *indefinite*, so the provider's exhaustive fibre enumeration does not apply to it and an orbit problem (or a shell in a definite sublattice) is what would decide it; and testing $y\notin S_\Co\otimes\QQ$ needs $S_\Co$ placed inside $L_{K3}$, i.e. the gluing $\gamma_\Co$ of @prop:coble-invariant-lattice in machine-readable form, which the repository does not carry. Not excluded is not existence: no witness for the rank-one case is constructed, and none is claimed. On top of it the authored tuple asks for automorphisms — realizability, the chamber ($h_\Co$ nef, $H$ nef and big) and the effectivity of $\alpha$. The rank-$1$ case — $\sdp$ meeting $S_\Co$ only in $\langle H\rangle$ — is not excluded by the definition and no example is constructed.
