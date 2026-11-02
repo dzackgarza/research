@@ -1,0 +1,26 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, read-only; repo bound at /repo
+
+Pic(S) = I_{1,10} = <H, E_1, ..., E_10> (prop:coble-invariant-lattice)
+  K_S = -3H + Sum E_i: K_S^2 = -1
+  h_Co = F_1 + F_2 = 6H - 2(E_1+..+E_8) - E_9 - E_10: square 2, h_Co.K_S = 0
+  its pullback h~_Co in S_Co = f^*Pic(S): square 4
+
+the root line of h~_Co^perp (2 vectors):
+  alpha = [3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1] square -2, alpha.h~ = 0, equals -K_S by coordinates: True
+  alpha = [-3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]     square -2, alpha.h~ = 0, equals -K_S by coordinates: False
+
+  -K_S = 3H - Sum E_i: square -1 (a (-1)-class), and the two roots are +- its pullback
+  so the pair of roots is {f^*(-K_S), -f^*(-K_S)} = {alpha, -alpha}, with alpha the anticanonical
+  class upstairs.
+
+SUMMARY
+  The root of the marking is the anticanonical class: alpha = 3f^*H - Sum f^*E_i, whose preimage
+  in Pic(S) is -K_S, a (-1)-class.  Its effectivity is therefore exactly the classical Coble
+  condition that the ten blown-up points lie on a cubic -- -K_S effective -- which the book's
+  ten-point blowup set-up does not impose.  Effectivity, and with it the chamber of the report's
+  tuple, reduces to that one condition plus H nef and big (H is the pullback of a line, so nef and
+  big on S), and not to an unspecified nef-cone computation.
+OK: the retained root is identified; its effectivity reduces to a single named geometric condition

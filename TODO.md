@@ -266,10 +266,14 @@ generators, image of order $696\,729\,600$ in $\Orth(A)$) restricted along the s
 class of $S_\Co$ and the transport of that of $M$ lie in one orbit — `in_same_orbit` returns `True`. So the
 two polarized lattices are matched by an isometry carrying $\tilde h_\Co$ to $h$.
 
-*What is missing.* (i) The labels. Of the tuple only existence of the root is established: the complement
-of $\tilde h_\Co$ has exactly one root line ($A_1$), so a root $\alpha$ with $\alpha^2=-2$,
-$H\cdot\alpha=0$ exists and is unique up to sign, but which of the two is the *retained effective* root is
-a chamber question and `roots_K[0]` is an abstract choice. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
+*What is missing.* (i) The labels. The root is now identified: the two vectors of $\tilde h_\Co^{\perp}$
+are $\pm(3f^*H-\Sum_i f^*E_i) = \pm f^*(-K_S)$ by @prop:coble-invariant-lattice's dictionary (same
+coordinates, half the square), so the root of the marking is the anticanonical class of the Coble surface.
+Its effectivity is therefore exactly the classical Coble condition that the ten blown-up points lie on a
+cubic, i.e. that $-K_S$ be effective, which the book's ten-point blowup set-up does not impose; given that,
+the retained effective root is the positive one, and the chamber reduces to it together with $H$ nef and
+big ($H$ is the pullback of a line). `computations/reports/coble_root_effectivity.py` records the
+identification. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
 discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
 subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
 an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber
