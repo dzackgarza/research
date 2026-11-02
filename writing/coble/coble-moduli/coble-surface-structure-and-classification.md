@@ -36,7 +36,7 @@ Cited: [@DZ99, §2] for the trichotomy of the norm.
 The trichotomy has three values; the argument is:
 
 Adjunction on the smooth rational curve $E$ gives $E^2 = -2 - E\cdot K_S$, so the possible values of $E^2$ are read off the intersection numbers of $E$ with $-K_S$.
-A Coble surface has $|-2K_S| = \{D\}$ with $D$ nonempty and $D$ a sum of $(-4)$-curves, so $-K_S = \tfrac12 D$ is not integral but $2(-K_S)=D$ is effective.
+A Coble surface has $|-2K_S| = \{D\}$ with $D$ nonempty and $D$ a sum of $(-4)$-curves, $\tfrac12D$ being a *divisor* representative of $-K_S$ that is not integral: the class $-K_S$ is integral as a class, and by the definition [@DK13, §3] gives it is ineffective, $|-K_S| = \emptyset$, while $2(-K_S) = [D]$ is effective.
 For $E$ not a component of $D$ the intersection $E\cdot D$ is a nonnegative even integer, $E\cdot K_S = -\tfrac12 E\cdot D$, and $E^2 = -2+\tfrac12 E\cdot D$; the values $E\cdot D = 0, 2$ give $E^2 = -2, -1$, and $E\cdot D\geq4$ would give $E^2\geq0$, contradicting negativity.
 For $E$ a component of $D$ one has $D = E + D'$ with $D'$ effective and not containing $E$, and $E^2 = -4$ is the value forced by the classification of the components of $D$.
 :::

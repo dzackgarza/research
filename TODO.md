@@ -269,16 +269,20 @@ two polarized lattices are matched by an isometry carrying $\tilde h_\Co$ to $h$
 *What is missing.* (i) The labels. The root is identified at coordinate level only: the two vectors of
 $\tilde h_\Co^{\perp}$ are $\pm(3f^*H-\Sum_i f^*E_i)$, whose preimages in $\Pic(S)$ are
 $\pm(3H-\Sum_i E_i) = \mp K_S$, a $(-1)$-class, by @prop:coble-invariant-lattice's dictionary
-(`computations/reports/coble_root_effectivity.py`). **Effectivity is not settled, and an earlier version of
-this item wrongly equated it with a "ten points on a cubic" condition.** The repository's Coble condition,
-on its proposition for norms of rational negative curves and attributed to [@DZ99, §2], is
-$\abs{-2K_S} = \{D\}$ with $D$ a nonempty sum of $(-4)$-curves, where $-K_S = \tfrac12D$ is not integral;
-that is a condition on $\abs{-2K_S}$, while the ten-point blowup model has $K_S = -3H+\Sum_i E_i$ and
-$-2K_S = 2(3H-\Sum_i E_i)$, whose linear system is a single reduced divisor only for special
-configurations. The two descriptions are not interchangeable. What does follow: $\alpha = f^*(-K_S)$ is
-effective if $-K_S$ is, $f$ being finite; the converse is not claimed. The tuple's $H$ is the degree-$4$
-class $\tilde h_\Co$, not the plane-line class of square $1$ in $\Pic(S)$, and no substitution between
-them is made. The chamber obligation therefore stays open, with these source conditions named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
+(`computations/reports/coble_root_effectivity.py`). **Effectivity is not settled, and two earlier readings of it were wrong.** The primary source in the
+repository is [@DK13, §3] (`references/literature/lattice-research/dolgachev_kondo_2013.md`): a Coble
+surface is a smooth rational projective surface with $\abs{-K_S} = \emptyset$ and
+$\abs{-2K_S}\neq\emptyset$, the classical example being the blowup of the plane at the ten *nodes of an
+irreducible plane sextic*. So $-K_S$ is an integral *class* — half-divisor coefficients say nothing about
+class integrality — but it is ineffective by definition, and the configuration is not ten points on a
+cubic; the archived note's $\abs{-2K_S} = \{D\}$ with $(-4)$-curves is a further statement attributed
+there to DZ99 §2 and does not replace the definition. What that leaves: $\alpha = f^*(-K_S)$ is the
+pullback of an ineffective class, and a pullback of an ineffective class may still be effective, so
+nothing follows for $\alpha$ either way from $\abs{-K_S} = \emptyset$; what the source pins is
+$2\alpha = f^*C$, the branch divisor, which is effective. Since $\alpha$ is a $(-2)$-class on the K3
+cover, exactly one of $\pm\alpha$ is effective and which one is a property of the cover. The tuple's
+$H$ is the degree-$4$ class $\tilde h_\Co$, not the plane-line class of square $1$, and no substitution
+between them is made. The chamber obligation therefore stays open, with these source conditions named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
 discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
 subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
 an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber

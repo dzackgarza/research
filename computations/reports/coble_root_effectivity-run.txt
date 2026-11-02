@@ -17,15 +17,14 @@ the root line of h~_Co^perp (2 vectors):
   class upstairs.
 
 SUMMARY
-  Decided, under prop:coble-invariant-lattice's dictionary only: the two roots are
-  +-(3f^*H - Sum f^*E_i), whose preimage classes in Pic(S) are +-(3H - Sum E_i) = -+K_S, a (-1)-class.
-  Not decided: that this class is effective.  The repository's Coble condition is |-2K_S| = {D}
-  with D a sum of (-4)-curves (coble-surface-structure-and-classification.md line 39, DZ99 sec. 2),
-  where -K_S is not integral; the ten-point model has K_S = -3H + Sum E_i and -2K_S = 2(3H-Sum E_i),
-  and whether |-2K_S| is a single reduced divisor depends on the configuration.  The two
-  descriptions are not interchangeable and are not interchanged here.
-  What does follow: alpha = f^*(-K_S) is effective if -K_S is, because a finite pullback of an
-  effective class is effective; the converse is not claimed.
-  H in the report's tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S), and no
-  substitution between them is made.
-OK: coordinates identified; effectivity left open with its source conditions stated
+  Decided, under prop:coble-invariant-lattice's dictionary: the two roots are
+  +-(3f^*H - Sum f^*E_i), whose preimages in Pic(S) are +-(3H - Sum E_i) = -+K_S.
+  Source definitions, from [@DK13] section 3 (references/literature/lattice-research/
+  dolgachev_kondo_2013.md): a Coble surface has |-K_S| = empty and |-2K_S| nonempty, and the
+  classical model is the blow-up at the ten nodes of an irreducible plane sextic.  So -K_S is an
+  integral class that is ineffective by definition, and the model is not ten points on a cubic.
+  Not decided, and not decidable from Pic(S): whether alpha = f^*(-K_S) is effective on the K3
+  cover.  2 alpha = f^*C is the branch divisor, hence effective; alpha itself is a (-2)-class on X
+  with either it or its negative effective, and which one is a property of the cover.
+  H in the report's tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S).
+OK: coordinates identified; the definition applied as stated; effectivity of the upstairs root left open
