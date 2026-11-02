@@ -990,6 +990,8 @@ Prove
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 :::
 
+**What the first problem's answer does to the second.** The labelled tuple of @prob:coble-rigidity is empty (@prop:no-rank-one-automorphism, @prop:root-pairs-evenly), so the pair $(I_\Co, I_{\mathrm{dP}})$ whose centralizer defines $\Gamma^{\mathrm{dir}}_{\Co,2}$ is a pair of *lattice* involutions and not the action of two automorphisms of one Coble cover. Two consequences, kept apart: the definition itself stands, since the centralizer is taken in $\Orth(L_{K3})$ where the pair does exist — $I_\Co = -\theta_\Co$ needs no geometry (@prop:theta-co-exists) and any involution with invariant lattice $\sdp$ is conjugate to [@AEGS25]'s by @prop:rank-two-slot-boundary's classification; but the equality $\Gamma^{\mathrm{dir}}_{\Co,2} = \Gamma^{\mathrm{geom}}_{\Co,2}$ can no longer be read as "the group of the direct construction equals the monodromy of the direct moduli problem", because the datum defining the first is not the datum of any member of that moduli problem. What survives untouched is the lattice comparison $\Gamma^{\mathrm{dir}}_{\Co,2}$ against $\Gamma^{\mathrm{Hdg}}_{\Co,2}$, which is an isometry of $L_{K3}$ carrying the Coble-labelled embedding to the Heegner one, and the congruence comparison, both of which are statements about $\Orth(L_{K3})$.
+
 Defining one of these groups to be “the group for which the desired semifan works” is circular.
 
 ::: {.remark title="What the four-group problem reduces to"}
