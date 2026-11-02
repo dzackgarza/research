@@ -520,11 +520,15 @@ So $\abs{A_{T_{\Co}}}=2^{1+2+8}=2^{11}$, and since $2T_{\Co}^{\#}\subseteq T_{\C
 By @def:two-elementary-isotropic-types and the criterion of @thm:two-elementary-classification, $\delta(T_{\Co})=0$ exactly when the quadratic form $q_L$ takes values in $\bZ/2\bZ\subseteq\bQ/2\bZ$.
 For the $\langle2\rangle$ summand with generator $\eta$ of square $2$, the dual vector is $\eta/2$ and
 $$
-q(\eta/2)=\tfrac{1}{4}\,\eta^2=\tfrac12\ \notin\ \bZ/2\bZ,
+q(\eta/2)=\tfrac{1}{4}\,\eta^2=\tfrac12\ \in\ \bZ/2\bZ,
+$$
+so the $\langle2\rangle$ summand does not witness oddity, but the $U(2)$ summand does: for the class $(e+f)/2\in U(2)^{\#}$ one has
+$$
+q\bigl((e+f)/2\bigr)=\tfrac{1}{4}(e+f)^2=1\ \notin\ \bZ/2\bZ,
 $$
 so $\delta(T_{\Co})=1$.
 
-Finally $T_{\Co}$ is odd, since $\eta^2=2$ is odd, so it is not an even $2$-elementary lattice; the odd $2$-elementary lattice of rank $11$ with $A=(\bZ/2)^{11}$ and $\delta=1$ is $I_{2,9}(2)$ in the notation of @sec-unimodular-lattice-classification, which is the last clause.
+Finally $T_{\Co}$ is even: every vector of $\langle2\rangle\perp U(2)\perp E_8(2)$ has even square, so it is an even $2$-elementary lattice; the even $2$-elementary lattice of rank $11$ with $A=(\bZ/2)^{11}$ and $\delta=1$ is $I_{2,9}(2)$ in the notation of @sec-unimodular-lattice-classification. The earlier version of this note said $T_{\Co}$ is odd because "$\eta^2 = 2$ is odd"; an even number and an even square are not an oddity, and its final sentence is withdrawn and replaced by this one.
 :::
 
 ### The invariant lattice and the reflection twist {#sec-reflection-twist}
