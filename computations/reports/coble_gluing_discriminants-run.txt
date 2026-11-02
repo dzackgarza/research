@@ -1,22 +1,63 @@
 provenance
   provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552   Sage: 11.0.beta5
 
-S_Co = <2> + <-2>^10        : rank 11, |det| 2048, |A| 2048
-T_Co = <2> + U(2) + E8(2)   : rank 11, |det| 2048, |A| 2048
-  type of A_{S_Co}: OwnedJoinCategory.parent_class[_PresentedModule].ObjectType
-  methods naming isometry/twist/quadratic on it: ['_preamble_quadratic_value_module', '_torsion_form_is_quadratic', 'associated_quadratic_form', 'correlation_isomorphism', 'equip_quadratic_form', 'is_anti_isometric', 'is_isometric_to', 'is_isomorphic', 'normal_form_isometry', 'quadratic_forms', 'quadratic_map', 'quadratic_map_from_morphism']
+|A_{S_Co}| = 2048, |A_{T_Co}| = 2048
+A_{S_Co}.is_anti_isometric(A_{T_Co}) = True
 
-the anti-isometry question: is q_{S_Co} isometric to -q_{T_Co}?
-  D_S.is_anti_isometric(D_T) -> True
-  (equivalently D_S.is_isometric_to(D_T.twist(-1)) -> True)
+the two normal-form isometries
+  f.domain()   = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
+  f.codomain() = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
+  g.domain()   = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
+  g.codomain() = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
+  f.domain() is g.domain() : False
+  f.domain() == g.domain() : True
 
-CONCLUSION
-  The two discriminant forms are anti-isometric, so S_Co + T_Co does admit a
-  unimodular overlattice with the full graph gluing, and the index 2^11 of L_K3 is
-  compatible with the pair.  What is still not in hand is the explicit arrow.
-  The block was located: normal_form_isometry()
-  builds NF(D_S) -> D_S and NF(D_T(-1)) -> D_T(-1), but composing them fails because
-  the two normal forms are distinct objects -- f.then(g) raises ValueError and
-  f*g / f@g raise TypeError -- so no canonical identification of the normal forms,
-  and no isometry constructor between abstract torsion quadratic forms, is available
-  at this pin.  That is A20 item 1(b), now with exact calls and traces.
+attempt: f.inverse().then(g)   [A_S -> NF -> A_T(-1)]
+  FAILED, traceback:
+    Traceback (most recent call last):
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
+        arrow = thunk()
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 90, in <lambda>
+        attempt('f.inverse().then(g)   [A_S -> NF -> A_T(-1)]', lambda: f.inverse().then(g))
+                                                                        ~~~~~~~~~~~~~~~~^^^
+      File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/abstract_categories/mor_categories.py", line 640, in then
+        raise ValueError(
+        ...<2 lines>...
+        )
+    ValueError: cannot compose Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] and then Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]: the codomain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the first is not the domain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the second
+attempt: f.inverse() * g        [multiplicative form]
+  FAILED, traceback:
+    Traceback (most recent call last):
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
+        arrow = thunk()
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 91, in <lambda>
+        attempt('f.inverse() * g        [multiplicative form]', lambda: f.inverse() * g)
+                                                                        ~~~~~~~~~~~~^~~
+    TypeError: unsupported operand type(s) for *: 'CategoricalIsomorphism' and 'CategoricalIsomorphism'
+attempt: g * f.inverse()        [reverse order]
+  FAILED, traceback:
+    Traceback (most recent call last):
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
+        arrow = thunk()
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 92, in <lambda>
+        attempt('g * f.inverse()        [reverse order]', lambda: g * f.inverse())
+                                                                  ~~^~~~~~~~~~~~~
+    TypeError: unsupported operand type(s) for *: 'CategoricalIsomorphism' and 'CategoricalIsomorphism'
+attempt: f.then(g)              [wrong direction; refusal is correct]
+  FAILED, traceback:
+    Traceback (most recent call last):
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
+        arrow = thunk()
+      File "/repo/computations/reports/coble_gluing_discriminants.py", line 93, in <lambda>
+        attempt('f.then(g)              [wrong direction; refusal is correct]', lambda: f.then(g))
+                                                                                        ~~~~~~^^^
+      File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/abstract_categories/mor_categories.py", line 640, in then
+        raise ValueError(
+        ...<2 lines>...
+        )
+    ValueError: cannot compose Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] and then Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]: the codomain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the first is not the domain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the second
+
+RESULT: none of the attempted constructions produced a composite.
+  Each refusal is shown with its own traceback above.
+
+Not claimed: anything about L_K3, about automorphisms, or about the chamber.

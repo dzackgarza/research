@@ -123,12 +123,18 @@ manuscript at `@prop:del-pezzo-placement` and in the remark that follows it:
 2. the enumerated set is `{f^*F_1, f^*F_2}`, so `N` contains one of them;
 3. `H - f^*F_1 = f^*F_2`, so containing one gives both, hence `N` contains
    `<f^*F_1, f^*F_2>`;
-4. both lattices have rank two, so `N = <f^*F_1, f^*F_2>`.
+4. `<f^*F_1, f^*F_2>` is **primitive** in `S_Co` — the decomposition
+   `S_Co = <f^*F_1, f^*F_2> perp N` has index 1, since `det` is `-4` and `-512` against
+   `det S_Co = 2^11` (`@prop:coble-cover-marking`) — so `S_Co/<f^*F_1, f^*F_2>` is
+   torsion-free; `N/<f^*F_1, f^*F_2>` is a subgroup of it, and being finite of equal rank it is
+   trivial, whence `N = <f^*F_1, f^*F_2>`.
 
-Nothing in that chain needs the enumerated `a` to be primitive, and nothing needs `N` to be
-primitive beyond rank equality. Step 3 is the only place where the specific shape of the
-solution set is used: had the two solutions not been a pair summing to `H`, the conclusion
-would not follow.
+Step 4 is the only step that needs more than rank: equal rank plus containment does **not**
+give equality in general (`2Z` is contained in `Z` at equal rank). What gives it here is
+primitivity, and the index-1 determinant computation is the witness for that. Step 3 is where
+the specific shape of the solution set enters — had the two solutions not been a pair summing
+to `H`, the conclusion would not follow. An earlier version of this note stopped at "both
+lattices have rank two", which was not enough.
 
 ## The gluing: what is in hand, and where the explicit arrow is blocked
 
@@ -148,16 +154,24 @@ The pair `S_Co + T_Co -> L_K3` with index `2^{11}` is the graph of an anti-isome
    normal-form-to-original morphism, so it does give `NF(A_{S_Co}) -> A_{S_Co}` and
    `NF(A_{T_Co}(-1)) -> A_{T_Co}(-1)`. Composing them to get `A_{S_Co} -> A_{T_Co}(-1)` fails:
 
-   * `f.then(g)` raises `ValueError: cannot compose Morphism from Finitely presented module ...`
-     — the two normal forms are constructed separately and are distinct objects, so the
-     domains do not match;
-   * `f * g` and the at-sign product raise
+   * `f.domain() is g.domain()` returns `False`: the two normal forms are constructed per form
+     and are distinct objects, so no arrow `NF(A_{S_Co}) -> NF(A_{T_Co}(-1))` is available to
+     compose with;
+   * consequently the correctly-directed `f.inverse().then(g)` is refused — `then` is
+     `other ∘ self` and requires `other.domain() is self.codomain()` — with
+     `ValueError: cannot compose Morphism from Finitely presented module ...`;
+   * the multiplicative and at-sign products raise
      `TypeError: unsupported operand type(s) for *: 'CategoricalIsomorphism' and
-     'CategoricalIsomorphism'`.
+     'CategoricalIsomorphism'`;
+   * `f.then(g)`, the reverse direction, is refused for the same documented reason and its
+     refusal says nothing about the provider.
 
-   What is missing is therefore not the existence of the arrow but either a canonical
-   identification of the two normal forms or an isometry constructor between abstract torsion
-   quadratic forms. That is A20 item 1(b), now with the exact calls and traces.
+   These are failures **under the documented contract**, executed in the script and reported
+   with the tracebacks Python produced. What they establish is that this route does not
+   produce the arrow; they do **not** establish that the provider has no constructor for it,
+   and no such claim is made. The trace is what would go to the owner. That is A20 item 1(b).
+   An earlier version of this note asserted that "no isometry constructor ... is available at
+   this pin"; that assertion was not verified under the correct contract and is withdrawn.
 
 `glue_map` is the operation that returns the anti-isometry in the form the book wants, but its
 docstring requires the two primitive orthogonal subobjects *inside* the ambient lattice, which

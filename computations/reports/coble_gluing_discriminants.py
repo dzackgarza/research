@@ -1,4 +1,4 @@
-"""Whether the Coble pair's two discriminant forms are anti-isometric, at the owner.
+"""Building the Coble anti-isometry gamma_Co through the maintained constructors.
 
     JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: \
     PYTHONPATH=/repo/.scratch/se-provider-c546/src \
@@ -6,29 +6,32 @@
         -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
     /repo/computations/reports/coble_gluing_discriminants.py
 
-What this decides, and why it is the right first step.  The gluing of the book,
-S_Co + T_Co -> L_K3 with [L_K3 : S_Co + T_Co] = 2^{11}, is the graph of an anti-isometry
-gamma_Co: A_{S_Co} -> A_{T_Co}; `glue_map` in the provider returns exactly that arrow, but as
-its docstring says it takes the two primitive orthogonal subobjects *inside* L, which is the
-object we are trying to build.  The question that does not need L is whether the anti-isometry
-can exist at all: an anti-isometry A_S -> A_T is an isometry A_S -> A_T(-1), so the pair can be
-glued to a unimodular lattice only if q_{S_Co} and -q_{T_Co} are isometric as quadratic forms.
-That is decided here with the owner's `is_isometric_to` on the two discriminant groups.
+What is attempted.  The gluing of S_Co + T_Co -> L_K3 is the graph of an anti-isometry
+gamma: A_{S_Co} -> A_{T_Co}, equivalently an isometry A_{S_Co} -> A_{T_Co}(-1).  The provider
+exposes `normal_form_isometry()` on a torsion form, documented as the normal-form-to-original
+morphism: NF(F) -> F, with domain the normal form.  So for F = A_{S_Co} and G = A_{T_Co}(-1),
 
-If it returns True, the gluing datum exists up to isometry (Nikulin's gluing correspondence,
-@thm:nikulin-gluing), and what remains missing is the explicit arrow, not its existence; if it
-returns False, then no unimodular overlattice of S_Co + T_Co exists at all and the index 2^{11}
-stated for L_K3 needs revisiting.
+    f : NF(A_{S_Co})     -> A_{S_Co}
+    g : NF(A_{T_Co}(-1)) -> A_{T_Co}(-1)
 
-Not attempted here: building L_K3, or producing the explicit anti-isometry.  The provider has
-`glue_map` only for subobjects of an existing ambient lattice, and the constructor of an
-isometry between two abstract torsion quadratic forms is the capability recorded as missing in
-A20 item 1(b).
+and gamma is f^{-1} followed by g, provided the two normal forms are the same object.  `then`
+is documented as "other ∘ self" and refuses unless other.domain() is self.codomain(), so
+direction matters: f.then(g) is not the intended composite, and a refusal there says nothing
+about the provider.  The attempts below run for real, and every failure is reported with the
+traceback Python produces.
+
+Reported: the domain and codomain of each arrow, the identity test between the two normal
+forms, and, if a composite is produced, the anti-isometry check q_T(gamma x) = -q_S(x) on the
+generators, which is where the twist sign is verified.
+
+Scope.  Discriminant forms only: nothing about L_K3, automorphisms of a surface, Kaehler cones,
+the chamber or effectivity.
 
 Provenance: pin c546077dce79a76eb32e92d080aa9c44e4c67552, Sage 11.0.beta5, image rootfs
 read-only, repository bound at /repo.
 """
 import sys
+import traceback
 
 from sage.all import CartanMatrix, ZZ, block_diagonal_matrix, diagonal_matrix, matrix
 from sage.version import version as sage_version
@@ -48,35 +51,63 @@ U = matrix(ZZ, [[0, 1], [1, 0]])
 T = Lattices(ZZ)([list(r) for r in block_diagonal_matrix(matrix(ZZ, [[2]]), 2 * U, 2 * E8).rows()])
 
 DS, DT = S.discriminant_group(), T.discriminant_group()
-print('S_Co = <2> + <-2>^10        : rank %d, |det| %d, |A| %d'
-      % (S.module_rank(), abs(int(S.determinant())), DS.cardinality()))
-print('T_Co = <2> + U(2) + E8(2)   : rank %d, |det| %d, |A| %d'
-      % (T.module_rank(), abs(int(T.determinant())), DT.cardinality()))
-print('  type of A_{S_Co}: %s' % (type(DS).__name__,))
-print('  methods naming isometry/twist/quadratic on it: %s'
-      % ([m for m in dir(DS) if ('isom' in m.lower() or 'twist' in m.lower() or 'quadratic' in m.lower())][:12],))
+DTm = DT.twist(-1)
+print('|A_{S_Co}| = %s, |A_{T_Co}| = %s' % (DS.cardinality(), DT.cardinality()))
+print('A_{S_Co}.is_anti_isometric(A_{T_Co}) = %s' % (DS.is_anti_isometric(DT),))
+print('')
 
-DT_minus = DT.twist(-1)
+f = DS.normal_form_isometry()
+g = DTm.normal_form_isometry()
+print('the two normal-form isometries')
+print('  f.domain()   = %s' % (f.domain(),))
+print('  f.codomain() = %s' % (f.codomain(),))
+print('  g.domain()   = %s' % (g.domain(),))
+print('  g.codomain() = %s' % (g.codomain(),))
+print('  f.domain() is g.domain() : %s' % (f.domain() is g.domain(),))
+print('  f.domain() == g.domain() : %s' % (f.domain() == g.domain(),))
+print('')
+
+gamma = None
+
+
+def attempt(label, thunk):
+    global gamma
+    print('attempt: %s' % label)
+    try:
+        arrow = thunk()
+    except Exception:
+        print('  FAILED, traceback:')
+        for line in traceback.format_exc().splitlines():
+            print('    ' + line)
+        return
+    print('  SUCCEEDED: %s' % (type(arrow).__name__,))
+    print('    domain   = %s' % (arrow.domain(),))
+    print('    codomain = %s' % (arrow.codomain(),))
+    if gamma is None:
+        gamma = arrow
+
+
+attempt('f.inverse().then(g)   [A_S -> NF -> A_T(-1)]', lambda: f.inverse().then(g))
+attempt('f.inverse() * g        [multiplicative form]', lambda: f.inverse() * g)
+attempt('g * f.inverse()        [reverse order]', lambda: g * f.inverse())
+attempt('f.then(g)              [wrong direction; refusal is correct]', lambda: f.then(g))
 
 print('')
-print('the anti-isometry question: is q_{S_Co} isometric to -q_{T_Co}?')
-answer = DS.is_anti_isometric(DT)
-print('  D_S.is_anti_isometric(D_T) -> %s' % (answer,))
-print('  (equivalently D_S.is_isometric_to(D_T.twist(-1)) -> %s)'
-      % (DS.is_isometric_to(DT_minus),))
-print('')
-if answer:
-    print('CONCLUSION')
-    print('  The two discriminant forms are anti-isometric, so S_Co + T_Co does admit a')
-    print('  unimodular overlattice with the full graph gluing, and the index 2^11 of L_K3 is')
-    print('  compatible with the pair.  What is still not in hand is the explicit arrow.')
-    print('  The block was located: normal_form_isometry()')
-    print('  builds NF(D_S) -> D_S and NF(D_T(-1)) -> D_T(-1), but composing them fails because')
-    print('  the two normal forms are distinct objects -- f.then(g) raises ValueError and')
-    print('  f*g / f@g raise TypeError -- so no canonical identification of the normal forms,')
-    print('  and no isometry constructor between abstract torsion quadratic forms, is available')
-    print('  at this pin.  That is A20 item 1(b), now with exact calls and traces.')
+if gamma is None:
+    print('RESULT: none of the attempted constructions produced a composite.')
+    print('  Each refusal is shown with its own traceback above.')
 else:
-    print('CONCLUSION')
-    print('  The forms are NOT anti-isometric: no unimodular overlattice of S_Co + T_Co exists,')
-    print('  and the index 2^11 stated for L_K3 would need revisiting.')
+    print('RESULT: an arrow A_{S_Co} -> A_{T_Co}(-1) was produced.')
+    gens = list(DS.module_generating_set())
+    qT = DT.quadratic_value_module()
+    print('  anti-isometry check on the %d generators of A_{S_Co}:' % len(gens))
+    ok = True
+    for x in gens:
+        y = gamma(x)
+        qy, qx = qT(y), gamma.domain().quadratic_value_module()(x)
+        same = (qy + qx == qT.zero())
+        print('    q_T(gamma x) + q_S(x) == 0 : %s' % (same,))
+        ok = ok and same
+    print('  gamma is an anti-isometry on every generator: %s' % (ok,))
+print('')
+print('Not claimed: anything about L_K3, about automorphisms, or about the chamber.')
