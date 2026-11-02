@@ -561,16 +561,15 @@ $B$ is open because the node condition is the vanishing of the coefficient of $x
 
 ::: {.proposition #prop:one-node-connected title="The one-node parameter space is nonempty and connected"}
 
-Let $B$ be the parameter space of @prop:one-node-family. Then $B$ is nonempty and connected: it is the intersection of two nonempty open conditions inside the projective hyperplane $\set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau\cong\PP^{12}$.
+Let $B$ be the parameter space of @prop:one-node-family. Then $B$ is a nonempty Zariski-open subset of the projective hyperplane $\set{f(p) = 0}\subset\abs{\OO_Y(4,4)}^\tau\cong\PP^{12}$, hence connected and path-connected.
 :::
 
 ::: {.proof}
 
-Evaluation at $p$ is a nonzero linear functional on $H^0(\OO_Y(4,4))^\tau$ — the corner monomial $x_0^4y_0^4$ is not there — so $\set{f(p)=0}$ is a hyperplane, of dimension $11$. In it:
-- the members with nondegenerate quadratic part at $p$ form an open set (@lem:node-condition), and a node at $p$ is exactly $f(p) = 0$ with this nondegeneracy;
-- the members whose branch curve is *singular somewhere* form the discriminant hypersurface of $\abs{\OO_Y(4,4)}^\tau$, a closed set, because $\OO(4,4)$ is base-point free on $Y$, so the members smooth away from $p$ form an open set once the node at $p$ is imposed.
+Let $H\definedas\set{f(p)=0}$, of dimension $11$ because evaluation at $p$ is a nonzero linear functional on the invariant system.
+Put $E\definedas\Omega^1_Y\otimes\OO_Y(4,4)$. Every $f\in H$ gives a section $df$ of $E$, and its zero scheme $Z_f$ is the Jacobian scheme of $\set{f=0}$, whose local length at a point is the Milnor number of the singularity there. The bundle $E$ has rank $2$, so $Z_f$ is $0$-dimensional exactly when $f$ has isolated singularities; call this open locus $H_{\mathrm{iso}}$. If $Z_f$ is $0$-dimensional, the Koszul complex of the cosection $df$ is an exact resolution of $\OO_{Z_f}$ by vector bundles, whose Euler characteristic is independent of $f$; and since $Z_f$ is $0$-dimensional one has $h^1(\OO_{Z_f}) = 0$ and $H^0(\OO_{Z_f})$ is the sum of the local Milnor numbers. So the total Milnor number $\tau(f)$ is *constant* on $H_{\mathrm{iso}}$.
 
-So $B$ is open in the hyperplane. The polynomial of @sec-explicit-curve has nondegenerate quadratic part $x^2+xy+2y^2$ at the node (discriminant $-7$) and, by the Gröbner-basis verification recorded at @sec-computational-record, no other singular point; hence $B\ne\varnothing$. A nonempty Zariski-open subset of the irreducible variety $\PP^{11}$ is connected — it is dense, and over $\CC$ even path-connected — so $B$ is connected.
+A point of $Z_f$ of length $1$ is a reduced point with ideal the maximal ideal, which is exactly a node with nondegenerate quadratic part: $\tau$ counts nodes. Every $f\in H$ is singular at $p$: $\tau$-invariance kills the linear terms, and $f(p)=0$ already puts $f$ on the curve, so $\mu_p\ge1$. The polynomial of @sec-explicit-curve is an element of $H$, its quadratic part $x^2+xy+2y^2$ is nondegenerate with discriminant $-7$, and the Gröbner-basis verification recorded at @sec-computational-record records no other singleton singular point; so it lies in $H_{\mathrm{iso}}$ with $\tau = 1$. Constancy then forces $\tau = 1$ on all of $H_{\mathrm{iso}}$, and every member of $H_{\mathrm{iso}}$ has exactly one singularity, a nondegenerate node, at $p$. Hence $B = H_{\mathrm{iso}}$, and the locus $\set{f=0}$ singular in codimension $1$ of the zero scheme is closed, so $H_{\mathrm{iso}}$ is open in $H$; the example supplies nonemptiness, and a nonempty Zariski-open subset of the irreducible variety $\PP^{11}$ is connected and path-connected.
 :::
 
 ::: {.theorem #thm:a21-labels title="The labels of any two tuples of the one-node direct-projective construction are conjugate"}

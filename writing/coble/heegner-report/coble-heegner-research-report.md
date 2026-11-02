@@ -570,25 +570,23 @@ S_{\Co}
 
 ::: {.proof}
 
-The involution $I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$, the K3 lattice splitting as $L_{K3}=S_{\mathrm{En}}\oplus T_{\mathrm{En}}$; and $w_\alpha$ is the reflection in $\alpha$, which lies in $T_{\mathrm{En}}$.
-So $w_\alpha$ acts as the identity on $S_{\mathrm{En}}$ and on $\alpha^{\perp}_{T_{\mathrm{En}}}$, and sends $\alpha\mapsto-\alpha$.
-The two factors commute because $I_{\mathrm{En}}(\alpha)=-\alpha$ and $w_\alpha$ is an involution fixing $I_{\mathrm{En}}$'s $(-1)$-eigenspace pointwise up to sign, so
-$$
-I_{\Co}I_{\mathrm{En}}(\alpha)=w_\alpha\bigl(I_{\mathrm{En}}(w_\alpha\alpha)\bigr)=w_\alpha(I_{\mathrm{En}}(-\alpha))=w_\alpha(\alpha)=-\alpha=I_{\mathrm{En}}(-\alpha)=I_{\mathrm{En}}I_{\Co}(\alpha),
-$$
-and both fix $\alpha^{\perp}$.
+*The eigenspaces over* $\bQ$. The involution $I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$, and $w_\alpha$ fixes $\alpha^\perp$ and sends $\alpha\mapsto-\alpha$, so over $\bQ$ the composite $I_\Co = w_\alpha I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}\oplus\bZ\alpha$ and as $-1$ on $\alpha^{\perp T_{\mathrm{En}}} = T_\Co$. Three points of integrality have to be checked, and are not assumptions.
 
-Hence on the three pieces $S_{\mathrm{En}}$, $\bZ\alpha$ and $T_{\Co}=\alpha^{\perp}_{T_{\mathrm{En}}}$ the operator $I_{\Co}$ acts as $+1$, $-1$ and $+1$ respectively: on $S_{\mathrm{En}}$ both factors are $+1$; on $\alpha$ the two signs cancel; on $T_{\Co}$ the factor $I_{\mathrm{En}}$ is $-1$ and $w_\alpha$ fixes it, and $I_{\Co}$ is the composite of the two so acts by $-1$ there, giving
-$$
-L_{K3}^{I_{\Co}=1}=S_{\mathrm{En}}\oplus\bZ\alpha,
-\qquad
-L_{K3}^{I_{\Co}=-1}=\alpha^{\perp}_{T_{\mathrm{En}}}=T_{\Co}.
-$$
+*The gluing, and the extension of the factors.* $S_\En\oplus T_\En\subseteq\lkt$ has index $2^{10}$ with the full graph gluing of its two discriminant forms; $I_\En$ acts trivially on $A_{S_\En}\oplus A_{T_\En}$ because the forms are $2$-elementary and $-\id$ is the identity there, so the gluing subgroup is preserved and $I_\En$ extends to an integral isometry of $\lkt$. And $w_\alpha(x) = x+(x\cdot\alpha)\alpha$ is integral on $\lkt$ because $x\cdot\alpha\in\bZ$ for $x\in\lkt$. Hence $I_\Co = w_\alpha I_\En\in\Orth(\lkt)$.
 
-The types: $S_{\mathrm{En}}\cong U(2)\oplus E_8(2)$ and $\bZ\alpha\cong\langle-2\rangle$ are orthogonal summands, so $S_{\Co}\cong U(2)\oplus E_8(2)\oplus\langle-2\rangle$, of signature $(1,1+8+0)=(1,9)$ and rank $11$, with discriminant $(\bZ/2)^{11}$ computed as in @prop:coble-transcendental and $\delta=0$ because every generator has even square up to the $\langle-2\rangle$ summand, whose dual vector has $q=-\tfrac12\in\bZ/2\bZ$ after reduction; this is the even lattice $I_{1,10}(2)$.
+*The invariant lattice.* Write $y\in\lkt^{I_\Co}$ as $y = y_S+y_T$ over $\bQ$ with $y_S\in S_\En^\#$ and $y_T\in T_\En^\#$, possible because $S_\En$ is primitive. Then
+$$I_\Co y = y_S - w_\alpha(y_T) = y_S - y_T - (y_T\cdot\alpha)\,\alpha,$$
+so $y = I_\Co y$ forces $2y_T = -(y_T\cdot\alpha)\alpha$. Writing $y_T = q\alpha + r$ with $r$ in the $\alpha$-orthogonal part of $T_\En^\#$ gives $2r = 0$ and hence $r = 0$, so $y_T = q\alpha$; and testing $q\alpha\in T_\En^\#$ against the generator $e$ of the summand $U$ of $T_\En$ gives $q\,(\alpha\cdot e) = -q\in\bZ$, so $q\in\bZ$. Therefore
+$$L_{K3}^{I_\Co = 1} = S_\En\oplus\bZ\alpha,$$
+and the $(-1)$-eigenspace is $T_\Co$ by the same computation with the sign reversed.
 
-So the two eigenspaces are $S_{\Co}$ and $T_{\Co}$, and the pair $(S_{\Co},T_{\Co})$ is a primitive orthogonal decomposition of $L_{K3}$ with $\rank S_{\Co}+\rank T_{\Co}=11+11=22$.
+*The type.* The summands $S_\En\cong U(2)\oplus E_8(2)$ and $\bZ\alpha\cong\langle-2\rangle$ are orthogonal, so the invariant lattice is $U(2)\oplus E_8(2)\oplus\langle-2\rangle$, of signature $(1,\ 1+8+1) = (1,10)$ (summing to the rank $11$, which the earlier version's $(1,9)$ does not), determinant $(-2)\det S_\En = 2048$ and discriminant group $(\bZ/2)^{11}$: the even $2$-elementary lattice $I_{1,10}(2)$. The invariant lattice and $T_\Co$ are mutually orthogonal complements in $\lkt$ of ranks $11+11 = 22$, and $S_\Co\oplus T_\Co$ has index $2^{11}$ there.
+
+*The root is a choice, and its uniqueness is a computation.* In $T_\En = U\oplus U(2)\oplus E_8(2)$ every vector of the second or third summand has square divisible by $4$, so a vector of square $-2$ lies in $U$; there $2ab = -2$ with $a = b\cdot$ signs leaves $\{\pm(e-f)\}$, and the swap $e\leftrightarrow f$ sends one to the other. So the twist uses either of these two roots — the model does not change — and @cons:reflection-twist is lattice data. Whether the construction's own involution is this twist, for its geometric labels, is exactly the identification left open at @rmk:a21-open; none of the above is used to shorten that.
+
 That the abstract type agrees with the period theory of [@DK13] is a check on the computation; it does not show that every family of direct Coble data realizes the same labeled embedding in $L_{K3}$, which is the labeled rigidity question of @sec-surface-divisors.
+
+
 :::
 
 ### The local geometric meaning of the root {#sec-root-geometry}
