@@ -16,13 +16,27 @@ The dictionary is prop:coble-invariant-lattice's: S_Co = f^* Pic(S) with f^*D . 
 class of S_Co has the *same coordinates* as its preimage in Pic(S) and half the square.  A root of S_Co
 therefore corresponds to a class of square -1 in Pic(S) = I_{1,10}, i.e. to a (-1)-class.
 
-What this decides and what it leaves: it decides which class that is -- for the admissible marking
-h~_Co = f^*(6H - 2(E_1+..+E_8) - E_9 - E_10) the two roots are +-(3 f^*H - Sum f^*E_i), so the pair is
-the anticanonical class and its negative, alpha' = -K_S = 3H - Sum E_i.  It does not decide whether
--K_S is effective: that is the classical Coble condition that the ten blown-up points lie on a cubic,
-which the book's set-up (an arbitrary ten-point blowup, prop:coble-invariant-lattice) does not impose.
-So the effectivity of the retained root reduces to one named geometric condition rather than to an
-unspecified chamber statement.
+What this decides and what it leaves.  It decides the coordinates: for the admissible marking
+h~_Co = f^*(6H - 2(E_1+..+E_8) - E_9 - E_10) the two roots are +-(3 f^*H - Sum f^*E_i), whose preimage
+in Pic(S) is +-(3H - Sum E_i) = +-(-K_S), a (-1)-class.  That is a coordinate statement under
+prop:coble-invariant-lattice's dictionary and nothing more.
+
+It does NOT decide that this class is effective, and an earlier version of this report said it did by
+calling the ten-points-on-a-cubic condition "the classical Coble condition".  The repository's own
+statement of the Coble condition is different: coble-surface-structure-and-classification.md line 39
+(proposition on norms of rational negative curves, cited to DZ99 section 2) has a Coble surface satisfying
+|-2K_S| = {D} with D a nonempty sum of (-4)-curves, so that -K_S = D/2 is NOT integral there and
+2(-K_S) = D is effective.  That is a condition on |-2K_S|, not on |-K_S|, and in the ten-point blowup
+model of prop:coble-invariant-lattice one has K_S = -3H + Sum E_i, so -2K_S = 2(3H - Sum E_i) and whether
+|-2K_S| consists of a single reduced divisor depends on the configuration.  The two descriptions are not
+interchangeable, and nothing here settles which one the retained Coble surface satisfies.
+
+What does follow, and only this: because f: X -> S is finite, the pullback of an effective class is
+effective, so alpha = f^*(-K_S) is effective IF -K_S is.  The converse is not claimed, and the book's
+ten-point blowup set-up does not assert that -K_S is effective.
+
+None of this touches H, which in the report's tuple is the degree-4 class H^2 = 4, i.e. h~_Co; the
+plane-line class H of Pic(S), with H^2 = 1, is a different object and is not substituted for it.
 """
 import sys
 
@@ -84,10 +98,15 @@ print('  class upstairs.')
 
 print('')
 print('SUMMARY')
-print('  The root of the marking is the anticanonical class: alpha = 3f^*H - Sum f^*E_i, whose preimage')
-print('  in Pic(S) is -K_S, a (-1)-class.  Its effectivity is therefore exactly the classical Coble')
-print('  condition that the ten blown-up points lie on a cubic -- -K_S effective -- which the book\'s')
-print('  ten-point blowup set-up does not impose.  Effectivity, and with it the chamber of the report\'s')
-print('  tuple, reduces to that one condition plus H nef and big (H is the pullback of a line, so nef and')
-print('  big on S), and not to an unspecified nef-cone computation.')
-print('OK: the retained root is identified; its effectivity reduces to a single named geometric condition')
+print('  Decided, under prop:coble-invariant-lattice\'s dictionary only: the two roots are')
+print('  +-(3f^*H - Sum f^*E_i), whose preimage classes in Pic(S) are +-(3H - Sum E_i) = -+K_S, a (-1)-class.')
+print('  Not decided: that this class is effective.  The repository\'s Coble condition is |-2K_S| = {D}')
+print('  with D a sum of (-4)-curves (coble-surface-structure-and-classification.md line 39, DZ99 sec. 2),')
+print('  where -K_S is not integral; the ten-point model has K_S = -3H + Sum E_i and -2K_S = 2(3H-Sum E_i),')
+print('  and whether |-2K_S| is a single reduced divisor depends on the configuration.  The two')
+print('  descriptions are not interchangeable and are not interchanged here.')
+print('  What does follow: alpha = f^*(-K_S) is effective if -K_S is, because a finite pullback of an')
+print('  effective class is effective; the converse is not claimed.')
+print('  H in the report\'s tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S), and no')
+print('  substitution between them is made.')
+print('OK: coordinates identified; effectivity left open with its source conditions stated')

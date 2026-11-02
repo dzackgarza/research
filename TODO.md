@@ -266,14 +266,19 @@ generators, image of order $696\,729\,600$ in $\Orth(A)$) restricted along the s
 class of $S_\Co$ and the transport of that of $M$ lie in one orbit — `in_same_orbit` returns `True`. So the
 two polarized lattices are matched by an isometry carrying $\tilde h_\Co$ to $h$.
 
-*What is missing.* (i) The labels. The root is now identified: the two vectors of $\tilde h_\Co^{\perp}$
-are $\pm(3f^*H-\Sum_i f^*E_i) = \pm f^*(-K_S)$ by @prop:coble-invariant-lattice's dictionary (same
-coordinates, half the square), so the root of the marking is the anticanonical class of the Coble surface.
-Its effectivity is therefore exactly the classical Coble condition that the ten blown-up points lie on a
-cubic, i.e. that $-K_S$ be effective, which the book's ten-point blowup set-up does not impose; given that,
-the retained effective root is the positive one, and the chamber reduces to it together with $H$ nef and
-big ($H$ is the pullback of a line). `computations/reports/coble_root_effectivity.py` records the
-identification. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
+*What is missing.* (i) The labels. The root is identified at coordinate level only: the two vectors of
+$\tilde h_\Co^{\perp}$ are $\pm(3f^*H-\Sum_i f^*E_i)$, whose preimages in $\Pic(S)$ are
+$\pm(3H-\Sum_i E_i) = \mp K_S$, a $(-1)$-class, by @prop:coble-invariant-lattice's dictionary
+(`computations/reports/coble_root_effectivity.py`). **Effectivity is not settled, and an earlier version of
+this item wrongly equated it with a "ten points on a cubic" condition.** The repository's Coble condition,
+on its proposition for norms of rational negative curves and attributed to [@DZ99, §2], is
+$\abs{-2K_S} = \{D\}$ with $D$ a nonempty sum of $(-4)$-curves, where $-K_S = \tfrac12D$ is not integral;
+that is a condition on $\abs{-2K_S}$, while the ten-point blowup model has $K_S = -3H+\Sum_i E_i$ and
+$-2K_S = 2(3H-\Sum_i E_i)$, whose linear system is a single reduced divisor only for special
+configurations. The two descriptions are not interchangeable. What does follow: $\alpha = f^*(-K_S)$ is
+effective if $-K_S$ is, $f$ being finite; the converse is not claimed. The tuple's $H$ is the degree-$4$
+class $\tilde h_\Co$, not the plane-line class of square $1$ in $\Pic(S)$, and no substitution between
+them is made. The chamber obligation therefore stays open, with these source conditions named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
 discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
 subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
 an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: effectivity of the root and the chamber

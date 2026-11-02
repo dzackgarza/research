@@ -17,10 +17,15 @@ the root line of h~_Co^perp (2 vectors):
   class upstairs.
 
 SUMMARY
-  The root of the marking is the anticanonical class: alpha = 3f^*H - Sum f^*E_i, whose preimage
-  in Pic(S) is -K_S, a (-1)-class.  Its effectivity is therefore exactly the classical Coble
-  condition that the ten blown-up points lie on a cubic -- -K_S effective -- which the book's
-  ten-point blowup set-up does not impose.  Effectivity, and with it the chamber of the report's
-  tuple, reduces to that one condition plus H nef and big (H is the pullback of a line, so nef and
-  big on S), and not to an unspecified nef-cone computation.
-OK: the retained root is identified; its effectivity reduces to a single named geometric condition
+  Decided, under prop:coble-invariant-lattice's dictionary only: the two roots are
+  +-(3f^*H - Sum f^*E_i), whose preimage classes in Pic(S) are +-(3H - Sum E_i) = -+K_S, a (-1)-class.
+  Not decided: that this class is effective.  The repository's Coble condition is |-2K_S| = {D}
+  with D a sum of (-4)-curves (coble-surface-structure-and-classification.md line 39, DZ99 sec. 2),
+  where -K_S is not integral; the ten-point model has K_S = -3H + Sum E_i and -2K_S = 2(3H-Sum E_i),
+  and whether |-2K_S| is a single reduced divisor depends on the configuration.  The two
+  descriptions are not interchangeable and are not interchanged here.
+  What does follow: alpha = f^*(-K_S) is effective if -K_S is, because a finite pullback of an
+  effective class is effective; the converse is not claimed.
+  H in the report's tuple is the degree-4 class h~_Co, not the plane-line class of Pic(S), and no
+  substitution between them is made.
+OK: coordinates identified; effectivity left open with its source conditions stated
