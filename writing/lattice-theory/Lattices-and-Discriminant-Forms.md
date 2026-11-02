@@ -98,8 +98,8 @@ Let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$ and let $I\injects K$ be a nonzero fracti
 The coefficient exact sequence is
 $$
 0\too I\too K\too K/I\too0
-$$ {#eq:metric-dual-coefficients}
-Applying the exact functor $\Hom_R(L,-)$ to @eq:metric-dual-coefficients gives
+$$ {#eq-metric-dual-coefficients}
+Applying the exact functor $\Hom_R(L,-)$ to @eq-metric-dual-coefficients gives
 $$
 0
 \too
