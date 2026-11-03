@@ -244,7 +244,12 @@ on it. The object it sketched is now computed at the maintained tier by
 `signature_pair`, `is_even`, and `is_isometric_to` for each joint-eigenspace piece against
 an independently built maintained counterpart), giving: `(++) is U(2) perp <-2>`,
 `(+-) is E8(-2)`, `(-+) = 0`, `(--) is <2> perp U(2) perp E8(-2)`, ranks (3,8,0,11), with
-I-reflection products verified integral.  That is the piecewise lattice match only; the
+I-reflection products verified integral.  The same run then prints, still at the maintained
+contract, the joint-piece spectral action of `J_Co` on the `(++)`, `(+-)`, `(--)` piece
+bases (3, 8, 11 vectors) and the placed Gram data of `H = Delta(e)+Delta(f)` and
+`alpha = e-f` (`H^2 = 4`, `alpha^2 = -2`, `H.alpha = 0`): input data for the
+operator-extension obligation, with no type, gluing, or membership conclusion drawn from
+it.  That is the piecewise lattice match only; the
 labelled embedding/gluing and the AEGS-vs-construction identification of the del Pezzo
 involution of the Coble K3 cover (the note `coble_aegs_involutions-run.txt` keeps at its
 end) remain the open questions they were; nothing in the run answers a chamber question.
