@@ -315,4 +315,12 @@ real provider limitation at this pin: torsion discriminant forms expose predicat
 (`isometry_to` raises `AttributeError`) — the third independent confirmation of the gap already
 recorded by `coble_gluing_discriminants-run.txt`; it does not block the published proof, which
 builds no gluing arrows (the full-graph property plus the verbatim-verified surjectivity lift do
-the work predicated-free). m7 (d4) continues running; nothing is restarted.
+the work predicated-free). m7 (d4) continues running; nothing is restarted.  **Provenance
+currency (kept current so the gap is not misreported):** the constructor gap above belongs to pin
+`c546077d`'s era.  The validated maintained provider `6ad7a5ea396da6e758ee28f3dea10a35baee0266`
+supplies `DS.isometry_to(DT.twist(-1))` with typed inverse/composition and the original Coble
+semantic tests, so no argument may rest on a capability blocker from the old pin. (Local note for
+re-runners: this VM's live image still prints the historical `AttributeError` on a bare
+`DS.isometry_to(...)`; the validated-pin capability is cited at the pin, and the checkout's
+lattice-level sanctioned constructors `glue_map` / `Isom(...).an_element()` cover the gluing the
+corpus actually presents.)
