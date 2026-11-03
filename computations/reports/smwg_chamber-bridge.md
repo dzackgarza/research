@@ -6,15 +6,26 @@ Corpus evidence-state `main@556455ee` (this document supersedes prose of `smwg_o
 `smw0kq02h`, accepted solutions m8 (period-blindness), m1 (root-sign blindness + the d5 theorems),
 m4 (AEGS closure + realization via Torelli), m6 (parity/Heegner mechanism), m2 (node adjunction),
 m7 (deformation smoothness); referee scope corrections are folded in and marked where they bind.
-**Review corrections applied after the first publication of this dossier:** (§2) the ampleness
-criterion decomposed into (C1) component and (C2) no-null-root, with the locus re-derived as the
-construction-bearing component of the wall complement — absence of an orthogonal root alone no
-longer stands as an ampleness proof; (S1) the implication chain set out with no unconditional
-arrow from `(Hdg)` and the wall-reflection counterexample pinned; (S4) `nu(b0) = 0` explicitly no
-longer implies a Picard rank for the certified member (kept open until a Picard computation
-supplies one); (§6.1) `Gamma_L`-orbit membership no longer said to *decide* the original chamber
-question (sufficiency only); (E2(i)) the product involution's `+1` character separated from the
-two `−1` ones.
+**Review corrections applied after the first publication of this dossier (two passes):**
+(Pass 2, current.) (§2) the required chamber is *identified*, not assumed — it is the authored
+fourth-bullet chamber with `A` interior — and the two chapters of ampleness are named (the
+nef/chamber condition (C1) and the no-null-effective-root condition (C2)); the `A`-null Heegner
+union is *contained in* the failure set (direction corrected), with no converse claimed; and the
+realization side `O` is the open analytic locus of relative ampleness on the marked family, with
+no connectedness used to lift a chamber. (S1) strict content is the witnessed
+`(Lat)`-true-or-`(Chm)`-false comparison only, written in prose; the faulty `w_alpha` counterexample
+removed (it is not label-preserving, sending `alpha` to `-alpha`), and every other strictness or
+failed-implication claim left open rather than asserted. (S2) the non-necessity mechanism is an
+exhibited pair satisfying the labels and quantifiers (two very-general members in different
+`Gamma_L`-orbits: the clause holds via the label transport and the algebraic A-positive rule,
+`(Hdg)` fails by definition).
+(Pass 1.) (§2) the ampleness criterion decomposed into (C1) component and (C2) no-null-root —
+absence of an orthogonal root alone no longer stands as an ampleness proof; (S1) the implication
+chain set out with no unconditional arrow from `(Hdg)` and the wall-reflection counterexample
+pinned (removed in pass 2); (S4) `nu(b0) = 0` explicitly no longer implies a Picard rank for the
+certified member (kept open until a Picard computation supplies one); (§6.1) `Gamma_L`-orbit
+membership no longer said to *decide* the original chamber question (sufficiency only); (E2(i))
+the product involution's `+1` character separated from the two `−1` ones.
 Tier discipline as in `smwg_operator-extension.md`: every numbered theorem here is proved from the
 premises of its own ledger row; member scripts (`twist_wall_check.py`, `twist_lattice_checks.py`,
 `m6_parity_probe.sage`, `coble_twist_base_pair.py`, `verify_period_locus.py`, `m8_eigenspaces.py`)
@@ -28,8 +39,10 @@ pair's scope (Theorem 9 of `sm00_chamber-negative-half.md` in readings R2–R5, 
 * **Existence (Q1, Theorems E1-E3).** The authored single involution `I_Co := w_alpha o I_En`
   (@cons:reflection-twist, report :535) has a genuine realization: the decorated moduli of marked
   K3s with a nonsymplectic involution of its type is **smooth of complex dimension 9** with
-  vanishing obstruction space, nonempty (every one-node member lies in it), and equal to the
-  amplitude condition's open locus of §2. The corpus's reflected *pair* is realized by commuting
+  vanishing obstruction space, nonempty (every one-node member lies in it), and the realization
+  side `O` of §2 is the open analytic locus of the named ampleness hypothesis (relative-ampleness
+  openness, with the authored chamber identified). The corpus's reflected *pair* is realized by
+  commuting
   geometric automorphisms on the same locus; its factorization is never geometric there; the
   authored companion `I_En` fails the construction's joint multiplicities; the second slot costs a
   chamber condition.
@@ -81,63 +94,62 @@ pair's scope (Theorem 9 of `sm00_chamber-negative-half.md` in readings R2–R5, 
   K3; the `Aut(X) -> O(H^2(X,Z))` injectivity; Local Torelli; the characterization of the ample
   cone by `{x : x^2 > 0, x·C > 0}` for effective curves `C`.
 
-## 2. The realization locus, with its exact hypotheses and topology
+## 2. The realization side's hypothesis, its chamber, and the exact period-level facts
 
 Put `A := 2H − alpha` (`A² = 14`, `A.H = 8`, `A.alpha = 2`).
 
-**The ampleness criterion used everywhere below (named, not smuggled).** For a projective K3
-surface `X`, the ample cone is
+**(0) The two chapters of ampleness, named.** For a projective K3 surface `X`,
 
 `Amp(X) = { x in C_X^+ : x·delta > 0 for every effective (−2)-class delta of X }`,
 
-where `C_X^+` is the component of `{x ∈ NS_R(X) : x² > 0}` (signature (1,·)) containing Kähler
-classes (Huybrechts, Lectures on K3 Surfaces, §2 of the chapters on the Torelli/cone side, in-repo
-`references/literature/lattice-research/huybrechts_k3_lectures.md` at topic level; BHPV Ch. VIII at
-corpus level). Hence ampleness of the fixed integral class `A` is the conjunction of:
+where `C_X^+` is the component of `{x ∈ NS_R(X) : x² > 0}` (signature `(1,·)`) containing Kähler
+classes (Huybrechts, Lectures on K3 Surfaces, cone/Torelli chapters, in-repo reference at topic
+level; BHPV Ch. VIII at corpus level). So ampleness of the fixed integral class `A` is the
+conjunction of:
 
-* **(C1) the chamber/component condition:** `A ∈ C_X^+` — equivalently `A·kappa > 0` for some
-  (hence every) Kähler class kappa. It fails exactly when `A` sits in the wrong component of the
-  positive cone, never at a wall;
-* **(C2) the no-null-effective-root condition:** `A·delta ≠ 0` for every effective `(−2)`-class
-  `delta` — equivalently, no effective `(−2)`-class is orthogonal to `A`. With `(C1)` the signs then
-  come out `> 0` automatically inside a chamber.
+* **(C1) the nef/chamber condition:** `A` belongs to the Kähler side (`C_X^+` along with its
+  walls) — **and the chamber meant here is identified, not assumed:** it is exactly the one the
+  fourth authored bullet names, i.e. the unique chamber with `A` in its interior (equivalently,
+  with `alpha` effective on its positive side and `H` nef and big in its closure). On the
+  construction members it exists and is the author's chamber by Lemma 2.2 of
+  `sm00_positive-half-A21.md` (`A` is ample there). Nothing below treats a bare positive-cone
+  component as sufficient for this chapter;
+* **(C2) the no-null-effective-root condition:** `A·delta ≠ 0` for every effective `(−2)`-root
+  `delta` — equivalently, no effective `(−2)`-root is orthogonal to `A`.
 
-For a marked pair `(X, psi)` with `psi(H^{2,0}(X)) ⊆ T_Co ⊗ C` (i.e. `sigma in D(T_Co)`) every
-class of `S_Co`, hence `A`, is algebraic on `X` (pairwise orthogonal to `sigma`). The realization
-locus of this dossier is **defined as**
+**(1) Wall direction, stated the right way.** If `delta² = −2`, `A·delta = 0`, and `delta` is
+algebraic at `sigma`, then one of `±delta` is effective (Riemann–Roch) and pairs `0` with `A`, so
+`A` fails nefness *and* ampleness at `X_sigma`. Consequently the `A`-null Heegner union
 
-`U := { sigma in D(T_Co) : A in Amp(X_sigma) }`
-     = (the connected component, in the analytic topology, of
-        `D(T_Co) \ cup_{delta}` (`delta^perp ∩ D(T_Co)`), over `(−2)`-classes `delta` with
-        `A·delta = 0`,
-        that contains the construction members).
+`N_A := cup_{delta : delta² = -2, A·delta = 0} (delta^perp ∩ D(T_Co))`
 
-**Lemma (properties of `U`).**
+is **contained in the failure set** of ampleness. `N_A` is a countable, locally finite union of
+closed analytic hyperplane sections, so its complement is analytic-open. **No converse inclusion
+is claimed:** the complement of `N_A` is *not* asserted to be an ampleness locus, because failure
+can also come from (C1) — the wrong positive-component side — which is not a wall.
 
-1. *The failure set is a wall union.* If `A·delta = 0` with `delta² = -2` algebraic at `sigma`,
-   then one of `±delta` is effective (Riemann–Roch) and pairs `0` with `A`, violating (C2): the
-   failure set is therefore **contained in** the countable, locally finite union of closed analytic
-   hyperplane sections `delta^perp ∩ D(T_Co)` with `A·delta = 0`. Deleting it leaves an
-   **analytic-open** subset.
-2. *Every point of `U` satisfies (C1) and (C2).* (C2) holds by the deletion just made (within a
-   region bounded by walls, algebraicity of each `(−2)`-class is constant, so the sign of
-   `A·delta` for effective `delta` is constant). (C1) holds on the named component: at the
-   construction members `A` is ample by Lemma 2.2 of `sm00_positive-half-A21.md`, and the sign of
-   `A·kappa` against a Kähler class is continuous along the connected locus.
-3. *`U` is nonempty and 9-dimensional*: it contains `sigma_b` for every one-node member `b`
-   (Lemma 2.2), hence a nonempty open subset of the image of the construction's period map; its
-   dimension is `11 − 2 = 9`.
-4. *The two chapters, kept straight.* (i) ampleness of `A` is a property of **the marked member**
-   (its null-root arrangement and positive component), never of a bare point; (ii) nevertheless
-   `sigma` decides *which `(−2)`-classes are algebraic* and hence where the walls are, so the
-   membership of the locus above is decidable at period level through (C1)+(C2). These are the only
-   two chapters of the condition; **absence of an algebraic `(−2)`-class orthogonal to `A` is not,
-   by itself, a proof of ampleness** — (C1) is the other half, and it is earned on the connected
-   component containing the construction members, not asserted everywhere in `D(T_Co)`.
-5. *Elevation warning, kept separate:* `Pic(X_sigma) = psi^{-1}(S_Co)` holds on `D(T_Co)` minus a
-   countable union of Noether–Lefschetz divisors. That set is dense and Baire-general; it is
-   **not** Zariski-open, and no argument in this dossier uses an open-set form of it (cf. also S4,
-   which is a pointwise parity argument, not a locus argument).
+**(2) Marked member versus bare period, kept explicit.** At a marked pair `(X, psi)` every class
+of `S_Co` (hence `A`) is algebraic — `sigma` alone decides that. For each algebraic `(−2)`-class
+`delta`, which of `±delta` is effective is **the marked member's datum**, and whether the
+A-pairing sign accords with effectivity is exactly (C1)'s content. Hence ampleness of `A` is
+never inferred "at the period alone" in this dossier: it is the condition **(M2)** named below at
+marked members; when it is being checked at one marked member, the whole check is lattice-specified
+by that member's arrangement (cf. S4 for the rank-11-decidable case).
+
+**(3) The open realization side.** The marked lattice-polarized family exists over `D(T_Co)`
+(Local Torelli; Huybrechts, Lectures on K3 Surfaces, Ch. 8, §2 about marked lattice-polarized
+moduli), and ampleness of a fixed integral class `A` on it is an **open condition in the analytic
+base** (relative ampleness is open for holomorphic families; cited at that scope). Denote that
+open subset by `O`. Then: `O` is nonempty — it contains every one-node member's period (Lemma
+2.2, `A` ample there) — of dimension `11 − 2 = 9` where nonempty, and disjoint from `N_A` of (1),
+with the named chamber of (C1) present at every marked pair in it by the exact bullet that defines
+`(M2)`. The prefix "`(M2)`" everywhere below means precisely this named hypothesis " `A` ample on
+the member", in the chamber identified above.
+
+**(4) Topology summary, nothing over-claimed.** `O` is analytic-open, nonempty, 9-dimensional; it
+is a subset of `D(T_Co) \ N_A`, with equality **not** asserted anywhere and the `(C1)`-failure mode
+outside every wall. `Pic = S_Co` is Baire-general, not Zariski-open, and is never used as an
+open-set condition.
 
 ## 3. Part 1 — existence (Q1), in three theorems
 
@@ -157,14 +169,16 @@ genus 8 and `χ(Fix) = -14` — not a smooth genus-9 value. It is used nowhere b
 *(m7's Lemmas 1-2, Theorem 1.)*
 
 **Theorem E2 (the pair realization and its exclusions).**
-(i) On any member of `U` (§2), the reflected operators `J_Co = w_alpha I_En` and
+(i) On any marked pair of the family of §2 item (3) with `(M2)` (i.e. with `A` ample in the named
+chamber), the reflected operators `J_Co = w_alpha I_En` and
 `J_dP = w_alpha I_dP` are Hodge isometries — _each acts as `-1` on `T_Co ⊗ C`_ — and they fix `A`
 (they fix `H` and `alpha`); their product `I_nik = J_Co J_dP` acts as `+1` on `T_Co ⊗ C` (hence
 fixes the period `sigma`), so its character on `H^{2,0}` is `(−1,−1,+1)`, and the product is the
 symplectic involution of Nikulin type (its coinvariant is the `(+-)`-piece `E8(-2)`; uniqueness
 [Ni1] Thm. 4.7 via S3). Every class they fix includes the integral ample class `A`, so by
 effective Torelli (S3) **all three are induced by commuting automorphisms**, all five authored
-bullets then hold, and their realization is the whole locus `U`.
+bullets then hold, and their realization runs the whole of the named open side `O` of §2 (every
+marked pair with `(M2)`).
 (ii) *The factorization is never geometric anywhere the fourth bullet holds:* on a member with `A`
 ample and `alpha` effective, `w_alpha`, `I_En`, `I_dP` each send `A` to
 `2H + alpha`, and `(2H + alpha)·alpha = -2 < 0`; an automorphism preserves the effective cone, so
@@ -251,42 +265,49 @@ restated with exact quantifiers; the ampleness and Torelli hypotheses are load-b
 `Aut(X) ↪ O(H²(X,Z))`-injectivity is needed only for exact operator equivariance, Remark 4.1 of
 the framing.)*
 
-**Separation S1 (levels, and exactly which implications hold).** Three levels: `(Lat)` (some
-label-carrying isometry exists; **weakest**), `(Chm)` (some label-carrying isometry carries the
-chamber; implies `(Lat)`), `(Orb)` (some label-carrying isometry carries `(sigma, chamber)`
-together, equivalently is induced by an isomorphism of tuples; implies `(Chm)` by definition).
+**Separation S1 (the exact implications, each with a label-satisfying witness).** Three levels,
+written as prose to keep the direction honest: `(Chm)` *implies* `(Lat)` (a chamber-carrying
+isometry is in particular a label-carrying one), and the implication is **not** reversible: the
+certified pair `(b0, b*)` satisfies `(Lat)` by [EXT] and fails `(Chm)` by Theorem 9 of
+`sm00_chamber-negative-half.md` — that is the only strict comparison proven here, and its witness
+satisfies the actual labels and quantifiers. Likewise `(Orb)` *implies* `(Chm)` by definition
+(`(Orb)` carries `(sigma, chamber)` together), with no strictness claim attached.
 
-*The sufficient route:* `(Hdg) ∧ (M2) ∧ (M3) ⇒ (Orb)` — a Hodge isometry `gamma` of label type
-that also carries the integral ample class `A` (`(M2)`, and `gamma(A) = A` because `gamma` fixes
-`H, alpha`) is induced by an isomorphism of tuples via effective Torelli `(M3)`.
+*The sufficient route:* `(Hdg) ∧ (M2) ∧ (M3) ⇒ (Orb)` — a label-carrying Hodge isometry `gamma`
+(it fixes `H` and `alpha`, hence `gamma(A) = A`) is induced, by effective Torelli `(M3)`, by an
+isomorphism of tuples, which carries `(sigma, chamber)` together.
 
-*No unconditional arrow from `(Hdg)` to anything.* `(Hdg)` alone does not imply `(Orb)` or
-`(Chm)`, and `(M2)` is exactly why: Hodge isometries may move chambers — concretely, the wall
-reflection `w_alpha` is a Hodge isometry for every period with `alpha` algebraic (it fixes the
-period then) and it moves the adjacent chamber across `alpha^perp`, by Theorem 2 of
-`.ultramath/smw0gfl0i/m4/chamber-prioritized.md`'s companion results and D1/E2(ii) below. Only
-with `(M2)` forcing the ample class does a Hodge isometry land on the chamber.
+*About what is not claimed, corrected to omit a faulty witness:* no unconditional arrow
+`(Hdg) ⇒ (Chm)` or `(Hdg) ⇒ (Orb)` is asserted anywhere. (One seductive candidate for a
+counterexample — the wall reflection `w_alpha` — is **not** a witness for the original tuple: it
+sends `alpha` to `-alpha`, violating the label `gamma(alpha) = alpha` of the original data, so it
+is never a
+label-*preserving* witness; it is accordingly not used.) The status left on record: whether every
+label-carrying Hodge isometry without `(M2)` and `(M3)` carries the chamber is *not decided anywhere
+in this dossier*; the only proved route to the chamber passes through the three named hypotheses,
+and `Theorem 9` + `A2` carry all exhibited failures.
 
-*Strictness, each verified at its stated scope:* `(Lat) ⫋ (Chm)` by Theorem 9 of
-`sm00_chamber-negative-half.md` (and by Corollary 3.4 of the framing, `(Lat) ∧ ¬(Hdg)` exhibited);
-`(Chm)` does not imply `(Hdg)` by Separation S2's generic-pairs mechanism; `(Hdg)` alone does not
-imply `(Chm)` by the wall-reflection fact just named; no strictness claim on `(Orb)` beyond its
-per-definition implication is made.
-
-**Separation S2 (necessity is not available — neither as theorem nor as generality).**
-The original clause's *necessity* is not proved, and in general is false in the only sense the
-corpus can presently test: by `prop:chamber-conditional` (S4) the label-transported chamber
-coincides with the target's exactly when no extra effective root cuts it; for two **very
-general** one-node members — whose existence with `Pic = S_Co` is Theorem D of
-`sm00_positive-half-A21.md`, and whose `nu = 0` follows by parity (S4) — the effective-root data
-are lattice-constant, so a label-carrying *non-Hodge* isometry transports the chamber between
-members whose periods nevertheless differ in the connected 9-dimensional family: `(Chm)` holds
-while `(Hdg)` fails for some such pairs. Therefore: `(Hdg)` is the proved sufficient bridge;
-whether `(Chm)` can imply `(Hdg)` in some restricted sense is *unproved*; and any statement of
-necessity for the orbit condition is in general false by the mechanism just displayed. No verdict
-or theorem here asserts necessity of orbit membership, or decidability of the orbit question.
-(Any in-dialogue phrase suggesting it — "the clause is exactly orbit-membership", "precisely when
-Hodge" — stands corrected to the one-sided implication plus this paragraph.)
+**Separation S2 (necessity is not available — and its exhibited failure mechanism).**
+The original clause's *necessity* is not proved, and in general is false, now by an exhibited
+pair satisfying the labels and quantifiers. Take two very general one-node members `b, b'` (their
+existence with `Pic = S_Co` is Theorem D of `sm00_positive-half-A21.md`; `nu = 0` by parity) whose
+periods lie in **different** `Gamma_L`-orbits — possible, since an arithmetic-group orbit is
+countable inside the connected 9-dimensional domain. (i) `(Chm)` holds for them, at lattice
+level and without any Hodge input: the label-carrying `theta` of `thm:a21-labels` conjugates
+`S_Co,b` onto `S_Co,b'` (it is one member of the conjugacy, set-wise, and carries every `(−2)`-
+class in it), and at a member with `A` ample the effective `(−2)`-classes are exactly its algebraic
+classes with positive `A`-pairing (one of `±delta` is effective, and the Kähler/ample class pairs
+positive with it), so `theta` carries the effective-root arrangements bijectively, and hence the
+authored chamber — the unique arrangement-chamber containing `A` (Lemma A of m3) — onto the
+other one; this is also precisely the record of `prop:chamber-conditional`, whose transported
+chamber coincides with the target's exactly when no extra root cuts it. (ii) `(Hdg)` **fails** for
+the same pair by definition, since their orbit classes differ. Hence `(Chm)` holds while `(Hdg)`
+fails for an exhibited label-satisfying pair. Therefore: `(Hdg)` is the proved sufficient bridge;
+whether `(Chm)` can imply `(Hdg)` in a restricted sense is *unproved*; and any statement of
+necessity for the orbit condition is in general false by the displayed mechanism. No theorem or
+verdict in this dossier asserts necessity of orbit membership or decidability of the orbit
+question. (Any in-dialogue phrase suggesting it — "the clause is exactly orbit-membership",
+"precisely when Hodge" — stands corrected to the one-sided implication plus this paragraph.)
 
 **Separation S3 (the certified pair's exact scope, preserved verbatim).**
 `(b0, b_star)`: no `gamma in O(L_K3)` with `gamma H_0 = H_star`, `gamma alpha_0 = alpha_star`,
@@ -371,11 +392,11 @@ registered in their member directories and are *not* among P1-P16.
 
 ## 8. Reviewer's checklist (hostile points, and where each stands)
 
-* *Is `U` really open, and with which hypotheses? The §2 lemma items 1-5: ampleness decomposed into
-  the component condition (C1) and the no-null-root condition (C2), the failure set contained in
-  the wall union, the locus the construction-bearing connected component of the wall complement.
-  Nothing in the dossier claims "absence of orthogonal roots alone proves ampleness": (C1) is
-  earned at the named component and no implication is run without both chapters named.
+* *Is the realization side open and with which hypotheses? §2 items (0)-(4): ampleness in two
+  named chapters — the identified authored chamber (C1) and the no-null-root condition (C2) — the
+  A-null Heegner union contained in the failure set (direction corrected), openness by relative
+  ampleness on the marked family, with no claim that the wall complement is an ampleness locus
+  and no chamber lift asserted by connectedness.
 * *Does existence overclaim E1/E2?* Every existence claim carries its hypothesis (`A` ample on the
   member for the pair; the authored single operator by smoothness+nonemptiness for E1); the
   factorization exclusion E2(ii) carries its own hypothesis explicitly.
