@@ -101,3 +101,22 @@ period-rank-9-by-fibre-dimension argument supersede the corresponding manuscript
   side, so the $\nu$-obstruction diff stands as proven on its stated inputs; and $F'$'s role
   in the general-vs-witness argument is consistent, its extra classes being the
   anti-invariant $C_1,C_2$ of the $\mathrm{IV}$ configuration.
+## Reclamation errata (third cycle; the m7 semantics document)
+* The chamber is not literally a product $c = \operatorname{Amp} \times N$ as `sm00_semantics.md`'s
+  Theorem 5(2) stated: its own assumption $p^{-1}(c_\text{alg}) \subseteq \mathcal P$ is false for
+  $n$ of large negative norm, as the incorporation review flagged. Corrected shape: open-ball fibres
+  with the quadratic truncation $(u+n)^2>0$ over the trace chamber. The trace bijection survives in
+  that form; the walls still see only the trace. Correction is written into the file as a referee
+  reclamation.
+* In the full $H^2$ of signature $(3,19)$ the claimed "translation-invariance subspace $= N_V$"
+  detector is unsupported: negative-norm directions of $N_V$ exit the positive set across the quadric,
+  not across a wall. The R4 forcing row (chamber equality forces Pic-identification) survives instead
+  via the accepted census argument of `sm00_chamber-negative-half.md`, which is already stated in the
+  ambient full-$H^2$ reading and needs no translation-invariance detector.
+* The ambient-signature assumption for the hyperbolic wall-distance formula is recorded: it is
+  signature-independent and is used only on the integral centre $y$ with $y^2 = 24$; that is its
+  scope.
+* Direction d2 (fibre audit) ended without a solution; the charter is covered by m3's accepted
+  witness-membership audit (Theorem A, the I-2/IV dichotomy and the chi-bookkeeping) and by the
+  negative half's elimination tests for the only numbers the corpus uses ($\nu(b_0) = 0$,
+  $\nu(b_\star) = 4$). Nothing in the outcome depends on d2.
