@@ -283,6 +283,18 @@ scripts demoted to exploratory, per tier discipline. Still open, unchanged: the 
 (m4's dichotomy), the authored second slot's text, (O1)/(O2), R4, $k\ge2$ saturation, the m7
 depreaudit sites.
 
+**m7 (d4) accepted, swarm ended solved**: m7's reduction made the pair-class question exactly the
+discriminant double coset (every anti-isometry admissible, since all piece discriminants are
+exponent-2 elementary, so both sign-changes always extend), proved the summand-level statements
+(`Aut(q_P) = Z/2` realised by the $U(2)$-swap that *fixes both labels*; $\mathrm{im}(O(E_8(-2))) =
+\mathrm{Aut}$, order $348\,364\,800 = |O_8^+(2)|$ with $q$-level orbits) and honestly isolated its
+one open statement (D), the surjectivity on $O(S_\mathrm{Co})$ — which the verbatim-verified Nikulin
+Thm 3.6.3 discharges directly ($S_\mathrm{Co}$ even, indefinite $(1,10)$, 2-elementary; likewise
+$T_\mathrm{Co}$). Accepted as a further independent derivation; bespoke enumerations kept
+exploratory-tier. The run `smw0gfl0i` then ended **solved** with seven accepted solutions
+(m4 framing dichotomy; m2, m3, m7 extension proofs; m8's near-complete line; m5 audit; m6
+structural analysis; m1 forcing-lemma closure) plus m8's triaged findings.
+
 **m8 (d1) termination, findings assessed**: the direction ended `abandoned` at limits with no
 submission and no report to judge; its five board findings were read and triaged. Kept at proved
 scope: f15 (each block has a unique primitive embedding into $L_{K3}$ by Nikulin Thm 1.14.4 with
