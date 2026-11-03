@@ -282,3 +282,25 @@ isolated as exactly the surjectivity statement) and m6 (d8) retained with their 
 scripts demoted to exploratory, per tier discipline. Still open, unchanged: the chamber clause
 (m4's dichotomy), the authored second slot's text, (O1)/(O2), R4, $k\ge2$ saturation, the m7
 depreaudit sites.
+
+**m8 (d1) termination, findings assessed**: the direction ended `abandoned` at limits with no
+submission and no report to judge; its five board findings were read and triaged. Kept at proved
+scope: f15 (each block has a unique primitive embedding into $L_{K3}$ by Nikulin Thm 1.14.4 with
+Rem. 1.14.5 — a correct cross-check, unused by the proof); f16 (discriminant-level transitivity of
+admissible split summands via strict $b$-orthogonality — consistent; its own flagged gaps are
+already closed by the accepted chain: its H1(i) follows from the verified N1 (Thm 3.6.3) on both
+$U(2)$-summand lattices, and H1(ii)/H2 are what the accepted Theorem A + flag-stabilizer/Theorem B
+do); f17's maintained cross-checks kept ($M=(+-)^\perp\cong U^3+E_8(-2)$ `is_isometric_to` True,
+matching N4's invariant type; $\Gamma_3$ of order 2048) with one correction recorded: its
+"index $[(++):\langle H,\alpha\rangle]^2=1$ ... span the (++) piece" line is a cross-rank
+determinant-ratio artifact ($|\det\langle H,\alpha\rangle|=8$ vs $|\det(++)|=8$ giving a ratio 1
+with no rank content), not a spanning
+statement; the accepted placement datum (primitive, complement of square $-4$, index 2 with the
+complement) stands at its verified scope. No mathematical obstruction arises from any of it. f18
+records its own dead route (the $V_Z$/Witt plane count 67456, not to be used). f19 re-verifies a
+real provider limitation at this pin: torsion discriminant forms expose predicates
+(`is_anti_isometric`, normal forms, value module) but NO composable isometry constructor
+(`isometry_to` raises `AttributeError`) — the third independent confirmation of the gap already
+recorded by `coble_gluing_discriminants-run.txt`; it does not block the published proof, which
+builds no gluing arrows (the full-graph property plus the verbatim-verified surjectivity lift do
+the work predicated-free). m7 (d4) continues running; nothing is restarted.
