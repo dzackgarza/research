@@ -178,12 +178,16 @@ above. Nothing in this register asserts a completion beyond the listed acceptanc
   certified split-ruling members (b*, B) and the IV-stratum member (F'). Its Lemmas 1-2
   (lattice bound, RR-nef) survive as reusable.
 O-S is decided (S_dP = Lambda = U(2)+<-2>, index 1) independently by four accepted routes;
-O-T is settled on the corpus's original slot (partner = I_En): NEGATIVE, with the joint
-character multiplicities (3,8,0,11) vs (10,1,0,11) and the product's anti-invariant rank
-8 vs 1, and with H1 discharged anyway by Nikulin's classification (the type of S_Co,b is
-the twist's S_Co-type). The persistent alternatives kept at scope: the auxiliary reading
-(w_alpha I_En, w_alpha I_dP), whose residue is the labelled embedding/gluing question,
-which abstract type does not decide.
+O-T on the reading whose second slot is I_En. That is the reading the rank computations
+*handled*, a conditional reading and not an original datum: the original text
+(cons:reflection-twist) names only I_Co, and this record does not call any other slot
+'original'. On that reading the pair is separated from the construction's pair by the
+joint character multiplicities (3,8,0,11) vs (10,1,0,11) and the product's
+anti-invariant rank 8 vs 1; the type of S_Co,b is separately a theorem by Nikulin
+classification and matches the twist's S_Co-type, and the finds do not depend on the
+chosen slot.  The original second-slot datum stays, by its text, as an open authoring
+question, and the reflected-pair candidate (w_alpha I_En, w_alpha I_dP) keeps its own
+remaining question, the labelled embedding/gluing, which abstract type does not decide.
 
 ## Scope note on `smtw_certify_lattices.py` and its log
 That script is re-labelled with its actual reliability class: **ordinary exploratory arithmetic**
@@ -217,12 +221,14 @@ validation is left open here, by design.
 ## Completion of `smw0dbvr6`
 All eight members' dispositions are complete; the swarm ended solved.  Final closed items:
 O-S decided (index 1, det 8) by five accepted derivations plus the late independent Nikulin
-route from m7-d4 (its predecessor section route having been rejected); O-T answered at the
-corpus's original second-slot reading as not conjugate (eigenrank multiset {11,3,14} vs
-{11,10,21}), with the reflected-pair candidate (w_alpha I_En, w_alpha I_dP) surviving with
-fully matching piecewise data and its only remaining question the labelled embedding/gluing;
-the original second-slot datum is an open authoring question by its text, not supplied by
-any rank computation; k=0 = U(2) (not U) by-product; k>=2 and the E_8(-2)-vs-<-2>^8 orbit
-case open.  Everything else in this record, the manuscript's A21 state-of-record and its
+route from m7-d4 (its predecessor section route having been rejected); O-T on the reading
+whose second slot is I_En, answered as not conjugate (eigenrank multiset {11,3,14} vs
+{11,10,21}) -- a conditional reading the rank computations handled, with no slot called
+original anywhere in this record, because the original text names only I_Co.  The
+reflected-pair candidate (w_alpha I_En, w_alpha I_dP) survives with fully matching
+piecewise data and its only remaining question the labelled embedding/gluing; the
+second-slot datum stays open as its own question by the original text, not supplied by
+any rank computation; k=0 = U(2) (not U) by-product; k>=2 and the E_8(-2)-vs-<-2>^8
+orbit case open.  Everything else in this record, the manuscript's A21 state-of-record and its
 named open derivations (the fourth bullet semantics, R4 recovery, embedding/gluing, second
 slot, $k>=2$ saturation) stands at that scope.
