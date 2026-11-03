@@ -134,20 +134,36 @@ identifications are still (co)invariant lattices of involutions on the unimodula
 $[L:A\perp B\perp D]^2=\prod|\det V_{ss'}|=2^{22}$, so $[L:M]=2^{11}$ for
 $M:=A\perp B\perp D$.
 
-**Lemma L2 (the gluing is a full graph).** The gluing $G=L/M\subset A_M$, isotropic of order
-$2^{11}$, projects *isomorphically* onto $A_D$ (order $2^{11}$): an element of the kernel would be
-a class in $A_{A\perp B}$ represented by an $L$-element in the rational span of $A\perp B$, but
-$A\perp B\subseteq S_\sigma$ and
-$\det(A)\cdot|\det B|=8\cdot 256=2048=|det S_\sigma|$ — established on both sides (model:
-maintained; construction: types theorem) — so $A\perp B=S_\sigma$ with index $1$, and
-$S_\sigma$ is saturated, hence the projection is injective, and by equal orders bijective. Dually
-$G$ projects isomorphically onto $A_{A\perp B}$. By N3, $G=\mathrm{graph}(\gamma)$ for an
-anti-isometry $\gamma\colon A_{A\perp B}\to A_D(-1)$: $q(\gamma v)=-q(v)$ for all
-$v\in A_{A\perp B}$.
+**Lemma L2 (the gluing is a full graph; with the hull/sum distinction made explicit).**
+*Individual* primitivity of the joint pieces (L1) does not by itself make their direct sum
+primitive: the sum is handled through its hull. Put
+$$S:=L\cap\bigl((A\perp B)\otimes\mathbb Q\bigr)=V_+(\sigma),$$
+the $+1$-eigenlattice of $\sigma$ (a rational eigenspace intersected with the integral lattice,
+hence primitive). Its complement
+$$T:=S^{\perp}=L\cap\bigl((A\perp B)\otimes\mathbb Q\bigr)^{\perp}=L\cap\bigl(D\otimes\mathbb Q\bigr)$$
+(the middle equality uses $E=V_{-+}=0$) is primitive as every orthogonal complement is, contains
+the saturated $D$ with the same rational span, and therefore **equals** $D$. By the gluing of a
+primitive complementary pair (N3) then $A_S\iso A_T(-1)$ and
+$$|\det S|=|\det T|=|\det D|=2048.$$
+The determinant/index calculation now closes the sum:
+$\det(A)\cdot\det B=8\cdot 256=2048=|\det S|$, so $[S:A\perp B]=1$, i.e.
+$$A\perp B=S=V_+(\sigma)\ \text{is primitive after all — with index one, derived, not assumed.}$$
+(The equality $|\det S_\sigma|=|\det D|$ is thereby a *consequence* of the involution structure
+and the maintained piece determinants alone, not an extra input; m1's closing note derives the
+same forcing lemma and uses it to close the projection-invariant route — accepted solution \#6.)
+The gluing $G=L/M\subset A_M$, isotropic of order $2^{11}$, now projects *isomorphically* onto
+$A_D$ (order $2^{11}$): an element of the kernel would be a class in $A_{A\perp B}$ represented
+by an $L$-element in the rational span of $A\perp B$ but outside $A\perp B$ — impossible by the
+index one just proved — so the projection is injective, and by equal orders bijective. Dually $G$
+projects isomorphically onto $A_{A\perp B}$ (its kernel is $G\cap A_D$, and $D$ is saturated). By
+N3, $G=\mathrm{graph}(\gamma)$ for an anti-isometry $\gamma\colon A_{A\perp B}\to A_D(-1)$:
+$q(\gamma v)=-q(v)$ for all $v\in A_{A\perp B}$.
 
 **Theorem A.** Let $(\sigma,\tau)$, $(\sigma',\tau')$ be commuting involution pairs of an even
 unimodular $L$ with $V_{-+}=V'_{-+}=0$, matching joint ranks $(3,8,0,11)$, and matching piece
-types $\Lambda,E_8(-2),T$, and $|det S_\sigma|=|det S_{\sigma'}|$. Then they are $O(L)$-conjugate.
+types $\Lambda,E_8(-2),T$ (whence both single-involution determinant laws
+$|\det S_\sigma|=|\det S_{\sigma'}|=2048$ by Lemma L2's first step). Then they are
+$O(L)$-conjugate.
 
 *Proof.* Choose piece isometries $\psi_A\colon A\to A'$, $\psi_B\colon B\to B'$ (types match),
 and any $\psi_D\colon D\to D'$. After transporting by
@@ -321,8 +337,10 @@ compatibility equation — (ii)+(iii) proved above with N1 applied to $D$ only.
   proof are on the page.
 - N1 is *discriminant*-surjectivity; the marked extension uses it inside the proved
   flag-stabilizer lemma (§6), not alone.
-- The graph property $(\gamma$ onto$A)$ rests on Lemma L2's index-1 equality
-  $\det(A)|\det B|=|\det S_\sigma|$ on **both** sides — maintained model-side, theorem b-side.
+- The graph property $(\gamma$ onto$A)$ rests on Lemma L2's hull/index argument: $T=S^{\perp}=D$
+  by saturations and rational spans, $|\det S|=|\det T|=|\det D|=2048$ by the primitive-complement
+  glue law, then $[S:A\perp B]=1$ from $\det A\cdot|\det B|=2048$ — the piece determinants alone,
+  no single-involution determinant assumed.
 - $(\star)$'s geometric premise is exactly „$\iota_b$ symplectic on a K3" (authored bullet,
   uniform), and N4's conclusion is cited with its own hypotheses (Ni1 4.7 + the explicit
   realization, vGS §§1.1–1.3).
