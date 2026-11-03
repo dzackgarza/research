@@ -395,15 +395,25 @@ swarm's directory.  The dossier's current state (pass 2) is:
   discriminant-automorphism image, owner-undecided for $T_\Co$); $\Gamma^\dir = \Gamma_L$ is
   separately open (chamber determination); $G_3, G_4$ untouched; **no group equality is asserted
   anywhere**, and `@prob:group-identification` of the four groups stands unchanged.
-- **(T-mixed), at its verified census**: the wall-forming mixed classes are (F2),(F3) with
-  $s^2 = t^2 = -4$; machine-verified counts: `BAD_S = 121` (the 120 (F3) root-classes plus the one
-  (F2) class) and `BAD_T = 496` (`3*120 + 136`); `|BAD_S| \le |NOTBAD_T| = 528`, so no counting
-  argument forces the walls and the existence of the mixed walls is **glue-dependent** on the pinned
-  Coble glue (the recorded open datum at report :661 item 7): if no pairing, B24 holds verbatim
-  with $O = D_\Co^o$; if paired, the image misses those norm-$(-4)$ Heegner divisors of $T_\Co$, and B24
-  stands with the corrected explicit complement. The brick probe's two mixed wall classes show both
-  branches live; the brick glue is not claimed to be the Coble glue. (An earlier hand-sketch
-  asserting a forced pairing is retracted as a miscount.)
+- **(T-mixed), at its completed census and pairing table**: the wall-forming mixed classes are
+  (F2),(F3) at $s^2 = t^2 = -4$ and (F4) at $(s^2,t^2)=(-2,-6)$, with (F1) collapsed into a pure
+  root and (F5) subsumed in $NL_2$; counts are machine-corroborated (bounded exact enumeration,
+  self-stability asserted across two box sizes; exploratory tier): the `E8/2E8` class split is the
+  standard `120/136`, `BAD_S = 121` (the 120 (F3) root-classes plus the one (F2) class),
+  `BAD_T = 496` at norm $-4$ (`3*120 + 136`) and $528$ at norm $-6$; m8-round2's Theorem 2.1
+  (verified) identifies every glued mixed wall with an ordinary $T_\Co$-Heegner divisor of its
+  $t$-part. `|BAD_S| \le |NOTBAD_T|`, so no *counting* argument forces a pairing; existence of a
+  glue avoiding every pairing is *not* certified by the comparison alone and is left open (to be
+  exhibited through the maintained discriminant-form constructor of the validated pin when
+  available), separately from the pinned-glue question itself. So the mixed walls are
+  **glue-dependent** on the pinned Coble glue (the recorded open datum at report :661 item 7), in
+  exactly three families: if no (F2),(F3),(F4) pairing occurs, B24 holds verbatim with
+  $O = D_\Co^o$; if some occur, the image misses those $T_\Co$-Heegner pieces — (F2),(F3) by
+  $A$-null Riemann–Roch effectivity (ampleness fails), (F4) by alpha-reducibility (the A2-split,
+  the named tacnode alternative, outside the tuple's exceptional bullet) — and B24 stands with the
+  corrected explicit complement. The brick probe's two mixed wall classes show both branches live;
+  the brick glue is not claimed to be the Coble glue. (An earlier hand-sketch asserting a forced
+  pairing is retracted as a miscount.)
 
 Still untouched here: the same-run adjudications of the four-group equality
 (`@prob:group-identification`), the certified negative pair with its verified scope, and the

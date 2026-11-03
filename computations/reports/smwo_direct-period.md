@@ -39,9 +39,52 @@ notation anywhere below.
   named per lemma; every geometric step is present.
   (iv) The image equality is scoped to what is now publicly established: the pointwise exclusion of
   Theorem A, the corpus's item-3 open-image content, and `im(p) = O/Gamma_L` at the tier of its
-  premise ledger — with the (T-mixed) census machine-verified (`BAD_S = 121`, `BAD_T = 496` in the
-  run log of `coble_mixed_census.py`; an earlier hand-sketch claiming a counting-forced pairing is
-  retracted there as a miscount) replacing any overclaim. No group equality is asserted anywhere.
+  premise ledger — with the (T-mixed) census machine-corroborated by bounded exact enumeration
+  with self-stability asserted across two box sizes (`BAD_S = 121`, `BAD_T = 496`, exploratory
+  tier; an earlier hand-sketch claiming a counting-forced pairing is retracted there as a
+  miscount) replacing any overclaim. No group equality is asserted anywhere.
+- **Pass 3 (this pass, the m8 resubmission's verdict folded in).** Three sharpenings.
+  (i) By m8's second submission's Theorem 2.1 (verified): for a mixed class `x = (s+t)/2`,
+  its wall in `D(T_Co)` equals the wall of its `t`-part (`s` is automatically orthogonal to every
+  point of the domain), and it is a *pure-`T_Co` Heegner divisor* (norm `t^2 in {-4, -6}`), so the
+  image's excluded set is always a union of ordinary `T_Co`-Heegner divisors — a sharpening, not a
+  closure (whether a `(-4)`-piece is charged is exactly the pairing question below).
+  (ii) The `(F4)`-family is restructured without the earlier circular reliance on the irreducibility
+  of `alpha`: the class-level equivalence is proved (an `(F4)`-class effective with `A`-positive
+  sign exists at a realization iff `alpha` is reducible as a class, `alpha = x + D`, each of
+  square `-2` with `x.D = 1`), and the tuple's exceptional bullet — `alpha` is by definition the
+  class of a smooth irreducible effective `(-2)`-curve — then does the final work: `(F4)`-carrying
+  realizations are alpha-reducible, hence outside the tuple's scope. The exceptional bullet is kept
+  explicit in Theorem D's definition of `O`.
+  (iii) The (T-mixed) pairing question is now asked for all three families with the pairing table
+  machine-corroborated by bounded exact enumeration (self-stability asserted across two box sizes;
+  exploratory tier): (F2) domain 1 class, partner space 496 at norm `-4`; (F3) domain 120
+  classes, partner space 496; (F4) domain 1 class, partner space 528 at norm `-6`. Existence of an
+  avoiding glue is *not* certified by the comparison `121 <= 528` alone — it is left open, to be
+  exhibited through the maintained discriminant-form constructor when available.`
+
+
+- **Pass 4 (this pass, the five acceptance gaps of pass 2/3 removed).**
+  (i) The dependency cycle `Lemma 4 uses E` / `L.3 uses Lemma 4` is restructured: Theorem SPLIT
+  (the IRR/TAC dichotomy) is proved *first and independently* — it uses only RR, adjunction,
+  Lemma L.1 and Lemma L.2, and never the curve `E` or Lemma 4 — and Lemma 4 afterwards invokes it
+  for the (F4) case only. Each conclusion has its own independent argument before it is used.
+  (ii) The `delta` criterion of Q1 is stated at its defining form (`delta = 1` iff the
+  discriminant form `q: A_L -> Q/2Z` has a non-integral value), with the correct witness
+  (`alpha/2` carries `q = -1/2 notin Z`) and the misclaimed `(e+f)/2` witness (`q = 1 in Z`,
+  integral) removed.
+  (iii) The census evidence is graded honestly: the `E8`-class split `120/136` is standard
+  `O^+(8,2)` arithmetic; the enumeration outputs are machine-corroborated at the exploratory tier
+  with self-stability asserted across two box sizes; and the existence of a glue avoiding every
+  pairing is *not* asserted from the cardinality comparison alone — it is left open, to be
+  exhibited through the maintained discriminant-form constructor when available.
+  (iv) Q2's intermediate "`d in {1, 2}`" from `2 S_dP subset image` is replaced by the true
+  `d in {1, 2, 4, 8}`, with the determinant comparison doing the whole closing work alone.
+  (v) Q4's irreducibility argument is reconciled: the node's structural local term (two transverse
+  smooth branches, Q3) lands either as term `2` in `(B_1.B_2)_q` with the remaining
+  `B_1.B_2 >= 2` spent at other points, or entirely inside one component with the whole
+  `B_1.B_2 >= 4` spent at other points — either branch yielding a second singularity, not a
+  confused single-step claim.
 
 ## Theorems, at their registered scopes
 
@@ -87,9 +130,13 @@ ampleness in families (:5167, Proposition 5.6).
 Standing setting for Sections L and QC: `sigma in O`, where
 
 `O := {sigma in D(T_Co) : exists a marked pair (X, psi) at sigma with psi(S_Co) subset NS(X) and
-psi(A) ample}`,
+psi(A) ample and psi(alpha) irreducible-effective}`,
 
-`(X, psi)` such a witnessing marked pair, `(I_Co, I_dP, H = e + f, alpha, A = 2H - alpha)` the
+`(X, psi)` such a witnessing marked pair — note the last clause is the tuple's *exceptional
+bullet*: the authored datum carries `alpha` as the class of a smooth irreducible effective
+`(-2)`-curve, so a realization at which `alpha` is reducible-effective is simply out of the
+tuple's scope (and is the tacnode-shaped stratum of Theorem SPLIT's (TAC) alternative, named there) —
+`(I_Co, I_dP, H = e + f, alpha, A = 2H - alpha)` the
 transported classes on `X` (`e, f` the `U(2)` ruling frame, `e^2 = f^2 = 0`, `e.f = 2`,
 `alpha^2 = -2`, `H^2 = 4`, `H.alpha = 0`, `A^2 = 14`, `A.alpha = 2`). The gluing is the full-graph
 glue of the index-`2^11` overlattice: every `x in L_K3` writes `2x = s + t` with `s in S_Co`,
@@ -120,46 +167,70 @@ assumption is `t != 0`), and `t^2` is even. If `s^2 <= -10` then `t^2 >= 2`, imp
 additionally: the glue containing `([0], [t/2])` forces `[t/2] = 0`, i.e. `x = t/2 in T_Co` — a
 pure `T`-root, not a mixed one. `square`
 
-**Lemma 4 (one contracted curve).** At `sigma in O`: `{x in NS(X) : x^2 = -2, x.H = 0} = {pm alpha}`;
-equivalently, writing `E` for the effective representative of `alpha` (Lemma L.3 below), `E` alone is
-contracted by `varphi_H`. *Hypotheses in force:* `A` ample (definition of `O`); RR; Lemma L.1;
-Lemma L.2. *Proof.* Let `x` be such a class; RR gives one of `pm x` effective. If `x` is pure
-(`t = 0`), then `x in S_Co` (its class `[x'] = [s/2]` must pair with `[0]` under the glue graph,
-and a bijection has only zero over zero, so `s/2 = x in S_Co`); write `x = ae + bf + w + c alpha`: `x.H = 2(a + b) = 0` gives `b = -a`, and
-`x^2 = -4a^2 + w^2 - 2c^2 = -2` gives `2a^2 + 2w-part + c^2 = 1` with the `E8(2)` part nonpositive,
-hence `a = 0`, `w = 0`, `c = pm 1`: `x = pm alpha`. Otherwise Lemma L.2 puts `x` in one of the five families:
+**Theorem SPLIT (the class of alpha: the dichotomy; the independent argument).** At a marked
+pair with `alpha` effective and `A` ample — and `alpha` IS effective at every such pair, since
+`chi(O(alpha)) = 1` and `A.alpha = 2 > 0` kills the false sign — exactly one of two configurations
+holds:
+(IRR) `alpha` is a *single* smooth rational curve `E`, with `h^0(alpha) = 1`;
+(TAC) `alpha = C_1 + C_2` with the `C_i` smooth rational, `C_i^2 = -2`, `C_1.C_2 = 1`, and each
+`A.C_i = 1`; moreover each `[C_i]` is an (F4)-class of Lemma L.2's census.
+*Hypotheses in force:* RR; adjunction (`C^2 = 2 p_a - 2 >= -2` for an irreducible curve); Lemma L.1
+(negativity of the algebraic part of `T_Co`); Lemma L.2 (the census). **Nothing else — in
+particular no use of Lemma 4, of the curve `E`, or of any later lemma.**
+*Proof.* Let `alpha = sum_i C_i` be a decomposition into irreducible effective curves, all
+`C_i^2 >= -2` by adjunction, cross-terms non-negative, `alpha^2 = -2`.
+- Suppose some `C_j^2 = 0`. Group the rest into `R := alpha - C_j`:
+  `alpha^2 = R^2 + 2 (C_j . R) = -2` with `C_j . R >= 0` forces `R^2 = -2`, `C_j.R = 0`, so `R` is
+  a single irreducible component `C_k` with `C_k^2 = -2`. Then `alpha.C_k = C_k^2 + C_j.C_k = -2`,
+  and ampleness (`A.C_j >= 1`, `A.C_k >= 1`) with `A.alpha = 2` gives `A.C_k = 1`, i.e.
+  `2 H.C_k = A.C_k + alpha.C_k = -1`, so `H.C_k = -1/2`: impossible (pairings are integral).
+- So every `C_i^2 = -2`. For exactly two components,
+  `C_1.C_2 = (alpha^2 - C_1^2 - C_2^2)/2 = 1`: the (TAC) configuration; ampleness and
+  `A.alpha = 2 = A.C_1 + A.C_2` give `A.C_i = 1`, and then
+  `alpha.C_i = C_i^2 + C_1.C_2 = -1`, so `2 H.C_i = A.C_i + alpha.C_i = 0`: each `[C_i]` is an
+  `H`-null `(-2)`-class. Lemma L.2's census places it: not pure (the pure census gives only
+  `pm alpha`), not (F1) (a pure `T`-root), not (F2)/(F3) (their `A` is `0`, not `1`), and not (F5)
+  (its `t` is a pure `T`-root, RR-effective with `A.t = 0`, contradicting ampleness): hence (F4).
+  A three-or-more-component decomposition is treated by first grouping all but one component into
+  `C_1` and applying the same arithmetic to the resulting pair, then recursing — the outcome is
+  again a contradiction or the two-component (TAC).
+- Otherwise one component: (IRR); `h^0(alpha) = 1` from `0 -> O -> O(alpha) -> O_E(alpha) -> 0`
+  with `O_E(alpha) = O_{P^1}(-2)`. `square`
+*Reading.* The tuple's exceptional bullet is exactly (IRR): by the authored datum `alpha` is the
+class of a smooth irreducible effective `(-2)`-curve. A realization at the (TAC) alternative (the
+named tacnode alternative) is out of the authored tuple's scope. Nothing in this theorem uses any
+conclusion about the `H`-null `(-2)`-classes, so it can and will be cited independently of the
+next lemma.
+
+**Lemma 4 (one contracted curve).** At `sigma in O` with the full tuple (`A` ample *and* `alpha`
+irreducible-effective — the exceptional bullet, i.e. Theorem SPLIT's (IRR) branch as picked by the
+authored datum): `{x in NS(X) : x^2 = -2, x.H = 0} = {pm alpha}`; writing `E` for the effective
+representative of `alpha` (Theorem SPLIT's (IRR) branch), `E` alone is contracted by `varphi_H`.
+*Hypotheses in force:* `A` ample (definition of `O`); RR; Lemma L.1; Lemma L.2; Theorem SPLIT (for
+the (F4) case only).
+*Proof.* Let `x` be such a class; RR gives one of `pm x` effective. If `x` is pure (`t = 0`), the
+glue graph has only zero over zero, so `x = s/2 in S_Co`; write `x = ae + bf + w + c alpha`:
+`x.H = 2(a + b) = 0` gives `b = -a`, and `x^2 = -4a^2 + w^2 - 2c^2 = -2` gives
+`2a^2 + 2w-part + c^2 = 1` with the `E8(2)` part nonpositive, hence `a = 0`, `w = 0`, `c = pm 1`:
+`x = pm alpha`. Otherwise Lemma L.2 puts `x` in one of the five families:
 - (F1): `x` is a pure `T`-root; `pm x` effective with `A.x = 0` contradicts `A` ample.
 - (F2): `A.x = 2(a+b) + c = 0` (`a+b = 0`, `c = 0`): `pm x` effective contradicts ampleness.
 - (F3): identically `A.x = 0`: contradiction.
-- (F4): `A.x = pm 1` and `alpha.x = mp 1`. RR supplies an effective sign; the effective sign has
-  positive `A`-pairing, so (replacing `x` by `-x` if needed) suppose `x` is effective with
-  `A.x = 1`, whence `alpha.x = -1`. Then the class is a curve `C` distinct from `E` with
-  `C.E = alpha.x = -1`, impossible for distinct irreducible curves; and `C` cannot have `E` as a
-  component, else writing `x = n alpha + y` with `n >= 1` and `y` `E`-free effective
-  (`y.alpha >= 0` as distinct curves) gives `A.y = 1 - 2n <= -1`, contradicting ampleness. So no
-  (F4)-class is algebraic at `sigma in O`.
+- (F4): `A.x = pm 1` and `alpha.x = mp 1`. RR supplies an effective sign. If the effective `x`
+  has `A.x = -1`, ampleness fails outright, so `sigma notin O`. If the effective `x` has
+  `A.x = 1`: write `alpha = sum_j D_j` into effective irreducible curves; since `alpha.x = -1`,
+  some component `D_j` satisfies `D_j.x < 0`, hence `D_j subset supp(x)`, i.e.
+  `x = mu D_j + R` with `mu >= 1`, `R` effective; then
+  `1 = A.x = mu * A.D_j + A.R >= mu + 1` (every component has `A >= 1` by ampleness), forcing
+  `mu = 1`, `R = 0`, so `x = D_j` is a component of `alpha`; and the residual
+  `D_rest := alpha - x` is effective with `A.D_rest = A.alpha - A.x = 1`, so on pairwise-A-counting
+  it is a single `A`-positive effective curve — the outcome is exactly the (TAC) alternative of
+  Theorem SPLIT. On the (IRR) branch the exceptional bullet excludes that alternative, so no
+  (F4)-class is algebraic at the counted `sigma`. (This is the only place Theorem SPLIT enters;
+  it needs no fact about irreducibility of `alpha` that Theorem SPLIT does not itself produce.)
 - (F5): its `t` is a pure `T`-root algebraic at `sigma` (since `x` and `s` are), of norm `-2`:
   `pm t` effective, `A.t = 0`, contradiction.
 Hence `x = pm alpha`. `square`
-
-**Lemma L.3 (the class of alpha is irreducible, and |alpha| is the single curve E).** At
-`sigma in O`: `alpha` is effective and is the class of a *single* smooth rational curve `E`, with
-`h^0(alpha) = 1`. *Hypotheses in force:* `A` ample; RR; Lemma 4. *Proof.*
-`chi(O(alpha)) = 2 + alpha^2/2 = 1`, and `A.alpha = 2 > 0` kills `h^0(-alpha)`, so `alpha` is
-effective. Let `alpha = sum_i C_i` be a decomposition into irreducible effective curves. On a K3
-every irreducible curve has `C_i^2 >= -2` (adjunction `C^2 = 2 p_a - 2`), so
-`alpha^2 = sum C_i^2 + 2 sum_{i<j} C_i.C_j = -2` forces either one component, or components with
-`C_i^2 = -2` and non-negative intersections. In a two-component decomposition the numerology is
-`C_1^2 + C_2^2 + 2 C_1.C_2 = -2`, i.e. either (a) `C_1^2 = C_2^2 = -2`, `C_1.C_2 = 1` — then
-`A.C_i > 0` with `A.C_1 + A.C_2 = A.alpha = 2`, so `A.C_i = 1`, and
-`alpha.C_1 = C_1^2 + C_1.C_2 = -1` gives `2 H.C_1 = A.C_1 + alpha.C_1 = 0`, so `[C_1]` is an
-`H`-null `(-2)`-class distinct from `pm alpha`, killed by Lemma 4; or (b) `C_1^2 = 0`,
-`C_2^2 = -2`, `C_1.C_2 = 0` — then `alpha.C_2 = -2` and `A.C_2 = 2 H.C_2 + 2 = 1` gives
-`H.C_2 = -1/2`, not an integer: impossible; or (c) `C_1^2 = 0`, `C_2^2 = -2`, `C_1.C_2 = d > 0`
-would require `alpha^2 = -2 - 0 + 2d + 0 = -2 + 2d`, so `d = 0`, back to (b). Any
-three-or-more-component decomposition is killed identically (two pairs give the same alternatives).
-Hence `alpha` is a single irreducible curve `E`, smooth and rational (adjunction). `h^0(E) = 1`
-from `0 -> O -> O(E) -> O_E(E) -> 0` with `O_E(E) = O_{P^1}(-2)`. `square`
 
 **Lemma 4b (the frame inequality, repaired; dependencies explicated).** At `sigma in O`, for every
 effective `delta in NS(X)` with `delta^2 = -2`: `e.delta >= 0` and `f.delta >= 0`.
@@ -223,8 +294,14 @@ trace value, not `chi`; the branch genus in Q1 uses the correct `-14`, as does c
 
 **Q1 (the quotient is smooth rational with computed numerics).** `Fix(iota_dP)` is smooth (fixed
 locus of an involution of a smooth surface is smooth) and, by Nikulin's classification for the
-2-elementary non-symplectic involution with `(r, a, delta) = (3, 3, 1)` (`delta = 1` from
-`(e+f)/2 in S_dP^*` with square `1 notin 2Z`), a single curve `C_8` of genus
+2-elementary non-symplectic involution with `(r, a, delta) = (3, 3, 1)`. The `delta` is certified
+by its defining criterion and not by the rejected witness: for an even `2`-elementary lattice the
+discriminant form is `q: A_L -> Q/2Z`, and `delta = 0` iff `q` is integral-valued (every value in
+`Z subset Q/2Z`); `delta = 1` iff some class has a non-integral value. Here `A_{S_dP}` contains
+`alpha/2` (the generator of the `<-2>` summand) with `q(alpha/2) = -1/2 mod 2Z`, not integral, so
+`delta = 1`. (The vector `(e+f)/2`, offered in the previous text, has
+`q((e+f)/2) = 1 in Z subset Q/2Z`, hence is integral-valued and cannot be a witness; that citation
+was wrong.) With it, `Fix(iota_dP)` is a single curve `C_8` of genus
 `g = (22 - r - a)/2 = 8` with no other fixed components and no isolated points; consistently
 `chi(C_8) = 2 - 2*8 = -14` (Q0). `Y° := X/iota_dP` is smooth (the fixed locus is a smooth divisor;
 local model `(t, u) mapsto (t^2, u)`), `rho: X -> Y°` is finite of degree `2` branched along the
@@ -245,17 +322,21 @@ one), and the restricted form on `S_dP` is double the form on `H^2(Y°,Z)`: henc
 (rational surfaces are), so `H^2(Y°,Z)` is free abelian, unimodular (`det = pm 1`), rank `3`. The
 pullback form computes `(pi^*a, pi^*b) = 2 (a,b)`, hence as a sublattice of `S_dP` the image
 `pi^*H^2(Y°)` has determinant `pm 8 = 2^3 * pm 1`. Transfer (`pi^* pi_* = 1 + iota^*`) sends any invariant `x` to
-`2x = pi^* pi_* x in pi^* H^2`, hence `2 S_dP subset pi^* H^2 subset S_dP`, i.e.
-`[S_dP : pi^* H^2] =: d in {1, 2}`. But `det S_dP = det(U(2) perp <-2>) = 8` (the corpus's
-invariant-lattice input, transported by the marking), and for a finite-index sublattice
-`det(pi^*H^2) = d^2 * det S_dP = 8 d^2` up to sign: so `d = 1`. Finally
+`2x = pi^* pi_* x in pi^* H^2`, hence `2 S_dP subset pi^* H^2 subset S_dP`, i.e. the quotient
+`S_dP / pi^* H^2` is an elementary abelian `2`-group of order `d in {1, 2, 4, 8}` (it is a
+quotient of `S_dP/2 S_dP = (Z/2)^3`; the text's earlier intermediate "`d in {1, 2}`" was not
+justified by the transfer alone and is removed). The separate determinant comparison then closes
+it and is the load-bearing step: `det S_dP = det(U(2) perp <-2>) = 8` (the corpus's
+invariant-lattice input, transported by the marking), for a finite-index sublattice
+`det(pi^*H^2) = d^2 * det S_dP = 8 d^2` up to sign, while `det(pi^*H^2) = 2^3 det H^2(Y°,Z)
+= 2^3 * pm 1 = pm 8` was computed above: so `d^2 = 1`, whence `d = 1`. Finally
 `Pic(Y°) = H^2(Y°,Z)` (since `q = p_g = 0`, `NS = H^2`): as a lattice it is free unimodular of
 signature `(1,2)`, **odd** by `K^2 = 7` (Wu class), hence `Pic(Y°) is congruent to U perp <-1>`
 (the unique odd unimodular lattice of signature `(1,2)`; `U perp <-1>` and `<1> perp <-1>^2` are
 isometric), with the form on `S_dP = pi^*Pic` the doubled one as claimed. `square`
 
 **Q3 (alpha descends to an irreducible (-1)-curve; intersections transverse — proved).** Let
-`alpha = [E]` with `E` the curve of Lemma L.3. Then: `iota_dP(E) = E` setwise (since
+`alpha = [E]` with `E` the curve of Theorem SPLIT's (IRR) branch. Then: `iota_dP(E) = E` setwise (since
 `iota_dP(alpha) = alpha` as classes and `h^0(alpha) = 1` gives `|alpha| = {E}`); `E` is not a
 component of `Fix(iota_dP)` (which is the single genus-`8` curve `C_8` of Q1, while `E` is
 rational); hence `iota_dP|E: E -> E` is a *nontrivial* involution of `P^1`, with exactly two fixed
@@ -312,12 +393,22 @@ give `B° + 2 e' in |beta^*(-2K_Y)|`, hence `B = beta_*(B° + 2 e') in |-2K_Y| =
   distinct points produces an ordinary double point (two distinct local tangent directions);
   independently and consistently, `p_a(B) = 1 + (B^2 + B.K_Y)/2 = 9` against the normalisation
   genus `8` gives total delta-invariant exactly `1`.
-- `B` is irreducible: if `B = B_1 + B_2` with bidegrees `(a, b)`, `(4 - a, 4 - b)`, all
-  `0 <= a, b <= 4`, then `B_1.B_2 = a(4 - b) + (4 - a)b = 4(a + b) - 2ab >= 4` (the minimum on the
-  range is attained at the splitting types `(1,0)+(3,4)` and mirrors), while every point of
-  `B_1 cap B_2` is a singular point of `B` and the single ordinary node contributes local
-  multiplicity `2`: contradiction. (The m1 alternative `sum a_i b_i = 15 + sum delta_i <= 16`
-  exhaustion gives the same and is recorded in the ledger.)
+- `B` is irreducible. The cover `X^# -> Y` has branch divisor reduced (it is smooth, and a
+  smooth double cover of a smooth surface cannot have a multiple branch component), so `B` is
+  reduced with Q3's single node as its only singularity. Suppose `B = B_1 + B_2` with bidegrees
+  `(a, b)`, `(4 - a, 4 - b)`, all `0 <= a, b <= 4`, not both zero in either. Then
+  `B_1.B_2 = a(4 - b) + (4 - a)b = 4(a + b) - 2ab >= 4` (minimum at `(1,0)+(3,4)` and mirrors).
+  Reconcile the node's own intersection multiplicity with the component bookkeeping, using the
+  proved structure of the node (Q3: two *transverse smooth* local branches, the push-down of the
+  two transverse simple points of `B° cap e'`): either the two branches lie in different
+  components — then the node contributes exactly `2` to the local term `(B_1.B_2)_q`, and the
+  remaining `B_1.B_2 - 2 >= 2` is spent at other points of `B_1 cap B_2`, each a second
+  singularity of `B`; or both lie in one component — then the node is internal to that component,
+  and the whole `B_1.B_2 >= 4` is spent at other intersection points (necessarily more than one
+  local multiplicity there, or one point of multiplicity `>= 3`), each a second singularity of
+  `B`. Either way there is a second singular point, contradicting "exactly one". (The m1
+  alternative `sum a_i b_i = 15 + sum delta_i <= 16` exhaustion gives the same and is recorded in
+  the ledger.)
 
 **Q5 (tau and the fixed node).** `iota_Co` commutes with `iota_dP`, so it descends to an involution
 `tau°` of `Y°`, preserving `e'` (it preserves `alpha`, hence `E`, hence its image curve) and
@@ -369,11 +460,16 @@ dominance-to-surjectivity inference appears anywhere. `square`
 The three markers of B24, at their now-proved content:
 
 - **The arrangement** `{delta^perp : delta in T_Co, delta^2 = -2} = NL_2(T_Co)` is excluded
-  pointwise (Theorem A). The complete wall list of the *image* is that arrangement **plus the mixed
-  glue walls of (T-mixed) whenever the pinned glue carries them** ((F2),(F3) of Lemma L.2; (F1)
-  collapses to a pure root, subsumed in `NL_2`; (F4),(F5) are disjoint from `O` by Lemma 4's
-  killing arguments, adding nothing). Hence
-  > `O = D(T_Co) \ [ NL_2(T_Co)  U  {gamma-paired (F2),(F3)-walls} ]`.
+  pointwise (Theorem A). By the (verified, m8-round2) observation that every mixed class's wall
+  equals its `t`-part's wall (`x^perp cap D = t^perp cap D`, since `s in S_Co = T_Co^perp` is
+  automatically orthogonal to every point of the domain), every excluded wall of the image is an
+  ordinary `T_Co`-Heegner divisor: the complete list is `NL_2` **plus the glued (F2),(F3),(F4)
+  walls** (norms `-4, -4, -6`; (F1) collapses to a pure root, subsumed in `NL_2`; (F5) has
+  `t^2 = -2`, likewise subsumed). The (F2),(F3)-walls are excluded by ampleness (`A`-null
+  Riemann-Roch-effective at the wall), the (F4)-walls by reducibility of `alpha` (the exceptional
+  bullet of `O`; the tacnode alternative), the un-glued walls of those norms are *not* excluded
+  (their periods may well be in `O` and in the image). Hence
+  > `O = D(T_Co) \ [ NL_2(T_Co)  U  {gamma-paired (F2),(F3),(F4) walls} ]`.
 - **The chamber** is the single labelled condition "`2H-alpha` ample": `A` lies on the Kahler side
   of the positive cone on the whole component (the sign of `A.omega` is locally constant on the
   labelled moduli, descends because every label-preserving change of marking fixes `A`, and is `+`
@@ -383,8 +479,9 @@ The three markers of B24, at their now-proved content:
   (Lemma 4b), so no separate chamber wall needs to be excluded.
 - **The exceptional root** `alpha` is a *function* of the labelled data, not a label: the unique
   `(-2)`-class of `S_Co` with `H.alpha = 0` and `A.alpha > 0` (m4's Lemma C1(b)); effective as soon
-  as `A` is ample (Lemma L.3), and the only effective `H`-null `(-2)`-class at any `sigma in O`
-  (Lemma 4) — which is what places the one node, its `tau`-fixedness and the irreducibility of `B`
+  as `A` is ample (Theorem SPLIT), irreducible-effective by the exceptional bullet of `O`'s
+  definition, and the only effective `H`-null `(-2)`-class at any `sigma in O` (Lemma 4 with the
+  bullet) — which is what places the one node, its `tau`-fixedness and the irreducibility of `B`
   automatically at every period of `O` (Q4-Q5).
 
 Density point (adjudicated, against m8's rejected claim): `O` is analytically open (relative
@@ -395,9 +492,11 @@ divisor, algebraic by Baily-Borel on the arithmetic quotient). The corpus's stan
 consistent with every exclusion proved, with this reading; a density claim for a fixed-norm
 arrangement is the (rejected) false form.
 
-**Theorem (residual (T-mixed), at its verified census).** With `L_K3 supset S_Co perp T_Co` of
-index `2^11` and the full-graph glue `A_{S_Co} =~ A_{T_Co}(-1)`, Lemma L.2's census shows the
-wall-forming mixed classes are the (F2),(F3)-type with `s^2 = t^2 = -4`, and:
+**Theorem (residual (T-mixed), at its verified census and its completed pairing table).** With
+`L_K3 supset S_Co perp T_Co` of index `2^11` and the full-graph glue `A_{S_Co} =~ A_{T_Co}(-1)`,
+Lemma L.2's census and the wall identification above (`x^perp cap D = t^perp cap D`) show the
+excluded walls of the image are the pure `T_Co`-roots plus, at most, the glued (F2),(F3),(F4)
+families; and:
 
 - `BAD_S` — the 2-adic classes of `S_Co` containing an `A`-null `s` of norm `-4` — has exactly
   **121** classes: the 120 (F3)-classes (`(a,b) = (0,0)` in the `U`-part, `w` a root class of
@@ -411,18 +510,30 @@ wall-forming mixed classes are the (F2),(F3)-type with `s^2 = t^2 = -4`, and:
 - `BAD_T` — the 2-adic classes of `T_Co` containing a norm-`(-4)` `t` — has exactly **496**
   classes (`3 * 120 + 136`), where the `E8`-class split is `120` classes of `q`-value `1` in
   `E8/2E8` (reachable by a root, and exactly those) versus `136` of `q`-value `0` including zero.
-- So `|BAD_S| = 121 <= |NOTBAD_T| = 1024 - 496 = 528`: no counting argument forces a glue pairing
-  of a `BAD_S` class with a `BAD_T` class, and a glue without any mixed wall class is
-  arithmetically consistent. **The mixed walls are glue-dependent**, precisely:
+- So `|BAD_S| = 121 <= |NOTBAD_T| = 1024 - 496 = 528`: no *counting* argument forces a glue
+  pairing of a `BAD_S` class with a `BAD_T` class. That is all the cardinality comparison
+  establishes; it does not construct or prove existence of a quadratic-form-compatible glue
+  avoiding every pairing. Such an existence claim would have to be exhibited through the
+  maintained discriminant-form constructor (`DS.isometry_to(DT.twist(-1))` at the validated pin
+  `6ad7a5ea396da6e758ee28f3dea10a35baee0266`; the local image does not implement it), and it is
+  **left open**, separately from the pinned-glue question itself. The pairing question is now
+  asked for all three families, with each domain and partner space machine-corroborated by bounded
+  exact enumeration (self-stability asserted across two box sizes, exploratory tier):
   > **(T-mixed).** Does the pinned Coble glue (recorded as an open datum at report :661 item 7)
-  > pair one of the 121 `BAD_S` classes with one of the 496 `BAD_T` classes?
+  > pair
+  > (F2) the one class `[ (e-f)/2 ]`        into the 496-class partner space at norm `-4`, or
+  > (F3) one of the 120 root classes `[w/2]` into that same 496-class partner space, or
+  > (F4) the class `[alpha/2]`              into the 528-class partner space at norm `-6`?
   
-  If *no*: B24 holds verbatim with `O = D_Co^o = D \ NL_2`. If *yes*: the image's wall list
-  contains those Heegner divisors of `T_Co` of norm `-4`, and B24 stands with the corrected
-  explicit complement — in both cases with the chamber and root content of Theorem D. The earlier
-  project hand-sketch asserting a forced pairing is retracted: it miscounted the `A`-null bad
-  sets (the `H`-null condition collapses the quadratic deficit to `{0,1}`, cutting the `S`-side
-  to 121 classes).
+  If none of the three pairings happens: B24 holds verbatim with `O = D_Co^o = D \ NL_2`. If some
+  happen: B24 stands with the corrected explicit complement — those `T_Co`-Heegner pieces excluded,
+  the (F2),(F3)-pieces by ampleness, the (F4)-pieces by alpha-reducibility (outside the tuple's
+  scope, i.e. the named tacnode alternative; whether its strata carry a geometric construction of
+  their own is a separate question, outside `@prob:B24`'s one-node scope) — in both cases with the
+  chamber and root content of Theorem D. An earlier hand-sketch asserting a forced pairing was
+  retracted above as a miscount; the counts here are machine-corroborated by bounded exact
+  enumeration (`BAD_S = 121`, partner spaces `496`, `528`, self-stability asserted across two box
+  sizes in the run log; exploratory tier).
 - The brick probe (`coble_mixed_gluing_probe.py` +`-run.txt`): the diagonal/anti-diagonal glue of
   `U^3 + E8(-1)^2` carries two mixed wall classes (`x = e_a - f_a`, `x = e_b - f_b`, `x^2 = -2`,
   `H.x = 0`, `A.x = 0`, both projections nonzero — their class pair is exactly the (F2)-type
@@ -472,6 +583,7 @@ wall-forming mixed classes are the (F2),(F3)-type with `s^2 = t^2 = -4`, and:
 | 8 | Swarm-accepted intermediate theorems (exclusion mechanisms; cover-step ingredients; monodromy generators; sign constancy; m6's arrangement computation and audit) | referee-accepted with records |
 | 9 | Verified class censuses: `BAD_S = 121`, `BAD_T = 496`, the `E8`-split `120/136`, the `ell`-bound, the quadratic deficit | exact arithmetic, `coble_mixed_census.py` (+run log), exploratory tier |
 | 10 | The brick ambient `U^3 + E8(-1)^2`: maintained embeddings, glue order `2^11`, two mixed wall classes | maintained construction (`coble_mixed_gluing_probe.py`); exploratory with respect to B24 |
+| 11 | Every mixed class's wall equals its `t`-part's wall (m8-round2 Theorem 2.1, verified); the pairing table (`496/528`, stability-asserted) | referee-verified; exact arithmetic, `coble_mixed_census2.py` (+run log), exploratory tier |
 
 Computation used is hand-carried exact arithmetic small enough to check line by line; the machine
 counts are verified and each is also proved in the text.
