@@ -6,6 +6,15 @@ Corpus evidence-state `main@556455ee` (this document supersedes prose of `smwg_o
 `smw0kq02h`, accepted solutions m8 (period-blindness), m1 (root-sign blindness + the d5 theorems),
 m4 (AEGS closure + realization via Torelli), m6 (parity/Heegner mechanism), m2 (node adjunction),
 m7 (deformation smoothness); referee scope corrections are folded in and marked where they bind.
+**Review corrections applied after the first publication of this dossier:** (§2) the ampleness
+criterion decomposed into (C1) component and (C2) no-null-root, with the locus re-derived as the
+construction-bearing component of the wall complement — absence of an orthogonal root alone no
+longer stands as an ampleness proof; (S1) the implication chain set out with no unconditional
+arrow from `(Hdg)` and the wall-reflection counterexample pinned; (S4) `nu(b0) = 0` explicitly no
+longer implies a Picard rank for the certified member (kept open until a Picard computation
+supplies one); (§6.1) `Gamma_L`-orbit membership no longer said to *decide* the original chamber
+question (sufficiency only); (E2(i)) the product involution's `+1` character separated from the
+two `−1` ones.
 Tier discipline as in `smwg_operator-extension.md`: every numbered theorem here is proved from the
 premises of its own ledger row; member scripts (`twist_wall_check.py`, `twist_lattice_checks.py`,
 `m6_parity_probe.sage`, `coble_twist_base_pair.py`, `verify_period_locus.py`, `m8_eigenspaces.py`)
@@ -72,38 +81,63 @@ pair's scope (Theorem 9 of `sm00_chamber-negative-half.md` in readings R2–R5, 
   K3; the `Aut(X) -> O(H^2(X,Z))` injectivity; Local Torelli; the characterization of the ample
   cone by `{x : x^2 > 0, x·C > 0}` for effective curves `C`.
 
-## 2. The open realization locus, with its exact topology
+## 2. The realization locus, with its exact hypotheses and topology
 
 Put `A := 2H − alpha` (`A² = 14`, `A.H = 8`, `A.alpha = 2`).
 
-**Definition and Lemma (the realization set, exactly).** For a marked K3 `(X, psi)` with
-`psi(H^{2,0}(X)) = C sigma subset T_Co (x) C` — that is, `sigma in D(T_Co)` — every class of
-`S_Co` is algebraic, in particular `H`, `alpha` and `A` are (each is orthogonal to `sigma`). Put
+**The ampleness criterion used everywhere below (named, not smuggled).** For a projective K3
+surface `X`, the ample cone is
 
-`U := { sigma in D(T_Co) : A is ample on X_sigma }`.
+`Amp(X) = { x in C_X^+ : x·delta > 0 for every effective (−2)-class delta of X }`,
 
-Then, with all claims self-contained:
+where `C_X^+` is the component of `{x ∈ NS_R(X) : x² > 0}` (signature (1,·)) containing Kähler
+classes (Huybrechts, Lectures on K3 Surfaces, §2 of the chapters on the Torelli/cone side, in-repo
+`references/literature/lattice-research/huybrechts_k3_lectures.md` at topic level; BHPV Ch. VIII at
+corpus level). Hence ampleness of the fixed integral class `A` is the conjunction of:
 
-1. `U = D(T_Co) \ cup_{delta} (delta^perp ∩ D(T_Co))` over `(−2)`-classes `delta` with
-   `A.delta = 0`: ampleness of the fixed even class `A` (which has `A² = 14 > 0`) fails exactly
-   when some effective `(−2)`-class is orthogonal to `A`, and "delta algebraic at sigma" is the
-   Heegner hyperplane `delta^perp`. The union is over a countable, locally finite family of closed
-   analytic hyperplane sections, so `U` is **analytic-open** (classical topology) in `D(T_Co)`.
-2. `U` is **nonempty**: `sigma_b` for every one-node member `b` lies in it (Lemma 2.2, S4), so is
-   every point of the *image of the construction's period map* (rank 9, hence contains a nonempty
-   Zariski-open subset of the quotient — S4 entry "period image"), and `U` has complex
-   dimension `11 − 2 = 9` wherever it is nonempty.
-3. `U` is **connected**: deleting locally finite unions of complex hyperplanes from a connected
-   complex domain leaves a connected set (real-codimension-2 removal).
-4. *Elevation warning, kept separate:* "`Pic(X_sigma) = psi^{-1}(S_Co)`" holds on
-   `D(T_Co)` minus a **countable union of Noether–Lefschetz divisors** (one for each `(−2)`-class
-   or its saturation clause outside `S_Co`). That set is dense and Baire-general; it is **not**
-   Zariski-open, and no argument below uses an open-set form of it. The amplitude condition (1),
-   not a Picard-exactness condition, is the open locus.
+* **(C1) the chamber/component condition:** `A ∈ C_X^+` — equivalently `A·kappa > 0` for some
+  (hence every) Kähler class kappa. It fails exactly when `A` sits in the wrong component of the
+  positive cone, never at a wall;
+* **(C2) the no-null-effective-root condition:** `A·delta ≠ 0` for every effective `(−2)`-class
+  `delta` — equivalently, no effective `(−2)`-class is orthogonal to `A`. With `(C1)` the signs then
+  come out `> 0` automatically inside a chamber.
 
-**Notice.** Nothing in (1) claims every hyperplane hits `U`'s complement in a full divisor of
-failure; the statement is the exact set-equality `U = D(T_Co) minus those walls`, which is all
-that ampleness means for this fixed class.
+For a marked pair `(X, psi)` with `psi(H^{2,0}(X)) ⊆ T_Co ⊗ C` (i.e. `sigma in D(T_Co)`) every
+class of `S_Co`, hence `A`, is algebraic on `X` (pairwise orthogonal to `sigma`). The realization
+locus of this dossier is **defined as**
+
+`U := { sigma in D(T_Co) : A in Amp(X_sigma) }`
+     = (the connected component, in the analytic topology, of
+        `D(T_Co) \ cup_{delta}` (`delta^perp ∩ D(T_Co)`), over `(−2)`-classes `delta` with
+        `A·delta = 0`,
+        that contains the construction members).
+
+**Lemma (properties of `U`).**
+
+1. *The failure set is a wall union.* If `A·delta = 0` with `delta² = -2` algebraic at `sigma`,
+   then one of `±delta` is effective (Riemann–Roch) and pairs `0` with `A`, violating (C2): the
+   failure set is therefore **contained in** the countable, locally finite union of closed analytic
+   hyperplane sections `delta^perp ∩ D(T_Co)` with `A·delta = 0`. Deleting it leaves an
+   **analytic-open** subset.
+2. *Every point of `U` satisfies (C1) and (C2).* (C2) holds by the deletion just made (within a
+   region bounded by walls, algebraicity of each `(−2)`-class is constant, so the sign of
+   `A·delta` for effective `delta` is constant). (C1) holds on the named component: at the
+   construction members `A` is ample by Lemma 2.2 of `sm00_positive-half-A21.md`, and the sign of
+   `A·kappa` against a Kähler class is continuous along the connected locus.
+3. *`U` is nonempty and 9-dimensional*: it contains `sigma_b` for every one-node member `b`
+   (Lemma 2.2), hence a nonempty open subset of the image of the construction's period map; its
+   dimension is `11 − 2 = 9`.
+4. *The two chapters, kept straight.* (i) ampleness of `A` is a property of **the marked member**
+   (its null-root arrangement and positive component), never of a bare point; (ii) nevertheless
+   `sigma` decides *which `(−2)`-classes are algebraic* and hence where the walls are, so the
+   membership of the locus above is decidable at period level through (C1)+(C2). These are the only
+   two chapters of the condition; **absence of an algebraic `(−2)`-class orthogonal to `A` is not,
+   by itself, a proof of ampleness** — (C1) is the other half, and it is earned on the connected
+   component containing the construction members, not asserted everywhere in `D(T_Co)`.
+5. *Elevation warning, kept separate:* `Pic(X_sigma) = psi^{-1}(S_Co)` holds on `D(T_Co)` minus a
+   countable union of Noether–Lefschetz divisors. That set is dense and Baire-general; it is
+   **not** Zariski-open, and no argument in this dossier uses an open-set form of it (cf. also S4,
+   which is a pointwise parity argument, not a locus argument).
 
 ## 3. Part 1 — existence (Q1), in three theorems
 
@@ -123,11 +157,14 @@ genus 8 and `χ(Fix) = -14` — not a smooth genus-9 value. It is used nowhere b
 *(m7's Lemmas 1-2, Theorem 1.)*
 
 **Theorem E2 (the pair realization and its exclusions).**
-(i) On any member of `U` (§2), the reflected operators `J_Co = w_alpha I_En`, `J_dP = w_alpha I_dP`
-and their product `I_nik = J_Co J_dP` are Hodge isometries (each acts as `−1` on `T_Co ⊗ C`), fix
-`A` (they fix `H` and `alpha`), and hence are induced by **commuting automorphisms** (effective
-Torelli, S3), with characters `(-1,-1,+1)` on `H^{2,0}` and symplectic product of Nikulin type
-(the coinvariant is the `(+-)`-piece `E8(-2)`; Nikulin [Ni1] Thm. 4.7 via S3).
+(i) On any member of `U` (§2), the reflected operators `J_Co = w_alpha I_En` and
+`J_dP = w_alpha I_dP` are Hodge isometries — _each acts as `-1` on `T_Co ⊗ C`_ — and they fix `A`
+(they fix `H` and `alpha`); their product `I_nik = J_Co J_dP` acts as `+1` on `T_Co ⊗ C` (hence
+fixes the period `sigma`), so its character on `H^{2,0}` is `(−1,−1,+1)`, and the product is the
+symplectic involution of Nikulin type (its coinvariant is the `(+-)`-piece `E8(-2)`; uniqueness
+[Ni1] Thm. 4.7 via S3). Every class they fix includes the integral ample class `A`, so by
+effective Torelli (S3) **all three are induced by commuting automorphisms**, all five authored
+bullets then hold, and their realization is the whole locus `U`.
 (ii) *The factorization is never geometric anywhere the fourth bullet holds:* on a member with `A`
 ample and `alpha` effective, `w_alpha`, `I_En`, `I_dP` each send `A` to
 `2H + alpha`, and `(2H + alpha)·alpha = -2 < 0`; an automorphism preserves the effective cone, so
@@ -184,10 +221,10 @@ chamber are not lattice data, independently of any member. *(m1's Theorem 1.)*
 The authored comparison clause (a chamber statement on the twist side against a construction
 tuple) has no truth value on the original data, proved in two complementing steps:
 (i) *the data determine an `O(L)`-class and a smooth, connected, open 9-dimensional realization
-family* (Theorem E1, §2), containing **both** models: the realization at a generic one-node member
-`b0` (the clause then holds for the construction tuple `b0` — via re-marking by the published
-labelled extension [EXT], which is itself, trivially, the identity), and at the certified
-`b_star` (the clause then fails against `b0`: Theorem 9, and `nu(b0) = 0 ≠ 4 = nu(b_star)`);
+family* (Theorem E1, §2), containing **both** models: the realization at the certified one-node
+member `b0` (the clause against the construction tuple `b0` then holds degenerately, by the
+identity — no rank claim about `b0` is used or needed), and at the certified `b_star` (the clause
+against the construction tuple `b0` then fails: Theorem 9, and `nu(b0) = 0 ≠ 4 = nu(b_star)`);
 (ii) *the two verdicts are not defects of algebraicity*: both realizations satisfy all five
 authored bullets (item 2 of §2, Theorem E1's nonemptiness).
 So the clause is **not a proposition** on the original data — *proved* non-determination, a
@@ -209,31 +246,47 @@ a **Hodge** isometry, equivalently `[sigma_2] = [sigma_1]` in `D(T_Co)/Gamma_L` 
 membership, **M3'**). Then effective Torelli (**M3**, S3) produces an isomorphism of tuples with
 containing induced cohomology action, carrying the Kähler, nef, and effective cones, and every
 chamber of every effective-root arrangement; α-effective and `H` nef and big automatically, and
-`(Chm)` in **every** reading, in particular `R5`. *(The corpus's `(Hdg) ⇒ (Chm)`, restated with
-exact quantifiers; `Aut(X) ↪ O(H²(X,Z))`-injectivity is needed only for exact operator
-equivariance, Remark 4.1 of the framing.)*
+`(Chm)` in **every** reading, in particular `R5`. *(The corpus's `(Hdg) + (M2) + (M3) ⇒ (Chm)`,
+restated with exact quantifiers; the ampleness and Torelli hypotheses are load-bearing, and
+`Aut(X) ↪ O(H²(X,Z))`-injectivity is needed only for exact operator equivariance, Remark 4.1 of
+the framing.)*
 
-**Separation S1 (the chain and its strengths).**
-`(Hdg) ⇒ (Orb) ⇒ (Chm) ⇒ (Lat)`, and the labelled `(Lat)` holds for every pair of one-node
-members ([EXT], uniform). Each arrow is strict at its stated level: `(Orb)` is the pair condition
-(`gamma` carries `(sigma, chamber)` together, equivalently is induced by an isomorphism of
-tuples); `(Chm)` is its chamber half alone.
-*(Verified: `(Lat) ∧ ¬(Hdg)` is exhibited by the certified pair, Corollary 3.4 of the framing.)*
+**Separation S1 (levels, and exactly which implications hold).** Three levels: `(Lat)` (some
+label-carrying isometry exists; **weakest**), `(Chm)` (some label-carrying isometry carries the
+chamber; implies `(Lat)`), `(Orb)` (some label-carrying isometry carries `(sigma, chamber)`
+together, equivalently is induced by an isomorphism of tuples; implies `(Chm)` by definition).
+
+*The sufficient route:* `(Hdg) ∧ (M2) ∧ (M3) ⇒ (Orb)` — a Hodge isometry `gamma` of label type
+that also carries the integral ample class `A` (`(M2)`, and `gamma(A) = A` because `gamma` fixes
+`H, alpha`) is induced by an isomorphism of tuples via effective Torelli `(M3)`.
+
+*No unconditional arrow from `(Hdg)` to anything.* `(Hdg)` alone does not imply `(Orb)` or
+`(Chm)`, and `(M2)` is exactly why: Hodge isometries may move chambers — concretely, the wall
+reflection `w_alpha` is a Hodge isometry for every period with `alpha` algebraic (it fixes the
+period then) and it moves the adjacent chamber across `alpha^perp`, by Theorem 2 of
+`.ultramath/smw0gfl0i/m4/chamber-prioritized.md`'s companion results and D1/E2(ii) below. Only
+with `(M2)` forcing the ample class does a Hodge isometry land on the chamber.
+
+*Strictness, each verified at its stated scope:* `(Lat) ⫋ (Chm)` by Theorem 9 of
+`sm00_chamber-negative-half.md` (and by Corollary 3.4 of the framing, `(Lat) ∧ ¬(Hdg)` exhibited);
+`(Chm)` does not imply `(Hdg)` by Separation S2's generic-pairs mechanism; `(Hdg)` alone does not
+imply `(Chm)` by the wall-reflection fact just named; no strictness claim on `(Orb)` beyond its
+per-definition implication is made.
 
 **Separation S2 (necessity is not available — neither as theorem nor as generality).**
 The original clause's *necessity* is not proved, and in general is false in the only sense the
 corpus can presently test: by `prop:chamber-conditional` (S4) the label-transported chamber
-coincides with the target's exactly when no extra effective root cuts it; for two **generic**
-one-node members (very general, `Pic = S_Co` by Theorem D of the positive half, and `nu = 0` by
-parity, S4) the effective-root data are lattice-constant, so a label-carrying *non-Hodge*
-isometry transports the chamber between members whose periods differ in the connected
-9-dimensional family — `(Chm)` holds while `(Hdg)` fails. Therefore: `(Hdg)` is the proved
-sufficient bridge; whether `(Chm)` can imply `(Hdg)` in some restricted sense is *unproved*, and
-any statement of necessity for the orbit condition is in general false by the mechanism just
-displayed. No verdict or theorem here asserts necessity of orbit membership, or decidability of
-the orbit question. (Any in-dialogue phrase suggesting it — "the clause is exactly
-orbit-membership", "precisely when Hodge" — stands corrected to the one-sided implication plus
-this paragraph.)
+coincides with the target's exactly when no extra effective root cuts it; for two **very
+general** one-node members — whose existence with `Pic = S_Co` is Theorem D of
+`sm00_positive-half-A21.md`, and whose `nu = 0` follows by parity (S4) — the effective-root data
+are lattice-constant, so a label-carrying *non-Hodge* isometry transports the chamber between
+members whose periods nevertheless differ in the connected 9-dimensional family: `(Chm)` holds
+while `(Hdg)` fails for some such pairs. Therefore: `(Hdg)` is the proved sufficient bridge;
+whether `(Chm)` can imply `(Hdg)` in some restricted sense is *unproved*; and any statement of
+necessity for the orbit condition is in general false by the mechanism just displayed. No verdict
+or theorem here asserts necessity of orbit membership, or decidability of the orbit question.
+(Any in-dialogue phrase suggesting it — "the clause is exactly orbit-membership", "precisely when
+Hodge" — stands corrected to the one-sided implication plus this paragraph.)
 
 **Separation S3 (the certified pair's exact scope, preserved verbatim).**
 `(b0, b_star)`: no `gamma in O(L_K3)` with `gamma H_0 = H_star`, `gamma alpha_0 = alpha_star`,
@@ -246,27 +299,40 @@ there, hence `(Hdg)` fails there — `b_star`'s period is not in the label-stabi
 Theorem 9). Nothing universal is claimed: for a general pair of one-node members the chamber
 question lives at the period level and is open exactly there.
 
-**Separation S4 (one unconditional lattice-level exclusion).** `H · S_Co = 2Z` (parity:
-`H.(ae + bf + v + c alpha) = 2(a+b)`), so a marked member with `Pic = S_Co` has
-`nu = 0`; primitivity of `S_Co` then forces any member with `nu > 0` to have `rho >= 12`
-(the `b_star` mechanism: the half-classes `(e +/- w)/2`, `w in E8(-2)`, algebraic only at
-that member). Hence no `nu > 0` side — in particular not `b_star` — can ever be
-tuple-isomorphic to a `Pic = S_Co` member, whatever its period: the `nu > 0` half is excluded at
-lattice level, at every period, unconditionally; and the `(b0, b_star)` separation reads
-**generic (`rho = 11`, `nu = 0`) vs Heegner (`rho >= 12`, `nu = 4`)**, not a failure of
-labels. *(m6's Lemma 2.3, Prop. 4.2, Cor. 4.3; with the special-period Picard action on the glued
-half-classes — permutation, not fixedness — correctly attributed to the automorphism's own data,
-not to any generic `Pic = S_Co` criterion; scope correction from review folded in.)*
+**Separation S4 (one unconditional lattice-level exclusion, with its exact scope).** Parity:
+`H · S_Co = 2Z` (`H.(ae + bf + v + c alpha) = 2(a+b)`). Hence:
+(i) a member with `Pic = S_Co` has `nu = 0` (no `H`-degree-1 `(-2)`-classes exist there);
+(ii) `nu > 0` forces `Pic ⊋ S_Co` and `rho >= 12` (`S_Co` is primitive, and
+`smwg_chamber-bridge`'s m6 arguments: the `H`-degree-1 classes glue into half-classes
+`(e ± w)/2`, `w in E8(-2)`, algebraic only at that member — where the Picard action on them is a
+permutation of the effective cone, attributed to the member's own automorphism, not to any
+`Pic = S_Co`-fixedness criterion).
+(iii) Therefore a member with `Pic = S_Co` and a member with `nu > 0` are never tuple-isomorphic,
+at **every** period and **unconditionally** — the exclusion needs no period input.
+
+*What `nu(b0) = 0` does not prove.* The certified member `b0` satisfies `nu(b0) = 0` (maintained
+census), and the corpus proves very general members have `Pic = S_Co` (Theorem D of
+`sm00_positive-half-A21.md`). But `nu` is a curve count, not a Picard-rank statement: `b0`'s rank
+is not decided by `nu = 0`, and no step in this dossier may assert `rho(b0) = 11` until an
+independent Picard computation on that member supplies one. The rank-separated reading of the
+obstruction is therefore exactly (iii): `nu`-level facts never imply rank-level facts about the
+certified member; the certified failure itself is preserved verbatim in S3. (The label-free
+dimension/span variant of (iii) — an open chamber spans `NS_R(X)`, so a chamber-carrying map must
+be rank-preserving — is valid **for a rank-11-witnessed pair** (e.g. any very-general member
+against `b_star`) by (i)-(ii), and is explicitly **not** applied to the certified member `b0`
+absent that rank evidence.)
 
 ## 6. Part 4 — what the surviving original comparison therefore is
 
 1. **Construction vs construction (one-node members).** `[EXT]` holds for every pair (proved,
-   uniform, lattice level). The chamber clause, in the corpus's adopted `R5` reading, is decided
-   by period data (`Gamma_L`-orbit with the label stabiliser), is *sufficiently* carried by
-   `(Hdg)` + `M2` + `M3` — which lands the two members on isomorphism by label-carrying marking —
-   and **fails at the certified pair** `(b0, b_star)`. The obstruction is preserved at exactly its
-   stated scope; by `prop:chamber-conditional`, the clause *also has true instances* between
-   generic members at lattice level without Hodge input.
+   uniform, lattice level). The chamber clause, in the corpus's adopted `R5` reading, is
+   *sufficiently* carried by `(Hdg)` + `M2` + `M3` — which lands the two members on isomorphism by
+   label-carrying marking — and **fails at the certified pair** `(b0, b_star)`. Whether any
+   period-orbit membership is *necessary* for the original label-carrying chamber isometry is
+   **not** decided by these theorems: the current document supplies sufficiency only, and the
+   clause *also has true instances* between generic members at lattice level without Hodge input
+   (`prop:chamber-conditional`). No statement here attaches decision-of-the-original-clause to the
+   `Gamma_L`-orbit.
 2. **Twist vs construction, as authored.** Part 1 (existence, in full) + Part 2 (proved
    non-determination): the original data select none of these realizations,
    and its clause is not well-posed — a theorem now, not a gap. The first slot is genuinely
@@ -305,9 +371,11 @@ registered in their member directories and are *not* among P1-P16.
 
 ## 8. Reviewer's checklist (hostile points, and where each stands)
 
-* *Is `U` really open, and in which topology?* §2 items 1-3: analytic-open hyperplane complement,
-  connected, nonempty; the Picard-exactness condition is kept Baire-general and never gate-keeps
-  anything (§2 item 4).
+* *Is `U` really open, and with which hypotheses? The §2 lemma items 1-5: ampleness decomposed into
+  the component condition (C1) and the no-null-root condition (C2), the failure set contained in
+  the wall union, the locus the construction-bearing connected component of the wall complement.
+  Nothing in the dossier claims "absence of orthogonal roots alone proves ampleness": (C1) is
+  earned at the named component and no implication is run without both chapters named.
 * *Does existence overclaim E1/E2?* Every existence claim carries its hypothesis (`A` ample on the
   member for the pair; the authored single operator by smoothness+nonemptiness for E1); the
   factorization exclusion E2(ii) carries its own hypothesis explicitly.
@@ -317,8 +385,10 @@ registered in their member directories and are *not* among P1-P16.
   chamber-conditional mechanism displayed; no necessity or decidability claim stands anywhere.
 * *Is the certified pair's scope inflated?* S3 quotes Theorem 9 + A2 verbatim; consequences are
   contrapositive through the sufficient route.
-* *Is `Pic = S_Co` treated as open?* §2 item 4 and S4: Baire-general only; the S4 exclusion uses
-  parity at `Pic = S_Co` members, not an open locus of them.
+* *Is `Pic = S_Co` treated as open?* §2 item 5 and S4: Baire-general only, and S4 additionally
+  records that `nu(b0) = 0` proves no rank for the certified member (kept open), with the
+  rank-separated exclusion exact at `(i)–(iii)` and the dimension/span variant reserved for
+  rank-witnessed pairs.
 * *Tier discipline:* every "maintained" tag points to the published run logs; every exploratory
   member script is named in the header and excluded from P1-P16.
 
