@@ -12,24 +12,38 @@ reliability, and what each is used for:
 the twist-root pinning. It has **no theorem about quotient membership, the discriminant
 gluing, or any chamber claim**.
 
-The companion `sm57_matrices_gen.txt` and the file `sm57_lean-report.md` document a
-pd-Baire *membership list with the convention of ẑ2 class-times* — that report's "mod
-$2\mathbb{Z}$" is Sage's `is_square(...) mod 2` output, not the corpus's coset membership
-in $\mathbb{Q}/2\mathbb{Z}$. **That list's δ-attributions are not used anywhere in the
-manuscript**; the $\delta$ baked into the report's text is the argument of
-`prop:cobble-transcendental`'s tail, not this file.
+The companion `sm57_matrices_gen.txt` and `sm57_lean-report.md` record, among the
+machine-checked facts, the published value lists `q_values = [0,1]` with `delta = 0` for
+$U(2)$ and `q_values = [0,1/2]` with `delta = 1` for $\langle2\rangle$ — in the
+convention of the corpus's original definition (`def:discriminant`,
+`def:two-elementary-isotropic-types`): in $\mathbb{Q}/2\mathbb{Z}$ the canonical subgroup
+$\mathbb{Z}/2\mathbb{Z}$ is $\{0+2\mathbb{Z},\,1+2\mathbb{Z}\}$ (the elements $x$
+with $2x\in2\mathbb{Z}$ are $0$ and $1$; $1/2$ has order $4$ and lies outside it). These
+published values agree with that definition on their face; an earlier paragraph of this
+README that relabeled them as a different convention is retracted. The focused semantic
+check, run through the maintained provider's discriminant-form API
+(`computations/reports/tco_delta_semantic.py`, log alongside of it, in the grad-log
+`tco_delta_semantic-run.txt`), confirms in the provider's own value module: $\langle2\rangle$
+has values $\{0,1/2\}$ with $\eta\mapsto[1/2]$, and $U(2)$ has values $\{0,1\}$ with
+$e+f\mapsto[1]$ — so $\delta(T_\Co)=1$ from the $\langle2\rangle$ component alone,
+exactly as `prop:coble-transcendental`'s tail now records.
 
 ## 2. Sage via the maintained provider (pin `c546077d`)
 Witness and lattice computations: `sm57_verify_special_member.py` + `.log` (the $F'$
-witness), `sm57_member_b0_full.py`, `sm57_verify_witness.py`, `sm57_verify_charts.py`,
+witness), `sm57_verify_witness.py`, `sm57_verify_charts.py`,
 `sm57_verify_members.py` + `.log` (m6 member B, NL strata), `sm57_matrices_gen.txt`,
 `sm57_verify_witness-m1.py` + `sm57_verification-log.txt`, `sm57_verify-run.txt`.
 These are run by the *maintained* lattice provider (`sage-extensions` at pin `c546077d`):
 their outputs are certificates of what they print.
 
 ## 3. Ordinary scripts and annotations (not certificates)
-`sm57_verify-run.txt` and `sm57_verify_witness-m1.py` contents are ordinary sympy or custom
-scripts; statements proven elsewhere (for example, the structure classification of their
+`sm57_member_b0_full.py` (sympy; repaired: `sp.factor_list(D)`'s scalar is `fac[0]`, not
+`fac[0][0]`; its successful run is now tracked at `sm57_member_b0_full-run.txt` and
+reproduces exactly the two reported claims: singular locus exactly $\{p\}$ in all four
+charts, and each ruling discriminant equal to (the node's ruling coordinate)$^2$ times a
+squarefree polynomial of degree $22$ — hence no reducible fibre away from the node's
+rulings), `sm57_verify-run.txt` and `sm57_verify_witness-m1.py` contents are ordinary
+sympy or custom scripts; statements proven elsewhere (for example, the structure classification of their
 output) are cited through them as evidence, not as automatic verification. m2's audit
 (`sm57_audit-one-node-m2.md`) and the m5/m6/m8 argument documents
 (`sm57_proof-m5.md`, `sm57_chamber-obstruction-m6.md`, `sm57_obstruction-m8.md`) are the

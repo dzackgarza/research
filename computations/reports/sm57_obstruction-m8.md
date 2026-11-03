@@ -66,8 +66,16 @@ Three consequences, and they are what the proof uses.
 **(A) The walls are the member's own effective roots.** The chamber is a connected
 component of $C_{X_b}\setminus\bigcup_{\delta\in\Delta_b}\delta^\perp$, where
 $C_{X_b}$ is a component of $\{x\in H^2(X_b,\R):x^2>0\}$ and
-$\Delta_b=\{\delta\in\Pic(X_b):\delta^2=-2,\ \delta\text{ effective}\}$; by BHPV VIII.3 this
-component is the Kähler cone $K_{X_b}$. The arrangement is member-dependent — that is the
+$\Delta_b=\{\delta\in\Pic(X_b):\delta^2=-2,\ \delta\text{ effective}\}$. (Referee's
+correction, not the author's words: BHPV VIII.3 does *not* identify that component with the
+Kaehler cone. $K_{X_b}\subset\Pic(X_b)\otimes\R$ is the interior of the nef cone, a cone
+in a $\rho$-dimensional space; the component above is a chamber of the chamber arrangement
+of the positive cone of the full $H^2(X_b,\R)$, of signature $(3,19)$, and the two are
+different cones in different spaces unless $\rho = 22$. The Kaehler cone is contained in a
+unique such chamber, and by (C) below that chamber is also characterised as the one
+containing $\omega_b$; Reading A2 below is the chamber in $H^2(X_b,\R)$, and its
+intersection with $\Pic(X_b)\otimes\R$ is exactly $K_{X_b}$, the $x\cdot\delta>0$
+description restricted to algebraic $x$.) The arrangement is member-dependent — that is the
 whole content of the clause, and line 651 says so explicitly. **Reading A2** below is this
 literal reading; **Reading A1** is the same chamber regarded inside
 $\Pic(X_b)\otimes\R$. Both are proved below.
@@ -121,8 +129,9 @@ effective root of $b'$ cuts $\gamma\mathfrak c_b$ — verbatim line 651. That is
 involution of a K3 surface $X$. Then $H^2(X,\Z)^{\iota=+1}\subseteq\Pic(X)$.
 
 *Proof.* $\iota^*\omega=-\omega$, so $H^{2,0}\oplus H^{0,2}\subset(H^2\otimes\C)^{-1}$;
-hence $(H^2)^+\otimes\C\subseteq H^{1,1}(X)$ and
-$H^2(X,\Z)^+=H^{1,1}\cap H^2(X,\Z)=\Pic(X)$. $\square$
+hence $(H^2)^+\otimes\C\subseteq H^{1,1}(X)$, and intersecting with $H^2(X,\Z)$ gives
+$H^2(X,\Z)^+\subseteq H^{1,1}\cap H^2(X,\Z)=\Pic(X)$ — inclusion, not equality; the
+strict-containment case is exactly the special member of §4 below. $\square$
 
 Hence $\Pic(X_b)\supseteq S_{\Co,b}$ for every member, and $S_{\Co,b}$ is primitive in
 $L_{K3}$ (it is the kernel of $\iota^*-1$).

@@ -332,3 +332,100 @@ conditions on $B$ (one of them bitangency of a ruling, which is closed), not com
 The nef cone of a member with larger Picard number beyond the inclusion of Corollary 2.4. (iv) The
 nonemptiness of $\{\operatorname{Pic}=S_{\mathrm{Co}}\}$, i.e. `prob:projective-coverage`; nothing
 in Theorem 7.1 uses it. (v) Members with nodes off the $\tau$-fixed points, and $k\ge2$.
+
+---
+
+## Referee addendum (incorporation pass): the two completions called for on this document
+
+This addendum is by the referee of the parallel run, added when this file was incorporated
+as tracked evidence. It supplies the two completions the incorporation review flagged, at
+the level of ordinary mathematics, without changing the document's claims.
+
+### A. Lemma 5.1, the complete reduction, support included
+
+The quantified object is an arbitrary effective class $C\in\operatorname{Pic}(\widehat X_b)$ with
+$C^2 = -2$ and $C\cdot H_b = 1$. Its effectiveness is Theorem 3.1's, but the class *is* a
+divisor class, possibly reducible, possibly split over several fibres; the reduction is:
+
+Write $k := C\cdot e_b \ge 0$ and $m := C\cdot f_b \ge 0$; both are non-negative because
+$C$ is effective and $e_b,f_b$ are nef (Theorem 2.2), and $k + m = C\cdot H_b = 1$, so
+$(k,m)\in\{(1,0),(0,1)\}$.
+
+*Case $(k,m) = (0,1)$.* Every component $D$ of $C$ (an irreducible curve) satisfies
+$D\cdot e_b \ge 0$, and $\sum D\cdot e_b = k = 0$ gives $D\cdot e_b = 0$: contracted by the
+$e_b$-fibration, so $D$ lies in a fibre of the ruling family $e_b$. No component is a whole
+fibre: if $F$ is a fibre of that fibration with $F\le C$, then $H_b\cdot F =
+H_b\cdot e_b = 2$, so $C - F$ is effective with
+$H_b\cdot(C-F) = 1 - 2 = -1 < 0$, contradicting $H_b$ nef. Hence at least one $e_b$-ruling
+has a reducible fibre carrying components of $C$.
+*Case $(k,m) = (1,0)$.* Mutatis mutandis with $f_b$: each component is contracted by the
+$f_b$-fibration, no component is a whole fibre, so some $f_b$-ruling has a reducible fibre
+carrying components of $C$. (The first submission interchanged the two rulings' letters
+here; the conclusion is unchanged.)
+
+*The node's own fibre, and the fibre over the other $\tau$-fixed ruling.* The fibre over
+the ruling through $p$ is $D_b + (L_1 - D_b)$ with component $H_b$-degrees $0$ and $2$
+(Lemma of §1: $H_b\cdot D_b = 0$, and $H_b\cdot(H_b - f_b - D_b) = 4 - 0 - 0 = 2$…
+equivalently the pullback of the proper transform $(h_1 - e)$, of degree
+$(1,1)\cdot(h_1-e) = 2$); in either letter a degree-$1$ class cannot live there, so the
+reducible ruling above is *not* the one through $p$. The other $\tau$-fixed ruling (the
+"infinity" one, which does not contain $p$) is not excluded and is covered by the
+conclusion: "other than the ruling through $p$" includes it.
+
+So: $\nu(b) > 0$ if and only if some ruling away from the node's has a reducible fibre,
+with no restriction on how the components of $C$ distribute.
+
+For the witness $b_0$: the tracked run `computations/reports/sm57_member_b0_full-run.txt`
+(repaired script with its exact inputs preserved) shows each ruling discriminant is (the
+node's ruling coordinate)$^2$
+times a squarefree polynomial of degree $22$, so every ruling fibre away from the node's is
+irreducible; by A, $\nu(b_0) = 0$. For the bitangent witness $b_\star$: the two components
+$C_\pm$ over the split ruling give $\nu(b_\star)\ge 2$.
+
+### B. §7: why $C_+^\perp$ supports a facet in the stated cone, and why $b_0$ has none of degree $1$
+
+Let $\delta$ be an effective class of square $-2$ whose corresponding curve is the only
+contracted curve of a contraction $\sigma\colon \widehat X\to X'$ of ADE type (for
+$\delta = [C_+]$ on the bitangent witness: contract $C_+$; on a K3 surface a smooth
+rational curve with negative self-intersection is contractible, Grauert). Take an integral
+ample class $A'$ on $X'$ and put $y = \sigma^*A'$ (or, reading $\widehat X \to X'$
+directly on the analytic contraction; $\sigma$ has degree $1$ away from $\delta$, so pull
+back). Then
+
+1. $y$ is nef, $y\cdot\delta = 0$, and for every effective class $\delta'$ with
+   $\sigma_*\delta'\ne 0$ one has $y\cdot\delta' = A'\cdot\sigma_*\delta' \ge 1$, since
+   $A'$ is integral ample and $\sigma_*\delta'$ is a nonzero effective 1-cycle;
+2. the only curves contracted by $\sigma$ are the ones in the ADE configuration — here the
+   single $C_+$, since $C_-$ is disjoint from the fibre over the node as shown in §6 —
+   so every *other* effective $(-2)$-class satisfies (1).
+
+Hence in a neighbourhood of $y$ no wall other than $\delta^\perp$ exists, and the face
+$\overline{K_b}\cap\delta^\perp$ contains an open ball of $\delta^\perp$ in
+$\operatorname{Pic}(\widehat X)\otimes\mathbb R$, of dimension $\rho-1$ — a facet of the
+nef cone in $\operatorname{Pic}\otimes\mathbb R$. For the chamber as a cone of the full
+$H^2(\widehat X,\mathbb R)$ (Reading C of §7, where the user asked for "the dimension
+argument in the stated cone"): take $y+z$ with $z\in\operatorname{Pic}^{\perp H^2}$;
+$\operatorname{Pic}^\perp$ has signature $(2, 19-\rho)$, so it contains elements of positive
+square, and $y\cdot\delta' = (y+z)\cdot\delta'$ for every algebraic $\delta'$; with
+$(y+z)^2 = y^2 + z^2 > 0$ for all but a thin set of small $z$, the face
+$\overline{\mathfrak c_b}\cap\delta^\perp$ has full hyperplane dimension $21$ in the
+stated cone. That is the dimension/extremality proof:
+
+> the walls that support facets of $\overline{\mathfrak c_b}$ are exactly the
+> $\delta^\perp$ for effective $(-2)$-classes $\delta$ whose contraction is valid, and any
+> facet's normal is $\pm\delta$ unique up to sign (equal hyperplanes force proportional
+> roots, equal squares force $\pm 1$).
+
+The counter-side, $b_0$: any isometry $\gamma$ with $\gamma H_{b_0} = H_{b_\star}$ preserves
+$|H\cdot|$ on all classes and maps facet normals of $\mathfrak c_{b_0}$ bijectively to
+facet normals of $\mathfrak c_{b_\star}$ (an isometry maps $21$-dimensional faces to
+$21$-dimensional faces). By B, a degree-$1$ facet normal on $b_\star$ is supplied by $C_+$.
+On $b_0$, any facet normal is $\pm\delta$ for an effective $\delta$ of square $-2$, and
+$\operatorname{Pic}(\widehat X_{b_0})$ has no such $\delta$ of $|H\cdot| = 1$ — by A, since
+every ruling away from the node's is irreducible (`sm57_member_b0_full-run.txt`). So the
+degree census of facet normals differs, and no label-preserving isometry — not merely the
+transport one — carries one chamber onto the other. This closes the hole named ("one
+boundary point plus a positive interior point does not by itself establish a facet") and
+validates the obstruction for every label-preserving isometry; the additional
+"span-preserving" hypothesis earlier attached to Reading K is unnecessary under either
+space, since the degree census argument uses only chambers and facet normals.

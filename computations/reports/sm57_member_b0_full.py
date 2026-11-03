@@ -18,6 +18,6 @@ for name,sub,vs in [('X1=1,Y1=1',{X1:1,Y1:1},(X0,Y0)),('X1=1,Y0=1',{X1:1,Y0:1},(
 Dy = sp.expand(sp.discriminant(sp.Poly(f,y), y)); Dx = sp.expand(sp.discriminant(sp.Poly(f,x), x))
 for nm,D,v in (("disc_y(f)",Dy,x),("disc_x(f)",Dx,y)):
     fac = sp.factor_list(D)
-    print(nm, "= ", fac[0][0], "*", [(sp.factor(b),e) for b,e in fac[1]], "  deg =", sp.degree(D,v))
+    print(nm, "= ", fac[0], "*", [(sp.factor(b),e) for b,e in fac[1]], "  deg =", sp.degree(D,v))
     print("   squarefree part of", nm, "/%s^2 :" % v, sp.factor(sp.sqf_part(D)))
     print("   multiplicity of the forced root:", [e for b,e in fac[1] if b==v])
