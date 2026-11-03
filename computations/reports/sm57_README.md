@@ -196,3 +196,20 @@ computational line the manuscript's saturation proposition cites. Any further va
 specific member's lattice type that someone needs should also go through those APIs in the shared
 development image (and their docs/tests first), not by patching algorithms locally; otherwise that
 validation is left open here, by design.
+
+## Verdict register, final dispositions of `smw0dbvr6`
+- d1 (m5, rebuilt): ACCEPTED (the divisibility criterion with two certified witnesses, one
+  per ruling: b_star's C_+·f_b = 1, and f_dag's split {y=1}-ruling with C'_±·e_b = 1; flat
+  rulings then propagate the omission over the connected node-at-(0,0) locus; k=0 = U(2),
+  k>=2 as named open question).
+- d8 (m1): ACCEPTED (RR-vertical O-S at the accepted fibre-span scope; O-T refuted on the
+  eigenrank multiset {11,3,14} vs {11,10,21} plus the labelled alpha action).
+- d5 (m3, corrected): ACCEPTED (fibre-span primitivity with the withdrawal of the first
+  version's H-degree-1 lemma recorded).
+- d4 (m7): REJECTED at its section route ("split over D" => "D intersect B-tilde empty" --
+  false at the certified bitangent witnesses; an even but nonempty branch divisor is the
+  general case). The Nikulin fixed-locus route in the same document stands at the m8
+  acceptance level; its O-T content is registered at the literal-negative scope plus the
+  named remaining obligations (embedding/gluing, and the E_8(-2)-vs-<-2>^8 orbit case).
+  Not used in any manuscript line: the "accepted" text above at that paragraph keeps only
+  the proposition's own argument and the maintained census.

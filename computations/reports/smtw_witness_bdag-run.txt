@@ -1,0 +1,11 @@
+f_dag = 3*x**4*y**4 + 4*x**4*y**2 - 10*x**4 - x**3*y**3 + x**3*y - 12*x**2*y**4 + 12*x**2*y**2 + 6*x**2 - 2*x*y**3 + 2*x*y - 3*y**4
+1. tau-invariant: True
+2. f(0,0) = 0 ; quadratic part = 6*x**2 + 2*x*y ; disc = 4
+3. singular locus per chart:
+   chart x0y0: Groebner basis of <g, g_u, g_v> = [x, y]
+   chart x1y1: Groebner basis of <g, g_u, g_v> = [1]
+   chart x0y1: Groebner basis of <g, g_u, g_v> = [1]
+   chart x1y0: Groebner basis of <g, g_u, g_v> = [1]
+4. restriction to the h_2-ruling {y=1}: f(x,1) = -3*(x - 1)**2*(x + 1)**2
+   f_y at (1,1),(−1,1): -22 -10
+   [{y=1}] . h_1 = 1  and  [{y=1}] . h_2 = 0  (rulings of the second family meet h_1 once)
