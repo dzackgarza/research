@@ -1,0 +1,8 @@
+provenance: c546077dce79a76eb32e92d080aa9c44e4c67552, Sage 11.0.beta5
+++: rank 3, det 8, sig (1, 2), even True
++-: rank 8, det 256, sig (0, 8), even True
+-+: rank 0, det 1, sig (0, 0), even True
+--: rank 11, det -2048, sig (2, 9), even True
+++ isometric to U(2) perp <-2>: True
++- isometric to E8(-2): True
+-- isometric to <2> perp U(2) perp E8(-2): True

@@ -232,3 +232,19 @@ any rank computation; k=0 = U(2) (not U) by-product; k>=2 and the E_8(-2)-vs-<-2
 orbit case open.  Everything else in this record, the manuscript's A21 state-of-record and its
 named open derivations (the fourth bullet semantics, R4 recovery, embedding/gluing, second
 slot, $k>=2$ saturation) stands at that scope.
+
+## Scope note on `reflected_pair_pieces.py`
+`reflected_pair_pieces.py` is **ordinary exploratory matrix arithmetic** (handwritten E8
+Gram, bespoke permutation/reflection construction, plain-matrix kernels and sig-checks via
+floating-point `eigvalsh`): it is not a certificate, and no manuscript or verdict-line relies
+on it. The object it sketched is now computed at the maintained tier by
+`computations/reports/coble_reflected_pair.py` (+ run log), which follows
+`coble_aegs_involutions.py`'s style at the same provider pin (`Lattices(ZZ)`, 
+`L.reflection(alpha)` maintained reflection, `sublattice_from`, `determinant`,
+`signature_pair`, `is_even`, and `is_isometric_to` for each joint-eigenspace piece against
+an independently built maintained counterpart), giving: `(++) is U(2) perp <-2>`,
+`(+-) is E8(-2)`, `(-+) = 0`, `(--) is <2> perp U(2) perp E8(-2)`, ranks (3,8,0,11), with
+I-reflection products verified integral.  That is the piecewise lattice match only; the
+labelled embedding/gluing and the AEGS-vs-construction identification of the del Pezzo
+involution of the Coble K3 cover (the note `coble_aegs_involutions-run.txt` keeps at its
+end) remain the open questions they were; nothing in the run answers a chamber question.
