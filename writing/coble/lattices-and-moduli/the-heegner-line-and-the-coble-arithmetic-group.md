@@ -511,7 +511,7 @@ Let $\widehat X\to X^\sharp$ be the minimal resolution of the node at $p$, $D$ t
 2. $\widehat\iota_{\mathrm{dP}}$ acts on that $\PP^2$ by $[X:Y:Z]\mapsto[X:Y:-Z]$, so it preserves the conic $D = \set{Z^2 = X^2+Y^2}$ and fixes on it exactly the two points $[1:\pm i:0]$, which are also where the proper transform of the branch curve meets $D$;
 3. consequently $\mathrm{Fix}(\widehat\iota_{\mathrm{dP}})$ is the normalization of the branch curve: for $f$ with exactly $k$ nodes and otherwise smooth, the branch curve has arithmetic genus $9$ and geometric genus $9-k$, so $\chi(\mathrm{Fix}) = 2-2(9-k) = 2k-16$, and Lefschetz gives $\rk S_{\mathrm{dP}} = \tfrac12(22+(2k-16)-2) = 2+k$;
 4. $S_{\mathrm{dP}}$ contains $\pi^*\Pic(Y)\perp\ZZ D_1\perp\cdots\perp\ZZ D_k$, of rank $2+k$: the pullbacks of $\Pic(Y) = \ZZ^2$ have Gram matrix $U(2)$, each $D_g$ is a $(-2)$-class because it is preserved by $\widehat\iota_{\mathrm{dP}}$, and $D_g\perp\pi^*\Pic(Y)$ and $D_g\perp D_{g'}$ for $g\ne g'$ because the resolution contracts them.
-So the invariant type of the lifted $I_{\mathrm{dP}}$ is $U(2)\perp\langle-2\rangle^{\oplus k}$ up to a finite index, and *not* $U(2)$ whenever $k\neq0$. Equality of lattices is a saturation question, not a rank count, and is not settled here.
+So the invariant type of the lifted $I_{\mathrm{dP}}$ is $U(2)\perp\langle-2\rangle^{\oplus k}$ up to a finite index, and *not* $U(2)$ whenever $k\neq0$. The finite index is settled at the one-node scope — $k=1$ with an ordinary node at a $\tau$-fixed point and the branch curve irreducible — by @prop:det-saturation-del-pezzo below (index $1$, i.e. equality of lattices there); it is properly not settled here for $k\ge2$.
 :::
 
 ::: {.proof}
