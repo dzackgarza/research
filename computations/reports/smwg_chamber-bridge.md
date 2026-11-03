@@ -19,6 +19,15 @@ failed-implication claim left open rather than asserted. (S2) the non-necessity 
 exhibited pair satisfying the labels and quantifiers (two very-general members in different
 `Gamma_L`-orbits: the clause holds via the label transport and the algebraic A-positive rule,
 `(Hdg)` fails by definition).
+(Pass 3, current.) (§2(1)) the wall paragraph no longer says "fails nefness and ampleness":
+a zero pairing excludes **ampleness** (strict positivity), not **nefness** (`>= 0`), and the
+distinction is kept with its dependencies; (§2(3)) existence at each period now rests on the
+*surjectivity of the period map* (PSS/Todorov, cited at BHPV VIII topic level), and openness
+runs at the Local-Torelli local / family-by-family scope — no global universal family over
+`D(T_Co)` is asserted or used; (S5') the stratum-level positive clause answers the equal-rank
+chamber case by the proved effectiveness rule at `A`-ample members plus the pinned chamber, with
+its unmatched-data residual left explicitly open; premise ledger extended to P19; the §6 heading
+and the S5'/S5 source-name collision are corrected.
 (Pass 1.) (§2) the ampleness criterion decomposed into (C1) component and (C2) no-null-root —
 absence of an orthogonal root alone no longer stands as an ampleness proof; (S1) the implication
 chain set out with no unconditional arrow from `(Hdg)` and the wall-reflection counterexample
@@ -117,9 +126,13 @@ conjunction of:
 * **(C2) the no-null-effective-root condition:** `A·delta ≠ 0` for every effective `(−2)`-root
   `delta` — equivalently, no effective `(−2)`-root is orthogonal to `A`.
 
-**(1) Wall direction, stated the right way.** If `delta² = −2`, `A·delta = 0`, and `delta` is
-algebraic at `sigma`, then one of `±delta` is effective (Riemann–Roch) and pairs `0` with `A`, so
-`A` fails nefness *and* ampleness at `X_sigma`. Consequently the `A`-null Heegner union
+**(1) Wall direction, stated the right way, with the nef/ample distinction kept.** If
+`delta² = −2`, `A·delta = 0`, and `delta` is algebraic at `sigma`, then one of `±delta` is
+effective (Riemann–Roch) and pairs `0` with `A`. Nefness itself is a `>= 0` condition, and a zero
+pairing on such a curve does **not** break it — so the wall does not, on its own, refute
+nefness. It does refute **ampleness** (the ample cone's pairings must be strictly positive on
+every effective curve, `<`), and `A` is therefore not ample at `X_sigma` there. Consequently the
+`A`-null Heegner union
 
 `N_A := cup_{delta : delta² = -2, A·delta = 0} (delta^perp ∩ D(T_Co))`
 
@@ -136,15 +149,28 @@ never inferred "at the period alone" in this dossier: it is the condition **(M2)
 marked members; when it is being checked at one marked member, the whole check is lattice-specified
 by that member's arrangement (cf. S4 for the rank-11-decidable case).
 
-**(3) The open realization side.** The marked lattice-polarized family exists over `D(T_Co)`
-(Local Torelli; Huybrechts, Lectures on K3 Surfaces, Ch. 8, §2 about marked lattice-polarized
-moduli), and ampleness of a fixed integral class `A` on it is an **open condition in the analytic
-base** (relative ampleness is open for holomorphic families; cited at that scope). Denote that
-open subset by `O`. Then: `O` is nonempty — it contains every one-node member's period (Lemma
-2.2, `A` ample there) — of dimension `11 − 2 = 9` where nonempty, and disjoint from `N_A` of (1),
-with the named chamber of (C1) present at every marked pair in it by the exact bullet that defines
-`(M2)`. The prefix "`(M2)`" everywhere below means precisely this named hypothesis " `A` ample on
-the member", in the chamber identified above.
+**(3) The open realization side, at the scope its theorems actually give.**
+**(3a) Existence at each point** is the *surjectivity of the period map* of K3 surfaces —
+Pjateckii-Šapiro–Šafarevič / Todorov (projective K3s; quoted at BHPV Ch. VIII topic level, and
+Huybrechts' lectures at topic level): every `sigma in D(T_Co)` is realized by some marked
+pair `(X_sigma, psi)`. This, not Local Torelli, is the existence fact used here.
+**(3b) Openness is local, and explicitly not derived from a global universal family.** In a
+holomorphic family of compact Kähler surfaces over an analytic germ `B` with a base-constant
+integral `(1,1)`-class `A` (a `Pic`-stable mark), the condition " `A` is ample on the fibre" is
+open at the base — openness of relative ampleness in a holomorphic family of compact complex
+manifolds, cited at that scope. Local Torelli is used for exactly and only what it proves: the
+period map of the marked-moduli space is a **local isomorphism**, so neighbourhoods of marked
+pairs base-change into neighbourhoods of periods; openness is accordingly read **family by
+family, at the local marked-moduli scope** — no fine moduli/universal family over the whole of
+`D(T_Co)` is asserted anywhere in this dossier, and where a statement needs a global family it is
+recorded as open rather than assumed.
+**(3c) Conclusion.** Define `O := { sigma in D(T_Co) : A in Amp(X_sigma) }` (marked membership at
+each `sigma` by (3a); the named chamber of `(C1)` is the fourth-bullet chamber identified in
+`(0)`). By (3b), `O` is analytic-open; it is nonempty — it contains every one-node member's
+period (`A` ample by Lemma 2.2 of `sm00_positive-half-A21.md`) — of dimension `11 − 2 = 9`
+where nonempty, and it is disjoint from `N_A` of (1), because ampleness fails there. The prefix
+"`(M2)`" everywhere below means precisely the named hypothesis "`A` ample on the member", in the
+identified chamber.
 
 **(4) Topology summary, nothing over-claimed.** `O` is analytic-open, nonempty, 9-dimensional; it
 is a subset of `D(T_Co) \ N_A`, with equality **not** asserted anywhere and the `(C1)`-failure mode
@@ -190,7 +216,7 @@ symmetry (S2's AEGS anchors :63, :128, :182).
 `(I_Co, I_En)` are `(10,1,0,11)` while the construction tuples have `(3,8,0,11)` ([EXT] and
 maintained run); a conjugacy preserves joint multiplicities, so `(I_Co, I_En)` is conjugate to no
 construction tuple. Among the AEGS operators, only `J_dP = w_alpha I_dP` satisfies the tuple's
-requirements (commuting, nonsymplectic, geometric on `U`, symplectic product, matching
+requirements (commuting, nonsymplectic, geometric at `(M2)`, symplectic product, matching
 multiplicities) at once. This excludes the base companion and admits the reflected one — it
 manufactures nothing and hides no rank-match step.
 (iv) *The second slot costs a chamber condition, not a period one:* `J_dP` is a Hodge isometry for
@@ -343,6 +369,35 @@ be rank-preserving — is valid **for a rank-11-witnessed pair** (e.g. any very-
 against `b_star`) by (i)-(ii), and is explicitly **not** applied to the certified member `b0`
 absent that rank evidence.)
 
+**Separation S5' (the stratum-level positive clause — the equal-rank case, advanced).**
+At a member with `A` ample, effectivity of a `(−2)`-class is *lattice-decidable*: exactly one of
+`±delta` is effective (Riemann–Roch: `h⁰(delta) + h⁰(-delta) >= 1`, and `delta`, `-delta` cannot
+both be effective), and ampleness pairs strictly positively with every effective divisor, so
+
+`Eff(−2)(X) = { algebraic (−2)-classes delta of X with A·delta > 0 }`.
+
+Together with m3's pinning lemma (the authored chamber is the unique arrangement chamber with `A`
+in its interior), this yields:
+
+**Theorem (S5).** Let `(X1, psi1)`, `(X2, psi2)` be marked tuples over the common labelled datum,
+with `A` ample on both (named `(M2)`), and let `theta` be a label-carrying isometry
+(`theta(H) = H'`, `theta(alpha) = alpha'`, conjugating the two operators if a pair is compared)
+carrying the **Néron–Severi lattice** of `X1` onto that of `X2` as marked sets — i.e. the
+effective arrangement's classes match under `theta`. Then `theta` carries the effective-root
+arrangements bijectively (by the rule above, applied on both sides at `(M2)`), and hence the
+authored chamber onto the other one: **(Chm) holds for the pair, under the original labels and
+quantifiers.**
+
+*Consequences and the exact remaining case.* (i) The certified pair's reading stays: Theorem 9 +
+A2 (pairs of mismatching arrangement shape) are unaffected. (ii) Very-general pairs (`Pic = S_Co`)
+satisfy the hypothesis via the invariant-lattice conjugation `theta` of `thm:a21-labels` — S2's
+exhibit specializes to it. (iii) *Same-stratum equal-rank pairs:* two members on one
+Noether–Lefschetz stratum with the same marked Picard data over the tuples — the extra effective
+classes matched under a label-carrying `theta` — satisfy the clause at arbitrary common rank,
+including `>= 12`: the equal-rank-`>=12` case close where its marked arrangement is matched; the
+residual equal-rank case with the extra classes **not** matched as sets by any label-carrying
+`theta` is **left open at its stated scope**, with nothing asserted for it.
+
 ## 6. Part 4 — what the surviving original comparison therefore is
 
 1. **Construction vs construction (one-node members).** `[EXT]` holds for every pair (proved,
@@ -386,6 +441,9 @@ absent that rank evidence.)
 | P14 | `2H + alpha` has `(2H+alpha)·alpha = -2` while `alpha` is effective on `U` | E2(ii) | Lemma arithmetic on `U` (`A.alpha = 2`, RR); proved here/in m7 |
 | P15 | `prop:chamber-conditional` (no-extra-root criterion for transported-vs-target chambers) | S2 | corpus proposition (the Heegner file, §"one-node comparison") |
 | P16 | no second authored slot; item 8(b) | D2, Part 4 | authored-text fact (`docs/a21-tuple-hypotheses.md`) |
+| P17 | at an `A`-ample member, `Eff(−2)(X) = {algebraic (−2), A-positive}` | S5' | **proved in place** (Riemann–Roch + ampleness definitions) |
+| P18 | period-map surjectivity for projective K3 (existence of a marked pair at every `sigma in D(T_Co)`); openness of relative ampleness in holomorphic families (Local-Torelli local scope only; no global universal family asserted) | §2(3) | cited: PSS/Todorov at BHPV VIII topic-level and Huybrechts topic-level; openness cited at the family scope |
+| P19 | labelled-extension conjugates carry `S_Co,b` onto `S_Co,b'` as sets (invariant-lattice conjugation) | S2 | thm:a21-labels / [EXT] machinery, used at its stated scope |
 
 No premise is used outside its stated scope. The exploratory member scripts listed in the header are
 registered in their member directories and are *not* among P1-P16.
