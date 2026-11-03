@@ -58,3 +58,22 @@ four downstream citation sites the dependency audit names
 (`sm57_depaudit-ledger.tsv` + `sm57_depaudit.py`); the surviving semantics question about
 the fourth bullet (which the parallel run reduced to two named interpretations, and the
 manuscript now reports as a fork rather than a fact).
+
+## Incorporation note (second UltraMath pass, `smw0b9kmo`)
+The witness-membership audit (`sm00_witness-membership-audit.md`, with
+`sm00_audit_witnesses.py` / `sm00_audit-witnesses-run.txt`) is now the reference for the
+tracked witnesses, and supplies four tracked errata:
+C1 — `sm57_chamber-obstruction-m6.md`'s displayed `f_B` is a documented typo: `a33 = -1`
+against `-4` (the maintained log's own value);
+C2 — `sm57_verify_witness.py`'s bitangent member and `sm57_verify_members.py`'s member B
+are distinct certified members (bitangency roots `{1,3}` vs `{1,-1}`);
+C3 — the node-ruling fibre is `I_2` with degrees `0,2` only when `a20 a02 != 0`; on the
+complement it is Kodaira `IV` with degrees `1,1,0` and `chi = 4` (Theorem A of the audit).
+The referee addendum to `sm57_proof-m5.md` is restricted accordingly; both members it
+compares sit on the `I_2` side, only `F'` on the `IV` side;
+C4 — corner-dependent claims are transferred between the four tau-fixed corners by the
+tau-preserving automorphism.
+The accepted positive half is tracked as
+`sm00_positive-half-A21.md` (+ `sm00_verify_one_node.py/.log`, `sm00_verify_ample.txt`):
+its ampleness lemma (Nakai-Moishezon on $\Bl_p Y$), openness proof, and the
+period-rank-9-by-fibre-dimension argument supersede the corresponding manuscript steps.

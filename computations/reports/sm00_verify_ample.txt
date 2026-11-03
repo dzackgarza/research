@@ -1,0 +1,12 @@
+Lemma 2.2 arithmetic on Yhat, basis (A,e): A^2=2, A.e=0, e^2=-1
+  t=1/4:  A_t = A - t e:  A_t^2 = 31/16   A_t.e = 1/4   (both > 0)
+  t=1/2:  A_t = A - t e:  A_t^2 = 7/4   A_t.e = 1/2   (both > 0)
+  t=3/4:  A_t = A - t e:  A_t^2 = 23/16   A_t.e = 3/4   (both > 0)
+  2A - e:  (2A-e)^2 = 7   (2A-e).e = 1   (2A-e).A = 4
+  (2A-e)^2 = 4*2 + 1 = 9? no: 4A^2 - 4A.e + e^2 = 8 - 0 - 1 = 7  [checked: 7 ]
+
+Lemma 2.2 inequalities: (a,b) bidegree, 0<=m<=min(a,b) multiplicity at p, 0<t<1
+  pairs (a,b,m,t) with A_t.C' <= 0 : []
+
+On the K3: (2H-alpha)^2 = 4H^2 - 4H.alpha + alpha^2 = 16 - 0 - 2 = 14 ; (2H-alpha).alpha = -alpha^2 = 2
+and (2H-alpha).e = 2*((2A-e).e) = 2 because deg(Xhat/Yhat) = 2

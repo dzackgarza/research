@@ -363,21 +363,26 @@ $f_b$-fibration, no component is a whole fibre, so some $f_b$-ruling has a reduc
 carrying components of $C$. (The first submission interchanged the two rulings' letters
 here; the conclusion is unchanged.)
 
-*The node's own fibre, and the fibre over the other $\tau$-fixed ruling.* The fibre over
-the ruling through $p$ is the strict-transform configuration $D_b+(L_1-D_b)$ where
-$L_1 = \pi^*h_1$ is the fibre line. Its components have $H_b$-degrees $0$ and $2$:
-$H_b\cdot D_b = 0$ because $\pi$ contracts $D_b$, and $H_b\cdot(L_1-D_b)
-= \pi^*(h_1+h_2)\cdot(\pi^*h_1 - D_b) = (\deg\pi)\,(h_1+h_2)\cdot h_1 - 0
-= 2\cdot 1 = 2$, with no subtraction terms involving $D_b$ appearing twice. (The sentence
-this replaces computed the second degree by an unverified '4 - 0 - 0'; that was not a
-hypothesis and the value is now computed above.) The contribution over other fibres that
-would make a degree-$1$ class live over the node's ruling is therefore ruled out by degree,
-provided the inductive frame of §A — each $C$ of degree $1$ is a proper sub-divisor of a
-single fibre's support — holds at the level of the explicit members; that frame is
-verified for the tracked explicit members in `computations/reports/sm57_verify_members.log`
-and `sm57_verify_special_member.log` (the next section keeps the general claim open until
-the fibre contents of a *generic* member are established, which is the verification run
-charter d3 of the continuing campaign). The other $\tau$-fixed ruling (the
+*The node's own fibre, and the fibre over the other $\tau$-fixed ruling (now with the
+dichotomy).* Whether the fibre over the node's ruling is an $I_2$ configuration depends on
+a hypothesis the first version of this paragraph did not name: with $a_{02}$ the
+coefficient of $y^2$ in the quadratic part of $f$ at the node and $a_{04}$ the other
+corner value, the branch divisor of $\pi^*C^\sim\to C^\sim$ is the zero divisor of
+$a_{02}+a_{04}Y^2$. So (i) for $a_{02}\ne0$ the fibre is $I_2 = D_b + (L_1 - D_b)$ with the
+component $H_b$-degrees $0$ and $2$: $H_b\cdot D_b = 0$ because $\pi$ contracts $D_b$, and
+$H_b\cdot(L_1-D_b) = \pi^*(h_1+h_2)\cdot(\pi^*h_1 - D_b)
+= (\deg\pi)\,(h_1+h_2)\cdot h_1 - 0 = 2\cdot 1 = 2$; (ii) for $a_{02} = 0$ (whence
+$a_{11}\ne0$) it is a Kodaira $\mathrm{IV}$ configuration $C_1+C_2+D_b$, three smooth
+rational curves meeting pairwise transversely at one point, of $H_b$-degrees $1,1,0$ and
+$\chi = 4$ (Theorem A of `computations/reports/sm00_witness-membership-audit.md`, proved
+there to first order from the strict-transform equation). The two members this document
+compares — $b_0$ and $b_\star$ — are both on side (i) (their logged quadratic parts read
+$(a_{20},a_{11},a_{02}) = (2,7,-5)$ and $(3,-28,13)$), so the degree frame is right for the
+pitched pair; the $F'$ member of `sm57_obstruction-m8.md` is on side (ii) (its quadratic
+part reads $(1,1,0)$), and its two degree-$1$ classes are exactly the $C_1,C_2$ of the
+$\mathrm{IV}$ configuration, which the first version of this paragraph's frame would have
+been wrong for. (The confirmed fibre contents and the $\chi$-bookkeeping ($2+22$, $2+2+2+18$,
+$4+2+18$ against $24$) are all in `sm00_audit-witnesses-run.txt`.) The other $\tau$-fixed ruling (the
 "infinity" one, which does not contain $p$) is not excluded and is covered by the
 conclusion: "other than the ruling through $p$" includes it.
 
