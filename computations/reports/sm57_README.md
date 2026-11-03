@@ -77,3 +77,27 @@ The accepted positive half is tracked as
 `sm00_positive-half-A21.md` (+ `sm00_verify_one_node.py/.log`, `sm00_verify_ample.txt`):
 its ampleness lemma (Nakai-Moishezon on $\Bl_p Y$), openness proof, and the
 period-rank-9-by-fibre-dimension argument supersede the corresponding manuscript steps.
+
+## Errata and adjudication register (referee pass, third cycle)
+* **Square of $2H-\alpha$.** The referee-issued acceptance text for the positive half said
+  "square $7$" for $2H-\alpha$ on the K3 side. That was the downstairs value:
+  $(2A-e)^2 = 4A^2-4A\cdot e+e^2 = 8-0-1 = 7$ on $\Bl_p Y$. Upstairs,
+  $(2H-\alpha)^2 = 4H^2-4H\cdot\alpha+\alpha^2 = 16-0-2 = 14$, the degree-two pullback's
+  scaling: $(\hat\pi^*(2A-e))^2 = \deg\hat\pi\,(2A-e)^2 = 2\cdot7 = 14$. The tracked
+  member evidence (`sm00_verify_ample.txt`) has these values correctly; only the
+  referee's phrasing was wrong, and it is corrected here.
+* **The node-ruling fibre, adjudicated with a maintained-level check.** m5/d7's earlier
+  universal claim that every node-ruling fibre is $D+D'$ of degrees $0$ and $2$ is false for
+  the *original* family: on the stratum $a_{02}=0$ the fibre is Kodaira $\mathrm{IV}$
+  ($C_1+C_2+D$, degrees $1,1,0$, $\chi=4$) by m3's Theorem A. The decisive computation is
+  now maintained at `computations/reports/fibre_dichotomy_check.py` (+ run log): the branch
+  divisor of $\pi^*C^\sim$ is the zero divisor of $a_{02}+a_{04}Y^2$, nonzero discriminant
+  on the $\mathrm{I_2}$ side (corpus, $b_0$, $b_\star$, $B$), zero discriminant on the
+  $\mathrm{IV}$ side ($F'$). Both strata belong to the original one-node family ($F'$ has
+  one node at a $\tau$-fixed corner, smooth elsewhere — certified), so the quantifier
+  *includes* the $\mathrm{IV}$ side, and the m5 Lemma 5.1 final sentence ("some ruling other
+  than the node's") is to be read as false there: $F'$'s two degree-$1$ classes live at the
+  node fibre itself. The obstruction pair ($b_0$, $b_\star$) is on the certified $\mathrm{I_2}$
+  side, so the $\nu$-obstruction diff stands as proven on its stated inputs; and $F'$'s role
+  in the general-vs-witness argument is consistent, its extra classes being the
+  anti-invariant $C_1,C_2$ of the $\mathrm{IV}$ configuration.

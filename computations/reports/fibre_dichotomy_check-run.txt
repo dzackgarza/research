@@ -1,0 +1,6 @@
+corpus   (sec-explicit-curve): a02=2, a04=3, node condition ok: True, ftwiddle(0,Y) = 3*Y^2 + 2, disc = -24 -> I_2 (two distinct geometric roots -> D+(L_1-D), degrees 0,2)
+m5 b0: a02=-5, a04=-1, node condition ok: True, ftwiddle(0,Y) = -Y^2 - 5, disc = -20 -> I_2 (two distinct geometric roots -> D+(L_1-D), degrees 0,2)
+m5 bstar: a02=13, a04=-10, node condition ok: True, ftwiddle(0,Y) = -10*Y^2 + 13, disc = 520 -> I_2 (two distinct geometric roots -> D+(L_1-D), degrees 0,2)
+m6 member B (coeff list): a02=-6, a04=8, node condition ok: True, ftwiddle(0,Y) = 8*Y^2 - 6, disc = 192 -> I_2 (two distinct geometric roots -> D+(L_1-D), degrees 0,2)
+m8 F' (corner x1=y1=1): a02=0, a04=1, node condition ok: True, ftwiddle(0,Y) = Y^2, disc = 0 -> IV (double point -> C1+C2+D, degrees 1,1,0)
+m3 check both tangent: a02=0, a04=1, node condition ok: True, ftwiddle(0,Y) = Y^2, disc = 0 -> IV (double point -> C1+C2+D, degrees 1,1,0)

@@ -382,7 +382,14 @@ pitched pair; the $F'$ member of `sm57_obstruction-m8.md` is on side (ii) (its q
 part reads $(1,1,0)$), and its two degree-$1$ classes are exactly the $C_1,C_2$ of the
 $\mathrm{IV}$ configuration, which the first version of this paragraph's frame would have
 been wrong for. (The confirmed fibre contents and the $\chi$-bookkeeping ($2+22$, $2+2+2+18$,
-$4+2+18$ against $24$) are all in `sm00_audit-witnesses-run.txt`.) The other $\tau$-fixed ruling (the
+$4+2+18$ against $24$) are all in `sm00_audit-witnesses-run.txt`.) *Adjudication, with a
+maintained-level check:* side (ii) **belongs to the original family** — $F'$ is a one-node
+member with an ordinary node at a $\tau$-fixed corner and smooth elsewhere — and side (i) holds for the corpus member,
+$b_0$, $b_\star$ and $B$; so a universal "$\mathrm{I_2}$, degrees $0$ and $2$" quantifier
+over one-node members is false, and this document's Lemma 5.1 final sentence is to be read as
+false on side (ii), where the degree-$1$ classes live at the node's fibre itself. The
+$\nu$-obstruction above uses only the side-(i) pair, which the check certifies, so its
+conclusion is unaffected. The other $\tau$-fixed ruling (the
 "infinity" one, which does not contain $p$) is not excluded and is covered by the
 conclusion: "other than the ruling through $p$" includes it.
 
