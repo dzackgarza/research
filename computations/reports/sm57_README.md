@@ -349,3 +349,35 @@ m7 (six of seven directions; m3, m5 still running).  Referee scope corrections a
 dossier where they bind (Theorem R's fixedness hypothesis, Theorem 4(a)'s Torelli dependence,
 the $(Lat)\nRightarrow(Chm)\nRightarrow(Hdg)$ one-sided readings, the corrected Lefschetz
 normalization census, and the current provider pin's constructor capability).
+
+
+## `smw0o7jbf` outcome register (A20 direct period theorem: image and monodromy)
+`smwo_direct-period.md` is the published dossier for the original `@prob:B24`/`@prob:B25`
+obligations, from the accepted solution m2/d6 of the run `smw0o7jbf`, with the referee's three
+caveats recorded at each theorem (the run's `REFEREE-verdict-m2.md` has the audit trail):
+- **Theorem A** (pointwise exclusion of the whole $T_\Co$ $(-2)$-arrangement from every construction
+  member's period, by Riemann–Roch + $\iota_{dP}$ inversion + pointedness):
+  **arrangement = $\{\delta^\perp:\delta\in T_\Co,\delta^2=-2\}$, excluded pointwise, not generically**.
+- **Theorem B** (the "missing geometric realisation" of the corpus's :1015 closed at the exact
+  chamber hypothesis "$2H-\alpha$ Kähler"—via fixed-class effectivity + global Torelli, with the
+  flagged statement-level input (R)).
+- **Theorem C** (model rigidity: every such Coble K3 belongs to the direct construction identically
+  on the component: the resolved quotient is the smooth rational $b_2=3$, $K^2=7$ model with the
+  genus-8 branch, and contracting recovers $(P^1\times P^1$, irreducible one-node-at-$\tau$-fixed
+  $(4,4)$, $H=\pi^*\mathcal O(1,1)$, product symplectic).
+- **Theorem D** $\operatorname{im}(p) = \DCoOc/\Gamma_L$, with B24's three markers itemized
+  (arrangement excluded pointwise; chamber = one labelled inequality; exceptional root encoded),
+  and fibres $=\operatorname{Aut}(Y)^\tau$-orbits, dimension 9.
+- **Theorem E** (B25 at quotient-group content): marking cover $\cong \DCoOc$ with deck $=G_1=G_2
+  =\Gamma^\dir_{\Co,2}$; the identification $\Gamma^\dir = \Gamma_L$ is **left open** (equality iff
+  the chamber datum is determined by $(H,\alpha)$; no quotient replaced by notation); $G_3,G_4$
+  untouched.
+- **(T-mixed) named as the next arithmetic theorem**: existence and effectivity of a mixed
+  $\delta = s+t$ with $\delta^2=-2$ and $(2H-\alpha)\cdot\delta=0$ at some $q\in D_\Co^o$, deciding
+  between image = exact arrangement complement (B24 verbatim) and image-minus-a-further-closed
+  stratum; the pure $S_\Co$- and $T_\Co$-cases are proved removed in the dossier.
+
+Still untouched here: the same-run adjudications of the four-group equality
+(`@prob:group-identification`), the certified negative pair with its verified scope, and the
+conditional Hodge bridge; the checklist of the dossier's own remaining obligations is in its last
+section.
