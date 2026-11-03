@@ -324,3 +324,28 @@ re-runners: this VM's live image still prints the historical `AttributeError` on
 `DS.isometry_to(...)`; the validated-pin capability is cited at the pin, and the checkout's
 lattice-level sanctioned constructors `glue_map` / `Isom(...).an_element()` cover the gluing the
 corpus actually presents.)
+
+## `smw0kq02h` status register (M1 member/period + chamber bridge)
+`smwg_chamber-bridge.md` is the published dossier for the two remaining questions, with its own
+premise ledger and hostile-reader checklist: **(Q1) existence** — the authored single operator
+$I_\Co := w_\alpha I_\En$ is realized on a smooth, nonempty, unobstructed 9-dimensional family
+(deformation arguments proved in place; the open locus stated exactly as the wall complement of the
+amplitude condition, with `Pic = S_Co` kept Baire-general, never Zariski-open); the reflected pair
+is realized by commuting automorphisms on it (effective Torelli with $A = 2H - \alpha$), while
+$w_\alpha, I_\En, I_{dP}$ are *never* geometric there (they send $A \mapsto 2H+\alpha$ with
+$(2H+\alpha)\cdot\alpha = -2 < 0$), and the authored companion fails the construction's joint
+multiplicities $(10,1,0,11)$ vs $(3,8,0,11)$. **Adjunction**: the reflection's whole algebraic
+content is adjoining one root (rootless AEGS pair $(2,8,0,12)$ with $\alpha \in V_{--}$ to the
+rooted one-node pair $(3,8,0,11)$ with $\alpha \in V_{++}$) — eigenlattice arithmetic, *not* a
+geometric degeneration construction. **(M1) determination**: proved non-determination — the
+realization family carries models with both clause-verdicts ($b_0$ side holds, $b_\star$ side
+fails by Theorem 9), so the twist-vs-construction chamber clause is not well-posed from the
+original data; root-sign blindness (Theorem D1) shows effectivity/chamber are not lattice data at
+all. **(Q2)**: the Hodge + $2H-\alpha$-ample + effective-Torelli bridge is the *sufficient* route;
+necessity is not available and in general false by the `prop:chamber-conditional` mechanism
+(generic pairs can share chambers without Hodge); the certified obstruction is preserved verbatim
+with its consequences derived by contraposition. Accepted solutions so far: m8, m1, m4, m6, m2,
+m7 (six of seven directions; m3, m5 still running).  Referee scope corrections are folded into the
+dossier where they bind (Theorem R's fixedness hypothesis, Theorem 4(a)'s Torelli dependence,
+the $(Lat)\nRightarrow(Chm)\nRightarrow(Hdg)$ one-sided readings, the corrected Lefschetz
+normalization census, and the current provider pin's constructor capability).
