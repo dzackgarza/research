@@ -1,0 +1,11 @@
+A_T q-profile: {0.0: 528, 0.5: 528, 1.0: 496, 1.5: 496}
+A_S q-profile: {0.0: 528, 0.5: 496, 1.0: 496, 1.5: 528}
+E8 mod-2 classes: 256
+r=2: |level q=1.5|=496, witnessed=496, level-witnessed=[], witnessed-level=0
+r=4: |level q=1.0|=496, witnessed=496, level-witnessed=[], witnessed-level=0
+r=6: |level q=0.5|=528, witnessed=527, level-witnessed=[(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)], witnessed-level=0
+r=8: |level q=0.0|=528, witnessed=528, level-witnessed=[], witnessed-level=0
+u=0 v=-2 k=0: solutions=1
+u=0 v=0 k=2: solutions=188
+u=0 v=2 k=0: solutions=1
+BAD_S: 95

@@ -126,6 +126,42 @@ notation anywhere below.
   exactly `(D1)` plus `(RI)` — themselves named, and the `T_Co`-surjectivity removed from `(D2)`s
   path. Readings (b)/(c) stand as faithful counter-readings; no group equality by notation; the
   cross-member transport fork stays open as it stood.
+- **Pass 7 (this pass, run `smw0uqe8g`'s remaining verdicts folded in: (X1), (X2), (X-TM),
+  the `T_Co`-surjectivity, and the census correction at norm `-6`).** Five decisions, each
+  referee-verified. (i) **(X-TM) fails: the (F2),(F3) pairing is FORCED for EVERY full-graph
+  glue** (m5/d1 and m1/d5, accepted by two independent routes; records
+  `.ultramath/smw0uqe8g/REFEREE-verdict-m5.md`, `...-m1.md`). The decisive identity is at the
+  discriminant form: `{z in A_{T_Co} : q_T(z) = 1} = BAD_T(-4)` exactly (referee-recomputed:
+  level 496, witnessed 496, zero slack in either direction), and every `xi in BAD_S` has
+  `q_S(xi) = -1`, so the glue's isotropy (`q_S + q_T == 0 (mod 2)`, `L_K3` even) forces
+  `gamma(xi)` into that level — all 121 classes, for every glue, pinned or not. B24 VERBATIM is
+  therefore FALSE for every glue; the statement of record is the corrected complement with the
+  charged walls pinned (the (T-mixed) theorem below). The earlier "no counting argument forces
+  a pairing" was right about counting and wrong as a release: the partner is constrained to a
+  single `q`-level, and that level IS `BAD_T(-4)` — forced by the level-set identity, not by
+  cardinality. (ii) **(X2) is closed, negatively** (m3/d3, accepted; record
+  `...-m3.md`): no marked pair with `S_Co` algebraic and `A = 2H - alpha` ample has `alpha`
+  reducible — the fibre count at `A.alpha = 2` forces an `A_2` cusp at the unique singular
+  branch point, and a `tau`-fixed point (`d tau = -id`, Cartan-linearised) of a `tau`-invariant
+  curve is never a cusp (even germs have Milnor number in `{1} u [3, +inf)`, the cusp has `2`).
+  Hence there are no nonempty TAC strata: `O~ = O` and `im(p) = O~/Gamma_L` hold
+  UNCONDITIONALLY; every (F4)-paired wall is ampleness-dead on both sides regardless of sign.
+  (iii) **Census corrected at norm `-6`**: `BAD_T(-6) = 527`, not 528 — the 528-element level
+  set `{q_T = 1/2}` is `BAD_T(-6)` together with the single class `eta_0 = [g/2]` (for `g` of
+  the `<2>` summand), which carries no vector of norm `-6` (`t^2 == 2 (mod 16)` with `c` odd,
+  vs `-6 == 10 (mod 16)`), and none of norm `-2, -4, -8` either; the published 528 came from
+  the parity heuristic at `coble_mixed_census2.py`:151-152. Consequence: the (F4) wall exists
+  iff `gamma([alpha/2]) != eta_0` — one bit about the pinned glue, still open; by (ii) its
+  truth value cannot revive any `A`-ample stratum. (iv) **The image, decided**:
+  `im(p) = O/Gamma_L` with `O` the corrected complement below (the 121 charged Heegner walls
+  always charged; the (F4) wall unless `gamma([alpha/2]) = eta_0`); and
+  `im(p) = O~/Gamma_L` unconditionally. (v) **The `T_Co`-surjectivity (the owner-undecided
+  input of (D2)) is decided** (m2/d7, accepted; record `...-m2.md`):
+  `O(T_Co) -> O(A_{T_Co}, q)` is surjective, index 1, by Nikulin's Thm 1.14.2 applied directly
+  (its condition (b) live and discharged by the literal `U(2)` summand) independently of
+  Thm 3.6.3, whose "as is easily seen" case is verified for this lattice. No
+  discriminant-level obstruction anywhere in (D2); its remaining content is kernel-level, i.e.
+  (RI), unchanged. B25's residual content stays exactly `(D1) + (RI)`.
 
 ## Theorems, at their registered scopes
 
@@ -550,7 +586,11 @@ dominance-to-surjectivity inference appears anywhere. `square`
   `alpha` reducible, by Theorem SPLIT's class-membership check and Lemma 4's ampleness-counting),
   so `im(p) = O~/Gamma_L` as well; and if moreover the pinned glue carries no (F2),(F3)-class,
   then `O~ = O = D_Co^o` exactly and B24 holds verbatim. None of this rests on any realization
-  beyond those of the original family.
+  beyond those of the original family. Pass 7 settles every antecedent of that ladder: the
+  pinned glue is never (F2),(F3)-free — every full-graph glue carries all 121 (F2),(F3)
+  classes — and (X2)'s negative closure gives `O~ = O` unconditionally; so the decided
+  statements are the unconditional `im(p) = O~/Gamma_L` and, in place of the ladder's top
+  rung, the corrected-complement image theorem of the (T-mixed) block below.
   **(Necessity-direction, with each equality stated at its own domain's criterion — the earlier
   merged form is corrected.)** An (F4)-carrying wall's periods fall into exactly two behaviors at
   any realization: with the `A`-negative sign, ampleness fails at every point of that wall (the
@@ -569,17 +609,18 @@ dominance-to-surjectivity inference appears anywhere. `square`
   > `A`-ample realization (no nonempty TAC stratum).
   > B24 VERBATIM: `im(p) = D_Co^o/Gamma_L`, `D_Co^o := D \ NL_2`,  iff
   > **(X-TM)** the pinned glue carries NO (F2),(F3),(F4) pairing at all.
-  Here `(X-TM)` — the full (T-mixed)-no — is the discriminant-form question about the pinned
-  glue (open; the maintained ambient exists, and the correct Enriques-side anchors for it are
-  `T_En = U + U(2) + E8(2)` of rank `12` and det `2^10` with `alpha = e - f` in the first `U`
-  and `T_Co = alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2) = <2> + U(2) + E8(2)` of rank `11`,
-  report :472-:505, :73; the earlier `rank-10` shorthand in referee communications is wrong and
-  is withdrawn). `(X2)` is the named geometric question **(T-strata)** about the existence of
-  `alpha`-reducible tacnode-alternative (A2) members with the same labels — attacked via the
-  cuspidal discriminant inside the one-node locus's closure in `|H_p|` and the
-  effectivity/ampleness-sign analysis there (with ties to m4's `Heeg_one`/`(warn:special-null)`
-  reading). Both are left open exactly as stated; the tacnode strata are NOT claimed closed by
-  publication, and no group equality is asserted anywhere.
+  The two conditions pinned in these criteria are now DECIDED (pass 7). `(X-TM)` fails: the
+  pinned glue — like every full-graph glue — carries all 121 (F2),(F3) classes, and its (F4)
+  half reduces to the single open bit `gamma([alpha/2]) = eta_0`; so the discriminant-form
+  question survives only as that one bit (the correct Enriques-side anchors for the pinning
+  route stand: `T_En = U + U(2) + E8(2)` of rank `12` and det `2^10` with `alpha = e - f` in
+  the first `U` and `T_Co = alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2) = <2> + U(2) + E8(2)`
+  of rank `11`, report :472-:505, :73). `(X2)`, the named geometric question **(T-strata)** of
+  the existence of `alpha`-reducible tacnode-alternative (A2) members with the same labels, is
+  closed negatively (m3/d3 of `smw0uqe8g`, accepted): no such member exists at `A` ample.
+  Hence, at their own domains: `im(p) = O~/Gamma_L` holds unconditionally (with `O~ = O`),
+  and `im(p) = D_Co^o/Gamma_L` is FALSE for every glue — the statement of record being the
+  corrected complement of the (T-mixed) theorem below. No group equality is asserted anywhere.
 
 The three markers of B24, at their now-proved content:
 
@@ -594,6 +635,11 @@ The three markers of B24, at their now-proved content:
   bullet of `O`; the tacnode alternative), the un-glued walls of those norms are *not* excluded
   (their periods may well be in `O` and in the image). Hence
   > `O = D(T_Co) \ [ NL_2(T_Co)  U  {gamma-paired (F2),(F3),(F4) walls} ]`.
+  Pass 7 pins this display: the (F2),(F3) walls are paired for EVERY full-graph glue and always
+  charged (121 Heegner divisors, norm `-4`); the (F4) wall is charged iff
+  `gamma([alpha/2]) != eta_0` (one pinned bit, open); and by (X2)'s negative closure every
+  charged wall is ampleness-dead at every realization, so nothing beyond this display is ever
+  charged.
 - **The chamber** is the single labelled condition "`2H-alpha` ample": `A` lies on the Kahler side
   of the positive cone on the whole component (the sign of `A.omega` is locally constant on the
   labelled moduli, descends because every label-preserving change of marking fixes `A`, and is `+`
@@ -616,11 +662,14 @@ divisor, algebraic by Baily-Borel on the arithmetic quotient). The corpus's stan
 consistent with every exclusion proved, with this reading; a density claim for a fixed-norm
 arrangement is the (rejected) false form.
 
-**Theorem (residual (T-mixed), at its verified census and its completed pairing table).** With
-`L_K3 supset S_Co perp T_Co` of index `2^11` and the full-graph glue `A_{S_Co} =~ A_{T_Co}(-1)`,
-Lemma L.2's census and the wall identification above (`x^perp cap D = t^perp cap D`) show the
-excluded walls of the image are the pure `T_Co`-roots plus, at most, the glued (F2),(F3),(F4)
-families; and:
+**Theorem ((T-mixed), discharged at every glue except the one pinned (F4) bit; B24 VERBATIM
+false).** With `L_K3 supset S_Co perp T_Co` of index `2^11` and the full-graph glue
+`A_{S_Co} =~ A_{T_Co}(-1)`, Lemma L.2's census and the wall identification above
+(`x^perp cap D = t^perp cap D`) show the excluded walls of the image are the pure `T_Co`-roots
+plus, at most, the glued (F2),(F3),(F4) families; and which of those are charged is now
+DECIDED (pass 7): (F2) and (F3) — all 121 classes — are paired into `BAD_T(-4)` by EVERY
+full-graph glue, and (F4) is charged iff `gamma([alpha/2]) != eta_0`. The census stands as
+verified:
 
 - `BAD_S` — the 2-adic classes of `S_Co` containing an `A`-null `s` of norm `-4` — has exactly
   **121** classes: the 120 (F3)-classes (`(a,b) = (0,0)` in the `U`-part, `w` a root class of
@@ -634,31 +683,40 @@ families; and:
 - `BAD_T` — the 2-adic classes of `T_Co` containing a norm-`(-4)` `t` — has exactly **496**
   classes (`3 * 120 + 136`), where the `E8`-class split is `120` classes of `q`-value `1` in
   `E8/2E8` (reachable by a root, and exactly those) versus `136` of `q`-value `0` including zero.
-- So `|BAD_S| = 121 <= |NOTBAD_T| = 1024 - 496 = 528`: no *counting* argument forces a glue
-  pairing of a `BAD_S` class with a `BAD_T` class. That is all the cardinality comparison
-  establishes; it does not construct or prove existence of a quadratic-form-compatible glue
-  avoiding every pairing. Such an existence claim would have to be exhibited through the
-  maintained discriminant-form constructor (`DS.isometry_to(DT.twist(-1))` at the validated pin
-  `6ad7a5ea396da6e758ee28f3dea10a35baee0266`; the local image does not implement it), and it is
-  **left open**, separately from the pinned-glue question itself. The pairing question is now
-  asked for all three families, with each domain and partner space machine-corroborated by bounded
-  exact enumeration (self-stability asserted across two box sizes, exploratory tier):
-  > **(T-mixed).** Does the pinned Coble glue (recorded as an open datum at report :661 item 7)
-  > pair
-  > (F2) the one class `[ (e-f)/2 ]`        into the 496-class partner space at norm `-4`, or
-  > (F3) one of the 120 root classes `[w/2]` into that same 496-class partner space, or
-  > (F4) the class `[alpha/2]`              into the 528-class partner space at norm `-6`?
+- `BAD_T` is not a level set by cardinality but ONE `q`-level set exactly:
+  `{z in A_{T_Co} : q_T(z) = 1} = BAD_T(-4)` (referee-recomputed over all 2048 classes: level
+  496, witnessed 496, zero slack in either direction; the `A_{T_Co}` profile is
+  `{0:528, 1/2:528, 1:496, 3/2:496}`), while `{q_T = 1/2} = BAD_T(-6) u {eta_0}` with
+  `BAD_T(-6) = 527` and `eta_0 = [g/2]` carrying no norm-`(-6)` vector (pass 7 (iii)). The
+  earlier cardinality comparison (`121 <= |NOTBAD_T| = 528`, "no counting argument forces a
+  pairing", an avoiding glue "left open") measured the wrong target and is withdrawn as a
+  release: the glue's isotropy (`q_S + q_T == 0 (mod 2)`) pins every partner to a single
+  `q`-level, and every `xi in BAD_S` sits at `q_S = -1`, so the (F2),(F3) partners land in
+  `{q_T = 1}` — which IS `BAD_T(-4)`. The forced pairing is decided by two independent
+  accepted routes (m5/d1's normal-form census plus `E8/2E8` count; m1/d5's exhaustive
+  level-set audit), each referee-recomputed:
+  > **(T-mixed), answered.** The pinned Coble glue — and IN FACT every full-graph glue —
+  > pairs (F2) the one class `[ (e-f)/2 ]` and (F3) all 120 root classes `[w/2]` INTO
+  > `BAD_T(-4)` (charged, always), and (F4) the class `[alpha/2]` into the `527 + {eta_0}`
+  > partner space at norm `-6`, whose wall is charged iff `gamma([alpha/2]) != eta_0`.
   
-  Consequently, at their own domains: `im(p) = O~/Gamma_L` iff `(X2)`; and B24 VERBATIM
-  (`im(p) = D_Co^o/Gamma_L`, `D_Co^o = D \ NL_2`, with the chamber and root content of Theorem D)
-  iff the pinned glue carries **no (F2),(F3),(F4) pairing at all** — because any single pairing
-  makes some `D_Co^o`-point miss the image ((F2),(F3),(F4)-paired walls all sit inside `D_Co^o`:
-  (F2),(F3) by ampleness death and (F4) by either ampleness-death or alpha-reducibility). In every
-  case the chamber and root content of Theorem D stands; and the two equality questions are
-  separately named, not merged. An earlier hand-sketch asserting a forced pairing was
-  retracted above as a miscount; the counts here are machine-corroborated by bounded exact
-  enumeration (`BAD_S = 121`, partner spaces `496`, `528`, self-stability asserted across two box
-  sizes in the run log; exploratory tier).
+  Consequently (pass 7 (i),(ii)): `im(p) = O~/Gamma_L` holds unconditionally (`O~ = O`, (X2)
+  closed negatively); and B24 VERBATIM (`im(p) = D_Co^o/Gamma_L`, `D_Co^o = D \ NL_2`, with the
+  chamber and root content of Theorem D) is FALSE for every glue — each of the 121 (F2),(F3)
+  walls is charged and sits inside `D_Co^o` while its points never lie in `O` (the (F4) walls,
+  ampleness-dead on both sides by (X2), are not even needed). The statement of record is the
+  image theorem with the charged walls pinned:
+  > `im(p) = O/Gamma_L`,  with
+  > `O = D(T_Co) \ [ NL_2  U  (union_{xi in BAD_S} Heeg_{gamma xi})  U  E_F4 ]`,
+  > `E_F4 = Heeg_{gamma([alpha/2])}` if `gamma([alpha/2]) != eta_0`, empty otherwise,
+  > `Heeg_eta := union_{t in T_Co, [t/2] = eta, t^2 in {-4,-6}} t^perp`.
+  The single remaining glue-dependent bit — whether `gamma([alpha/2]) = eta_0` for the PINNED
+  glue — is provably not decidable from lattice invariants alone (every even index-`2^11`
+  overlattice of `S_Co perp T_Co` in signature `(3,19)` is isometric to `L_K3`, and some
+  anti-isometry does send `[alpha/2]` to `eta_0`, by order-2-summand matching); it needs the
+  pinned glue itself, at a maintained discriminant-form constructor the local image does not
+  implement (the only `isometry_to` in the c546 image is lattice-level,
+  `lattices.py`:4373; the image does not import under this VM's Sage 10.8).
 - The brick probe (`coble_mixed_gluing_probe.py` +`-run.txt`): the diagonal/anti-diagonal glue of
   `U^3 + E8(-1)^2` carries two mixed wall classes (`x = e_a - f_a`, `x = e_b - f_b`, `x^2 = -2`,
   `H.x = 0`, `A.x = 0`, both projections nonzero — their class pair is exactly the (F2)-type
@@ -699,18 +757,29 @@ families; and:
    > `Gamma^dir_{Co,2} = Gamma_L`
    as a lattice-level statement (m4 of run `smw0uqe8g`, accepted with the audit recorded at
    `computations/reports/smw0_ch-direction-audit.md` and the mark `.ultramath/smw0uqe8g/REFEREE-verdict-m4.md`;
-   no weaker chamber or group is substituted anywhere). The full-lattice and period-domain
-   counter-readings are distinct objects from the authored chamber, recorded there, and do not
-   disturb the chain; the cross-member *transport* fork of the corpus's fourth bullet is untouched
-   by this decision and stays open as it stood.
+   no weaker chamber or group is substituted anywhere). The invariance step itself is established
+   by marking-transport bookkeeping (a model class's effectivity is a property of the realization
+   pair and transports compatibly, so the transported effective arrangement is the stabiliser's
+   inverse-translate of the old one, and the `(H, alpha)`-pinning formula returns the same chamber;
+   no Hodge-automorphism assumption is used: `computations/reports/smw0_ch-direction-audit-addendum.md`,
+   sec. 1). And the `(D2) <=> (RI)` shape is kept only at the normalised-section reading, where
+   both directions have the genuine subgroup proof (`smw0_ch-direction-audit-addendum.md`, sec. 2;
+   an un-normalised lift-family would admit nontrivial kernel elements as lifts of `1 in P`, and
+   its converse is not on this foundation). The full-lattice and period-domain counter-readings are
+   distinct objects from the authored chamber, recorded there, and do not disturb the chain; the
+   cross-member *transport* fork of the corpus's fourth bullet is untouched by this decision and
+   stays open as it stood.
    The residual content of B25 is then exactly the two named pieces, with nothing else intervening:
    (D1) *monodromy-maximality*: the family's discriminant meets every `Gamma^dir`-orbit of walls;
-   (RI) *reflection index*: is `ker rho_{T_Co}` (the `O^+`-stable group with the discriminant
-   action's kernel) generated by the `(-2)`-reflections of `T_Co`? — with the observation that every
-   wall reflection already lies in the stable group (`rho_T` is trivial on lattice-vector
-   reflections because `[delta] = 0` in `A_{T_Co}`), so `(D2)` is equivalent to `(RI)`. Both are
+   (RI) *reflection index*: is `ker rho_{T_Co}` generated by the `(-2)`-reflections of `T_Co`? —
+   with the observation that every wall reflection already lies in the stable group (`rho_T` is
+   trivial on lattice-vector reflections because `[delta] = 0` in `A_{T_Co}`), and the equivalence
+   `(D2) <=> (RI)` kept only at the normalised-section reading (the converse needs the lift of
+   `1 in P` normalised; both directions then have the subgroup proof). Both `(D1)` and `(RI)` are
    named open; in particular the `T_Co`-surjectivity of `coble_labeled_embedding-run.txt` SS3.3-3.4
-   enters only the four-group comparisons, not `(D2)`. With `(D1) + (RI)`, B25 concludes
+   enters only the four-group comparisons, not `(D2)` — and is now DECIDED: `O(T_Co) ->
+   O(A_{T_Co}, q)` is surjective, index 1 (m2/d7 of `smw0uqe8g`, accepted at
+   `.ultramath/smw0uqe8g/REFEREE-verdict-m2.md`). With `(D1) + (RI)`, B25 concludes
    `G1 = G2 = G5`; `G3, G4` are untouched; `@prob:group-identification` stands unchanged with no
    equality by notation.
 
@@ -726,9 +795,9 @@ families; and:
 | 6 | Nikulin's fixed-locus classification for 2-elementary involutions at `(r,a,delta) = (3,3,1)` and `(11,11,1)` (computed in place); Noether/Castelnuovo numerics; del Pezzo classification degree `7` (Demazure, LNM 777) | standard/book tier |
 | 7 | `2H-alpha` ample on every member; characters/ranks | corpus lemmas 1.3, 2.2 of `sm00_positive-half-A21.md` |
 | 8 | Swarm-accepted intermediate theorems (exclusion mechanisms; cover-step ingredients; monodromy generators; sign constancy; m6's arrangement computation and audit) | referee-accepted with records |
-| 9 | Verified class censuses: `BAD_S = 121`, `BAD_T = 496`, the `E8`-split `120/136`, the `ell`-bound, the quadratic deficit | exact arithmetic, `coble_mixed_census.py` (+run log), exploratory tier |
+| 9 | Verified class censuses: `BAD_S = 121`, `BAD_T = 496`, the `E8`-split `120/136`, the `ell`-bound, the quadratic deficit; the `q`-level identities `{q_T = 1} = BAD_T(-4)` and `{q_T = 1/2} = BAD_T(-6) u {eta_0}` with `BAD_T(-6) = 527` (pass 7 (i),(iii)) | exact arithmetic, `coble_mixed_census.py` (+run log), exploratory tier; level identities referee-recomputed twice independently |
 | 10 | The brick ambient `U^3 + E8(-1)^2`: maintained embeddings, glue order `2^11`, two mixed wall classes | maintained construction (`coble_mixed_gluing_probe.py`); exploratory with respect to B24 |
-| 11 | Every mixed class's wall equals its `t`-part's wall (m8-round2 Theorem 2.1, verified); the pairing table (`496/528`, stability-asserted) | referee-verified; exact arithmetic, `coble_mixed_census2.py` (+run log), exploratory tier |
+| 11 | Every mixed class's wall equals its `t`-part's wall (m8-round2 Theorem 2.1, verified); the pairing table (`496`/`527 + {eta_0}`, the 528 of `coble_mixed_census2.py`:151-152 corrected at pass 7 (iii)) | referee-verified; exact arithmetic, `coble_mixed_census2.py` (+run log) with the correction, exploratory tier |
 
 Computation used is hand-carried exact arithmetic small enough to check line by line; the machine
 counts are verified and each is also proved in the text.
@@ -749,17 +818,22 @@ counts are verified and each is also proved in the text.
 
 ## What remains open next (named, not cosmetic)
 
-* `(T-mixed)` — the glue-pairing question above, deciding between the two branches of B24;
-  attackable by computing the pinned Coble glue's action on the 121 `BAD_S` classes (the maintained
-  machinery for the ambient exists; the pinned glue is the recorded open datum). Reference inputs
-  for the pinning route, corrected at their source: `T_En = U + U(2) + E8(2)` of rank `12` and det
-  `2^10`, `alpha = e - f` in its first `U`, `T_Co = alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2)` of
-  rank `11` and det `-2^11`, `S_En + T_En` of index `2^10` in `L_K3` with the full-graph gluing
+* `(T-mixed)` — DISCHARGED except one pinned bit (pass 7): every full-graph glue pairs all 121
+  (F2),(F3) classes into `BAD_T(-4)`, so B24 VERBATIM is false and the corrected complement is the
+  statement of record; the (F4) wall is charged unless `gamma([alpha/2]) = eta_0`, and deciding
+  THAT equality for the pinned glue is the single remaining glue-dependent question — provably not
+  decidable from lattice invariants alone. Route: the pinned glue from the labelled-corner data or
+  the Enriques side, at a maintained discriminant-form constructor the local image does not
+  implement. Reference inputs for the pinning route, corrected at their source: `T_En = U + U(2) +
+  E8(2)` of rank `12` and det `2^10`, `alpha = e - f` in its first `U`, `T_Co =
+  alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2)` of rank `11` and det `-2^11`, `S_En + T_En` of index
+  `2^10` in `L_K3` with the full-graph gluing
   (report :73, :472-:505, :575-:585, :333; an earlier `rank-10` shorthand for `T_En` is withdrawn).
-* `(D1)` and `(D2)` of Theorem E — with `(D2)` equivalent to the reflection-index question
-  **(RI)** (is `ker rho_{T_Co}` generated by `T_Co`'s `(-2)`-reflections?); `W_node <= G1` is
-  computed; the `T_Co`-surjectivity enters only the four-group comparisons, not `(D2)` (m4's D2',
-  accepted).
+* `(D1)` of Theorem E, together with the reflection-index question **(RI)** — is
+  `ker rho_{T_Co}` generated by `T_Co`'s `(-2)`-reflections?; `(D2) <=> (RI)` kept only at the
+  normalised-section reading (both directions proved there on the subgroup argument; a spurious
+  kernel-side obligation from an earlier bookkeeping is retracted);
+  `W_node <= G1` is computed.
 * `Gamma^dir_{Co,2} = Gamma_L` — **decided** at the authored chamber's reading (CH: m4 of
   `smw0uqe8g`, accepted at `.ultramath/smw0uqe8g/REFEREE-verdict-m4.md`): the chamber is determined
   by `(H, alpha)` at every member with the accumulation hedge collapsed; readings (b)/(c) remain
