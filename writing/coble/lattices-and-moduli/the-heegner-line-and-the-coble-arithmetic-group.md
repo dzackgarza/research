@@ -681,6 +681,31 @@ In the situation of @prop:one-node-family the monodromy representation of $R^2\w
 Monodromy is parallel transport along loops, which by @thm:one-node-transport preserves each of the four pieces.
 :::
 
+::: {.proposition #prop:det-saturation-del-pezzo title="The del Pezzo invariant lattice is the flat lattice, index one"}
+
+For a one-node member as in @prop:del-pezzo-type-on-the-resolution — the resolved K3 $\widehat X_b$ of the double cover of $\widehat Y = \Bl_p(\PP^1\times\PP^1)$ branched along the smooth proper transform $\widetilde B$, with $e_b = \widehat\pi^*h_1$, $f_b = \widehat\pi^*h_2$ the ruling pullbacks and $D_b = \widehat\pi^*e$ the exceptional $(-2)$-curve —
+$$S_{\mathrm{dP},b}=H^2(\widehat X_b,\ZZ)^{\widehat\iota_{\mathrm{dP}}=+1}
+=\Lambda=\langle e_b,f_b,[D_b]\rangle\cong U(2)\perp\langle-2\rangle,\qquad \det S_{\mathrm{dP},b} = 8,$$
+and the index-$2$ candidate $U\perp\langle-2\rangle$ (det $2$) of the corpus's earlier candidates does not occur. In particular every $I_{\mathrm{dP}}$-invariant class pairs evenly with each ruling class.
+:::
+
+::: {.proof}
+
+*Context and hypotheses on which this depends: one node at a $\tau$-fixed point whose proper transform is smooth, so that $\widehat\pi$ is a double cover of a smooth rational surface branched along a smooth curve — the node condition of @lem:node-condition and the resolution of @prop:del-pezzo-type-on-the-resolution; a second one is the irreducibility of a one-nodal $\tau$-invariant curve of bidegree $(4,4)$ (recorded and proved as reported in `computations/reports/sm57_audit-one-node-m2.md`, `lem:irred`), which is what keeps every fibre-divisor of each ruling's pullback reduced.*
+
+*Step 1 (index bound).* $S_{\mathrm{dP},b}$ is even and primitive in $L\definedas H^2(\widehat X_b,\ZZ)$. Since $\widehat\pi$ is finite flat of degree $2$, the transfer formula $\widehat\pi^*\widehat\pi_* = 1+\widehat\iota_{\mathrm{dP}}^*$ on $H^2(\widehat X_b,\ZZ)$ sends $x\in S_{\mathrm{dP},b}$ to $2x = \widehat\pi^*\widehat\pi_*x\in\Lambda$; hence $\Lambda\subseteq S_{\mathrm{dP},b}\subseteq\widehat\pi^*H^2(\widehat Y,\ZZ)=\Lambda\otimes\QQ$ rationally, equal ranks, and $[S_{\mathrm{dP},b}:\Lambda]\in\set{1,2}$ by $\det\Lambda=8$.
+
+*Step 2 (what index $2$ would impose).* Suppose $[S_{\mathrm{dP},b}:\Lambda]=2$ with $S/S_0 = \mathbb Z/2$. Pick $z\notin\Lambda$, write $2z=ae+bf+cD$; integrality of $z^2=ab-\tfrac{c^2}2$ forces $c$ even; evenness forces $ab$ even. If both $a,b$ even then $z\in\Lambda$, contrary to choice. Hence exactly one of $e_b/2,f_b/2$ is integral in $S$, and in particular $e_b\in2L$ or $f_b\in2L$. (This enumeration is exactly the two even half-classes the maintained provider's census returns, `computations/reports/sdp_discriminant_referee.py` and its log at pin `c546077d`, with the index-4 case removed by the same arithmetic.)
+
+*Step 3 (hypotheses: each fibre preimage is a reduced divisor).* For the fibration $\varphi=\phi_{|e_b|}\colon\widehat X_b\to\PP^1$ defined by $|e_b|$ (base-point free because $e_b=\widehat\pi^*h_1$ and $|\OO_Y(1,0)|$ is base-point free; each fibre class $[F_v]=e_b$), every fibre $F_v = \widehat\pi^{-1}(M)$ of a ruling line $M$ has all multiplicities $n_j=1$ in its component decomposition: $\widehat\pi$ is étale over the generic point of $M$ (branch points of the cover over $M$ sit in the finite set $\widetilde B\cap M$, and $M$ is not contained in $\widetilde B$ — with $B$ irreducible by the premise quoted above), so each component enters with multiplicity $1$.
+
+*Lemma (the ruling classes are primitive in $L$).* Suppose $e_b = 2\eta$ with $\eta\in L$ (hence $\eta\in\mathrm{NS}$, since $e_b$ is type $(1,1)$). Then $\eta^2=0$, $\eta\cdot e_b=0$, $\eta\cdot f_b=1$. Since $(-\eta)\cdot f_b=-1<0$ and $f_b$ is nef, $h^0(-\eta)=0$; Riemann–Roch on the K3 then gives $h^0(\eta)\ge2$, so let $E\in|\eta|$ be effective. Each component of $E$ lies in a fibre of $\varphi$ (from $\eta\cdot e_b=0$ and $e_b$ nef), and grouping by fibre, $E=\sum_v E_v$ with disjoint supports; the component span of one fibre is negative semidefinite (Hodge index on $e_b^\perp/\mathbb R e_b$), so $[E_v]=q_v[F_v]$ in that span with $q_v\in\mathbb Q_{\ge0}$ (sign by effectivity). Comparing coefficients with Step 3's $n_j=1$, every $q_v\in\mathbb Z_{\ge0}$. But then
+$$1=\eta\cdot f_b=\sum_v q_v\cdot(e_b\cdot f_b)=2\sum_v q_v,$$
+an integer on the right but $1$ on the left: impossible. Hence $e_b$ is primitive in $L$, and the same argument with the rulings exchanged shows $f_b$ primitive.
+
+*Conclusion.* By the steps, neither $e_b/2$ nor $f_b/2$ is integral in $L$, so Step 2's alternative is empty and $[S_{\mathrm{dP},b}:\Lambda]=1$. At $k=0$, $\Lambda=U(2)=\widehat\pi^*H^2(Y,\ZZ)$ retains its two summands and the same primitivity argument excludes the unimodular overlattice $U$ of step 2's family, deciding the earlier "$U(2)$ or $U$" binary in favour of $U(2)$.
+:::
+
 ::: {.remark #rmk:a21-open title="What the original operators do to the A21 slot, and why it is open"}
 
 *The root of the construction is an exceptional curve, and the slot fixes it.* By @prop:local-operators the fixed locus of $I_\Co$ on the cover is carried by the singular $\tau$-fixed points, and by @prop:del-pezzo-type-on-the-resolution each of them contributes an exceptional curve $D_g$ fixed pointwise after the resolution; there are no isolated fixed points, for the reason given there. The root of the construction is one of them: the exceptional curve over a singular $\tau$-fixed point, which is effective, of square $-2$ and of degree $0$ against $H$ because $\pi$ contracts it. Each $D_g$ is preserved by $\widehat\iota_{\mathrm{dP}}$ as well. Hence
