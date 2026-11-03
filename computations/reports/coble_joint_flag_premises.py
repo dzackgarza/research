@@ -2,12 +2,19 @@
 
 Published transplanted form of the m3/smw0gfl0i check
 (.ultramath/smw0gfl0i/m3/a21_m3_flag_theorem_check.py); self-contained, except for the
-sage_extensions provider package.  Two print lines are corrected against the original:
-the definite piece's note now makes no discriminant-image claim (the original said "its image
-is trivial", which is false: the actual image of O(E8(-2)) on A_{E8(-2)} is the full mod-2
-Weyl reduction O^+_8(F_2) with kernel {+-1}; see computations/reports/smwg_operator-extension.md
-SS3).  Every computed value is unchanged.  One duplicated assignment block was removed from
-section 5.  Run:
+sage_extensions provider package.  Three evidence labels are corrected against the original,
+with no computed value changed:
+ 1. the definite piece's note makes no discriminant-image claim (the original said "its image
+    is trivial", which is false: the actual image of O(E8(-2)) on A_{E8(-2)} is the full mod-2
+    Weyl reduction O^+_8(F_2) with kernel {+-1}; see smwg_operator-extension.md SS3);
+ 2. w is now built by the provider's own maintained constructor L.reflection(alpha) and turned
+    into a matrix by the corpus's own op_matrix idiom (applying the maintained operator to the
+    maintained basis of L), replacing a hand-built Wm = Id + a a^T G, and w(alpha) == -alpha is
+    printed as its maintained behaviour check;
+ 3. the product line no longer prints "symplectic" for what was only a nonidentity test: it
+    prints "is an involution" and "is not the identity" and says plainly that nonidentity is not
+    a symplectic-action check (the symplectic reading has its own cited proofs, smwg SS4).
+One duplicated assignment block was removed from section 5.  Run:
 
     JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot: \
     PYTHONPATH=/repo/.scratch/se-provider-c546/src \
@@ -91,19 +98,24 @@ for name, M in (('I_dP', M_dP), ('I_enr', M_enr)):
 
 alpha_vec = [0] * n
 alpha_vec[0], alpha_vec[1] = 1, -1
-# w = reflection in alpha:  w(x) = x + (x.alpha) alpha
-Wm = Id + matrix(ZZ, n, n, lambda i, j: (G[i, j] * 0))
-am = matrix(ZZ, n, 1, alpha_vec)
-Wm = Id + am * am.transpose() * G            # (x.alpha) alpha, since alpha^2 = -2
-print('w = L.reflection(alpha): isometry: %s, involution: %s'
-      % (Wm.transpose() * G * Wm == G, Wm * Wm == Id))
+# w by the provider's maintained constructor; matrix by the corpus's op_matrix idiom
+# (the maintained operator applied to the maintained basis of L).
+alpha_elt = L.linear_combination({0: 1, 1: -1})
+assert int(alpha_elt * alpha_elt) == -2
+w_ref = L.reflection(alpha_elt)
+Wm = matrix(ZZ, n, n, lambda i, j: int(w_ref(L.basis_vector(j)).to_vector()(i)))
+minus_alpha = L.linear_combination({0: -1, 1: 1})
+print('w = L.reflection(alpha): isometry: %s, involution: %s, w(alpha) == -alpha: %s'
+      % (Wm.transpose() * G * Wm == G, Wm * Wm == Id, w_ref(alpha_elt) == minus_alpha))
 M_Co = Wm * M_enr
 M_dPp = Wm * M_dP
 for name, M in (('J_Co = w o I_enr', M_Co), ('J_dP = w o I_dP', M_dPp)):
     print('%s: isometry: %s, involution: %s' % (name, M.transpose() * G * M == G, M * M == Id))
 print('J_Co and J_dP commute: %s' % ((M_Co * M_dPp == M_dPp * M_Co),))
-print('product J_Co J_dP is an involution: %s, symplectic (no +1 on the whole): %s'
-      % ((M_Co * M_dPp) * (M_Co * M_dPp) == Id, M_Co * M_dPp != Id))
+print('product J_Co J_dP is an involution: %s' % ((M_Co * M_dPp) * (M_Co * M_dPp) == Id,))
+print('product J_Co J_dP is not the identity: %s' % (M_Co * M_dPp != Id,))
+print('  (nonidentity is NOT a symplectic-action check; the symplectic reading has its own')
+print('   cited proofs, see computations/reports/smwg_operator-extension.md SS4 and N4 of SS1)')
 print('')
 
 # ---------------------------------------------------------------- 2. joint eigenspace lattices

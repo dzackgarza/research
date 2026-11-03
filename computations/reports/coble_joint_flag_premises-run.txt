@@ -5,11 +5,14 @@ provenance
 model: L = U^3 + E8(-1)^2, rank 22, determinant -1, even True
 I_dP: isometry of L: True, involution: True
 I_enr: isometry of L: True, involution: True
-w = L.reflection(alpha): isometry: True, involution: True
+w = L.reflection(alpha): isometry: True, involution: True, w(alpha) == -alpha: True
 J_Co = w o I_enr: isometry: True, involution: True
 J_dP = w o I_dP: isometry: True, involution: True
 J_Co and J_dP commute: True
-product J_Co J_dP is an involution: True, symplectic (no +1 on the whole): True
+product J_Co J_dP is an involution: True
+product J_Co J_dP is not the identity: True
+  (nonidentity is NOT a symplectic-action check; the symplectic reading has its own
+   cited proofs, see computations/reports/smwg_operator-extension.md SS4 and N4 of SS1)
 
 ++: rank 3, |det| 8, signature (1, 2), even True, definite False, |A| 8 = 2^rank True
 +-: rank 8, |det| 256, signature (0, 8), even True, definite True, |A| 256 = 2^rank True

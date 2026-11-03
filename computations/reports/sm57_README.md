@@ -266,8 +266,12 @@ closure of the $(+-)$-type (Nikulin [Ni1] Thm 4.7 via van Geemen–Sarti §§1.1
 + the derived construction-side corner identification ($H_b=e_b+f_b$, $\alpha_b=[D_b]$,
 index 1 from `@prop:det-saturation-del-pezzo`) + the proved marked-orbit and flag-stabilizer
 gluing compatibility. Companion maintained artifact: `coble_joint_flag_premises.py` + `-run.txt`
-(transplanted, deduplicated m3 check at the pin, reproducing its original log except one corrected
-print note; it certifies the joint pieces, their types via `is_isometric_to`, the 2-elementarity and
+(transplanted, deduplicated m3 check at the pin, reproducing its original log except three corrected
+evidence-label lines, all recorded in its header: the false discriminant-image note, the honest
+reflection construction (now the provider's own `L.reflection(alpha)` with a `w(alpha)=-alpha`
+behaviour check, replacing the hand-built matrix), and the product line relabelled from a
+nonidentity test that had been printed as "symplectic" — the symplectic reading is supported
+separately by the cited geometric proofs, not by the matrix); it certifies the joint pieces, their types via `is_isometric_to`, the 2-elementarity and
 indefiniteness hypothesis rows, the full-graph index, and the corner placement of $(H,\alpha)$ in
 the maintained basis); two defects caught in review are repaired in the proof document (the
 rank-11 block's (co)invariant identification against the sign table, and the $E_8(-2)$

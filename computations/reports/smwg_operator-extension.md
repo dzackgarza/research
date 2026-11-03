@@ -334,8 +334,14 @@ compatibility equation — (ii)+(iii) proved above with N1 applied to $D$ only.
 - Exploratory scripts: `verify2` (m2), `certificate` (m5), `verify_pieces/gluing`, `saturate` (m6)
   are exploratory; the proof uses none of their outputs as validation. The maintained-tier artifact
   is `computations/reports/coble_joint_flag_premises.py` + `-run.txt` (provider semantic calls at
-  the pin; the transplanted, deduplicated form of the m3 check, with the one print line that had
-  repeated the false discriminant-image claim corrected, and every computed value unchanged).
+  the pin; the transplanted, deduplicated form of the m3 check, with three evidence-label
+  corrections recorded in its header and every computed value unchanged: the false
+  discriminant-image note removed; $w$ built by the provider's own `L.reflection(\alpha)`
+  constructor and turned into a matrix by the corpus's `op_matrix` idiom, replacing the
+  hand-built `Id+a a^{\mathsf T}G`, with $w(\alpha)=-\alpha$ printed as its behaviour check; and
+  the product line no longer labelled "symplectic" from a nonidentity test — the run log prints
+  "is an involution"/"is not the identity" and refers the symplectic reading to its cited proofs
+  above (§4, N1/N4), which is where it is actually supported).
 - Swarm state: accepted — m2 (d7), m3 (d5), m4 (d3); audits m5, m6 retained as proofs with their
   scripts demoted; d2 (explicit witness), d4 (group-action classification), d1 (gluing
   enumeration), d8 (mod-2 shadow) continue as of writing.
