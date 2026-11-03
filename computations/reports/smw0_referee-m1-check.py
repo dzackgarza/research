@@ -87,6 +87,27 @@ for r in (2, 4, 6, 8):
           ('[]' if r != 6 else '[eta_0=(1,0,...)]') + ')')
 
 # --- BAD_S via proved bound: 7u^2 + v^2 + 2k = 4, u=a+b, v=a-b ---
+# Reconciliation (owner's correction of the earlier committed log): the first
+# version enumerated w in the CLIPPED box [-3,3]^8 and printed 95; the bound is
+# not met (the highest E8 root has coefficient 6).  The exact input is the same
+# Gram matrix C; the evidence below is complete, not bounded:  norm-2 vectors
+# of the E8 Cartan are exactly its roots, enumerated by closure of the simple
+# roots under simple-root addition (positive half) plus the sign map, integer
+# arithmetic, no box -- 240 = #roots(E8).
+def cartan(v):
+    return int(sum(v[i]*int(C[i][j])*v[j] for i in range(8) for j in range(8)))
+simples = [tuple(1 if i==k else 0 for i in range(8)) for k in range(8)]
+roots, frontier, seenC = set(), list(simples), set(simples)
+while frontier:
+    r = frontier.pop()
+    if cartan(r) == 2:
+        roots.add(r)
+        for s in simples:
+            for cand in (tuple(r[i]+s[i] for i in range(8)), tuple(r[i]-s[i] for i in range(8))):
+                if cand not in seenC:
+                    seenC.add(cand); frontier.append(cand)
+roots |= {tuple(-x for x in r) for r in roots}
+print('E8 roots (exact closure, same Gram input):', len(roots))
 sols = []
 for u in range(-2, 3):
     for v in range(-2, 3):
@@ -94,11 +115,54 @@ for u in range(-2, 3):
         if k != int(k) or k < 0 or (u+v) % 2:  # a,b integral needs u,v same parity
             continue
         k = int(k)
-        cnt = 0
-        for W3 in product(range(-3,4), repeat=8):
-            w = np.array(W3)
-            if int(w @ C @ w) == k:
-                cnt += 1
-                sols.append((u, v, W3))
+        if k > 2: continue
+        cnt = len(roots) if k == 2 else (1 if k == 0 else 0)
+        sols.extend((u, v, k) for _ in range(cnt))
         print(f'u={u} v={v} k={k}: lattice solutions={cnt}')
-print('BAD_S classes (proved bound, s ~ -s):', len(sols)//2)
+
+# Explicit level-vs-witnessed comparison (the decisive set identities).
+def level_set(qv):
+    out = set()
+    for bits in product((0, 1), repeat=11):
+        c, m, n = bits[:3]
+        w = np.array(bits[3:], dtype=np.int64)
+        if ((2*c*c + 4*m*n + (-2)*int(w @ C @ w))/4) % 2 == qv:
+            out.add(bits)
+    return out
+def witnessed_set(r):
+    out = set()
+    for bits in product((0, 1), repeat=11):
+        c0, m0, n0 = bits[:3]
+        wmod = tuple(int(x) for x in bits[3:])
+        ok = False
+        for dc in range(-3, 4):
+            c = c0 + 2*dc
+            for dm in range(-3, 4):
+                m = m0 + 2*dm
+                for dn in range(-3, 4):
+                    n = n0 + 2*dn
+                    need = -r - 2*c*c - 4*m*n
+                    if need > 0 or need % 2:
+                        continue
+                    k = -need // 2
+                    if 0 <= k <= KMAX and k in norm_by_class.get(wmod, set()):
+                        ok = True
+                        break
+                if ok: break
+            if ok: break
+        if ok: out.add(bits)
+    return out
+ETA0 = (1,) + (0,)*10
+for r, qv in ((2, 1.5), (4, 1.0), (6, 0.5), (8, 0.0)):
+    L = level_set(qv)
+    W = witnessed_set(r)
+    assert W <= L, 'witnessed outside level (structural inclusion failed)'
+    diff = sorted(L - W)
+    expected = [] if r != 6 else [ETA0]
+    print(f'r={r}: |level q={qv}| = {len(L)}, witnessed = {len(W)}, '
+          f'level minus witnessed = {diff} (expected {expected})')
+    assert diff == expected
+print('set identities confirmed: {q_T = 1} = BAD_T(-4); {q_T = 1/2} = BAD_T(-6) + {eta_0}; '
+      'levels for r=2,8 saturated by witnesses.')
+
+print('BAD_S classes (proved bound, exact enumeration, s ~ -s):', len(sols)//2)

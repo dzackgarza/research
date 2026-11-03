@@ -154,7 +154,8 @@ notation anywhere below.
   iff `gamma([alpha/2]) != eta_0` — one bit about the pinned glue, still open; by (ii) its
   truth value cannot revive any `A`-ample stratum. (iv) **The image, decided**:
   `im(p) = O/Gamma_L` with `O` the corrected complement below (the 121 charged Heegner walls
-  always charged; the (F4) wall unless `gamma([alpha/2]) = eta_0`); and
+  always charged; the (F4) wall unless `gamma([alpha/2]) = eta_0` — the case the corpus's
+  `gamma_Co` itself falls in, so `E_F4` is empty for it: pass 8); and
   `im(p) = O~/Gamma_L` unconditionally. (v) **The `T_Co`-surjectivity (the owner-undecided
   input of (D2)) is decided** (m2/d7, accepted; record `...-m2.md`):
   `O(T_Co) -> O(A_{T_Co}, q)` is surjective, index 1, by Nikulin's Thm 1.14.2 applied directly
@@ -162,6 +163,35 @@ notation anywhere below.
   Thm 3.6.3, whose "as is easily seen" case is verified for this lattice. No
   discriminant-level obstruction anywhere in (D2); its remaining content is kernel-level, i.e.
   (RI), unchanged. B25's residual content stays exactly `(D1) + (RI)`.
+- **Pass 8 (this pass, the owner's four corrections folded in).** (i) **The maintained tier is
+  executed at the validated pin `6ad7a5ea`**, superseding the `c546`-era capability reports: the
+  discriminant forms are constructed at `TorsionQuadraticFormModules.from_relations_and_gram` from
+  the lattice Gram data (the provider's own convention), and the validated constructor
+  `DS.isometry_to(DT.twist(-1))` returns `gamma_Co` with **`gamma_Co([alpha/2]) = eta_0`** — so the
+  (F4) family is empty for the corpus's sanctioned glue and `E_F4 = empty`; the maintained census
+  reproduces every profile and decision (`computations/reports/smw0_maintained-gamma_compute.sage`
+  + `-run.txt`; provenance on file: this VM's Sage 10.8, module-level imports, RR sentinel shim,
+  no container). The remaining identification **(GL-ID)** — that the A21 construction's pinned
+  glue equals this maintained witness — is the only surviving glue-dependent question, named open.
+  (ii) **BAD_S reconciliation (the owner's correction)**: the previously committed referee log's
+  `95` was a clipped exploratory box (`[-3,3]^8`; the highest E8 root has coefficient 6), not
+  evidence against the manuscript's `121`; the reconciled
+  `computations/reports/smw0_referee-m1-check.py`/`-run.txt` enumerates the roots exactly (closure
+  of the simple roots, same Gram input, in-file explanation) and ends at `121`. The manuscript's
+  "verified" claim now rests on the proved bound + exact closure + the maintained census, not on
+  the earlier bounded run. (iii) **CH narrowed**: the determination `Gamma^dir = Gamma_L` stands at
+  the labels'-own lattice reading; at the unchanged item-6 full-tuple semantics the invariance
+  step is **withdrawn** — the open implication **(INV)** (stabiliser preservation of the member's
+  model-effective arrangement) is what the earlier marking-transport bookkeeping only covered
+  covariantly. (iv) **(D2) at its exact content**: the `(D2) <=> (RI)` equivalence holds at the
+  normalised *normal-form* reading (Lemma A + Lemma B of `smw0_ch-direction-audit-addendum.md`);
+  at the repository's *generation* reading it is conditional on the named relations step **(REL)**
+  (section normality and 2-cocycles), open; the first-edition sentence "every use of (D2) in this
+  repository is recorded at that reading" is retracted, and the original (D2) generation statement
+  stays open. (v) **Complete proofs published**: `computations/reports/smw0_accepted-proofs.md`
+  carries the full proofs and hypotheses of every accepted direction (X1, X2, the surjectivity,
+  CH at its narrowed scope, the audit, and this pass's maintained computation); this report's
+  earlier verdict-summary citations now point there.
 
 ## Theorems, at their registered scopes
 
@@ -709,14 +739,25 @@ verified:
   > `im(p) = O/Gamma_L`,  with
   > `O = D(T_Co) \ [ NL_2  U  (union_{xi in BAD_S} Heeg_{gamma xi})  U  E_F4 ]`,
   > `E_F4 = Heeg_{gamma([alpha/2])}` if `gamma([alpha/2]) != eta_0`, empty otherwise,
-  > `Heeg_eta := union_{t in T_Co, [t/2] = eta, t^2 in {-4,-6}} t^perp`.
-  The single remaining glue-dependent bit — whether `gamma([alpha/2]) = eta_0` for the PINNED
-  glue — is provably not decidable from lattice invariants alone (every even index-`2^11`
-  overlattice of `S_Co perp T_Co` in signature `(3,19)` is isometric to `L_K3`, and some
-  anti-isometry does send `[alpha/2]` to `eta_0`, by order-2-summand matching); it needs the
-  pinned glue itself, at a maintained discriminant-form constructor the local image does not
-  implement (the only `isometry_to` in the c546 image is lattice-level,
-  `lattices.py`:4373; the image does not import under this VM's Sage 10.8).
+  > `Heeg_eta := union_{t in T_Co, [t/2] = eta, t^2 in {-4,-6}} t^perp`;
+  in particular `E_F4 = empty` for the corpus's sanctioned `gamma_Co` (pass 8), and by (X2)'s
+  accepted closure every charged (F4) wall is ampleness-dead on both sides in any case.
+  The single remaining glue-dependent bit is now **computed for the corpus's sanctioned
+  constructor**: the maintained `DS.isometry_to(DT.twist(-1))` at provider pin `6ad7a5ea` — the
+  `gamma_Co` route of the corpus's own declarations (TODO:334 supersession of the `c546077d`
+  failures) — returns the witness with `gamma_Co([alpha/2]) = (1,0,...,0) = eta_0`
+  (`computations/reports/smw0_maintained-gamma_compute.sage` + `-run.txt`, provenance on file:
+  this VM's Sage 10.8, module-level maintained imports, direct construction of the forms at the
+  maintained category). Hence **for the corpus's `gamma_Co` the (F4) family is empty and no (F4)
+  wall is ever charged: `E_F4 = empty`**. What remains OPEN and is named **(GL-ID)**: the
+  identification of the *A21 construction's* pinned glue (:661 item 7 datum) with this maintained
+  constructor; a different glue could carry `[alpha/2]` off `eta_0`, and the bit is not decidable
+  from invariants (some anti-isometry does send `[alpha/2]` to `eta_0`, others do not).
+  The earlier sentence reporting the `c546` image as "the maintained constructor the local image
+  does not implement" is superseded: `isometry_to` exists on torsion forms from pin `6ad7a5ea`
+  (`form_modules.py`:2774) and is executed here; the `c546`-era claims were about the stale local
+  snapshot only. (And by (X2)'s accepted closure even a charged (F4) wall is ampleness-dead on
+  both sides, so (GL-ID) bears on the complement's listing, not on the image.)
 - The brick probe (`coble_mixed_gluing_probe.py` +`-run.txt`): the diagonal/anti-diagonal glue of
   `U^3 + E8(-1)^2` carries two mixed wall classes (`x = e_a - f_a`, `x = e_b - f_b`, `x^2 = -2`,
   `H.x = 0`, `A.x = 0`, both projections nonzero — their class pair is exactly the (F2)-type
@@ -757,26 +798,30 @@ verified:
    > `Gamma^dir_{Co,2} = Gamma_L`
    as a lattice-level statement (m4 of run `smw0uqe8g`, accepted with the audit recorded at
    `computations/reports/smw0_ch-direction-audit.md` and the mark `.ultramath/smw0uqe8g/REFEREE-verdict-m4.md`;
-   no weaker chamber or group is substituted anywhere). The invariance step itself is established
-   by marking-transport bookkeeping (a model class's effectivity is a property of the realization
-   pair and transports compatibly, so the transported effective arrangement is the stabiliser's
-   inverse-translate of the old one, and the `(H, alpha)`-pinning formula returns the same chamber;
-   no Hodge-automorphism assumption is used: `computations/reports/smw0_ch-direction-audit-addendum.md`,
-   sec. 1). And the `(D2) <=> (RI)` shape is kept only at the normalised-section reading, where
-   both directions have the genuine subgroup proof (`smw0_ch-direction-audit-addendum.md`, sec. 2;
-   an un-normalised lift-family would admit nontrivial kernel elements as lifts of `1 in P`, and
-   its converse is not on this foundation). The full-lattice and period-domain counter-readings are
-   distinct objects from the authored chamber, recorded there, and do not disturb the chain; the
-   cross-member *transport* fork of the corpus's fourth bullet is untouched by this decision and
-   stays open as it stood.
-   The residual content of B25 is then exactly the two named pieces, with nothing else intervening:
+   no weaker chamber or group is substituted anywhere). This equality stands at the *labels'-own
+   lattice* reading of the chamber datum, and THAT is its proved scope. At the unchanged item-6
+   full-tuple semantics (the Kähler-containing chamber cut at the member's effective roots), the
+   determination is conditional on the named open implication **(INV)** (every label stabiliser
+   preserves the tuple's model-effective arrangement): the earlier marking-transport bookkeeping
+   proves the pinning formula's *covariance* under transport, which is equivariance and not
+   fixedness — the invariance step it claimed is withdrawn (`smw0_ch-direction-audit-addendum.md`
+   sec. 1, second edition). The `(D2) <=> (RI)` equivalence likewise stands at its exact formal
+   content: at the normalised-section *normal-form* reading by the displayed factorisation
+   (Lemma A + Lemma B of the addendum); at the repository's *generation* reading it is conditional
+   on the named relations step **(REL)** (normality and 2-cocycles of the section), which is open;
+   the original (D2) generation statement stays open. The full-lattice and period-domain
+   counter-readings are distinct objects from the authored chamber, recorded there, and do not
+   disturb the chain; the cross-member *transport* fork of the corpus's fourth bullet is untouched
+   by this decision and stays open as it stood.
+   The residual content of B25 is then exactly the named pieces, with nothing else intervening:
    (D1) *monodromy-maximality*: the family's discriminant meets every `Gamma^dir`-orbit of walls;
    (RI) *reflection index*: is `ker rho_{T_Co}` generated by the `(-2)`-reflections of `T_Co`? —
    with the observation that every wall reflection already lies in the stable group (`rho_T` is
-   trivial on lattice-vector reflections because `[delta] = 0` in `A_{T_Co}`), and the equivalence
-   `(D2) <=> (RI)` kept only at the normalised-section reading (the converse needs the lift of
-   `1 in P` normalised; both directions then have the subgroup proof). Both `(D1)` and `(RI)` are
-   named open; in particular the `T_Co`-surjectivity of `coble_labeled_embedding-run.txt` SS3.3-3.4
+   trivial on lattice-vector reflections because `[delta] = 0` in `A_{T_Co}`); and **(REL)**: the
+   normality/2-cocycle relations of the normalised section, named in
+   `smw0_ch-direction-audit-addendum.md` sec. 2 — the step the generation reading of `(D2) <=> (RI)`
+   needs in the converse direction. `(D1)`, `(RI)`, `(REL)` are named open; in particular the
+   `T_Co`-surjectivity of `coble_labeled_embedding-run.txt` SS3.3-3.4
    enters only the four-group comparisons, not `(D2)` — and is now DECIDED: `O(T_Co) ->
    O(A_{T_Co}, q)` is surjective, index 1 (m2/d7 of `smw0uqe8g`, accepted at
    `.ultramath/smw0uqe8g/REFEREE-verdict-m2.md`). With `(D1) + (RI)`, B25 concludes
@@ -798,6 +843,7 @@ verified:
 | 9 | Verified class censuses: `BAD_S = 121`, `BAD_T = 496`, the `E8`-split `120/136`, the `ell`-bound, the quadratic deficit; the `q`-level identities `{q_T = 1} = BAD_T(-4)` and `{q_T = 1/2} = BAD_T(-6) u {eta_0}` with `BAD_T(-6) = 527` (pass 7 (i),(iii)) | exact arithmetic, `coble_mixed_census.py` (+run log), exploratory tier; level identities referee-recomputed twice independently |
 | 10 | The brick ambient `U^3 + E8(-1)^2`: maintained embeddings, glue order `2^11`, two mixed wall classes | maintained construction (`coble_mixed_gluing_probe.py`); exploratory with respect to B24 |
 | 11 | Every mixed class's wall equals its `t`-part's wall (m8-round2 Theorem 2.1, verified); the pairing table (`496`/`527 + {eta_0}`, the 528 of `coble_mixed_census2.py`:151-152 corrected at pass 7 (iii)) | referee-verified; exact arithmetic, `coble_mixed_census2.py` (+run log) with the correction, exploratory tier |
+| 12 | The maintained witness and census at provider pin `6ad7a5ea`: `gamma_Co = DS.isometry_to(DT.twist(-1))` returns the identity-framed witness; `gamma_Co([alpha/2]) = (1,0,...,0) = eta_0`; `is_anti_isometric`, `is_isomorphic(DTm)`, `DSdiag ≅ DS_u2` all True; the maintained `q`-profiles reproduce {0:528, 1/2:528, 1:496, 3/2:496} and the complementary S-profile; all 121 BAD_S images at `q_T = 1` | maintained library execution, `computations/reports/smw0_maintained-gamma_compute.sage` (+`-run.txt`), module-level route with provenance on file (Sage 10.8; RR sentinel shim; forms built at `TorsionQuadraticFormModules.from_relations_and_gram`) |
 
 Computation used is hand-carried exact arithmetic small enough to check line by line; the machine
 counts are verified and each is also proved in the text.
@@ -818,25 +864,33 @@ counts are verified and each is also proved in the text.
 
 ## What remains open next (named, not cosmetic)
 
-* `(T-mixed)` — DISCHARGED except one pinned bit (pass 7): every full-graph glue pairs all 121
-  (F2),(F3) classes into `BAD_T(-4)`, so B24 VERBATIM is false and the corrected complement is the
-  statement of record; the (F4) wall is charged unless `gamma([alpha/2]) = eta_0`, and deciding
-  THAT equality for the pinned glue is the single remaining glue-dependent question — provably not
-  decidable from lattice invariants alone. Route: the pinned glue from the labelled-corner data or
-  the Enriques side, at a maintained discriminant-form constructor the local image does not
-  implement. Reference inputs for the pinning route, corrected at their source: `T_En = U + U(2) +
-  E8(2)` of rank `12` and det `2^10`, `alpha = e - f` in its first `U`, `T_Co =
-  alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2)` of rank `11` and det `-2^11`, `S_En + T_En` of index
-  `2^10` in `L_K3` with the full-graph gluing
+* `(T-mixed)` — DISCHARGED, with one identification left (passes 7-8): every full-graph glue
+  pairs all 121 (F2),(F3) classes into `BAD_T(-4)`, so B24 VERBATIM is false and the corrected
+  complement is the statement of record; the (F4) wall is charged unless
+  `gamma([alpha/2]) = eta_0` — and the maintained constructor at pin `6ad7a5ea` computes
+  `gamma_Co([alpha/2]) = eta_0` for the corpus's sanctioned glue (E_F4 = empty for it;
+  `smw0_maintained-gamma-run.txt`). The single remaining glue-dependent question is the named
+  identification **(GL-ID)**: that the A21 construction's pinned glue (:661 item 7 datum) equals
+  this maintained witness — not decidable from lattice invariants alone; route: the labelled-corner
+  data or the Enriques side. Reference inputs for the pinning route, corrected at their source:
+  `T_En = U + U(2) + E8(2)` of rank `12` and det `2^10`, `alpha = e - f` in its first `U`,
+  `T_Co = alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2)` of rank `11` and det `-2^11`,
+  `S_En + T_En` of index `2^10` in `L_K3` with the full-graph gluing
   (report :73, :472-:505, :575-:585, :333; an earlier `rank-10` shorthand for `T_En` is withdrawn).
+  By (X2)'s accepted closure even a charged (F4) wall is ampleness-dead on both sides, so (GL-ID)
+  bears on the complement's listing, not on the image.
 * `(D1)` of Theorem E, together with the reflection-index question **(RI)** — is
-  `ker rho_{T_Co}` generated by `T_Co`'s `(-2)`-reflections?; `(D2) <=> (RI)` kept only at the
-  normalised-section reading (both directions proved there on the subgroup argument; a spurious
-  kernel-side obligation from an earlier bookkeeping is retracted);
-  `W_node <= G1` is computed.
-* `Gamma^dir_{Co,2} = Gamma_L` — **decided** at the authored chamber's reading (CH: m4 of
-  `smw0uqe8g`, accepted at `.ultramath/smw0uqe8g/REFEREE-verdict-m4.md`): the chamber is determined
-  by `(H, alpha)` at every member with the accumulation hedge collapsed; readings (b)/(c) remain
+  `ker rho_{T_Co}` generated by `T_Co`'s `(-2)`-reflections? — and the relations step **(REL)**
+  (section-normal normality and 2-cocycles): `(D2) <=> (RI)` stands at the normal-form reading
+  (Lemma A + Lemma B of the addendum); at the repository's generation reading it is conditional
+  on (REL); the original (D2) generation statement is OPEN (a spurious kernel-side obligation from
+  an earlier bookkeeping is retracted; `W_node <= G1` is computed).
+* `Gamma^dir_{Co,2} = Gamma_L` — **decided at the labels'-own lattice reading** (CH: m4 of
+  `smw0uqe8g`, accepted at `.ultramath/smw0uqe8g/REFEREE-verdict-m4.md`; full proof published at
+  `computations/reports/smw0_accepted-proofs.md` sec. I): at that reading the chamber is determined
+  by `(H, alpha)` at every member with the accumulation hedge collapsed. At the unchanged item-6
+  full-tuple semantics the determination is conditional on the named open implication **(INV)**
+  (stabiliser preservation of the member's model-effective arrangement); readings (b)/(c) remain
   faithful counter-readings; the cross-member transport fork stays open.
 * `@prob:group-identification` among the four — untouched except `G1`'s proved content.
 * The A21-side leftovers: rank-`>=12` unmatched-extra-class chamber comparisons, R4 recovery, the
