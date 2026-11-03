@@ -213,3 +213,16 @@ validation is left open here, by design.
   named remaining obligations (embedding/gluing, and the E_8(-2)-vs-<-2>^8 orbit case).
   Not used in any manuscript line: the "accepted" text above at that paragraph keeps only
   the proposition's own argument and the maintained census.
+
+## Completion of `smw0dbvr6`
+All eight members' dispositions are complete; the swarm ended solved.  Final closed items:
+O-S decided (index 1, det 8) by five accepted derivations plus the late independent Nikulin
+route from m7-d4 (its predecessor section route having been rejected); O-T answered at the
+corpus's original second-slot reading as not conjugate (eigenrank multiset {11,3,14} vs
+{11,10,21}), with the reflected-pair candidate (w_alpha I_En, w_alpha I_dP) surviving with
+fully matching piecewise data and its only remaining question the labelled embedding/gluing;
+the original second-slot datum is an open authoring question by its text, not supplied by
+any rank computation; k=0 = U(2) (not U) by-product; k>=2 and the E_8(-2)-vs-<-2>^8 orbit
+case open.  Everything else in this record, the manuscript's A21 state-of-record and its
+named open derivations (the fourth bullet semantics, R4 recovery, embedding/gluing, second
+slot, $k>=2$ saturation) stands at that scope.
