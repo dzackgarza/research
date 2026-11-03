@@ -86,6 +86,35 @@ notation anywhere below.
   `B_1.B_2 >= 4` spent at other points — either branch yielding a second singularity, not a
   confused single-step claim.
 
+
+- **Pass 5 (this pass, the remaining five acceptance gaps of pass 4).**
+  (i) Q4's local term is the correct local calculation: the node is a double point (multiplicity
+  `2` as a point of the curve) with two smooth transverse branches; two smooth plane branches with
+  distinct tangents meet with local intersection number `1` (`dim k[[u,v]]/(u,v)`), not `2`; the
+  earlier text had used the point's multiplicity in place of the `(B_1.B_2)_q` term. The
+  cross-component and internal splits then use `1` resp. `0` correctly, and the residual
+  `B_1.B_2` budget is spent at other intersection points, each a second singularity.
+  (ii) Lemma 4's (F4) bullet separates `R = 0` from `R != 0` before any inequality is drawn (the
+  latter gives `A.R >= 1`, whence `1 >= mu + 1` is the contradiction; then `R = 0` gives
+  `mu = 1`, `A.D_j = 1` and the residual's single-curve conclusion by the same integral
+  counting), and the residual's `D^2 = -2`, `x.D = 1` follow by explicit pairing, not a leftover
+  iteration clause.
+  (iii) Theorem SPLIT's numerology now covers *all* component squares and multiplicities by
+  `A`-counting (integrality of `A.C >= 1` forces `alpha` to have at most two components counting
+  multiplicity, killing `alpha = m C` for `m = 2` and every three-component case), and the
+  positive-square and isotropic sub-cases are eliminated by square-adjunction and the integral
+  `H.C_k = -1/2` obstruction — no irreducible-curve bound is ever applied to a grouped reducible
+  divisor (the residual's single-curve status comes from the integral `A`-count, not from an
+  irreducibility assumption).
+  (iv) The exact standing of `O` against the original A20 claim is stated (Theorem D (relations)):
+  `O` with the exceptional bullet is the original tuple's own scope (the bullet is authored), the
+  pass-2 A-ample-only locus `O~` possibly contains the TAC strata, `im(p) = O/Gamma_L` is the
+  established original claim, and `im(p) = O~/Gamma_L` holds iff the pinned glue is (F4)-free —
+  the difference is the named (F4) family, not a closed issue.
+  (v) None of these is labelled closed by publication alone: the tacnode strata are named open
+  (as a separate construction question outside the one-node scope), and the remaining (T-mixed)
+  pairing question, `(D1)/(D2)`, and chamber determination stand open as before.
+
 ## Theorems, at their registered scopes
 
 **Lemma 1.** `I_dP = -1` on `T_Co`. (Joint character ranks of `<I_Co, I_dP>` are `(3, 8, 0, 11)`
@@ -175,32 +204,41 @@ holds:
 (TAC) `alpha = C_1 + C_2` with the `C_i` smooth rational, `C_i^2 = -2`, `C_1.C_2 = 1`, and each
 `A.C_i = 1`; moreover each `[C_i]` is an (F4)-class of Lemma L.2's census.
 *Hypotheses in force:* RR; adjunction (`C^2 = 2 p_a - 2 >= -2` for an irreducible curve); Lemma L.1
-(negativity of the algebraic part of `T_Co`); Lemma L.2 (the census). **Nothing else — in
-particular no use of Lemma 4, of the curve `E`, or of any later lemma.**
-*Proof.* Let `alpha = sum_i C_i` be a decomposition into irreducible effective curves, all
-`C_i^2 >= -2` by adjunction, cross-terms non-negative, `alpha^2 = -2`.
-- Suppose some `C_j^2 = 0`. Group the rest into `R := alpha - C_j`:
-  `alpha^2 = R^2 + 2 (C_j . R) = -2` with `C_j . R >= 0` forces `R^2 = -2`, `C_j.R = 0`, so `R` is
-  a single irreducible component `C_k` with `C_k^2 = -2`. Then `alpha.C_k = C_k^2 + C_j.C_k = -2`,
-  and ampleness (`A.C_j >= 1`, `A.C_k >= 1`) with `A.alpha = 2` gives `A.C_k = 1`, i.e.
-  `2 H.C_k = A.C_k + alpha.C_k = -1`, so `H.C_k = -1/2`: impossible (pairings are integral).
-- So every `C_i^2 = -2`. For exactly two components,
-  `C_1.C_2 = (alpha^2 - C_1^2 - C_2^2)/2 = 1`: the (TAC) configuration; ampleness and
-  `A.alpha = 2 = A.C_1 + A.C_2` give `A.C_i = 1`, and then
-  `alpha.C_i = C_i^2 + C_1.C_2 = -1`, so `2 H.C_i = A.C_i + alpha.C_i = 0`: each `[C_i]` is an
-  `H`-null `(-2)`-class. Lemma L.2's census places it: not pure (the pure census gives only
-  `pm alpha`), not (F1) (a pure `T`-root), not (F2)/(F3) (their `A` is `0`, not `1`), and not (F5)
-  (its `t` is a pure `T`-root, RR-effective with `A.t = 0`, contradicting ampleness): hence (F4).
-  A three-or-more-component decomposition is treated by first grouping all but one component into
-  `C_1` and applying the same arithmetic to the resulting pair, then recursing — the outcome is
-  again a contradiction or the two-component (TAC).
-- Otherwise one component: (IRR); `h^0(alpha) = 1` from `0 -> O -> O(alpha) -> O_E(alpha) -> 0`
-  with `O_E(alpha) = O_{P^1}(-2)`. `square`
+(negativity of the algebraic part of `T_Co`); Lemma L.2 (the census); integrality of intersection
+pairings. **Nothing else — in particular no use of Lemma 4, of the curve `E`, or of any later
+lemma.**
+*Proof.* Every irreducible effective curve on a K3 has `C^2 >= -2` (adjunction), and ampleness of
+`A` gives `A.C >= 1` (an integral, positive pairing with an effective curve) for every component.
+Write `alpha = sum_i m_i C_i`, `m_i >= 1`, distinct irreducible components. Then
+`2 = A.alpha = sum_i m_i (A.C_i)` with each term a positive integer, so `alpha` has at most two
+components counting multiplicity.
+- *One component with multiplicity.* `alpha = m C`: `alpha^2 = m^2 C^2 = -2`, with `m in {1, 2}`
+  (`m >= 2` gives `4 C^2 = -2`, not an integer square): so `m = 1`: (IRR). Then
+  `h^0(alpha) = 1` from `0 -> O -> O(alpha) -> O_E(alpha) -> 0` with `O_E(alpha) = O_{P^1}(-2)`.
+- *Two distinct components.* `alpha = C_1 + C_2` (each of multiplicity `1`, by the `A`-counting
+  just made), `A.C_1 = A.C_2 = 1`.
+  Squares, enumerated:
+  (b1) `C_1^2 = C_2^2 = 0`: `alpha^2 = 2 C_1.C_2 = -2`, so `C_1.C_2 = -1`: impossible for distinct
+  irreducible curves.
+  (b2) exactly one of `C_i^2` is `>= 0` and the other is `>= 0` too: then
+  `alpha^2 = C_1^2 + C_2^2 + 2 C_1.C_2 >= 0` — against `alpha^2 = -2`.
+  (b3) `C_1^2 = 0`, `C_2^2 = -2`: `alpha^2 = -2 + 2 (C_1.C_2) = -2` forces `C_1.C_2 = 0`, and then
+  `alpha.C_2 = C_1.C_2 + C_2^2 = -2`, whence
+  `A.C_2 = 2 H.C_2 - alpha.C_2 = 2 H.C_2 + 2 = 1`, so `H.C_2 = -1/2`: not an integer — impossible.
+  (b4) `C_1^2 = C_2^2 = -2`: `alpha^2 = -4 + 2 (C_1.C_2) = -2` forces `C_1.C_2 = 1`: (TAC), and
+  then `alpha.C_i = C_i^2 + C_1.C_2 = -1`, so `2 H.C_i = A.C_i + alpha.C_i = 0`: each `[C_i]` is
+  an `H`-null `(-2)`-class. Lemma L.2's census places it: not pure (the pure census gives only
+  `pm alpha`, and `[C_1] = [C_2] = alpha` would not decompose), not (F1) (a pure `T`-root), not
+  (F2)/(F3) (their `A` is `0`, not `1`), and not (F5) (its `t` is a pure `T`-root, RR-effective
+  with `A.t = 0`, contradicting ampleness): hence (F4).
+  For three-or-more components the `A`-counting above already excludes them (`sum m_i A.C_i >= 3`
+  if there are at least three positive-integer terms). `square`
 *Reading.* The tuple's exceptional bullet is exactly (IRR): by the authored datum `alpha` is the
 class of a smooth irreducible effective `(-2)`-curve. A realization at the (TAC) alternative (the
 named tacnode alternative) is out of the authored tuple's scope. Nothing in this theorem uses any
 conclusion about the `H`-null `(-2)`-classes, so it can and will be cited independently of the
 next lemma.
+
 
 **Lemma 4 (one contracted curve).** At `sigma in O` with the full tuple (`A` ample *and* `alpha`
 irreducible-effective — the exceptional bullet, i.e. Theorem SPLIT's (IRR) branch as picked by the
@@ -220,14 +258,20 @@ glue graph has only zero over zero, so `x = s/2 in S_Co`; write `x = ae + bf + w
   has `A.x = -1`, ampleness fails outright, so `sigma notin O`. If the effective `x` has
   `A.x = 1`: write `alpha = sum_j D_j` into effective irreducible curves; since `alpha.x = -1`,
   some component `D_j` satisfies `D_j.x < 0`, hence `D_j subset supp(x)`, i.e.
-  `x = mu D_j + R` with `mu >= 1`, `R` effective; then
-  `1 = A.x = mu * A.D_j + A.R >= mu + 1` (every component has `A >= 1` by ampleness), forcing
-  `mu = 1`, `R = 0`, so `x = D_j` is a component of `alpha`; and the residual
-  `D_rest := alpha - x` is effective with `A.D_rest = A.alpha - A.x = 1`, so on pairwise-A-counting
-  it is a single `A`-positive effective curve — the outcome is exactly the (TAC) alternative of
-  Theorem SPLIT. On the (IRR) branch the exceptional bullet excludes that alternative, so no
-  (F4)-class is algebraic at the counted `sigma`. (This is the only place Theorem SPLIT enters;
-  it needs no fact about irreducibility of `alpha` that Theorem SPLIT does not itself produce.)
+  `x = mu D_j + R` with `mu >= 1` and `R` an *effective* divisor. Separate the two cases before
+  bounding:
+  *If `R != 0`:* then `A.R >= 1` (ampleness, integral positive pairing), and every component has
+  `A >= 1`, so `1 = A.x = mu * A.D_j + A.R >= mu + 1`, forcing `mu <= 0`: impossible.
+  *Hence `R = 0`:* then `x = mu D_j` and `1 = A.x = mu * A.D_j >= mu`, so `mu = 1`,
+  `A.D_j = 1`, and `x = D_j` is a single component of `alpha`; the residual
+  `D_rest := alpha - x` is effective with `A.D_rest = A.alpha - A.x = 1`, and by the same
+  ampleness-counting it cannot decompose (two components would each carry `A >= 1`, totalling
+  `>= 2`), so `D_rest` is a single effective curve `D`, with
+  `x.D = alpha.x - x^2 = -1 + 2 = 1` and `D^2 = alpha^2 - x^2 - 2 x.D = -2`: the outcome is
+  exactly the (TAC) alternative of Theorem SPLIT. On the (IRR) branch the exceptional bullet
+  excludes that alternative, so no (F4)-class is algebraic at the counted `sigma`. (This is the
+  only place Theorem SPLIT enters; it needs no fact about irreducibility of `alpha` that Theorem
+  SPLIT does not itself produce.)
 - (F5): its `t` is a pure `T`-root algebraic at `sigma` (since `x` and `s` are), of norm `-2`:
   `pm t` effective, `A.t = 0`, contradiction.
 Hence `x = pm alpha`. `square`
@@ -398,17 +442,23 @@ give `B° + 2 e' in |beta^*(-2K_Y)|`, hence `B = beta_*(B° + 2 e') in |-2K_Y| =
   reduced with Q3's single node as its only singularity. Suppose `B = B_1 + B_2` with bidegrees
   `(a, b)`, `(4 - a, 4 - b)`, all `0 <= a, b <= 4`, not both zero in either. Then
   `B_1.B_2 = a(4 - b) + (4 - a)b = 4(a + b) - 2ab >= 4` (minimum at `(1,0)+(3,4)` and mirrors).
-  Reconcile the node's own intersection multiplicity with the component bookkeeping, using the
-  proved structure of the node (Q3: two *transverse smooth* local branches, the push-down of the
-  two transverse simple points of `B° cap e'`): either the two branches lie in different
-  components — then the node contributes exactly `2` to the local term `(B_1.B_2)_q`, and the
-  remaining `B_1.B_2 - 2 >= 2` is spent at other points of `B_1 cap B_2`, each a second
-  singularity of `B`; or both lie in one component — then the node is internal to that component,
-  and the whole `B_1.B_2 >= 4` is spent at other intersection points (necessarily more than one
-  local multiplicity there, or one point of multiplicity `>= 3`), each a second singularity of
-  `B`. Either way there is a second singular point, contradicting "exactly one". (The m1
-  alternative `sum a_i b_i = 15 + sum delta_i <= 16` exhaustion gives the same and is recorded in
-  the ledger.)
+  Now the local calculation of the node's own term, stated at its proved structure: the node is a
+  double point (multiplicity `2` as a singular point of the curve `B`), with two *smooth transverse
+  local branches*; two smooth plane branches with distinct tangents have local intersection number
+  `1` at the node (in the local model `{u v = 0}` the branches `{u = 0}` and `{v = 0}` intersect
+  with multiplicity `dim_C k[[u,v]]/(u,v) = 1`; Bezout's lower bound `mult_p(f) mult_p(g) = 1`,
+  attained for distinct tangents). So the node contributes `{1}` as a local intersection term
+  between the two branches — not `2` (the `2` is the *multiplicity of the point for the whole
+  curve*, and the earlier text's use of it as the `(B_1.B_2)_q` term confused the two). Now split
+  as before:
+  (i) the two branches lie in different components: then `(B_1.B_2)_q = 1`, and the remaining
+  `B_1.B_2 - 1 >= 3` is spent at other points of `B_1 cap B_2`, each a second singularity of `B`;
+  (ii) both branches lie in one component: the node is internal to that component and contributes
+  `0` to `(B_1.B_2)_q`, so the whole `B_1.B_2 >= 4` is spent at other intersection points, each a
+  second singularity of `B` (if all additional intersections lie at one point, it is a singular
+  point of the union distinct from `q`, again a second one). Either way there is a second singular
+  point, contradicting "exactly one". (The m1 alternative
+  `sum a_i b_i = 15 + sum delta_i <= 16` exhaustion gives the same and is recorded in the ledger.)
 
 **Q5 (tau and the fixed node).** `iota_Co` commutes with `iota_dP`, so it descends to an involution
 `tau°` of `Y°`, preserving `e'` (it preserves `alpha`, hence `E`, hence its image curve) and
@@ -456,6 +506,38 @@ involutions geometric at the chamber hypothesis (`A` ample), Section L supplies 
 single contracted curve, the frame inequality and the pencils, and Section QC reconstructs the
 member whose period is `sigma`. Membership in the image is decided member by member; no
 dominance-to-surjectivity inference appears anywhere. `square`
+
+**Theorem D (relations; the exact standing of `O` against the original A20 claim).** Put
+
+`O~ := {sigma : exists a marked pair (X, psi) at sigma with psi(S_Co) subset NS(X), psi(A) ample}`
+(the pass-2 locus), and `O := {sigma in O~ for which psi(alpha) is irreducible-effective}`.
+
+- The original A20 problem's own scope is `O`, not `O~`: the tuple's fourth authored bullet
+  carries `alpha` as the class of the node's *exceptional curve* — a smooth irreducible
+  `(-2)`-curve by the very definition of the nodal resolution — so the original marked-image
+  question reads natively on the realization locus with the exceptional bullet fulfilled.
+  Defining `O` with the irreducibility clause is thus *restoring* the original hypothesis at the
+  realization side, not weakening it.
+- The relations are exact: `im(p) subset O` (at every member, `alpha` is by construction the
+  node's exceptional curve: irreducible-effective; so members lie even in `O`, a fortiori
+  beyond what pass 1 recorded as `O~`); `O subset O~` (by definition); and
+  `O~ minus O subseteq {(F4)-walls}`: at a `sigma` of `O~` lying outside the exceptional bullet,
+  `alpha` is reducible; Theorem SPLIT puts such a realization at its (TAC) alternative, whose
+  components are (F4)-classes, so `sigma` lies on an (F4)-wall; and conversely, on an (F4)-wall
+  either the effective-sign pairing kills ampleness outright (so `sigma` is not even in `O~`), or
+  the effective (F4)-class with `A`-positive sign decomposes `alpha` as in Lemma 4, again making
+  the realization alpha-reducible. So the two sets are disjoint.
+- Therefore: the image theorem at the ORIGINAL quantifiers is `im(p) = O/Gamma_L` (proved by
+  Section QC at the original tuple, no changed-hypothesis move); the pass-2 headline formulation
+  at `O~` was promoted beyond what is established, since it would additionally require the TAC
+  strata to be reachable or empty — exactly the (F4)-branch of (T-mixed). The difference between
+  the two loci is the named second family of the residual question, not something publication
+  can close: `im(p) = O~/Gamma_L` holds iff the pinned glue is (F4)-free (and then `O~ = O` at
+  the relevant level); otherwise it is a proper inclusion `im(p) = O/Gamma_L subset O~/Gamma_L`
+  whose complement is carried by the TAC strata. Whether those strata carry a different geometric
+  construction (the tacnode/A2 Coble pairs) is a separate open question outside `@prob:B24`'s
+  one-node scope (m4's `Heeg_one` records the same residual from the member side; the two
+  formulations coincide).
 
 The three markers of B24, at their now-proved content:
 

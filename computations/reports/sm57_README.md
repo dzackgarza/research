@@ -377,15 +377,10 @@ swarm's directory.  The dossier's current state (pass 2) is:
   $\tau$ product with a $\tau$-fixed node; the unique degree-$7$ del Pezzo (Demazure, LNM 777) is
   the only classification input used; **no rigidity of smooth rational surfaces is used**.
 - **Theorem D** $\operatorname{im}(p) = O/\Gamma_L$ with
-  $O = \{\sigma : \exists\ \text{marked } (X,\psi) \text{ at } \sigma \text{ with } \psi(2H-\alpha) \text{ ample}\}$,
-  proved member-by-member (Section L: the full (F1)-(F5) census, Lemma 4 (one contracted curve),
-  Lemma 4b (frame inequality, repaired publicly — its written form was circular; the derivation now
-  uses only ampleness of $A$, RR, negativity of the algebraic part of $T_\Co$, primitivity of
-  $e,f$), Lemma 5 (pencils); Section QC: the reconstruction). B24's three markers: the arrangement
-  excluded pointwise; the chamber the single condition "$2H-\alpha$ ample" (sign constancy on the
-  component, no $A$-null root of $S_\Co$, frame inequality at every $\sigma\in O$); the exceptional
-  root $\alpha$ a function of $(S_\Co, H, A)$. The corpus's open-image statement stands (the walls
-  are locally finite, never dense; m8's contrary claim was rejected with its proof).
+  $O = \{\sigma : \exists\ \text{marked } (X,\psi) \text{ at } \sigma \text{ with } \psi(2H-\alpha) \text{ ample and } \psi(\alpha) \text{ irreducible-effective}\}$
+  — the original tuple's own scope, not a weakening (the fourth authored bullet carries $\alpha$
+  as the node's *exceptional*, hence irreducible, curve) — proved member-by-member (Section L: the
+  (F1)-(F5) census, Theorem SPLIT (the $\alpha$-dichotomy, independent: RR + adjunction + Lemma L.1 + census L.2 only), Lemma 4 (one contracted curve), Lemma 4b (frame inequality, repaired publicly — its written form was circular; the derivation now uses only ampleness of $A$, RR, negativity of the algebraic part of $T_\Co$, primitivity of $e,f$), Lemma 5 (pencils); Section QC: the reconstruction). The relation to the pass-2 A-ample-only locus $O\sim$: $O \subset O\sim$, $\operatorname{im}(p) \subset O \subset O\sim$, and $O\sim \setminus O \subseteq \{$F4-walls$\}$; equality $\operatorname{im}(p) = O\sim/\Gamma_L$ holds iff the pinned glue is (F4)-free — the pass-2 formulation at $O\sim$ was promoted beyond establishment, and the difference is the named (F4) family, with the tacnode strata named open (outside the one-node scope; m4's `Heeg_one` is the same residual from the member side). B24's three markers: the arrangement excluded pointwise; the chamber the single condition "$2H-\alpha$ ample" (sign constancy on the component, no $A$-null root of $S_\Co$, frame inequality at every $\sigma\in O$); the exceptional root $\alpha$ a function of $(S_\Co, H, A)$. The corpus's open-image statement stands (the walls are locally finite, never dense; m8's contrary claim was rejected with its proof).
 - **Theorem E** (B25 **scoped to what is proved**): deck group of the marking cover $= G_1$
   (covering theory; the labelled trivialising cover is normal by construction);
   $G_1 \subseteq \Gamma_L = G_5$ and $G_1 \subseteq \Gamma^{\dir}_{\Co,2} = G_2$ (flat labels);
