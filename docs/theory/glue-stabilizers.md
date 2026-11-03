@@ -24,7 +24,7 @@ The existing `Lattices.glue_map` returns `γ` as `H_S → H_T(−1)`.
 
 Leads:
 - Peters–Sterk, *Symmetric and Quadratic Forms* (June 2024), Props. 15.1.1–15.1.3 and 1.7.4 (already cited by `glue_map`).
-- Nikulin, *Integral symmetric bilinear forms and some of their applications* (1979): Prop. 1.4.1 on overlattices and isotropic subgroups; Cor. 1.5.2 and Thm. 1.14.2 on the extension of isometries and on the surjectivity of `O(L) → O(A_L)`. Check the numbering.
+- Nikulin, *Integral symmetric bilinear forms and some of their applications* (1979): Prop. 1.4.1 on overlattices and isotropic subgroups; Cor. 1.5.2 and Thm. 1.14.2 on the extension of isometries and on the surjectivity of `O(L) → O(A_L)`. Numbering checked (this session, smw0gfl0i): the surjectivity statement used for even indefinite 2-elementary lattices is THEOREM 3.6.3, verbatim in the repo's primary note `references/literature/lattice-research/nikulin1979integral.md` :1595, whose proof reduces it to Thm. 1.14.2 via the `u_+^{(2)}(2)`/`v_+^{(2)}(2)` summand decomposition (`a = rk > 2`); recorded with the full proof in `computations/reports/smwg_operator-extension.md` §1 (N1).
 - Dolgachev, *Mirror symmetry for lattice polarized K3 surfaces*, for the lattice-polarized setting where `Γ_{h,T}` appears.
 
 ## Generators of finite-index subgroups

@@ -253,3 +253,21 @@ it.  That is the piecewise lattice match only; the
 labelled embedding/gluing and the AEGS-vs-construction identification of the del Pezzo
 involution of the Coble K3 cover (the note `coble_aegs_involutions-run.txt` keeps at its
 end) remain the open questions they were; nothing in the run answers a chamber question.
+
+## `smw0gfl0i` outcome register (operator-preserving labelled extension, lattice level)
+`smwg_operator-extension.md` is the full proof, with exact verbatim source statements,
+hypothesis checks, the referee-supplied steps, the uniformity table, and the tier discipline
+recorded: obligation 8(d)(1) of the A21 comparison is established **at lattice level, for every
+(irreducible) one-node member b** — $g\in O(L_{K3})$ conjugating the reflected pair to a
+one-node member's pair and carrying $(H,\alpha)\mapsto(H_b,\alpha_b)$. Chain: m2's Theorem A
+(double coset collapses via Nikulin Thm 3.6.3, verified verbatim in the repo's primary note
+`references/literature/lattice-research/nikulin1979integral.md` :1595) + the symplectic-coinvariant
+closure of the $(+-)$-type (Nikulin [Ni1] Thm 4.7 via van Geemen–Sarti §§1.1–1.3, uniform in $b$)
++ the derived construction-side corner identification ($H_b=e_b+f_b$, $\alpha_b=[D_b]$,
+index 1 from `@prop:det-saturation-del-pezzo`) + the proved marked-orbit and flag-stabilizer
+gluing compatibility. Accepted swarm solutions: m2 (d7), m3 (d5, independent second derivation),
+m4 (d3, the chamber/period dichotomy); audits m5 (d6, premise audit: no impossible entry, residue
+isolated as exactly the surjectivity statement) and m6 (d8) retained with their bespoke exact
+scripts demoted to exploratory, per tier discipline. Still open, unchanged: the chamber clause
+(m4's dichotomy), the authored second slot's text, (O1)/(O2), R4, $k\ge2$ saturation, the m7
+depreaudit sites.
