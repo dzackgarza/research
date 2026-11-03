@@ -265,7 +265,14 @@ one-node member's pair and carrying $(H,\alpha)\mapsto(H_b,\alpha_b)$. Chain: m2
 closure of the $(+-)$-type (Nikulin [Ni1] Thm 4.7 via van Geemen–Sarti §§1.1–1.3, uniform in $b$)
 + the derived construction-side corner identification ($H_b=e_b+f_b$, $\alpha_b=[D_b]$,
 index 1 from `@prop:det-saturation-del-pezzo`) + the proved marked-orbit and flag-stabilizer
-gluing compatibility. Accepted swarm solutions: m2 (d7), m3 (d5, independent second derivation),
+gluing compatibility. Companion maintained artifact: `coble_joint_flag_premises.py` + `-run.txt`
+(transplanted, deduplicated m3 check at the pin, reproducing its original log except one corrected
+print note; it certifies the joint pieces, their types via `is_isometric_to`, the 2-elementarity and
+indefiniteness hypothesis rows, the full-graph index, and the corner placement of $(H,\alpha)$ in
+the maintained basis); two defects caught in review are repaired in the proof document (the
+rank-11 block's (co)invariant identification against the sign table, and the $E_8(-2)$
+discriminant-action remark, whose original trivial-image form was false and is replaced by the
+correct classical mod-2 Weyl reduction statement, used nowhere). Accepted swarm solutions: m2 (d7), m3 (d5, independent second derivation),
 m4 (d3, the chamber/period dichotomy); audits m5 (d6, premise audit: no impossible entry, residue
 isolated as exactly the surjectivity statement) and m6 (d8) retained with their bespoke exact
 scripts demoted to exploratory, per tier discipline. Still open, unchanged: the chamber clause

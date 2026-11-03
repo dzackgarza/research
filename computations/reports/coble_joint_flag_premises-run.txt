@@ -1,0 +1,59 @@
+provenance
+  provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552   Sage: 11.0.beta5
+  provider package: /repo/.scratch/se-provider-c546/src/sage_extensions/__init__.py
+
+model: L = U^3 + E8(-1)^2, rank 22, determinant -1, even True
+I_dP: isometry of L: True, involution: True
+I_enr: isometry of L: True, involution: True
+w = L.reflection(alpha): isometry: True, involution: True
+J_Co = w o I_enr: isometry: True, involution: True
+J_dP = w o I_dP: isometry: True, involution: True
+J_Co and J_dP commute: True
+product J_Co J_dP is an involution: True, symplectic (no +1 on the whole): True
+
+++: rank 3, |det| 8, signature (1, 2), even True, definite False, |A| 8 = 2^rank True
++-: rank 8, |det| 256, signature (0, 8), even True, definite True, |A| 256 = 2^rank True
+-+: rank 0 (empty piece)
+--: rank 11, |det| 2048, signature (2, 9), even True, definite False, |A| 2048 = 2^rank True
+
+maintained type comparisons (provider is_isometric_to):
+  ++ is U(2) perp <-2>            : True
+  +- is E8(-2)                    : True
+  -- is <2> perp U(2) perp E8(-2) : True
+  controls: E8m2_target definite True, TCO_target even True indefinite True, Lambda_target even True indefinite True
+
+Nikulin 1980 Thm 3.6.3 hypotheses (even, indefinite, 2-elementary):
+  ++: even True, indefinite True, |A| = 2^rank True  -> surjectivity applies
+  --: even True, indefinite True, |A| = 2^rank True  -> surjectivity applies
+  +- (E8(-2)): definite True -> 3.6.3 NOT applied to it (no image claim is used: the proof
+       lifts on the rank-11 block only; cf. smwg_operator-extension.md SS3)
+
+[L : V++ perp V+- perp V-+ perp V--] = 2048 ; |A_{V--}| = 2048 ; |A_{V++ perp V+-}| = 2048
+  full graph gluing (index = |A| on both sides): True
+
+labelled classes
+  H   = Delta(e)+Delta(f), coords [0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] : H^2 = 4
+  alpha = e-f,             coords [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] : alpha^2 = -2
+  H.alpha = 0
+  J_Co fixes H: True, fixes alpha: True
+  J_dP fixes H: True, fixes alpha: True
+  H/2 in L: False ; alpha/2 in L: False ; (H+alpha)/2 in L: False ; (H-alpha)/2 in L: False
+
+the (++) piece V++ = U(2) perp <-2> in its maintained basis
+  Gram of the maintained basis: [(-2, 0, 0), (0, 0, 2), (0, 2, 0)]
+  H in V++ with coordinates ['0', '1', '1'] (integral: True)
+  alpha in V++ with coordinates ['1', '0', '0'] (integral: True)
+  cross-checks in V-coordinates: H^2 = 4, alpha^2 = -2, H.alpha = 0
+  primitive generator delta of (H,alpha)^perp inside V++: [0, 1, -1]
+    delta^2 = -4 (structure says -4)
+    delta.H = 0, delta.alpha = 0
+    (H+delta)/2 in V++: True   coords ['0', '1', '0']
+    (H-delta)/2 in V++: True   coords ['0', '0', '1']
+    e = (H+delta)/2, f = H-e, alpha: Gram [(0, 2, 0), (2, 0, 0), (0, 0, -2)]
+    det of that Gram = 8, |det V++| = 8 -> index one: True
+    e^2 = 0, f^2 = 0, e.f = 2, e.alpha = 0, f.alpha = 0, alpha^2 = -2
+    H = e+f: True
+
+summary: the four joint pieces, their maintained types, the full-graph index 2048, the
+  placement of H and alpha in V++, and the index-one corner (e,f,alpha) of V++ are all
+  reproduced at the pin.  Nothing here concerns the construction side; its data are cited.
