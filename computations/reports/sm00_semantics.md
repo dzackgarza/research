@@ -812,3 +812,57 @@ accepted negative-half document on **integral** $y$ of square $24 > 0$: it is si
 (a totally geodesic $(1,1)$ reduction), and the ball of radius $\operatorname{arcsinh}(1/\sqrt{48})$.
 Applying that formula to *non-integral* centres or beyond the fixed $y$ would re-open the flagged step;
 its current use in the corpus is exactly integral-centre $y$, and it is what settles the wall-free ball.
+
+## Referee reclamation, second entry (fourth cycle)
+
+### S-1. The wall-distance formula: its scope is the signature-$(1,\cdot)$ fibre, and the full-$V$ form follows by the product structure of algebraic walls, not by "signature independence"
+
+The phrase in the first reclamation ("signature-independent") is withdrawn. What is true, and what
+the corpus uses:
+
+*(a) Inside $W = H^{1,1}(X,\mathbb R)$, signature $(1,19)$, and inside $\mathrm{NS}_\mathbb R$,
+signature $(1,\rho-1)$:* the set $\{x^2=1\}$ is hyperbolic space (up to the two components), the
+formula $\sinh d([x],[\delta^\perp]) = |x\cdot\delta|/\sqrt{x^2(-\delta^2)}$ with $\delta^2=-2$
+holds for every effective root $\delta$, and the ball of radius $\operatorname{arcsinh}(1/\sqrt{48})$
+about the integral $y$ ($y^2 = 24$) contains no root wall whose normal has nonzero pairing with $y$;
+integrality of $y$ bounds nonzero pairings by $\ge 1$ below. This is the proof of the wall-free ball
+used by `sm00_chamber-negative-half.md`, and it goes through at signature $(1,\cdot)$ without any
+fix-up.
+
+*(b) In the full $V = H^2(X,\mathbb R)$, signature $(3,19)$:* $\{x^2=1\}$ is not hyperbolic space
+(the induced metric has signature $(2,19)$), and the formula's use as a metric statement is not
+available. The extension needed by the accepted negative half is nevertheless rigorous: the walls
+$\delta^\perp$ for every *algebraic* root $\delta$ split orthogonally as
+$\delta^\perp = (\delta^\perp\cap\mathrm{NS}_\mathbb R) \perp N_V$ with $N_V=\mathrm{NS}^{\perp V}$
+(signature $(2,20-\rho)$), so a wall collision of $y+u+n$ ($u\in\mathrm{NS}_\mathbb R$, $n\in N_V$) is
+the collision of $y+u$ in the signature-$(1,\rho-1)$ fibre alone. Taking the fibre ball of (a) times a
+Euclidean neighbourhood of $y$ on which the open condition $x^2>0$ stays valid gives an open
+tube in $D\subset V$ meeting no root wall except $C_+^\perp$; intersecting with
+$C_+^\perp = (C_+^\perp\cap\mathrm{NS}_\mathbb R)\perp N_V$ gives a relatively open $21$-dimensional
+piece of the chamber closure — i.e. the facet. This is the extension, with each restriction named
+explicitly, and it is the only form in which the corpus now relies on it.
+
+### S-2. The inference "$\gamma(c)=c'$ forces $\gamma\operatorname{Pic}=\operatorname{Pic}'$", at its proved scope each
+
+The census argument of the accepted negative half is **pair-specific**: for the certified pair
+$(b_0,b_\star)$ it shows no label-preserving $\gamma$ with $\gamma(c_{b_0}) = c_{b_\star}$ exists,
+because the facet-normal degree censuses differ. It does not, and is not claimed by it to, establish
+a general theorem "chamber equality forces Picard recovery" for arbitrary two members. What does
+stand generally:
+
+* **R Barbera's readings R1, R2 (nef and ample cones in $\mathrm{NS}_\mathbb R$):** the closed
+  chamber has $\mathrm{NS}_\mathbb R$-span, so $\gamma(c) = c'$ forces $\gamma\mathrm{NS} = \gamma\mathrm{NS}'$,
+  hence $\gamma\operatorname{Pic} = \operatorname{Pic}'$ (valid for any members).
+* **R3 (Kähler chamber in $W$):** $c$ is open in $W$, hence spans $W$; $\gamma(c) = c'$ forces
+  $\gamma W = W'$, and $\operatorname{Pic} = W\cap L$ gives $\gamma\operatorname{Pic}=\operatorname{Pic}'$.
+* **R5 (the positive cone in $W$):** same span argument.
+* **R4 (the chamber in the full $V$, the corpus's reading of the fourth bullet):** the universal
+  inference is **open**. Its supposed detector (translation-invariance subspace) fails as recorded
+  in the first reclamation entry, and the trace-projection $p$ is not available to recover
+  $\mathrm{NS}_\mathbb R$ from an isometry neither known nor shown to commute with $p$. With the
+  shape $c=\{(u,v):u\in c_{\mathrm{alg}},\ (u+v)^2>0\}$ the trace $p(c)=c_{\mathrm{alg}}$ is intrinsic
+  to $c$ only when $p$ is intrinsic, which $\gamma(c)=c'$ alone does not give. The accepted negative
+  half's conclusion in this reading is exactly the pair-specific census theorem; whether
+  $\gamma(c)=c'$ *in general* forces $\gamma\operatorname{Pic}=\operatorname{Pic}'$ is named here as
+  the remaining open statement (call it the R4 recovery question), and nothing above or below this
+  reclamation relies on its truth.

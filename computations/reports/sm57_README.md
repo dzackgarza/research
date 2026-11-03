@@ -120,3 +120,49 @@ period-rank-9-by-fibre-dimension argument supersede the corresponding manuscript
   witness-membership audit (Theorem A, the I-2/IV dichotomy and the chi-bookkeeping) and by the
   negative half's elimination tests for the only numbers the corpus uses ($\nu(b_0) = 0$,
   $\nu(b_\star) = 4$). Nothing in the outcome depends on d2.
+
+## Complete verdict register of the second run (`smw0b9kmo`, ended solved)
+- d4 (m8) positive half: ACCEPTED. Labels conjugate for every pair; rho >= 11 on every member;
+  period map rank 9 by the fibre-dimension theorem (ruling swap named; my prior injectivity phrasing superseded).
+- d6 (m3) witness authenticity: ACCEPTED. All five tracked witnesses certified; Theorem A (I_2/IV),
+  the chi bookkeeping, and four tracked errata (C1-C4).
+- d5 (m2) negative half: ACCEPTED. The chamber clause is false for the certified pair in every
+  member-determined reading (R2-R5), for every label-preserving isometry, with Grauert-free facet
+  (y = 2H - alpha + C_+ + e_b, y^2 = 24) and the hyperbolic wall-distance bound; nu(b0) = 0 and
+  nu(b*) >= 4 exact.
+- d3 (m4) contraction/facet chain: ACCEPTED. Artin 1962 Thm 2.3 supplies the projective contraction
+  (hypotheses checked: negative-definite pair matrix, p_a(mC) = 1 - m^2 <= 0); Lemma A1 supplies the
+  wall-free ball; the Pic^perp signature correction (2, 20 - rho) is applied.
+- d1 (m7) cone semantics: ACCEPTED with the referee reclamation above (the literal product and the
+  V-detector were wrong as stated; corrected shape and the census route to R4 stand in their place,
+  and the title table chamber-false-in-R1-R5 / true-in-R6 survives).
+- d8 (m1) arithmetic core: ACCEPTED. The (degree-4 class, root) pair carries no freedom and no
+  distinguishing arithmetic (root pinning Thm 3; <4>|<-2> cannot embed in U(2); ten gluings, one
+  invariant), and names the residue: class number 1 of the genus {rank 20, sig (2,18), form -q_N}
+  and transitivity of O(K) on the gluing anti-isometries, both genuinely open.
+- d7 (m5) premise ledger: ACCEPTED on resubmission after the PL-7 rejection; now
+  dichotomy-quantified (a_02 != 0 gives I_2, a_02 = 0 gives Kodaira IV), PL-8/PL-9 re-scoped, and
+  Appendix A carries the corrected universal census with the indicator terms, matched against the
+  independently audited values (F': nu = 2).
+- d2 (m6) fibre audit: ENDED WITHOUT A SOLUTION; charter discharged by d6's audit and d5's
+  elimination tests (the only two numbers the corpus uses).
+
+Open items, named and not concluded anywhere in this register: the fourth bullet's semantics fork
+(member-determined readings R1-R5, where the clause is false, versus the label-own R6, where it is
+true; the authoring choice is not made); the twist identification of the construction's involution
+pair; the saturation of Lambda in S_dP (det candidate {8,2}); and d8's two arithmetic residues
+above. Nothing in this register asserts a completion beyond the listed acceptances.
+## Reclamation errata, second entry (fourth cycle)
+* The earlier entry's phrase "signature-independent" for the hyperbolic wall-distance formula is
+  withdrawn.  Scope as now recorded in sm00_semantics.md'S S-1 entry: rigorous inside the signature
+  (1, .) fibres (W = H^{1,1} and NS_R), where it supplies the wall-free ball; extended to the full
+  H^2 space of signature (3,19) only through the product structure of algebraic walls
+  (delta-perp = (delta-perp cap NS_R) perp N_V), with the positive-square condition handled as the
+  open condition it is.  At its fibre scope it remains the accepted negative half's ball; nothing
+  further uses it.
+* The universal inference chamber-equality -> Picard recovery is withdrawn outside its proved
+  scope: it holds generally for readings R1/R2 (span = NS), R3 (span = W), R5, but is OPEN in the
+  full-V reading R4 of the fourth bullet, where the census argument is exactly pair-specific -- the
+  accepted theorem that the certified pair is not conjugate with the chamber, which is what A21's
+  chamber clause needs -- and a universal R4 recovery theorem is named as an open question
+  (the R4 recovery question), not assumed anywhere.
