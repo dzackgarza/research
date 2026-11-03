@@ -214,6 +214,35 @@ notation anywhere below.
   entirely; the (X2) antecedent is empty for every glue (the accepted closure stands but is not
   needed); the only unspecified content of the pinned glue left in the corpus is *which* norm-`(-4)`
   wall each of the 121 `BAD_S` classes maps to. (D1), (RI), (REL), (INV), `G3, G4` untouched.
+- **Pass 10 (the owner's precise acceptance gaps, closed with proofs and the declared runtime).**
+  (i) **CH.2 positivity corrected**: the pinning selection uses `H` **nef and big** (Lemma 4b/5 +
+  `H^2 = 4`), never ample — and it *cannot* be ample since `H.alpha = 0` with `alpha` effective —
+  the nef formulation puts `H` in the Kähler closure and the Kähler cone on the
+  `alpha`-positive side (corrected in `smw0_accepted-proofs.md` §I and the addendum's second
+  edition). (ii) **CH.0a arithmetic verified, one assertion corrected**: `P^perp cap S_dP =
+  Z(e-f)` exactly; `<H, alpha>` primitive (parity + the three halves); the triple
+  `(H, e-f, alpha)` spans the **index-2** sublattice `P + Z(e-f)` of `S_dP` (determinants 32 vs 8)
+  — the earlier `= S_dP` was wrong as written; the stabilizer determination uses rational
+  generation only, so `|O(S_dP)_{H,alpha}| = 2` stands. (iii) **Subgroup inclusions at their
+  exact scope**: for every `h in ker rho_T` the pair `(id_S, h)` satisfies the glue condition and
+  fixes the item-6 chamber pointwise (its `S`-side is the identity), so
+  `W(T_Co) subset ker rho_T subset G2 subset G5` holds with the proof on record; genuinely open
+  beyond it: (INV) for a general stabiliser `(g,h)` with `g != id` (the finer display
+  `G2 = rho_T^{-1}(P')` at item 6 is conditional on it, as before). (iv) **The declared shared
+  runtime runs and certifies**: the extracted rootfs `$HOME/sage-image/rootfs` (Sage 11.0.beta5)
+  via `proot-x86_64`; the provider's validated test
+  `tests/forms/test_the_coble_anti_isometry.sage` runs **verbatim** and PASSES
+  (`smw0_container_validated-test-run.txt`); the maintained semantic lattice route cross-checks
+  all three decisions plus the witness with `[alpha/2] -> eta_0`; the CERT-EXT evidence
+  (inverse/composition on all 2048 elements; `q` on all 2048; `b` on all 121 generator pairs with
+  the printed matrix; bilinearity spot-verified on 1500 random pairs; the perp/Inv computations
+  and `[1,527]` block with singleton `eta_0` at `((0,528),(2,496))`) is produced in the declared
+  runtime (`smw0_maintained-gamma_compute-container-run.txt`) and reproduced identically by the
+  interim Sage-10.8 route (its `RR` sentinel shim is no longer load-bearing). The redundant
+  second rootfs pull was stopped as not required by any acceptance check. The numerical/design
+  choices (the U(2)-coordinate framings; `eta_0` the `<2>`-summand half-class) are fixed inputs
+  of these runs; no trial alternative is substituted anywhere. The five groups keep their
+  original definitions and scope.
 
 ## Theorems, at their registered scopes
 

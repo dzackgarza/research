@@ -1,0 +1,10 @@
+container validated-test, Sage: 11.0.beta5
+validated test 1 (decision): PASS
+validated test 2 (typed witness): PASS
+|A_T|, |A_S|, |A_Sdiag| = 2048 2048 2048
+lattice route: DS.is_anti_isometric(DT) = True
+lattice route: DSdiag.is_isomorphic(DS) = True
+lattice route: DS.isometry_to(DT(-1)) = OwnedTorsionFormIsometryMor_with_category_with_category.element_class
+lattice-route witness on [generator 0 of S]: (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  equals eta_0 = [g/2] = (1,0,...,0)? True
+lattice-route witness isometry on generators (q): True

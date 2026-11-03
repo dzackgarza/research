@@ -33,7 +33,11 @@ formula "the unique `alpha_b`-positive component whose closure contains `H_b`". 
 `dist(H_b, delta^perp) = |H_b.delta|/|delta| >= 1/sqrt 2` for every such root
 (`smw0_ch-direction-audit.md`'s Theorem CH.2, as audited). Around `H_b` the arrangement is a
 single hyperplane with two sides; the `alpha_b`-positive side is `cc_b`, and it contains the
-Kahler cone (`H_b` ample at the member; `Kahler . alpha_b > 0` since `alpha_b` is effective).
+Kahler cone — at the correct positivity input: `H_b` is **nef and big** at the member (Lemma 4b
+and `H_b^2 = 4`; it cannot be ample, since `H_b.alpha_b = 0` with `alpha_b` effective — the
+first edition's "ample" is corrected here, and the selection argument needs only nef: nef places
+`H_b` in the closure of the Kahler cone, and `Kahler . alpha_b > 0` since `alpha_b` is
+effective).
 At any `sigma in O` (not only a member), the same pin holds by the dossier's Lemma 4 (only
 `pm alpha` is an effective H-null root there). This uses no accumulation hypothesis anywhere.
 
@@ -99,10 +103,19 @@ the bookkeeping (proved, unchanged) is:
 (a) `G5 = rho_T^{-1}(P)` with `P = gamma rho_S(A) gamma^{-1}` (`A = O(S_dP)_{H,alpha} x O(E8(2))`),
     from the accepted m4 direction's structure theorem; lifts of `P` exist (`rho_T` is surjective
     by the accepted m2 direction).
-(b) `W subset ker rho_T subset G5`: every `h in ker rho_T` lifts to the pair `(id_S, h)` because
-    the glue condition for that pair reads `gamma = rho_T(h) gamma`, i.e. is exactly
-    `rho_T(h) = 1`. Likewise every `w_delta` has `rho_T = id` (because `[delta]` is zero as a
-    class in `A_{T_Co}`; reflections in a *lattice vector* act trivially on the discriminant form).
+(b) `W subset ker rho_T subset G2 subset G5`, at every reading — with the pointwise argument on
+    record (the owner's correction was that this inclusion had been asserted without it): every
+    `h in ker rho_T` lifts to the pair `(id_S, h)`, because the glue condition for that pair
+    reads `gamma = rho_T(h) gamma`, i.e. is exactly `rho_T(h) = 1`; and the `id_S`-side fixes
+    every `S`-side model class pointwise, in particular the item-6 chamber, which is cut from
+    model classes in `S_Co`. Hence the pair lies in `Z_{H,alpha,cc}` at any of the three readings
+    of `cc` whose walls are `S`-side (labels'-own and item-6; the period-domain reading is
+    different, and there the inclusion does need the extra hypothesis). Likewise every `w_delta`
+    has `rho_T = id` (because `[delta]` is zero as a class in `A_{T_Co}`; reflections in a
+    *lattice vector* act trivially on the discriminant form). Beyond this inclusion, the finer
+    display `G2 = rho_T^{-1}(P')` with `P' = gamma rho_S(A_cc) gamma^{-1}` is proved at the
+    labels'-own reading (Theorem CH), and at the item-6 reading it is conditional on (INV): a
+    general stabiliser `(g,h)` with `g != id` acts on the chamber non-pointwise.
 (c) `ker(Z -> G5) = { (g, id_T) : g in ker rho_S(A) }` — the elements of `Z` acting trivially on
     `T_Co`. Their image in `G5` is the identity; they do NOT produce a subgroup of `G5` at all.
     The first-edition formulation of a kernel-side "(J)" obligation — stated as `ker rho_S(A)`
