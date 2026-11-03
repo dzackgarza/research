@@ -364,11 +364,20 @@ carrying components of $C$. (The first submission interchanged the two rulings' 
 here; the conclusion is unchanged.)
 
 *The node's own fibre, and the fibre over the other $\tau$-fixed ruling.* The fibre over
-the ruling through $p$ is $D_b + (L_1 - D_b)$ with component $H_b$-degrees $0$ and $2$
-(Lemma of §1: $H_b\cdot D_b = 0$, and $H_b\cdot(H_b - f_b - D_b) = 4 - 0 - 0 = 2$…
-equivalently the pullback of the proper transform $(h_1 - e)$, of degree
-$(1,1)\cdot(h_1-e) = 2$); in either letter a degree-$1$ class cannot live there, so the
-reducible ruling above is *not* the one through $p$. The other $\tau$-fixed ruling (the
+the ruling through $p$ is the strict-transform configuration $D_b+(L_1-D_b)$ where
+$L_1 = \pi^*h_1$ is the fibre line. Its components have $H_b$-degrees $0$ and $2$:
+$H_b\cdot D_b = 0$ because $\pi$ contracts $D_b$, and $H_b\cdot(L_1-D_b)
+= \pi^*(h_1+h_2)\cdot(\pi^*h_1 - D_b) = (\deg\pi)\,(h_1+h_2)\cdot h_1 - 0
+= 2\cdot 1 = 2$, with no subtraction terms involving $D_b$ appearing twice. (The sentence
+this replaces computed the second degree by an unverified '4 - 0 - 0'; that was not a
+hypothesis and the value is now computed above.) The contribution over other fibres that
+would make a degree-$1$ class live over the node's ruling is therefore ruled out by degree,
+provided the inductive frame of §A — each $C$ of degree $1$ is a proper sub-divisor of a
+single fibre's support — holds at the level of the explicit members; that frame is
+verified for the tracked explicit members in `computations/reports/sm57_verify_members.log`
+and `sm57_verify_special_member.log` (the next section keeps the general claim open until
+the fibre contents of a *generic* member are established, which is the verification run
+charter d3 of the continuing campaign). The other $\tau$-fixed ruling (the
 "infinity" one, which does not contain $p$) is not excluded and is covered by the
 conclusion: "other than the ruling through $p$" includes it.
 
