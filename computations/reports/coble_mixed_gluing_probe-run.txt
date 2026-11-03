@@ -1,0 +1,50 @@
+provenance
+  provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552   Sage: 11.0.beta5
+
+ambient L: rank 22, det -1, signature (3, 19) (type _ProductCategory.parent_class), even True
+  even unimodular (rank 22, signature printed above): the K3 lattice.
+
+S sublattice: rank 11, det 2048, signature (1, 10)
+T = S^perp:  rank 11, det -2048, signature (2, 9)
+
+S  is_isometric_to( U(2) + <-2> + E8(-2) ): True
+T  is_isometric_to( <2> + U(2) + E8(-2) ): True
+
+piece checks inside L (all must hold):
+  e^2=0 f^2=0 e.f=2 (want 0,0,2)
+  alpha = uc_minus: square -2 (want -2); uc_plus: square 2 (want 2)
+  diag/anti E8 basis squares: {-4} {-4} (want {-4} on the even 2*E8 scale when the
+    two copies are glued: each diag vector has square 2*(-2) = -4)
+
+glue_map(S, T): glue order (domain x codomain): 2048 x 2048
+|A_S| = 2048, |A_T| = 2048, det S = 2048, det T = -2048
+  full graph iff glue order = sqrt(|A_S|.|A_T|) = 2^11 = 2048.
+
+mixed (-2)-vectors of L with H.delta = A.delta = 0 and both projections nonzero:
+  H^2 = 4 (want 4), alpha^2 = -2 (want -2), A^2 = 14 (want 14)
+  x1 = (e_a - f_a, mirror of the U(2) diag/anti pair)
+    x^2 = -2, x.H = 0, x.A = 0
+    nonzero S-side pairing: True ; nonzero T-side pairing: True
+  x2 = (e_b - f_b, inside U_b)
+    x^2 = -2, x.H = 0, x.A = 0
+    nonzero S-side pairing: True ; nonzero T-side pairing: True
+  control x3 = uc_minus (pure S root alpha, T-pairings must all vanish)
+    x^2 = -2, x.H = 0, x.A = 2
+    nonzero S-side pairing: True ; nonzero T-side pairing: False
+
+MIXED WALL CLASSES PRESENT in this glue (x^2=-2, x.H=0, x.A=0, both parts nonzero):
+   x1 = (e_a - f_a, mirror of the U(2) diag/anti pair)
+   x2 = (e_b - f_b, inside U_b)
+
+interpretation, carefully scoped:
+  - the wall of such a class inside D(T_Co) is the hyperplane of its T-projection (t^2 = -4 for
+    the (F2) shape), an honest Heegner divisor of T_Co; at a period on it the class is algebraic,
+    Riemann-Roch makes one sign effective, and A.delta = 0 then excludes ampleness of A, so the
+    period is outside O and outside the one-node image.  So whenever the pinned Coble glue carries
+    a (F2)/(F3)-shaped pair, B24-as-verbatim (the pure (-2) arrangement complement) is false and
+    the arrangement needs those Heegner pieces too.
+  - this probe exhibits such classes in ONE glue (the diagonal/anti-diagonal brick glue), so the
+    "no mixed class anywhere" branch is not automatic; it can only hold, if at all, as a property
+    of the actual Coble glue -- which the corpus records as an open datum (report :661, item 7).
+
+Not claimed: that the brick glue IS the Coble glue; no conclusion about B24 itself.
