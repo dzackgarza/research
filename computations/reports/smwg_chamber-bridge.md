@@ -19,7 +19,13 @@ failed-implication claim left open rather than asserted. (S2) the non-necessity 
 exhibited pair satisfying the labels and quantifiers (two very-general members in different
 `Gamma_L`-orbits: the clause holds via the label transport and the algebraic A-positive rule,
 `(Hdg)` fails by definition).
-(Pass 3, current.) (§2(1)) the wall paragraph no longer says "fails nefness and ampleness":
+(Pass 4, current.) §2(3) no longer argues openness by pointwise-chosen lifts: the realization
+set `O` is defined *existentially* (there EXISTS a marked pair at `sigma` with `A` ample, keeping
+to the named chamber), and openness is proved through a compatible local marked family at a
+witnessing pair — Local Torelli's local isomorphism plus openness of relative ampleness on the
+system with `A` base-constant — not by any arbitrary per-point lift and not by a global universal
+family, both of which are kept unasserted.
+(Pass 3.) (§2(1)) the wall paragraph no longer says "fails nefness and ampleness":
 a zero pairing excludes **ampleness** (strict positivity), not **nefness** (`>= 0`), and the
 distinction is kept with its dependencies; (§2(3)) existence at each period now rests on the
 *surjectivity of the period map* (PSS/Todorov, cited at BHPV VIII topic level), and openness
@@ -154,23 +160,30 @@ by that member's arrangement (cf. S4 for the rank-11-decidable case).
 Pjateckii-Šapiro–Šafarevič / Todorov (projective K3s; quoted at BHPV Ch. VIII topic level, and
 Huybrechts' lectures at topic level): every `sigma in D(T_Co)` is realized by some marked
 pair `(X_sigma, psi)`. This, not Local Torelli, is the existence fact used here.
-**(3b) Openness is local, and explicitly not derived from a global universal family.** In a
-holomorphic family of compact Kähler surfaces over an analytic germ `B` with a base-constant
-integral `(1,1)`-class `A` (a `Pic`-stable mark), the condition " `A` is ample on the fibre" is
-open at the base — openness of relative ampleness in a holomorphic family of compact complex
-manifolds, cited at that scope. Local Torelli is used for exactly and only what it proves: the
-period map of the marked-moduli space is a **local isomorphism**, so neighbourhoods of marked
-pairs base-change into neighbourhoods of periods; openness is accordingly read **family by
-family, at the local marked-moduli scope** — no fine moduli/universal family over the whole of
-`D(T_Co)` is asserted anywhere in this dossier, and where a statement needs a global family it is
-recorded as open rather than assumed.
-**(3c) Conclusion.** Define `O := { sigma in D(T_Co) : A in Amp(X_sigma) }` (marked membership at
-each `sigma` by (3a); the named chamber of `(C1)` is the fourth-bullet chamber identified in
-`(0)`). By (3b), `O` is analytic-open; it is nonempty — it contains every one-node member's
-period (`A` ample by Lemma 2.2 of `sm00_positive-half-A21.md`) — of dimension `11 − 2 = 9`
-where nonempty, and it is disjoint from `N_A` of (1), because ampleness fails there. The prefix
-"`(M2)`" everywhere below means precisely the named hypothesis "`A` ample on the member", in the
-identified chamber.
+**(3b) The realization set is existential by definition (per-point choices do not embarrass it).**
+Define
+
+`O := { sigma in D(T_Co) : there EXISTS a marked pair (X, psi) at sigma with psi^{-1}(A) ample }`,
+
+with the named chamber of `(C1)` — the fourth-bullet chamber identified in `(0)` — required of the
+witnessing pair. No "A ample at the arbitrarily chosen pointwise lift" is asserted: different lifts
+of one `sigma` may carry different marked classes conjugate by automorphisms, and the definition is
+*existence* of one good marked lift, exactly as the construction supplies at a one-node member.
+**(3c) Openness, via local marked lifts with a constant mark (not via a universal family).** Let
+`sigma in O` and let `(X, psi)` be a witnessing marked pair with the mark `A` base-constant on it.
+The local marked family at `(X, psi)` given by the local moduli of marked K3 pairs — the content of
+Local Torelli, used for exactly and only what it proves, namely that the period map of the
+marked-moduli space is a **local isomorphism** — carries `A` as a base-constant marked
+`(1,1)`-class throughout its embedded image of a neighbourhood of `sigma`. Openness of relative
+ampleness (in a holomorphic family of compact complex manifolds, cited at that scope) then keeps `A`
+ample on all fibres over a neighbourhood of `sigma`, and the period-map local isomorphism carries
+the neighbourhood of the witnessing pair onto a neighbourhood of `sigma` inside `O`. Hence `O` is
+**analytic-open** — by a compatible local marked lift with the mark held constant, not by any
+arbitrary per-point lift and not by a global universal family, neither of which is asserted or used
+anywhere in this dossier. `O` is nonempty — it contains every one-node member's period (`A` ample
+there by Lemma 2.2 of `sm00_positive-half-A21.md`) — of dimension `11 − 2 = 9` where nonempty, and
+disjoint from `N_A` of (1), because ampleness fails there. The prefix "`(M2)`" everywhere below
+means precisely the named hypothesis "`A` ample on the member", in the identified chamber.
 
 **(4) Topology summary, nothing over-claimed.** `O` is analytic-open, nonempty, 9-dimensional; it
 is a subset of `D(T_Co) \ N_A`, with equality **not** asserted anywhere and the `(C1)`-failure mode
