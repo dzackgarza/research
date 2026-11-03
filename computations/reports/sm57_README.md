@@ -184,3 +184,15 @@ character multiplicities (3,8,0,11) vs (10,1,0,11) and the product's anti-invari
 the twist's S_Co-type). The persistent alternatives kept at scope: the auxiliary reading
 (w_alpha I_En, w_alpha I_dP), whose residue is the labelled embedding/gluing question,
 which abstract type does not decide.
+
+## Scope note on `smtw_certify_lattices.py` and its log
+That script is re-labelled with its actual reliability class: **ordinary exploratory arithmetic**
+(it reimplements determinants, signatures, quadratic values and Gram operations from Fraction/itertools
+and hand-builds E8, with no maintained semantic API underneath). It is not a computational certificate,
+and acceptance texts in this record do not rely on it. Where computational validation matters, what is
+used here is the maintained provider's own lattice/discriminant/saturation APIs — here the
+`sdp_discriminant_referee.py` run at pin `c546077d` and its log, which is also the only
+computational line the manuscript's saturation proposition cites. Any further validation of a
+specific member's lattice type that someone needs should also go through those APIs in the shared
+development image (and their docs/tests first), not by patching algorithms locally; otherwise that
+validation is left open here, by design.
