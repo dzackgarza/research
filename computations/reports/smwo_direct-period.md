@@ -109,8 +109,10 @@ notation anywhere below.
   (iv) The exact standing of `O` against the original A20 claim is stated (Theorem D (relations)):
   `O` with the exceptional bullet is the original tuple's own scope (the bullet is authored), the
   pass-2 A-ample-only locus `O~` possibly contains the TAC strata, `im(p) = O/Gamma_L` is the
-  established original claim, and `im(p) = O~/Gamma_L` holds iff the pinned glue is (F4)-free —
-  the difference is the named (F4) family, not a closed issue.
+  established original claim, and `im(p) = O~/Gamma_L` is established ONCE the pinned glue is
+  (F4)-free; the full conditional kept is the two-conjunct one `(X1) no (F2),(F3) pairing and
+  (X2) no (F4)-wall carrying a correct-sign A-ample realization` (the second is the named
+  geometric question (T-strata)), since a dead-ampleness wall harms the equality on neither side.
   (v) None of these is labelled closed by publication alone: the tacnode strata are named open
   (as a separate construction question outside the one-node scope), and the remaining (T-mixed)
   pairing question, `(D1)/(D2)`, and chamber determination stand open as before.
@@ -217,11 +219,15 @@ components counting multiplicity.
   `h^0(alpha) = 1` from `0 -> O -> O(alpha) -> O_E(alpha) -> 0` with `O_E(alpha) = O_{P^1}(-2)`.
 - *Two distinct components.* `alpha = C_1 + C_2` (each of multiplicity `1`, by the `A`-counting
   just made), `A.C_1 = A.C_2 = 1`.
-  Squares, enumerated:
+  Squares, enumerated (all cases, including the positive-square ones):
   (b1) `C_1^2 = C_2^2 = 0`: `alpha^2 = 2 C_1.C_2 = -2`, so `C_1.C_2 = -1`: impossible for distinct
   irreducible curves.
-  (b2) exactly one of `C_i^2` is `>= 0` and the other is `>= 0` too: then
-  `alpha^2 = C_1^2 + C_2^2 + 2 C_1.C_2 >= 0` — against `alpha^2 = -2`.
+  (b2a) `C_1^2 >= 0` and `C_2^2 >= 0`: `alpha^2 = C_1^2 + C_2^2 + 2 C_1.C_2 >= 0` — against
+  `alpha^2 = -2`.
+  (b2b) `C_1^2 > 0`, `C_2^2 = -2`: `alpha^2 = C_1^2 - 2 + 2 (C_1.C_2) = -2` forces
+  `C_1.C_2 = -C_1^2/2 <= -1` (the form is even, so `C_1^2` is a positive even integer and the
+  right side is a negative integer): impossible for distinct irreducible curves — explicitly the
+  positive-square-single-negative case, excluded.
   (b3) `C_1^2 = 0`, `C_2^2 = -2`: `alpha^2 = -2 + 2 (C_1.C_2) = -2` forces `C_1.C_2 = 0`, and then
   `alpha.C_2 = C_1.C_2 + C_2^2 = -2`, whence
   `A.C_2 = 2 H.C_2 - alpha.C_2 = 2 H.C_2 + 2 = 1`, so `H.C_2 = -1/2`: not an integer — impossible.
@@ -527,17 +533,33 @@ dominance-to-surjectivity inference appears anywhere. `square`
   either the effective-sign pairing kills ampleness outright (so `sigma` is not even in `O~`), or
   the effective (F4)-class with `A`-positive sign decomposes `alpha` as in Lemma 4, again making
   the realization alpha-reducible. So the two sets are disjoint.
-- Therefore: the image theorem at the ORIGINAL quantifiers is `im(p) = O/Gamma_L` (proved by
-  Section QC at the original tuple, no changed-hypothesis move); the pass-2 headline formulation
-  at `O~` was promoted beyond what is established, since it would additionally require the TAC
-  strata to be reachable or empty — exactly the (F4)-branch of (T-mixed). The difference between
-  the two loci is the named second family of the residual question, not something publication
-  can close: `im(p) = O~/Gamma_L` holds iff the pinned glue is (F4)-free (and then `O~ = O` at
-  the relevant level); otherwise it is a proper inclusion `im(p) = O/Gamma_L subset O~/Gamma_L`
-  whose complement is carried by the TAC strata. Whether those strata carry a different geometric
-  construction (the tacnode/A2 Coble pairs) is a separate open question outside `@prob:B24`'s
-  one-node scope (m4's `Heeg_one` records the same residual from the member side; the two
-  formulations coincide).
+- Therefore, with the directions separated as they must be:
+  **(Suff-direction, established).** The image theorem at the ORIGINAL quantifiers is
+  `im(p) = O/Gamma_L` (proved by Section QC at the original tuple). If the pinned glue is
+  (F4)-free, then additionally `O~ = O` at every realization (an (F4) class is what makes
+  `alpha` reducible, by Theorem SPLIT's class-membership check and Lemma 4's ampleness-counting),
+  so `im(p) = O~/Gamma_L` as well; and if moreover the pinned glue carries no (F2),(F3)-class,
+  then `O~ = O = D_Co^o` exactly and B24 holds verbatim. None of this rests on any realization
+  beyond those of the original family.
+  **(Necessity-direction, NOT established as stated, and now kept conditional.)** The gluing
+  class alone decides nothing: an (F4)-carrying wall's periods fall into two behaviors, decided
+  by which sign of the algebraic `(F4)`-class is efficient at the realization — with the
+  `A`-negative sign, ampleness fails at every point of that wall and the wall is dead on both
+  sides (it is neither in `O~` nor in the image, so `im(p) = O~/Gamma_L` can survive a
+  non-`(F4)`-free glue); with the `A`-positive sign and ampleness surviving, Lemma 4's mechanism
+  gives `alpha = x + D` reducible: a genuine TAC stratum of `O~ minus O`, absent from the image
+  by one-node scope. So the correct conditional statement of record is:
+  > `im(p) = O~/Gamma_L` holds iff `(X1)` the pinned glue carries no (F2),(F3)-class **and**
+  > `(X2)` no glue-carried (F4)-wall carries a correct-sign `A`-ample realization
+  > (equivalently: no nonempty TAC stratum exists).
+  `(X1)` is a discriminant-form question about the pinned glue (open; the maintained ambient
+  exists), and `(X2)` is the named geometric question **(T-strata)**: whether
+  `alpha`-reducible, tacnode-alternative (A2-cuspidal, one-node-adjacent) members exist with the
+  same labels — to be settled by the cuspidal discriminant inside the one-node locus's closure
+  in `|H_p|` and by the ampleness/effectivity-sign analysis there, with ties to m4's
+  `Heeg_one`/`(warn:special-null)` reading. Both are left open exactly as stated; the tacnode
+  strata themselves are a separate geometric question outside `@prob:B24`'s one-node scope here,
+  and nothing in this file labels them closed.
 
 The three markers of B24, at their now-proved content:
 
@@ -607,12 +629,14 @@ families; and:
   > (F3) one of the 120 root classes `[w/2]` into that same 496-class partner space, or
   > (F4) the class `[alpha/2]`              into the 528-class partner space at norm `-6`?
   
-  If none of the three pairings happens: B24 holds verbatim with `O = D_Co^o = D \ NL_2`. If some
-  happen: B24 stands with the corrected explicit complement — those `T_Co`-Heegner pieces excluded,
-  the (F2),(F3)-pieces by ampleness, the (F4)-pieces by alpha-reducibility (outside the tuple's
-  scope, i.e. the named tacnode alternative; whether its strata carry a geometric construction of
-  their own is a separate question, outside `@prob:B24`'s one-node scope) — in both cases with the
-  chamber and root content of Theorem D. An earlier hand-sketch asserting a forced pairing was
+  Consequently: B24 holds VERBATIM (`im(p) = D_Co^o/Gamma_L`, `D_Co^o = D \ NL_2`, with the
+  chamber and root content of Theorem D) exactly upon the conjunction `(X1) no (F2),(F3) pairing
+  in the pinned glue AND (X2) no (F4)-wall carrying a correct-sign `A`-ample realization`. If
+  either fails, B24 stands with the corrected explicit complement — the charged `T_Co`-Heegner
+  pieces excluded, (F2),(F3) by ampleness and (F4) by `alpha`-reducibility — or, in the
+  TAC-empty-by-sign sub-case of `(X2)`, dead on both sides and harmless. In every case the chamber
+  and root content of Theorem D stands. `(X1)` is the discriminant-form part of the residual;
+  `(X2)` is the geometric one, and neither is claimed by publication. An earlier hand-sketch asserting a forced pairing was
   retracted above as a miscount; the counts here are machine-corroborated by bounded exact
   enumeration (`BAD_S = 121`, partner spaces `496`, `528`, self-stability asserted across two box
   sizes in the run log; exploratory tier).
