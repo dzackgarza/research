@@ -684,20 +684,25 @@ families; and:
    symbolically). They live at *boundary* degenerations, never at members — precisely compatible
    with Theorem A. Separately, the node degeneration's own vanishing class is `pm alpha`, with
    `w_alpha|_{T_Co} = id`: `alpha` contributes nothing to `G1` (m3 SS6.2, m7 SS5).
-4. **The chamber question (CH) is decided; and the residual is named at its two pieces.**
-   (CH) is **decided** (m4 of run `smw0uqe8g`, accepted at `.ultramath/smw0uqe8g/REFEREE-verdict-m4.md`):
-   at the corpus's authored chamber semantics — `@def:direct-cover-datum` item 6 (:878: the chamber
-   in which the exceptional curve is effective and the contraction good) with
-   `@rmk:chamber-not-transported`'s chamber containing the Kahler cone — the chamber is determined
-   by `(H, alpha)` at every member, because no effective `(-2)`-wall approaches `H`
-   (`dist(H_b, delta^perp) >= 1/sqrt 2` for every effective root `delta != +-alpha_b`, integrality;
-   the accumulation hedge of `the-heegner-line:638`/`:659` is obsolete at the member scope), so the
-   stabiliser condition `{g c = c}` is automatic for the label stabiliser, and
+4. **The chamber question (CH) is decided at the corpus's own chamber semantics (audited chain);
+   the residual is named at its two pieces.** The chamber of item 6
+   (`@def:direct-cover-datum`, heegner-report :889-:896), read with `@rmk:chamber-not-transported`
+   as the component of the positive cone containing the Kahler cone and cut at the member's
+   effective algebraic roots, IS a function of `(H, alpha)` at every member: by `@lem:face-at-H`
+   only `alpha_b^perp` of the effective walls passes through `H_b`, and the uniform bound
+   `dist(H_b, delta^perp) >= 1/sqrt 2` for every effective root `delta != +-alpha_b` (integrality
+   of `H_b.delta`) kills the corpus's own accumulation hedge at `the-heegner-line:638`, making
+   `@prop:chamber-pinned` unconditional; uniqueness then selects the `alpha`-positive component with
+   `H` in closure, and any label stabiliser, permuting effective walls and preserving both the
+   sheet and `alpha`-positivity, maps that unique component to itself. Hence for `@def:direct-group`
+   as written: `Z_{O(LK3)}(I_Co, I_dP)_{H,alpha,c} = Z_{O(LK3)}(I_Co, I_dP)_{H,alpha}`, and
    > `Gamma^dir_{Co,2} = Gamma_L`
-   as a lattice-level statement at the authored chamber's reading. The two faithful counter-readings
-   (full-lattice and period-domain chambers) keep their own determination failures (each recorded
-   with its witness); and the cross-member *transport* fork of the corpus's fourth bullet is
-   untouched by this decision and stays open as it stood.
+   as a lattice-level statement (m4 of run `smw0uqe8g`, accepted with the audit recorded at
+   `computations/reports/smw0_ch-direction-audit.md` and the mark `.ultramath/smw0uqe8g/REFEREE-verdict-m4.md`;
+   no weaker chamber or group is substituted anywhere). The full-lattice and period-domain
+   counter-readings are distinct objects from the authored chamber, recorded there, and do not
+   disturb the chain; the cross-member *transport* fork of the corpus's fourth bullet is untouched
+   by this decision and stays open as it stood.
    The residual content of B25 is then exactly the two named pieces, with nothing else intervening:
    (D1) *monodromy-maximality*: the family's discriminant meets every `Gamma^dir`-orbit of walls;
    (RI) *reflection index*: is `ker rho_{T_Co}` (the `O^+`-stable group with the discriminant
