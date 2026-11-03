@@ -166,3 +166,21 @@ above. Nothing in this register asserts a completion beyond the listed acceptanc
   accepted theorem that the certified pair is not conjugate with the chamber, which is what A21's
   chamber clause needs -- and a universal R4 recovery theorem is named as an open question
   (the R4 recovery question), not assumed anywhere.
+
+## Verdict register of the twist-identification run (`smw0dbvr6`)
+- d6 (m4) ambient saturation: ACCEPTED (with the nef-plus-fibration completion of its
+  Lemma 1 checked by the referee).
+- d2 (m6) fibre-span primitivity + readings analysis: ACCEPTED.
+- d7 (m8) Nikulin fixed-locus route + types: ACCEPTED (route 1; the (3,3,1) and (11,11,1)
+  invariants, T-type, and the pair-fail on the literal slot via multiplicity tables).
+- d3 (m2) RR-verticality + literal-slot refutation: ACCEPTED.
+- d5 (m3): REJECTED at Lemma 3 (`no irreducible curve of H-degree 1`): false on the
+  certified split-ruling members (b*, B) and the IV-stratum member (F'). Its Lemmas 1-2
+  (lattice bound, RR-nef) survive as reusable.
+O-S is decided (S_dP = Lambda = U(2)+<-2>, index 1) independently by four accepted routes;
+O-T is settled on the corpus's original slot (partner = I_En): NEGATIVE, with the joint
+character multiplicities (3,8,0,11) vs (10,1,0,11) and the product's anti-invariant rank
+8 vs 1, and with H1 discharged anyway by Nikulin's classification (the type of S_Co,b is
+the twist's S_Co-type). The persistent alternatives kept at scope: the auxiliary reading
+(w_alpha I_En, w_alpha I_dP), whose residue is the labelled embedding/gluing question,
+which abstract type does not decide.
