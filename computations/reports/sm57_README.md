@@ -353,29 +353,57 @@ normalization census, and the current provider pin's constructor capability).
 
 ## `smw0o7jbf` outcome register (A20 direct period theorem: image and monodromy)
 `smwo_direct-period.md` is the published dossier for the original `@prob:B24`/`@prob:B25`
-obligations, from the accepted solution m2/d6 of the run `smw0o7jbf`, with the referee's three
-caveats recorded at each theorem (the run's `REFEREE-verdict-m2.md` has the audit trail):
+obligations.  From the run `smw0o7jbf`: **six accepted solutions** (m2, m1, m3, m4, m5, m6, m7;
+**m8 rejected** with three recorded gaps); referee records `REFEREE-verdict-m{1,..,8}.md` are in the
+swarm's directory.  The dossier's current state (pass 2) is:
 - **Theorem A** (pointwise exclusion of the whole $T_\Co$ $(-2)$-arrangement from every construction
-  member's period, by Riemann–Roch + $\iota_{dP}$ inversion + pointedness):
-  **arrangement = $\{\delta^\perp:\delta\in T_\Co,\delta^2=-2\}$, excluded pointwise, not generically**.
+  member's period, three independent proofs accepted):
+  **arrangement = $\{\delta^\perp:\delta\in T_\Co,\delta^2=-2\}$, excluded pointwise, not generically**;
+  the image *meets* the $(-6)$-Heegner locus (the special member $F'$ has $[C_1-C_2]\in T_\Co$ of
+  square $-6$), so nothing larger is excluded.
 - **Theorem B** (the "missing geometric realisation" of the corpus's :1015 closed at the exact
-  chamber hypothesis "$2H-\alpha$ Kähler"—via fixed-class effectivity + global Torelli, with the
-  flagged statement-level input (R)).
-- **Theorem C** (model rigidity: every such Coble K3 belongs to the direct construction identically
-  on the component: the resolved quotient is the smooth rational $b_2=3$, $K^2=7$ model with the
-  genus-8 branch, and contracting recovers $(P^1\times P^1$, irreducible one-node-at-$\tau$-fixed
-  $(4,4)$, $H=\pi^*\mathcal O(1,1)$, product symplectic).
-- **Theorem D** $\operatorname{im}(p) = \DCoOc/\Gamma_L$, with B24's three markers itemized
-  (arrangement excluded pointwise; chamber = one labelled inequality; exceptional root encoded),
-  and fibres $=\operatorname{Aut}(Y)^\tau$-orbits, dimension 9.
-- **Theorem E** (B25 at quotient-group content): marking cover $\cong \DCoOc$ with deck $=G_1=G_2
-  =\Gamma^\dir_{\Co,2}$; the identification $\Gamma^\dir = \Gamma_L$ is **left open** (equality iff
-  the chamber datum is determined by $(H,\alpha)$; no quotient replaced by notation); $G_3,G_4$
-  untouched.
-- **(T-mixed) named as the next arithmetic theorem**: existence and effectivity of a mixed
-  $\delta = s+t$ with $\delta^2=-2$ and $(2H-\alpha)\cdot\delta=0$ at some $q\in D_\Co^o$, deciding
-  between image = exact arrangement complement (B24 verbatim) and image-minus-a-further-closed
-  stratum; the pure $S_\Co$- and $T_\Co$-cases are proved removed in the dossier.
+  chamber hypothesis "$2H-\alpha$ Kähler" — fixed-class effectivity + global Torelli; the earlier
+  flagged input (R) is replaced by the anchored PSS/realization statements, anchors verified
+  verbatim (`huybrechts_k3_lectures.md` :9480, :10227-:10240, :5167, :3536, :737, :1027)).
+- **Theorem C** (the quotient reconstruction is arithmetic, not rigid; pass 2 proves every
+  quotient-side input publicly): $\chi(\mathrm{Fix}) = 2\mathrm{rk}\,S_\iota - 20$ conventions
+  ($-14$ for $\iota_{\mathrm{dP}}$; the pass-1 "$2\mathrm{rk}-22$" was the trace, corrected);
+  the quotient lattice $\pi^*H^2(Y^\circ) = S_{\mathrm{dP}}$ at **index one proved** by the
+  transfer/determinant argument (not the corpus's member-side prop alone); $\alpha$ descends to the
+  irreducible $(-1)$-curve $e'$ with $\widetilde B \cdot e' = 2$ transverse at two points (proved);
+  the contraction yields $Y \cong \mathbb P^1\times\mathbb P^1$ by the degree-$8$ classification
+  with the nef square-$2$ class ($a^2-m^2=2$ unsolvable; $\mathbb F_2$ killed by ampleness), the
+  branch being the irreducible one-node-$(4,4)$ curve ($B_1\cdot B_2 \ge 4$ against the node), and
+  $\tau$ product with a $\tau$-fixed node; the unique degree-$7$ del Pezzo (Demazure, LNM 777) is
+  the only classification input used; **no rigidity of smooth rational surfaces is used**.
+- **Theorem D** $\operatorname{im}(p) = O/\Gamma_L$ with
+  $O = \{\sigma : \exists\ \text{marked } (X,\psi) \text{ at } \sigma \text{ with } \psi(2H-\alpha) \text{ ample}\}$,
+  proved member-by-member (Section L: the full (F1)-(F5) census, Lemma 4 (one contracted curve),
+  Lemma 4b (frame inequality, repaired publicly — its written form was circular; the derivation now
+  uses only ampleness of $A$, RR, negativity of the algebraic part of $T_\Co$, primitivity of
+  $e,f$), Lemma 5 (pencils); Section QC: the reconstruction). B24's three markers: the arrangement
+  excluded pointwise; the chamber the single condition "$2H-\alpha$ ample" (sign constancy on the
+  component, no $A$-null root of $S_\Co$, frame inequality at every $\sigma\in O$); the exceptional
+  root $\alpha$ a function of $(S_\Co, H, A)$. The corpus's open-image statement stands (the walls
+  are locally finite, never dense; m8's contrary claim was rejected with its proof).
+- **Theorem E** (B25 **scoped to what is proved**): deck group of the marking cover $= G_1$
+  (covering theory; the labelled trivialising cover is normal by construction);
+  $G_1 \subseteq \Gamma_L = G_5$ and $G_1 \subseteq \Gamma^{\dir}_{\Co,2} = G_2$ (flat labels);
+  computed generators $W_{\mathrm{node}} = \langle w_\delta, (w_s, w_e)\rangle \subseteq G_1$ from
+  the two wall types (second $\tau$-fixed point, nodal pair); **$G_1 = G_2$ is OPEN** with the two
+  missing statements named: (D1) monodromy-maximality, (D2) generation (by wall reflections and the
+  discriminant-automorphism image, owner-undecided for $T_\Co$); $\Gamma^\dir = \Gamma_L$ is
+  separately open (chamber determination); $G_3, G_4$ untouched; **no group equality is asserted
+  anywhere**, and `@prob:group-identification` of the four groups stands unchanged.
+- **(T-mixed), at its verified census**: the wall-forming mixed classes are (F2),(F3) with
+  $s^2 = t^2 = -4$; machine-verified counts: `BAD_S = 121` (the 120 (F3) root-classes plus the one
+  (F2) class) and `BAD_T = 496` (`3*120 + 136`); `|BAD_S| \le |NOTBAD_T| = 528`, so no counting
+  argument forces the walls and the existence of the mixed walls is **glue-dependent** on the pinned
+  Coble glue (the recorded open datum at report :661 item 7): if no pairing, B24 holds verbatim
+  with $O = D_\Co^o$; if paired, the image misses those norm-$(-4)$ Heegner divisors of $T_\Co$, and B24
+  stands with the corrected explicit complement. The brick probe's two mixed wall classes show both
+  branches live; the brick glue is not claimed to be the Coble glue. (An earlier hand-sketch
+  asserting a forced pairing is retracted as a miscount.)
 
 Still untouched here: the same-run adjudications of the four-group equality
 (`@prob:group-identification`), the certified negative pair with its verified scope, and the
