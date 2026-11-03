@@ -423,8 +423,13 @@ swarm's directory.  The dossier's current state (pass 2) is:
   `6ad7a5ea` (the corpus's declared glue-construction route) returns the witness with
   $\gamma_\Co([\alpha/2]) = [g/2] = \eta_0$ (`smw0_maintained-gamma_compute.sage` + `-run.txt`,
   provenance on file), so the (F4) family is empty for $\gamma_\Co$ and no (F4) wall is ever
-  charged; the remaining open identification is named **(GL-ID)** — that the A21 construction's
-  pinned glue equals this maintained witness (not decidable from invariants). And (X2) closed
+  charged. **Then m6/d4 of the same run (accepted) decided the bit outright for every glue**:
+  the orbit invariant $\mathrm{Inv}(x) =$ multiset of $q_T$-values on $x^\perp$ splits the 528
+  level-1 classes as $[1,527]$ with the singleton $\eta_0$ matching the source-side invariant
+  $((0,528),(2,496))$, so $\gamma([\alpha/2]) = \eta_0$ for **every** anti-isometry — the (F4)
+  family is realised by no full-graph glue, $E_{F4} = \emptyset$ universally, and the earlier
+  `(GL-ID)` identification question is vacuous (the referee's intermediate intuition that the bit
+  was glue-dependent is retracted in pass 9 of the report). And (X2) closed
   negatively (m3, accepted): every paired
   wall is ampleness-dead on both sides — (F2),(F3) by $A$-null Riemann–Roch effectivity,
   (F4) by the empty tacnode alternative. Hence B24 VERBATIM is false for every glue, and the

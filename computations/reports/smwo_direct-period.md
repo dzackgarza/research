@@ -172,7 +172,8 @@ notation anywhere below.
   reproduces every profile and decision (`computations/reports/smw0_maintained-gamma_compute.sage`
   + `-run.txt`; provenance on file: this VM's Sage 10.8, module-level imports, RR sentinel shim,
   no container). The remaining identification **(GL-ID)** — that the A21 construction's pinned
-  glue equals this maintained witness — is the only surviving glue-dependent question, named open.
+  glue equals this maintained witness — is **vacuous as of pass 9**: m6/d4's perp-invariant
+  proves `gamma([alpha/2]) = eta_0` for EVERY glue, so no identification is needed.
   (ii) **BAD_S reconciliation (the owner's correction)**: the previously committed referee log's
   `95` was a clipped exploratory box (`[-3,3]^8`; the highest E8 root has coefficient 6), not
   evidence against the manuscript's `121`; the reconciled
@@ -192,6 +193,27 @@ notation anywhere below.
   carries the full proofs and hypotheses of every accepted direction (X1, X2, the surjectivity,
   CH at its narrowed scope, the audit, and this pass's maintained computation); this report's
   earlier verdict-summary citations now point there.
+- **Pass 9 (this pass, run `smw0uqe8g`'s sixth accepted solution, m6/d4: the (F4) bit decided for
+  EVERY glue; the swarm ends solved).** The orbit invariant
+  `Inv(x) :=` multiset of `q_T`-values on `x^perp` is constant on `O(q_T)`-orbits, and the
+  attainable images of `[alpha/2]` form one orbit; the image's invariant is source-side (the
+  anti-isometry maps `[alpha/2]^perp` onto `gamma[alpha/2]^perp`), computed once:
+  `((0,528),(2,496))`. On the 528 level-1 classes of `A_{T_Co}` the invariant splits as
+  **[1, 527]**, the singleton block `{eta_0}` with exactly that value — referee-verified three ways
+  (independent full census, m6's exhaustive computation, and the reason plain: any other level-1
+  class admits a `c'`-odd orthogonal class via `(m,n)`-parity or the `C`-mod-2 nondegeneracy, so
+  its perp contains a half-integral value, while `eta_0^perp` = the `c`-even hyperplane does not).
+  Hence **`gamma([alpha/2]) = eta_0` for every full-graph glue**: no (F4) class is ever
+  glue-carried (the glued `(alpha + g)/2` is isotropic), and **`E_F4 = empty` for every glue** —
+  not only for the corpus's sanctioned `gamma_Co`. **Retraction named in the pass-8 entry**:
+  the published intuition that the bit is glue-dependent and that "(GL-ID) is open" is **wrong** —
+  it was asserted without proof (what had been proved was only the *existence* of one such glue);
+  the perp-invariant leaves no second case, and (GL-ID) is vacuous. Consistency: the
+  maintained witness at pin `6ad7a5ea`, m6's elementwise-verified explicit glue, and the
+  invariant refutation all agree. Consequences: the complement below loses the `E_F4` term
+  entirely; the (X2) antecedent is empty for every glue (the accepted closure stands but is not
+  needed); the only unspecified content of the pinned glue left in the corpus is *which* norm-`(-4)`
+  wall each of the 121 `BAD_S` classes maps to. (D1), (RI), (REL), (INV), `G3, G4` untouched.
 
 ## Theorems, at their registered scopes
 
@@ -727,8 +749,9 @@ verified:
   level-set audit), each referee-recomputed:
   > **(T-mixed), answered.** The pinned Coble glue — and IN FACT every full-graph glue —
   > pairs (F2) the one class `[ (e-f)/2 ]` and (F3) all 120 root classes `[w/2]` INTO
-  > `BAD_T(-4)` (charged, always), and (F4) the class `[alpha/2]` into the `527 + {eta_0}`
-  > partner space at norm `-6`, whose wall is charged iff `gamma([alpha/2]) != eta_0`.
+  > `BAD_T(-4)` (charged, always), and (F4) the class `[alpha/2]` INTO `{eta_0}` exactly
+  > (m6/d4, pass 9): `gamma([alpha/2]) = eta_0` for EVERY anti-isometry, so the (F4) family is
+  > realised in `L_K3` by no full-graph glue at all; its wall is never charged.
   
   Consequently (pass 7 (i),(ii)): `im(p) = O~/Gamma_L` holds unconditionally (`O~ = O`, (X2)
   closed negatively); and B24 VERBATIM (`im(p) = D_Co^o/Gamma_L`, `D_Co^o = D \ NL_2`, with the
@@ -737,11 +760,11 @@ verified:
   ampleness-dead on both sides by (X2), are not even needed). The statement of record is the
   image theorem with the charged walls pinned:
   > `im(p) = O/Gamma_L`,  with
-  > `O = D(T_Co) \ [ NL_2  U  (union_{xi in BAD_S} Heeg_{gamma xi})  U  E_F4 ]`,
-  > `E_F4 = Heeg_{gamma([alpha/2])}` if `gamma([alpha/2]) != eta_0`, empty otherwise,
-  > `Heeg_eta := union_{t in T_Co, [t/2] = eta, t^2 in {-4,-6}} t^perp`;
-  in particular `E_F4 = empty` for the corpus's sanctioned `gamma_Co` (pass 8), and by (X2)'s
-  accepted closure every charged (F4) wall is ampleness-dead on both sides in any case.
+  > `O = D(T_Co) \ [ NL_2  U  (union_{xi in BAD_S} Heeg_{gamma xi}) ]`,
+  > `Heeg_eta := union_{t in T_Co, [t/2] = eta, t^2 = -4} t^perp` —
+  with `E_F4 = empty` for **every** glue (pass 9; the earlier conditional term is deleted, not
+  merely defaulted), and with (X2)'s accepted closure guaranteeing that even hypothetically
+  charged (F4) walls would be ampleness-dead on both sides.
   The single remaining glue-dependent bit is now **computed for the corpus's sanctioned
   constructor**: the maintained `DS.isometry_to(DT.twist(-1))` at provider pin `6ad7a5ea` — the
   `gamma_Co` route of the corpus's own declarations (TODO:334 supersession of the `c546077d`
@@ -749,15 +772,16 @@ verified:
   (`computations/reports/smw0_maintained-gamma_compute.sage` + `-run.txt`, provenance on file:
   this VM's Sage 10.8, module-level maintained imports, direct construction of the forms at the
   maintained category). Hence **for the corpus's `gamma_Co` the (F4) family is empty and no (F4)
-  wall is ever charged: `E_F4 = empty`**. What remains OPEN and is named **(GL-ID)**: the
-  identification of the *A21 construction's* pinned glue (:661 item 7 datum) with this maintained
-  constructor; a different glue could carry `[alpha/2]` off `eta_0`, and the bit is not decidable
-  from invariants (some anti-isometry does send `[alpha/2]` to `eta_0`, others do not).
+  wall is ever charged: `E_F4 = empty`**. **Superseded by pass 9**: the parenthetical below —
+  that a different glue could carry `[alpha/2]` off `eta_0` and that the bit "(GL-ID)" needs the
+  A21 construction's pinned glue — is **false** and is retracted: m6/d4's perp-invariant shows
+  `gamma([alpha/2]) = eta_0` for **every** anti-isometry, so `E_F4 = empty` for every glue and no
+  identification is needed.
   The earlier sentence reporting the `c546` image as "the maintained constructor the local image
   does not implement" is superseded: `isometry_to` exists on torsion forms from pin `6ad7a5ea`
   (`form_modules.py`:2774) and is executed here; the `c546`-era claims were about the stale local
-  snapshot only. (And by (X2)'s accepted closure even a charged (F4) wall is ampleness-dead on
-  both sides, so (GL-ID) bears on the complement's listing, not on the image.)
+  snapshot only. (And by (X2)'s accepted closure even a hypothetically charged (F4) wall is
+  ampleness-dead on both sides.)
 - The brick probe (`coble_mixed_gluing_probe.py` +`-run.txt`): the diagonal/anti-diagonal glue of
   `U^3 + E8(-1)^2` carries two mixed wall classes (`x = e_a - f_a`, `x = e_b - f_b`, `x^2 = -2`,
   `H.x = 0`, `A.x = 0`, both projections nonzero — their class pair is exactly the (F2)-type
@@ -864,21 +888,18 @@ counts are verified and each is also proved in the text.
 
 ## What remains open next (named, not cosmetic)
 
-* `(T-mixed)` — DISCHARGED, with one identification left (passes 7-8): every full-graph glue
-  pairs all 121 (F2),(F3) classes into `BAD_T(-4)`, so B24 VERBATIM is false and the corrected
-  complement is the statement of record; the (F4) wall is charged unless
-  `gamma([alpha/2]) = eta_0` — and the maintained constructor at pin `6ad7a5ea` computes
-  `gamma_Co([alpha/2]) = eta_0` for the corpus's sanctioned glue (E_F4 = empty for it;
-  `smw0_maintained-gamma-run.txt`). The single remaining glue-dependent question is the named
-  identification **(GL-ID)**: that the A21 construction's pinned glue (:661 item 7 datum) equals
-  this maintained witness — not decidable from lattice invariants alone; route: the labelled-corner
-  data or the Enriques side. Reference inputs for the pinning route, corrected at their source:
-  `T_En = U + U(2) + E8(2)` of rank `12` and det `2^10`, `alpha = e - f` in its first `U`,
-  `T_Co = alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2)` of rank `11` and det `-2^11`,
+* `(T-mixed)` — DISCHARGED in full (passes 7-9): every full-graph glue pairs all 121 (F2),(F3)
+  classes into `BAD_T(-4)`, so B24 VERBATIM is false and the corrected complement is the
+  statement of record; and (F4) is decided for EVERY glue by m6/d4's perp-invariant:
+  `gamma([alpha/2]) = eta_0` always, so the (F4) family is never glue-carried and `E_F4 = empty`
+  for every glue. The remaining question about the pinned glue is bookkeeping only: *which*
+  norm-`(-4)` wall each of the 121 `BAD_S` classes maps to (the labelled-corner/A21 data);
+  nothing about the image depends on it. Reference inputs for that route, corrected at their
+  source: `T_En = U + U(2) + E8(2)` of rank `12` and det `2^10`, `alpha = e - f` in its first
+  `U`, `T_Co = alpha^perp_{T_En} = Z(e+f) + U(2) + E8(2)` of rank `11` and det `-2^11`,
   `S_En + T_En` of index `2^10` in `L_K3` with the full-graph gluing
-  (report :73, :472-:505, :575-:585, :333; an earlier `rank-10` shorthand for `T_En` is withdrawn).
-  By (X2)'s accepted closure even a charged (F4) wall is ampleness-dead on both sides, so (GL-ID)
-  bears on the complement's listing, not on the image.
+  (report :73, :472-:505, :575-:585, :333; an earlier `rank-10` shorthand for `T_En` is
+  withdrawn).
 * `(D1)` of Theorem E, together with the reflection-index question **(RI)** — is
   `ker rho_{T_Co}` generated by `T_Co`'s `(-2)`-reflections? — and the relations step **(REL)**
   (section-normal normality and 2-cocycles): `(D2) <=> (RI)` stands at the normal-form reading
