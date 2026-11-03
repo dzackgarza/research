@@ -1,0 +1,60 @@
+=== verify_lattices.py (exact integer arithmetic) ===
+{"name": "L_K3", "rank": 22, "det": 1, "even": true, "two_elementary": true, "disc_order": 1, "disc_order_equals_det": true, "a": 0, "delta": 0, "delta_witness": [], "q_values": ["0"]}
+{"name": "S_En", "rank": 10, "det": 1024, "even": true, "two_elementary": true, "disc_order": 1024, "disc_order_equals_det": true, "a": 10, "delta": 0, "delta_witness": [], "q_values": ["0", "1"]}
+{"name": "T_En", "rank": 12, "det": 1024, "even": true, "two_elementary": true, "disc_order": 1024, "disc_order_equals_det": true, "a": 10, "delta": 0, "delta_witness": [], "q_values": ["0", "1"]}
+{"name": "S_Co", "rank": 11, "det": 2048, "even": true, "two_elementary": true, "disc_order": 2048, "disc_order_equals_det": true, "a": 11, "delta": 1, "delta_witness": [[10, "3/2"]], "q_values": ["0", "1", "1/2", "3/2"]}
+{"name": "T_Co", "rank": 11, "det": 2048, "even": true, "two_elementary": true, "disc_order": 2048, "disc_order_equals_det": true, "a": 11, "delta": 1, "delta_witness": [[0, "1/2"]], "q_values": ["0", "1", "1/2", "3/2"]}
+{"name": "S_dP(k=1)", "rank": 3, "det": 8, "even": true, "two_elementary": true, "disc_order": 8, "disc_order_equals_det": true, "a": 3, "delta": 1, "delta_witness": [[2, "3/2"]], "q_values": ["0", "1", "1/2", "3/2"]}
+index[S_En (+) T_En : L_K3]^2 = 1048576 -> index = 1024 = 2^10 (perfect square: True)
+index[S_Co (+) T_Co : L_K3]^2 = 4194304 -> index = 2048 = 2^11 (perfect square: True)
+anti-isometry A_S_En -> -A_T_En: {'exists': True, 'basis_size': 10, 'group_order': 1024}
+anti-isometry A_S_Co -> -A_T_Co: {'exists': True, 'basis_size': 11, 'group_order': 2048}
+summand {"name": "U", "rank": 2, "det": 1, "even": true, "two_elementary": true, "disc_order": 1, "disc_order_equals_det": true, "a": 0, "delta": 0, "delta_witness": [], "q_values": ["0"]}
+summand {"name": "U(2)", "rank": 2, "det": 4, "even": true, "two_elementary": true, "disc_order": 4, "disc_order_equals_det": true, "a": 2, "delta": 0, "delta_witness": [], "q_values": ["0", "1"]}
+summand {"name": "<2>", "rank": 1, "det": 2, "even": true, "two_elementary": true, "disc_order": 2, "disc_order_equals_det": true, "a": 1, "delta": 1, "delta_witness": [[0, "1/2"]], "q_values": ["0", "1/2"]}
+summand {"name": "<-2>", "rank": 1, "det": 2, "even": true, "two_elementary": true, "disc_order": 2, "disc_order_equals_det": true, "a": 1, "delta": 1, "delta_witness": [[0, "3/2"]], "q_values": ["0", "3/2"]}
+summand {"name": "E8(-1)", "rank": 8, "det": 1, "even": true, "two_elementary": true, "disc_order": 1, "disc_order_equals_det": true, "a": 0, "delta": 0, "delta_witness": [], "q_values": ["0"]}
+summand {"name": "E8(-2)", "rank": 8, "det": 256, "even": true, "two_elementary": true, "disc_order": 256, "disc_order_equals_det": true, "a": 8, "delta": 0, "delta_witness": [], "q_values": ["0", "1"]}
+solutions of x^2=4, x.alpha=0 in U(2)(+)<-2>: [(-1, -1, 0), (1, 1, 0)]
+{"square(e-f)": -2, "square(e+f)": 2, "square(E8(-2) simple root)": -4, "square(e+f+r1)": -2, "e+f+r1": [1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0], "lies_in_U_summand": false}
+
+=== Lean 4.33.1 + Mathlib: A21Arithmetic.lean ===
+compiles, exit 0, no sorry
+
+=== theorems ===
+42:theorem det_cartanE8 : cartanE8.det = 1 := by native_decide
+44:theorem cartanE8_even : ∀ i : Fin 8, cartanE8 i i % 2 = 0 := by native_decide
+49:theorem E8m2_eq_smul : E8m2 = (-2 : ℤ) • cartanE8 := by
+52:theorem det_E8m2 : E8m2.det = 256 := by
+59:theorem E8m1_eq_smul : E8m1 = (-1 : ℤ) • cartanE8 := by
+62:theorem det_E8m1 : E8m1.det = 1 := by
+73:theorem det_U2m : U2m.det = -4 := by native_decide
+74:theorem det_U1m : U1m.det = -1 := by native_decide
+86:theorem det_G_dP : G_dP.det = 8 := by native_decide
+88:theorem G_dP_even : ∀ i : Fin 3, G_dP i i % 2 = 0 := by native_decide
+90:theorem det_G_dP_not_unit : G_dP.det ≠ 1 ∧ G_dP.det ≠ -1 := by
+95:theorem pinned (x : Fin 3 → ℤ)
+125:theorem det_fromBlocks_block (m n : Type*) [Fintype m] [Fintype n]
+137:theorem det_G_S_En : G_S_En.det = -1024 := by
+145:theorem det_G_S_Co : G_S_Co.det = 2048 := by
+154:theorem det_G_T_Co : G_T_Co.det = -2048 := by
+164:theorem det_G_T_En : G_T_En.det = 1024 := by
+180:theorem det_G_LK3 : G_LK3.det = -1 := by
+185:theorem G_LK3_unimodular : G_LK3.det = 1 ∨ G_LK3.det = -1 := by
+189:theorem G_LK3_even : ∀ i, G_LK3 i i % 2 = 0 := by
+221:theorem alphaT_sq : alphaT ⬝ᵥ (G_T_En_fin.mulVec alphaT) = -2 := by native_decide
+223:theorem etaT_sq : etaT ⬝ᵥ (G_T_En_fin.mulVec etaT) = 2 := by native_decide
+225:theorem rootE8_sq : rootE8 ⬝ᵥ (G_T_En_fin.mulVec rootE8) = -4 := by native_decide
+227:theorem betaRoot_sq : betaRoot ⬝ᵥ (G_T_En_fin.mulVec betaRoot) = -2 := by native_decide
+230:theorem betaRoot_not_U : betaRoot 4 = 1 := by native_decide
+235:theorem twist_root_pinned (β : Fin 12 → ℤ)
+276:theorem summand_det_unit {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m]
+291:theorem S_dP_no_unit_det (h : G_dP.det = 1 ∨ G_dP.det = -1) : False := by
+311:theorem even_G_S_En : ∀ i : Fin 10, G_S_En_fin i i % 2 = 0 := by native_decide
+313:theorem even_G_S_Co : ∀ i : Fin 11, G_S_Co_fin i i % 2 = 0 := by native_decide
+315:theorem even_G_T_Co : ∀ i : Fin 11, G_T_Co_fin i i % 2 = 0 := by native_decide
+317:theorem G_T_En_fin_even : ∀ i : Fin 12, G_T_En_fin i i % 2 = 0 := by native_decide
+
+=== sorry check ===
+0
+0 occurrences

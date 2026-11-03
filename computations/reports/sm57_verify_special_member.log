@@ -1,0 +1,24 @@
+F = x0^4*y0^4 + x1^4*y0^4 + x0*x1^3*y0^3*y1 + x0^2*x1^2*y0^2*y1^2 + x0^3*x1*y0*y1^3 + x0*x1^3*y0*y1^3 + x0^4*y1^4 + x0^2*x1^2*y1^4
+[1] tau-invariance F(-x0,x1,-y0,y1)==F : True
+[2] every monomial has x-degree 4 and y-degree 4 : True
+[3] F(p) for p=([0:1],[0:1]) : 0 | F at the other three tau-fixed points : [x0^4*y0^4, x0^4*y1^4, x1^4*y0^4]
+[4] singular locus of B = {F=0} in the four affine charts (dim -1 <=> empty):
+      x1y1  GB=[u, v]                       dim=0
+      x0y1  GB=[1]                          dim=-1
+      x1y0  GB=[1]                          dim=-1
+      x0y0  GB=[1]                          dim=-1
+[5] local equation at p : x^4*y^4 + x^4 + x^3*y + x^2*y^2 + x*y^3 + y^4 + x^2 + x*y
+    linear part : 0 | quadratic part : x^2 + x*y | discriminant of quadratic part : 1 -> ordinary node
+[6] restriction to the tau-fixed ruling {x0=0} : y0^4 * x1^4 (a square of a quadratic: branch 4[y0=0])
+    restriction to the other tau-fixed ruling {y0=0} : x0^2 * y1^4 * (x0^2 + x1^2) (not a square)
+[7] strict transform of X^sharp in the chart (x,z) = (X Y, Z Y) : 0 = -X^4*Y^6 - X^4*Y^2 - X^3*Y^2 - X^2*Y^2 - X*Y^2 - X^2 + Z^2 - Y^2 - X
+    singular locus of the strict transform (dim -1 = smooth) : -1 [1]
+    D = exceptional  GB=[X^2 - Z^2 + X, Y]       dim=1
+    C1               GB=[X, Z - Y]               dim=1
+    C2               GB=[X, Z + Y]               dim=1
+    C1 cap C2 : [X, Z, Y]  (equals (g,X,Z,Y): the two branches meet in one transverse point)
+    C1 cap D  : [X, Z, Y]  (one transverse point)
+    C2 cap D  : [X, Z, Y]  (one transverse point)
+[8] total transform of the ruling {x0=x=0}: (x) = (X)*(Y) = strict transform + exceptional, multiplicity 1
+    so the fibre of the elliptic fibration is F = C1 + C2 + D ; F^2 = -2-2-2+2(3) = 0, F.D = 1+1-2 = 0 = pi^*(O(1,0)).D
+    adjunction on the resolution (K=0): every component is a smooth rational curve, so every component has square -2
