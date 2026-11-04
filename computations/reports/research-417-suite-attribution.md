@@ -52,3 +52,30 @@ categorized per obligation when it completes.
 `#417` remains unaccepted: the suite has not passed. Nothing here closes it, no broad T
 claim is made, and the pins are untouched (`6ad7a5ea` provider snapshot; rootfs `/repos`
 copies unchanged; CI's `441519c5` still unmeasured).
+
+## Terminal outcome of the whole-directory runs (recovered)
+
+Both full attempts reached the same terminal state: **exit 4 during collection, before any
+test executes**, so there are no per-file results to harvest from them yet.
+
+- `jmw2fot47`: exit 4 after 2 m 56 s; `dzack_research` resolved from the rootfs copy.
+- `jmw2ftfaq`: exit 4 after **2 m 13 s** (133.46 s), same three blockers, with the paths now
+  proving this repo was the source (`/repo/src/dzack_research/preamble/all.py`,
+  `/repo/tests/constructions/conftest.py`). `--continue-on-collection-errors` does not help,
+  because the first blocker is not a collection error but a **session-level policy abort**.
+
+The three blockers, in the order they stop the session:
+
+1. `POLICY.NO_SKIP_MASK` — `test_functors_construct.sage::test_a_nullary_functor_sends_an_object_into_its_codomain[NOTSET]`
+   carries a `skip`, which the project's `qc_xfail_issues` plugin treats as a usage error and
+   aborts the whole session with exit 4.
+2. `ImportError: cannot import name 'FractionFieldQuotients' from 'dzack_research.preamble.all'`
+   — `test_fraction_field_quotient_arithmetic_regression.sage`.
+3. `ImportError: cannot import name 'COMMUTATIVE_RINGS' from 'conftest'`
+   — `test_properties_construct.sage`.
+
+**Recovered acceptance failure:** the constructions population cannot be collected as it
+stands, so `#417`'s "the expectation suite must pass" is blocked at the collection stage by
+this repository's own test surface — independently of the two queued source-owner items
+(subset-read contract, `object_set` exposure). None of the three is those, and none is an
+issue count.
