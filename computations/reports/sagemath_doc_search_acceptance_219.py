@@ -12,6 +12,7 @@ fixed ``_add_source_list`` catch only through ``_process_inline_citations``, whi
 first and therefore never tested it.
 """
 
+import ast
 import os
 import shutil
 import sys
@@ -61,6 +62,12 @@ import inline_citation_enhancer as ice  # noqa: E402
 import sagemath_utils as su  # noqa: E402
 
 sys.modules["sagemath_doc_search.citation_utils"] = cu
+# The package stub has to answer `from sagemath_doc_search import ...` with the same
+# module objects the survey uses elsewhere, or a failure would surface as a second,
+# unrelated error class.
+_pkg.extract_python_docstrings = su.extract_python_docstrings
+_pkg.get_sage_path = su.get_sage_path
+_pkg.get_sagemath_patterns = su.get_sagemath_patterns
 
 
 # --------------------------------------------------------------------------- harness
@@ -163,6 +170,91 @@ LONG_WITHOUT_CITATION = (
     "This answer is deliberately long and carries no inline citation marker at all, so "
     "post-processing goes straight to the source list."
 )
+
+
+# Stand-in for universal-ctags, which this machine does not have. It honours the CLI
+# surface the index builder actually uses and writes the real tags format, so the check
+# exercises our subprocess call, success branch and parser rather than the tool.
+FAKE_CTAGS = '''#!/usr/bin/env python3
+"""Stand-in for universal-ctags: the CLI surface the index builder uses."""
+import os
+import sys
+from pathlib import Path
+
+argv = sys.argv[1:]
+out = Path(argv[argv.index("-f") + 1])
+root = Path(argv[-1])
+sep = chr(9)
+log = os.environ.get("CTAGS_STUB_LOG")
+if log:
+    with open(log, "a", encoding="utf-8") as fh:
+        fh.write("call\\n")
+lines = ["!_TAG_FILE_FORMAT" + sep + "2"]
+for source in sorted(root.rglob("*.py")):
+    for number, line in enumerate(source.read_text(encoding="utf-8").splitlines(), 1):
+        stripped = line.strip()
+        if stripped.startswith("class "):
+            name = stripped[6:].split("(")[0].split(":")[0].strip()
+            relative = source.relative_to(root.parent.parent)
+            lines.append(
+                name + sep + str(relative) + sep + "/^" + stripped + "$/" + sep
+                + "line:" + str(number))
+out.write_text("\\n".join(lines) + "\\n", encoding="utf-8")
+'''
+
+
+def _stub_streamlit(recorded):
+    """A recording stand-in for the Streamlit calls the indexing path makes."""
+
+    class _Call:
+        def __init__(self, name):
+            self._name = name
+
+        def __getattr__(self, name):
+            return _Call(self._name + "." + name)
+
+        def __call__(self, *args, **kwargs):
+            recorded.append((self._name, args))
+            if self._name == "cache_data":
+                if args and callable(args[0]):
+                    return args[0]
+                return lambda fn: fn
+            if self._name.split(".")[-1] in ("expander", "spinner", "status"):
+                class _Context:
+                    def __enter__(self):
+                        return self
+
+                    def __exit__(self, *exc_info):
+                        return False
+
+                return _Context()
+            return None
+
+    class _Module(types.ModuleType):
+        def __getattr__(self, name):
+            return _Call(name)
+
+    module = _Module("streamlit")
+    module.session_state = {}
+    return module
+
+
+def exec_module_functions(path):
+    """Execute a script's imports and top-level defs, skipping its application body.
+
+    `HayStack_Doc_Search` is a Streamlit script: its app body runs at import, so a plain
+    import launches the app.  This runs the module's own source for the pieces under test
+    -- the shipped code, not a transcription of it.
+    """
+    tree = ast.parse(path.read_text())
+    keep = [
+        node
+        for node in tree.body
+        if isinstance(node, (ast.Import, ast.ImportFrom, ast.FunctionDef))
+    ]
+    namespace = {"__name__": path.stem + "_functions", "__file__": str(path)}
+    exec(compile(ast.Module(body=keep, type_ignores=[]), str(path), "exec"), namespace)
+    return namespace
 
 
 # ------------------------------------------------------- sagemath_utils: read/parse
@@ -399,6 +491,131 @@ def b18_happy_path_still_links():
     assert "src/sage/modules/lattice.py:1" in out, out
 
 
+def b19_ctags_success_path():
+    """The ctags build succeeds: index written, consumed, and reused without a rebuild.
+
+    This machine has no `ctags`, so the executable is a stand-in that honours the CLI
+    surface the builder uses (`-f <out>`, source dir last) and writes the real tags
+    format.  What is under test is our side of that contract: the subprocess call, the
+    success branch, and the parser reading the file it produced.
+    """
+    tree = TMP / "ctags-sage"
+    (tree / "src" / "sage" / "modules").mkdir(parents=True)
+    # Six filler lines put the class on line 7, so the line number proves the index was
+    # read rather than defaulted.
+    (tree / "src" / "sage" / "modules" / "lattice.py").write_text(
+        "# filler\n" * 6 + 'class Lattice:\n    """A lattice."""\n'
+    )
+    bin_dir = TMP / "bin"
+    bin_dir.mkdir()
+    stub = bin_dir / "ctags"
+    stub.write_text(FAKE_CTAGS)
+    stub.chmod(0o755)
+    log = TMP / "ctags-calls.log"
+    index = TMP / "tags-success"
+    saved_path = os.environ.get("PATH", "")
+    os.environ["PATH"] = str(bin_dir) + os.pathsep + saved_path
+    os.environ["CTAGS_STUB_LOG"] = str(log)
+    try:
+        with sage_root(tree), ctags_index(index):
+            assert su.create_sage_ctags_index() is True
+            assert index.exists() and index.stat().st_size > 0, "the index was not written"
+            found = su.find_symbol_line_with_sage_index("Lattice")
+            line = su.get_primary_line_number(
+                "class Lattice:\n    pass\n", "src/sage/modules/lattice.py"
+            )
+            assert su.create_sage_ctags_index() is True
+    finally:
+        os.environ["PATH"] = saved_path
+        os.environ.pop("CTAGS_STUB_LOG", None)
+    assert found == (7, "src/sage/modules/lattice.py"), found
+    assert line == 7, line
+    # The second call found a fresh index and must not have shelled out again.
+    assert log.read_text().count("call") == 1, log.read_text()
+
+
+def b20_runtime_warning_path():
+    """A per-file failure reaches the Streamlit warning, and the scan keeps going.
+
+    `HayStack_Doc_Search` is a Streamlit script whose app body runs at import time, so
+    importing it would launch the app.  The check instead executes the module's own
+    source for its imports and function definitions -- the shipped code, not a
+    transcription -- with only the UI and the LLM generator stubbed.
+    """
+    saved = {k: sys.modules.get(k) for k in ("streamlit", "dotenv")}
+    saved.update(
+        {k: v for k, v in sys.modules.items() if k.startswith("haystack.components.generators")}
+    )
+    recorded = []
+    stub_keys = ("streamlit", "dotenv", "haystack.components.generators.openai")
+    try:
+        sys.modules["streamlit"] = _stub_streamlit(recorded)
+        _dotenv = types.ModuleType("dotenv")
+        _dotenv.load_dotenv = lambda *a, **k: None
+        sys.modules["dotenv"] = _dotenv
+        _gen = types.ModuleType("haystack.components.generators.openai")
+
+        class _OpenAIGenerator:
+            def __init__(self, *a, **k):
+                pass
+
+        _gen.OpenAIGenerator = _OpenAIGenerator
+        sys.modules["haystack.components.generators.openai"] = _gen
+
+        module_path = SCRIPTS / "HayStack_Doc_Search.py"
+        namespace = exec_module_functions(module_path)
+        cache = TMP / "doc-cache"
+        cache.mkdir()
+        namespace["CACHE_PATH"] = cache
+
+        tree = TMP / "warn-tree"
+        tree.mkdir()
+        good = tree / "lattices.rst"
+        good.write_text("Tutorial\n========\n\nA lattice is a poset with meets and joins.\n")
+        broken = tree / "missing.py"
+        entry = lambda p, rel, suffix: {
+            "path": p,
+            "meta": {
+                "source": "SageMath Local",
+                "relative_path": rel,
+                "suffix": suffix,
+                "url_source": "file://" + rel,
+            },
+        }
+
+        store = namespace["InMemoryDocumentStore"]()
+        stats = namespace["index_files"](
+            [entry(broken, "missing.py", ".py"), entry(good, "lattices.rst", ".rst")],
+            store,
+            "acceptance-warning",
+        )
+        warnings = [a[0] for name, a in recorded if name.endswith("warning") and a]
+        assert stats.get("processed_files") == 1, stats
+        assert len(store.filter_documents()) == 1, "the readable file was not indexed"
+        assert len(warnings) == 1, warnings
+        assert "missing.py" in warnings[0], warnings[0]
+        assert "FileNotFoundError" in warnings[0], warnings[0]
+
+        recorded.clear()
+        nothing = namespace["index_files"](
+            [entry(broken, "missing.py", ".py")],
+            namespace["InMemoryDocumentStore"](),
+            "acceptance-nothing",
+        )
+        warnings = [a[0] for name, a in recorded if name.endswith("warning") and a]
+        assert nothing == {}, nothing
+        assert "No documents were successfully processed." in warnings, warnings
+    finally:
+        for key, value in saved.items():
+            if value is None:
+                sys.modules.pop(key, None)
+            else:
+                sys.modules[key] = value
+        for key in stub_keys:
+            if key not in saved:
+                sys.modules.pop(key, None)
+
+
 # --------------------------------------------------------------------------- run
 
 CATALOGUE = [
@@ -421,6 +638,8 @@ CATALOGUE = [
     ("b16 inline-link catch -> CitationLinkError", b16_inline_link_failure),
     ("b17 (audit) missing citation_utils -> ImportError", b17_missing_citation_utils_is_not_line_one),
     ("b18 happy path keeps the source-list links", b18_happy_path_still_links),
+    ("b19 ctags build succeeds and the index is consumed", b19_ctags_success_path),
+    ("b20 per-file failure reaches the Streamlit warning", b20_runtime_warning_path),
 ]
 
 try:

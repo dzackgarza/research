@@ -1,33 +1,32 @@
-From e9980bff7b8604d3d6772b4ca4c7e76ff91e6c88 Mon Sep 17 00:00:00 2001
+From cc31390a48c255d9f4114d0223d373e82e5328f3 Mon Sep 17 00:00:00 2001
 From: agent <agent@local>
-Date: Wed, 4 Nov 2026 14:41:14 +0000
-Subject: [PATCH] ordinal natural product: least-element interface + the
- successor upper bound
+Date: Wed, 4 Nov 2026 15:03:50 +0000
+Subject: [PATCH] ordinal natural product: mirror the successor bound, and
+ settle the successor step at the unit factor
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Three interface lemmas that let downstream laws compare with the product without
-unfolding the sInf definition:
-- naturalProduct_le_of_constraint: any ordinal satisfying the defining constraint
-  bounds a ⊗ b above.
-- naturalProduct_isLeast: a ⊗ b satisfies the constraint and is below every ordinal
-  that does.
-- naturalProduct_eq_iff: c = a ⊗ b iff c satisfies the constraint and is minimal.
+`naturalProduct_succ_le` bounds `a ⊗ (b+1)` above by `(a ⊗ b) ⊕ a`, with the
+successor in the second argument.  `naturalProduct_succ_le_left` is the same
+bound with the successor in the first argument, which commutativity of the
+product gives outright and which the distributivity argument needs in that
+orientation.
 
-And the first half of distributivity over a one-step extension, by induction on the
-first argument using the characterisation above:
-- naturalProduct_succ_le: a ⊗ (b+1) <= (a ⊗ b) ⊕ a.
+`naturalProduct_one_succ` records that at `a = 1` the two sides of the missing
+successor law coincide; it is the base case of the induction that would close
+the general equality, and it is the only case of it proved here.
 
-Build: lake build LeanCategories.ForMathlib.OrdinalNaturalSum -- green (909 jobs).
-No sorry in the file. The reverse inequality (a ⊗ (b+1) >= (a ⊗ b) ⊕ a), hence
-associativity and the full commutative-semiring laws, is not proved here.
+The reverse inequality in general is untouched and still open: closing it needs
+either continuity (sup-interchange) for `naturalSum` in its first argument, or
+the Cantor-normal-form description the file deliberately declines.  No structure
+instance is added.
 ---
- .../ForMathlib/OrdinalNaturalSum.lean         | 89 +++++++++++++++++++
- 1 file changed, 89 insertions(+)
+ .../ForMathlib/OrdinalNaturalSum.lean         | 102 ++++++++++++++++++
+ 1 file changed, 102 insertions(+)
 
 diff --git a/LeanCategories/ForMathlib/OrdinalNaturalSum.lean b/LeanCategories/ForMathlib/OrdinalNaturalSum.lean
-index cf5c75c..8eab580 100644
+index cf5c75c..55dc582 100644
 --- a/LeanCategories/ForMathlib/OrdinalNaturalSum.lean
 +++ b/LeanCategories/ForMathlib/OrdinalNaturalSum.lean
 @@ -356,6 +356,50 @@ theorem naturalProduct_constraint {a a' b b' : Ordinal.{u}} (ha : a' < a) (hb :
@@ -81,7 +80,7 @@ index cf5c75c..8eab580 100644
  /-- Natural product is symmetric. The defining inequalities are exchanged by swapping the
  operands and using symmetry of natural sum. -/
  theorem naturalProduct_comm (a b : Ordinal.{u}) : naturalProduct a b = naturalProduct b a := by
-@@ -671,4 +715,49 @@ theorem naturalProductList_strictMono {as bs : List Ordinal.{u}}
+@@ -671,4 +715,62 @@ theorem naturalProductList_strictMono {as bs : List Ordinal.{u}}
      exact (naturalProduct_mono_right (a := a) (naturalProductList_mono hweak)).trans_lt
        (naturalProduct_lt_left hab ht)
  
@@ -129,6 +128,19 @@ index cf5c75c..8eab580 100644
 +            naturalSum_lt_right (naturalSum_lt_right ha)
 +        _ = naturalSum (naturalSum (naturalProduct a b) a) (naturalProduct a' b) :=
 +            reassoc' _ _ _
++
++/-- **Successor step, upper bound, mirrored.** The same bound with the successor in the
++first argument. Commutativity of the product gives it from `naturalProduct_succ_le`. -/
++theorem naturalProduct_succ_le_left (a b : Ordinal.{u}) :
++    naturalProduct (Order.succ a) b ≤ naturalSum (naturalProduct a b) b := by
++  simpa only [naturalProduct_comm (Order.succ a) b, naturalProduct_comm a b] using
++    naturalProduct_succ_le b a
++
++/-- **The successor step at the unit factor.** Both sides coincide here, so this is the
++`a = 1` base case of the equality that `naturalProduct_succ_le` bounds above. -/
++theorem naturalProduct_one_succ (b : Ordinal.{u}) :
++    naturalProduct 1 (Order.succ b) = naturalSum (naturalProduct 1 b) 1 := by
++  simp only [naturalProduct_one_left, naturalSum_one]
 +
  end LeanCategories.ForMathlib.OrdinalNatural
 -- 

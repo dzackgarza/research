@@ -5,7 +5,7 @@ modules and against the acceptance survey itself. The issue tree is untouched; #
 where it is, open.
 
 Result: every site the audit named is real, and every one of them is now caller-visible.
-`computations/reports/sagemath_doc_search_acceptance_219.py` passes **19/19** and now
+`computations/reports/sagemath_doc_search_acceptance_219.py` passes **21/21** and now
 exercises the audited `_add_source_list` catch directly.
 
 ## 1. The audit's claims, checked
@@ -45,7 +45,7 @@ cause.
 
 ## 3. What the acceptance now proves
 
-`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (19/19)`.
+`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (21/21)`.
 Each check is one boundary, and each one asserts the *caller-visible* consequence.
 
 - **b15 is the audited one.** It reaches `_add_source_list` twice — through
@@ -60,6 +60,28 @@ Each check is one boundary, and each one asserts the *caller-visible* consequenc
   skip and its escalation; b8/b9 separate "no entry" from "no usable index".
 - b18 pins that search and citation output still work: source list with a local-file link
   and a rendered documentation URL, and inline markers resolving to those entries.
+- **b19 closes the ctags success path**, which the previous survey left unverified. The
+  builder is run for real: a stand-in `ctags` on `PATH` honours the CLI surface the
+  builder uses and writes the real tags format, so our subprocess call, the `returncode ==
+  0` branch, the written index and the parser are all exercised end to end. The class sits
+  on line 7 of the fixture, so the returned line number proves the index was read rather
+  than defaulted; a second `create_sage_ctags_index()` calls the stand-in exactly once
+  more — i.e. never — proving the fresh-index branch.
+- **b20 closes the runtime warning path**, which the previous survey only read. It
+  executes `HayStack_Doc_Search`'s own source for its imports and function definitions
+  (the app body runs at import, so importing the module would launch Streamlit), with the
+  UI and the LLM generator stubbed, and then runs `index_files` on one unreadable and one
+  readable file. Caller-visible result: exactly one `st.warning` carrying the path and
+  `FileNotFoundError`, the readable file indexed, and on a run where nothing survives the
+  return value is `{}` plus `"No documents were successfully processed."`.
+
+## 3a. What the acceptance still does not establish
+
+- Streamlit itself is replaced by a recorder, and `ctags` by a stand-in. The assertions are
+  about *our* code's behaviour at those boundaries — that the warning is emitted with the
+  reason, that the index is built, written and parsed — not about Streamlit's rendering or
+  universal-ctags' own output. A run against the real app and a real ctags binary is still
+  outside this survey.
 
 ## 4. Deliberate non-changes
 
@@ -79,10 +101,12 @@ Each check is one boundary, and each one asserts the *caller-visible* consequenc
 
 ## 5. Limits of this verification
 
-- `HayStack_Doc_Search.py` is compiled but **not executed**: it needs Streamlit and a live
-  pipeline. Its failure handling was verified by reading it, not by running it.
-- The ctags **success** path is untested: this VM has no `ctags` binary and no Sage tree.
-  Only the build-failure and read-failure paths are exercised (b7, b8).
+- `HayStack_Doc_Search.index_files` is now **executed** (b20), but from its own source with
+  the application body skipped and Streamlit stubbed; the surrounding app flow
+  (`main`, the cache-hit path, retrieval) is still not run.
+- The ctags **success** path is now executed (b19) against a stand-in executable: our
+  subprocess call, success branch, index file and parser are covered; universal-ctags'
+  own output format is taken as documented rather than observed.
 - `find_sagemath_files`, `create_sage_ctags_index`, `find_symbol_line_with_sage_index`,
   `create_sources_section` and `sagemath_utils.get_primary_line_number` have no in-repo
   caller (`grep -rln` finds only their definitions and the acceptance survey). Their
@@ -94,6 +118,6 @@ Each check is one boundary, and each one asserts the *caller-visible* consequenc
 ## 6. Reproduce
 
 ```sh
-python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 19/19, exit 0
+python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 21/21, exit 0
 python3 computations/scripts/sagemath_doc_search/inline_citation_enhancer.py  # module demo
 ```

@@ -39,6 +39,52 @@ re-associating a four-term Hessenberg sum around the constraint supplied by
 summand and then spend `a' < a` inside a nested natural sum. Both reductions are now
 machine-checked rather than sketched.
 
+## Second delivery (this pass): the mirrored bound and the unit-factor case
+
+The #606 handoff orders the next proofs as "natural-sum associativity, then the
+natural-product unit, monotonicity with its exact positivity hypotheses, distributivity,
+and associativity". Checked against the file at `fc6d3d6`: associativity of the natural
+sum, the product's unit (`naturalProduct_one`, `naturalProduct_one_left`), monotonicity
+(`naturalProduct_mono_left/right/mono`), strict monotonicity
+(`naturalProduct_lt_left/right`, `naturalProduct_lt_iff_left/right`) and cancellation are
+**already there**. The only items of that list still outstanding are distributivity and
+associativity — the two the obstruction below governs.
+
+Added in this pass, both sorry-free and in the same patch:
+
+5. `naturalProduct_succ_le_left`. **`(a + 1) ⊗ b ≤ (a ⊗ b) ⊕ b`** — the same one-step
+   bound with the successor in the *first* argument, which `naturalProduct_comm` gives
+   from (4) in two rewrites. The distributivity argument needs the bound in that
+   orientation.
+6. `naturalProduct_one_succ`. **`1 ⊗ (b + 1) = (1 ⊗ b) ⊕ 1`** — at the unit factor the
+   two sides of the missing successor law coincide (`simp` with `naturalProduct_one_left`
+   and `naturalSum_one`). It is the `a = 1` base case of the induction that would close
+   the general equality, and the only case of that equality proved here.
+
+## `#606` route item 1: the set-diagram presentations are already registered
+
+The handoff says "arbitrary filtered diagrams still need their limit and colimit
+presentations, cones or cocones, legs, mediators, and exact hypotheses". Checked by
+building, at `fc6d3d6`, that claim is **stale**:
+
+- `lake build LeanCategories.Catalogue.Semantics.Limits.Registration` — green, 2707
+  jobs. That file already carries `setsDiagramLimit` / `setsDiagramColimit` for arbitrary
+  small shapes (`{J : Type v} [Category.{w} J]`, no finite or enumerable index set),
+  their projections/injections, the universal mediators with `_fac` and `_uniq`,
+  `hom_ext`, the endofunctors on `J ⥤ Type`, the filtered-colimit comparison
+  `setsFilteredColimit_eq_iff` under `IsFilteredOrEmpty`, and the registrations
+  `lim.sets.diagram` / `colim.sets.diagram` with their four morphism entries.
+- `lake build` of `Foundation.Cardinality`, `Foundation.PowerSets`, `Foundation.Ordinals`,
+  `Foundation.FiniteOrders`, `Foundation.FiniteSubsets` — green, 2786 jobs.
+- No `sorry` term and no `axiom` declaration anywhere under `LeanCategories/` (grep for
+  the bare token, and for `axiom` at line start).
+
+So the remaining formal inputs for the set layer are exactly the four open upstream
+issues that #606 is blocked by, not missing work at the limits file:
+`lean-categories#95` (finite-subset direct-image functor), `#96` (selected
+enumeration/ranking data), `#97` (well-ordered sets and order types), `#98` (partial and
+total order categories). All four are still open, which is why #606 stays open.
+
 ## The exact obstruction (not proved, and why)
 
 The reverse inequality
@@ -88,6 +134,12 @@ named law set. That is a design decision reserved to the formal owner.
 
 ## Reproduce
 
-    cd <lean-categories checkout>            # at fc6d3d6
+    cd <lean-categories checkout>            # at fc6d3d6, clean
     git apply computations/reports/leancategories-ordinal-natural-product.patch
-    lake build LeanCategories.ForMathlib.OrdinalNaturalSum
+    lake build LeanCategories.ForMathlib.OrdinalNaturalSum          # 909 jobs, green
+    lake build LeanCategories.Catalogue.Semantics.Limits.Registration   # 2707 jobs, green
+    lake build LeanCategories.Catalogue.Semantics.Foundation.Cardinality \
+      LeanCategories.Catalogue.Semantics.Foundation.PowerSets \
+      LeanCategories.Catalogue.Semantics.Foundation.Ordinals \
+      LeanCategories.Catalogue.Semantics.Foundation.FiniteOrders \
+      LeanCategories.Catalogue.Semantics.Foundation.FiniteSubsets        # 2786 jobs, green
