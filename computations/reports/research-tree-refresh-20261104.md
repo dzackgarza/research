@@ -80,3 +80,22 @@ guesswork here.
   can establish from source.
 - Expectation population, for whoever executes: 234 files under `tests/constructions` and
   `tests/user_simulations` reference cardinality/countability.
+
+## Parent's read-only audit of the set-boundary prerequisites (at research 496293 / sage-extensions dca789c)
+
+Read-only source audit, none of it executed acceptance. It replaces my earlier crude
+"are those issue numbers open?" test with actual prerequisite edges:
+
+- `sage-extensions#40`: `End`/`Aut` exist; `sage-extensions#39` (constructing category) is
+  the actual prerequisite even though no prose edge names it.
+- `sage-extensions#95`: `object_set` exists; runtime acceptance still unexecuted.
+- `sage-extensions#79`: source delivered; the final tests live in `sage-extensions#238`.
+- `sage-extensions#118`: the `RegularPolytopes` text is stale; owned posets exist; the A2
+  specimen plus `#116`'s six-route acceptance still need review.
+- `sage-extensions#225`: class-based `Set` dispatch genuinely remains; tagged M2.
+
+Lesson recorded: an open issue number is not evidence of naked prerequisite. Run-time
+acceptance is allowed only when those edges, not the issue labels, say so. Accordingly,
+the prerequisite-follow-through fetches the exact states of #39/#238/#116 at the same
+window as the rest, and local acceptance is keyed to the realized runtime pin, not to the
+stale one in this VM's canonical rootfs.
