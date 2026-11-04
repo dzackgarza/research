@@ -10,7 +10,34 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
+# Each entry is verified against the deployed session by the exact assertion body below:
+# the functor's object action, its codomain containment and its action on the identity
+# morphism.  An entry is added only once all of that holds; the rest of the seven functors
+# this file's known-values test names are listed with the cause that blocks them, not
+# assumed.
 NULLARY_FUNCTORS = {
+    "power_set": (
+        lambda: FiniteSets().power_set_functor(),
+        lambda: Sets.Δ[2],
+        None,
+    ),
+    "free_group": (
+        lambda: Sets().free_group(),
+        lambda: Sets.Δ[1],
+        None,
+    ),
+    "underlying_set": (
+        lambda: Groups().underlying_set(),
+        lambda: Groups.S(3),
+        None,
+    ),
+}
+
+BLOCKED_NULLARY_FUNCTORS = {
+    "abelianization": "provider TypeError: a GAP whole group map is private engine output",
+    "cardinality": "provider AssertionError: cannot give the morphism 3 -> 3 of cardinals: undecided whether 3 <= 3",
+    "ring_of_integers": "session has no NumberFields; the provider exports OwnedNumberFields/NumberFieldsWithChosenPrimitiveElement",
+    "fraction_field": "provider AttributeError: the owned commutative non-zero-divisor rings have no fraction_field",
 }
 
 
@@ -23,8 +50,8 @@ def test_every_nullary_functor_sends_an_object_into_its_codomain() -> None:
     """
     assert NULLARY_FUNCTORS, (
         "NULLARY_FUNCTORS is empty although this file's known-values test names seven "
-        "nullary functors: abelianization, cardinality, power set, free group, "
-        "underlying set, ring of integers, fraction field"
+        "nullary functors; see BLOCKED_NULLARY_FUNCTORS for the causes that keep the "
+        "unverified ones out"
     )
     for constructor, specimen, codomain in NULLARY_FUNCTORS.values():
         functor = constructor()
