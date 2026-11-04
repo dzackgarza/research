@@ -629,6 +629,32 @@ def b21_malformed_line_field_is_not_a_miss():
     assert "tags-corrupt" in str(exc), str(exc)
 
 
+
+def b22_unknown_path_yields_no_unknown_links():
+    """A doc with no relative_path fails closed; `file://.../unknown` is never emitted."""
+    enhancer = ice.InlineCitationEnhancer()
+    docs_nopath = [
+        ice.Document(
+            content="class Thing:\n    def method(self):\n        pass\n",
+            meta={"citation_id": "src1", "citation_display": "thing"},
+        )
+    ]
+    # Long citation-free text reaches the source list; (src1) forces the inline path.
+    # Either way the boundary is _add_source_list's up-front sentinel check.
+    for text in (LONG_WITHOUT_CITATION, "answer (src1)."):
+        exc = expect(
+            ice.CitationLinkError,
+            enhancer.post_process_response_citations,
+            text,
+            docs_nopath,
+        )
+        origin = innermost(exc.__traceback__)
+        assert origin == "_add_source_list", "exception was formed in %r" % origin
+        assert "no relative_path" in str(exc), str(exc)
+    exc = expect(ice.CitationLinkError, enhancer._add_source_list, "text", docs_nopath)
+    assert "no relative_path" in str(exc), str(exc)
+
+
 # --------------------------------------------------------------------------- run
 
 CATALOGUE = [
@@ -654,6 +680,7 @@ CATALOGUE = [
     ("b19 ctags build succeeds and the index is consumed", b19_ctags_success_path),
     ("b20 per-file failure reaches the Streamlit warning", b20_runtime_warning_path),
     ("b21 corrupt line: field -> CtagsIndexError, not a miss", b21_malformed_line_field_is_not_a_miss),
+    ("b22 no relative_path -> CitationLinkError, no unknown link", b22_unknown_path_yields_no_unknown_links),
 ]
 
 try:

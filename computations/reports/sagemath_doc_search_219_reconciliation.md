@@ -5,7 +5,7 @@ modules and against the acceptance survey itself. The issue tree is untouched; #
 where it is, open.
 
 Result: every site the audit named is real, and every one of them is now caller-visible.
-`computations/reports/sagemath_doc_search_acceptance_219.py` passes **22/22** and now
+`computations/reports/sagemath_doc_search_acceptance_219.py` passes **23/23** and now
 exercises the audited `_add_source_list` catch directly.
 
 ## 1. The audit's claims, checked
@@ -41,11 +41,12 @@ cause.
 | `create_sources_section` (`citation_utils.py:212`) | a source with no `relative_path` was emitted as a bare `unknown` line | raises `CitationSourceError(citation_id, meta)` |
 | `_process_inline_citations` (`inline_citation_enhancer.py:409`) | `line_number or 1`; a dead `href="` lookup (the link is Markdown) followed by an unreachable `return` after `raise` | passes the line number through unchanged; the dead lookup and the unreachable return are gone |
 | `_get_line_number` (`inline_citation_enhancer.py:453`) | `except ImportError: return 1` | the import failure propagates |
+| `_add_source_list` (`inline_citation_enhancer.py:350-405`) | a document with no `relative_path` defaulted to `"unknown"` and was linked as `file://.../unknown` / `.../src/sage/unknown`, never triggering the `CitationLinkError` wrap | the same sentinel `citation_utils` rejects now fails closed up front: `CitationLinkError` carrying "no relative_path" before any link is formed (b22) |
 | `convert_to_docs_url` (`citation_utils.py`) | `except ValueError: pass` guarding `parts.index("en")` | removed: the membership test on the line above makes it unreachable |
 
 ## 3. What the acceptance now proves
 
-`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (22/22)`.
+`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (23/23)`.
 Each check is one boundary, and each one asserts the *caller-visible* consequence.
 
 - **b15 is the audited one.** It reaches `_add_source_list` twice — through
@@ -118,6 +119,6 @@ Each check is one boundary, and each one asserts the *caller-visible* consequenc
 ## 6. Reproduce
 
 ```sh
-python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 22/22, exit 0
+python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 23/23, exit 0
 python3 computations/scripts/sagemath_doc_search/inline_citation_enhancer.py  # module demo
 ```

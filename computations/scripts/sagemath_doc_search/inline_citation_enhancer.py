@@ -353,6 +353,16 @@ print("Discriminant group:", L.discriminant_group())
         if not documents:
             return response
 
+        # The "unknown" sentinel begins here -- the same one citation_utils rejects:
+        # a document with no relative_path must fail closed rather than emit a
+        # successful-looking file://.../unknown source.
+        for doc in documents:
+            if str(doc.meta.get("relative_path", "unknown")) == "unknown":
+                raise CitationLinkError(
+                    "unknown",
+                    KeyError("the document carries no relative_path in its meta"),
+                )
+
         # First, process inline citations to convert (src1) to proper links
         citation_map: dict[str, _CitationTarget] = {}
         for doc in documents:
