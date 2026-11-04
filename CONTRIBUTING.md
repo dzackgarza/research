@@ -60,14 +60,14 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
-- **Rule**: Before adding or changing code under `src/dzack_research/preamble/` or in sage-extensions (`sage_extensions`), read the generated megadoc output `docs/preamble-megadoc.md` and the root [TODO.md](TODO.md), including its unfinished constructions, input contracts, priorities, dependencies, acceptance criteria, and active file reservations.
+- **Rule**: Before adding or changing code under `src/dzack_research/preamble/` or in sage-extensions (`sage_extensions`), read the generated megadoc output `docs/preamble-megadoc.md` and the owning issue with its ancestors and siblings in the [native issue tree](https://github.com/dzackgarza/research/issues/46), including its unfinished constructions, input contracts, dependencies and acceptance criteria.
   Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; when `DEV-58` permits execution, regenerate a stale document with `just preamble-megadoc` and read it. While execution is suspended, read the existing reference as an index, inspect the affected live source, and retain regeneration under terminal T.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
 
 - **Rationale**: Prevents duplicate definitions, competing APIs, already-recorded remediation from being reintroduced, and siloed mathematical implementations while ensuring global functorial coherence.
 
-- **Violation Example**: Implementing an ad-hoc direct sum or orthogonal quotient exclusively for lattices without checking the megadoc for the general construction; adding a new tuple-valued framing helper while `TODO.md` already records the owned-family remediation; recreating a known architecture problem already catalogued in [the organization findings](TODO.md#common-categorical-authority-and-public-boundaries).
+- **Violation Example**: Implementing an ad-hoc direct sum or orthogonal quotient exclusively for lattices without checking the megadoc for the general construction; adding a new tuple-valued framing helper while an open issue already records the owned-family remediation; recreating a known architecture problem already catalogued in the [native issue tree](https://github.com/dzackgarza/research/issues/46).
 
 - **Correct Example**: Read the generated construction inventory and active remediation queues first; reuse the existing tensor product, Hom, subobject, or functor when it already expresses the mathematics, and add a missing operation at the category where its definition belongs rather than at the first concrete consumer that needs it.
 
@@ -374,7 +374,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 - **Rationale**: Reporting a fixable upstream defect as “known” feels cautious to an agent but leaves every downstream caller compensating for it.  The resulting Protocols, local stubs, facades, aliases, and copied computations turn one source defect into permanent distributed complexity.
 
-- **Violation Example**: the preamble's type/API is wrong, so a downstream research script defines a local Protocol instead of repairing the preamble; a missing semantic `kernel` capability is noted in `TODO.md` while the current feature ships a matrix workaround; a clean reference mirror is known to be on the wrong pinned revision and the mismatch is merely documented.
+- **Violation Example**: the preamble's type/API is wrong, so a downstream research script defines a local Protocol instead of repairing the preamble; a missing semantic `kernel` capability is noted in an issue while the current feature ships a matrix workaround; a clean reference mirror is known to be on the wrong pinned revision and the mismatch is merely documented.
 
 - **Correct Example**: repair/wire the authoritative preamble annotation or semantic method, consume it normally downstream, and keep only genuinely deferred research work in the TODO.  If the source cannot be modified because it is external/unowned, use the narrow documented boundary appropriate to that external dependency.
 
@@ -719,7 +719,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
   has supporting evidence, as required by `DEV-61`.
 
 - **Programme acceptance:** Broad suites, QC gates and notebook campaigns remain
-  suspended until the required M1 source prerequisites in `TODO.md` are delivered.
+  suspended until the required M1 source prerequisites ([#417](https://github.com/dzackgarza/research/issues/417)) are delivered.
   T begins with `core-usability-session`; `terminal-session` owns complete
   frozen-API acceptance and `extended-mathematics-session` owns required feature
   acceptance. M2 audits and API freeze, M3 full-suite acceptance and M4 capability
@@ -847,7 +847,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 #### `DEV-60`: Close One Front at a Time in Dependency Order
 
-- **Rule**: Work exactly one `TODO.md` node at a time, in the DAG's dependency
+- **Rule**: Work exactly one issue-tree work unit at a time, in the tree's sibling
   order, and drive it to its stated acceptance before opening any other front.
   Shared-substrate (preamble) edits are in scope only when the current node's
   contract requires them. If multiple fronts are already open, close the
@@ -867,9 +867,9 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
   and leave a large refactor uncommitted and unowned across many files while
   starting new authoring elsewhere.
 
-- **Correct Example**: select the next unblocked `TODO.md` node, complete and
-  commit it with the queue reconciliation, and then select the
-  following node; when a prior front is already open, finish the one closest
+- **Correct Example**: select the next work unit with `itree next dzackgarza/research`,
+  complete and commit it, close its issue, and then select the
+  following work unit; when a prior front is already open, finish the one closest
   to acceptance first.
 
 #### `DEV-61`: Reconcile the Single-Worker Queue with Delivery
@@ -944,7 +944,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 #### `DEV-65`: An Obstruction Met While Changing a Declaration Is a Finding, Never a Mechanism
 
-- **Rule**: When a declaration change meets an obstruction (a construction that cannot proceed, an object that must be in a category that does not yet exist when it is built, a Sage behaviour that a plain declaration triggers), the change stops there and the obstruction becomes a node in `TODO.md` with its dependency path, or a question to the owner.  It is never resolved by a runtime mechanism: not `refine` after construction, not a declaration that reads an engine object, not a `super_categories` override on an axiom class, not a membership predicate, not a placeholder supercategory.  The same rule binds an agent working one subtree under a brief: the report names the obstruction with the file and line, and the brief's owner decides.
+- **Rule**: When a declaration change meets an obstruction (a construction that cannot proceed, an object that must be in a category that does not yet exist when it is built, a Sage behaviour that a plain declaration triggers), the change stops there and the obstruction becomes a work unit in the native issue tree, placed under its owning grouping before the work it blocks, or a question to the owner.  It is never resolved by a runtime mechanism: not `refine` after construction, not a declaration that reads an engine object, not a `super_categories` override on an axiom class, not a membership predicate, not a placeholder supercategory.  The same rule binds an agent working one subtree under a brief: the report names the obstruction with the file and line, and the brief's owner decides.
 
 - **Rationale**: every one of those mechanisms was tried on 2026-09-16 by an agent that had the policy in front of it, because from inside a subtree the mechanism is the shortest path to a passing view: nine `super_categories` overrides to block axiom descent that one deleted edge stops; the integers refined into `OwnedOrders` after construction, with a declaration reading an engine view of ZZ to avoid re-entry; a base-free category pointed two levels up for want of the node it needed.  Each would have been invisible to the next reader and each restated at the leaf a fact that belongs to the owner.  The obstruction is the information; the mechanism destroys it.
 

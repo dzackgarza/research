@@ -7,7 +7,7 @@ The score measures the judgment needed to preserve mathematical structure and lo
 It increases with uncertain ownership, unresolved contracts, and errors that propagate into later contributions.
 File count, output length, repetition, and execution cost do not determine the score.
 
-The [TODO workstream DAG](TODO.md#remaining-workstreams-as-a-dependency-graph) determines which work is ready.
+The [native issue tree](https://github.com/dzackgarza/research/issues/46) determines which work is ready; `itree next dzackgarza/research` selects it.
 This guide determines the reasoning capability appropriate to that work.
 The [construction and inheritance design](references/preamble-architecture.md) supplies the preamble's architectural context.
 
@@ -103,7 +103,7 @@ They describe assignments, not permanent scores attached to files or workstreams
 
 The topological-algebra example rises into the foundational bands if it must first redefine generic actions or internal modules.
 A leaf assignment becomes lower complexity only after its required structures have clear owners and usable contracts.
-The [DAG](TODO.md#remaining-workstreams-as-a-dependency-graph) records those dependencies.
+The issue tree records those dependencies through its sibling order and issue bodies.
 
 ## Reading the model tables
 

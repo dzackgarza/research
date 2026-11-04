@@ -165,12 +165,12 @@ The [function-level assignments](../gitclones/sage-indefinite-port/references/po
 ## Owner resume — 2026-10-08
 
 The repository owner resumed this workstream on 2026-10-08 after the October stop. The three
-priority steps in `HANDOFF.md` are complete; select current work from the `TODO.md` dependency graph.
-Record completed source-audit reasoning, including the required inventory and ancestor review,
-in the corresponding commit. Keep unexecuted mathematical assertions and unresolved computation
-frontiers with their live TODO owners so later execution can find them. Do not expand HANDOFF.md
-with retrospective pass narratives or repeat completed history in the live worklist. Preserve its
-existing mathematical specimens until their outstanding obligations have a durable owner.
+priority steps of that resume are complete; select current work from the [native issue tree](https://github.com/dzackgarza/research/issues/46)
+with `itree next dzackgarza/research`. Record completed source-audit reasoning, including the required
+inventory and ancestor review, in the corresponding commit. Keep unexecuted mathematical assertions and
+unresolved computation frontiers on their owning issues so later execution can find them. The geometry
+and cohomology scope of the former `HANDOFF.md` is [#623](https://github.com/dzackgarza/research/issues/623)
+and its children; the resumed-port handoff is recoverable at Git source `d33da7354b:HANDOFF.md`.
 Only a later explicit owner instruction stops the repository again.
 
 ## Owner resume — 2026-09-17
@@ -180,7 +180,7 @@ The repository owner resumed this workstream on 2026-09-17. The initial
 `origin/remediate/*` branches were reviewed, compliant work was absorbed into `main`,
 rejected changes were recorded at their complaint owners, and the remote branches were
 deleted with exact-tip leases. That completed objective is no longer an execution gate.
-Select subsequent work from the current `TODO.md` dependency graph and its priority rule.
+Select subsequent work from the native issue tree in its sibling order.
 Recurrence of an older scheduled pause does not supersede this resume; only a later
 explicit owner instruction stops the repository again.
 
@@ -282,7 +282,7 @@ Keep scope, acceptance conditions and review dispositions on the owning issue;
 record delivered changes and evidence in commits. Existing verification and
 publication rules still apply.
 
-There is one line of work, `origin/main`, one DAG, and one `TODO.md`.
+There is one line of work, `origin/main`, and one issue tree.
 This repository is cloned on more than one host. Identify the current host
 with `hostname` before deciding which checkout is the other host; inspect the
 current host's `main` and dirty source locally. Each clone's local `main` is
@@ -306,8 +306,8 @@ only a copy. So:
   because its owner is active, preserve the local checkpoint and branches,
   leave the push outstanding, and report the cross-host comparison as
   unperformed. Never call a local clean import evidence of remote agreement.
-- Never trim, fork or keep a host-local `TODO.md`.  A node closed on one
-  host is closed by the commit that reaches `origin/main`.
+- A work unit is closed by the commit that reaches `origin/main`; close its
+  issue from that commit, never from an unpushed local line.
 - A `--no-verify` sync skips the gate, so it checks the one thing the gate
   would have caught first: `from dzack_research.preamble.all import *`
   succeeds in a fresh process.  A tree that does not import is not synced.
@@ -461,25 +461,26 @@ longer how this repository is worked — it has one worker — so claiming ahead
 overhead, and a node you are about to implement does not need announcing to anybody. Take the
 node, implement it, and reconcile its row in the commit that delivers it.
 
-## TODO.md is a product, not a description (always-on)
+## The issue tree is a product, not a description (always-on)
 
-The DAG in `TODO.md` is the instrument that selects work: node IDs, `Needs` edges, and the
-acceptance each one carries. When it stops being able to answer "what is ready", the repository
-does not stall visibly — selection falls back to whoever is reading it, and the program drifts
-toward whatever is nearest rather than whatever unblocks the most.
+The [native issue tree](https://github.com/dzackgarza/research/issues/46) is the instrument that selects work: sibling order, groupings,
+and the acceptance criteria each work unit carries. When it stops being able to answer "what is
+ready", the repository does not stall visibly — selection falls back to whoever is reading it, and
+the program drifts toward whatever is nearest rather than whatever unblocks the most.
 
-So it is maintained as a deliverable, to the same standard as the constructions. A node's row
-is reconciled in the commit that delivers it. An edge that no longer describes a real
-dependency is corrected when you find it. A node whose acceptance text has drifted from what
-the node now means is rewritten before it is worked. And a defect in the DAG outranks the node
-you were about to take, because every later worker inherits the same wrong answer.
+So it is maintained as a deliverable, to the same standard as the constructions. A work unit is
+closed in the wake of the commit that delivers it. A sibling position that no longer reflects the
+real dependency order is corrected with `itree move` when you find it. A work unit whose acceptance
+text has drifted from what it now means is rewritten before it is worked. And a finding from
+`itree doctor dzackgarza/research` outranks the work unit you were about to take, because every
+later worker inherits the same wrong answer.
 
 ## Review your own workstream for drift (always-on)
 
 At every node closure, before selecting the next one, check that the work is still the work:
 
-- Does the delivered/pending count in `TODO.md` actually reflect what is in the tree? A ledger
-  that has stopped moving while commits land means the commits are not delivering nodes.
+- Do the open work units in the issue tree actually reflect what is in the source tree? A tree
+  that has stopped closing issues while commits land means the commits are not delivering work units.
 - Are the last several commits carrying mathematics, or records, claims and reformatting? If the
   latter, the session has drifted into administration and the next commit must carry content.
 - Is the scheduling surface still answering? A document that has stopped listing next units, a
@@ -491,28 +492,26 @@ in the tooling that selects work is more expensive than any single node, because
 worker inherits the same silence and drifts the same way. Routing around it — picking units by
 hand, keeping a private list, working from memory — hides the defect and guarantees it recurs.
 
-## Using and maintaining TODO.md (always-on)
+## Using and maintaining the issue tree (always-on)
 
-**TODO.md says what to do next, never what was done.** Apply
+**The issue tree says what to do next, never what was done.** Apply
 [`DEV-50`](CONTRIBUTING.md#dev-50-todos-contain-only-unfinished-work)
 and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
 
 - **When selecting work:** reread the live queue, its dependencies and active
   claims, then inspect the selected item's current source and consumers.
-  Use the [TODO DAG](TODO.md#remaining-workstreams-as-a-dependency-graph): each
-  unchecked item has one stable ID and one `Needs` list. Select a ready required
-  node, then apply the work priorities and reservations. Section order, shared
-  files and optional research suggestions are not prerequisite edges.
+  Use the [native issue tree](https://github.com/dzackgarza/research/issues/46): `itree next dzackgarza/research` selects the
+  first open work unit in sibling order, and each work unit carries its own acceptance
+  criteria. Shared files and optional research suggestions are not prerequisite edges;
+  the [crosswalk](TODO.md) maps former source identifiers to issues.
   Implement only the remaining delta. An unchecked item is not evidence that
   the construction is absent; a remembered completion is not evidence that its
   current implementation satisfies the requirement.
-- **When delivering work:** reconcile the affected TODO items in the delivery
-  commit, or an immediate companion commit, before selecting another task or
-  handing off. Remove a completed item, including its task-specific explanation
-  and obsolete dependency references. Do not mark it `[x]`, append a completion
-  note, or move it to a completed section. Record evidence and reasoning in the
-  commit, not in the queue. Apply the same rule when inspected source establishes
-  that another worker already delivered a stale listed item.
+- **When delivering work:** close the delivered work unit with
+  `itree close --reason completed` as soon as its commit is on `origin/main`,
+  before selecting another task or handing off. Record evidence and reasoning in
+  the commit, not in the issue. Apply the same rule when inspected source
+  establishes that another worker already delivered a stale open work unit.
 - **For partial delivery:** retain only the concrete unfinished obligations,
   with their owners, input maps, hypotheses and acceptance criteria. Preserve
   the original required generality; one implemented specialization does not
@@ -523,7 +522,7 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
   resurrect a past checkbox or append a retrospective audit. Incorporate a
   related new obligation into the existing unfinished item rather than creating
   duplicate authoritative lists.
-- **Before committing a queue update:** follow `DEV-61`, reread the live file,
+- **Before editing an issue body:** follow `DEV-61`, reread the live issue,
   and apply only the intended delta. The current single-worker workflow has no
   reservation layer. Preserve foreign edits and any pre-existing reservation
   until its ownership is resolved; age alone never authorizes removing it.
