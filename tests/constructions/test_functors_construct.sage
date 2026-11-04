@@ -10,11 +10,11 @@ import pytest
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
 
-# Each entry is verified against the deployed session by the exact assertion body below:
-# the functor's object action, its codomain containment and its action on the identity
-# morphism.  An entry is added only once all of that holds; the rest of the seven functors
-# this file's known-values test names are listed with the cause that blocks them, not
-# assumed.
+# Coverage rule: membership is decided by whether the input is valid in the session -- a
+# category-level constructor and a specimen in its domain -- not by whether the case
+# currently passes.  A valid case whose application fails is an executable obligation and
+# stays here with its failing assertion; a case with no valid input is recorded as blocked
+# with the missing construction, not silently dropped.
 NULLARY_FUNCTORS = {
     "power_set": (
         lambda: FiniteSets().power_set_functor(),
@@ -31,40 +31,76 @@ NULLARY_FUNCTORS = {
         lambda: Groups.S(3),
         None,
     ),
+    # Valid input, currently failing on a provider defect: kept as an obligation.
+    "abelianization": (
+        lambda: Groups().abelianization(),
+        lambda: Groups.S(3),
+        None,
+    ),
+    # Valid input, currently failing on a provider defect: kept as an obligation.
+    "cardinality": (
+        lambda: Sets().cardinality_functor(),
+        lambda: Sets.Δ[2],
+        None,
+    ),
 }
 
+# No valid input exists in the deployed session: the construction named by the file's
+# known-values test has no category-level spelling, so these cannot be executable here.
 BLOCKED_NULLARY_FUNCTORS = {
-    "abelianization": "provider TypeError: a GAP whole group map is private engine output",
-    "cardinality": "provider AssertionError: cannot give the morphism 3 -> 3 of cardinals: undecided whether 3 <= 3",
-    "ring_of_integers": "session has no NumberFields; the provider exports OwnedNumberFields/NumberFieldsWithChosenPrimitiveElement",
-    "fraction_field": "provider AttributeError: the owned commutative non-zero-divisor rings have no fraction_field",
+    "ring_of_integers": (
+        "no valid input: neither OwnedNumberFields() nor "
+        "NumberFieldsWithChosenPrimitiveElement() exposes ring_of_integers; the provider's "
+        "definition at categories/rings/number_fields.py:481 is not a category constructor"
+    ),
+    "fraction_field": (
+        "no valid input: IntegralDomains() has no fraction_field; the provider defines it "
+        "only on RealField/ComplexField (rings/real.py:1056, rings/complex.py:629)"
+    ),
 }
 
 
-def test_every_nullary_functor_sends_an_object_into_its_codomain() -> None:
-    """Each registered nullary functor sends its domain witness into its codomain.
 
-    The population is the one this file's known-values test names.  An empty population
-    states nothing, and an empty parametrization is reported as a skip, which
-    ``POLICY.NO_SKIP_MASK`` forbids: so the absence is asserted rather than masked.
+INTENDED_NULLARY_FUNCTORS = frozenset(
+    {
+        "abelianization",
+        "cardinality",
+        "power_set",
+        "free_group",
+        "underlying_set",
+        "ring_of_integers",
+        "fraction_field",
+    }
+)
+
+
+def test_every_intended_nullary_functor_is_accounted_for() -> None:
+    """All seven functors are either executable obligations or blocked with a cause.
+
+    Coverage is about valid inputs, not about passing: nothing is dropped to make a
+    subset green, a blocked entry must name the missing construction, and no functor may
+    appear on both sides.
     """
-    assert NULLARY_FUNCTORS, (
-        "NULLARY_FUNCTORS is empty although this file's known-values test names seven "
-        "nullary functors; see BLOCKED_NULLARY_FUNCTORS for the causes that keep the "
-        "unverified ones out"
-    )
-    for constructor, specimen, codomain in NULLARY_FUNCTORS.values():
-        functor = constructor()
-        source = specimen()
-        image = functor(source)
-        assert source in functor.domain()
-        if codomain is not None:
-            assert image in codomain()
-        assert image in functor.codomain()
-        identity = source.Mor(source).identity()
-        image_of_identity = functor(identity)
-        assert image_of_identity.domain() == image
-        assert image_of_identity.codomain() == image
+    assert set(NULLARY_FUNCTORS) | set(BLOCKED_NULLARY_FUNCTORS) == INTENDED_NULLARY_FUNCTORS
+    assert set(NULLARY_FUNCTORS) & set(BLOCKED_NULLARY_FUNCTORS) == set()
+    assert all(reason for reason in BLOCKED_NULLARY_FUNCTORS.values())
+
+
+@pytest.mark.parametrize("name", sorted(NULLARY_FUNCTORS))
+def test_a_nullary_functor_sends_an_object_into_its_codomain(name) -> None:
+    """Each executable nullary functor sends its domain witness into its codomain."""
+    constructor, specimen, codomain = NULLARY_FUNCTORS[name]
+    functor = constructor()
+    source = specimen()
+    image = functor(source)
+    assert source in functor.domain()
+    if codomain is not None:
+        assert image in codomain()
+    assert image in functor.codomain()
+    identity = source.Mor(source).identity()
+    image_of_identity = functor(identity)
+    assert image_of_identity.domain() == image
+    assert image_of_identity.codomain() == image
 
 
 def test_known_values_of_the_nullary_functors() -> None:
