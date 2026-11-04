@@ -1,5 +1,4 @@
 ---
-title: The research program for F_(Co,n) with 2 <= n <= 10
 unit: research-program
 status: conjectural
 tags:
@@ -10,7 +9,7 @@ tags:
 notes: |-
   Provenance: `/home/dzack/gitclones/diss/100-corpus/100-data/dzg-research/research-statements/canonical/my_research_statement/ResearchStatement.md`, section "Future Work / Coble surfaces with $1\leq n\leq 10$ boundary components".
   Not in the dissertation.
-  The table of the ten lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogonal complements $N = M^\perp$ is **already recorded** in [[coble-lattice-table|the Coble lattice table]] (@tbl:coble-lattices), sourced from Cossec-Dolgachev-Liedtke, *Enriques Surfaces I*, Table 5.1, p. 553. This note records only the research program built on it, which is not recorded elsewhere.
+  The table of the ten lattices $M = (10+n,\, 12-n,\, \delta)$ and their orthogonal complements $N = M^\perp$ is **already recorded** in [[coble-lattice-table|the Coble lattice table]], sourced from Cossec-Dolgachev-Liedtke, *Enriques Surfaces I*, Table 5.1, p. 553. This note records only the research program built on it, which is not recorded elsewhere.
 ---
 
 # The research program for $F_{\Co,n}$, $2 \leq n \leq 10$ {#sec-coble-families-research-program}
@@ -26,7 +25,7 @@ Applying the period domain construction to these lattices yields ten moduli spac
 
 ::: {.remark title="Position in Nikulin's triangle"}
 
-This collection of ten lattices **coincides precisely with the $g=0$ line** of Nikulin's triangular table of 2-elementary lattices (AE22, Fig. 1). That identification is the organizing observation behind the whole program, and is also what ties the Coble families to the index 2 Halphen families; see [[halphen-index-2-moduli-program]].
+This collection of ten lattices **coincides precisely with the $g=0$ line** of Nikulin's triangular table of 2-elementary lattices (AE22, Fig. 1). That identification is the organizing observation behind the whole program, and is also what ties the Coble families to the index 2 Halphen families; see [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program).
 :::
 
 The moduli spaces $F_{\Co,n}$ for $n \geq 2$ have not appeared in the literature.
@@ -62,7 +61,7 @@ These semifans are either refinements or coarsenings of the canonical Coxeter fa
 ::: {.remark title="Each family embeds into unpolarized Enriques moduli"}
 
 By *Enriques Surfaces I*, Prop.
-5.4.6, for each rank-$(10+n)$ lattice in @tbl:coble-lattices there is an embedding
+5.4.6, for each rank-$(10+n)$ lattice in [the Coble lattice table](#sec-coble-lattice-table) there is an embedding
 $$
 F_{\Co,n} \injects \fen
 $$
@@ -70,4 +69,4 @@ into the moduli space of Enriques surfaces, constructed from $E_{10}(2)$-polariz
 Consequently the integral-affine structures, and hence the dlt and stable models, can be obtained by restricting the K3 boundary data of AE22. This is the mechanism that makes the whole family tractable at once, rather than one $n$ at a time.
 :::
 
-Related: [[cusp-correspondence-morphism-chain.md]], [[halphen-index-2-moduli-program]], [[nodal-enriques-moduli-program]].
+Related: [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program), [The nodal Enriques moduli program](#sec-nodal-enriques-moduli-program).

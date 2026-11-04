@@ -1,4 +1,4 @@
-# Halphen Surfaces
+# Halphen surfaces {#sec-halphen-surfaces}
 
 ::: {.remark}
 
@@ -37,11 +37,36 @@ Let $X$ be a Coble surface and $\pi_{E}: X \to Y$ be the blowing down of a (-1)-
 Conversely, the blow-up of a singular point of an irreducible non-multiple fiber of a Halphen surface of index 2 is a Coble surface.
 :::
 
+::: {.proof}
+
+Let $C$ be the anti-bicanonical curve of the Coble surface $X$, so that $|-2K_X|=\{C\}$ and $C$ is a sum of $(-4)$-curves.
+
+*$C$ passes through $y_0$. *
+The curve $C$ is the fixed curve of the involution on the K3 cover, and $E$ is a $(-1)$-curve disjoint from $C$: a curve meeting $C$ would meet $-2K_X$ positively and, being a $(-1)$-curve, would have to be a component of $|-2K_X|$, which is a sum of $(-4)$-curves.
+So $E$ contracts and $C$ maps to a curve $F=\pi_E(C)$ on $Y$ passing through $y_0=\pi_E(E)$, which is therefore a singular point of $F$.
+
+*The anti-bicanonical class.*
+By adjunction for the blowup, $K_X=\pi_E^*(K_Y)+E$ and $C=\pi_E^*(F)-mE$ where $m=C\cdot E$ is the multiplicity of $F$ at $y_0$.
+From $-2K_X=C$,
+$$
+-2\pi_E^*K_Y-2E=\pi_E^*F-mE,
+$$
+which forces $m=2$ and $F=-2K_Y$: so $F\in|-2K_Y|$, the point $y_0$ is a double point of $F$, and $\pi_E^*(F)=C+2E$.
+
+*$F$ is the non-multiple fibre and $Y$ is Halphen of index $2$.*
+Since $C^2=-4$ and $C\cdot E=0$, the projection formula gives $F^2=\pi_E^*F\cdot\pi_E^*F=C^2+4E^2=-4-4=-8$; and $F$ is connected because $C$ is, the fibers of $\pi_E$ other than $E$ being points.
+So $F$ is an irreducible curve of arithmetic genus $1$ — adjunction, $2p_a-2=F^2+K_Y\cdot F=-8-F^2/2=-8+4=-4$, giving $p_a=1$ — and its self-intersection is $0$ on the elliptic fibration obtained by completing $|-2K_Y|=|F|$ to a pencil.
+Hence $F$ is a fibre of the Halphen fibration, and it is non-multiple because $2F$ is not a member of $|-2K_Y|$: it is $2$ times the unique member, so the fibration has index $2$ and $F$ is its non-multiple fibre.
+
+*Conversely.*
+If $F$ is an irreducible non-multiple fibre of a Halphen fibration of index $2$ on $Y$ and $y_0\in F$ is a singular point, then $\pi_E$ the blowup of $y_0$ has $K_X=\pi^*K_Y+E$ and $|-2K_X|\ni\pi^*F-2E$; the proper transform $\pi^*F-2E$ has square $F^2-4=-4$ and arithmetic genus $1$ by adjunction, so it is a $(-4)$-curve, and the surface $X$ has an effective anti-bicanonical divisor with those properties: a Coble surface.
+:::
+
 ::: {.remark}
 
 Why introduce Halphen surfaces?
-I conjecture that the geometric construction(s) above yield some kind of correspondence between moduli spaces of Coble surfaces with $n$ boundary components and the various moduli spaces of index 2 Halphen pencils on the $g=0$ line of Nikulin's triangle diagram of 2-elementary lattices.
-Regarding the coarse spaces as period domains attached to lattices, the lattices match up precisely; see [[coble-lattice-table|the Coble lattice table]].
+I conjecture that the geometric construction(s) above yield some kind of correspondence between moduli spaces of Coble surfaces with $n$ boundary components and the various moduli spaces of index 2 Halphen pencils on the $g=0$ line of Nikulin's diagram of $2$-elementary lattices, whose vertices are the triples $(r, a, \delta)$.
+Regarding the coarse spaces as quotients of the period domains attached to these lattices, the lattices match up precisely; see [the Coble lattice table](#sec-coble-lattice-table).
 Applications of mirror moves indicate that the cusp diagrams would correspondingly coincide as well.
 :::
 

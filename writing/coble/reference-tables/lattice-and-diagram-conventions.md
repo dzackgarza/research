@@ -1,5 +1,4 @@
 ---
-title: Lattice length table and Coxeter-Vinberg diagram conventions
 unit: reference
 status: reference
 tags:
@@ -16,7 +15,7 @@ Archived thesis appendix tables and figures, sections A.1.3, A.2.1, A.2.2, and A
 :::
 None of these tables appear in the dissertation.
 
-This project defines the length $\ell(L)$ in [[discriminant-forms-and-genus|Discriminant forms and genus]] but tabulates no values.
+This project defines the length $\ell(L)$ in [Discriminant forms and genus](#sec-discriminant-genus) but tabulates no values.
 
 ## Length table
 
@@ -80,18 +79,18 @@ $|h_1 h_2| = \sqrt{h_1^2 h_2^2}\, w_{12}$ with $w_{12}$ from the table above.
 | black, black, thick | $-4$ | $-4$ | 4 |
 | black, black, dotted | $-4$ | $-4$ | $>4$ |
 
-This project's [[reflection-groups-and-vinberg|Reflection groups and Vinberg]] note describes dotted edges in prose only; the tables above are the corresponding numerical conventions, and are what the reconstruction formula
+This project's [Reflection groups and Vinberg](#sec-reflection-groups-and-vinberg) note describes dotted edges in prose only; the tables above are the corresponding numerical conventions, and are what the reconstruction formula
 $$
-\langle v_i, v_j\rangle = \sqrt{v_i^2 v_j^2}\,\cos\!\left(\frac{\pi}{m_{ij}+2}\right)
+\langle v_i, v_j\rangle = \sqrt{\abs{v_i^2}\,\abs{v_j^2}}\,\cos\!\left(\frac{\pi}{m_{ij}}\right)
 $$
-of [[root-vectors-and-folded-sterk-diagrams]] depends on.
+of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams) depends on.
 
 ## Cusp type classification
 
 |  | Type II | Type III |
 | --- | --- | --- |
 | Boundary strata | 1-cusps, curves $C_i$ | 0-cusps, points $p_j$ |
-| Sublattice type | isotropic lines in $I^1(L)$ | isotropic planes in $I^2(L)$ |
+| Sublattice type | isotropic lines in $L$ | primitive isotropic planes in $L$ |
 | Subdiagram type | maximal parabolic | maximal elliptic |
 
 ## $E_8$ Gram matrix
@@ -157,7 +156,7 @@ The covering $F_{\En,2}\to F_{K3,\En}$ is recorded as finite of degree $2^7\cdot
 ::: {.remark title="Why these belong in this project"}
 
 $A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \generators{2}\oplus E_{10}(2)$ adds one $C_2$ to $A_{E_{10}(2)} = C_2^{10}$.
-The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $\Gamma_{\Co}$-orbit problem to a finite computation in $A_{T_{\Co}}$, which is the method recorded in [[cusp-correspondence-morphism-chain]]. The group orders bound the index computations in that reduction.
+The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $\Gamma_{\Co}$-orbit problem to a finite computation in $A_{T_{\Co}}$, which is the method recorded in [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain). The group orders bound the index computations in that reduction.
 :::
 
-Related: [[root-vectors-and-folded-sterk-diagrams]], [[coxiter-results-for-cusp-lattices]], [[coble-lattice-isotropic-candidates]].
+Related: [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [CoxIter results for the Sterk cusps and the 0-cusp lattices](#sec-coxiter-results-for-cusp-lattices), [Candidate isotropic vectors in $T_{\Co}$](#sec-coble-lattice-isotropic-candidates).

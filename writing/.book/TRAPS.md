@@ -126,6 +126,20 @@ A user filter without `at:` runs at pre-quarto, after normalize, so it cannot in
 The `amsthm-divs` extension hides each reserved class that `custom-numbered-blocks` also numbers: it renames the class at pre-ast and restores it at pre-quarto.
 Today that is only `remark`. `.proof` divs take no ID, and Quarto still renders them.
 
+## A fence that does not start a block does not make a block
+
+Pandoc's `fenced_divs` opens a div only where a block may start, so a `:::` line written directly under a line of prose is absorbed into that paragraph: the fence, its attributes and its `#id` become text, and the div never exists.
+The page then renders prose where a proposition, a lemma or a figure belongs, and the label is not registered.
+For a `fig-` div this surfaces, because Quarto resolves the reference and reports `quarto-unresolved-ref`; for the theorem family it does not, because `amsthm-refs` rewrites `@prop:x` into `\longref{prop:x}` and `custom-numbered-blocks` drops an id it never registered, so the words disappear while check 7 still passes on the source.
+A blank line above every opening fence is the rule; a closing fence may abut the prose it follows.
+
+The same silence covers an attribute block written with LaTeX escapes: `title=\"...\"` does not parse, the whole fence line becomes text, and nothing else on the line differs, so it reads correctly in a diff.
+Doubled control sequences inside the math of such a block are the same defect one level down: pandoc keeps `\\Orth` verbatim inside `$...$`, and its HTML writer then warns `Could not convert TeX math`.
+
+Reconcile the two before believing a page: the ids a page declares are the matches of `^:::\s*{...#id`, and the ids pandoc parses are the `Div` identifiers of `pandoc -f markdown -t native <page>`.
+`.scratch/div_sweep.py` does this over `writing/`.
+Blocks lost this way and found this way: `prop:cusp-map-not-onto` and `prop:cusp-map-separates-mod-two`, whose fences sat under prose and whose swallowing also took the `fig-enriques-coble-correspondence` figure below them; `prop:odd-unimodular-rank-one-transitivity`, escaped quotes and doubled macros throughout; and `fig-classical-dynkin-foldings` in the dissertation.
+
 ## Pandoc splits `\dynkin[options]E6` after the options
 
 Pandoc's markdown reader takes a LaTeX command as raw TeX only through its bracketed and braced arguments.

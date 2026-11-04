@@ -1,4 +1,4 @@
-# Eichler transvections {#sec:eichler-transvections}
+# Eichler transvections {#sec-eichler-transvections}
 
 ## Eichler--Siegel transvections
 

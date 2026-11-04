@@ -50,7 +50,7 @@ if subprocess.run(["pgrep", "-f", r"quarto\.js preview"],
 # that rewrites an input by renaming a temporary file into place replaces the link
 # with a copy; the copy renders perfectly well, so nothing else here would notice the
 # two drifting apart. Adding a part means adding its name here and to _quarto.yml.
-LINKED_PARTS = ("index.md", "category-theory", "coble", "data", ".assets")
+LINKED_PARTS = ("index.md", "category-theory", "coble", "data", "lattice-theory", ".assets")
 for name in LINKED_PARTS:
     entry, source = BOOK / name, DOCS / name
     if not entry.is_symlink():

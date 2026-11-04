@@ -27,20 +27,21 @@ The outcome of the algorithm is summarized by the following tree:
 Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mirror moves.
 :::
 
-Thus $\fco$ has one 0-cusp corresponding to an isotropic vector $v_0$ with
+Thus there is one $\Orth^+(T_\Co)$-orbit of $0$-cusps, represented by an isotropic vector $v_0$ with
 
 $$
 v_0^{\perp T_{\Co}}/\generators{v_0} \cong (9,9,1)_1 \cong \generators{2} \oplus E_{8}(2)
 $$
 
-Moreover, this 0-cusp $v_0$ is incident to one 1-cusp $C_0$ corresponding to an isotropic plane $J = \generators{v_0, v_1}$ with
+The arithmetic group $\Gamma_\Co$ is strictly smaller — the transposition of the two isotropic generators of the $U(2)$ summand is an integral isometry of $T_\Co$ lying in $\Orth^+(T_\Co)$ and not in $\Gamma_\Co$, built and checked through the owner's own operations in `computations/reports/coble_congruence_witness.py` — so its orbit decomposition of primitive isotropic vectors is finer than this one (@lem:stable-orthogonal-not-transitive); the cusp diagram computed below is the one attached to $v_0$.
+This $0$-cusp $v_0$ is incident to one $\Orth^+(T_\Co)$-orbit of $1$-cusps, represented by an isotropic plane $J = \generators{v_0, v_1}$ with
 
 $$
 J^{\perp T_{\Co}}/\generators{J} \cong (7,7,1)_0 \cong A_1^{\oplus 7} ,
 $$
 
 where $v_1 \in v_0^{\perp T_{\Co}}/\generators{v_0}$.
-In the diagrammatic language of [@AE22 Fig. 1, Thm. 5.10], this corresponds to a $U^2$ move and can be summarized in the following mirror move diagram as a composition of two even ordinary $U(2)$-type moves:
+In the diagrammatic language of [@AE22 Fig. 1, Thm. 5.10], this corresponds to a composite of two even ordinary mirror moves, with $H = U(2)$, summarized in the following mirror move diagram:
 
 ::: {#fig-mirror-moves-coble-simplified .figure}
 \begin{tikzpicture}
@@ -62,7 +63,7 @@ Calculations verify that $v_0^2 = v_1^2 = 0$, that $v_1 \in v_0^{\perp T_{\Co}}/
 We further note that $\div_{T_{\Co}}(v_0) = \div_{T_{\Co}}(v_1) = 2$, which will be an important invariant for establishing a correspondence to cusps of other moduli spaces.
 For an isotropic plane $J$, we denote the divisibilities of the constituent generating vectors as a tuple $(d_1, d_2)$, and in this convention we have $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
 
-By [@CDL25 Prop. 5.4.6], there is an open embedding $F_{(11, 11, 1)} \injects F_{\EnriquesInvariants}$, i.e. $\fco \injects \fen$, realizing $\fco$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
+By [@CDL25 Prop. 5.4.6], there is a locally closed immersion $\fco \injects \mch_{-2}/\Gamma_\En \subset \fen$ whose image is open in the Heegner divisor $H_{-2}$, realizing $\fco$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
 The image is an open subset of a closed irreducible subset of $\mch_{-2}/\Gamma_\En$.
 By [@CDL25 Thm. 5.8.2], the coarse space of $\fco$ is a rational variety, and since $\fen$ is quasiprojective, so too is $\fco$.
 Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\mch_{-2}$ contains the modular curve $X$.

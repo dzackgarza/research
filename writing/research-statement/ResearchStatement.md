@@ -129,7 +129,7 @@ To determine the stratification of \( \overline{ F_{\Co} }^{\operatorname{BB}} \
 Application of the mirror move algorithm to $S_{\Co} = (11, 11, 1)_1$.
 :::
 Using this, I have constructed the incidence diagram that represents \( \del \overline{ F_{\Co} }^{\operatorname{BB}} \), which is shown in @fig:coble-cusp-diagram-detailed.
-Using lattice theoretic techniques, and in particular an invariant called the *divisibility*, I have determined that \( \eta \) induces the correspondence \( \del \overline{ F_{\Co} }^{\operatorname{BB}}\to \del \overline{ F_{\En} }^{\operatorname{BB}} \) depicted in @fig:enriques-coble-correspondence, which has allowed me to determine that Coble degenerations are *\( \Dc^2 \)-type*, as opposed to *\( {\RP}^2 \)-type*, an essential ingredient for later constructing the correct divisorial log terminal (dlt) models of KSBA degenerations.
+Using lattice theoretic techniques, and in particular an invariant called the *divisibility*, I have determined that \( \eta \) induces the correspondence \( \del \overline{ F_{\Co} }^{\operatorname{BB}}\to \del \overline{ F_{\En} }^{\operatorname{BB}} \) depicted in @fig:enriques-coble-correspondence-statement, which has allowed me to determine that Coble degenerations are *\( \Dc^2 \)-type*, as opposed to *\( {\RP}^2 \)-type*, an essential ingredient for later constructing the correct divisorial log terminal (dlt) models of KSBA degenerations.
 
 ::: {#fig:coble-cusp-diagram-detailed .figure}
 \input{tikz/fig_Cusp_Diagram_Co.tex}
@@ -139,7 +139,7 @@ Rounded nodes indicate points added in the boundary of the compactification $\ov
 Solid arrows $A\to B$ indicate that a point $A$ is contained in the closure of a curve $B$.
 :::
 
-::: {#fig:enriques-coble-correspondence .figure}
+::: {#fig:enriques-coble-correspondence-statement .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 
 The cusp correspondence $\eta: \overline{  F_{\Co} }^{\operatorname{BB}} \to \overline{  F_{\En}  }^{\operatorname{BB}}$.

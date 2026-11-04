@@ -144,6 +144,13 @@ and the factorization is functorial: a commutative square from $f$ to $f'$ induc
 The object $\operatorname{Im}(f)$ is the domain of $m$ and $\operatorname{Coim}(f)$ the codomain of $e$ [@Mac98, §VIII.3, Proposition 1].
 :::
 
+::: {.proof}
+
+This is [@Mac98, §VIII.3, Proposition 1].
+
+The factorization, its functoriality and the identification of the two objects are the cited proposition. The degreewise use of it, in `thm:chain-complexes-abelian`, is: since kernels and cokernels there are taken degreewise, this factorization is too, which is what makes the canonical morphism an isomorphism of complexes rather than only of objects.
+:::
+
 ::: {.theorem #thm:diagram-lemmas title="Diagram lemmas"}
 
 Let $\mca$ be abelian.
@@ -155,6 +162,13 @@ $$
 $$
 exact (snake lemma).
 In a commutative diagram with exact rows and five vertical morphisms, if the four outer ones are isomorphisms then so is the middle one (five lemma) [@Mac98, §VIII.4, Lemmas 1, 4, and 5].
+:::
+
+::: {.proof}
+
+This is [@Mac98, §VIII.4, Lemmas 1, 4 and 5].
+
+The three lemmas are cited. They are used in exactly two places in the book: `thm:homology-les`, which applies the snake lemma to the square of rows Z_{n-1} over C_n/B_n, and the five lemma as stated. Nothing here is re-derived, and a reader who wants the argument should have Mac Lane open.
 :::
 
 Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c$ with $gf=0$ is exact at $b$ when the monomorphism $\operatorname{Im}(f)\to b$ and the kernel of $g$ represent the same subobject of $b$ (@def:subobject-relation).
@@ -229,6 +243,13 @@ C\hookrightarrow\mathbf{Set}^{C^{\opop}},
 C^{\opop}\hookrightarrow\mathbf{Set}^{C}
 $$
 are fully faithful: natural transformations between represented functors correspond to morphisms between the representing objects [@Rie16, Corollary 2.2.8].
+:::
+
+::: {.proof}
+
+This is [@Rie16, Theorem 2.2.4; @Mac98, §III.2].
+
+Cited. The form stated here is the two claims the book uses: the bijection natural in the representing object, and its converse identifying natural transformations with elements of the value at the representing object. Both are the cited statement read in the unenriched setting.
 :::
 
 ::: {.corollary #cor:representations-unique title="Uniqueness of representations"}

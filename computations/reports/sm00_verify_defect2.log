@@ -1,0 +1,21 @@
+[b0] tau-invariant (only i+j even): True
+[b0] f(0,0) = 0  quadratic part = 2*x**2 + 7*x*y - 5*y**2  discriminant = 89
+[b_star] tau-invariant (only i+j even): True
+[b_star] f(0,0) = 0  quadratic part = 3*x**2 - 28*x*y + 13*y**2  discriminant = 628
+[b0] disc_y(f) = x**2*(752640*x**22 + 2466752*x**20 + 2872989*x**18 + 139516*x**16 - 2330618*x**14 + 1779080*x**12 - 458095*x**10 - 3994880*x**8 + 615440*x**6 + 1430784*x**4 - 187072*x**2 - 44500)
+[b0] disc_x(f) = -y**2*(46080*y**22 + 635776*y**20 + 2303948*y**18 + 1391004*y**16 + 6321016*y**14 - 5619268*y**12 + 13839591*y**10 - 10858864*y**8 + 9965106*y**6 - 3879172*y**4 + 1616339*y**2 + 8544)
+[b_star] disc_y(f) = x**2*(x - 1)**2*(x + 1)**2*(15704832*x**18 + 76360888*x**16 + 76471072*x**14 - 9058588*x**12 - 52076891*x**10 + 356972258*x**8 + 1502866833*x**6 - 332833272*x**4 - 1670871164*x**2 + 55188640)
+[b_star] disc_x(f) = -y**2*(138548480*y**22 - 201244728*y**20 + 73496327*y**18 + 898310496*y**16 + 3565780682*y**14 + 6206860420*y**12 + 7930647623*y**10 + 6957883664*y**8 + 4525230464*y**6 + 1869974120*y**4 + 469788624*y**2 + 406944)
+[b_star] f(1,y) = (y - 3)**2*(y - 1)**2
+[b_star] f(0,y) = -y**2*(10*y**2 - 13)
+[b0] f(0,y) = -y**2*(y**2 + 5)
+[lattice] Gram of <e,f,alpha> = [[0, 2, 0], [2, 0, 0], [0, 0, -2]]  det = 8  signature = {-2: 2, 2: 1}
+[lattice] Gram of <e,f,alpha,C_+> = [[0, 2, 0, 0], [2, 0, 0, 1], [0, 0, -2, 0], [0, 1, 0, -2]]  det = -16
+[lattice] all norms even (Grams of basis vectors): True
+[lattice] signature (counting +): 1  (counting -): 3
+[b0] q(x) = 752640*x**22 + 2466752*x**20 + 2872989*x**18 + 139516*x**16 - 2330618*x**14 + 1779080*x**12 - 458095*x**10 - 3994880*x**8 + 615440*x**6 + 1430784*x**4 - 187072*x**2 - 44500  deg = 22  squarefree: True
+[lattice] H^2 = 4  H.alpha = 0  H.C_+ = 1  e.C_+ = 0  f.C_+ = 1  alpha.C_+ = 0
+[lattice] A = H - 1/2 alpha: square = 7/2  pairing with C_+ = 1  e: 2  f: 2  alpha: 1
+[lattice] y = A + (A.C_+/2) C_+: square = 4  pairing with C_+ = 0  e: 2  f: 5/2  alpha: 1
+[lattice] A = H - 3/4 alpha: square = 23/8  pairing with C_+ = 1  e: 2  f: 2  alpha: 3/2
+[lattice] y = A + (A.C_+/2) C_+: square = 27/8  pairing with C_+ = 0  e: 2  f: 5/2  alpha: 3/2

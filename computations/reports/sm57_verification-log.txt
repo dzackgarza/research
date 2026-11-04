@@ -1,0 +1,24 @@
+=== verify_witness.py (member A) ===
+1) monomials with i+j odd (must be empty): []
+   bidegree: 4 4
+2) f(p) = 0
+   Hessian det at p = 3   quad part = x**2 - x*y + y**2
+3) factor_list: (-1, [(7*x**4*y**4 - 9*x**4*y**2 - x**4 + 8*x**3*y**3 - 4*x**3*y - 11*x**2*y**4 - 9*x**2*y**2 - x**2 - 6*x*y**3 + x*y - y**4 - y**2, 1)])
+5) f mod q = x**4*(x**4 + 6*x**2 + 11) + 6*x**2 + 1  and Phi|_D * x^2 = x**2*(x**2 + 3) + 1
+   Phi|_D numerator factors: x**4 + 3*x**2 + 1
+4) singular locus in chart x0=y0=1 (x,y) : [X1, Y1]
+4) singular locus in chart x0=1,y1=1 (x,1/y) : [1]
+4) singular locus in chart x1=1,y0=1 (1/x,y) : [1]
+4) singular locus in chart x1=y1=1 (1/x,1/y) : [1]
+
+=== facet_check.py (lattice configuration and facet witnesses) ===
+C1^2,C2^2,C1.C2 = -2 -2 4
+C1+C2 = H ? True  C1-C2 = delta ? True
+squares: {'alpha': -2, 'h1-alpha': Fraction(-2, 1), 'h2-alpha': Fraction(-2, 1), 'C1': Fraction(-2, 1), 'C2': Fraction(-2, 1)}
+H-degrees: {'alpha': 0, 'h1-alpha': Fraction(2, 1), 'h2-alpha': Fraction(2, 1), 'C1': Fraction(2, 1), 'C2': Fraction(2, 1)}
+C_i.alpha: 0 0  (h1-alpha).alpha: 2
+alpha point (1, 1, 0, 0) vals {'alpha': 0, 'h1-alpha': Fraction(2, 1), 'h2-alpha': Fraction(2, 1), 'C1': Fraction(2, 1), 'C2': Fraction(2, 1)} square 4
+h1-alpha point (2, 1, -1, 0) vals {'alpha': 2, 'h1-alpha': Fraction(0, 1), 'h2-alpha': Fraction(2, 1), 'C1': Fraction(3, 1), 'C2': Fraction(3, 1)} square 6
+h2-alpha point (1, 2, -1, 0) vals {'alpha': 2, 'h1-alpha': Fraction(2, 1), 'h2-alpha': Fraction(0, 1), 'C1': Fraction(3, 1), 'C2': Fraction(3, 1)} square 6
+C1 point (3, 3, -1, 1) vals {'alpha': 2, 'h1-alpha': Fraction(4, 1), 'h2-alpha': Fraction(4, 1), 'C1': Fraction(0, 1), 'C2': Fraction(12, 1)} square 22
+C2 point (3, 3, -1, -1) vals {'alpha': 2, 'h1-alpha': Fraction(4, 1), 'h2-alpha': Fraction(4, 1), 'C1': Fraction(12, 1), 'C2': Fraction(0, 1)} square 22

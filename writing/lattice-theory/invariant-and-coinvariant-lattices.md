@@ -1,4 +1,4 @@
-# Invariant and coinvariant lattices
+# Invariant and coinvariant lattices {#sec-invariant-coinvariant}
 
 ::: {.definition #def:invariant_coinvariant_lattices title="Invariants and coinvariants of integral group actions"}
 Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ and let $\rho\colon G\too\Orth(L)$ be an action of a finite group. The homomorphism $\rho$ makes $L$ a left module over the integral group ring $\bZ[G]$, with augmentation $\epsilon_G\colon\bZ[G]\too\bZ$ and augmentation ideal $J_G\definedas\ker(\epsilon_G)$.
@@ -328,6 +328,11 @@ C_{\generators{I}}\isoto A_S^\sharp\isoto A_T^\sharp,
 \ell(A_S^\sharp)=\ell(A_T^\sharp).
 $$
 The involution restricts to the identity on the discriminant quadratic module $A_{T,q}$.
+:::
+
+::: {.proof}
+
+The corollary specializes `thm:unimodular-finite-group-gluing` to the case of a single involution, where the group ring is Z[t]/(t^2-1) and the two gluing classes are the two eigenspace lattices of `prop:involution_eigenspaces`.
 :::
 
 ::: {.example #ex:swap-involution-u2 title="Exchange of two hyperbolic planes"}

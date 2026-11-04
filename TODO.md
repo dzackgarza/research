@@ -1,198 +1,900 @@
-# Preamble work issues
+# Outstanding mathematical problems
 
-Implement issue work directly on `main`. Use a branch only when parallel work
-requires a separate worktree. The [delivery policy](CONTRIBUTING.md#delivery-workflow)
-overrides `itree next`'s generic instruction to open a PR.
+Writing and mathematics only. Determined by reading `writing/`, not by collecting earlier lists. The
+book's own [open-problems chapter](writing/coble/open-problems/open-problems.md) is one input; several
+problems below are stated elsewhere in the corpus and never reach it, and one entry there rests on a
+hypothesis that fails for the lattice it is applied to. Code, tooling, and computation status are not
+in this file: library work is upstream
+([`sage-extensions` #7--#13](https://github.com/dzackgarza/sage-extensions/issues)) and evidence
+status is in [GAPS](writing/dissertation/GAPS.md).
 
-The live programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Order minimizes the work needed to complete the required programme, including rework. Shared correctness and construction, reusable mathematical operations, and required capability normally precede broad reviews and final acceptance. Advance a shared change when it removes or shortens named later repairs; reassess those repairs against their full acceptance after delivery. Performance and workflow repairs move earlier for observed costs on required work. Optional work follows required work.
+Three classes, because they need different things. **A** is mathematics nobody has. **B** is open
+in this programme: the answer is not known but a finite derivation or computation decides it.
+**C** is not open at all and should be repaired in the text.
 
-[AGENTS.md](AGENTS.md#execution-order) states the payoff and dependency rules. Milestone numbers retain their identities; native sibling order determines execution. Task contracts, hypotheses, specimens, acceptance and dependencies live in the issues. This file maps the former source identifiers to their current owners.
+## A. Open mathematics
 
-[INTENT.md](INTENT.md), [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) govern implementation. Issue [#414](https://github.com/dzackgarza/research/issues/414) retains the shared execution contract. Terminal acceptance [#498](https://github.com/dzackgarza/research/issues/498), including its continuation comments, and required-extension acceptance [#550](https://github.com/dzackgarza/research/issues/550) retain their complete obligations.
+**A1. The number of $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$** — the
+$0$-cusps of $\fco$. At least two (@lem:stable-orthogonal-not-transitive), no upper bound known.
+Equivalent for the discriminant kernel (@prop:discriminant-kernel-orbits), so one problem, not two.
+The Eichler criterion is unavailable because $T_\Co$ contains no $U$. The open content is the
+passage from the finite decomposition of $A_{T_\Co}$ back to the lattice: an integral parabolic
+stabilizer may have proper image in the finite one.
 
-Concrete repairs extracted from broader surveys are [minimal-prime loci #561](https://github.com/dzackgarza/research/issues/561), [indexed-family equality #562](https://github.com/dzackgarza/research/issues/562), [Coxeter construction #563](https://github.com/dzackgarza/research/issues/563), and [spinor-generator accumulation #564](https://github.com/dzackgarza/research/issues/564). Their original surveys or inventories depend on these repairs.
+**A2. The number of $\Gamma_\Co$-orbits of primitive isotropic planes of $T_\Co$** — the $1$-cusps
+of $\fco$. $\Orth^+(T_\Co)$ is transitive (@thm:plane-transitivity-tco); for $\Gamma_\Co$ nothing
+is known. The candidate separator is the subspace $\bar J\subseteq A_{T_\Co}$ a plane cuts out, and
+whether it separates is undecided. $A_{T_\Co}$ has $23\,715$ two-dimensional totally isotropic
+subspaces, so the invariant is far from constant but no computation has been made.
 
-## M1 — Shared correctness and daily mathematical constructions
+**A3. Explicit generators of $\Gamma_\Co$.** Split, and the split is now sharp.
+*Done, verified at the owner* (`computations/reports/coble_stabilizer_generators.py`): the integral
+stabilizer of the degree-$2$ polarization. With $S_\En = C(2)$, $h = u_0+w_0$ and
+$h^{\perp C} \cong \generators{-2}\oplus E_8(-1)$, the nine reflections in $u_0-w_0$ and in the eight
+simple roots of $E_8(-1)$ generate $\Orth(h^{\perp C})$ — completeness decided by the owner's own
+subgroup comparison, $\abs{\Orth(h^{\perp C})} = 1\,393\,459\,200 = 2\abs{W(E_8)}$ — and by
+@prop:polarization-stabilizer-enriques those nine are generators of $\Stab_{\Orth(S_\En)}(h)$. Their
+images under the discriminant representation generate $G \leq \Orth(A_{S_\En}, q_{S_\En})$ with
+$\abs{G} = 696\,729\,600 = \abs{W(E_8)}$, the order @thm:coble-heegner-finite-orbits (1) asserts (B2,
+whose order half this settles; its orbit lengths are untouched).
+*Done, partly*: $\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ is an owned subgroup object
+(`T.stable_orthogonal_group().intersection(T.O_plus())`), and so is the congruence preimage of the
+*cyclic* subgroup the witness generates, `T.Aut().discriminant_preimage(<rho(sigma)>)` — not of the
+prescribed $P$; that $\rho(\sigma)\in P$ is the block argument of @sec-gamma-co-comparison, and
+building $P$ as an object is a separate missing capability (A20 item 1). A genuine integral element of
+$\Gamma_\Co$ is exhibited:
+$\zeta+a_1\in T_\Co$ has square $-2$, so its reflection lies in
+$\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \Gamma_\Co$, confirmed by the owner's membership test.
+*Remaining*: generators of $\Gamma_\Co$ itself. The reflections of $T_\Co$ in its $(-2)$-vectors lie in
+$\Gamma_\Co$, and the owner confirms this for $\zeta+a_1$, but that is one element and not a generating
+statement. What the owner's contracts do and do not give here, checked rather than assumed:
+`Lattices.roots()` is the definite-lattice root set and refuses $T_\Co$ by contract, so its refusal says
+nothing about the $(-2)$-vectors of $T_\Co$; `reflective_root_locus` is documented as possibly infinite
+for an indefinite lattice; `possible_root_lengths()` gives $\{1,2,4\}$ for $T_\Co$; and
+`root_module_generating_set()` is a semi-decision for $L = \ZZ\Phi(L)$ on any signature, which concerns
+the module the roots generate and not $\Orth^+(L)$ being generated by reflections. Neither conclusion
+about generation by reflections is drawn. The obligation is two-part — an explicit reflective set, and a
+theorem that it with finitely many further isometries generates $\Gamma_\Co$ — and is the Vinberg-type
+statement the research report records as required and open (@prob:coxeter-completeness, B32–B34).
+Semantic handoffs if the owner wants the capabilities: one operation returning generators, or a
+finite-index certificate, for an intersection of predicate subgroups of $\Orth(L)$ of a $\ZZ$-lattice;
+and one returning the subgroup of $\Orth(A)$ preserving a given orthogonal decomposition of a finite
+torsion form, computed from the decomposition rather than by enumerating the subobject family (that
+route did not return in eight minutes at order $2048$ here). Nothing in research may substitute a
+locally implemented group algorithm or subobject enumeration for either.
 
-[Issue #417](https://github.com/dzackgarza/research/issues/417)
+**A4. $\Gamma_\Co = \widetilde O^+(T_\Co)$, and are the two definitions of $\Gamma_\Co$ one group?**
+First half settled and written down (@sec-gamma-co-comparison): $\Gamma_\Co=\Orth^+(T_\Co)^*$ and
+$\widetilde\Orth^+(L)=\ker(\rho_L,\chi_{\mathrm{sp}})$ coincide for $L=T_\Co$, because the book defines
+$\Orth^+(L)=\Theta_{\mathbb{R}}(L)$ and $\widetilde\Orth^+(L)$ as the pullback of
+$\widetilde\Orth(L)=\ker\rho_L$ along it; that is a substitution and carries no arithmetic content.
+Second half settled as far as it can be: the "second definition" was ill-typed, and its correction
+$\Gamma^\theta_\Co$ contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$, as does the
+Heegner group $\Gamma^{\mathrm{Hdg}}_\Co$, whose index over $\Gamma_\Co$ is
+$\abs{\rho_{T_\Co}(\Stab_{\gent}(\ZZ\delta))}\le\abs{W(E_8)}=696\,729\,600$
+(@prop:gamma-co-in-heegner-group, @prop:gamma-co-in-theta-centralizer). So the two definitions agree
+exactly when a finite subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ is trivial. The numerical bound
+$696\,729\,600$ is proved from @prop:polarization-stabilizer-enriques alone — the stabilizer there has
+order $2\abs{W(E_8)}$ and its reduction has $\id_U\oplus(-\id_{E_8})$ in the kernel — and the
+*equality* of the image with $\abs{W(E_8)}$, with the orbit lengths, is B2's unverified computation
+and is used nowhere in the new propositions. **Open:** compute those two finite subgroups — the
+missing input is explicit generators for $\gent$ (A3), after which it is a computation in a finite
+group of order $46\,998\,591\,897\,600$ and needs no geometry. Strictness of the two inclusions is
+open; by contrast the congruence group is *proved* strictly larger, see A20.
 
-The required [core migration #384](https://github.com/dzackgarza/research/issues/384) and [property/constructor integration #556](https://github.com/dzackgarza/research/issues/556) precede repairs to the transitional runtime they retire. Each layer reconciles its complete mathematics with `lean-categories`, its semantic execution with the `lean-cas-dsl` kernel, and its computations with leaf registrations. The affected issues retain unmet requirements on the final construction. The native tree also places shared finite-action and formed-module computations before their decorated-family consumers.
+**A5. Coble root-orbit uniqueness under $\gent$** (@qst:coble_root_orbit_uniqueness). Namikawa gives
+it for the full Enriques group; the polarized problem needs the finite-index subgroup $\gent$, for
+which it is not settled. Everything in the KSBA branch waits on it.
 
-| Source identifier | Issue |
-| --- | --- |
-| `mor-hom-expectation-ruling` | [#492](https://github.com/dzackgarza/research/issues/492) |
-| `core-property-construction` | [#556](https://github.com/dzackgarza/research/issues/556) |
-| `division-algebras-are-placed-by-construction` | [#451](https://github.com/dzackgarza/research/issues/451) |
-| `ring-sizes-follow-construction` | [#450](https://github.com/dzackgarza/research/issues/450) |
-| `effective-categorical-constructions` | [#428](https://github.com/dzackgarza/research/issues/428) |
-| `pullbacks-in-every-category` | [#514](https://github.com/dzackgarza/research/issues/514) |
-| `named-notions-unfolded-population` | [#485](https://github.com/dzackgarza/research/issues/485) |
-| `modules-over-a-group-algebra-keep-the-module-axioms` | [#443](https://github.com/dzackgarza/research/issues/443) |
-| `modules-call-on-a-set-is-the-free-module` | [#461](https://github.com/dzackgarza/research/issues/461) |
-| `cat-declares-the-owned-objects` | [#470](https://github.com/dzackgarza/research/issues/470) |
-| `arrows-compare-through-richcmp` | [#453](https://github.com/dzackgarza/research/issues/453) |
-| `an-object-lies-in-several-slices` | [#468](https://github.com/dzackgarza/research/issues/468) |
-| `module-and-algebra-slice-objects-lie-in-their-slice` | [#469](https://github.com/dzackgarza/research/issues/469) |
-| `every-arrow-is-an-element-of-its-mor` | [#454](https://github.com/dzackgarza/research/issues/454) |
-| `objects-of-sets-answer-their-endomorphisms` | [#458](https://github.com/dzackgarza/research/issues/458) |
-| `maximal-and-prime-ideals-are-presented` | [#444](https://github.com/dzackgarza/research/issues/444) |
-| `native-rings-are-constructed-not-adopted` | [#447](https://github.com/dzackgarza/research/issues/447) |
-| `adopted-rings-declare-their-construction-data` | [#467](https://github.com/dzackgarza/research/issues/467) |
-| `objects-ask-the-mor-of-their-ambient-category` | [#435](https://github.com/dzackgarza/research/issues/435) |
-| `graded-modules-ask-their-mor-of-the-endpoints` | [#457](https://github.com/dzackgarza/research/issues/457) |
-| `equivariant-module-maps-give-their-natural-transformation` | [#456](https://github.com/dzackgarza/research/issues/456) |
-| `restricted-algebras-are-restricted-modules` | [#478](https://github.com/dzackgarza/research/issues/478) |
-| `internal-mor-inclusion-starts-at-the-mor-module` | [#479](https://github.com/dzackgarza/research/issues/479) |
-| `restricted-mors-decide-membership-by-their-predicate` | [#481](https://github.com/dzackgarza/research/issues/481) |
-| `algebra-arrows-are-ring-arrows` | [#459](https://github.com/dzackgarza/research/issues/459) |
-| `power-algebra-identity` | [#460](https://github.com/dzackgarza/research/issues/460) |
-| `unital-algebras-supply-their-unit` | [#462](https://github.com/dzackgarza/research/issues/462) |
-| `derivation-spaces-read-declared-data` | [#463](https://github.com/dzackgarza/research/issues/463) |
-| `group-resolution-augmentation-terminates` | [#464](https://github.com/dzackgarza/research/issues/464) |
-| `augmented-algebras-retain-their-defining-data` | [#483](https://github.com/dzackgarza/research/issues/483) |
-| `finite-galois-stages-answer-as-their-fields` | [#484](https://github.com/dzackgarza/research/issues/484) |
-| `infinite-index-additive-product-placement` | [#430](https://github.com/dzackgarza/research/issues/430) |
-| `centres-of-algebras-on-infinitely-generated-modules` | [#452](https://github.com/dzackgarza/research/issues/452) |
-| `abelian-groups-are-z-modules` | [#533](https://github.com/dzackgarza/research/issues/533) |
-| `rings-of-integers-are-dedekind-by-construction` | [#449](https://github.com/dzackgarza/research/issues/449) |
-| `covering-families-cover-their-space` | [#471](https://github.com/dzackgarza/research/issues/471) |
-| `gluing-accepts-isomorphisms-on-overlaps` | [#472](https://github.com/dzackgarza/research/issues/472) |
-| `base-change-structure-morphisms-land-in-their-mor` | [#473](https://github.com/dzackgarza/research/issues/473) |
-| `native-free-algebras-answer-their-variable` | [#474](https://github.com/dzackgarza/research/issues/474) |
-| `nonaffine-structure-sheaf-coverage` | [#499](https://github.com/dzackgarza/research/issues/499) |
-| `sheaves-compute-sections-on-opens` | [#500](https://github.com/dzackgarza/research/issues/500) |
-| `arrow-class-subcategories-admit-their-arrows` | [#477](https://github.com/dzackgarza/research/issues/477) |
-| `marked-schemes-construct-on-the-owner-route` | [#476](https://github.com/dzackgarza/research/issues/476) |
-| `symbolic-expressions-are-no-owned-ring` | [#446](https://github.com/dzackgarza/research/issues/446) |
-| `the-real-line-is-a-smooth-manifold` | [#434](https://github.com/dzackgarza/research/issues/434) |
-| `function-spaces-are-subobjects-of-mor` | [#433](https://github.com/dzackgarza/research/issues/433) |
-| `group-categories-defined-by-data` | [#432](https://github.com/dzackgarza/research/issues/432) |
-| `lattice-mor-stays-in-the-preamble` | [#482](https://github.com/dzackgarza/research/issues/482) |
-| `brauer-characters-are-maps-on-p-regular-elements` | [#480](https://github.com/dzackgarza/research/issues/480) |
-| `coxeter-diagrams-construct-from-their-data` | [#439](https://github.com/dzackgarza/research/issues/439) |
-| `coxeter-diagram-orders-are-owned-posets` | [#441](https://github.com/dzackgarza/research/issues/441) |
-| `partially-ordered-sets-have-monotone-maps` | [#442](https://github.com/dzackgarza/research/issues/442) |
+**A6. The quarter singularity $\tfrac14(1,1)$** (@conj:coble_quarter_singularity). Stated as the
+local model for an $A_1$-node of the K3 cover fixed by $\ien$; the text says plainly it "remains
+unproved; it is precisely the input awaited by the slc and ampleness verifications".
 
-## Reusable lattice and group computations
+**A7. KSBA versus semitoroidal** (@conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss), open on
+four counts the chapter enumerates: A5, the ramification-semifan restriction identity, the injection
+that the stable quotient determines its marked root, and an explicit cusp computation.
 
-[Issue #415](https://github.com/dzackgarza/research/issues/415)
+**A8. The admissibility test for Coble roots at a cusp** (@qst:coble_cusp_admissibility). Sterk
+cusps $3$ and $5$ are the delicate cases. Without it the boundary dictionaries in the preliminary
+KSBA work stay unverified.
 
-| Source identifier | Issue |
-| --- | --- |
-| `construction-cost-on-resumed-routes` | [#422](https://github.com/dzackgarza/research/issues/422) |
-| `port-configurations-cones-and-integral-lifts` | [#423](https://github.com/dzackgarza/research/issues/423) |
+**A9. Is $\mch^*_{10A_1}$ empty?** (@qst:coble-arrangement-empty). Decides whether the GIT
+compactification of ten-nodal sextics is Baily–Borel or a proper semitoroidal model strictly between.
+A reduction is recorded (roots of the sextic have divisibility $1$ in $\Lambda_1$), leaving
+divisibility-two roots of $\Lambda_1$ whose hyperplane meets $D(T_\Co)$ properly.
 
-## Specialized port computation and acceptance
+**A10. The position of the three semifans** (@qst:semifan-poset-position): Coxeter, KSBA, Looijenga.
+Depends on A9, and includes tracing a named degeneration — a double cubic, say — to the $0$-cusp
+$(9,9,1)_1$ or the $1$-cusp $(7,7,1)_0$.
 
-[Issue #416](https://github.com/dzackgarza/research/issues/416)
+**A11. The reflection subgroup bounding each published Sterk diagram**
+(@qst:sterk-reflection-subgroup, @qst:sterk-ideal-vertices). The quotients for $j=2,3,4,5$ are
+mutually isometric, so their full Weyl groups are conjugate and cannot explain four inequivalent
+published diagrams with $10,12,11,14$ walls. The missing datum is the subgroup induced by the
+stabilizer of $\eta_j$ in the ambient arithmetic group, and the index is a covolume ratio that no
+Euler characteristic supplies — in odd dimension it vanishes.
 
-| Source identifier | Issue |
-| --- | --- |
-| `port-rank-three-isotropic-traversal` | [#424](https://github.com/dzackgarza/research/issues/424) |
-| `port-nonscalar-component-centralizers` | [#425](https://github.com/dzackgarza/research/issues/425) |
-| `port-handoff-frozen-acceptance` | [#426](https://github.com/dzackgarza/research/issues/426) |
+**A12. An equivariant triangulation of the integral affine sphere compatible with the marked root**
+(@qst:equivariant_triangulation). Absent it, the marked-root prescription is a principle rather than
+a model.
 
-## M4 — Required mathematical expansion
+**A13. The horizontal folding involution in coordinates** — the $22\times22$ matrix of $\theta_\Co$ on
+$U^3\oplus E_8^2$, with the polarization classes and the diagram's roots compared in that basis.
+Existence and the eigenlattices are proved (@prop:theta-co-exists); the coordinates, the gluing
+anti-isometry, and the comparison to $\Gamma_\Co^\En(\delta)$ are not.
 
-[Issue #420](https://github.com/dzackgarza/research/issues/420)
+**A14. Scattone's diagram versus AET19's.** Scattone's Figure 6.3.1 and AET19's diagram for the
+$(18,2,0)$ lattice should be the same and reportedly are not; how they differ, and which is right, is
+unresolved. Everything derived from $\Phi_{(18,2,0)}$ — including the folded Sterk diagrams and
+A13's matrix — inherits whatever the discrepancy is.
 
-| Source identifier | Issue |
-| --- | --- |
-| `geometry-stub-operations-compute` | [#501](https://github.com/dzackgarza/research/issues/501) |
-| `orthogonal-groups-of-direct-sums` | [#506](https://github.com/dzackgarza/research/issues/506) |
-| `higher-rank-integral-lattice-representation` | [#505](https://github.com/dzackgarza/research/issues/505) |
-| `lattice-glue-stabilizers` | [#515](https://github.com/dzackgarza/research/issues/515) |
-| `filtered-objects-and-associated-graded` | [#534](https://github.com/dzackgarza/research/issues/534) |
-| `filtered-scalar-extension-and-conjugation` | [#535](https://github.com/dzackgarza/research/issues/535) |
-| `pure-and-mixed-hodge-structures` | [#536](https://github.com/dzackgarza/research/issues/536) |
-| `hodge-tensors-pairings-and-polarizations` | [#537](https://github.com/dzackgarza/research/issues/537) |
-| `k3-hodge-and-partner-foundations` | [#532](https://github.com/dzackgarza/research/issues/532) |
-| `hodge-lattice-isometries` | [#538](https://github.com/dzackgarza/research/issues/538) |
-| `hodge-isometry-subgroup-computation` | [#539](https://github.com/dzackgarza/research/issues/539) |
-| `k3-surfaces-and-cohomology` | [#540](https://github.com/dzackgarza/research/issues/540) |
-| `genus-finiteness-parity-and-classification` | [#531](https://github.com/dzackgarza/research/issues/531) |
-| `pontryagin-duality` | [#512](https://github.com/dzackgarza/research/issues/512) |
-| `group-exact-sequences-and-homology` | [#513](https://github.com/dzackgarza/research/issues/513) |
-| `signed-discriminant-lifting-obstructions` | [#542](https://github.com/dzackgarza/research/issues/542) |
-| `k3-ample-cones-and-stabilizers` | [#541](https://github.com/dzackgarza/research/issues/541) |
-| `k3-automorphisms-by-torelli` | [#543](https://github.com/dzackgarza/research/issues/543) |
-| `k3-fourier-mukai-partner-count` | [#545](https://github.com/dzackgarza/research/issues/545) |
-| `k3-families-on-threefolds` | [#544](https://github.com/dzackgarza/research/issues/544) |
-| `k3-brauer-groups-and-classes` | [#546](https://github.com/dzackgarza/research/issues/546) |
-| `k3-mukai-lattices-and-vectors` | [#547](https://github.com/dzackgarza/research/issues/547) |
-| `k3-sheaf-moduli-and-caldararu-classes` | [#548](https://github.com/dzackgarza/research/issues/548) |
-| `discriminant-lagrangian-elements-and-subsets` | [#549](https://github.com/dzackgarza/research/issues/549) |
-| `complex-realization-is-a-functor` | [#527](https://github.com/dzackgarza/research/issues/527) |
-| `complete-intersection-hodge-sources` | [#528](https://github.com/dzackgarza/research/issues/528) |
-| `complete-intersection-hodge-structure` | [#529](https://github.com/dzackgarza/research/issues/529) |
-| `optional-manifold-tangent-bundles` (historical identifier; required by #520) | [#553](https://github.com/dzackgarza/research/issues/553) |
-| `simplicial-and-cw-foundations` | [#517](https://github.com/dzackgarza/research/issues/517) |
-| `integral-affine-polyhedral-p1` | [#518](https://github.com/dzackgarza/research/issues/518) |
-| `integral-affine-polyhedral-p2` | [#519](https://github.com/dzackgarza/research/issues/519) |
-| `integral-affine-polyhedral-p3` | [#520](https://github.com/dzackgarza/research/issues/520) |
-| `integral-affine-polyhedral-p4` | [#521](https://github.com/dzackgarza/research/issues/521) |
-| `integral-affine-polyhedral-p5` | [#522](https://github.com/dzackgarza/research/issues/522) |
-| `integral-affine-polyhedral-p6` | [#523](https://github.com/dzackgarza/research/issues/523) |
-| `modular-form-spaces-with-character` | [#502](https://github.com/dzackgarza/research/issues/502) |
-| `theta-cusp-form-coordinates` | [#503](https://github.com/dzackgarza/research/issues/503) |
-| `definite-representation-exceptions` | [#504](https://github.com/dzackgarza/research/issues/504) |
-| `modular-forms-and-hecke-algebras` | [#525](https://github.com/dzackgarza/research/issues/525) |
-| `higher-signature-reflection-engine-ruling` | [#509](https://github.com/dzackgarza/research/issues/509) |
-| `higher-signature-reflection-group-search` | [#508](https://github.com/dzackgarza/research/issues/508) |
-| `hyperbolic-restricted-reflection-engine-ruling` | [#511](https://github.com/dzackgarza/research/issues/511) |
-| `hyperbolic-restricted-norm-reflection-groups` | [#510](https://github.com/dzackgarza/research/issues/510) |
-| `lattice-reflection-groups` | [#507](https://github.com/dzackgarza/research/issues/507) |
-| `coxeter-group-structure` | [#516](https://github.com/dzackgarza/research/issues/516) |
-| `coxeter-complexes-and-buildings` | [#524](https://github.com/dzackgarza/research/issues/524) |
-| `satake-diagrams-present-real-forms` | [#526](https://github.com/dzackgarza/research/issues/526) |
-| `prime-prolongations-from-p-adic-embeddings` | [#466](https://github.com/dzackgarza/research/issues/466) |
-| `geometric-cards-store-betti-numbers` | [#530](https://github.com/dzackgarza/research/issues/530) |
+**A15. The strong $\Gamma_\Co$-lifting in the cusp correspondence.** Weak (pointwise orbit)
+compatibility is proved; equivariance and stabilizer comparison need a homomorphism.
 
-## M2 — API review and retained core closure
+**A16. Vector-level transitivity for $\latI_{1,8}$.** Lines only, by
+@prop:rank-nine-line-transitivity. For $(2,9)$ it follows because $-\id\in\Orth^+$ supplies the sign;
+$(1,8)$ is where that fails.
 
-[Issue #418](https://github.com/dzackgarza/research/issues/418)
+**A17. The global questions on hyperbolic Coxeter diagrams** (@qst:maximal-parabolic-complexity,
+@conj:galois-invariance-parabolics, @qst:parabolic-count-growth, @qst:arithmeticity,
+@qst:exact-covolume, @qst:regularized-theta). Genuinely open in the literature, not only here: the
+cost of finding maximal parabolic subdiagrams, Galois invariance of their count, its growth with
+rank, arithmeticity from the diagram, exact covolumes in odd dimension, and a regularized theta
+series for an indefinite lattice.
 
-| Source identifier | Issue |
-| --- | --- |
-| `resolution-truncations-in-the-session` | [#465](https://github.com/dzackgarza/research/issues/465) |
-| `placement-audit` | [#429](https://github.com/dzackgarza/research/issues/429) |
-| `engine-wiring-audit` | [#431](https://github.com/dzackgarza/research/issues/431) |
-| `membership-replaces-dynamic-peeking` | [#436](https://github.com/dzackgarza/research/issues/436) |
-| `session-objects-are-built-by-their-parents` | [#440](https://github.com/dzackgarza/research/issues/440) |
-| `literal-sets-route-by-membership` | [#475](https://github.com/dzackgarza/research/issues/475) |
-| `construction-is-instant` | [#437](https://github.com/dzackgarza/research/issues/437) |
-| `daily-core-exercises` | [#438](https://github.com/dzackgarza/research/issues/438) |
-| `architecture-remediation` | [#486](https://github.com/dzackgarza/research/issues/486) |
-| `core-usability-session` | [#487](https://github.com/dzackgarza/research/issues/487) |
-| `constructor-discovery` | [#491](https://github.com/dzackgarza/research/issues/491) |
-| `refactor-audit` | [#488](https://github.com/dzackgarza/research/issues/488) |
-| `type-paydown` | [#489](https://github.com/dzackgarza/research/issues/489) |
-| `bloat-audit-loop` | [#490](https://github.com/dzackgarza/research/issues/490) |
-| `minimal-api-freeze` | [#493](https://github.com/dzackgarza/research/issues/493) |
+**A18. The autonomous Coble programme.** The research report states the full chain of "required
+theorems" for deriving the compactification: A1–A8 for the Heegner strategy, B2.1–B7.1 for the
+autonomous strategy, C1–C5 for the reflection-folding route. They are enumerated at A31 below, where
+the ones carrying independent mathematical content are separated out.
 
-## M3 — Complete mathematical acceptance
+**A19. Dawes' Example 2.2 disagrees with the in-tree computation** (@qst:dawes-example-22). The
+paper concludes $v_1\sim v_2$ in $U\oplus A_3$; the computation returns $v_1\not\sim v_2$ because
+the complements have different discriminants. Unequal discriminants refute equivalence under
+$\Orth(L)$ and every subgroup, whatever isometry test runs downstream, so the disagreement is not a
+tooling artefact — it lies in the paper's conclusion, the transcription, or the computed
+complements. The squares are consistent with the stated Gram matrices, which clears the
+transcription of the vectors; recomputing the two complements settles the rest. This matters beyond
+the example: Algorithm 2.3 of the same paper is the published route to A1.
 
-[Issue #419](https://github.com/dzackgarza/research/issues/419)
+**A20. The four arithmetic groups are not known to coincide** (@prob:group-identification, the
+research report's §"Four arithmetic groups that must not be conflated"). Reduced, not closed. Proved
+(@sec-gamma-co-comparison): $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ contains $\Gamma_\Co$ as the kernel of its
+action on $A_{T_\Co}$, with quotient $\rho_{T_\Co}(\Stab_{\gent}(\ZZ\delta))$ of order
+$\le\abs{W(E_8)}=696\,729\,600$ (from @prop:polarization-stabilizer-enriques, not from B2); the
+Coble-side centralizer group $\Gamma^\theta_\Co$ likewise; and $\Gamma^{\mathrm{cong}}_{\Co,2}$ is a
+genuine overgroup of $\ker\rho_{T_\Co}$ whose quotient $\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ is
+nontrivial. Nontriviality of that quotient does not by itself give strictness — a preimage exceeds the
+kernel only if some element of the quotient is realised by an integral isometry — but here one is
+proposed and its required properties are verified through the owner's operations:
+`computations/reports/coble_congruence_witness.py` builds the transposition of the two isotropic
+generators of the $U(2)$ summand as `Lattices.reflection(e' - f')`, decides its membership in `O_plus`
+and in `stable_orthogonal_group` with those groups, takes the classes with `discriminant_class` of
+`primitive_dual`, and computes the action with `discriminant_morphism`, finding $\sigma\in\Orth^+(T_\Co)$,
+$\sigma\notin\ker\rho$, $q([e'/2]) = q([f'/2]) = 0$, $q([\zeta/2]) = 1/2$,
+$b([e'/2],[f'/2]) = 1/2$, and $|A_{T_\Co}| = 2048 = |\det T_\Co|$. That $\rho(\sigma)$ lies in the
+*prescribed* $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$ is the block argument — the transposition is
+an isometry of the $U(2)$ block and the identity on the other two — and not a computation of $P$; what
+the owner builds on the congruence side is $\rho^{-1}(\generators{\rho(\sigma)})$, the preimage of the
+cyclic subgroup, which is contained in $\rho^{-1}(P)$ by that argument
+(`computations/reports/coble_stabilizer_generators.py`). So
+$\Gamma^{\mathrm{cong}}_{\Co,2}$ **strictly** contains $\Gamma_\Co$, while strictness for
+$\Gamma^{\mathrm{Hdg}}$ and $\Gamma^\theta_\Co$ is open and no witness is proposed for either. What remains, with the exact missing
+hypothesis in each case:
 
-| Source identifier | Issue |
-| --- | --- |
-| `triage-long-tail` | [#496](https://github.com/dzackgarza/research/issues/496) |
-| `suite-compactification` | [#494](https://github.com/dzackgarza/research/issues/494) |
-| `category-method-coverage-sweep` | [#495](https://github.com/dzackgarza/research/issues/495) |
-| `suite-within-time-gates` | [#497](https://github.com/dzackgarza/research/issues/497) |
-| `terminal-session` | [#498](https://github.com/dzackgarza/research/issues/498) |
-| `resumed-handoff-delivery` | [#427](https://github.com/dzackgarza/research/issues/427) |
-| `extended-mathematics-session` | [#550](https://github.com/dzackgarza/research/issues/550) |
+1. $\Gamma^{\mathrm{Hdg}}$ vs $\Gamma^{\mathrm{cong}}$: compare two subgroups of the finite group
+   $\Orth(A_{T_\Co},q_{T_\Co})$; needs explicit generators for the $\delta$-stabilizer inside $\gent$
+   (A3) and for the Coble-side centralizer. A finite computation once those exist, no geometry in it.
+   Blocked upstream, on two owner capabilities. Both now have exact specimens; nothing is patched or
+   worked around in research.
 
-## M5 — Optional research extensions
+   *(a) `discriminant_representation_is_surjective()` on $T_\Co$: a pinned-provider failure, not
+   reproduced on a later provider.* The historical record stands: at provider `c546077d`, Sage
+   11.0.beta5, the call raises, with the traceback in
+   `computations/reports/coble_tco_surjectivity_specimen-run.txt` — from `lattices.py:3243` through
+   `discriminant_image`, `group_generators`, `selected_group_resolution`, the automorphism-generator
+   route and `sage_indefinite_port`'s `eichler.py`, failing in `recursive.py:154` at
+   `int(coordinates(label))` with `TypeError: … not 'OwnedJoinCategory.element_class'`. The same
+   specimen returns `True` for $S_\Co$ and $M$ at that pin, so the failure was specific to the
+   indefinite Eichler generator route.
+   *Later-provider evidence, from the port.* `dzackgarza/sage-indefinite-port@fd63f677`, files
+   `.tmp/probe-tco-specimen.py`, `.tmp/log-tco-current.txt`, `.tmp/acceptance-coverage.md`: the
+   specimen reproduced verbatim from this repository at `a145cea4` — same construction
+   `Lattices(ZZ)([list(row) for row in GRAM.rows()])`, giving rank 11, determinant $-2048$, signature
+   $(2,9)$, even — returns `True` under provider `565fc6b9929ba1c7a131d38b6135443bcce64093`
+   with Sage 11.0.beta5 and a 6144 MiB guard, with both controls `True`; `child waited=0
+   shell_code=0 samples=867`, wall about 29 minutes, peak tree RSS 4239 MiB (julia 3306, python 1161),
+   host low-water 9071 MiB. The old-pin site now reads through `_integer` (port commit `ab140b70`), so
+   no repair is needed for this operation and none was made.
+   *Provenance caveat, kept as published.* The log header prints the port engine revision as
+   `44dc4d6c3e1261ec3c32b933392e9c29fa3917f8:87fbf863c413…`; the coverage document's provenance note
+   records that the executed working tree is commit `06bc9562` with src
+   `965041fd64e6cad6d0a7f4cebff69ef28f06b0f5` — that is `87fbf863` plus one repair — while its line 184
+   still prints the pre-commit pair. The row is therefore tied to the working-tree content, not to the
+   hash its header echoes.
+   *What this does and does not establish.* It shows the pinned runtime failure does not reproduce on a
+   later provider. It is not retroactive validation of the pinned run, it is not a $T_\En$ rerun, and it
+   establishes nothing about generator completeness, about equality of any of the arithmetic groups, or
+   about any other A20 or A21 obligation: the mathematical content of the step remains
+   @thm:two-elementary-surjectivity, cited as a theorem. Nothing was rerun here for the bookkeeping.
+   *(b) Torsion forms have `is_isometric_to` but no explicit isometry constructor*, so no anti-isometry
+   $A_{S_\En}\to A_{T_\En}$ with $q_{T_\En}\circ\gamma = -q_{S_\En}$ can be produced explicitly;
+   `A_S.is_isometric_to(A_T)` returns `True`, which is the untwisted statement. Expected operation: an
+   explicit isometry constructor on torsion quadratic forms, twisted variant included.
 
-[Issue #421](https://github.com/dzackgarza/research/issues/421)
+2. $\Gamma^{\mathrm{dir}}$ vs the other two: was to need an isometry of $\lkt$ carrying the Coble-labeled
+   datum to the Enriques-labeled one with $\tilde h_\Co\mapsto h$. The *unlabelled* comparison of the two
+   polarizations is now settled in the affirmative: for an admissible $h_\Co\in K_S^\perp$, verified
+   against the criterion of @prop:canonical-perp-is-e10, the two polarization complements are isometric
+   and the glue classes match, so by Nikulin's criterion the two polarized lattices are matched by an
+   isometry carrying $\tilde h_\Co$ to $h$; the earlier obstruction, computed from $H+E_1$ with
+   $D\cdot K_S=-4$, concerned inadmissible markings and is withdrawn. What remains is under A21: the
+   labels and the ambient extension. A20 item 1 is untouched.
+3. $\Gamma^{\mathrm{geom}}$: needs the direct global Torelli and direct monodromy theorems (@prob:B24,
+   @prob:B25), i.e. a direct period theorem. Not a lattice statement at all.
 
-| Source identifier | Issue |
-| --- | --- |
-| `optional-framed-manifolds` | [#551](https://github.com/dzackgarza/research/issues/551) |
-| `optional-brauer-manin-obstructions` | [#552](https://github.com/dzackgarza/research/issues/552) |
-| `optional-random-lattices-of-given-invariants` | [#554](https://github.com/dzackgarza/research/issues/554) |
-| `optional-moduli-of-stable-curves` | [#555](https://github.com/dzackgarza/research/issues/555) |
-| `optional-database` | [#557](https://github.com/dzackgarza/research/issues/557) |
-| `optional-engine` | [#558](https://github.com/dzackgarza/research/issues/558) |
+The report's trap stands: defining one of them to be "the group for which the desired semifan works"
+is circular. Every other Coble statement inherits whichever group it was stated for.
+
+**A21. Labeled Coble rigidity** (@prob:coble-rigidity). Two labeled tuples
+$(L_{K3}, I_\Co, I_{\mathrm{dP}}, H, \alpha, \mathcal C)$ arising from the projective construction
+should be conjugate by an element of $\Orth(L_{K3})$ preserving the labels. This is strictly stronger
+than uniqueness of the primitive embedding of $S_\Co$, and without it no direct period quotient is
+coordinate-independent. Still open, and it is a Coble-to-Coble statement; the representative of its del Pezzo slot carried by the
+two isotropic summands is a lattice isometry rather than the action of an automorphism of the cover, which is a
+proved restriction on that representative and not a weakening of the conjugacy question
+(@cor:no-del-pezzo-involution-coble-cover).
+
+The *Coble-to-Enriques* comparison that A20(2) cites it for is a different statement, and its unlabelled
+part is settled affirmatively (`computations/reports/coble_labeled_embedding.py`).
+
+*Admissibility, verified against the defining source.* With $K_S = -3H+\Sum_i E_i$
+(@prop:canonical-perp-is-e10) and its criterion $\Sum_i b_i = 3a$ for $D = aH - \Sum_i b_i E_i$, the
+classes $F_1 = 3H-(E_1+\dots+E_9)$ and $F_2 = 3H-(E_1+\dots+E_8+E_{10})$ are isotropic, orthogonal to
+$K_S$, and satisfy $F_1\cdot F_2 = 1$, so $h_\Co = F_1+F_2$ lies in $K_S^\perp$ with $a = 6$,
+$\Sum_i b_i = 18$ and $h_\Co^2 = 2$; its pullback has square $4$.
+
+*Complements, and the complement identity by determinants.* $M = T_\Co^{\perp\lkt}$ equals
+$S_\En\oplus\ZZ\delta$ because $\det T_\Co = 2^{11}$, $\det(T_\Co^{\perp\lkt}) = \det T_\Co$ in the
+unimodular $\lkt$, and $\det(S_\En\oplus\ZZ\delta) = 2^{10}\cdot 2 = 2^{11}$ with containment. The
+embedding indices are $[\lkt : S_\En\oplus T_\En] = \abs{A_{S_\En}} = 2^{10}$ and
+$[\lkt : S_\Co\oplus T_\Co] = 2^{11}$, both read off the discriminant orders of the gluing
+anti-isometries; an earlier version asserted index $2$ for the Enriques side without a source, and that
+is withdrawn (`computations/reports/coble_embedding_index.py`). Both polarization complements have rank
+$10$, determinant $2048$, signature $(0,10)$ and $2$ roots, and `is_isometric_to` returns `True`.
+
+*The marked pair, decided.* By Nikulin an isometry carrying $\tilde h_\Co$ to $h$ exists iff some isometry
+$\tilde h_\Co^{\perp}\to h^{\perp}$ carries the glue class of one to that of the other, both classes having
+order $2$; through the represented action of $\Orth(\tilde h_\Co^{\perp})$ (order $2\,786\,918\,400$, $22$
+generators, image of order $696\,729\,600$ in $\Orth(A)$) restricted along the subgroup inclusion, the glue
+class of $S_\Co$ and the transport of that of $M$ lie in one orbit — `in_same_orbit` returns `True`. So the
+two polarized lattices are matched by an isometry carrying $\tilde h_\Co$ to $h$.
+
+*What is missing.* (i) The labels. The root is identified at coordinate level only: the two vectors of
+$\tilde h_\Co^{\perp}$ are $\pm(3f^*H-\Sum_i f^*E_i)$, whose preimages in $\Pic(S)$ are
+$\pm(3H-\Sum_i E_i) = \mp K_S$, a $(-1)$-class, by @prop:coble-invariant-lattice's dictionary
+(`computations/reports/coble_root_effectivity.py`). **Effectivity, settled by the ramification divisor.** [@DK13, §3]
+(`references/literature/lattice-research/dolgachev_kondo_2013.md`): a Coble surface is a smooth rational
+projective surface with $\abs{-K_S} = \emptyset$ and $\abs{-2K_S}\neq\emptyset$, namely the blowup at the
+ten nodes of an irreducible plane sextic $C$; so $-K_S$ is an integral class that is ineffective, and the
+configuration is not ten points on a cubic. Branch and ramification are distinct: the branch divisor is
+$C\subset S$ with $[C] = 6H-2\Sum_iE_i = -2K_S$, the ramification divisor is $R = f^{-1}(C)\subset X$, and
+a double cover satisfies $f^*[C] = 2[R]$. Hence $[R] = \tfrac12f^*[C] = f^*(-K_S) = \alpha$: $\alpha$ is
+the class of the ramification curve, effective with a geometric witness. The sign is fixed too, $-\alpha$
+being $[R']$ for no effective $R'$ (else $R+R'$ principal with both terms effective and nonnegative), so the
+retained root is $+\alpha = 3f^*H-\Sum_i f^*E_i$, and $2\alpha = f^*[C] = 2[R]$ is effective as twice $R$ —
+the three statements are consistent. The coordinate check certifies none of this; it only fixes the two
+roots and their preimages. The tuple's $H$ is the degree-$4$ class $\tilde h_\Co$, not the plane-line class.
+**Still open in the chamber:** the nefness of $h_\Co$, which is a question about a class and not a separate
+question about $H$: nefness and bigness are numerical, and for the finite cover $f$ the pullback
+$H = f^*h_\Co$ is nef and big exactly when $h_\Co$ is, bigness then following from $h_\Co^2 = 2 > 0$.
+@def:coble-polarization-classes requires only $F_i^2 = 0$, $F_1\cdot F_2 = 1$ of the isotropic summands,
+so nefness is a premise that no source here supplies. The chamber obligation stays open with that premise
+named. $I_\Co = -\theta_\Co$ **needs no gluing data**: both
+discriminant forms are $2$-elementary, so $(+\id_{S_\Co},-\id_{T_\Co})$ preserves every isotropic gluing
+subgroup (@prop:theta-co-exists), and its action on $H$ is that of $+\id_{S_\Co}$, verified at the owner as
+an isometry of $S_\Co\perp T_\Co$ fixing $H$. Still missing: the chamber's nefness premise and the labeling of $I_{\mathrm{dP}}$ — which *is* lattice data in the primary source, contrary to an earlier note
+here: AEGS `def:involutions` gives $I_{\mathrm{dP}}(v,u,u',e,e') = (-v,u',u,-e,-e')$ with eigenspaces
+$S_{\mathrm{dP}} = \Delta(U) = U(2)$ and $T_{\mathrm{dP}} = U\oplus\Delta^-(U)\oplus E_8^2$, and the owner
+confirms those eigenspaces act by $+1$ and $-1$ and that AEGS's Enriques pair is the book's
+$S_\En, T_\En$ with $[L : S_\En\oplus T_\En] = 2^{10}$
+(`computations/reports/coble_aegs_involutions.py`). What was a *labeling* statement is now decided, negatively and by a forced marking rather
+than by a missing one: [@DK13, section 3] names the classes $e_0 = f^*H$ and $e_i = f^*E_i$, which are classes
+in the basis this book already uses, so $M_X = f^*\Pic(S) = S_\Co$ and $N_X = T_\Co$ by rank and determinant;
+in that basis $H = 6e_0-2\Sum_{i\le8}e_i-e_9-e_{10}$ and $\alpha = 3e_0-\Sum_{i=1}^{10}e_i$. The
+isometry in question — $+1$ on the primitive $U(2)$ spanned by $f^*F_1$, $f^*F_2$, the only one inside $S_\Co$ by the
+enumeration recorded below —
+which contains $H$, and $-1$ on its complement — sends $\alpha$ to $-\alpha$, and $\alpha$ is effective while
+$-\alpha$ is not, so no automorphism of the cover acts as it does. That is the whole of the rank-two case, not one candidate among several:
+`computations/reports/coble_del_pezzo_placement.py` enumerates the isotropic classes of $S_\Co$ pairing $2$
+against $H$ on the negative definite complement $H^{\perp}\cap S_\Co$ — complete, since the provider's
+`elements_of_norm` returns the whole square fibre on definite lattices — and finds exactly $f^*F_1$ and
+$f^*F_2$. So every primitive $U(2)$ inside $S_\Co$ containing $H$ contains one of them, hence both, hence is
+their span: there is no other contained placement for $\alpha$ to escape to. An earlier version of this
+paragraph supposed there might be, which was wrong. What is *not* decided is the case where the slot is not
+contained in $S_\Co$ at all (see below), and every geometric question: any admissible isometry is $-\id$ on a
+complement containing the transcendental lattice, hence a Hodge isometry for every member of the family, and
+the remaining question is whether it preserves the Kähler cone.
+**What the authored tuple requires at this slot, and what the abstract reading adds.** The authored five
+hypotheses are authoritative and geometric (quoted in `docs/a21-tuple-hypotheses.md` with the baseline commit):
+commuting nonsymplectic involutions, $H^2 = 4$ fixed by both, $\alpha^2 = -2$ with $H\cdot\alpha = 0$ and
+$\alpha$ fixed by $I_\Co$, the chamber $\mcc$ in which $\alpha$ is effective and $H$ is nef and big, and the
+product's symplectic character; and the problem is stated for tuples "arising from the direct projective
+construction". A weaker, purely lattice reading asks for an involution of $L_{K3}$ with invariant lattice
+$\sdp\cong U(2)$, containing $H$, commuting with $I_\Co$; that reading is what is analysed in the manuscript and
+it is labelled as such throughout — the geometric requirement is not replaced by it.
+Under the abstract reading, `@prop:del-pezzo-placement` gives what is true integrally: with
+$A = S_\Co\cap\sdp$ and $B = S_\Co\cap\sdp^{\perp\lkt}$ one has $S_\Co\otimes\QQ = A_\QQ\oplus B_\QQ$ and
+$2S_\Co\subseteq A\oplus B\subseteq S_\Co$, so the sum has index a power of $2$ and is not in general all of
+$S_\Co$; $A$ is primitive with $\ZZ H\subseteq A$ and $\rk A\in\{1,2\}$, rank $1$ forcing $A = \ZZ H$ and rank
+$2$ meaning $\sdp\subseteq S_\Co$. No authored condition relates $I_{\mathrm{dP}}$ to $\alpha$: of the five
+bullets, three mention $I_{\mathrm{dP}}$ and two mention $\alpha$, and none mentions both.
+Decided since: if the slot is contained in $S_\Co$ it is the published candidate, uniquely (below, certified);
+and the two discriminant forms are anti-isometric, so the pair does admit a unimodular overlattice with the full
+graph gluing (`computations/reports/coble_gluing_discriminants.py`: `A_{S_\Co}.is_anti_isometric(A_{T_\Co})`
+returns True).  The normal-form route was executed, not described: The normal-form route was executed at pin `c546077d`, where it failed: `f.domain() is g.domain()` returns `False`, so `f.inverse().then(g)` is refused by the documented test, the products raise `TypeError` on `CategoricalIsomorphism`, and `isometry_to` is lattice-level only (traces in `computations/reports/coble_gluing_discriminants-run.txt`). **Superseded**: maintained `sage-extensions` at main `6ad7a5ea396da6e758ee28f3dea10a35baee0266` provides `DS.isometry_to(DT.twist(-1))`, with `tests/forms/test_the_coble_anti_isometry.sage` verifying the Coble case — typed source and target, quadratic values on generators and pair sums, all pairwise bilinear values, the untwisted sign, inverses and compositions. Neither `@prop:rank-one-slot` (which quantifies over the anti-isometry) nor `@prop:no-rank-one-automorphism` (which uses no gluing) needs the explicit arrow.
+
+*The finite check, now done and certified.* The naive route — `elements_of_norm` on the dual $S_\Co^\#$ — targets an indefinite lattice whose norm-$(-1)$ fibre is infinite, and it is not a certificate; that call was made once, capped, and abandoned. The correct object is integral: $a\mapsto y\coloneq 2a-H$ is a bijection from $\{a\in S_\Co : a^2 = 0,\ a\cdot H = 2\}$ onto $\{y\in H^{\perp}\cap S_\Co : y^2 = -4,\ y\equiv H \pmod{2S_\Co}\}$, and $H^{\perp}\cap S_\Co$ is negative definite ($H^2 = 4>0$), so the owner's fibre operation enumerates it completely. `computations/reports/coble_del_pezzo_placement.py` (+ `-run.txt`) builds the complement through `primitive_sublattice_from` and `orthogonal_complement`, checks `is_definite()`, takes the norm-$(-4)$ fibre — $242$ elements — and finds exactly two congruent to $H$ modulo $2S_\Co$, giving $f^*F_1$ and $f^*F_2$: **inside $S_\Co$ the placement is unique**, so the corollary covers the whole rank-$2$ case. The completeness contract it relies on is quoted verbatim, with the provider file and line numbers, in `docs/a21-tuple-hypotheses.md`; the covering argument — every primitive $U(2)$ inside $S_\Co$ containing $H$ contains one of the two enumerated classes, hence both, hence equals the span — is recorded there and in the manuscript remark.
+What this leaves is the case $A = \ZZ H$, and every geometric obligation of the authored tuple. That lattice question is **answered in the affirmative at the owner**, by `@prop:rank-one-slot`, and the argument is a gluing argument, not the one an earlier version of this note gave. Commutation forces the functional $x\mapsto x\cdot b$ to vanish on $H^{\perp S_\Co}$ with $b\cdot H = 2$, which is possible exactly because the values of $x\cdot H$ on $S_\Co$ generate $2\bZ$; the involution with $(+1)$-eigenspace $\langle H,b\rangle$ is then integral on $S_\Co$, and — this is what the earlier version missed — its eigenspaces still do not split $S_\Co$: $\ZZ H+(H^{\perp S_\Co})$ has index $2$. The second generator is not a vector of $S_\Co\oplus T_\Co$ at all but $b = \tfrac12H+t$ with $t$ of square $-1$ in $T_\Co^{\#}$, in the class $\gamma_\Co(\overline{H/2})$; that class has odd value and there are $496$ odd classes in $A_{T_\Co}$, each containing an explicit vector of square $-1$, so the slot exists for every anti-isometry $\gamma_\Co$ (`computations/reports/coble_rank_one_placement.py`, `-run.txt`). The earlier chain — a lattice $S' = \langle S_\Co,b\rangle$ whose complement's discriminant form is realisable by the maintained predicate `is_discriminant_form_of_even_lattice`, hence “$S'\perp T = L_{K3}$” — is **withdrawn**: an orthogonal sum of two lattices of nontrivial discriminant is not unimodular, the predicate is a predicate and constructs nothing, and neither the gluing nor a primitive embedding nor an operator follows from it. **The A21 slot is open for the original tuple**, and the closure claimed here in an earlier round is withdrawn: the construction's own operators are $\iota_{\mathrm{dP}}(x,y,z) = (x,y,-z)$ and $\iota_\Co(x,y,z) = (-x,-y,-z)$ on $X^\sharp = \{z^2 = f(x,y)\}$ (`@prop:local-operators`), and on the resolution $\widehat\iota_\Co$ fixes the exceptional curve pointwise while $\widehat\iota_{\mathrm{dP}}$ acts on it with two fixed points — so the lifted del Pezzo invariant lattice has rank $2+k$ for $k$ nodes and contains $U(2)\perp\langle-2\rangle^{\oplus k}$ (`@prop:del-pezzo-type-on-the-resolution`), $U(2)$ only at $k = 0$, which makes $I_\Co$ fixed-point-free and the quotient Enriques. The authored root is one of the exceptional curves and is *fixed* by $I_{\mathrm{dP}}$, so the reversal argument of `@prop:no-rank-one-automorphism` and `@prop:rank-two-slot-boundary` — true for slots with $S_{\mathrm{dP}}\cong U(2)$ — does not apply to this tuple (`@rmk:a21-open`). Missing: saturation of $\pi^*\Pic(Y)\perp\bigoplus\ZZ D_g$ in $S_{\mathrm{dP}}$, and the geometry of the slot on this tuple. The tuple is not empty, though: `@prop:tuple-of-the-construction` checks the five bullets on the resolved cover with $H = \pi^*\OO(1,1)$ and $\alpha = [D_g]$, $H$ nef and big because $\OO(1,1)$ is very ample and $H\cdot D_g = 0$ because $\pi$ contracts it — so A21 is a rigidity question about tuples that exist, and its answer is not the empty set. Second, the two invariant lattices meet in full rank, $\rk(S_\Co\cap S_{\mathrm{dP}}) = k+2 = \rk S_{\mathrm{dP}}$, since both contain $\pi^*\Pic(Y)\perp\bigoplus\ZZ D_g$. Third, on the one-node locus — the problem's own case — the construction is a smooth proper equivariant family with a relative polarization and an exceptional divisor (`@prop:one-node-family`), and parallel transport carries the invariant lattices, $H$ and $\alpha$ (`@thm:one-node-transport`), with the monodromy landing in their stabilizer (`@cor:construction-monodromy`). RESOLVED (swarm `smvz57fr3`, judged to depth). The one-nodal parameter space is a nonempty open, path-connected subset of the hyperplane $\{f(p)=0\}$ (m2's audit: uniform IFT for escape-to-$p$, Bézout for no fixed component), so the **labels** of A21 hold for every pair (`@thm:a21-labels`, label conjugacy of $S_\Co$, $S_{\mathrm{dP}}$, $H$, $\alpha$). The **chamber clause is false as authored** under the corpus's own reading of the fourth bullet (chamber cut by the member's own effective roots): (i) unconditionally, by m5's $\nu(b)=\#\{\delta^2=-2,\delta\cdot H=1\}$ — zero on an explicitly verified member (both discriminants = (node-ruling)$^2$·degree-22 squarefree) and $\ge2$ on the verified bitangent witness, so no label-preserving isometry matches the two chambers (Readings K and C); and (ii) end-to-end by m8: the period map of the one-node family has maximal rank $9$ (Thm 3.3, by the flat ample class $2H-\alpha$ + strong Torelli + recovery of $(Y,B)$ from $\varphi_H$, so member$\mapsto(X,H)$ is injective), a very general member has $\Pic=S_\Co$ (Baire), and the $F'$-witness has an anti-invariant extremal $(-2)$-curve (all pieces verified computationally). Alternative semantics: under the label-own reading of the chamber the clause closes by `@lem:face-at-H` (m6 §4.5–4.6); the authoring question for what the fourth bullet means is the author's, and is the one thing left to decide. Also recorded: every one-node member has $\rho\ge11$ ($S_\Co$ algebraic rank 11; kills every rank-3 baseline), NL strata of bitangent rulings are nonempty (m6; three-split-ruling member verified), m1's even-contact strata classification with verified members at $q=1,2$, m1's $\Lambda_k$ census generalizing $\nu$, m4's machine-verified tuple arithmetic with the two corrections (T_En root uniqueness false; $T_\Co$ even — the second incorporated at `c447bc93`), and m7's dependency audit (`depaudit-ledger.tsv`): only four genuine downstream uses of A21, none touching the chamber; three references unsatisfiable as worded (det mismatches at `prob:group-identification`-adjacent sites). TODO for the author: decide the fourth bullet's chamber semantics; then rewrite the four downstream sites named by the audit; `@prob:twist-identification` and the $S_{\mathrm{dP}}$ saturation stay open (untouched). The node count separates members away from that locus ($\rk S_{\mathrm{dP}} = 3$ vs $4$), which is auxiliary to it. The Hodge condition a Torelli argument would need is located in `@rmk:rank-one-geometry` and is beside the point for the rank-one conclusion.
+**The Coble-side degree-2 polarization, from the primary construction behind [@DK13, §8].** That reference is [@CD12] (Cantat–Dolgachev), now read rather than inferred from DK13's summary. On an unnodal Coble surface $X$: $h = F_1+F_2$ from two half-fibres of Halphen fibrations of index 2, $h^2 = 2$; $\abs{2h}$ has no base points and defines $\phi_h: X\to\PP^4$ ([@CD12] Lemma 3.7, whose proof uses only the intersection properties and $\abs{f_i} = \set{F_i}$, Remark 3.8); the image is a $2$-to-$1$ quartic (Lemma 3.9) and is a four-nodal quartic Del Pezzo (Lemma 3.10). Hence $h$ is nef and big in the unnodal case, on a source. Remark 3.3 gives **openness** of the unnodal locus and, with the classical nonemptiness of conditions (i)–(v) of Theorem 3.2, density in the Coble locus *if* that locus is irreducible — which the passage does not state and which is not claimed here. The *one-node* members of @prop:quasipolarization form a different locus, and nothing in the passage bounds its intersection with the unnodal open set: no nonemptiness, no density, no degeneration argument. So the chamber obligation of the direct-projective construction stands open; only the unnodal, possibly general, smooth case is covered.
+**Domains, for the record.** The two double covers are different and were conflated in an earlier version of this note: $\widetilde X\to X$ is the K3 cover branched along $\mathfrak{C}\in\abs{-2K_X}$ (unique, self-intersection $-4$, [@CD12] §3.2) with deck $I_\Co$ acting on $\widetilde X$ and fixed curve $R$; while $\phi_h$ contracts $\mathfrak{C}$ to the node $q$ (as $h\cdot\mathfrak{C} = 0$), and after blowing up $q$ gives a finite double cover $\phi': X\to\mathsf D'$ whose deck $\tau$ acts **on $X$**, with $\tau^* = \id_H\oplus(-\id_{E_8})$ ([@CD12] (16)). So the genus-$4$-plus-three-points fixed locus that DK13 §8 attributes to "the deck transformation $\sigma$ of $S$" lives on the Coble surface and contradicts nothing about $I_\Co$'s genus-$0$ fixed curve on the K3.
+**The lift, and its order derived rather than assumed.** `@prop:involution-lifting-double-cover`: for $\pi$ branched along a smooth $B\in\abs{2\mcl}$, $\tau$ an involution preserving $B$, and a linearization compatible with the branch section, the lifts are $\tilde\tau$ and $\tilde\tau\iota$ with **common** square in $\{\id,\iota\}$ — so choosing the other lift does not change the order, which corrects an earlier inference of this note. The order is decided at a fixed point $p\in B$: in the local model $w^2 = u$ one has $\tilde\tau^*w = \epsilon w$ with $\epsilon^2 = \sigma$, the sign of $\tau$ on the normal line, so $\sigma = +1$ gives order $2$ and $\sigma = -1$ order $4$. `@cor:lift-in-cd12-model` applies it: DK13 §8's fixed curve $\overline W$ meets $\mathfrak C$ in two points, and transversality there is a consequence of the eigenvalues ($+1$ on $T\overline W$, $-1$ on $T\mathfrak C$ because $\tau$ acts nontrivially on $\mathfrak C\cong\PP^1$), so $\sigma = +1$ and the lift is an involution commuting with $I_\Co$. The three isolated fixed points lie off $\mathfrak C$, since one on $\mathfrak C$ would force $\tilde\tau^2 = \iota$.
+**Lattice partly settled, by CD12's own action.** On $\pi^*\Pic(S)$ the lift acts as $\tau$, i.e. as $\id_{\mathsf H}\oplus(-\id_{E_8})$ on CD12's $\mathsf H = \langle f_1,f_2\rangle$ plus $\ZZ K_S$ (dimensions $2+8+1 = 11 = \rho$). So the invariant lattice contains $\pi^*\mathsf H\oplus\ZZ\pi^*K_S$, rank $3$, with $\pi^*\mathsf H\cong U(2)$ — the $\sdp$ of AEGS — but $\pi^*K_S$ of square $2K_S^2 = -2$, and $U(2)$ has no $(-2)$-class: the invariant lattice is **not** $\sdp$, so the lift is not of AEGS's $\mathrm{dP}$ type. Whether a Del Pezzo involution in a wider sense is available is untouched. Not determined by any source and not assumed: the action on the part of $H^2(\widetilde X)$ not pulled back from $S$, where the two lifts differ — so no single sign acts on the whole anti-invariant lattice.
+What is *not* an obstruction, and what a withdrawn argument got wrong: the ten disjoint $(-2)$-curves. An
+involution with invariant lattice exactly $U(2)$ fixes no smooth rational curve
+(@prop:del-pezzo-invariant-has-no-roots), so it may move the curves, and the existence of ten disjoint curves
+does not show that an arbitrary involution permutes that chosen set — the withdrawn argument assumed exactly
+that. The anti-invariant lattice can itself contain $(-2)$-classes, $T_\dp$ among them, so the lemma does not
+obstruct the existence of such an involution. Hence @cor:no-del-pezzo-involution-coble-cover, and the
+del Pezzo slot of the tuple is a lattice label. The lattice pair does exist and commutes — $f^*F_1$, $f^*F_2$
+span a primitive $U(2)\subset S_\Co$ containing $H$, and $+1$ there with $-1$ on the complement is an
+integral isometry of $L_{K3}$ commuting with $I_\Co$ — so the tuple is realizable at the level of lattices and
+not on the surface. Certified on the two summands by the owner's operations in
+`computations/reports/coble_del_pezzo_slot_operator.py` (+ `-run.txt`): the operator is built from its images
+and accepted by the isometry constructor, the pairing, the involution, $\phi(H) = H$, $\phi(\alpha) = -\alpha$
+and both eigenspaces are checked on lattice elements, $\rho(\phi)$ and $\rho(-\id_{T_\Co})$ are checked to fix
+every discriminant generator, and both discriminant groups are checked to have exponent $2$ — the exponent,
+not $q(-x) = q(x)$, is what makes $-\id$ an identity on $A_{T_\Co}$. $L_{K3}$ and the gluing are *not* built
+there: the extension is @thm:automorphism-lifting-criterion applied to those verified hypotheses, and it is
+recorded as such. (ii) The ambient extension follows by argument rather than by object: the two primitive embeddings have
+the same complement $T_\Co$ (with $M = S_\En\oplus\ZZ\delta$ by the determinant identity above), the
+composite $\gamma_\En\bar\psi\gamma_\Co^{-1}$ is realised by an integral
+$\phi\in\Orth(T_\Co)$ because $\Orth(T_\Co)\to\Orth(A_{T_\Co})$ is surjective for a $2$-elementary lattice
+(@thm:two-elementary-surjectivity), and $ (\psi,\phi)$ then extends over $L_{K3}$ by @thm:nikulin-gluing.
+Owner status of that input: surjective for $S_\Co$ and for $M$ (owner-verified); for $T_\Co$ the
+indefinite Eichler machinery raised the same `TypeError` at the pinned provider and returns `True` on the
+later provider recorded under A20 item 1, so what stands is a pinned-provider failure that a later provider
+does not reproduce — traceback, minimal construction and provenance kept there — and that step rests on the
+book's theorem, not on an owner computation. Not built: $L_{K3}$ and the two embeddings, so
+no isometry object exists, and the chamber is not transported.
+**A22. Projective coverage** (@prob:projective-coverage). The quotient of the open nodal invariant
+$(4,4)$ locus by the full centralizer of $\tau$ should be the complete direct moduli stack. The
+report gives a dimension count ($12-1-2=9$) and one explicit polynomial, and says both are
+insufficient: this needs irreducibility at the level of the arithmetic group and recovery of the K3
+cover and both involutions from the Coble datum.
+
+**A23. Equivalence of the resolved-cover and singular-pair moduli stacks**
+(@prob:cover-singular-equivalence), compatible with base change and automorphisms. This is the
+replacement for silently identifying a Heegner period point with a geometric Coble pair.
+
+**A24. Integral cusp lifting** (@prob:cusp-lifting), and this one now has its finite half in hand.
+The report records the finite computation: four orbits of nonzero singular vectors in a
+$10$-dimensional plus-type $\mathbb F_2$-space, of sizes $135, 2, 270, 120$, and five orbits of
+totally singular planes, of sizes $1575, 270, 9450, 3780, 8640$. The four vector sizes are exactly
+the fine Heegner list $[1,2,120,135,270]$ — so B2's numbers are a finite $O(A)$ computation that
+exists, and the open content is precisely the identification of that finite group with the image of
+the integral parabolic stabilizer. The report's own warning says the two are not interchangeable:
+a finite $O(A)$ orbit calculation does not classify cusps without a lifting theorem.
+
+**A25. Coble Vinberg and root completeness at every polarized $0$-cusp**
+(@prob:coxeter-completeness). The report's diagnosis: the four candidate wall-slice arrangements
+$G^2_{\mathrm{slice}},\dots,G^5_{\mathrm{slice}}$ have $1,3,3,9$ maximal parabolic faces, and those
+counts *disagree* with the finite-shadow orbit counts — so chamber completeness, arithmetic diagram
+automorphisms and finite-orbit calibration must all be settled before boundary strata are enumerated.
+A list of vectors or a Gram computation is not a Coxeter theorem.
+
+**A26. The degeneration chain for the direct Coble theory** — four required theorems that stand or
+fall together: integral-affine realization (@prob:affine-realization), algebraic extension of the two
+involutions to divisor models (@prob:algebraic-extension), the dlt quotient (@prob:dlt-quotient), the
+stable contraction by relative Proj (@prob:stable-proj), and the component classification
+(@prob:component-classification). The report notes the Coble case cannot be obtained by substituting
+the Coble involution into the Enriques tables, because the resolved Coble involution has a fixed
+curve.
+
+**A27. The direct semifan and semitoroidal restriction** (@prob:direct-semifan,
+@prob:restricted-semifan). The subtorus lemma is local and toric; the report lists seven separate
+statements needed before "intersect the AEGS semifans" is a compactification theorem rather than a
+candidate construction. `warn:restrict-semifan` says the same in one line.
+
+**A28. The two target theorems** (@prob:autonomous-theorem, @prob:comparison-theorem). Target A is
+the autonomous Coble compactification; Target B is the comparison with the Enriques Heegner divisor,
+which is the theorem the problem actually asks for. Target A does not imply Target B.
+
+**A29. "The Coble $0$-cusp is Sterk cusp 2" is a conjecture that no chapter reconciles.** The
+morphism-chain note states it and says in the same paragraph that it "is not recorded in open
+problems" and "should be reconciled with the $(9,9,1)$ / $(7,7,1)$ Coble cusp data". It also records
+the consistency check that would test it: the dissertation proves Sterk cusp 1 is
+$\mathbb{RP}^2$-type and cusps 2–5 are $\mathbb D^2$-type, and the author separately claims Coble
+degenerations are $\mathbb D^2$-type, so the conjecture *implies* the independently derived claim.
+That check is described as "currently unexercised".
+
+**A30. Is the Coble–Mukai lattice the natural home for the group action?**
+(@qst:coble-mukai-naturality). $\mathrm{CM}(S)$ has rank $11-n$ and signature $(1,10-n)$; the
+boundary configuration is primitive in $L$ but not in $\NS(S)$ for $n\geq2$. Whether the group acting
+on $\mathrm{CM}(S)$ is the stable orthogonal group of $L$ or the subgroup induced from $\NS(S)$ is
+open, and the odd part of the discriminant — invisible to the $2$-elementary invariants of $S_\Co$ —
+is where it would show.
+
+**A31. The strategy lemmas.** The report's Strategy A states eight required lemmas (A1–A8: root-orbit
+and embedded-component, root-marked universal family, Coble-pair identification, generic
+reconstruction, arithmetic cusp lifting, local toroidal normalization, semitoroidal compatibility, no
+further coarsening); Strategy B states twenty-three (B2.1–B7.1) reproducing the AEGS chain
+autonomously; Strategy C states five (C1–C5) for the reflection-folding route. Each is stated sharply
+in the report at the given label. Strategy C is explicitly demoted: the earlier attempt "produced
+wall-slice diagrams rather than Coxeter diagrams".
+
+**A32. The $n\geq 2$ programme.** Three conjectures for $F_{\Co,n}$: that the Baily–Borel boundaries
+of all ten families are computable by the $n=1$ techniques; that the ramification locus of the K3 cover
+is a recognizable divisor in the Alexeev–Engel sense, which would give a semitoroidal
+compactification by AEH21; and that the semifans refine or coarsen the Coxeter fans. The organizing
+observation is that the ten lattices $(10+n, 12-n, \delta)$ are exactly the $g=0$ row of Nikulin's
+triangle.
+
+**A33. Three of the ten Coble families admit no Coxeter chamber at all.** Alexeev's classification,
+recorded in the reflective-two-elementary chapter, shows that the even $2$-elementary lattices
+$(17,5,1)$, $(18,4,1)$ and $(19,3,1)$ — rows $n=7,8,9$ of the Coble table — are not reflective, while
+every other lattice on the line $r+a=22$ is. For those three, $W_r$ has infinite index in $\Orth(S)$,
+Vinberg's algorithm does not terminate, there is no finite Coxeter diagram to fold, and the toroidal
+compactification from a Coxeter fan is unavailable. The same theorem gives a second consequence: by
+`thm:k3-automorphism-sequence`, $\Aut(X)$ is finite exactly when $S_X$ is two-reflective, so the K3
+covers in those three families have infinite automorphism groups. Any programme for the $n\geq2$
+families (A32) has to say what replaces the reflection data there.
+
+**A34. Dolgachev–Zhang's open classification.** The coble-moduli chapter records, from the source, that
+classifying all surfaces with finitely many smooth rational negative curves up to automorphism is open.
+For Coble surfaces the finiteness itself is Coble's theorem; the classification of all such surfaces is
+not.
+
+**A35. Do the integral-affine data determine the stable limit?** @conj:classification-ia-data states
+that for a fixed monodromy invariant $\lambda$ the combinatorial type $(\Gamma(\mcx_0), R_{\IA})$
+determines the KSBA stable limit $(\overline{\mcx}_0, \epsilon\overline{\mcr}_0)$, and that this type
+is locally constant in families. The dissertation itself records that only the converse is established
+— from the divisor model to the data — and that the forward direction "does not follow from properness
+of the KSBA functor or from the invariance of dual complexes under PL homeomorphism, and is not
+available in the literature as far as this thesis can determine". This is the hinge the whole
+divisor-model method turns on: without it, computing $B(\lambda)$ computes a candidate, not the limit.
+
+**A36. Describe the semifan of a recognizable divisor.** The toroidal chapter states that describing
+$\semifan{F}_R$ for a recognizable divisor $R$ is "currently a widely open problem", and that it is open
+even for the rational-curve divisor $R_{\rcop}^{\,}$, where the semifan is characterised only as the
+coarsest subdivision on which the combinatorial type of stable pairs is constant. The Enriques case is
+available only because @AE22 supply the ramification-locus semifans explicitly.
+
+**A37. The finiteness of the classifying map rests on an unproved semifan comparison.**
+@lem:semifan-comparison states that $\phi$ is finite if and only if every KSBA semifan $\semifan{G}_k$
+equals the constructed $\semifan{F}_k$, and @thm:no-coarsening is its discharge. But the lemma's proof
+already assumes what it must show — "the crux is that given any coarsening ... points corresponding to
+distinct degenerations would thus be glued together in the target, thus $\phi$ is finite if and only if
+no such coarsening occurs" — and @thm:no-coarsening argues from @def:maximality-degenerations, a notion
+of "maximal" degeneration introduced there for the purpose, by asserting that "maximality is a complete
+moduli invariant — distinct configurations cannot be identified", which is not proved and is the very
+point at issue. So the finiteness of $\phi$, on which the identification of the KSBA and semitoroidal
+compactifications depends, is asserted through a definition and a claim about KSBA theory that no source
+is cited for.
+
+**A38. The restriction of the ambient semifan is taken as formal.** @prop:restriction-semifans asserts
+that $\normalize{B}$ is *isomorphic* to the semitoroidal compactification for the restricted semifan
+$\semifan{F}_B$, on the ground that "the restriction of the polyhedral structure follows functorially
+from intersecting the hyperplane arrangements". The research report states the opposite as a warning
+(@warn:restrict-semifan) and lists seven separate statements needed before "intersect the AEGS semifans"
+is a theorem (A27). Two chapters of the same book therefore take opposite positions on whether
+semitoroidal restriction is formal, and the dissertation's version is the one carrying the theorem.
+
+**A39. Three open questions in the category-theory part.** The section `sec-open-statements` of
+`Monoidal-Stable/Stable-Categories-of-Modules-with-Duality.md` states, and says are not proved in the
+book: (i) whether the hyperbolic stabilization $S=F_{H(R)}$ of $\mathbf{Lat}_R$ can be inverted into a
+pointed $\infty$-category — that is, whether there are $\mcc$ and $\iota\colon\mathbf{Lat}_R^{\simeq}\to
+\mcc^{\simeq}$ with $\iota\circ S\simeq\Sigma\circ\iota$; (ii) whether any symmetric monoidal structure on
+a category built from $\mathbf{Lat}_R$, other than $\perp$, has an invertible object of nonzero Witt
+class; and (iii) whether the discriminant construction factors through the $\epsilon$-quadratic Poincaré
+complexes over $\Z$, and through which functor. The first two are sharpened by @thm:invertible-summand,
+which proves that on $\mathbf{Lat}_R$ itself the two demands — invertibility and moving the Witt class —
+are incompatible.
+
+**A40. Does the presentation of the $2$-elementary form monoid compute its $K_0$?** The classification
+chapter records that freely imposing the six relations on the free commutative monoid on $p,q,u,v$ gives
+the group $\Z\times\Z/4\Z$ generated by $v$ and $q$, and then says "it is not immediately clear if this
+coincides with the corresponding Grothendieck group $K_0$ of the category of such quadratic forms". The
+lattice-theory chapter proves the *monoid* statement (@thm:2elementary-decomposition) and is silent on
+the group completion. So the presentation is known and the $K_0$ identification is not, and the two
+chapters disagree about whether that is a gap.
+**A41. A bijection across different discriminants is asserted without proof.**
+`450-scattone.md:191-198` uses a bijection $T_\En/\Orth(T_\En)\cong K/\Orth(K)$ between cusp sets of two
+lattices with different discriminant groups, and covers the gap with "some slightly finer analysis".
+For $\eta$ in the $I_{1,1}$ summand the quotient is $\II_{1,9}$ alone, which does not account for the
+rest of the enumeration. The $F_\En$ cusp count downstream rests on this.
+**A42. Two forms of the embedding $S_\En\injects S_\Nod$, neither checked against the other.**
+`coble/adjacent-programs/nodal-enriques-moduli-program.md` records the primitive embedding in two
+forms — $((e,f),x)\mapsto((2\tilde f+\tilde g+h,\tilde g),x)$, attributed to Cossec–Dolgachev–Liedtke
+p. 561, and $((e_1,f_1),x)\mapsto(f_2,2e_2+f_2+h,x)$, which is what the research statement cites from
+*Enriques Surfaces I* Def. 5.6.3. Both are the identity on $E_8(2)$ and both are claimed to exhibit
+$F_\Nod\injects\fen$. The text says they are "written in different bases and have not been checked
+against each other", and calls reconciling them "a small and worthwhile task". Nothing downstream can be
+trusted until one is derived.
+
+**A43. The nodal Enriques family is outside the method the rest of the book uses.** $T_\Nod$ is *not*
+$2$-elementary, while every other lattice in the programme is, and the Sterk–Nikulin orbit apparatus
+assumes $2$-elementarity throughout. The chapter states this as "the single structural obstruction
+distinguishing the nodal case from every other family in this program", and the classification of its
+boundary components therefore needs orbit techniques for non-$2$-elementary discriminant forms, which
+the book does not have.
+
+
+
+
+
+
+
+
+
+
+
+
+## B. Open here, decidable by a derivation
+
+**B1. Genus uniqueness of $T_\Co$.** This is where the chapter's own argument fails, and it matters
+more than the entry admits. The text proposes to "confirm that $r > a$ forces a unique class in the
+genus, so that the reduction of isotropic-orbit questions to $q_{T_\Co}$ is justified" — but
+$T_\Co$ has $(r,a,\delta)=(11,11,1)$, so $r=a$, and Nikulin's $r>a$ criterion does not apply. The
+same chapter elsewhere relies on exactly this gap ("surjectivity is not available at $r=a=11$").
+So the justification for reading orbit questions off the discriminant form is *not* in place, and the
+honest statement is not "verify $r>a$" but "settle the genus of a $2$-elementary lattice at $r=a$".
+
+**B2. Whether $[1,2,120,135,270]$ is the $G_\Co$ decomposition.** Half settled. The order
+$696\,729\,600$ is now verified at the owner: the nine integral generators of
+$\Stab_{\Orth(S_\En)}(h)$ (A3) have discriminant images generating a subgroup of
+$\Orth(A_{S_\En}, q_{S_\En})$ of exactly that order
+(`computations/reports/coble_stabilizer_generators.py`). The four orbit lengths are still unproved;
+consistency with $[1,255,272]$ and the index $136$ is a check on the claim and not a proof of it.
+Waits on A3 for the integral generators of $\gent$ itself. Not used by
+@prop:gamma-co-in-heegner-group for its bound, which comes from
+@prop:polarization-stabilizer-enriques (order $2\abs{W(E_8)}$ of the stabilizer, with
+$\id_U\oplus(-\id_{E_8})$ in the kernel of its reduction), so the propositions of
+@sec-gamma-co-comparison do not depend on the orbit lengths — only their sharpening would.
+
+**B3. Whether $[1,255,272]$ are orbits of the stated stabilizer.** The three parts are known to
+partition the $528$ isotropic classes; that they are the orbits of the stabilizer of the polarization
+class is not established.
+
+**B4. Explicit primitive embedding matrices** for $T_\Co\injects\ten\injects\tdp\injects\lkt$, and
+primitivity verified in coordinates rather than invoked. Feeds A13.
+
+**B5. A worked instance of the Coble curve.** An explicit ten-nodal rational sextic $F(x,y,z)=0$ as
+the image of a degree-$6$ map $\PP^1\to\PP^2$, with its K3 cover $w^2=F$. Would anchor B4 and A13.
+
+## C. Not open — repair in the text
+
+**C1. `F_{\Nod,2}` is written `???`** in the display of moduli spaces in
+[moduli-construction.md](writing/coble/lattices-and-moduli/moduli-construction.md). Either define it
+or remove the row.
+
+**C2. The tower diagram's `?` arrow** $F_{\Co,2}\to\fco$, and the uncharacterised $\Gamma_{\Co,2}$.
+Either describe the group or remove the arrow and say why the tower stops.
+
+**C3. The open-problems entry on $(r,a,\delta)$.** Its first bullet — "compute the Gram matrices and
+verify their $(r,a,\delta)$ invariants" — is done: $S_\Co\cong(11,11,1)_1$ and $T_\Co\cong(11,11,1)_2$
+are computed, including the fibre counts and the order of $\Orth$. The entry should be replaced by B1,
+which is the real residue.
+
+**C4. Two verification chores phrased as questions:** `morrison-flowerpot-degenerations.md` asks to
+check that a surface is $F_4$ with part of its toric boundary, and `divisor-and-dlt-models.md` asks
+whether a Kulikov comparison is intended. Neither is a research problem.
+
+**C5. A lemma whose proof assumes the theorem it feeds.** `lem:divisibilityTcoOne` is used to derive
+the cusp correspondence, and its proof assumes a unique $\Gamma_\Co$-orbit of isotropic vectors of
+$T_\Co$ — which is A1, the enumeration that the same section leaves open. The chapter records this
+in passing; it should be stated where the lemma is used, because as it stands the cusp-correspondence
+argument is circular: it consumes the very count it is meant to support.
+
+**C6. Two chapters disagree about whether the invariants separate the $S_\Co$ orbits.** The
+computations page says the Odd/Even-ordinary/Even-characteristic trichotomy "is what the cusp
+correspondence sections rely on"; the open-problems chapter says the two $\Orth^+(S_\Co)$-orbits both
+have quotient invariants $(9,9,1)$ and so "are not separated by the invariants of the boundary
+lattice". Both cannot be the operative claim. One of them is the correct one and the other should go.
+
+**C7. A Gram entry the report corrects and the figure transcription may not.** The research report
+records, twice and as a warning, that the black nodes $\alpha_{20}$ and $\alpha_{21}$ of the square
+ambient diagram have inner product $4$ and not $2$, and that "any computation based on the latter
+value has the wrong rank" — the rank comes out $20$ instead of $18$. Any transcription of Sterk's
+Figure 5 that used $2$ for that bond carries the wrong lattice. The two computations should be
+reconciled and the surviving value stated once.
+
+**C8. A discarded calibration is still cited by label.** The report's appendix retains the seven
+finite orbit labels $245, 34, 45, 35^{(2)}, 35^{(6)}, 55^{(2)}, 55^{(6)}$ and says explicitly that
+the calibration is not retained and that $245$ is incompatible with the $(-2)$-class obstruction. The
+labels should not survive anywhere in the book, including in a chapter that explains why they were
+discarded.
+
+**C9. One lattice written with two types.** The Scattone method chapter calls $T_\Co$ "the
+transcendental lattice $(11,11,1)_1$"; `lattices.md` and every other chapter have
+$T_\Co = (11,11,1)_2$, and $S_\Co = (11,11,1)_1$. The two lattices share the triple and differ in the
+sign of the form, which is exactly the confusion the chapter's own next sentence guards against. It is
+one character in one place, but it is in the paragraph that warns against confusing the two lattices.
+
+**C10. The Type II weight filtration says $W_2 = H^2$ and $W_4 = 0$.** `200-Kulikov.md` lists, for
+$N^2 = 0$, "$W_0 = \ker(N)$; $W_2 = H^2$; $W_4 = 0$". The filtration is increasing, so $W_4\supseteq
+W_2$; if $W_2 = H^2$ then $W_4 = H^2$. The entry is either a sign error or a transposition, and the
+chapter is the one that defines the filtration, so a reader has no other source to fall back on. The
+same line's $W_0 = \ker(N)$ is not the monodromy-weight convention either, in which the lowest
+nonzero step is $\operatorname{im}(N)$.
+
+**C11. Two definitions of subobject, and the second is the one the lattice part uses.**
+`foundations/Categorical-Foundations.md:40` defines a subobject as a monomorphism $m\colon X\to Y$, "the
+datum is the arrow $m$, not merely the domain $X$", while `foundations/Elements-and-Containment.md:24`
+defines it as an *isomorphism class* of monomorphisms. Both carry distinct labels (`def:subcategory`,
+`def:subobject-relation`), neither refers to the other, and the lattice-theory notion of a primitive
+subobject is built on the second. One of the two should be the definition and the other a derived remark.
+
+**C12. "Chain equivalence" is used four times and defined nowhere, and is equated with
+quasi-isomorphism, which is false.** `algebraic-structures/Chain-Complexes.md:237` asserts that a chain
+map is a chain equivalence exactly when it is a quasi-isomorphism. For complexes of $R$-modules that is
+false: the acyclic complex $\ZZ/4\xrightarrow{2}\ZZ/4$ is quasi-isomorphic to $0$ but not contractible,
+multiplication by $2$ on $\Hom(\ZZ/4,\ZZ/4)$ not being an isomorphism. No projectivity or boundedness is
+assumed at `:180`. This is not cosmetic, because `Stable-Categories-of-Modules-with-Duality.md:105`
+defines an $n$-dimensional Poincaré complex by requiring $\phi_0$ to be a *chain equivalence*, so the
+equation with quasi-isomorphism weakens the defining condition of the book's own Poincaré complex, and
+the term itself appears at four sites and is defined at none of them.
+
+**C13. A citation that does not carry its claim.** `coble/heegner-report/coble-heegner-research-report.md:510`
+cites `@prop:stabilization-discriminant` for "the discriminant of an orthogonal sum is the orthogonal sum
+of the discriminants". That proposition states only $A_{S(L)}\cong A_L$ for hyperbolic stabilization. The
+result used is `@prop:discriminant-orthogonal-sum`, whose title is "Discriminants of orthogonal sums".
+
+**C14. A double dual used without statement.** The proof of the perfect-linking theorem at
+`forms-quadratic/Torsion-Pairings-and-Linking-Forms.md:83` uses $(L^\#)^\# = L$ to conclude that the
+adjoint of the discriminant pairing has zero kernel. The book states the metric-dual identities for
+orthogonal sums and twists (`rem:dual-lattice-properties`) and not the double dual, so the step has no
+premise on the page. That page is deliberately unlisted (see C38), so the gap is not published —
+but it is the same page whose unlisted status has a different cause.
+
+**C15. A true conclusion drawn from an irrelevant premise.** `foundations/Higher-Categories-and-Universes.md:488`
+concludes that $\mathbf{Cat}_{\infty,\infty}$ has no zero object from the fact that $*\amalg*$ is neither
+initial nor terminal. Whether $*\amalg*$ is initial or terminal is irrelevant: a zero object must be both
+initial and terminal, the initial object here is $\varnothing$, the terminal one is $*$, and the argument
+needed is that they are not equivalent.
+
+**C31. The mirror-move theorem's hypothesis excludes the only lattice it is applied to.**
+`450-scattone.md:227` states the algorithm for "a $2$-elementary, nondegenerate, even **unimodular**
+lattice of signature $(2,n)$". A unimodular $2$-elementary lattice has $a=\dim_{\F_2}A_L=0$, so in the
+even/ordinary and even/characteristic rows of the mirror move $a$ never leaves $0$; yet at `:299` the
+algorithm is applied to $T_\En$ and returns $(10,10,0)_1$ and $(10,8,0)_1$, that is $a=10$. The
+hypothesis under which the theorem is used is "even indefinite $2$-elementary", not unimodular, so the
+section proves it for a class its own application is not in.
+
+**C32. $(r,a,\delta)$ is claimed to determine a lattice for which it does not.**
+`450-scattone.md:277` says the boundary lattice $\bar T_I$ of a $1$-cusp "is determined up to isometry
+by invariants $(r_2,a_2,\delta_2)$". That classification holds for $2$-elementary lattices only in the
+*indefinite* case (`300-classification.md` restates Nikulin 3.6.2), while $\bar T_I=I^{\perp}/I$ at a
+$1$-cusp is negative definite. The next clause of the same sentence concedes the point — "distinct
+$\Gamma$-orbits of $1$-cusps are distinguished by their root lattices" — and `:146` puts nine orbits in
+one genus of rank $17$, which on the first clause would be one isometry class and hence one cusp.
+
+**C16–C23. Eight defects in the worked examples of the lattice chapter.** All in
+`dissertation/sections/1-part-combinatorial/2-chapter-lattice-theory/200-examples.md`, each stated
+correctly at a second location in the book.
+
+- *C16.* `:123` describes the half-integer roots of $F_4$ as those with an even number of minus signs.
+  That gives $8$, and with $8+24$ integral roots totals $40$, not $48$; and the file's own
+  $\alpha_4=\tfrac12(e_1-e_2-e_3-e_4)$ has three minus signs and is excluded by the description. The
+  correct statement is `root-systems.md`, `def:root-system-F4`.
+- *C17.* `:157–166` says $D_n^+\not\cong D_n^-$ for even $n$ and two lines later that $D_8^+\cong E_8$;
+  both $D_8^\pm$ are even unimodular of rank $8$, hence both are $E_8$, so the file contradicts itself
+  on one page. The construction is also not closed for odd $n$, and $D_n^\pm$ is not integral for
+  $n\equiv2\pmod 4$. Correct form at `root-systems.md:248`.
+- *C18.* `:168–189` negates $G_{E_8}^{-1}$ and the fundamental weights relative to the file's own
+  positive-definite convention, so that $\beta(w_1,\alpha_1)=-1$.
+- *C19.* The $E_8$ sign is unresolved across the file: `:60–62` and `:102` declare one convention,
+  `:235` and `:274–290` the other, and under the declared one $\Lambda_{K3}$ has signature $(19,3)$.
+- *C20.* `:68` defines a simple system by $\Z_{\ge0}\Phi=R(L)$, which is impossible — $-\alpha_1$ is a root.
+- *C21.* `:250` and `:265` prove both classification theorems from "an even unimodular lattice exists
+  only in ranks divisible by $8$", which $U$, $U^2$ and $\Lambda_{K3}$ refute.
+- *C22.* `:114–115`: $v_8^2=8$ cannot generate $A_1$, and a single vector cannot generate $A_2$; the
+  index $q$ in "$q\le i\le n$" at `:119` is never defined.
+- *C23.* `:250` contradicts `:54–55` on parity; `:200` writes $w_1,\dots,w_p$ for a rank-$p+q$ lattice;
+  `:307` writes "signature $(2,0)$" and reuses $U$ for $U_1$.
+
+**C33. The finiteness of the classifying map is a theorem in one chapter and a conjecture in another.**
+`dissertation/3-part-main-theorem/6-chapter/600-finite-coarsening.md` proves @thm:no-coarsening and
+deduces @cor:finiteness-classifying-map, both as theorems. `coble/results-f-en-2/classifying-map-and-involution.md`
+states the same statement as @conj:classifying_map_finite and says of the very argument the dissertation
+gives: "This argument is presented as the program's intended route, not as a completed proof", with a
+warning that the source note "asserted the extension ... without proof; each remains an obligation of
+the program". So the same proposition is proved in one chapter and declared conjectural in another, and
+the chapter that calls it conjectural is the one that names the gap (see A37).
+
+**C34. The global extension of the Enriques involution, likewise.** `300-extend-univ-family.md` states
+@thm:global-extension-enriques-involution as a theorem, with a proof resting on "standard consequences"
+and on closed conditions being "propagated by the structure of the moduli functor".
+`coble/results-f-en-2/classifying-map-and-involution.md` states the same thing as
+@conj:enriques_involution_extension and records that the source note asserted it without proof.
+
+**C35. The per-cusp ray counts are computed in one chapter and provisional in another.**
+`900-five-cusps.md` tabulates the five cusps' Type II and Type III counts as results, with the
+deletions and inertia checks cited to computations. `coble/results-f-en-2/main-theorem-and-cusps.md`
+says of the same numbers: "The precise per-cusp ray counts and IAS involutions should be regarded as
+provisional pending an independent cusp computation".
+
+**C36. "Precisely the lattices of the Coble table" fails at the last row.**
+`coble/adjacent-programs/halphen-index-2-moduli-program.md` says the lattices $(10+n,12-n,\delta)$ for
+$1\le n\le 9$ "are **precisely** the lattices of [the Coble lattice table]". That table has eleven rows,
+$n = 1,\dots,10$, with the $n=10$ row $(20,2,1)$: the Halphen family stops at $n=9$ and the Coble table
+does not.
+
+**C37. Four slips in `475-our-cusps.md`.** The proof of @thm:orbit-classification-sterk writes
+"$\eta_i = a_i e + b_i e + c_i$" with $e$ twice where $e,f$ is meant; two lines later "$a_2=0,v_2=p$"
+where $b_2=p$ is meant and $v_2$ is not otherwise defined; the boundary lattice is written
+$\eta^{\perp T}/\genus{\eta}$ with the group macro where $\langle\eta\rangle$ is meant; and the cusp
+$\eta_3$ table entry ends "$s_{\alpha_{20}}$ fixes" with its object missing.
+
+**C24–C26. Three bibliography errors, one of them widespread.** These are citation defects, not
+typographic ones: each names a different work from the one that carries the claim.
+
+- *C24.* `@Kol23` is Kollár's *Arthur Byron Coble, 1878–1966*, a biography; the book carrying KSBA
+  theory is `@Kol23a` (*Families of Varieties of General Type*). `@Kol23` is cited for KSBA claims at
+  nine sites: `400-ksba-functor.md:34`, `heegner-report:131, 219, 2593`, `000-part-1.md:32`,
+  `100-historical-context.md:15`, `100-defining-fen2.md:50`, `700-zmt-isomorphism.md:39`,
+  `ResearchStatement.md:11`.
+- *C25.* `@Loo03` is *Compactifications Defined by Arrangements. I. The Ball Quotient Case* and
+  `@Loo02` is *…II. Locally Symmetric Varieties of Type IV*; `300-semitoroidal.md:7, 65, 75, 84` and
+  `heegner-report:185, 223` cite `Loo03` for the Type IV theory, which is in `Loo02`. The Heegner
+  bibliography additionally keys Part II as `Loo03`, so the same key names two different papers across
+  the two bibliographies.
+- *C26.* `@AE23a` is *The Flex Divisor of a K3 Surface*; the tower theorem it is cited for is in
+  `@AE23`, *Compact Moduli of K3 Surfaces*. Sites: `000-part-2.md:40` `[@AE23a, Thm. 5.14]`,
+  `5-chapter-ias-dlt/000-intro.md:55`, `4-chapter-cpt/000-ksba.md:55`.
+
+**C27. A stale duplicate of the Coble lattice table is still in the tree.** `coble/tables/coble-lattices.md`
+row $n=4$ prints $D_4^{\oplus2}\oplus A_1^{\oplus4}\oplus U(2)$ beside $(14,8,1)$, whose discriminant
+length is $2+2+4+2=10$; row $n=5$ prints $E_8\oplus A_1^{\oplus5}\oplus U$ beside $(15,7,1)$, whose $a$
+is $5$. `coble/lattices-and-moduli/coble-lattice-table.md` has the correct rows and records those two
+forms as superseded. **Severity corrected on re-reading:** the build config already unlists the fragment
+— `writing/.book/_quarto.yml:225` comments it out and the note beside it says "an untitled table fragment
+that no chapter includes. The same table stands, in full and as a chapter at
+`coble/lattices-and-moduli/coble-lattice-table.md`; **keep one of the two**". So a reader never meets the
+wrong table; what remains is an unresolved housekeeping item the book has already marked. Recorded
+because a first report of it called it a live contradiction, which overstated it.
+
+**C28. The GIT model of $\fco$ is stated with the wrong dimension, twice.**
+`research-statement/ResearchStatement.md:111` says $\fco$ "is birational to the moduli space of Coble
+surfaces with $n=1$ boundary component constructed as a GIT quotient $(\PP^2)^{10}\sslash \PGL_3$".
+That quotient has dimension $20-8=12$; $\fco$ has dimension $9$. The same claim appears at
+`coble/coble-moduli/cusp-correspondence-morphism-chain.md`, where it is offered as "an independent
+handle on the dimension $9$" — it cannot be, the two numbers differing by $3$.
+
+**C29. Semifan ray counts and Coxeter ray counts are mislabelled as each other.** The remark
+"Consistency with the dissertation" in `coble/computations/coxiter-results-for-cusp-lattices.md:42` says
+"the dissertation records for these cusps only the ray counts of the semifans (Cusp 1: 4 Type II + 4 Type
+III; Cusp 2: 2 + 8; Cusp 3: 3 + 15)". Those are the *Coxeter* counts: `900-five-cusps.md` gives the
+semifan counts as $2+0$, $2+7$, $2+7$, $4+7$, $3+0$, and the Coxeter counts as $4+4$, $2+8$, $3+15$,
+$4+12$, $5+17$. The remark therefore compares its own CoxIter numbers against the wrong column, and its
+conclusion — "which is a different quantity from any entry above" — is drawn from the mislabelling.
+
+**C30. Two false positives from the swarm, recorded so they are not re-derived.** Member m2 reported that
+`scattone-cusp-method.md:174` calls the four degree-2 boundary lattices the root lattices $A_{17}$ etc.;
+the sentence reads "distinguished by their root sublattices:", and `450-scattone.md:41-42` says the same
+thing. Member m4 reported that `475-our-cusps.md:227` enumerates the five $0$-cusps by
+$\Orth(\ten)$-orbits; the sentence names $\gent$-orbits. Neither is a defect, and both were rejected
+after reading the sources.
+
+**C38. Two pages cannot be published because three declarations they use do not exist.**
+`writing/.book/_quarto.yml` unlists `category-theory/forms-quadratic/Pairings-and-Perfect-Duality.md`
+and `forms-quadratic/Torsion-Pairings-and-Linking-Forms.md`, and records the reason: the first "names
+`@def:dualizable-object`, `@prop:projective-dualizable` and `@prop:orthogonal-galois-connection`, and no
+page declares any of the three", so listing it "publishes three references that render as nothing", and
+the second "builds on that page; it is listed once the three blocks exist". Checked: no file in
+`writing/` declares any of the three, while `Pairings-and-Perfect-Duality.md:63,:90` cites two of them.
+So the missing mathematics is three definitions and propositions in the duality part of the
+category-theory foundations, and until they are written two finished pages of the book are excluded from
+the build by design.
+
+## Authored texts outside the markdown corpus
+
+The corpus is not only `.md`. `writing/` also holds authored talks and drafts, and they are inventoried
+here so that "all of `writing/`" means something.
+
+| text | size | status | contribution |
+| --- | --- | --- | --- |
+| `talks/2026-07 PCRM/pcrm_pres.tex` | 2 266 words | read in full | claims reconciled below; no open problem absent from the list |
+| `talks/2026-07 PCRM/SCU Presentation.tex` | 799 words | read in full | an earlier draft of the same talk, most frame titles literally "TBD", ending before the Coble results; no claim that `pcrm_pres.tex` does not also make |
+| `coble/reference/coble-paper-2026-07-24.pdf` | 87 pp | contents read, key sections checked | the LaTeX draft of *this same book*: its contents correspond section for section to the `coble` tree, and its section 4K is `lattices-and-moduli/moduli-construction.md`, including the `F_{\Nod,2}=???` and the `?` arrow of C1 and C2. No claim outside the markdown corpus found |
+| `coble/reference/coble-paper-outline.pdf` | 2 pp | read in full | an outline naming Main Theorems A–E; each corresponds to an item already in the list (A7/A28 for A, A2/A8 and `thm:cusp_correspondence` for B, A13/A31 for C, A26 for D) |
+| `coble/reference/halphen-surfaces-2026-05-16.pdf` | 3 pp | read in full | a Halphen-surface draft; its content is `adjacent-programs/halphen-index-2-moduli-program.md` and the Halphen note, with no open problem not already listed |
+| `coble/reference/coble-cusps-2024-06-22.pdf` | 4 pp | read | a diagram sketch, no prose claim |
+| `talks/2026-07 PCRM DZG_final.pdf` | 36 pp | read | the rendered `pcrm_pres.tex`, dated June 2026 |
+| `coble/papers/**` | ~140 000 words of `.tex` | not authored here | deposited third-party sources (AE22, ABE22, AB19, YZZ25, Kim20, AE23a, AET23, AEGS23) |
+
+Figure and asset directories (`svg-inkscape`, `tikz`, `*.jpg`, `.assets`, `.book`) hold no prose.
+
+### What the talk claims, and how they stand
+
+Reconciled against the list; a difference is recorded as a difference in the text, not as a mathematical
+error, because the talk is a dated document and the book is the current one.
+
+*Still current, and consistent with the book.* The definitional frames; "75 possibilities" for a
+nonsymplectic involution (the book cites the same count); AE22's Theorem 9.10 that 50 of those 75 cases
+have a semifan tower isomorphic to the normalized KSBA compactification; the theorem that
+$v_0^{\perp}/v_0\cong\generators{2}\oplus E_8(2)\cong(9,9,1)_1$ for the unique
+$v_0\in T_\Co[0]/\Orth^+(T_\Co)$; and a conditional theorem on $\Gamma_{T_\Co,2}$, stated under the
+explicit hypothesis that the orbit $\delta$ stays unique in $T_\En[2]/\Gamma_{\En,2}$ — which is the
+hypothesis the book now records as open (A1, A20).
+
+*Open problems the talk states, all still open in the book.* KSBA = semitoroidal for $\fco$ with an
+explicit semifan and effectively computable stable models (A7, A26, A28); the quarter-singularity stable
+pair $(Y,\frac{1+\epsilon}{2}C+\epsilon\Ram(\idp))$ (A6); the orbit and group identification that the
+conditional theorem above assumes (A1, A20, A31).
+
+*Superseded by the book, and not errors.* The talk conjectures, marked "**pending computation**", that
+$\bd\bbcpt{F_{\Co,2}}$ has **four** $0$-cusps; the book leaves that count open and knows only a lower
+bound of two. The talk's sketch of the proof — distinct $\bar v_i$ in $A_{T_\Co}$, lift, then argue
+non-splitting — is precisely the subgroup-descent step the book now records as unavailable for these
+groups, so the talk is where the route was proposed and the book is where it was found not to close. The
+talk also states `thm:normalization`'s target as a closed subvariety of $F_{\En,2}$, which the book later
+corrected to the ambient quotient $\mathbf D(T_\En)/\Gamma_\En$ and its Heegner divisor.
+
+*Draft slips in the talk, not in the book.* The type is printed $(11,11,11)_1$ and $(11,11,11)_2$ in one
+frame and correctly $(11,11,1)$ in the next; the citations say `Nik79` where the book uses `Nik79a`/`Nik80`,
+and `Ste95a`, a key the book does not use.
+
+*One corroboration.* The talk states the Coble dimension correctly — "$F_\Co\subseteq(\PP^2)^{10}/\PGL_3$,
+and there are 3 discriminant conditions, so $\dim F_\Co=12-3$ agrees with $\dim F_{\I_{1,10}(2)}=11-2$" —
+which is the statement `research-statement/ResearchStatement.md:111` and
+`coble/coble-moduli/cusp-correspondence-morphism-chain.md` lost. That makes C28 drift from a correct
+statement rather than a live disagreement, and the talk is a third place carrying the correct form.
+
+## A note on what is not in this list
+
+Certificates are not mathematics. Several claims in the book are true-as-computed and unproved; they
+appear above only where the *mathematical* statement is at stake (B2, B3). Their evidential status is
+recorded in [GAPS](writing/dissertation/GAPS.md), which is the audit trail and not a problem list.
+
+## Coverage of this list
+
+Complete for the corpus. Every one of the 165 `writing/` files has been read at the depth this list
+needs, by one of two routes.
+
+Read directly, in full: all of `writing/coble` — the eleven chapter directories (`lattices-and-moduli`,
+`computations`, `compactifications`, `degenerations`, `surfaces-and-moduli`, `stable-limits`,
+`cusp-correspondence`, `coble-moduli`, `heegner-report`, `introduction`, `open-problems`) **and** the
+nine that a first pass missed and this pass added: `tables` (both files), `appendix-reference` (both),
+`adjacent-programs` (both), `results-f-en-2` (all three), `coble-surfaces` (all three),
+`scripts/certificates`, `reference-tables`, `papers/README.md`, `extracted-references`. Also read:
+`writing/.book/_quarto.yml`'s chapter list and its deliberately-unlisted register, which is what makes
+the published/unpublished distinction below checkable. The earlier claim in this file that "all 64 files of `coble`" had been read was
+wrong: those nine subdirectories were never opened, and the two largest items in this list (A42, A43,
+and defects C33–C36) came out of them. `writing/lattice-theory` top level, `arithmetic/`,
+`classification/`, `definite/`, `embeddings/`, `examples/`, `hyperbolic/`, `local/`. `writing/dissertation`
+in full: all four parts, including `2-chapter-lattice-theory`'s `000`, `100`, `200`, `300`, `400`, `500`,
+`600`, `700`, and `3-chapter-enriques-k3`'s `000`, `100`, `450`, `475`. `writing/research-statement`,
+`writing/index.md`, and `writing/category-theory/monoidal-stable` and `forms-quadratic`.
+
+Audited by `ultramath` swarm `smvy0k5df` and checked here before entry: the remaining 22
+`category-theory` files (member m3), the five lattice-theory pages listed above (m4),
+`200-examples.md` (m5 and m7 independently), `450-scattone.md` (m2, second pass), the framing text (m1),
+the cross-chapter consistency pass (m8), and a citation-carry audit of all 158 bibliography keys (m6).
+Two member claims were false and are recorded as C30; one was sent back and withdrawn by its author.
+
+**Scope.** "All of `writing/`" is read to mean all authored prose: the 165 `.md` files, the two authored
+`.tex` talks, and the authored drafts deposited as PDF under `coble/reference/`. Deposited third-party
+sources under `coble/papers/` are the literature the book cites, not the book; figures and build assets
+carry no prose. The table above records each named text and what it contributed.
+
+**Read is not the same as published.** `_quarto.yml` deliberately unlists five pages, each with a
+recorded reason. That matters for severity: the stale Coble table (C27) and the missing double dual
+(C14) are on unlisted files, so a reader never meets either; they are housekeeping items the book has
+already marked, not contradictions in the text. C38 is the case where the unlisting itself is the
+defect.
+
+**How the items were obtained.** A40, A42, A43 and C33–C36 come from reading the subdirectories the
+earlier pass skipped. A37 was found by reading the dissertation's chapter 6; C33 is the same defect seen
+from the other side, in the chapter that calls the argument conjectural. C27 and C29 came from the
+consistency pass rather than from reading chapters, which is why the direction was worth running even
+though the reading pass had already covered those chapters.

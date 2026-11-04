@@ -39,6 +39,24 @@ which sends the generator $h$ of $\generators{2}$ to $\tilde e+\tilde f\in U$ an
 Since $\coker \eta$ is torsionfree, $\eta$ is a primitive embedding.
 :::
 
+::: {.proof}
+
+The map is well defined and isometric: $h$ has square $2$ and $\tilde e+\tilde f$ has square $2$, since $\tilde e,\tilde f$ are the isotropic basis of $U$ with $\tilde e\cdot\tilde f=1$; and $\eta$ is the identity on $E_{10}(2)$, which is an orthogonal summand of both sides.
+So $\eta$ is a morphism of lattices of $\mathbf{Lat}_{\bZ}$, and it is injective because it is injective on each summand.
+
+For primitivity, by @prop:primitive-characterization it suffices that $\coker\eta$ be torsion-free, equivalently that $\eta(T_{\Co})$ be saturated in $T_{\En}$.
+Suppose $x\in T_{\En}$ has $mx\in\eta(T_{\Co})$ for some $m\geq1$; the claim is $x\in\eta(T_{\Co})$.
+
+Write $x=x_U+x_{E}$ with $x_U\in U$ and $x_E\in E_{10}(2)$, and $\eta(T_{\Co})=\bZ(\tilde e+\tilde f)\oplus E_{10}(2)$.
+From $mx\in\eta(T_{\Co})$, the $E_{10}$ component gives $mx_E\in E_{10}(2)$, so $x_E\in E_{10}(2)$, since $E_{10}(2)$ is a lattice and in particular saturated in itself as a summand.
+Then $mx_U\in\bZ(\tilde e+\tilde f)$.
+Write $x_U=a\tilde e+b\tilde f$; then $\tilde e+\tilde f$ generates a primitive rank-one sublattice of $U$, because the functional $U\to\bZ$ given by $\tilde e\mapsto1$, $\tilde f\mapsto0$ takes the value $1$ on $\tilde e+\tilde f$.
+A vector pairing to $1$ with a primitive vector witnesses that no integral multiple of it can be reached from a non-integral point, so $a=b$, and $x_U=a(\tilde e+\tilde f)\in\bZ(\tilde e+\tilde f)$.
+Hence $x\in\eta(T_{\Co})$.
+
+The only fact used about $E_{10}(2)$ is that it is a direct summand, so the same argument shows that adjoining a primitive rank-one summand preserves primitivity; the specific form of $E_{10}(2)$ enters only through that.
+:::
+
 ::: {.lemma #lem:sequence_of_embeddings}
 
 There is a sequence of primitive embeddings
@@ -59,6 +77,18 @@ $$
 
 and thus an embedding $\fco \injects \fttz$.
 :::
+
+::: {.proof}
+
+The diagonal map exhibited is isometric on each summand, and it is embedding of lattices by the same argument as @lem:primitive_embedding_eta: a primitive rank-one summand adjoined to a summand that is saturated on both sides stays primitive, the check being that the quotient is torsion-free summand by summand.
+
+Uniqueness up to $\Orth(\lkt)$ is the input from the source and not derived here: it is the rigidity statement of [@AEGS25] for the embedding chain, quoted at @thm:aegs-rigidity.
+What this lemma adds to that is the recognition that the abstract chain of the source is realized by the diagonal map on the two $E_8$ summands, so the chain can be written down in coordinates rather than referred to existentially.
+That coordinate form is what the cusp computations need, since they pick explicit isotropic vectors.
+
+The final clause passes to period domains: an embedding of lattices is an isometry of the associated symmetric spaces, and $\fco\embeds\fttz$ is the induced inclusion of period domains, which is how the boundary strata of the two compactifications are compared.
+:::
+
 
 ::: {.proof}
 
@@ -94,16 +124,16 @@ This follows from [@KK72 §5, Thm.2].
 
 ::: {.theorem #thm:normalization}
 
-$\fco$ is the normalization of a closed subvariety of $\fen$.
+$\fco$ is the normalization of a closed subvariety of the ambient period quotient $\bD(\ten)/\Gamma_\En$, namely of its Heegner divisor $\mch_{-2}/\Gamma_\En$; not of $\fen$, which is the complement of that divisor (@sec-moduli-construction).
 :::
 
 ::: {.proof}
 
 Write $\Gamma_\Co\definedas\Orth^+(T_\Co)^*$ and $\Gamma_\En\definedas\Orth^+(T_\En)^*$, and let
 $$
-f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En = \fen
+f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En
 $$
-be the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta. The argument has four steps: a gluing computation that identifies the stabilizer of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
+be the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta. The target is the ambient period quotient and not the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma_\En$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $k = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f$ lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$ and meets no open complement of it. Conflating the two would make the map land outside its own target. The argument has four steps: a gluing computation that identifies the stabilizer of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
 
 The gluing datum.
 Put $K\definedas \eta(T_\Co)^{\perp T_\En}$.
@@ -163,7 +193,7 @@ Properness and finiteness.
 By @lem:locally_closed_embedding_BB, the map $f$ extends to a morphism $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to \overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore proper.
 A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
 So $\bar f$ carries boundary to boundary, giving $\inverseof{\bar f}(\fen) = \fco$, and $f$ is proper because properness is stable under base change.
-A proper morphism with finite fibres is finite ([Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS)), so $f$ is finite.
+A proper morphism with finite fibres is finite ([@stacks-02LS]), so $f$ is finite.
 Let $Z\definedas f(\fco)$, which is closed in $\fen$ because a finite morphism is closed.
 
 Generic injectivity.
@@ -186,22 +216,13 @@ The proof above replaces that detour by the direct gluing computation, which is 
 
 ::: {.remark #rmk:descent-of-an-equivariant-inclusion title="What the stabilizer statement has to supply"}
 
-The stabilizer step of @thm:normalization is one instance of a general criterion for descending a map to a pair of quotients.
-Let $f\colon A\injects B$ be an inclusion of sets, and let $G_A$ and $G_B$ be groups acting on $A$ and on $B$.
-Then $f$ descends to a map of orbit spaces
-$$
-\bar f\colon G_A\backslash A \to G_B\backslash B
-$$
-precisely when every element of $G_A$ acts on $A$ as the restriction of some element of $G_B$ preserving $f(A)$, that is when
-$$
-\im\bigl(G_A\to\Aut(A)\bigr)
-\;\iscontainedin\;
-\im\bigl(\Stab_{G_B}(f(A))\to\Aut(f(A))\bigr)
-.
-$$
-For the case at hand, $A = \bD(T_\Co)$ with $G_A = \Orth^+(T_\Co)^*$ and $B = \bD(T_\En)$ with $G_B = \Orth^+(T_\En)^*$, so what is needed is that every isometry of $T_\Co$ in $G_A$ extends to an isometry of $T_\En$ preserving $T_\Co$.
-The criterion is a containment, not an equality: for a general pair of groups the stabilizer of $f(A)$ in $G_B$ may restrict to a group strictly larger than the image of $G_A$ without obstructing the descent.
-What a strictly larger restriction costs is injectivity, since two $G_A$-orbits may then be identified in $G_B\backslash B$.
-The gluing computation in the proof above rules that out here: the restriction of $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $\Orth^+(T_\Co)^*$, so the containment is an equality and the only source of non-injectivity left is a point of $\bD(T_\Co)$ lying on a second translate $\inverseof{g}(T_\Co)$.
-That is what the fibre count controls.
+The stabilizer step of @thm:normalization is one instance of a criterion for descending a map to a pair of quotients, and the criterion has a weak form and a strong one that are worth separating.
+Let $f\colon A\injects B$ be an inclusion of sets, with groups $G_A$ and $G_B$ acting on $A$ and on $B$.
+A map of orbit sets $\bar f\colon G_A\backslash A\too G_B\backslash B$ is well defined as soon as $f$ carries orbits into orbits: for every $x\in A$ and every $g_A\in G_A$ there must be some $g_B\in G_B$, allowed to depend on both $x$ and $g_A$, with $g_B f(x) = f(g_A x)$.
+That is all a set-theoretic descent needs, and it is strictly weaker than an equivariance statement.
+The strong form is a uniform assignment, for instance a homomorphism $G_A\too G_B$ with $f\circ g_A = g_B\circ f$ for all $g_A$ at once.
+It is not necessary for $\bar f$ to exist, but it is what the geometric statements here use: it makes $f$ equivariant rather than merely orbit-compatible, it is what identifies quotients rather than just producing a map between them, and it is what any comparison of stabilizers or of orbit decompositions has to stand on.
+For the case at hand, $A = \bD(T_\Co)$ with $G_A = \Orth^+(T_\Co)^*$ and $B = \bD(T_\En)$ with $G_B = \Orth^+(T_\En)^*$, and what the gluing computation above supplies is the strong form, with equality: restriction of $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $G_A$, so $g_A\mapsto\id_K\oplus g_A$ is a genuine homomorphism and $f$ is $G_A$-equivariant, not merely orbit-compatible.
+It is worth naming what that map is, since the weak form would not have given it: the kernel of restriction is $\{1, s_k\}$, where $s_k$ is the reflection in the $(-2)$-vector $k = \tilde e - \tilde f$ --- it fixes $T_\Co$ pointwise and negates $k$ --- so restriction is two-to-one on the stabilizer and the equivariant assignment is its section, the extension fixing $k$.
+Equality of the images does not give injectivity of $\bar f$: two $G_A$-orbits may still be carried into one $G_B$-orbit, and it is the point of $\bD(T_\Co)$ lying on a second translate $\inverseof{g}(T_\Co)$ that the fibre count has to control.
 :::

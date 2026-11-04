@@ -1,0 +1,6 @@
+T_En: rank 12, det 1024 signature (2, 10)
+alpha^2: -2  alpha.e: -1
+u^2: 2
+|elements of norm -4 in E8(2)|: 240
+v in E8(2) has square -4
+alpha2^2: -2 with nonzero components in U and E8(2)

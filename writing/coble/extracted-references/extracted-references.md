@@ -187,10 +187,9 @@ Cited as [@DZ99].
 
 - **Project relevance:** one of the main classical-modern references for the geometry behind the paper's moduli problem.
 
-## GK20 — Rational plane sextics with worse singularities (appendix reference)
+## GK20 — Golla and Kütle, Symplectic isotopy of rational cuspidal sextics and septics (appendix reference)
 
-Bibkey: `GK20` (unchanged; not listed in the citation-key audit — used as-is.
-Note: the original note frontmatter carried only the placeholder title "GK20" with no author or year, so no fuller title is supplied here).
+Bibkey: `GK20`. The work is Golla--Kütle, *Symplectic isotopy of rational cuspidal sextics and septics* (2020, arXiv:2008.10923), which is the entry the key resolves to in the bibliography.
 Cited as [@GK20].
 
 *Abstract.* Appendix reference for rational plane sextics with worse singularities, used to note that rational sextics need not lie in the ten-node Severi stratum.
@@ -199,9 +198,11 @@ Cited as [@GK20].
 
 - **Project relevance:** supports the caveat that the classical Coble construction uses a special generic nodal stratum rather than all rational sextics.
 
-## Hor77 — Eiji Horikawa (1978): On the periods of Enriques surfaces. II
+## Hor77 — Eiji Horikawa (1977): On the periods of Enriques surfaces, II
 
-Bibkey: `Hor77` (imported from note `Hor78`; remapped `Hor78` to `Hor77`, the global key for "Periods II"). Cited as [@Hor77].
+Bibkey: `Hor77`, the note in Proceedings of the Japan Academy 53 (1977), 53--55.
+The periods papers of Horikawa are carried as three keys, and no one of them is a renaming of another: `Hor77` is the 1977 Japan Academy note, `Hor78` is *On the periods of Enriques surfaces. I*, Math. Ann. 234 (1978), 73--88, and `Hor78a` is *On the periods of Enriques surfaces. II*, Math. Ann. 235 (1978), 217--246.
+Cited as [@Hor77].
 
 *Abstract.* Classical period-domain source behind the Horikawa model for Enriques and Coble surfaces.
 

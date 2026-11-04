@@ -1,0 +1,27 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, mounted read-only; repo bound at /repo
+
+T_Co = <2> + U(2) + E8(2);  sigma := L.reflection(e' - f')
+  |det T_Co| = 2048, |A_{T_Co}| = 2048
+  q(e' - f') = -4
+  sigma(e') == f': True;  sigma(f') == e': True
+  sigma fixes zeta and all 8 E8(2) roots: True
+  sigma in O_plus (= Orth^+(T_Co), the spinor kernel over RR): True
+  sigma in stable_orthogonal_group (= ker rho):                False
+  sigma in special_orthogonal_group:                           False
+  classes nonzero: zeta/2 True, e'/2 True, f'/2 True
+  q(e'/2) == q(f'/2) == 0 in the quadratic value module: True
+  q(zeta/2) == 1/2 in the quadratic value module: True
+  b(e'/2, f'/2) == 1/2 in the bilinear value module: True
+  the U(2) block is orthogonal to the <2> and E8(2) blocks: True
+  rho(sigma) transposes e'/2 and f'/2: True
+  rho(sigma) fixes zeta/2 and all 8 root classes: True
+
+CONCLUSION
+  sigma in Orth^+(T_Co) with rho(sigma) in O(q_{U(2)}) x O(q_{E8(2)}) and rho(sigma) != 1,
+  so sigma lies in the congruence preimage rho^{-1}(P) and not in
+  Gamma_Co = Orth^+(T_Co) cap ker(rho): the inclusion is strict, [rho^{-1}(P) : Gamma_Co] >= 2.
+  Every step is an owner call; no contragredient, dual basis, pairing or comparison is built here.
+OK: the congruence group strictly contains the stable group, witnessed by an owner-built isometry

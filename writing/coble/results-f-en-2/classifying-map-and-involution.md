@@ -59,18 +59,29 @@ This argument is presented as the program's intended route, not as a completed p
 
 The statement above is finiteness of $\phi\colon \normalize{B}\to\ksbacpt{\fentwo}$, a morphism of KSBA compactifications, and its proposed proof is the semifan comparison just described.
 It is a different statement from the finiteness of the period map $\fco\to \fen$ established in the normalization theorem (@thm:normalization).
-The two share the criterion -- a proper morphism with finite fibres is finite ([Stacks Project, Tag 02LS](https://stacks.math.columbia.edu/tag/02LS)) -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
+The two share the criterion -- a proper morphism with finite fibres is finite ([@stacks-02LS]) -- and nothing else: on the period side the fibre count is a count of $(-2)$-vectors in a negative definite lattice, whereas here the fibres are controlled by whether the induced semifans coarsen.
 The no-coarsening statement is moreover the same phenomenon as the no-moduli-loss conjecture (@conj:no_moduli_loss), which is itself open.
 :::
 
 ## Zariski's Main Theorem and the classifying isomorphism
 
-::: {.theorem #thm:zariski_main_theorem title="Zariski's Main Theorem (classical)"}
+::: {.theorem #thm:zariski_main_theorem title="Finite birational maps onto a normal variety"}
 
-Let $f\colon X \to Y$ be a birational, finite morphism between normal varieties, with $Y$ proper.
+Let $f\colon X \to Y$ be a finite birational morphism of varieties, with $Y$ normal.
 Then $f$ is an isomorphism.
 :::
 
+::: {.proof}
+
+A finite morphism is affine, so locally $Y = \Spec A$ and $X = \Spec B$ with $B$ a finite $A$-module containing $A$; birationality identifies $\Frac B$ with $\Frac A = K$, giving $A\iscontainedin B\iscontainedin K$.
+Since $Y$ is normal, $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B = A$.
+
+This is the form the classifying map needs, and it is the case of Zariski's Main Theorem in which the map is finite.
+The classical statement assumes quasi-finiteness instead and concludes only that $f$ is an isomorphism onto an open subset [@Har10a, §V.5]; properness of $f$ upgrades that, and a finite morphism is proper.
+Normality of the source is a hypothesis of neither form, so the hypotheses to check below are birationality, finiteness, and normality of the target.
+
+
+:::
 ::: {.remark}
 
 Zariski's Main Theorem (@thm:zariski_main_theorem) is a classical theorem [@Har10a]; a finite birational morphism onto a normal variety is an isomorphism.
@@ -83,17 +94,16 @@ For the Enriques compactification, the classifying map
 $$
 \phi\colon \normalize{B} \to \normksbacpt{\fentwo}
 $$
-is expected to satisfy the four hypotheses of Zariski's Main Theorem (@thm:zariski_main_theorem):
+is expected to satisfy the hypotheses of Zariski's Main Theorem (@thm:zariski_main_theorem):
 
 1. **Birational**: $\phi$ is an isomorphism on the interior $\fentwo$.
 
-2. **Finite**: by the proposed "no coarsening" semifan argument of the finiteness conjecture (@conj:classifying_map_finite).
+2. **Finite fibres**: by the proposed "no coarsening" semifan argument of the finiteness conjecture (@conj:classifying_map_finite).
 
-3. **Normal**: both spaces are normal by construction ($\normalize{B}$ as a normalization, $\normksbacpt{\fentwo}$ likewise).
-
-4. **Proper**: the KSBA moduli stacks are proper [@AEGS25; @Kol23a].
+3. **Normal target**: $\normksbacpt{\fentwo}$ is normal by construction, and $\normalize{B}$ is a normalization.
 
 Granting these, Zariski's Main Theorem would give that $\phi$ is an isomorphism, identifying the geometric KSBA limits with the explicitly constructible semitoroidal boundary.
+Properness of the target is not one of the hypotheses: it enters only through $\phi$ being a map of proper spaces, which it inherits from properness of the KSBA moduli stacks [@AEGS25; @Kol23a].
 :::
 
 ::: {.remark title="Status of the hypotheses"}

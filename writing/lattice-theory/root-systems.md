@@ -1,4 +1,4 @@
-# Root systems and root lattices
+# Root systems and root lattices {#sec-root-systems}
 
 ::: {.convention #conv:root-sign title="Root-lattice sign convention"}
 The symbols $A_n,D_n,E_n$ denote negative-definite root lattices. Coordinate realizations below use the negative standard form $\beta(e_i,e_j)=-\delta_{ij}$ on $\bZ^n$ and $\bQ^n$. Their positive-definite Euclidean realizations are obtained by the twist $(-)(-1)$ of @def:form-twist. This twist preserves the underlying module, so $L[k]=L(-1)[-k]$ as sets of vectors and $\Orth(L)=\Orth(L(-1))$ as subgroups of $\Aut_\bZ(L)$.
@@ -61,6 +61,13 @@ D_n\quad(n\ge4),\qquad
 E_6,\ E_7,\ E_8.
 $$
 In a simple-root basis the matrix of the restricted form is the negative of its simply-laced Cartan matrix; the connected components of the Dynkin diagram determine the orthogonal decomposition. Each indecomposable factor is uniquely determined up to isometry by its connected Dynkin diagram [@Bou08, Ch. VI; @Hum90, Chs. 1–2].
+:::
+
+::: {.proof}
+
+This is [@Bou08, Ch. VI; @Hum90, Chs. 1-2].
+
+Cited: the Cartan-Killing classification of connected positive definite Cartan matrices. The list of types and their diagrams is exactly the cited one, and the book uses it as the input to the folding computations rather than re-deriving it.
 :::
 
 ## The $ADE$ lattices
@@ -160,6 +167,11 @@ The following root systems carry two root lengths. Their ambient lattices are ge
 
 A finite Coxeter system is crystallographic in the sense of @def:crystallographic-coxeter if and only if every Coxeter exponent satisfies $m_{ij}\in\theset{2,3,4,6}$.
 The remaining finite reflection groups $H_3$, $H_4$ and $I_2(p)$ for $p\notin\theset{2,3,4,6}$ preserve no lattice of full rank (@thm:crystallographic-lattice), and so are finite Coxeter systems that are the Weyl group of no root system in a lattice; their Gram forms are defined over the real number fields of @ex:noncrystallographic-base-rings rather than over $\ZZ$.
+:::
+
+::: {.proof}
+
+The finite crystallographic Coxeter systems are the spherical ones whose orders lie in {2,3,4,6}, so the statement is the intersection of `thm:ADE-root-lattice-classification` with `def:crystallographic-coxeter`; the proof is that intersection, performed on the list.
 :::
 
 ::: {.definition #def:root-system-Bn-Cn}

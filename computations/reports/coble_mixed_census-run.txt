@@ -1,0 +1,29 @@
+provider: plain sage (exploratory exact arithmetic), Sage: 11.0.beta5
+
+(i) E8/2E8 class census:
+   distinct nonzero classes reached: 256 of 255
+   odd classes (min norm 2 mod 4): 120 (closed form 120)
+   even classes (min norm 0 mod 4): 135 (closed form 136; 0 belongs here)
+   odd classes reachable by a ROOT (norm 2): 120 = all of them
+   worst minimal norm: odd classes 2, even classes 4
+
+(ii) BAD_S census (A-null):
+   values of ell = 1 + a b - 2(a+b)^2 >= 0 occurring: [0, 1]
+   U-part bits (0, 0): 120 classes
+   U-part bits (1, 1): 1 classes
+   |BAD_S| = 121   (expected 121 = 120 (F3) + 1 (F2))
+
+(iii) BAD_T census:
+   (c-bit, U-bits) (0, (0, 0)): 120 classes
+   (c-bit, U-bits) (0, (0, 1)): 120 classes
+   (c-bit, U-bits) (0, (1, 0)): 120 classes
+   (c-bit, U-bits) (0, (1, 1)): 136 classes
+   |BAD_T| = 496   (expected 496 = 3*120 + 136)
+   odd-c classes in BAD_T (should be empty): 0
+
+(iv) the pairing question (correctly):
+   BAD_S: 121 of 1024 A-null-side q = +-1 classes
+   BAD_T: 496; NOTBAD_T = 528
+   |BAD_S| <= |NOTBAD_T|: no counting argument forces a mixed-wall pairing; hence
+   glues without any (F2),(F3) wall are arithmetically consistent, and glues with them
+   exist (the brick probe carries two).  The pinned Coble glue decides the branch.

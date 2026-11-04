@@ -17,6 +17,16 @@ Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the collection of folded s
 3. The isomorphism is established via an intermediate normalization $\normalize{B}$ of the Zariski closure of the Noether--Lefschetz locus inside the K3 compactification $\ksbacpt{\fttz}$ [@AEGS25 Sec. 6].
 :::
 
+::: {.proof}
+
+Clause (1) is [@AEGS25, Thm. 1] and clause (3) is [@AEGS25, §6]; clause (2) is the part that is not a direct quotation, and it is where the folded semifans of this book enter.
+
+The transport: AEGS identify the normalization of the KSBA compactification with a semitoroidal compactification for a semifan cut out of the cusps of $\fentwo$, and clause (1) is that identity.
+Clause (2) records which cusps are toroidal for the *chosen* semitoroidal structure and which are only semitoroidal, which is a statement about the folded semifans $\semifan{F}_k$ of @sec-toroidal-and-semitoroidal rather than about the AEGS semifan; it follows cusp by cusp from the folding computation, and cusps $2$, $4$, $35$ together with the adjacent $1$-cusps are the ones where the folding is trivial, so the fan is already a genuine fan there.
+Clause (3) names the intermediate object -- the normalization $\normalize{B}$ of the Zariski closure of the Noether-Lefschetz locus inside the K3 compactification -- through which the comparison runs, and that is the only route in the literature that reaches clause (1) at all.
+
+
+:::
 ::: {.notation #not:sterk-cusp-labels title="Two indexings of the boundary"}
 
 The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in the five-cusp example (@ex:fen2_five_cusps). A $1$-cusp is denoted $i_1\dots i_k$ when its closure contains the $0$-cusps $i_1,\dots,i_k$ [@AEGS25 Not. 3.1]; there are nine of them,

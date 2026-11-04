@@ -1,0 +1,10 @@
+dim of tau-invariant forms in H^0(O(4,4)) = 13
+=> |V| = P^12, H_p = {f(p)=0} = P^11
+term total degrees present: [2, 4, 6, 8] (all even => tau-invariant)
+f(p) = 0
+quadratic part at p: x**2 + x*y + 2*y**2   disc b^2-4ac = -7   det Hess = 4ac-b^2 = 7
+chart x0=1,y0=1: Groebner basis (g, g_u, g_v) = [x1, y1]
+chart x0=1,y1=1: Groebner basis (g, g_u, g_v) = [1]
+chart x1=1,y0=1: Groebner basis (g, g_u, g_v) = [1]
+chart x1=1,y1=1: Groebner basis (g, g_u, g_v) = [1]
+exceptional conic: Z1^2 = 2*Y1**2 + Y1 + 1 ; its discriminant in Y1 = -7 (nonzero => smooth conic, D = P^1)

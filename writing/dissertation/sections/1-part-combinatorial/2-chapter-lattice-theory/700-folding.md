@@ -54,6 +54,7 @@ Classical examples in the context of semisimple Lie algebras include:
 
 In the study of $\fentwo$, the folding procedure must be carried out more carefully at the level of lattices, explicitly tracking the explicit twists that folding introduces, along with other parity-related data necessary for distinguishing irreducible components of the associated KSBA stable models, which we describe in the section on ADE surfaces.
 In order to make this theory concrete, we now show how to explicitly carry out the types of folding calculations that occur for $\fentwo$, as well as for some of the exceptional types that do not occur in this specific case, noting the slightly new features that arise (like tracking twists) arise, causing some slight differences in conventions from the presentations of folding given in classical literature.
+
 ::: {#fig-classical-dynkin-foldings .figure}
 \begin{tikzpicture}
   \pic (P) at (0,0) {dynkin folding={involutions={13}, mark=o,

@@ -1,0 +1,35 @@
+provenance: c546077dce79a76eb32e92d080aa9c44e4c67552, Sage 11.0.beta5
+++: rank 3, det 8, sig (1, 2), even True
++-: rank 8, det 256, sig (0, 8), even True
+-+: rank 0, det 1, sig (0, 0), even True
+--: rank 11, det -2048, sig (2, 9), even True
+++ isometric to U(2) perp <-2>: True
++- isometric to E8(-2): True
+-- isometric to <2> perp U(2) perp E8(-2): True
+H (Delta(e)+Delta(f)) as L element: e_2 + e_3 + e_4 + e_5
+  H in (++) piece?  False
+alpha as L element: e_0 - e_1
+  alpha in (++) piece?  False
+  J_Co on e_0 - e_1 -> e_0 - e_1
+  J_Co on e_2 + e_4 -> e_2 + e_4
+  J_Co on e_3 + e_5 -> e_3 + e_5
+  J_Co on e_6 + e_14 -> e_6 + e_14
+  J_Co on e_7 + e_15 -> e_7 + e_15
+  J_Co on e_8 + e_16 -> e_8 + e_16
+  J_Co on e_9 + e_17 -> e_9 + e_17
+  J_Co on e_10 + e_18 -> e_10 + e_18
+  J_Co on e_11 + e_19 -> e_11 + e_19
+  J_Co on e_12 + e_20 -> e_12 + e_20
+  J_Co on e_13 + e_21 -> e_13 + e_21
+  J_Co on e_0 + e_1 -> -e_0 - e_1
+  J_Co on e_2 - e_4 -> -e_2 + e_4
+  J_Co on e_3 - e_5 -> -e_3 + e_5
+  J_Co on e_6 - e_14 -> -e_6 + e_14
+  J_Co on e_7 - e_15 -> -e_7 + e_15
+  J_Co on e_8 - e_16 -> -e_8 + e_16
+  J_Co on e_9 - e_17 -> -e_9 + e_17
+  J_Co on e_10 - e_18 -> -e_10 + e_18
+  J_Co on e_11 - e_19 -> -e_11 + e_19
+  J_Co on e_12 - e_20 -> -e_12 + e_20
+  J_Co on e_13 - e_21 -> -e_13 + e_21
+placement: H^2 = 4, alpha^2 = -2, H.alpha = 0

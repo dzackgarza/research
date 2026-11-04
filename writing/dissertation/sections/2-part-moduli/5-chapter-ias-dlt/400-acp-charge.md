@@ -66,6 +66,12 @@ This imposes the constraint that at most 24 of the components $V_i$ can be non-t
 This result provides a rigidity condition on the combinatorics of K3 degenerations [@FM83, Thm. 2.2], [@Fri15].
 :::
 
+::: {.proof}
+
+The identity is [@FM83, Thm. 2.2].
+A toric anticanonical pair has charge zero, so the components that are not toric are precisely those carrying the total charge $24$; the bound on their number is a bound on the number of positive summands, and needs the individual charges of the components of a Type $\III$ Kulikov model to be non-negative, which is where [@Fri15] is used.
+:::
+
 ::: {.remark}
 The conservation property constrains the possible combinatorial types of $\mcx_0$s and ensures that the total complexity of a degeneration, as measured by the charge, remains constant across the moduli space.
 This invariance establishes the relationship between the KSBA and Baily-Borel compactifications of the moduli space.

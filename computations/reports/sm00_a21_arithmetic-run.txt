@@ -1,0 +1,42 @@
+== 1. the corpus's lattices (report props coble-eigenspaces, coble-transcendental) ==
+  S_Co=U(2)|E8(-2)|<-2> rank 11 det 2048 sig (1, 10) A (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2) even True
+  T_Co=<2>|U(2)|E8(-2) rank 11 det -2048 sig (2, 9) A (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2) even True
+  squares of the 3^8 box in E8(-2): [-60, -52, -48, -44, -40, -36, -32, -28, -24, -20, -16, -12, -8, -4, 0]  (0 and -4 only; every square of E8(-2) is 0 mod 4 and <= 0)
+  E8 roots (square -4) in the box: 88 ; vectors of square -2:  0
+
+== 2. the pair (H,alpha) in S_Co = U(2)|E8(-2)|<-2> ==
+  H^2 = 4  alpha^2 = -2  H.alpha = 0
+  (2H-alpha)^2 = 14 > 0, H.(2H-alpha) > 0: same cone
+  H primitive (H/2 not integral for even lattice): 1
+  alpha primitive: -1/2
+  (H+alpha)/2 and (H-alpha)/2 not in L (even): 1/2 1/2
+
+== 3. root pinning in S_Co:  {beta in S_Co : beta^2=-2, beta.H=0} = {+d,-d} ==
+  parametrise beta = a(h1+h2)+e+c d ; beta.H = 0 forces b=-a ; then beta^2 = -4a^2 + e^2 - 2c^2
+  e^2 in 4Z and e^2 <= 0, so 2a^2 + 2(e^2/4) + c^2 = 1 has the unique solution a=0, e=0, c=+-1
+  integer solutions (a,c,k) of 2a^2+2k+c^2=1 with k>=0: [(0, -1, 0), (0, 1, 0)]
+
+== 4. ten gluings of S_Co|T_Co -> L_K3 ; K = (H,alpha)^perp ==
+  gluing 1 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 2 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 3 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 4 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 5 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 6 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 7 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 8 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 9 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  gluing 10 : L det -1 sig (3, 19) | K det 8 sig (2, 18) A_K (2, 4) q [0, 1/4, 1/4, 1/2, 1, 3/2, 7/4, 7/4]
+  distinct invariants of K over the ten gluings: 1
+  EXPECTED (hand index count): [L:N+K] = 2^12/2^9 = 8, so |det K| = 8^2/|det N| = 8, q_K = -q_N
+
+== 5. the same invariant for three pairs in the standard model U^3|E8(-1)^2 ==
+  alpha = [1, -1, 0, 0, 0, 0, 0, 0] -> det K 8 A_K (2, 4) sig (2, 18)
+  alpha = [0, 0, 0, 0, 1, -1, 0, 0] -> det K 8 A_K (2, 4) sig (2, 18)
+  alpha = [0, 0, 0, 0, 0, 0, 1, 0] -> det K 8 A_K (2, 4) sig (2, 18)
+
+== 6. the weaker reading cannot host bullet 3: <4>|<-2> does not embed in U(2) ==
+  U(2) has rank 2 and det -4, so a rank-2 sublattice of index k has det -4k^2; -8 is not of that form
+  machine: determinants of all index-k sublattices of U(2) for k=1,2,3 lie in {-4,-16,-36} (not -8)
+  =>  no pair (H,alpha) with H^2=4, alpha^2=-2, H.alpha=0 lies in U(2); an invariant lattice U(2)
+      therefore cannot satisfy bullets 2+3 of the authored list.

@@ -1,0 +1,9 @@
+B: rank 11, signature (2, 9), det -1
+the line l = <v+w>: square 0, primitive True
+l^perp/l: rank 9, signature (1, 8), det 1
+   rank 9, signature (1, 8), det 1
+
+so l^perp/l is unimodular of rank 9 and signature (1,8), hence I_{1,8} by the indefinite
+classification, and the isotropic planes through l are exactly the isotropic lines of that quotient.
+Every isometry phi of the quotient extends to B as id_P + phi, which fixes every point of P and
+hence the line l: the restriction is surjective in the split model, with no discriminant condition.

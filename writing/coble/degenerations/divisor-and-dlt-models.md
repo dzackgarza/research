@@ -2,8 +2,8 @@
 
 ::: {.remark}
 
-This section collects three models used to describe degenerations of K3 and Enriques surfaces and their KSBA stable limits: the *dlt* (divisorially log terminal) models of stable involution pairs, the *divisor models* of a degeneration of pairs, and the *half-divisor models* obtained by an involution quotient.
-The three are related: a half-divisor model is the quotient of a divisor model by an involution, and the dlt models supply the birational models on whose strata the associated combinatorial data live.
+This section collects three models used to describe degenerations of K3 and Enriques surfaces and their KSBA stable limits: the *dlt* models of Enriques degenerations, the *divisor models* of a degeneration of pairs, and the *half-divisor models* obtained by an involution quotient.
+The three are related: the dlt model is the quotient of a Kulikov model by the Enriques involution, the half-divisor model is the quotient of a divisor model by the same involution, and the strata of the quotients carry the combinatorial data.
 :::
 
 ::: {.question}
@@ -17,11 +17,11 @@ The dlt, divisor and half-divisor models here are those of the Alexeev--Engel--G
 
 ## dlt models and involution pairs
 
-Here a *dlt model* refers to a relative divisorially-log-terminal model of the degeneration supplying these boundary strata; the definition below is of the associated *stable involution pair* $(X, D, \iota)$.
+Here the *dlt model* of a Kulikov model $\mcx \to (C,0)$ on which $\iota_\En$ acts regularly is the quotient $\mcz \definedas \mcx/\iota_\En$ [@AEGS25 Def. 4.7]; the dual complex of $\mcz_0$ is the boundary stratum, and the definition below records the involution pair $(X, D, \iota)$ it comes from.
 
 ::: {.definition #def:dlt-involution-pair title="dlt models and involution pairs"}
 
-For Enriques surface degenerations we study *stable involution pairs* $(X, D, \iota)$, where $X$ is the K3 cover limit, $D$ is the boundary, and $\iota$ is the involution.
+For Enriques surface degenerations we study *involution pairs* $(X, D, \iota)$, where $X$ is the K3 cover limit, $D$ is the boundary, and $\iota$ is the involution.
 The canonical condition
 $$
 K_X + D \sim 0

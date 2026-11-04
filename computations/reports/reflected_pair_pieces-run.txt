@@ -1,0 +1,6 @@
+(++) rank 3 det 8 sig (1, 2)
+(+-) rank 8 det 256 sig (0, 8)
+(-+) rank 0 det 0 sig (0, 0)
+(--) rank 11 det -2048 sig (2, 9)
+J_Co-invariant rank 11 det 2048
+H = Delta(e)+Delta(f) = (0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)  H^2 = 4  H.alpha = 0

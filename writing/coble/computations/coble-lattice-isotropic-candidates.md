@@ -1,5 +1,4 @@
 ---
-title: Candidate isotropic vectors in T_Co and their transport to T_En and T_dP
 unit: computation
 status: partial
 tags:
@@ -15,7 +14,7 @@ notes: >-
 
 ::: {.remark title="What open problem this addresses"}
 
-[[open-problems|Open problems]] records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\discriminantkernel{T}$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.
+[Open problems](#sec-open-problems) records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\discriminantkernel{T}$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.
 This note records the concrete candidate list and the machinery assembled to settle it.
 :::
 
@@ -43,11 +42,11 @@ $$
 
 Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` returning the minimum of $|\inner{v}{x}|$ over nonzero $x$, together with the full list of inner products.
 
-## The three-way parallel transport
+## The images under the embedding chain
 
 ::: {.construction title="Term-by-term transport along the embedding chain"}
 
-The same 18 vectors are transported term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
+The same 18 vectors are mapped term-by-term along the embedding chain $T_{\Co}\injects \ten\injects \tdp$:
 
 - into $\ten = U \oplus U(2) \oplus E_8(2)$ by $h \mapsto e+f$;
 
@@ -89,4 +88,4 @@ Also recorded, from a separate OSCAR/Julia notebook, the $(r,a,\delta)$ invarian
 Here $\delta$ is computed as "some diagonal entry of the discriminant quadratic form is non-integral", citing AE22 Def.
 2.3 for coparity.
 
-Related: [[cusp-correspondence-morphism-chain|cusp-correspondence morphism chain]], [[computational-toolchain-and-recipe|computational toolchain and recipe]].
+Related: [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe).

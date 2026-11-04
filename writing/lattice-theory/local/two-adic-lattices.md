@@ -1,4 +1,4 @@
-# Local $2$-adic lattices {#sec:local-two-adic-lattices}
+# Local $2$-adic lattices {#sec-local-two-adic-lattices}
 
 ## Nikulin's $2$-adic lattices $V_k$ and $U_k$
 

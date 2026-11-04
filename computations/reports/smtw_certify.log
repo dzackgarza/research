@@ -1,0 +1,92 @@
+==============================================================================
+PART 1.  Lam = U(2)+<-2> and its even overlattices (O-S)
+==============================================================================
+Lam basis e,f,E, Gram = [[0, 2, 0], [2, 0, 0], [0, 0, -2]]
+[Lam]  rank=3  det=8  signature=(1, 2)  even=True
+   3 dual generators; all 7 nontrivial F_2-combinations non-integral: True
+   A_L = (Z/2)^3, det = 8; q-values ['0', '1/2', '1', '3/2']; delta = 1; isotropic classes = 3
+
+index-2 superlattices of Lam inside Lam^v:
+            e/2: det(overlattice) = 8/4 = 2, even = True
+            f/2: det(overlattice) = 8/4 = 2, even = True
+            E/2: det(overlattice) = 8/4 = 2, even = False
+        e/2+f/2: det(overlattice) = 8/4 = 2, even = False
+        e/2+E/2: det(overlattice) = 8/4 = 2, even = False
+        f/2+E/2: det(overlattice) = 8/4 = 2, even = False
+    e/2+f/2+E/2: det(overlattice) = 8/4 = 2, even = False
+   even index-2 overlattices: ['e/2', 'f/2']
+   overlattice e/2: basis (e/2, other generator, E) has Gram [[Fraction(0, 1), Fraction(1, 1), Fraction(0, 1)], [Fraction(1, 1), Fraction(0, 1), Fraction(0, 1)], [Fraction(0, 1), Fraction(0, 1), Fraction(-2, 1)]] == U+<-2>: True
+   overlattice f/2: basis (f/2, other generator, E) has Gram [[Fraction(0, 1), Fraction(1, 1), Fraction(0, 1)], [Fraction(1, 1), Fraction(0, 1), Fraction(0, 1)], [Fraction(0, 1), Fraction(0, 1), Fraction(-2, 1)]] == U+<-2>: True
+
+==============================================================================
+PART 2.  Saturation of Lam in an even unimodular ambient lattice
+==============================================================================
+   combination     square (mod 4)   reason it cannot be 2y
+   e                 0 (mod 4 = 0)    y^2 = 0 needs primitivity of e (fibration lemma)
+   f                 0 (mod 4 = 0)    y^2 = 0 needs primitivity of f (fibration lemma)
+   E                -2 (mod 4 = 2)    y^2 = -1/2, not integral
+   e+f               4 (mod 4 = 0)    y^2 = 1, odd
+   e+E              -2 (mod 4 = 2)    y^2 = -1/2, not integral
+   f+E              -2 (mod 4 = 2)    y^2 = -1/2, not integral
+   e+f+E             2 (mod 4 = 2)    y^2 = 1/2, not integral
+   => {e,f,E} is F_2-independent in L/2L  =>  Lam cap 2L = 2Lam
+   => every S with Lam <= S <= L equals Lam (as S subset Lam^v, 2S subset Lam)
+
+   model L_K3 = U^3+E8(-1)^2: rank 22, det -1, sig (3, 19), even True
+   e^2 = 0, f^2 = 0, 2(e.f) = 4, E^2 = -2
+   model: e       lies in 2L_K3? False
+   model: f       lies in 2L_K3? False
+   model: E       lies in 2L_K3? False
+   model: e+f     lies in 2L_K3? False
+   model: e+E     lies in 2L_K3? False
+   model: f+E     lies in 2L_K3? False
+   model: e+f+E   lies in 2L_K3? False
+
+==============================================================================
+PART 3.  Twist side: types, discriminants, gluing (O-T)
+==============================================================================
+[S_En = U(2)+E8(-2)]  rank=10  det=-1024  signature=(1, 9)  even=True
+   10 dual generators; all 1023 nontrivial F_2-combinations non-integral: True
+   A_L = (Z/2)^10, det = -1024; q-values ['0', '1']; delta = 0; isotropic classes = 528
+[T_En = U+U(2)+E8(-2)]  rank=12  det=1024  signature=(2, 10)  even=True
+   10 dual generators; all 1023 nontrivial F_2-combinations non-integral: True
+   A_L = (Z/2)^10, det = 1024; q-values ['0', '1']; delta = 0; isotropic classes = 528
+[S_Co-twist = U(2)+E8(-2)+<-2>]  rank=11  det=2048  signature=(1, 10)  even=True
+   11 dual generators; all 2047 nontrivial F_2-combinations non-integral: True
+   A_L = (Z/2)^11, det = 2048; q-values ['0', '1/2', '1', '3/2']; delta = 1; isotropic classes = 528
+[T_Co-twist = <2>+U(2)+E8(-2)]  rank=11  det=-2048  signature=(2, 9)  even=True
+   11 dual generators; all 2047 nontrivial F_2-combinations non-integral: True
+   A_L = (Z/2)^11, det = -2048; q-values ['0', '1/2', '1', '3/2']; delta = 1; isotropic classes = 528
+
+   root alpha = e-f in T_En: alpha^2 = -2
+   alpha^perp in T_En: det -2048, sig (2, 9); target T_Co-twist: det -2048, sig (2, 9)
+   alpha = e-f lies in the U summand of T_En, and S_En is perpendicular to T_En in L_K3,
+   so alpha is perpendicular to S_En and S_Co-twist = S_En + Z alpha is orthogonal.
+   det sign rule check: signature (1,10) => det > 0; S_Co-twist det = 2048
+   signature (2,9) => det < 0; T_Co-twist det = -2048
+   [L_K3 : S_En + T_En] = |A_S_En| = 2^10 = 1024
+   [L_K3 : S_Co-twist + T_Co-twist] = |A_S_Co-twist| = 2^11 = 2048
+
+==============================================================================
+PART 4.  Construction side: Lefschetz ranks and the joint rank system
+==============================================================================
+   k=0: chi(Fix I_dP) = -16 -> rk S_dP = 2 (= k+2 = 2)
+   k=0: chi(Fix I_Co) = 0  -> rk S_Co = 10 (= k+10 = 10)
+   k=1: chi(Fix I_dP) = -14 -> rk S_dP = 3 (= k+2 = 3)
+   k=1: chi(Fix I_Co) = 2  -> rk S_Co = 11 (= k+10 = 11)
+   J symplectic with 8 fixed points: chi = 8 -> rk S_J = 14
+   construction k=1  (rk S_Co, rk S_dP, rk S_J) = (11, 3, 14) -> (a_++,a_+-,a_-+,a_--,) = (3, 8, 0, 11)
+   twist             (rk S_Co, rk S_dP, rk S_J) = (11, 10, 21) -> (a_++,a_+-,a_-+,a_--,) = (10, 1, 0, 11)
+   the two quadruples differ => no O(L_K3)-isometry carries one G-action to the other
+   construction side: a_-+ = 0 <=> S_dP subset S_Co <=> S_dP = Lam (as Lam <= S_Co)
+
+==============================================================================
+PART 5.  The authored root: characters
+==============================================================================
+   construction: I_dP preserves D = {Z^2 = X^2+Y^2} in the exceptional P^2 => +[alpha]
+   construction: I_Co fixes D pointwise => +[alpha]
+   twist: I_En(alpha) = -alpha (alpha in T_En), w_alpha(alpha) = -alpha
+   twist: I_Co(alpha) = w_alpha(-alpha) = +alpha
+   => the second twist involution has alpha-character -1, I_dP has +1.
+
+ALL CERTIFICATES PASSED (exact arithmetic).

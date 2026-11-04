@@ -1,0 +1,6 @@
+written: <2> + U(2) + E8(2)        rank 11  sig (2, 9)  det  -2048  two_elementary (11, 11, 1)  |A| 2048
+splitting: U(2) + U(2) + I_{0,7}(2) rank 11  sig (2, 9)  det  -2048  two_elementary (11, 11, 1)  |A| 2048
+
+the two presentations agree in rank, signature, determinant, two-elementary type and |A|
+(the identification of I_{1,7} with I_{1,1} + I_{0,7} is the book's indefinite classification,
+ and twisting distributes over the orthogonal sum, so no further check is needed for the split)

@@ -26,7 +26,7 @@ The irrelevant roots are exactly those the generalized Coxeter semifan collapses
 ::: {.remark}
 
 For the Coble locus one further restriction applies, and it is the content of the rest of this chapter.
-A polarized Coble surface is an Enriques surface whose period lies on the Heegner divisor cut by an admissible root $\delta$, so its stable limits are those Enriques limits lying over $\delta^{\perp}$.
+A polarized Coble surface corresponds to a point of the Heegner divisor $\delta^{\perp}$ cut out by an admissible root $\delta$ in the Enriques period domain, so its stable limits are those Enriques limits lying over $\delta^{\perp}$.
 Making that precise means restricting the semifan $\semifan{F}_{\ram}$ along $\bD(\delta^{\perp})$, which is the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan), and identifying the resulting singularity type, which is the quarter-singularity conjecture (@conj:coble_quarter_singularity).
 :::
 
@@ -59,13 +59,13 @@ Compare the equivariant-triangulation question (@qst:equivariant_triangulation).
 ::: {.remark}
 
 The stable limits below compactify the polarized Coble locus, which we realize inside the moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces: one takes the Coble Heegner divisor cut out inside $\fentwo$ and normalizes it.
-Because the polarized arithmetic group $\gent$ has finite index in the full Enriques group $\Gamma_\En$, a single unpolarized root orbit can split into several polarized orbits.
-Until root-orbit uniqueness is established for $\gent$, the polarized Coble locus is therefore described as a union of *branchwise* quotients, one attached to each orbit of admissible Coble roots, rather than as a single global quotient.
+Because the polarized arithmetic group $\gent$ has finite index in the full Enriques group $\Gamma^K_\En$, a single unpolarized root orbit can split into several polarized orbits.
+Until root-orbit uniqueness is established for $\gent$, the polarized Coble locus is therefore described as the union of the quotients $\bD(\delta^{\perp})/\Stab_{\gent}(\delta)$, one for each orbit of admissible Coble roots, rather than as a single global quotient.
 :::
 
 ::: {.remark}
 
-Each branch carries its own arithmetic group.
+Each branch has its own arithmetic group.
 Fixing an admissible Coble root $\delta$ -- a primitive $(-2)$-vector in the polarized Enriques period lattice -- the group governing the corresponding branch is the image in $\Orth(\delta^\perp)$ of the stabilizer of $\bZ\delta$ inside $\gent$; this is the minimal group making the period-domain inclusion
 $$
 \bD(\delta^\perp) \injects \bD(\ten)
@@ -76,8 +76,10 @@ Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], th
 :::
 ::: {.remark #rmk:gamma-co-2-two-definitions title="The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors"}
 
-The branchwise notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; @sec-moduli-construction defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
-These agree, and the bridge is $T_\Co \cong \delta^{\perp \ten}$ above.
+These notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; @sec-moduli-construction defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
+The bridge $T_\Co \cong \delta^{\perp \ten}$ identifies the two only after restriction to $T_\Co$, because the ambient groups differ: the first lives in $\gent$, which is a proper subgroup of $\Orth(\ten)$, while the second is taken in the full group $\Gamma^K_\En = \Orth(\ten)$.
+The restriction of $\Stab_{\gent}(\ZZ\delta)$ to $T_\Co$ is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en, and its relation to the stable group $\Gamma_\Co$ is @prop:gamma-co-in-heegner-group: it contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$ and is larger by a finite subgroup.
+So the identification of complements settles the line-versus-vector question below and does not by itself identify the two arithmetic groups.
 
 An isometry of $\ten$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so $\Stab(\delta) \iscontainedin \Stab(T_\Co)$.
 Conversely an isometry preserving $T_\Co$ preserves its orthogonal complement in $\ten$, which is the rank-one lattice $\generators{\delta}$, so it sends $\delta \mapsto \pm\delta$.
@@ -92,12 +94,12 @@ The stabilizer of the *line* is the right object: it is what acts on the period 
 
 ::: {.question #qst:coble_root_orbit_uniqueness}
 
-Is the orbit of admissible Coble roots under $\gent$ unique, so that the branchwise polarized Coble locus collapses to a single normalized divisor?
+Is the orbit of admissible Coble roots under $\gent$ unique, so that the union of branches collapses to a single normalized divisor?
 Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\gent$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
 :::
 
 ::: {.warning}
-The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full Enriques group $\Gamma_\En$.
+The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full Enriques group $\Gamma^K_\En$.
 It does not settle the corresponding question for the finite-index subgroup $\gent$, which is what the polarized problem needs.
 :::
 
@@ -136,7 +138,7 @@ In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@H
 
 ::: {.remark}
 
-The local singularity package of the quarter-singularity conjecture (@conj:coble_quarter_singularity) is central to the program but remains unproved; it is precisely the input awaited by the slc and ampleness verifications above.
+The local singularity data of the quarter-singularity conjecture (@conj:coble_quarter_singularity) is central to the program but remains unproved; it is precisely the input awaited by the slc and ampleness verifications above.
 :::
 
 ## The restricted ramification semifan
@@ -166,9 +168,8 @@ After normalization, the KSBA compactification of the polarized Coble locus agre
 
 ::: {.conjecture #conj:no_moduli_loss}
 
-The stable quotient remembers the marked Coble root.
-Geometrically, this memory is carried by the $\frac{1}{4}(1,1)$ singularity of the quarter-singularity conjecture (@conj:coble_quarter_singularity) -- equivalently, by the contracted anti-bicanonical $(-4)$-curve on the resolution -- so that degenerations differing only by their marked root are not identified.
-Without this memory the restricted semifan would be too fine for the actual KSBA boundary, and the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) would fail.
+The stable quotient determines its marked Coble root: the $\frac{1}{4}(1,1)$ singularity of the quarter-singularity conjecture (@conj:coble_quarter_singularity) -- equivalently, the contracted anti-bicanonical $(-4)$-curve on the resolution -- recovers it, so that degenerations differing only by their marked root are not identified.
+Without this injectivity the restricted semifan would be too fine for the actual KSBA boundary, and the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) would fail.
 :::
 
 ::: {.remark}

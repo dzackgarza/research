@@ -1,0 +1,13 @@
+|Orth(A_{T_Co}, q)| = 46998591897600, classes 2048
+the claimed stabilizer order divides it, with quotient 496
+classes of value q = 1: 496   (prop:coble-q-fibers says 496)
+chosen class 1/2 h~_Co: q = 1, doubling gives the zero class: True
+its Orbit-orbit has 496 classes (13.5s), so the stabilizer has order 94755225600
+Stab_{Orth(q)}(1/2 h~_Co) has order 94755225600 (2848.5s)
+isotropic classes: 528
+stabilizer rebuilt inside Orth(q): order 94755225600
+restricted the ambient action through H -> G: FiniteGSets.parent_class
+the restricted action gives 3 orbits on the 528 isotropic classes (767.8s)
+orbits inside the isotropic classes: 3, of sizes [1, 255, 272]
+the singleton orbit is exactly {D.zero()}: asserted, not inferred
+stabilizer generators: 1984

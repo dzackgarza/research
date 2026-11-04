@@ -12,7 +12,7 @@ As such, they are intimately tied to the theory of algebraic K3 surfaces equippe
 For a reduced plane sextic $C$, the double cover of $S$ branched along the proper transform of $C$ is a K3 surface $X$ which can be realized as a degeneration of the universal double cover of an Enriques surface, where $X$ acquires an $A_1$ singularity fixed by the Enriques involution.
 The resulting quotient has a quartic singularity whose resolution is an irreducible smooth rational curve $\tilde C$ satisfying $\tilde C^2 = -4$, and thus by [@Nue15 §3] is a Coble surface.
 
-We will be interested in Coble surfaces in the strong sense, where $\abs{-2K_S} = \theset{C_1 + \cdots + C_n}$ is a single reduced divisor comprised of $n$ disjoint smooth rational curves referred to as *boundary components* of $S$.
+We will be interested in the Coble surfaces for which $\abs{-2K_S}$ consists of the single reduced divisor $C_1 + \cdots + C_n$, comprised of $n$ disjoint smooth rational curves, the *boundary components* of $S$.
 It is known that $1\leq n\leq 10$, and for each such $n$, there is a moduli space $F_{\Co, n}$ of Coble surfaces with $n$ boundary components.
 When $n=1$, the moduli space $\fco \definedas F_{\Co, 1}$ of Coble surfaces can be described as a boundary divisor $\mch_{-2}$ in the 10-dimensional moduli space $F_{\En}$ of unpolarized Enriques surfaces, and thus $\fco$ is 9-dimensional.
 Moreover, $\fco$ was shown to be rational in [@DK13] via a comparison to a moduli space of cuspidal plane quintics.
@@ -38,7 +38,8 @@ Although KSBA compactifications admit strong modular interpretations, their boun
 A recent strategy employed in [@ABE22; @AET23; @AE22; @AEGS25] is to simultaneously leverage the advantages of both semitoric and KSBA compactifications by finding comparison morphisms between them.
 This allows the modular boundary of the KSBA compactification to be studied and classified using the combinatorics of toric geometry, lattice theory, and critically, advances in integral affine geometry and mirror symmetry.
 
-The moduli space $F_\Co$ of Coble surfaces with $n=1$ boundary components admits a Hodge-theoretic period domain description of the form $D(T_\Co)/\Gamma_\Co$ where $T_\Co$ is a fixed lattice and $\Gamma_\Co \definedas \Orth^+(T_\Co)^*$ is the stable orthogonal group preserving the period domain component (an arithmetic subgroup of finite index in $\Orth(T_\Co)$). Its Baily-Borel compactification $\overline{F_{\Co}}^{\bb}$ contains only one 0-cusp $p_0$, and thus the combinatorial data of a semitoroidal compactification is determined by a single $\Gamma_\Co\dash$invariant semifan associated to a lattice at $p_0$.
+The moduli space $F_\Co$ of Coble surfaces with $n=1$ boundary components admits a Hodge-theoretic period domain description of the form $D(T_\Co)/\Gamma_\Co$ where $T_\Co$ is a fixed lattice and $\Gamma_\Co \definedas \Orth^+(T_\Co)^*$ is the stable orthogonal group preserving the period domain component (an arithmetic subgroup of finite index in $\Orth(T_\Co)$). Its Baily-Borel compactification $\overline{F_{\Co}}^{\bb}$ has at least two $0$-cusps: $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors (@thm:unpolarized-cusps), but $\Gamma_\Co$ is not, the two isotropic generators of the $U(2)$ summand lying in different orbits (@lem:stable-orthogonal-not-transitive).
+The combinatorial data of a semitoroidal compactification is therefore a $\Gamma_\Co$-invariant semifan at each $0$-cusp, and the comparison with the KSBA compactification carried out below is the one at the cusp whose associated lattice is $\latI_{1,8}(2) = (9,9,1)_1$.
 A canonical choice one can take is the Coxeter fan, formed by a fundamental domain of the action of the lattice's Weyl group, along with its reflections; see @fig-coxeter-fan-cone.
 Perhaps more naturally, one can also search for a semifan $\mcf$ such that the resulting compactification $\overline{F_\Co}^{\mcf}$ is isomorphic to the KSBA compactification $\overline{F_\Co}$ for a suitably chosen divisor, and indeed this is what we do in this paper.
 To this end, we prove the following:
@@ -64,12 +65,23 @@ Such a polyhedron is computed by Vinberg's algorithm [@Vin75 §1].
 
 ::: {.theorem #thm:main}
 
-There is a semifan $\mcf$ such that there exists a morphism
+There is a collection of semifans $\theset{\mcf_I}$, one at each $0$-cusp of $\fco$, such that there exists a morphism
 $$
-\Psi: (\overline{F_\Co})^{\nu} \to \overline{F_\Co}^{\mcf}
+\Psi: (\overline{F_\Co})^{\nu} \to \overline{F_\Co}^{\theset{\mcf_I}}
 $$
-from the normalization of the KSBA compactification to the semitoroidal compactification associated with $\mcf$.
-The Coxeter fan of $T_{\Co}$ is a refinement of $\mcf$, and stable Coble surfaces in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter diagrams.
+from the normalization of the KSBA compactification to the semitoroidal compactification associated with them.
+At the cusp represented by $v_1$, whose boundary lattice is $\latI_{1,8}(2) = (9,9,1)_1$, the semifan $\mcf_{v_1}$ is the one that the comparison below produces, and the Coxeter fan of $T_{\Co}$ refines it; the remaining cusps are not treated in this paper.
+Stable Coble surfaces in the boundary of $\overline{F_\Co}$ admit explicit descriptions in terms of surfaces associated to sub-Dynkin diagrams of Coxeter diagrams.
+:::
+
+::: {.proof}
+
+This is the book's own theorem and is not proved in this section; the proof is assembled in the results part, whose main statement it is (@thm:fen2_main), from three ingredients.
+
+What can be said here is which part rests on what, since the statement is stated at the front and defended at the back.
+The morphism $\Psi$ is obtained by comparing the KSBA compactification with a semitoroidal one cusp by cusp, so it rests on the cusp computations of @sec-cusp-diagrams-by-moduli-space and @sec-enriques-coble-correspondence, and on the stable limits of @sec-ksba and @sec-geometric-preliminaries; the identification of the normalization with the semitoroidal compactification is @thm:fen2_main.
+That the Coxeter fan refines $\mcf$ is a statement about the reflection group of $T_{\Co}$, proved where that group is computed, in @sec-reflection-groups-and-vinberg.
+And the description of boundary surfaces by sub-Dynkin diagrams is the folding computation of @sec-dynkin-foldings, whose output the last clause summarizes.
 :::
 
 ::: {.remark}

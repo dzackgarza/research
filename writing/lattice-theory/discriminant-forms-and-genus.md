@@ -1,4 +1,4 @@
-# Discriminant forms and the genus
+# Discriminant forms and the genus {#sec-discriminant-genus}
 
 ::: {.convention #conv:discriminant-lattice-notation title="Discriminant-form notation"}
 
@@ -138,6 +138,13 @@ $$
 
 For $R=\bZ$, every spinor genus of an indefinite lattice of rank at least $3$ contains one integral isometry class [@CS10, Ch. 15, Thm. 14].
 :::
+
+::: {.proof}
+
+This is [@CS10, Ch. 15, Thm. 14].
+
+Cited: the spinor class of a lattice in the class group, in the form of Conway-Sloane Chapter 15. The book needs only the existence of the invariant and its compatibility with orthogonal sum, both of which are in the cited theorem.
+:::
 ## Mass
 
 ::: {.definition #def:mass title="Mass of a lattice genus"}
@@ -180,6 +187,13 @@ $$
 [@MH73, Appendix 4].
 :::
 
+::: {.proof}
+
+This is [@MH73, Appendix 4].
+
+Cited: Milgram (and, in this form, van der Blij) as presented in Milnor-Husemoller Appendix 4 -- the eighth-root-of-unity formula, the Brown invariant, and the congruence sigma = e mod 8. All three are the cited statement, and the book uses the congruence as an obstruction on the discriminant form.
+:::
+
 ::: {.corollary #cor:primitive-complement-signature title="Signature congruence for primitive complements"}
 
 Let $\iota\colon S\injects\Lambda$ be a primitive embedding into an even unimodular lattice, and let $\kappa\colon T\injects\Lambda$ represent its orthogonal complement.
@@ -192,4 +206,9 @@ $$
 \quad\text{in }\bZ/8\bZ,
 $$
 and @thm:milgram gives $\signature{S}+\signature{T}\equiv0\pmod8$.
+:::
+
+::: {.proof}
+
+The signature of a primitive complement is the difference of signatures, which is additivity of `def:signature` over the orthogonal splitting of `thm:orthogonal-decomposition`, applied to the embedding whose complement is primitive.
 :::

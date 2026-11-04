@@ -1,4 +1,4 @@
-# Toroidal and semitoroidal compactifications
+# Toroidal and semitoroidal compactifications {#sec-toroidal-and-semitoroidal}
 
 ::: {.remark title="Orientation"}
 
@@ -27,28 +27,36 @@ There is a proper $\Gamma$-equivariant morphism $\torcpt{\FG} \to \bbcpt{\FG}$.
 
 Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mcf_I$.
 
-A semifan relaxes the conditions of a fan by not requiring local finiteness or full support.
-This allows "partial" toroidalization at selected cusps while leaving others untouched or less refined.
+A semifan $\mcf_I$ carries the same data as a fan, except that its cones need only be locally polyhedral in $C_I$ rather than rational polyhedral, together with a compatibility condition at each $1$-cusp: for $I = \ZZ\delta \oplus \ZZ\lambda$ a primitive rank two isotropic lattice, the tiles of the periodic tiling of $I^{\perp}/I$ induced by the cones of $\mcf_I$ containing $\ZZ\lambda$ are of the form $B \times (H_I \otimes \RR)$ for bounded polytopes $B$, and the primitive sublattice $H_I$ is required not to depend on the choice of $\delta\in I$ [@AE23, Def. 5.11; @Loo02, Def. 6.1].
+Local finiteness is not among the relaxed axioms, and every fan is a semifan.
 
-Semitoroidal compactifications sit in a tower of proper birational morphisms:
+When $\overline F$ is semitoroidal the comparison morphisms assemble into a tower of proper birational morphisms:
 $$
 \torcpt{\FG} \too
 \semitorcpt{\FG} \too
 \bbcpt{\FG}
 .
 $$
-They are critical for modeling KSBA boundaries where fans may be infinitely generated or accumulate.
+They are critical for modeling KSBA boundaries where the relevant semifans are not fans.
 :::
 
 ::: {.theorem #thm:tower-semitoroidal}
 
-Any normal compactification admitting a tower
+Let $F$ be a type IV arithmetic quotient and $\overline F$ a normal compactification of $F$.
+Then $\overline F$ is a semitoroidal compactification, for some semifan $\mcf_I$, if and only if it sits between some toroidal and the Baily--Borel compactification, that is if there is a fan $\FG$ and a tower
 $$
 \torcpt{\FG} \too
-\semitorcpt{\FG} \too
+\overline F \too
 \bbcpt{\FG}
 $$
-as in @def:semitoroidal-compactification is isomorphic to a semitoroidal compactification [@AE23, Thm. 1].
+of morphisms over $\bbcpt{\FG}$ [@AE23, Thm. 5.14].
+:::
+
+::: {.proof}
+
+This is [@AE23, Thm. 5.14].
+
+Cited: semitoroidal compactifications of type IV arithmetic quotients are exactly the normal compactifications that are images of a toroidal compactification and dominate the Baily--Borel compactification, a characterization the source proves and records as not previously in the literature. The forward implication is immediate on refining the semifan to a fan; the converse reconstructs the semifan as the images of the cones of maximal dimension. The tower of @def:semitoroidal-compactification is the special case in which $\overline F$ is itself semitoroidal.
 :::
 
 ::: {.remark title="Polarized Coble trace restriction"}
@@ -113,7 +121,7 @@ The KSBA moduli space $\oF_\Gamma$ provides a modular, proper, algebraic compact
 
 ::: {.remark title="Polarized Coble application"}
 
-The Coble-specific stable-pair package extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
+The Coble-specific stable-pair construction extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
 The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see @conj:ksba_semitoroidal_comparison.
 :::
 
@@ -151,6 +159,13 @@ A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if,
 ::: {.theorem #thm:recognizable-semitoroidal}
 
 If $R$ is recognizable, then the normalization of the KSBA compactification $\oF^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mcf_R}$, defined by a specific semifan $\mcf_R$ [@AE23].
+:::
+
+::: {.proof}
+
+This is [@AE23].
+
+Cited: recognizability of a divisor implying the comparison morphism with the semitoroidal compactification, from Alexeev-Engel. The book applies it to the restricted ramification divisor, which is where the hypothesis is checked.
 :::
 
 ::: {.example #ex:recognizable-divisors}

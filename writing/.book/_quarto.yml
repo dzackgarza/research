@@ -17,7 +17,8 @@ project:
   post-render:
     - .assets/copy-resources.sh
 book:
-  title: Writing
+  title: "Coble and Enriques surfaces"
+  subtitle: "Lattices, compactifications, and cusps"
   repo-url: https://github.com/dzackgarza/research
   site-url: https://dzackgarza.github.io/research/
   search: true
@@ -34,7 +35,7 @@ book:
   # subject it is about. So a new page is placed by reading it -- never by
   # appending to a part or inserting beside a similar filename. Filename order is
   # unrelated to dependency order, and here it once produced the exact reverse of
-  # it. See writing/coble/AGENTS.md, "Where a new chapter goes".
+  # it.
   chapters:
     - index.md
     # Part 1. The landing page heads its own first group. Order is
@@ -65,6 +66,7 @@ book:
     - part: Forms and Witt theory
       chapters:
         - category-theory/forms-quadratic/Bilinear-and-Quadratic-Forms.md
+        - category-theory/forms-quadratic/Quadratic-Maps-and-Divided-Powers.md
         - category-theory/forms-quadratic/Bilinear-Forms-on-Algebra-Modules.md
         - category-theory/forms-quadratic/Hyperbolic-Forms-and-Witt-Classes.md
         - category-theory/monoidal-stable/Stable-Categories-of-Modules-with-Duality.md
@@ -89,19 +91,43 @@ book:
         - coble/coble-surfaces/rational-sextic-calculations.md
     # General lattice machinery, complete before any Coble-specific lattice is
     # named. Splitting this from the next part is what keeps either readable.
-    - part: Lattice theory
+    #
+    # The order below is the dependency order of the prose, not the order the files
+    # sit in: the defining pages first (@sec-lattices-discriminant, then
+    # @sec-basic-invariants), then the structure built on them (embeddings,
+    # isometries, reflections, the spinor and Eichler arithmetic), then the genus,
+    # then classification, then the root and Coxeter systems. The
+    # Miranda--Morrison page sits inside classification because it consumes the
+    # 2-elementary decomposition and is consumed by the lattice classification that
+    # follows it. One reference still points forward, and it is named in the part
+    # landing page: @sec-two-elementary-discriminant-classification cites
+    # @thm:two-elementary-classification, which the next page states.
+    - part: lattice-theory/index.md
       chapters:
         - lattice-theory/Lattices-and-Discriminant-Forms.md
-        - lattice-theory/arithmetic/clifford-lifting-and-spinor-obstructions.md
-        - lattice-theory/Isometries-and-Arithmetic-Invariants.md
-        - lattice-theory/lattice-theory.md
-        - lattice-theory/root-systems.md
-        - lattice-theory/Coxeter-Systems-and-Lattices.md
-        - lattice-theory/discriminant-forms-and-genus.md
+        - lattice-theory/basic-invariants.md
+        - lattice-theory/local/two-adic-lattices.md
+        - lattice-theory/arithmetic/levels-and-characters.md
         - lattice-theory/embeddings-and-overlattices.md
+        - lattice-theory/embeddings/orthogonal-complements.md
+        - lattice-theory/Isometries-and-Arithmetic-Invariants.md
+        - lattice-theory/reflections.md
+        - lattice-theory/arithmetic/spinor-norm.md
+        - lattice-theory/arithmetic/eichler-transvections.md
+        - lattice-theory/arithmetic/clifford-lifting-and-spinor-obstructions.md
         - lattice-theory/automorphism-lifting-through-a-gluing.md
-        - lattice-theory/special-lattices-and-transformations.md
+        - lattice-theory/root-systems.md
+        - lattice-theory/discriminant-forms-and-genus.md
+        - lattice-theory/examples/standard-lattices.md
+        - lattice-theory/classification/unimodular-lattices.md
+        - lattice-theory/classification/two-elementary-discriminant-forms.md
+        - lattice-theory/arithmetic/miranda-morrison.md
+        - lattice-theory/classification/two-elementary-lattices.md
+        - lattice-theory/definite/minima-and-regularity.md
+        - lattice-theory/hyperbolic/integral-hyperbolic-index.md
+        - lattice-theory/Coxeter-Systems-and-Lattices.md
         - lattice-theory/invariant-and-coinvariant-lattices.md
+        - lattice-theory/examples/k3-enriques-lattices.md
     # This project's own arithmetic, in dependency order: the discriminant orbits
     # are what the Heegner line is cut out of, and the lifting criterion is stated
     # for the arithmetic group that chapter constructs.
@@ -187,6 +213,25 @@ book:
         - coble/appendix-reference/coxeter-and-dynkin-diagrams.md
         - coble/reference-tables/lattice-and-diagram-conventions.md
         - coble/extracted-references/extracted-references.md
+# Deliberately unlisted prose under the linked parts. A book renders exactly
+# `book.chapters`, so nothing below reaches the site; each reason is recorded
+# because the counterpart rule is "listed, or deliberately unlisted".
+#
+#   category-theory/forms-quadratic/Pairings-and-Perfect-Duality.md
+#     names @def:dualizable-object, @prop:projective-dualizable and
+#     @prop:orthogonal-galois-connection, and no page declares any of the three.
+#     Listing it publishes three references that render as nothing.
+#   category-theory/forms-quadratic/Torsion-Pairings-and-Linking-Forms.md
+#     builds on that page; it is listed once the three blocks exist.
+#   coble/tables/coble-lattices.md
+#     an untitled table fragment that no chapter includes. The same table stands,
+#     in full and as a chapter, at coble/lattices-and-moduli/coble-lattice-table.md;
+#     keep one of the two.
+#   coble/tables/dynkin-diagrams.md
+#     an untitled table fragment, pulled in by `include` from
+#     coble/appendix-reference/coxeter-and-dynkin-diagrams.md, which is its page.
+#   coble/heegner-report/README.md
+#     the build instructions for the standalone report beside it.
 # Assets that pandoc, rather than Quarto, opens must live in .assets/ -- see the
 # note beside `filters:` below. The two Coble bibliographies need no such
 # treatment: they sit inside a symlinked part, so both tools reach them the same way.

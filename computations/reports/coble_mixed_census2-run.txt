@@ -1,0 +1,22 @@
+provider: plain sage (exploratory exact arithmetic), Sage: 11.0.beta5
+
+BAD_T(-2): 496 classes at both box sizes (stable: True)
+BAD_T(-4): 496 classes at both box sizes (stable: True)
+BAD_T(-6): 528 classes at both box sizes (stable: True)
+
+domains: (F2) 1 class; (F3) 120 classes (root classes of E8/2E8)
+(F4) 1 class ([alpha/2])
+
+pairing table for the (T-mixed) question of the dossier:
+  family   S-domain   T-partner norm target   T-partner space
+  (F5)     --          -2 (in NL_2)          496
+  (F2)     1          -4                    496
+  (F3)     120        -4                    496
+  (F4)     1          -6                    528
+
+interpretation: each family is excluded from the one-node image iff the pinned Coble glue
+pairs its S-domain class(es) into the matching T-partner space.  The (F4) mechanism is
+different from (F2)/(F3): at a glued (F4)-class, alpha itself decomposes as x + D with
+each of A = 1 (the A_2-split), i.e. alpha is reducible-effective at that realization --
+outside the tuple's exceptional bullet, hence outside the one-node problem's scope, so
+those strata are excluded with no ampleness computation at all.

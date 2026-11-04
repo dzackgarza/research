@@ -39,33 +39,23 @@ $$
 Thus $s_v\in\Orth(L_K)$.
 :::
 
-::: {.definition #def:reflection-pairing-ideal title="Pairing ideal of a vector"}
-
-For $L\in\mathbf{Lat}_R$ and $v\in L$, the **pairing ideal** is the image submodule
-$$
-I_v\definedas\operatorname{im}\qty{
-\beta_L(-,v)\colon U(L)\longrightarrow R}
-\hookrightarrow R.
-$$
-For $R=\bZ$, it equals $\div_L(v)\bZ$ by @def:lattice-divisibility.
-:::
-
 ::: {.proposition #prop:reflection-integrality title="Integral reflections and their obstruction"}
 
 Let $L\in\mathbf{Lat}_R$ and let $v\in L$ be anisotropic. Write the exact sequence in $R\text{-}\mathbf{Mod}$
 $$
 0\too U(L)\xrightarrow{\iota_L}L_K
-\xrightarrow{q_L}\operatorname{coker}(\iota_L)\too0.
+\longrightarrow\operatorname{coker}(\iota_L)\too0.
 $$
-The reflection $s_v\in\Orth(L_K)$ is induced by a unique integral isometry $\widetilde s_v\in\Orth(L)$ if and only if
+The reflection $s_v\in\Orth(L_K)$ is induced by a unique integral isometry $\widetilde s_v\in\Orth(L)$ if and only if the composite
 $$
-q_L\circ s_v\circ\iota_L=0.
+U(L)\xrightarrow{\;s_v\circ\iota_L\;}L_K\longrightarrow\operatorname{coker}(\iota_L)
 $$
+is zero.
 If the rank-one morphism $R\to U(L)$ determined by $1\mapsto v$ is primitive, this condition is equivalent to the ideal monomorphism
 $$
 2I_v\hookrightarrow\beta_L(v,v)R
 $$
-inside $R$.
+inside $R$, for the divisibility ideal $I_v$ of @def:lattice-divisibility.
 :::
 
 ::: {.proof}

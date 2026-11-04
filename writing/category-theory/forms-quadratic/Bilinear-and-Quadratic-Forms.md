@@ -334,6 +334,13 @@ $$
 is an isomorphism [@MH73, I §3.1].
 :::
 
+::: {.proof}
+
+This is [@MH73, I §3.1].
+The argument needs nothing of $M$: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ equals $b(t_0,\iota(t))$ for a unique $t_0\in T$ by perfectness of $b|_T$, and then $m-\iota(t_0)\in T^{\perp}$; injectivity is that $T\cap T^{\perp}$ is the kernel of the perfect form $b_T$.
+So the statement holds with $M$ an arbitrary bilinear module, not only a nondegenerate lattice, which is why the hypothesis names only $T$.
+:::
+
 ## Gram matrices and the determinant {#sec-gram-determinant}
 
 ::: {.proposition #prop:gram-matrix-free-module title="Gram matrix"}
@@ -348,6 +355,12 @@ a finite sum by finite support of the coordinates.
 Every family $(G_{ij})_{i,j\in I}$ in $R$ arises uniquely in this way.
 :::
 
+::: {.proof}
+
+The first claim is bilinearity applied to two finite sums, and the second is that a bilinear form is determined by its values on pairs of basis vectors, with the displayed formula reconstructing it.
+This is the standard bijection between forms and matrices on a free module [@MH73, I §2.1]; it is stated for an arbitrary index set, which is what the finite support of the coordinates supplies.
+:::
+
 ::: {.proposition #prop:gram-congruence title="Congruence"}
 
 Let $M$ be free with basis $e_1,\dots,e_n$ and Gram matrix $G=\bigl(b(e_i,e_j)\bigr)$ as in @prop:gram-matrix-free-module.
@@ -357,6 +370,15 @@ $$
 G'=P^{\mathsf T}GP,
 $$
 and two Gram matrices present isomorphic forms exactly when they are congruent in this sense [@MH73, I §2.3].
+:::
+
+::: {.proof}
+
+If $e'_j=\Sum_iP_{ij}e_i$ then
+$$
+G'_{ij}=b(e'_i,e'_j)=\Sum_{k,l}P_{ki}\,G_{kl}\,P_{lj}=(P^{\mathsf T}GP)_{ij}
+$$
+by bilinearity; and conversely an invertible $P$ defines a second basis $e'$ of the same form, so congruent matrices are the Gram matrices of one form in two bases [@MH73, I §2.3].
 :::
 
 ::: {.definition #def:cartan-matrix title="The Cartan matrix"}
@@ -407,12 +429,19 @@ Under orthogonal sum the rank adds and the determinant multiplies [@MH73, I §3]
 
 Let $b$ be skew-symmetric on a free module with basis $e_1,\dots,e_n$.
 Then $b$ is alternating if and only if $b(e_i,e_i)=0$ for every $i$.
-For $x=\Sum_ix_ie_i$,
+:::
+
+::: {.proof}
+
+For $x=\Sum_ix_ie_i$, bilinearity gives
 $$
 b(x,x)=\Sum_i x_i^{2}\,b(e_i,e_i)+\Sum_{i<j}x_ix_j\bigl(b(e_i,e_j)+b(e_j,e_i)\bigr),
 $$
-and skew-symmetry kills the second sum.
-
+a finite sum, and skew-symmetry makes $b(e_i,e_j)+b(e_j,e_i)=0$, so
+$$
+b(x,x)=\Sum_i x_i^{2}\,b(e_i,e_i).
+$$
+If every $b(e_i,e_i)$ vanishes then $b(x,x)=0$ for every $x$; conversely $b(e_i,e_i)=0$ is the case $x=e_i$.
 :::
 
 ::: {.remark}
@@ -456,6 +485,11 @@ If $M$ and $N$ are free of ranks $m$ and $n$ with Gram matrices $G_M$ and $G_N$,
 $$
 \det(b_M\tensor_R b_N)=\det(b_M)^{\,n}\det(b_N)^{\,m}.
 $$
+:::
+
+::: {.proof}
+
+The Gram matrix is the Kronecker product because $(b_M\tensor b_N)(e_i\tensor f_a,e_j\tensor f_b)=b_M(e_i,e_j)b_N(f_a,f_b)$ by @def:form-tensor, and the determinant identity follows from $\det(A\tensor B)=\det(A)^{n}\det(B)^{m}$ [@MH73, I §5.3], which is the multiplicativity of the determinant applied to the factorization $A\tensor B=(A\tensor I_n)(I_m\tensor B)$.
 :::
 
 ::: {.definition #def:form-twist title="Twisting"}
@@ -515,10 +549,20 @@ For a nondegenerate form every component has radical dimension $0$ and is writte
 Let $F$ be an ordered field and let $b$ be a perfect symmetric bilinear form on a finite-dimensional $F$-vector space $V$.
 Then $V\cong V^{+}\perp V^{-}$ with $b$ positive definite on $V^{+}$ and negative definite on $V^{-}$, and the two dimensions depend only on the isomorphism class of $(V,b)$: $\dim V^{+}$ is the greatest dimension of a positive definite subspace of $V$ [@MH73, III §2.5].
 So the signature of @def:signature is $(\dim V^{+},\dim V^{-},0)$ and $p+q=\dim V$.
+For a degenerate $b$ the same conclusions hold with $r=\dim\radic(V)$ nonzero, and $p+q+r=\dim V$.
+:::
 
-For a degenerate $b$, choose a complement $N$ to $\radic(V)$ in $V$.
-Every pairing involving $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$ and $b|_N$ is nondegenerate, hence perfect because $N$ is finite dimensional.
-Applying the above to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$, so $p+q+r=\dim V$ in every case.
+::: {.proof}
+
+This is [@MH73, III §2.5].
+The one hypothesis of the book's that has to be spent is that an ordered field has characteristic $0$, hence $2$ is a unit and
+$$
+2\,b(u,v)=b(u+v,u+v)-b(u,u)-b(v,v).
+$$
+That identity is what guarantees a vector of nonzero square and hence, by @thm:orthogonal-decomposition, an orthogonal basis: without it a perfect symmetric form over a field of characteristic $2$ need have none, and the diagonalization argument does not start.
+Given an orthogonal basis, $V=V^{+}\perp V^{-}$ with the two summands definite, and $\dim V^{+}$ is maximal among positive definite subspaces because such a subspace meets $V^{-}$ only at $0$.
+
+The degenerate clause is not part of the cited statement and is derived here: for a complement $N$ of $\radic(V)$, every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
 :::
 
 ::: {.definition #def:definiteness title="Definiteness"}
@@ -537,7 +581,6 @@ Then $b$ is
 - *hyperbolic*, or of Lorentzian signature, if $n\geq2$ and $(p,q,r)=(1,n-1,0)$;
 
 - *parabolic* if $n\geq2$ and $(p,q,r)=(0,n-1,1)$.
-
 :::
 
 ::: {.convention}
@@ -558,7 +601,7 @@ $$
 so its Gram matrix is $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$, its form is perfect and even, and its signature over an ordered field is $(1,1,0)$.
 
 A perfect symmetric form $b$ on $M$ is *split* if $M$ has a direct summand $N$ with $N=N^{\perp_b}$ [@MH73, I §6.1].
-Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes [@MH73, I §6.3]; this applies to a field of characteristic other than $2$.
+Over a ring whose finitely generated projective modules are free and in which $2$ is a unit, a split form is an orthogonal sum of hyperbolic planes, which is @thm:metabolic-is-hyperbolic; this applies to a field of characteristic other than $2$.
 :::
 
 ::: {.definition #def:witt-index title="Witt index"}
@@ -579,6 +622,18 @@ V\cong S\perp A
 $$
 with $S$ split and $A$ anisotropic [@MH73, III §1.1], and $A$ is determined up to isomorphism by the Witt class of $V$ [@MH73, III §1.7].
 Here $\dim S=2\,i(V)$ and $\dim A=\dim V-2\,i(V)$.
+:::
+
+::: {.proof}
+
+This is [@MH73, III §1.1 and §1.7].
+Two of the clauses are where the hypotheses are spent.
+
+Existence does not need $2$ to be a unit: if $v$ is isotropic and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
+So the induction produces $S\perp A$ with $A$ anisotropic over any field.
+
+What is cited rather than derived is (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace [@MH73, III §1.2], and (ii) Witt cancellation for the uniqueness of $A$ [@MH73, III §1.7].
+Neither is bookkeeping: the first fails without the hypothesis on $A$, since $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic with index $1$ while neither summand contains an isotropic vector, and the standard proof of the second splits a rank-one summand off both sides, which needs a vector of nonzero square and so is not available in characteristic $2$.
 :::
 
 ::: {.example #ex:witt-index-over-Q title="Witt index and signature"}

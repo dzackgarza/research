@@ -26,7 +26,7 @@ Thus the enumeration of boundary components reduces to a purely lattice-theoreti
 
 ::: {.remark title="Scattone’s 1987 memoir"}
 
-Scattone's 1987 memoir [@Sca87] carries out this classification lattice-theoretically, with essentially no Hodge-theoretic machinery.
+Scattone's 1987 memoir [@Sca87] carries out this classification by lattice theory, without Hodge-theoretic input.
 Its three technical ingredients are:
 
 - **Discriminant-form analysis**: separating boundary components by their discriminant quadratic forms;
@@ -49,6 +49,15 @@ Let $L$ be a nondegenerate lattice and $v\in L$ an arbitrary (not necessarily is
 Then $v^* \definedas v/\div_L(v)\in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\div_L(v)$.
 
 In particular $\div_L(v)$ divides $\abs{A_L} = \abs{\disc{L}}$.
+:::
+
+::: {.proof}
+
+The two clauses are the standard divisibility facts for a vector in a nondegenerate lattice, proved here because the Eichler criterion below is stated in terms of the same pair.
+
+Both clauses come from the divisibility of @def:lattice-divisibility: $v^*=v/\div_L(v)$ lies in $L^\#$ because $\beta_L(v^*,x)=\beta_L(v,x)/\div_L(v)$ is an integer for every $x$, and it is primitive there because any $m$ with $v^*\in mL^\#$ would give $v\in m\div_L(v)L$, forcing $m=\pm1$ by primitivity of $v$ in $L$.
+Its image in $A_L$ has order exactly $\div_L(v)$, that being the least $n$ with $nv\in L\cdot\div_L(v)$.
+Since $A_L$ is finite of order $\abs{\disc L}$, the order of an element divides the order of the group, which is the last clause.
 :::
 
 ::: {.remark}
@@ -76,6 +85,16 @@ $$
 Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group [@Eic74; @Sca87].
 :::
 
+::: {.proof}
+
+This is [@Eic74] with the formulation of [@Sca87].
+
+The class $[v^*]\in A_L$ of @prop:coble-divisibility-discriminant determines $\div_L(v)$, because $\div_L(v)$ was shown above to be the order of $[v^*]$; so the pair $(\div_L, [v^*])$ listed first and the pair $(\div_L, v/\div_L\bmod L)$ listed second carry the same information, and the two phrasings of the criterion agree.
+What the criterion says is that for $L$ containing $U^2$ these invariants are complete: length and discriminant class together determine the orbit under the subgroup acting trivially on $A_L$, so no further invariant separates two primitive vectors of equal length and equal class.
+
+The hypothesis $U^2$ is what the transvections need: an Eichler transvection in the direction of an isotropic $e\in L$ with a partner $f$ satisfying $\beta_L(e,f)=1$ moves $v$ by an integral multiple of $e$ without changing $v$'s class in $A_L$, and two summands give enough room to move any primitive $v$ to any $w$ with the same invariants.
+:::
+
 ::: {.theorem #thm:eichler-transvection title="Scattone’s condition for Eichler transvection orbits"}
 
 Let $L$ be an even lattice admitting a splitting $L \isoto U^{2}\oplus M$ with $M$ an arbitrary lattice, and fix $k\in\ZZ$.
@@ -88,6 +107,13 @@ v \sim_{E(L)} w
 ,
 $$
 where $E(L)$ is the **Eichler transvection group** and $\sim_{E(L)}$ denotes $E(L)$-equivalence [@Sca87].
+:::
+
+::: {.proof}
+
+This is [@Sca87, Ch. 1].
+The relation to @thm:scattone-eichler-criterion: this one fixes the length $k$ and asks for equivalence under the transvection subgroup $E(L)$, whereas Eichler's criterion asks for equivalence under the full discriminant kernel.
+Since $E(L)\leq\discriminantkernel{L}$ by definition, equivalence under $E(L)$ implies equivalence under the kernel, so the criterion here is finer; the hypothesis $U^2$ is the same in both, being what makes the transvections act.
 :::
 
 ::: {.remark}
@@ -112,6 +138,14 @@ Let $\eta_1, \eta_2\in T$ be primitive isotropic vectors satisfying
 3. $\eta_1 \equiv \eta_2 \pmod{pT}$.
 
 Then there exists an isometry $\phi\in\discriminantkernel{T}$ with $\phi(\eta_1) = \eta_2$ [@Ste91].
+:::
+
+::: {.proof}
+
+This is [@Ste91].
+
+The three hypotheses are not redundant. Lengths alone would not separate the divisibility classes, and the congruence modulo $pT$ is what pins the discriminant class $[\eta^*]$ through @prop:coble-divisibility-discriminant, since $\eta/p$ differs from $\eta'/p$ by an element of $T$ precisely when the two agree modulo $pT$.
+So the statement is a form of @thm:eichler-transvection adapted to isotropic vectors of arbitrary divisibility, where $E(T)$ is replaced by the discriminant kernel itself; that is why the conclusion is stated for $\discriminantkernel{T}$ and not for a transvection subgroup.
 :::
 
 ::: {.remark}

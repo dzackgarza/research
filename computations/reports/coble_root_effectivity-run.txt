@@ -1,0 +1,31 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, read-only; repo bound at /repo
+
+Pic(S) = I_{1,10} = <H, E_1, ..., E_10> (prop:coble-invariant-lattice)
+  K_S = -3H + Sum E_i: K_S^2 = -1
+  h_Co = F_1 + F_2 = 6H - 2(E_1+..+E_8) - E_9 - E_10: square 2, h_Co.K_S = 0
+  its pullback h~_Co in S_Co = f^*Pic(S): square 4
+
+the root line of h~_Co^perp (2 vectors):
+  alpha = [3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1] square -2, alpha.h~ = 0, equals -K_S by coordinates: True
+  alpha = [-3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]     square -2, alpha.h~ = 0, equals -K_S by coordinates: False
+
+  -K_S = 3H - Sum E_i: square -1 (a (-1)-class), and the two roots are +- its pullback
+  so the pair of roots is {f^*(-K_S), -f^*(-K_S)} = {alpha, -alpha}, with alpha the anticanonical
+  class upstairs.
+
+SUMMARY
+  Coordinates: the two roots are +-(3f^*H - Sum f^*E_i), with preimages +-(3H - Sum E_i) = -+K_S.
+  Definition, [@DK13] section 3: |-K_S| = empty, |-2K_S| nonempty, S the blowup at the ten nodes of
+  the plane sextic C, so that [C] = 6H - 2 Sum E_i = -2K_S.
+  Branch downstairs, ramification upstairs: the branch divisor is C in S; the ramification divisor
+  is R = f^{-1}(C) in X, and f^*[C] = 2[R].  Hence [R] = f^*[C]/2 = f^*(-K_S) = alpha: alpha is
+  the class of the ramification curve, so it is effective with a geometric witness.
+  2alpha = f^*[C] = 2[R] is therefore effective as twice R; exactly one of +-alpha is effective,
+  and it is +alpha, since -alpha = [R'] with R' effective would make R + R' principal with both
+  terms effective, forcing both to vanish.  The sign is resolved: the retained root is +alpha.
+  Still open, and separate: whether H = h~_Co = f^*h_Co is nef and big; and the identification of
+  I_dP with the del Pezzo involution of the cover.  The coordinate check above certifies neither.
+OK: the retained root identified and shown effective by its ramification divisor; sign resolved

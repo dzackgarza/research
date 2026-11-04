@@ -1,4 +1,4 @@
-# Nodal Enriques Surfaces
+# Nodal Enriques surfaces {#sec-nodal-enriques-lattices}
 
 The lattices for $S_{\Nod}$ comes from [@DK13 Prop. 3.1].
 There is a primitive embedding

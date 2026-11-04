@@ -15,14 +15,14 @@ notes: |-
 # Orbits of isotropic vectors and the Tits building of a cusp configuration {#sec-isotropic-orbits-and-tits-buildings}
 
 
-The enumeration of $\Orth(T)$- and $\Gamma$-orbits of primitive isotropic vectors in $T_\Co$ is left open in [[open-problems|open problems]], where it blocks the uniqueness of the Baily--Borel $0$-cusp.
+The enumeration of $\Orth(T)$- and $\Gamma$-orbits of primitive isotropic vectors in $T_\Co$ is left open in [open problems](#sec-open-problems), where it blocks the uniqueness of the Baily--Borel $0$-cusp.
 Two published algorithm families answer that question for indefinite lattices; this page states what each computes and under which hypotheses.
 
 ## Why the orbit count is the cusp count
 
 ::: {.remark title="The correspondence and the invariants that separate orbits"}
 
-[[scattone-cusp-method|The Scattone cusp method]] records the correspondence and its separating invariants: for $T$ of signature $(2,n)$ and an arithmetic $\Gamma\leq\Orth(T)$, the $0$-cusps of the Baily--Borel compactification are the $\Gamma$-orbits of primitive isotropic lines of $T$ and the $1$-cusps are the $\Gamma$-orbits of primitive isotropic planes, and the pair $\bigl(\div_T(v), [v^*]\bigr)$ of @prop:coble-divisibility-discriminant separates those orbits under the hypotheses of @thm:eichler-criterion and @thm:sterk-orbit.
+[The Scattone cusp method](#sec-scattone-cusp-method) records the correspondence and its separating invariants: for $T$ of signature $(2,n)$ and an arithmetic $\Gamma\leq\Orth(T)$, the $0$-cusps of the Baily--Borel compactification are the $\Gamma$-orbits of primitive isotropic lines of $T$ and the $1$-cusps are the $\Gamma$-orbits of primitive isotropic planes, and the pair $\bigl(\div_T(v), [v^*]\bigr)$ of @prop:coble-divisibility-discriminant separates those orbits under the hypotheses of @thm:eichler-criterion and @thm:sterk-orbit.
 :::
 
 ::: {.remark title="The building of a lattice of signature $(2,n)$"}
@@ -56,6 +56,23 @@ Then
 Each holds a fortiori for any subgroup of $\Orth(L)$, so a failure of any one of them refutes equivalence under every group considered here.
 :::
 
+::: {.proof}
+
+All three are invariance under an isometry, and none needs $v_i$ isotropic.
+
+(1) $\phi$ preserves the form, so $v_2^2=\phi(v_1)^2=v_1^2$.
+
+(2) $\phi$ induces an isomorphism of the dual lattices, so $\beta_{L}(\phi v_1,\phi x)=\beta_L(v_1,x)$ shows that the divisibility ideals of @def:lattice-divisibility agree, hence $\div_L(v_1)=\div_L(v_2)$ as positive generators of the same ideal.
+For the classes: $\phi$ carries $v_1/\div_L(v_1)$ to $v_2/\div_L(v_2)$ because it is linear and preserves the divisibility, and it passes to the quotient $A_L=L^\#/L$ because it maps $L$ to $L$; so the induced automorphism of $A_L$ sends $[v_1^*]$ to $[v_2^*]$ by @def:lattice-discriminant-class.
+
+(3) $\phi(v_1)=v_2$ gives $\phi(v_1^{\perp L})=v_2^{\perp L}$: if $x\perp v_1$ then $\beta(\phi x,v_2)=\beta(x,v_1)=0$, and conversely by applying $\phi^{-1}$.
+The restriction is an isometry onto, hence an isometry of lattices, so the complements are isometric and by @def:discriminant they have the same discriminant form.
+
+The last sentence is the practical content: each condition is a necessary condition on any orbit, so a pair failing one is separated by every subgroup of $\Orth(L)$ at once, and the computations of this page use that to discard candidates without knowing the group.
+
+The necessary conditions on an isotropic orbit are the invariants of `prop:coble-divisibility-discriminant` together with the building-theoretic restriction that an isotropic vector lies in a chamber of the Tits building determined by its class.
+:::
+
 ::: {.remark title="The definite case"}
 
 Algorithm 2.1 of [@Daw22] decides $\Gamma$-equivalence of $v_1, v_2$ with $v_1^2 = v_2^2 \neq 0$ under the hypothesis that $v_1^{\perp L}$ is definite.
@@ -71,7 +88,7 @@ $$
 \Orth(L)\too\Orth(q_L)
 $$
 is surjective.
-This is the same surjectivity that Nikulin's criteria supply for a $2$-elementary lattice with $r > a$ [@Nik80], and it is the hypothesis under which [[open-problems|open problems]] reduces the $T_\Co$ orbit problem to $A_{T_\Co}$.
+This is the same surjectivity that Nikulin's criteria supply for a $2$-elementary lattice with $r > a$ [@Nik80], and it is the hypothesis under which [open problems](#sec-open-problems) reduces the $T_\Co$ orbit problem to $A_{T_\Co}$.
 Without it the discriminant data does not determine the orbit, and the algorithm decides nothing.
 :::
 
@@ -130,7 +147,7 @@ $$
 M \;=\; U\oplus U(2)\oplus E_8^{\oplus 2},
 $$
 with $E_8$ negative definite, since no other assignment of the shorthand to scalings and multiplicities of $U$ and $E_8$ has rank $20$.
-This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in which the root configuration $\Phi_{(18,2,0)}$ and the folded Sterk diagrams are written ([[root-vectors-and-folded-sterk-diagrams|root vectors and folded Sterk diagrams]]), and in which the embedding chain $T_\Co\injects \ten\injects \tdp$ terminates ([[coble-lattice-isotropic-candidates|Coble lattice isotropic candidates]]). The isotropic-orbit algorithms are therefore already stated for the ambient lattice of this project, and the residue is their transport along that chain.
+This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in which the root configuration $\Phi_{(18,2,0)}$ and the folded Sterk diagrams are written ([root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams)), and in which the embedding chain $T_\Co\injects \ten\injects \tdp$ terminates ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)). The isotropic-orbit algorithms are therefore already stated for the ambient lattice of this project, and the residue is their transport along that chain.
 :::
 
 ::: {.remark title="Scope of the exercised cases"}
@@ -141,7 +158,7 @@ The resulting orbit counts are not part of the record.
 
 ::: {.remark title="The implementation named in the recipe"}
 
-Step 6 of the recipe in [[computational-toolchain-and-recipe|the computational toolchain and recipe]] asks for orbit representatives through the function `vector_orbit_representatives`, which `sage-indefinite-port` owns. That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the two-elementary registry, are the invariants under which the orbit representatives it returns are recognized.
+Step 6 of the recipe in [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe) asks for orbit representatives through the function `vector_orbit_representatives`, which `sage-indefinite-port` owns. That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the table of $2$-elementary lattices keyed by $(r,a,\delta)$, are the invariants under which the orbit representatives it returns are recognized.
 :::
 
 ## What remains for the Coble lattices
@@ -151,7 +168,7 @@ Step 6 of the recipe in [[computational-toolchain-and-recipe|the computational t
 The algorithms above decide orbit equivalence for a fixed indefinite form and a fixed group.
 For $T_\Co = \generators{2}\oplus E_{10}(2)$ the remaining inputs are the group and the lift: the orbits are wanted for $\Orth(T_\Co)$, for $\discriminantkernel{T_\Co}$ and for $\Gamma_\Co$, which differ, and the reduction to $A_{T_\Co}\cong(\ZZ/2\ZZ)^{11}$ requires the surjectivity hypothesis above together with the lifting statement of @thm:sterk-orbit.
 Every primitive isotropic vector of $T_\Co$ has $\div_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so the divisibility half of condition (2) of @prop:orbit-necessary-conditions separates nothing there, and the class $[v^*]\in A_{T_\Co}$ is the whole of that invariant.
-The candidate isotropic vectors of $T_\Co$ and the three-way transport of each along $T_\Co\injects \ten\injects \tdp$ are recorded in [[coble-lattice-isotropic-candidates|Coble lattice isotropic candidates]]; running the orbit solver on them is the step that would replace the vector-by-vector table with a count.
+The candidate isotropic vectors of $T_\Co$ and the three-way transport of each along $T_\Co\injects \ten\injects \tdp$ are recorded in [Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates); running the orbit solver on them is the step that would replace the vector-by-vector table with a count.
 :::
 
-Related: [[scattone-cusp-method|Scattone cusp method]], [[coble-lattice-isotropic-candidates|Coble lattice isotropic candidates]], [[computational-toolchain-and-recipe|computational toolchain and recipe]], [[cusp-correspondence-morphism-chain|cusp-correspondence morphism chain]], [[open-problems|open problems]].
+Related: [Scattone cusp method](#sec-scattone-cusp-method), [Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe), [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain), [open problems](#sec-open-problems).

@@ -1,4 +1,4 @@
-# Discriminant orbits of the Coble lattice {#sec:discriminant-orbits}
+# Discriminant orbits of the Coble lattice {#sec-discriminant-orbits}
 
 ::: {.remark}
 
@@ -75,6 +75,9 @@ Twisting by $2$ and reading off invariants gives $\latI_{1,8}(2) = (9,9,1)$ of s
 
 Since $\Orth^+(T_\Co) = \Orth^+(B)$ and both isotropy and primitivity are unchanged by the twist, @prop:tco-split-maximal places $T_\Co$ under @thm:split-maximal-isotropic-transitivity; @thm:unpolarized-cusps gives the corresponding full-group cusp classification, and the computation above identifies its two boundary lattices with the Coble cusp invariants $(9,9,1)_1$ and $(7,7,1)_0$ used in the cusp correspondence.
 The $1$-cusp lattice $\latI_{0,7}(2)\cong A_1^{\oplus 7}$ is negative definite of rank $7$, consistent with Witt index $2$ in signature $(2,9)$: $11 - 2\cdot 2 = 7$.
+The gluing datum of the plane is computed too: every primitive vector of $J$ has divisibility $2$, so $J$ cuts out of $A_{T_\Co}$ the two-dimensional subspace $\bar J$ that is its image in $T_\Co/2T_\Co\cong B/2B$, and the plane $\generators{e',\,2h+\alpha_1+\alpha_2}$ of the cusp correspondence cuts out, in its own presentation, the subspace spanned by the images of $e'$ and $\alpha_1+\alpha_2$ (`computations/reports/plane_gluing_subgroup.py`).
+Both are $(\ZZ/2)^2$ with zero pairing, and that is forced rather than informative: the two planes are primitive isotropic planes of a lattice of signature $(2,9)$, hence one $\Orth^+$ orbit by @thm:plane-transitivity-tco, so every *isometry* invariant of the pair $(T_\Co,J)$ — in particular the isomorphism type of $\bar J$ with its form — is the same for all planes.
+The datum that can separate $\Gamma_\Co$-orbits is the subspace itself and not its type: $\Gamma_\Co$ acts trivially on $A_{T_\Co}$, so $\bar J$ is $\Gamma_\Co$-invariant, while an isometry $g$ carries it to $\overline{g(J)}$, so $\bar J$ is *not* an isometry invariant. Comparing the two exhibited subspaces would require identifying the two presentations of $T_\Co$, which this book does not construct; so nothing is claimed about whether the two exhibited planes lie in one $\Gamma_\Co$-orbit, and the count of $1$-cusps of $\fco$ stays open with it (@sec-open-problems).
 :::
 
 ## The discriminant form of $T_\Co$
@@ -144,6 +147,7 @@ The remaining fiber sizes are $2^{10} - 528 = 496$.
 The counts $\#A_{E_{10}(2)} = 1024$, $\#I^0 = 528$ and $\#I^1 = 496$ tabulated in the reference tables are exactly the numbers $2^{10}$, $N_0$ and $2^{10} - N_0$ appearing in this proof, and the summand counts $\#I^0(U(2)) = 3$, $\#I^0(E_8(2)) = 136$ are the two zero-counts used to identify the type.
 The isotropic classes of $A_{T_\Co}$ and of $A_{E_{10}(2)}$ therefore coincide as sets: a class $\varepsilon\bar v + \bar y$ is isotropic only if $\varepsilon = 0$, because $q_{T_\Co}(\bar v) = \tfrac12\notin\ZZ$ while $q_{E_{10}(2)}$ is $\ZZ$-valued.
 This is the invariant $\delta = 1$ of $T_\Co$ read off from a distinguished class.
+Both the four fiber sizes and the two summand zero-counts are reproduced from the lattice itself in `computations/reports/coble_528_isotropic_classes.py`: $B$ is assembled from the Cartan matrix of $E_8$ and the hyperbolic plane, twisted to $T_\Co$, and its discriminant quadratic form counted, the lattice counted being checked to be the one this chapter means by its signature $(2,9)$ and its $2$-elementary type $(11,11,1)$.
 :::
 
 ## The isometry group of the discriminant form
@@ -194,6 +198,11 @@ Witt's extension theorem for nondegenerate quadratic forms over a field states t
 The zero class is fixed, and by @prop:coble-q-fibers there are $528 - 1 = 527$ nonzero singular vectors.
 :::
 
+::: {.remark}
+
+The statement is also checked at the maintained action in `computations/reports/coble_isotropic_orbits.py`, and the check is worth reading as a warning: the orbit partition of the $2048$ classes has six orbits, of sizes $1, 1, 496, 496, 527, 527$, and the two orbits of size $527$ are *not* both isotropic --- one is the nonzero isotropic classes and the other lies in the fiber $q = \tfrac12$. Classified by the value of $q$ they are $(1,0)$, $(1,\tfrac12)$, $(496,1)$, $(496,\tfrac32)$, $(527,0)$ and $(527,\tfrac12)$, and restricting to $\inverseof{q}(0)$ leaves exactly the orbits of sizes $1$ and $527$ claimed above.
+:::
+
 ## From discriminant classes to lattice vectors
 
 ::: {.proposition #prop:coble-primitive-isotropic-classes title="Primitive isotropic vectors and their discriminant classes"}
@@ -219,7 +228,81 @@ For the full orthogonal group, @thm:unpolarized-cusps states that $\Orth^+(T_\Co
 
 For a subgroup $\Gamma\leq\Orth(T_\Co)$ the passage runs the other way and is not automatic.
 The reduction map sends $\Gamma$-orbits of primitive isotropic vectors to $\rho(\Gamma)$-orbits of nonzero isotropic classes, but the integral parabolic stabilizer can have proper image in the finite stabilizer, so a finite orbit may split.
+Conversely a *smaller* group need not have strictly finer orbits: by @lem:character-kernel-orbits the partitions of a group and of a subgroup agree exactly when every orbit's stabilizer meets the subgroup, and @prop:discriminant-kernel-orbits exhibits the case that matters here, the discriminant kernel being strictly larger than $\Gamma_\Co$ with the same orbits.
 The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in @thm:coble-heegner-finite-orbits, and the lift of that finite decomposition to primitive isotropic vectors of $T_\Co$ is open.
+:::
+
+::: {.lemma #lem:stable-orthogonal-not-transitive title="The stable orthogonal group is not transitive on isotropic lines"}
+
+Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be isotropic generators of the first hyperbolic summand of $B$, so that in $T_\Co$ they are primitive isotropic vectors with $e\cdot f = 2$.
+Then no $g\in\Gamma_\Co = \Orth^+(T_\Co)^*$ satisfies $g(\ZZ e) = \ZZ f$.
+So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the arithmetic group of $\fco$ is not, and $\overline{F_\Co}^{\bb}$ has at least two $0$-cusps.
+:::
+
+::: {.proof}
+
+By definition of the stable orthogonal group, $g$ acts trivially on $A_{T_\Co}$; and the identification $A_{T_\Co}\cong B/2B$ of @prop:twisted-unimodular-discriminant is $\Orth(B)$-equivariant, $g$ sending the class of $\tfrac12 x$ to the class of $\tfrac12 g(x)$ for $x\in B$.
+
+Suppose $g(\ZZ e) = \ZZ f$, so $g(e) = m f$ for some $m\in\ZZ$. Because $e$ is primitive and $g$ is an isometry, $g(e)$ is primitive, so $m = \pm1$.
+Now $\tfrac12 e\in T_\Co^*$, because $\beta_{T_\Co}\bigl(\tfrac12 e, B\bigr) = \beta_{B}(e,B)\subseteq\ZZ$; hence $g(\tfrac12 e) = \pm\tfrac12 f$ is again in $T_\Co^*$, and applying $g$ to the class of $\tfrac12 e$ gives the class of $\pm\tfrac12 f$.
+That class is the class of $\tfrac12 e$, since $g$ fixes every class, so $\tfrac12(e\mp f)\in T_\Co = B$, that is $e\mp f\in 2B$.
+But $e$ and $f$ are two elements of a $\ZZ$-basis of $B$, and the coordinates of $e - f$ on $e$ and $f$ are $1$ and $-1$, so $e\mp f\notin 2B$. Contradiction.
+:::
+
+::: {.remark}
+
+The number of $0$-cusps is a property of the pair $(T_\Co,\Gamma_\Co)$ and not of the lattice: with $\Orth^+(T_\Co)$ in place of $\Gamma_\Co$ it is one (@thm:unpolarized-cusps), and the group attached to $\fco$ is the stable one throughout (@sec-moduli-construction).
+
+The argument gives a lower bound and no upper one.
+Since $\Gamma_\Co$ fixes every class of $A_{T_\Co}$, two primitive isotropic vectors in different classes lie in different orbits, so the number of $\Gamma_\Co$-orbits is at least the number of classes of $A_{T_\Co}$ attained by primitive isotropic vectors.
+That number is the orbit of a single class under the image of $\Orth(T_\Co)$ in $\Orth(q_{T_\Co})$, and surjectivity of that image is not available at $r = a = 11$: the surjectivity of $\Orth(T)\too\Orth(q_T)$ quoted among the open problems holds for $r > a$.
+So the refinement is at least the two orbits of @lem:stable-orthogonal-not-transitive and may be much finer.
+
+What the finite calculation does determine is the other end: @thm:coble-isotropic-class-orbits shows the $527$ nonzero isotropic *classes* form a single orbit under $\Orth(q_{T_\Co})$, so the finiteness in $A_{T_\Co}$ is a statement about the finite group and not about the cusps of $\fco$.
+:::
+
+::: {.lemma #lem:character-kernel-orbits title="Orbits of a group and of the kernel of a character"}
+
+Let a group $G$ act on a set $X$, let $\chi\colon G\to\{\pm1\}$ be a homomorphism and $H=\ker\chi$. Then for $x\in X$
+$$
+Hx = Gx \quad\Longleftrightarrow\quad \Stab_G(x)\not\subseteq H,
+$$
+and therefore
+$$
+\#(H\backslash X) \;=\; \#(G\backslash X) \;+\; \#\bigl\{G\text{-orbits } O : \Stab_G(x)\subseteq H \text{ for } x\in O\bigr\},
+$$
+the added term counting the $G$-orbits that are unions of exactly two $H$-orbits.
+In particular an index $[G:H]\leq2$ constrains the two partitions only through the stabilizers: it gives $Hx\subseteq Gx$ and no equality in either direction, and whether the counts agree is decided orbit by orbit, not by the group.
+:::
+
+::: {.proof}
+
+The target of $\chi$ is abelian, so $\chi$ is constant on conjugacy classes, conjugates of $\Stab_G(x)$ have the same image, and "$\Stab_G(x)\subseteq H$" is a property of the orbit.
+
+Suppose first that $s\in\Stab_G(x)$ has $\chi(s)=-1$, and let $\sigma\in G$ have $\chi(\sigma)=-1$; then $\chi(\sigma s^{-1}) = (-1)(-1) = +1$, so $\sigma s^{-1}\in H$ and $\sigma x = (\sigma s^{-1})sx = (\sigma s^{-1})x\in Hx$, whence $Gx = Hx\cup H\sigma x = Hx$. Conversely if $Gx = Hx$ then $\sigma x\in Hx$, say $\sigma x = hx$ with $h\in H$, and $h^{-1}\sigma\in\Stab_G(x)$ has $\chi = (-1)(-1) = -1$.
+
+Since $[G:H]\leq2$, $G = H\cup\sigma H$ for any $\sigma$ with $\chi(\sigma)=-1$ when $\chi$ is nontrivial, so every $G$-orbit is $Hx\cup H\sigma x$, and these two are either equal or disjoint: one or two $H$-orbits. It is one exactly when $\Stab_G(x)\not\subseteq H$. Summing the number of $H$-orbits over the $G$-orbits gives the displayed identity.
+
+The last sentence is not a formality: `computations/reports/orbit_splitting_criterion.py` checks the criterion orbit by orbit on the orthogonal groups of $A_1^{\oplus n}$ and $D_4$ acting on roots, on norm-$4$ vectors, on $L/2L$ and on root lines, and it exhibits both outcomes with $\chi$ onto $G$ — $\Orth(A_1^{\oplus2})$ on the four roots has equal counts, its regular action has unequal counts.
+:::
+
+::: {.proposition #prop:discriminant-kernel-orbits title="The discriminant kernel and the stable group have the same isotropic orbits"}
+
+Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the discriminant kernel and $\Gamma_\Co=\Orth^+(T_\Co)\intersect K$. Then
+
+1. $K\neq\Gamma_\Co$, and $[K:\Gamma_\Co]=2$;
+2. $K$ and $\Gamma_\Co$ have the same orbits on the primitive isotropic vectors of $T_\Co$, and the same orbits on the primitive isotropic lines.
+
+The number of orbits is not determined here: it is at least two (@lem:stable-orthogonal-not-transitive) and no upper bound follows from anything in this section.
+:::
+
+::: {.proof}
+
+*The groups differ.* $B$ is odd, so it has a unit vector $v$ with $v^2=1$, and the reflection $s_v(x) = x-2(x,v)v$ is integral and orthogonal. Modulo $2B$ it is the identity, so $s_v\in K$; and by the reflection computation of @prop:period-spinor-character, $\chi_{\mathrm{per}}(s_v) = \operatorname{sgn}(-q(v)) = -1$, because $q(v) = \tfrac12 > 0$ and $v$ is a positive vector. So $\chi_{\mathrm{per}}$ is nontrivial on $K$, which is therefore not contained in $\Orth^+$, and $[K:\Gamma_\Co]=2$ since $\chi_{\mathrm{per}}$ takes values in $\{\pm1\}$.
+
+*The orbits agree.* By @lem:character-kernel-orbits it is enough to find, for each primitive isotropic $x$, an element of $\Stab_K(x)$ with character $-1$. Put $L=\ZZ x$; then $L^{\perp}=L\perp M$ with $M\cong\latI_{1,8}$, the splitting of @thm:plane-transitivity-tco whose quotient is computed at the owner in `computations/reports/split_quotient_I18.py`. Now $\latI_{1,8}\cong\latI_{1,1}\perp\latI_{0,7}$ has a unit vector $v$, and $v\perp L$, so $s_v$ fixes $x$ and fixes $L$ pointwise while lying in $K$ with $\chi_{\mathrm{per}}(s_v)=-1$ by the computation above. Hence every $K$-orbit is $\Gamma_\Co$-stable and the two partitions coincide.
+
+*Vectors and lines.* The map from vector-orbits to line-orbits is surjective always, and injective here because $-\id\in\Gamma_\Co$: it acts trivially on $A_{T_\Co}$, which is $2$-torsion, and $\chi_{\mathrm{per}}(-\id)=+1$, its determinant on the positive plane being $(-1)^2$. So each line-orbit carries exactly one vector-orbit for either group.
 :::
 
 ## The Eichler criterion and its hypothesis
@@ -229,5 +312,7 @@ The $\gent$-induced orbit decomposition of the $528$ isotropic classes is comput
 By @thm:eichler-criterion, for lattices containing $U^{\oplus 2}$, $\widetilde{\SO}^+(L)$-equivalence of primitive vectors is determined by the pair $(v^2, v^*\bmod L)$.
 For $T_\Co$, @prop:tco-as-twist implies that every value of $\beta_{T_\Co}$ is even, so no two vectors pair to $1$ and $T_\Co$ contains no copy of $U$; the same obstruction is recorded after @thm:eichler-criterion for $S_\Co$ and $\sen$.
 An orbit statement for $T_\Co$ therefore needs a different mechanism.
-For the full orthogonal group, @thm:unpolarized-cusps gives transitivity using @prop:tco-split-maximal; for a subgroup specified by its image in $\Orth(q)$, the algorithms of [@Daw22] apply.
+For the full orthogonal group, @thm:unpolarized-cusps gives transitivity using @prop:tco-split-maximal, and for the odd $B = \latI_{2,9}$ that transitivity has a direct source which does not go through the even-lattice results at all: James' integral Witt theorem [@Jam68] applies with $r - \abs{\fs} = 11 - 7 = 4 = 2(1+1)$, and its characteristic clause is vacuous because a characteristic vector of $\latI_{p,q}$ has odd coordinates and square $\equiv p-q \equiv 1 \pmod 8$, never $0$. So transitivity on primitive isotropic *vectors* is settled for $B$; the rank-two case is not, the inequality there needing $6$, and it is recorded at @thm:split-maximal-isotropic-transitivity.
+
+For a subgroup specified by its image in $\Orth(q)$, the algorithms of [@Daw22] do *not* apply as the citation would suggest, and the mismatch is worth stating because it is on both sides. Dawes' setup assumes even lattices from §1.1, and the split-maximal stabilizer results of §3.1 and §3.2 assume a $U^{\oplus2}$ decomposition. The Coble lattice is even but not $U^{\oplus2}$-decomposable --- as the Eichler remark below proves, $T_\Co$ contains no copy of $U$ at all --- while the odd lattice $B$ with the decomposition is outside the parity hypothesis. So neither presentation satisfies both hypotheses, and the passage from $\rho(\Gamma)$-orbits on the finite group to $\Gamma$-orbits on primitive isotropic vectors is not available from that source for $\Gamma_\Co$. What the finite computation can still do is bound: since $\Gamma_\Co$ fixes every class of $A_{T_\Co}$, vectors with different classes lie in different $\Gamma_\Co$-orbits, so the finite orbit count is a lower bound for the integral one and never an upper one.
 :::

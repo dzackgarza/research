@@ -1,0 +1,34 @@
+T_En: rank 12, signature (2, 10), det 1024
+T_Co: rank 11, signature (2, 9), det -2048
+eta is an isometry of the two Gram matrices   AGREE
+k = e~ - f~: square -2 and orthogonal to eta(T_Co)   AGREE
+
+the representatives:
+   v_1 = e'         isotropic True  div 2
+   v_2 = 2h+a_1+a_2 isotropic True  div 2
+   eta(v_1)         isotropic True  div 2
+   e~ (target)      isotropic True  div 1
+
+   v_1: beta_En(eta(v), e~) = 0, beta_Co(v,h)/2 = 0   AGREE
+       div_En(eta(v)) = 2, gcd(div_Co(v), beta_Co(v,h)/2) = 2   AGREE
+   v_2: beta_En(eta(v), e~) = 2, beta_Co(v,h)/2 = 2   AGREE
+       div_En(eta(v)) = 2, gcd(div_Co(v), beta_Co(v,h)/2) = 2   AGREE
+
+the Gram of T_Co is even entrywise, so div_Co is even for every vector   AGREE
+U(2) + E8(2) is twice an even lattice, so y^2 = 0 mod 4 for every y in that block   AGREE
+
+   e~ (div 1)         boundary lattice: rank 10, det -1024, two_elementary (r,a,delta) = (10, 10, 0)
+   eta(v_1) (div 2)   boundary lattice: rank 10, det  -256, two_elementary (r,a,delta) = (10, 8, 0)
+
+candidate w~ = 2e~ + e~': isotropic True, div 2
+   witness k' = e~ - f~ + f~': square -2, beta(k', w~) = 0
+   so w~ passes the necessary condition; its boundary lattice is rank 10, det  -256, (r,a,delta) (10, 8, 0)
+   nothing here decides whether k' lies in the Gamma_En orbit of k, which is what the criterion needs
+
+e~' and f~' both have divisibility 2 in T_En
+the coordinates of e~' - f~' are [1, -1], so the difference is not in 2*T_En:
+   the two target classes are distinct, since Gamma_En acts trivially on the discriminant group
+
+div_En(eta(v)) is even for every primitive isotropic v of T_Co, hence 2;
+div(e~) = 1, and divisibility is an isometry invariant, so no Gamma_En-translate of any eta(v)
+can be e~: the divisibility-1 cusp lies outside the image and Phi is NOT SURJECTIVE.

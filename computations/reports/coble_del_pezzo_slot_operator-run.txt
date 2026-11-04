@@ -1,0 +1,38 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, mounted read-only; repo bound at /repo
+
+S_Co = <2> + <-2>^10;  basis e_0..e_10;  a = f^*F_1, b = f^*F_2, H = a+b, alpha
+  |det S_Co| = 2048, |A_{S_Co}| = 2048
+  q(a) = 0, q(b) = 0, b(a,b) = 2, q(H) = 4, q(alpha) = -2
+  alpha is orthogonal to a, b and H: True
+  <a,b> as a primitive sublattice: rank 2, determinant -4
+  N = <a,b>^perp in S_Co:      rank 9, determinant -512
+  det<a,b> * det N == det S_Co (index 1): True
+  the defining matrix has integer entries on the e-basis: True
+  phi built by S.O() from its images on the basis: accepted as an isometry of S_Co
+  phi preserves the pairing on the basis: True
+  phi is an involution:                   True
+  phi(a) == a, phi(b) == b:               True
+  phi(H) == H:                            True
+  phi(alpha) == -alpha:                   True
+  the (+1)-eigenspace contains <a,b>:     True
+  phi acts as -1 on a basis of N:         True
+  rho(phi) fixes all 11 discriminant generators: True
+  A_{S_Co} has exponent 2:                True
+
+T_Co = <2> + U(2) + E8(2);  the -id factor
+  A_{T_Co} has exponent 2 (T_Co is 2-elementary): True
+  rho(-id_{T_Co}) fixes all 11 discriminant generators: True
+  (form preservation alone would not give this; the exponent 2 above is the premise)
+
+CONCLUSION
+  phi is an integral isometry of S_Co, an involution, it fixes H, it reverses alpha,
+  it acts trivially on A_{S_Co}; A_{T_Co} has exponent 2 and -id acts trivially on it.
+  Those are exactly the hypotheses of @thm:automorphism-lifting-criterion for the pair
+  (phi|_{S_Co}, -id_{T_Co}) over S_Co + T_Co -> L_K3.  L_K3 and its gluing are NOT built
+  in this run: the extension is that theorem applied to the two verified facts, and the
+  geometric statements about automorphisms, Kaehler cones and chambers are not touched.
+
+OK: the del Pezzo slot candidate is certified on S_Co and T_Co by the owner's operations

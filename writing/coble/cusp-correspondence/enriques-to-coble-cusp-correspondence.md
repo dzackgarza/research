@@ -1,44 +1,140 @@
-,# Enriques to Coble correspondence
+# Enriques to Coble correspondence {#sec-enriques-coble-correspondence}
 
 ::: {.theorem #thm:cusp_correspondence}
 
-The embedding $\eta: \fco\to \fen$ induces the correspondence on boundary cusps of the Baily-Borel compactifications shown in @fig-enriques-coble-correspondence.
+Let $\eta\colon T_\Co\injects\ten$ be the primitive embedding, $v_1, v_2$ the isotropic vectors of @lem:divisibilityTcoOne and $\tilde J = \generators{\eta(v_1), \eta(v_2)}$. Then $\tilde J$ is an isotropic plane, $\eta(v_1)$ is isotropic with $\div_\ten(\eta(v_1)) = 2$, and
+$$\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1, \qquad \tilde J^{\perp\ten}/\tilde J\cong(8,6,0)_0,$$
+the boundary lattices of the $0$-cusp $(10,8,0)_1$ and the $1$-cusp $(8,6,0)_0$ of the Enriques cusp diagram; while
+$$v_1^{\perp T_\Co}/v_1\cong(9,9,1)_1, \qquad J^{\perp T_\Co}/J\cong(7,7,1)_0$$
+are the corresponding Coble boundary lattices.
 :::
 
+::: {.proof}
+
+What is proved is a statement about isotropic *objects* and the boundary lattices attached to them, and it is proved at the displayed vectors in the lemmas below. It is not a statement about orbit sets, and the difference is not a formality: a cusp is an orbit, and identifying the boundary lattice at one vector of each orbit does not identify the two orbit sets, since distinct orbits can carry isometric boundary lattices -- which is exactly the possibility left open on the Coble side by @lem:stable-orthogonal-not-transitive and by the orbit count in @sec-coble-lattice-isotropic-candidates.
+
+Three things would be needed for a bijection on orbits.
+The first is available and is not new here.
+
+*The extension homomorphism.* The object map is compatible with the groups, by the stabilizer step of @thm:normalization: with $K = T_\Co^{\perp\ten} = \ZZ k$, $k = \tilde e - \tilde f$, $k^2 = -2$, the gluing group is $H = \generators{(h/2,\,k/2)}\leq A_{T_\Co}\oplus A_K$, isotropic because $q_{T_\Co}(h/2) + q_K(k/2) = \frac12-\frac12 = 0$, and every $\varphi\in\Gamma_\Co$ extends across it --- as $\varphi\oplus\id_K$, which preserves $H$ because $\bar\varphi$ is the identity on $A_{T_\Co}$ --- to an element of $\Gamma_\En$, by @thm:automorphism-lifting-criterion. So there is a homomorphism
+$$\mathrm{Ext}\colon\Gamma_\Co\too\Stab_{\Gamma_\En}(T_\Co)\subset\Gamma_\En,\qquad \varphi\mapsto\tilde\varphi,\quad \tilde\varphi(k) = k,$$
+and restriction is a left inverse: $\mathrm{res}\circ\mathrm{Ext} = \id$. Three consequences are worth separating, because the kernel is easily misread. $\mathrm{Ext}$ is injective, its image is the subgroup of $\Stab_{\Gamma_\En}(T_\Co)$ fixing the vector $k$, and $\mathrm{res}$ itself is *not* injective: its kernel is $\{1, s_k\}$, where $s_k$ is the reflection in the $(-2)$-vector $k$, which fixes $T_\Co$ pointwise and negates $k$. So the stabilizer of the vector $k$ is $\mathrm{Ext}(\Gamma_\Co)$, while the stabilizer of the *line* $\ZZ k$ is $\mathrm{Ext}(\Gamma_\Co)\times\generators{s_k}$; it is the section, not restriction, that is the equivariant assignment.
+Consequently $\eta$ is $\Gamma_\Co$-equivariant --- $\eta(\varphi v) = \mathrm{Ext}(\varphi)\,\eta(v)$ for every $v$ --- and the object map induces a well-defined map of orbit sets
+$$\Gamma_\Co\backslash\{\text{primitive isotropic objects of }T_\Co\}\ \longrightarrow\ \Gamma_\En\backslash\{\text{primitive isotropic objects of }\ten\}.$$
+
+The second is not open any more: surjectivity fails, and it fails for an invariant reason.
+
+::: {.proposition #prop:cusp-map-not-onto}
+
+The orbit map $\Phi$ is not surjective. The divisibility-$1$ Enriques $0$-cusp, of boundary lattice $(10,10,0)_1$, has empty fibre: no primitive isotropic vector of $T_\Co$ is carried into a $\Gamma_\En$-translate of it.
+:::
+
+::: {.proof}
+
+Divisibility is an isometry invariant, so it is constant on $\Gamma_\En$-orbits, and [@AEGS25, §2] distinguish the two $0$-cusps of the Enriques diagram by it --- $(10,10,0)_1$ at divisibility $1$ and $(10,8,0)_1$ at divisibility $2$. So it suffices to show that $\div_\ten(\eta(v))$ is even for every primitive isotropic $v\in T_\Co$.
+
+Two identities. First, $\ten = \eta(T_\Co) + \ZZ\tilde e$, so
+$$\div_\ten(\eta(v)) = \gcd\bigl(\div_{T_\Co}(v),\ \beta_\ten(\eta(v),\tilde e)\bigr), \qquad \beta_\ten(\eta(v),\tilde e) = \tfrac12\beta_{T_\Co}(v,h),$$
+the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Second, both entries of the gcd are even. $\div_{T_\Co}$ is even for every vector, since the Gram of $T_\Co$ is even entrywise; and if $v = ah + y$ with $y$ in the $U(2)\oplus E_8(2)$ block, then $v^2 = 2a^2 + y^2$ with $y^2\equiv0 \pmod 4$, that block being twice an even lattice, so $v$ isotropic forces $a^2$ even and $a$ even. Hence $\div_\ten(\eta(v))$ is even, and being a primitive vector of a $2$-elementary lattice it is $2$.
+
+So the image lies in the divisibility-$2$ classes, and the $(10,10,0)_1$ cusp is missed.
+The identities and the two parity facts are checked on the representatives in `computations/reports/coble_enriques_cusp_orbit_map.py`, which also reproduces the two boundary lattices by the maintained two-elementary route: $\tilde e^{\perp\ten}/\tilde e\cong(10,10,0)_1$ of determinant $-1024$, and $\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1$ of determinant $-256$.
+:::
+
+*The fibre, with the two actions on the correct sides.* Fix the left action convention, $\gamma\cdot x = \gamma x$. The fibre of $\Phi$ over the target class $[\tilde w]$ consists of the source classes $[v]$ with $\gamma\eta(v) = \tilde w$ for some $\gamma\in\Gamma_\En$, so put
+$$Y = \{\gamma\in\Gamma_\En : \gamma^{-1}\tilde w\in\eta(T_\Co)\}, \qquad v_\gamma \definedas \eta^{-1}\bigl(\gamma^{-1}\tilde w\bigr),$$
+and the fibre is the double-coset set
+$$\Phi^{-1}\bigl([\tilde w]\bigr) = \Stab_{\Gamma_\En}(\tilde w)\,\backslash\, Y\, /\, \mathrm{Ext}(\Gamma_\Co).$$
+Both actions preserve $Y$, and the sides are not interchangeable. On the left, $h\in\Stab_{\Gamma_\En}(\tilde w)$ sends $\gamma$ to $h\gamma$ and $(h\gamma)^{-1}\tilde w = \gamma^{-1}h^{-1}\tilde w = \gamma^{-1}\tilde w$, so $v_{h\gamma} = v_\gamma$: the left action does not change the source vector at all. On the right, $\varphi\in\Gamma_\Co$ sends $\gamma$ to $\gamma\,\mathrm{Ext}(\varphi)$, and
+$$\bigl(\gamma\,\mathrm{Ext}(\varphi)\bigr)^{-1}\tilde w = \mathrm{Ext}(\varphi)^{-1}\gamma^{-1}\tilde w = \mathrm{Ext}\bigl(\varphi^{-1}\bigr)\eta(v_\gamma) = \eta\bigl(\varphi^{-1}v_\gamma\bigr),$$
+so $v_{\gamma \mathrm{Ext}(\varphi)} = \varphi^{-1}v_\gamma$: the right action moves the source vector inside its $\Gamma_\Co$-orbit, which is exactly the ambiguity the fibre has to quotient out. There is nothing to quotient on the left beyond removing the redundant $\gamma$'s that produce the same $v_\gamma$; putting $\Gamma_\Co$ on the left and the stabilizer on the right is the reversed expression and would not be a subgroup of $\Gamma_\En\times\Gamma_\Co$ acting on $Y$ in the written order.
+Conversely, if $[v_\gamma] = [v_{\gamma'}]$, say $v_{\gamma'} = \varphi v_\gamma$, then $\gamma'^{-1}\tilde w = \eta(\varphi v_\gamma) = \mathrm{Ext}(\varphi)\gamma^{-1}\tilde w$, that is $\gamma \mathrm{Ext}(\varphi)^{-1}\gamma'^{-1}\in\Stab_{\Gamma_\En}(\tilde w)$, which gives $\gamma' \in \Stab_{\Gamma_\En}(\tilde w)\,\gamma\,\mathrm{Ext}(\Gamma_\Co)$. So the double cosets of the displayed set are exactly the source cusp classes lying over $[\tilde w]$, and the fibre is empty exactly when $Y$ is.
+
+Two scope limits are worth stating before the next step.
+This is the fibre of the *0-cusp* map: $v$ and $v'$ are isotropic vectors, i.e. rank-$1$ isotropic lines, and the rank-$2$ analogue --- primitive isotropic planes, the $1$-cusps --- has its own fibre, obtained by replacing $v$ by a plane throughout, which is not treated here and about which nothing below should be read.
+And the group on the Enriques side above is the stable one, $\Gamma_\En\definedas\Orth^+(\ten)^*$ throughout, as in @thm:normalization; AEGS25's group $\Gamma^K_\En\definedas\Orth(\ten)$, whose cusp diagram is the one with two $0$-cusps, is a different and larger group, and is written with the superscript $K$ whenever it appears.
+
+What remains open is injectivity of the $0$-cusp map alone, and the discriminant reduces it to one class.
+
+::: {.proposition #prop:cusp-map-separates-mod-two}
+
+Let $v, v'$ be primitive isotropic vectors of $T_\Co$. If $\eta(v)$ and $\eta(v')$ lie in the same $\Gamma_\En$-orbit, then $v\equiv v'\pmod{2T_\Co}$.
+The statement is about the stable group and does not hold for $\Gamma^K_\En = \Orth(\ten)$: an isometry outside the discriminant kernel can move $\bar x$, and nothing below is claimed for it.
+:::
+
+::: {.proof}
+
+Restrict attention to the image vectors: $x = \eta(v)$ and $x' = \eta(v')$, which by @prop:cusp-map-not-onto have divisibility $2$ in $\ten$. The restriction is necessary and not a convenience --- a primitive isotropic vector of $\ten$ need not have divisibility $2$, and $\tilde e$ itself is one of divisibility $1$ --- and it is exactly why the conclusion is about images and not about all of $\ten$. Now if $\gamma x = x'$ with $\gamma\in\Gamma_\En$, the class
+$$\bar x \definedas \tfrac12 x \bmod \ten \in A_\ten = \ten^\vee/\ten$$
+is defined, isotropic because $x^2 = 0$. Applying $\gamma$: $\gamma(x/2) = x'/2$, and $\gamma$ acts trivially on $A_\ten$ because $\Gamma_\En\subseteq\discriminantkernel{\ten}$ by definition, so $\bar x = \overline{x'}$, i.e. $\tfrac12(x - x')\in\ten$, i.e. $x\equiv x'\pmod{2\ten}$. For $x = \eta(v)$, $x' = \eta(v')$ this reads $v\equiv v'\pmod{2T_\Co}$, since $\eta(T_\Co)$ is primitive in $\ten$ and therefore $2\ten\intersect\eta(T_\Co) = 2\eta(T_\Co)$.
+:::
+
+So the map separates any two source classes whose representatives are incongruent mod $2$, and a fibre contains representatives from one class in $T_\Co/2T_\Co$ only: injectivity can fail only among vectors congruent mod $2$. That is the residue of the injectivity question and nothing follows from it beyond the congruence itself --- in particular congruence mod $2$ is neither an orbit criterion nor a statement about reflections, and the residue is a genuine orbit question about one class in $T_\Co/2T_\Co$, not a smaller instance of the same one.
+
+A representative consequence, stated for what it is. By @lem:stable-orthogonal-not-transitive the isotropic generators $e'$, $f'$ of the $U(2)$ summand lie in different $\Gamma_\Co$-orbits; $\tilde e'$, $\tilde f'$ have divisibility $2$ in $\ten$; and $e'-f'$ has an odd coordinate in the $\ten$-basis, so $e'\not\equiv f'\pmod{2T_\Co}$ and, by the proposition, $[\tilde e']\neq[\tilde f']$. That separates this pair of source classes. It is *not* injectivity of $\Phi$: injectivity says that no two distinct source classes share a target class, and exhibiting one pair with distinct images is consistent with that and proves nothing about the others. What it does show is that the difference between the two $0$-cusp diagrams is not a collapse of these two classes into one.
+
+The two questions that remain are different questions and are kept apart here.
+
+*Surjectivity onto the divisibility-$2$ locus.* The image of $\Phi$ is contained in the $\Gamma_\En$-orbits of primitive isotropic vectors of $\ten$ meeting $\eta(T_\Co)$, and @prop:cusp-map-not-onto excludes the divisibility-$1$ ones; so the image is a subset of the divisibility-$2$ classes, nonempty, and containing at least the two classes just separated. Whether it is *all* of the divisibility-$2$ classes is surjectivity onto that locus, and it is a condition on the target: for a divisibility-$2$ primitive isotropic $\tilde w$ one asks whether some $\gamma\in\Gamma_\En$ carries it into $\eta(T_\Co)=k^{\perp\ten}$. Since $\gamma$ is an isometry, that is equivalent to
+$$\beta_\ten\bigl(\tilde w,\ \gamma^{-1}k\bigr) = 0,$$
+so the target locus is hit exactly when $\tilde w$ is orthogonal to some $(-2)$-vector in the $\Gamma_\En$-orbit of $k$. That is the exact form the image-locus condition takes here, and deciding it needs a statement about the $(-2)$-vectors in that orbit, which is not made in this section.
+
+*Injectivity.* This asks whether two distinct $\Gamma_\Co$-orbits can have the same target $\Gamma_\En$-orbit, and by @prop:cusp-map-separates-mod-two it can only happen inside one mod-$2$ class of $T_\Co$. That invariant is not new: for $v$ of divisibility $2$ the class of $\tfrac12 v$ is the discriminant class $v^*\in A_{T_\Co}$ of @prop:coble-primitive-isotropic-classes, so the fibre is controlled by the map $v\mapsto v^*$ that the discriminant-orbits section already studies, and the question is how $\Gamma_\Co$-orbits of primitive isotropic vectors distribute over one value of $v^*$.
+
+That is exactly the subgroup-descent step, and it is where the sources do not reach. The reduction from $\Gamma_\Co$-orbits of primitives to the orbits of the image $\rho(\Gamma_\Co)\leq\Orth(q_{T_\Co})$ can lose information --- the integral stabilizer may have proper image in the finite one --- and the algorithms that decide the descent are stated for even lattices with a $U^{\oplus2}$ splitting, which $T_\Co$ is not and $B$ only is at the cost of parity, as recorded in the discriminant-orbits section. So injectivity is *not* concluded here: the invariant narrows a fibre to one class and nothing in the book's sources lifts a finite orbit back to an integral one for these groups. The Coble-side decomposition is open in the book's own terms (@lem:stable-orthogonal-not-transitive gives two orbits among the generators, and @sec-coble-lattice-isotropic-candidates counts the finite picture without lifting it).
+
+Neither question implies the other, and no count of one settles the other.
+
+So $\Phi$ is not known to be a bijection and is proved not to be one: not surjective (@prop:cusp-map-not-onto), and injective only up to the mod-$2$ refinement (@prop:cusp-map-separates-mod-two).
+
+Two maps have been in play and only one of them is a correspondence of cusps.
+The *type map* is what the lemmas of this section compute and what @fig-enriques-coble-correspondence draws: at the displayed representatives, the boundary lattice of the Coble cusp is matched with the boundary lattice of an Enriques cusp, $(9,9,1)_1$ with $(10,8,0)_1$ and $(7,7,1)_0$ with $(8,6,0)_0$. Its arrow records a matching of boundary-lattice types and nothing more.
+The *orbit map* on the stable groups is $\Phi$: it is defined and $\Gamma_\Co$-equivariant, it is not onto (@prop:cusp-map-not-onto), and it is injective only up to @prop:cusp-map-separates-mod-two.
+The first does not imply the second, and the figure should be read as the type map.
+For the full group $\Gamma^K_\En$ the orbit statement is a third thing again: its orbits are coarser than the stable ones, its two $0$-cusps are classified, and how the stable cusps sit over that diagram --- counting them, and matching them with the Coble ones --- is not settled here, and the divisibility and discriminant arguments above are statements about the stable group that do not transfer to it wholesale.
+On the Coble side the decomposition is itself open (@lem:stable-orthogonal-not-transitive leaves at least two $0$-cusps, and @sec-coble-lattice-isotropic-candidates counts the finite picture without lifting it), which is why the correspondence in this section stays at the level of the displayed representatives.
+
+*Which space the cusps belong to.* The objects above live in the ambient quotient $\bD(\ten)/\Gamma_\En$, and the orbit sets compared are its Baily--Borel boundary strata. They are not the boundary strata of the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma_\En$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $k$, and $k^2 = -2$, so the whole Coble period domain lies in $\mch_{-2}$ and its image lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$, meeting no open complement of it. The cusp diagram whose boundary lattices are matched below is the one of that ambient quotient, and its two $0$-cusps and two $1$-cusps are [@AEGS25, §2]'s for $F^K_\En = \bD(\ten)/\Gamma_\En$ with $\Gamma_\En = \Orth(\ten)$; the stable orbits are finer, so identifying the stable and $F^K_\En$ cusps is a separate question, and a third quotient, the polarized $F_{\En,2}$ with its five $0$-cusps [@AEGS25, §3], is not used here at all.
+
+The method is divisibility and discriminant class, by @prop:coble-divisibility-discriminant, at each cusp --- which is what the following sections carry out --- and it is a method for comparing objects' boundary lattices and, with the equivariance above, for transporting one orbit to one orbit; it makes no claim about the orbit sets being matched one for one.
+
+:::
 ::: {#fig-enriques-coble-correspondence .figure}
 \input{tikz/fig_Cusp_Correspondence_Co_En.tex}
 
-Cusp correspondence $\fco \to \fen$.
+Cusp correspondence between the boundary lattices of $\fco$ and the cusps $(10,10,0)_1$, $(10,8,0)_1$, $(8,8,0)_0$, $(8,6,0)_0$ of the Enriques diagram of $F^K_\En$.
 :::
 
 We prove the cusp correspondence by comparing divisibilities of isotropic vectors at the corresponding 0-cusps and 1-cusps in both moduli spaces.
 
 ::: {.lemma #lem:divisibilityAlwaysTwoTco}
 
-Any $v\in T_\Co$ satisfies $\div_{T_\Co}(v) = 2$ if there exists any $v'\in T_\Co$ for which $v\cdot v' \neq 0$.
+Every $v\in T_\Co$ has $\div_{T_\Co}(v)$ even; and $\div_{T_\Co}(v) = 2$ exactly when $\div_L(v) = 1$ for $L=\generators{1}\oplus E_{10}$, that is when $v$ is primitive in $L$, equivalently when its coordinates in a $\ZZ$-basis of $L$ have no common divisor.
 :::
 
 ::: {.proof}
 
-Let $M_{T_\Co}$ be the Gram matrix for $T_\Co$, and note that since
-
+Write $T_\Co=L(2)$ for $L\definedas\generators{1}\oplus E_{10}$, which is unimodular: this is the identity
 $$
-T_\Co = \generators{2} \oplus E_{10}(2) = \qty{\generators{1} \oplus E_{10}}(2)
-,
+T_\Co=\generators{2}\oplus E_{10}(2)=\qty{\generators{1}\oplus E_{10}}(2)
 $$
+of @prop:coble-transcendental, and twisting by a unit does not change the underlying module.
+So $T_\Co$ and $L$ have the same underlying $\bZ$-module and $\beta_{T_\Co}=2\,\beta_L$.
 
-every entry in $M_{T_\Co}$ is 2-divisible.
-Thus one can write $M_{T_\Co} = 2A$ for some integral matrix $A$.
-Letting $v' \in T_\Co$ be any other vector not orthogonal to $v$, we have
+For $v,x\in T_\Co$ then $\beta_{T_\Co}(v,x)=2\beta_L(v,x)$, so every value is even, whether or not $v$ pairs nontrivially with something: $\div_{T_\Co}(v)$ is even for every $v$.
+That is all the Gram-matrix argument establishes, and it is the first clause.
 
-$$
-v\cdot v' = \inner{v}{M_{T_\Co}v'} = \inner{v}{2 Av'}
-= 2\inner{v}{Av'} \neq 0
-,
-$$
+For the second, $\div_{T_\Co}(v)=2\div_L(v)$, so $\div_{T_\Co}(v)=2$ exactly when $\div_L(v)=1$, that is when no integer $m>1$ divides every value $\beta_L(v,x)$.
+Because $L$ is unimodular, $\beta_L^{\sharp}\colon L\to L^{*}$ is an isomorphism, and $\beta_L(v,-)$ is divisible by $m$ exactly when $v\in mL$; so $\div_L(v)=1$ is the indivisibility of the functional $\beta_L(v,-)$, equivalently the primitivity of $v$ in $L$, and in coordinates it is the statement that the gcd of the coordinates of $v$ is one.
+Unimodularity is what makes these three conditions one.
+Evaluated in a $\ZZ$-basis with Gram matrix $G$, the divisibility is the gcd of the entries of $Gv$, which is the gcd of the coordinates of $v$ exactly when $G$ is unimodular; the two gcds are then related by the adjugate, whose entries are integral.
+The gcd of the coordinates is itself basis-independent, since one $\ZZ$-basis of $L$ changes to another by a unimodular matrix.
+For a form that is not unimodular the identification fails, and the rank-one lattice $\generators{2}$ shows both directions failing: its generator is primitive and has divisibility $2$, while $3$ is not primitive and has divisibility $6$.
 
-where $\inner{\cdot}{\cdot}$ is the standard Euclidean inner product.
-Thus 2 divides $v\cdot v'$, and since $\div_{T_\Co}(v) \in \theset{1, 2}$ for any $v \in T_\Co$, the result follows.
+The second clause is a hypothesis and cannot be dropped: pairing nontrivially with something does not force $\div=2$.
+The generator $h$ of the $\generators{2}$ summand has $h^2=2$ and $\div(h)=2$, but $(2h)^2=8$ and $2h$ pairs to $4$ with $h$, so $\div(2h)=4$; and $\div(3h)=6$ with $3h$ not in $2T_\Co$, so neither "not in $2T_\Co$" nor "pairs nontrivially" characterizes divisibility $2$.
+What $2\mid\div$ gives is only that the divisibility is even, and $\div_L(v)=1$ is the hypothesis that isolates the value $2$.
+Every vector the cusp computations use is primitive, which is why the weaker hypothesis sufficed for them.
 :::
 
 ::: {.lemma #lem:divisibilityTcoOne}
@@ -59,7 +155,8 @@ We then have $\div_{\ten}(w_1) = 2$.
 ::: {.proof}
 
 By @lem:divisibilityAlwaysTwoTco, $v_1$ has divisibility $2$ in $T_\Co$; moreover it is isotropic.
-By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them. Hence $v_1$ represents the unique full-group $0$-cusp of $\fco$ and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ Whether the $\Gamma_\Co$-orbits coincide with the $\Orth(T_\Co)$-orbits is the residue recorded among the open problems; the argument below uses only the full-group statement.
+By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them, so $v_1$ represents *the* $0$-cusp of $\fco$ for the full orthogonal group and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ The arithmetic group $\Gamma_\Co = \Orth^+(T_\Co)^*$ is strictly smaller and its orbits are finer: $v_1$ represents one of at least two $0$-cusps (@lem:stable-orthogonal-not-transitive), and whether two $\Gamma_\Co$-orbits can share the boundary lattice $\latI_{1,8}(2)$ is part of the open analysis below.
+The argument uses only the lattice at $v_1$, so the correspondence computed here is the one through this cusp.
 
 Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $\ten$, we have
 
@@ -102,18 +199,19 @@ $$
 } \cong U \oplus E_{8}(2) \cong (10,8,0)_1.
 $$
 
-Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$; by the divisibility calculation (@lem:divisibilityTcoOne) $\mathrm{div}_{\ten}(w_1) = 2$.
-Since the divisibility of the isotropic vector at the Enriques 0-cusp $(10, 8, 0)_1$ is also 2 and the two Enriques 0-cusps are distinguished by divisibility, the correspondence follows.
+Alternatively, by [@AE22 Prop. 5.5], the isomorphism type of $w_1^{\perp \ten}/w_1$ is determined by $\mathrm{div}_{\ten}(w_1)$, which the divisibility calculation (@lem:divisibilityTcoOne) gives as $2$; divisibility is also what distinguishes the two Enriques $0$-cusps, $(10,10,0)_1$ at divisibility $1$ and $(10,8,0)_1$ at divisibility $2$ [@AEGS25, §2].
+So $\eta(v_1)$ sits at the $(10,8,0)_1$ cusp, and that is the matching asserted: at the representatives, not between orbit sets, for which see @thm:cusp_correspondence.
 :::
 
 ::: {.lemma #lem:1_cusp_correspondence}
 
-The 1-cusp $(7,7,1)_0$ in $\fco$ maps to the 1-cusp $(8, 6, 0)_0$ in $\fen$.
+The isotropic plane $\tilde J = \generators{\eta(v_1), \eta(v_2)}$ lies at the Enriques $1$-cusp $(8,6,0)_0$, while $J = \generators{v_1, v_2}$ lies at the Coble $1$-cusp $(7,7,1)_0$: the $1$-cusp correspondence at these representatives.
 :::
 
 ::: {.proof}
 
-By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic planes, and for any such plane $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7} = (7,7,1)$. It remains to identify the isomorphism type of the image $\tilde J^{\perp \ten}/\tilde J$ in $\ten$.
+Nothing here uses transitivity of $\Orth^+(T_\Co)$ on primitive isotropic planes, and the lemma does not assert it: both boundary lattices are computed at the exhibited planes. For $J = \generators{v_1, v_2}$ the quotient $J^{\perp T_\Co}/J$ is computed at the owner --- `computations/reports/one_cusp_plane_quotient.py`, through `primitive_isotropic_subobject(v_1, v_2)` and its isotropic reduction, with $v_1 = e'$ and $v_2 = 2h+\alpha_1+\alpha_2$ in the basis $\generators{2}\oplus U(2)\oplus E_8(2)$ --- and has rank $7$, signature $(0,7)$, determinant $-2^7$ and two-elementary type $(7,7,1)$, matching $A_1^{\oplus 7}$ entry for entry; and the statement about $\tilde J$ is likewise about the exhibited image. What the global statement would add is a different claim -- that *every* primitive isotropic plane of $T_\Co$ lies in the orbit of $J$, and correspondingly that $(7,7,1)_0$ names the only Coble $1$-cusp -- and that claim is not used here: it is proved for the full group at @thm:plane-transitivity-tco, this lemma does not consume it, and its $\Gamma_\Co$-analogue, which is what would bear on the number of $1$-cusps, remains open.
+It remains to identify the isomorphism type of the image $\tilde J^{\perp \ten}/\tilde J$ in $\ten$.
 One checks that both $v_2$ and $w_2$ are isotropic, and $v_2 \in v_1^{\perp T_\Co}/v_1$, and so $J$ and $\tilde J$ define isotropic planes in $T_\Co$ and $\ten$ respectively.
 By [@AE22 Prop. 5.5, Lem. 5.9], it suffices to show
 
@@ -153,7 +251,7 @@ On the other hand, cusp $(8,8,0)$ does not satisfy this property -- the vector $
 ::: {.remark}
 
 The two 1-cusps $(8,8,0)$ and $(8,6,0)$ in $\fen$ are isomorphic to the modular curves $X_0(2)$ and $X \definedas \overline{\bH / \SL_2(\bZ)}$ respectively, and by [@CDL25 Cor. 5.9.10] the 1-cusp $(7,7,1)$ in $\fco$ is isomorphic to $X$.
-This can additionally be verified by [@AE22 Prop. 5.13]: the 1-cusp $(7,7,1)$ in $T_\Co$ is incident to exactly one 0-cusp, as is the 1-cusp $(8,6,0)$ in $\ten$, and thus the corresponding modular curves are both isomorphic to $X$.
+This can additionally be verified by [@AE22 Prop. 5.13]: the 1-cusp $(7,7,1)$ in $T_\Co$ is incident, as a full-orthogonal-group stratum, to exactly one 0-cusp, as is the 1-cusp $(8,6,0)$ in $\ten$, and thus the corresponding modular curves are both isomorphic to $X$.
 We conjecture that general correspondences on $1$-cusps must preserve the isomorphism types of the corresponding modular curves, yielding an alternative proof of @lem:1_cusp_correspondence.
 :::
 

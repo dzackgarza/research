@@ -1,0 +1,4 @@
+det M: 8
+integral-valued nonzero half-classes (a,b,c,q): [(0, 1, 0, 0), (1, 0, 0, 0)]
+  generated overlattice det would be 2
+  generated overlattice det would be 2

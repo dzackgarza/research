@@ -25,6 +25,13 @@ $$
 is exact in $\mca$ [@Wei94, Thm. 1.2.3, Ex. 1.2.4].
 :::
 
+::: {.proof}
+
+This is [@Wei94, Thm. 1.2.3 and Ex. 1.2.4].
+The reason it transfers is that every construction involved is degreewise: kernels and cokernels of a chain map are taken in each degree with the restricted differentials, which are well defined because $f$ intertwines them, and $\operatorname{Coim}\to\operatorname{Im}$ is degreewise the isomorphism of the abelian base and hence, by the degreewise criterion for a chain map to be an isomorphism, one of complexes.
+Since kernels and cokernels are degreewise, monic, epic and exactness are checked in each degree, which is the second assertion.
+:::
+
 ## Homology and exactness {#sec-homology-and-exactness}
 
 Assume $\mca$ abelian for the remainder of the chapter.
@@ -76,6 +83,22 @@ $$
 \xrightarrow{\ \del\ }H_{n-1}(A)\too\cdots
 $$
 is exact [@Wei94, Thm. 1.3.1].
+:::
+
+::: {.proof}
+
+This is [@Wei94, Thm. 1.3.1], and the proof is the snake lemma applied to
+```tikzcd
+A_n/B_n(A) \arrow[r] \arrow[d, "d^A"] &
+B_n/B_n(B) \arrow[r] \arrow[d, "d^B"] &
+C_n/B_n(C) \arrow[r] \arrow[d, "d^C"] & 0 \\
+Z_{n-1}(A) \arrow[r] &
+Z_{n-1}(B) \arrow[r] &
+Z_{n-1}(C) & {}
+```
+whose rows are exact by @thm:chain-complexes-abelian and whose two ends the snake lemma of @thm:diagram-lemmas identifies as $H_n(C)$ and $H_{n-1}(A)$.
+Applying it to the translate $[n]$ gives the sequence in every degree at once, and naturality is functoriality of the snake lemma.
+The snake lemma is thus the one input this chapter takes without deriving.
 :::
 
 ## Translation, truncation, and the mapping cone {#sec-translation-cone}
@@ -190,7 +213,13 @@ $$
 $$
 Then $\beta\mapsto\beta^{\sharp}$ is a bijection from the bilinear forms of degree $n$ on $C$ to the chain maps $C\to C^{n-*}$.
 
-*Proof.* For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\Hom_R(C_{n-r},R)$, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
+The condition that $\beta^{\sharp}$ be a chain equivalence is the Poincaré condition of @def:poincare-complex.
+:::
+
+::: {.proof}
+
+For each $r$, an $R$-bilinear map $C_r\times C_{n-r}\to R$ is the same as an $R$-linear map $C_r\to\Hom_R(C_{n-r},R)$, by the universal property of the hom module, and the sign $(-1)^r$ is a bijection of each such set with itself, so the two families correspond.
+
 It remains to match the two conditions.
 For $x\in C_r$ and $y\in C_{n-r+1}$,
 $$
@@ -198,10 +227,14 @@ $$
 \qquad
 \bigl((-1)^r(d^C)^{*}\beta^{\sharp}_r(x)\bigr)(y)=(-1)^{2r}\beta_{r,n-r}(x,d^Cy),
 $$
-so $\beta^{\sharp}$ commutes with the differentials exactly when $\beta_{r-1,n-r+1}(d^Cx,y)+(-1)^{r}\beta_{r,n-r}(x,d^Cy)=0$ for all $r$, which is the condition of @def:complex-form with $p=r$ and $q=n+1-r$.
-$\sq$
+the second because the differential of the $n$-dual is $(-1)^r(d^C)^{*}$ by @def:n-dual-complex, and because $(-1)^r\beta^\sharp_r(x)$ evaluates at $y$ as $(-1)^r$ times $\beta^{\sharp}_r(x)(d^Cy)=(-1)^r\beta_{r,n-r}(x,d^Cy)$.
+So $\beta^{\sharp}$ commutes with the differentials exactly when
+$$
+(-1)^{r-1}\beta_{r-1,n-r+1}(d^Cx,y)=(-1)^{2r}\beta_{r,n-r}(x,d^Cy),
+$$
+that is, multiplying by $(-1)^{r-1}$, exactly when $\beta_{r-1,n-r+1}(d^Cx,y)+(-1)^{r}\beta_{r,n-r}(x,d^Cy)=0$ for all $r$, which is the condition of @def:complex-form with $p=r$ and $q=n+1-r$.
 
-The condition that $\beta^{\sharp}$ be a chain equivalence is the Poincaré condition of @def:poincare-complex.
+A chain map $\beta^{\sharp}$ is a chain equivalence exactly when it is a quasi-isomorphism, and under the bijection that is the condition of @def:poincare-complex.
 :::
 
 ::: {.proposition #prop:form-on-homology title="The induced pairing on homology"}
@@ -214,14 +247,16 @@ $$
 $$
 is a well-defined $R$-bilinear map $H_p(C)\times H_q(C)\to W$.
 If $\beta_n=\gamma\circ d_{n+1}$ for some $R$-linear $\gamma\colon(C\tensor_RC)_{n+1}\to W$, then $\bar\beta_{p,q}=0$.
+:::
 
-*Proof.* Let $x\in Z_p(C)$ and $y\in C_{q+1}$.
-In $(C\tensor_RC)_{n+1}$ one has $d(x\tensor_R y)=d^Cx\tensor_R y+(-1)^px\tensor_R d^Cy=(-1)^px\tensor_R d^Cy$, so $0=\beta_n\bigl(d(x\tensor_R y)\bigr)=(-1)^p\beta_{p,q}(x,d^Cy)$ and hence $\beta_{p,q}(x,d^Cy)=0$.
-Let $x'\in C_{p+1}$ and $y\in Z_q(C)$.
-Then $d(x'\tensor_R y)=d^Cx'\tensor_R y$, so $\beta_{p,q}(d^Cx',y)=0$.
-Thus $\beta_{p,q}$ annihilates $Z_p(C)\times B_q(C)$ and $B_p(C)\times Z_q(C)$, and descends to the subquotients.
-If $\beta_n=\gamma d_{n+1}$ and $x,y$ are cycles, then $d(x\tensor_R y)=0$ and $\beta_{p,q}(x,y)=\gamma\bigl(d(x\tensor_R y)\bigr)=0$.
-$\sq$
+::: {.proof}
+
+Let $x\in Z_p(C)$ and $y\in C_{q+1}$.
+In $(C\tensor_RC)_{n+1}$ one has $d(x\tensor_R y)=d^Cx\tensor_R y+(-1)^px\tensor_R d^Cy=(-1)^px\tensor_R d^Cy$, because $x$ is a cycle; so $0=\beta_n\bigl(d(x\tensor_R y)\bigr)=(-1)^p\beta_{p,q}(x,d^Cy)$, since $\beta$ is a chain map into a complex with zero differentials, and hence $\beta_{p,q}(x,d^Cy)=0$.
+Similarly, for $x'\in C_{p+1}$ and $y\in Z_q(C)$ one has $d(x'\tensor_R y)=d^Cx'\tensor_R y$, so $\beta_{p,q}(d^Cx',y)=0$.
+Thus $\beta_{p,q}$ annihilates $Z_p(C)\times B_q(C)$ and $B_p(C)\times Z_q(C)$, and $B_p\subseteq Z_p$ makes it descend to a pairing $H_p(C)\times H_q(C)\to W$, which is the assignment displayed.
+
+If $\beta_n=\gamma\circ d_{n+1}$ and $x,y$ are cycles, then $d(x\tensor_Ry)=0$ by the first computation, so $\beta_{p,q}(x,y)=\gamma\bigl(d(x\tensor_Ry)\bigr)=0$ by the factorization.
 :::
 
 ::: {.proposition #prop:degreewise-isometry title="Degreewise isometries"}
@@ -233,11 +268,16 @@ b_{p-1}(d^Cx,d^Cy)=b_p(x,y)
 \qquad(x,y\in C_p,\ p\in\bZ).
 $$
 Then $b_p=0$ for every $p$.
+:::
 
-*Proof.* Apply the hypothesis in degree $p$ and then in degree $p-1$: for $x,y\in C_p$,
+::: {.proof}
+
+Apply the hypothesis in degree $p$, then in degree $p-1$ to the vectors $d^Cx,d^Cy\in C_{p-1}$, which is where that instance of the hypothesis lives; for $x,y\in C_p$,
 $$
-b_p(x,y)=b_{p-1}(d^Cx,d^Cy)=b_{p-2}\bigl((d^C)^2x,(d^C)^2y\bigr)=b_{p-2}(0,0)=0. \qquad\sq
+b_p(x,y)=b_{p-1}(d^Cx,d^Cy)=b_{p-2}\bigl((d^C)^2x,(d^C)^2y\bigr)=b_{p-2}(0,0)=0,
 $$
+the last step because $(d^C)^2=0$ and a bilinear form vanishes on a pair with a zero entry.
+Nothing is assumed about $C$ beyond the differentials, and the hypothesis is used in two adjacent degrees, which is why the family is indexed by all of $\bZ$.
 :::
 
 ::: {.remark}
@@ -272,6 +312,14 @@ Let $\epsilon\colon P\to M$ be a projective resolution and let $\eta\colon Q\to 
 Every morphism $f'\colon M\to N$ lifts to a chain map $f\colon P\to Q$ with $\eta f_0=f'\epsilon$, and any two such lifts are chain homotopic [@Wei94, Thm. 2.2.6].
 :::
 
+::: {.proof}
+
+This is [@Wei94, Thm. 2.2.6].
+The lift is built degree by degree: $f_0$ lifts $f'\epsilon$ along the epimorphism $\eta$ because $P_0$ is projective, and $f_n$ lifts $f_{n-1}d^P_n$ along $Q_n\twoheadrightarrow\operatorname{im}d^Q_n$ for the same reason, the composite landing in $\ker d^Q_{n-1}=\operatorname{im}d^Q_n$ by exactness of $Q$ and $d^Pd^P=0$.
+The homotopy is built by the same induction, from the observation that $d^Q_n\bigl(f_n-g_n-s_{n-1}d^P_n\bigr)=0$, so the difference lifts again.
+Only projectivity of the $P_n$, exactness of both augmented complexes and additivity are used; the $Q_n$ need not be projective, which is why the statement calls $Q$ a resolution and not a projective one.
+:::
+
 ::: {.definition #def:syzygy title="Syzygies"}
 
 Let
@@ -288,6 +336,14 @@ A surjection $F_0\twoheadrightarrow M$ determines its kernel; a free module surj
 
 Let $k$ be a field and $R=k[x_1,\dots,x_r]$.
 Every finitely generated graded $R$-module has a graded free resolution of length at most $r$ by finitely generated free modules [@Eis95, Thm. 1.13].
+:::
+
+::: {.proof}
+
+This is [@Eis95, Thm. 1.13].
+Two of its inputs are cited rather than derived here: exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Ch. 17], and the coincidence of the minimal resolution with the computation of Tor [@Eis95, Ch. 20].
+With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
+The existence of a finite graded resolution, by contrast, is derived here and needs only that $R$ is Noetherian.
 :::
 
 ::: {.definition #def:minimal-resolution title="Minimal free resolutions"}

@@ -38,6 +38,13 @@ Every $\QQ$-valued bilinear module $(L,\beta)$ determines a $\QQ$-valued quadrat
 Conversely, every $\QQ$-valued quadratic module $(L,q)$ determines a symmetric bilinear module $(L,\beta_q)$ via the polar form.
 :::
 
+::: {.proof}
+
+With the normalisation of @def:quadratic-form, $\beta_q(v,w) = q(v+w)-q(v)-q(w)$, one has $q_{\beta_q} = \beta_{q_\beta}$ composed the other way: $\beta_{q_\beta}(v,w) = \beta(v,w)$ for symmetric $\beta$, while $q_{\beta_q}(v) = q(2v)-2q(v) = 2q(v)$.
+So the two constructions are mutual inverses up to the factor $2$, which is inverted over $\QQ$: the symmetric part of $\beta$ is what $q_\beta$ sees, and halving $\beta_q$ recovers $q$.
+:::
+
+
 ::: {.lemma title="{Bijection for Even Lattices}" #lem:even-lattice-bijection}
 
 There is a bijection between even symmetric integral forms and integral quadratic forms:
@@ -49,6 +56,14 @@ $$\begin{aligned}
 In other words, the polar form of any integral quadratic form is an even symmetric integral form.
 Conversely, every even symmetric integral form $\beta$ is the polar form of the integral quadratic form $q(v) \definedas {1\over 2}\beta(v,v)$.
 :::
+
+::: {.proof}
+
+For integral $q$ the polar form $\beta_q(v,w) = q(v+w)-q(v)-q(w)$ is integral and even, since $\beta_q(v,v) = 2q(v)$.
+Conversely an even $\beta$ has $\frac12\beta(v,v)\in\ZZ$ and polarises back to $\beta$.
+The halving is why evenness is needed: the diagonal of an odd form gives half-integers.
+:::
+
 
 ##### Lattices
 
@@ -180,6 +195,14 @@ For a sublattice $S \iscontainedin L$, the following are equivalent:
 - Every integral linear functional on $S$ can be lifted to an integral linear functional on $L$.
 :::
 
+::: {.proof}
+
+Over the principal ideal domain $\ZZ$, $L/S$ is torsion-free exactly when $S$ is saturated, and a finitely generated torsion-free $\ZZ$-module is free; so saturation, being a direct summand, and extending a basis of $S$ to one of $L$ are one condition.
+$S_\QQ\intersect L = S$ is that condition again: an element of $L\sm S$ lies in $S_\QQ$ exactly when some nonzero multiple of it lies in $S$.
+For the last two clauses $L$ is required to be nondegenerate, which is the standing hypothesis of this chapter: then $\beta$ identifies $L_\QQ$ with its dual (@thm:geometric-identification-dual), and $S = (S^{\perp L})^{\perp L}$ as well as the lifting of integral functionals from $S$ to $L$ say that no element of $L\sm S$ is orthogonal to all of $S$, which is saturation of $S$ read in the dual.
+:::
+
+
 ::: {.definition 
     title="{Equivalence of Embeddings}" 
     #def:embedding-equivalence
@@ -249,6 +272,13 @@ For a nondegenerate integral lattice $(L,\beta)$, the dual lattice can be identi
 Under this identification, we have the inclusions $L \iscontainedin \dualof{L} \iscontainedin L_{\QQ}$.
 :::
 
+::: {.proof}
+
+Nondegeneracy gives an isomorphism $L_\QQ\to\Hom(L_\QQ,\QQ)$, $v\mapsto\beta_\QQ(v,-)$, and $\dualof{L} = \Hom(L,\ZZ)$ is the preimage of the integral functionals, that is $\theset{v\in L_\QQ \st \beta_\QQ(v,L)\iscontainedin\ZZ}$; the vector $v_\phi$ is the inverse image of $\phi$.
+For $v\in L$ and $w\in L$ integrality of $\beta$ gives $\beta(v,w)\in\ZZ$, so $L\iscontainedin\dualof{L}$, and $\dualof{L}\iscontainedin L_\QQ$ holds by construction.
+:::
+
+
 ::: {.remark title="{Properties of Dual Lattices}" #rem:dual-lattice-properties}
 We summarize some standard properties of dual lattices
 
@@ -278,6 +308,13 @@ The discriminant forms $b_L$ and $q_L$ of a nondegenerate lattice $L$ are themse
 For any $[v], [w] \in A_L$, the bilinear and quadratic forms are related by $\beta_{A_L}([v],[w]) = {1\over 2}(q_{A_L} ([v]+[w]) - q_{A_L} ([v]) - q_{A_L} ([w]))$, where multiplication by ${1\over 2}$ is interpreted as an isomorphism $\QQ/2\ZZ \to \QQ/\ZZ$.
 :::
 
+::: {.proof}
+
+The form $b_L$ is nondegenerate: the map $A_L\to\Hom(A_L,\QQ/\ZZ)$, $v\mapsto\bigl(w\mapsto\beta(v,w)\bmod\ZZ\bigr)$, is injective because $\beta$ identifies $\dualof{L}$ with $\Hom(L,\ZZ)$, so $\beta(v,L)\iscontainedin\ZZ$ forces $v\in L$; domain and target have order $\abs{A_L}$, so it is an isomorphism.
+The displayed identity is the polarisation of $q_L$, so nondegeneracy of $q_L$ is the same statement, with $\frac12$ read as the isomorphism $\QQ/2\ZZ\to\QQ/\ZZ$.
+:::
+
+
 ::: {.proposition title="{Exact Sequence for Scaled Lattices}" #prop:scaled-lattice-sequence}
 For any lattice $L$ and positive integer $m$, there is a short exact sequence:
 $$
@@ -294,6 +331,14 @@ The group $\discriminantcokernel{A_L}$ measures the obstruction to lifting isome
 We note that $\psi$ is surjective (i.e., $\discriminantcokernel{A_L} = 0$) when $L$ is indefinite and satisfies $\ell(A_L) + 2 \leq \rank(L)$, where $\ell(A_L)$ is the minimal number of generators of $A_L$.
 For unimodular lattices like $U$ and $E_8$, the discriminant group is trivial, so $\discriminantkernel{L} = \Orth(L)$.
 :::
+
+::: {.proof}
+
+Since $(L(m))^* = \frac1m\dualof{L}$, the discriminant group is $A_{L(m)} = \frac1m\dualof{L}/L = \dualof{L}/mL$, which contains $L/mL$ with quotient $\dualof{L}/L = A_L$; for $L$ unimodular $\dualof{L} = L$ and the inclusion is an isomorphism.
+An isometry preserves $\dualof{L}$ because integrality of the pairings characterises it (@thm:geometric-identification-dual), hence descends to $A_L$, and the exact sequence is the first isomorphism theorem for $\psi$.
+That $\psi$ is onto when $L$ is indefinite and $\ell(A_L)+2\leq\rank L$ is Nikulin's surjectivity theorem [@Nik80]; for unimodular $L$ both $A_L$ and $\psi$ are trivial, so the kernel is all of $\Orth(L)$.
+:::
+
 
 ::: {.example title="$U$ and $U(2)$" #ex:hyperbolic-duals}
 The hyperbolic lattice $U$ is unimodular, so $U^\vee = U$ and its discriminant group $A_U$ is trivial.

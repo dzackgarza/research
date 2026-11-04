@@ -43,6 +43,13 @@ The charge behaves as follows under blowups of an anticanonical pair:
 This is [@Fri15 Lem. 2.2(iii)]; the charge itself is [@Fri15 Def. 1.1].
 :::
 
+::: {.proof}
+
+This is [@Fri15 Lem. 2.2(iii); @Fri15 Def. 1.1].
+
+Cited: how the charge of an anticanonical pair changes under a blowup, in Friedman Lemma 2.2(iii), with the definition of the charge in Definition 1.1. The book uses it to track charges along its chain of blowups.
+:::
+
 ::: {.theorem #thm:friedman-miranda-charge title="Friedman--Miranda charge theorem"}
 
 Let $\mcx \to (C, 0)$ be a Type III Kulikov degeneration of $K3$ surfaces with central fiber
@@ -63,6 +70,13 @@ $$
 $$
 This imposes severe constraints on the possible combinatorial types of degenerations.
 The identity is [@FM83 Prop. 3.7], proved there in the setting of the dual complex of a Kulikov degeneration.
+:::
+
+::: {.proof}
+
+This is [@FM83 Prop. 3.7].
+
+Cited: the Friedman-Miranda determination of charges, Proposition 3.7. The book quotes it because the charge of the pairs it constructs is exactly the input that proposition takes.
 :::
 
 ## Singularities in the minimal model program

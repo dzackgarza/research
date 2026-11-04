@@ -78,7 +78,7 @@ K_S^{\perp} \cong E_{10} = U\oplus E_8
 ,
 $$
 the Enriques lattice of the Enriques-lattice definition (@def:enriques-lattice).
-The Coble boundary curve has class
+The anti-bicanonical curve $C \in \abs{-2K_S}$ has class
 $$
 C = 6H - 2\Sum_{i=1}^{10} E_i = -2K_S
 .
@@ -100,13 +100,13 @@ An even unimodular lattice of signature $(1,9)$ is isometric to $E_{10}$ by the 
 Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 :::
 
-::: {.definition #def:coble-polarization-classes title="The plane class and the degree-2 Coble polarization"}
+::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization"}
 
 The two classes to be distinguished are:
 
-1. the **plane class** $H\in\Pic(S)$, the pullback of a line, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3);
+1. the **hyperplane class** $H\in\Pic(S)$, the pullback of $c_1(\OO_{\PP^2}(1))$, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3);
 
-2. the **degree-$2$ Coble polarization** $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$, of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
+2. the **degree-$2$ numerical polarization** $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$, of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
 :::
 
 ::: {.remark title="Why the two must not be identified"}

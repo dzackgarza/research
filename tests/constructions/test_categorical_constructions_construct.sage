@@ -8,6 +8,8 @@ and Iso constructions.
 """
 
 from dzack_research.preamble.all import *  # noqa: F401,F403
+from sage_extensions.categories.group.groups import OwnedAbelianGroups, OwnedGroups
+from sage_extensions.categories.modules.pure.modules import Modules
 
 # ---------------------------------------------------------------------------
 # Limits and colimits in Sets.
@@ -159,36 +161,36 @@ def test_subobjects_of_a_module_form_a_category(commutative_ring) -> None:
 
 
 def test_products_coproducts_kernels_and_cokernels_of_groups() -> None:
-    symmetric = Groups.S(3)
-    two = Groups.C(2)
-    three = Groups.C(3)
-    groups = Groups()
+    symmetric = OwnedGroups().S(3)
+    two = OwnedGroups().C(2)
+    three = OwnedGroups().C(3)
+    groups = OwnedGroups()
     product = groups.product((symmetric, two))
     free_product = groups.coproduct((two, three))
     sign = symmetric.Mor(two)(
         {g: (two.group_generators()[0] if g.order() == 2 else two.one()) for g in symmetric.group_generators()}
     )
 
-    assert product in Groups()
+    assert product in OwnedGroups()
     assert product.order() == 12
     assert not product.is_abelian()
-    assert free_product in Groups()
+    assert free_product in OwnedGroups()
     assert free_product not in FiniteGroups()
     assert free_product.cardinality() == aleph0
     assert sign.kernel().order() == 3
     assert sign.kernel().is_abelian()
     assert sign.kernel().inclusion().cokernel().order() == 2
     assert sign.cokernel().order() == 1
-    assert groups.product((two, three)).is_isomorphic_to(Groups.C(6))
+    assert groups.product((two, three)).is_isomorphic_to(OwnedGroups().C(6))
 
 
 def test_subgroups_of_the_symmetric_group_form_a_category() -> None:
-    symmetric = Groups.S(3)
-    subgroups = Groups().Subobjects(symmetric)
+    symmetric = OwnedGroups().S(3)
+    subgroups = OwnedGroups().Subobjects(symmetric)
     assert subgroups in Cat()
     assert subgroups.cardinality() == cardinal(6)
-    assert Groups().Subobjects(Groups.C(6)).cardinality() == cardinal(4)
-    assert Groups().Subobjects(Groups.Q()).cardinality() == cardinal(6)
+    assert OwnedGroups().Subobjects(OwnedGroups().C(6)).cardinality() == cardinal(4)
+    assert OwnedGroups().Subobjects(OwnedGroups().Q()).cardinality() == cardinal(6)
 
 
 # ---------------------------------------------------------------------------
@@ -202,12 +204,12 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
         Modules(ZZ).SliceOver(module),
         OwnedRings().CosliceUnder(ZZ),
         Sets().opposite(),
-        Cat().product((Sets(), Groups())),
+        Cat().product((Sets(), OwnedGroups())),
         Cat().Mor(Sets(), Sets()),
         Sets().Core(),
         Modules(ZZ),
         Sets(),
-        Groups(),
+        OwnedGroups(),
     ):
         assert category in Cat()
     assert module.subobject_on([module.module_generator(0)]) in Modules(ZZ).SliceOver(module)
@@ -216,6 +218,240 @@ def test_slices_coslices_opposites_products_and_functor_categories() -> None:
     assert functor_category(Sets().identity_functor()) in functor_category
     assert Fields() in Cat()
     assert Cat() in Cat()
+
+
+def test_all_cat_construction_accessors_build_owned_categories() -> None:
+    r"""Each of the 21 Cat-carried accessors builds its selected category on the supplied data."""
+    groups = OwnedGroups()
+    group = OwnedGroups().C(2)
+    symmetric = OwnedGroups().S(3)
+    labels = Sets.Δ[1]
+    index = PosetCategory(labels, le=lambda left, right: int(left) <= int(right))
+    diagrams = groups.Diagram(index)
+    diagram = diagrams.constant_functor(group)
+    sign = symmetric.Mor(group)(
+        {
+            generator: (
+                group.group_generators()[0]
+                if generator.order() == 2
+                else group.one()
+            )
+            for generator in symmetric.group_generators()
+        }
+    )
+    modules = Modules(ZZ)
+    module = ZZ.free_module(1)
+
+    arrow = groups.Arrow()
+    iso_arrow = groups.IsoArrow()
+    core = groups.core()
+    directed = groups.DirectedSystem(index)
+    inverse = groups.InverseSystem(index)
+    cone = groups.Cone(diagram)
+    cocone = groups.Cocone(diagram)
+    product = groups.Product((group, group))
+    coproduct = groups.Coproduct((group, group))
+    biproduct = modules.Biproduct((module, module))
+    direct_sum = modules.DirectSum()
+    tensor_product = modules.TensorProduct((module, module))
+    slice_category = groups.SliceOver(group)
+    coslice_category = groups.CosliceUnder(group)
+    subobjects = groups.SubObject(symmetric)
+    superobjects = groups.SuperObject(group)
+    covering_objects = groups.CoveringObject(group)
+    covered_objects = groups.CoveredObject(symmetric)
+    kernels = groups.Kernel(sign)
+    cokernels = groups.Cokernel(sign)
+    identity_group = groups.Mor(group, group).identity()
+    identity_symmetric = groups.Mor(symmetric, symmetric).identity()
+    arrow_object = arrow(sign)
+    iso_arrow_object = iso_arrow(identity_group)
+    core_identity = core.Mor(group, group)(identity_group, identity_group)
+    directed_diagram = directed.constant_functor(group)
+    inverse_diagram = inverse.constant_functor(group)
+    cone_object = cone.cone(group, lambda _index: identity_group)
+    cocone_object = cocone.cocone(group, lambda _index: identity_group)
+    slice_object = slice_category(identity_group)
+    coslice_object = coslice_category(identity_group)
+    superobject = superobjects(identity_group)
+    covering_object = covering_objects(identity_group)
+    covered_object = covered_objects(identity_symmetric)
+    kernel_object = sign.kernel()
+    cokernel_object = sign.cokernel()
+
+    construction_names = (
+        "Arrow",
+        "IsoArrow",
+        "core",
+        "Diagram",
+        "DirectedSystem",
+        "InverseSystem",
+        "Cone",
+        "Cocone",
+        "Product",
+        "Coproduct",
+        "Biproduct",
+        "DirectSum",
+        "TensorProduct",
+        "SliceOver",
+        "CosliceUnder",
+        "SubObject",
+        "SuperObject",
+        "CoveringObject",
+        "CoveredObject",
+        "Kernel",
+        "Cokernel",
+    )
+    constructions = (
+        arrow,
+        iso_arrow,
+        core,
+        diagrams,
+        directed,
+        inverse,
+        cone,
+        cocone,
+        product,
+        coproduct,
+        biproduct,
+        direct_sum,
+        tensor_product,
+        slice_category,
+        coslice_category,
+        subobjects,
+        superobjects,
+        covering_objects,
+        covered_objects,
+        kernels,
+        cokernels,
+    )
+    for name, construction in zip(construction_names, constructions, strict=True):
+        assert construction in Cat(), f"{name} returned {construction}, not an object of Cat()"
+    assert diagrams is Cat().Mor(index, groups)
+    assert diagram.domain() is index
+    assert diagram.codomain() is groups
+    assert arrow_object in arrow
+    assert iso_arrow_object in iso_arrow
+    assert group in core
+    assert core_identity == core.identity(group)
+    assert directed_diagram in directed
+    assert directed_diagram.domain() is index
+    assert inverse_diagram in inverse
+    assert inverse_diagram.domain() is index.opposite()
+    assert directed.index_category() is index
+    assert inverse.base_index_category() is index
+    assert cone.diagram() is diagram
+    assert cocone.diagram() is diagram
+    assert cone_object in cone
+    assert cone_object.diagram() is diagram
+    assert cocone_object in cocone
+    assert cocone_object.diagram() is diagram
+    print("CAT-370: diagram and cone constructors passed", flush=True)
+    product_construction = groups.product_construction((group, group))
+    product_category_cone = product.cone(
+        group, lambda _index: groups.Mor(group, group).identity()
+    )
+    assert product_category_cone in product
+    assert product_category_cone.diagram() is product.diagram()
+    product_cone = groups.Cone(product_construction.diagram()).cone(
+        group, lambda _index: groups.Mor(group, group).identity()
+    )
+    product_factor = product_construction.factor(product_cone)
+    assert product_construction.cone() in product_construction.diagram().Cones()
+    assert product_cone in groups.Cone(product_construction.diagram())
+    assert product_factor.apex_map().domain() is group
+    assert product_factor.apex_map().codomain() is product_construction.object()
+    for index_object in product_construction.diagram().domain().objects():
+        assert (
+            product_construction.structure_morphism(index_object)
+            * product_factor.apex_map()
+            == product_cone.structure_morphism(index_object)
+        )
+    print("CAT-370: product universal property passed", flush=True)
+
+    print("CAT-370: before selected coproduct construction", flush=True)
+    coproduct_construction = groups.coproduct_construction((group, group))
+    print("CAT-370: selected coproduct construction passed", flush=True)
+    coproduct_category_cocone = coproduct.cocone(
+        group, lambda _index: groups.Mor(group, group).identity()
+    )
+    assert coproduct_category_cocone in coproduct
+    assert coproduct_category_cocone.diagram() is coproduct.diagram()
+    coproduct_cocone = groups.Cocone(coproduct_construction.diagram()).cocone(
+        group, lambda _index: groups.Mor(group, group).identity()
+    )
+    coproduct_factor = coproduct_construction.factor(coproduct_cocone)
+    assert coproduct_construction.cocone() in coproduct_construction.diagram().Cocones()
+    assert coproduct_cocone in groups.Cocone(coproduct_construction.diagram())
+    assert coproduct_factor.apex_map().domain() is coproduct_construction.object()
+    assert coproduct_factor.apex_map().codomain() is group
+    for index_object in coproduct_construction.diagram().domain().objects():
+        assert (
+            coproduct_factor.apex_map()
+            * coproduct_construction.costructure_morphism(index_object)
+            == coproduct_cocone.costructure_morphism(index_object)
+        )
+    print("CAT-370: coproduct universal property passed", flush=True)
+
+    module_two = ZZ.free_module(2)
+    biproduct_object = modules.biproduct((module, module_two))
+    print("CAT-370: biproduct constructed", flush=True)
+    assert biproduct is biproduct_object.category()
+    assert biproduct_object.biproduct_factor(0) is module
+    assert biproduct_object.biproduct_factor(1) is module_two
+    assert (
+        biproduct_object.projection(0) * biproduct_object.injection(0)
+        == modules.Mor(module, module).identity()
+    )
+    assert (
+        biproduct_object.projection(1) * biproduct_object.injection(1)
+        == modules.Mor(module_two, module_two).identity()
+    )
+    print("CAT-370: biproduct maps passed", flush=True)
+
+    print("CAT-370: before direct-sum verification", flush=True)
+    direct_sum_object = direct_sum.verify_decomposition(
+        biproduct_object, (module, module_two)
+    )
+    print("CAT-370: direct-sum verification passed", flush=True)
+    assert direct_sum.base_category() is modules
+    assert direct_sum_object in direct_sum
+    assert direct_sum_object.summand(0) is module
+    assert direct_sum_object.summand(1) is module_two
+    assert direct_sum_object.injection(0).codomain() is direct_sum_object
+    assert direct_sum_object.projection(0).domain() is direct_sum_object
+
+    print("CAT-370: before tensor product", flush=True)
+    tensor_product_object = modules.tensor_product((module, module_two))
+    print("CAT-370: tensor product constructed", flush=True)
+    assert tensor_product is tensor_product_object.category()
+    assert tensor_product_object.tensor_factor(0) is module
+    assert tensor_product_object.tensor_factor(1) is module_two
+    assert (
+        tensor_product_object.pure_tensor(
+            module.module_generator(0), module_two.module_generator(0)
+        )
+        in tensor_product_object
+    )
+    print("CAT-370: pure tensor passed", flush=True)
+    assert slice_object in slice_category
+    assert slice_category.arrow(slice_object) is identity_group
+    assert coslice_object in coslice_category
+    assert coslice_category.arrow(coslice_object) is identity_group
+    assert slice_category.base_object() is group
+    assert coslice_category.base_object() is group
+    assert subobjects.base_object() is symmetric
+    assert kernel_object in subobjects
+    assert superobjects.base_object() is group
+    assert superobject in superobjects
+    assert covering_objects.base_object() is group
+    assert covering_object in covering_objects
+    assert covered_objects.base_object() is symmetric
+    assert covered_object in covered_objects
+    assert kernel_object in kernels
+    assert kernels.base_object() is sign.domain()
+    assert cokernel_object in cokernels
+    assert cokernels.base_object() is sign.codomain()
 
 
 def test_identity_and_inclusion_functors() -> None:
@@ -227,7 +463,7 @@ def test_identity_and_inclusion_functors() -> None:
     assert inclusion(QQ) is QQ
     assert inclusion.domain() is Fields()
     assert inclusion.codomain() is CommutativeRings()
-    assert AbelianGroups().inclusion_into(Groups())(Groups.C(4)) is Groups.C(4)
+    assert OwnedAbelianGroups().inclusion_into(OwnedGroups())(OwnedGroups().C(4)) is OwnedGroups().C(4)
 
 
 def test_natural_transformations_between_functors() -> None:
@@ -264,7 +500,7 @@ def test_hom_end_aut_mono_epi_constructions_on_sets() -> None:
     assert Sets().Mor(two, three).cardinality() == cardinal(9)
     assert Sets().End(three).cardinality() == cardinal(27)
     assert Sets().Aut(three).order() == 6
-    assert Sets().Aut(three) in Groups()
+    assert Sets().Aut(three) in OwnedGroups()
     assert Sets().Mono(two, three).cardinality() == cardinal(6)
     assert Sets().Epi(three, two).cardinality() == cardinal(6)
     assert Sets().Epi(two, three).cardinality() == cardinal(0)
@@ -276,7 +512,7 @@ def test_hom_end_aut_constructions_on_modules_over_a_field(field) -> None:
     endomorphisms = Modules(field).End(plane)
     automorphisms = Modules(field).Aut(plane)
     assert endomorphisms in Cat()
-    assert automorphisms in Groups()
+    assert automorphisms in OwnedGroups()
     assert endomorphisms.identity() in automorphisms
     if field.cardinality().is_finite():
         q = field.cardinality()

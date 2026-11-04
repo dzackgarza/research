@@ -1,4 +1,4 @@
-Ma# Constructions of the moduli space {#sec-moduli-construction}
+# Constructions of the moduli space {#sec-moduli-construction}
 
 We summarize the relevant moduli spaces:
 
@@ -6,6 +6,7 @@ $$
 \begin{aligned}
 \fen &= \bD(\ten)/\Orth^+(\ten)^* &
 \fentwo &= \bD(\ten)/\gent \\
+F^K_{\En} &= \bD(\ten)/\Gamma^K_{\En} \\
 \fco &= \bD(T_\Co) / \Orth^+(T_\Co)^* &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
@@ -16,11 +17,23 @@ where
 $$
 \begin{aligned}
 \gent &= \Orth(\ten) \intersect \Orth(\tdp) \iscontainedin \Orth(\lkt) \\
+\Gamma^K_{\En} &= \Orth(\ten), \qquad \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten} \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(\ten)}(T_\Co) \iscontainedin \Orth(\ten) \\
 F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
 F_{\Nod, 2} &= ???
 \end{aligned}
 $$
+
+Three quotients of one period domain appear here and they are not the same space, so no statement about cusps passes between them for free.
+The *stable* quotient is $\fen = \bD(\ten)/\Orth^+(\ten)^*$, by the discriminant kernel inside the component-preserving group; it is the group this book's moduli problem uses.
+The *unpolarized* quotient is $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$ with $\Gamma^K_{\En} = \Orth(\ten)$, which is [@AEGS25]'s $\overline{F^K_{\En}}^{\bb}$, and the cusp diagram usually quoted for the unpolarized Enriques space -- two $0$-cusps distinguished by divisibility and two $1$-cusps, $(10,10,0)_1$, $(10,8,0)_1$, $(8,8,0)_0$, $(8,6,0)_0$ -- is the cusp diagram of *that* quotient [@AEGS25, §2].
+The *polarized* quotient is $\fentwo = \bD(\ten)/\gent$ with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, the twisted group whose period space carries five $0$-cusps [@AEGS25, §3].
+Because $\Orth^+(\ten)^*\subseteq\Orth^+(\ten)\subseteq\Gamma^K_{\En}$, the stable orbits are the finest and the $\Gamma^K_{\En}$-orbits the coarsest, so a cusp count made for one of these groups is not a cusp count for another: importing the two-cusp classification of $F^K_{\En}$ into the stable quotient $\fen$ would be exactly the silent change of group that the comparison below must avoid, and the passage from one to the other is not known here.
+The superscript is not decoration: $\Gamma^K_{\En} = \Orth(\ten)$ is [@AEGS25]'s $\Gamma_{\mathrm{Enr}}$, the full group and the outer term of the chain above, whereas $\Gamma_\En$ without it denotes the stable subgroup $\Orth^+(\ten)^*$ throughout this book (@sec-heegner-line, @thm:normalization, @def:gamma-co-en).
+Writing $\Gamma_\En$ for $\Orth(\ten)$ would conflate the two ends of that chain, and a quotient by one of them is the quotient by the other only for the orbit problems in which the difference happens to be invisible.
+The same three-way distinction has to be kept on the Coble side, where $\fco$ is the stable quotient and $F_{\Co,2}$ the polarized one.
+The relation there between the stable Coble group $\Gamma_\Co = \Orth^+(T_\Co)^*$ and the two groups obtained from the Enriques and the Coble markings is @sec-gamma-co-comparison: each marked group contains the stable one as the kernel of its action on $A_{T_\Co}$, hence with finite index, and is determined by $\Gamma_\Co$ together with an explicit subgroup of the finite group $\Orth(A_{T_\Co}, q_{T_\Co})$.
+Whether either inclusion is strict is an open question about that finite subgroup, and it is not decided by the subgroup being nontrivial: strictness requires an element of the marked group acting nontrivially on $A_{T_\Co}$, which is an integral statement about the lattice.
 
 where $\tdp$ is described in [@AEGS25].
 Note that we implicitly use the embedding $\eta\colon T_\Co\injects\ten$ of @lem:primitive_embedding_eta.
@@ -123,7 +136,11 @@ For the Coble lattices $\rank(S_\Co) = 11$, so $\dim_\CC D_{T_\Co} = 9$.
 
 ::: {.proof}
 
-The K3 lattice has rank $22$, so $\rank(T) = 22 - \rank(M)$, and $T$ has signature $(2, 20 - \rank(M))$; apply @prop:type-iv-dimension.
+The K3 lattice has rank $22$ and signature $(3,19)$. The embedding is primitive, which gives a splitting over $\mathbb{Q}$ and not over $\mathbb{Z}$: $M$ and $T$ span $\lkt\otimes\QQ$ orthogonally, so their ranks and signatures add, while $M\oplus T$ has index $|\det M| = |\det T|$ in $\lkt$ and the integral statement is the gluing $A_M\cong A_T$ rather than a direct sum (the same point as in @sec-enriques-coble-correspondence, where the corresponding inclusion for $T_\Co\subset\ten$ is treated). Orthogonal decomposition over $\mathbb{Z}$ needs the embedded form to be perfect (@thm:orthogonal-decomposition), which $M = S_\Co$ is not: its determinant is $2^{11}$. The formal counterpart of that statement is `formalization/coble-enriques/Splitting.lean`'s `splits_of_unimodular`: unimodularity of the restricted Gram is exactly the hypothesis, and primitivity alone is not.
+Ranks add, so $\rank(T)=22-\rank(M)$.
+Signatures add too, by @def:signature applied to the orthogonal sum of the two real forms, so if $M$ has signature $(1,\rank(M)-1)$ then $T$ has signature $(3-1,\,19-(\rank(M)-1))=(2,\,20-\rank(M))$.
+The first index is $2$, so $T$ is of type IV in the sense of @prop:type-iv-dimension, whose dimension for a type IV lattice of signature $(2,m)$ is $m$; with $m=20-\rank(M)$ that is the displayed dimension.
+For $M=S_\Co$ of rank $11$ the complement has signature $(2,9)$, giving $\dim_\CC D_{T_\Co}=9$.
 :::
 
 Letting $E_{10} \definedas U \oplus E_8$, one can similarly consider the Enriques lattices $\sen := E_{10}(2)$ with $\ten = U \oplus E_{10}(2)$.
@@ -242,6 +259,13 @@ When $T$ is a nodal type, $\per_T$ is moreover an isomorphism of orbifolds onto 
 The description of the image restates, at the level of moduli spaces, the equisingular deformation theory of Urabe [@Ura88].
 :::
 
+::: {.proof}
+
+This is [@YZZ25 §3.1; §1, §3.2, §3.3, §6.2].
+
+Cited from Yu-Zheng-Zhang, in the sections named in the statement. The book uses the period map for the sextic locus only to place the Coble moduli problem inside it, so the statement is quoted rather than re-proved.
+:::
+
 ::: {.theorem #thm:git-equals-looijenga title="The GIT compactification is a Looijenga compactification"}
 
 Let $\Lambda_1 \definedas H^{\perp\lkt}$, of signature $(2,19)$ with $A_{\Lambda_1}\cong\ZZ/2$, and let $\Gamma_1$ be the arithmetic group of the degree-$2$ K3 moduli space $\Gamma_1\backslash D(\Lambda_1)$.
@@ -256,6 +280,13 @@ $$
 \wh{\mcm}_T \;\cong\; \overline{\Gamma_T\backslash D(Q)}^{\,\mch^{*}_T}
 $$
 between the GIT compactification of $\mcm_T$ and the Looijenga compactification of @def:looijenga-compactification applied to $\Gamma_T\backslash(D(Q) - \mch^{*}_T)$, compatibly with the corresponding statement of Shah and Looijenga for the whole space of sextics, $\overline{\mcm}\cong\overline{\Gamma_1\backslash D(\Lambda_1)}^{\,\mch_\infty}$ [@Sha80; @Loo02]; the two vertical maps of the resulting square are normalizations onto their images [@YZZ25 §4.2].
+:::
+
+::: {.proof}
+
+This is [@YZZ25 §4.1, §4.2; @Sha80; @Loo02].
+
+Cited: the identification of the geometric invariant theory quotient with Looijenga compactification, in the form of Yu-Zheng-Zhang Sections 4.1 and 4.2, building on Shah and Looijenga. The book uses the identification as the comparison between two compactifications it computes separately.
 :::
 
 ::: {.remark title="The arithmetic group as a normalizer"}
@@ -289,8 +320,8 @@ Until the first inclusion is shown to be an equality, $\mcm_{10A_1}$ and $\fco$ 
 ::: {.remark title="The other singular types"}
 
 The same theorems hold for every singular type of plane sextic with simple singularities, of which the root lattices have been classified by Urabe [@Ura88] and Yang [@Yan96]: the maximal rank is $19$, and the number of root lattices of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$ respectively [@YZZ25 §1].
-Each such type therefore carries both an arithmetic model of its moduli space and a Looijenga model of its GIT compactification.
-The Coble families with $n$ boundary components are indexed by the number of irreducible components of the branch sextic ([[coble-lattice-table|the Coble lattice table]]) rather than by its singular type, so which type $T$ carries which family is a question this section does not settle.
+Each such type therefore determines both an arithmetic model of its moduli space and a Looijenga model of its GIT compactification.
+The Coble families with $n$ boundary components are indexed by the number of irreducible components of the branch sextic ([the Coble lattice table](#sec-coble-lattice-table)) rather than by its singular type, so which type $T$ carries which family is a question this section does not settle.
 :::
 
 ## KSBA spaces

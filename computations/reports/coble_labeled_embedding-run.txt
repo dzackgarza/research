@@ -1,0 +1,118 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552 (.scratch/se-provider-c546/src, read-only export)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, mounted read-only; repo bound at /repo
+
+0.1 admissibility, from the defining source
+    Pic(S) = I_{1,10}: rank 11, det 1, signature (1, 10)
+    K_S = -3H + Sum E_i: square -1, divisibility 1
+    F_1 = 3H - E_1 - ... - E_9: square 0, D.K_S = 0, divisibility 1
+    F_2 = 3H - E_1 - ... - E_8 - E_10: square 0, D.K_S = 0, divisibility 1
+    F_1.F_2 = 1
+    h_Co = F_1 + F_2: square 2, h_Co.K_S = 0, divisibility 1
+    in the form aH - Sum b_i E_i: a = 6, Sum b_i = 18, 3a = 18, D^2 = 2
+
+0.2 the pullback marking
+    f^*D . f^*D' = 2 D.D' (prop:coble-invariant-lattice): same coordinates, doubled form, so
+    h~_Co has square 4 and divisibility 2
+    its complement: rank 10, det 2048, signature (0, 10), roots 2
+
+1. the classes an earlier version of this script used were not admissible
+    H + E_1: square 0, D.K_S = -4 (admissible only if that is 0)
+    2H + E_1 + E_2 + E_3 + E_4: square 0, D.K_S = -10 (admissible only if that is 0)
+    so the negative those classes produced concerns non-admissible markings and is not evidence
+    about A21.  H + E_1 is the class that gave the earlier h~ = 2e + f_1 + f_2 with 18 roots.
+
+2. the Enriques side
+    M = S_En + <delta> = U(2) + E8(2) + <-2>: rank 11, det 2048, signature (1, 10)
+    h = e + f: square 4, h.delta = 0, divisibility 2
+    C = U + E8(-1): det -1, even True
+    so S_En^# = (1/2)C has integral squares, no (x + delta/2) is integral, and
+    <S_En, delta> = S_En + Z delta is saturated: this section compares the actual lattice
+    its polarization complement: rank 10, det 2048, signature (0, 10), roots 2
+
+3. the comparison of the complements, owner-decided
+   is_isometric_to returned True
+
+3.1 the marked-pair isometry, decided
+    complements isometric: True
+    glue subgroup of h~^perp: order 2; of h^perp: order 2
+    |O(h~^perp)| = 2786918400, generators 22
+    |image of O(h~^perp) in O(A)| = 696729600
+    glue class of S_Co in A(h~^perp): order 2
+    glue class of M in A(h^perp):     order 2
+    transported back along the isometry, same parent as cS: True
+    c_S and the transport of c_M in one O(h~^perp)-orbit: True
+    So the glue classes match for an isometry h~^perp -> h^perp, and by Nikulin an isometry
+    S_Co -> M carries h~_Co to h: the marked pair is matched at the level of the two lattices.
+    Not covered: the extension to an isometry of L_K3 carrying the two primitive embeddings
+    (L_K3 is not built), the retained effectivity of the root, and the involution and chamber
+    labels of A21.
+
+3.2 the root of the marking: existence now, effectivity not
+    roots of h~^perp: 2, i.e. one root line, root system A_1
+    a root alpha: square -2, alpha.h~ = 0, alpha in S_Co: True
+    What this establishes: h~_Co^perp has exactly one root line, so a root orthogonal to H
+    exists and is unique up to sign.  What it does NOT establish: that this is the *retained*
+    effective exceptional root of A21.  roots_K[0] is an abstract choice of representative, and
+    which of the two roots is effective is a chamber statement, transported by the nef cone and
+    not decided by the lattice alone.  It is recorded as an existence statement only.
+    Nor is the involution side verified: I_Co = -theta_Co would act as +1 on S_Co and -1 on
+    T_Co, so its S_Co-component fixes H, but theta_Co itself needs the gluing gamma_Co of
+    cons:embedding-gluing-data, is not constructed here, and no morphism-level check of its
+    action on H has been made.
+
+3.3 the ambient extension, and what the owner can and cannot verify
+    S_Co                       det 2048 signature (1, 10): O(L) -> O(A) surjective: True
+    M = S_En + <delta>         det 2048 signature (1, 10): O(L) -> O(A) surjective: True
+    T_Co = <2> + U(2) + E8(2)  det -2048 signature (2, 9): owner undecided, TypeError: int() argument must be a string, a bytes-like object or a real number, not 'OwnedJoinCategory.element_class'
+    So two of the three are owner-verified and the third, T_Co, is the lattice for which the
+    indefinite Eichler machinery fails (the same failure recorded for A20 item 1).  The argument
+    for the extension therefore rests on thm:two-elementary-surjectivity for T_Co -- a book
+    theorem, not an owner computation -- and on Nikulin's gluing criterion for the extension
+    itself.  L_K3 is the unique even unimodular lattice of signature (3,19).
+
+3.4 the Coble involution label
+    |A_{S_Co}| = 2048, |A_{T_Co}| = 2048
+    A_{S_Co} exponent 2 (is_p_elementary raised AttributeError)
+    A_{T_Co} exponent 2 (is_p_elementary raised AttributeError)
+    S_Co (+) T_Co as an owner lattice: rank 22, det -4194304, signature (3, 19)
+    the pair (+id_{S_Co}, -id_{T_Co}) as an owner isometry of S_Co (+) T_Co:
+      it fixes a basis vector of the T_Co summand up to sign and H pointwise: True
+      image of the first T_Co basis vector: True
+    the pair (+id_{S_Co}, -id_{T_Co}) acts trivially on A_{S_Co} (+) A_{T_Co} because both forms
+    are 2-elementary, so it preserves every isotropic gluing subgroup and extends over L_K3 by
+    thm:nikulin-gluing for any gamma_Co: that is prop:theta-co-exists, and it is why the label
+    I_Co := -theta_Co needs no gluing data.  Its action on H = h~_Co is the action of +id_{S_Co}.
+    Still not established: that the retained EFFECTIVE root is the one computed in 3.2 (a chamber
+    statement), and the del Pezzo involution I_dP, which the sources do not give as lattice data.
+
+4. what this does not do
+   4.1 the labels.  A21 compares tuples (L_K3, I_Co, I_dP, H, alpha, C): commuting
+       nonsymplectic involutions, H^2 = 4 fixed by both, alpha^2 = -2 with H.alpha = 0 fixed
+       by I_Co, and a chamber with alpha effective and H nef and big (heegner report,
+       sec-labeled-lattice-data).  None is built here, so this is an unlabelled comparison of
+       polarizations, necessary for the labeled one and not a substitute for it.
+   4.2 the marked pair is decided in section 3.1: the glue classes match, so by Nikulin the two
+       polarized lattices are matched by an isometry carrying h~_Co to h.  What that does not give
+       is the extension of that isometry over L_K3 between the two primitive embeddings, which is
+       4.3.
+   4.3 the ambient: section 3.3 states the extension argument and what it rests on -- the marked
+       pair decided here, thm:two-elementary-surjectivity for T_Co, Nikulin's gluing criterion,
+       and the uniqueness of the even unimodular lattice of signature (3,19).  Not done: building
+       L_K3 and the two embeddings, so the extension is an argument rather than an object, and the
+       chamber is not transported.  I_Co = -theta_Co needs no gluing data at all (3.4); I_dP is not
+       lattice data in the sources.  Nothing here promotes modelled lattice data to the retained
+       geometric labels.
+
+SUMMARY
+  0.1 admissibility verified, not assumed: F_1, F_2 isotropic and orthogonal to
+      K_S = -3H + Sum E_i with F_1.F_2 = 1, so h_Co = F_1 + F_2 lies in K_S^perp with h_Co^2 = 2,
+      matching the criterion Sum b_i = 3a of prop:canonical-perp-is-e10 (a = 6, sum 18).
+  0.2 its pullback has square 4; the polarization complement has rank 10, det 2048, sig (0,10).
+  1. the classes earlier versions used (H + E_1, 2H + ...) are not in K_S^perp, so the negative
+      they gave is about non-admissible markings and A21 was never obstructed by it.
+  3. the two complements ARE isometric: the necessary condition holds for this admissible
+      marking, and what is owed is 4.1-4.3.
+OK: admissibility verified against its defining source, the comparison decided at the owner, and
+    its relation to A21 stated

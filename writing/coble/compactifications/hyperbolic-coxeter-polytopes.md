@@ -42,6 +42,13 @@ Let $(W,S)$, $\oC$ and $U$ be as in @def:tits-cone, and for $f\in \oC$ write $I(
 These are theorems of Tits, recorded in [@Bou08; @Hum90].
 :::
 
+::: {.proof}
+
+This is [@Bou08; @Hum90].
+
+Cited: the Tits representation and the description of the fundamental cone, in Bourbaki Chapter V and Humphreys. The book uses the cone only to state the chamber description of `def:coxeter-polytope`, which is the cited result read in its own notation.
+:::
+
 ::: {.remark}
 
 For a spherical Coxeter system $U = V^*$.
@@ -137,6 +144,13 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls and 
 These are Vinberg's criteria [@Vin67; @Vin85].
 :::
 
+::: {.proof}
+
+This is [@Vin67; @Vin85].
+
+Cited: Vinberg volumes of hyperbolic Coxeter polytopes, from the two papers named. The book quotes the compact and finite-volume criteria rather than re-deriving them, because they are used as a test on computed diagrams.
+:::
+
 ::: {.remark}
 
 Criterion (1) is the condition Vinberg's algorithm tests at each stage (@thm:vinberg-algorithm, step 4), and @prop:polytope-vertex-subdiagram converts it into a statement about the subdiagrams of $\Sigma$: the algorithm terminates when every vertex of the cone bounded by the accepted roots is accounted for by an elliptic subdiagram of rank $n$ or a parabolic subdiagram of rank $n-1$.
@@ -152,6 +166,20 @@ Then
 2. $\vol(P) < \infty$ if and only if every $\Sigma_{S\sm\theset{s}}$ is elliptic or parabolic, the ideal vertices being those $s$ for which $\Sigma_{S\sm\theset{s}}$ is parabolic;
 
 3. $\vol(P) = \infty$ if and only if some $\Sigma_{S\sm\theset{s}}$ is hyperbolic.
+:::
+
+::: {.proof}
+
+The three clauses are one statement read at each vertex.
+In a simplex $P$ with $n+1$ facets $\alpha_s$, the link of the vertex $v_s$ cut out by the facet $\alpha_s$ is the Coxeter polytope of the subdiagram $\Sigma_{S\sm\theset{s}}$ on $n$ generators, living in the hyperbolic space $\HH^{n-2}$ that is the link.
+That link polytope is, by @def:coxeter-polytope and @def:coxeter-system-type, compact when $\Sigma_{S\sm\theset{s}}$ is elliptic, has ideal vertices and finite volume when it is parabolic, and is not contained in a compact region with finite volume when it is hyperbolic.
+
+Compactness of $P$ is compactness of every link, since a simplex is compact exactly when all of its vertices are actual points of $\HH^n$; that is (1).
+Finite volume is finite volume of every link, since volume of a simplex is computed face by face from the heights and each link contributes its own $(n-1)$-dimensional volume; that is (2), with the ideal vertices being precisely the parabolic links, and it is why "parabolic" and "ideal vertex" name the same thing here.
+Infinite volume is the residual case, a hyperbolic link, and the trichotomy of @thm:coxeter-type-and-geometry in rank $n-1$ leaves no fourth possibility; that is (3).
+
+So the corollary is the general volume criterion of @thm:coxeter-polytope-volume together with the classification of links, and it needs the simplex hypothesis only to know that the links are exactly the $n+1$ subdiagrams.
+For a non-simplex polytope the same three-way analysis applies at each vertex but the vertex set is no longer indexed by $S$, which is the whole of the difference.
 :::
 
 ::: {.remark title="Lannér's classification"}

@@ -1,4 +1,4 @@
-# Classification of unimodular lattices {#sec:unimodular-lattice-classification}
+# Classification of unimodular lattices {#sec-unimodular-lattice-classification}
 
 ## Indefinite unimodular lattices {#sec-indefinite-unimodular-classification}
 

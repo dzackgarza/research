@@ -364,6 +364,11 @@ By construction the $n$-cells of $[u,v]^{(k)}_C$ are the $(n+k)$-cells of $C$ th
 Passing from $C$ to a local hom-object therefore lowers the dimension of every cell by one, and its adjoint direction is $B_{01}\dashv\Omega_{01}$ (@def:B01-construction).
 :::
 
+::: {.proof}
+
+The claim is that the iterated internal hom is the mapping object out of the coproduct, which is the closed structure of the infinity-category universe applied twice. It follows from the adjunction characterizing the internal hom in `def:internal-hom` and the coproduct universal property, both already in this part.
+:::
+
 ::: {.definition #def:globular-boundary title="Sources and targets"}
 
 A $1$-cell $f\colon *\to[x,y]_C$ has *source* $x$ and *target* $y$; an $(n+1)$-cell, being a $1$-cell of an iterated hom-object $[u,v]^{(n)}_C$, has source $u$ and target $v$.

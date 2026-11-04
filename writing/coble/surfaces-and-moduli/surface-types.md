@@ -82,7 +82,7 @@ h^{1,1}(Z) = 10,
 h^{2,0}(Z) = h^{0,2}(Z) = 0,
 $$
 All remaining Hodge numbers vanish except $h^{0,0}(Z)=h^{2,2}(Z)=1$.
-The second integral cohomology carries a $2$-torsion summand,
+The second integral cohomology has a $2$-torsion summand,
 $$
 \NS(Z) \cong H^2(Z; \ZZ) \cong \ZZ^{10}\oplus \ZZ/2\ZZ
 ,
@@ -98,13 +98,13 @@ The root lattices $A_n$, $D_n$ and $E_n$ here are negative definite, with roots 
 
 ::: {.definition #def:ade-surface title="ADE surface"}
 
-An **$ADE$ surface** $(Y, C)$ is a log canonical log del Pezzo surface of index two whose boundary $C$ has dual intersection graph a simply-laced Dynkin diagram ($A_n$, $D_n$, or $E_n$). These surfaces have canonical toric models determined by lattice polytopes in $\ZZ^2$ [@AT17].
+An **$ADE$ surface** $(Y, C)$ is a log canonical, **non-klt** del Pezzo pair of index two -- $-(K_Y + C)$ is ample and $2(K_Y + C)$ is Cartier, with nonempty non-klt locus -- whose boundary $C$ has dual intersection graph a simply-laced Dynkin diagram ($A_n$, $D_n$, or $E_n$). These surfaces have canonical toric models determined by lattice polytopes in $\ZZ^2$ [@AT17].
 :::
 
 ::: {.definition #def:priming title="Priming"}
 
-A **priming** is a weighted blowup at a boundary node (a corner blowup) that reduces the lattice length of a long edge.
-Allowed primings are restricted so as to preserve log canonicity and toricity [@AT17].
+A **priming** of $(Y, C)$ is the weighted blowup at distinct nonsingular points $P_1, \dots, P_k$ of $C$, with ideals $I_i \simeq (y, x^2)$ supported at $P_i$ and transverse to $C$, followed by the contraction given by $\abs{N L_0}$ where $L_0 = -2(K_{Y'} + C')$ and $Y'$ is the blowup; it shortens the long sides of the boundary [@AT17, Def. 3.13].
+A blowup at a node of the boundary is a corner blowup, a different operation.
 :::
 
 ::: {.definition #def:folding-bc title="Folding"}

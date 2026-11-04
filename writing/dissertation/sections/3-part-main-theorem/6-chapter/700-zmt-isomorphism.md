@@ -3,36 +3,40 @@
 In this section, we apply Zariski’s Main Theorem to the classifying morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ constructed in previous sections, obtaining a precise modular isomorphism between the KSBA compactification and the explicit semitoroidal model described via folded ramification semifans.
 
 ::: {.theorem
-    title="Zariski's main theorem"
+    title="Finite birational maps onto a normal variety"
     #thm:zariski-main-theorem
 }
-Let $f: X \to Y$ be a morphism of varieties.
-Suppose:
-
-1. $f$ is birational,
-
-2. $f$ is finite,
-
-3. $X$ and $Y$ are normal,
-
-4. $Y$ is proper.
-
+Let $f: X \to Y$ be a finite birational morphism of varieties, with $Y$ normal.
 Then $f$ is an isomorphism.
 :::
+
+::: {.proof}
+
+Since $f$ is finite it is affine, so locally $Y = \Spec A$ and $X = \Spec B$ with $B$ a finite $A$-module containing $A$; birationality identifies $\Frac B$ with $\Frac A = K$, so $B\iscontainedin K$ and $A\iscontainedin B\iscontainedin K$.
+Normality of $Y$ says $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B\iscontainedin A$ and $f$ is an isomorphism.
+
+This is the case of Zariski's main theorem that the classifying map uses, where $\phi$ is finite.
+The theorem in its classical form assumes quasi-finiteness of $f$ rather than finiteness and concludes only that $f$ is an isomorphism onto an open subset [@Har10a, §V.5]; properness of $f$ upgrades that to an isomorphism, and a finite morphism is proper, so the statement above is the special case.
+Normality of the source is a hypothesis of neither form.
 
 ::: {.lemma
     title="{Verification of Hypotheses for the Classifying Map}"
     #lem:verification-hypotheses
 }
-The morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ constructed above satisfies all hypotheses of Zariski's Main Theorem:
+The morphism $\phi: \normalize{B} \to \cpt{\fentwo}$ constructed above satisfies the hypotheses of Zariski's Main Theorem:
 
 1. Birationality: By @prop:properties-classifying, $\phi$ restricts to an isomorphism over the dense open subset $\fentwo$.
 
-2. Finiteness: By @cor:finiteness-classifying-map, $\phi$ is finite.
+2. Quasi-finiteness: By @cor:finiteness-classifying-map, $\phi$ is finite, hence proper and quasi-finite.
 
-3. Normality: $\normalize{B}$ is normal by definition as normalization; $\ksbacpt{\fentwo}$ is normal as the normalization of the proper algebraic stack $\cpt{\fentwo}$.
+3. Normality of the target: $\ksbacpt{\fentwo}$ is normal as the normalization of the proper algebraic stack $\cpt{\fentwo}$.
+:::
 
-4. Properness: $\cpt{\fentwo}$ is proper by the general theory of KSBA compactification for surfaces with numerically trivial canonical class (see Kollár, Theorem 1.2).
+::: {.proof}
+
+The three items verify the hypotheses of @thm:zariski-main-theorem: birational, quasi-finite, and normal target, which give that $\phi$ is an isomorphism onto an open subset, and finiteness, which gives properness and hence the isomorphism.
+$\normalize{B}$ is normal by construction, which the theorem does not require.
+Properness of the KSBA moduli stack [@Kol23] enters through $\phi$ being a map of proper spaces, not as a hypothesis of the theorem.
 :::
 
 We are thus led to the following:

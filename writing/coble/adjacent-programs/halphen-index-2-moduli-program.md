@@ -1,5 +1,4 @@
 ---
-title: Moduli of index 2 Halphen and rational elliptic surfaces
 unit: research-program
 status: conjectural
 tags:
@@ -45,7 +44,7 @@ Every relatively minimal rational elliptic surface is Halphen of some index.
 In AE22, the case $S = \HalphenInvariants$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \definedas X/\iota$ is an index 2 Halphen pencil.
 More generally, by AE22 section 4C, the lattices $S = (10+n,\, 12-n,\, \delta)$ for $1\leq n\leq 9$ give index 2 Halphen K3 surfaces $X$ with an $I_{2k}$ fiber, and contracting the $(-1)$-curves in the special fiber yields index 2 Halphen pencils with an $I_k$ fiber.
 
-These are **precisely the lattices of @tbl:coble-lattices**, the ten Coble families of [[coble-families-research-program|the Coble families research program]].
+These are **precisely the lattices of [the Coble lattice table](#sec-coble-lattice-table)**, the ten Coble families of [the Coble families research program](#sec-coble-families-research-program).
 The lattice coincidence is the whole content of the conjecture: two geometrically different families of surfaces are attached to one line of Nikulin's triangle.
 :::
 
@@ -61,7 +60,7 @@ The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
 That fiber can be used to construct a recognizable divisor $R$.
-This is the load-bearing conjecture: it is what supplies the $R$ the previous conjecture needs.
+This conjecture is what supplies the $R$ that the previous one needs.
 :::
 
 ## The stated starting point
@@ -82,7 +81,7 @@ The Coxeter diagram for $S \definedas \HalphenInvariants$ is well known and the 
 
 7. Use AE22 to construct dlt models and integral-affine structures classifying $\partial\overline{F_S}^R$.
 
-Steps 3 through 5 are exactly the recipe recorded in [[computational-toolchain-and-recipe|the computational toolchain and recipe]], applied to a new lattice.
+Steps 3 through 5 are exactly the recipe recorded in [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe), applied to a new lattice.
 
 ::: {.remark title="Why the program is stated as worth doing"}
 
@@ -90,4 +89,4 @@ It opens a comparison between GIT and KSBA compactifications, since $M_{H,1}$ an
 Generalizing to $\overline{M_{H,m}}^R$ for $m>2$ would give new moduli spaces of general rational elliptic surfaces with no restriction on fiber type.
 :::
 
-Related: [[coble-families-research-program|Coble families research program]], [[nodal-enriques-moduli-program|nodal Enriques moduli program]], [[computational-toolchain-and-recipe|computational toolchain and recipe]].
+Related: [Coble families research program](#sec-coble-families-research-program), [nodal Enriques moduli program](#sec-nodal-enriques-moduli-program), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe).

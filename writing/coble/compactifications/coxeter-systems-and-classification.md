@@ -129,6 +129,16 @@ Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
    of @def:coxeter-polytope and [@Vin67; @Vin85].
 :::
 
+::: {.proof}
+
+All three are [@Bou08, Ch. V §4 and Ch. VI §4; @Hum90, §§2.3, 6.4 and 6.8], with $G = -2B$ for $B$ the sources' invariant form, so that definite for $B$ is the corresponding definite sign for $G$.
+
+What the clauses add to the cited statements is which space these forms act on, and that is the only part read off @def:coxeter-system-type.
+In (1) the source's sphere belongs to $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain, so the citation covers the clause as written.
+In (2) the euclidean space is $\RR^S/\ker G$, of dimension $n-1$; the affine reflections are the $s_{\alpha_s}$, and the discreteness asserted is properness of the action, which is how the source states it.
+In (3) the hyperboloid inside the nondegenerate space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber of @def:coxeter-polytope; this is the one clause where nondegeneracy rather than definiteness is what is needed.
+:::
+
 ::: {.remark}
 
 Statement (3) asserts nothing about the volume of $P$: the finite-volume and compact cases are separated by the criterion of @thm:coxeter-polytope-volume.
@@ -212,6 +222,13 @@ $$
 and diagrams from distinct entries of this list are not isomorphic [@Bou08; @Hum90].
 :::
 
+::: {.proof}
+
+This is the Cartan--Killing classification, [@Bou08, Ch. VI §4, Théorème 1] and [@Hum90, §2.4 and §3.6].
+
+The cited statements classify connected Coxeter graphs carrying positive definite forms, which is the same list under $G = -2B$.
+:::
+
 ::: {.remark}
 
 Here $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_2$, $I_2(4)\cong B_2$ and $I_2(6)\cong G_2$; the list above records each isomorphism class once.
@@ -236,6 +253,13 @@ each of rank $n+1$ and drawn in the diagram table of the Diagrams appendix [@Bou
 The diagram $\tilde A_1$ has two vertices joined by a bond with $m_{12} = \infty$, and $\tilde A_n$ for $n\geq 2$ is the cycle on $n+1$ vertices with all bonds $m_{ij} = 3$.
 :::
 
+::: {.proof}
+
+This is the classification of irreducible affine Coxeter diagrams, [@Bou08, Ch. VI §4, Théorème 2] and [@Hum90, §2.5 and §6.5].
+
+The sources list the affine diagrams together with their completed Dynkin diagrams; the Dynkin diagram is the affine one with the vertex that $\delta$ of @prop:euclidean-radical meets with coefficient $1$ adjoined.
+:::
+
 ::: {.proposition #prop:euclidean-radical title="The radical of a euclidean diagram"}
 
 Let $\Sigma$ be an irreducible euclidean diagram on the vertex set $I$, with Gram form $G[I,I]$ and simple roots $\theset{\alpha_s}_{s\in I}$.
@@ -246,6 +270,18 @@ $$
 ,
 $$
 unique up to scalar, and $\delta^2 = 0$ [@Bou08; @Hum90].
+:::
+
+::: {.proof}
+
+That $\ker G[I,I]$ is one-dimensional with a generating vector of strictly positive coordinates is [@Bou08, Ch. VI §2.3, Proposition 6] and [@Hum90, §2.5]; the cited statement is for the positive semidefinite normalization, and invertibility of the sign change in @thm:coxeter-type-and-geometry preserves kernels, so the kernel is the same subspace here.
+
+Two clauses follow formally once the generators are known:
+$\delta^2 = \beta(\delta,\delta) = 0$, since $\delta$ lies in the kernel of the form;
+and the uniqueness up to scalar is the one-dimensionality, an irreducible euclidean diagram being connected so that its Gram form is not a direct sum.
+
+The positivity is the substantive part and is not formal: it says $\delta$ lies in the closed cone spanned by the simple roots, not merely in the kernel of the form.
+That is what the remark below uses, and it is proved in the cited places by checking that the coefficients of the affine diagram's highest root, or an explicit solution of $G[I,I]x = 0$, are positive in each type.
 :::
 
 ::: {.remark}
@@ -264,6 +300,18 @@ A Coxeter matrix $M$ on $S$ is **crystallographic** if $m_{st}\in\theset{2,3,4,6
 ::: {.theorem #thm:crystallographic-lattice}
 
 A Coxeter matrix $M$ is crystallographic if and only if the group $W(M)$ preserves a lattice of full rank in $\RR^S$ [@Bou08; @Hum90].
+:::
+
+::: {.proof}
+
+This is [@Bou08, Ch. VI §4, no. 1] and [@Hum90, §2.11].
+
+The forward direction is the one with content: for $m\in\{2,3,4,6\}$ the number $2\cos(\pi/m)$ is an integer, so $G[I,I]$ is an integral Gram matrix in the basis $\alpha_s$ by @prop:gram-form-integrality, and the span of that basis is then a full-rank lattice preserved by the reflections of @def:coxeter-gram-form, which act by the integral matrices $s_{\alpha_t}(\alpha_s) = \alpha_s - G_{st}\alpha_t$.
+
+Conversely, if $W$ preserves a full-rank lattice $L$ then in a basis of $L$ the reflections act by integral matrices, and the entry $(s_{\alpha_t}(\alpha_s) : \alpha_t)$ is $-G_{st} = -2\cos(\pi/m_{st})$, an integer.
+Write $\lambda \definedas 2\cos(\pi/m)$; it is an algebraic integer, being $\zeta+\zeta^{-1}$ for a root of unity $\zeta$, and lying in $\QQ$ it is then an integer in $[-2,2]$.
+The values $2\cos(\pi/m)$ in that range are $2, 1, 0, -1, -2$ at $m = \infty, 3, 2, 4, 6$ respectively, and no other order qualifies, since $2\cos(\pi/m)$ is then strictly between $-2$ and $2$ and irrational by @prop:coxeter-base-field-degree.
+So $m\in\{2,3,4,6,\infty\}$, which is @def:crystallographic-coxeter.
 :::
 
 ::: {.example #ex:crystallographic-rescaling title="Rescaling to an integral form"}
@@ -286,7 +334,7 @@ For $m_{st}\in\theset{2,3}$ the entries $0$ and $1$ are already integral, and th
 ::: {.definition #def:coxeter-base-field}
 
 Let $M$ be a Coxeter matrix on $S$.
-Its **base field** is the subfield
+Its **field of definition** is the subfield
 $$
 K(M) \definedas \QQ\!\left(\, 2\cos(\pi/m_{st}) \;:\; s\neq t,\ m_{st} < \infty \,\right) \iscontainedin \RR
 ,
@@ -302,6 +350,18 @@ $$
 .
 $$
 In particular $K(M) = \QQ$ exactly when $m_{st}\in\theset{2,3,\infty}$ for all $s\neq t$.
+:::
+
+::: {.proof}
+
+The first identity is $\zeta_{2m} + \zeta_{2m}^{-1} = 2\cos(2\pi/2m) = 2\cos(\pi/m)$ for a primitive $2m$-th root, and $\zeta\mapsto\zeta^{-1}$ generates $\operatorname{Gal}(\QQ(\zeta_{2m})/\QQ)$, a group of order $\#(\ZZ/2m\ZZ)^{\!\times}$.
+Complex conjugation is $\zeta\mapsto\zeta^{-1}$, so it is the involution $\sigma$ of that group, and an element $x$ of the cyclotomic field is fixed by $\sigma$ exactly when $x\in\QQ(\zeta_{2m})^{\langle\sigma\rangle}$.
+The fixed field of conjugation is the maximal totally real subfield, and $\zeta+\zeta^{-1}$ generates it: it is fixed, and $[\QQ(\zeta):\QQ(\zeta+\zeta^{-1})] = 2$ because $\zeta$ satisfies the quadratic $T^2 - (\zeta+\zeta^{-1})T + 1$ over that field and is not in it.
+Hence $\QQ(2\cos(\pi/m))$ is that fixed field, of degree $\tfrac12\#(\ZZ/2m\ZZ)^{\!\times}$ over $\QQ$.
+
+For the specializations, Euler's $\varphi$ is $1$ exactly at $1$ and $2$, so $\tfrac12\varphi(2m) = 1$ exactly when $2m\in\{2,4\}$; $2m = 2$ would give $m = 1$, which is not an order $\geq2$, leaving $m = 2$.
+The value $m = 3$ gives $\varphi(6) = 2$ and degree $1$ as well, so these two orders give rational values, and they give $2\cos(\pi/2) = 0$ and $2\cos(\pi/3) = 1$; the order $m = \infty$ is not in the index set of the union and contributes the diagonal value $2$ of @def:coxeter-gram-form.
+Every order $m\geq4$ has $\varphi(2m)\geq 4$ and hence degree $\geq2$, so $K(M) = \QQ$ exactly for the three listed orders.
 :::
 
 ::: {.proposition #prop:gram-form-integrality title="When the Gram form is integral"}

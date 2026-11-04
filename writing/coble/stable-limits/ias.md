@@ -1,4 +1,4 @@
-# Integral affine structures
+# Integral affine structures {#sec-ias-degenerations}
 
 ::: {.remark}
 
@@ -85,7 +85,7 @@ The integral affine structure $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15},
 ::: {#fig-ias2-disc-slice .figure}
 \input{tikz/fig_ias2_construction.tex}
 
-The disc slice $B(\lambda)$ of the inverted cone, with the outward rays at its boundary points.
+The integral affine disc $P(\lambda)$, one hemisphere of the sphere $B(\lambda)$, with the outward rays at its boundary points.
 :::
 
 ::: {#fig-ias2-disc .figure}
@@ -124,7 +124,7 @@ We leverage the theory of [@AEGS25; @AE22; @AE23; @AET23; @ABE22].
 ::: {.remark}
 
 For Enriques and Coble surfaces the integral affine data is built on the K3 cover first and only then folded downstairs.
-One starts from the K3 monodromy (Coxeter) data behind the integral affine sphere, imposes the Coble condition by marking a root $r$ of zero length,
+One starts from the K3 monodromy (Coxeter) data behind the integral affine sphere, imposes the Coble condition by marking a root $r$ and requiring the period to lie on the hyperplane $r^{\perp}$, that is on the Heegner divisor cut out by $r$,
 $$
 \lambda \cdot r = 0,
 $$
@@ -141,5 +141,5 @@ Absent such a triangulation, the marked-root prescription remains a construction
 ::: {.remark}
 
 Under the cusp correspondence, the Coble $0$-cusp corresponds to Sterk cusp $2$, realized as the folding of the cusp $(18,0,0)_1$ by the horizontal symmetry of its Coxeter diagram [@AEGS25].
-The associated integral affine and Kulikov models are therefore of *disc* type, matching the folding involution of Sterk $2$; the Coble boundary is expected to produce disc-type integral affine structures rather than sphere- or $\mathbf{RP}^2$-type limits, in agreement with the flowerpot degenerations of Morrison [@Mor81; @AEGS25].
+The associated integral affine and Kulikov models therefore have dual complex a disc, $\Gamma(\mcz_0) \cong \bD^2$, matching the folding involution of Sterk $2$; the Coble boundary is expected to produce dual complexes that are discs rather than spheres or $\mathbf{RP}^2$, in agreement with the flowerpot degenerations of Morrison [@Mor81; @AEGS25].
 :::

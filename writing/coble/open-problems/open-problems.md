@@ -12,7 +12,7 @@ None of the statements below is claimed to be settled; several cross-reference p
 
 ::: {.remark title="Open problem: isometry class and genus of the Coble lattices"}
 
-The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\diag(2,-2,\dots,-2)$, equivalently $\generators{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in [[coble-lattice-table|the Coble lattice table]], and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
+The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\diag(2,-2,\dots,-2)$, equivalently $\generators{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in [the Coble lattice table](#sec-coble-lattice-table), and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
 What is not yet formally established is the *isometry-class verification* and the *genus decomposition*: whether the genus of $T_\Co$ contains a unique isometry class.
 Concretely:
 
@@ -40,7 +40,7 @@ $$
 \qquad
 \lkt^{-\theta} \cong S_\Co,
 $$
-and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as a functorial consequence of the lattice isometry (cf. @def:folded-root, @lem:root-folding-tdp, and @def:invariant_coinvariant_lattices). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
+and whose action on roots induces the *horizontal folding* of the $(18,0,0)_1$ Coxeter diagram, as an immediate consequence of the lattice isometry (cf. @def:folded-root, @lem:root-folding-tdp, and @def:invariant_coinvariant_lattices). The involution should swap the polarization generators between sectors, $h_\En \leftrightarrow h_\Co$.
 Existence and the eigenlattice description are settled by @prop:theta-co-exists: the pair $(-\id_{S_\Co}, \id_{T_\Co})$ preserves the gluing graph of the Coble primitive embedding and extends to an isometry $\theta_\Co$ of $\lkt$ with the stated eigenlattices. The open technical content is to *write down the $22\times 22$ matrix of $\theta_\Co$ on the standard basis of $U^{3}\oplus E_8^{2}$*, which requires exhibiting the primitive embedding and the gluing anti-isometry in coordinates, and then to compare the polarization classes and the roots of the Coxeter diagram in that basis.
 :::
 
@@ -48,34 +48,53 @@ Existence and the eigenlattice description are settled by @prop:theta-co-exists:
 
 ::: {.question title="Open problem: enumeration of isotropic orbits by Sterk's technique"}
 
-How many orbits of primitive isotropic vectors does $T_\Co$ have under $\Orth(T_\Co)$, $\Orth^{*}(T_\Co)$, and the arithmetic group $\Gamma_\Co$?
+How many orbits of primitive isotropic vectors does $T_\Co$ have under the arithmetic group $\Gamma_\Co = \Orth^+(T_\Co)^*$?
+The discriminant kernel $\discriminantkernel{T_\Co}$ is larger, $\Gamma_\Co$ being its component-preserving half of index $2$, and it has the *same* orbits: @prop:discriminant-kernel-orbits. So this is one question and not two, and the group-theoretic difference between the kernel and the stable group does not appear in the count.
+The index alone would not have given that, and the first version of this item drew the wrong conclusion from it: whether two groups' orbit partitions agree is decided orbit by orbit, through their stabilizers, by @lem:character-kernel-orbits.
+What is settled is the lower end: for $\Orth^+(T_\Co)$ the count is one (@thm:unpolarized-cusps); for $\Gamma_\Co$, and so for the kernel, it is at least two, the two isotropic generators of the $U(2)$ summand lying in distinct orbits (@lem:stable-orthogonal-not-transitive, whose argument uses only triviality on $A_{T_\Co}$ and so applies to the kernel as well).
+Nothing here gives an upper bound, and $\fco$ has at least two $0$-cusps rather than one.
 Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\div(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\div(v),\, \bar v \in A_T,\, v^2 = 0)$.
 The finite half is settled by @prop:coble-q-fibers and @thm:coble-isotropic-class-orbits: $A_{T_\Co}$ has $528$ isotropic classes, and $\Orth(q_{T_\Co})$ has two orbits of sizes $1$ and $527$. By @prop:coble-primitive-isotropic-classes every primitive isotropic vector of $T_\Co$ maps to the nonzero orbit. Under the degree-$2$ Enriques group, @thm:coble-heegner-finite-orbits gives the refinement $[1, 2, 120, 135, 270]$. The open work is the passage from these finite decompositions back to the lattice:
 
-- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and verify that exactly one $\Orth^{*}(T)$-orbit exists in divisibility $2$, the Eichler criterion being unavailable because $T_\Co$ contains no copy of $U$ (the Eichler criterion (@thm:eichler-criterion) and the remark following it);
+- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and determine how many $\Gamma_\Co$-orbits lie in divisibility $2$ — the same number as for the discriminant kernel, by @prop:discriminant-kernel-orbits; there are at least two (@lem:stable-orthogonal-not-transitive), so the finite picture, in which every primitive isotropic vector maps to the single nonzero class, does not lift to a single orbit. The Eichler criterion is unavailable here because $T_\Co$ contains no copy of $U$ (the Eichler criterion (@thm:eichler-criterion) and the remark following it);
 
 - decide whether the four nonzero orbits of $\gent$-induced classes lift to four orbits of primitive isotropic vectors or to more, an integral parabolic stabilizer being permitted to have proper image in the finite one;
 
-- verify that the $\Orth(T)$-orbits coincide with the $\Gamma_\Co$-orbits, so that the Baily--Borel $0$-cusp is unique.
+- count the $\Gamma_\Co$-orbits themselves, and decide which of them carry the Coble stable limits. The $\Orth(T)$-orbits do not coincide with the $\Gamma_\Co$-orbits (@lem:stable-orthogonal-not-transitive), so the uniqueness of the Baily--Borel $0$-cusp fails for the arithmetic group of $\fco$; what is open is the decomposition, not whether it is trivial.
 
 By @lem:divisibilityAlwaysTwoTco, every primitive isotropic $v \in T_\Co$ has $\div_{T_\Co}(v) = 2$; this fixes the divisibility datum but not the orbit count.
 :::
 
 ::: {.remark title="Open problem: explicit generators of $\Gamma_\Co$ and uniqueness of the 1-cusp"}
 
-The arithmetic group governing the Coble locus is the stabilizer of the polarization $h_\Co$ inside $\Orth(\ten)$, cut further by the horizontal folding involution $\theta$,
+The Coble-side description of the arithmetic group is the centralizer of the horizontal folding involution, cut by the polarization.
+That centralizer cannot be taken inside $\Orth(\ten)$: the polarization $h_\Co\in K_S^{\perp\Pic(S)}\iscontainedin\Pic(S)$ is a class on the Coble surface, of square $2$, with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$ (@def:coble-polarization-classes), and $\theta_\Co$ is an isometry of $\lkt$, so the group has to be formed in $\Orth(\lkt)$ and then pushed to $T_\Co$.
+With $\theta_\Co$ the sign involution of @prop:theta-co-exists, whose eigenspaces are $T_\Co$ and $S_\Co$, the group is
 $$
-\Gamma_\Co = \Stab_{\Orth(\ten)}(h_\Co) \intersect Z_{\Orth(\ten)}(\theta),
+\Gamma^\theta_\Co \definedas
+\theset{\;
+\varphi\in\Orth^+(T_\Co)
+\;\middle|\;
+\exists\, g\in Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)
+\ \text{with}\ \restrictionof{g}{T_\Co} = \varphi
+\;}
+,
 $$
-where in the Enriques sector $h_\En = e + f\in U(2)$ is the degree-$2$ polarization vector of square $4$ on the K3 side (@prop:gamma-en-two-gluing), and $h_\Co\in K_S^{\perp\Pic(S)}\iscontainedin\Pic(S)$ is the degree-$2$ Coble polarization (@def:coble-polarization-classes), of square $2$ downstairs with K3 pullback $\tilde h_\Co = f^{*}h_\Co$ of square $4$.
-The class $h_\Co$ is not the plane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of $h_\En$.
-A source-backed candidate for $\Gamma_\Co$, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ from @def:gamma-co-en; identifying the two is part of the open work below.
+the part of the image of that intersection lying in $\Orth^+(T_\Co)$, which is the group of @prop:gamma-co-in-theta-centralizer; the component condition is imposed there because the intersection may contain isometries acting on the wrong component of $T_\Co$.
+An earlier version of this item placed both operations inside $\Orth(\ten)$, where neither object lives.
+The class $h_\Co$ is not the hyperplane class $H$, whose K3 pullback $e_0 = f^{*}H$ has square $2$; the two must be kept apart, and it is $h_\Co$ that is the analogue of the Enriques vector $h_\En = e + f\in U(2)$ of @prop:gamma-en-two-gluing.
+$\Gamma^\theta_\Co$ contains $\Gamma_\Co$, and by @prop:gamma-co-in-theta-centralizer $\Gamma_\Co$ is exactly the kernel of its action on $A_{T_\Co}$; whether the inclusion is *strict* is the triviality of that finite image, and it is open, no element of $\Gamma^\theta_\Co$ acting nontrivially on $A_{T_\Co}$ having been exhibited.
+A second candidate, defined from the Enriques side by the Heegner line rather than by $\theta$, is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en; by @prop:gamma-co-in-heegner-group it too contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$, and whether that inclusion is strict is open for the same reason.
+Comparing the two candidates with *each other*, rather than each with $\Gamma_\Co$, requires an isometry of $\lkt$ carrying the Coble-labeled structure to the Enriques-labeled one, which is @prob:coble-rigidity: both are extensions of the same $\Gamma_\Co$ by subgroups of the finite group $\Orth(A_{T_\Co},q_{T_\Co})$, and it is those finite subgroups that such an isometry would have to match (@sec-gamma-co-comparison).
 An explicit representation of $\Gamma_\Co$ by *matrix generators* is presently a stub.
 The open work is to:
 
-- compute the stabilizer/centralizer intersection in the Enriques (equivalently $\lkt$) lattice to produce a minimal set of matrix generators for $\Gamma_\Co$, as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co$ ($\tilde h_\Co^2 = 4$). By @prop:theta-co-exists, $\theta$ already exists as a lattice isometry without a coordinate description, and @thm:coble-heegner-finite-orbits already determines the image of the resulting group in $\Orth(q_{T_\Co})$; what a generating set adds is the lattice group above that finite image;
+- compute the stabilizer/centralizer intersection to produce a minimal set of matrix generators for the group above. The Enriques-side half is now settled: the reflections in $u_0-w_0$ and in the eight simple roots of $E_8(-1)$ generate the integral stabilizer $\Stab_{\Orth(S_\En)}(h)$, completeness decided by the owner's own subgroup comparison against $\abs{\Orth(h^{\perp C})} = 2\abs{W(E_8)}$, and their discriminant images generate the group of order $\abs{W(E_8)}$ that @thm:coble-heegner-finite-orbits (1) names, through `computations/reports/coble_stabilizer_generators.py`. What remains is (i) the corresponding finite image for the Coble-side group $\Gamma^\theta_\Co$, which has not been computed, so the two finite subgroups still have to be compared, and (ii) generators of $\Gamma_\Co$ itself: the reflections of $T_\Co$ in its $(-2)$-vectors lie in $\Gamma_\Co$ — $\zeta+a_1$ has square $-2$, for instance — but that is one element and not a generating statement. The owner's contracts bound what can be concluded here: `Lattices.roots()` is the definite-lattice root set and refuses an indefinite lattice by contract, so its refusal is not evidence about the $(-2)$-vectors of $T_\Co$; `reflective_root_locus` is documented as possibly infinite for an indefinite lattice; `possible_root_lengths()` returns $\{1,2,4\}$; and `root_module_generating_set()` is a semi-decision for $L = \ZZ\Phi(L)$, which concerns the module the roots generate and not $\Orth^+(L)$ being generated by reflections. No conclusion about generation by reflections is drawn, and the obligation is two-part — an explicit reflective set, and a theorem that it with finitely many further isometries generates $\Gamma_\Co$ — recorded as open in the research report;
 
-- verify the *uniqueness of the $1$-cusp for $\Gamma_\Co$*. For the full orthogonal group, @thm:unpolarized-cusps together with @prop:tco-split-maximal gives transitivity of $\Orth^+(T_\Co)$ on primitive isotropic planes and $J^{\perp T_\Co}/J\cong\latI_{0,7}(2)\cong A_1^{\oplus 7}$. The residue is the subgroup statement, which does not follow from the full-group one.
+- determine the $\Gamma_\Co$-orbits of primitive isotropic *planes*, and with them the $1$-cusps of $\fco$. For the full orthogonal group the transitivity is now a theorem of this book rather than a citation: @thm:plane-transitivity-tco proves that $\Orth^+(T_\Co)$ acts transitively on primitive isotropic planes, by splitting the unimodular model $B=\latI_{2,9}=\latI_{1,1}\perp\latI_{1,8}$ at a line and lifting isometries of the quotient as $\id\perp\varphi$ with the component read off @def:period-component-character. The boundary lattice of the exhibited plane is computed at the owner as well: $J^{\perp T_\Co}/J$ has rank $7$, signature $(0,7)$, determinant $-2^7$ and type $(7,7,1)$, i.e. $\latI_{0,7}(2)\cong A_1^{\oplus 7}$, in `computations/reports/one_cusp_plane_quotient.py`.
+  The residue is the subgroup statement, which does not follow from the full-group one. What the earlier version of this item got wrong is that it declared a plane to have no discriminant invariant, on the ground that "a plane is not an element of $T_\Co$". The invariant exists, and the first repair of this item then named the wrong object: a plane's datum is not the dual of its restricted form, nor the *type* of anything, but the subspace
+  $$\bar J \;=\; (T_\Co^\vee\cap J_\QQ)/J \;\subset\; A_{T_\Co},$$
+  which under $A_{T_\Co}\cong T_\Co/2T_\Co\cong B/2B$ is simply the image of $J$, a two-dimensional totally isotropic subspace, and which is computed for the exhibited planes in `computations/reports/plane_gluing_subgroup.py`. It is $(\ZZ/2)^2$ with zero pairing for *every* primitive isotropic plane, by @thm:plane-transitivity-tco, so its isomorphism type is an isometry invariant and carries no information; the subspace itself does, because $\Gamma_\Co$ acts trivially on $A_{T_\Co}$ and an isometry does not: $\overline{g(J)} = g(\bar J)$. This is the plane analogue of $v\mapsto v^*$ for lines and it gives the same kind of lower bound, the number of $\Gamma_\Co$-orbits of planes being at least the number of subspaces attained; $A_{T_\Co}$ has $23\,715$ two-dimensional totally isotropic subspaces, so the invariant is very far from constant, and whether it separates is what remains open. Whether $\fco$ has one $1$-cusp or several is open with it, as is the $\Gamma_\Co$-orbit of the two exhibited planes, which would be decided by comparing their subspaces in one presentation of $T_\Co$.
 
 This refines, at the level of orbits and generators, the $1$-cusp correspondence $(7,7,1)_0 \mapsto (8,6,0)_0$ established in @lem:1_cusp_correspondence.
 :::
@@ -97,7 +116,7 @@ Sterk's published fundamental domains for the five cusps of $\fentwo$ have $12, 
 The quotients for $j = 2,3,4,5$ are mutually isometric, so their full Weyl groups are conjugate and cannot account for four inequivalent published diagrams.
 The open work is to identify, for each $j$, the reflection subgroup $W_j\leq W(\eta_j^{\perp\ten}/\eta_j)$ for which the published diagram bounds a fundamental domain, to exhibit that domain as a union of chambers of the full group, and to determine the index $[W(\eta_j^{\perp\ten}/\eta_j) : W_j]$ as a covolume ratio.
 Cusp $2$, to which the Coble $0$-cusp is claimed to correspond, is the case in which the two computations agree.
-The data and the derivation are in [[sterk-root-counts-and-computed-chambers]].
+The data and the derivation are in [Sterk's simple-root counts and the computed Vinberg chambers](#sec-sterk-root-counts-and-computed-chambers).
 :::
 
 ::: {.remark title="Open problem: hyperbolic-quotient derivation of the cusp correspondence"}
@@ -173,7 +192,7 @@ The open work is:
 ::: {.question #qst:regularized-theta title="Open problem: theta series of indefinite lattices"}
 
 For a positive-definite lattice the theta series $\theta_L(q) = \Sum_{v\in L} q^{v^2/2}$ converges and is a modular form.
-For an indefinite lattice each level set $L[k]$ can be infinite (see the Lattice Theory section), the series does not converge, and a regularization is required before any modular statement can be made.
+For an indefinite lattice the set of vectors of square $k$ can be infinite (see the Lattice Theory section), the series does not converge, and a regularization is required before any modular statement can be made.
 
 The open work is to define a regularized theta series for the hyperbolic lattices of this monograph, determine its transformation behaviour, and relate it to the lattice invariants --- discriminant form, genus, and the reflection group --- that the rest of this document computes.
 :::
@@ -265,5 +284,5 @@ The problems above share a small set of concrete starting data, recorded here fo
 
 - **Sterk orbit lift.** For the $2$-elementary $T_\Co$, an orbit is determined by the tuple $(\div(v),\, \bar v \in A_{T_\Co},\, v^2 = 0)$, reducing the search to $\bF_2$-vector-space orbits under $\Orth(q_{T_\Co})$.
 
-- **$\Gamma_\Co$ generators.** Computed as the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta)$ and the stabilizer of the primitive vector $\tilde h_\Co = f^{*}h_\Co$, of square $4$.
+- **$\Gamma_\Co$ generators.** Not known; the matrix representation is a stub. The candidate description is the image in $\Orth^+(T_\Co)$ of the intersection of the reflection group $W(T)$ with the centralizer $Z(\theta_\Co)$ and with the stabilizer of the primitive vector $\tilde h_\Co = f^{*}h_\Co$, of square $4$ (@prop:gamma-co-in-theta-centralizer), whose eigenspace formulation is the one that can be written down at present.
 :::

@@ -73,6 +73,13 @@ and differential induced by $d_0$.
 Then $N$ is an equivalence between the category of simplicial objects of $\mca$ and $\mathbf{Ch}_{\geq0}(\mca)$ [@Wei94, Thm. 8.4.1].
 :::
 
+::: {.proof}
+
+This is [@Wei94, Thm. 8.4.1].
+Normalization throws away the degenerate simplices: the quotient of $X_n$ by the subspace spanned by the images of the degeneracy maps is canonically $N(X)_n$, so $N$ keeps exactly the information $d_0$ needs and no more [@Wei94, §8.3].
+Enough projectives is not used; the statement is for any abelian $\mca$.
+:::
+
 ::: {.definition #def:comonad-resolution title="Comonad resolutions and the bar construction"}
 
 Let $F\colon\mcc\to\mca$ be left adjoint to $U\colon\mca\to\mcc$.
@@ -104,6 +111,13 @@ For a $*$-invariant subgroup $U\iscontainedin\widetilde K_0(A)$, the *$n$-dimens
 $L^{0}_{U}(A,\epsilon)$ is the Witt group of nonsingular $\epsilon$-symmetric forms over $A$, and $L^{U}_{0}(A,\epsilon)$ the Witt group of nonsingular $\epsilon$-quadratic forms; a form admitting a lagrangian is zero in it [@Ran98, Ex. 20.11].
 :::
 
+::: {.proof}
+
+This is [@Ran98, Ex. 20.11].
+In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex concentrated in degree $0$ together with a symmetric or quadratic structure whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence, which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
+That last identification is the one this book uses, and it is where @prop:metabolic-witt-trivial applies: a hyperbolic form is one admitting a lagrangian, so its class in $L^0$ is zero, the same conclusion the Witt ring gives.
+:::
+
 For $A=R$ a Dedekind domain with the identity involution and $\epsilon=1$, the group $L^{0}_{\widetilde K_0(R)}(R,1)$ is the additive group of the Witt ring $W(R)$ of @thm:witt-ring, and by @prop:hyperbolic-metabolic every hyperbolic form of @def:hyperbolic-form has the zero class in it.
 
 ## Model presentation {#sec-model-presentation}
@@ -129,6 +143,15 @@ Then $C_{+}(\mca)$ is a model category in which
 The cofibrant replacement of an object of $\mca$ concentrated in degree $0$ is a projective resolution of that object.
 :::
 
+::: {.proof}
+
+The model structure is [@Qui67, Ch. I §1, Ex. B]; the axioms are checked there for the three classes named.
+
+The identification of the cofibrant replacement is the part read off the hypotheses, and it is what makes @sec-derived-functors legitimate.
+A cofibrant object is one for which $\varnothing\to C$ is a cofibration, that is, injective with a projective cokernel in each degree; a complex concentrated in degree $0$ in $\mca$ is not cofibrant in general, because its cokernel is the object itself and need not be projective.
+A cofibrant replacement $P\to A$ is a degreewise map from such a $P$ to $A$ in degree $0$ and to $0$ elsewhere, a weak equivalence by hypothesis; being a degreewise epimorphism with projective terms it is a projective resolution of $A$, and exactness of the augmented complex is the vanishing of homology above degree $0$ required by the weak equivalence.
+:::
+
 In a pointed model category the loop and suspension functors and the fibration and cofibration sequences are constructed on the homotopy category [@Qui67, Ch. I §§2–3].
 The corresponding $\infty$-categorical constructions are @def:loops-suspension, and their adjunction is @sec-adjunctions.
 
@@ -138,6 +161,8 @@ The corresponding $\infty$-categorical constructions are @def:loops-suspension, 
 
 An $\infty$-category $\mcc$ is *stable* if it has a zero object, every morphism of $\mcc$ admits a kernel and a cokernel, and a triangle in $\mcc$ is exact if and only if it is coexact [@Lur09, Def. 2.9].
 The homotopy category of a stable $\infty$-category is triangulated [@Lur09, Thm. 3.11], a stable $\infty$-category admits all finite limits and colimits [@Lur09, Prop. 4.4], and on it the suspension and loop functors of @def:loops-suspension are mutually inverse equivalences [@Lur09, §2].
+The hypothesis of the first is weaker than stability: it asks that $\mcc$ be pointed, admit cokernels, and have the suspension an equivalence.
+That hypothesis holds for every stable $\mcc$, and is in fact equivalent to stability, by [@Lur09, Rmk. 3.12], so the statement above is the corollary of the cited theorem that the book uses.
 :::
 
 For a pointed $\infty$-category $\mcc$ admitting the relevant finite limits and colimits, @sec-adjunctions gives
@@ -183,10 +208,25 @@ For an $\infty$-category $\mcc$ the stabilization $\mathrm{Stab}(\mcc)$ is unive
 The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{Stab}(\mcs)$ [@Lur09, Def. 9.1], and it is freely generated under colimits, as a stable $\infty$-category, by the sphere spectrum [@Lur09, Cor. 15.6].
 :::
 
+::: {.proof}
+
+The clauses are the cited items, and two of them read differently in the source.
+$\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is a definition, not a theorem, in [@Lur09, Def. 8.4]; $\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is then the case $\mcc=\mcs$ together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
+The universal property is stated in [@Lur09] as an equivalence $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ [@Lur09, Prop. 10.12], whose content is the same, and the paper's introduction draws the corollary in the form used here.
+Free generation by the sphere spectrum is [@Lur09, Cor. 15.6], whose statement is that evaluation on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
+:::
+
 ::: {.theorem #thm:derived-category-heart title="The derived $\infty$-category"}
 
 Let $\mca$ be an abelian category with enough projectives.
 Then $\mcd^{-}(\mca)$ is a stable $\infty$-category, the subcategories of complexes with vanishing homology in negative and in positive degrees determine a $t$-structure on it, and its heart is equivalent to the nerve of $\mca$ [@Lur09, Prop. 13.10].
+:::
+
+::: {.proof}
+
+All three clauses are [@Lur09, Prop. 13.10], and they are the three numbered parts of that proposition: stability, the $t$-structure given by the vanishing conditions on homology in negative and positive degrees, and the identification of the heart with the nerve of $\mca$.
+
+The hypothesis is used once and is not decorative: enough projectives is what supplies the map $P_\bullet\to A_\bullet$ with projective terms that the proof of the source's part (2) needs, and it is the same hypothesis that makes the cofibrant replacement of @thm:projective-model-structure a projective resolution.
 :::
 
 Taking $\mca=A\text{-}\mathbf{Mod}$ places the complexes of @def:poincare-complex in the stable $\infty$-category $\mcd^{-}(A\text{-}\mathbf{Mod})$, whose heart is $A\text{-}\mathbf{Mod}$, and the duality functor of @def:ring-with-involution extends to complexes by @def:n-dual-complex.

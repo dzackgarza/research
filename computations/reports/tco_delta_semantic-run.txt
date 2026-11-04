@@ -1,0 +1,8 @@
+<2>: det 2, |A_L| 2, distinct q-values ['[(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring', '[0] in Fraction Field of Integer Ring / (2)Integer Ring']
+  witness div(eta) = 2
+  eta: q(class) = [(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring
+U(2): det -4, |A_L| 4, distinct q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  witness div(e+f) = 2
+  e+f: q(class) = [1] in Fraction Field of Integer Ring / (2)Integer Ring
+T_Co witness eta (in <2>): q(class) = [(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring
+T_Co witness e+f (in U(2)): q(class) = [1] in Fraction Field of Integer Ring / (2)Integer Ring

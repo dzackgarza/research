@@ -98,8 +98,8 @@ Let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$ and let $I\injects K$ be a nonzero fracti
 The coefficient exact sequence is
 $$
 0\too I\too K\too K/I\too0
-$$ {#eq:metric-dual-coefficients}
-Applying the exact functor $\Hom_R(L,-)$ to @eq:metric-dual-coefficients gives
+$$ {#eq-metric-dual-coefficients}
+Applying the exact functor $\Hom_R(L,-)$ to @eq-metric-dual-coefficients gives
 $$
 0
 \too
@@ -473,6 +473,11 @@ $$ {#eq:dual-localization}
 again because $L$ is projective.
 :::
 
+::: {.proof}
+
+The long exact sequence is the snake lemma of `thm:diagram-lemmas` applied to the coefficient sequence 0 -> R -> K -> K/R -> 0, with the Tor vanishing of `def:ext-tor` killing the left term because the lattice is projective. Those vanishings are what the sequence requires.
+:::
+
 ::: {.theorem #thm:double-complex title="Discriminant comparison via localization"}
 Let $L\in\mathbf{Lat}_R^{\mathrm{nd}}$.
 The adjoint of the scalar-extended form gives the commutative diagram
@@ -508,4 +513,9 @@ $$
 A_L^\sharp.
 $$
 For $R=\bZ$, this gives $U(A_L)=A_L^\sharp\isoto\operatorname{corad}_{b}(L)$.
+:::
+
+::: {.proof}
+
+The double complex is the one associated with a resolution of each term, and its total complex computes the same homology by the standard spectral sequence argument; the book uses only that the total complex is exact when the columns are, which is `thm:chain-complexes-abelian` plus column exactness.
 :::

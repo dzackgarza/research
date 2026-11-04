@@ -35,7 +35,7 @@ From this, we find that the class number $\cl(T)$ directly influences the number
 #### Existence and Uniqueness
 
 ::: {.theorem
-    title="Nikulin's Analog of Witt's Theorem [@Nik79, Thm. 1.14.4]"
+    title="Nikulin's Analog of Witt's Theorem [@Nik80, Thm. 1.14.4]"
     #thm:nik79-1-14-4
 }
 Let $S$ be an even lattice and $L$ an even unimodular lattice.
@@ -60,7 +60,13 @@ Then
   .$$
 :::
 
-We note that this is not how @Nik79 originally states the theorem, but rather extracts the case that is more commonly used in applications for clarity.
+::: {.proof}
+
+This is [@Nik80, Thm. 1.14.4], in its three cases: the weak case under the discriminant-length bound, the generic case where only the odd part of the discriminant counts, and the exceptional 2-adic case, in which existence is not automatic but is equivalent to the displayed decomposition of $q_S$.
+:::
+
+
+We note that this is not how @Nik80 originally states the theorem, but rather extracts the case that is more commonly used in applications for clarity.
 The generic case is both necessary and sufficient for the existence and uniqueness of a primitive embedding, The weak case, which uses the global invariant $\ell(A_S)$ is easier to check in practice, but only gives a sufficient condition and is thus strictly weaker than the generic case.
 This is because if $A$ is any finite abelian group, one can consider the primary decomposition $A = \bigoplus_p A_p$, and there is an inequality $\max_p \ell(A_p) \leq \ell(A) \leq \Sum_p \ell(A_p)$.
 Thus, using $\ell(A_S)$ in place of $\max_{p \neq 2} \ell(A_{S_p})$ can exclude embeddings that the generic case would allow.
@@ -124,6 +130,14 @@ Then:
    .$$
 
 :::
+
+::: {.proof}
+
+This is [@PS24, Prop. 15.1.1].
+For (2), $S\oplus T\iscontainedin L$ with all three of finite index in the common $S^*\oplus T^*$, and $\det L = \det S\cdot\det T / [L:S\oplus T]^2$; since $L$ is unimodular this gives $[L:S\oplus T]^2 = \abs{A_S}\abs{A_T}$, and the snake lemma applied to the two inclusions computes the index as $\abs{A_S}$, whence $\abs{A_S} = \abs{A_T}$.
+For (3), an element of $L$ that is not in $S\oplus T$ pairs integrally with $S$ and with $T$, so $L/(S\oplus T)$ is the graph of an anti-isometry $A_S\to A_T$; this is the gluing datum.
+:::
+
 
 #### Gluing and Overlattices
 
@@ -265,7 +279,7 @@ $$
 A_S = A_{U(2)} \oplus A_{E_8(@)} = C_2^2 \oplus C_2^{8} \cong C_2^{10} \cong A_T
 ,$$
 and that $S$ and $T$ are both even indefinite 2-elementary lattices.
-By [@Nik79, Thm. 3.6.3], the restrictions $\Orth(S)\to\Orth(A_S)$ and $\Orth(T) \to\Orth(A_T)$ are surjective, and thus of $f\in \Orth(S)$, using the fact that $A_S\cong A_T$, the restricted isometry $f_{A_S}$ induces an isometry $f_{A_T}$ on $A_T$, which can be be lifted to an isometry $f_T$ on $T$.
+By [@Nik80, Thm. 3.6.3], the restrictions $\Orth(S)\to\Orth(A_S)$ and $\Orth(T) \to\Orth(A_T)$ are surjective, and thus of $f\in \Orth(S)$, using the fact that $A_S\cong A_T$, the restricted isometry $f_{A_S}$ induces an isometry $f_{A_T}$ on $A_T$, which can be be lifted to an isometry $f_T$ on $T$.
 By construction, $f_{T}$ and $f_{S}$ act identically on $A_S$ and $A_T$, and so lift to an isometry $f\in \Orth(L)$ preserving both $S$ and $T$.
 :::
 

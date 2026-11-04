@@ -1,4 +1,4 @@
-.# Standard lattice examples {#sec:standard-lattice-examples}
+# Standard lattice examples {#sec-standard-lattice-examples}
 
 ## The hyperbolic plane and its orthogonal group
 

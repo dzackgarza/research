@@ -1,0 +1,56 @@
+RR shim: ON (interim Sage-10.8 route)
+provenance
+  provider pin: 6ad7a5ea396da6e758ee28f3dea10a35baee0266   Sage: 10.8   route: direct from_relations_and_gram, owned rings via _owned_integers/_owned_rationals; RR shim ON (interim Sage-10.8 route)
+  |A_S| = 2048 |A_T| = 2048
+  DS.is_anti_isometric(DT) = True ; DS.is_isomorphic(DTm) = True ; DSdg.is_isomorphic(DS) = True
+  DS.isometry_to(DTm)  = Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
+  DSdiag.isometry_to(DTm) = Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
+  gamma_u2([alpha/2]) : T coordinates (g,e,f,w1..w8) = (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+    equals eta_0 = [g/2]? True
+    q_T(image) + q_S([alpha/2]) = [0] in Fraction Field of Integer Ring / (2)Integer Ring (must be 0 mod 2)
+  isometry vs twisted codomain on generators (q): True ; anti- vs untwisted: True
+  gamma_u2 on S generators (T coordinates (g,e,f,w1..w8)):
+    e0 -> (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)   q_T = [(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e1 -> (0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)   q_T = [0] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [0] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e2 -> (0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)   q_T = [0] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [0] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e3 -> (0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e4 -> (0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e5 -> (0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e6 -> (0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e7 -> (0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e8 -> (0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e9 -> (0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+    e10 -> (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1)   q_T = [1] in Fraction Field of Integer Ring / (2)Integer Ring (q_S = [1] in Fraction Field of Integer Ring / (2)Integer Ring)
+  q-profile A_T (maintained q): {[0] in Fraction Field of Integer Ring / (2)Integer Ring: 528, [1] in Fraction Field of Integer Ring / (2)Integer Ring: 496, [(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring: 528, [(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring: 496}
+  q-profile A_S (maintained q): {[0] in Fraction Field of Integer Ring / (2)Integer Ring: 528, [1] in Fraction Field of Integer Ring / (2)Integer Ring: 496, [(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring: 528, [(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring: 496}
+  E8 roots enumerated by height induction: 240 (expect 240)
+  BAD_S classes assembled: 121 (expect 121)
+  probe: q of (F2)-image = [1] in Fraction Field of Integer Ring / (2)Integer Ring
+  of the 121 BAD_S classes, images under gamma_u2 at q_T = 1: 121 (all, if forced)
+
+SUMMARY: maintained witness gamma_u2 exists and is exact; the open (F4) bit evaluates as printed above.
+
+CERT-EXT
+  (1) inverse(w.fwd(x)/w.inv) on all 2048: 2048 ; then(fwd,inv)(x)==x on all 2048: 2048
+  (2) DTm.q(f(x)) == DS.q(x) on all 2048: 2048
+  (3) DTm.b(f(gi),f(gj)) == DS.b(gi,gj) on all 121 generator pairs: True
+    source b-matrix (row i, over generators (alpha,e,f,w1..w8)), maintained .b:
+      ['[(1)/(2)]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]']
+      ['[0]', '[0]', '[(1)/(2)]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]']
+      ['[0]', '[(1)/(2)]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]']
+      ['[0]', '[0]', '[0]', '[0]', '[0]', '[(1)/(2)]', '[0]', '[0]', '[0]', '[0]', '[0]']
+      ['[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[(1)/(2)]', '[0]', '[0]', '[0]', '[0]']
+      ['[0]', '[0]', '[0]', '[(1)/(2)]', '[0]', '[0]', '[(1)/(2)]', '[0]', '[0]', '[0]', '[0]']
+      ['[0]', '[0]', '[0]', '[0]', '[(1)/(2)]', '[(1)/(2)]', '[0]', '[(1)/(2)]', '[0]', '[0]', '[0]']
+      ['[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[(1)/(2)]', '[0]', '[(1)/(2)]', '[0]', '[0]']
+      ['[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[(1)/(2)]', '[0]', '[(1)/(2)]', '[0]']
+      ['[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[(1)/(2)]', '[0]', '[(1)/(2)]']
+      ['[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[0]', '[(1)/(2)]', '[0]']
+  (4) .b == integer table on 1500 random pairs (bilinearity property of the maintained form): True
+  (4) .b (mod 1, parity) == integer table on 1500 random pairs: True
+  (5a) maintained .q value levels: A_S [(0, 528), (1, 496), (2, 496), (3, 528)] ; A_T [(0, 528), (1, 528), (2, 496), (3, 496)]
+  (5b) source-side multiset (-q_S on [alpha/2]^perp): [(0, 528), (2, 496)]
+  (5c) Inv(eta_0) (q_T on eta_0^perp):                [(0, 528), (2, 496)]
+  (6a) level-1 classes of A_T: 528
+  (6b) Inv-block sizes over level 1: [1, 527]
+  (6c) singleton block: invariant ((0, 528), (2, 496)) ; the class (1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) ; equals eta_0? True

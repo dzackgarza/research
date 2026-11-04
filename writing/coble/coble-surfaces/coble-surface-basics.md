@@ -23,14 +23,15 @@ This is the classical example studied in [@Cob19] and [@Cob29] -- the blowup $S$
 [@Cob19] shows, among other things, that there are finitely many $\Aut(S)$-orbits of smooth rational curves of negative self-intersection.
 
 Note that conversely, starting with such a plane sextic $\tilde C$, one can show that the proper transform $C$ of $\tilde C$ is in $\abs{-2K_S}$.
-Blowing up the singularities of $C$ yields a Coble surface with *smooth* anti-bicanonical divisor; such Coble surfaces are not the image of any birational but not biregular morphism from another Coble surface and are said to be **terminal**. We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface.
+We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface; the sources use *terminal* for the same condition.
+Blowing up the singularities of $C$ yields the minimal Coble surface of its birational class, with smooth anti-bicanonical divisor and no $(-1)$-curve left to blow down.
 :::
 
 ::: {.remark title="On the importance of Cobles"}
 
 Following [@CD12 §1.4], a point set $\mathcal{P}=\theset{p_{1}, \ldots, p_{n}}$ of $\PP^{2}$ is called **Cremona special** if $n \geq 9$ and if the surface $S$ obtained by blowing up $\mathcal{P}$ is such that $\Aut^*(S)$, the image of $\Aut(S)$ in $\Orth(\Pic(S))$, has finite index in the infinite Weyl group $W_{S}$.
 The surface $S$ is then also called Cremona special.
-This condition of finiteness roughly expresses that $\Aut^*(X)$ is as large as possible.
+The index is finite, so $\Aut^*(S)$ and $W_S$ are commensurable.
 A point set is called *unnodal* if its blowup does not contain any $(-2)$-curves.
 In [@CD12], it is proved that a Cremona special complex rational surface is either an unnodal Halphen surface (with $n=9$) or an unnodal Coble surface (with $n=10$), that unnodal point sets define a Zariski open subset in the moduli space of point sets defining Halphen and Coble surfaces, and that Cremona special Halphen and Coble surfaces are precisely the unnodal ones.
 :::

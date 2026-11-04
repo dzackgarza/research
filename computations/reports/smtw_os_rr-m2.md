@@ -1,0 +1,326 @@
+# O-S: the saturation of `Lambda` in `S_dP` — **decided: `S_dP = Lambda`, `det = 8`**
+
+Member m2, direction d3, swarm `smw0dbvr6`. Repository
+`/workspace/nucleus/work/projects/p-9fcb4ed7f4b64e008de2ee29a7197bf4/repo` (read-only),
+evidence state `main@141058a8`; the corpus citations by block id are to
+
+* `writing/coble/lattices-and-moduli/the-heegner-line-and-the-coble-arithmetic-group.md`
+  (cited as *(A)* below),
+* `writing/coble/heegner-report/coble-heegner-research-report.md` (cited as *(H)*),
+* `computations/reports/` (cited by file).
+
+**Result.** Let `b` be a member of the one-node direct-projective construction
+(`k = 1` node, `X = X_hat_b` the resolved K3, `pi: X -> Yhat = Bl_p(P^1 x P^1)` the
+double cover of *(A)* `lem:face-at-H(1)`), and put
+
+```
+e = e_b = pi^*h_1,   f = f_b = pi^*h_2,   D = D_b = pi^*e_Yhat,
+Lambda = <e, f, D> = U(2) + <-2>            (det 8),
+S_dP   = H^2(X,Z)^{I_dP = +1}               (rank 3, *(A)* prop:tuple-of-the-construction(5)).
+```
+
+Then
+
+```
+S_dP = pi^* H^2(Yhat, Z) = Lambda   and   det S_dP = 8          (index 1),
+```
+
+i.e. the det-2 candidate `U + <-2>` does **not** occur. The same argument gives
+`S_dP = U(2)` for the smooth (`k = 0`) members, which settles the "`U(2)` or `U`"
+alternative left open in *(A)* `rmk:a21-open`.
+
+Nothing here assumes an integral eigensplitting of `H^2(X,Z)`, and no chamber or
+translation-invariance statement is used. The proof uses only: the double-cover
+description of `X`, `pi_* pi^* = 2` on cohomology, the Lefschetz rank of *(A)*
+`prop:tuple-of-the-construction` (only as a consistency input; not needed), the
+discriminant form of `Lambda` (the corpus's maintained referee log), and
+Riemann–Roch plus Kodaira's local structure of the two elliptic rulings.
+
+---
+
+## 1. The geometric model, and `Lambda` as a pullback
+
+`Y = P^1 x P^1` with ruling classes `h_1, h_2` (`h_i^2 = 0`, `h_1.h_2 = 1`),
+`B in |O_Y(4,4)|^tau` the branch curve with exactly one node `p`, `X^# = {z^2 = f}`
+the double cover, `X = Bl_{p_hat} X^#` the resolution, `B~` the proper transform of
+`B` in `Yhat = Bl_p Y`, `e_Yhat` the exceptional curve of `Bl_p`.
+
+1.1 **(Model.)** `pi: X -> Yhat` is the double cover of the smooth rational surface
+`Yhat` branched along the smooth curve `B~`, and `pi^* e_Yhat = D`. This is
+*(A)* `lem:face-at-H(1)` (with its proof: the preimage of `e_Yhat` is the double
+cover of `e_Yhat ≅ P^1` branched at its two points of `B~`, hence one curve, of
+square `2 e_Yhat^2 = -2`, namely `D`), together with
+`K_Yhat + (1/2)B~ = K_Yhat + (2h_1 + 2h_2 - e_Yhat) = 0` for the canonical-class
+check that the double cover has trivial canonical class. Here
+`B~ = 4h_1 + 4h_2 - 2 e_Yhat` (the node has multiplicity 2 at `p`) and
+`K_Yhat = -2h_1 - 2h_2 + e_Yhat`.
+
+1.2 **(The lattice.)** `H^2(Yhat,Z) = <h_1, h_2, -e_Yhat> ≅ U + <-1>` with
+`h_1.h_2 = 1`, `e_Yhat^2 = -1`, `e_Yhat ⊥ h_i`. For a finite flat cover of degree 2,
+`(pi^* a).(pi^* b) = 2 (a.b)`. Hence `pi^* H^2(Yhat,Z) = <e, f, D>` has Gram matrix
+`[[0,2,0],[2,0,0],[0,0,-2]] = U(2) + <-2>`, of determinant `8`, signature `(1,2)`,
+even. This is the corpus's `Lambda` (*(A)* `rmk:a21-open`, and
+`computations/reports/sm00_premise-ledger-d7.md` §4(c)), with `e = h_1`,
+`f = h_2`, `D = g` in that file's notation.
+
+1.3 **`Lambda` inside `S_dP`.**
+`I_dP` is the deck transformation of `pi` (`pi o I_dP = pi`, *(A)*
+`prop:local-operators(3)`), so `I_dP^* pi^* = pi^*` and `pi^* H^2(Yhat,Z) ⊆ S_dP`.
+Also `I_dP` is nonsymplectic (`(A)` `prop:local-operators(2)`), so every invariant
+class is of type `(1,1)`: `S_dP ⊆ NS(X) = H^{1,1}(X,Z)`.
+
+1.4 **Index bound.** `pi` is finite flat of degree 2 (it is locally
+`Spec(O + O(-2,-2))` over `Yhat`), so by the transfer formula for a degree-2 flat
+cover, `pi^* pi_* = 1 + I_dP^*` on `H^*(X,Z)`. For `x in S_dP` put
+`y = pi_* x in H^2(Yhat,Z)` (integral, as `Yhat` is smooth and `pi` is finite). Then
+
+```
+2x = x + I_dP^* x = pi^* pi_* x = pi^* y  in  Lambda .
+```
+
+Hence `Lambda ⊆ S_dP` and `2 S_dP ⊆ Lambda`, i.e. `[S_dP : Lambda] <= 2`; it is 1 or 2.
+Equivalently `[S_dP : Lambda]^2 = 8 / det S_dP`, the corpus's index formula
+(`sm00_premise-ledger-d7.md` §4(c)).
+
+The transfer identity `pi^* pi_* = 1 + I_dP^*` is the standard norm formula for a
+degree-2 cover. Nothing about the transcendental part of `H^2(X,Z)` is needed for it
+here: by 1.3 the classes of `S_dP` are of type `(1,1)`, hence divisor classes, and on
+divisor classes the identity is `pi^* pi_* D = D + I_dP D` cycle by cycle (for an
+`I_dP`-invariant curve `C` with image `C'` one has `pi^* C' = C` and `pi_* C = 2C'`,
+for a component of the branch curve `pi_* C = C` and `pi^* C = 2C`; both give
+`pi^* pi_* C = 2C`).
+
+---
+
+## 2. If the index were 2, which class would have to be integral
+
+2.1 `S_dP` is an even lattice (it is a primitive sublattice of the even unimodular
+lattice `H^2(X,Z)` of a K3). If `[S_dP : Lambda] = 2`, then `S_dP ⊂ Lambda^#` and
+`S_dP / Lambda` is generated by the class of an element `w in S_dP`, `2w in Lambda`,
+`w notin Lambda`, whose coset `w mod Lambda` is a nonzero element of order 2 of the
+discriminant group `A_Lambda = Lambda^#/Lambda ≅ (Z/2)^3` with `q(w) = w^2 ≡ 0 (mod 2Z)`
+(needed for `S_dP` to be even).
+
+2.2 **The even classes.** Write `q = (.)^2 mod 2Z`. A `Z`-basis of `Lambda^#` is
+`e^* = f/2`, `f^* = e/2`, `D^* = -D/2`. The eight classes of `(Z/2)^3` have squares
+
+```
+0 : 0            f/2 : 0          e/2 : 0          -D/2 : -1/2
+(f+e)/2 : 1      (f-D)/2 : -1/2   (e-D)/2 : -1/2   (f+e-D)/2 : 1/2
+```
+
+so exactly **two** nonzero classes are even: `e/2` and `f/2`. Equivalently, the only
+even overlattices of `Lambda` are `Lambda + Z(e/2)` and `Lambda + Z(f/2)`; each has
+Gram matrix `[[0,1,0],[1,0,0],[0,0,-2]]` in the basis `(f, e/2, D)` respectively
+`(e, f/2, D)`, i.e. is `U + <-2>` (det 2). This is exactly the maintained referee
+data, `computations/reports/sdp_discriminant_referee-run.txt` (pin `c546077d`,
+script `sdp_discriminant_referee.py`: "integral-valued nonzero half-classes
+`(a,b,c,q) = [(0,1,0,0),(1,0,0,0)]`, generated overlattice det 2"), and
+`sm00_premise-ledger-d7.md` §4(c). I reproduced both the square table and the Gram
+matrix `[[0,1,0],[1,0,0],[0,0,-2]]` independently
+(`.ultramath/smw0dbvr6/m2/scripts/verify_os_ot.py`, §A–B of its output).
+
+2.3 **Consequence.** Suppose `[S_dP : Lambda] = 2`. Then, by 2.1–2.2, the coset
+`w mod Lambda` is `f/2 + Lambda` or `e/2 + Lambda`. In the first case
+`f/2 = w - lambda` with `lambda in Lambda`, so `f/2 ∈ S_dP`; by 1.3 it is an
+**integral** class of `NS(X)`. By swapping the two rulings the second case is the
+same statement with `e/2`. So the index-2 hypothesis forces
+
+```
+f/2 ∈ NS(X)      (or else e/2 ∈ NS(X)).
+```
+
+That class has `(f/2)^2 = 0`, `(f/2).f = 0`, `(f/2).e = 1`, the last because
+`e.f = 2 (h_1.h_2) = 2`. Note the shape of the parity statement: the class of the
+`f/2`-coset has **even** pairing with `f` and **odd** pairing with `e`; the two ruling
+classes are interchangeable only in the *existence* question, not in the parity of a
+particular coset. (The corpus's formulation, "an `I_dP`-invariant class of odd pairing
+against one of the ruling classes", is therefore right as an "or", and the coset
+determines which of the two it is.) Section 3 shows that no such class exists.
+
+---
+
+## 3. The key lemma: no zero-square class of odd ruling degree
+
+3.1 **Set-up.** `f = pi^* h_2` is nef and semiample: `|f|` is the pullback of the
+linear system `|O(1)|` of the base `P^1` of the `h_2`-ruling under
+`X -> Yhat -> P^1`, hence base-point-free, and
+`h^0(X, f) = h^0(Yhat, h_2) + h^0(Yhat, h_2 + K_Yhat) = 2 + 0 = 2`
+(via `pi_* O_X = O_Yhat + K_Yhat`; the second summand vanishes because
+`h_2 + K_Yhat = -2h_1 - h_2 + e_Yhat` has degree `-1` against the nef class `h_1`).
+Hence `phi = phi_{|f|}: X -> P^1` is a morphism onto `P^1` whose fibres have class
+`f`; each fibre has arithmetic genus 1 (`f^2 = 0`, `K_X = 0`), and a K3 has no
+`(-1)`-curves, so `phi` is relatively minimal and its singular fibres are Kodaira
+fibres.
+
+3.2 **Lemma.** Let `e, f ∈ NS(X)` be nef classes on a K3 `X` with `e.f = 2`,
+`e^2 = f^2 = 0`, and suppose `|f|` is a base-point-free pencil with `h^0(f) = 2` whose
+fibres are reduced (as in 3.1, where this is verified for `f = pi^*h_2`). Then there
+is **no** integral class `x ∈ NS(X)` with
+
+```
+x^2 = 0,   x.f = 0,   x.e  odd.
+```
+
+The reducedness of the fibres cannot be dropped: on a K3 with `U ⊂ NS` spanned by two
+elliptic fibre classes `E, E'` with `E.E' = 1`, the classes `e = E`, `f = 2E'` are nef
+with `e.f = 2`, `e^2 = f^2 = 0`, and `x = E'` has `x^2 = 0`, `x.f = 0`, `x.e = 1`; there
+`|f| = |2E'|` is not a pencil (`h^0(2E') > 2`) and its fibre is `2E'`, not reduced. In
+the application the fibres are pullbacks `pi^*M` of ruling lines, hence reduced.
+
+*Proof.*
+
+*(a)* `h^0(-x) = 0`. If `-x` were the class of an effective divisor then
+`(-x).e >= 0` (e is nef), but `(-x).e = -(x.e)` is odd, hence nonzero and negative.
+Contradiction. By Serre duality (`K_X = 0`), `h^2(x) = h^0(-x) = 0`.
+
+*(b)* `h^0(x) = 0`. Suppose not, and let `E ∈ |x|` be an effective divisor,
+`E = sum_i a_i C_i` with `a_i >= 1` and `C_i` distinct irreducible curves. Since
+`x.f = 0` and `f` is nef, `sum_i a_i (C_i.f) = 0` with every term `>= 0`, so
+`C_i.f = 0` for all `i`. A curve `C` with `C.f = 0` has `deg(phi|_C) = 0`, so `C` is
+contained in a fibre of `phi` (3.1). Group the components by the fibre of `phi` they
+lie in: `E = sum_v E_v`, where `E_v` is supported on the fibre `F_v`; different
+fibres are disjoint, so `E_v.E_{v'} = 0` for `v != v'` and
+`x^2 = E^2 = sum_v E_v^2`. For a fibre `F_v = sum_j n_j Theta_j` of an elliptic
+fibration on a K3 the Gram matrix `(Theta_i.Theta_j)` of its components is negative
+semidefinite and its radical is generated by the fibre class `F_v` (the dual graph is
+an affine Dynkin diagram and `Theta_i.F_v = 0` for all `i`; relative minimality of a
+K3 gives `Theta_i^2 = -2`). Moreover **all** multiplicities `n_j` equal `1`: the fibre
+of `phi` over the point of `P^1` corresponding to a ruling line `M ⊂ Yhat` is the
+pullback divisor `pi^* M`, and `pi` is étale over the generic point of `M` (the
+ramification points of the cover over `M` are the finite set `B~ ∩ M`), so every
+component of the fibre appears with multiplicity 1. Hence `E_v^2 <= 0`, and
+`sum_v E_v^2 = 0` forces `E_v^2 = 0` for every `v`; then `E_v` lies in the radical,
+`E_v = q_v F_v` with `q_v ∈ Q_{>=0}`, and comparing coefficients with `a_j = q_v n_j = q_v`
+in a fibre gives `q_v ∈ Z_{>0}`.
+So `E = (sum_v q_v) f` as classes, with `sum_v q_v ∈ Z_{>=1}`, and
+`x.e = (sum_v q_v)(f.e) = 2 sum_v q_v` is **even**, contradicting the hypothesis.
+
+*(c)* Now `h^0(x) = h^2(x) = 0`, so Riemann–Roch gives
+`chi(O_X(x)) = 2 + x^2/2 = 2 = h^0 - h^1 + h^2 = -h^1 <= 0`, a contradiction. ∎
+
+3.3 **Remark on the shape of the lemma.** The two hypotheses that carry the weight
+are `x.f = 0` (so that `x`, if effective, is *vertical*, hence a combination of whole
+fibres) and `x^2 = 0` (so that no fibre-component can appear with a coefficient: only
+the radical survives). The class that would arise from an index-2 saturation has both
+properties for free, which is why the argument closes the question and not merely a
+strategy.
+
+3.4 **Why the naive "section" argument fails, and why this one does not.** The
+corpus's route (ii) proposes to read the index off an `I_dP`-invariant *curve* of
+`e`-degree 1. There is none, and here is why in each of the two possible cases. Let
+`C` be an `I_dP`-invariant irreducible curve and `C' = pi(C)`. If `C` is not
+pointwise fixed then `pi^{-1}(C') = C + I_dP C = C` as cycles, so
+`[C] = pi^*[C'] ∈ Lambda` and `[C].e = 2 (C'.h_1)` is even. If `C` is pointwise
+fixed then `C` is an irreducible component of `Fix(I_dP) = B~`, which is irreducible
+(`B~` is the normalisation of the irreducible curve `B`, *(A)*
+`prop:del-pezzo-type-on-the-resolution(3)`), so `C = B~` and
+`[C].e = B.h_1 = 4` is even. In neither case is the `e`-degree odd. The lemma above
+supplies what the section argument could not: the index-2 class need not be
+effective, but *if* it exists it has square 0 and odd `e`-degree, and those two
+properties are what kill it.
+
+---
+
+## 4. The theorem
+
+4.1 **Theorem.** For every member `b` of the one-node construction of *(A)*
+`prop:one-node-family` (`k = 1`), with `Lambda`, `S_dP` as in 1.2–1.3,
+
+```
+S_dP = Lambda = pi^* H^2(Yhat,Z) ≅ U(2) + <-2>,     det S_dP = 8,
+```
+
+the discriminant group is `(Z/2)^3` and the 2-elementary invariant is `(r,a,delta) = (3,3,1)`.
+
+*Proof.* `Lambda ⊆ S_dP` and `[S_dP : Lambda] <= 2` (1.4). If the index were 2, then
+by 2.3 the class `f/2` (or `e/2`) would be an integral class of `NS(X)`; it has
+`x^2 = 0`, `x.f = 0` and `x.e = 1`, contradicting Lemma 3.2 (applied with `(e,f)`,
+respectively with the two rulings interchanged). Hence the index is 1. ∎
+
+4.2 **Consistency checks.**
+
+* *(A)* `prop:tuple-of-the-construction(5)` gives `rk S_dP = k + 2 = 3 = rk Lambda`,
+  which is the rank the theorem makes an equality of lattices.
+* *(A)* `prop:del-pezzo-type-on-the-resolution(4)` and `rmk:a21-open` record
+  `U(2) + <-2> ⊆ S_dP` with equal rank and name the index as the open point; 4.1
+  closes it on the side `det = 8`, which is what the corpus's identification
+  `S_dP = U(2) + <-2>` (`rmk:a21-open`, `sm00_premise-ledger-d7.md` §4(c)) needs.
+* The class of the fixed curve. `Fix(I_dP) = B~` is the normalisation of `B`, a curve
+  of genus `9 - k = 8` and `chi = -14` (`(A)` `prop:del-pezzo-type-on-the-resolution(3)`).
+  Since `B~` is `I_dP`-invariant, its class lies in `S_dP`; and because the three
+  intersection numbers `[B~].D = 2` (the two points of `B~ ∩ D`, *(A)*
+  `prop:del-pezzo-type-on-the-resolution(2)`), `[B~].e = B.h_1 = 4`,
+  `[B~].f = B.h_2 = 4` determine a functional on `Lambda` whose representing element
+  of `Lambda^#` is `2e + 2f - D`, the rank equality `rk S_dP = rk Lambda` forces
+  `[B~] = 2e + 2f - D`, with `(2e+2f-D)^2 = 14 = 2.8 - 2`, as genus requires.
+  This identity holds under *both* candidate answers for `S_dP` (the class is in
+  `Lambda` either way, since `Lambda ⊂ S_dP`), so it does not decide the index; it is
+  recorded because it is a nontrivial identity that the answer must — and does —
+  reproduce, and because it exhibits the whole fixed locus of `I_dP` as pulled back
+  from `Yhat`, in line with 4.1.
+* Numerically: `.ultramath/smw0dbvr6/m2/scripts/verify_os_ot.py`, output §A–C.
+
+4.3 **The `k = 0` case, and the corpus's open remark.** For a smooth branch curve
+(`k = 0`) the same proof applies with `Yhat = Y` and `Lambda_0 = pi^*H^2(Y,Z) = U(2)`
+(basis `e, f`; the discriminant group of `U(2)` is `(Z/2)^2` and its two nonzero even
+classes are `e/2`, `f/2`). The index-2 hypothesis again puts `f/2 ∈ NS(X)` with
+`x^2 = 0`, `x.f = 0`, `x.e = 1`, which Lemma 3.2 excludes. Hence at `k = 0` the
+invariant lattice of the deck involution is `pi^*H^2(Y,Z) = U(2)` and **not** `U`,
+settling the alternative left open in *(A)* `rmk:a21-open` ("at `k = 0` the invariant
+lattice is `U(2)` or `U` and which of the two is not decided here"). At `k = 0` the
+involution `I_dP` is the covering involution of the double cover of the smooth
+rational surface `Y` branched along a smooth `(4,4)` curve, so its invariant lattice
+is exactly this rank-2 lattice.
+
+4.4 **Consequences worth recording.**
+
+* `T_dP = S_dP^{perp} ∩ H^2(X,Z)` (rank 19, signature `(2,17)`) has
+  `det T_dP = ±8` and discriminant form `-q_{U(2)+<-2>}`, i.e. also `(Z/2)^3`.
+* Together with `I_dP`-invariance and nonsymplecticity (1.3), `S_dP = Lambda` says:
+  **every** `I_dP`-invariant integral class on a one-node member is a pullback from
+  `Yhat = Bl_p(P^1 x P^1)`. In particular the invariant lattice is isometric to
+  `H^2(Yhat,Z)` with its form doubled.
+* The index is a deformation invariant of the family (the `S_dP,b` are the fibres of
+  a flat sub-local-system, *(A)* `thm:one-node-transport`), so 4.1 holds for every
+  member of the connected one-node locus `B` (*(A)* `prop:one-node-connected`), not
+  only for a general one; the proof above in fact never uses the member beyond
+  `k = 1`.
+
+---
+
+## 5. What this does **not** decide
+
+5.1 **`S_Co` (rank 11) is untouched.** The same transfer trick does not apply:
+`X/I_Co` is not smooth — it has a `1/4(1,1)` point *(H)* `prop:local-quarter` — so
+`S_Co` is not the pullback of `H^2` of a smooth surface in the sense used here, and
+the analogue of 1.4 (an index bound `[S_Co : something] <= 2`) is not available.
+Determining `S_Co`'s type (and whether it is the twist's `I_{1,10}(2)`) remains a
+separate question; see the companion document on O-T, where the *pair*
+`(I_Co, I_dP)` is shown not to be the twist pair at all, and `S_dP` is shown to be
+the `U(2) + <-2>` piece of any candidate `S_Co`.
+
+5.2 **No claim about the effective cone, the chamber, or `H`.** Nothing in the
+argument uses effectivity beyond `h^0(-x) = 0`, which is a consequence of nefness of
+`e` and the sign of the intersection number.
+
+5.3 **No claim about `Lambda`'s primitivity in `H^2(X,Z)` beyond index 1 in
+`S_dP`.** The theorem gives primitivity of `Lambda` in `H^2(X,Z)` as a by-product
+(a sublattice of index 1 in the primitive sublattice `S_dP` is primitive), but it
+does not compute the gluing of `Lambda` with `T_dP` beyond the discriminant-form
+statement of 4.4.
+
+---
+
+## 6. Reproducing the arithmetic
+
+* Maintained provider (pin `c546077d`), unmodified:
+  `computations/reports/sdp_discriminant_referee.py` and `-run.txt`; run here as a
+  copy under `.scratch/`; output: `det M: 8`; the two even nonzero half-classes
+  `(0,1,0,0)` and `(1,0,0,0)`; overlattice det 2 for each.
+* Independent re-derivation of the square table of `A_Lambda`, of the Gram matrix
+  `[[0,1,0],[1,0,0],[0,0,-2]]` of both index-2 overlattices, and of the fixed-curve
+  identity `[B~] = 2e + 2f - D`:
+  `.ultramath/smw0dbvr6/m2/scripts/verify_os_ot.py` (output §A, §B, §C).
+* The rest of the document is a hand proof; the scripts are consistency checks, not
+  certificates.

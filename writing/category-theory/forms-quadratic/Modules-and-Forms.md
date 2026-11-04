@@ -86,6 +86,11 @@ Dropping the requirement that $e$ be an isomorphism and asking only that it be s
 A basis is the case of a generating frame whose structure map is an isomorphism.
 :::
 
+::: {.proof}
+
+A basis is structure and not a property: two bases of one module are related by an element of GL_n, which is a torsor and not a truth value. The proof is the argument of `def:property-structure-stuff` applied to the forgetful functor from modules-with-basis.
+:::
+
 ::: {.definition #def:free-module-orientation title="Orientation of a free module"}
 
 Let $R$ be a commutative ring and let $M$ be a free $R$-module of finite rank $n$.

@@ -1,4 +1,4 @@
-# K3 double covers and their involutions {#sec:k3-covers-involutions}
+# K3 double covers and their involutions {#sec-k3-covers-involutions}
 
 This section records the general machinery of the K3 double cover of a rational surface, the distinguished geometric involutions it carries, and the lattice involutions they induce on $H^2$ together with their invariant and coinvariant sublattices.
 The Coble-specific instance of the double-cover construction — where the base is a terminal Coble surface and the branch locus is the anticanonical curve — is treated in the section on K3 covers of Coble surfaces; here we develop the construction for a general base and the involution-theoretic apparatus common to the del Pezzo, Enriques, and Nikulin quotients.
@@ -16,7 +16,7 @@ $$
 .
 $$
 
-Adjunction yields
+For the double cover branched along $B \in \abs{-2\mcl}$ the canonical bundle formula gives
 $$
 K_X = \pi^*(K_Y + \mcl)
 ,
@@ -98,3 +98,47 @@ del Pezzo, Enriques, and Nikulin involutions on $\lkt = U^3 \oplus E_8^2$. For
 the Nikulin involution the invariant and coinvariant lattices are written
 $L_{\Nik}^{+}$ and $L_{\Nik}^{-}$; each complementary pair has
 ranks summing to $22 = \rank\lkt$. {#tbl-k3-cover-coinvariant-lattices}
+
+## Two constraints on involutions of a K3
+
+The lattice decompositions above describe the abstract involutions of $\lkt$.
+Whether a given K3 surface carries one of them as an automorphism is a separate question.
+Two statements used elsewhere in the book are refined here: a necessary condition on the invariant lattice of a del Pezzo involution, which any representative of the Coble tuple's del Pezzo slot has to satisfy (@prop:coble-cover-marking), and the exact hypothesis under which a product of two involutions is again an involution, which is what any claim about the symplectic character of such a product has to carry.
+
+::: {.proposition #prop:del-pezzo-invariant-has-no-roots title="The del Pezzo invariant lattice contains no class of square $-2$"}
+
+Let $X$ be a K3 surface and let $\iota\in\Aut(X)$ be an involution whose invariant lattice is $H^2(X,\ZZ)^{\iota}\cong\sdp = U(2)$.
+Then $H^2(X,\ZZ)^{\iota}$ contains no class of square $-2$, and consequently $\iota$ fixes no smooth rational curve on $X$.
+:::
+
+::: {.proof}
+
+With isotropic generators $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
+:::
+
+::: {.remark title="What this does and does not rule out"}
+
+The condition is necessary and not sufficient, and the hypothesis is that the invariant lattice *is* $\sdp$, of rank $2$: an involution whose invariant lattice merely contains $\sdp$ is not covered.
+It says nothing against the existence of such an involution, because the anti-invariant lattice can itself contain classes of square $-2$: in $\tdp = U\oplus U(2)\oplus E_8^2$ the sum of $E+F$ for a hyperbolic basis of $U$, of square $2$, and of a vector of $U(2)$ of square $-4$ has square $-2$; the lemma constrains which rational curves are *fixed* and not which curves the surface carries.
+:::
+
+::: {.proposition #prop:product-of-involutions title="When a product of involutions is an involution"}
+
+Let $X$ be a K3 surface and let $\iota,\iota'\in\Aut(X)$ be involutions.
+Then $\iota\iota'$ is an involution if and only if $\iota$ and $\iota'$ commute.
+If a generator $\sigma$ of $H^{2,0}(X)$ satisfies $\iota^*\sigma = \iota'^*\sigma = -\sigma$, then $(\iota\iota')^*\sigma = +\sigma$; with commutation as well, $\iota\iota'$ is therefore a symplectic involution.
+The two conclusions are different claims: the second alone does not give the order.
+:::
+
+::: {.proof}
+
+If $\iota\iota'$ is an involution then $\iota\iota'\iota\iota' = \id$, and multiplying on the left by $\iota$ and on the right by $\iota'$, both of which are their own inverses, gives $\iota'\iota = \iota\iota'$.
+Conversely $(\iota\iota')^2 = \iota\iota'\iota\iota' = \iota^2\iota'^2 = \id$ whenever the two commute, the middle step being the only place commutation is used.
+Independently of commutation, $(\iota\iota')^* = \iota'^*\circ\iota^*$, so $(\iota\iota')^*\sigma = \iota'^*(\iota^*\sigma) = \iota'^*(-\sigma) = \sigma$: the factor $H^{2,0}(X)$ is one dimensional and each involution acts on it by a scalar, so the product acts by $(-1)(-1) = +1$ whatever the order of composition.
+:::
+
+::: {.remark title="Why the order has to be stated"}
+For a product of two involutions, being an involution and being symplectic are two different properties and the first is a hypothesis of the second as a statement about involutions.
+The action on $H^{2,0}$ is forced by the nonsymplectic character of the factors and needs no commutation; the order is exactly equivalent to commutation.
+So a tuple that lists a commuting pair of nonsymplectic involutions and then, separately, the symplectic character of their product, lists a consequence as though it were a condition; and a tuple that lists the symplectic character while leaving commutation open records a property of a product that need not be an involution at all.
+:::

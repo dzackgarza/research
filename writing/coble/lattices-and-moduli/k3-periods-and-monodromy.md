@@ -1,4 +1,4 @@
-# K3 periods and monodromy {#sec:k3-periods-monodromy}
+# K3 periods and monodromy {#sec-k3-periods-monodromy}
 
 ::: {.definition #def:k3-moduli-functors title="K3 families, markings, periods, and monodromy"}
 

@@ -173,6 +173,13 @@ with limit cone $\lambda_j=p_j\circ e$ for the equalizer $e$.
 Consequently a category with equalizers and all small products is complete, and a category with a terminal object, binary products, and equalizers is finitely complete [@Mac98, §V.2, Theorem 1 and Corollaries 1–2].
 :::
 
+::: {.proof}
+
+This is [@Mac98, §V.2, Theorem 1 and Corollaries 1-2].
+
+Cited. The construction is the cited one: the equalizer of the two maps out of the product of the indexing objects, over the product of the targets. The book uses it only to inherit finite completeness from products and equalizers, which is the corollary form of the citation.
+:::
+
 A terminal object and pullbacks also suffice for finite completeness: the product $X\times Y$ is the pullback of $X\to *\from Y$, and the equalizer of $f,g\colon X\to Y$ is the pullback of $(\id,f)$ and $(\id,g)\colon X\to X\times Y$.
 Completeness is a stronger hypothesis than finite completeness, and a small category that is complete is a preorder with all small meets [@Mac98, §V.2, Proposition 3].
 
@@ -224,4 +231,11 @@ the limit over the comma category $(c\downarrow K)$ of @def:comma-category, and 
 Let $!\colon J\to\mathbf 1$ be the unique functor to the terminal category.
 A functor $\mathbf 1\to\mca$ is an object of $\mca$, and a natural transformation $T\Rightarrow S\circ{!}$ is a cocone under $T$ with nadir the object $S$.
 Hence the left Kan extension $\operatorname{Lan}_{!}T$ is the colimit of $T$, with its universal transformation the colimit cocone, and dually $\operatorname{Ran}_{!}T$ is the limit of $T$ [@Mac98, §X.7].
+:::
+
+::: {.proof}
+
+This is [@Mac98, §X.7].
+
+Cited. A limit is the right Kan extension of the diagram along the terminal functor, and the colimit the dual; the book uses it to place limits in the Kan-extension calculus rather than to compute with it, so no derivation is given.
 :::

@@ -81,7 +81,7 @@ With the full $O(T)$ in the middle, the corresponding group on its left is
 $$
 P_S\times_{O(A_S)}O(T),
 $$
-the integral gluing stabilizer with the ample condition. Restricting along $G_X\hookrightarrow O(T)$ gives $\operatorname{Aut}(X)$. Thus the Hodge restriction is essential to the sequence involving actual automorphisms.
+the fibre product of the ample-conditioned period domain with $O(T)$ over the discriminant action. Restricting along $G_X\hookrightarrow O(T)$ gives $\operatorname{Aut}(X)$. Thus the Hodge restriction is essential to the sequence involving actual automorphisms.
 
 For Picard rank two, the fibre-product construction still applies. For an elliptic K3 surface of Picard rank two, Proposition 3.10 additionally proves $A_1=1$; the rank-at-least-three Miranda–Morrison computation must be replaced by the explicit binary-lattice discriminant image [@MS24, Proposition 3.10].
 

@@ -1,0 +1,40 @@
+rank and signature: T_4 21, Lambda_19 21
+determinants: T_4 -4, Lambda_19 -4
+;;; Warning: Maxima is unable to set up the help system.
+(Details: CL-INFO::LOAD-PRIMARY-INDEX: Cannot open #P"/usr/local/share/info/maxima-index.lisp".
+C library error: No such file or directory)
+
+;;; Warning: Maxima is unable to set up the help system.
+(Details: CL-INFO::LOAD-PRIMARY-INDEX: Cannot open #P"/usr/local/share/info/maxima-index-html.lisp".
+C library error: No such file or directory)
+
+ -- an error. To debug this try: debugmode(true);
+A_{T_4}      = Finitely presented module on 21 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 4]
+A_{Lambda_19} = Finitely presented module on 21 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 4]
+class number of the genus of D_17: not computable on this image (RuntimeError)
+J = <e_1, e_2>: squares 0, 0 and pairing 0
+J is primitive: its vectors are two standard basis vectors of Lambda_19, so the
+sublattice they span is a direct summand, and every isotropic plane considered below
+contains J or is carried to it by an isometry of Lambda_19.
+roots: a_1^2 = -2, a_3^2 = -2, a_1 . a_3 = 0
+e_1 + f_1 has square 2 and e_1 - f_1 has square -2; their composite is the -1 of the
+plane, so its spinor norm is c^2 * 2 * (-2) = -4c^2, the class of -1 for c = 1/2 and
+for c = 1: non-trivial either way.
+a_1 is a single reflection of square -2: spinor norm c * (-2), trivial for c = 1/2 and
+the class of -2 for c = 1 -- so a (-2)-root does not separate the two groups under the
+normalization this literature uses, and the witnesses are a (-4)-vector and the -1 of the
+plane instead.
+a (-4)-vector orthogonal to the plane with an integral reflection: basis nodes (19, 20)
+it fixes the plane and is a single reflection of square -4: spinor norm c * (-4),
+the class of 2 for c = 1/2 and of -1 for c = 1, non-trivial either way.
+a_1 has divisibility 1 in Lambda_19 -- odd -- and its reflection lies in the
+discriminant kernel: False, so a (-2)-root of this summand is not a witness at all;
+-1 on the first hyperbolic summand lies in the discriminant kernel: True
+the (-4)-vector reflection lies in the discriminant kernel: True
+
+So the stabilizer of this primitive isotropic plane contains elements of the
+discriminant kernel whose spinor norm is not one -- -1 on the first hyperbolic summand,
+and the (-4)-vector reflection found above.  The spinor kernel and the whole discriminant
+kernel therefore have one and the same orbit through this plane: the spinor condition
+refines no orbit here, and the refinement question is settled for this one of the nine
+orbits only.
