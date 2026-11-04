@@ -4,83 +4,83 @@ Implement issue work directly on `main`. Use a branch only when parallel work
 requires a separate worktree. The [delivery policy](CONTRIBUTING.md#delivery-workflow)
 overrides `itree next`'s generic instruction to open a PR.
 
-The live programme is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46). Order minimizes the work needed to complete the required programme, including rework. Shared correctness and construction, reusable mathematical operations, and required capability normally precede broad reviews and final acceptance. Advance a shared change when it removes or shortens named later repairs; reassess those repairs against their full acceptance after delivery. Performance and workflow repairs move earlier for observed costs on required work. Optional work follows required work.
+The roadmap is [the ordered research issue tree, #46](https://github.com/dzackgarza/research/issues/46); its milestones route to `Phase:` issues under [sage-extensions#14](https://github.com/dzackgarza/sage-extensions/issues/14), which hold the work units (`itree next dzackgarza/sage-extensions`). Order minimizes the work needed to complete the required programme, including rework. Shared correctness and construction, reusable mathematical operations, and required capability normally precede broad reviews and final acceptance. Advance a shared change when it removes or shortens named later repairs; reassess those repairs against their full acceptance after delivery. Performance and workflow repairs move earlier for observed costs on required work. Optional work follows required work.
 
 [AGENTS.md](AGENTS.md#execution-order) states the payoff and dependency rules. Milestone numbers retain their identities; native sibling order determines execution. Task contracts, hypotheses, specimens, acceptance and dependencies live in the issues. This file maps the former source identifiers to their current owners.
 
-[INTENT.md](INTENT.md), [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) govern implementation. Issue [#414](https://github.com/dzackgarza/research/issues/414) retains the shared execution contract. Terminal acceptance [#498](https://github.com/dzackgarza/research/issues/498), including its continuation comments, and required-extension acceptance [#550](https://github.com/dzackgarza/research/issues/550) retain their complete obligations.
+[INTENT.md](INTENT.md), [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md) govern implementation. Issue [#414](https://github.com/dzackgarza/research/issues/414) retains the shared execution contract. Terminal acceptance [sage-extensions#238](https://github.com/dzackgarza/sage-extensions/issues/238), including its continuation comments, and required-extension acceptance [sage-extensions#240](https://github.com/dzackgarza/sage-extensions/issues/240) retain their complete obligations.
 
-Concrete repairs extracted from broader surveys are [minimal-prime loci #561](https://github.com/dzackgarza/research/issues/561), [indexed-family equality #562](https://github.com/dzackgarza/research/issues/562), [Coxeter construction #563](https://github.com/dzackgarza/research/issues/563), and [spinor-generator accumulation #564](https://github.com/dzackgarza/research/issues/564). Their original surveys or inventories depend on these repairs.
+Concrete repairs extracted from broader surveys are [minimal-prime loci sage-extensions#87](https://github.com/dzackgarza/sage-extensions/issues/87), [indexed-family equality sage-extensions#90](https://github.com/dzackgarza/sage-extensions/issues/90), [Coxeter construction #563](https://github.com/dzackgarza/research/issues/563), and [spinor-generator accumulation #564](https://github.com/dzackgarza/research/issues/564). Their original surveys or inventories depend on these repairs.
 
 ## M1 — Shared correctness and daily mathematical constructions
 
-[Issue #417](https://github.com/dzackgarza/research/issues/417)
+[Issue #417](https://github.com/dzackgarza/research/issues/417) routes to [sage-extensions#21](https://github.com/dzackgarza/sage-extensions/issues/21), which holds the work units.
 
-The required [core migration #384](https://github.com/dzackgarza/research/issues/384) and [property/constructor integration #556](https://github.com/dzackgarza/research/issues/556) precede repairs to the transitional runtime they retire. Each layer reconciles its complete mathematics with `lean-categories`, its semantic execution with the `lean-cas-dsl` kernel, and its computations with leaf registrations. The affected issues retain unmet requirements on the final construction. The native tree also places shared finite-action and formed-module computations before their decorated-family consumers.
+The required [core migration #384](https://github.com/dzackgarza/research/issues/384) and [property/constructor integration sage-extensions#27](https://github.com/dzackgarza/sage-extensions/issues/27) precede repairs to the transitional runtime they retire. Each layer reconciles its complete mathematics with `lean-categories`, its semantic execution with the `lean-cas-dsl` kernel, and its computations with leaf registrations. The affected issues retain unmet requirements on the final construction. The native tree also places shared finite-action and formed-module computations before their decorated-family consumers.
 
 | Source identifier | Issue |
 | --- | --- |
 | `mor-hom-expectation-ruling` | [#492](https://github.com/dzackgarza/research/issues/492) |
-| `core-property-construction` | [#556](https://github.com/dzackgarza/research/issues/556) |
-| `division-algebras-are-placed-by-construction` | [#451](https://github.com/dzackgarza/research/issues/451) |
-| `ring-sizes-follow-construction` | [#450](https://github.com/dzackgarza/research/issues/450) |
-| `effective-categorical-constructions` | [#428](https://github.com/dzackgarza/research/issues/428) |
-| `pullbacks-in-every-category` | [#514](https://github.com/dzackgarza/research/issues/514) |
-| `named-notions-unfolded-population` | [#485](https://github.com/dzackgarza/research/issues/485) |
-| `modules-over-a-group-algebra-keep-the-module-axioms` | [#443](https://github.com/dzackgarza/research/issues/443) |
-| `modules-call-on-a-set-is-the-free-module` | [#461](https://github.com/dzackgarza/research/issues/461) |
-| `cat-declares-the-owned-objects` | [#470](https://github.com/dzackgarza/research/issues/470) |
-| `arrows-compare-through-richcmp` | [#453](https://github.com/dzackgarza/research/issues/453) |
-| `an-object-lies-in-several-slices` | [#468](https://github.com/dzackgarza/research/issues/468) |
-| `module-and-algebra-slice-objects-lie-in-their-slice` | [#469](https://github.com/dzackgarza/research/issues/469) |
-| `every-arrow-is-an-element-of-its-mor` | [#454](https://github.com/dzackgarza/research/issues/454) |
-| `objects-of-sets-answer-their-endomorphisms` | [#458](https://github.com/dzackgarza/research/issues/458) |
+| `core-property-construction` | [sage-extensions#27](https://github.com/dzackgarza/sage-extensions/issues/27) |
+| `division-algebras-are-placed-by-construction` | [sage-extensions#35](https://github.com/dzackgarza/sage-extensions/issues/35) |
+| `ring-sizes-follow-construction` | [sage-extensions#36](https://github.com/dzackgarza/sage-extensions/issues/36) |
+| `effective-categorical-constructions` | [sage-extensions#32](https://github.com/dzackgarza/sage-extensions/issues/32) |
+| `pullbacks-in-every-category` | [sage-extensions#33](https://github.com/dzackgarza/sage-extensions/issues/33) |
+| `named-notions-unfolded-population` | [sage-extensions#34](https://github.com/dzackgarza/sage-extensions/issues/34) |
+| `modules-over-a-group-algebra-keep-the-module-axioms` | [sage-extensions#37](https://github.com/dzackgarza/sage-extensions/issues/37) |
+| `modules-call-on-a-set-is-the-free-module` | [sage-extensions#38](https://github.com/dzackgarza/sage-extensions/issues/38) |
+| `cat-declares-the-owned-objects` | [sage-extensions#28](https://github.com/dzackgarza/sage-extensions/issues/28) |
+| `arrows-compare-through-richcmp` | [sage-extensions#121](https://github.com/dzackgarza/sage-extensions/issues/121) |
+| `an-object-lies-in-several-slices` | [sage-extensions#30](https://github.com/dzackgarza/sage-extensions/issues/30) |
+| `module-and-algebra-slice-objects-lie-in-their-slice` | [sage-extensions#31](https://github.com/dzackgarza/sage-extensions/issues/31) |
+| `every-arrow-is-an-element-of-its-mor` | [sage-extensions#29](https://github.com/dzackgarza/sage-extensions/issues/29) |
+| `objects-of-sets-answer-their-endomorphisms` | [sage-extensions#40](https://github.com/dzackgarza/sage-extensions/issues/40) |
 | `maximal-and-prime-ideals-are-presented` | [#444](https://github.com/dzackgarza/research/issues/444) |
 | `native-rings-are-constructed-not-adopted` | [#447](https://github.com/dzackgarza/research/issues/447) |
 | `adopted-rings-declare-their-construction-data` | [#467](https://github.com/dzackgarza/research/issues/467) |
-| `objects-ask-the-mor-of-their-ambient-category` | [#435](https://github.com/dzackgarza/research/issues/435) |
-| `graded-modules-ask-their-mor-of-the-endpoints` | [#457](https://github.com/dzackgarza/research/issues/457) |
-| `equivariant-module-maps-give-their-natural-transformation` | [#456](https://github.com/dzackgarza/research/issues/456) |
-| `restricted-algebras-are-restricted-modules` | [#478](https://github.com/dzackgarza/research/issues/478) |
-| `internal-mor-inclusion-starts-at-the-mor-module` | [#479](https://github.com/dzackgarza/research/issues/479) |
-| `restricted-mors-decide-membership-by-their-predicate` | [#481](https://github.com/dzackgarza/research/issues/481) |
-| `algebra-arrows-are-ring-arrows` | [#459](https://github.com/dzackgarza/research/issues/459) |
-| `power-algebra-identity` | [#460](https://github.com/dzackgarza/research/issues/460) |
-| `unital-algebras-supply-their-unit` | [#462](https://github.com/dzackgarza/research/issues/462) |
-| `derivation-spaces-read-declared-data` | [#463](https://github.com/dzackgarza/research/issues/463) |
-| `group-resolution-augmentation-terminates` | [#464](https://github.com/dzackgarza/research/issues/464) |
-| `augmented-algebras-retain-their-defining-data` | [#483](https://github.com/dzackgarza/research/issues/483) |
-| `finite-galois-stages-answer-as-their-fields` | [#484](https://github.com/dzackgarza/research/issues/484) |
-| `infinite-index-additive-product-placement` | [#430](https://github.com/dzackgarza/research/issues/430) |
-| `centres-of-algebras-on-infinitely-generated-modules` | [#452](https://github.com/dzackgarza/research/issues/452) |
-| `abelian-groups-are-z-modules` | [#533](https://github.com/dzackgarza/research/issues/533) |
+| `objects-ask-the-mor-of-their-ambient-category` | [sage-extensions#39](https://github.com/dzackgarza/sage-extensions/issues/39) |
+| `graded-modules-ask-their-mor-of-the-endpoints` | [sage-extensions#41](https://github.com/dzackgarza/sage-extensions/issues/41) |
+| `equivariant-module-maps-give-their-natural-transformation` | [sage-extensions#42](https://github.com/dzackgarza/sage-extensions/issues/42) |
+| `restricted-algebras-are-restricted-modules` | [sage-extensions#43](https://github.com/dzackgarza/sage-extensions/issues/43) |
+| `internal-mor-inclusion-starts-at-the-mor-module` | [sage-extensions#46](https://github.com/dzackgarza/sage-extensions/issues/46) |
+| `restricted-mors-decide-membership-by-their-predicate` | [sage-extensions#47](https://github.com/dzackgarza/sage-extensions/issues/47) |
+| `algebra-arrows-are-ring-arrows` | [sage-extensions#48](https://github.com/dzackgarza/sage-extensions/issues/48) |
+| `power-algebra-identity` | [sage-extensions#49](https://github.com/dzackgarza/sage-extensions/issues/49) |
+| `unital-algebras-supply-their-unit` | [sage-extensions#50](https://github.com/dzackgarza/sage-extensions/issues/50) |
+| `derivation-spaces-read-declared-data` | [sage-extensions#52](https://github.com/dzackgarza/sage-extensions/issues/52) |
+| `group-resolution-augmentation-terminates` | [sage-extensions#54](https://github.com/dzackgarza/sage-extensions/issues/54) |
+| `augmented-algebras-retain-their-defining-data` | [sage-extensions#56](https://github.com/dzackgarza/sage-extensions/issues/56) |
+| `finite-galois-stages-answer-as-their-fields` | [sage-extensions#59](https://github.com/dzackgarza/sage-extensions/issues/59) |
+| `infinite-index-additive-product-placement` | [sage-extensions#62](https://github.com/dzackgarza/sage-extensions/issues/62) |
+| `centres-of-algebras-on-infinitely-generated-modules` | [sage-extensions#64](https://github.com/dzackgarza/sage-extensions/issues/64) |
+| `abelian-groups-are-z-modules` | [sage-extensions#66](https://github.com/dzackgarza/sage-extensions/issues/66) |
 | `rings-of-integers-are-dedekind-by-construction` | [#449](https://github.com/dzackgarza/research/issues/449) |
-| `covering-families-cover-their-space` | [#471](https://github.com/dzackgarza/research/issues/471) |
-| `gluing-accepts-isomorphisms-on-overlaps` | [#472](https://github.com/dzackgarza/research/issues/472) |
-| `base-change-structure-morphisms-land-in-their-mor` | [#473](https://github.com/dzackgarza/research/issues/473) |
-| `native-free-algebras-answer-their-variable` | [#474](https://github.com/dzackgarza/research/issues/474) |
-| `nonaffine-structure-sheaf-coverage` | [#499](https://github.com/dzackgarza/research/issues/499) |
-| `sheaves-compute-sections-on-opens` | [#500](https://github.com/dzackgarza/research/issues/500) |
-| `arrow-class-subcategories-admit-their-arrows` | [#477](https://github.com/dzackgarza/research/issues/477) |
-| `marked-schemes-construct-on-the-owner-route` | [#476](https://github.com/dzackgarza/research/issues/476) |
-| `symbolic-expressions-are-no-owned-ring` | [#446](https://github.com/dzackgarza/research/issues/446) |
-| `the-real-line-is-a-smooth-manifold` | [#434](https://github.com/dzackgarza/research/issues/434) |
-| `function-spaces-are-subobjects-of-mor` | [#433](https://github.com/dzackgarza/research/issues/433) |
-| `group-categories-defined-by-data` | [#432](https://github.com/dzackgarza/research/issues/432) |
-| `lattice-mor-stays-in-the-preamble` | [#482](https://github.com/dzackgarza/research/issues/482) |
-| `brauer-characters-are-maps-on-p-regular-elements` | [#480](https://github.com/dzackgarza/research/issues/480) |
-| `coxeter-diagrams-construct-from-their-data` | [#439](https://github.com/dzackgarza/research/issues/439) |
-| `coxeter-diagram-orders-are-owned-posets` | [#441](https://github.com/dzackgarza/research/issues/441) |
-| `partially-ordered-sets-have-monotone-maps` | [#442](https://github.com/dzackgarza/research/issues/442) |
+| `covering-families-cover-their-space` | [sage-extensions#68](https://github.com/dzackgarza/sage-extensions/issues/68) |
+| `gluing-accepts-isomorphisms-on-overlaps` | [sage-extensions#70](https://github.com/dzackgarza/sage-extensions/issues/70) |
+| `base-change-structure-morphisms-land-in-their-mor` | [sage-extensions#74](https://github.com/dzackgarza/sage-extensions/issues/74) |
+| `native-free-algebras-answer-their-variable` | [sage-extensions#77](https://github.com/dzackgarza/sage-extensions/issues/77) |
+| `nonaffine-structure-sheaf-coverage` | [sage-extensions#80](https://github.com/dzackgarza/sage-extensions/issues/80) |
+| `sheaves-compute-sections-on-opens` | [sage-extensions#83](https://github.com/dzackgarza/sage-extensions/issues/83) |
+| `arrow-class-subcategories-admit-their-arrows` | [sage-extensions#86](https://github.com/dzackgarza/sage-extensions/issues/86) |
+| `marked-schemes-construct-on-the-owner-route` | [sage-extensions#89](https://github.com/dzackgarza/sage-extensions/issues/89) |
+| `symbolic-expressions-are-no-owned-ring` | [sage-extensions#93](https://github.com/dzackgarza/sage-extensions/issues/93) |
+| `the-real-line-is-a-smooth-manifold` | [sage-extensions#97](https://github.com/dzackgarza/sage-extensions/issues/97) |
+| `function-spaces-are-subobjects-of-mor` | [sage-extensions#101](https://github.com/dzackgarza/sage-extensions/issues/101) |
+| `group-categories-defined-by-data` | [sage-extensions#104](https://github.com/dzackgarza/sage-extensions/issues/104) |
+| `lattice-mor-stays-in-the-preamble` | [sage-extensions#107](https://github.com/dzackgarza/sage-extensions/issues/107) |
+| `brauer-characters-are-maps-on-p-regular-elements` | [sage-extensions#110](https://github.com/dzackgarza/sage-extensions/issues/110) |
+| `coxeter-diagrams-construct-from-their-data` | [sage-extensions#113](https://github.com/dzackgarza/sage-extensions/issues/113) |
+| `coxeter-diagram-orders-are-owned-posets` | [sage-extensions#116](https://github.com/dzackgarza/sage-extensions/issues/116) |
+| `partially-ordered-sets-have-monotone-maps` | [sage-extensions#118](https://github.com/dzackgarza/sage-extensions/issues/118) |
 
 ## Reusable lattice and group computations
 
-[Issue #415](https://github.com/dzackgarza/research/issues/415)
+[Issue #415](https://github.com/dzackgarza/research/issues/415) routes to [sage-extensions#44](https://github.com/dzackgarza/sage-extensions/issues/44), which holds the work units.
 
 | Source identifier | Issue |
 | --- | --- |
-| `construction-cost-on-resumed-routes` | [#422](https://github.com/dzackgarza/research/issues/422) |
-| `port-configurations-cones-and-integral-lifts` | [#423](https://github.com/dzackgarza/research/issues/423) |
+| `construction-cost-on-resumed-routes` | [sage-extensions#78](https://github.com/dzackgarza/sage-extensions/issues/78) |
+| `port-configurations-cones-and-integral-lifts` | [sage-extensions#81](https://github.com/dzackgarza/sage-extensions/issues/81) |
 
 ## Specialized port computation and acceptance
 
@@ -88,111 +88,111 @@ The required [core migration #384](https://github.com/dzackgarza/research/issues
 
 | Source identifier | Issue |
 | --- | --- |
-| `port-rank-three-isotropic-traversal` | [#424](https://github.com/dzackgarza/research/issues/424) |
-| `port-nonscalar-component-centralizers` | [#425](https://github.com/dzackgarza/research/issues/425) |
-| `port-handoff-frozen-acceptance` | [#426](https://github.com/dzackgarza/research/issues/426) |
+| `port-rank-three-isotropic-traversal` | [sage-indefinite-port#15](https://github.com/dzackgarza/sage-indefinite-port/issues/15) |
+| `port-nonscalar-component-centralizers` | [sage-indefinite-port#18](https://github.com/dzackgarza/sage-indefinite-port/issues/18) |
+| `port-handoff-frozen-acceptance` | [sage-indefinite-port#33](https://github.com/dzackgarza/sage-indefinite-port/issues/33) |
 
 ## M4 — Required mathematical expansion
 
-[Issue #420](https://github.com/dzackgarza/research/issues/420)
+[Issue #420](https://github.com/dzackgarza/research/issues/420) routes to [sage-extensions#22](https://github.com/dzackgarza/sage-extensions/issues/22), which holds the work units.
 
 | Source identifier | Issue |
 | --- | --- |
-| `geometry-stub-operations-compute` | [#501](https://github.com/dzackgarza/research/issues/501) |
-| `orthogonal-groups-of-direct-sums` | [#506](https://github.com/dzackgarza/research/issues/506) |
-| `higher-rank-integral-lattice-representation` | [#505](https://github.com/dzackgarza/research/issues/505) |
-| `lattice-glue-stabilizers` | [#515](https://github.com/dzackgarza/research/issues/515) |
-| `filtered-objects-and-associated-graded` | [#534](https://github.com/dzackgarza/research/issues/534) |
-| `filtered-scalar-extension-and-conjugation` | [#535](https://github.com/dzackgarza/research/issues/535) |
-| `pure-and-mixed-hodge-structures` | [#536](https://github.com/dzackgarza/research/issues/536) |
-| `hodge-tensors-pairings-and-polarizations` | [#537](https://github.com/dzackgarza/research/issues/537) |
-| `k3-hodge-and-partner-foundations` | [#532](https://github.com/dzackgarza/research/issues/532) |
-| `hodge-lattice-isometries` | [#538](https://github.com/dzackgarza/research/issues/538) |
-| `hodge-isometry-subgroup-computation` | [#539](https://github.com/dzackgarza/research/issues/539) |
-| `k3-surfaces-and-cohomology` | [#540](https://github.com/dzackgarza/research/issues/540) |
-| `genus-finiteness-parity-and-classification` | [#531](https://github.com/dzackgarza/research/issues/531) |
-| `pontryagin-duality` | [#512](https://github.com/dzackgarza/research/issues/512) |
-| `group-exact-sequences-and-homology` | [#513](https://github.com/dzackgarza/research/issues/513) |
-| `signed-discriminant-lifting-obstructions` | [#542](https://github.com/dzackgarza/research/issues/542) |
-| `k3-ample-cones-and-stabilizers` | [#541](https://github.com/dzackgarza/research/issues/541) |
-| `k3-automorphisms-by-torelli` | [#543](https://github.com/dzackgarza/research/issues/543) |
-| `k3-fourier-mukai-partner-count` | [#545](https://github.com/dzackgarza/research/issues/545) |
-| `k3-families-on-threefolds` | [#544](https://github.com/dzackgarza/research/issues/544) |
-| `k3-brauer-groups-and-classes` | [#546](https://github.com/dzackgarza/research/issues/546) |
-| `k3-mukai-lattices-and-vectors` | [#547](https://github.com/dzackgarza/research/issues/547) |
-| `k3-sheaf-moduli-and-caldararu-classes` | [#548](https://github.com/dzackgarza/research/issues/548) |
-| `discriminant-lagrangian-elements-and-subsets` | [#549](https://github.com/dzackgarza/research/issues/549) |
-| `complex-realization-is-a-functor` | [#527](https://github.com/dzackgarza/research/issues/527) |
-| `complete-intersection-hodge-sources` | [#528](https://github.com/dzackgarza/research/issues/528) |
-| `complete-intersection-hodge-structure` | [#529](https://github.com/dzackgarza/research/issues/529) |
-| `optional-manifold-tangent-bundles` (historical identifier; required by #520) | [#553](https://github.com/dzackgarza/research/issues/553) |
-| `simplicial-and-cw-foundations` | [#517](https://github.com/dzackgarza/research/issues/517) |
-| `integral-affine-polyhedral-p1` | [#518](https://github.com/dzackgarza/research/issues/518) |
-| `integral-affine-polyhedral-p2` | [#519](https://github.com/dzackgarza/research/issues/519) |
-| `integral-affine-polyhedral-p3` | [#520](https://github.com/dzackgarza/research/issues/520) |
-| `integral-affine-polyhedral-p4` | [#521](https://github.com/dzackgarza/research/issues/521) |
-| `integral-affine-polyhedral-p5` | [#522](https://github.com/dzackgarza/research/issues/522) |
-| `integral-affine-polyhedral-p6` | [#523](https://github.com/dzackgarza/research/issues/523) |
-| `modular-form-spaces-with-character` | [#502](https://github.com/dzackgarza/research/issues/502) |
-| `theta-cusp-form-coordinates` | [#503](https://github.com/dzackgarza/research/issues/503) |
-| `definite-representation-exceptions` | [#504](https://github.com/dzackgarza/research/issues/504) |
-| `modular-forms-and-hecke-algebras` | [#525](https://github.com/dzackgarza/research/issues/525) |
-| `higher-signature-reflection-engine-ruling` | [#509](https://github.com/dzackgarza/research/issues/509) |
-| `higher-signature-reflection-group-search` | [#508](https://github.com/dzackgarza/research/issues/508) |
-| `hyperbolic-restricted-reflection-engine-ruling` | [#511](https://github.com/dzackgarza/research/issues/511) |
-| `hyperbolic-restricted-norm-reflection-groups` | [#510](https://github.com/dzackgarza/research/issues/510) |
-| `lattice-reflection-groups` | [#507](https://github.com/dzackgarza/research/issues/507) |
-| `coxeter-group-structure` | [#516](https://github.com/dzackgarza/research/issues/516) |
-| `coxeter-complexes-and-buildings` | [#524](https://github.com/dzackgarza/research/issues/524) |
-| `satake-diagrams-present-real-forms` | [#526](https://github.com/dzackgarza/research/issues/526) |
-| `prime-prolongations-from-p-adic-embeddings` | [#466](https://github.com/dzackgarza/research/issues/466) |
-| `geometric-cards-store-betti-numbers` | [#530](https://github.com/dzackgarza/research/issues/530) |
+| `geometry-stub-operations-compute` | [sage-extensions#200](https://github.com/dzackgarza/sage-extensions/issues/200) |
+| `orthogonal-groups-of-direct-sums` | [sage-extensions#130](https://github.com/dzackgarza/sage-extensions/issues/130) |
+| `higher-rank-integral-lattice-representation` | [sage-extensions#127](https://github.com/dzackgarza/sage-extensions/issues/127) |
+| `lattice-glue-stabilizers` | [sage-extensions#136](https://github.com/dzackgarza/sage-extensions/issues/136) |
+| `filtered-objects-and-associated-graded` | [sage-extensions#142](https://github.com/dzackgarza/sage-extensions/issues/142) |
+| `filtered-scalar-extension-and-conjugation` | [sage-extensions#145](https://github.com/dzackgarza/sage-extensions/issues/145) |
+| `pure-and-mixed-hodge-structures` | [sage-extensions#148](https://github.com/dzackgarza/sage-extensions/issues/148) |
+| `hodge-tensors-pairings-and-polarizations` | [sage-extensions#151](https://github.com/dzackgarza/sage-extensions/issues/151) |
+| `k3-hodge-and-partner-foundations` | [sage-extensions#139](https://github.com/dzackgarza/sage-extensions/issues/139) |
+| `hodge-lattice-isometries` | [sage-extensions#154](https://github.com/dzackgarza/sage-extensions/issues/154) |
+| `hodge-isometry-subgroup-computation` | [sage-extensions#157](https://github.com/dzackgarza/sage-extensions/issues/157) |
+| `k3-surfaces-and-cohomology` | [sage-extensions#169](https://github.com/dzackgarza/sage-extensions/issues/169) |
+| `genus-finiteness-parity-and-classification` | [sage-extensions#124](https://github.com/dzackgarza/sage-extensions/issues/124) |
+| `pontryagin-duality` | [sage-extensions#171](https://github.com/dzackgarza/sage-extensions/issues/171) |
+| `group-exact-sequences-and-homology` | [sage-extensions#174](https://github.com/dzackgarza/sage-extensions/issues/174) |
+| `signed-discriminant-lifting-obstructions` | [sage-extensions#177](https://github.com/dzackgarza/sage-extensions/issues/177) |
+| `k3-ample-cones-and-stabilizers` | [sage-extensions#179](https://github.com/dzackgarza/sage-extensions/issues/179) |
+| `k3-automorphisms-by-torelli` | [sage-extensions#182](https://github.com/dzackgarza/sage-extensions/issues/182) |
+| `k3-fourier-mukai-partner-count` | [sage-extensions#185](https://github.com/dzackgarza/sage-extensions/issues/185) |
+| `k3-families-on-threefolds` | [sage-extensions#188](https://github.com/dzackgarza/sage-extensions/issues/188) |
+| `k3-brauer-groups-and-classes` | [sage-extensions#190](https://github.com/dzackgarza/sage-extensions/issues/190) |
+| `k3-mukai-lattices-and-vectors` | [sage-extensions#193](https://github.com/dzackgarza/sage-extensions/issues/193) |
+| `k3-sheaf-moduli-and-caldararu-classes` | [sage-extensions#196](https://github.com/dzackgarza/sage-extensions/issues/196) |
+| `discriminant-lagrangian-elements-and-subsets` | [sage-extensions#197](https://github.com/dzackgarza/sage-extensions/issues/197) |
+| `complex-realization-is-a-functor` | [sage-extensions#160](https://github.com/dzackgarza/sage-extensions/issues/160) |
+| `complete-intersection-hodge-sources` | [sage-extensions#163](https://github.com/dzackgarza/sage-extensions/issues/163) |
+| `complete-intersection-hodge-structure` | [sage-extensions#166](https://github.com/dzackgarza/sage-extensions/issues/166) |
+| `optional-manifold-tangent-bundles` (historical identifier; required by #520) | [sage-extensions#198](https://github.com/dzackgarza/sage-extensions/issues/198) |
+| `simplicial-and-cw-foundations` | [sage-extensions#199](https://github.com/dzackgarza/sage-extensions/issues/199) |
+| `integral-affine-polyhedral-p1` | [sage-extensions#201](https://github.com/dzackgarza/sage-extensions/issues/201) |
+| `integral-affine-polyhedral-p2` | [sage-extensions#202](https://github.com/dzackgarza/sage-extensions/issues/202) |
+| `integral-affine-polyhedral-p3` | [sage-extensions#203](https://github.com/dzackgarza/sage-extensions/issues/203) |
+| `integral-affine-polyhedral-p4` | [sage-extensions#204](https://github.com/dzackgarza/sage-extensions/issues/204) |
+| `integral-affine-polyhedral-p5` | [sage-extensions#205](https://github.com/dzackgarza/sage-extensions/issues/205) |
+| `integral-affine-polyhedral-p6` | [sage-extensions#206](https://github.com/dzackgarza/sage-extensions/issues/206) |
+| `modular-form-spaces-with-character` | [sage-extensions#207](https://github.com/dzackgarza/sage-extensions/issues/207) |
+| `theta-cusp-form-coordinates` | [sage-extensions#208](https://github.com/dzackgarza/sage-extensions/issues/208) |
+| `definite-representation-exceptions` | [sage-extensions#209](https://github.com/dzackgarza/sage-extensions/issues/209) |
+| `modular-forms-and-hecke-algebras` | [sage-extensions#210](https://github.com/dzackgarza/sage-extensions/issues/210) |
+| `higher-signature-reflection-engine-ruling` | [sage-extensions#211](https://github.com/dzackgarza/sage-extensions/issues/211) |
+| `higher-signature-reflection-group-search` | [sage-extensions#212](https://github.com/dzackgarza/sage-extensions/issues/212) |
+| `hyperbolic-restricted-reflection-engine-ruling` | [sage-extensions#213](https://github.com/dzackgarza/sage-extensions/issues/213) |
+| `hyperbolic-restricted-norm-reflection-groups` | [sage-extensions#214](https://github.com/dzackgarza/sage-extensions/issues/214) |
+| `lattice-reflection-groups` | [sage-extensions#215](https://github.com/dzackgarza/sage-extensions/issues/215) |
+| `coxeter-group-structure` | [sage-extensions#133](https://github.com/dzackgarza/sage-extensions/issues/133) |
+| `coxeter-complexes-and-buildings` | [sage-extensions#216](https://github.com/dzackgarza/sage-extensions/issues/216) |
+| `satake-diagrams-present-real-forms` | [sage-extensions#217](https://github.com/dzackgarza/sage-extensions/issues/217) |
+| `prime-prolongations-from-p-adic-embeddings` | [sage-extensions#218](https://github.com/dzackgarza/sage-extensions/issues/218) |
+| `geometric-cards-store-betti-numbers` | [sage-extensions#219](https://github.com/dzackgarza/sage-extensions/issues/219) |
 
 ## M2 — API review and retained core closure
 
-[Issue #418](https://github.com/dzackgarza/research/issues/418)
+[Issue #418](https://github.com/dzackgarza/research/issues/418) routes to [sage-extensions#23](https://github.com/dzackgarza/sage-extensions/issues/23), which holds the work units.
 
 | Source identifier | Issue |
 | --- | --- |
-| `resolution-truncations-in-the-session` | [#465](https://github.com/dzackgarza/research/issues/465) |
-| `placement-audit` | [#429](https://github.com/dzackgarza/research/issues/429) |
-| `engine-wiring-audit` | [#431](https://github.com/dzackgarza/research/issues/431) |
-| `membership-replaces-dynamic-peeking` | [#436](https://github.com/dzackgarza/research/issues/436) |
-| `session-objects-are-built-by-their-parents` | [#440](https://github.com/dzackgarza/research/issues/440) |
-| `literal-sets-route-by-membership` | [#475](https://github.com/dzackgarza/research/issues/475) |
-| `construction-is-instant` | [#437](https://github.com/dzackgarza/research/issues/437) |
-| `daily-core-exercises` | [#438](https://github.com/dzackgarza/research/issues/438) |
-| `architecture-remediation` | [#486](https://github.com/dzackgarza/research/issues/486) |
-| `core-usability-session` | [#487](https://github.com/dzackgarza/research/issues/487) |
-| `constructor-discovery` | [#491](https://github.com/dzackgarza/research/issues/491) |
-| `refactor-audit` | [#488](https://github.com/dzackgarza/research/issues/488) |
-| `type-paydown` | [#489](https://github.com/dzackgarza/research/issues/489) |
-| `bloat-audit-loop` | [#490](https://github.com/dzackgarza/research/issues/490) |
-| `minimal-api-freeze` | [#493](https://github.com/dzackgarza/research/issues/493) |
+| `resolution-truncations-in-the-session` | [sage-extensions#220](https://github.com/dzackgarza/sage-extensions/issues/220) |
+| `placement-audit` | [sage-extensions#221](https://github.com/dzackgarza/sage-extensions/issues/221) |
+| `engine-wiring-audit` | [sage-extensions#222](https://github.com/dzackgarza/sage-extensions/issues/222) |
+| `membership-replaces-dynamic-peeking` | [sage-extensions#223](https://github.com/dzackgarza/sage-extensions/issues/223) |
+| `session-objects-are-built-by-their-parents` | [sage-extensions#224](https://github.com/dzackgarza/sage-extensions/issues/224) |
+| `literal-sets-route-by-membership` | [sage-extensions#225](https://github.com/dzackgarza/sage-extensions/issues/225) |
+| `construction-is-instant` | [sage-extensions#226](https://github.com/dzackgarza/sage-extensions/issues/226) |
+| `daily-core-exercises` | [sage-extensions#227](https://github.com/dzackgarza/sage-extensions/issues/227) |
+| `architecture-remediation` | [sage-extensions#228](https://github.com/dzackgarza/sage-extensions/issues/228) |
+| `core-usability-session` | [sage-extensions#229](https://github.com/dzackgarza/sage-extensions/issues/229) |
+| `constructor-discovery` | [sage-extensions#230](https://github.com/dzackgarza/sage-extensions/issues/230) |
+| `refactor-audit` | [sage-extensions#231](https://github.com/dzackgarza/sage-extensions/issues/231) |
+| `type-paydown` | [sage-extensions#232](https://github.com/dzackgarza/sage-extensions/issues/232) |
+| `bloat-audit-loop` | [sage-extensions#233](https://github.com/dzackgarza/sage-extensions/issues/233) |
+| `minimal-api-freeze` | [sage-extensions#26](https://github.com/dzackgarza/sage-extensions/issues/26) |
 
 ## M3 — Complete mathematical acceptance
 
-[Issue #419](https://github.com/dzackgarza/research/issues/419)
+[Issue #419](https://github.com/dzackgarza/research/issues/419) routes to [sage-extensions#24](https://github.com/dzackgarza/sage-extensions/issues/24), which holds the work units.
 
 | Source identifier | Issue |
 | --- | --- |
-| `triage-long-tail` | [#496](https://github.com/dzackgarza/research/issues/496) |
-| `suite-compactification` | [#494](https://github.com/dzackgarza/research/issues/494) |
-| `category-method-coverage-sweep` | [#495](https://github.com/dzackgarza/research/issues/495) |
-| `suite-within-time-gates` | [#497](https://github.com/dzackgarza/research/issues/497) |
-| `terminal-session` | [#498](https://github.com/dzackgarza/research/issues/498) |
-| `resumed-handoff-delivery` | [#427](https://github.com/dzackgarza/research/issues/427) |
-| `extended-mathematics-session` | [#550](https://github.com/dzackgarza/research/issues/550) |
+| `triage-long-tail` | [sage-extensions#234](https://github.com/dzackgarza/sage-extensions/issues/234) |
+| `suite-compactification` | [sage-extensions#235](https://github.com/dzackgarza/sage-extensions/issues/235) |
+| `category-method-coverage-sweep` | [sage-extensions#236](https://github.com/dzackgarza/sage-extensions/issues/236) |
+| `suite-within-time-gates` | [sage-extensions#237](https://github.com/dzackgarza/sage-extensions/issues/237) |
+| `terminal-session` | [sage-extensions#238](https://github.com/dzackgarza/sage-extensions/issues/238) |
+| `resumed-handoff-delivery` | [sage-extensions#239](https://github.com/dzackgarza/sage-extensions/issues/239) |
+| `extended-mathematics-session` | [sage-extensions#240](https://github.com/dzackgarza/sage-extensions/issues/240) |
 
 ## M5 — Optional research extensions
 
-[Issue #421](https://github.com/dzackgarza/research/issues/421)
+[Issue #421](https://github.com/dzackgarza/research/issues/421) routes to [sage-extensions#25](https://github.com/dzackgarza/sage-extensions/issues/25), which holds the work units.
 
 | Source identifier | Issue |
 | --- | --- |
-| `optional-framed-manifolds` | [#551](https://github.com/dzackgarza/research/issues/551) |
-| `optional-brauer-manin-obstructions` | [#552](https://github.com/dzackgarza/research/issues/552) |
-| `optional-random-lattices-of-given-invariants` | [#554](https://github.com/dzackgarza/research/issues/554) |
-| `optional-moduli-of-stable-curves` | [#555](https://github.com/dzackgarza/research/issues/555) |
-| `optional-database` | [#557](https://github.com/dzackgarza/research/issues/557) |
-| `optional-engine` | [#558](https://github.com/dzackgarza/research/issues/558) |
+| `optional-framed-manifolds` | [sage-extensions#241](https://github.com/dzackgarza/sage-extensions/issues/241) |
+| `optional-brauer-manin-obstructions` | [sage-extensions#242](https://github.com/dzackgarza/sage-extensions/issues/242) |
+| `optional-random-lattices-of-given-invariants` | [sage-extensions#243](https://github.com/dzackgarza/sage-extensions/issues/243) |
+| `optional-moduli-of-stable-curves` | [sage-extensions#244](https://github.com/dzackgarza/sage-extensions/issues/244) |
+| `optional-database` | [sage-extensions#245](https://github.com/dzackgarza/sage-extensions/issues/245) |
+| `optional-engine` | [sage-extensions#246](https://github.com/dzackgarza/sage-extensions/issues/246) |

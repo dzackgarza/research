@@ -174,7 +174,7 @@ priority steps of that resume are complete; select current work from the [native
 with `itree next dzackgarza/research`. Record completed source-audit reasoning, including the required
 inventory and ancestor review, in the corresponding commit. Keep unexecuted mathematical assertions and
 unresolved computation frontiers on their owning issues so later execution can find them. The geometry
-and cohomology scope of the former `HANDOFF.md` is [#623](https://github.com/dzackgarza/research/issues/623)
+and cohomology scope of the former `HANDOFF.md` is [sage-extensions#168](https://github.com/dzackgarza/sage-extensions/issues/168)
 and its children; the resumed-port handoff is recoverable at Git source `d33da7354b:HANDOFF.md`.
 Only a later explicit owner instruction stops the repository again.
 
@@ -415,7 +415,9 @@ not permission to rewrite foundations or create another tracking framework.
 
 **Record actual issues whenever they are discovered.** Apply
 [`DEV-59`](CONTRIBUTING.md#dev-59-record-observed-foundational-gaps-and-papercuts)
-in the [native issue tree](https://github.com/dzackgarza/research/issues/46), including findings outside the selected task.
+in the issue tree of the owning repository, including findings outside the selected task:
+a defect or gap in `sage_extensions` goes to the [sage-extensions tree](https://github.com/dzackgarza/sage-extensions/issues/14),
+one in this repository's notebooks, writing, expectation suite or tooling to the [native issue tree](https://github.com/dzackgarza/research/issues/46).
 Give the missing general mathematics, the dependency path, observed evidence,
 existing partial capability, affected consumers, an honest coverage boundary,
 and the `lean-categories` request for mathematics it lacks.
@@ -507,7 +509,9 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
   claims, then inspect the selected item's current source and consumers.
   Use the [native issue tree](https://github.com/dzackgarza/research/issues/46): `itree next dzackgarza/research` selects the
   first open work unit in sibling order, and each work unit carries its own acceptance
-  criteria. Shared files and optional research suggestions are not prerequisite edges;
+  criteria. Work on the `sage_extensions` library lives in the
+  [sage-extensions tree](https://github.com/dzackgarza/sage-extensions/issues/14), under `Phase:` issues that realize
+  the milestones here; `itree next dzackgarza/sage-extensions` selects it. Shared files and optional research suggestions are not prerequisite edges;
   the [crosswalk](docs/issue-migration/preamble-issues.md) maps former source identifiers to issues,
   and the outstanding mathematical problems are the work units under #641, #642 and #643.
   Implement only the remaining delta. An unchecked item is not evidence that

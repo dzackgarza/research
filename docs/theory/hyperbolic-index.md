@@ -574,7 +574,7 @@ predicate computation; their absence is not treated as degeneracy.
 The upstream definitions are in
 `LeanCategories/Lattices/Valued/Constructions.lean`; the specific general
 nondegeneracy-preservation declaration remains a formalization audit item
-in [#498](https://github.com/dzackgarza/research/issues/498). Its integral perfection-preservation theorems are
+in [sage-extensions#238](https://github.com/dzackgarza/sage-extensions/issues/238). Its integral perfection-preservation theorems are
 stronger in conclusion but require stronger hypotheses and are not
 substitutes for this zero-radical statement.
 
@@ -1717,7 +1717,7 @@ including invariant primitivity exclusion, finite sampling, and actual
 integral maximal splittings at indices zero, one and two, including odd
 and mixed-parity complements. A regular-Cauchy RR specimen verifies decomposition
 endpoints and summand ranks; its symbolic Gram equality remains undecided.
-The rest of the dependency index remains with `terminal-session`, [#498](https://github.com/dzackgarza/research/issues/498).
+The rest of the dependency index remains with `terminal-session`, [sage-extensions#238](https://github.com/dzackgarza/sage-extensions/issues/238).
 The general zero-radical preservation
 theorem is now `isNondegenerate_of_indexedOrthogonalPairing` at the
 `lean-categories` bilinear-module owner, including the empty sum; its
