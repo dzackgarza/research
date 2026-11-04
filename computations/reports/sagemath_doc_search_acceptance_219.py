@@ -616,6 +616,19 @@ def b20_runtime_warning_path():
                 sys.modules.pop(key, None)
 
 
+
+def b21_malformed_line_field_is_not_a_miss():
+    """A matching tag entry with a corrupt `line:` field is corruption, not a miss."""
+    f = TMP / "tags-corrupt"
+    f.write_text(
+        "Lattice\tsrc/sage/modules/lattice.py\t/^class Lattice:$/\tline:notanumber\n",
+        encoding="utf-8",
+    )
+    with ctags_index(f):
+        exc = expect(su.CtagsIndexError, su.find_symbol_line_with_sage_index, "Lattice")
+    assert "tags-corrupt" in str(exc), str(exc)
+
+
 # --------------------------------------------------------------------------- run
 
 CATALOGUE = [
@@ -640,6 +653,7 @@ CATALOGUE = [
     ("b18 happy path keeps the source-list links", b18_happy_path_still_links),
     ("b19 ctags build succeeds and the index is consumed", b19_ctags_success_path),
     ("b20 per-file failure reaches the Streamlit warning", b20_runtime_warning_path),
+    ("b21 corrupt line: field -> CtagsIndexError, not a miss", b21_malformed_line_field_is_not_a_miss),
 ]
 
 try:

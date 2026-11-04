@@ -5,7 +5,7 @@ modules and against the acceptance survey itself. The issue tree is untouched; #
 where it is, open.
 
 Result: every site the audit named is real, and every one of them is now caller-visible.
-`computations/reports/sagemath_doc_search_acceptance_219.py` passes **21/21** and now
+`computations/reports/sagemath_doc_search_acceptance_219.py` passes **22/22** and now
 exercises the audited `_add_source_list` catch directly.
 
 ## 1. The audit's claims, checked
@@ -34,7 +34,7 @@ cause.
 | `extract_python_docstrings` (`sagemath_utils.py:88`) | raises `DocumentationReadError` on a failed read; returns a plain `str` for every fallback | raises as before; returns `ExtractedDocumentation(str)` carrying `extraction` ∈ `docstrings` / `raw-no-docstrings` / `raw-syntax-error` / `empty-file` and `recovered_from` (the `SyntaxError`) |
 | `find_sagemath_files` (`:293`) | `[]` on a missing Sage root; skips printed | raises `DocumentationReadError`; per-file skips carried on `SageFileCatalog.skipped` as `(path, exception)`, with `raise_if_nothing_read()` to escalate a scan that read nothing |
 | `create_sage_ctags_index` (`:507`) | `False` on every failure, reason printed | raises `CtagsIndexError(index_path, cause)`; `True` only when a usable index exists |
-| `find_symbol_line_with_sage_index` (`:581`) | build failure and read failure both `(None, None)` | raises `CtagsIndexError`; `(None, None)` now means only "the index has no entry for this symbol" |
+| `find_symbol_line_with_sage_index` (`:581`) | build failure and read failure both `(None, None)`; a matching entry with a corrupt `line:` field was dropped to the same `(None, None)` | raises `CtagsIndexError`; `(None, None)` now means only "the index has no entry for this symbol" — neither an unreadable index nor a corrupt matching entry can pose as a true negative (b21) |
 | `get_primary_line_number` (`sagemath_utils.py:667`) | explicit line → ctags → invented `min(i*2+1, 100)` | explicit line → ctags → `None`; no estimate is ever presented as a line number |
 | `get_primary_line_number` (`citation_utils.py:27`) | `1` when undeterminable | `None` |
 | `create_file_link` (`citation_utils.py:65`) | `#L{line_number}` / `:{line_number}` with `line_number=1` by default | accepts `None` and emits no fragment instead of a guessed `#L1` |
@@ -45,7 +45,7 @@ cause.
 
 ## 3. What the acceptance now proves
 
-`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (21/21)`.
+`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (22/22)`.
 Each check is one boundary, and each one asserts the *caller-visible* consequence.
 
 - **b15 is the audited one.** It reaches `_add_source_list` twice — through
@@ -118,6 +118,6 @@ Each check is one boundary, and each one asserts the *caller-visible* consequenc
 ## 6. Reproduce
 
 ```sh
-python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 21/21, exit 0
+python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 22/22, exit 0
 python3 computations/scripts/sagemath_doc_search/inline_citation_enhancer.py  # module demo
 ```

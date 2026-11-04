@@ -590,8 +590,9 @@ def find_symbol_line_with_sage_index(
 
     Returns:
         Tuple of (line_number, file_path) if found, (None, None) if the index simply has
-        no entry for the symbol.  An index that cannot be built or read raises
-        :class:`CtagsIndexError`: a true negative never doubles as an error report.
+        no entry for the symbol.  An index that cannot be built or read, or a matching
+        entry with a corrupt `line:` field, raises :class:`CtagsIndexError`: a true
+        negative never doubles as an error report.
     """
     ctags_file = CTAGS_INDEX_PATH
 
@@ -618,8 +619,12 @@ def find_symbol_line_with_sage_index(
                                 try:
                                     line_number = int(part.split(":")[1])
                                     break
-                                except (ValueError, IndexError):
-                                    continue
+                                except (ValueError, IndexError) as e:
+                                    # A tag entry for this symbol with an unreadable
+                                    # line-number field means a corrupt index, not an
+                                    # absent symbol: (None, None) must stay a true
+                                    # negative, never a cover for malformed data.
+                                    raise CtagsIndexError(ctags_file, e) from e
 
                         if line_number:
                             matches.append((line_number, file_path))
