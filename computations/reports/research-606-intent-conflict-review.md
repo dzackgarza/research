@@ -67,3 +67,20 @@ any migration.
 `lean-categories#97` then `#96`; the `lean-cas-dsl` catalogue-derived surface;
 `sage-extensions#234/#498` (`DEV-58`); research-issue writes (read-only here); and the
 `lean-categories` publication route for the two prepared patches.
+
+## User ownership clarification (supersedes earlier inference)
+
+sage-extensions **already has** the maintained set layer.  Two consequences, recorded as
+binding for this session:
+
+- nothing may be created or migrated as an abstraction because #606 says so;
+- `OwnedCategory` presence in the maintained API is not a defect.
+
+This corrects one framing in the inventory file: the label "transitional" applied to the
+set layer in `sage_extensions/categories/sets/set_categories.py` derived from #606's
+issue wording, not from a defect found in the maintained API.  Research consumes that
+maintained public API; the inventory's positive statements (what is exposed and through
+which star-import) stand, but no remove-or-replace plan follows from them.
+
+Everything else in this review is unchanged: no checkouts, edits or authoring upstream,
+no issue writes, no reordering, and the external dependencies as recorded.

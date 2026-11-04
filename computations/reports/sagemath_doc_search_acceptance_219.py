@@ -655,6 +655,51 @@ def b22_unknown_path_yields_no_unknown_links():
     assert "no relative_path" in str(exc), str(exc)
 
 
+
+def b23_malformed_index_line_is_not_a_miss():
+    """line:0, line:-1, a missing line field, or garbled bytes are corruption, not a miss.
+
+    Each of these used to be accepted (or silently dropped), turning a corrupt index into
+    the same answer as a genuine "no such symbol".
+    """
+    cases = (
+        ("zero", "Lattice\tsrc/x.py\t/^class Lattice:$/\tline:0\n"),
+        ("negative", "Lattice\tsrc/x.py\t/^class Lattice:$/\tline:-1\n"),
+        ("nofield", "Lattice\tsrc/x.py\t/^class Lattice:$/\tkind:class\n"),
+    )
+    for label, content in cases:
+        fixture = TMP / ("tags-line-" + label)
+        fixture.write_text(content, encoding="utf-8")
+        with ctags_index(fixture):
+            exc = expect(
+                su.CtagsIndexError, su.find_symbol_line_with_sage_index, "Lattice"
+            )
+        assert fixture.name in str(exc), (label, str(exc))
+    garbled = TMP / "tags-garbled"
+    garbled.write_bytes(b"\xff\xfe\x00not utf-8\t\x80\x81")
+    with ctags_index(garbled):
+        exc = expect(su.CtagsIndexError, su.find_symbol_line_with_sage_index, "Lattice")
+    assert "tags-garbled" in str(exc), str(exc)
+
+
+def b24_none_or_empty_path_yields_no_link():
+    """relative_path None/'' meets the same sentinel boundary as the 'unknown' one."""
+    enhancer = ice.InlineCitationEnhancer()
+    for value in (None, "", "   "):
+        docs = [
+            ice.Document(
+                content="class Thing:\n    pass\n",
+                meta={
+                    "citation_id": "src1",
+                    "citation_display": "thing",
+                    "relative_path": value,
+                },
+            )
+        ]
+        exc = expect(ice.CitationLinkError, enhancer._add_source_list, "text", docs)
+        assert "no relative_path" in str(exc), (repr(value), str(exc))
+
+
 # --------------------------------------------------------------------------- run
 
 CATALOGUE = [
@@ -681,6 +726,8 @@ CATALOGUE = [
     ("b20 per-file failure reaches the Streamlit warning", b20_runtime_warning_path),
     ("b21 corrupt line: field -> CtagsIndexError, not a miss", b21_malformed_line_field_is_not_a_miss),
     ("b22 no relative_path -> CitationLinkError, no unknown link", b22_unknown_path_yields_no_unknown_links),
+    ("b23 zero/negative/missing/garbled line -> CtagsIndexError", b23_malformed_index_line_is_not_a_miss),
+    ("b24 None/empty relative_path -> CitationLinkError", b24_none_or_empty_path_yields_no_link),
 ]
 
 try:

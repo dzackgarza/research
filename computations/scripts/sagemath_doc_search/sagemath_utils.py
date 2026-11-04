@@ -590,9 +590,9 @@ def find_symbol_line_with_sage_index(
 
     Returns:
         Tuple of (line_number, file_path) if found, (None, None) if the index simply has
-        no entry for the symbol.  An index that cannot be built or read, or a matching
-        entry with a corrupt `line:` field, raises :class:`CtagsIndexError`: a true
-        negative never doubles as an error report.
+        no entry for the symbol.  An index that cannot be built or read (including bytes it
+        cannot decode), or a matching entry without a real 1-based `line:` number,
+        raises :class:`CtagsIndexError`: a true negative never doubles as an error report.
     """
     ctags_file = CTAGS_INDEX_PATH
 
@@ -600,7 +600,7 @@ def find_symbol_line_with_sage_index(
         create_sage_ctags_index()
 
     try:
-        with open(ctags_file, encoding="utf-8", errors="replace") as f:
+        with open(ctags_file, encoding="utf-8") as f:
             matches: list[tuple[int, str]] = []
             for line in f:
                 if line.startswith("!_TAG_"):
@@ -612,7 +612,11 @@ def find_symbol_line_with_sage_index(
                     file_path = parts[1]
 
                     if tag_name == symbol_name:
-                        # Extract line number
+                        # The entry must carry a real 1-based line number.  A missing
+                        # `line:` field, an unparseable one, or a bogus value (0 has
+                        # silently read as "no entry", -1 as a valid link target) marks
+                        # the index as corrupt: (None, None) stays a true negative,
+                        # never a cover for malformed data.
                         line_number = None
                         for part in parts[3:]:
                             if part.startswith("line:"):
@@ -620,14 +624,16 @@ def find_symbol_line_with_sage_index(
                                     line_number = int(part.split(":")[1])
                                     break
                                 except (ValueError, IndexError) as e:
-                                    # A tag entry for this symbol with an unreadable
-                                    # line-number field means a corrupt index, not an
-                                    # absent symbol: (None, None) must stay a true
-                                    # negative, never a cover for malformed data.
                                     raise CtagsIndexError(ctags_file, e) from e
-
-                        if line_number:
-                            matches.append((line_number, file_path))
+                        if line_number is None or line_number < 1:
+                            raise CtagsIndexError(
+                                ctags_file,
+                                ValueError(
+                                    "tag entry for %r carries no valid line: field"
+                                    % symbol_name
+                                ),
+                            )
+                        matches.append((line_number, file_path))
 
             if matches:
                 # If we have a file hint, prefer matches from that file
@@ -639,7 +645,9 @@ def find_symbol_line_with_sage_index(
                 # Otherwise return the first match
                 return matches[0]
 
-    except OSError as e:
+    except (OSError, UnicodeDecodeError) as e:
+        # A decoder that replaced invalid bytes would have read corrupt data as
+        # "symbols not found"; the read failure reaches the caller instead.
         raise CtagsIndexError(ctags_file, e) from e
 
     return None, None
