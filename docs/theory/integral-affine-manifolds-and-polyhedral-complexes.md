@@ -7,7 +7,7 @@ these objects and maps and may use maintained geometry engines privately. The
 relevant existing presentations are
 [`manifolds.py`](../../sage_extensions/categories/manifolds.py),
 [`polytopes.py`](../../sage_extensions/categories/schemes/polytopes.py),
-and the unfinished [`simplicial-and-cw-foundations`](../../TODO.md) node.
+and the unfinished [`simplicial-and-cw-foundations`](https://github.com/dzackgarza/research/issues/517) node.
 
 ## Category graph and declaration kinds
 
@@ -161,7 +161,7 @@ must be admitted as objects of the corresponding manifold categories. In the
 current preamble, `DifferentiableManifolds` stores a finite degree,
 `SmoothManifolds` presents smooth real manifolds, and `ComplexManifolds`
 forgets to smooth real manifolds. The placement of `RR` itself remains a
-separate recorded gap in [`TODO.md`](../../TODO.md).
+separate recorded gap, [#434](https://github.com/dzackgarza/research/issues/434).
 
 ## Integral-affine structure: selected data and forgetful functors
 
@@ -316,7 +316,7 @@ is another presentation, with degeneracies; the Kan condition is a horn
 filling condition and is not inherent in a polygon gluing. A PL manifold
 requires the relevant vertex links to be PL spheres or balls. Thus none of
 these labels follows from the words “dual complex” alone. These constructions
-meet the existing [`simplicial-and-cw-foundations`](../../TODO.md) node.
+meet the existing [`simplicial-and-cw-foundations`](https://github.com/dzackgarza/research/issues/517) node.
 
 For a cell `sigma` in a selected complex `K`, its closed star is the union of
 closed cells containing `sigma`; its link is the complex of directions
@@ -463,7 +463,7 @@ characteristic map. In a simplicial complex, `link(sigma)` consists of the
 simplices disjoint from `sigma` whose joins with it lie in `K`. For a
 triangulated surface, vertex links determine the local surface condition.
 Hatcher, *Algebraic Topology*, §2.1 gives the `Delta`-complex gluing model;
-the existing [`simplicial-and-cw-foundations`](../../TODO.md) node owns the
+the existing [`simplicial-and-cw-foundations`](https://github.com/dzackgarza/research/issues/517) node owns the
 general complex foundation.
 
 The general gluing input is a finite diagram `D: I -> CellComplexes` of
@@ -576,7 +576,7 @@ would conflate rays with affine points. The common complex owner should
 supply stars, links, face posets and subdivisions. A one-skeleton graph
 cannot replace its two-cells, and a bare face poset cannot recover every
 nonregular attaching map. The unfinished
-[`simplicial-and-cw-foundations`](../../TODO.md) node owns this shared layer.
+[`simplicial-and-cw-foundations`](https://github.com/dzackgarza/research/issues/517) node owns this shared layer.
 
 **Symmetries and quotients.** `RegularPolytopes.symmetry_group()` is specific
 to the Schläfli/Coxeter construction. A general polytope's abstract
@@ -671,11 +671,11 @@ or quotient engine.
 Each phase has one mathematical output and an exit condition at the owner of
 that output. A phase may use a private engine only after its input category,
 result category, and retained arrows are fixed. The existing
-[`simplicial-and-cw-foundations`](../../TODO.md) node owns the common complex
+[`simplicial-and-cw-foundations`](https://github.com/dzackgarza/research/issues/517) node owns the common complex
 foundation and depends on `pullbacks-in-every-category`; these phases consume
 that node rather than create a second complex hierarchy. The existing
-[`the-real-line-is-a-smooth-manifold`](../../TODO.md) and
-[`optional-manifold-tangent-bundles`](../../TODO.md) nodes likewise own those
+[`the-real-line-is-a-smooth-manifold`](https://github.com/dzackgarza/research/issues/434) and
+[`optional-manifold-tangent-bundles`](https://github.com/dzackgarza/research/issues/553) nodes likewise own those
 foundational repairs. Phase labels describe dependency order, not separate
 repositories or acceptance by an AEGS consumer.
 
@@ -720,13 +720,13 @@ The source-level P1 register below records the inspected owner and missing
 typing for each branch of the displayed graph. An existing preamble
 class is partial presentation of the required category and its arrows.
 The missing paths remain open in
-[`integral-affine-polyhedral-p1`](../../TODO.md).
+[`integral-affine-polyhedral-p1`](https://github.com/dzackgarza/research/issues/518).
 
 | Graph branch and arrow | Inspected owner or request | P1 remainder |
 | --- | --- | --- |
 | Topological, fixed `C^k`, smooth, boundary/corner and dimension strata; weakening and forgetful maps | [`TopologicalAtlases`](../../sage_extensions/categories/topological_atlases.py), [`RealCkAtlases`](../../sage_extensions/categories/real_ck_atlases.py), [`stratified_atlases.py`](../../sage_extensions/categories/stratified_atlases.py), [`RealCkManifolds`](../../sage_extensions/categories/real_ck_manifolds.py), [`manifolds_with_boundary.py`](../../sage_extensions/categories/manifolds_with_boundary.py) and [`manifold_dimension_strata.py`](../../sage_extensions/categories/manifold_dimension_strata.py) declare atlas presentations, manifold categories, map classes and functor paths. | Construct their exact atlas images and the retained object and map data. |
 | Complex manifolds, `CC^m`, and realification to real dimension `2m` | [`HolomorphicAtlases`](../../sage_extensions/categories/holomorphic_atlases.py) declares the atlas presentation, its map category, maximalization and realification functors. [`CC`](../../sage_extensions/rings/complex.py) declares its identity chart and standard atlases. `ComplexManifolds.realification()` and the pure-dimension realification functor declare the manifold object and morphism paths. | Place the exact `CC^m` object under its holomorphic atlas and construct the real dimension-`2m` image and map. |
-| `RR^n` as a smooth manifold | [`RR`](../../sage_extensions/rings/real.py) declares its identity chart and standard topological and smooth atlases; [`the-real-line-is-a-smooth-manifold`](../../TODO.md) owns their placement. | Construct the same `RR` object with its identity chart; then the finite-product route must retain the exact `RR^n` object. |
+| `RR^n` as a smooth manifold | [`RR`](../../sage_extensions/rings/real.py) declares its identity chart and standard topological and smooth atlases; [`the-real-line-is-a-smooth-manifold`](https://github.com/dzackgarza/research/issues/434) owns their placement. | Construct the same `RR` object with its identity chart; then the finite-product route must retain the exact `RR^n` object. |
 | Vector and affine spaces, lattice embedding and integral-affine group | [`Torsors`](../../sage_extensions/categories/group/g_sets.py) owns the supplied action, point difference and nonempty witness. [`RealAffineSpaces` and `AffineSpacesWithLattice`](../../sage_extensions/categories/real_affine_spaces.py) and [`ComplexAffineSpaces`](../../sage_extensions/categories/complex_affine_spaces.py) declare their affine data and map categories; the real lattice is a finite free `ZZ`-module, with no quadratic form. | Construct and retain the exact torsor, selected lattice embedding, integral-affine group action on charts and complex chart-model functor images. |
 | Integral-affine structures over one smooth manifold | [`Cat.fiber`](../../sage_extensions/categories/abstract_categories/cat.py) and its inclusion functor declare the strict fibre of the smooth forgetful functor over the selected manifold. | Construct its objects and maps over the identity of that exact manifold. |
 | Local integral-affine isomorphisms | [`IntegralAffineManifolds.local_isomorphisms()`](../../sage_extensions/categories/integral_affine_manifolds.py) and the fixed-dimension owner select generic wide subcategories on their same affine objects and local-isomorphism arrow classes. | Decide the arrow predicate from exact chart maps and establish identity and composition closure. |
@@ -735,7 +735,7 @@ The missing paths remain open in
 | Finite graded posets and abstract polytopes | [`FiniteGradedPosets`](../../sage_extensions/categories/sets/finite_graded_posets.py) and [`AbstractPolytopes`](../../sage_extensions/categories/schemes/polytopes.py) declare their face-poset objects and rank-preserving `Mor`; `RegularPolytopes` has a separate abstract-face-structure functor. | Construct the abstract face poset of each Schläfli presentation and its map images. |
 | Metric ambient spaces and isometries | [`EuclideanSpaces` and `SphericalSpaces`](../../sage_extensions/categories/metric_affine_spaces.py) declare their map categories; [`RiemannianManifolds`](../../sage_extensions/categories/manifolds.py) declares the local-isometry `Mor` inherited by [`HyperbolicSpaces`](../../sage_extensions/categories/hyperbolic_geometry.py). | Establish metric preservation in each constructor and the Riemannian smooth-forgetful images. |
 | Placed affine/lattice/Euclidean/spherical/hyperbolic polytopes and face-poset functors | [`polytopes.py`](../../sage_extensions/categories/schemes/polytopes.py) declares each placed category, face-poset functor, affine and lattice map types, and ambient-isometry map types for metric polytopes. [`HyperbolicPolyhedra`](../../sage_extensions/categories/hyperbolic_geometry.py) is a partial realization. | Construct each ambient inclusion, face-to-polytope arrow, boundary inclusion and geometric map from the selected data. |
-| Cell, polytopal, simplicial, `Delta` and simplicial-set branches; realizations and `Kan` | [`cell_complexes.py`](../../sage_extensions/categories/cell_complexes.py) declares these categories, their `Mor`, defining-data constructors, skeleton inclusions, realization functors, subcomplex and cell-placement paths, and the `Kan` refinement. [`simplicial-and-cw-foundations`](../../TODO.md) owns the general construction. | Construct skeleta, characteristic and face maps, realizations, subcomplex inclusions and their mathematical assertions. |
+| Cell, polytopal, simplicial, `Delta` and simplicial-set branches; realizations and `Kan` | [`cell_complexes.py`](../../sage_extensions/categories/cell_complexes.py) declares these categories, their `Mor`, defining-data constructors, skeleton inclusions, realization functors, subcomplex and cell-placement paths, and the `Kan` refinement. [`simplicial-and-cw-foundations`](https://github.com/dzackgarza/research/issues/517) owns the general construction. | Construct skeleta, characteristic and face maps, realizations, subcomplex inclusions and their mathematical assertions. |
 | Chosen triangulation over `K`, integrality and unimodularity | [`ChosenTriangulations`](../../sage_extensions/categories/triangulations.py) declares the category over the exact target, `Mor`, source functor, defining `T`, realization map, simplex inclusions and property refinements. | Construct the selected lattice comparison and verify coverage, face intersections and unimodularity. |
 | Face diagrams, colimit cocones and structured surgeries | [`Cat`](../../sage_extensions/categories/abstract_categories/cat.py) presents generic diagrams, colimits and pushouts; [`CellComplexes`](../../sage_extensions/categories/cell_complexes.py) declares the coproduct and coequalizer hooks they require; [`IntegralAffineCollars`](../../sage_extensions/categories/integral_affine_collars.py) declares the face, neighborhood and affine comparison maps. | Construct the cell-complex coproduct and coequalizer, typed face diagram, quotient cocone, boundary span and affine collar extensions. |
 | Degeneration to dual complex | [`DegenerationCentralFibers`](../../sage_extensions/categories/schemes/degeneration_central_fibers.py) declares the exact central fibre, its component inclusions and intersection strata, plus the dual-complex functor. | Construct the source-to-complex correspondence and its induced incidence map. |

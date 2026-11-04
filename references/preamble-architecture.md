@@ -2,7 +2,8 @@
 
 Architectural assessment and proposed design, 2026-09-07.
 Source revision: `84c8f978`.
-The [architecture work queue](../TODO.md#constructor-and-admission-foundations) owns implementation and completion state.
+The [issue tree](https://github.com/dzackgarza/research/issues/46) owns implementation and completion state; the
+[crosswalk](../docs/issue-migration/preamble-issues.md) maps the queue's former identifiers to issues.
 
 The principal defect is a separation between category membership, construction of defining data, and the meaning of inherited operations.
 Class inheritance now supplies methods, but several constructors still reconstruct their mathematical structure afterward.
@@ -66,7 +67,7 @@ There are two distinct multiplications here: the original product and its commut
 They define different algebra structures on the same underlying module.
 A general multiplication owner would let Lie objects reuse algebra construction while keeping this functor distinct from inclusion.
 
-The [existing algebra conversion](../TODO.md#the-algebra-node-conversion-designed-and-part-built)
+The [existing algebra conversion](https://github.com/dzackgarza/research/blob/84c8f978/TODO.md#the-algebra-node-conversion-designed-and-part-built)
 already selects this general node and records the unfinished `work/algnode` candidate.
 That work is an input to the repair.
 The selected-multiplication construction at `57465081` still transports through represented module presentations, so the action and presentation boundaries also need attention.
@@ -188,7 +189,7 @@ Their property subcategories retain the original module morphisms.
 The proposed category of selected presentations uses commuting diagrams as morphisms.
 Its forgetful functor to modules must state which maps it forgets.
 If a caller needs every module morphism while retaining a presentation for computation, that is a different category and must be declared as such.
-The existing [framing design](../TODO.md#framed-designed-and-not-built) already treats framings as additional structure and uses comma-category language.
+The existing [framing design](https://github.com/dzackgarza/research/blob/84c8f978/TODO.md#framed-designed-and-not-built) already treats framings as additional structure and uses comma-category language.
 Complete its morphism specification before implementation: arbitrary maps between the free modules differ from maps induced by functions between their label sets.
 The selected-presentation normalization already uses arbitrary linear changes of basis.
 
@@ -300,7 +301,7 @@ Earlier runtime checking requires a separate decision about that policy.
 
 ## Ownership and extension
 
-The existing [framework boundary](../TODO.md#how-much-category-theory-to-implement-here) remains the division of responsibility.
+The existing [framework boundary](https://github.com/dzackgarza/research/blob/84c8f978/TODO.md#how-much-category-theory-to-implement-here) remains the division of responsibility.
 `sage-categories` owns generic structure functors, monoidal actions, class assembly, and static projection.
 The preamble owns its mathematical categories, construction data, algorithms, and current consumers.
 Repair its existing common construction path where needed to complete an actual dependency.
@@ -321,4 +322,4 @@ Higher or derived settings additionally require their own coherent categorical s
 The present design therefore exposes the categorical parameters and maps on which those later extensions depend.
 
 The [contribution procedure](https://github.com/dzackgarza/sage-extensions/blob/main/CONTRIBUTING.md#preamble-design-philosophy) directs a writer to the immediate owner and its constructor.
-The [work queue](../TODO.md#constructor-and-admission-foundations) orders the repair by those dependencies.
+The [issue tree](https://github.com/dzackgarza/research/issues/46) orders the repair by those dependencies.
