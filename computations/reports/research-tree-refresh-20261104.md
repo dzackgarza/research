@@ -128,3 +128,36 @@ claim as established: no run was made, no upstream edit was made, and the runtim
 coordination question does not yet arise. When those states change, the next acceptance
 step will be keyed to a runtime that carries the realized library (canonical rootfs
 remains pinned at `7b222e8…`).
+
+## Correction: readiness is per candidate, and #606 is not a boundary
+
+Supersedes the "every edge open, therefore blocked" reading above. Two errors in it:
+
+- **#606 is closed superseded.** It is not an acceptance boundary and nothing here may be
+  gated on it. The table of its "boundary prerequisites" was a misreading.
+- **An open issue does not prove a missing construction.** Current `DEV-58` permits an
+  issue's original acceptance once its *actual construction and runtime* prerequisites are
+  complete, M1 included; it does not require issues to close first. The first table
+  substituted labels for evidence, which is exactly what the rule forbids.
+
+Per-candidate evidence, read from the pinned provider snapshot in `.scratch/se-provider-
+6ad7a5ea` (source pin `6ad7a5ea`, one pin behind the audited `dca789c`), not executed:
+
+| candidate | source evidence | what remains |
+| --- | --- | --- |
+| #40 End/Aut | `class End` at `categories/abstract_categories/mor_categories.py`; `Aut` not found under that literal in this snapshot | actual #39 prerequisite inspection; runtime acceptance |
+| #39 prerequisite | open per live read; `objects ask the mor of their ambient category` | its acceptance depends on #40's Mor data; no source inspection done here beyond the class presence |
+| #95 `object_set` | `def object_set` in `categories/group/classifying_categories.py` and `categories/abstract_categories/functors.py` | runtime acceptance (unexecuted), not source |
+| #79 Subsets | `class Subsets` not found in this snapshot; the issue is about ownership vs Sage's class | source at `dca789c` per the parent's audit; final execution belongs to #238 (M3) |
+| #118 posets | `class PartiallyOrderedSets` and `class TotallyOrderedSets` at `categories/sets/set_categories.py` | the `RegularPolytopes` objection is stale; actual A2 and #116 six-route acceptance need their own review |
+| #225 dispatch | class-based `Set` dispatch still the live path | genuine M2 work; does not freeze M1 |
+
+**Exact missing prerequisite now, stated as such:** deployed-runtime evidence. The
+canonical rootfs in this VM pins `sage-extensions` at `7b222e862145…`, older than both the
+audited source (`dca789c`) and this snapshot (`6ad7a5ea`), so any runtime acceptance run
+here would test a superseded deployment and could not be evidence for the audited source.
+That deployment — or the CI image at the matching pin — is the runtime owner's write; the
+source commits' presence is not deployed-runtime evidence.
+
+No GET fetch was rerun, no upstream was checked out or edited, and the shared runtime was
+not mutated.
