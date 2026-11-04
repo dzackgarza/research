@@ -700,6 +700,44 @@ def b24_none_or_empty_path_yields_no_link():
         assert "no relative_path" in str(exc), (repr(value), str(exc))
 
 
+
+def b25_renderer_rejects_every_pathless_form():
+    """create_sources_section must not render absent/None/blank/sentinel paths."""
+    for value in (None, "", "   ", "unknown"):
+        doc = types.SimpleNamespace(
+            meta={
+                "citation_id": "src1",
+                "citation_display": "thing",
+                "relative_path": value,
+            }
+        )
+        exc = expect(cu.CitationSourceError, cu.create_sources_section, [], [doc])
+        assert "src1" in str(exc), (repr(value), str(exc))
+    # and a real path still renders
+    good = types.SimpleNamespace(
+        meta={
+            "citation_id": "src2",
+            "citation_display": "lattice.py (discriminant)",
+            "relative_path": "src/sage/modules/lattice.py",
+        },
+    )
+    good.content = "class Lattice:\n    pass\n"
+    out = cu.create_sources_section([], [good])
+    assert "src/sage/modules/lattice.py:1" in out, out
+
+
+def b26_blank_path_never_becomes_a_working_directory_link():
+    """create_file_link("") used to resolve to the cwd, looking like a real file."""
+    for value in ("", "   "):
+        exc = expect(ValueError, cu.create_file_link, value, None, "local")
+        assert "real path" in str(exc), (repr(value), str(exc))
+    # the renderer and the primitive agree about the same failure class
+    for text, a_kind in (("github", "#L"), ("local", "")):
+        link = cu.create_file_link("src/sage/modules/lattice.py", 1, text)
+        assert "src/sage/modules/lattice.py" in link, link
+    exc = expect(ValueError, cu.create_file_link, "", 7, "github")
+
+
 # --------------------------------------------------------------------------- run
 
 CATALOGUE = [
@@ -728,6 +766,8 @@ CATALOGUE = [
     ("b22 no relative_path -> CitationLinkError, no unknown link", b22_unknown_path_yields_no_unknown_links),
     ("b23 zero/negative/missing/garbled line -> CtagsIndexError", b23_malformed_index_line_is_not_a_miss),
     ("b24 None/empty relative_path -> CitationLinkError", b24_none_or_empty_path_yields_no_link),
+    ("b25 renderer rejects absent/None/blank/sentinel path", b25_renderer_rejects_every_pathless_form),
+    ("b26 blank path -> ValueError, not a cwd link", b26_blank_path_never_becomes_a_working_directory_link),
 ]
 
 try:

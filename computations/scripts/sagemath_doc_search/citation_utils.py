@@ -24,6 +24,18 @@ class CitationSourceError(ValueError):
         )
 
 
+def require_file_path(meta, citation_id) -> str:
+    """Return the cited document's usable file path, else reject it precisely.
+
+    Absent, None, blank or the ``"unknown"`` sentinel are all pathless; renderers must
+    not turn any of them into a working-directory link presented as a real source.
+    """
+    rel_path = meta.get("relative_path")
+    if rel_path is None or str(rel_path).strip() in ("", "unknown"):
+        raise CitationSourceError(citation_id, meta)
+    return str(rel_path)
+
+
 def get_primary_line_number(content: str, file_path: str) -> int | None:
     """
     Extract a primary line number from content for citation purposes.
@@ -76,7 +88,14 @@ def create_file_link(
 
     Returns:
         HTML link string
+
+    Raises:
+        ValueError: ``file_path`` is blank.  A blank path would resolve to the current
+            working directory, which is a successful-looking bogus link.
     """
+    if not file_path or not file_path.strip():
+        raise ValueError("a file link needs a real path, got %r" % (file_path,))
+
     suffix = f":{line_number}" if line_number else ""
 
     if link_type == "github":
@@ -229,28 +248,26 @@ def create_sources_section(documents: list, enhanced_docs: list) -> str:
     for doc in enhanced_docs:
         citation_id = doc.meta.get("citation_id", "src?")
         citation_display = doc.meta.get("citation_display", "unknown")
-        rel_path = doc.meta.get("relative_path", "unknown")
 
-        if rel_path != "unknown":
-            # Get line number from content
-            line_no = get_primary_line_number(doc.content, rel_path)
+        # Absent, None, blank or sentinel paths all fail closed identically, so a
+        # working-directory or placeholder link can never stand as a rendered source.
+        rel_path = require_file_path(doc.meta, citation_id)
 
-            # Create appropriate link based on file type
-            if rel_path.endswith(".rst"):
-                docs_url = convert_to_docs_url(rel_path)
-                if docs_url:
-                    file_link = f'<a href="{docs_url}" target="_blank">{Path(rel_path).name}</a>'
-                else:
-                    file_link = create_file_link(rel_path, line_no, "github")
+        # Get line number from content
+        line_no = get_primary_line_number(doc.content, rel_path)
+
+        # Create appropriate link based on file type
+        if rel_path.endswith(".rst"):
+            docs_url = convert_to_docs_url(rel_path)
+            if docs_url:
+                file_link = f'<a href="{docs_url}" target="_blank">{Path(rel_path).name}</a>'
             else:
-                file_link = create_file_link(rel_path, line_no, "local")
-
-            source_lines.append(
-                f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>'
-            )
+                file_link = create_file_link(rel_path, line_no, "github")
         else:
-            # A source with no path cannot be linked: raising keeps "unknown" from
-            # standing in the source list as if it were a rendered file.
-            raise CitationSourceError(citation_id, doc.meta)
+            file_link = create_file_link(rel_path, line_no, "local")
+
+        source_lines.append(
+            f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>'
+        )
 
     return "\n".join(source_lines)
