@@ -58,3 +58,25 @@ guesswork here.
   artifacts waiting for the `lean-categories` publishing route; nothing here claims them.
 - Next permissible owned work in actual issue order: none this instant beyond this record —
   the remaining acceptance is execution-bound to terminal T.
+
+## Corroboration and the actual prerequisite picture
+
+- `4056425eafc8b6ad73e782338d3e7cc2b569848c` (2026-10-26, ancestor of main) rewrote
+  DEV-58: "Once an issue's source changes and actual construction prerequisites are
+  complete, the orchestrator runs that issue's original mathematical acceptance
+  assertions on the integrated committed source. This applies during M1. Unrelated
+  unfinished M1 work does not block those checks." Broad programme execution still defers
+  to terminal T. This is the controlling text; older copies of the blanket reading
+  elsewhere are superseded.
+- The runtime that would execute #417's suite must **carry the realized library**. This
+  VM's canonical Sage rootfs has `sage-extensions` at `7b222e86214524a53802350f3cfda9c513707600`
+  (read directly from the rootfs git metadata), older than the delivered main the parent's
+  source evidence cites (`c94206fc`). Consumers must not update the shared rootfs; the
+  dedicated Sage environment project owns it. That pin — not the phase — is what defers a
+  meaningful local run.
+- Upstream prerequisite state (`sage-extensions#21`, `#40/#79/#95/#118/#225`) is not
+  readable this instant (unauthenticated window exhausted), so no claim is made that
+  #417's acceptance is runnable or blocked; the two facts above are the ones this session
+  can establish from source.
+- Expectation population, for whoever executes: 234 files under `tests/constructions` and
+  `tests/user_simulations` reference cardinality/countability.
