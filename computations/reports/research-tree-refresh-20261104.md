@@ -99,3 +99,32 @@ acceptance is allowed only when those edges, not the issue labels, say so. Accor
 the prerequisite-follow-through fetches the exact states of #39/#238/#116 at the same
 window as the rest, and local acceptance is keyed to the realized runtime pin, not to the
 stale one in this VM's canonical rootfs.
+
+## Upstream prerequisite states, read live after the rate window reset (job completed at ~16:57 UTC)
+
+Probed at the reset as scheduled, read exactly the states below (10 + the audit's 3 extra
+nodes; full JSON in `.scratch/upstream-state-20261104.json`).
+
+| issue | state | state_reason | title |
+| --- | --- | --- | --- |
+| sage-extensions#21 | open | — | Phase: M1 — Daily mathematical work |
+| sage-extensions#39 | open | — | Objects ask the mor of their ambient category |
+| sage-extensions#40 | open | — | Objects of sets answer their endomorphisms |
+| sage-extensions#79 | open | **reopened** | The preamble does not own Subsets, and Sage's calls an unrelated Subsets |
+| sage-extensions#95 | open | **reopened** | Classifying categories have an object set |
+| sage-extensions#116 | open | — | Coxeter diagram orders are owned posets |
+| sage-extensions#118 | open | — | Partially ordered sets have monotone maps |
+| sage-extensions#225 | open | — | Literal sets route by membership |
+| sage-extensions#238 | open | — | Terminal session |
+| lean-categories#95 | open | — | covariant finite-subset direct-image functor |
+| lean-categories#96 | open | — | enumeration/ranking data for EnumeratedSets |
+| lean-categories#97 | open | — | well-ordered sets and order-type route |
+| lean-categories#98 | open | — | partial and total order categories |
+
+Reading: every prerequisite edge on the #417/#606 boundary is open, and two of the
+presentation issues were **reopened**, so the source states establish the opposite of
+ready. There is accordingly no research-owned acceptance whose prerequisites I could
+claim as established: no run was made, no upstream edit was made, and the runtime-owner
+coordination question does not yet arise. When those states change, the next acceptance
+step will be keyed to a runtime that carries the realized library (canonical rootfs
+remains pinned at `7b222e8…`).
