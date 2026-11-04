@@ -8,7 +8,23 @@ import re
 from pathlib import Path
 
 
-def get_primary_line_number(content: str, file_path: str) -> int:
+class CitationSourceError(ValueError):
+    """A source cannot be rendered as a citation because it carries no file path.
+
+    Raised instead of emitting a placeholder such as a bare ``unknown`` where a path
+    belongs, which reads like a rendered source when it is not one (#219).
+    """
+
+    def __init__(self, citation_id, meta):
+        self.citation_id = citation_id
+        self.meta = meta
+        super().__init__(
+            "cannot render source %s: the document carries no relative_path in %r"
+            % (citation_id, meta)
+        )
+
+
+def get_primary_line_number(content: str, file_path: str) -> int | None:
     """
     Extract a primary line number from content for citation purposes.
 
@@ -17,10 +33,12 @@ def get_primary_line_number(content: str, file_path: str) -> int:
         file_path: Path to the file
 
     Returns:
-        Line number (1-based) or 1 if not determinable
+        Line number (1-based), or None when no line is determinable.  None is a real
+        answer -- an unknown line -- and is never flattened into line 1, which would
+        point a reader at the top of a file the content says nothing about.
     """
     if not content:
-        return 1
+        return None
 
     lines = content.split("\n")
 
@@ -41,23 +59,26 @@ def get_primary_line_number(content: str, file_path: str) -> int:
                 if lines[i].strip()[0] in "=-~^\"'":
                     return i
 
-    return 1
+    return None
 
 
 def create_file_link(
-    file_path: str, line_number: int = 1, link_type: str = "local"
+    file_path: str, line_number: int | None = None, link_type: str = "local"
 ) -> str:
     """
     Create a clickable link for a file path.
 
     Args:
         file_path: Relative file path
-        line_number: Line number to link to
+        line_number: Line to jump to, or None when the line is unknown; no anchor is
+            emitted for None rather than a guessed one
         link_type: Type of link ("local", "github")
 
     Returns:
         HTML link string
     """
+    suffix = f":{line_number}" if line_number else ""
+
     if link_type == "github":
         # Create GitHub link
         clean_path = fix_github_path(file_path)
@@ -71,14 +92,15 @@ def create_file_link(
                 )
 
         # Default to GitHub source view
+        anchor = f"#L{line_number}" if line_number else ""
         github_url = (
-            f"https://github.com/sagemath/sage/blob/develop/{clean_path}#L{line_number}"
+            f"https://github.com/sagemath/sage/blob/develop/{clean_path}{anchor}"
         )
-        return f'<a href="{github_url}" target="_blank">{file_path}:{line_number}</a>'
+        return f'<a href="{github_url}" target="_blank">{file_path}{suffix}</a>'
 
     else:  # local
         # Create local file link
-        return f'<a href="file://{Path(file_path).absolute()}" target="_blank">{file_path}:{line_number}</a>'
+        return f'<a href="file://{Path(file_path).absolute()}" target="_blank">{file_path}{suffix}</a>'
 
 
 def fix_github_path(file_path: str) -> str:
@@ -121,20 +143,18 @@ def convert_to_docs_url(file_path: str) -> str | None:
 
     # Look for documentation structure patterns
     if "doc" in path_parts and "en" in path_parts:
-        # Find the index after 'en'
-        try:
-            en_index = path_parts.index("en")
-            if en_index + 1 < len(path_parts):
-                # Get the part after 'en'
-                doc_path = "/".join(path_parts[en_index + 1 :])
-                # Remove .rst extension
-                doc_path = doc_path.replace(".rst", ".html")
+        # Find the index after 'en'. The membership test above guarantees index() cannot
+        # raise, so the old catch-and-pass is gone rather than kept unreachable.
+        en_index = path_parts.index("en")
+        if en_index + 1 < len(path_parts):
+            # Get the part after 'en'
+            doc_path = "/".join(path_parts[en_index + 1 :])
+            # Remove .rst extension
+            doc_path = doc_path.replace(".rst", ".html")
 
-                # Create docs URL
-                base_url = "https://doc.sagemath.org/html/en"
-                return f"{base_url}/{doc_path}"
-        except ValueError:
-            pass
+            # Create docs URL
+            base_url = "https://doc.sagemath.org/html/en"
+            return f"{base_url}/{doc_path}"
 
     return None
 
@@ -229,8 +249,8 @@ def create_sources_section(documents: list, enhanced_docs: list) -> str:
                 f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>'
             )
         else:
-            source_lines.append(
-                f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>'
-            )
+            # A source with no path cannot be linked: raising keeps "unknown" from
+            # standing in the source list as if it were a rendered file.
+            raise CitationSourceError(citation_id, doc.meta)
 
     return "\n".join(source_lines)

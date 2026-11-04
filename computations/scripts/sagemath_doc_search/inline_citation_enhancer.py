@@ -428,56 +428,45 @@ print("Discriminant group:", L.discriminant_group())
                             create_file_link,
                         )
 
-                    if file_path.endswith(".rst"):
-                        # For documentation files, prefer GitHub/docs URLs
-                        file_link = create_file_link(
-                            file_path, line_number or 1, "github"
-                        )
-                    else:
-                        # For source files, use local links
-                        file_link = create_file_link(
-                            file_path, line_number or 1, "local"
-                        )
-
-                    # Extract just the href attribute for the inline citation
-                    import re
-
-                    href_match = re.search(r'href="([^"]+)"', file_link)
-                    if href_match:
-                        href_url = href_match.group(1)
-                        return f'<sup><a href="{href_url}" target="_blank" class="citation-link">[{citation_id}]</a></sup>'
-                    else:
-                        # Fallback to internal reference if link creation fails
-                        return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
+                    # Forming the link here is what surfaces a broken citation path as
+                    # CitationLinkError (the rendered target stays the source-list anchor).
+                    create_file_link(
+                        file_path,
+                        line_number,
+                        "github" if file_path.endswith(".rst") else "local",
+                    )
+                    # The marker points at the source-list entry (id="ref-..."), which is
+                    # where the direct file link lives.  create_file_link returns
+                    # Markdown, so there is no href to lift out of it; rewriting this
+                    # anchor to a file:// URL would trade a link that always resolves for
+                    # one a browser may refuse to follow.
+                    return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
 
                 except Exception as e:
                     raise CitationLinkError(file_path, e) from e
-                    return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
             else:
                 return match.group(0)  # Return original if not found
 
-        # The href lookup above already guards itself: only when an href attribute is present
-        # do we substitute a direct link, otherwise the internal anchor stands.
-        # The (src1), (src2), ... anchors in the text keep pointing at the emitted ref list,
-        # which is where the direct links live.
         pattern = r"\((src\d+)\)"
         return re.sub(pattern, replace_citation, text)
 
     def _get_line_number(self, content: str, file_path: str) -> int | None:
-        """Get line number for citation purposes."""
-        try:
-            try:
-                from sagemath_doc_search.citation_utils import (
-                    get_primary_line_number,
-                )
-            except ModuleNotFoundError:
-                from citation_utils import (
-                    get_primary_line_number,
-                )
+        """Line number for a citation, or None when the content does not determine one.
 
-            return get_primary_line_number(content, file_path)
-        except ImportError:
-            return 1  # Fallback
+        Reaching this method without ``citation_utils`` is a broken installation, not an
+        unknown line: the import failure propagates instead of being flattened into
+        line 1, which would cite the top of a file at random.
+        """
+        try:
+            from sagemath_doc_search.citation_utils import (
+                get_primary_line_number,
+            )
+        except ModuleNotFoundError:
+            from citation_utils import (
+                get_primary_line_number,
+            )
+
+        return get_primary_line_number(content, file_path)
 
 
 def create_citation_enhanced_prompt(

@@ -7,18 +7,94 @@ This module contains functions that can be used independently of Streamlit.
 import ast
 import os
 from pathlib import Path
-from typing import Any
+
+#: The ctags index that backs symbol line-number lookup.
+CTAGS_INDEX_PATH = Path(__file__).parent / "sage_ctags_index"
 
 
-def extract_python_docstrings(file_path: Path) -> str:
+class DocumentationReadError(IOError):
+    """A documentation read/parse operation failed; carries path and original cause."""
+
+    def __init__(self, path, original):
+        self.path = path
+        self.original = original
+        detail = f"{type(original).__name__}: {original}" if original else "unknown"
+        super().__init__(f"cannot read documentation from {path}: {detail}")
+
+
+class CtagsIndexError(IOError):
+    """The ctags index could not be built or read; carries the index path and cause.
+
+    Raised wherever the index is *needed* rather than merely absent from a lookup, so
+    that "the symbol is not in the index" and "there is no usable index" never collapse
+    into the same answer.
+    """
+
+    def __init__(self, path, original):
+        self.path = path
+        self.original = original
+        detail = f"{type(original).__name__}: {original}" if original else "unknown"
+        super().__init__(f"cannot use the ctags index at {path}: {detail}")
+
+
+class ExtractedDocumentation(str):
+    """Extracted documentation, plus how it was obtained.
+
+    It is a ``str`` because every caller consumes it as text.  The extra attributes are
+    what make a fallback visible instead of silent (#219):
+
+    * ``extraction``: ``"docstrings"`` (the file parsed as Python and its docstrings were
+      rendered), ``"raw-no-docstrings"`` (it parsed but carried none, so the raw-text scan
+      ran), ``"raw-syntax-error"`` (it is not parseable Python -- the expected case for
+      ``.pyx``/``.sage`` -- so only the raw-text scan ran), or ``"empty-file"``.
+    * ``recovered_from``: the ``SyntaxError`` behind ``"raw-syntax-error"``, else ``None``.
+
+    A caller that needs parsed docstrings rather than a text scan checks
+    ``doc.extraction == "docstrings"``; a caller content with either keeps using the str.
+    """
+
+    extraction: str
+    recovered_from: BaseException | None
+
+    def __new__(cls, value, extraction="docstrings", recovered_from=None):
+        self = super().__new__(cls, value)
+        self.extraction = extraction
+        self.recovered_from = recovered_from
+        return self
+
+
+class SageFileCatalog(list):
+    """The documentation files a scan catalogued, plus the per-file reads it skipped.
+
+    Continuing past one unreadable file is a recovery the input justifies -- a bulk scan
+    of a source tree should not die on one bad entry -- but it is kept caller-visible:
+    ``skipped`` holds ``(path, exception)`` pairs, so "no files matched" is distinguishable
+    from "files matched and could not be read".  :meth:`raise_if_nothing_read` escalates
+    the case where the recovery left nothing at all.
+    """
+
+    def __init__(self, files=(), skipped=()):
+        super().__init__(files)
+        self.skipped: list[tuple[Path, BaseException]] = list(skipped)
+
+    def raise_if_nothing_read(self) -> "SageFileCatalog":
+        """Re-raise the first recorded skip when every candidate file was skipped."""
+        if not self and self.skipped:
+            path, original = self.skipped[0]
+            raise DocumentationReadError(path, original)
+        return self
+
+
+def extract_python_docstrings(file_path: Path) -> ExtractedDocumentation:
     """Extract docstrings and class/function definitions from Python files with enhanced SageMath support.
 
     Failure contract (issue #219): any genuine failure of the *requested* read/parse of
     ``file_path`` raises :class:`DocumentationReadError` carrying the path and the
-    original exception; only a file successfully read that yields no enhanced content
-    may produce the raw-content fallback, and only an unreadable file that passes the
-    secondary raw read may produce that fallback's result.  An empty surface never
-    replaces a failed one.
+    original exception.  The two fallbacks that the input itself justifies -- an empty
+    file, and a file that is not parseable Python (``.pyx``/``.sage``) or carries no
+    docstrings -- still return, but the result records which one ran (``extraction``) and
+    what caused it (``recovered_from``), so a caller can tell a text scan from a rendered
+    docstring.  An empty surface never replaces a failed one.
     """
     try:
         with open(file_path, encoding="utf-8") as f:
@@ -26,16 +102,21 @@ def extract_python_docstrings(file_path: Path) -> str:
 
         # Skip empty files
         if not content.strip():
-            return ""
+            return ExtractedDocumentation("", extraction="empty-file")
 
         lines = content.split("\n")
 
         # Parse the AST to extract docstrings
         try:
             tree = ast.parse(content)
-        except SyntaxError:
-            # If we can't parse as Python, return enhanced raw content
-            return extract_raw_content_enhanced(lines, file_path)
+        except SyntaxError as exc:
+            # Not Python (e.g. .pyx/.sage): the raw-text scan is the documented recovery,
+            # and the SyntaxError that forced it stays on the result.
+            return ExtractedDocumentation(
+                extract_raw_content_enhanced(lines, file_path),
+                extraction="raw-syntax-error",
+                recovered_from=exc,
+            )
 
         extracted_content = []
 
@@ -92,26 +173,18 @@ def extract_python_docstrings(file_path: Path) -> str:
         extracted_content.extend(functions_found)
 
         if extracted_content:
-            return "\n\n".join(extracted_content)
-        else:
-            # Fallback to enhanced raw content extraction
-            return extract_raw_content_enhanced(lines, file_path)
+            return ExtractedDocumentation("\n\n".join(extracted_content))
+
+        # Parsed, but nothing to render: the raw-text scan runs as a recovery, and the
+        # result says so rather than passing itself off as rendered docstrings.
+        return ExtractedDocumentation(
+            extract_raw_content_enhanced(lines, file_path),
+            extraction="raw-no-docstrings",
+        )
 
     except Exception as e:
         # No silent fallback: the path and the original failure reach the caller.
         raise DocumentationReadError(file_path, e) from e
-
-
-
-
-class DocumentationReadError(IOError):
-    """A documentation read/parse operation failed; carries path and original cause."""
-
-    def __init__(self, path, original):
-        self.path = path
-        self.original = original
-        detail = type(original).__name__ + str(original) if original else "unknown"
-        super().__init__(f"cannot read documentation from {path}: {detail}")
 
 
 def enhance_sage_docstring(docstring: str, context: str, line_no: int) -> str:
@@ -217,16 +290,25 @@ def get_sagemath_patterns() -> list[str]:
     ]
 
 
-def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
-    """Find and catalog SageMath documentation files."""
+def find_sagemath_files(max_file_size_mb: int = 1) -> SageFileCatalog:
+    """Find and catalog SageMath documentation files.
+
+    A SageMath root that is not there is a failure of the requested scan, not an empty
+    catalog: it raises :class:`DocumentationReadError` instead of returning ``[]``, which
+    is what a search over an empty corpus would also have looked like.  Files that match
+    a pattern but cannot be stat-ed or placed relative to the root are skipped -- a
+    justified recovery for a bulk tree walk -- and the reason is kept on the returned
+    catalog's ``skipped`` list.
+    """
     sage_path = get_sage_path()
     patterns = get_sagemath_patterns()
 
     if not sage_path.exists():
-        print(f"Warning: SageMath path not found at {sage_path}")
-        return []
+        raise DocumentationReadError(
+            sage_path, FileNotFoundError(f"no SageMath installation at {sage_path}")
+        )
 
-    files = []
+    files = SageFileCatalog()
     max_file_size = max_file_size_mb * 1024 * 1024
 
     for pattern in patterns:
@@ -257,8 +339,9 @@ def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
                 }
                 files.append(data)
             except (OSError, ValueError) as e:
-                # Skip files that can't be accessed, with the reason preserved per-file.
-                print(f"Warning: skipping {p}: {type(e).__name__}: {e}")
+                # Recovery, not silence: the file is skipped and (path, cause) is carried
+                # on the returned catalog so the caller can see what was left out.
+                files.skipped.append((p, e))
                 continue
 
     return files
@@ -429,17 +512,22 @@ def create_sage_ctags_index(force_rebuild: bool = False) -> bool:
         force_rebuild: If True, rebuild even if index exists
 
     Returns:
-        True if index was created/exists, False otherwise
+        True once a usable index exists at :data:`CTAGS_INDEX_PATH`.
+
+    Raises:
+        CtagsIndexError: the index could not be built -- no Sage tree, ctags missing or
+            exiting non-zero, a timeout, or the index path being unwritable.  Every one
+            of those used to return ``False`` and leave the caller to guess.
     """
     import subprocess
-    from pathlib import Path
 
     sage_path = get_sage_path()
     if not sage_path.exists():
-        return False
+        raise CtagsIndexError(
+            CTAGS_INDEX_PATH, FileNotFoundError(f"no SageMath installation at {sage_path}")
+        )
 
-    # Store the ctags file in the doc search directory
-    ctags_file = Path(__file__).parent / "sage_ctags_index"
+    ctags_file = CTAGS_INDEX_PATH
 
     # Check if we need to rebuild
     if ctags_file.exists() and not force_rebuild:
@@ -473,24 +561,21 @@ def create_sage_ctags_index(force_rebuild: bool = False) -> bool:
             text=True,
             timeout=300,
         )  # 5 minute timeout
+    except subprocess.TimeoutExpired as e:
+        raise CtagsIndexError(ctags_file, e) from e
+    except OSError as e:
+        # ctags is not installed, or the index path is not writable.
+        raise CtagsIndexError(ctags_file, e) from e
 
-        if result.returncode == 0:
-            print(f"✅ Successfully created ctags index: {ctags_file}")
-            print(f"   Index size: {ctags_file.stat().st_size / 1024 / 1024:.1f} MB")
-            return True
-        else:
-            print(f"❌ Failed to create ctags index: {result.stderr}")
-            return False
+    if result.returncode != 0:
+        raise CtagsIndexError(
+            ctags_file,
+            RuntimeError(f"ctags exited {result.returncode}: {result.stderr.strip()}"),
+        )
 
-    except subprocess.TimeoutExpired:
-        print("❌ Ctags indexing timed out - repository too large")
-        return False
-    except FileNotFoundError:
-        print("❌ ctags not found - please install universal-ctags")
-        return False
-    except Exception as e:
-        print(f"❌ Error creating ctags index: {e}")
-        return False
+    print(f"✅ Successfully created ctags index: {ctags_file}")
+    print(f"   Index size: {ctags_file.stat().st_size / 1024 / 1024:.1f} MB")
+    return True
 
 
 def find_symbol_line_with_sage_index(
@@ -504,17 +589,17 @@ def find_symbol_line_with_sage_index(
         file_hint: Optional hint about which file the symbol might be in
 
     Returns:
-        Tuple of (line_number, file_path) if found, (None, None) otherwise
+        Tuple of (line_number, file_path) if found, (None, None) if the index simply has
+        no entry for the symbol.  An index that cannot be built or read raises
+        :class:`CtagsIndexError`: a true negative never doubles as an error report.
     """
-    ctags_file = Path(__file__).parent / "sage_ctags_index"
+    ctags_file = CTAGS_INDEX_PATH
 
     if not ctags_file.exists():
-        # Try to create the index
-        if not create_sage_ctags_index():
-            return None, None
+        create_sage_ctags_index()
 
     try:
-        with open(ctags_file) as f:
+        with open(ctags_file, encoding="utf-8", errors="replace") as f:
             matches: list[tuple[int, str]] = []
             for line in f:
                 if line.startswith("!_TAG_"):
@@ -549,8 +634,8 @@ def find_symbol_line_with_sage_index(
                 # Otherwise return the first match
                 return matches[0]
 
-    except Exception as e:
-        print(f"Warning: Error reading ctags index: {e}")
+    except OSError as e:
+        raise CtagsIndexError(ctags_file, e) from e
 
     return None, None
 
@@ -582,7 +667,15 @@ def get_symbol_from_content(content: str) -> str | None:
 def get_primary_line_number(
     content: str, relative_path: str | None = None
 ) -> int | None:
-    """Get the most relevant line number from content, using ctags if available."""
+    """Get the most relevant line number from content, using ctags if available.
+
+    Returns the first line number the content names explicitly, else the line the ctags
+    index reports for the content's leading symbol, else ``None``.  ``None`` means the
+    line is not determinable: it is never replaced by an estimate derived from the
+    chunk's own offsets, which would be indistinguishable from a real line number.  An
+    index that cannot be built or read raises :class:`CtagsIndexError` rather than
+    hiding behind such an estimate.
+    """
     # First try explicit line number references
     line_numbers = extract_line_numbers_from_content(content)
     if line_numbers:
@@ -593,38 +686,9 @@ def get_primary_line_number(
         # Try to find the main symbol in this content
         symbol = get_symbol_from_content(content)
         if symbol:
-            line_no, found_file = find_symbol_line_with_sage_index(
-                symbol, relative_path
-            )
+            line_no, _found_file = find_symbol_line_with_sage_index(symbol, relative_path)
             if line_no:
                 return line_no
 
-    # Fallback to heuristic estimation for source code
-    lines = content.split("\n")
-
-    # Look for class definitions (usually near the beginning of important content)
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        if stripped.startswith("class ") and ":" in stripped:
-            # Estimate that this class might be around line i*2 + 1 in the original file
-            # This is a rough heuristic since we don't know where in the file this chunk came from
-            return min(i * 2 + 1, 100)  # Cap at line 100 for reasonable estimates
-
-    # Look for function definitions
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        if stripped.startswith("def ") and "(" in stripped and ":" in stripped:
-            return min(i * 2 + 1, 50)  # Cap at line 50 for function definitions
-
-    # Look for docstring starts (often indicate beginning of classes/functions)
-    for i, line in enumerate(lines):
-        stripped = line.strip()
-        if (
-            stripped.startswith('r"""')
-            or stripped.startswith('"""')
-            or stripped.startswith("'''")
-        ):
-            return min(i + 1, 20)  # Assume docstrings are near the beginning
-
-    # If no specific indicators found, return None (no line number)
+    # No evidence for a line number: say so instead of inventing one.
     return None
