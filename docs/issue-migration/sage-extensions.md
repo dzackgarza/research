@@ -2,7 +2,8 @@
 
 Every row of the former `TODO.md` described work on what is now the `sage-extensions`
 library, tracked in this repository. This file records the factoring, the evidence for it,
-and the issue bodies, which are now posted upstream. Nothing here is this repository's work.
+and the issue bodies. The upstream issues #7–#13 were closed on 2026-11-04 as duplicates of the
+live research groupings #417, #415, #416, #420, #418, #419 and #421, in that order. Nothing here is this repository's work.
 
 ## Why this is not `research` work
 

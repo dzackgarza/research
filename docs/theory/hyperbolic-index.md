@@ -1717,7 +1717,7 @@ including invariant primitivity exclusion, finite sampling, and actual
 integral maximal splittings at indices zero, one and two, including odd
 and mixed-parity complements. A regular-Cauchy RR specimen verifies decomposition
 endpoints and summand ranks; its symbolic Gram equality remains undecided.
-The rest of the dependency index remains with `terminal-session` in TODO.md.
+The rest of the dependency index remains with `terminal-session`, [#498](https://github.com/dzackgarza/research/issues/498).
 The general zero-radical preservation
 theorem is now `isNondegenerate_of_indexedOrthogonalPairing` at the
 `lean-categories` bilinear-module owner, including the empty sum; its
@@ -2564,7 +2564,7 @@ are not correctness evidence on the formal side.
 
 The dependency interfaces below retain mathematical objects and maps. Their
 execution obligations remain open under the repository's source phase in
-[TODO.md](../../TODO.md); these examples do not certify an implementation.
+the [issue tree](https://github.com/dzackgarza/research/issues/46); these examples do not certify an implementation.
 The target integral index and maximal-splitting computations consume these
 reusable constructions and return the actual isometry and its maps.
 

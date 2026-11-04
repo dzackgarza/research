@@ -1,12 +1,8 @@
-# Open items
+# Evidence record of the dissertation move
 
-Things noticed while moving the dissertation from LaTeX back to Markdown that need the author's judgment.
-None of them blocks the build, which compiles with no LaTeX errors.
+What was noticed while moving the dissertation from LaTeX back to Markdown, with the evidence for each item.
+The open items are work units in the [issue tree](https://github.com/dzackgarza/research/issues/46): #721, #722, #723 and #724. None of them blocks the build, which compiles with no LaTeX errors.
 What has since been settled is listed at the end, so that a reader can tell "resolved" from "never noticed".
-
-## Unfinished text
-
-- None. The last one, `\todo{Separate the Hodge-theoretic work}` in [[450-scattone|Scattone boundary analysis]], is resolved: the lattice-theoretic cusp enumeration and the limiting mixed Hodge structures at the boundary are now separate subsections, and the second opens by saying what it adds that the first does not supply.
 
 ## Possibly missing content
 
@@ -232,7 +228,7 @@ What has since been settled is listed at the end, so that a reader can tell "res
   H = <(xi_a, xi_b)> always gives D_n, and for special pairs the source writes out
   H = <(alpha_a, alpha_b)> and H = <(alpha_12, xi_b)> with their glued vectors.  Carrying that out
   for the nine, and checking rank 17, evenness, negative definiteness and the discriminant form
-  against D_17, is the next piece of work; nothing above depends on it beyond the citation of A.6,
+  against D_17, is work unit #721; nothing above depends on it beyond the citation of A.6,
   and the chapter says as much.
 
   What is claimed, and what is not.  The degree-four space has nine Type II boundary components,
@@ -1500,7 +1496,7 @@ What has since been settled is listed at the end, so that a reader can tell "res
       the subgroup's element constructions validate; and validate_point_closure() on the H-set, which the
       current restrict() helper in heegner_orbit_checks.py does not do.  A public subgroup-containment
       predicate (H <= Stab of the polarization) would be the cheapest form of the fixity check, and it does not
-      exist: _engine_subgroup_contains is private.  The verifier is unchanged pending that review.
+      exist: _engine_subgroup_contains is private.  The verifier is unchanged pending that review, which is work unit #722.
   Downstream uses of the new criterion, corrected.  The Heegner chapter said the arithmetic group "is strictly
   smaller and its orbits on lines and planes are strictly finer".  On lines that is right and now cites
   lem:stable-orthogonal-not-transitive; on planes the number of orbits is open, and strictness on lines does
@@ -1511,19 +1507,6 @@ What has since been settled is listed at the end, so that a reader can tell "res
   finite-orbits now yields the four stabilizer indices 136n/m = 1, 135, 64, 72 for the fine orbits of sizes
   2, 270, 120, 135 inside the coarse orbits of sizes 272, 272, 255, 255 -- integers, and at most 136 as
   [S_x : (G_Co)_x] <= [S : G_Co] forces, which is a second independent check on the two orbit lists.
-
-## Structure
-
-- The submitted LaTeX had four subsection headings in Part II that the Markdown never had, so this is a long-standing divergence, not a regression.
-  Part II now opens with framing prose like the other two, but those four headings are still absent.
-
-## Notes on the move
-
-- Citation keys were remapped to the live Zotero library, so a key in the text now matches the Better BibTeX key of the item.
-  Two of them changed meaning: Zotero has `Sha81` for Shah's degree 4 K3 paper and `Sha81a` for his Enriques paper, which is the opposite of the old local bibliography, and the text was swapped to match Zotero.
-  Worth spot-checking the two citation sites.
-
-- `[@Alexeev]` appears twice inside HTML comments in [[000-ksba|the KSBA chapter]]. It resolves to nothing, but the comments are invisible to the build, so nothing is broken.
 
 ## Settled since this list was written
 

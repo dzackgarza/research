@@ -194,7 +194,7 @@ explicit owner instruction stops the repository again.
 Every agent, subagent, worker and delegate reads the [reading index](docs/edit-reading-index.md)
 and its common required sections before the first edit in this repository or
 `dzackgarza/lattice-database`. The index routes each kind of edit to the relevant
-sections of `INTENT.md`, this file, `CONTRIBUTING.md`, `TODO.md`, the native issue
+sections of `INTENT.md`, this file, `CONTRIBUTING.md`, the native issue
 tree, the generated megadoc, and subtree instructions. Read the applicable
 sections themselves; a brief or rule-code list is not a substitute. Follow
 cross-references when a section makes another rule applicable. A brief names
@@ -508,7 +508,8 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
   Use the [native issue tree](https://github.com/dzackgarza/research/issues/46): `itree next dzackgarza/research` selects the
   first open work unit in sibling order, and each work unit carries its own acceptance
   criteria. Shared files and optional research suggestions are not prerequisite edges;
-  the [crosswalk](TODO.md) maps former source identifiers to issues.
+  the [crosswalk](docs/issue-migration/preamble-issues.md) maps former source identifiers to issues,
+  and the outstanding mathematical problems are the work units under #641, #642 and #643.
   Implement only the remaining delta. An unchecked item is not evidence that
   the construction is absent; a remembered completion is not evidence that its
   current implementation satisfies the requirement.
