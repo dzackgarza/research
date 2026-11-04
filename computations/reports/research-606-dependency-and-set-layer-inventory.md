@@ -1,54 +1,87 @@
-# research#606 — dependency state and the research-side set layer
+# research#606 — dependency state and reconciliation against the actual public API
 
-Recorded under the authorization boundary in force: this research session does not author
-or check out `dzackgarza/lean-categories`; missing formal inputs stay with that upstream
-owner. Everything below is either read from research's own tree or is issue evidence.
+Supersedes and corrects this file's inventory section. The earlier draft claimed the set
+layer was unreferenced ("vacated") because `rg SetsCategory|set_categories` over `src/`
+found nothing. That inference was wrong: the surface research consumers import is a
+star-reexport, so names need not appear under `src/` at all. The corrected reconciliation
+below is grounded in the source shown.
 
-## Ordered leaf and its real dependencies
+## The actual public surface
 
-`#46 → #417 → #384 → #606` is the only open path: `#417` has 20 children, 19 closed and
-only `#384` open; `#384` has exactly one child, `#606`, which has no sub-issues.
+`src/dzack_research/preamble/all.py` (the session module research notebooks import) says
+of itself (line 4-9): *"The session namespace ... belong to `sage_extensions.all`. This
+module re-exports it ... and registers that name so the parser treats its star import as
+the complete session."* and it does:
 
-`#606` is blocked by four `lean-categories` issues, all open, each with `blocked_by: 0` and
-`blocking: 1`: `#95`, `#96`, `#97`, `#98`. Read against the `lean-categories` tip that was
-inspected earlier (`fc6d3d6`), the state is:
+```python
+from sage_extensions import language_runtime as _language_runtime
+from sage_extensions.all import *                    # noqa: F401,F403
+from sage_extensions.categories.group.groups import OwnedGroups as Groups
+_language_runtime.register_session_module(__name__)
+```
 
-| issue | requirement | state at that tip |
-| --- | --- | --- |
-| #95 | `P_fin : Sets ⥤ Sets` with laws and the natural inclusion into `𝒫` | declarations present; the inclusion registration was missing — artifact prepared in `leancategories-95-finite-subsets-inclusion.patch` |
-| #96 | selected ranking `rank : X ≃ Fin n` / `≃ ℕ` with inverse laws and total accessors | absent |
-| #97 | `WellOrderedSets`, the wide subcategory `E_mon`, `E_mon → WellOrderedSets`, forgetful chain, order type | absent |
-| #98 | `PartiallyOrderedSets`, `TotallyOrderedSets` with monotone maps and routes | present |
+`sage_extensions.all` (provider snapshot `.scratch/se-provider-6ad7a5ea`) then re-exports
+the set layer in bulk, `all.py:406-439`:
 
-So the genuinely missing formal inputs are **#97, then #96** (`#96`'s own body defers its
-order contract to `#97`). Both belong to the `lean-categories` owner; this session cannot
-author, check out or publish there.
+> `Sets, CountableSets, CountablyInfiniteSets, EnumeratedSets, FiniteSets,
+> FinitePowerSets, PowerSets, PartiallyOrderedSets, TotallyOrderedSets, WellOrderedSets,
+> CartesianProductsOfSets, CoproductsOfSets, UncountableSets, InfiniteSets, ...`
 
-## Research-side set layer
+and those classes live in
+`sage_extensions/categories/sets/set_categories.py` (7048 lines) as `OwnedCategory`
+subclasses: `EnumeratedSets` (314), `Sets` (1265), `PowerSets` (3320), `FinitePowerSets`
+(3856), `CartesianProductsOfSets` (4758), `CoproductsOfSets`(5581), `PartiallyOrderedSets`
+(6741), `TotallyOrderedSets` (6838), `WellOrderedSets` (6981), with `OwnedCategory` based
+in `sage_extensions/owned_category.py`.
 
-`#606`'s second acceptance bullet requires that public research consumers obtain the set
-layer through the catalogue-derived language and that the migrated path has no local
-provider ordering or cooperative initializer. Checked in this tree:
+So the transitional Python set category, with the provider ordering and cooperative
+initialization #606 names, **is** research's live public API today. The prior "vacuity"
+statement is withdrawn.
 
-- the set layer is at `archives/preamble/categories/sets/` — `sets.sage`, `owned_sets.py`,
-  `cardinals.py`, `ordinals.py` — not under `src/`;
-- `rg` over `src/` finds **no** reference to `SetsCategory`, `set_categories`,
-  `EnumeratedSets` or `PartiallyOrderedSets`;
-- `OwnedCategory` survives in live code only through three utilities:
-  `src/dzack_research/utilities/category_graph.py`, `megadoc.py`,
-  `construction_universe.py` (plus the `archives/preamble/owned_category*.py` definitions
-  and `docs/preamble-graph.json`).
+## Acceptance reconciliation
 
-Consequence for #606: there is no live `src/` consumer of the set-layer provider path to
-migrate, so the migration half of the issue is not blocked on kernel work in this
-repository — what remains is the formal half (#97, #96) and the utilities' use of the
-`OwnedCategory` machinery, which is shared transitional machinery that `research#384`
-retains for removal after the last dependent layer migrates.
+`research#606`'s bullets, checked against this surface:
 
-## Publication blockers (exact)
+1. **Each set-layer operation reconciled to its formal catalogue declaration or the
+   precise missing input with its owner.** The population is the exposed list above. From
+   earlier source inspection of the formal owner (`lean-categories` at `fc6d3d6`, checked
+   by build, now read-only for this session): `Sets`, products/coproducts, diagram limits
+   and colimits (incl. filtered) are registered and green; powersets, cardinality and
+   ordinals (incl. the Hessenberg product) are registered and green; finite subsets with
+   `directImage` and the PO/TO categories exist (issues #95, #98 delivered-side, though
+   open). **Missing**: `lean-categories#97` (`WellOrderedSets`, `E_mon`, forgetful chain,
+   order type) and `lean-categories#96` (selected ranking `rank : X ≃ Fin n` / `≃ ℕ` with
+   laws) — #96's body defers its order contract to #97. These are the precise missing
+   formal inputs, and they belong to that upstream owner.
+2. **Public research consumers obtain the set-layer constructions and operations through
+   the catalogue-derived language, with complete data and result types, and the migrated
+   path has no local provider ordering or cooperative initializer.** **Not met.** Today's
+   path is exactly its negation: `preamble.all → sage_extensions.all → set_categories.py
+   (OwnedCategory)`. Meeting it needs the catalogue-derived session surface, whose owners
+   are `lean-cas-dsl` (kernel) and `lean-categories` (declarations), and additionally need
+   #97/#96 for the ordered part.
+3. **Every computation on that path is an opaque leaf registration; existing specimens
+   preserved; terminal execution and independent acceptance under
+   `sage-extensions#234/#498` under `DEV-58`.** External to this repository.
+4. **`research#384` retains removal of shared transitional Python machinery after the last
+   dependent layer migrates.** Open and downstream of the above.
 
-- `lean-categories`: authoring/checkout/push from this session is withdrawn by
-  authorization. Prepared artifacts remain in this repository for the owner or the
-  coordinator to publish; nothing was pushed there and no credentials were created.
-- research issues: read-only through the connected GitHub route, so `#606` and `#219`
-  cannot be closed or commented from here.
+## Exact external dependencies
+
+- `lean-categories#97`, then `#96` — open, owned by `lean-categories`; this session is
+  barred by authorization from authoring or checking out that repo.
+- the `lean-cas-dsl` catalogue-derived session surface — the kernel this reconciliation's
+  consumers must adopt; external repository.
+- `sage-extensions#234/#498` (`DEV-58`) — terminal execution and independent acceptance;
+  external repository issues.
+- publication: the prepared `lean-categories#95` inclusion-registration artifact and the
+  ordinal natural-product patch wait for the owner's publishing route; research issues are
+  read-only through the connected GitHub route, so neither #606 nor #219 can be closed
+  from here.
+
+## Research-side work done in this pass
+
+Corrected this record. No other work was started: any further research-side step on #606
+(adding catalogue-derived names to `preamble.all`, shrinking the exposed transitional
+surface, or touching `archives/`) would either change behavior under acceptance the issue
+has not yet enabled, or duplicate work owned upstream.
