@@ -23,13 +23,30 @@ retains here is the cross-repository ordering among the milestones under #46 and
 research-side acceptance: the expectation suite under `tests/` in this repository must
 pass on the realized library.**
 
-## What currently bounds execution here
+## What currently bounds execution here (corrected)
 
-`CONTRIBUTING.md`'s current verification phase `n` suspends Sage execution, tests, QC and
-notebook execution while the foundational architecture moves; "required execution remains
-in terminal T under `n`". So the #417 acceptance suite is a waiting obligation, not a
-runnable one from this session: running the expectation suite now would act against the
-phase. Source inspection and record work remain permitted.
+My first pass of this section over-read the phase. The parent's read of `CONTRIBUTING.md`
+at `f30078e` stands: **DEV-58/`n` is not a blanket Sage or test ban.** The orchestrator
+runs each issue's original acceptance once its source and actual prerequisites are
+complete, M1 included; what defers are *broad* suites, QC and notebook campaigns, and
+only until #417's source prerequisites are delivered. Corrections recorded:
+
+- No broad run is implied by anything here, and none was made by me at any point.
+- Whether #417's prerequisites are delivered is not readable from this session just now:
+  its realization lives at `sage-extensions#21` and the Python-presentation issues
+  `sage-extensions#40/#79/#95/#118/#225`, and the unauthenticated GitHub rate window is
+  exhausted until its next reset. I therefore neither claim the set-expectation suite is
+  runnable nor that it is not.
+- Consistent with the corrected reading, this repository's CI runs issue-specific
+  acceptance automatically: `.github/workflows/cat-runtime-acceptance.yml` executes the
+  named `tests/constructions/...construct.sage` files in the Sage container when pushes
+  touch them. Orchestrated acceptance is thus already scoped per specimen; my local role
+  adds nothing executable there.
+
+So: correct and more modest — the phase bounds *broad* campaigns, which I never needed;
+issue-specific acceptance belongs to the orchestrator and CI; and the open question (are
+#417's upstream prerequisites delivered?) is checkable on the next rate window, not by
+guesswork here.
 
 ## Consequences for this repo's records
 
