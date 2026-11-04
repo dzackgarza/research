@@ -398,11 +398,11 @@ print("Discriminant group:", L.discriminant_group())
                 )
 
             except Exception as e:
-                logger.warning(f"Failed to create link for {rel_path}: {e}; degraded output would substitute a bare path for the requested link -- kept because the source data was already gathered and only the formatting step failed.")
-                # Fallback if link creation fails
-                source_lines.append(
-                    f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>'
-                )
+                # CitationLinkError carries the broken path to the caller, so a
+                # successful-looking bare-path fallback never substitutes for the
+                # requested link: recovery is distinguishable from success by the
+                # raised exception itself.
+                raise CitationLinkError(rel_path, e) from e
 
         return processed_response + "\n".join(source_lines)
 
