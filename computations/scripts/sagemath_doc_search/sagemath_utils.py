@@ -11,7 +11,15 @@ from typing import Any
 
 
 def extract_python_docstrings(file_path: Path) -> str:
-    """Extract docstrings and class/function definitions from Python files with enhanced SageMath support."""
+    """Extract docstrings and class/function definitions from Python files with enhanced SageMath support.
+
+    Failure contract (issue #219): any genuine failure of the *requested* read/parse of
+    ``file_path`` raises :class:`DocumentationReadError` carrying the path and the
+    original exception; only a file successfully read that yields no enhanced content
+    may produce the raw-content fallback, and only an unreadable file that passes the
+    secondary raw read may produce that fallback's result.  An empty surface never
+    replaces a failed one.
+    """
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
@@ -89,14 +97,21 @@ def extract_python_docstrings(file_path: Path) -> str:
             # Fallback to enhanced raw content extraction
             return extract_raw_content_enhanced(lines, file_path)
 
-    except Exception:
-        # Fallback to enhanced raw content
-        try:
-            with open(file_path, encoding="utf-8") as f:
-                lines = f.readlines()
-            return extract_raw_content_enhanced(lines, file_path)
-        except Exception:
-            return ""
+    except Exception as e:
+        # No silent fallback: the path and the original failure reach the caller.
+        raise DocumentationReadError(file_path, e) from e
+
+
+
+
+class DocumentationReadError(IOError):
+    """A documentation read/parse operation failed; carries path and original cause."""
+
+    def __init__(self, path, original):
+        self.path = path
+        self.original = original
+        detail = type(original).__name__ + str(original) if original else "unknown"
+        super().__init__(f"cannot read documentation from {path}: {detail}")
 
 
 def enhance_sage_docstring(docstring: str, context: str, line_no: int) -> str:
@@ -241,8 +256,9 @@ def find_sagemath_files(max_file_size_mb: int = 1) -> list[dict[str, Any]]:
                     },
                 }
                 files.append(data)
-            except OSError, ValueError:
-                # Skip files that can't be accessed
+            except (OSError, ValueError) as e:
+                # Skip files that can't be accessed, with the reason preserved per-file.
+                print(f"Warning: skipping {p}: {type(e).__name__}: {e}")
                 continue
 
     return files
@@ -517,7 +533,7 @@ def find_symbol_line_with_sage_index(
                                 try:
                                     line_number = int(part.split(":")[1])
                                     break
-                                except ValueError, IndexError:
+                                except (ValueError, IndexError):
                                     continue
 
                         if line_number:

@@ -16,6 +16,32 @@ from typing import Any, TypedDict
 
 logger = logging.getLogger(__name__)
 
+
+class DocumentationEnhancementError(RuntimeError):
+    """Metadata enhancement of a document failed; carries the document and cause."""
+
+    def __init__(self, doc, original):
+        self.doc = doc
+        self.original = original
+        rel = getattr(doc, "meta", {}).get("relative_path", "?")
+        super().__init__(
+            "cannot enhance document metadata for %s: %s: %s"
+            % (rel, type(original).__name__, original)
+        )
+
+
+class CitationLinkError(RuntimeError):
+    """A requested direct citation link could not be formed; carries path and cause."""
+
+    def __init__(self, file_path, original):
+        self.file_path = file_path
+        self.original = original
+        super().__init__(
+            "cannot form citation link for %s: %s: %s"
+            % (file_path, type(original).__name__, original)
+        )
+
+
 from haystack.dataclasses import Document
 
 
@@ -75,8 +101,7 @@ class InlineCitationEnhancer:
                 enhanced_docs.append(enhanced_doc)
 
             except Exception as e:
-                logger.warning(f"Failed to enhance document metadata: {e}")
-                enhanced_docs.append(doc)  # Keep original on error
+                raise DocumentationEnhancementError(doc, e) from e
 
         return enhanced_docs
 
@@ -305,8 +330,8 @@ print("Discriminant group:", L.discriminant_group())
             return response
 
         except Exception as e:
-            logger.error(f"Error post-processing citations: {e}")
-            return response  # Return original on error
+            logger.error("Error post-processing citations: %s", e)
+            raise
 
     def _add_single_citation(self, response: str, documents: list[Document]) -> str:
         """Add a single citation to very short responses that have none."""
@@ -351,10 +376,16 @@ print("Discriminant group:", L.discriminant_group())
 
             # Create appropriate link
             try:
-                from sagemath_doc_search.citation_utils import (
-                    create_file_link,
-                    get_primary_line_number,
-                )
+                try:
+                    from sagemath_doc_search.citation_utils import (
+                        create_file_link,
+                        get_primary_line_number,
+                    )
+                except ModuleNotFoundError:
+                    from citation_utils import (
+                        create_file_link,
+                        get_primary_line_number,
+                    )
 
                 line_no = get_primary_line_number(doc.content or "", rel_path)
                 if rel_path.endswith(".rst"):
@@ -367,7 +398,7 @@ print("Discriminant group:", L.discriminant_group())
                 )
 
             except Exception as e:
-                logger.warning(f"Failed to create link for {rel_path}: {e}")
+                logger.warning(f"Failed to create link for {rel_path}: {e}; degraded output would substitute a bare path for the requested link -- kept because the source data was already gathered and only the formatting step failed.")
                 # Fallback if link creation fails
                 source_lines.append(
                     f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>'
@@ -388,9 +419,14 @@ print("Discriminant group:", L.discriminant_group())
 
                 # Create direct link to source file instead of internal anchor
                 try:
-                    from sagemath_doc_search.citation_utils import (
-                        create_file_link,
-                    )
+                    try:
+                        from sagemath_doc_search.citation_utils import (
+                            create_file_link,
+                        )
+                    except ModuleNotFoundError:
+                        from citation_utils import (
+                            create_file_link,
+                        )
 
                     if file_path.endswith(".rst"):
                         # For documentation files, prefer GitHub/docs URLs
@@ -415,24 +451,29 @@ print("Discriminant group:", L.discriminant_group())
                         return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
 
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to create direct citation link for {file_path}: {e}"
-                    )
-                    # Fallback to internal reference
+                    raise CitationLinkError(file_path, e) from e
                     return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
             else:
                 return match.group(0)  # Return original if not found
 
-        # Replace (src1), (src2), etc. with direct source file links
+        # The href lookup above already guards itself: only when an href attribute is present
+        # do we substitute a direct link, otherwise the internal anchor stands.
+        # The (src1), (src2), ... anchors in the text keep pointing at the emitted ref list,
+        # which is where the direct links live.
         pattern = r"\((src\d+)\)"
         return re.sub(pattern, replace_citation, text)
 
     def _get_line_number(self, content: str, file_path: str) -> int | None:
         """Get line number for citation purposes."""
         try:
-            from sagemath_doc_search.citation_utils import (
-                get_primary_line_number,
-            )
+            try:
+                from sagemath_doc_search.citation_utils import (
+                    get_primary_line_number,
+                )
+            except ModuleNotFoundError:
+                from citation_utils import (
+                    get_primary_line_number,
+                )
 
             return get_primary_line_number(content, file_path)
         except ImportError:
