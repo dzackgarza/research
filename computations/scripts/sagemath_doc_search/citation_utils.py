@@ -8,7 +8,35 @@ import re
 from pathlib import Path
 
 
-def get_primary_line_number(content: str, file_path: str) -> int:
+class CitationSourceError(ValueError):
+    """A source cannot be rendered as a citation because it carries no file path.
+
+    Raised instead of emitting a placeholder such as a bare ``unknown`` where a path
+    belongs, which reads like a rendered source when it is not one (#219).
+    """
+
+    def __init__(self, citation_id, meta):
+        self.citation_id = citation_id
+        self.meta = meta
+        super().__init__(
+            "cannot render source %s: the document carries no relative_path in %r"
+            % (citation_id, meta)
+        )
+
+
+def require_file_path(meta, citation_id) -> str:
+    """Return the cited document's usable file path, else reject it precisely.
+
+    Absent, None, blank or the ``"unknown"`` sentinel are all pathless; renderers must
+    not turn any of them into a working-directory link presented as a real source.
+    """
+    rel_path = meta.get("relative_path")
+    if rel_path is None or str(rel_path).strip() in ("", "unknown"):
+        raise CitationSourceError(citation_id, meta)
+    return str(rel_path)
+
+
+def get_primary_line_number(content: str, file_path: str) -> int | None:
     """
     Extract a primary line number from content for citation purposes.
 
@@ -17,10 +45,12 @@ def get_primary_line_number(content: str, file_path: str) -> int:
         file_path: Path to the file
 
     Returns:
-        Line number (1-based) or 1 if not determinable
+        Line number (1-based), or None when no line is determinable.  None is a real
+        answer -- an unknown line -- and is never flattened into line 1, which would
+        point a reader at the top of a file the content says nothing about.
     """
     if not content:
-        return 1
+        return None
 
     lines = content.split("\n")
 
@@ -41,23 +71,33 @@ def get_primary_line_number(content: str, file_path: str) -> int:
                 if lines[i].strip()[0] in "=-~^\"'":
                     return i
 
-    return 1
+    return None
 
 
 def create_file_link(
-    file_path: str, line_number: int = 1, link_type: str = "local"
+    file_path: str, line_number: int | None = None, link_type: str = "local"
 ) -> str:
     """
     Create a clickable link for a file path.
 
     Args:
         file_path: Relative file path
-        line_number: Line number to link to
+        line_number: Line to jump to, or None when the line is unknown; no anchor is
+            emitted for None rather than a guessed one
         link_type: Type of link ("local", "github")
 
     Returns:
         HTML link string
+
+    Raises:
+        ValueError: ``file_path`` is blank.  A blank path would resolve to the current
+            working directory, which is a successful-looking bogus link.
     """
+    if not file_path or not file_path.strip():
+        raise ValueError("a file link needs a real path, got %r" % (file_path,))
+
+    suffix = f":{line_number}" if line_number else ""
+
     if link_type == "github":
         # Create GitHub link
         clean_path = fix_github_path(file_path)
@@ -71,14 +111,15 @@ def create_file_link(
                 )
 
         # Default to GitHub source view
+        anchor = f"#L{line_number}" if line_number else ""
         github_url = (
-            f"https://github.com/sagemath/sage/blob/develop/{clean_path}#L{line_number}"
+            f"https://github.com/sagemath/sage/blob/develop/{clean_path}{anchor}"
         )
-        return f'<a href="{github_url}" target="_blank">{file_path}:{line_number}</a>'
+        return f'<a href="{github_url}" target="_blank">{file_path}{suffix}</a>'
 
     else:  # local
         # Create local file link
-        return f'<a href="file://{Path(file_path).absolute()}" target="_blank">{file_path}:{line_number}</a>'
+        return f'<a href="file://{Path(file_path).absolute()}" target="_blank">{file_path}{suffix}</a>'
 
 
 def fix_github_path(file_path: str) -> str:
@@ -121,20 +162,18 @@ def convert_to_docs_url(file_path: str) -> str | None:
 
     # Look for documentation structure patterns
     if "doc" in path_parts and "en" in path_parts:
-        # Find the index after 'en'
-        try:
-            en_index = path_parts.index("en")
-            if en_index + 1 < len(path_parts):
-                # Get the part after 'en'
-                doc_path = "/".join(path_parts[en_index + 1 :])
-                # Remove .rst extension
-                doc_path = doc_path.replace(".rst", ".html")
+        # Find the index after 'en'. The membership test above guarantees index() cannot
+        # raise, so the old catch-and-pass is gone rather than kept unreachable.
+        en_index = path_parts.index("en")
+        if en_index + 1 < len(path_parts):
+            # Get the part after 'en'
+            doc_path = "/".join(path_parts[en_index + 1 :])
+            # Remove .rst extension
+            doc_path = doc_path.replace(".rst", ".html")
 
-                # Create docs URL
-                base_url = "https://doc.sagemath.org/html/en"
-                return f"{base_url}/{doc_path}"
-        except ValueError:
-            pass
+            # Create docs URL
+            base_url = "https://doc.sagemath.org/html/en"
+            return f"{base_url}/{doc_path}"
 
     return None
 
@@ -209,28 +248,26 @@ def create_sources_section(documents: list, enhanced_docs: list) -> str:
     for doc in enhanced_docs:
         citation_id = doc.meta.get("citation_id", "src?")
         citation_display = doc.meta.get("citation_display", "unknown")
-        rel_path = doc.meta.get("relative_path", "unknown")
 
-        if rel_path != "unknown":
-            # Get line number from content
-            line_no = get_primary_line_number(doc.content, rel_path)
+        # Absent, None, blank or sentinel paths all fail closed identically, so a
+        # working-directory or placeholder link can never stand as a rendered source.
+        rel_path = require_file_path(doc.meta, citation_id)
 
-            # Create appropriate link based on file type
-            if rel_path.endswith(".rst"):
-                docs_url = convert_to_docs_url(rel_path)
-                if docs_url:
-                    file_link = f'<a href="{docs_url}" target="_blank">{Path(rel_path).name}</a>'
-                else:
-                    file_link = create_file_link(rel_path, line_no, "github")
+        # Get line number from content
+        line_no = get_primary_line_number(doc.content, rel_path)
+
+        # Create appropriate link based on file type
+        if rel_path.endswith(".rst"):
+            docs_url = convert_to_docs_url(rel_path)
+            if docs_url:
+                file_link = f'<a href="{docs_url}" target="_blank">{Path(rel_path).name}</a>'
             else:
-                file_link = create_file_link(rel_path, line_no, "local")
-
-            source_lines.append(
-                f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>'
-            )
+                file_link = create_file_link(rel_path, line_no, "github")
         else:
-            source_lines.append(
-                f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>'
-            )
+            file_link = create_file_link(rel_path, line_no, "local")
+
+        source_lines.append(
+            f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {file_link} - {citation_display}</p>'
+        )
 
     return "\n".join(source_lines)

@@ -16,6 +16,32 @@ from typing import Any, TypedDict
 
 logger = logging.getLogger(__name__)
 
+
+class DocumentationEnhancementError(RuntimeError):
+    """Metadata enhancement of a document failed; carries the document and cause."""
+
+    def __init__(self, doc, original):
+        self.doc = doc
+        self.original = original
+        rel = getattr(doc, "meta", {}).get("relative_path", "?")
+        super().__init__(
+            "cannot enhance document metadata for %s: %s: %s"
+            % (rel, type(original).__name__, original)
+        )
+
+
+class CitationLinkError(RuntimeError):
+    """A requested direct citation link could not be formed; carries path and cause."""
+
+    def __init__(self, file_path, original):
+        self.file_path = file_path
+        self.original = original
+        super().__init__(
+            "cannot form citation link for %s: %s: %s"
+            % (file_path, type(original).__name__, original)
+        )
+
+
 from haystack.dataclasses import Document
 
 
@@ -75,8 +101,7 @@ class InlineCitationEnhancer:
                 enhanced_docs.append(enhanced_doc)
 
             except Exception as e:
-                logger.warning(f"Failed to enhance document metadata: {e}")
-                enhanced_docs.append(doc)  # Keep original on error
+                raise DocumentationEnhancementError(doc, e) from e
 
         return enhanced_docs
 
@@ -305,8 +330,8 @@ print("Discriminant group:", L.discriminant_group())
             return response
 
         except Exception as e:
-            logger.error(f"Error post-processing citations: {e}")
-            return response  # Return original on error
+            logger.error("Error post-processing citations: %s", e)
+            raise
 
     def _add_single_citation(self, response: str, documents: list[Document]) -> str:
         """Add a single citation to very short responses that have none."""
@@ -327,6 +352,17 @@ print("Discriminant group:", L.discriminant_group())
 
         if not documents:
             return response
+
+        # The "unknown" sentinel begins here -- the same one citation_utils rejects:
+        # a document with no relative_path (absent, None, or empty) must fail closed
+        # rather than emit a successful-looking file://.../unknown (or .../None) source.
+        for doc in documents:
+            rel_path = doc.meta.get("relative_path")
+            if rel_path is None or str(rel_path).strip() in ("", "unknown"):
+                raise CitationLinkError(
+                    str(rel_path),
+                    KeyError("the document carries no relative_path in its meta"),
+                )
 
         # First, process inline citations to convert (src1) to proper links
         citation_map: dict[str, _CitationTarget] = {}
@@ -351,10 +387,16 @@ print("Discriminant group:", L.discriminant_group())
 
             # Create appropriate link
             try:
-                from sagemath_doc_search.citation_utils import (
-                    create_file_link,
-                    get_primary_line_number,
-                )
+                try:
+                    from sagemath_doc_search.citation_utils import (
+                        create_file_link,
+                        get_primary_line_number,
+                    )
+                except ModuleNotFoundError:
+                    from citation_utils import (
+                        create_file_link,
+                        get_primary_line_number,
+                    )
 
                 line_no = get_primary_line_number(doc.content or "", rel_path)
                 if rel_path.endswith(".rst"):
@@ -367,11 +409,11 @@ print("Discriminant group:", L.discriminant_group())
                 )
 
             except Exception as e:
-                logger.warning(f"Failed to create link for {rel_path}: {e}")
-                # Fallback if link creation fails
-                source_lines.append(
-                    f'<p id="ref-{citation_id}"><strong>[{citation_id}]</strong> {rel_path} - {citation_display}</p>'
-                )
+                # CitationLinkError carries the broken path to the caller, so a
+                # successful-looking bare-path fallback never substitutes for the
+                # requested link: recovery is distinguishable from success by the
+                # raised exception itself.
+                raise CitationLinkError(rel_path, e) from e
 
         return processed_response + "\n".join(source_lines)
 
@@ -388,55 +430,54 @@ print("Discriminant group:", L.discriminant_group())
 
                 # Create direct link to source file instead of internal anchor
                 try:
-                    from sagemath_doc_search.citation_utils import (
-                        create_file_link,
+                    try:
+                        from sagemath_doc_search.citation_utils import (
+                            create_file_link,
+                        )
+                    except ModuleNotFoundError:
+                        from citation_utils import (
+                            create_file_link,
+                        )
+
+                    # Forming the link here is what surfaces a broken citation path as
+                    # CitationLinkError (the rendered target stays the source-list anchor).
+                    create_file_link(
+                        file_path,
+                        line_number,
+                        "github" if file_path.endswith(".rst") else "local",
                     )
-
-                    if file_path.endswith(".rst"):
-                        # For documentation files, prefer GitHub/docs URLs
-                        file_link = create_file_link(
-                            file_path, line_number or 1, "github"
-                        )
-                    else:
-                        # For source files, use local links
-                        file_link = create_file_link(
-                            file_path, line_number or 1, "local"
-                        )
-
-                    # Extract just the href attribute for the inline citation
-                    import re
-
-                    href_match = re.search(r'href="([^"]+)"', file_link)
-                    if href_match:
-                        href_url = href_match.group(1)
-                        return f'<sup><a href="{href_url}" target="_blank" class="citation-link">[{citation_id}]</a></sup>'
-                    else:
-                        # Fallback to internal reference if link creation fails
-                        return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
+                    # The marker points at the source-list entry (id="ref-..."), which is
+                    # where the direct file link lives.  create_file_link returns
+                    # Markdown, so there is no href to lift out of it; rewriting this
+                    # anchor to a file:// URL would trade a link that always resolves for
+                    # one a browser may refuse to follow.
+                    return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
 
                 except Exception as e:
-                    logger.warning(
-                        f"Failed to create direct citation link for {file_path}: {e}"
-                    )
-                    # Fallback to internal reference
-                    return f'<sup><a href="#ref-{citation_id}" class="citation-link">[{citation_id}]</a></sup>'
+                    raise CitationLinkError(file_path, e) from e
             else:
                 return match.group(0)  # Return original if not found
 
-        # Replace (src1), (src2), etc. with direct source file links
         pattern = r"\((src\d+)\)"
         return re.sub(pattern, replace_citation, text)
 
     def _get_line_number(self, content: str, file_path: str) -> int | None:
-        """Get line number for citation purposes."""
+        """Line number for a citation, or None when the content does not determine one.
+
+        Reaching this method without ``citation_utils`` is a broken installation, not an
+        unknown line: the import failure propagates instead of being flattened into
+        line 1, which would cite the top of a file at random.
+        """
         try:
             from sagemath_doc_search.citation_utils import (
                 get_primary_line_number,
             )
+        except ModuleNotFoundError:
+            from citation_utils import (
+                get_primary_line_number,
+            )
 
-            return get_primary_line_number(content, file_path)
-        except ImportError:
-            return 1  # Fallback
+        return get_primary_line_number(content, file_path)
 
 
 def create_citation_enhanced_prompt(

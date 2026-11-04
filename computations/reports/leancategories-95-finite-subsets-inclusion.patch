@@ -1,0 +1,42 @@
+From 6ae8c8d6d78a81dc3850070f9c3d9a919f2135c8 Mon Sep 17 00:00:00 2001
+From: agent <agent@local>
+Date: Wed, 4 Nov 2026 15:17:24 +0000
+Subject: [PATCH] lean-categories#95: register the finite-subset inclusion into
+ the power set
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+`CasCatalogue.Foundation.FiniteSubsets.inclusion` (`𝒫_fin(X) ↪ 𝒫(X)`) and its `Mono`
+instance were already declared but unregistered, so the catalogue did not expose the
+natural inclusion that research#606 reads off the finite-subset object. This adds the
+`normalized_registry .inclusion` row `incl.sets.finite_subsets` with
+`sub := obj.sets.finite_subsets`, `super := obj.sets.power_set`, `parameterization`
+defaulting to `.shared`, and `mono := CasCatalogue.Foundation.FiniteSubsets.inclusion_mono`.
+
+The entry is accepted by the registry's own `validateInclusion`: the category and both
+objects resolve, the declaration is a morphism of `CategoryId.sets`, its endpoints use the
+shared parameter, and the named proof is `Mono` of that exact arrow. No declaration, no
+statement and no existing registration is changed.
+---
+ .../Catalogue/Semantics/Foundation/FiniteSubsets.lean       | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/LeanCategories/Catalogue/Semantics/Foundation/FiniteSubsets.lean b/LeanCategories/Catalogue/Semantics/Foundation/FiniteSubsets.lean
+index 55682c0..d9d75bc 100644
+--- a/LeanCategories/Catalogue/Semantics/Foundation/FiniteSubsets.lean
++++ b/LeanCategories/Catalogue/Semantics/Foundation/FiniteSubsets.lean
+@@ -148,4 +148,10 @@ normalized_registry .object
+     admission := some `CasCatalogue.Foundation.FiniteSubsets.admit
+     evidence := some `CasCatalogue.Foundation.FiniteSubsets.finiteSubsetEvidence }
+ 
++normalized_registry .inclusion
++  { id := ⟨"incl.sets.finite_subsets"⟩, category := CategoryId.sets
++    sub := ⟨"obj.sets.finite_subsets"⟩, super := ⟨"obj.sets.power_set"⟩
++    declaration := `CasCatalogue.Foundation.FiniteSubsets.inclusion
++    mono := `CasCatalogue.Foundation.FiniteSubsets.inclusion_mono }
++
+ end CasCatalogue
+-- 
+2.53.0
+
