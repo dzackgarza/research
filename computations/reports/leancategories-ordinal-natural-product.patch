@@ -1,0 +1,136 @@
+From e9980bff7b8604d3d6772b4ca4c7e76ff91e6c88 Mon Sep 17 00:00:00 2001
+From: agent <agent@local>
+Date: Wed, 4 Nov 2026 14:41:14 +0000
+Subject: [PATCH] ordinal natural product: least-element interface + the
+ successor upper bound
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Three interface lemmas that let downstream laws compare with the product without
+unfolding the sInf definition:
+- naturalProduct_le_of_constraint: any ordinal satisfying the defining constraint
+  bounds a ⊗ b above.
+- naturalProduct_isLeast: a ⊗ b satisfies the constraint and is below every ordinal
+  that does.
+- naturalProduct_eq_iff: c = a ⊗ b iff c satisfies the constraint and is minimal.
+
+And the first half of distributivity over a one-step extension, by induction on the
+first argument using the characterisation above:
+- naturalProduct_succ_le: a ⊗ (b+1) <= (a ⊗ b) ⊕ a.
+
+Build: lake build LeanCategories.ForMathlib.OrdinalNaturalSum -- green (909 jobs).
+No sorry in the file. The reverse inequality (a ⊗ (b+1) >= (a ⊗ b) ⊕ a), hence
+associativity and the full commutative-semiring laws, is not proved here.
+---
+ .../ForMathlib/OrdinalNaturalSum.lean         | 89 +++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+
+diff --git a/LeanCategories/ForMathlib/OrdinalNaturalSum.lean b/LeanCategories/ForMathlib/OrdinalNaturalSum.lean
+index cf5c75c..8eab580 100644
+--- a/LeanCategories/ForMathlib/OrdinalNaturalSum.lean
++++ b/LeanCategories/ForMathlib/OrdinalNaturalSum.lean
+@@ -356,6 +356,50 @@ theorem naturalProduct_constraint {a a' b b' : Ordinal.{u}} (ha : a' < a) (hb :
+   rw [naturalProduct_def a b]
+   exact csInf_mem (naturalProduct_admissible a b) a' ha b' hb
+ 
++/-- **Constraint upper bound.** Any ordinal satisfying the defining constraint of the natural
++product at `(a, b)` bounds the product above. This is the interface form of the defining
++`csInf`: every later law that compares the product with a candidate ordinal discharges the
++comparison through this lemma rather than unfolding the definition. -/
++theorem naturalProduct_le_of_constraint {a b c : Ordinal.{u}}
++    (h : ∀ a' < a, ∀ b' < b,
++      naturalSum (naturalProduct a' b) (naturalProduct a b') <
++        naturalSum c (naturalProduct a' b')) :
++    naturalProduct a b ≤ c := by
++  rw [naturalProduct_def]
++  exact csInf_le ⟨0, fun _ _ => zero_le⟩ h
++
++/-- **Least-element characterisation.** The natural product `a ⊗ b` is the least ordinal
++satisfying the defining constraint. Stated as: it satisfies the constraint, and it is below
++every ordinal that does. -/
++theorem naturalProduct_isLeast (a b : Ordinal.{u}) :
++    (∀ a' < a, ∀ b' < b,
++      naturalSum (naturalProduct a' b) (naturalProduct a b') <
++        naturalSum (naturalProduct a b) (naturalProduct a' b')) ∧
++    (∀ c, (∀ a' < a, ∀ b' < b,
++      naturalSum (naturalProduct a' b) (naturalProduct a b') <
++        naturalSum c (naturalProduct a' b')) → naturalProduct a b ≤ c) :=
++  ⟨fun a' ha b' hb => naturalProduct_constraint ha hb,
++   fun _ h => naturalProduct_le_of_constraint h⟩
++
++/-- **Uniqueness of the least solution**: an ordinal is the natural product exactly when it
++satisfies the constraint and is minimal among such ordinals. -/
++theorem naturalProduct_eq_iff {a b c : Ordinal.{u}} :
++    c = naturalProduct a b ↔
++      (∀ a' < a, ∀ b' < b,
++        naturalSum (naturalProduct a' b) (naturalProduct a b') <
++          naturalSum c (naturalProduct a' b')) ∧
++      (∀ d, (∀ a' < a, ∀ b' < b,
++        naturalSum (naturalProduct a' b) (naturalProduct a b') <
++          naturalSum d (naturalProduct a' b')) → c ≤ d) := by
++  constructor
++  · rintro rfl
++    exact naturalProduct_isLeast a b
++  · rintro ⟨hc, hmin⟩
++    exact le_antisymm
++      (hmin (naturalProduct a b) (fun a' ha b' hb => naturalProduct_constraint ha hb))
++      (naturalProduct_le_of_constraint hc)
++
++
+ /-- Natural product is symmetric. The defining inequalities are exchanged by swapping the
+ operands and using symmetry of natural sum. -/
+ theorem naturalProduct_comm (a b : Ordinal.{u}) : naturalProduct a b = naturalProduct b a := by
+@@ -671,4 +715,49 @@ theorem naturalProductList_strictMono {as bs : List Ordinal.{u}}
+     exact (naturalProduct_mono_right (a := a) (naturalProductList_mono hweak)).trans_lt
+       (naturalProduct_lt_left hab ht)
+ 
++/-- **Successor step, upper bound.** Multiplying by `Order.succ b` costs at most one extra
++summand `a`: `a ⊗ (b+1) ≤ (a ⊗ b) ⊕ a`. The first half of distributivity over a one-step
++extension, proved from the least-element characterisation by induction on `a`. -/
++theorem naturalProduct_succ_le (a b : Ordinal.{u}) :
++    naturalProduct a (Order.succ b) ≤ naturalSum (naturalProduct a b) a := by
++  induction a using Ordinal.induction with
++  | h a IH =>
++    apply naturalProduct_le_of_constraint
++    intro a' ha b' hb'
++    have hb'le : b' ≤ b := Order.lt_succ_iff.mp hb'
++    have hIH : naturalProduct a' (Order.succ b) ≤ naturalSum (naturalProduct a' b) a' :=
++      IH a' ha
++    refine lt_of_le_of_lt (naturalSum_mono_left hIH) ?_
++    -- the two reassociations shared by both cases
++    have reassoc : ∀ p q r : Ordinal.{u},
++        naturalSum (naturalSum p r) q = naturalSum (naturalSum p q) r := by
++      intro p q r
++      exact (naturalSum_assoc p r q).trans
++        ((congrArg (naturalSum p) (naturalSum_comm r q)).trans
++          (naturalSum_assoc p q r).symm)
++    have reassoc' : ∀ p q r : Ordinal.{u},
++        naturalSum p (naturalSum q r) = naturalSum (naturalSum p r) q := by
++      intro p q r
++      exact (congrArg (naturalSum p) (naturalSum_comm q r)).trans
++        (naturalSum_assoc p r q).symm
++    rcases lt_or_eq_of_le hb'le with hlt | heq
++    · have hc := naturalProduct_constraint (a := a) (b := b) ha hlt
++      calc naturalSum (naturalSum (naturalProduct a' b) a') (naturalProduct a b')
++          = naturalSum (naturalSum (naturalProduct a' b) (naturalProduct a b')) a' :=
++            reassoc _ _ _
++        _ < naturalSum (naturalSum (naturalProduct a b) (naturalProduct a' b')) a' :=
++            naturalSum_lt_left hc
++        _ < naturalSum (naturalSum (naturalProduct a b) (naturalProduct a' b')) a :=
++            naturalSum_lt_right ha
++        _ = naturalSum (naturalSum (naturalProduct a b) a) (naturalProduct a' b') :=
++            reassoc _ _ _
++    · subst b'
++      calc naturalSum (naturalSum (naturalProduct a' b) a') (naturalProduct a b)
++          = naturalSum (naturalProduct a b) (naturalSum (naturalProduct a' b) a') :=
++            naturalSum_comm _ _
++        _ < naturalSum (naturalProduct a b) (naturalSum (naturalProduct a' b) a) :=
++            naturalSum_lt_right (naturalSum_lt_right ha)
++        _ = naturalSum (naturalSum (naturalProduct a b) a) (naturalProduct a' b) :=
++            reassoc' _ _ _
++
+ end LeanCategories.ForMathlib.OrdinalNatural
+-- 
+2.53.0
+
