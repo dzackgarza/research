@@ -14,20 +14,30 @@ NULLARY_FUNCTORS = {
 }
 
 
-@pytest.mark.parametrize("name", sorted(NULLARY_FUNCTORS))
-def test_a_nullary_functor_sends_an_object_into_its_codomain(name) -> None:
-    constructor, specimen, codomain = NULLARY_FUNCTORS[name]
-    functor = constructor()
-    source = specimen()
-    image = functor(source)
-    assert source in functor.domain()
-    if codomain is not None:
-        assert image in codomain()
-    assert image in functor.codomain()
-    identity = source.Mor(source).identity()
-    image_of_identity = functor(identity)
-    assert image_of_identity.domain() == image
-    assert image_of_identity.codomain() == image
+def test_every_nullary_functor_sends_an_object_into_its_codomain() -> None:
+    """Each registered nullary functor sends its domain witness into its codomain.
+
+    The population is the one this file's known-values test names.  An empty population
+    states nothing, and an empty parametrization is reported as a skip, which
+    ``POLICY.NO_SKIP_MASK`` forbids: so the absence is asserted rather than masked.
+    """
+    assert NULLARY_FUNCTORS, (
+        "NULLARY_FUNCTORS is empty although this file's known-values test names seven "
+        "nullary functors: abelianization, cardinality, power set, free group, "
+        "underlying set, ring of integers, fraction field"
+    )
+    for constructor, specimen, codomain in NULLARY_FUNCTORS.values():
+        functor = constructor()
+        source = specimen()
+        image = functor(source)
+        assert source in functor.domain()
+        if codomain is not None:
+            assert image in codomain()
+        assert image in functor.codomain()
+        identity = source.Mor(source).identity()
+        image_of_identity = functor(identity)
+        assert image_of_identity.domain() == image
+        assert image_of_identity.codomain() == image
 
 
 def test_known_values_of_the_nullary_functors() -> None:
