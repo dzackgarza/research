@@ -1,5 +1,11 @@
 # research#606 — dependency state and reconciliation against the actual public API
 
+> Governing caveat (recorded after this file): the migration language below is #606's
+> wording, not an independently established mandate for research-side implementation.
+> See [research-606-intent-conflict-review.md](research-606-intent-conflict-review.md):
+> this repo consumes maintained public interfaces; implementation belongs upstream.
+> Nothing in this file was acted on as rearchitecture.
+
 Supersedes and corrects this file's inventory section. The earlier draft claimed the set
 layer was unreferenced ("vacated") because `rg SetsCategory|set_categories` over `src/`
 found nothing. That inference was wrong: the surface research consumers import is a
