@@ -591,8 +591,9 @@ def find_symbol_line_with_sage_index(
     Returns:
         Tuple of (line_number, file_path) if found, (None, None) if the index simply has
         no entry for the symbol.  An index that cannot be built or read (including bytes it
-        cannot decode), or a matching entry without a real 1-based `line:` number,
-        raises :class:`CtagsIndexError`: a true negative never doubles as an error report.
+        cannot decode), or a record for the requested symbol without a file and a real
+        1-based `line:` number, raises :class:`CtagsIndexError`: a true negative never
+        doubles as an error report.
     """
     ctags_file = CTAGS_INDEX_PATH
 
@@ -606,34 +607,49 @@ def find_symbol_line_with_sage_index(
                 if line.startswith("!_TAG_"):
                     continue
 
-                parts = line.strip().split("\t")
-                if len(parts) >= 4:
-                    tag_name = parts[0]
-                    file_path = parts[1]
+                stripped = line.strip()
+                if not stripped:
+                    continue
+                parts = stripped.split("\t")
+                tag_name = parts[0]
 
-                    if tag_name == symbol_name:
-                        # The entry must carry a real 1-based line number.  A missing
-                        # `line:` field, an unparseable one, or a bogus value (0 has
-                        # silently read as "no entry", -1 as a valid link target) marks
-                        # the index as corrupt: (None, None) stays a true negative,
-                        # never a cover for malformed data.
-                        line_number = None
-                        for part in parts[3:]:
-                            if part.startswith("line:"):
-                                try:
-                                    line_number = int(part.split(":")[1])
-                                    break
-                                except (ValueError, IndexError) as e:
-                                    raise CtagsIndexError(ctags_file, e) from e
-                        if line_number is None or line_number < 1:
-                            raise CtagsIndexError(
-                                ctags_file,
-                                ValueError(
-                                    "tag entry for %r carries no valid line: field"
-                                    % symbol_name
-                                ),
-                            )
-                        matches.append((line_number, file_path))
+                if tag_name != symbol_name:
+                    # Malformed records for other symbols neither help nor hinder this
+                    # lookup; only records for the requested symbol must be well formed.
+                    continue
+
+                # A record for the requested symbol must supply a file and a real
+                # 1-based line number.  A short record (the old field-count gate let it
+                # slip past every check), a missing `line:` field, an unparseable one,
+                # or a bogus value (0 once read as "no entry", -1 as a link target) is a
+                # malformed index record, not "the symbol is absent": (None, None)
+                # stays a true negative, never a cover for corrupt data.
+                if len(parts) < 2 or not parts[1].strip():
+                    raise CtagsIndexError(
+                        ctags_file,
+                        ValueError(
+                            "tag entry for %r carries no file field" % symbol_name
+                        ),
+                    )
+                file_path = parts[1]
+                line_number = None
+                if len(parts) >= 4:
+                    for part in parts[3:]:
+                        if part.startswith("line:"):
+                            try:
+                                line_number = int(part.split(":")[1])
+                                break
+                            except (ValueError, IndexError) as e:
+                                raise CtagsIndexError(ctags_file, e) from e
+                if line_number is None or line_number < 1:
+                    raise CtagsIndexError(
+                        ctags_file,
+                        ValueError(
+                            "tag entry for %r carries no valid line: field"
+                            % symbol_name
+                        ),
+                    )
+                matches.append((line_number, file_path))
 
             if matches:
                 # If we have a file hint, prefer matches from that file

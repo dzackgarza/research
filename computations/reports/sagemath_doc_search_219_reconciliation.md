@@ -5,7 +5,7 @@ modules and against the acceptance survey itself. The issue tree is untouched; #
 where it is, open.
 
 Result: every site the audit named is real, and every one of them is now caller-visible.
-`computations/reports/sagemath_doc_search_acceptance_219.py` passes **27/27** and now
+`computations/reports/sagemath_doc_search_acceptance_219.py` passes **28/28** and now
 exercises the audited `_add_source_list` catch directly.
 
 ## 1. The audit's claims, checked
@@ -46,7 +46,7 @@ cause.
 
 ## 3. What the acceptance now proves
 
-`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (27/27)`.
+`python3 computations/reports/sagemath_doc_search_acceptance_219.py` → `PASS (28/28)`.
 Each check is one boundary, and each one asserts the *caller-visible* consequence.
 
 - **b15 is the audited one.** It reaches `_add_source_list` twice — through
@@ -119,6 +119,6 @@ Each check is one boundary, and each one asserts the *caller-visible* consequenc
 ## 6. Reproduce
 
 ```sh
-python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 27/27, exit 0
+python3 computations/reports/sagemath_doc_search_acceptance_219.py   # 28/28, exit 0
 python3 computations/scripts/sagemath_doc_search/inline_citation_enhancer.py  # module demo
 ```
