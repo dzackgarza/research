@@ -50,7 +50,7 @@ A row leaves this page when its owner holds a proof, a disproof, or a computatio
 |:---|:---|:---|
 | **The number of $0$-cusps of $\fco$** | @prob:cusp-lifting; the lower bound and the stabilizer index, @prop:coble-stable-cusp-lower-bound; @sec-open-problems | [#644](https://github.com/dzackgarza/research/issues/644), [#667](https://github.com/dzackgarza/research/issues/667) |
 | **The number of $1$-cusps of $\fco$** | @sec-open-problems; the full-group case, @thm:plane-transitivity-tco | [#645](https://github.com/dzackgarza/research/issues/645) |
-| **A generating set of the group $\Gamma_\Co$** | @prob:coxeter-completeness | [#646](https://github.com/dzackgarza/research/issues/646) |
+| **A generating set of the group $\Gamma_\Co$** | @prob:coxeter-completeness; the reflective set is decided and no longer open, @prop:gamma-co-reflective-set | [#646](https://github.com/dzackgarza/research/issues/646) |
 | **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison; `computations/reports/smw0_accepted-proofs.md` | [#647](https://github.com/dzackgarza/research/issues/647), [#663](https://github.com/dzackgarza/research/issues/663), [#720](https://github.com/dzackgarza/research/issues/720) |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison | |
 | **Labeled Coble rigidity** | @prob:coble-rigidity, @prob:effective-cone-agreement, @prob:twist-identification, @rmk:a21-open | [#664](https://github.com/dzackgarza/research/issues/664) |

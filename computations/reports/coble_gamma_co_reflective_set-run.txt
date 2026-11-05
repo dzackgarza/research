@@ -1,0 +1,67 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: the rootfs image checkout /repos/sage-extensions, pin 7b222e86
+  lattice: built here from its own Gram data, not read from a stored object
+
+T_Co = <2> + U(2) + E8(-2), the twist B(2) of prop:tco-as-twist
+  rank 11, determinant -2048, signature (2, 9), even: True
+  two_elementary_invariants: (11, 11, 1)   (the Coble table: (11, 11, 1))
+  basis squares (zeta; e-prime, f-prime; the eight E8(-2) vectors): [2, 0, 0, -4, -4, -4, -4, -4, -4, -4, -4]
+
+the reflective squares the owner admits
+  possible_root_lengths(): [1, 2, 4]   (divisors of 2 * exp(A_L) = 2 * 2)
+  square -1 cannot occur in an even lattice, and square +-2 and -4 are the two
+  cases of @def:2elementary-roots on a 2-elementary lattice.
+
+one representative of each case of the introduction
+  short root  zeta + a_1               q =  -2   div = 2
+  short root  zeta + a_8               q =  -2   div = 2
+  positive root  zeta                  q =   2   div = 2
+  positive root  e' + f'               q =   4   div = 2
+  long root  a_1                       q =  -4   div = 2
+  long root  e' - f'                   q =  -4   div = 2
+
+the reflections, built by the owner
+  Gamma_Co's discriminant half ker(rho_T) as an owned object: PreimageSubgroups.parent_class
+  s_(zeta + a_1): determinant -1, fixes the vectors orthogonal to the root: True,
+      an involution: True, negates the root: True
+  s_(e' - f'): determinant -1, an involution: True, negates the root: True
+  the discriminant action of s_(e' - f'), computed by hand and not here:
+      s((e')/2) = (f')/2, and (f' - e')/2 is not in T_Co, so rho(s) != 1.
+
+the owner operations this question needs, and what they do here
+  T.O_plus()                                     REFUSED AssertionError: O^+(Integral lattice of rank 11 and signature (2, 9)) is the kernel of the real spinor norm at the real place of Frac(R); QQ has exactly one, but Frac(R) = Fraction Field of Integer Ring: pass a real embedding of it to spinor_kernel
+  T.spinor_norm()                                REFUSED AssertionError: the spinor norm of Integral lattice of rank 11 and signature (2, 9) is computed here over represented absolute number fields, but Frac(R) = Fraction Field of Integer Ring
+  T.roots()                                      REFUSED ValueError: cannot run a definite-lattice algorithm on Integral lattice of rank 11 and signature (2, 9): it must be positive or negative definite, but its signature is (2, 9) in rank 11
+  T.roots_of_square(-2)                          REFUSED ValueError: cannot run a definite-lattice algorithm on Integral lattice of rank 11 and signature (2, 9): it must be positive or negative definite, but its signature is (2, 9) in rank 11
+  T.root_sublattice()                            REFUSED ValueError: cannot run a definite-lattice algorithm on Integral lattice of rank 11 and signature (2, 9): it must be positive or negative definite, but its signature is (2, 9) in rank 11
+  HyperbolicLattices(ZZ)(T)                      REFUSED AssertionError: Integral lattice of rank 11 and signature (2, 9) is not a hyperbolic lattice: a hyperbolic lattice has signature (1, n) or (n, 1), but Integral lattice of rank 11 and signature (2, 9) has signature (2, 9)
+  T.reflective_root_locus()                      Sets.parent_class[_ConditionSetEngine].ObjectType
+    is the short root in it                      True
+    is e' - f' in it                             True
+    is a_1 in it                                 True
+    is zeta (+2) in it                           True
+
+SUMMARY
+  (1) T_Co is the even lattice <2> + U(2) + E8(-2), rank 11, det -2048, signature
+      (2, 9), two-elementary with invariants (11, 11, 1), agreeing with the
+      chapter table; its admissible reflective squares are {1, 2, 4} and the
+      square -1 is excluded by parity, so its roots are the short roots v^2 = -2
+      and the long roots v^2 = -4, whose divisibility is 2 here, as
+      @def:2elementary-roots and lem:divisibilityAlwaysTwoTco say;
+  (2) the (-2)-vectors of T_Co give reflections the owner builds, and both the
+      spinor-norm and the discriminant computations that place them in Gamma_Co are
+      hand proofs recorded in the writing, not owner decisions, because O^+ and the
+      discriminant action are unavailable at this runtime (the refusals above and
+      the crashes in coble_owner_gap-blockers-20261105.md);
+  (3) the long root e' - f' has an integral reflection in O^+(T_Co) that moves the
+      discriminant, so the reflective set of Gamma_Co is not the whole root system:
+      it is the short roots together with the long roots that are discriminant-
+      trivial, and among the short roots nothing more has to be decided;
+  (4) T_Co is not hyperbolic, so the Vinberg-algorithm route the research report
+      names (@prob:coxeter-completeness item 2, B32--B34) does not apply to T_Co
+      itself: HyperbolicLattices refuses it by signature, and what remains is the
+      reflective-lattice question in signature (2,9), for which the owner has no
+      operation.  No generation statement is made or implied here.
+OK: the reflective set is decided in writing; the generation half is blocked at the
+    owner with the exact operations named, not with a substituted algorithm.
