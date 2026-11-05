@@ -1,0 +1,5 @@
+launcher      : /sage/.venv/bin/sage
+which gap     : /sage/.venv/bin/gap
+C1: det 5 | C2: det 5
+calling C1.is_isometric_to(C2) ...
+is_isometric_to -> True
