@@ -1,0 +1,60 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-6ad7a5ea/src on PYTHONPATH, pin 6ad7a5ea
+
+L = U + A_3, the lattice of @ex:dawes-u-a3
+  rank 5, signature (1, 4), determinant 4, even: True
+
+v_1 = (4, 4, 1, 2, -1)
+  q = 20, split as U-part 32 and A_3-part -12   (@ex:dawes-u-a3 says the same)
+  coordinates have gcd 1, so v is primitive; div_L(v) = 4
+  v^perp: rank 4, signature (0, 4), determinant 5, even: True
+         Gram matrix [(-2, -1, 1, -1), (-1, -2, 1, -1), (1, 1, -2, 1), (-1, -1, 1, -2)]
+         det(L)*q(v)/div(v)^2 = 4 * 20 / 16 = 5   AGREE
+         as a plain lattice: 20 roots, root type A4
+         rank 4 + roots of type A_4 (a rank-4 root system of determinant 5) +
+         determinant 5 force the lattice to BE the A_4 root lattice: the roots
+         span a sublattice of determinant 5 equal to det(v^perp).
+
+v_2 = (36, 144, 5, -30, 83)
+  q = 20, split as U-part 10368 and A_3-part -10348   (@ex:dawes-u-a3 says the same)
+  coordinates have gcd 1, so v is primitive; div_L(v) = 4
+  v^perp: rank 4, signature (0, 4), determinant 5, even: True
+         Gram matrix [(-182, -192, -445, -590), (-192, -206, -476, -631), (-445, -476, -1102, -1459), (-590, -631, -1459, -1934)]
+         det(L)*q(v)/div(v)^2 = 4 * 20 / 16 = 5   AGREE
+         as a plain lattice: 20 roots, root type A4
+         rank 4 + roots of type A_4 (a rank-4 root system of determinant 5) +
+         determinant 5 force the lattice to BE the A_4 root lattice: the roots
+         span a sublattice of determinant 5 equal to det(v^perp).
+
+the two complements side by side
+  v_1: determinant 5, 20 roots, root type A4, Gram diagonal [-2, -2, -2, -2]
+  v_2: determinant 5, 20 roots, root type A4, Gram diagonal [-182, -206, -1102, -1934]
+  equal determinants: True   both root type A4
+  so the two complements are isometric: they are both the A_4 root lattice, negated.
+
+the last invariant @prop:orbit-necessary-conditions(2) names: the class of v/div(v)
+  [v_1/div] = [0] + [1] - [2] - [3], with q = [(5)/(4)] in Fraction Field of Integer Ring / (2)Integer Ring
+  [v_2/div] = 36*[0] + 9*[1] + 5*[2] - 7*[3] - 34*[4], with q = [(5)/(4)] in Fraction Field of Integer Ring / (2)Integer Ring
+  equal as classes of A_L: True
+
+SUMMARY
+  (1) both vectors are primitive of square 20 and divisibility 4 in L, so both
+      complements have determinant det(L)*20/4^2 = 5 by the formula proved in the
+      page: the recorded ground for v_1 not~ v_2, "the complements have different
+      discriminants", is impossible, not merely unverified;
+  (2) the complements are not merely close but isometric: both are rank 4, negative
+      definite, of determinant 5, with 20 roots of type A_4, which forces each to BE
+      the A_4 root lattice; so no correct computation of the complements can witness
+      inequivalence, and the in-tree run either computed them wrongly or recorded a
+      reason it did not use;
+  (3) every invariant that @prop:orbit-necessary-conditions requires to agree does
+      agree: square 20, divisibility 4, isometric complements (both -A_4), and the
+      same class of v/div(v) in A_L, which carries q = 5/4 for both.  Nothing
+      computed here separates the two vectors, so the paper stands uncontradicted;
+  (4) the equivalence itself is still not proved: what would settle it is an explicit
+      isometry of L carrying v_1 to v_2, or the orbit decision, and both need the
+      isometry machinery that #272 and the GAP stop block.  No claim about v_1 ~ v_2
+      is made.
+OK: the recorded attribution is refuted at the owner; the equivalence question is
+    named as the orbit question and left to the machinery that is blocked.

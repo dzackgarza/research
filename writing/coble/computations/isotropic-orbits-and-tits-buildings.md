@@ -73,6 +73,32 @@ The last sentence is the practical content: each condition is a necessary condit
 The necessary conditions on an isotropic orbit are the invariants of `prop:coble-divisibility-discriminant` together with the building-theoretic restriction that an isotropic vector lies in a chamber of the Tits building determined by its class.
 :::
 
+::: {.lemma #lem:complement-determinant title="The determinant of a complement is fixed by the square and the divisibility"}
+
+Let $L$ be a nondegenerate integral lattice and $v\in L$ primitive with $q(v)\neq0$.
+Then
+$$
+\abs{\det\bigl(v^{\perp L}\bigr)}
+=
+\abs{\det L}\cdot\frac{\abs{q(v)}}{\div_L(v)^{2}}
+.
+$$
+:::
+
+::: {.proof}
+
+The map $\varphi\colon L\to\ZZ$, $x\mapsto\beta(x,v)$, has image $\div_L(v)\ZZ$ and kernel $v^{\perp L}$, and it carries $\ZZ v$ onto $q(v)\ZZ$; so
+$$
+L\big/\bigl(\ZZ v+v^{\perp L}\bigr) \;\iso\; \div_L(v)\ZZ\big/ q(v)\ZZ
+,\qquad
+\bigl[L:\ZZ v+v^{\perp L}\bigr] = \frac{\abs{q(v)}}{\div_L(v)}
+,$$
+the quotient on the right being finite of that order because $q(v)\in\div_L(v)\ZZ$.
+On the other hand $\det(\ZZ v\oplus v^{\perp L}) = q(v)\cdot\det(v^{\perp L})$ and $\det(\ZZ v\oplus v^{\perp L}) = [L:\ZZ v+v^{\perp L}]^{2}\cdot\det L$; substituting the index gives the formula.
+:::
+
+Two primitive vectors of one lattice with the same square and the same divisibility therefore have complements of equal determinant, and condition (3) of @prop:orbit-necessary-conditions cannot be violated through the determinant alone: a difference between two complements, if there is one, is finer than its discriminant.
+
 ::: {.remark title="The definite case"}
 
 Algorithm 2.1 of [@Daw22] decides $\Gamma$-equivalence of $v_1, v_2$ with $v_1^2 = v_2^2 \neq 0$ under the hypothesis that $v_1^{\perp L}$ is definite.
@@ -115,6 +141,16 @@ Run on Example 2.2 of @ex:dawes-u-a3, the in-tree computation returns $v_1\not\s
 The record attributes the disagreement to a simplified isometry test, but a discriminant is an isometry invariant, so by @prop:orbit-necessary-conditions(3) unequal discriminants refute equivalence under $\Orth(L)$ and under every subgroup of it, whatever isometry test is used downstream.
 The disagreement therefore lies in one of three places: the conclusion of [@Daw22], the transcription of the vectors or of the Gram matrix, or the computed complements.
 The squares recorded in @ex:dawes-u-a3 are consistent with the stated Gram matrices, which settles the transcription of the vectors; recomputing the two complements and their discriminants settles the rest.
+
+*The recorded ground is impossible, and the complements are isometric.*
+Both vectors are primitive, with $q(v) = 20$ and $\div_L(v) = 4$, so by @lem:complement-determinant both complements have determinant $4\cdot 20/4^{2} = 5$: unequal discriminants are not something a correct computation could have found.
+The recomputation in `computations/reports/coble_dawes-example-2-2_complements.py` finds more than equal determinants: both complements are rank $4$, negative definite, of determinant $5$, with $20$ roots of type $A_4$, and a rank-$4$ lattice whose roots are of type $A_4$ and whose determinant equals $\det A_4$ *is* the root lattice $A_4$, so the two complements are isometric.
+Every invariant of @prop:orbit-necessary-conditions therefore agrees on the pair: equal squares, equal divisibilities, isometric complements, and — the last one, which the same record computes — the same class of $v/\div(v)$ in $A_L$, carrying $q = 5/4$ for both.
+
+*What that leaves.*
+The in-tree run is not evidence against the paper's conclusion: the invariant it named is false for this pair, and the complements it would have had to compute are isometric, so the recorded refutation is withdrawn.
+Neither is the conclusion proved: what is missing is an explicit isometry carrying $v_1$ to $v_2$, equivalently the decision of the orbit of a primitive vector of square $20$ in $L$, and that is the isometry machinery which at this stage is the blocked layer recorded in `computations/reports/coble_gamma_co_two_definitions.py`.
+The question therefore stands open in one direction only: nothing computed here separates the two vectors, and nothing recorded against the paper survives.
 :::
 
 ::: {.remark title="Buildings by descent along a subgroup"}
