@@ -213,6 +213,9 @@ book:
         - coble/appendix-reference/coxeter-and-dynkin-diagrams.md
         - coble/reference-tables/lattice-and-diagram-conventions.md
         - coble/extracted-references/extracted-references.md
+    # The register of research unknowns across the whole book: it cites blocks from
+    # every part and from the dissertation, so it closes the reading order.
+    - open-questions.md
 # Deliberately unlisted prose under the linked parts. A book renders exactly
 # `book.chapters`, so nothing below reaches the site; each reason is recorded
 # because the counterpart rule is "listed, or deliberately unlisted".
