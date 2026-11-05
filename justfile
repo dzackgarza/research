@@ -283,7 +283,7 @@ sage-init-check: sage-init-install
         kc.stop_channels()
         km.shutdown_kernel()
     PY
-    "$(just --evaluate sage_bin 2>/dev/null || echo "${SAGE_BIN:-sage}")" \
+    "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" \
         -c "exec(open('${probe}').read())"
 
 # Rebuild the Sage-owned research environment.

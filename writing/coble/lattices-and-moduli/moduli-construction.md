@@ -19,8 +19,7 @@ $$
 \gent &= \Orth(\ten) \intersect \Orth(\tdp) \iscontainedin \Orth(\lkt) \\
 \Gamma^K_{\En} &= \Orth(\ten), \qquad \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten} \\
 \Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(\ten)}(T_\Co) \iscontainedin \Orth(\ten) \\
-F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^* \\
-F_{\Nod, 2} &= ???
+F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^*
 \end{aligned}
 $$
 

@@ -24,6 +24,24 @@ direnv allow
 
 The session preamble is `src/dzack_research/preamble/`; `from dzack_research.preamble.all import *` is the session import. The mathematical library it imports is [sage-extensions](https://github.com/dzackgarza/sage-extensions) (`sage_extensions`). The previous preamble is archived at `archives/preamble/`.
 
+### Run it
+
+```python
+>>> from dzack_research.preamble.all import *
+>>> Lattices(ZZ)("E8")
+Integral lattice of rank 8 and signature (0, 8)
+>>> Groups.S(3).classifying_category().object_set()
+{* in B(Symmetric group S_3)}
+
+```
+
+The block runs as a doctest on every push, in the
+[README example workflow](.github/workflows/readme-example.yml). Locally:
+
+```bash
+PYTHONPATH=src "$(just -f ~/ai-review-ci/justfiles/sage.just -d . _sage-python)" -m doctest README.md
+```
+
 For a source-only audit of **every declared category, subcategory, method,
 construction route, result-category claim, and recursive reachable type**,
 run `just construction-universe` and open

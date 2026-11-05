@@ -39,8 +39,12 @@ classified by CoxIter as **Perron, not Pisot, not Salem**. Each output also list
 
 ::: {.remark title="Consistency with the dissertation"}
 
-The dissertation records for these cusps only the ray counts of the semifans (Cusp 1: 4 Type II + 4 Type III; Cusp 2: 2 + 8; Cusp 3: 3 + 15), which is a different quantity from any entry above.
-Nothing in the dissertation contradicts these numbers, and nothing in it reproduces them.
+The dissertation records two ray counts for each cusp.
+The rays of the Coxeter compactification are the orbits, under the symmetries of the Coxeter diagram, of its maximal parabolic subdiagrams (Type II) and of its elliptic subdiagrams of rank $9$ (Type III): $4+4$, $2+8$, $3+15$, $4+12$, $5+17$ for Sterk 1 to 5.
+The rays of the semifans are the subset of these that survive the removal of every subdiagram with a connected component of irrelevant roots: $2+0$, $2+7$, $2+7$, $4+7$, $3+0$.
+CoxIter counts the same subdiagrams before the quotient by the diagram symmetries: an ideal vertex of the Coxeter polytope is a maximal parabolic subdiagram and a finite vertex is an elliptic subdiagram of rank $9$.
+For Sterk 1 the dissertation counts nine labelled maximal parabolic subdiagrams, reduced to four orbits by a symmetry group of order $4$, and the table above reports nine vertices at infinity.
+The orbit counts themselves are not among the CoxIter outputs, which take no quotient by the diagram symmetries.
 :::
 
 ## The 0-cusp lattices

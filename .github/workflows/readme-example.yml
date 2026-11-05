@@ -1,0 +1,46 @@
+name: README example
+# The README example is the smallest acceptance: it runs as a doctest on
+# every push, inside the shared Sage image.
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+permissions:
+  contents: read
+  packages: read
+defaults:
+  run:
+    shell: bash
+jobs:
+  readme:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    container:
+      image: ghcr.io/dzackgarza/sage:develop
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ github.token }}
+      options: --user root
+    env:
+      SAGE_BIN: /sage/.venv/bin/sage
+    steps:
+      - uses: actions/checkout@v4
+      - run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Install the checkout into the image's Sage environment
+        # The image owns the Sage projects this package imports; install the
+        # checkout without dependency resolution so its graph is not re-resolved.
+        run: |
+          sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+          uv pip install --quiet --python "$sage_python" --no-deps --editable .
+      - name: Run the README example
+        env:
+          PYTHONPATH: ${{ github.workspace }}/src
+        run: |
+          echo 'export DIRENV_CONFIGURED_CORRECTLY=1' > "$HOME/.envrc"
+          set -a
+          source .envrc
+          set +a
+          mkdir -p "$TMPDIR"
+          sage_python="$("$SAGE_BIN" -c 'import sys; print(sys.executable)')"
+          "$sage_python" -m doctest README.md

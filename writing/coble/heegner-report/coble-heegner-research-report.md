@@ -509,7 +509,7 @@ $$
 $\langle2\rangle$ contributes $(1,0)$, $U(2)$ contributes $(1,1)$ because the isotropic basis $e,f$ of $U$ survives the twist, and $E_8(2)$ is negative definite of rank $8$; by @def:signature signatures add over an orthogonal sum of nondegenerate summands, so $\signature(T_{\Co})=(2,1+8)=(2,9)$ and the rank is $1+2+8=11$.
 
 *Discriminant group.*
-Each summand has determinant a power of $2$, so $T_{\Co}$ is integral and its discriminant is a $2$-group; by @prop:stabilization-discriminant the discriminant of an orthogonal sum is the orthogonal sum of the discriminants when the summands are 2-elementary, and here
+Each summand has determinant a power of $2$, so $T_{\Co}$ is integral and its discriminant is a $2$-group; by @prop:discriminant-orthogonal-sum the discriminant of an orthogonal sum is the orthogonal sum of the discriminants, and here
 $$
 \abs{A_{\langle2\rangle}}=2,\qquad \abs{A_{U(2)}}=4=2^2,\qquad \abs{A_{E_8(2)}}=2^8,
 $$

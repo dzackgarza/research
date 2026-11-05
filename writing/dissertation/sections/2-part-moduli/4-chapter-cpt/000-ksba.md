@@ -30,9 +30,9 @@ This notion generalizes the stability condition for curves: for $X$ a nodal curv
 The KSBA compactification provides a canonical and proper compactification of the moduli space of varieties and pairs of log general type by allowing stable pairs $(X, D)$ with semi log canonical singularities and ample $K_X + D$.
 As a consequence, these moduli spaces are proper and projective, and their construction is compatible with the minimal model program.
 
-<!-- see [Kollár, *Moduli of varieties of general type*, in: *Handbook of Moduli*, vol. II (2013), 131–157, arXiv:1008.0621], [@Alexeev, *Comp. Math.* 112 (1998), 147–182], [Kollár–Shepherd-Barron, *J. Algebraic Geom.* 1 (1992), 429–479]. -->
+<!-- see [Kollár, *Moduli of varieties of general type*, in: *Handbook of Moduli*, vol. II (2013), 131–157, arXiv:1008.0621], [Alexeev, *Comp. Math.* 112 (1998), 147–182], [Kollár–Shepherd-Barron, *J. Algebraic Geom.* 1 (1992), 429–479]. -->
 
-<!-- see (Kollár–Shepherd-Barron–Alexeev) compactification, as constructed in [Kollár–Shepherd-Barron, *J. Algebraic Geom.* 1 (1992), 429–479], [@Alexeev, *Comp. Math.* 112 (1998), 147–182], and [Kollár, *Moduli of varieties of general type*, Handbook of Moduli, vol. II, 2013 (arXiv:1008.0621)],  -->
+<!-- see (Kollár–Shepherd-Barron–Alexeev) compactification, as constructed in [Kollár–Shepherd-Barron, *J. Algebraic Geom.* 1 (1992), 429–479], [Alexeev, *Comp. Math.* 112 (1998), 147–182], and [Kollár, *Moduli of varieties of general type*, Handbook of Moduli, vol. II, 2013 (arXiv:1008.0621)],  -->
 
 ### Recognizable Divisors
 
