@@ -48,7 +48,7 @@ docs-deploy: docs-check
 docs-check: docs-assets
     python3 scripts/docs_check.py
 
-# Local check in seconds: the gate's source checks over the whole book (path links, heading numbers, inline citation URLs, theorem references), then one page rendered for tikz and markdown syntax errors. e.g. `just docs-lint coble/index.md`
+# Local check in seconds: the gate's source checks over the whole book (citation keys, cross-references, path links, heading numbers, inline citation URLs, theorem references), then one page rendered for tikz and markdown syntax errors. e.g. `just docs-lint coble/index.md`
 docs-lint FILE: docs-assets
     python3 scripts/docs_check.py --source
     cd writing/.book && uvx --from quarto-cli quarto render "{{FILE}}" --to html

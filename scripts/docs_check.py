@@ -13,11 +13,12 @@ Quarto command from $QUARTO (default `uvx --from quarto-cli quarto`).
 Run: `just docs-check`.
 
 `--source` runs only the checks that read the markdown sources: the chapter list,
-the part links, path and block links, heading numbers, inline citation URLs,
-refs-web.bib, and theorem-family references. It renders nothing and opens no network
-connection, so `just docs-lint` runs it in seconds. The render-dependent checks
-(citations, cross-refs, anchor ids, external links) belong to the full gate, which
-CI runs on every push.
+the part links, citation keys against the bibliographies `_quarto.yml` lists, Quarto
+cross-references and `#sec-` links against the explicit ids, path and block links,
+heading numbers, inline citation URLs, refs-web.bib, and theorem-family references.
+It renders nothing and opens no network connection, so `just docs-lint` runs it in
+under a second. The render itself, citations outside the prose, links to generated
+ids, and external links belong to the full gate, which CI runs on every push.
 """
 import argparse
 import os
@@ -149,6 +150,59 @@ if lua_table is None:
     sys.exit(f"docs-check: read no ref_prefixes table out of {AMSTHM_REFS}")
 THEOREM_PREFIXES = re.findall(r'(\w+)"?\]?\s*=\s*true', lua_table.group(1))
 
+# Every chapter, read once. `prose` is the text outside fenced and inline code, for
+# the checks that read pandoc syntax: code can hold an `@decorator` that pandoc
+# never reads as a citation.
+sources = {md: md.read_text(encoding="utf-8", errors="replace") for md in SITE_MD}
+CODE = re.compile(r"^(`{3,}|~{3,}).*?^\1[ \t]*$|`[^`\n]*`", re.M | re.S)
+prose = {md: CODE.sub("", text) for md, text in sources.items()}
+EXPLICIT_IDS = {m.group(1) for text in sources.values()
+                for m in re.finditer(r"\{#([\w:.-]+)", text)}
+
+# 1s, 2s. citation keys and Quarto cross-references, read from the sources, so a key
+# no bibliography has and a `@sec-x` with no `{#sec-x}` are caught without a render.
+# Checks 1 and 2 still run in the full gate: the render log sees citations this scan
+# does not reach, such as ones in YAML metadata.
+# A `@key` is a Quarto cross-reference when its prefix is one Quarto reserves and is
+# followed by a hyphen; a theorem-family reference when the prefix is one amsthm-refs
+# registers and is followed by a colon (check 7 owns those); a Stacks tag when it is
+# `stacks-` (a filter resolves it). Anything else must be a bibliography key.
+BIBS = [BOOK / b for b in re.findall(r"^\s+-\s+(\S+\.bib)\s*$",
+                                     (BOOK / "_quarto.yml").read_text(), re.M)]
+if not BIBS:
+    sys.exit("docs-check: read no bibliography list out of _quarto.yml")
+for b in BIBS:
+    if not b.is_file():
+        sys.exit(f"docs-check: bibliography {b} is missing (`just docs-assets` copies the shared one)")
+BIB_KEYS = {k for b in BIBS
+            for k in re.findall(r"^@\w+\s*\{\s*([^,\s]+)\s*,",
+                                b.read_text(encoding="utf-8", errors="replace"), re.M)}
+QUARTO_PREFIXES = {"fig", "tbl", "lst", "tip", "nte", "wrn", "imp", "cau", "thm", "lem", "cor",
+                   "prp", "cnj", "def", "exm", "exr", "sol", "rem", "eq", "sec"}
+CITE_KEY = re.compile(r"(?<![\w@/.])@\{?([A-Za-z0-9_][\w:.#$%&+?<>~/-]*\w)\}?")
+
+
+def key_kind(key: str) -> str:
+    sep = re.search(r"[-:]", key)
+    prefix = key[:sep.start()] if sep else key
+    if sep and sep.group() == "-" and prefix in QUARTO_PREFIXES:
+        return "crossref"
+    if sep and sep.group() == ":" and prefix in THEOREM_PREFIXES:
+        return "theorem"
+    if key.startswith("stacks-"):
+        return "stacks"
+    return "citation"
+
+
+for md, text in prose.items():
+    for i, line in enumerate(text.splitlines(), 1):
+        for m in CITE_KEY.finditer(line):
+            key, kind = m.group(1), key_kind(m.group(1))
+            if kind == "citation" and key not in BIB_KEYS:
+                failures.append(f"{md.name}:{i}: citation @{key} is in no bibliography")
+            elif kind == "crossref" and key not in EXPLICIT_IDS:
+                failures.append(f"{md.name}:{i}: @{key} names no {{#{key}}} in the book")
+
 # 3. broken links. A link names its target by id, `[t](#sec-x)`, and Quarto finds the
 # page that holds the id, so a chapter can move without breaking a link to it. A link
 # by path, `[t](../dir/Page.md)`, breaks when either end moves, so it is refused.
@@ -156,7 +210,8 @@ THEOREM_PREFIXES = re.findall(r'(\w+)"?\]?\s*=\s*true', lua_table.group(1))
 # stays an in-page anchor and is dead from any other chapter, so it is refused too.
 # The ids come from the rendered pages, because Quarto also generates an id for every
 # heading without an explicit one. A source-only run has no render to read, so it
-# checks the form of each link and leaves the existence of the id to the full gate.
+# checks a link to a reserved-prefix id (`#sec-x`) against the explicit ids of the
+# sources and leaves links to generated ids to the full gate.
 ids = None if SOURCE_ONLY else {
     i for h in SITE.rglob("*.html")
     for i in re.findall(r'id="([^"]+)"', h.read_text(encoding="utf-8", errors="replace"))}
@@ -168,6 +223,8 @@ for md in SITE_MD:
                                 f"write `text (@{m.group(1)})`")
             elif ids is not None and m.group(1) not in ids:
                 failures.append(f"{md.name}:{i}: link to #{m.group(1)}, which no page has")
+            elif ids is None and key_kind(m.group(1)) == "crossref" and m.group(1) not in EXPLICIT_IDS:
+                failures.append(f"{md.name}:{i}: link to #{m.group(1)}, which no page defines")
         for m in re.finditer(r"\]\(((?![a-z]+:)[^)\s#]+\.md)(#[^)\s]*)?\)", line):
             failures.append(f"{md.name}:{i}: link to the path {m.group(1)} — link to the "
                             "id of the heading instead, `[text](#sec-x)`")
@@ -203,7 +260,6 @@ for m in re.finditer(r"@(\w+)\{([^,]+),(.*?)\n\}", REFS_WEB.read_text(encoding="
 # drops a reference whose id it never registered, and pandoc drops raw LaTeX such as
 # `\cref{x}` in HTML, so either defect silently deletes words from the sentence.
 # Check 2 cannot see this: `quarto-unresolved-ref` is Quarto's own crossref marker.
-sources = {md: md.read_text(encoding="utf-8", errors="replace") for md in SITE_MD}
 defined = {m.group(1) for text in sources.values()
            for m in re.finditer(r"^:{3,}\s*\{[^}\n]*#([\w:.-]+)", text, re.M)}
 THEOREM_REF = re.compile(r"(?<![\w@])@((?:" + "|".join(THEOREM_PREFIXES) + r"):[\w:.-]*[\w-])")
@@ -261,7 +317,7 @@ if failures:
     print("docs-check FAILED:\n" + "\n".join(f"  - {f}" for f in failures))
     sys.exit(1)
 if SOURCE_ONLY:
-    print(f"docs-check --source: OK ({len(SITE_MD)} chapters; citations, cross-refs, anchor ids, "
-          "and external links are checked by the full gate)")
+    print(f"docs-check --source: OK ({len(SITE_MD)} chapters, {len(BIB_KEYS)} bibliography keys; "
+          "the render, links to generated ids, and external links are checked by the full gate)")
 else:
     print(f"docs-check: OK (citations, cross-refs, anchor links, and {len(urls)} external links all resolve)")
