@@ -719,7 +719,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
   has supporting evidence, as required by `DEV-61`.
 
 - **Programme acceptance:** Broad suites, QC gates and notebook campaigns remain
-  suspended until the required M1 source prerequisites ([#417](https://github.com/dzackgarza/research/issues/417)) are delivered.
+  suspended until the M1 source prerequisites ([sage-extensions#21](https://github.com/dzackgarza/sage-extensions/issues/21)) are delivered.
   T begins with `core-usability-session`; `terminal-session` owns complete
   frozen-API acceptance and `extended-mathematics-session` owns required feature
   acceptance. M2 audits and API freeze, M3 full-suite acceptance and M4 capability
