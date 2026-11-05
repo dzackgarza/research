@@ -1,4 +1,4 @@
-# Coble surfaces moduli: annotated bibliography
+# Coble surfaces moduli: annotated bibliography {#sec-coble-annotated-bibliography}
 
 ## Coble geometry and moduli
 

@@ -8,4 +8,4 @@ The pages are the paper: one topic per page, with no separate notes tree, and th
 Front matter states what a page is: `unit: method` marks a reusable computation, the pages beside it are its output, and `status: conjectural` marks a research program rather than a result.
 The lattice theory these pages evaluate is the preceding part; nothing here is stated about a lattice that is not defined there or on the page itself.
 
-[Annotated bibliography and literature map](annotated-bibliography.md): references by project topic, with direct links to PDF sections in Zotero.
+[Annotated bibliography and literature map](#sec-coble-annotated-bibliography): references by project topic, with direct links to PDF sections in Zotero.
