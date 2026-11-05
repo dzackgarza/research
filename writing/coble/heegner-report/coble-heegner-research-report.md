@@ -1528,6 +1528,10 @@ For every polarized Coble $0$-cusp:
 
 A list of vectors or a finite Gram-matrix computation is not a Coxeter theorem without these steps.
 
+The five items are stated for the cusp lattices, and they are the right site for them: item 2 is Vinberg's algorithm, which is a statement about a lattice of signature $(1,n)$, and the transcendental lattice $T_\Co$ of signature $(2,9)$ is not one.
+For $T_\Co$ itself the corresponding question is the reflective-lattice one, and its first half is now a theorem of this book rather than an open obligation: by @prop:gamma-co-reflective-set the reflections lying in the stable group $\Gamma_\Co$ are exactly those in the short roots together with those in the long roots whose reflection is discriminant-trivial, the short roots all lying in it.
+What remains open for $T_\Co$, and is not one of the five items above, is whether that reflective set together with finitely many further isometries generates $\Gamma_\Co$; the state of that question, and the operations it needs from the owning library, are recorded in `computations/reports/coble_gamma_co_reflective_set.py` and `computations/reports/coble_owner_gap-blockers-20261105.md`.
+
 ## Integral-affine structures, dlt quotients, and stable models {#sec-integral-affine}
 
 ### The AEGS dictionary {#sec-aegs-dictionary}
