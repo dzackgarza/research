@@ -32,8 +32,11 @@ smallest case there is; the committed `coble_isotropic_orbits.py` — which did 
 the full group's partition in 29.8 s on 2026-11-04 — now stops as well (probe 4 of the same
 file). The cause, the probes that rule out a stale GAP workspace, a wrong GAP root and an
 autoloaded package, and the second, independent API-level defect in `O_plus()` and
-`spinor_norm()` are recorded in `coble_owner_gap-blockers-20261105.md`. Neither issue can
-be settled on this runtime, and no orbit enumeration is implemented here in its place.
+`spinor_norm()` are recorded in `coble_owner_gap-blockers-20261105.md`. That file records a measurement and not an
+attribution -- the environment split, and the fact that other workspaces on this VM report a
+working `libgap` -- and the question of why this rootfs differs is with the runtime owner.
+Neither issue can be settled with what runs here, and no orbit enumeration is implemented
+here in its place.
 
 ## What does stand today
 

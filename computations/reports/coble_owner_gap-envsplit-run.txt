@@ -1,0 +1,71 @@
+===== 1. host shell: which sage and which python
+/opt/math/bin/sage
+/opt/math/bin/python
+/opt/math/bin/sage
+----- the repository's .envrc selects SAGE_BIN, so its default is checked too
+7:export SAGE_BIN="${SAGE_BIN:-$HOME/.local/bin/sage}"
+ls: cannot access '/workspace/nucleus/work/home/.local/bin/sage': No such file or directory
+----- sage.env of the host sage
+/opt/math/lib/python3.12/site-packages/sage/__init__.py
+SAGE_LOCAL= /opt/math
+GAP_ROOT_PATHS= /opt/math/lib/gap/;/opt/math/share/gap/
+
+===== 2. host sage: kernel_info, then libgap 1+1
+  File "<string>", line 1, in <module>
+  File "sage/libs/gap/util.pyx", line 1, in init sage.libs.gap.util
+  File "sage/libs/gap/element.pyx", line 24, in init sage.libs.gap.element
+ImportError: cannot import name GAPError
+  File "sage/libs/gap/libgap.pyx", line 1, in init sage.libs.gap.libgap
+  File "sage/libs/gap/util.pyx", line 1, in init sage.libs.gap.util
+  File "sage/libs/gap/element.pyx", line 22, in init sage.libs.gap.element
+ImportError: cannot import name libgap
+
+===== 3. environment variables visible to this shell
+
+===== 4. rootfs: /sage/.venv/bin/python under env -i (the asked-for probe)
+#W Static module lib/oper1.g has CRC mismatch, ignoring
+#W Static module lib/type1.g has CRC mismatch, ignoring
+------------------------------------------------------------------------
+------------------------------------------------------------------------
+cysignals failed to execute cysignals-CSI: No such file or directory
+------------------------------------------------------------------------
+Unhandled SIGSEGV: A segmentation fault occurred.
+This probably occurred because a *compiled* module has a bug
+------------------------------------------------------------------------
+Unhandled SIGSEGV: A segmentation fault occurred.
+This probably occurred because a *compiled* module has a bug
+in it and is not properly wrapped with sig_on(), sig_off().
+Python will now terminate.
+------------------------------------------------------------------------
+
+===== 5. rootfs: the GAP install the kernel is reading
+----- sage.env of the rootfs interpreter (no libgap import)
+    import sage, sage.env; print(sage.__file__); print('SAGE_LOCAL=', sage.env.SAGE_LOCAL); print('GAP_ROOT_PATHS=', sage.env.GAP_ROOT_PATHS)
+                                                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'sage.env' has no attribute 'GAP_ROOT_PATHS'
+SAGE_LOCAL= /sage/.venv
+----- the first root of GAP_ROOT_PATHS: is there a lib/ tree under it?
+pkg
+sysinfo.gap
+----- the GAP the kernel declares
+GAParch=x86_64-pc-linux-gnu-default64-kv11
+GAP_VERSION="4.16.1"
+GAP_BUILD_VERSION="4.16.1"
+----- where lib/oper1.g actually is, and how its whole tree is dated
+/workspace/nucleus/work/home/sage-image/rootfs/sage/.venv/lib/libgap.so.11
+/workspace/nucleus/work/home/sage-image/rootfs/sage/.venv/share/gap/lib/oper1.g
+2026-11-04 16:25:57.000000000 +0000 41070 /workspace/nucleus/work/home/sage-image/rootfs/sage/.venv/share/gap/lib/oper1.g
+2026-11-04 16:25:57.000000000 +0000 13728232 /workspace/nucleus/work/home/sage-image/rootfs/sage/.venv/lib/libgap.so.11
+----- every lib/ file carries one mtime:   Nov 4 
+----- the distro GAP is a third tree and disagrees in size
+39545 /workspace/nucleus/work/home/sage-image/rootfs/usr/share/gap/lib/oper1.g
+41070 /workspace/nucleus/work/home/sage-image/rootfs/sage/.venv/share/gap/lib/oper1.g
+80615 total
+
+===== 6. other Sage or GAP installations anywhere on this VM
+/opt/math/lib/libgap.so.9
+/opt/math/lib/libgap.so
+
+===== 7. and the second finding, under the same clean environment
+  O_plus()       REFUSED AssertionError: O^+(Integral lattice of rank 2 and signature (1, 1)) is the kernel of the real spinor norm at the real place of Frac(R); QQ has exactly one, but Frac(R) = Fraction Field of Integer Ring: pass a real embedding of it to sp
+  spinor_norm()  REFUSED AssertionError: the spinor norm of Integral lattice of rank 2 and signature (1, 1) is computed here over represented absolute number fields, but Frac(R) = Fraction Field of Integer Ring
