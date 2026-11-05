@@ -77,6 +77,65 @@ The value $[b,c]$ is the *internal hom*. For a commutative ring $R$, $(R\text{-}
 The *dual object* of $a$ in a closed monoidal category is $[a,e]$; that the canonical morphism $a\to[[a,e],e]$ is an isomorphism is a hypothesis on $a$, stated where it is used.
 :::
 
+::: {.definition #def:dualizable-object title="Dualizable objects"}
+
+Let $\langle V,\tensor,e\rangle$ be a symmetric monoidal category (@def:braided-symmetric), with $\alpha,\lambda,\varrho$ suppressed from the notation by @thm:coherence.
+An object $a\in V$ is *dualizable* when there exist an object $a^\vee$, the *dual* of $a$, and morphisms
+$$
+\operatorname{coev}_a\colon e\too a\tensor a^\vee,
+\qquad
+\operatorname{ev}_a\colon a^\vee\tensor a\too e,
+$$
+the *coevaluation* and the *evaluation*, satisfying the two triangle identities
+$$
+(1_a\tensor\operatorname{ev}_a)\circ(\operatorname{coev}_a\tensor 1_a)=1_a,
+\qquad
+(\operatorname{ev}_a\tensor 1_{a^\vee})\circ(1_{a^\vee}\tensor\operatorname{coev}_a)=1_{a^\vee}
+$$
+[@PS13, Def. 2.1].
+:::
+
+::: {.proposition #prop:projective-dualizable title="Finitely generated projective modules are dualizable"}
+
+Let $R$ be a commutative ring, let $A$ be a finitely generated projective $R$-module, and put $A^\vee\definedas\Hom_R(A,R)$.
+Then $A$ is dualizable in $(R\text{-}\mathbf{Mod},\tensor_R,R)$ with dual $A^\vee$ and evaluation $\operatorname{ev}_A(f\tensor a)=f(a)$.
+The biduality morphism
+$$
+\varepsilon_A\colon A\too A^{\vee\vee},
+\qquad
+\varepsilon_A(a)(f)=f(a),
+$$
+is an isomorphism [@Lam99, (2.9) and (2.11)].
+:::
+
+::: {.proof}
+
+By the dual basis lemma for a finitely generated projective module [@Lam99, (2.9) and (2.11)], there are $a_1,\dots,a_n\in A$ and $f_1,\dots,f_n\in A^\vee$ with
+$$
+a=\sum_{i=1}^n a_i\,f_i(a)
+\qquad\text{for all }a\in A.
+$$
+Define $\operatorname{coev}_A\colon R\too A\tensor_RA^\vee$ by $1\mapsto\sum_i a_i\tensor f_i$.
+
+For $f\in A^\vee$ and $a\in A$, applying $f$ to the displayed equation gives $f(a)=\sum_i f(a_i)f_i(a)$, so
+$$
+f=\sum_{i=1}^n f(a_i)\,f_i .
+$$
+
+The first triangle identity sends $a$ to $\sum_i a_i\tensor f_i\tensor a$ and then to $\sum_i a_if_i(a)=a$.
+The second sends $f$ to $\sum_i f\tensor a_i\tensor f_i$ and then to $\sum_i f(a_i)f_i=f$.
+Thus $(A^\vee,\operatorname{coev}_A,\operatorname{ev}_A)$ exhibits $A$ as dualizable.
+
+If $\varepsilon_A(a)=0$, then $f_i(a)=0$ for every $i$, so $a=\sum_i a_if_i(a)=0$.
+Given $\varphi\in A^{\vee\vee}$, put $a\definedas\sum_i a_i\,\varphi(f_i)$.
+For every $f\in A^\vee$,
+$$
+\varepsilon_A(a)(f)=\sum_{i=1}^n f(a_i)\,\varphi(f_i)=\varphi\Bigl(\sum_{i=1}^n f(a_i)f_i\Bigr)=\varphi(f),
+$$
+so $\varepsilon_A(a)=\varphi$.
+Hence the $R$-linear map $\varepsilon_A$ is bijective, and so an isomorphism.
+:::
+
 ## Internal algebraic objects {#sec-internal-objects}
 
 ::: {.definition #def:monoid-object title="Monoid objects"}

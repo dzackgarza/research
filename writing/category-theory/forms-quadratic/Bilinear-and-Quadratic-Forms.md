@@ -284,6 +284,45 @@ $$
 $$
 :::
 
+::: {.proposition #prop:orthogonal-galois-connection title="The orthogonal complement is an antitone Galois connection"}
+
+Let $(M,W,b)$ be a symmetric bilinear module, and let $\operatorname{Sub}(M)$ be the poset of subobjects of $M$ in $R\text{-}\mathbf{Mod}$ (@def:subobject-relation), with $S\subseteq T$ when $S$ factors through $T$.
+For a subobject $S$ represented by $\iota\colon S\injects M$, let $S^\perp$ be the subobject represented by $\kappa_\iota^{\mathrm R}\colon S^{\perp_b}\injects M$ of @def:orthogonal-complement.
+Then $S\mapsto S^\perp$ is a well-defined order-reversing map $\operatorname{Sub}(M)\too\operatorname{Sub}(M)$, and for all $S,T\in\operatorname{Sub}(M)$
+$$
+S\subseteq T^\perp
+\quad\Longleftrightarrow\quad
+T\subseteq S^\perp .
+$$
+Thus $(-)^\perp$ is an antitone Galois connection of $\operatorname{Sub}(M)$ with itself, and
+$$
+S\subseteq S^{\perp\perp},
+\qquad
+S^\perp=S^{\perp\perp\perp}
+$$
+[@Mac98, §IV.5, Thm. 1].
+:::
+
+::: {.proof}
+
+In $R\text{-}\mathbf{Mod}$ a subobject of $M$ is determined by the image of any representative, and $S\subseteq T$ holds exactly when the image of $S$ is contained in the image of $T$.
+By the exact sequence that defines $S^{\perp_b}$, the image of $\kappa_\iota^{\mathrm R}$ is
+$$
+\{x\in M : b(y,x)=0\text{ for all }y\in\iota(S)\},
+$$
+which depends only on $\iota(S)$, so $S^\perp$ depends only on the subobject $S$.
+If $\iota(S)\subseteq\iota'(T)$, every $x$ orthogonal to $\iota'(T)$ is orthogonal to $\iota(S)$, so $T^\perp\subseteq S^\perp$.
+
+Both $S\subseteq T^\perp$ and $T\subseteq S^\perp$ state that $b(y,z)=0$ for all $y$ in the image of $T$ and $z$ in the image of $S$, the second after the symmetry $b(y,z)=b(z,y)$.
+So the two conditions are equivalent.
+
+Regard $(-)^\perp$ as two order-preserving maps $F\colon\operatorname{Sub}(M)\too\operatorname{Sub}(M)^{\mathrm{op}}$ and $G\colon\operatorname{Sub}(M)^{\mathrm{op}}\too\operatorname{Sub}(M)$.
+The displayed equivalence states that $FS\supseteq T$ in $\operatorname{Sub}(M)$ if and only if $S\subseteq GT$, so $F$ is left adjoint to $G$ and the pair is a Galois connection [@Mac98, §IV.5, Thm. 1].
+Taking $T=S^\perp$ gives $S\subseteq S^{\perp\perp}$.
+Applying the order-reversing map to $S\subseteq S^{\perp\perp}$ gives $S^{\perp\perp\perp}\subseteq S^\perp$, and $S^\perp\subseteq(S^\perp)^{\perp\perp}$ is the previous inclusion for $S^\perp$.
+Hence $S^\perp=S^{\perp\perp\perp}$.
+:::
+
 ::: {.definition #def:nondegenerate-reduction title="Nondegenerate reduction"}
 
 Let $B$ be a symmetric bilinear module and let
