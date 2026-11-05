@@ -922,7 +922,7 @@ Then:
    W(T_\Co) \definedas \generators{\,s_v \;:\; v \in T_\Co,\ v^2 = -2\,}
    \iscontainedin \Gamma_\Co
    ,$$
-   and it is infinite, since a lattice of signature $(2,9)$ has infinitely many vectors of square $-2$;
+   and it is infinite, the proof exhibiting a family;
 2. if $v^2 = 2$ or $v^2 = 4$ then $s_v$ is an isometry of $T_\Co$ lying in $\ker\rho_{T_\Co}$ and outside $\Orth^+(T_\Co)$, hence outside $\Gamma_\Co$;
 3. the long root $e'-f'$ of the $U(2)$ summand has $s_{e'-f'}\in\Orth^+(T_\Co)$ and $s_{e'-f'}\notin\ker\rho_{T_\Co}$.
 
@@ -942,14 +942,14 @@ x_a \definedas a\zeta + e' - \tfrac{a^2+1}{2}f'
 \qquad\text{has}\qquad
 x_a^2 = 2a^2 + 4\cdot\Bigl(-\tfrac{a^2+1}{2}\Bigr) = -2
 ,$$
-since $\zeta$ is orthogonal to the $U(2)$ summand and $b(e',f') = 2$ there.
+since $\zeta$ is orthogonal to the $U(2)$ summand and $\beta(e',f') = 2$ there.
 
 (2) For $v^2 = \pm2$ the same computation gives $\rho_{T_\Co}(s_v) = \id$; for $v^2 = 4$ it gives $s_v(x^*) - x^* = -\tfrac12\beta(x^*,v)v$, and $\beta(x^*,v) = 2\beta(x^*, v/2)$ with $v/2\in T_\Co^*$ because $\div_{T_\Co}(v) = 2$, so this is again an element of $T_\Co$.
 The real spinor norm is where the two cases separate: $\spinornorm_\bR(s_v) = [-v^2/2]$, which is the class of $-1$ for $v^2 = 2$ and the same class for $v^2 = 4$, and that class is not the identity of $\bR^\times/(\bR^\times)^2$.
 So $s_v \notin \Orth^+(T_\Co)$ while $s_v\in\ker\rho_{T_\Co}$, and a member of $\ker\rho_{T_\Co}$ that is not in $\Orth^+(T_\Co)$ is not in their intersection.
 
 (3) The vector $v = e'-f'$ has square $0+0-2\cdot2 = -4$ and divisibility $2$, so $s_v(x) = x + \tfrac12\beta(x,v)v$ is an isometry of $T_\Co$.
-The class $[e']/2$ lies in $T_\Co^*$: it pairs to $1$ with $f'$ and to $0$ with $e'$, with $\zeta$ and with $E_8(-2)$.
+The vector $e'/2$ lies in $T_\Co^*$: it pairs to $1$ with $f'$ and to $0$ with $e'$, with $\zeta$ and with $E_8(-2)$.
 Now $\beta(e'/2,\, e'-f') = -1$, so
 $$
 s_v\bigl(\tfrac12 e'\bigr) = \tfrac12 e' - \tfrac12\bigl(e'-f'\bigr) = \tfrac12 f'
