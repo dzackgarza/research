@@ -72,7 +72,7 @@ Issue [#660](https://github.com/dzackgarza/research/issues/660).
 
 **The number of $0$-cusps of $\fco$.**
 The number of $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$.
-Established: at least two (@lem:stable-orthogonal-not-transitive); the same number for the discriminant kernel (@prop:discriminant-kernel-orbits); on the finite side, $A_{T_\Co}$ has $528$ nonzero isotropic classes and the finite group acts with orbit lengths $[1,2,120,135,270]$ (@thm:coble-heegner-finite-orbits, whose orbit lengths are still an unverified computation, see the last section).
+Established: at least $527$, one for each nonzero isotropic class of $A_{T_\Co}$, with the exact count an index of stabilizers (@prop:coble-stable-cusp-lower-bound); the same number for the discriminant kernel (@prop:discriminant-kernel-orbits); on the finite side, $A_{T_\Co}$ has $528$ nonzero isotropic classes and the finite group acts with orbit lengths $[1,2,120,135,270]$ (@thm:coble-heegner-finite-orbits, whose orbit lengths are still an unverified computation, see the last section).
 No upper bound is known.
 The Eichler criterion does not apply because $T_\Co$ contains no copy of $U$.
 The open content is the lifting theorem @prob:cusp-lifting: whether the image of the integral parabolic stabilizer is the finite group whose orbits were computed.
@@ -227,12 +227,6 @@ Issue [#679](https://github.com/dzackgarza/research/issues/679).
 Issue [#684](https://github.com/dzackgarza/research/issues/684).
 
 ## Decidable by a finite derivation, not yet decided
-
-**The genus of $T_\Co$ and the surjectivity at $r=a$.**
-@sec-open-problems proposes to justify the passage from $T_\Co$ to its discriminant form by Nikulin's $r>a$ criterion, and $T_\Co$ has $r=a=11$; @sec-discriminant-orbits states that surjectivity of $\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is not available there.
-@thm:two-elementary-surjectivity, as stated in this book, assumes only an even indefinite nondegenerate $2$-elementary lattice, and @sec-gamma-co-comparison applies it to $T_\Co$.
-The three pages have to be reconciled against the cited source before any orbit count is read off the discriminant form.
-Issue [#687](https://github.com/dzackgarza/research/issues/687).
 
 **The orbit lengths on the $528$ isotropic classes.**
 The order $696\,729\,600$ of the finite group in @thm:coble-heegner-finite-orbits is verified; its orbit lengths $[1,2,120,135,270]$ are not, and neither is the claim that $[1,255,272]$ are the orbits of the polarization stabilizer.

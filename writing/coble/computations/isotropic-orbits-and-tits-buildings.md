@@ -88,7 +88,7 @@ $$
 \Orth(L)\too\Orth(q_L)
 $$
 is surjective.
-This is the same surjectivity that Nikulin's criteria supply for a $2$-elementary lattice with $r > a$ [@Nik80], and it is the hypothesis under which [open problems](#sec-open-problems) reduces the $T_\Co$ orbit problem to $A_{T_\Co}$.
+For an even indefinite $2$-elementary lattice this surjectivity holds with no further hypothesis (@thm:two-elementary-surjectivity), so it is available for $T_\Co$, and it is the hypothesis under which [open problems](#sec-open-problems) reduces the $\Orth(T_\Co)$-orbit problem to $A_{T_\Co}$.
 Without it the discriminant data does not determine the orbit, and the algorithm decides nothing.
 :::
 

@@ -10,15 +10,13 @@ None of the statements below is claimed to be settled; several cross-reference p
 
 ## Lattice-theoretic gaps
 
-::: {.remark title="Open problem: isometry class and genus of the Coble lattices"}
+::: {.remark title="The genus and the discriminant representation of the Coble lattices"}
 
 The invariants $(r,a,\delta)$ of the geometric lattice $S_\Co \cong (11,11,1)_1$ (signature $(1,10)$, Gram matrix $\diag(2,-2,\dots,-2)$, equivalently $\generators{-2}\oplus E_{10}(2)$) and of the transcendental lattice $T_\Co = S_\Co^{\perp \lkt} \cong (11,11,1)_2$ (signature $(2,9)$) are recorded in [the Coble lattice table](#sec-coble-lattice-table), and both satisfy $q_{S_\Co} \cong q_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ with $q_{S_\Co} = -q_{T_\Co} \bmod 2\ZZ$.
-What is not yet formally established is the *isometry-class verification* and the *genus decomposition*: whether the genus of $T_\Co$ contains a unique isometry class.
-Concretely:
-
-- compute the Gram matrices of $S_\Co$ and $T_\Co$ and verify their $(r,a,\delta)$ invariants and genus cardinality via Nikulin's classification (the $r > a$ check for a $2$-elementary lattice) [@Nik80];
-
-- confirm that $r > a$ forces a unique class in the genus, so that the reduction of isotropic-orbit questions to the discriminant form $q_{T_\Co}$ via @thm:sterk-orbit is justified.
+Both lattices are even, indefinite and $2$-elementary, with both signature indices nonzero, so Nikulin's two theorems on $2$-elementary lattices apply with no further hypothesis: each is the unique lattice in its genus (@thm:two-elementary-classification, [@Nik80, Thm. 3.6.2]), and $\Orth(T_\Co)\to\Orth(q_{T_\Co})$ and $\Orth(S_\Co)\to\Orth(q_{S_\Co})$ are surjective (@thm:two-elementary-surjectivity, [@Nik80, Thm. 3.6.3]).
+Neither theorem has a hypothesis $r > a$. The case $r > a$ is the one in which Nikulin's general criteria [@Nik80, Cor. 1.13.3 and Thm. 1.14.2] already give both conclusions, and the case $r = a$, which is that of $S_\Co$ and $T_\Co$ with $r = a = 11$, is treated separately in the proofs of Theorems 3.6.2 and 3.6.3.
+So the orbits of $\Orth(T_\Co)$ on primitive vectors of given square and divisibility are read off the discriminant form.
+The open questions below concern the stable group $\Gamma_\Co$, which acts trivially on $A_{T_\Co}$; the discriminant form separates its orbits (@prop:coble-stable-cusp-lower-bound) and does not count them.
 :::
 
 ::: {.remark title="Open problem: explicit primitive embedding matrices"}
@@ -51,12 +49,12 @@ Existence and the eigenlattice description are settled by @prop:theta-co-exists:
 How many orbits of primitive isotropic vectors does $T_\Co$ have under the arithmetic group $\Gamma_\Co = \Orth^+(T_\Co)^*$?
 The discriminant kernel $\discriminantkernel{T_\Co}$ is larger, $\Gamma_\Co$ being its component-preserving half of index $2$, and it has the *same* orbits: @prop:discriminant-kernel-orbits. So this is one question and not two, and the group-theoretic difference between the kernel and the stable group does not appear in the count.
 The index alone would not have given that, and the first version of this item drew the wrong conclusion from it: whether two groups' orbit partitions agree is decided orbit by orbit, through their stabilizers, by @lem:character-kernel-orbits.
-What is settled is the lower end: for $\Orth^+(T_\Co)$ the count is one (@thm:unpolarized-cusps); for $\Gamma_\Co$, and so for the kernel, it is at least two, the two isotropic generators of the $U(2)$ summand lying in distinct orbits (@lem:stable-orthogonal-not-transitive, whose argument uses only triviality on $A_{T_\Co}$ and so applies to the kernel as well).
-Nothing here gives an upper bound, and $\fco$ has at least two $0$-cusps rather than one.
-Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for a $2$-elementary lattice with $r > a$ the genus contains a unique class and $\Orth(T) \to \Orth(q_T)$ is surjective [@Nik80], so a primitive isotropic vector $v$ with $\div(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\div(v),\, \bar v \in A_T,\, v^2 = 0)$.
+What is settled is the lower end: for $\Orth^+(T_\Co)$ the count is one (@thm:unpolarized-cusps); for $\Gamma_\Co$, and so for the kernel, it is at least $527$, one orbit for each nonzero isotropic class of $A_{T_\Co}$ (@prop:coble-stable-cusp-lower-bound, whose argument uses only triviality on $A_{T_\Co}$ and so applies to the kernel as well).
+Nothing here gives an upper bound, and $\fco$ has at least $527$ $0$-cusps rather than one.
+Sterk's technique [@Ste91] determines these by analyzing the orbits of the images (lifts) in the discriminant group $A_{T_\Co} \cong (\ZZ/2\ZZ)^{11}$ under $\Orth(q_{T_\Co})$: for an even indefinite $2$-elementary lattice $T$ with both signature indices nonzero the genus contains a unique class (@thm:two-elementary-classification) and $\Orth(T) \to \Orth(q_T)$ is surjective (@thm:two-elementary-surjectivity), so a primitive isotropic vector $v$ with $\div(v)=d$ is determined up to $\Orth(T)$ by the tuple $(\div(v),\, \bar v \in A_T,\, v^2 = 0)$.
 The finite half is settled by @prop:coble-q-fibers and @thm:coble-isotropic-class-orbits: $A_{T_\Co}$ has $528$ isotropic classes, and $\Orth(q_{T_\Co})$ has two orbits of sizes $1$ and $527$. By @prop:coble-primitive-isotropic-classes every primitive isotropic vector of $T_\Co$ maps to the nonzero orbit. Under the degree-$2$ Enriques group, @thm:coble-heegner-finite-orbits gives the refinement $[1, 2, 120, 135, 270]$. The open work is the passage from these finite decompositions back to the lattice:
 
-- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and determine how many $\Gamma_\Co$-orbits lie in divisibility $2$ — the same number as for the discriminant kernel, by @prop:discriminant-kernel-orbits; there are at least two (@lem:stable-orthogonal-not-transitive), so the finite picture, in which every primitive isotropic vector maps to the single nonzero class, does not lift to a single orbit. The Eichler criterion is unavailable here because $T_\Co$ contains no copy of $U$ (the Eichler criterion (@thm:eichler-criterion) and the remark following it);
+- lift the $\Orth(q_{T_\Co})$-orbits to $T_\Co$ and determine how many $\Gamma_\Co$-orbits lie in divisibility $2$ — the same number as for the discriminant kernel, by @prop:discriminant-kernel-orbits; there are at least $527$, and the count is exactly $527$ when the stabilizer of a primitive isotropic vector in $\Orth(T_\Co)$ maps onto the stabilizer of its class in $\Orth(q_{T_\Co})$ (@prop:coble-stable-cusp-lower-bound), so the finite picture, in which the primitive isotropic vectors map onto the single nonzero orbit, does not lift to a single orbit. The Eichler criterion is unavailable here because $T_\Co$ contains no copy of $U$ (the Eichler criterion (@thm:eichler-criterion) and the remark following it);
 
 - decide whether the four nonzero orbits of $\gent$-induced classes lift to four orbits of primitive isotropic vectors or to more, an integral parabolic stabilizer being permitted to have proper image in the finite one;
 
