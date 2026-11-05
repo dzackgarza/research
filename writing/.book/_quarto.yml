@@ -66,6 +66,8 @@ book:
     - part: Forms and Witt theory
       chapters:
         - category-theory/forms-quadratic/Bilinear-and-Quadratic-Forms.md
+        - category-theory/forms-quadratic/Pairings-and-Perfect-Duality.md
+        - category-theory/forms-quadratic/Torsion-Pairings-and-Linking-Forms.md
         - category-theory/forms-quadratic/Quadratic-Maps-and-Divided-Powers.md
         - category-theory/forms-quadratic/Bilinear-Forms-on-Algebra-Modules.md
         - category-theory/forms-quadratic/Hyperbolic-Forms-and-Witt-Classes.md
@@ -220,12 +222,6 @@ book:
 # `book.chapters`, so nothing below reaches the site; each reason is recorded
 # because the counterpart rule is "listed, or deliberately unlisted".
 #
-#   category-theory/forms-quadratic/Pairings-and-Perfect-Duality.md
-#     names @def:dualizable-object, @prop:projective-dualizable and
-#     @prop:orthogonal-galois-connection, and no page declares any of the three.
-#     Listing it publishes three references that render as nothing.
-#   category-theory/forms-quadratic/Torsion-Pairings-and-Linking-Forms.md
-#     builds on that page; it is listed once the three blocks exist.
 #   coble/tables/coble-lattices.md
 #     an untitled table fragment that no chapter includes. The same table stands,
 #     in full and as a chapter, at coble/lattices-and-moduli/coble-lattice-table.md;
