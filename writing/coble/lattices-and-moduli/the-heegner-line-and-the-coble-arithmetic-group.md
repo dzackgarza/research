@@ -942,7 +942,7 @@ What can be said without the finite computation is that the finite group on the 
 
 ::: {.lemma #lem:polarization-stabilizer-discriminant-nontrivial title="The finite image of the polarization stabilizer is not trivial"}
 
-Let $C = U\oplus E_8(-1)$ and $S_\En = C(2) = U(2)\oplus E_8(-1)$ be the lattices of @def:enriques-lattice, with $h = u_0+w_0$ the degree-$2$ polarization class of $S_\En$, and put $v \definedas u_0-w_0$.
+Let $C = U\oplus E_8$ and $S_\En = C(2) = U(2)\oplus E_8(2)$ be the lattices of @def:enriques-lattice, where $E_8$ is negative definite in that definition's convention, and let $h = u_0+w_0$ be the degree-$2$ polarization class of $S_\En$; put $v \definedas u_0-w_0$.
 Then the reflection $s_v$ is an isometry of $S_\En$ fixing $h$, and it acts nontrivially on $A_{S_\En}$; consequently the subgroup $\rho_{S_\En}\bigl(\Stab_{\Orth(S_\En)}(h)\bigr)$ whose order bounds the index in @prop:gamma-co-in-heegner-group is not trivial.
 :::
 
@@ -956,7 +956,7 @@ Then $b(u_0/2, v) = \tfrac12\bigl(b(u_0,u_0) - b(u_0,w_0)\bigr) = -1$, so
 $$
 s_v\bigl(\tfrac12 u_0\bigr) = \tfrac12 u_0 - \tfrac12 v = \tfrac12 w_0
 ,$$
-and $\tfrac12 w_0 - \tfrac12 u_0 = \tfrac12(w_0-u_0)$ has coordinates $(-\tfrac12, \tfrac12, 0,\dots,0)$ in the basis $u_0, w_0, E_8(-1)$ of $S_\En$, so it is not in $S_\En$.
+and $\tfrac12 w_0 - \tfrac12 u_0 = \tfrac12(w_0-u_0)$ has coordinates $(-\tfrac12, \tfrac12, 0,\dots,0)$ in the basis $u_0, w_0$ together with a basis of $E_8(2)$, so it is not in $S_\En$.
 Hence $\rho_{S_\En}(s_v)\neq\id$ while $s_v(h) = h$, which is the claim.
 :::
 
@@ -973,35 +973,55 @@ The record of what was checked and what stopped is `computations/reports/coble_g
 
 The two propositions above compare $\Gamma_\Co$ with the larger groups by way of its finite image on $A_{T_\Co}$.
 The opposite question is what lies *inside* $\Gamma_\Co$, and it begins with the reflections of $T_\Co$.
-By @def:2elementary-roots the roots of an even $2$-elementary lattice are of two kinds, the short roots of square $-2$ and the long roots of square $-4$; that vocabulary is set up there for a hyperbolic lattice, and it transfers to $T_\Co$ because it uses the square and the divisibility and neither uses the signature.
-The short roots behave uniformly, and the long roots do not.
+
+*Convention, used throughout this section.*
+$T_\Co = B(2)$ and $S_\En = C(2)$ are twists by $2$ of unimodular lattices, so their duals are half of them,
+$$
+T_\Co^* = \tfrac12 T_\Co \subset T_\Co\tensor\bQ,
+\qquad
+S_\En^* = \tfrac12 S_\En
+,
+$$
+and $A_L = L^*/L = (\tfrac12 L)/L\cong L/2L$.
+Under that identification the discriminant action of $g\in\Orth(L)$ is reduction modulo $2$, so
+$$
+\rho_L(g) = \id \quad\Longleftrightarrow\quad g\equiv\id \pmod 2
+.
+$$
+Two consequences are used below and are worth separating from the arguments that use them: a pairing of two vectors that both lie in $L^*$ is a half-integer and not an integer, and the reduction modulo $2$ is the only place where the integral lattice enters the discriminant representation.
+
+By @def:2elementary-roots the roots of an even $2$-elementary lattice are the short roots of square $-2$ and the long roots of square $-4$; that vocabulary is set up there for a hyperbolic lattice and transfers to $T_\Co$ because it uses the square and the divisibility and neither uses the signature.
 
 ::: {.proposition #prop:gamma-co-reflective-set title="The reflective set of the stable Coble group"}
 
-Let $T_\Co = B(2)$ be the Coble lattice of @prop:tco-as-twist, even of signature $(2,9)$ and determinant $-2048$, so that every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and let $\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ be the stable group above, with $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ of @def:lattice-spinor-kernels and $\spinornorm_\bR$ the real spinor norm of @def:spinor-norm.
+Let $T_\Co = B(2)$ be the Coble lattice of @prop:tco-as-twist, even of signature $(2,9)$ and determinant $-2048$, so that every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and let $\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$, with $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ of @def:lattice-spinor-kernels and $\spinornorm_\bR$ the real spinor norm of @def:spinor-norm.
 Write $s_v$ for the reflection of @def:spinor-norm in a nonisotropic vector $v$.
-Then:
+Then $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{2,-2,4,-4\}$, and among those:
 
-1. if $v^2 = -2$ then $s_v$ is an isometry of $T_\Co$ and lies in $\Gamma_\Co$; consequently the short roots generate a subgroup
+1. if $v^2 = -2$ then $s_v\in\Gamma_\Co$; hence the short roots generate a subgroup
    $$
    W(T_\Co) \definedas \generators{\,s_v \;:\; v \in T_\Co,\ v^2 = -2\,}
    \iscontainedin \Gamma_\Co
    ,$$
-   and it is infinite, the proof exhibiting a family;
-2. if $v^2 = 2$ or $v^2 = 4$ then $s_v$ is an isometry of $T_\Co$ lying in $\ker\rho_{T_\Co}$ and outside $\Orth^+(T_\Co)$, hence outside $\Gamma_\Co$;
-3. the long root $e'-f'$ of the $U(2)$ summand has $s_{e'-f'}\in\Orth^+(T_\Co)$ and $s_{e'-f'}\notin\ker\rho_{T_\Co}$.
+   which is infinite, the proof exhibiting a family;
+2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\Gamma_\Co$;
+3. if $v^2 = -4$ then $s_v\in\Orth^+(T_\Co)$ and $s_v\notin\ker\rho_{T_\Co}$.
 
-So the reflective set of $\Gamma_\Co$ — the set of vectors of $T_\Co$ whose reflections lie in $\Gamma_\Co$ — contains every short root and no vector of positive square, and among the long roots it contains exactly those whose reflection acts trivially on $A_{T_\Co}$; it is not the whole root system of $T_\Co$, and (3) is a witnessed exception rather than a hypothetical one.
+Consequently the reflective set of $\Gamma_\Co$ — the vectors of $T_\Co$ whose reflection lies in $\Gamma_\Co$ — is exactly the set of short roots, and no long root lies in it.
 :::
 
 ::: {.proof}
 
-Throughout, $v\in T_\Co$ is primitive, so $\div_{T_\Co}(v) = 2$ by @lem:divisibilityAlwaysTwoTco, and therefore $2\beta(x,v)/\beta(v,v)$ is an integer for every $x\in T_\Co$ and every primitive $v$ whose square divides $4$; the reflection $s_v$ is then an element of $\Orth(T_\Co)$.
+*Integrality.*
+A primitive $v$ has $\div_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so $\beta(v,T_\Co) = 2\ZZ$; and $v^2\in\{2,-2,4,-4\}$ forces $v$ primitive, since $v = dw$ with $d\ge2$ would give $v^2 = d^2w^2$ with $w^2$ even.
+Then $2\beta(x,v)/\beta(v,v)$ is an integer for every $x$, because $2\beta(x,v)$ is a multiple of $4$ and $\beta(v,v)$ divides $4$; so $s_v$ is an isometry of $T_\Co$ in all four cases, and for any other square it is not, since $\beta(v,T_\Co)\subseteq (v^2/2)\ZZ$ would fail.
+The real spinor norm of @def:spinor-norm is $\spinornorm_\bR(s_w) = [-\tfrac12\beta(w,w)]$ for any nonisotropic $w$, so $\spinornorm_\bR(s_v)$ is $[-1]$ for $v^2 = 2$, $[1]$ for $v^2 = -2$, $[-2] = [-1]$ for $v^2 = 4$, and $[2] = [1]$ for $v^2 = -4$.
 
-(1) For $v^2 = -2$ the reflection is $s_v(x) = x + \beta(x,v)v$, and for $x^* \in T_\Co^*$ the pairing $\beta(x^*,v)$ is an integer because $v$ lies in $T_\Co$, so $s_v(x^*) - x^* = \beta(x^*,v)v \in T_\Co$ and $\rho_{T_\Co}(s_v) = \id$.
-By @def:spinor-norm, $\spinornorm_\bR(s_w) = [-\tfrac12\beta(w,w)]$ for any nonisotropic $w$, so $\spinornorm_\bR(s_v) = [1]$ and $s_v \in \Theta_\bR(T_\Co) = \Orth^+(T_\Co)$.
-Both conditions hold, so $s_v\in\Gamma_\Co$.
-The set of such $v$ is infinite, and the family is explicit: for odd $a\in\ZZ$,
+(1) For $v^2 = -2$ the reflection is $s_v(x) = x + \beta(x,v)v$.
+The spinor norm is $[1]$, so $s_v\in\Theta_\bR(T_\Co)$.
+For $x^*\in T_\Co^*$ the pairing $\beta(x^*,v)$ is an integer, because $x^*$ pairs integrally with every element of $T_\Co$ and $v$ lies in $T_\Co$; hence $s_v(x^*)-x^* = \beta(x^*,v)v\in T_\Co$ and $\rho_{T_\Co}(s_v) = \id$.
+So $s_v\in\Gamma_\Co$.
+The set of such $v$ is infinite and the family is explicit: for odd $a\in\ZZ$,
 $$
 x_a \definedas a\zeta + e' - \tfrac{a^2+1}{2}f'
 \qquad\text{has}\qquad
@@ -1009,27 +1029,40 @@ x_a^2 = 2a^2 + 4\cdot\Bigl(-\tfrac{a^2+1}{2}\Bigr) = -2
 ,$$
 since $\zeta$ is orthogonal to the $U(2)$ summand and $\beta(e',f') = 2$ there.
 
-(2) For $v^2 = \pm2$ the same computation gives $\rho_{T_\Co}(s_v) = \id$; for $v^2 = 4$ it gives $s_v(x^*) - x^* = -\tfrac12\beta(x^*,v)v$, and $\beta(x^*,v) = 2\beta(x^*, v/2)$ with $v/2\in T_\Co^*$ because $\div_{T_\Co}(v) = 2$, so this is again an element of $T_\Co$.
-The real spinor norm is where the two cases separate: $\spinornorm_\bR(s_v) = [-v^2/2]$, which is the class of $-1$ for $v^2 = 2$ and the same class for $v^2 = 4$, and that class is not the identity of $\bR^\times/(\bR^\times)^2$.
-So $s_v \notin \Orth^+(T_\Co)$ while $s_v\in\ker\rho_{T_\Co}$, and a member of $\ker\rho_{T_\Co}$ that is not in $\Orth^+(T_\Co)$ is not in their intersection.
-
-(3) The vector $v = e'-f'$ has square $0+0-2\cdot2 = -4$ and divisibility $2$, so $s_v(x) = x + \tfrac12\beta(x,v)v$ is an isometry of $T_\Co$.
-The vector $e'/2$ lies in $T_\Co^*$: it pairs to $1$ with $f'$ and to $0$ with $e'$, with $\zeta$ and with $E_8(-2)$.
-Now $\beta(e'/2,\, e'-f') = -1$, so
+(2) Both squares give $\spinornorm_\bR(s_v) = [-1]$, which is not the identity of $\bR^\times/(\bR^\times)^2$, so $s_v\notin\Theta_\bR(T_\Co)$ and hence $s_v\notin\Gamma_\Co$.
+Nothing about $\ker\rho_{T_\Co}$ is needed, and for $v^2 = 4$ the corresponding assertion would be false: for $v = e'+f'$ in the $U(2)$ summand one has $\beta(e'/2, v) = 1$ and
 $$
-s_v\bigl(\tfrac12 e'\bigr) = \tfrac12 e' - \tfrac12\bigl(e'-f'\bigr) = \tfrac12 f'
+s_v\bigl(\tfrac12 e'\bigr) = \tfrac12 e' - \tfrac12\bigl(e'+f'\bigr) = -\tfrac12 f',
+\qquad
+s_v\bigl(\tfrac12 e'\bigr) - \tfrac12 e' = -\tfrac12\bigl(e'+f'\bigr)\notin T_\Co
 ,$$
-and $\tfrac12 f' - \tfrac12 e' = \tfrac12(f'-e') \notin T_\Co$, since $e',f'$ are a $\ZZ$-basis of the $U(2)$ summand with Gram matrix $\begin{pmatrix}0&2\\2&0\end{pmatrix}$ and $f'-e'$ has coordinates $(-1,1)$ there, whose halves are not integral.
-So $\rho_{T_\Co}(s_v)\neq\id$ and $s_v\notin\ker\rho_{T_\Co}$.
-On the other hand $\spinornorm_\bR(s_v) = [-(-4)/2] = [2] = [1]$, so $s_v\in\Orth^+(T_\Co)$.
+so $\rho_{T_\Co}(s_v)\neq\id$ there.
+The factor $\tfrac12$ is exactly the half-integrality of a pairing of two vectors of $T_\Co^*$.
+
+(3) Let $v^2 = -4$, and write the same reflection in the coordinates of $B$, where $b_B = \tfrac12\beta_{T_\Co}$ and $b_B(v,v) = -2$; then
+$$
+s_v(x) = x + b_B(x,v)\,v
+\qquad (x\in B = T_\Co).
+$$
+$B$ is unimodular and $v$ is primitive, so the functional $b_B(\cdot,v)$ is unimodular and some $x\in B$ has $b_B(x,v) = 1$; for that $x$,
+$$
+s_v(x) - x = v \notin 2B
+,$$
+because $v$ is primitive.
+Under the convention above, $A_{T_\Co} = B/2B$ and $\rho_{T_\Co}(g) = \id$ means $g\equiv\id\bmod 2$; so $\rho_{T_\Co}(s_v)\neq\id$ and $s_v\notin\Gamma_\Co$.
+With (2) this excludes the two positive squares and the long roots, leaving exactly (1), and the reflective set is the short roots.
 :::
 
 ::: {.remark title="What the reflective set settles, and what it does not"}
 
-Parts (1)–(3) decide the reflective set of $\Gamma_\Co$: it is determined, not chosen, so no larger reflective set is available and no smaller one is needed.
-They do not decide generation.
-The statement that a reflective set together with finitely many further isometries generates $\Gamma_\Co$ is not a corollary of the containment in (1), and the route named for it in the research report — Vinberg's algorithm at each cusp (@prob:coxeter-completeness item 2, and the cusp-level items B32--B34 of the research report's taxonomy) — is a statement about hyperbolic lattices and does not apply to $T_\Co$ itself, which has signature $(2,9)$; the owner refuses it on exactly that ground, `HyperbolicLattices` accepting signature $(1,n)$ or $(n,1)$ only, and the hyperbolic statement belongs to the cusp lattices of @sec-open-problems and not to $T_\Co$.
-What remains for $T_\Co$ is the reflective-lattice question in signature $(2,9)$, and no operation of the owning library decides it: `Lattices.roots()` is the definite-lattice root set and refuses an indefinite lattice by contract, which is not evidence about the $(-2)$-vectors of $T_\Co$; `root_module_generating_set()` is a semi-decision for $T_\Co = \ZZ\Phi(T_\Co)$, the module the roots generate, and not for $\Orth^+(T_\Co)$ being generated by reflections; and there is no operation returning generators of, or a finite-index certificate for, $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$.
+Parts (1)–(3) decide the reflective set: it is the short roots, determined and not chosen, with nothing left to add and nothing to remove.
+
+They do not decide how large $W(T_\Co)$ is in $\Gamma_\Co$.
+The question is *not* whether "a reflective set together with finitely many further isometries generates $\Gamma_\Co$": $\Gamma_\Co$ is an arithmetic subgroup of $\Orth(T_\Co\tensor\bR)\iso\Orth(2,9)$, and arithmetic subgroups of semisimple real groups are finitely generated (Borel--Harish-Chandra), so any generating set together with finitely many further elements generates it, and that formulation carries no content.
+What carries content is the **index** $[\Gamma_\Co : W(T_\Co)]$: whether it is finite, and if finite which.
+
+That index is what a Vinberg-type statement computes, and the route named for it in the research report — Vinberg's algorithm at each cusp (@prob:coxeter-completeness item 2, and the cusp-level items B32--B34 of the taxonomy) — is a statement about hyperbolic lattices and does not apply to $T_\Co$ itself, which has signature $(2,9)$; the owning library refuses it on exactly that ground, `HyperbolicLattices` accepting signature $(1,n)$ or $(n,1)$ only, and the hyperbolic statement belongs to the cusp lattices of @sec-open-problems and not to $T_\Co$.
+For $T_\Co$ the index is undecided here, and no operation of the owning library decides it: `Lattices.roots()` is the definite-lattice root set and refuses an indefinite lattice by contract, which is not evidence about the $(-2)$-vectors; `root_module_generating_set()` is a semi-decision for $T_\Co = \ZZ\Phi(T_\Co)$, the module the roots generate, and not for the index of $W(T_\Co)$ in $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$; and there is no operation returning generators of, or a finite-index certificate for, that intersection.
 The computed state is recorded in `computations/reports/coble_gamma_co_reflective_set.py`, and the state of the running Sage and its lattice library that keeps (1)–(3) as proofs here rather than as decisions of that library is recorded in `computations/reports/coble_owner_gap-blockers-20261105.md`.
 :::
 

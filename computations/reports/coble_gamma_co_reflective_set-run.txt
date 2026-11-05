@@ -3,10 +3,10 @@ provenance
   sage-extensions: .scratch/se-provider-6ad7a5ea/src on PYTHONPATH, pin 6ad7a5ea
   lattice: built here from its own Gram data, not read from a stored object
 
-T_Co = <2> + U(2) + E8(-2), the twist B(2) of prop:tco-as-twist
+T_Co = <2> + U(2) + E8(2), the twist B(2) of prop:tco-as-twist
   rank 11, determinant -2048, signature (2, 9), even: True
   two_elementary_invariants: (11, 11, 1)   (the Coble table: (11, 11, 1))
-  basis squares (zeta; e-prime, f-prime; the eight E8(-2) vectors): [2, 0, 0, -4, -4, -4, -4, -4, -4, -4, -4]
+  basis squares (zeta; e-prime, f-prime; the eight E8(2) vectors): [2, 0, 0, -4, -4, -4, -4, -4, -4, -4, -4]
 
 the reflective squares the owner admits
   possible_root_lengths(): [1, 2, 4]   (divisors of 2 * exp(A_L) = 2 * 2)
@@ -26,8 +26,11 @@ the reflections, built by the owner
   s_(zeta + a_1): determinant -1, fixes the vectors orthogonal to the root: True,
       an involution: True, negates the root: True
   s_(e' - f'): determinant -1, an involution: True, negates the root: True
-  the discriminant action of s_(e' - f'), computed by hand and not here:
-      s((e')/2) = (f')/2, and (f' - e')/2 is not in T_Co, so rho(s) != 1.
+  the two half-integrality witnesses, computed by hand and not here:
+      b(e', e' + f') = 2, so b((e')/2, e' + f') = 1: s_(e'+f') moves (e')/2 by a
+      class, and -(e' + f')/2 is not in T_Co, so s_(e'+f') is not in ker(rho).
+      For v = a_1 of square -4 the same is forced by the B-coordinate argument of
+      the docstring: s_v(x) - x = v for an x with b_B(x,v) = 1, and v is primitive.
 
 the owner operations this question needs, and what they do here
   (the lattice layer builds; the decision layer needs GAP, see the blockers record)
@@ -46,12 +49,11 @@ the owner operations this question needs, and what they do here
     is zeta (+2) in it                           True
 
 SUMMARY
-  (1) T_Co is the even lattice <2> + U(2) + E8(-2), rank 11, det -2048, signature
+  (1) T_Co is the even lattice <2> + U(2) + E8(2), rank 11, det -2048, signature
       (2, 9), two-elementary with invariants (11, 11, 1), agreeing with the
-      chapter table; its admissible reflective squares are {1, 2, 4} and the
-      square -1 is excluded by parity, so its roots are the short roots v^2 = -2
-      and the long roots v^2 = -4, whose divisibility is 2 here, as
-      @def:2elementary-roots and lem:divisibilityAlwaysTwoTco say;
+      chapter table; its admissible reflective squares are {1, 2, 4}, and the square
+      -1 is excluded by parity, so the reflective squares are +-2 and -4, the short
+      and long roots of @def:2elementary-roots with divisibility 2 here;
   (2) the (-2)-vectors of T_Co give reflections the owner builds, and the groups
       O^+(T_Co), the spinor norm and ker(rho_T_Co) are all built here as objects; but
       the two steps that place a named reflection in Gamma_Co are decisions, and
@@ -59,14 +61,16 @@ SUMMARY
       discriminant one raises in the provider before GAP is reached (probe 3 of
       coble_owner_gap-blockers-20261105.md).  Both therefore remain proofs in the
       writing and are not claimed as owner decisions here;
-  (3) the long root e' - f' has an integral reflection in O^+(T_Co) that moves the
-      discriminant, so the reflective set of Gamma_Co is not the whole root system:
-      it is the short roots together with the long roots whose reflection acts
-      trivially on A_T_Co, and among the short roots nothing more has to be decided;
+  (3) the reflective set of Gamma_Co is exactly the short roots.  The positive-square
+      reflections fail O^+ by the spinor norm alone, and no long root lies in
+      ker(rho): for v^2 = -4 the reflection is s_v(x) = x + b_B(x,v) v in the
+      coordinates of B, B is unimodular and v primitive so some x has b_B(x,v) = 1,
+      and s_v(x) - x = v is not in 2B.  Nothing is left to decide vector by vector;
   (4) T_Co is not hyperbolic, so the Vinberg-algorithm route the research report
       names (@prob:coxeter-completeness item 2, B32--B34) does not apply to T_Co
-      itself: HyperbolicLattices refuses it by signature, and what remains is the
-      reflective-lattice question in signature (2,9), for which the owner has no
-      operation.  No generation statement is made or implied here.
-OK: the reflective set is decided in writing; the generation half is blocked at the
-    owner with the exact operations named, not with a substituted algorithm.
+      itself: HyperbolicLattices refuses it by signature, and the hyperbolic
+      statement belongs to the cusp lattices.  What is open for T_Co is the index
+      [Gamma_Co : W(T_Co)], not "generation by a reflective set plus finitely many
+      isometries", which is vacuous because Gamma_Co is finitely generated.
+OK: the reflective set is decided, exactly, in writing; the open quantity is the
+    index of W(T_Co) in Gamma_Co, and no operation here computes it.
