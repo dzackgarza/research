@@ -925,7 +925,7 @@ Then:
 
 1. $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma_\Co$ if and only if $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) = 1$, and $\Gamma^\theta_\Co = \Gamma_\Co$ if and only if $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr) = 1$;
 2. both $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)$ and $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)$ are subgroups of the finite group $\Orth(A_{T_\Co}, q_{T_\Co})$, of order $46\,998\,591\,897\,600$ by @prop:coble-discriminant-group, and neither question involves $\fco$ or a period domain;
-3. $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)\neq1$ exactly when some $g\in Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ has $\restrictionof{g}{T_\Co}$ acting nontrivially on $A_{T_\Co}$.
+3. $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)\neq1$ exactly when some $g\in Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ has $\restrictionof{g}{T_\Co}$ acting nontrivially on $A_{T_\Co}$; the component condition on that restriction is not an extra hypothesis, because it can always be arranged (see the proof).
 
 So each of the two questions is a question about a finite group, and a *witness* for strictness of either inclusion is a single explicit isometry, of $\lkt$ in case (3) and of the Heegner lattice in the other.
 :::
@@ -934,11 +934,16 @@ So each of the two questions is a question about a finite group, and a *witness*
 
 (1) is the second claim of each of the two propositions, which identifies $\Gamma_\Co$ with the kernel of the respective finite image, together with the first isomorphism theorem; a kernel is everything exactly when the image is trivial.
 (2) an isometry of $T_\Co$ has a discriminant image, so each image is a subgroup of the finite group acting on $A_{T_\Co}$, and the order of that group is the one @prop:coble-discriminant-group computes.
-(3) unwinds the definition of $\Gamma^\theta_\Co$ as the set of restrictions of the elements of that intersection: a nontrivial image is an element of it acting nontrivially on $A_{T_\Co}$, and conversely.
+(3) unwinds the definition of $\Gamma^\theta_\Co$ as the set of restrictions of the elements of that intersection, so a nontrivial image is a restriction acting nontrivially on $A_{T_\Co}$, and conversely.
+The one place the definition is not unwound by itself is the requirement $\restrictionof{g}{T_\Co}\in\Orth^+(T_\Co)$, which is part of the definition of $\Gamma^\theta_\Co$ and is not implied by acting nontrivially on the discriminant.
+It is nevertheless free: let $w\in T_\Co$ have $w^2 = 2$ — $\zeta$ of the $\generators{2}$ summand, for instance — so that $s_w\in\ker\rho_{T_\Co}$ and $\spinornorm_\bR(s_w) = [-1]$ by @prop:gamma-co-reflective-set(2) and its proof.
+The pair $(\id_{S_\Co}, s_w)$ satisfies the compatibility of @thm:automorphism-lifting-criterion because $\bar s_w = \id$, so it extends to an isometry $h$ of $\lkt$ with $h|_{S_\Co} = \id_{S_\Co}$ and $h|_{T_\Co} = s_w$; then $gh$ commutes with $\theta_\Co$, fixes $\tilde h_\Co$, has restriction $\restrictionof{g}{T_\Co}s_w$ with the same discriminant action as $\restrictionof{g}{T_\Co}$, and spinor norm multiplied by $-1$.
+So one of $\restrictionof{g}{T_\Co}$ and $\restrictionof{g}{T_\Co}s_w$ is in $\Orth^+(T_\Co)$, and it lies in $\Gamma^\theta_\Co$ with nontrivial image.
 :::
 
-Nothing in the two propositions above, or in this one, says whether either image is trivial: the containment $\Gamma_\Co\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma_\Co\iscontainedin\Gamma^\theta_\Co$ is all that is proved, and by contrast the congruence group is *proved* strictly larger, in the remark below.
-What can be said without the finite computation is that the finite group on the Enriques side is not trivial, so the index in @prop:gamma-co-in-heegner-group is bounded by a group that is genuinely bigger than the trivial one and the question is not vacuous.
+This proposition reduces the two questions but does not by itself decide whether either image is trivial, and by contrast the congruence group is *proved* strictly larger, in the remark below.
+The Heegner one is decided in the next two statements: the finite image of the polarization stabilizer is not trivial (@lem:polarization-stabilizer-discriminant-nontrivial), and the surjectivity of the discriminant representation for a $2$-elementary lattice transports that nontriviality into $\Gamma^{\mathrm{Hdg}}_\Co$ itself (@prop:gamma-co-heegner-strict).
+The theta one is not decided, and nothing on the page transports a nontrivial class from an $S$-side isometry to a $T$-side one there: the analogue of the "equivalently" clause of @prop:gamma-en-two-gluing, which is what the Heegner side uses, is precisely what an explicit gluing isometry $A_{S_\Co}\to A_{T_\Co}$ would supply, and the owning library has no operation that produces one.
 
 ::: {.lemma #lem:polarization-stabilizer-discriminant-nontrivial title="The finite image of the polarization stabilizer is not trivial"}
 
@@ -960,13 +965,45 @@ and $\tfrac12 w_0 - \tfrac12 u_0 = \tfrac12(w_0-u_0)$ has coordinates $(-\tfrac1
 Hence $\rho_{S_\En}(s_v)\neq\id$ while $s_v(h) = h$, which is the claim.
 :::
 
-::: {.remark title="What the lemma does and does not settle"}
+::: {.proposition #prop:gamma-co-heegner-strict title="The Heegner description is strictly larger"}
 
-The lemma is about the group whose order *bounds* the index in @prop:gamma-co-in-heegner-group, and it does not make either inclusion strict.
-An element of $\Gamma^{\mathrm{Hdg}}_\Co$ is the restriction of an element of $\Stab_{\gent}(\ZZ\delta)$, and an isometry of $S_\En$ with nontrivial discriminant image need not have a partner in $T_\Co$: by @thm:automorphism-lifting-criterion a pair $(g_S,g_T)$ extends over the overlattice exactly when $\bar g_T\circ\gamma = \gamma\circ\bar g_S$, and the lemma's element $s_v$ supplies only its $g_S$ half.
-So the strictness of the two inclusions remains open, and what would decide it is one of the following: an explicit pair, in which case the inclusion is strict and the two definitions are different groups; or the triviality of the two finite images, in which case the definitions agree.
-Both are decided in a finite group by @prop:gamma-co-two-definitions, and neither is decided here: reading the discriminant image of a named isometry is the call `s.discriminant_morphism()`, which at the adopted runtime raises `TypeError: TorsionFormOrthogonalGroup._element_constructor_() got an unexpected keyword argument 'check'` (dzackgarza/sage-extensions#272), on $S_\En$ as on $T_\Co$.
-The record of what was checked and what stopped is `computations/reports/coble_gamma_co_two_definitions.py`.
+The inclusion $\Gamma_\Co\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group is strict: $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)\neq1$, and
+$$
+2 \;\leq\; [\Gamma^{\mathrm{Hdg}}_\Co:\Gamma_\Co] \;\leq\; \abs{W(E_8)} = 696\,729\,600
+.$$
+:::
+
+::: {.proof}
+
+Let $s_v$ be the reflection of @lem:polarization-stabilizer-discriminant-nontrivial, so $v = u_0-w_0\in S_\En$, $s_v(h) = h$ and $\rho_{S_\En}(s_v)\neq\id$; put $c \definedas \gamma\,\rho_{S_\En}(s_v)\,\gamma^{-1}\in\Orth(q_{\TEn})$, which is nontrivial.
+
+*Surjectivity.*
+$T_\Co$ is even, indefinite and $2$-elementary, so $\rho_{T_\Co}\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ is onto (@thm:two-elementary-surjectivity).
+By @prop:coble-discriminant-group every isometry of $q_{T_\Co}$ fixes the class $\zeta/2$ and respects the decomposition $A_{T_\Co} = \ZZ(\zeta/2)\perp A^0$, so the representation factors through $\Orth(q_{T_\Co})\iso\Orth(q_{T_\Co}|_{A^0})$, and $A^0$ is identified with $A_{\TEn}$ as in the proof of @prop:gamma-co-in-heegner-group.
+Choose $\varphi\in\Orth(T_\Co)$ whose class is the one matching $c$ under that identification.
+
+*Extension.*
+$\varphi$ fixes $\zeta/2$, so $\varphi\oplus\id_{\ZZ\delta}$ preserves the gluing subgroup $\generators{(\delta/2,\,\zeta/2)}$ of @lem:coble-heegner-vector and by @cor:liftable-automorphisms extends over the index-two overlattice $\ten$ to an isometry $g$ with $g(\delta) = \delta$ and $\restrictionof{g}{T_\Co} = \varphi$.
+
+*Membership in $\gent$.*
+By that extension the class of $g$ in $\Orth(q_{\TEn})$ is the class of $\varphi$ on $A^0$, that is $c = \gamma\rho_{S_\En}(s_v)\gamma^{-1}$; so $\bar g_T\circ\gamma = \gamma\circ\bar g_S$ with $g_S = s_v$, and $s_v(h) = h$.
+By @prop:gamma-en-two-gluing this is exactly the condition for $g\in\gent$, and $g(\delta) = \delta$, so $g\in\Stab_{\gent}(\ZZ\delta)$ with nontrivial $\rho_{T_\Co}(\restrictionof{g}{T_\Co})$.
+
+*The component condition.*
+If $\varphi\notin\Orth^+(T_\Co)$, use the repair of @prop:gamma-co-two-definitions(3): $s_\zeta\in\ker\rho_{T_\Co}$ has $\spinornorm_\bR(s_\zeta) = [-1]$, so $(\id_{S_\En}, s_\zeta)$ glues and extends to an isometry $h'$ of $\ten$ with $h'(\delta) = \delta$, $\restrictionof{h'}{T_\Co} = s_\zeta$ and trivial class; hence $h'\in\gent$ with partner $\id_{S_\En}$, and $gh'\in\Stab_{\gent}(\ZZ\delta)$ has restriction $\varphi s_\zeta\in\Orth^+(T_\Co)$ with the same nontrivial class.
+
+So $\Gamma^{\mathrm{Hdg}}_\Co$ contains an element of $\Orth^+(T_\Co)$ acting nontrivially on $A_{T_\Co}$; by @prop:gamma-co-two-definitions(1) the inclusion is strict, and the upper bound is @prop:gamma-co-in-heegner-group(2).
+:::
+
+::: {.remark title="What the two statements settle, and where the #272 record now stands"}
+
+@lem:polarization-stabilizer-discriminant-nontrivial and @prop:gamma-co-heegner-strict settle the Heegner half of the comparison: the Heegner description and the stable group are *different* groups, with index between $2$ and $696\,729\,600$.
+The objection that an isometry of $S_\En$ with nontrivial discriminant image "need not have a partner in $T_\Co$" is answered, not waved away: every class of $\Orth(q_{T_\Co})$ is realised by an integral isometry of $T_\Co$ (@thm:two-elementary-surjectivity), every such isometry fixes the gluing class $\zeta/2$ (@prop:coble-discriminant-group), so it glues to the identity on $\ZZ\delta$ (@cor:liftable-automorphisms), and @prop:gamma-en-two-gluing puts the pair in $\gent$.
+
+The theta half stays open, and what it would need is the analogue of that last step on the Coble side: isometries of $T_\Co$ realising the classes $\gamma_\Co\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))\gamma_\Co^{-1}$ *and* gluing to the corresponding isometries of $S_\Co$.
+That is what explicit generators of the Coble-side centralizer would give, and it is item 1 of @prob:group-identification.
+Nothing in the owning library produces the gluing isometry $A_{S_\Co}\to A_{T_\Co}$ itself: torsion forms have `is_isometric_to` and no explicit isometry constructor.
+So the computation record `computations/reports/coble_gamma_co_two_definitions.py` now stands for the theta half only, and the blocked call it names, `s.discriminant_morphism()`, is dzackgarza/sage-extensions#272.
 :::
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
@@ -1004,7 +1041,7 @@ Then $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{2,-2,4,-4\}$, and amon
    \iscontainedin \Gamma_\Co
    ,$$
    which is infinite, the proof exhibiting a family;
-2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\Gamma_\Co$;
+2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\Gamma_\Co$; for $v^2 = 2$ one has in addition $s_v\in\ker\rho_{T_\Co}$, and for $v^2 = 4$ one does not in general;
 3. if $v^2 = -4$ then $s_v\in\Orth^+(T_\Co)$ and $s_v\notin\ker\rho_{T_\Co}$.
 
 Consequently the reflective set of $\Gamma_\Co$ — the vectors of $T_\Co$ whose reflection lies in $\Gamma_\Co$ — is exactly the set of short roots, and no long root lies in it.
@@ -1030,7 +1067,8 @@ x_a^2 = 2a^2 + 4\cdot\Bigl(-\tfrac{a^2+1}{2}\Bigr) = -2
 since $\zeta$ is orthogonal to the $U(2)$ summand and $\beta(e',f') = 2$ there.
 
 (2) Both squares give $\spinornorm_\bR(s_v) = [-1]$, which is not the identity of $\bR^\times/(\bR^\times)^2$, so $s_v\notin\Theta_\bR(T_\Co)$ and hence $s_v\notin\Gamma_\Co$.
-Nothing about $\ker\rho_{T_\Co}$ is needed, and for $v^2 = 4$ the corresponding assertion would be false: for $v = e'+f'$ in the $U(2)$ summand one has $\beta(e'/2, v) = 1$ and
+For $v^2 = 2$ the reflection is $s_v(x) = x - \beta(x,v)v$, and $\beta(x^*,v)\in\ZZ$ for $x^*\in T_\Co^*$, so $s_v(x^*)-x^*\in T_\Co$ and $s_v\in\ker\rho_{T_\Co}$: such a reflection is discriminant-trivial and fails only the component condition.
+For $v^2 = 4$ even that fails: for $v = e'+f'$ in the $U(2)$ summand one has $\beta(e'/2, v) = 1$ and
 $$
 s_v\bigl(\tfrac12 e'\bigr) = \tfrac12 e' - \tfrac12\bigl(e'+f'\bigr) = -\tfrac12 f',
 \qquad
@@ -1074,7 +1112,7 @@ Three kinds of statement are in play, and only the last two carry arithmetic con
 No equality among them is a definition, and the identity $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is the only one settled by unpacking notation.
 
 *Discriminant gluing.* The two propositions above are of this kind: they express each of $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ as an extension of $\Gamma_\Co$ by an explicit subgroup of the finite group $\Orth(A_{T_\Co},q_{T_\Co})$, so each equals $\Gamma_\Co$ exactly when its finite subgroup is trivial.
-Strictness of either inclusion is therefore a question about that subgroup and not about the lattices, and neither is asserted here.
+Strictness is therefore a question about that subgroup and not about the lattices: for the Heegner group it is decided above, negatively for equality, since $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)\neq1$ (@prop:gamma-co-heegner-strict); for the $\theta$-group it is not decided anywhere on this page.
 The consequence for an orbit count is quantitative: a $\Gamma^{\mathrm{Hdg}}_\Co$-orbit of primitive isotropic vectors splits into at most $[\Gamma^{\mathrm{Hdg}}_\Co : \Gamma_\Co]$ orbits under $\Gamma_\Co$, so a count made for one of the two groups is not a count for the other, and the factor relating them is finite.
 In the same way the congruence group of @prob:group-identification is $\rho_{T_\Co}^{-1}(P)$ with $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)}) \leq \Orth(A_{T_\En}, q_{T_\En}) \iso \Orth(A^0, q_{T_\Co}|_{A^0})$, made into a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ by the identity on $\ZZ\tfrac12\zeta$.
 Nontriviality of $P$ alone does not separate that preimage from $\Gamma_\Co$: a preimage of a subgroup is larger than the kernel only if some element of the subgroup is realised by an integral isometry.
@@ -1083,7 +1121,7 @@ Let $(e', f')$ be the basis of the $U(2)$ summand of $T_\Co$, with $e'^2 = f'^2 
 What the argument needs of $\sigma$ is that it lies in $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ by @def:spinor-norm, that it moves the discriminant, and that its discriminant action preserves the three blocks of $A_{T_\Co} = \ZZ\tfrac12\zeta\perp A_{U(2)}\perp A_{E_8(2)}$ and acts on the $U(2)$ block by the transposition; these are verified through the owner's operations, where $\sigma$ is built by `Lattices.reflection`, its membership in `O_plus` and in `stable_orthogonal_group` is decided by those groups, the classes are the owner's `discriminant_class` of `primitive_dual`, and the action is `discriminant_morphism`, with $q([\tfrac12 e']) = q([\tfrac12 f']) = 0$, $q([\tfrac12\zeta]) = \tfrac12$, $b([\tfrac12 e'], [\tfrac12 f']) = \tfrac12$ and $\abs{A_{T_\Co}} = \abs{\det T_\Co} = 2048$ read off the same objects (`computations/reports/coble_congruence_witness.py`).
 Since a transposition of the two isotropic classes of $A_{U(2)}$ is an isometry of that block, $\rho(\sigma)\in\Orth(q_{U(2)})\subseteq P$; that inclusion is the block argument just stated and is not a computation of $P$ itself, and what the owner builds on the congruence side is the preimage of the cyclic subgroup $\generators{\rho(\sigma)}$, not of $P$ (`computations/reports/coble_stabilizer_generators.py`).
 So $\rho(\sigma)\in P$ is nontrivial, $\sigma\notin\Gamma_\Co$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ strictly contains $\Gamma_\Co$.
-What this does and does not settle: the four-group identification of @prob:group-identification cannot be an equality with the stable group $\Gamma_\Co$, only an equality among overgroups of it, and for the congruence group the overgroup is strictly larger while for the Heegner and $\theta$-groups no witness is proposed and strictness stays open.
+What this does and does not settle: the four-group identification of @prob:group-identification cannot be an equality with the stable group $\Gamma_\Co$, only an equality among overgroups of it, and the congruence and Heegner overgroups are both strictly larger — the congruence one by the witness $\sigma$ just described, the Heegner one by @prop:gamma-co-heegner-strict — while for the $\theta$-group no witness is proposed and strictness stays open.
 
 *Torelli, monodromy and labeled embeddings.* Two of the four are not of that kind.
 The direct and geometric groups are images of centralizers in $\Orth(\lkt)$ of the labeled Coble datum, so comparing either with a Heegner group requires an isometry of $\lkt$ carrying the Enriques-labeled structure $(S_\En, T_\En, \ZZ\delta, h)$ of @prop:gamma-en-two-gluing to the Coble-labeled one $(S_\Co, T_\Co, \tilde h_\Co)$ of @prop:gamma-co-in-theta-centralizer; that is the labeled rigidity of @prob:coble-rigidity, not a computation in $T_\Co$.

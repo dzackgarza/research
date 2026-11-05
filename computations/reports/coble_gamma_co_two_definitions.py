@@ -28,8 +28,11 @@ action of a named isometry -- is the call #272 breaks, so it is *stated and chec
 inputs* here and not decided: `s.discriminant_morphism()` raises
   TypeError: TorsionFormOrthogonalGroup._element_constructor_() got an unexpected keyword
   argument 'check'
-on S_En exactly as it does on T_Co.  Nothing below claims the two inclusions are strict;
-that needs rho_T(Gamma^theta_Co) itself, and no operation here decides it.
+on S_En exactly as it does on T_Co.  Nothing below claims either inclusion is strict.  The
+Heegner one no longer needs it: the page proves prop:gamma-co-heegner-strict from
+lem:polarization-stabilizer-discriminant-nontrivial together with Nikulin's surjectivity
+theorem, and that proof is writing, not computation.  What is left for this record is the
+theta half, which needs rho_T(Gamma^theta_Co) itself, and no operation here decides it.
 """
 import sys
 
@@ -52,9 +55,9 @@ C = Lattices(ZZ)([list(row) for row in C_GRAM.rows()])
 S = Lattices(ZZ)([list(row) for row in (2 * C_GRAM).rows()])
 
 print('the two lattices of the Heegner side')
-print('  C = U + E8(-1): rank %d, signature %s, determinant %s'
+print('  C = U + E8, with E8 negative definite (@def:enriques-lattice): rank %d, signature %s, determinant %s'
       % (C.rank(), C.signature_pair(), C.determinant()))
-print('  S_En = C(2):    rank %d, signature %s, determinant %s'
+print('  S_En = C(2) = U(2) + E8(2):  rank %d, signature %s, determinant %s'
       % (S.rank(), S.signature_pair(), S.determinant()))
 c_basis = [C.basis_vector(i) for i in range(C.rank())]
 s_basis = [S.basis_vector(i) for i in range(S.rank())]
@@ -110,12 +113,16 @@ print('  (2) the finite subgroup that separates the two further definitions is n
 print('      the Enriques side, by hand and with every input above checked: s_(u_0 - w_0)')
 print('      lies in Stab_{O(S_En)}(h) and carries the class of u_0/2 to that of w_0/2,')
 print('      whose difference (w_0 - u_0)/2 is not in S_En.  So rho_{S_En}(Stab(h)) != 1')
-print('      (lem:polarization-stabilizer-discriminant-nontrivial);')
-print('  (3) that does not settle #647: what decides it is rho_T(Gamma^theta_Co) and')
-print('      rho_T(Gamma^Hdg_Co), subgroups of O(A_{T_Co}, q) of order at most')
-print('      46 998 591 897 600, and exhibiting their elements needs the discriminant action')
-print('      of a named isometry -- the call that raises above.  The question is therefore')
-print('      reduced to a finite-group computation and recorded as blocked on #272; no')
-print('      statement about strictness of either inclusion is made here.')
+print('      (lem:polarization-stabilizer-discriminant-nontrivial).  The page now turns that')
+print('      into strictness of the Heegner inclusion, prop:gamma-co-heegner-strict, by')
+print('      Nikulin surjectivity for the 2-elementary T_Co: that step is writing, and this')
+print('      run neither makes nor needs it;')
+print('  (3) what this record stands for is the theta half: rho_T(Gamma^theta_Co) is a')
+print('      subgroup of O(A_T_Co, q) of order at most 46 998 591 897 600, and exhibiting')
+print('      its elements needs the discriminant action of a named isometry -- the call that')
+print('      raises above.  The theta question is therefore reduced to a finite-group')
+print('      computation and recorded as blocked on #272; no statement about the strictness')
+print('      of the theta inclusion is made here.')
 print('OK: the definitional half is a lemma, the separating subgroup is nontrivial by proof,')
-print('    and the finite computation that decides the rest is named and blocked at its call.')
+print('    the Heegner half of #647 is settled in the writing, and the theta half is blocked')
+print('    at its call.')
