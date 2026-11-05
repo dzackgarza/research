@@ -16,7 +16,9 @@ what does not rather than reporting a single verdict for both halves.
 | #688 | `G_Co = ρ_{S_En}(Stab_{Orth(S_En)}(h))`, named on the page as order `696 729 600`, index `136` in `S` | `S_En.discriminant_representation()`, images of nine reflections, `A.orthogonal_group().subgroup(images)`, then `orbits` | same |
 
 Every one of them starts with `orthogonal_group()` of a discriminant form, and that call
-does not return at this runtime:
+does not return at this runtime. Measured at the provider the corpus actually runs at,
+`sage-extensions` pin `6ad7a5ea396da6e758ee28f3dea10a35baee0266` on `PYTHONPATH`, not at
+the image checkout:
 
 ```
 ########## probe 2: the finite orthogonal group of a 4-class discriminant form
@@ -30,13 +32,14 @@ Unhandled SIGSEGV: A segmentation fault occurred.
 That is `coble_owner_gap-blockers.sh` probe 2 on the four-class form `A_{U(2)}`, the
 smallest case there is; the committed `coble_isotropic_orbits.py` — which did materialise
 the full group's partition in 29.8 s on 2026-11-04 — now stops as well (probe 4 of the same
-file). The cause, the probes that rule out a stale GAP workspace, a wrong GAP root and an
-autoloaded package, and the second, independent API-level defect in `O_plus()` and
-`spinor_norm()` are recorded in `coble_owner_gap-blockers-20261105.md`. That file records a measurement and not an
-attribution -- the environment split, and the fact that other workspaces on this VM report a
-working `libgap` -- and the question of why this rootfs differs is with the runtime owner.
-Neither issue can be settled with what runs here, and no orbit enumeration is implemented
-here in its place.
+file), and both were re-run at the declared provider pin for this transcript. The cause, the
+date it arrived, and the probes that rule out a stale GAP workspace, a wrong GAP root, an
+autoloaded package, this shell's environment and `proot` itself are in
+`coble_owner_gap-blockers-20261105.md`; so is the correction that the `O_plus()` and
+`spinor_norm()` refusal reported in an earlier draft belongs to the image's own checkout at
+`7b222e86` and not to the provider these computations run at, where both return objects.
+Neither issue can be settled with what decides here, and no orbit enumeration is implemented
+in its place.
 
 ## What does stand today
 

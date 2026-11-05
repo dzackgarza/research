@@ -1,3 +1,7 @@
+provenance
+  PYTHONPATH=/repo/.scratch/se-provider-6ad7a5ea/src
+  rootfs /workspace/nucleus/work/home/sage-image/rootfs, /sage/.venv/bin/sage, Sage 11.0.beta5
+
 ########## probe 1: libgap itself, no owning library involved
 $ sage /repo/.scratch/owner-gap-probes/p1_bare_libgap.py
 about to evaluate 1+1 in libgap
@@ -12,7 +16,7 @@ This probably occurred because a *compiled* module has a bug
 in it and is not properly wrapped with sig_on(), sig_off().
 Python will now terminate.
 ------------------------------------------------------------------------
-########## (exit above; a transcript that stops after a traceback is a crash)
+########## (exit status above; a transcript that stops mid-traceback is a crash)
 
 ########## probe 2: the finite orthogonal group of a 4-class discriminant form
 $ sage /repo/.scratch/owner-gap-probes/p2_orthogonal_group.py
@@ -29,23 +33,25 @@ This probably occurred because a *compiled* module has a bug
 in it and is not properly wrapped with sig_on(), sig_off().
 Python will now terminate.
 ------------------------------------------------------------------------
-########## (exit above; a transcript that stops after a traceback is a crash)
+########## (exit status above; a transcript that stops mid-traceback is a crash)
 
 ########## probe 3: membership in ker(rho_T), the matrix #646 turns on
 $ sage /repo/.scratch/owner-gap-probes/p3_predicate_membership.py
 reflection built; asking whether it lies in ker(rho_T)
-#W Static module lib/oper1.g has CRC mismatch, ignoring
-#W Static module lib/type1.g has CRC mismatch, ignoring
-------------------------------------------------------------------------
-------------------------------------------------------------------------
-cysignals failed to execute cysignals-CSI: No such file or directory
-------------------------------------------------------------------------
-Unhandled SIGSEGV: A segmentation fault occurred.
-This probably occurred because a *compiled* module has a bug
-in it and is not properly wrapped with sig_on(), sig_off().
-Python will now terminate.
-------------------------------------------------------------------------
-########## (exit above; a transcript that stops after a traceback is a crash)
+Traceback (most recent call last):
+  File "/sage/.venv/bin/sage", line 9, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/sage/.venv/lib/python3.14/site-packages/sage/cli/__init__.py", line 54, in main
+    return RunFileCmd(options).run()
+           ~~~~~~~~~~~~~~~~~~~~~~~^^
+        [...]
+           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repo/.scratch/se-provider-6ad7a5ea/src/sage_extensions/categories/abstract_categories/mor_foundation.py", line 61, in __call__
+    return self._element_constructor_(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+TypeError: TorsionFormOrthogonalGroup._element_constructor_() got an unexpected keyword argument 'check'
+########## (exit status above; a transcript that stops mid-traceback is a crash)
 
 ########## probe 4: the committed record coble_isotropic_orbits.py, green on 2026-11-04
 $ sage /repo/computations/reports/coble_isotropic_orbits.py
@@ -60,5 +66,5 @@ This probably occurred because a *compiled* module has a bug
 in it and is not properly wrapped with sig_on(), sig_off().
 Python will now terminate.
 ------------------------------------------------------------------------
-########## (exit above; a transcript that stops after a traceback is a crash)
+########## (exit status above; a transcript that stops mid-traceback is a crash)
 

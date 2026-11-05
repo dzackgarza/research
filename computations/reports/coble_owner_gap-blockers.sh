@@ -3,15 +3,16 @@
 #
 #     bash computations/reports/coble_owner_gap-blockers.sh
 #
-# Each probe runs in its own `sage` process under the declared shared runtime, because a
-# segfault ends the interpreter: one probe per process is the only way to see all four.
-# Nothing in the rootfs is written; the probes are written to .scratch/ and are not part
-# of the repository's content.
+# Each probe runs in its own `sage` process under the declared shared runtime, because what
+# ends the interpreter also ends the transcript: one probe per process is the only way to
+# see all four. Set PYTHONPATH to the snapshot the corpus runs at before invoking, so the
+# transcript says which provider was in use; nothing in the rootfs is written, and the probe
+# files go to .scratch/ and are not repository content.
 #
 # Why this file exists.  #646 (generators of Gamma_Co), #689 ([1, 255, 272]) and #688
-# ([1, 2, 120, 135, 270]) each need one of the owner's finite-group operations.  All four
-# probes below stop the interpreter instead of returning, and the recorded output is the
-# evidence for that; no conclusion about the mathematics is drawn from a crash.
+# ([1, 2, 120, 135, 270]) each need one of the owner's finite-group operations.  Probes 1, 2
+# and 4 stop the interpreter; probe 3 fails earlier, in the provider, with a TypeError.  No
+# conclusion about the mathematics is drawn from either.
 set -u
 REPO=$(cd "$(dirname "$0")/../.." && pwd)
 RUNTIME=/workspace/nucleus/work/home/sage-image/rootfs
@@ -19,16 +20,28 @@ PROOT=$REPO/.scratch/udocker_dir/bin/proot-x86_64
 PROBES=$REPO/.scratch/owner-gap-probes
 mkdir -p "$PROBES"
 
-run() {  # run <label> <file>; the file is given inside the bind, as /repo/...
+echo "provenance"
+PROVIDER=${PYTHONPATH:-<unset, so the image checkout /repos/sage-extensions>}
+echo "  PYTHONPATH=$PROVIDER"
+echo "  rootfs $RUNTIME, /sage/.venv/bin/sage, Sage 11.0.beta5"
+echo
+
+run() {  # run <label> <file>; the file is named inside the bind, as /repo/...
     local inside=/repo/${2#"$REPO"/}
     echo "########## $1"
     echo "\$ sage $inside"
     JULIA_DEPOT_PATH=/root/.julia:/opt/julia-depot timeout 900 \
         "$PROOT" -R "$RUNTIME" -b /proc -b /dev -b /sys -b "$REPO":/repo -w /repo \
-        /sage/.venv/bin/sage "$inside" 2>&1 \
-        | grep -v -E '^/sage/|^/lib/|^/usr/|\(\+0x' \
-        | head -14
-    echo "########## (exit above; a transcript that stops after a traceback is a crash)"
+        /sage/.venv/bin/sage "$inside" > "$PROBES/last.txt" 2>&1
+    grep -v -E '^/sage/|^/lib/|^/usr/|^/opt/|\(\+0x' "$PROBES/last.txt" > "$PROBES/shown.txt"
+    if [ "$(wc -l < "$PROBES/shown.txt")" -le 16 ]; then
+        cat "$PROBES/shown.txt"
+    else
+        head -8 "$PROBES/shown.txt"
+        echo "        [...]"
+        tail -5 "$PROBES/shown.txt"
+    fi
+    echo "########## (exit status above; a transcript that stops mid-traceback is a crash)"
     echo
 }
 

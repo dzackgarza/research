@@ -1,13 +1,18 @@
 """A3 (#646): the reflective set of the stable Coble group, at the owning library.
 
     RUNTIME=/workspace/nucleus/work/home/sage-image/rootfs
+    PYTHONPATH=/repo/.scratch/se-provider-6ad7a5ea/src \
     .scratch/udocker_dir/bin/proot-x86_64 -R "$RUNTIME" -b /proc -b /dev -b /sys \
         -b <repo>:/repo -w /repo /sage/.venv/bin/sage \
         /repo/computations/reports/coble_gamma_co_reflective_set.py
 
 Declared shared runtime, adopted: image ghcr.io/dzackgarza/sage at the rootfs above
-(Sage 11.0.beta5), carrying its own sage-extensions checkout at /repos/sage-extensions
-(pin 7b222e86214524a53802350f3cfda9c513707600). Nothing in the rootfs is written.
+(Sage 11.0.beta5), with the research provider on PYTHONPATH at the snapshot the corpus's
+own records run at, sage-extensions pin 6ad7a5ea396da6e758ee28f3dea10a35baee0266
+(.scratch/se-provider-6ad7a5ea/src, rebuilt from that pin; see
+deployed-runtime-readiness-20261104.md, which says which checkout the computations use and
+that it is not the image's own /repos/sage-extensions at 7b222e86). Nothing in the rootfs is
+written.
 
 What this file is for.  #646 asks for two things about
 Gamma_Co = O^+(T_Co) cap ker(rho_{T_Co}): an explicit reflective set in T_Co, and a
@@ -63,7 +68,7 @@ def refusal(label, thunk):
 
 print('provenance')
 print('  Sage: %s' % SAGE_VERSION)
-print('  sage-extensions: the rootfs image checkout /repos/sage-extensions, pin 7b222e86')
+print('  sage-extensions: .scratch/se-provider-6ad7a5ea/src on PYTHONPATH, pin 6ad7a5ea')
 print('  lattice: built here from its own Gram data, not read from a stored object')
 print('')
 
@@ -133,6 +138,7 @@ print('')
 
 # ---------------------------------------------------------------- what the owner refuses
 print('the owner operations this question needs, and what they do here')
+print('  (the lattice layer builds; the decision layer needs GAP, see the blockers record)')
 refusal('T.O_plus()', lambda: T.O_plus())
 refusal('T.spinor_norm()', lambda: T.spinor_norm())
 refusal('T.roots()', lambda: list(T.roots()))
@@ -155,15 +161,17 @@ print('      chapter table; its admissible reflective squares are {1, 2, 4} and 
 print('      square -1 is excluded by parity, so its roots are the short roots v^2 = -2')
 print('      and the long roots v^2 = -4, whose divisibility is 2 here, as')
 print('      @def:2elementary-roots and lem:divisibilityAlwaysTwoTco say;')
-print('  (2) the (-2)-vectors of T_Co give reflections the owner builds, and both the')
-print('      spinor-norm and the discriminant computations that place them in Gamma_Co are')
-print('      hand proofs recorded in the writing, not owner decisions, because O^+ and the')
-print('      discriminant action are unavailable at this runtime (the refusals above and')
-print('      the crashes in coble_owner_gap-blockers-20261105.md);')
+print('  (2) the (-2)-vectors of T_Co give reflections the owner builds, and the groups')
+print('      O^+(T_Co), the spinor norm and ker(rho_T_Co) are all built here as objects; but')
+print('      the two steps that place a named reflection in Gamma_Co are decisions, and')
+print('      neither is available: the spinor one stops the interpreter in GAP, and the')
+print('      discriminant one raises in the provider before GAP is reached (probe 3 of')
+print('      coble_owner_gap-blockers-20261105.md).  Both therefore remain proofs in the')
+print('      writing and are not claimed as owner decisions here;')
 print("  (3) the long root e' - f' has an integral reflection in O^+(T_Co) that moves the")
 print('      discriminant, so the reflective set of Gamma_Co is not the whole root system:')
-print('      it is the short roots together with the long roots that are discriminant-')
-print('      trivial, and among the short roots nothing more has to be decided;')
+print('      it is the short roots together with the long roots whose reflection acts')
+print('      trivially on A_T_Co, and among the short roots nothing more has to be decided;')
 print('  (4) T_Co is not hyperbolic, so the Vinberg-algorithm route the research report')
 print('      names (@prob:coxeter-completeness item 2, B32--B34) does not apply to T_Co')
 print('      itself: HyperbolicLattices refuses it by signature, and what remains is the')
