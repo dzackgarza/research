@@ -429,8 +429,8 @@ under each leaf. Keep full complaint evidence in its body or a linked comment.
 Place new issues in the native tree under #46, ordered by correctness, reusable
 capability, and reduction of later work. Native blocked-by relations record real
 prerequisites. Filing does not repair a defect or authorize unrelated implementation.
-Close an issue only with evidence for its full requirements; preserve remaining
-proof work under terminal T. Read and update the issues through itree and GitHub.
+Close an issue only with evidence for its full requirements, which means its
+assertions were run (`DEV-58`). Read and update the issues through itree and GitHub.
 Apply `DEV-61` to issue edits; the current single-worker
 workflow has no claim ledger or coordination mutex.
 The detailed capture and maintenance contract lives in `DEV-59`.
@@ -525,8 +525,8 @@ and [`DEV-56`](CONTRIBUTING.md#dev-56-decide-the-next-construction-in-the-todo).
 - **For partial delivery:** retain only the concrete unfinished obligations,
   with their owners, input maps, hypotheses and acceptance criteria. Preserve
   the original required generality; one implemented specialization does not
-  discharge the broader construction. Keep required execution work open when
-  implementation is delivered with unverified specimens under terminal T.
+  discharge the broader construction. Keep the issue open until its specimens
+  have been run (`DEV-58`).
 - **When discovering new work:** add the missing construction or repair from
   the current state, with its next specimen and actual dependencies. Do not
   resurrect a past checkbox or append a retrospective audit. Incorporate a

@@ -29,7 +29,7 @@ Use the [task complexity guide](COMPLEXITY.md) to score work and select a model 
 For current work selection and corrections, apply `DEV-50` through `DEV-58`:
 [future-only TODOs](#dev-50-todos-contain-only-unfinished-work),
 [mathematical representation](#dev-51-a-computational-image-is-not-the-object),
-and [verification phases](#dev-58-observe-the-current-verification-phase).
+and [run it](#dev-58-run-it).
 
 * * *
 
@@ -61,7 +61,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 #### `DEV-03`: Consult Megadoc, TODOs, Reuse Constructions, and Implement at Maximal Generality
 
 - **Rule**: Before adding or changing code under `src/dzack_research/preamble/` or in sage-extensions (`sage_extensions`), read the generated megadoc output `docs/preamble-megadoc.md` and the owning issue with its ancestors and siblings in the [native issue tree](https://github.com/dzackgarza/research/issues/46), including its unfinished constructions, input contracts, dependencies and acceptance criteria.
-  Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; when `DEV-58` permits execution, regenerate a stale document with `just preamble-megadoc` and read it. While execution is suspended, read the existing reference as an index, inspect the affected live source, and retain regeneration under terminal T.
+  Reading the generator `src/dzack_research/utilities/megadoc.py` does not satisfy the megadoc requirement; regenerate a stale document with `just preamble-megadoc` and read it.
   Always reuse existing constructions when they are mathematically correct and principled.
   When a required construction does not exist, implement it at its most mathematically general level (in its native abstract category or module layer) and progressively specialize and share it across concrete domains.
 
@@ -622,7 +622,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 - **Violation Example**: restoring an old release row to unchecked after discovering a new defect; leaving a completed toric algorithm as work to implement again; deleting the general non-toric requirement because its toric specialization exists.
 
-- **Correct Example**: name the present completion constructor, the finite quotient it currently uses, and the new exact completion behavior required. Keep completed implementation history in git and pending execution in terminal T.
+- **Correct Example**: name the present completion constructor, the finite quotient it currently uses, and the new exact completion behavior required. Keep completed implementation history in git and run the new behavior before closing.
 
 #### `DEV-51`: A Computational Image Is Not the Object
 
@@ -652,7 +652,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 - **Rule**: Translate a correction into the invariant it establishes, then follow that invariant through the affected public constructor, alternative constructors, elements, morphisms, and structural functors. Repair the common mathematical owner where the invariant belongs. Preserve both the new behavior and the already required behavior at that boundary; a fix to one route must not silently leave a second route with the same defect.
 
-  Write separating mathematical specimens at the existing proof surface, subject to `DEV-58`. Include a nontrivial positive case and a nearby case that would expose overgeneralization. Migrate implementation consumers, not the mathematician's expectations. The protected expectation subtrees and their catalogue remain unchanged except for a justified mathematical correction recorded in its commit, as required by `AGENTS.md`.
+  Write and run separating mathematical specimens at the existing proof surface (`DEV-58`). Include a nontrivial positive case and a nearby case that would expose overgeneralization. Migrate implementation consumers, not the mathematician's expectations. The protected expectation subtrees and their catalogue remain unchanged except for a justified mathematical correction recorded in its commit, as required by `AGENTS.md`.
 
 - **Rationale**: A local spelling or constructor repair can leave the generating error intact. Another coefficient regime, direct Hom constructor, or dependent functor then recreates the violation without copying its original code.
 
@@ -708,39 +708,27 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 
 - **Correct Example**: identify which constructions became available during the observed interval, whether later edits preserved them, and whether dependent work consumed the repaired contract. State unobserved intervals and runtime verification gaps without converting them into conclusions about effort.
 
-#### `DEV-58`: Observe the Current Verification Phase
+#### `DEV-58`: Run It
 
-- **Issue acceptance:** Once an issue's source changes and actual construction
-  prerequisites are complete, the orchestrator runs that issue's original
-  mathematical acceptance assertions on the integrated committed source. This
-  applies during M1. Unrelated unfinished M1 work does not block those checks.
-  Keep failures and their repairs with the original issue, and rerun the affected
-  assertions after repair. Close the issue only when every original requirement
-  has supporting evidence, as required by `DEV-61`.
+- **Rule**: Acceptance of a construction is running it. Before an issue closes,
+  run its own assertions on the committed source under the Sage virtual
+  environment and paste the command, the revision and the output at the issue.
+  A source review, a compilation or an import check proves nothing about the
+  mathematics. The commit and push hooks run as wired; `--no-verify` is for a
+  commit that touches no code path. The README example is the smallest
+  acceptance and runs in CI on every push, in under five minutes.
 
-- **Programme acceptance:** Broad suites, QC gates and notebook campaigns remain
-  suspended until the M1 source prerequisites ([sage-extensions#21](https://github.com/dzackgarza/sage-extensions/issues/21)) are delivered.
-  T begins with `core-usability-session`; `terminal-session` owns complete
-  frozen-API acceptance and `extended-mathematics-session` owns required feature
-  acceptance. M2 audits and API freeze, M3 full-suite acceptance and M4 capability
-  growth do not restart the suspension after T begins.
+- **Rationale**: A construction committed as "explicitly unverified" against a
+  future execution phase is a claim with no evidence, and the records of that
+  claim displace the run that would settle it.
 
-- **Readiness:** Inspect the source obligations and actual dependencies, not just
-  issue open/closed state. An issue awaiting execution remains open without making
-  its delivered source unfinished. Before an issue's prerequisites are ready,
-  write and commit constructions and falsifying assertions explicitly unverified.
-  The short merged-tree import check and required tool provisioning remain allowed.
+- **Violation Example**: closing an issue on "source closure only; terminal
+  execution not accepted"; writing "the Sage assertions were not executed" at an
+  issue whose assertions take seconds to run.
 
-- **Evidence:** Record the checked revision, original assertions and results at
-  the existing issue. A startup check, source review or compilation does not prove
-  mathematical acceptance. The orchestrator owns acceptance and publication;
-  workers retain their existing targeted-check and commit limits. Keep the
-  protected expectations and mathematical evidence boundaries intact.
-
-- **Hooks:** Classify hook applicability by staged paths. Prose-only commits use
-  `--no-verify`; the notebook/preamble scope exemption remains binding. Issue-level
-  acceptance does not authorize broad hooks before T or changes to shared QC
-  configuration.
+- **Correct Example**: `Groups.S(3).classifying_category().object_set()` printed
+  `{* in B(Symmetric group S_3)}` under the Sage venv at the named revision; the
+  command and output are pasted at the issue, and the issue closes.
 
 #### `DEV-59`: Record Observed Foundational Gaps and Papercuts
 
@@ -829,7 +817,7 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
   Preserve evidence comments after closure and use the issue's native state.
   Preserve enduring engineering decisions at their declaration.
   Source-based remediation does not certify runtime
-  behavior; required execution remains in terminal T under `DEV-58`. An observed
+  behavior; run the failing case (`DEV-58`). An observed
   runtime failure is not resolved merely because a speculative source fix exists.
 
 - **Rationale**: A leaf-level workaround can hide a reusable mathematical
@@ -851,11 +839,9 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
   order, and drive it to its stated acceptance before opening any other front.
   Shared-substrate (preamble) edits are in scope only when the current node's
   contract requires them. If multiple fronts are already open, close the
-  nearest-to-acceptance front before any new authoring. During the refactor,
-  commits use `--no-verify` per `DEV-58`; address real defects observed in the
-  work itself as they arise, but do not run hooks, test suites, or type-check
-  gates mid-refactor, and do not spend effort making files pass checks while
-  the architecture around them is incomplete.
+  nearest-to-acceptance front before any new authoring. Address real defects
+  observed in the work itself as they arise; the commit and push hooks run as
+  wired (`DEV-58`).
 
 - **Rationale**: Parallel half-open fronts multiply integration debt, hide
   which mathematical contract is actually blocked, and leave abandoned
@@ -892,8 +878,8 @@ and [verification phases](#dev-58-observe-the-current-verification-phase).
 - **Violation Example:** commit a claim, perform no construction, then commit its
   release; reject authorized work because a removed claim ledger has no entry.
 - **Correct Example:** deliver a constructor and its falsifying specimens,
-  discharge only the issue obligations supported by that commit, and leave
-  execution evidence owed under terminal T.
+  discharge only the issue obligations supported by that commit, and run the
+  specimens before closing (`DEV-58`).
 
   **Acceptance before reselection:** after a source unit is delivered, the
   orchestrator compares every requirement with the committed owners, callers
