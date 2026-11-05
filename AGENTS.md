@@ -808,6 +808,8 @@ linked in. Edit the real file under `writing/`; the symlink is only how Quarto r
 
 A push of `main` that changes `writing/` triggers `docs.yml` and redeploys Pages; local edits do not appear on the published site until pushed.
 
+The two gates read different bibliographies. `just docs-check` copies `~/.pandoc/bib/references.bib`, the working copy of the `pandoc-config` clone; `docs.yml` clones that repository's `main`. While the working copy holds an uncommitted bib edit, the local gate and the CI gate disagree on which citation keys are undefined.
+
 ## Annotation feedback loop
 
 The user delivers docs feedback by annotating the rendered pages in the browser; the `annotate` CLI turns those annotations into a committed batch the agent acts on.
