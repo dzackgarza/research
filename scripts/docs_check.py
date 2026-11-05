@@ -19,6 +19,12 @@ heading numbers, inline citation URLs, refs-web.bib, and theorem-family referenc
 It renders nothing and opens no network connection, so `just docs-lint` runs it in
 under a second. The render itself, citations outside the prose, links to generated
 ids, and external links belong to the full gate, which CI runs on every push.
+
+The citation check reads `writing/.assets/references.bib`, which `just docs-assets`
+copies from the ~/.pandoc working tree; CI copies the same file from pandoc-config's
+main branch. A key that exists only in uncommitted ~/.pandoc changes passes here and
+fails in CI, and a key those changes renamed fails here and passes in CI. Compare
+against `git -C ~/.pandoc show origin/main:bib/references.bib` when the two disagree.
 """
 import argparse
 import os
