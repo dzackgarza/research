@@ -1,0 +1,27 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+T_Co = <2> + U(2) + E8(2): rank 11, determinant -2048, signature (2, 9)
+
+Gamma_Co as an owned object: IntersectionSubgroups.parent_class
+  membership in it is tested as the conjunction "in O^+(T_Co) and in ker(rho_T_Co)",
+  which is what the intersection is; the half that fails is then visible.
+
+the reflective set, square by square
+  short root  zeta + a_1 q =  -2  in O^+: True   in ker(rho): True   in Gamma_Co: True   AGREE
+  short root  zeta + a_8 q =  -2  in O^+: True   in ker(rho): True   in Gamma_Co: True   AGREE
+  short root  x_3 (a = 3) q =  -2  in O^+: True   in ker(rho): True   in Gamma_Co: True   AGREE
+  positive     zeta      q =   2  in O^+: False  in ker(rho): True   in Gamma_Co: False  AGREE
+  positive     e' + f'   q =   4  in O^+: False  in ker(rho): False  in Gamma_Co: False  AGREE
+  long root    a_1       q =  -4  in O^+: True   in ker(rho): False  in Gamma_Co: False  AGREE
+  long root    e' - f'   q =  -4  in O^+: True   in ker(rho): False  in Gamma_Co: False  AGREE
+
+SUMMARY
+  every short root tested lies in Gamma_Co, and every vector of square +2, +4 or -4
+  tested lies outside it -- with the half it fails named in the two mixed cases: the
+  positive squares lie in ker(rho) but not in O^+ where they are in ker(rho) at all,
+  and the long roots lie in O^+ and outside ker(rho).  That is
+  prop:gamma-co-reflective-set, decided at the owner and not only proved.
+OK
