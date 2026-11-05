@@ -11,7 +11,7 @@ Zariski's Main Theorem itself is a classical, proven theorem; only its applicati
 :::
 
 ::: {.remark}
-The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
+The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har77].
 :::
 
 ## Global extension of the Enriques involution
@@ -77,14 +77,14 @@ A finite morphism is affine, so locally $Y = \Spec A$ and $X = \Spec B$ with $B$
 Since $Y$ is normal, $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B = A$.
 
 This is the form the classifying map needs, and it is the case of Zariski's Main Theorem in which the map is finite.
-The classical statement assumes quasi-finiteness instead and concludes only that $f$ is an isomorphism onto an open subset [@Har10a, §V.5]; properness of $f$ upgrades that, and a finite morphism is proper.
+The classical statement assumes quasi-finiteness instead and concludes only that $f$ is an isomorphism onto an open subset [@Har77, §V.5]; properness of $f$ upgrades that, and a finite morphism is proper.
 Normality of the source is a hypothesis of neither form, so the hypotheses to check below are birationality, finiteness, and normality of the target.
 
 
 :::
 ::: {.remark}
 
-Zariski's Main Theorem (@thm:zariski_main_theorem) is a classical theorem [@Har10a]; a finite birational morphism onto a normal variety is an isomorphism.
+Zariski's Main Theorem (@thm:zariski_main_theorem) is a classical theorem [@Har77]; a finite birational morphism onto a normal variety is an isomorphism.
 It is invoked here only as an external tool; the content below -- that the classifying map $\phi$ satisfies its hypotheses -- is the program's own claim.
 :::
 
