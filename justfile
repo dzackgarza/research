@@ -44,12 +44,13 @@ docs-deploy: docs-check
     [ "$code" = 200 ] || { echo "docs-deploy: nginx answered $code for lattice-research.localhost" >&2; exit 1; }
     echo "docs-deploy: http://lattice-research.localhost/ is serving $(find "$site" -name '*.html' | wc -l) pages"
 
-# Gate: render the docs book and fail on undefined citations, unresolved cross-refs, or broken anchor links
+# Full gate, the build CI runs on every push: render the docs book twice and fail on undefined citations, unresolved cross-refs, broken anchor links, or dead external links
 docs-check: docs-assets
     python3 scripts/docs_check.py
 
-# Fast check of one docs file: surfaces tikz-compile and pandoc/markdown syntax errors in seconds (no full-book link gate). e.g. `just docs-lint category-theory/framework/Mathematical-Framework.md`
+# Local check in seconds: the gate's source checks over the whole book (path links, heading numbers, inline citation URLs, theorem references), then one page rendered for tikz and markdown syntax errors. e.g. `just docs-lint coble/index.md`
 docs-lint FILE: docs-assets
+    python3 scripts/docs_check.py --source
     cd writing/.book && uvx --from quarto-cli quarto render "{{FILE}}" --to html
 
 # Rename a docs cross-reference/anchor slug everywhere, then prove every reference still resolves. Rewrites {#slug} anchors, @slug crossrefs, and ](…#slug) link fragments in one hyphen-boundary-safe pass (a longer slug is never partially hit) and runs the docs gate. e.g. `just docs-rename-ref def-old-name def-new-name`

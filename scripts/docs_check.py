@@ -11,7 +11,15 @@ Renders the book and fails (nonzero exit) on any data-integrity defect:
 
 Quarto command from $QUARTO (default `uvx --from quarto-cli quarto`).
 Run: `just docs-check`.
+
+`--source` runs only the checks that read the markdown sources: the chapter list,
+the part links, path and block links, heading numbers, inline citation URLs,
+refs-web.bib, and theorem-family references. It renders nothing and opens no network
+connection, so `just docs-lint` runs it in seconds. The render-dependent checks
+(citations, cross-refs, anchor ids, external links) belong to the full gate, which
+CI runs on every push.
 """
+import argparse
 import os
 import re
 import shlex
@@ -26,6 +34,11 @@ SITE = BOOK / "_site"
 REFS_WEB = ASSETS / "refs-web.bib"
 QUARTO = shlex.split(os.environ.get("QUARTO", "uvx --from quarto-cli quarto"))
 
+parser = argparse.ArgumentParser(description="integrity gate for the docs book")
+parser.add_argument("--source", action="store_true",
+                    help="source checks only: no render, no network")
+SOURCE_ONLY = parser.parse_args().source
+
 failures: list[str] = []
 
 # --- 0. no second Quarto process on this project ----------------------------------
@@ -36,9 +49,10 @@ failures: list[str] = []
 # finishes, so during that render the port is free, this gate starts, and the two
 # renders move each other's intermediates out from under themselves. The failure
 # surfaces as `NotFound ... rename '<chapter>.html'` on an arbitrary chapter. Look for
-# the process instead, which exists for the whole of that window.
-if subprocess.run(["pgrep", "-f", r"quarto\.js preview"],
-                  capture_output=True, text=True).returncode == 0:
+# the process instead, which exists for the whole of that window. A source-only run
+# writes no intermediates, so a preview can keep running beside it.
+if not SOURCE_ONLY and subprocess.run(["pgrep", "-f", r"quarto\.js preview"],
+                                      capture_output=True, text=True).returncode == 0:
     sys.exit("docs-check: a preview is running on this project. It renders the same "
              "intermediate paths as this gate and they corrupt each other — stop it "
              "first. Nothing is wrong with the book.")
@@ -79,11 +93,12 @@ for name in CHAPTERS:
 # *different* chapter, so one interrupted run keeps every later run red until the
 # stray file goes. Only the html of a chapter in the book is removed, so nothing
 # authored can be caught by this.
-for name in CHAPTERS:
-    stray = (BOOK / name).with_suffix(".html")
-    if stray.exists():
-        stray.unlink()
-        print(f"docs-check: cleared {stray}, left by an interrupted render")
+if not SOURCE_ONLY:
+    for name in CHAPTERS:
+        stray = (BOOK / name).with_suffix(".html")
+        if stray.exists():
+            stray.unlink()
+            print(f"docs-check: cleared {stray}, left by an interrupted render")
 
 # --- render twice, capturing warnings -------------------------------------------
 # custom-numbered-blocks resolves custom-block @id references (and legacy
@@ -97,42 +112,35 @@ for name in CHAPTERS:
 # The gate must therefore render twice itself: a single pass would check a site whose
 # forward references are all missing, and CI clones fresh, so it has no earlier pass
 # to inherit a registry from.
-for _pass in (1, 2):
-    proc = subprocess.run(
-        [*QUARTO, "render", str(BOOK)],
-        capture_output=True, text=True,
-    )
-    log = proc.stdout + proc.stderr
-    if proc.returncode != 0:
-        print(log)
-        sys.exit(f"docs-check: `quarto render` failed on pass {_pass} (exit {proc.returncode})")
+if not SOURCE_ONLY:
+    for _pass in (1, 2):
+        proc = subprocess.run(
+            [*QUARTO, "render", str(BOOK)],
+            capture_output=True, text=True,
+        )
+        log = proc.stdout + proc.stderr
+        if proc.returncode != 0:
+            print(log)
+            sys.exit(f"docs-check: `quarto render` failed on pass {_pass} (exit {proc.returncode})")
 
-# 1. undefined citations
-missing = sorted(set(re.findall(r"citation (\S+) not found", log)))
-if missing:
-    failures.append("undefined citations (not in any bibliography): " + ", ".join(missing))
+    # 1. undefined citations
+    missing = sorted(set(re.findall(r"citation (\S+) not found", log)))
+    if missing:
+        failures.append("undefined citations (not in any bibliography): " + ", ".join(missing))
 
-# 2. unresolved cross-references
-for html in sorted(SITE.rglob("*.html")):
-    hits = html.read_text(encoding="utf-8", errors="replace").count("quarto-unresolved-ref")
-    if hits:
-        refs = sorted(set(re.findall(r'quarto-unresolved-ref[^>]*>\?([\w:-]+)',
-                                     html.read_text(encoding="utf-8", errors="replace"))))
-        failures.append(f"{html.name}: {hits} unresolved cross-ref(s): {', '.join(refs)}")
+    # 2. unresolved cross-references
+    for html in sorted(SITE.rglob("*.html")):
+        hits = html.read_text(encoding="utf-8", errors="replace").count("quarto-unresolved-ref")
+        if hits:
+            refs = sorted(set(re.findall(r'quarto-unresolved-ref[^>]*>\?([\w:-]+)',
+                                         html.read_text(encoding="utf-8", errors="replace"))))
+            failures.append(f"{html.name}: {hits} unresolved cross-ref(s): {', '.join(refs)}")
 
 # The checks below are about site content. `writing/` also holds documents Quarto
 # does not render: the dissertation markdown, which compiles through ~/.pandoc, plus
-# talks, exams, and agent skill files. The rendered set is exactly the markdown that
-# produced a page under _site.
-#
-# Scan the prose tree, not the project root: the parts reach Quarto as symlinks and
-# `rglob` does not descend those, so scanning BOOK would silently find nothing.
-SITE_MD = [md for md in sorted(DOCS.rglob("*.md"))
-           if BOOK not in md.parents
-           and (SITE / md.relative_to(DOCS).with_suffix(".html")).exists()]
-if not SITE_MD:
-    sys.exit("docs-check: no rendered markdown found — the source scan and _site "
-             "disagree, so checks 3 and 4 below would pass without reading anything")
+# talks, exams, and agent skill files. The rendered set is exactly the chapter list of
+# _quarto.yml, resolved through the part links: a page it does not list does not render.
+SITE_MD = sorted({(BOOK / name).resolve() for name in CHAPTERS})
 
 # The theorem-family prefixes: the keys amsthm-refs hands to the numbered-block filter.
 AMSTHM_REFS = BOOK / "_extensions/local/amsthm-refs/amsthm-refs.lua"
@@ -146,15 +154,19 @@ THEOREM_PREFIXES = re.findall(r'(\w+)"?\]?\s*=\s*true', lua_table.group(1))
 # by path, `[t](../dir/Page.md)`, breaks when either end moves, so it is refused.
 # Quarto finds the page only for a heading id; a link to a numbered block (`#thm:x`)
 # stays an in-page anchor and is dead from any other chapter, so it is refused too.
-ids = {i for h in SITE.rglob("*.html")
-       for i in re.findall(r'id="([^"]+)"', h.read_text(encoding="utf-8", errors="replace"))}
+# The ids come from the rendered pages, because Quarto also generates an id for every
+# heading without an explicit one. A source-only run has no render to read, so it
+# checks the form of each link and leaves the existence of the id to the full gate.
+ids = None if SOURCE_ONLY else {
+    i for h in SITE.rglob("*.html")
+    for i in re.findall(r'id="([^"]+)"', h.read_text(encoding="utf-8", errors="replace"))}
 for md in SITE_MD:
     for i, line in enumerate(md.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
         for m in re.finditer(r"\]\(#([^)\s]+)\)", line):
             if m.group(1).split(":")[0] in THEOREM_PREFIXES and ":" in m.group(1):
                 failures.append(f"{md.name}:{i}: link to the block #{m.group(1)} — "
                                 f"write `text (@{m.group(1)})`")
-            elif m.group(1) not in ids:
+            elif ids is not None and m.group(1) not in ids:
                 failures.append(f"{md.name}:{i}: link to #{m.group(1)}, which no page has")
         for m in re.finditer(r"\]\(((?![a-z]+:)[^)\s#]+\.md)(#[^)\s]*)?\)", line):
             failures.append(f"{md.name}:{i}: link to the path {m.group(1)} — link to the "
@@ -205,7 +217,8 @@ for md, text in sources.items():
             failures.append(f"{md.name}:{i}: {m.group(0)} is raw LaTeX — "
                             f"write @{m.group(1)} or [-@{m.group(1)}]")
 
-# 8. external links must resolve — a cited resource that 404s can't be verified to exist
+# 8. external links must resolve — a cited resource that 404s can't be verified to exist.
+# Full gate only: a source-only run opens no connection.
 import urllib.request
 import urllib.error
 from concurrent.futures import ThreadPoolExecutor
@@ -240,11 +253,15 @@ def check_url(u: str):
         return None  # transient network error — never fails the build on a 404-less error
 
 
-if urls:
+if urls and not SOURCE_ONLY:
     with ThreadPoolExecutor(max_workers=8) as ex:
         failures += [r for r in ex.map(check_url, sorted(urls)) if r]
 
 if failures:
     print("docs-check FAILED:\n" + "\n".join(f"  - {f}" for f in failures))
     sys.exit(1)
-print(f"docs-check: OK (citations, cross-refs, anchor links, and {len(urls)} external links all resolve)")
+if SOURCE_ONLY:
+    print(f"docs-check --source: OK ({len(SITE_MD)} chapters; citations, cross-refs, anchor ids, "
+          "and external links are checked by the full gate)")
+else:
+    print(f"docs-check: OK (citations, cross-refs, anchor links, and {len(urls)} external links all resolve)")

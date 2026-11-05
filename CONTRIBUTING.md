@@ -1184,8 +1184,8 @@ The book builds from the repository root:
 
 ```bash
 just docs-preview                # serve the site locally with live reload
-just docs-lint coble/<page>.md   # render one page
-just docs-check                  # render, then fail on any citation, cross-ref, or link defect
+just docs-lint coble/<page>.md   # source checks over the book, then render one page
+just docs-check                  # the full build CI runs: render, then fail on any citation, cross-ref, or link defect
 ```
 
 ### The Coble part
