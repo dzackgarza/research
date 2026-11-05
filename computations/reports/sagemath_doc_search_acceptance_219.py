@@ -738,6 +738,41 @@ def b26_blank_path_never_becomes_a_working_directory_link():
     exc = expect(ValueError, cu.create_file_link, "", 7, "github")
 
 
+
+def b27_short_matching_record_is_not_a_miss():
+    """Short malformed records for the requested symbol raise; for others, they don't.
+
+    The old field-count gate let a matching 2- or 3-field record bypass every check and
+    read as "symbol absent".  The same corruption for a *different* symbol is tolerated,
+    and an absent symbol is still the true negative.
+    """
+    short_cases = (
+        ("two-fields", "Lattice\tsrc/x.py\n"),
+        ("three-fields", "Lattice\tsrc/x.py\t/^class Lattice:$/\n"),
+        ("empty-file", "Lattice\t\t/^class Lattice:$/\tline:5\n"),
+    )
+    for label, content in short_cases:
+        fixture = TMP / ("tags-short-" + label)
+        fixture.write_text(content, encoding="utf-8")
+        with ctags_index(fixture):
+            exc = expect(
+                su.CtagsIndexError, su.find_symbol_line_with_sage_index, "Lattice"
+            )
+        assert fixture.name in str(exc), (label, str(exc))
+    # corruption in a record for a different symbol must not break this lookup
+    mixed = TMP / "tags-mixed"
+    mixed.write_text(
+        "Other\tsrc/y.py\n"
+        "Lattice\tsrc/x.py\t/^class Lattice:$/\tline:7\n",
+        encoding="utf-8",
+    )
+    with ctags_index(mixed):
+        assert su.find_symbol_line_with_sage_index("Lattice") == (7, "src/x.py")
+    # and an absent symbol is still the honest miss
+    with ctags_index(mixed):
+        assert su.find_symbol_line_with_sage_index("NotThere") == (None, None)
+
+
 # --------------------------------------------------------------------------- run
 
 CATALOGUE = [
@@ -768,6 +803,7 @@ CATALOGUE = [
     ("b24 None/empty relative_path -> CitationLinkError", b24_none_or_empty_path_yields_no_link),
     ("b25 renderer rejects absent/None/blank/sentinel path", b25_renderer_rejects_every_pathless_form),
     ("b26 blank path -> ValueError, not a cwd link", b26_blank_path_never_becomes_a_working_directory_link),
+    ("b27 short matching record -> CtagsIndexError, others tolerated", b27_short_matching_record_is_not_a_miss),
 ]
 
 try:

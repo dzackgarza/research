@@ -1,0 +1,163 @@
+# Tree refresh after the #219 closure and the #606/#384 reflow (2026-11-04)
+
+Read from the live issues; no issue was written, closed or reordered from here.
+
+## What closed
+
+- **research#219** — `completed`, 2026-11-04T16:26:43Z, after the parent's independent
+  review of `14b30805`. The 28-boundary survey and its reconciliation record stand as its
+  evidence; no further action on this issue is available or needed from this repo.
+- **research#606** — `not_planned` / label `superseded`, 16:11:46Z. Owner's closure
+  comment: "no research code remains for this issue to migrate"; its obligations are
+  re-filed at owners: lean-categories#95–#98 (formal remainder), sage-extensions#40/#79/
+  #95/#118/#225 (Python presentation of sets), and research-side acceptance declared as
+  the expectation suite in `tests/constructions` and `tests/user_simulations` (218 files
+  already asserting cardinality and countability facts).
+- **research#384** — `not_planned` / `superseded`, 16:15:49Z; `sub_issues_summary` 1/1.
+
+## What is open now, in order
+
+`#46`'s first child **#417 (Milestone M1 — Daily mathematical work) is open** with all 20
+children complete. Its realization lives at `dzackgarza/sage-extensions#21`; what it
+retains here is the cross-repository ordering among the milestones under #46 and **the
+research-side acceptance: the expectation suite under `tests/` in this repository must
+pass on the realized library.**
+
+## What currently bounds execution here (corrected)
+
+My first pass of this section over-read the phase. The parent's read of `CONTRIBUTING.md`
+at `f30078e` stands: **DEV-58/`n` is not a blanket Sage or test ban.** The orchestrator
+runs each issue's original acceptance once its source and actual prerequisites are
+complete, M1 included; what defers are *broad* suites, QC and notebook campaigns, and
+only until #417's source prerequisites are delivered. Corrections recorded:
+
+- No broad run is implied by anything here, and none was made by me at any point.
+- Whether #417's prerequisites are delivered is not readable from this session just now:
+  its realization lives at `sage-extensions#21` and the Python-presentation issues
+  `sage-extensions#40/#79/#95/#118/#225`, and the unauthenticated GitHub rate window is
+  exhausted until its next reset. I therefore neither claim the set-expectation suite is
+  runnable nor that it is not.
+- Consistent with the corrected reading, this repository's CI runs issue-specific
+  acceptance automatically: `.github/workflows/cat-runtime-acceptance.yml` executes the
+  named `tests/constructions/...construct.sage` files in the Sage container when pushes
+  touch them. Orchestrated acceptance is thus already scoped per specimen; my local role
+  adds nothing executable there.
+
+So: correct and more modest — the phase bounds *broad* campaigns, which I never needed;
+issue-specific acceptance belongs to the orchestrator and CI; and the open question (are
+#417's upstream prerequisites delivered?) is checkable on the next rate window, not by
+guesswork here.
+
+## Consequences for this repo's records
+
+- #219 closure supersedes the former "issue write unavailable" blocker for that issue;
+  its evidence stays where it is.
+- The #606/#384 reflow supersedes their former blocked-by analysis: lean-categories
+  #95–#98 and sage-extensions #40/#79/#95/#118/#225 keep their owners. The two prepared pro-topic
+  patches (ordinal natural product; finite-subset inclusion registration) remain the
+  artifacts waiting for the `lean-categories` publishing route; nothing here claims them.
+- Next permissible owned work in actual issue order: none this instant beyond this record —
+  the remaining acceptance is execution-bound to terminal T.
+
+## Corroboration and the actual prerequisite picture
+
+- `4056425eafc8b6ad73e782338d3e7cc2b569848c` (2026-10-26, ancestor of main) rewrote
+  DEV-58: "Once an issue's source changes and actual construction prerequisites are
+  complete, the orchestrator runs that issue's original mathematical acceptance
+  assertions on the integrated committed source. This applies during M1. Unrelated
+  unfinished M1 work does not block those checks." Broad programme execution still defers
+  to terminal T. This is the controlling text; older copies of the blanket reading
+  elsewhere are superseded.
+- The runtime that would execute #417's suite must **carry the realized library**. This
+  VM's canonical Sage rootfs has `sage-extensions` at `7b222e86214524a53802350f3cfda9c513707600`
+  (read directly from the rootfs git metadata), older than the delivered main the parent's
+  source evidence cites (`c94206fc`). Consumers must not update the shared rootfs; the
+  dedicated Sage environment project owns it. That pin — not the phase — is what defers a
+  meaningful local run.
+- Upstream prerequisite state (`sage-extensions#21`, `#40/#79/#95/#118/#225`) is not
+  readable this instant (unauthenticated window exhausted), so no claim is made that
+  #417's acceptance is runnable or blocked; the two facts above are the ones this session
+  can establish from source.
+- Expectation population, for whoever executes: 234 files under `tests/constructions` and
+  `tests/user_simulations` reference cardinality/countability.
+
+## Parent's read-only audit of the set-boundary prerequisites (at research 496293 / sage-extensions dca789c)
+
+Read-only source audit, none of it executed acceptance. It replaces my earlier crude
+"are those issue numbers open?" test with actual prerequisite edges:
+
+- `sage-extensions#40`: `End`/`Aut` exist; `sage-extensions#39` (constructing category) is
+  the actual prerequisite even though no prose edge names it.
+- `sage-extensions#95`: `object_set` exists; runtime acceptance still unexecuted.
+- `sage-extensions#79`: source delivered; the final tests live in `sage-extensions#238`.
+- `sage-extensions#118`: the `RegularPolytopes` text is stale; owned posets exist; the A2
+  specimen plus `#116`'s six-route acceptance still need review.
+- `sage-extensions#225`: class-based `Set` dispatch genuinely remains; tagged M2.
+
+Lesson recorded: an open issue number is not evidence of naked prerequisite. Run-time
+acceptance is allowed only when those edges, not the issue labels, say so. Accordingly,
+the prerequisite-follow-through fetches the exact states of #39/#238/#116 at the same
+window as the rest, and local acceptance is keyed to the realized runtime pin, not to the
+stale one in this VM's canonical rootfs.
+
+## Upstream prerequisite states, read live after the rate window reset (job completed at ~16:57 UTC)
+
+Probed at the reset as scheduled, read exactly the states below (10 + the audit's 3 extra
+nodes; full JSON in `.scratch/upstream-state-20261104.json`).
+
+| issue | state | state_reason | title |
+| --- | --- | --- | --- |
+| sage-extensions#21 | open | — | Phase: M1 — Daily mathematical work |
+| sage-extensions#39 | open | — | Objects ask the mor of their ambient category |
+| sage-extensions#40 | open | — | Objects of sets answer their endomorphisms |
+| sage-extensions#79 | open | **reopened** | The preamble does not own Subsets, and Sage's calls an unrelated Subsets |
+| sage-extensions#95 | open | **reopened** | Classifying categories have an object set |
+| sage-extensions#116 | open | — | Coxeter diagram orders are owned posets |
+| sage-extensions#118 | open | — | Partially ordered sets have monotone maps |
+| sage-extensions#225 | open | — | Literal sets route by membership |
+| sage-extensions#238 | open | — | Terminal session |
+| lean-categories#95 | open | — | covariant finite-subset direct-image functor |
+| lean-categories#96 | open | — | enumeration/ranking data for EnumeratedSets |
+| lean-categories#97 | open | — | well-ordered sets and order-type route |
+| lean-categories#98 | open | — | partial and total order categories |
+
+Reading: every prerequisite edge on the #417/#606 boundary is open, and two of the
+presentation issues were **reopened**, so the source states establish the opposite of
+ready. There is accordingly no research-owned acceptance whose prerequisites I could
+claim as established: no run was made, no upstream edit was made, and the runtime-owner
+coordination question does not yet arise. When those states change, the next acceptance
+step will be keyed to a runtime that carries the realized library (canonical rootfs
+remains pinned at `7b222e8…`).
+
+## Correction: readiness is per candidate, and #606 is not a boundary
+
+Supersedes the "every edge open, therefore blocked" reading above. Two errors in it:
+
+- **#606 is closed superseded.** It is not an acceptance boundary and nothing here may be
+  gated on it. The table of its "boundary prerequisites" was a misreading.
+- **An open issue does not prove a missing construction.** Current `DEV-58` permits an
+  issue's original acceptance once its *actual construction and runtime* prerequisites are
+  complete, M1 included; it does not require issues to close first. The first table
+  substituted labels for evidence, which is exactly what the rule forbids.
+
+Per-candidate evidence, read from the pinned provider snapshot in `.scratch/se-provider-
+6ad7a5ea` (source pin `6ad7a5ea`, one pin behind the audited `dca789c`), not executed:
+
+| candidate | source evidence | what remains |
+| --- | --- | --- |
+| #40 End/Aut | `class End` at `categories/abstract_categories/mor_categories.py`; `Aut` not found under that literal in this snapshot | actual #39 prerequisite inspection; runtime acceptance |
+| #39 prerequisite | open per live read; `objects ask the mor of their ambient category` | its acceptance depends on #40's Mor data; no source inspection done here beyond the class presence |
+| #95 `object_set` | `def object_set` in `categories/group/classifying_categories.py` and `categories/abstract_categories/functors.py` | runtime acceptance (unexecuted), not source |
+| #79 Subsets | `class Subsets` not found in this snapshot; the issue is about ownership vs Sage's class | source at `dca789c` per the parent's audit; final execution belongs to #238 (M3) |
+| #118 posets | `class PartiallyOrderedSets` and `class TotallyOrderedSets` at `categories/sets/set_categories.py` | the `RegularPolytopes` objection is stale; actual A2 and #116 six-route acceptance need their own review |
+| #225 dispatch | class-based `Set` dispatch still the live path | genuine M2 work; does not freeze M1 |
+
+**Exact missing prerequisite now, stated as such:** deployed-runtime evidence. The
+canonical rootfs in this VM pins `sage-extensions` at `7b222e862145…`, older than both the
+audited source (`dca789c`) and this snapshot (`6ad7a5ea`), so any runtime acceptance run
+here would test a superseded deployment and could not be evidence for the audited source.
+That deployment — or the CI image at the matching pin — is the runtime owner's write; the
+source commits' presence is not deployed-runtime evidence.
+
+No GET fetch was rerun, no upstream was checked out or edited, and the shared runtime was
+not mutated.
