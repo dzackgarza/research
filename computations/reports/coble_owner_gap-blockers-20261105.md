@@ -95,6 +95,23 @@ the one the corpus's own `coble_stabilizer_generators.py` made at pin `c546` —
 it can be made. What is needed is either the constructor accepting `check` or the caller
 dropping it; both are inside the library.
 
+Every route to that decision is the same route, so the defect is not avoidable by choosing
+another documented call. `rho = T.discriminant_representation()` builds, and then
+
+```
+  s.discriminant_morphism()    RAISED TypeError: TorsionFormOrthogonalGroup._element_constructor_()
+                               got an unexpected keyword argument 'check'
+  T.discriminant_representation() -> Generic morphism: From: Orthogonal group O(...)
+  rho(s)                       RAISED TypeError: ... unexpected keyword argument 'check'
+  s in T.O_plus()              [the GAP stop below]
+```
+
+so `s.discriminant_morphism()`, `rho(s)` and the membership test all die in
+`_torsion_form_isometry`, while the *morphism* `rho` itself is constructible. One defect, one
+call site (`torsion_form_modules.py:315`), on the critical path of #646, #689 and #688: the
+finite orthogonal group that #689 and #688 need is the *target* of that morphism, and probe 2
+shows it cannot be built either.
+
 ## Where the GAP fault sits, and when it arrived
 
 - GAP initializes and reaches `READ_GAP_ROOT`, so it finds a root and reads library text; it
