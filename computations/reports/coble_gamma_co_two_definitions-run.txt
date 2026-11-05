@@ -1,0 +1,45 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-6ad7a5ea/src on PYTHONPATH, pin 6ad7a5ea
+
+the two lattices of the Heegner side
+  C = U + E8(-1): rank 10, signature (1, 9), determinant -1
+  S_En = C(2):    rank 10, signature (1, 9), determinant -1024
+  h = u_0 + w_0: h^2 = 2 in C and 4 in S_En
+
+the U(2) summand of S_En, which the proof below uses
+  u_0^2 = 0, w_0^2 = 0, u_0 . w_0 = 2
+  v = u_0 - w_0: q = -4, divisibility 2
+  |A_{S_En}| = 1024, and the exponent of A_L bounds possible_root_lengths: [1, 2, 4]
+
+the reflection, built by the owner
+  s = s_(u_0 - w_0): determinant -1, an involution: True
+  s fixes h = u_0 + w_0: True   <-- the first half of the lemma
+  s fixes the sum u_0 + w_0: True, and transposes the two directions: s(u_0) = w_0: True
+
+the step that decides the lemma: the discriminant action of s
+  s(x) = x + b(x,v)v/2 because q(v) = -4, and b(u_0/2, v) = b(u_0,v)/2 = -1, so
+  s(u_0/2) = w_0/2 and s(u_0/2) - u_0/2 = (w_0 - u_0)/2, whose coordinates in the
+  basis of S_En are (-1/2, 1/2, 0, ..., 0): not in S_En, so rho(s) != 1.
+  Asking the owner instead:
+  s.discriminant_morphism() RAISED TypeError: TorsionFormOrthogonalGroup._element_constructor_() got an unexpected keyword argument 'check'
+  the same call on T_Co fails identically; it is dzackgarza/sage-extensions#272
+
+SUMMARY
+  (1) the first half of #647 is definitional and needs nothing here:
+      Gamma_Co = O^+(T_Co)* = tilde O^+(T_Co), because the book defines
+      O^+(L) := Theta_R(L) and tilde O^+(L) as the pullback of ker rho_L along it
+      (lem:gamma-co-is-tilde-o-plus);
+  (2) the finite subgroup that separates the two further definitions is nontrivial on
+      the Enriques side, by hand and with every input above checked: s_(u_0 - w_0)
+      lies in Stab_{O(S_En)}(h) and carries the class of u_0/2 to that of w_0/2,
+      whose difference (w_0 - u_0)/2 is not in S_En.  So rho_{S_En}(Stab(h)) != 1
+      (lem:polarization-stabilizer-discriminant-nontrivial);
+  (3) that does not settle #647: what decides it is rho_T(Gamma^theta_Co) and
+      rho_T(Gamma^Hdg_Co), subgroups of O(A_{T_Co}, q) of order at most
+      46 998 591 897 600, and exhibiting their elements needs the discriminant action
+      of a named isometry -- the call that raises above.  The question is therefore
+      reduced to a finite-group computation and recorded as blocked on #272; no
+      statement about strictness of either inclusion is made here.
+OK: the definitional half is a lemma, the separating subgroup is nontrivial by proof,
+    and the finite computation that decides the rest is named and blocked at its call.

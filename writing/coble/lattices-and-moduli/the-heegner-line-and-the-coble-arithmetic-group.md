@@ -904,6 +904,71 @@ So $\varphi$ lies in $\Gamma^\theta_\Co$, which is the inclusion.
 An element of $\Gamma^\theta_\Co$ is an isometry of $T_\Co$, so its discriminant image is defined without a choice of lift, and the kernel is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \Gamma_\Co$; the index is the order of the image.
 :::
 
+::: {.lemma #lem:gamma-co-is-tilde-o-plus title="The stable group is $\widetilde\Orth^+(T_\Co)$, definitionally"}
+
+With $\Orth^+(L)\definedas\Theta_\bR(L)$ of @def:lattice-spinor-kernels and $\widetilde\Orth^+(L)$ the pullback of $\widetilde\Orth(L)=\ker\rho_L$ along the inclusion $\Orth^+(L)\injects\Orth(L)$,
+$$
+\Gamma_\Co = \Orth^+(T_\Co)^* = \widetilde\Orth^+(T_\Co)
+.$$
+:::
+
+::: {.proof}
+
+The left side is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ by the definition of $\Gamma_\Co$ above, and the right side is the same intersection by the definition of a pullback along an inclusion: the pullback of $\ker\rho_L$ along $\Orth^+(L)\injects\Orth(L)$ is the set of those $g\in\Orth^+(L)$ whose image lies in $\ker\rho_L$.
+So the identity asserts nothing beyond those two definitions, and no arithmetic property of $T_\Co$ enters it.
+:::
+
+::: {.proposition #prop:gamma-co-two-definitions title="What separates the two further definitions of $\Gamma_\Co$"}
+
+Let $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ be the groups of @prop:gamma-co-in-heegner-group and @prop:gamma-co-in-theta-centralizer.
+Then:
+
+1. $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma_\Co$ if and only if $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) = 1$, and $\Gamma^\theta_\Co = \Gamma_\Co$ if and only if $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr) = 1$;
+2. both $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)$ and $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)$ are subgroups of the finite group $\Orth(A_{T_\Co}, q_{T_\Co})$, of order $46\,998\,591\,897\,600$ by @prop:coble-discriminant-group, and neither question involves $\fco$ or a period domain;
+3. $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)\neq1$ exactly when some $g\in Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ has $\restrictionof{g}{T_\Co}$ acting nontrivially on $A_{T_\Co}$.
+
+So each of the two questions is a question about a finite group, and a *witness* for strictness of either inclusion is a single explicit isometry, of $\lkt$ in case (3) and of the Heegner lattice in the other.
+:::
+
+::: {.proof}
+
+(1) is the second claim of each of the two propositions, which identifies $\Gamma_\Co$ with the kernel of the respective finite image, together with the first isomorphism theorem; a kernel is everything exactly when the image is trivial.
+(2) an isometry of $T_\Co$ has a discriminant image, so each image is a subgroup of the finite group acting on $A_{T_\Co}$, and the order of that group is the one @prop:coble-discriminant-group computes.
+(3) unwinds the definition of $\Gamma^\theta_\Co$ as the set of restrictions of the elements of that intersection: a nontrivial image is an element of it acting nontrivially on $A_{T_\Co}$, and conversely.
+:::
+
+Nothing in the two propositions above, or in this one, says whether either image is trivial: the containment $\Gamma_\Co\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma_\Co\iscontainedin\Gamma^\theta_\Co$ is all that is proved, and by contrast the congruence group is *proved* strictly larger, in the remark below.
+What can be said without the finite computation is that the finite group on the Enriques side is not trivial, so the index in @prop:gamma-co-in-heegner-group is bounded by a group that is genuinely bigger than the trivial one and the question is not vacuous.
+
+::: {.lemma #lem:polarization-stabilizer-discriminant-nontrivial title="The finite image of the polarization stabilizer is not trivial"}
+
+Let $C = U\oplus E_8(-1)$ and $S_\En = C(2) = U(2)\oplus E_8(-1)$ be the lattices of @def:enriques-lattice, with $h = u_0+w_0$ the degree-$2$ polarization class of $S_\En$, and put $v \definedas u_0-w_0$.
+Then the reflection $s_v$ is an isometry of $S_\En$ fixing $h$, and it acts nontrivially on $A_{S_\En}$; consequently the subgroup $\rho_{S_\En}\bigl(\Stab_{\Orth(S_\En)}(h)\bigr)$ whose order bounds the index in @prop:gamma-co-in-heegner-group is not trivial.
+:::
+
+::: {.proof}
+
+In $S_\En$ one has $u_0^2 = w_0^2 = 0$ and $b(u_0,w_0) = 2$, so $v^2 = -4$ and $\div_{S_\En}(v) = 2$; the reflection is therefore the integral isometry $s_v(x) = x + \tfrac12 b(x,v)v$ of @def:spinor-norm, and $\spinornorm_\bR(s_v) = [2] = [1]$, so $s_v\in\Orth^+(S_\En)$.
+It fixes $h$: $b(h,v) = b(u_0+w_0,\,u_0-w_0) = 0-2+2-0 = 0$, hence $s_v(h) = h$.
+
+For the discriminant, the class of $u_0/2$ lies in $S_\En^*$, because $b_{S_\En} = 2\,b_C$ and $u_0, y\in C$ give $b_{S_\En}(u_0/2, y) = b_C(u_0,y)\in\ZZ$ for every $y\in S_\En$.
+Then $b(u_0/2, v) = \tfrac12\bigl(b(u_0,u_0) - b(u_0,w_0)\bigr) = -1$, so
+$$
+s_v\bigl(\tfrac12 u_0\bigr) = \tfrac12 u_0 - \tfrac12 v = \tfrac12 w_0
+,$$
+and $\tfrac12 w_0 - \tfrac12 u_0 = \tfrac12(w_0-u_0)$ has coordinates $(-\tfrac12, \tfrac12, 0,\dots,0)$ in the basis $u_0, w_0, E_8(-1)$ of $S_\En$, so it is not in $S_\En$.
+Hence $\rho_{S_\En}(s_v)\neq\id$ while $s_v(h) = h$, which is the claim.
+:::
+
+::: {.remark title="What the lemma does and does not settle"}
+
+The lemma is about the group whose order *bounds* the index in @prop:gamma-co-in-heegner-group, and it does not make either inclusion strict.
+An element of $\Gamma^{\mathrm{Hdg}}_\Co$ is the restriction of an element of $\Stab_{\gent}(\ZZ\delta)$, and an isometry of $S_\En$ with nontrivial discriminant image need not have a partner in $T_\Co$: by @thm:automorphism-lifting-criterion a pair $(g_S,g_T)$ extends over the overlattice exactly when $\bar g_T\circ\gamma = \gamma\circ\bar g_S$, and the lemma's element $s_v$ supplies only its $g_S$ half.
+So the strictness of the two inclusions remains open, and what would decide it is one of the following: an explicit pair, in which case the inclusion is strict and the two definitions are different groups; or the triviality of the two finite images, in which case the definitions agree.
+Both are decided in a finite group by @prop:gamma-co-two-definitions, and neither is decided here: reading the discriminant image of a named isometry is the call `s.discriminant_morphism()`, which at the adopted runtime raises `TypeError: TorsionFormOrthogonalGroup._element_constructor_() got an unexpected keyword argument 'check'` (dzackgarza/sage-extensions#272), on $S_\En$ as on $T_\Co$.
+The record of what was checked and what stopped is `computations/reports/coble_gamma_co_two_definitions.py`.
+:::
+
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
 The two propositions above compare $\Gamma_\Co$ with the larger groups by way of its finite image on $A_{T_\Co}$.
