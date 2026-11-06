@@ -1,111 +1,59 @@
 provenance
-  provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552   Sage: 11.0.beta5
+  Sage: 11.0.beta5, checkout 281da26ffdce
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
 
-|A_{S_Co}| = 2048, |A_{T_Co}| = 2048
-A_{S_Co}.is_anti_isometric(A_{T_Co}) = True
+the two lattices
+  S_Co = C_S(2): rank 11, signature (1, 10), determinant 2048
+  T_Co = B(2):   rank 11, signature (2, 9), determinant -2048
 
-the two normal-form isometries
-  f.domain()   = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
-  f.codomain() = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
-  g.domain()   = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
-  g.codomain() = Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]
-  f.domain() is g.domain() : False
-  f.domain() == g.domain() : True
+the discriminant forms
+  |A_{S_Co}| = 2048, |A_{T_Co}| = 2048
+  A_{S_Co}.is_anti_isometric(A_{T_Co}) = True
 
-attempt: f.inverse().then(g)   [A_S -> NF -> A_T(-1)]
-  FAILED, traceback:
-    Traceback (most recent call last):
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
-        arrow = thunk()
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 90, in <lambda>
-        attempt('f.inverse().then(g)   [A_S -> NF -> A_T(-1)]', lambda: f.inverse().then(g))
-                                                                        ~~~~~~~~~~~~~~~~^^^
-      File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/abstract_categories/mor_categories.py", line 640, in then
-        raise ValueError(
-        ...<2 lines>...
-        )
-    ValueError: cannot compose Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] and then Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]: the codomain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the first is not the domain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the second
-attempt: f.inverse() * g        [multiplicative form]
-  FAILED, traceback:
-    Traceback (most recent call last):
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
-        arrow = thunk()
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 91, in <lambda>
-        attempt('f.inverse() * g        [multiplicative form]', lambda: f.inverse() * g)
-                                                                        ~~~~~~~~~~~~^~~
-    TypeError: unsupported operand type(s) for *: 'CategoricalIsomorphism' and 'CategoricalIsomorphism'
-attempt: g * f.inverse()        [reverse order]
-  FAILED, traceback:
-    Traceback (most recent call last):
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
-        arrow = thunk()
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 92, in <lambda>
-        attempt('g * f.inverse()        [reverse order]', lambda: g * f.inverse())
-                                                                  ~~^~~~~~~~~~~~~
-    TypeError: unsupported operand type(s) for *: 'CategoricalIsomorphism' and 'CategoricalIsomorphism'
-attempt: f.then(g)              [wrong direction; refusal is correct]
-  FAILED, traceback:
-    Traceback (most recent call last):
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
-        arrow = thunk()
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 93, in <lambda>
-        attempt('f.then(g)              [wrong direction; refusal is correct]', lambda: f.then(g))
-                                                                                        ~~~~~~^^^
-      File "/repo/.scratch/se-provider-c546/src/sage_extensions/categories/abstract_categories/mor_categories.py", line 640, in then
-        raise ValueError(
-        ...<2 lines>...
-        )
-    ValueError: cannot compose Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] and then Morphism from Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] to Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2]: the codomain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the first is not the domain Finitely presented module on 11 module generators over Integer Ring with invariant factors Invariant-factor family: [0 ↦ 2, 1 ↦ 2, 2 ↦ 2, 3 ↦ 2, 4 ↦ 2, 5 ↦ 2, 6 ↦ 2, 7 ↦ 2, 8 ↦ 2, 9 ↦ 2, 10 ↦ 2] of the second
-attempt: D_S.isometry_to(D_T(-1)) [the constructor the gluing would need]
-  FAILED, traceback:
-    Traceback (most recent call last):
-      File "sage/structure/category_object.pyx", line 858, in sage.structure.category_object.CategoryObject.getattr_from_category
-        return self._cached_methods[name]
-    KeyError: 'isometry_to'
-    
-    During handling of the above exception, another exception occurred:
-    
-    Traceback (most recent call last):
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 77, in attempt
-        arrow = thunk()
-      File "/repo/computations/reports/coble_gluing_discriminants.py", line 95, in <lambda>
-        lambda: DS.isometry_to(DTm))
-                ^^^^^^^^^^^^^^
-      File "sage/structure/category_object.pyx", line 852, in sage.structure.category_object.CategoryObject.__getattr__
-        return self.getattr_from_category(name)
-      File "sage/structure/category_object.pyx", line 867, in sage.structure.category_object.CategoryObject.getattr_from_category
-        attr = getattr_from_other_class(self, cls, name)
-      File "sage/cpython/getattr.pyx", line 362, in sage.cpython.getattr.getattr_from_other_class
-        raise AttributeError(dummy_error_message)
-    AttributeError: 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'isometry_to'
+the block decompositions, as subgroups of the discriminant groups
+  S:  <K> block  order   2, q-values ['[(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring', '[0] in Fraction Field of Integer Ring / (2)Integer Ring']
+  S:  U(2) block order   4, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  S:  E8 block   order 256, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  T(-1):  <1> block order   2, q-values ['[(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring', '[0] in Fraction Field of Integer Ring / (2)Integer Ring']
+  T(-1):  U(2) block order   4, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  T(-1):  E8 block order 256, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  orders 2, 4, 256, multiplying to 2048 on each side
 
-the routes attempted, each by the call above -- not an exhaustive search of the
-  provider capabilities:
-  then                                  mor_categories.py:637-644, "other o self", requires
-                                        other.domain() is self.codomain()
-  normal_form = p_adic_jordan_form      form_modules.py:2736-2742 and 3709-3713; computed
-                                        per call by _p_adic_jordan_form
-                                        (torsion_form_modules.py:1014), so two equal forms
-                                        get distinct normal-form objects
-  reframing_isometry / regenerate       form_modules.py:2630-2645: re-presents the SAME
-                                        form on new generators, not a bridge between two
-  isometry_to                           lattices.py:4373, lattice level only
-  is_isomorphic / is_anti_isometric     form_modules.py:2760, 2773, 3733: predicates
-  equip_quadratic_form                  pure/modules.py:1980, on a pure module, so it needs
-                                        a linear identification of the two underlying
-                                        modules, which would be a local algorithm
+building the anti-isometry: gamma = A_{S_Co}.isometry_to(A_{T_Co}(-1))
+  built: OwnedTorsionFormIsometryMor_with_category_with_category.element_class
 
-RESULT: none of the attempted constructions produced a composite.
-  Each refusal is shown with its own traceback above.
+isometry-to-the-twist check q_{T(-1)}(gamma x) = q_S(x) on all 260 classes of the three blocks: True
+  (q_{T(-1)} = -q_T, so this is the anti-isometry statement q_T(gamma x) = -q_S(x)
 
-requested operation, for the library owner
-  An isometry constructor at the level of torsion quadratic forms: given D1, D2 with
-  D1.is_isomorphic(D2) True, return a CategoricalIsomorphism with domain D1 and
-  codomain D2 -- e.g. D1.isometry_to(D2), or isometry_between(D1, D2).  The gluing needs
-  the twisted case only: gamma = D1.isometry_to(D2.twist(-1)), after which the check
-  q_D2(gamma x) = -q_D1(x) on generators is what this script already performs whenever
-  an arrow exists.  An alternative that also suffices: a normal form published once per
-  isometry class, so that normal_form_isometry() for two equal forms has the same domain
-  object and the guards of `then` are satisfied without an explicit bridge.
+gamma is a typed isometry of torsion forms (not a bare map), hence bijective;
+  the orders of the block images below verify injectivity on the blocks themselves.
 
-Not claimed: anything about L_K3, about automorphisms, or about the chamber.
+the block check: does gamma carry block to block?
+  order-2 block  gamma(<K>) == <1> : False
+  U(2) block     gamma(U)   == U   : False
+  E8(2) block    gamma(E8)  == E8  : False
+
+where the images land
+  gamma(<K>) order   2   inside the E8 block: False   inside the U(2) block: False
+  gamma(U)   order   4   inside the E8 block: False   inside the U(2) block: False
+  gamma(E8)  order 256   inside the E8 block: False   inside the U(2) block: False
+
+RESULT
+  block-compatible on this gamma: False
+
+  the three blocks of the two sides are pairwise isometric with matching q-value sets
+  (orders 2, 4, 256 and the same values on each side, printed above), so an anti-isometry
+  carrying block to block EXISTS: the block-wise map is one.  What fails here is not
+  existence but this particular gamma.
+
+What this does and does not decide.
+  Decided: the anti-isometry produced by A.isometry_to(A_{T_Co}(-1)) -- the provider
+  isometry, verified above to satisfy q_{T(-1)}(gamma x) = q_S(x) on the 260 classes of
+  the three blocks -- does NOT carry the summand blocks to the summand blocks.
+  Not decided, and not decidable this way: whether the gluing gamma_Co of the *marked*
+  embedding S_Co + T_Co -> L_K3 is block-compatible.  isometry_to returns an arbitrary
+  isometry of the two abstract forms, and the negative above is a property of that choice;
+  a different choice (the block-wise one) is block-compatible by construction.  So this
+  record fixes what the provider construction gives and leaves the labelled question to
+  prob:coble-rigidity, as a computed fact and not as a theorem.

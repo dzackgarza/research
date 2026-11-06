@@ -1232,6 +1232,21 @@ What decides it is the gluing isometry as constructed for the embedding $S_\Co\o
 This is the same block-compatibility of @prop:gamma-cong-eq-heegner(2), for $\gamma_\Co$ instead of $\gamma$: with it, $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ as well; without it, $\Gamma^\theta_\Co$ is a subgroup of index $\abs{W(E_8)}$ over $\Gamma_\Co$ which need not be that one, and the page's data do not decide which.
 :::
 
+::: {.remark title="The block check, computed"}
+
+What is computed, and by which script, as of the adopted runtime (Sage checkout `281da26ffd`, Sage 11.0.beta5, GAP 4.16.1) with `sage-extensions` at pin `15db925b`:
+`computations/reports/coble_gluing_discriminants.py`, transcript `-run.txt`.
+
+The two forms are built from their summands — $A_{S_\Co} = C_S/2C_S$ with $C_S = \generators{K}\oplus U\oplus E_8(-1)$, $K^2 = -1$, and $A_{T_\Co} = B/2B$ with $B = \generators{1}\oplus U\oplus E_8(-1)$ — and the three blocks have orders $2$, $4$, $256$ on each side, multiplying to $2048$.
+With $\gamma = A_{S_\Co}\texttt{.isometry\_to}(A_{T_\Co}(-1))$ built by the provider (sage-extensions#272 having put the torsion-form isometry constructor on one contract), the isometry-to-the-twist identity $q_{T_\Co(-1)}(\gamma x) = q_{S_\Co}(x)$ holds on all $260$ classes of the three blocks, so $\gamma$ is an anti-isometry there; and $\gamma$ carries **none** of the three blocks to the corresponding block:
+$$
+\gamma(\generators{K})\neq\generators{1},\qquad \gamma\bigl(A_{U(2)}\bigr)\neq A_{U(2)},\qquad \gamma\bigl(A_{E_8(2)}\bigr)\neq A_{E_8(2)}.
+$$
+That is a fact about the isometry the provider's constructor returns, not about $\gamma_\Co$: `isometry_to` returns *an* isometry of the two abstract forms, and the block-wise map is block-compatible by construction — the three blocks are pairwise isometric with matching $q$-value sets, also printed in the same transcript.
+So the computation fixes what the constructor gives and does not decide the labelled question, which stays where the remark above put it: an instance of @prob:coble-rigidity, about the marked embedding rather than about the pair of forms.
+A second, incidental finding is recorded in the same transcript: the map's forward conversion refuses the elements of `module_generating_set()` (with `ValueError: NN = {0, 1, 2, ...} is not in Category of sets with partial maps`) while accepting classes built by `discriminant_class`, which is why every check above runs on the latter.
+:::
+
 ::: {.remark title="What this does to A20"}
 Item 1 of A20 — the comparison of the Heegner group with the congruence group — was recorded as blocked on two owner capabilities: explicit generators of $\gent$, and an explicit isometry of torsion forms.
 The first of the two is not needed: generators of the *image* suffice, and they are the nine reflections whose discriminant images @prop:gamma-co-heegner-strict transports, while the congruence subgroup is given by its two factors, whose orders are computed in (1).
