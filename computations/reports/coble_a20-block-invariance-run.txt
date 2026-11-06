@@ -1,0 +1,27 @@
+provenance
+  Sage: 11.0.beta5, checkout 281da26ffdce
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+S_En = C(2): rank 10, signature (1, 9), determinant -1024
+A_{S_En}: 1024 classes
+
+the blocks
+  U(2) block  order   4, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  E8(2) block order 256, q-values ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+
+the orbits of O(q_{S_En}) on the 1024 classes: 3, sizes [1, 496, 527]   (45 s)
+
+orbits meeting the U(2) block: 3
+  orbit of size 1: 1 of its classes inside the U(2) block
+  orbit of size 496: 1 of its classes inside the U(2) block
+  orbit of size 527: 2 of its classes inside the U(2) block
+
+the decomposition A_{S_En} = A_{U(2)} perp A_{E8(2)} is O(q_{S_En})-invariant: False
+
+  witness, in one orbit of size 496:
+    x = [0] + [1]   (inside the U(2) block, q = 1)
+    y = [0] + [1] + [3] + [4] + [5] + [6] + [8]   (outside the U(2) block, q = 1)
+  so some isometry of q_{S_En} moves a class of the U(2) block out of it: the
+  decomposition is NOT invariant, block-compatibility is a property of the chosen
+  anti-isometry, and item 1 stays with the labeled-embedding statement (#664).
