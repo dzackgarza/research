@@ -76,7 +76,10 @@ for g in gensB:
         pair = matrix(ZZ, 1, r, [B.pairing(g(basis[j]), basis[i]) for i in range(r)])
         coords = (pair * inv)[0]
         cols.append([int(QQ(x)) % 2 for x in coords])
-    gens_H.append(matrix(GF(2), r, r, [[cols[j][i] for j in range(r)] for i in range(r)]))
+    # GAP acts on row vectors by right multiplication, so the column-convention matrix of the
+    # module automorphism enters the comparison transposed; the O(q) generators stay as mat_of
+    # returns them, and the two sides then agree on J.
+    gens_H.append(matrix(GF(2), r, r, [[cols[j][i] for j in range(r)] for i in range(r)]).transpose())
 H = libgap.Group([libgap(g) for g in gens_H])
 order_H = int(libgap.Size(H))
 print('  |H| = |rho(Stab_{O(B)}(P))| = %d' % order_H)
@@ -119,7 +122,22 @@ order_orbit = len(list(orbit))
 print('  |Stab_{O(q)}(J)| = %d' % order_stab)
 print('  |O(q) . J| = %d' % order_orbit)
 print('  |Stab| * |orbit| = |G|: %s' % (order_stab * order_orbit == order_G))
-print('  H <= Stab: %s   (%.0f s)' % (bool(libgap.IsSubgroup(Stab, H)), time.time() - start))
+contained = bool(libgap.IsSubgroup(Stab, H))
+print('  H <= Stab: %s   (%.0f s)' % (contained, time.time() - start))
+if not contained:
+    print('  the containment fails; scanning for the first generator that moves J')
+    Jm = matrix(GF(2), [r1, r3])
+    for k, g in enumerate(gens_H):
+        M2 = Jm * g
+        image = libgap.Subspace(libgap.GF(2) ** r, libgap([[int(x) for x in M2[i]] for i in (0, 1)]))
+        try:
+            same = bool(libgap.IsSubspace(J, image))
+        except Exception:
+            same = False
+        if not same:
+            print('  generator %d moves J; its matrix over GF(2) is' % k)
+            print(g)
+            break
 
 print('\nTHE NUMBERS')
 print('  |H| = |rho(Stab_{O(B)}(P))|      = %d' % order_H)

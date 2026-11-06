@@ -1327,6 +1327,8 @@ The labels below are internal finite labels; they are not cusp labels.
 
 : Finite totally singular plane orbits. {#tbl-finite-plane-orbits}
 
+The five sizes of @tbl-finite-plane-orbits are a **page proof**: their total $1575+270+9450+3780+8640 = 23\,715$ is the size of the single $\Orth(q_{T_\Co})$-orbit of the order-$4$ isotropic subgroup $J$, computed in `computations/reports/coble-plane-half-f2.py`, so they refine that orbit and do not partition it, and the group whose orbits they are has not been identified here. The computation that would decide them, and the identification of that group, is sage-extensions#286.
+
 **Status of the two tables.** The vector table is identified and its lift is proved: the four sizes are the orbits of $G_\Co$, the image of the degree-$2$ parabolic stabilizer, and the $\Gamma_\Co$-orbits of primitive isotropic vectors number $527$, one per nonzero isotropic class (@sec-cusp-lifting). The plane table is **unverified**: none of its five sizes has been reproduced by a record in this repository, and the plane orbit decomposition needs the library call filed as sage-extensions#286 (the $\Gamma$-orbits of primitive isotropic vectors and planes of $T_\Co$ with incidence). It is marked unverified pending that call, and #645 (the number of $1$-cusps) is blocked by it.
 
 A later enhanced calculation decorated a finite plane by one of eight ``stars'' in the natural $S_8$-set attached to its $6$-dimensional quotient.
