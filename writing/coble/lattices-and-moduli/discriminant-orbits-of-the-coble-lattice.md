@@ -260,6 +260,7 @@ The lemma gives two orbits of the full orthogonal group; for $\Gamma_\Co$ the co
 
 Let $\rho_{T_\Co}\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ be the discriminant representation and let $v\in T_\Co$ be primitive isotropic.
 Then the number of $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$ is $527$, one for each nonzero isotropic class of $A_{T_\Co}$; the number of $\Gamma_\Co$-orbits of primitive isotropic lines is the same, so $\overline{F_\Co}^{\bb}$ has exactly $527$ $0$-cusps.
+This count is **proved in prose only**: no computation record decides it. The computation that would is the library call that returns the $\ker\rho_{T_\Co}$- and $\Gamma_\Co$-orbit counts on $T_\Co$ directly, sage-extensions#286; until that record exists the number stands on the proof of @sec-cusp-lifting and on the class count of @prop:coble-q-fibers, and on nothing computed.
 :::
 
 ::: {.proof}
