@@ -372,7 +372,7 @@ $$
 $$
 in the recorded basis $\eps_1,\dots,\eps_{10}$ of $\eta_1^{\perp}/\eta_1$, the coefficients $(2,3,4,6,5,4,3,2)$ being the marks of the highest root of $E_8$;
 
-3. the chamber of $K_\Co$ has **nine** walls and the CoxIter diagram the record describes as a rank-$9$ chain with exactly one label-$4$ edge, with one ideal vertex; this half is a **page proof**, not a computation record, and sage-extensions#285 is the unit that computes it (see the proof).
+3. the chamber of $K_\Co$ has **nine** walls, and in the negative-square convention its Gram matrix has norms $(-2,\dots,-2,-1,-1)$ with a chain of seven label-$3$ edges, one label-$4$ edge closing the chain at one end, a second label-$4$ edge joining the last wall to the chain's first node, and no other pairings: the diagram is the nine-node chain with one leaf, and it is *not* a bare chain ([@Vin72], Table 5, article p. 31).
 :::
 
 ::: {.proof}
@@ -381,7 +381,9 @@ in the recorded basis $\eps_1,\dots,\eps_{10}$ of $\eta_1^{\perp}/\eta_1$, the c
 
 *The Enriques half.* The record is @sec-sterk-root-counts-and-computed-chambers, whose input it names: Vinberg's algorithm on $\eta_1^{\perp}/\eta_1\cong E_{10}(2)$, of type $(10,10,0)$, returns ten roots and one ideal vertex, and the ten roots are printed there in the recorded basis; CoxIter's separate run on the same diagram, @sec-coxiter-results-for-cusp-lattices, reports dimension $9$, one vertex at infinity, Gram field $\QQ$, the simplex $f$-vector of a $9$-simplex, and the diagram as $\widetilde E_{10}$-shaped. Wall count and ideal-vertex count agree between the two, which is the check.
 
-*The Coble half.* No input is named in the tree for the $(9,9,1)$ row of @sec-coxiter-results-for-cusp-lattices: the record there reports the shape, the Gram field $\QQ[\sqrt2]$ and the $f$-vector, but not the diagram it ran CoxIter on, and nothing in the tree derives that diagram from a Vinberg run or from a transcription. By the evidence rule of this project the diagram is therefore a page proof, and the root set of the $I_{1,8}$ chamber --- Vinberg's, with walls of norms $-1$ and $-2$, hence $-2$ and $-4$ in $K_\Co$ --- is what sage-extensions#285 computes when it runs Vinberg anchored at the cusp. The wall count nine and the one label-$4$ edge stand on the record's CoxIter output alone.
+*The Coble half.* Computed, by the recursion of [@Vin72, p. 30]: on $\I_{1,8}$ with basis $v_0,\dots,v_8$ of squares $(1,-1,\dots,-1)$, from the initial roots $e_i = -v_i+v_{i+1}$ and $e_8 = -v_8$, the record `computations/reports/coble_I18_vinberg-chamber.py` takes the candidates $k_1^2+\dots+k_8^2 = k_0^2+\epsilon$ with $k_0\ge0$ and $k_1\ge\dots\ge k_8\ge0$ in increasing $k_0^2/\epsilon$, keeping those pairing $\ge0$ with every wall already found --- the negative-square convention, in which adjacent walls of a chamber pair positively --- and prints nine walls. The Gram matrix is a seven-node $-2$ chain, closed at one end by a $-4$ edge to a $-1$ node and holding at the other a $-1$ node joined by a further $-4$ edge; the labels are six of $3$ and two of $4$, and the field is $\QQ[\sqrt2]$, matching the CoxIter row's Gram field.
+
+One defect is recorded with it. The in-tree row of @sec-coxiter-results-for-cusp-lattices describes the $(9,9,1)$ diagram as a "rank-$9$ chain, one label-$4$ edge", and that description is contradicted twice: the chamber above has a branch node and two label-$4$ edges. Since the row does not name the diagram CoxIter was run on, it cannot be decided here whether its words or its input are wrong; CoxIter must be re-run on the nine-node diagram printed by the record above, and the row replaced by that run.
 :::
 
 ::: {.remark title="What is not decided here"}
