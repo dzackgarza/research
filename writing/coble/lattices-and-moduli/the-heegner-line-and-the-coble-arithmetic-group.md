@@ -1280,6 +1280,13 @@ $G_3$, $G_4$ — untouched, with no formulation on the page to state a requireme
 None of the six is decided here.
 :::
 
+::: {.remark title="A20, closed out: what this section decides and what it hands on"}
+
+What is decided by this section, each with its own record: the stable group is the discriminant-and-spinor kernel and is contained in both candidate overgroups with index $\abs{W(E_8)}$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index); the congruence group is larger by the factor $2$ coming from $\ker\rho_{T_\Co}\not\subseteq\Orth^+$ (@prop:gamma-cong-eq-heegner(3)); and the Heegner description equals the congruence one exactly when the Enriques gluing is block-compatible (@prop:gamma-cong-eq-heegner(2)) — a *real* condition, since neither summand decomposition is $\Orth(q)$-invariant (`computations/reports/coble_gluing_discriminants.py`, `computations/reports/coble_a20-block-invariance.py`).
+What is handed on, and to where: item 1's remaining statement and item 2 both become the labeled-embedding question of @prob:coble-rigidity — whether the gluing $\gamma$ of the marked embedding carries the $U(2)$ summand to the $U(2)$ summand — which is a computation on the embedding and not on the abstract pair of forms; item 3 becomes @prob:B24 and @prob:B25; and the six absorbed items are split in the remark above with what each would need.
+No further record on this page changes any of that: the issue's remaining content is that one block check, and it lives with the A21 work.
+:::
+
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
 The two propositions above compare $\Gamma_\Co$ with the larger groups by way of its finite image on $A_{T_\Co}$.
