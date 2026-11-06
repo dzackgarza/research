@@ -83,14 +83,35 @@ print('  |H| = |rho(Stab_{O(B)}(P))| = %d' % order_H)
 
 print('\n(2 cont.) J, its stabilizer, its orbit')
 start = time.time()
-V = libgap.FullRowModule(libgap.GF(2), r)
-rows = []
-for idx in (0, 2):
-    v = [0] * r
-    v[idx] = 1
-    rows.append(libgap(v))
-J = libgap.Submodule(V, rows)
-print('  dim J = %s' % int(libgap.Dimension(J)))
+V = libgap.GF(2) ** r
+r1 = [0] * r; r1[0] = 1
+r3 = [0] * r; r3[2] = 1
+print('  building J = <e1/2, e2/2>, trying the available GAP constructions')
+J = None
+candidates = [
+    ("Subspace(V, [vector, vector])", lambda: libgap.Subspace(V, libgap([libgap(r1), libgap(r3)]))),
+    ("Subspace(V, gens, \"basis\")", lambda: libgap.Subspace(V, libgap([libgap(r1), libgap(r3)]), "basis")),
+    ("Submodule(V, gens, \"basis\")", lambda: libgap.Submodule(V, libgap([libgap(r1), libgap(r3)]), "basis")),
+    ("the canonical-basis matrix", lambda: libgap(matrix(GF(2), [r1, r3])),
+     ),
+]
+for entry in candidates:
+    name, build = entry[0], entry[1]
+    try:
+        candidate = build()
+        try:
+            dim = int(libgap.Dimension(candidate))
+        except Exception:
+            dim = 'n/a'
+        print('    %-34s OK, dimension %s' % (name, dim))
+        J = candidate
+        break
+    except Exception as exc:                                # noqa: BLE001
+        print('    %-34s FAILED: %s: %s' % (name, type(exc).__name__, exc))
+if J is None:
+    print('  no construction of J succeeded; stopping')
+    raise SystemExit(1)
+start = time.time()
 Stab = libgap.Stabilizer(G, J, libgap.OnSubspacesByCanonicalBasis)
 order_stab = int(libgap.Size(Stab))
 orbit = libgap.Orbit(G, J, libgap.OnSubspacesByCanonicalBasis)
