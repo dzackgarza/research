@@ -151,6 +151,17 @@ Every invariant of @prop:orbit-necessary-conditions therefore agrees on the pair
 The in-tree run is not evidence against the paper's conclusion: the invariant it named is false for this pair, and the complements it would have had to compute are isometric, so the recorded refutation is withdrawn.
 Neither is the conclusion proved: what is missing is an explicit isometry carrying $v_1$ to $v_2$, equivalently the decision of the orbit of a primitive vector of square $20$ in $L$, and that is the isometry machinery which at this stage is the blocked layer recorded in `computations/reports/coble_gamma_co_two_definitions.py`.
 The question therefore stands open in one direction only: nothing computed here separates the two vectors, and nothing recorded against the paper survives.
+
+*The two complements, printed.* In $L = U\oplus A_3$ the complement of a primitive $v$ has rank $4$ (not $3$: $L$ has rank $5$), and its Gram matrix in a $\ZZ$-basis of $v^{\perp L}$ is, for $v_1$ and $v_2$ as in @ex:dawes-u-a3,
+$$
+G_1 = \begin{pmatrix} -2&-1&1&-1\\ -1&-2&1&-1\\ 1&1&-2&1\\ -1&-1&1&-2\end{pmatrix},
+\qquad
+G_2 = \begin{pmatrix} -182&-192&-445&-590\\ -192&-206&-476&-631\\ -445&-476&-1102&-1459\\ -590&-631&-1459&-1934\end{pmatrix},
+$$
+with $\det G_1 = \det G_2 = 5$, $20$ roots of type $A_4$ in each, and both negative definite of signature $(0,4)$; a rank-$4$ lattice whose roots are of type $A_4$ and whose determinant equals $\det A_4 = 5$ *is* the $A_4$ root lattice, so $v_1^{\perp L}\iso v_2^{\perp L}\iso -A_4$.
+*The transcription.* $v_1 = (4,4,1,2,-1)$ and $v_2 = (36,144,5,-30,83)$ in the basis of @ex:dawes-u-a3 satisfy $v_i^2 = 20$ with the $U$-part contributing $2a b$ and the $A_3$-part the stated quadratic form, which is the paper's own data; the coordinates are primitive in both cases and the divisibility is $4$. So the transcription is consistent with the paper's Gram matrices and squares, and neither the transcription nor the paper's conclusion is the faulty step.
+*Which step is wrong, and the corrected statement.* The computed complements are the faulty step: the recorded ground for $v_1\not\sim v_2$ — that the complements have different discriminants — is impossible by @lem:complement-determinant, and the complements it names are in fact isometric. The corrected statement is therefore that of @qst:dawes-example-22 above: the in-tree refutation is withdrawn, the paper's conclusion $v_1\sim v_2$ is not contradicted by anything computed here, and what remains is the sufficiency direction — an explicit isometry of $L$ carrying $v_1$ to $v_2$, which the page does not supply.
+
 :::
 
 ::: {.remark title="Buildings by descent along a subgroup"}
