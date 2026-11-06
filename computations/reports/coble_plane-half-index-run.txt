@@ -27,14 +27,16 @@ the Gram matrix of the substituted walls
   [0, 0, 1, 0, 0, 0, 0, 0, -2]
   it equals the printed chamber Gram matrix: True
 
-the O(q) images
-  every generator preserves q on the tested classes: True
+the O(q) images on the eleven coordinates of B/2B
+  the even sublattice basis, with squares: [4, 0, 0, 0, 0, 0, 0, 0, 0]
+  every reflection preserves q: True
+  every kernel transvection preserves q: True
 
 THE NUMBERS
-  |rho(S)|   = 348364800
-  |rho(E_v)| = 1
-  index |rho(S)|/|rho(E_v)| = 348364800
-  spinor factor: the eight walls of square -2 give [1], the wall of square -1 gives
-  [-(-1)/2] = [1/2] = [1], and the transvections [1]: so the factor is 1.
-  index [O(K) : G] = 348364800
-  rho(E_v) is trivial: True
+  |rho(W)|       = 348364800
+  |rho(ker pi)|  = 256
+  |<rho(W), rho(ker pi)>| = 89181388800
+  c = |rho(W)| |rho(ker pi)| / |rho(S)| = 1
+  [O(K) : G] = |rho(W)| / c = 348364800
+  |O(q)| / |rho(S)| = 527
+  527 * c            = 527

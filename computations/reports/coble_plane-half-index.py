@@ -100,13 +100,13 @@ print('  it equals the printed chamber Gram matrix: %s' % (got == target))
 print('')
 
 
-# the O(q) images, as matrices on the 11 coordinates of B/2B
-print('the O(q) images')
+# ---- the O(q) images and the three group orders -------------------------------------------
+print('the O(q) images on the eleven coordinates of B/2B')
 NOBJ = r
 
 
 def qval(x):
-    return (b(x, x) // 2) % 2
+    return ((sum(x[i] * G_B[i, j] * x[j] for i in range(NOBJ) for j in range(NOBJ))) // 2) % 2
 
 
 def add(x, y):
@@ -123,13 +123,12 @@ def basis_vec(i):
 
 def mat_of(fn):
     cols = [fn(basis_vec(j)) for j in range(NOBJ)]
-    return matrix(GF(2), NOBJ, NOBJ,
-                  [[cols[j][i] for j in range(NOBJ)] for i in range(NOBJ)])
+    return matrix(GF(2), NOBJ, NOBJ, [[cols[j][i] for j in range(NOBJ)] for i in range(NOBJ)])
 
 
 def refl(w):
     sq = b(w, w)
-    assert (-2) % sq == 0, 'reflection coefficient not integral'
+    assert (-2) % sq == 0
     c = (-2) // sq
 
     def f(x, w=w, c=c):
@@ -137,37 +136,52 @@ def refl(w):
     return f
 
 
-def trans(k):
-    def f(x, k=k):
-        return add(add(x, scal(b(x, k) % 2, e1)), scal((-b(x, e1)) % 2, k))
+def kernel_transvection(w):
+    """E_B(e_1, w) mod 2, with all four terms: x |-> x + b_B(x,w) e_1 + x_1 (1 + w^2/2) w."""
+    half = (b(w, w) // 2) % 2
+
+    def f(x, w=w, half=half):
+        y = add(x, scal(b(x, e1) % 2 * ((1 + half) % 2), w))
+        return add(y, scal(b(x, w) % 2, e1))
     return f
 
 
-tests = [basis_vec(i) for i in range(NOBJ)] + [[1] * NOBJ, [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1]]
-gens_S, gens_E, ok = [], [], True
-for w in walls:
-    M = mat_of(refl(w))
-    gens_S.append(M)
-# b_{T_Co} = 2 b_B is even-valued, so the correction term of E(v,k) is 2 k_B^2 b_B(x,v) v, even,
-# and b_T(x,k)v - b_T(x,v)k is even too: every Eichler transvection reduces to the identity mod 2.
-# The transvection images are therefore recorded as the identity and checked as such.
-gens_E.append(mat_of(lambda x: list(x)))
-for M in gens_S:
+tests = [basis_vec(i) for i in range(NOBJ)] + [[1] * NOBJ,
+                                                [1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1],
+                                                [0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0]]
+
+
+def qok(M):
     for x in tests:
         y = [int((M * vector(GF(2), x))[i]) for i in range(NOBJ)]
         if qval(y) != qval(x):
-            ok = False
-print('  every generator preserves q on the tested classes: %s' % ok)
-G_S = libgap.Group([libgap(M) for M in gens_S])
-G_E = libgap.Group([libgap(M) for M in gens_E])
-order_S = int(libgap.Size(G_S))
-order_E = int(libgap.Size(G_E))
+            return False
+    return True
+
+
+# the even sublattice of I_{1,8}: 2 v_0 and v_0 + v_i, i = 1..8
+ev = []
+for t in range(NOBJ):
+    ev.append((2 * V[0][t]) % 1000)
+ev = [list(2 * x for x in V[0])] + [[V[0][t] + V[i][t] for t in range(NOBJ)] for i in range(1, 9)]
+print('  the even sublattice basis, with squares: %s' % [b(w, w) for w in ev])
+G_W = libgap.Group([libgap(mat_of(refl(w))) for w in walls])
+G_K = libgap.Group([libgap(mat_of(kernel_transvection(w))) for w in ev])
+G_S = libgap.Group([libgap(mat_of(refl(w))) for w in walls]
+                   + [libgap(mat_of(kernel_transvection(w))) for w in ev])
+print('  every reflection preserves q: %s' % all(qok(mat_of(refl(w))) for w in walls))
+print('  every kernel transvection preserves q: %s'
+      % all(qok(mat_of(kernel_transvection(w))) for w in ev))
+oW = int(libgap.Size(G_W))
+oK = int(libgap.Size(G_K))
+oS = int(libgap.Size(G_S))
 print('')
 print('THE NUMBERS')
-print('  |rho(S)|   = %d' % order_S)
-print('  |rho(E_v)| = %d' % order_E)
-print('  index |rho(S)|/|rho(E_v)| = %d' % (order_S // order_E))
-print('  spinor factor: the eight walls of square -2 give [1], the wall of square -1 gives')
-print('  [-(-1)/2] = [1/2] = [1], and the transvections [1]: so the factor is 1.')
-print('  index [O(K) : G] = %d' % (order_S // order_E))
-print('  rho(E_v) is trivial: %s' % (order_E == 1))
+print('  |rho(W)|       = %d' % oW)
+print('  |rho(ker pi)|  = %d' % oK)
+print('  |<rho(W), rho(ker pi)>| = %d' % oS)
+print('  c = |rho(W)| |rho(ker pi)| / |rho(S)| = %d' % ((oW * oK) // oS))
+print('  [O(K) : G] = |rho(W)| / c = %d' % (oW // ((oW * oK) // oS)))
+OQ = 46998591897600
+print('  |O(q)| / |rho(S)| = %d' % (OQ // oS))
+print('  527 * c            = %d' % (527 * ((oW * oK) // oS)))
