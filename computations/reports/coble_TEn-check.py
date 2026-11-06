@@ -8,6 +8,15 @@ T_En = U + U(2) + E8(2), rank 12, determinant -2^10, signature (2,10).  This par
 discriminant form and the order of its orthogonal group, which the orbit counts of the check need.
 The remainder of the check -- the two O(T_En)-orbit representatives, their cusp lattices' chambers,
 S_v, rho(S_v), ker pi_v and the per-orbit counts -- is not in this run.
+
+STEP (i) OF THE CHECK IS ALREADY A RECORD IN THE TREE, and needs no new run:
+  sec-sterk-root-counts-and-computed-chambers records Vinberg's algorithm on both cusp lattices:
+    on eta_1^perp/eta_1 = E10(2) = U(2) + E8(2), of type (10,10,0): ten roots, one ideal vertex,
+    with the ten roots printed (the -eps_3..-eps_10, eps_1-eps_2, and the E8-marks root);
+    on eta_j^perp/eta_j = U + E8(2), of type (10,8,0), j = 2..5: ten roots, two ideal vertices,
+    the roots being the same list with the coefficient of eps_2 in the last root equal to 2.
+  Both name their input (Vinberg's algorithm on the named lattice), so both diagrams are computation
+  records by the evidence rule of this project.
 """
 import os
 import sys
