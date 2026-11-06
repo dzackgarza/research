@@ -460,6 +460,21 @@ Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signatur
 and $\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $L$.
 :::
 
+::: {.proposition #prop:rank-nine-vector-transitivity title="Primitive isotropic vectors of $\latI_{1,8}$ and of its twist"}
+
+Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$.
+Then $\Orth(L)$ and $\Orth^+(L)$ both act **transitively on the primitive isotropic vectors** of $L$, hence on the lines by $-\id\in\Orth^+(L)$.
+:::
+
+::: {.proof}
+
+Twisting by $2$ preserves the module and the isometry group as a subgroup of $\GL_9(\ZZ)$, as in @prop:rank-nine-line-transitivity, so it suffices to treat $L = \latI_{1,8}$.
+There, $-\id\in\Orth(L)$ acts by $v\mapsto -v$, so the $\Orth(L)$-orbits of primitive isotropic *vectors* are the same as its orbits of *lines*, which @prop:rank-nine-line-transitivity shows to be a single orbit; what remains is to upgrade that orbit from $\Orth(L)$ to $\Orth^+(L)$, which is done below by exhibiting an element of the other coset that fixes $v$.
+
+Take $g\in\Orth(L)$ with $g(v) = w$; if $g\in\Orth^+(L)$ there is nothing to do. Otherwise replace $g$ by $s_a g$, where $a\in v^{\perp L}$ has odd square: such an $a$ exists because $v^{\perp L}/v \iso \I_{0,7}$ is odd, and then $s_a$ fixes $v$ (as $a\perp v$) so $s_a g$ still carries $v$ to $w$, while $\spinornorm_\bR(s_a) = [-\tfrac12 a^2]\neq[1]$ for $a^2$ odd, so $s_a\notin\Orth^+(L)$ and $s_a g$ is in the other coset — that is, in $\Orth^+(L)$.
+Hence $\Orth^+(L)\cdot v = \Orth(L)\cdot v$, and by @prop:rank-nine-line-transitivity the primitive isotropic vectors form a single $\Orth^+(L)$-orbit.
+:::
+
 ::: {.proof}
 
 Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\ZZ)$ and isotropy, so it
