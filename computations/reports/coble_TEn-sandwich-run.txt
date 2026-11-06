@@ -1,0 +1,14 @@
+eta = e_1 (div 1), K(L_1) = U(2) + E8(2)
+  20 generators, every one q-preserving: True
+  |rho(S_eta)| = 46998591897600
+  |O(q)| / (orbit size 1) = |Stab_{O(q)}([eta/2])| = 46998591897600
+  index |Stab| / |rho(S_eta)| = 1   (published: 1)
+  (0 s)
+
+eta = e_3 (div 2), K(L_2) = U + E8(2)
+  20 generators, every one q-preserving: True
+  |rho(S_eta)| = 348364800
+  |O(q)| / (orbit size 527) = |Stab_{O(q)}([eta/2])| = 89181388800
+  index |Stab| / |rho(S_eta)| = 256   (published: 527)
+  (0 s)
+
