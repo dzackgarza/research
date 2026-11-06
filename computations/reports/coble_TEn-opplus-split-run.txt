@@ -1,0 +1,12 @@
+eta = e_1 (div 1): g = id_U (+) (-id on U(2)+E8(2))
+  fixes verbose eta: True
+  acts trivially on A_{T_En} (all 1024 masks): True
+  scaling on the two positive directions: 1 and -1, determinant -1
+  lies in O^+(T_En): False
+
+eta = e_3 (div 2): g = id_U(2) (+) (-id on U+E8(2))
+  fixes verbose eta: True
+  acts trivially on A_{T_En} (all 1024 masks): True
+  scaling on the two positive directions: -1 and 1, determinant -1
+  lies in O^+(T_En): False
+
