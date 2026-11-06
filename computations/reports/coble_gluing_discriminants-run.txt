@@ -39,21 +39,38 @@ where the images land
   gamma(U)   order   4   inside the E8 block: False   inside the U(2) block: False
   gamma(E8)  order 256   inside the E8 block: False   inside the U(2) block: False
 
-RESULT
+RESULT on the provider isometry
   block-compatible on this gamma: False
 
-  the three blocks of the two sides are pairwise isometric with matching q-value sets
-  (orders 2, 4, 256 and the same values on each side, printed above), so an anti-isometry
-  carrying block to block EXISTS: the block-wise map is one.  What fails here is not
-  existence but this particular gamma.
+  This is a fact about the isometry the constructor returns, not about the forms: the
+  three blocks are pairwise isometric with matching q-value sets (printed above), so a
+  block-compatible anti-isometry exists.  What it shows is that block-compatibility is a
+  property of a chosen anti-isometry and not of the pair of forms.
+
+THE MATHEMATICAL CONSEQUENCE, computed from the group action instead
+  If gamma_bw is a block-compatible anti-isometry and gamma_prov is not, then
+  phi = gamma_prov^{-1} o gamma_bw is an isometry of q_{S_Co} carrying A_{U(2)} to
+  gamma_prov^{-1}(A_{U(2)}^T), which is not A_{U(2)}.  Rather than build phi, the orbit
+  partition of O(q_{S_Co}) on A_{S_Co} decides its existence directly:
+    O(q_{S_Co}) orbits on the 2048 classes: 6, sizes [1, 1, 496, 496, 527, 527]   (66 s)
+    orbits meeting the U(2) block but not contained in it: 2
+    witness, in one orbit of size 496:
+      x = [1] + [2]   (in the U(2) block, q = 1)
+      y = [1] + [3] + [4] + [5] + [7] + [8]   (outside the U(2) block, q = 1)
+    so some phi in O(q_{S_Co}) carries x to y and moves the U(2) block:
+    phi(A_{U(2)}) != A_{U(2)}.
+
+  Hence the summand decomposition of A_{S_Co} is NOT invariant under O(q_{S_Co}), and
+  block-compatibility of an anti-isometry is a property of that anti-isometry, not of
+  the pair of forms.  No explicit phi is printed: the witness pair in one orbit is what
+  certifies its existence, and the routes to an explicit one are closed at this pin
+  (vector_equivalence_witness is definite-only, and no module-morphism constructor for
+  the block-wise composite is used here).
 
 What this does and does not decide.
-  Decided: the anti-isometry produced by A.isometry_to(A_{T_Co}(-1)) -- the provider
-  isometry, verified above to satisfy q_{T(-1)}(gamma x) = q_S(x) on the 260 classes of
-  the three blocks -- does NOT carry the summand blocks to the summand blocks.
-  Not decided, and not decidable this way: whether the gluing gamma_Co of the *marked*
-  embedding S_Co + T_Co -> L_K3 is block-compatible.  isometry_to returns an arbitrary
-  isometry of the two abstract forms, and the negative above is a property of that choice;
-  a different choice (the block-wise one) is block-compatible by construction.  So this
-  record fixes what the provider construction gives and leaves the labelled question to
-  prob:coble-rigidity, as a computed fact and not as a theorem.
+  Decides: the summand decomposition of A_{S_Co} is not invariant under O(q_{S_Co}), so
+  an anti-isometry may or may not be block-compatible; the hypothesis of
+  prop:gamma-cong-eq-heegner is therefore a real condition on the gluing gamma, and it is
+  not decidable from the abstract pair of forms.
+  Does not decide: whether the gluing gamma_Co of the marked embedding satisfies it --
+  that stays an instance of prob:coble-rigidity, as the page says.
