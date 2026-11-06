@@ -1020,10 +1020,10 @@ $$
 @lem:polarization-stabilizer-discriminant-nontrivial and @prop:gamma-co-heegner-strict settle the Heegner half of the comparison: the Heegner description and the stable group are *different* groups, with index between $2$ and $696\,729\,600$.
 The objection that an isometry of $S_\En$ with nontrivial discriminant image "need not have a partner in $T_\Co$" is answered, not waved away: every class of $\Orth(q_{T_\Co})$ is realised by an integral isometry of $T_\Co$ (@thm:two-elementary-surjectivity), every such isometry fixes the gluing class $\zeta/2$ (@prop:coble-discriminant-group), so it glues to the identity on $\ZZ\delta$ (@cor:liftable-automorphisms), and @prop:gamma-en-two-gluing puts the pair in $\gent$.
 
-The theta half stays open, and what it would need is the analogue of that last step on the Coble side: isometries of $T_\Co$ realising the classes $\gamma_\Co\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))\gamma_\Co^{-1}$ *and* gluing to the corresponding isometries of $S_\Co$.
-That is what explicit generators of the Coble-side centralizer would give, and it is item 1 of @prob:group-identification.
-Nothing in the owning library produces the gluing isometry $A_{S_\Co}\to A_{T_\Co}$ itself: torsion forms have `is_isometric_to` and no explicit isometry constructor.
-So the computation record `computations/reports/coble_gamma_co_two_definitions.py` now stands for the theta half only, and the blocked call it names, `s.discriminant_morphism()`, is dzackgarza/sage-extensions#272.
+The theta half stays open, and it needs two things, neither of which is on the page.
+First, the Coble-side analogue of the sentence of @prop:gamma-en-two-gluing that identifies the image of $\gent$ in $\Orth(q_{\TEn})$ with the $\gamma$-transport of the image of $\Stab_{\Orth(S_\En)}(h)$: what has to be known is that the image of $Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ in $\Orth(q_{T_\Co})$ is the $\gamma_\Co$-transport of the image of $\Stab_{\Orth(S_\Co)}(\tilde h_\Co)$, so that a class known to come from the $S_\Co$ side is realised by an isometry of $T_\Co$ that glues to it and fixes $\tilde h_\Co$. That is a statement about the Coble embedding, and it is item 1 of @prob:group-identification; it is what makes the Heegner half go, and it has no substitute.
+Second, generators of that centralizer intersection, without which even the Coble-side stabilizer has no classes to transport.
+`computations/reports/coble_theta-half-requirements.md` states both, with the operation the owner would have to supply if the second is to come from the library rather than from a proof.
 :::
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
