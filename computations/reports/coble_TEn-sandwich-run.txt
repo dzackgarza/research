@@ -1,14 +1,26 @@
+  (w = basis(2)/2 is not integral for this eta; skipped)
+  (w = basis(3)/2 is not integral for this eta; skipped)
+  (w = basis(4)/2 is not integral for this eta; skipped)
+  (w = basis(5)/2 is not integral for this eta; skipped)
+  (w = basis(6)/2 is not integral for this eta; skipped)
+  (w = basis(7)/2 is not integral for this eta; skipped)
+  (w = basis(8)/2 is not integral for this eta; skipped)
+  (w = basis(9)/2 is not integral for this eta; skipped)
+  (w = basis(10)/2 is not integral for this eta; skipped)
+  (w = basis(11)/2 is not integral for this eta; skipped)
+  transvections kept: 0
 eta = e_1 (div 1), K(L_1) = U(2) + E8(2)
-  20 generators, every one q-preserving: True
+  10 generators, every one q-preserving: True
   |rho(S_eta)| = 46998591897600
   |O(q)| / (orbit size 1) = |Stab_{O(q)}([eta/2])| = 46998591897600
-  index |Stab| / |rho(S_eta)| = 1   (published: 1)
+  |O(q)| / |rho(S_eta)| = 1   (published: 1)   AGREE
   (0 s)
 
+  transvections kept: 8
 eta = e_3 (div 2), K(L_2) = U + E8(2)
-  20 generators, every one q-preserving: True
-  |rho(S_eta)| = 348364800
+  18 generators, every one q-preserving: True
+  |rho(S_eta)| = 89181388800
   |O(q)| / (orbit size 527) = |Stab_{O(q)}([eta/2])| = 89181388800
-  index |Stab| / |rho(S_eta)| = 256   (published: 527)
+  |O(q)| / |rho(S_eta)| = 527   (published: 527)   AGREE
   (0 s)
 

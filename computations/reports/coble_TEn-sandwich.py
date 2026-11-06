@@ -70,9 +70,29 @@ def refl_matrix(r):
 
 
 def trans_matrix(eta, w):
-    return [[(1 if i == j else 0) + w[i] * sum(G[j][k] * eta[k] for k in range(N))
-             - eta[i] * sum(G[j][k] * w[k] for k in range(N))
-             for j in range(N)] for i in range(N)]
+    """E(eta, w)(x) = x + b(x,w) eta - b(x,eta) w - (w^2/2) b(x,eta) eta, all four terms,
+    with w in T* cap eta^perp; built over QQ and checked integral and Gram-preserving."""
+    from fractions import Fraction as F
+    half = F(sum(w[i] * G[i][j] * w[j] for i in range(N) for j in range(N)), 2)
+    M = [[F(1 if i == j else 0)
+          + w[i] * sum(G[j][k] * eta[k] for k in range(N))
+          - eta[i] * sum(G[j][k] * w[k] for k in range(N))
+          - half * eta[i] * sum(G[j][k] * eta[k] for k in range(N))
+          for j in range(N)] for i in range(N)]
+    assert all(x.denominator == 1 for row in M for x in row), 'transvection not integral'
+    M = [[int(x) for x in row] for row in M]
+    for i in range(N):
+        for j in range(N):
+            assert sum(M[k][i] * G[k][l] * M[l][j] for k in range(N) for l in range(N)) == G[i][j]
+    return M
+
+
+def half_vector(i):
+    v = [0] * N
+    if True:
+        from fractions import Fraction as F
+        v[i] = F(1, 2)
+    return v
 
 
 walls1 = ([[0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
@@ -86,12 +106,12 @@ walls2 = ([[0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
            [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, -2, -2, -3, -4, -6, -5, -4, -3, -2]])
 cases = (('eta = e_1 (div 1), K(L_1) = U(2) + E8(2)', [1] + [0] * 11, walls1, 1,
-          [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
+          [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
          ('eta = e_3 (div 2), K(L_2) = U + E8(2)', [0, 0, 1] + [0] * 9, walls2, 527,
-          [0, 1, 4, 5, 6, 7, 8, 9, 10, 11]))
+          [0, 1, 4, 5, 6, 7, 8, 9, 10, 11], [4, 5, 6, 7, 8, 9, 10, 11]))
 OQ = 46998591897600
 tests = [[1 if k == i else 0 for k in range(10)] for i in range(10)] + [[1] * 10]
-for name, eta, walls, orbit, slots in cases:
+for name, eta, walls, orbit, slots, wslots in cases:
     lifted = []
     for w in walls:
         v = [0] * 12
@@ -102,10 +122,17 @@ for name, eta, walls, orbit, slots in cases:
     for r in lifted:
         M = refl_matrix(r)
         gens.append(mat_of(lambda m, M=M: apply_g(M, m)))
-    for i in slots:
-        w = [1 if k == i else 0 for k in range(12)]
-        M = trans_matrix(eta, w)
+    kept = 0
+    for i in wslots:
+        try:
+            M = trans_matrix(eta, half_vector(i))
+        except AssertionError:
+            # not an integral isometry of T_En for this eta: (w^2/2) b(x,eta) is half-integral
+            print('  (w = basis(%d)/2 is not integral for this eta; skipped)' % i)
+            continue
+        kept += 1
         gens.append(mat_of(lambda m, M=M: apply_g(M, m)))
+    print('  transvections kept: %d' % kept)
     for M in gens:
         for x in tests:
             y = [int((M * vector(GF(2), x))[i]) for i in range(10)]
@@ -118,7 +145,7 @@ for name, eta, walls, orbit, slots in cases:
     print('  %d generators, every one q-preserving: %s' % (len(gens), ok))
     print('  |rho(S_eta)| = %d' % order)
     print('  |O(q)| / (orbit size %d) = |Stab_{O(q)}([eta/2])| = %d' % (orbit, stab))
-    print('  index |Stab| / |rho(S_eta)| = %d   (published: %d)'
-          % (stab // order if order else -1, orbit))
+    print('  |O(q)| / |rho(S_eta)| = %d   (published: %d)   %s'
+          % (OQ // order, orbit, 'AGREE' if OQ // order == orbit else 'MISMATCH'))
     print('  (%.0f s)' % (time.time() - start))
     print('')
