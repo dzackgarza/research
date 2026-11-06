@@ -1,6 +1,6 @@
 provenance
   Sage: 11.0.beta5
-  sage-extensions: .scratch/se-provider-6ad7a5ea/src on PYTHONPATH, pin 6ad7a5ea
+  sage-extensions: .scratch/se-provider-15db925b/src on PYTHONPATH, pin 15db925b
   lattice: built here from its own Gram data, not read from a stored object
 
 T_Co = <2> + U(2) + E8(2), the twist B(2) of prop:tco-as-twist
@@ -33,7 +33,7 @@ the reflections, built by the owner
       the docstring: s_v(x) - x = v for an x with b_B(x,v) = 1, and v is primitive.
 
 the owner operations this question needs, and what they do here
-  (the lattice layer builds; the decision layer needs GAP, see the blockers record)
+  (both layers build here; the decisions themselves are in coble_gamma_co_membership.py)
   T.O_plus()                                     {g in Orthogonal group O(Integral lattice of rank 11 and signature (2, 9)) : sn_RR(g) = 1}
   T.spinor_norm()                                Generic morphism:
   From: Orthogonal group O(Integral lattice of rank 11 and signature (2, 9))
@@ -55,12 +55,10 @@ SUMMARY
       -1 is excluded by parity, so the reflective squares are +-2 and -4, the short
       and long roots of @def:2elementary-roots with divisibility 2 here;
   (2) the (-2)-vectors of T_Co give reflections the owner builds, and the groups
-      O^+(T_Co), the spinor norm and ker(rho_T_Co) are all built here as objects; but
-      the two steps that place a named reflection in Gamma_Co are decisions, and
-      neither is available: the spinor one stops the interpreter in GAP, and the
-      discriminant one raises in the provider before GAP is reached (probe 3 of
-      coble_owner_gap-blockers-20261105.md).  Both therefore remain proofs in the
-      writing and are not claimed as owner decisions here;
+      O^+(T_Co), the spinor norm and ker(rho_T_Co) are all built here as objects; the
+      membership decisions that place a named reflection in Gamma_Co are not taken in
+      this file -- they are taken in coble_gamma_co_membership.py, which is the
+      record for that;
   (3) the reflective set of Gamma_Co is exactly the short roots.  The positive-square
       reflections fail O^+ by the spinor norm alone, and no long root lies in
       ker(rho): for v^2 = -4 the reflection is s_v(x) = x + b_B(x,v) v in the

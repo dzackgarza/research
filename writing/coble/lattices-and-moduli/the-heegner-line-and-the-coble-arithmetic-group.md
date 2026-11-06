@@ -937,7 +937,7 @@ So each of the two questions is a question about a finite group, and a *witness*
 (3) unwinds the definition of $\Gamma^\theta_\Co$ as the set of restrictions of the elements of that intersection, so a nontrivial image is a restriction acting nontrivially on $A_{T_\Co}$, and conversely.
 The one place the definition is not unwound by itself is the requirement $\restrictionof{g}{T_\Co}\in\Orth^+(T_\Co)$, which is part of the definition of $\Gamma^\theta_\Co$ and is not implied by acting nontrivially on the discriminant.
 It is nevertheless free: let $w\in T_\Co$ have $w^2 = 2$ — $\zeta$ of the $\generators{2}$ summand, for instance — so that $s_w\in\ker\rho_{T_\Co}$ and $\spinornorm_\bR(s_w) = [-1]$ by @prop:gamma-co-reflective-set(2) and its proof.
-The pair $(\id_{S_\Co}, s_w)$ satisfies the compatibility of @thm:automorphism-lifting-criterion because $\bar s_w = \id$, so it extends to an isometry $h$ of $\lkt$ with $h|_{S_\Co} = \id_{S_\Co}$ and $h|_{T_\Co} = s_w$; then $gh$ commutes with $\theta_\Co$, fixes $\tilde h_\Co$, has restriction $\restrictionof{g}{T_\Co}s_w$ with the same discriminant action as $\restrictionof{g}{T_\Co}$, and spinor norm multiplied by $-1$.
+The pair $(\id_{S_\Co}, s_w)$ satisfies the compatibility of @thm:automorphism-lifting-criterion because $\bar s_w = \id$, so it extends to an isometry $\hat h$ of $\lkt$ with $\hat h|_{S_\Co} = \id_{S_\Co}$ and $\hat h|_{T_\Co} = s_w$; then $g\hat h$ commutes with $\theta_\Co$, fixes $\tilde h_\Co$, has restriction $\restrictionof{g}{T_\Co}s_w$ with the same discriminant action as $\restrictionof{g}{T_\Co}$, and spinor norm multiplied by $-1$.
 So one of $\restrictionof{g}{T_\Co}$ and $\restrictionof{g}{T_\Co}s_w$ is in $\Orth^+(T_\Co)$, and it lies in $\Gamma^\theta_\Co$ with nontrivial image.
 :::
 
@@ -953,7 +953,7 @@ Then the reflection $s_v$ is an isometry of $S_\En$ fixing $h$, and it acts nont
 
 ::: {.proof}
 
-In $S_\En$ one has $u_0^2 = w_0^2 = 0$ and $b(u_0,w_0) = 2$, so $v^2 = -4$ and $\div_{S_\En}(v) = 2$; the reflection is therefore the integral isometry $s_v(x) = x + \tfrac12 b(x,v)v$ of @def:spinor-norm, and $\spinornorm_\bR(s_v) = [2] = [1]$, so $s_v\in\Orth^+(S_\En)$.
+In $S_\En$ one has $u_0^2 = w_0^2 = 0$ and $b(u_0,w_0) = 2$, so $v^2 = -4$ and $\div_{S_\En}(v) = 2$; the reflection is therefore the integral isometry $s_v(x) = x + \tfrac12 b(x,v)v$ of @def:spinor-norm.
 It fixes $h$: $b(h,v) = b(u_0+w_0,\,u_0-w_0) = 0-2+2-0 = 0$, hence $s_v(h) = h$.
 
 For the discriminant, the class of $u_0/2$ lies in $S_\En^*$, because $b_{S_\En} = 2\,b_C$ and $u_0, y\in C$ give $b_{S_\En}(u_0/2, y) = b_C(u_0,y)\in\ZZ$ for every $y\in S_\En$.
@@ -965,12 +965,16 @@ and $\tfrac12 w_0 - \tfrac12 u_0 = \tfrac12(w_0-u_0)$ has coordinates $(-\tfrac1
 Hence $\rho_{S_\En}(s_v)\neq\id$ while $s_v(h) = h$, which is the claim.
 :::
 
-::: {.proposition #prop:gamma-co-heegner-strict title="The Heegner description is strictly larger"}
+::: {.proposition #prop:gamma-co-heegner-strict title="The Heegner description is strictly larger, by exactly $\abs{W(E_8)}$"}
 
-The inclusion $\Gamma_\Co\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group is strict: $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)\neq1$, and
+The inclusion $\Gamma_\Co\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group is strict, and
 $$
-2 \;\leq\; [\Gamma^{\mathrm{Hdg}}_\Co:\Gamma_\Co] \;\leq\; \abs{W(E_8)} = 696\,729\,600
-.$$
+\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) \;=\; G_\Co \definedas \rho_{S_\En}\bigl(\Stab_{\Orth(S_\En)}(h)\bigr),
+\qquad
+[\Gamma^{\mathrm{Hdg}}_\Co:\Gamma_\Co] \;=\; \abs{G_\Co} \;=\; \abs{W(E_8)} \;=\; 696\,729\,600
+,$$
+the two finite images being identified through the gluing anti-isometry $\gamma$.
+The order $\abs{G_\Co} = \abs{W(E_8)}$ is proved here and uses no computation.
 :::
 
 ::: {.proof}
@@ -992,7 +996,21 @@ By @prop:gamma-en-two-gluing this is exactly the condition for $g\in\gent$, and 
 *The component condition.*
 If $\varphi\notin\Orth^+(T_\Co)$, use the repair of @prop:gamma-co-two-definitions(3): $s_\zeta\in\ker\rho_{T_\Co}$ has $\spinornorm_\bR(s_\zeta) = [-1]$, so $(\id_{S_\En}, s_\zeta)$ glues and extends to an isometry $h'$ of $\ten$ with $h'(\delta) = \delta$, $\restrictionof{h'}{T_\Co} = s_\zeta$ and trivial class; hence $h'\in\gent$ with partner $\id_{S_\En}$, and $gh'\in\Stab_{\gent}(\ZZ\delta)$ has restriction $\varphi s_\zeta\in\Orth^+(T_\Co)$ with the same nontrivial class.
 
-So $\Gamma^{\mathrm{Hdg}}_\Co$ contains an element of $\Orth^+(T_\Co)$ acting nontrivially on $A_{T_\Co}$; by @prop:gamma-co-two-definitions(1) the inclusion is strict, and the upper bound is @prop:gamma-co-in-heegner-group(2).
+So $\Gamma^{\mathrm{Hdg}}_\Co$ contains an element of $\Orth^+(T_\Co)$ acting nontrivially on $A_{T_\Co}$, which by @prop:gamma-co-two-definitions(1) makes the inclusion strict.
+
+*The other inclusion, hence equality.*
+Nothing above used anything about $s_v$ except that it lies in $\Stab_{\Orth(S_\En)}(h)$, so the construction applies to every element of that stabilizer and gives $\gamma\,\abs{G_\Co}\,\gamma^{-1}\subseteq\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)$.
+Conversely $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)\subseteq\gamma\,\abs{G_\Co}\,\gamma^{-1}$: that is the containment in the proof of @prop:gamma-co-in-heegner-group(2), where the image of $\gent$ in $\Orth(q_{\TEn})$ is identified with the $\gamma$-transport of the image of $\Stab_{\Orth(S_\En)}(h)$ (@prop:gamma-en-two-gluing) and $\Gamma^{\mathrm{Hdg}}_\Co$ is the image of $\Stab_{\gent}(\ZZ\delta)\iscontainedin\gent$ under restriction.
+So the two images are equal, and by @prop:gamma-co-in-heegner-group(2) the index is their common order.
+
+*The order of $G_\Co$.*
+By @prop:polarization-stabilizer-enriques, $\Stab_{\Orth(S_\En)}(h)\iso\theset{\pm1}\times W(E_8)$, of order $2\abs{W(E_8)}$; the first factor is the reflection in the $\generators{-2}$ direction of $h^{\perp C}$, that is $\id_U\oplus(-\id_{E_8})$, and the second is $W(E_8)$ acting on $E_8$.
+In the coordinates of $C$ — the module of $S_\En = C(2)$ — an isometry acts on $A_{S_\En} = C/2C$ by its reduction modulo $2$, each factor acting trivially on the other's summand.
+The reflection $\id_U\oplus(-\id_{E_8})$ is trivial modulo $2$ on $E_8$, so it lies in the kernel; the $W(E_8)$ factor meets the kernel in $\theset{\pm1}$, because the reduction $W(E_8)\to\Orth(E_8/2E_8)$ has kernel $\theset{\pm1}$ (the identification $W(E_8)\cong 2\Orth^+_8(2)\cdot 2$ of [@CCN+85], under which that reduction is onto $\Orth^+_8(2)\cdot 2$ of order $\abs{W(E_8)}/2$).
+Hence the kernel of $\Stab_{\Orth(S_\En)}(h)\to\Orth(A_{S_\En})$ is exactly $\theset{\pm1}$ on the $E_8$ summand, of order $2$, and
+$$
+\abs{G_\Co} = \frac{2\abs{W(E_8)}}{2} = \abs{W(E_8)} = 696\,729\,600
+.$$
 :::
 
 ::: {.remark title="What the two statements settle, and where the #272 record now stands"}
@@ -1025,15 +1043,15 @@ $$
 \rho_L(g) = \id \quad\Longleftrightarrow\quad g\equiv\id \pmod 2
 .
 $$
-Two consequences are used below and are worth separating from the arguments that use them: a pairing of two vectors that both lie in $L^*$ is a half-integer and not an integer, and the reduction modulo $2$ is the only place where the integral lattice enters the discriminant representation.
+Two consequences are used below and are worth separating from the arguments that use them: a pairing of two vectors that both lie in $L^*$ lies in $\tfrac12\ZZ$ and need not be integral, and the reduction modulo $2$ is the only place where the integral lattice enters the discriminant representation.
 
-By @def:2elementary-roots the roots of an even $2$-elementary lattice are the short roots of square $-2$ and the long roots of square $-4$; that vocabulary is set up there for a hyperbolic lattice and transfers to $T_\Co$ because it uses the square and the divisibility and neither uses the signature.
+By @def:2elementary-roots the roots of a $2$-elementary lattice are the short roots of square $-2$ and the long roots of square $-4$ with divisibility $2$; that definition carries no signature hypothesis, so it applies to $T_\Co$ as it stands.
 
 ::: {.proposition #prop:gamma-co-reflective-set title="The reflective set of the stable Coble group"}
 
 Let $T_\Co = B(2)$ be the Coble lattice of @prop:tco-as-twist, even of signature $(2,9)$ and determinant $-2048$, so that every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and let $\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$, with $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ of @def:lattice-spinor-kernels and $\spinornorm_\bR$ the real spinor norm of @def:spinor-norm.
 Write $s_v$ for the reflection of @def:spinor-norm in a nonisotropic vector $v$.
-Then $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{2,-2,4,-4\}$, and among those:
+Then, for a primitive $v$, $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{2,-2,4,-4\}$, and among those:
 
 1. if $v^2 = -2$ then $s_v\in\Gamma_\Co$; hence the short roots generate a subgroup
    $$
@@ -1041,17 +1059,18 @@ Then $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{2,-2,4,-4\}$, and amon
    \iscontainedin \Gamma_\Co
    ,$$
    which is infinite, the proof exhibiting a family;
-2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\Gamma_\Co$; for $v^2 = 2$ one has in addition $s_v\in\ker\rho_{T_\Co}$, and for $v^2 = 4$ one does not in general;
+2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\Gamma_\Co$; for $v^2 = 2$ one has in addition $s_v\in\ker\rho_{T_\Co}$, and for $v^2 = 4$ never;
 3. if $v^2 = -4$ then $s_v\in\Orth^+(T_\Co)$ and $s_v\notin\ker\rho_{T_\Co}$.
 
-Consequently the reflective set of $\Gamma_\Co$ — the vectors of $T_\Co$ whose reflection lies in $\Gamma_\Co$ — is exactly the set of short roots, and no long root lies in it.
+Consequently the reflective set of $\Gamma_\Co$ — the primitive vectors of $T_\Co$ whose reflection lies in $\Gamma_\Co$ — is exactly the set of primitive short roots, which is every vector of square $-2$, and no long root lies in it.
 :::
 
 ::: {.proof}
 
 *Integrality.*
-A primitive $v$ has $\div_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so $\beta(v,T_\Co) = 2\ZZ$; and $v^2\in\{2,-2,4,-4\}$ forces $v$ primitive, since $v = dw$ with $d\ge2$ would give $v^2 = d^2w^2$ with $w^2$ even.
-Then $2\beta(x,v)/\beta(v,v)$ is an integer for every $x$, because $2\beta(x,v)$ is a multiple of $4$ and $\beta(v,v)$ divides $4$; so $s_v$ is an isometry of $T_\Co$ in all four cases, and for any other square it is not, since $\beta(v,T_\Co)\subseteq (v^2/2)\ZZ$ would fail.
+A primitive $v$ has $\div_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so $\beta(v,T_\Co) = 2\ZZ$; then $2\beta(x,v)/\beta(v,v)$ is an integer for every $x\in T_\Co$ exactly when $\beta(v,v)$ divides $4$, because $2\beta(x,v)$ runs over $4\ZZ$ while $\beta(v,v)$ need not divide it.
+So for primitive $v$ the reflection is integral exactly for $v^2\in\{2,-2,4,-4\}$.
+Primitivity cannot be dropped from that clause: $s_v$ depends only on the line $\ZZ v$, so $v = 2w$ with $w^2 = -2$ has $v^2 = -8$ and $s_v = s_w$, which is integral.
 The real spinor norm of @def:spinor-norm is $\spinornorm_\bR(s_w) = [-\tfrac12\beta(w,w)]$ for any nonisotropic $w$, so $\spinornorm_\bR(s_v)$ is $[-1]$ for $v^2 = 2$, $[1]$ for $v^2 = -2$, $[-2] = [-1]$ for $v^2 = 4$, and $[2] = [1]$ for $v^2 = -4$.
 
 (1) For $v^2 = -2$ the reflection is $s_v(x) = x + \beta(x,v)v$.
@@ -1068,14 +1087,12 @@ since $\zeta$ is orthogonal to the $U(2)$ summand and $\beta(e',f') = 2$ there.
 
 (2) Both squares give $\spinornorm_\bR(s_v) = [-1]$, which is not the identity of $\bR^\times/(\bR^\times)^2$, so $s_v\notin\Theta_\bR(T_\Co)$ and hence $s_v\notin\Gamma_\Co$.
 For $v^2 = 2$ the reflection is $s_v(x) = x - \beta(x,v)v$, and $\beta(x^*,v)\in\ZZ$ for $x^*\in T_\Co^*$, so $s_v(x^*)-x^*\in T_\Co$ and $s_v\in\ker\rho_{T_\Co}$: such a reflection is discriminant-trivial and fails only the component condition.
-For $v^2 = 4$ even that fails: for $v = e'+f'$ in the $U(2)$ summand one has $\beta(e'/2, v) = 1$ and
+For $v^2 = 4$ it never is.
+In the coordinates of $B$ one has $b_B(v,v) = 2$ and $s_v(x) = x - b_B(x,v)v$; $B$ is unimodular and $v$ primitive, so $b_B(\cdot,v)$ is unimodular and some $x$ has $b_B(x,v) = 1$, whence
 $$
-s_v\bigl(\tfrac12 e'\bigr) = \tfrac12 e' - \tfrac12\bigl(e'+f'\bigr) = -\tfrac12 f',
-\qquad
-s_v\bigl(\tfrac12 e'\bigr) - \tfrac12 e' = -\tfrac12\bigl(e'+f'\bigr)\notin T_\Co
+s_v(x) - x = -v \notin 2B
 ,$$
-so $\rho_{T_\Co}(s_v)\neq\id$ there.
-The factor $\tfrac12$ is exactly the half-integrality of a pairing of two vectors of $T_\Co^*$.
+so $s_v\not\equiv\id\bmod 2$ and $\rho_{T_\Co}(s_v)\neq\id$ — the argument of (3), with the sign of the coefficient reversed.
 
 (3) Let $v^2 = -4$, and write the same reflection in the coordinates of $B$, where $b_B = \tfrac12\beta_{T_\Co}$ and $b_B(v,v) = -2$; then
 $$
@@ -1096,7 +1113,7 @@ With (2) this excludes the two positive squares and the long roots, leaving exac
 Parts (1)–(3) decide the reflective set: it is the short roots, determined and not chosen, with nothing left to add and nothing to remove.
 
 They do not decide how large $W(T_\Co)$ is in $\Gamma_\Co$.
-The question is *not* whether "a reflective set together with finitely many further isometries generates $\Gamma_\Co$": $\Gamma_\Co$ is an arithmetic subgroup of $\Orth(T_\Co\tensor\bR)\iso\Orth(2,9)$, and arithmetic subgroups of semisimple real groups are finitely generated (Borel--Harish-Chandra), so any generating set together with finitely many further elements generates it, and that formulation carries no content.
+The question is *not* whether "a reflective set together with finitely many further isometries generates $\Gamma_\Co$": $\Gamma_\Co$ is an arithmetic subgroup of $\Orth(T_\Co\tensor\bR)\iso\Orth(2,9)$, and arithmetic subgroups of semisimple real groups are finitely generated (Borel--Harish-Chandra), so any subset of $\Gamma_\Co$ together with a finite generating set generates $\Gamma_\Co$, and that formulation carries no content.
 What carries content is the **index** $[\Gamma_\Co : W(T_\Co)]$: whether it is finite, and if finite which.
 
 That index is what a Vinberg-type statement computes, and the route named for it in the research report — Vinberg's algorithm at each cusp (@prob:coxeter-completeness item 2, and the cusp-level items B32--B34 of the taxonomy) — is a statement about hyperbolic lattices and does not apply to $T_\Co$ itself, which has signature $(2,9)$; the owning library refuses it on exactly that ground, `HyperbolicLattices` accepting signature $(1,n)$ or $(n,1)$ only, and the hyperbolic statement belongs to the cusp lattices of @sec-open-problems and not to $T_\Co$.

@@ -7,22 +7,19 @@
         /repo/computations/reports/coble_gamma_co_reflective_set.py
 
 Declared shared runtime, adopted: image ghcr.io/dzackgarza/sage at the rootfs above
-(Sage 11.0.beta5), with the research provider on PYTHONPATH at the snapshot the corpus's
-own records run at, sage-extensions pin 6ad7a5ea396da6e758ee28f3dea10a35baee0266
-(.scratch/se-provider-6ad7a5ea/src, rebuilt from that pin; see
-deployed-runtime-readiness-20261104.md, which says which checkout the computations use and
-that it is not the image's own /repos/sage-extensions at 7b222e86). Nothing in the rootfs is
-written.
+(Sage 11.0.beta5), with sage-extensions pin 15db925b0c92e525f769fcbf57135f1391263a9e on
+PYTHONPATH (.scratch/se-provider-15db925b/src, cloned from that pin), and with PATH derived
+from the resolved launcher so that the bare `gap` kernel_info() runs is the venv's GAP 4.16.1
+and not the distribution's 4.14 (sage#11, coble_gap-path-20261105.md). Nothing in the rootfs
+is written.
 
-What this file is for.  #646 asks for two things about
-Gamma_Co = O^+(T_Co) cap ker(rho_{T_Co}): an explicit reflective set in T_Co, and a
-theorem that it, with finitely many further isometries, generates Gamma_Co.  The first
-half is decided here and in writing/coble/lattices-and-moduli/
-the-heegner-line-and-the-coble-arithmetic-group.md; the second half is not, and the
-run records exactly why, operation by operation, rather than a conclusion drawn from a
-refusal.  The deciding matrix for the second half -- membership in ker(rho) of an
-explicit isometry -- is not available at this runtime at all; see
-computations/reports/coble_owner_gap-blockers-20261105.md for the pasted crash.
+What this file is for.  #646 asks for an explicit reflective set in T_Co for
+Gamma_Co = O^+(T_Co) cap ker(rho_{T_Co}).  That is what this file records, square by
+square, and it is the half settled in writing/coble/lattices-and-moduli/
+the-heegner-line-and-the-coble-arithmetic-group.md.  The open quantity there is not
+"generation by a reflective set plus finitely many isometries" -- Gamma_Co is a finitely
+generated arithmetic group, so that formulation is vacuous -- but the index of the group
+the short roots generate in Gamma_Co, and nothing here computes that index.
 
 The reflective set, stated.  By @def:2elementary-roots the roots of an even
 2-elementary lattice are the short roots (v^2 = -2) and the long roots (v^2 = -4 with
@@ -32,11 +29,11 @@ div(v) = 2).  For v in T_Co:
     ker(rho_{T_Co}) (s_v(x*) = x* + (x*.v) v, and x*.v is an integer because v is in the
     lattice), so s_v lies in Gamma_Co.  Every (-2)-vector, and there are infinitely many;
   * v^2 = +2, resp. +4: sn_R(s_v) = [-q(v)/2] = [-1], so s_v is not in O^+(T_Co) and
-    hence not in Gamma_Co; nothing about ker(rho) is needed, and for v^2 = 4 the
-    corresponding assertion is false: for v = e' + f', (e')/2 is a dual vector and
-    b((e')/2, v) = 1, so s_v maps the class of (e')/2 to that of -(f')/2 and
-    s_v((e')/2) - (e')/2 = -(e' + f')/2 is not in T_Co.  The half-integer is exactly the
-    point of the convention T_Co^* = (1/2)T_Co: two dual vectors pair half-integrally;
+    hence not in Gamma_Co.  For v^2 = +2 the reflection is anyway in ker(rho); for
+    v^2 = 4 it is never: in the coordinates of B one has b_B(v,v) = 2, s_v(x) =
+    x - b_B(x,v) v, B is unimodular and v primitive, so some x has b_B(x,v) = 1 and
+    s_v(x) - x = -v is not in 2B.  That is the argument of the long-root case with the
+    sign of the coefficient reversed;
   * v^2 = -4, the long roots: integral because div(v) = 2, and sn_R(s_v) = [2] = [1], so
     s_v lies in O^+(T_Co); but it is NOT in ker(rho).  Write it in the coordinates of
     B, where b_B = (1/2)b and b_B(v,v) = -2: s_v(x) = x + b_B(x,v) v.  B is unimodular and
@@ -44,9 +41,8 @@ div(v) = 2).  For v in T_Co:
     s_v(x) - x = v, which is not in 2B.  Since rho(g) = 1 means g = I mod 2 on B/2B, no
     long root lies in Gamma_Co.
 
-So the reflective set of Gamma_Co is the short roots, together with such long roots as
-act trivially on A_{T_Co}; the short roots alone are the part that is decided by the
-square.  What the run checks, and what it cannot.
+So the reflective set of Gamma_Co is exactly the short roots, and no long root lies in it.
+What the run checks, and what it cannot.
 """
 import sys
 
@@ -72,7 +68,7 @@ def refusal(label, thunk):
 
 print('provenance')
 print('  Sage: %s' % SAGE_VERSION)
-print('  sage-extensions: .scratch/se-provider-6ad7a5ea/src on PYTHONPATH, pin 6ad7a5ea')
+print('  sage-extensions: .scratch/se-provider-15db925b/src on PYTHONPATH, pin 15db925b')
 print('  lattice: built here from its own Gram data, not read from a stored object')
 print('')
 
@@ -145,7 +141,7 @@ print('')
 
 # ---------------------------------------------------------------- what the owner refuses
 print('the owner operations this question needs, and what they do here')
-print('  (the lattice layer builds; the decision layer needs GAP, see the blockers record)')
+print('  (both layers build here; the decisions themselves are in coble_gamma_co_membership.py)')
 refusal('T.O_plus()', lambda: T.O_plus())
 refusal('T.spinor_norm()', lambda: T.spinor_norm())
 refusal('T.roots()', lambda: list(T.roots()))
@@ -168,12 +164,10 @@ print('      chapter table; its admissible reflective squares are {1, 2, 4}, and
 print('      -1 is excluded by parity, so the reflective squares are +-2 and -4, the short')
 print('      and long roots of @def:2elementary-roots with divisibility 2 here;')
 print('  (2) the (-2)-vectors of T_Co give reflections the owner builds, and the groups')
-print('      O^+(T_Co), the spinor norm and ker(rho_T_Co) are all built here as objects; but')
-print('      the two steps that place a named reflection in Gamma_Co are decisions, and')
-print('      neither is available: the spinor one stops the interpreter in GAP, and the')
-print('      discriminant one raises in the provider before GAP is reached (probe 3 of')
-print('      coble_owner_gap-blockers-20261105.md).  Both therefore remain proofs in the')
-print('      writing and are not claimed as owner decisions here;')
+print('      O^+(T_Co), the spinor norm and ker(rho_T_Co) are all built here as objects; the')
+print('      membership decisions that place a named reflection in Gamma_Co are not taken in')
+print('      this file -- they are taken in coble_gamma_co_membership.py, which is the')
+print('      record for that;')
 print('  (3) the reflective set of Gamma_Co is exactly the short roots.  The positive-square')
 print('      reflections fail O^+ by the spinor norm alone, and no long root lies in')
 print('      ker(rho): for v^2 = -4 the reflection is s_v(x) = x + b_B(x,v) v in the')
