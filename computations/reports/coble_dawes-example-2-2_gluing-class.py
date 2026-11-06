@@ -121,9 +121,74 @@ print('    a vector x with 5x = a*v and a not divisible by 5 has b(x, L) = (a/5)
 print('    since div_L(v) = 4; so that class is impossible for both vectors.')
 print('')
 
+print('(d) the six lines of P^1(F_5): which gluing classes are isotropic')
+from fractions import Fraction  # noqa: E402
+
+
+def to_fraction(value):
+    """A Python rational from the owner's value, read off its class string.
+
+    The owner returns the value as an element of a fraction field over Z/(2); its string is
+    "(6)/(5)" for 6/5, so the parentheses are stripped and the fraction is parsed exactly.
+    """
+    import re
+    match = re.search(r'\[([^\]]+)\]', str(value))
+    text = match.group(1) if match else str(value)
+    return Fraction(text.replace('(', '').replace(')', ''))
+
+# the generator of A_N whose value is 6/5, and the class of v/5 in A_<v>
+generator = None
+for x in A_N.elements():
+    if x != A_N.zero() and to_fraction(A_N.q(x)) == Fraction(6, 5):
+        generator = x
+        break
+assert generator is not None
+print('    generator of A_N with q = 6/5: %s' % generator)
+
+lines = [(1, k) for k in range(5)] + [(0, 1)]
+isotropic_lines = []
+for (j, k) in lines:
+    qV = Fraction(4 * j * j, 5)                       # q(j*v/5) = 4j^2/5
+    qN = Fraction(0) if k == 0 else to_fraction(A_N.q(k * generator))
+    total = qV + qN
+    iso = (total / 2).denominator == 1                 # total = 0 in Q/2Z
+    print('    line (%-d:%d):  q_<v> = %-5s + q_N = %-5s  total %-5s  isotropic: %s'
+          % (j, k, qV, qN, total, iso))
+    if iso:
+        isotropic_lines.append((j, k))
+print('    isotropic lines: %s' % (isotropic_lines,))
+
+print('')
+print('(e) the orbit of (1, -1) on the four diagonal lines')
+diagonal = [(1, k) for k in range(1, 5)]
+orbits = []
+seen = set()
+for line in diagonal:
+    if line in seen:
+        continue
+    orbit = set()
+    for a in (1, -1):
+        for b in (1, -1):
+            j, k = a * line[0], b * line[1]
+            # normalise the first coordinate to 1
+            normalised = (1, (k * pow(j, -1, 5)) % 5)
+            orbit.add(normalised)
+    orbits.append(sorted(orbit))
+    seen |= orbit
+print('    orbits: %s' % (orbits,))
+print('    number of orbits on the four diagonal lines: %d' % len(orbits))
+iso_diagonal = sorted(line for line in isotropic_lines if line[0] != 0 and line[1] != 0)
+print('    isotropic diagonal lines: %s' % (iso_diagonal,))
+print('    they form one orbit: %s'
+      % (len(orbits) == 2 and 1 == len([o for o in orbits if set(iso_diagonal) <= set(o)])))
+print('')
+
 print('CONCLUSION')
-print('  Both degenerate gluing classes are excluded, so Lambda has both coordinates nonzero;')
-print('  the diagonal classes of P^1(F_5) form one orbit under O(<v>) x O(N) = {+-1} x {+-1}.')
-print('  There is therefore exactly one class of pair (L, v) with v^2 = 20, div = 4 and')
-print('  v^perp/v = A_4, and v_1 ~ v_2 in L under O(L): the claim of @ex:dawes-u-a3 stands and')
-print('  the in-tree v_1 not~ v_2 is withdrawn.')
+print('  Both degenerate gluing classes are excluded, so Lambda has both coordinates nonzero.')
+print('  On the four diagonal lines of P^1(F_5) the group O(<v>) x O(N) = {+-1} x {+-1} has TWO')
+print('  orbits, {(1:1),(1:4)} and {(1:2),(1:3)}; isotropy selects the first, because')
+print('  q(j*v/5) = 4j^2/5 adds to q_N = 6/5 exactly at k = +-1 and to 4/5 at k = +-2, so the')
+print('  only isotropic diagonal lines are (1:1) and (1:4), and those two are exchanged by the')
+print('  flip of the second coordinate.  Hence exactly one gluing class is isotropic, and')
+print('  v_1 ~ v_2 in L under O(L): the claim of @ex:dawes-u-a3 stands and the in-tree')
+print('  v_1 not~ v_2 is withdrawn.')
