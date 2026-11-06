@@ -946,7 +946,7 @@ So one of $\restrictionof{g}{T_\Co}$ and $\restrictionof{g}{T_\Co}s_w$ is in $\O
 
 This proposition reduces the two questions but does not by itself decide whether either image is trivial, and by contrast the congruence group is *proved* strictly larger, in the remark below.
 The Heegner one is decided in the next two statements: the finite image of the polarization stabilizer is not trivial (@lem:polarization-stabilizer-discriminant-nontrivial), and the surjectivity of the discriminant representation for a $2$-elementary lattice transports that nontriviality into $\Gamma^{\mathrm{Hdg}}_\Co$ itself (@prop:gamma-co-heegner-strict).
-The theta one is not decided, and nothing on the page transports a nontrivial class from an $S$-side isometry to a $T$-side one there: the analogue of the "equivalently" clause of @prop:gamma-en-two-gluing, which is what the Heegner side uses, is precisely what an explicit gluing isometry $A_{S_\Co}\to A_{T_\Co}$ would supply, and the owning library has no operation that produces one.
+The theta one is decided below, in the section on the Coble-side gluing statement: there the analogue of the "equivalently" clause of @prop:gamma-en-two-gluing is not an extra theorem, because the discriminant representation of $T_\Co$ is surjective, and the transported class of a nontrivial $S_\Co$-side isometry is realised by an integral isometry of $T_\Co$ (@prop:theta-co-gluing, @lem:coble-stabilizer-discriminant-nontrivial, @prop:theta-co-index).
 
 ::: {.lemma #lem:polarization-stabilizer-discriminant-nontrivial title="The finite image of the polarization stabilizer is not trivial"}
 
@@ -1007,10 +1007,11 @@ Conversely $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)\subseteq\gamma\,\a
 So the two images are equal, and by @prop:gamma-co-in-heegner-group(2) the index is their common order.
 
 *The order of $G_\Co$.*
-By @prop:polarization-stabilizer-enriques, $\Stab_{\Orth(S_\En)}(h)\iso\theset{\pm1}\times W(E_8)$, of order $2\abs{W(E_8)}$; the first factor is the reflection in the $\generators{-2}$ direction of $h^{\perp C}$, that is $\id_U\oplus(-\id_{E_8})$, and the second is $W(E_8)$ acting on $E_8$.
-In the coordinates of $C$ — the module of $S_\En = C(2)$ — an isometry acts on $A_{S_\En} = C/2C$ by its reduction modulo $2$, each factor acting trivially on the other's summand.
-The reflection $\id_U\oplus(-\id_{E_8})$ is trivial modulo $2$ on $E_8$, so it lies in the kernel; the $W(E_8)$ factor meets the kernel in $\theset{\pm1}$, because the reduction $W(E_8)\to\Orth(E_8/2E_8)$ has kernel $\theset{\pm1}$ (the identification $W(E_8)\cong 2\Orth^+_8(2)\cdot 2$ of [@CCN+85], under which that reduction is onto $\Orth^+_8(2)\cdot 2$ of order $\abs{W(E_8)}/2$).
-Hence the kernel of $\Stab_{\Orth(S_\En)}(h)\to\Orth(A_{S_\En})$ is exactly $\theset{\pm1}$ on the $E_8$ summand, of order $2$, and
+By @prop:polarization-stabilizer-enriques, $\Stab_{\Orth(S_\En)}(h)\iso\Orth(h^{\perp C}) = \Orth\bigl(\generators{-2}\oplus E_8\bigr) = \theset{\pm1}\times W(E_8)$, of order $2\abs{W(E_8)}$; the first factor is the reflection $s_{u_0-w_0}$ in the $\generators{-2}$ direction $u_0-w_0$ of $h^{\perp C}$, and the second is $W(E_8)$ acting on $E_8$.
+In the coordinates of $C$ — the module of $S_\En = C(2)$ — an isometry acts on $A_{S_\En} = C/2C$ by its reduction modulo $2$ (@prop:twisted-unimodular-discriminant), each factor acting trivially on the other's summand.
+The two factors behave differently there: $s_{u_0-w_0}$ acts nontrivially, since it moves the class of $u_0/2$ (@lem:polarization-stabilizer-discriminant-nontrivial), whereas the element $\id_U\oplus(-\id_{E_8})$, which is the image of $-\id_{E_8} = w_0\in W(E_8)$ and not of $s_{u_0-w_0}$, is trivial modulo $2$.
+The $W(E_8)$ factor meets the kernel in $\theset{\pm1}$, because the reduction $W(E_8)\to\Orth(E_8/2E_8)$ has kernel $\theset{\pm1}$ (the identification $W(E_8)\cong 2\Orth^+_8(2)\cdot 2$ of [@CCN+85], under which that reduction is onto $\Orth^+_8(2)\cdot 2$ of order $\abs{W(E_8)}/2$), and $\pm\id_{E_8}$ are the two elements of that kernel.
+Hence the kernel of $\Stab_{\Orth(S_\En)}(h)\to\Orth(A_{S_\En})$ is $\theset{1,\ \id_U\oplus(-\id_{E_8})}$, of order $2$, and
 $$
 \abs{G_\Co} = \frac{2\abs{W(E_8)}}{2} = \abs{W(E_8)} = 696\,729\,600
 .$$
@@ -1067,7 +1068,13 @@ The difference is where the witness comes from: there the nontrivial class was p
 
 ::: {.lemma #lem:coble-stabilizer-discriminant-nontrivial title="The $\tilde h_\Co$-stabilizer of $S_\Co$ has nontrivial discriminant image"}
 
-Let $S_\Co = \latI_{1,10}(2) = C(2)$ with $C$ unimodular, and let $\tilde h_\Co = u+w\in S_\Co$ be the degree-$2$ Coble polarization in the Enriques-type presentation of @def:coble-polarization-classes, so that $u^2 = w^2 = 0$ and $u\cdot w = 2$, whence $\tilde h_\Co^2 = 4$.
+Let $C = \latI_{1,10}$ be odd unimodular of signature $(1,10)$, so that $C\iso\generators{K}\oplus U\oplus E_8$ with $K^2 = 1$, $U = \generators{F_1,F_2}$ the hyperbolic plane and $E_8$ negative definite (@thm:indefinite-unimodular-classification), and let $S_\Co = C(2)$ with $\tilde h_\Co\in S_\Co$ the degree-$2$ Coble polarization, so that $\tilde h_\Co^2 = 4$ and $\tilde h_\Co^2 = 2$ as a vector of $C$.
+Any $h\in C$ of square $2$ has $h^{\perp C} = \generators{a}\oplus E_8$ with $a^2 = -2$, and the two vectors
+$$
+u \definedas \tfrac12(h+a), \qquad w \definedas \tfrac12(h-a)
+$$
+are integral, since $b(h\pm a,\cdot)$ is even on $h$, on $a$ and on $h^{\perp C}$, and satisfy $u^2 = w^2 = 0$ and $u\cdot w = 1$; in $S_\Co = C(2)$ they have $u^2 = w^2 = 0$ and $u\cdot w = 2$, and $u+w = \tilde h_\Co$.
+This is the Enriques-type presentation of @def:coble-polarization-classes, $h_\Co = F_1+F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, pulled back along the double cover; in the model it reads $u = F_1$, $w = F_2$, $h = F_1+F_2$.
 Put $v \definedas u-w$.
 Then $v^2 = -4$, $v$ is primitive, $b(\tilde h_\Co, v) = 0$, and the reflection $s_v$ is an isometry of $S_\Co$ fixing $\tilde h_\Co$ with $\rho_{S_\Co}(s_v)\neq\id$.
 Consequently $\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)\neq1$.
@@ -1078,7 +1085,8 @@ Consequently $\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)\neq1$.
 $v^2 = u^2 - 2\,u\cdot w + w^2 = 0-4+0 = -4$, and $b(\tilde h_\Co, v) = u^2 - u\cdot w + w\cdot u - w^2 = 0$, so $s_v(\tilde h_\Co) = \tilde h_\Co$ as soon as $s_v$ is an isometry.
 
 *Primitivity.*
-Suppose $v = 2x$. Then $b(u,v) = u^2 - u\cdot w = -2 = 2\,b(u,x)$ gives $b(u,x) = -1$, and $b(v,v) = -4 = 4x^2$ gives $x^2 = -1$, which an even lattice does not contain.
+Suppose $v = kx$ with $k\geq2$ and $x$ integral. Then $-4 = v^2 = k^2x^2$, so $k^2\mid 4$ and $x^2 = -4/k^2$; the only integer value left is $k = 2$, giving $x^2 = -1$, and an even lattice has no vector of square $-1$.
+(The two halves combine: $b(u,v) = u^2 - u\cdot w = -2 = k\,b(u,x)$ shows $k \mid 2$, so $k$ is $1$ or $2$, and $k = 2$ is excluded as just shown.)
 So $v$ is primitive.
 
 *Integrality.*
@@ -1091,29 +1099,56 @@ $$
 s_v(x) - x = v \notin 2S_\Co
 ,$$
 since $v$ is primitive.
-Under $A_{S_\Co} = S_\Co/2S_\Co$, reduction modulo $2$ is the discriminant action, so $\rho_{S_\Co}(s_v)\neq\id$.
+Under $A_{S_\Co} = S_\Co/2S_\Co$ — the identification of @prop:twisted-unimodular-discriminant — reduction modulo $2$ is the discriminant action, so $\rho_{S_\Co}(s_v)\neq\id$.
 :::
 
 ::: {.corollary #cor:theta-co-strict title="The $\theta$-description is strictly larger"}
 
-$\Gamma_\Co\subsetneq\Gamma^\theta_\Co$, and $[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))} \geq 2$, a divisor of $46\,998\,591\,897\,600$.
+$\Gamma_\Co\subsetneq\Gamma^\theta_\Co$, with $[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$, which @prop:theta-co-index evaluates as $\abs{W(E_8)} = 696\,729\,600$.
 :::
 
 ::: {.proof}
 
-Immediate from @prop:theta-co-gluing and @lem:coble-stabilizer-discriminant-nontrivial, the bound being that the image is a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$, whose order is @prop:coble-discriminant-group.
+Immediate from @prop:theta-co-gluing and @lem:coble-stabilizer-discriminant-nontrivial: the image there is nontrivial, and it is a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ of @prop:coble-discriminant-group.
 :::
 
-::: {.problem #prob:theta-co-index title="The index of the $\theta$-description"}
+::: {.proposition #prop:theta-co-index title="The index of the $\theta$-description"}
 
-Compute $\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$, that is the index $[\Gamma^\theta_\Co:\Gamma_\Co]$ of @cor:theta-co-strict, which is known only to lie between $2$ and $46\,998\,591\,897\,600$.
-By @prop:theta-co-gluing this is a question about finite groups and nothing else, and it decides the $\theta$ entry of @prob:group-identification.
-Two inputs are wanted, and neither exists in the owning library:
-an explicit generating set for $\Stab_{\Orth(S_\Co)}(\tilde h_\Co)$ as integral isometries of $S_\Co$, and the discriminant representation of a finite group presented that way;
-the operation that would supply the first is
-`centralizer_generators(ambient, involutions, fixed)`, taking a lattice, a list of isometries to commute with and a vector to fix, and returning a generating set of the intersection of the centralizer and the stabilizer as integral isometries, certified by per-generator commutation, fixity and form preservation together with an order identity.
-`computations/reports/coble_theta-half-requirements.md` states the contract in full.
+$[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{W(E_8)} = 696\,729\,600$, the same number as the Heegner index of @prop:gamma-co-heegner-strict.
 :::
+
+::: {.proof}
+
+By @prop:theta-co-gluing the index is $\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$. Write $C = \generators{K}\oplus U\oplus E_8$ and $h = \tilde h_\Co$ as in @lem:coble-stabilizer-discriminant-nontrivial, with $u = F_1$, $w = F_2$ in the model, and recall $\Orth(S_\Co) = \Orth(C)$ because $S_\Co = C(2)$.
+
+*The shape of $h^{\perp C}$.*
+$h^{\perp C} = \generators{K}\oplus\generators{v}\oplus E_8$ with $v = F_1-F_2$, of squares $1$, $-2$ and the $E_8$ form; its determinant is $-2$, since $\det(\ZZ h) = 2$ and $\det C = -1$ give $\det(h^{\perp C}) = \det(C)\cdot[C:\ZZ h\oplus h^{\perp C}]^2/\det(\ZZ h) = -4/2$.
+Its root system — the vectors of square $-2$ — is exactly $\theset{\pm v}$ together with the $240$ roots of $E_8$: a vector $x = aK + bv + e$ has $x^2 = a^2 - 2b^2 + e^2$, which is $-2$ only for $a = 0$ and ($b = 0$, $e$ a root) or ($b = \pm1$, $e = 0$).
+
+*The stabilizer.*
+The restriction $\Stab_{\Orth(C)}(h)\to\Orth(h^{\perp C})$ is an isomorphism: an isometry of $h^{\perp C}$ acts trivially on $A_{h^{\perp C}} = \ZZ/2\ZZ$, whose automorphism group is trivial, so the pair $(\id_h,\varphi)$ preserves the glue subgroup of $\ZZ h\oplus h^{\perp C}$ in $C$ and extends by @thm:automorphism-lifting-criterion with $u = \id$.
+On $h^{\perp C}$, an isometry permutes roots, hence preserves the two components $\theset{\pm v}$ and the $E_8$ root system — they have different ranks — and therefore preserves $\generators{v} = \theset{\pm v}\cup\theset{0}$... more precisely preserves $\generators{v}$ and its orthogonal complement $\generators{K}\oplus E_8$, in which the roots span $E_8$; so it preserves $E_8$ and fixes $\generators{K}$.
+Hence
+$$
+\Stab_{\Orth(S_\Co)}(\tilde h_\Co) \;\iso\; \theset{\pm1}_K\times\langle s_v\rangle\times \Orth(E_8), \qquad \abs{\cdot} = 2\cdot2\cdot\abs{W(E_8)} = 4\abs{W(E_8)},
+$$
+using $\Orth(E_8) = W(E_8)$, since $-\id_{E_8} = w_0$ lies in $W(E_8)$.
+
+*The image.*
+By @prop:twisted-unimodular-discriminant, $\rho_{S_\Co}(g) = \id$ exactly for $g\equiv\id\bmod 2$ on $C/2C$.
+Of the three factors: $1$ and $s_K$ are trivial there, because $s_K(x) = x - 2b(x,K)K$; $-\id_{E_8}$ is trivial because $-1\equiv1\bmod2$; $s_v$ is not, because $s_v(F_1) = F_1 + b(F_1,v)v = F_1 - v = F_2$ and $F_2 - F_1 = -v$ is not in $2C$, $v$ being primitive; and $W(E_8)$ meets the kernel in $\theset{\pm1}$, that being the kernel of $W(E_8)\to\Orth(E_8/2E_8)$ ([@CCN+85], as in @prop:gamma-co-heegner-strict).
+So the kernel has order $2\cdot2 = 4$ and
+$$
+\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))} = \frac{4\abs{W(E_8)}}{4} = \abs{W(E_8)} = 696\,729\,600
+.$$
+:::
+
+::: {.remark title="A step of the argument that is not needed"}
+
+The extension is sometimes justified by counting the vectors of square $-1$ in $h^{\perp C}$, of which one might expect only $\pm K$; that count is wrong, since $K+e$ has square $1-2 = -1$ for every root $e$ of $E_8$, and the count is not needed: an isometry of $h^{\perp C}$ acts trivially on its discriminant group because that group is $\ZZ/2\ZZ$, and that triviality is the whole hypothesis of @thm:automorphism-lifting-criterion with $u = \id$.
+:::
+
+With @prop:gamma-co-heegner-strict, both candidate overgroups of $\Gamma_\Co$ are strictly larger by the *same* factor $\abs{W(E_8)}$; what remains of @prob:group-identification is the direct and geometric comparison (@prob:coble-rigidity, @prob:B24, @prob:B25), and not the $\theta$ one.
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
@@ -1229,7 +1264,8 @@ Let $(e', f')$ be the basis of the $U(2)$ summand of $T_\Co$, with $e'^2 = f'^2 
 What the argument needs of $\sigma$ is that it lies in $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ by @def:spinor-norm, that it moves the discriminant, and that its discriminant action preserves the three blocks of $A_{T_\Co} = \ZZ\tfrac12\zeta\perp A_{U(2)}\perp A_{E_8(2)}$ and acts on the $U(2)$ block by the transposition; these are verified through the owner's operations, where $\sigma$ is built by `Lattices.reflection`, its membership in `O_plus` and in `stable_orthogonal_group` is decided by those groups, the classes are the owner's `discriminant_class` of `primitive_dual`, and the action is `discriminant_morphism`, with $q([\tfrac12 e']) = q([\tfrac12 f']) = 0$, $q([\tfrac12\zeta]) = \tfrac12$, $b([\tfrac12 e'], [\tfrac12 f']) = \tfrac12$ and $\abs{A_{T_\Co}} = \abs{\det T_\Co} = 2048$ read off the same objects (`computations/reports/coble_congruence_witness.py`).
 Since a transposition of the two isotropic classes of $A_{U(2)}$ is an isometry of that block, $\rho(\sigma)\in\Orth(q_{U(2)})\subseteq P$; that inclusion is the block argument just stated and is not a computation of $P$ itself, and what the owner builds on the congruence side is the preimage of the cyclic subgroup $\generators{\rho(\sigma)}$, not of $P$ (`computations/reports/coble_stabilizer_generators.py`).
 So $\rho(\sigma)\in P$ is nontrivial, $\sigma\notin\Gamma_\Co$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ strictly contains $\Gamma_\Co$.
-What this does and does not settle: the four-group identification of @prob:group-identification cannot be an equality with the stable group $\Gamma_\Co$, only an equality among overgroups of it, and three of the overgroups are now known to be strictly larger: the congruence one by the witness $\sigma$ just described, the Heegner one by @prop:gamma-co-heegner-strict, and the $\theta$ one by @cor:theta-co-strict, so what remains of the comparison is the *index* of each overgroup and not whether it exceeds one.
+What this does and does not settle: the four-group identification of @prob:group-identification cannot be an equality with the stable group $\Gamma_\Co$, only an equality among overgroups of it, and of the four, two are now known to be strictly larger than $\Gamma_\Co$ — the congruence group by the witness $\sigma$ just described, and the Heegner group by @prop:gamma-co-heegner-strict, whose index is $\abs{W(E_8)}$ — while the direct and geometric entries are not comparisons of subgroups of $\Orth(A_{T_\Co})$ at all (§@sec-four-groups) and their open content is @prob:coble-rigidity, @prob:B24 and @prob:B25.
+$\Gamma^\theta_\Co$ of @prop:gamma-co-in-theta-centralizer is a fifth group, outside that list, and it too is strictly larger, with the same index (@prop:theta-co-index).
 
 *Torelli, monodromy and labeled embeddings.* Two of the four are not of that kind.
 The direct and geometric groups are images of centralizers in $\Orth(\lkt)$ of the labeled Coble datum, so comparing either with a Heegner group requires an isometry of $\lkt$ carrying the Enriques-labeled structure $(S_\En, T_\En, \ZZ\delta, h)$ of @prop:gamma-en-two-gluing to the Coble-labeled one $(S_\Co, T_\Co, \tilde h_\Co)$ of @prop:gamma-co-in-theta-centralizer; that is the labeled rigidity of @prob:coble-rigidity, not a computation in $T_\Co$.
