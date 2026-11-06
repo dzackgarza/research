@@ -340,3 +340,27 @@ For the full orthogonal group, @thm:unpolarized-cusps gives transitivity using @
 
 For a subgroup specified by its image in $\Orth(q)$, the algorithms of [@Daw22] do *not* apply as the citation would suggest, and the mismatch is worth stating because it is on both sides. Dawes' setup assumes even lattices from §1.1, and the split-maximal stabilizer results of §3.1 and §3.2 assume a $U^{\oplus2}$ decomposition. The Coble lattice is even but not $U^{\oplus2}$-decomposable --- as the Eichler remark below proves, $T_\Co$ contains no copy of $U$ at all --- while the odd lattice $B$ with the decomposition is outside the parity hypothesis. So neither presentation satisfies both hypotheses, and the passage from $\rho(\Gamma)$-orbits on the finite group to $\Gamma$-orbits on primitive isotropic vectors is not available from that source for $\Gamma_\Co$. What the finite computation can still do is bound: since $\Gamma_\Co$ fixes every class of $A_{T_\Co}$, vectors with different classes lie in different $\Gamma_\Co$-orbits, so the finite orbit count is a lower bound for the integral one and never an upper one.
 :::
+
+## The two $0$-cusp lattices {#sec-zero-cusp-lattices}
+
+::: {.proposition #prop:zero-cusp-lattices title="The $0$-cusp lattices of $\fen$ and of $\fco$"}
+
+Let $T$ be $T_\En = U\perp U(2)\perp E_8(2)$ or $T_\Co = B(2)$ with $B = U\perp U\perp \I_{0,7}$, and let $v$ be a primitive isotropic vector: the isotropic generator of a hyperbolic summand in either case.
+Then the cusp lattice $v^{\perp T}/\generators{v}$ is
+
+1. for $T_\En$, $U(2)\oplus E_8(2)$: rank $10$, determinant $-2^{10}$, signature $(1,9)$, even $2$-elementary with invariants $(r,a,\delta) = (10,10,0)$;
+2. for $T_\Co$, $U(2)\oplus\generators{-2}^{7} = \I_{1,8}(2)$: rank $9$, determinant $2^{9}$, signature $(1,8)$, even $2$-elementary with invariants $(r,a,\delta) = (9,9,1)$.
+:::
+
+::: {.proof}
+
+In both cases $v$ spans a hyperbolic summand and is orthogonal to the rest, so $v^{\perp T} = \generators{v}\perp (\text{the remaining summand})$ and the quotient by $\generators{v}$ drops the hyperbolic direction: for $T_\En = U\perp U(2)\perp E_8(2)$ this leaves $U(2)\oplus E_8(2)$, and for $T_\Co = U(2)\oplus U(2)\oplus\I_{0,7}(2)$ from the splitting of @prop:tco-split-maximal it leaves $U(2)\oplus\I_{0,7}(2) = U(2)\oplus\generators{-2}^{7}$, which is $2\cdot\I_{1,8}$ because $U\oplus\generators{-1}^{7}$ is the odd unimodular lattice of signature $(1,8)$.
+
+The invariants are computed in `computations/reports/coble_zero-cusp-lattices.py` and its run, which builds each lattice and prints rank, determinant, signature, the elementary divisors of the Gram matrix, the order of the discriminant group, and whether the values of $q$ are all integral --- that is $\delta$: $U(2)\oplus E_8(2)$ has divisors $[2,\dots,2]$ of length $10$, $\abs{A} = 1024$, all values integral and $\delta = 0$; $\I_{1,8}(2)$ has divisors $[2,\dots,2]$ of length $9$, $\abs{A} = 512$, non-integral values and $\delta = 1$.
+:::
+
+::: {.remark title="What is not decided here"}
+
+Reflectivity, and the Coxeter diagram the cusp lattice carries, are not decided by that record: deciding them means running Vinberg's algorithm *anchored at the chosen cusp*, which the library does not expose --- the operation would take a hyperbolic lattice together with the isotropic vector defining the cusp and return the chamber's walls with their inner products, and it is sage-extensions#285.
+It is needed here on $U(2)\oplus E_8(2)$ (the Enriques cusp, where Sterk publishes the diagram) and on $\I_{1,8}(2)$ (the Coble cusp); until it exists the wall count and the identification of the diagram with the published one are not asserted, and @sec-open-problems carries them.
+:::
