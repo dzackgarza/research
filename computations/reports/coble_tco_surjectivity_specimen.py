@@ -16,6 +16,14 @@ for M = S_En + <delta>, both rank 11, det 2048, signature (1,10), so the failure
 about the discriminant predicate in general.  The traceback is printed in full, and the run log
 `coble_tco_surjectivity_specimen-run.txt` is the record handed to sage-extensions.
 
+**Rerun at sage-indefinite-port 991b88b0** (this file unchanged, the port bound on
+PYTHONPATH ahead of the image copy, PATH carrying /sage/.venv/bin so the bare gap resolves):
+`L.discriminant_representation_is_surjective()` **returns True**, and the two controls return
+True as before.  The record is `coble_tco_surjectivity_specimen-port991b88b0-run.txt`; the
+earlier traceback at port 4f0ee50c stands in `coble_tco_surjectivity_specimen-run.txt` as
+history.  Port#71 is therefore closed by that run, and sage-extensions#286 can be built on
+the call it needed.
+
 Provenance is printed first: provider pin, Sage version, image, and the two source roots that appear in
 the traceback (the preamble checkout bound at /repo and the engine at /repos/...).
 """
