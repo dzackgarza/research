@@ -17,6 +17,7 @@ notes: |-
 
 The enumeration of $\Orth(T)$- and $\Gamma$-orbits of primitive isotropic vectors in $T_\Co$ is left open in [open problems](#sec-open-problems), where it blocks the uniqueness of the Baily--Borel $0$-cusp.
 Two published algorithm families answer that question for indefinite lattices; this page states what each computes and under which hypotheses.
+What the orbits are counted *by*, before any algorithm runs, is [discriminant-form descent](#sec-discriminant-descent): a finite set of classes, one fibre each, and the fibre index of @prop:descent-fibre.
 
 ## Why the orbit count is the cusp count
 

@@ -188,6 +188,7 @@ book:
         - coble/computations/lattice-algorithms-by-signature.md
         - coble/computations/fundamental-chamber-polyhedra.md
         - coble/computations/isotropic-orbits-and-tits-buildings.md
+        - coble/computations/discriminant-form-descent.md
         - coble/computations/periods-and-local-monodromy.md
     - part: Computed results
       chapters:
