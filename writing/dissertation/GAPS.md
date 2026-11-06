@@ -1190,9 +1190,11 @@ What has since been settled is listed at the end, so that a reader can tell "res
   for every t != 0.  That is checked exactly in computations/reports/sigma_t_not_an_isometry.py and its
   transcript, not argued in prose.  What survives is the *line* statement, and for the component it needs no
   construction at all: -id fixes every line and lies in Orth \ Orth^+, since it interchanges the two
-  components of the positive cone in signature (1,8), so Orth and Orth^+ have the same orbits on lines.  The
-  vector-level statement under Orth^+ is left open, and the target of the manuscript's cusp statements is
-  lines (Baily-Borel cusps are orbits of primitive isotropic lines), not vectors.
+  components of the positive cone in signature (1,8) (lem:minus-identity-spinor-norm), so Orth and Orth^+
+  have the same orbits on lines.  The
+  vector-level statement is not a single orbit either: by prop:rank-nine-vector-transitivity Orth^+ has
+  exactly two, v and -v, the two sides of the positive cone.  The target of the manuscript's cusp statements
+  is lines (Baily-Borel cusps are orbits of primitive isotropic lines), not vectors.
   Two further points from the audit of the splitting step.  The corollary used is cor:hyperbolic-splitting,
   whose hypotheses are a nondegenerate unimodular lattice with a primitive isotropic vector, and which for
   odd L produces the odd hyperbolic plane I_{1,1} and not U; the proof now says so.  And the rank-7 input --
@@ -1355,8 +1357,9 @@ What has since been settled is listed at the end, so that a reader can tell "res
   determinant on the positive plane being (-1)^2 = +1.  The proof now carries the target-side step, at a
   primitive isotropic line, for both halves, and it records the consequence that for (2,9) line transitivity
   gives transitivity on primitive isotropic *vectors* too, since -id supplies the sign -- which is what the
-  downstream citations of thm:unpolarized-cusps assert, and which stays false in (1,8), the case where
-  prop:rank-nine-line-transitivity keeps the vector statement open.
+  downstream citations of thm:unpolarized-cusps assert, and which stays false in (1,8): there the two orbits
+  of prop:rank-nine-vector-transitivity are v and -v, and the passage between them is the sign, not the
+  group.
   The plane's own invariant, and the formula that was wrong in the first draft of the correction.  The
   open-problems item that had declared a plane to have no discriminant invariant now says which invariant it
   has, and the first version of that correction named the wrong object: J^vee/J for the *restricted* form is

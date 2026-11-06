@@ -38,7 +38,7 @@ A row leaves this page when its owner holds a proof, a disproof, or a computatio
 
 | Unknown | Statement of record | Work unit |
 |:---|:---|:---|
-| **Vector-level transitivity for $\latI_{1,8}$** | after @prop:rank-nine-line-transitivity in @sec-embeddings-overlattices | [#659](https://github.com/dzackgarza/research/issues/659) |
+| **Vector-level transitivity for $\latI_{1,8}$** | settled by @prop:rank-nine-vector-transitivity in @sec-embeddings-overlattices: $\Orth(\latI_{1,8})$ is transitive on primitive isotropic vectors, and $\Orth^+(\latI_{1,8})$ has exactly two orbits, $v$ and $-v$, the two sides of the positive cone, exchanged by $-\id\notin\Orth^+$; no reflection inside $v^{\perp}$ moves between them, $v^{\perp}/v\cong\latI_{0,7}$ being negative definite, so every such reflection lies in $\Orth^+$ | [#659](https://github.com/dzackgarza/research/issues/659) |
 | **The reflection subgroup of each Sterk fundamental domain** | @qst:sterk-reflection-subgroup, @qst:sterk-ideal-vertices | [#654](https://github.com/dzackgarza/research/issues/654) |
 | **Global questions on hyperbolic Coxeter diagrams** | @qst:maximal-parabolic-complexity, @conj:galois-invariance-parabolics, @qst:parabolic-count-growth, @qst:arithmeticity, @qst:exact-covolume, @qst:regularized-theta | [#660](https://github.com/dzackgarza/research/issues/660) |
 
@@ -102,7 +102,7 @@ A row leaves this page when its owner holds a proof, a disproof, or a computatio
 |:---|:---|:---|
 | **Do the integral-affine data determine the stable limit** | `conj:classification-ia-data` in `sections/3-part-main-theorem/7-chapter/800-divisor-models.md` | [#678](https://github.com/dzackgarza/research/issues/678) |
 | **The semifan of a recognizable divisor** | `sections/2-part-moduli/4-chapter-cpt/300-semitoroidal.md` | [#679](https://github.com/dzackgarza/research/issues/679) |
-| **The cusp bijection across two discriminants** | `sections/1-part-combinatorial/3-chapter-enriques-k3/450-scattone.md` | [#684](https://github.com/dzackgarza/research/issues/684) |
+| **The cusp bijection across two discriminants** | settled in `sections/1-part-combinatorial/3-chapter-enriques-k3/450-scattone.md`: the transport through $K$ is withdrawn, since $A_{\ten}\cong(\ZZ/2)^{10}$ against $A_K=0$ and $K$ has a single 0-cusp, and the count is @prop:fen-two-zero-cusps, proved from @thm:isotropic-trichotomy with `computations/reports/coble_enriques-zero-cusps.py` | [#684](https://github.com/dzackgarza/research/issues/684) |
 
 : {tbl-colwidths="[32,48,20]"}
 
