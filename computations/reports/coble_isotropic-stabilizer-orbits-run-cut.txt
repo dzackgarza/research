@@ -1,0 +1,17 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+A = A_{T_Co}: 2048 classes, 528 of them isotropic
+
+|G| = |Orth(A, q)| = 46998591897600   (71 s)
+
+the polarization class c = [10], q(c) = [1] in Fraction Field of Integer Ring / (2)Integer Ring
+  the q = 1 fibre has 496 classes; |G|/496 = 94755225600
+
+H = G.stabilizer_of_element(c)   -- the expensive step
+  |H| = 94755225600   (2163 s)
+  check |H| = |G|/496: 94755225600 = 94755225600   AGREE
+
+the orbits of H on the 528 isotropic classes: A.orbits(group=H)

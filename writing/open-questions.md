@@ -110,7 +110,7 @@ A row leaves this page when its owner holds a proof, a disproof, or a computatio
 
 | Unknown | Statement of record | Work unit |
 |:---|:---|:---|
-| **The orbit lengths on the $528$ isotropic classes** | @thm:coble-heegner-finite-orbits — the fine list $[1,2,120,135,270]$ is computed in `computations/reports/coble_gco_orbit-decomposition.py`, the coarse $[1,255,272]$ is not; | [#688](https://github.com/dzackgarza/research/issues/688), [#689](https://github.com/dzackgarza/research/issues/689) |
+| **The orbit lengths on the $528$ isotropic classes** | @thm:coble-heegner-finite-orbits — both lists are now computed: the fine $[1,2,120,135,270]$ in `computations/reports/coble_gco_orbit-decomposition.py`, the coarse $[1,255,272]$ in `computations/reports/coble_isotropic-stabilizer-orbits.py`; | [#688](https://github.com/dzackgarza/research/issues/688), [#689](https://github.com/dzackgarza/research/issues/689) |
 | **Scattone's diagram against the AET19 diagram** | @sec-root-vectors-and-folded-sterk-diagrams | [#657](https://github.com/dzackgarza/research/issues/657) |
 | **Dawes' Example 2.2** | @qst:dawes-example-22; the recorded ground is refuted by @lem:complement-determinant and the two complements are isometric, `computations/reports/coble_dawes-example-2-2_complements.py` | [#662](https://github.com/dzackgarza/research/issues/662) |
 | **Two forms of the embedding $S_\En\hookrightarrow S_\Nod$** | @sec-nodal-enriques-moduli-program | [#685](https://github.com/dzackgarza/research/issues/685) |
