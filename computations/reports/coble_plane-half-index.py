@@ -137,7 +137,8 @@ def refl(w):
 
 
 def kernel_transvection(w):
-    """E_B(e_1, w) mod 2, with all four terms: x |-> x + b_B(x,w) e_1 + x_1 (1 + w^2/2) w."""
+    """E_B(e_1, w) mod 2:  E = x - b(w,x) e_1 + x_1 w - (w^2/2) x_1 e_1, so
+    x |-> x + b_B(x,w) e_1 + x_1 w + (w^2/2) x_1 e_1; the (w^2/2) term sits on e_1, not on w."""
     half = (b(w, w) // 2) % 2
 
     def f(x, w=w, half=half):
