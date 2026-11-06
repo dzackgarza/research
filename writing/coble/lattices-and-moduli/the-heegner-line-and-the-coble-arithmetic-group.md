@@ -1257,6 +1257,15 @@ The second is exactly what is missing: block-compatibility of $\gamma$ is a stat
 What remains of A20 beyond that is item 2, item 3, and the four items of the absorbed swarm (#720), none of which is a comparison of two subgroups of $\Orth(A_{T_\Co},q_{T_\Co})$.
 :::
 
+::: {.remark title="A20 item 2: the direct and geometric entries are not subgroup comparisons"}
+
+Item 2 of A20 — $\Gamma^{\mathrm{dir}}_{\Co,2}$ against the other two — is not a question of the kind the rest of this section answers, and no finite computation decides it.
+$\Gamma^{\mathrm{dir}}_{\Co,2}$ is the image of $Z_{\Orth(\lkt)}(I_\Co, I_{\mathrm{dP}})_{H,\alpha,\mathcal C}$ under restriction to $T_\Co$ (@def:direct-group), so comparing it with $\Gamma^{\mathrm{Hdg}}_\Co$ asks for an isometry of $\lkt$ carrying the Coble-labeled datum to the Enriques-labeled one — the labeled rigidity of @prob:coble-rigidity, and nothing about $\Orth(A_{T_\Co},q_{T_\Co})$ enters it.
+$\Gamma^{\mathrm{geom}}_{\Co,2}$ is the monodromy of the direct moduli stack (@def:geometric-monodromy), so it agrees with an arithmetic group only through the direct period and direct monodromy theorems, @prob:B24 and @prob:B25.
+What *is* recorded and stands: the pair $(I_\Co,I_{\mathrm{dP}})$ defines a lattice datum whose slot is a $U(2)$ or a $\ZZ H$ inside $S_\Co$, the rank-two case is unique inside $S_\Co$ (`computations/reports/coble_del_pezzo_placement.py`) and the rank-one case exists for every anti-isometry (`computations/reports/coble_rank_one_placement.py`), and no automorphism of the Coble cover realises the slot's involution (@cor:no-del-pezzo-involution-coble-cover); that is why the entry is a *lattice* label and not a geometric group.
+So item 2 is handed to @prob:coble-rigidity — where the labeled-conjugacy computation of the A21 discussion lives (@rmk:chamber-not-transported and the scope remark after it) — and item 3 to @prob:B24 and @prob:B25; neither is claimed here.
+:::
+
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
 The two propositions above compare $\Gamma_\Co$ with the larger groups by way of its finite image on $A_{T_\Co}$.
