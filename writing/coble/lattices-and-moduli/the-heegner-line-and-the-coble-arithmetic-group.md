@@ -1016,15 +1016,103 @@ $$
 .$$
 :::
 
-::: {.remark title="What the two statements settle, and where the #272 record now stands"}
+::: {.remark title="What the two statements settle"}
 
-@lem:polarization-stabilizer-discriminant-nontrivial and @prop:gamma-co-heegner-strict settle the Heegner half of the comparison: the Heegner description and the stable group are *different* groups, with index between $2$ and $696\,729\,600$.
+@lem:polarization-stabilizer-discriminant-nontrivial and @prop:gamma-co-heegner-strict settle the Heegner half of the comparison: the Heegner description and the stable group are *different* groups, with index exactly $\abs{W(E_8)}$.
 The objection that an isometry of $S_\En$ with nontrivial discriminant image "need not have a partner in $T_\Co$" is answered, not waved away: every class of $\Orth(q_{T_\Co})$ is realised by an integral isometry of $T_\Co$ (@thm:two-elementary-surjectivity), every such isometry fixes the gluing class $\zeta/2$ (@prop:coble-discriminant-group), so it glues to the identity on $\ZZ\delta$ (@cor:liftable-automorphisms), and @prop:gamma-en-two-gluing puts the pair in $\gent$.
+:::
 
-The theta half stays open, and it needs two things, neither of which is on the page.
-First, the Coble-side analogue of the sentence of @prop:gamma-en-two-gluing that identifies the image of $\gent$ in $\Orth(q_{\TEn})$ with the $\gamma$-transport of the image of $\Stab_{\Orth(S_\En)}(h)$: what has to be known is that the image of $Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ in $\Orth(q_{T_\Co})$ is the $\gamma_\Co$-transport of the image of $\Stab_{\Orth(S_\Co)}(\tilde h_\Co)$, so that a class known to come from the $S_\Co$ side is realised by an isometry of $T_\Co$ that glues to it and fixes $\tilde h_\Co$. That is a statement about the Coble embedding, and it is item 1 of @prob:group-identification; it is what makes the Heegner half go, and it has no substitute.
-Second, generators of that centralizer intersection, without which even the Coble-side stabilizer has no classes to transport.
-`computations/reports/coble_theta-half-requirements.md` states both, with the operation the owner would have to supply if the second is to come from the library rather than from a proof.
+## The $\theta$-description: the Coble-side gluing statement {#sec-theta-gluing}
+
+The $\theta$-description of $\Gamma_\Co$ is @prop:gamma-co-in-theta-centralizer: the restrictions to $T_\Co$ of the isometries of $\lkt$ that commute with $\theta_\Co$ and fix $\tilde h_\Co$.
+Comparing it with $\Gamma_\Co$ needs the Coble analogue of the sentence of @prop:gamma-en-two-gluing that identifies the image of $\gent$ in $\Orth(q_{\TEn})$ with the $\gamma$-transport of the image of an integral stabilizer.
+On the Coble side that sentence is not an extra theorem: the discriminant representation of $T_\Co$ is *surjective*, so a class on the $S_\Co$ side can always be lifted on the $T_\Co$ side to an integral isometry, and the pair then glues.
+
+::: {.proposition #prop:theta-co-gluing title="The image of the $\theta$-description is the transported $S_\Co$-stabilizer"}
+
+Let $S_\Co\injects\lkt$ be the primitive embedding of @prop:coble-invariant-lattice with complement $T_\Co$ and gluing anti-isometry $\gamma_\Co\colon A_{S_\Co}\iso A_{T_\Co}$, and let $\Gamma^\theta_\Co$ be the group of @prop:gamma-co-in-theta-centralizer.
+Then
+$$
+\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)
+=
+\gamma_\Co\,\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)\,\gamma_\Co^{-1}
+\qquad\text{in}\qquad \Orth(A_{T_\Co}, q_{T_\Co}),
+$$
+and consequently
+$$
+\Gamma^\theta_\Co = \Gamma_\Co \iff \rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr) = 1,
+\qquad
+[\Gamma^\theta_\Co : \Gamma_\Co] = \abs{\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)}.
+$$
+:::
+
+::: {.proof}
+
+*One inclusion.*
+Let $\varphi\in\Gamma^\theta_\Co$, so $\varphi = \restrictionof{g}{T_\Co}$ for some $g\in Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$.
+By @prop:theta-co-exists $g$ preserves both eigenspaces, so $g = \psi\oplus\varphi$ with $\psi = \restrictionof{g}{S_\Co}\in\Orth(S_\Co)$; it fixes $\tilde h_\Co\in S_\Co$, so $\psi\in\Stab_{\Orth(S_\Co)}(\tilde h_\Co)$.
+By @thm:automorphism-lifting-criterion the pair $(\psi,\varphi)$ glues, that is $\bar\varphi\circ\gamma_\Co = \gamma_\Co\circ\bar\psi$, which is the statement $\rho_{T_\Co}(\varphi) = \gamma_\Co\rho_{S_\Co}(\psi)\gamma_\Co^{-1}$.
+
+*The other inclusion.*
+Let $\psi\in\Stab_{\Orth(S_\Co)}(\tilde h_\Co)$ and put $c \definedas \gamma_\Co\bar\psi\gamma_\Co^{-1}\in\Orth(q_{T_\Co})$.
+$T_\Co$ is even, indefinite and $2$-elementary, so $\rho_{T_\Co}$ is onto (@thm:two-elementary-surjectivity) and there is $\varphi_0\in\Orth(T_\Co)$ with $\rho_{T_\Co}(\varphi_0) = c$; then the pair $(\psi,\varphi_0)$ satisfies the compatibility of @thm:automorphism-lifting-criterion, so it extends to an isometry $g\in\Orth(\lkt)$ preserving both eigenspaces, that is commuting with $\theta_\Co$ (@prop:theta-co-exists), and fixing $\tilde h_\Co$ because $\psi$ does.
+If $\varphi_0\in\Orth^+(T_\Co)$ then $\varphi_0\in\Gamma^\theta_\Co$ and $c$ is its image.
+If not, let $\hat h\in\Orth(\lkt)$ be the extension of $(\id_{S_\Co}, s_\zeta)$ given by @prop:gamma-co-two-definitions(3); it also commutes with $\theta_\Co$ and fixes $\tilde h_\Co$, and $g\hat h$ has restriction $\varphi_0 s_\zeta\in\Orth^+(T_\Co)$ with the same discriminant class, because $\rho_{T_\Co}(s_\zeta) = \id$.
+So $c\in\rho_{T_\Co}(\Gamma^\theta_\Co)$ either way, and the two images are equal.
+The two corollaries are @prop:gamma-co-two-definitions(1) and the first isomorphism theorem.
+:::
+
+The remaining question is therefore about $\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)$, and it is answered affirmatively by the same device that settled the Enriques side.
+The difference is where the witness comes from: there the nontrivial class was produced by a reflection in $u_0-w_0$, here it comes from the two isotropic classes that make up the degree-$2$ polarization.
+
+::: {.lemma #lem:coble-stabilizer-discriminant-nontrivial title="The $\tilde h_\Co$-stabilizer of $S_\Co$ has nontrivial discriminant image"}
+
+Let $S_\Co = \latI_{1,10}(2) = C(2)$ with $C$ unimodular, and let $\tilde h_\Co = u+w\in S_\Co$ be the degree-$2$ Coble polarization in the Enriques-type presentation of @def:coble-polarization-classes, so that $u^2 = w^2 = 0$ and $u\cdot w = 2$, whence $\tilde h_\Co^2 = 4$.
+Put $v \definedas u-w$.
+Then $v^2 = -4$, $v$ is primitive, $b(\tilde h_\Co, v) = 0$, and the reflection $s_v$ is an isometry of $S_\Co$ fixing $\tilde h_\Co$ with $\rho_{S_\Co}(s_v)\neq\id$.
+Consequently $\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)\neq1$.
+:::
+
+::: {.proof}
+
+$v^2 = u^2 - 2\,u\cdot w + w^2 = 0-4+0 = -4$, and $b(\tilde h_\Co, v) = u^2 - u\cdot w + w\cdot u - w^2 = 0$, so $s_v(\tilde h_\Co) = \tilde h_\Co$ as soon as $s_v$ is an isometry.
+
+*Primitivity.*
+Suppose $v = 2x$. Then $b(u,v) = u^2 - u\cdot w = -2 = 2\,b(u,x)$ gives $b(u,x) = -1$, and $b(v,v) = -4 = 4x^2$ gives $x^2 = -1$, which an even lattice does not contain.
+So $v$ is primitive.
+
+*Integrality.*
+$S_\Co = C(2)$ with $C$ unimodular, so $b_{S_\Co} = 2\,b_C$ and $b_{S_\Co}(v,S_\Co) = 2\ZZ$: every primitive vector of a twist $C(2)$ has divisibility $2$.
+Hence $s_v(x) = x + \tfrac12 b(x,v)v = x + b_C(x,v)v$ is an isometry of $S_\Co$.
+
+*Nontrivial discriminant class.*
+$C$ is unimodular and $v$ primitive, so the functional $b_C(\cdot,v)$ is unimodular and some $x\in S_\Co$ has $b_C(x,v) = 1$; for that $x$,
+$$
+s_v(x) - x = v \notin 2S_\Co
+,$$
+since $v$ is primitive.
+Under $A_{S_\Co} = S_\Co/2S_\Co$, reduction modulo $2$ is the discriminant action, so $\rho_{S_\Co}(s_v)\neq\id$.
+:::
+
+::: {.corollary #cor:theta-co-strict title="The $\theta$-description is strictly larger"}
+
+$\Gamma_\Co\subsetneq\Gamma^\theta_\Co$, and $[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))} \geq 2$, a divisor of $46\,998\,591\,897\,600$.
+:::
+
+::: {.proof}
+
+Immediate from @prop:theta-co-gluing and @lem:coble-stabilizer-discriminant-nontrivial, the bound being that the image is a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$, whose order is @prop:coble-discriminant-group.
+:::
+
+::: {.problem #prob:theta-co-index title="The index of the $\theta$-description"}
+
+Compute $\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$, that is the index $[\Gamma^\theta_\Co:\Gamma_\Co]$ of @cor:theta-co-strict, which is known only to lie between $2$ and $46\,998\,591\,897\,600$.
+By @prop:theta-co-gluing this is a question about finite groups and nothing else, and it decides the $\theta$ entry of @prob:group-identification.
+Two inputs are wanted, and neither exists in the owning library:
+an explicit generating set for $\Stab_{\Orth(S_\Co)}(\tilde h_\Co)$ as integral isometries of $S_\Co$, and the discriminant representation of a finite group presented that way;
+the operation that would supply the first is
+`centralizer_generators(ambient, involutions, fixed)`, taking a lattice, a list of isometries to commute with and a vector to fix, and returning a generating set of the intersection of the centralizer and the stabilizer as integral isometries, certified by per-generator commutation, fixity and form preservation together with an order identity.
+`computations/reports/coble_theta-half-requirements.md` states the contract in full.
 :::
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
@@ -1132,7 +1220,7 @@ Three kinds of statement are in play, and only the last two carry arithmetic con
 No equality among them is a definition, and the identity $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is the only one settled by unpacking notation.
 
 *Discriminant gluing.* The two propositions above are of this kind: they express each of $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ as an extension of $\Gamma_\Co$ by an explicit subgroup of the finite group $\Orth(A_{T_\Co},q_{T_\Co})$, so each equals $\Gamma_\Co$ exactly when its finite subgroup is trivial.
-Strictness is therefore a question about that subgroup and not about the lattices: for the Heegner group it is decided above, negatively for equality, since $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)\neq1$ (@prop:gamma-co-heegner-strict); for the $\theta$-group it is not decided anywhere on this page.
+Strictness is therefore a question about that subgroup and not about the lattices, and it is decided above for both: $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)\neq1$ (@prop:gamma-co-heegner-strict) and $\rho_{T_\Co}(\Gamma^\theta_\Co)\neq1$ (@cor:theta-co-strict).
 The consequence for an orbit count is quantitative: a $\Gamma^{\mathrm{Hdg}}_\Co$-orbit of primitive isotropic vectors splits into at most $[\Gamma^{\mathrm{Hdg}}_\Co : \Gamma_\Co]$ orbits under $\Gamma_\Co$, so a count made for one of the two groups is not a count for the other, and the factor relating them is finite.
 In the same way the congruence group of @prob:group-identification is $\rho_{T_\Co}^{-1}(P)$ with $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)}) \leq \Orth(A_{T_\En}, q_{T_\En}) \iso \Orth(A^0, q_{T_\Co}|_{A^0})$, made into a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ by the identity on $\ZZ\tfrac12\zeta$.
 Nontriviality of $P$ alone does not separate that preimage from $\Gamma_\Co$: a preimage of a subgroup is larger than the kernel only if some element of the subgroup is realised by an integral isometry.
@@ -1141,7 +1229,7 @@ Let $(e', f')$ be the basis of the $U(2)$ summand of $T_\Co$, with $e'^2 = f'^2 
 What the argument needs of $\sigma$ is that it lies in $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ by @def:spinor-norm, that it moves the discriminant, and that its discriminant action preserves the three blocks of $A_{T_\Co} = \ZZ\tfrac12\zeta\perp A_{U(2)}\perp A_{E_8(2)}$ and acts on the $U(2)$ block by the transposition; these are verified through the owner's operations, where $\sigma$ is built by `Lattices.reflection`, its membership in `O_plus` and in `stable_orthogonal_group` is decided by those groups, the classes are the owner's `discriminant_class` of `primitive_dual`, and the action is `discriminant_morphism`, with $q([\tfrac12 e']) = q([\tfrac12 f']) = 0$, $q([\tfrac12\zeta]) = \tfrac12$, $b([\tfrac12 e'], [\tfrac12 f']) = \tfrac12$ and $\abs{A_{T_\Co}} = \abs{\det T_\Co} = 2048$ read off the same objects (`computations/reports/coble_congruence_witness.py`).
 Since a transposition of the two isotropic classes of $A_{U(2)}$ is an isometry of that block, $\rho(\sigma)\in\Orth(q_{U(2)})\subseteq P$; that inclusion is the block argument just stated and is not a computation of $P$ itself, and what the owner builds on the congruence side is the preimage of the cyclic subgroup $\generators{\rho(\sigma)}$, not of $P$ (`computations/reports/coble_stabilizer_generators.py`).
 So $\rho(\sigma)\in P$ is nontrivial, $\sigma\notin\Gamma_\Co$, and $\Gamma^{\mathrm{cong}}_{\Co,2}$ strictly contains $\Gamma_\Co$.
-What this does and does not settle: the four-group identification of @prob:group-identification cannot be an equality with the stable group $\Gamma_\Co$, only an equality among overgroups of it, and the congruence and Heegner overgroups are both strictly larger — the congruence one by the witness $\sigma$ just described, the Heegner one by @prop:gamma-co-heegner-strict — while for the $\theta$-group no witness is proposed and strictness stays open.
+What this does and does not settle: the four-group identification of @prob:group-identification cannot be an equality with the stable group $\Gamma_\Co$, only an equality among overgroups of it, and three of the overgroups are now known to be strictly larger: the congruence one by the witness $\sigma$ just described, the Heegner one by @prop:gamma-co-heegner-strict, and the $\theta$ one by @cor:theta-co-strict, so what remains of the comparison is the *index* of each overgroup and not whether it exceeds one.
 
 *Torelli, monodromy and labeled embeddings.* Two of the four are not of that kind.
 The direct and geometric groups are images of centralizers in $\Orth(\lkt)$ of the labeled Coble datum, so comparing either with a Heegner group requires an isometry of $\lkt$ carrying the Enriques-labeled structure $(S_\En, T_\En, \ZZ\delta, h)$ of @prop:gamma-en-two-gluing to the Coble-labeled one $(S_\Co, T_\Co, \tilde h_\Co)$ of @prop:gamma-co-in-theta-centralizer; that is the labeled rigidity of @prob:coble-rigidity, not a computation in $T_\Co$.
