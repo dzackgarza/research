@@ -1,0 +1,33 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+
+(1) L = I_{1,8} = <1> perp <-1>^8
+  rank 9, signature (1, 8), determinant 1, even False
+
+(2) the spinor norm of -id
+  positive index p = 1, so spinor-norm(-id) = [(-1)^p] = [(-1)^1] = -1
+  and -id sends v to -v for every v, so it exchanges the two sides
+
+(3) two primitive isotropic vectors and an isometry between them
+  v  = (1, 1, 0, 0, 0, 0, 0, 0, 0): square 0
+  v' = (1, 0, 1, 0, 0, 0, 0, 0, 0): square 0
+  the reflection in v - v' has direction of square -2
+  g(v) = (1, 0, 1, 0, 0, 0, 0, 0, 0)
+  g carries v to v': True
+  g preserves the form: True
+  spinor norm of a reflection in a vector of square -2 is [1], so g is in O^+: True
+
+(4) the reflections inside v-perp
+  a = (0, 0, 1, 0, 0, 0, 0, 0, 0): square -1, orthogonal to v: True
+  the reflection s_a fixes v: True
+  its spinor norm is [-a^2/2] = [(1)/(2)], which is 1 in R^*/R^{*2} because a^2 < 0
+  so every reflection inside v-perp with negative square lies in O^+, and none changes
+  the coset of O^+; this is the step the page proof records and does not use a positive one.
+
+CONCLUSION
+  (1) I_{1,8} is odd unimodular of signature (1,8); (2) -id has spinor norm -1, so it is
+  outside O^+ and exchanges v with -v; (3) O-transitivity on a nontrivial pair is exhibited
+  by an explicit isometry; (4) reflections inside v-perp all lie in O^+.  The count of two
+  O^+-orbits is the page proof of prop:rank-nine-vector-transitivity; this record supplies
+  its numerical inputs and is cited there.

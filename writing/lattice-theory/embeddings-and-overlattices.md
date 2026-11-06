@@ -471,6 +471,8 @@ Then
 2. $\Orth^+(L)$ has exactly two orbits on them, the vectors of side $+1$ and the vectors of side $-1$; $-\id_L$ lies in $\Orth(L)\setminus\Orth^+(L)$ and exchanges the two;
 
 3. every $g\in\Orth(L)$ carrying a vector of side $+1$ to a vector of side $+1$ lies in $\Orth^+(L)$.
+
+The number of orbits in (2) is a page proof, and its numerical inputs are computed in `computations/reports/coble_I18_two_orbits.py`: $\latI_{1,8}$ of rank $9$, signature $(1,8)$, odd and unimodular; $-\id$ with spinor norm $[(-1)^1] = -1$, hence outside $\Orth^+$ and exchanging the two sides; an explicit isometry carrying one primitive isotropic vector to another; and the reflections inside $v^{\perp}$ with their spinor norm $1$. No computation record decides the orbit count itself.
 :::
 
 ::: {.proof}
