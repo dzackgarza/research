@@ -1297,6 +1297,26 @@ What the computation needs, and what the two records above do not supply: the an
 What is built already, and verified without them: $\lkt = 3U\oplus 2E_8(-1)$ and the summands $S_\Co = C_S(2)$, $T_\Co = B(2)$, $S_\En = C(2)$ with the ranks $22, 11, 11, 10$, the signatures $(3,19), (1,10), (2,9), (1,9)$, the determinants $-1, 2048, -2048, -1024$ and evenness, and the two orthogonal sums with $\det = -2^{22}$ and $\det = -2^{20}$, into which the recorded indices $2^{11}$ and $2^{10}$ divide correctly (`computations/reports/coble_a21-embedding-build.py`).
 :::
 
+## Integral cusp lifting: the map from lattice orbits to discriminant orbits {#sec-cusp-lifting}
+
+@prob:cusp-lifting asks for the $\Gamma_{\Co,2}$-classification of the primitive isotropic *lines* and *planes* of $T_\Co$, and the finite half of it is done while the integral half is not. This section states what separates them.
+
+*The map, and why it is a map of orbits at all.* Let $T_\Co = B(2)$ with $B$ unimodular, so $T_\Co^* = \tfrac12 T_\Co$ and $A_{T_\Co} = B/2B$. A primitive isotropic $v\in T_\Co$ gives the class $[v/2]\in A_{T_\Co}$, of value $q([v/2]) = v^2/4 = 0$, so isotropic; and $\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ acts **trivially** on $A_{T_\Co}$, since $\ker\rho_{T_\Co}$ is by definition the isometries congruent to the identity modulo $2$.
+So $[v/2]$ is a $\Gamma_\Co$-invariant of $v$ — the statement $\rho(g) = \id \iff g\equiv\id\bmod 2$ of §@sec-gamma-co-reflective-set — and there is a well defined map
+$$
+\bigl\{\Gamma_\Co\text{-orbits of primitive isotropic }v\bigr\}\longrightarrow \bigl\{\text{isotropic classes of }A_{T_\Co}\bigr\},
+\qquad
+\Gamma_\Co\cdot v\longmapsto [v/2],
+$$
+and likewise for primitive isotropic planes $P\subset T_\Co$, whose image is the subgroup $(P\cap \tfrac12T_\Co)/T_\Co$ … more precisely the isotropic subgroup $[P/2]$ of $A_{T_\Co}$, of order $4$, spanned by the classes of a basis.
+
+*The decision: the map is not injective, and that is the whole content.* Two primitive isotropic vectors with the same class are related by an element of $2T_\Co$, and nothing in $\Gamma_\Co$ is obliged to move one to the other: the fibres are the $\Gamma_\Co$-orbits inside a single class, and their number is the index of the stabilizer of a representative. So the classification of $\Gamma_\Co$-orbits is the classification of isotropic classes *together with* the decomposition of each class under its own stabilizer — and the second part is where the Eichler criterion on the rescaled unimodular $B$ enters: for $B$ odd unimodular of signature $(2,9)$ containing $U$, two primitive isotropic vectors of $B$ with the same class modulo $2B$ are carried to each other by an isometry of $B$ ([@Eic74]; the criterion is @thm:eichler-transvection's, applied to $B$ rather than to $T_\Co$), and what is left is to decide whether that isometry can be chosen **congruent to the identity modulo $2$** — which is exactly the condition $g\in\ker\rho_{T_\Co}$ — and this is not a consequence of the criterion.
+That is the precise gap: transitivity of $\Orth(B)$ on a class is available; transitivity of the congruence subgroup $\ker\rho$ on the same class is the lifting statement, and it is not proved here.
+
+*The finite half, identified.* The finite orbit lists the report records — four orbits of nonzero singular vectors of sizes $135,\,2,\,270,\,120$, summing to $527$, and five of totally singular planes — are orbits of a group of order $\abs{W(E_8)}$, and that group *is* the image of the integral parabolic stabilizer: by @prop:polarization-stabilizer-enriques $\Stab_{\Orth(S_\En)}(h) \cong \theset{\pm1}\times W(E_8)$ is the stabilizer of the degree-$2$ polarization, and its discriminant image is $G_\Co$, of order $\abs{W(E_8)}$ (@prop:gamma-co-heegner-strict). The computation `computations/reports/coble_gco_orbit-decomposition.py` (transcript `-run.txt`) returns exactly the partition $[1,2,120,135,270]$ of the $528$ isotropic classes of $A_{S_\En}$ under that group, so the four nonzero sizes are its orbits and the finite half of @prob:cusp-lifting is settled by that record rather than by a new one.
+What is *not* settled, and cannot be by that computation: whether those four finite orbits lift to $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$ one-for-one. The map above says only that each $\Gamma_\Co$-orbit sits inside one class; the finite orbits are orbits of a subgroup of $\Orth(q)$, not of $\Gamma_\Co$.
+
+
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
 The two propositions above compare $\Gamma_\Co$ with the larger groups by way of its finite image on $A_{T_\Co}$.

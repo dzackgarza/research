@@ -1344,6 +1344,8 @@ and the incident flags.
 Give explicit integral representatives and stabilizers.
 :::
 
+**State.** The finite half is settled: the group whose orbits are the reported $135, 2, 270, 120$ is $G_\Co = \rho_{S_\En}(\Stab_{\Orth(S_\En)}(h))$, the image of the degree-$2$ parabolic stabilizer, of order $\abs{W(E_8)}$, and the orbit partition $[1,2,120,135,270]$ of the $528$ isotropic classes is computed in `computations/reports/coble_gco_orbit-decomposition.py`. The integral half is open and is stated in §@sec-cusp-lifting: the map $\Gamma_\Co\cdot v\mapsto[v/2]$ is well defined because $\Gamma_\Co$ acts trivially on $A_{T_\Co}$, it is **not** injective, its fibres are the $\Gamma_\Co$-orbits inside a single class, and what is missing is transitivity of the congruence subgroup $\ker\rho_{T_\Co}$ on a class — available for $\Orth(B)$ by Eichler's criterion ([@Eic74]), not for $\ker\rho$.
+
 ### Necessary restrictions on maps to Enriques cusps {#sec-possible-cusp-images}
 
 Suppose the comparison map to the Enriques period quotient has been constructed.
