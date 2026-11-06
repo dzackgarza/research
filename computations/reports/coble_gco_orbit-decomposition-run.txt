@@ -1,0 +1,32 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+S_En = C(2) = U(2) + E8(2): rank 10, determinant -1024, signature (1, 9)
+  h = u_0 + w_0 has h^2 = 4
+
+the nine integral isometries, before their discriminant images
+  squares: s_(u_0-w_0) in the direction of a vector of square -4
+  each fixes h: True
+  each an isometry of S_En: True
+
+A_{S_En}: 1024 classes, 528 isotropic
+
+the nine discriminant images, built in 295 s
+  each fixes the class of h/2: True
+
+|O(A_{S_En}, q)| = 46998591897600   (0 s)
+
+the call: O.subgroup(images), the group defined by its nine generators
+  |G_Co| = 696729600   (0 s)
+  claimed 696 729 600 = |W(E8)|: True
+
+the orbits of G_Co on the 528 isotropic classes
+  the group carries only get_action/register_action, so the action is asked of the
+  module, which takes the acting group as an argument: A.orbits(group=G)
+  all orbits of G_Co on A_{S_En}: 9, sizes [1, 1, 2, 120, 120, 135, 135, 240, 270]
+  those contained in the isotropic classes: 5, sizes [1, 2, 120, 135, 270]   (15 s)
+  sum: 528, and the set has 528 classes
+
+the stated list is [1, 2, 120, 135, 270]: AGREE
