@@ -51,6 +51,7 @@ A second, independent implementation returns $9$ roots for $\eta_1$ and $10$ for
 | 5 | 14 | 10 | 2 |
 
 The two computed root sets, their coordinates in the recorded basis of each rank-$10$ quotient, and Sterk's own hand-entered root sets in both the $\ten$ and $L_{20,2,0}$ models are recorded in the Sage initialization computation.
+That citation does not hold: the file it points at, `sage-init.sage`, is the session startup file --- a display hook for cell results --- and contains no root set, no basis and no lattice. So the coordinates $\eps_1,\dots,\eps_{10}$ in which the ten roots below are written are *not* defined in the tree: the two chambers are records for their wall counts and ideal vertices, not for their root coordinates, and $\eps_i\mapsto T_\En$ is owed.
 
 ## The computed chambers are hyperbolic simplices
 
