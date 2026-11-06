@@ -253,7 +253,7 @@ But $e$ and $f$ are two elements of a $\ZZ$-basis of $B$, and the coordinates of
 
 The number of $0$-cusps is a property of the pair $(T_\Co,\Gamma_\Co)$ and not of the lattice: with $\Orth^+(T_\Co)$ in place of $\Gamma_\Co$ it is one (@thm:unpolarized-cusps), and the group attached to $\fco$ is the stable one throughout (@sec-moduli-construction).
 
-The lemma gives two orbits; the discriminant form gives the bound of the next proposition, and no upper bound.
+The lemma gives two orbits of the full orthogonal group; for $\Gamma_\Co$ the count is $527$, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting), so the discriminant form does give the exact number and not only a lower bound.
 :::
 
 ::: {.proposition #prop:coble-stable-cusp-lower-bound title="At least $527$ $0$-cusps"}
@@ -317,7 +317,7 @@ Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the dis
 1. $K\neq\Gamma_\Co$, and $[K:\Gamma_\Co]=2$;
 2. $K$ and $\Gamma_\Co$ have the same orbits on the primitive isotropic vectors of $T_\Co$, and the same orbits on the primitive isotropic lines.
 
-The number of orbits is not determined here: it is at least $527$ (@prop:coble-stable-cusp-lower-bound) and no upper bound follows from anything in this section.
+The number of $\Gamma_\Co$-orbits is $527$ (@sec-cusp-lifting): the lifting theorem makes the $\Gamma_\Co$-orbits of primitive isotropic vectors correspond to the nonzero isotropic classes of $A_{T_\Co}$, of which there are $527$ (@prop:coble-q-fibers), so the lower bound of @prop:coble-stable-cusp-lower-bound is attained.
 :::
 
 ::: {.proof}

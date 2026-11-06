@@ -1233,9 +1233,10 @@ which would need $2(2+1)=6$.
 
 So the plane-transitivity obligation recorded in earlier revisions is discharged, by an argument rather than
 by a citation. What no argument here supplies is the $\Gamma_{\Co}$-analogue of either half, and the two
-halves stand differently. On lines the refinement is strict: $\Gamma_\Co$ has at least $527$ orbits where
+halves stand differently. On lines the refinement is strict and its size is known: $\Gamma_\Co$ has $527$ orbits where
 $\Orth^+(T_\Co)$ has one, one for each nonzero isotropic class of $A_{T_\Co}$
-(@prop:coble-stable-cusp-lower-bound). On planes even the number of orbits is open, and it is not implied
+(@sec-cusp-lifting, where the lifting theorem and the index $1$ of the parabolic stabilizer's image
+are proved; the lower bound of @prop:coble-stable-cusp-lower-bound is attained). On planes even the number of orbits is open, and it is not implied
 by strictness on lines. Nor does properness of a subgroup by itself make its orbits strictly finer: the
 discriminant kernel is strictly larger than $\Gamma_\Co$ and has exactly the same orbits on lines and on
 vectors (@prop:discriminant-kernel-orbits), so the question is decided orbit by orbit through the
