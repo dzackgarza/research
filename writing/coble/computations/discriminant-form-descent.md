@@ -130,7 +130,8 @@ Take $T_\Co = B(2)$ with $B = \generators{1}\oplus U\oplus E_8(-1)$ (@prop:tco-a
 The provider run in `computations/reports/coble_528_isotropic_classes.py` returns $2048$ classes for $A_{T_\Co}$, of which $528$ are isotropic, the zero class among them; so $\mathcal C(T_\Co)$ has $527$ nonzero elements.
 The order is $|\Orth(A,q)| = 46\,998\,591\,897\,600$, and $\rho_{T_\Co,q}$ is onto $\Orth(A,q)$ by @thm:two-elementary-surjectivity, so (H1) holds.
 
-*The vector half, settled.* For $\Gamma_\Co$ the descent group is the kernel, $\rho_{T_\Co,q}(\Gamma_\Co) = 1$; every isotropic class is then its own orbit, and @cor:descent-count with the filling of @prop:descent-eichler — $T_\Co$ contains $U\perp U(2)$, two hyperbolic planes — gives $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class. That is the count recorded in `computations/reports/coble_isotropic_orbits.py`, and it is what the $0$-cusp statements of @sec-discriminant-orbits use.
+*The vector half, a page proof whose computation is owed.* For $\Gamma_\Co$ the descent group is the kernel, $\rho_{T_\Co,q}(\Gamma_\Co) = 1$; every isotropic class is then its own orbit, and @cor:descent-count with the filling of @prop:descent-eichler — $T_\Co$ contains $U\perp U(2)$, two hyperbolic planes — gives $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class.
+That number is **proved in prose only**: no computation record decides it, and the library call that would is sage-extensions#286, the same unit the plane half below names. Nothing in this paragraph is a computed count. That is the count recorded in `computations/reports/coble_isotropic_orbits.py`, and it is what the $0$-cusp statements of @sec-discriminant-orbits use.
 
 *The plane half, open.* For a primitive isotropic plane $P$ the same mechanism would run on the quotient $P^{\perp}/P$, which is $\latI_{0,7}$; the fibre over the class of $P$ is governed by
 $$
