@@ -1,0 +1,40 @@
+the I_{1,8} basis inside B
+  squares: [1, -1, -1, -1, -1, -1, -1, -1, -1]
+  Gram: [[1, 0, 0, 0, 0, 0, 0, 0, 0], [0, -1, 0, 0, 0, 0, 0, 0, 0], [0, 0, -1, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 0, 0, 0, 0, 0], [0, 0, 0, 0, -1, 0, 0, 0, 0], [0, 0, 0, 0, 0, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, -1, 0, 0], [0, 0, 0, 0, 0, 0, 0, -1, 0], [0, 0, 0, 0, 0, 0, 0, 0, -1]]
+  orthogonal to v = e_1: True
+  determinant of the three-vector block: 1
+
+the nine walls in B coordinates, with their squares
+  [0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 0]   square -2
+  [0, 0, 0, -1, -1, 1, 0, 0, 0, 0, 0]   square -2
+  [0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0]   square -2
+  [0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0]   square -2
+  [0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0]   square -2
+  [0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 0]   square -2
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1]   square -2
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]   square -1
+  [0, 0, 2, 2, 3, 1, 0, 0, 0, 0, 0]   square -2
+
+the Gram matrix of the substituted walls
+  [-2, 1, 0, 0, 0, 0, 0, 0, 0]
+  [1, -2, 1, 0, 0, 0, 0, 0, 0]
+  [0, 1, -2, 1, 0, 0, 0, 0, 1]
+  [0, 0, 1, -2, 1, 0, 0, 0, 0]
+  [0, 0, 0, 1, -2, 1, 0, 0, 0]
+  [0, 0, 0, 0, 1, -2, 1, 0, 0]
+  [0, 0, 0, 0, 0, 1, -2, 1, 0]
+  [0, 0, 0, 0, 0, 0, 1, -1, 0]
+  [0, 0, 1, 0, 0, 0, 0, 0, -2]
+  it equals the printed chamber Gram matrix: True
+
+the O(q) images
+  every generator preserves q on the tested classes: True
+
+THE NUMBERS
+  |rho(S)|   = 348364800
+  |rho(E_v)| = 1
+  index |rho(S)|/|rho(E_v)| = 348364800
+  spinor factor: the eight walls of square -2 give [1], the wall of square -1 gives
+  [-(-1)/2] = [1/2] = [1], and the transvections [1]: so the factor is 1.
+  index [O(K) : G] = 348364800
+  rho(E_v) is trivial: True

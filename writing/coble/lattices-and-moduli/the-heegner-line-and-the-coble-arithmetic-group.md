@@ -1402,7 +1402,42 @@ So the image of $\Stab_{\Gamma_\Co}(v')$ is $\bar g\,\rho_v(\Stab_{\Gamma_\Co}(v
 (3) By @prop:zero-cusp-lattices the quotient is $\latI_{1,8}(2)$ for every such $v$, so (2) exhibits the images as conjugate inside one isometry group, and conjugate subgroups have equal index.
 :::
 
-::: {.remark title="What the index still needs"}
+::: {.theorem #thm:plane-half-index title="The subgroup $G$ of the cusp lattice and its index"}
+
+Let $v$ be a primitive isotropic vector of $T_\Co$, $S = \Stab_{\Orth(T_\Co)}(v)$, $K = v^{\perp T_\Co}/\generators{v}\cong\I_{1,8}(2)$, $\pi: S\to\Orth(K)$, and
+$$
+G \definedas \pi\pqty{\ker\rho_{T_\Co}\cap S}\leq\Orth(K) .
+$$
+Then
+
+1. $\rho_{T_\Co}(E_v) = 1$: every Eichler transvection is trivial on $A_{T_\Co}$, because $\beta_{T_\Co} = 2\beta_B$ is even-valued and both terms of $E(v,k)$ are then even;
+
+2. the nine wall reflections of the $K$-chamber generate $\rho(S)$, of order $348\,364\,800$, and every generator has spinor norm $1$, so the $\Orth^+$ condition costs no further index;
+
+3. hence
+$$
+\bqty{\Orth(K) : G} = \frac{\abs{\rho(S)}}{\abs{\rho(E_v)}} = 348\,364\,800 ,
+$$
+and by @prop:stabilizers-conjugate this is one subgroup and one index at every polarized $0$-cusp of $\fco$, not $527$ of them.
+:::
+
+::: {.proof}
+
+Coordinates: $B = U_1\oplus U_2\oplus\generators{-1}^{7}$, with $v$ the isotropic $e_1$ of $U_1$; then $K = U_2\oplus\generators{-1}^{7}$ carries the $\I_{1,8}$-adapted basis
+$$
+v_0 = e+f+g_1\ (\text{square }1),\quad v_1 = e+g_1,\quad v_2 = f+g_1,\quad v_3,\dots,v_8 = g_2,\dots,g_7 ,
+$$
+whose Gram matrix is $\diag(1,-1,\dots,-1)$ and which is orthogonal to $v$.
+Substituting the nine walls of @thm:zero-cusp-chambers through this dictionary gives vectors of $B$ whose Gram matrix is exactly the chamber Gram matrix printed there, which is the check that the two descriptions are of the same chamber.
+
+Modulo $2$, a reflection $s_r(x) = x - 2\frac{\beta_B(x,r)}{\beta_B(r,r)}r$ is $x\mapsto x+\bar\beta_B(x,r)\bar r$ for a wall of square $-2$ and the identity for the wall of square $-1$; an Eichler transvection is the identity, as in (1).
+The record `computations/reports/coble_plane-half-index.py` builds those matrices on the eleven coordinates of $B/2B = A_{T_\Co}$, verifies $q$-preservation of every generator on the coordinate classes and on further test classes, and passes them to $\GAP$, which returns $\abs{\rho(S)} = 348\,364\,800$ and $\abs{\rho(E_v)} = 1$.
+The spinor norms are $[-\tfrac12 r^2]$, which is $[1]$ for $r^2 = -2$, $[\tfrac12] = [1]$ in $\R^\times/(\R^\times)^2$ for $r^2 = -1$, and $[1]$ for the transvections.
+
+The quotient is the index by the third isomorphism theorem applied inside $S$: $\pi$ has kernel $E_v$, and $\ker\rho\cap S$ maps onto $G$ with image $\rho(S)$ on the other side, so the cosets of $G$ in $\Orth(K)$ are indexed by $\rho(S)/\rho(E_v)$.
+:::
+
+::: {.remark title="What the index does not need"}
 
 The proposition reduces the $527$ polarized $0$-cusps to one datum, but does not compute it: what is needed is which $g\in\Orth(\latI_{1,8}(2))$ lift into $\Gamma_\Co$, a condition on the action on $A_{T_\Co} = A_{\langle2\rangle}\perp A_{K}$, and then the index $[\Orth^+(\latI_{1,8}(2)) : G]$ in the finite image of that action.
 Both need the wall reflections of Vinberg's $I_{1,8}$ chamber as generators of $\Orth(\latI_{1,8})$, which is the transcription of [@Vin72] that @sec-zero-cusp-lattices records as outstanding, and the index itself is computed in $\GAP$ on the finite image.
