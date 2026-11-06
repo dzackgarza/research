@@ -1,0 +1,14 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+A = A_{T_Co}: 2048 classes, 528 isotropic
+
+the class c of (1/2)h~_Co: taken in the q = 1 fibre
+  c = [10], q(c) = [1] in Fraction Field of Integer Ring / (2)Integer Ring
+
+|O(A, q)| = 46998591897600   (83 s)
+  |O| / 496 = 94755225600, the order GAPS.md records for the stabilizer
+
+the call: O.stabilizer_of_element(c)
