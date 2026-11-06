@@ -229,7 +229,7 @@ For the full orthogonal group, @thm:unpolarized-cusps states that $\Orth^+(T_\Co
 For a subgroup $\Gamma\leq\Orth(T_\Co)$ the passage runs the other way and is not automatic.
 The reduction map sends $\Gamma$-orbits of primitive isotropic vectors to $\rho(\Gamma)$-orbits of nonzero isotropic classes, but the integral parabolic stabilizer can have proper image in the finite stabilizer, so a finite orbit may split.
 Conversely a *smaller* group need not have strictly finer orbits: by @lem:character-kernel-orbits the partitions of a group and of a subgroup agree exactly when every orbit's stabilizer meets the subgroup, and @prop:discriminant-kernel-orbits exhibits the case that matters here, the discriminant kernel being strictly larger than $\Gamma_\Co$ with the same orbits.
-The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in @thm:coble-heegner-finite-orbits, and the lift of that finite decomposition to primitive isotropic vectors of $T_\Co$ is open.
+The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in @thm:coble-heegner-finite-orbits, and it lifts: by @sec-cusp-lifting the parabolic stabilizer's image is the whole finite stabilizer, so each finite orbit is exactly one class of primitive isotropic vectors and not several.
 :::
 
 ::: {.lemma #lem:stable-orthogonal-not-transitive title="The stable orthogonal group is not transitive on isotropic lines"}
@@ -256,15 +256,10 @@ The number of $0$-cusps is a property of the pair $(T_\Co,\Gamma_\Co)$ and not o
 The lemma gives two orbits of the full orthogonal group; for $\Gamma_\Co$ the count is $527$, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting), so the discriminant form does give the exact number and not only a lower bound.
 :::
 
-::: {.proposition #prop:coble-stable-cusp-lower-bound title="At least $527$ $0$-cusps"}
+::: {.proposition #prop:coble-cusp-count title="The $0$-cusp count of $\fco$"}
 
 Let $\rho_{T_\Co}\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ be the discriminant representation and let $v\in T_\Co$ be primitive isotropic.
-The number of $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$ is
-$$
-527\cdot\bigl[\Stab_{\Orth(q_{T_\Co})}(v^*) : \rho_{T_\Co}\bigl(\Stab_{\Orth(T_\Co)}(v)\bigr)\bigr],
-$$
-one orbit for each nonzero isotropic class of $A_{T_\Co}$ when the stabilizer of $v$ maps onto the stabilizer of its class, and more otherwise.
-The number of $\Gamma_\Co$-orbits of primitive isotropic lines is the same, so $\overline{F_\Co}^{\bb}$ has at least $527$ $0$-cusps.
+Then the number of $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$ is $527$, one for each nonzero isotropic class of $A_{T_\Co}$; the number of $\Gamma_\Co$-orbits of primitive isotropic lines is the same, so $\overline{F_\Co}^{\bb}$ has exactly $527$ $0$-cusps.
 :::
 
 ::: {.proof}
@@ -272,17 +267,20 @@ The number of $\Gamma_\Co$-orbits of primitive isotropic lines is the same, so $
 $\Gamma_\Co$ acts trivially on $A_{T_\Co}$, so for $g\in\Gamma_\Co$ the class of $g(v)$ is $g(\tfrac12 v)+T_\Co = v^*$: primitive isotropic vectors with different classes lie in different $\Gamma_\Co$-orbits.
 The classes attained by primitive isotropic vectors form one orbit of $\rho_{T_\Co}(\Orth(T_\Co))$, because $\Orth^+(T_\Co)$ is transitive on primitive isotropic lines (@thm:unpolarized-cusps) and $-\id\in\Gamma_\Co$, so $\Orth(T_\Co)$ is transitive on primitive isotropic vectors.
 $T_\Co$ is even, indefinite and $2$-elementary, so $\rho_{T_\Co}$ is surjective (@thm:two-elementary-surjectivity) --- the surjectivity that [discriminant-form descent](#sec-discriminant-descent) names as its hypothesis (H1) --- and that orbit is an orbit of $\Orth(q_{T_\Co})$; by @prop:coble-primitive-isotropic-classes it contains a nonzero isotropic class, so by @thm:coble-isotropic-class-orbits it is the set of all $527$ nonzero isotropic classes.
-Hence there are at least $527$ orbits.
+So the $527$ nonzero isotropic classes give $527$ pairwise distinct orbits, and no vector has a class outside them: the count is $527$.
 
 For the exact count, let $K = \ker\rho_{T_\Co}$; it has the same orbits as $\Gamma_\Co$ (@prop:discriminant-kernel-orbits).
 $K$ is normal in $\Orth(T_\Co)$ with quotient $\Orth(q_{T_\Co})$, and $\Orth(T_\Co)$ acts transitively with stabilizer $S = \Stab_{\Orth(T_\Co)}(v)$, so the $K$-orbits correspond to the cosets of $KS$ in $\Orth(T_\Co)$, and their number is $[\Orth(q_{T_\Co}) : \rho_{T_\Co}(S)]$.
-Since $\rho_{T_\Co}(S)$ fixes $v^*$, it lies in $\Stab_{\Orth(q_{T_\Co})}(v^*)$, whose index in $\Orth(q_{T_\Co})$ is the orbit length $527$; the displayed product follows.
+Since $\rho_{T_\Co}(S)$ fixes $v^*$, it lies in $\Stab_{\Orth(q_{T_\Co})}(v^*)$, whose index in $\Orth(q_{T_\Co})$ is the orbit length $527$.
+
+That inclusion is an equality, and it is the content of @sec-cusp-lifting: writing $B = U\perp K$ with $\latI_{1,8}\cong K$, the Levi part $\Orth(K)$ maps onto the Levi quotient of $\Stab_{\Orth(q)}(v^*)$ and the Eichler transvections $E(v,k)$ supply the kernel, of order $2^8 = 89\,181\,388\,800/348\,364\,800$, so $\rho_{T_\Co}(S) = \Stab_{\Orth(q_{T_\Co})}(v^*)$ and the index is $1$.
+Hence the count is $527$ and not merely at least that.
 Vectors and lines give the same count because $-\id\in\Gamma_\Co$, as in the proof of @prop:discriminant-kernel-orbits.
 :::
 
 ::: {.remark}
 
-What the finite calculation determines is the other end: @thm:coble-isotropic-class-orbits shows the $527$ nonzero isotropic *classes* form a single orbit under $\Orth(q_{T_\Co})$, so a count in $A_{T_\Co}$ is a statement about the finite group, and the passage to the cusps of $\fco$ is the index in @prop:coble-stable-cusp-lower-bound.
+What the finite calculation determines is the other end: @thm:coble-isotropic-class-orbits shows the $527$ nonzero isotropic *classes* form a single orbit under $\Orth(q_{T_\Co})$, so a count in $A_{T_\Co}$ is a statement about the finite group, and the passage to the cusps of $\fco$ is the index of @prop:coble-cusp-count.
 :::
 
 ::: {.lemma #lem:character-kernel-orbits title="Orbits of a group and of the kernel of a character"}
@@ -317,7 +315,7 @@ Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the dis
 1. $K\neq\Gamma_\Co$, and $[K:\Gamma_\Co]=2$;
 2. $K$ and $\Gamma_\Co$ have the same orbits on the primitive isotropic vectors of $T_\Co$, and the same orbits on the primitive isotropic lines.
 
-The number of $\Gamma_\Co$-orbits is $527$ (@sec-cusp-lifting): the lifting theorem makes the $\Gamma_\Co$-orbits of primitive isotropic vectors correspond to the nonzero isotropic classes of $A_{T_\Co}$, of which there are $527$ (@prop:coble-q-fibers), so the lower bound of @prop:coble-stable-cusp-lower-bound is attained.
+The number of $\Gamma_\Co$-orbits is $527$ (@sec-cusp-lifting): the lifting theorem makes the $\Gamma_\Co$-orbits of primitive isotropic vectors correspond to the nonzero isotropic classes of $A_{T_\Co}$, of which there are $527$ (@prop:coble-q-fibers), which is the count of @prop:coble-cusp-count.
 :::
 
 ::: {.proof}
