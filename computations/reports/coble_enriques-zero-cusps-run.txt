@@ -1,0 +1,27 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+T_En = U + U(2) + E8(2)
+  rank 12, determinant 1024, signature (2, 10)
+
+A_{T_En}: 1024 classes   (5 s)
+  A is 2-elementary, i.e. (Z/2)^10: |A| = 1024 and every element has order 2: True   (11 s)
+  the multiset of values of q, over all 1024 classes   (11 s)
+    q = [0] in Fraction Field of Integer Ring / (2)Integer Ring (lift 0     )  528 classes   the lift is an integer: True
+    q = [1] in Fraction Field of Integer Ring / (2)Integer Ring (lift 1     )  496 classes   the lift is an integer: True
+  every value of q has an integral lift, i.e. q maps into Z/2Z in Q/2Z (delta_T = 0): True
+  hence q mod Z is the zero functional, and a characteristic class -- a nonzero x with
+  b(x, y) = q(y) mod Z for every y -- would lie in the radical of the nondegenerate
+  bilinear form.  There is none, so type (3) of [@AE22, Prop. 5.5] does not occur.
+
+  isotropic classes (q = 0): 528, of which nonzero: 527   (6 s)
+
+the two representatives
+  e  (the isotropic generator of U): square 0, divisibility Ideal (1) of Integer Ring
+  e' (the isotropic generator of U(2)): square 0, divisibility Ideal (2) of Integer Ring
+
+types realized: e is of type (1) odd/simple iff div = 1,
+                e' is of type (2) even ordinary iff div = 2 and its class is not
+                characteristic, which is implied by the vanishing of q mod Z above.

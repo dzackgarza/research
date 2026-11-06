@@ -188,14 +188,36 @@ The cusp diagram of $\fell$, the moduli space of elliptic K3 surfaces, which con
 #### $\fen$: Unpolarized Enriques Surfaces {#sec:fen-unpolarized-cusps}
 
 The moduli space of *unpolarized* Enriques surfaces corresponds to the lattice $\ten$ and $\Gamma_{\En} \definedas \Orth^+(\ten)$, yielding the orthogonal modular variety $\fen$.
-To enumerate the 0-cusps of $\bbcpt{\fen}$, one can replace $\ten$ by an auxiliary lattice $K = U \oplus E_8 \oplus \I_{1,1}$ and utilize a bijection
+Enumerating the 0-cusps of $\bbcpt{\fen}$ is therefore the enumeration of the primitive isotropic vectors of $\ten$, and since $\ten$ is $2$-elementary the enumeration has exactly one slot per type of primitive isotropic vector, of which there are finitely many.
+
+**The transport through an auxiliary lattice is withdrawn.**
+An earlier version of this section replaced $\ten$ by the auxiliary lattice $K = U \oplus E_8 \oplus \I_{1,1}$, invoked a bijection $\ten/\Orth(\ten) \cong K/\Orth(K)$, and read the classification of the quotients $\bdlattice{T}{\eta}$ of the isotropic vectors of $K$ as $\I_{1,9}$ or $\II_{1,9}$ as a count of two $\Gamma_{\En}$-orbits in $\ten$.
+Neither the bijection nor the count survives. The two lattices have different discriminant groups, $A_{\ten} \cong (\ZZ/2)^{10}$ against $A_K = 0$, so no isometry relates them and no map between their orbit sets is produced: "pulling back" is a map that neither side defines. And the dichotomy being transported is not present in $K$: the lattice $K = U\oplus E_8\oplus \I_{1,1}$ is odd, so by @thm:isotropic-trichotomy with $a_K = 0$ only the first case can occur, the quotient $\bdlattice{T}{\eta}$ of a primitive isotropic $\eta \in K$ then being a unimodular lattice of signature $(1,9)$ with invariants $(10, 0, \delta_K)$ --- that is, of the same parity as $K$ --- and the uniqueness clause of that theorem gives $\bdlattice{T}{\eta} \cong \I_{1,9}$ for every such $\eta$. The lattice $K$ therefore has a single 0-cusp, so no bijection between the two orbit sets can hold, and the recorded ground for the two orbits was not a ground.
+
+**What the count does rest on.**
+The 0-cusps are the orbits of the two types that occur, and each of the two types is a single orbit.
+
+::: {.proposition #prop:fen-two-zero-cusps title="The 0-cusps of the unpolarized Enriques moduli space"}
+
+The lattice $\ten$ has exactly two $\Gamma_{\En}$-orbits of primitive isotropic lines. They are the odd class, represented by the isotropic generator $e$ of the $U$ summand, and the even ordinary class, represented by the isotropic generator $e'$ of the $U(2)$ summand. The corresponding boundary lattices are
 $$
-\ten/\Orth(\ten) \cong K/\Orth(K)
-,$$
-allowing for a classification in terms of simpler lattices.
-A primitive isotropic vector $\eta \in \I_{1,1}\subset K$ yields a unimodular lattice $\bdlattice{T}{\eta}$ of signature $(1,9)$.
-There are precisely two such lattices up to isometry, $\I_{1, 9}$ and $\II_{1, 9}$.
-Pulling back, some slightly finer analysis shows there are exactly two $\Gamma_{\En}$-orbits of primitive isotropic lines in $\ten$, corresponding to two 0-cusps $\eta_1, \eta_2$.
+\bdlattice{T}{e} \cong U(2)\oplus E_8(2) = (10,10,0)_1,
+\qquad
+\bdlattice{T}{e'} \cong U\oplus E_8(2) = (10,8,0)_1,
+$$
+which are not isometric. Hence $\bbcpt{\fen}$ has exactly two 0-cusps, $\eta_1 \definedas e$ and $\eta_2 \definedas e'$.
+:::
+
+::: {.proof}
+
+The lattice $\ten$ is even $2$-elementary of invariants $(12,10,0)_2$: its discriminant group $A_{\ten}$ has $1024 = 2^{10}$ elements, every one of order two, and the values of $q_{\ten}$ over them are $0$ on $528$ classes and $1$ on $496$, both integral; the computation is `computations/reports/coble_enriques-zero-cusps.py` with its output `computations/reports/coble_enriques-zero-cusps-run.txt`. Hence $\delta(\ten) = 0$ in the sense of @thm:two-elementary-classification, the functional $q_{\ten} \bmod \ZZ$ vanishes, and $A_{\ten}$ has no nonzero characteristic class: such a class $x$ would satisfy $\bar\beta(x,y) = q_{\ten}(y)\bmod\ZZ$ for every $y$, so it would lie in the radical of a nondegenerate form. The third case of @thm:isotropic-trichotomy requires $\delta = 1$ and therefore does not occur, and every primitive isotropic vector of $\ten$ is of the first or the second type.
+
+The first type gives $\ten \cong U \perp \bdlattice{T}{\eta}$ with $\bdlattice{T}{\eta}$ of signature $(1,9)$ and invariants $(10,10,0)$, and the second gives $\ten \cong U(2)\perp \bdlattice{T}{\eta}$ with $\bdlattice{T}{\eta}$ of signature $(1,9)$ and invariants $(10,8,0)$. Both lattices exist, namely $U(2)\oplus E_8(2)$ and $U\oplus E_8(2)$, and each is the unique even $2$-elementary lattice of its signature and invariants up to isometry by @thm:two-elementary-classification; the determinants $2^2\cdot 2^8$ and $2^8$ and the generator lengths $2 + 8$ and $8$ are those read off the two splittings. The representatives $e$ and $e'$ realize the two types: $\div_{\ten}(e) = 1$ and $\div_{\ten}(e') = 2$, as computed in the same record, and the class of $e'/2$ is ordinary because no class of $A_{\ten}$ is characteristic. By the existence and uniqueness clause of @thm:isotropic-trichotomy --- an isotropic vector of a given type exists if and only if a $2$-elementary lattice with the corresponding invariants exists, and it is then unique up to $\Orth(\ten)$ --- each type contributes exactly one $\Orth(\ten)$-orbit of primitive isotropic vectors, and there are no other types. The two orbits are distinct because an isometry carries $\eta^{\perp \ten}/\eta$ isometrically onto $(\eta')^{\perp \ten}/\eta'$, whereas the two quotients have unequal generator lengths, $10$ and $8$.
+
+The count is the same for $\Gamma_{\En} = \Orth^+(\ten)$ as for $\Orth(\ten)$. If $g \in \Orth(\ten)$ carries one primitive isotropic line onto another, so does $g s_\alpha$ for the reflection $s_\alpha$ in a vector $\alpha \in \eta^{\perp \ten}$ of negative square: such vectors exist, $E_8(2)$ being an orthogonal summand of $\eta^{\perp \ten}$ for both types and having roots of square $-4$; a reflection fixes $\eta$; and a reflection in a vector of square $-4$ does not lie in $\Gamma_{\En}$, its spinor norm being the class of $\pm\alpha^2/2 = \mp 2$, and $2$ is not a square in $\QQ$. So of $g$ and $g s_\alpha$ exactly one lies in $\Gamma_{\En}$, which has index two in $\Orth(\ten)$, and the orbits of the two groups on primitive isotropic lines agree.
+:::
+
+The **1-cusps** are not settled by the argument above, and the paragraph that follows records one on the auxiliary lattice $K$ in the same way; the two 1-cusps used later in this chapter are the ones produced by the two-step mirror moves applied to $\ten$ in the subsection below.
 A direct approach for **1-cusps** is analytic: any isotropic plane $P \subset K$ must contain an odd primitive isotropic vector $\eta$, due to the indefinite form $\I_{1,1}$.
 There is only one orbit of such under the full orthogonal group, so $P$ can always be assumed to contain $\eta$.
 The remaining problem is to classify the possible isometry classes of primitive isotropic lines in $\bdlattice{T}{\eta} \cong \I_{1,9}$.
