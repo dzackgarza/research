@@ -1377,7 +1377,32 @@ Let $P\subset B$ be a primitive isotropic plane and $K_P \definedas P^{\perp B}/
 $P$ is primitive of rank $2$ and isotropic, so $P^{\perp B}$ has rank $9$ and $K_P$ rank $7$, and $K_P$ is unimodular: the index of $\ZZ$-sublattices $P\oplus P^{\perp}$ in $P^{\perp}$ has square $\det(P^{\perp})/\det(P)$ … equivalently $B$ unimodular forces $K_P$ unimodular. Its signature is $(0,7)$, so $K_P$ is a definite unimodular lattice of odd determinant sign, hence odd; an even definite unimodular lattice has rank divisible by $8$, so there is none of rank $7$; and there is exactly one odd definite unimodular lattice in each rank below $9$, namely $\I_{0,7} = \generators{-1}^{7}$ (the classification of odd unimodular forms, [@Nik80], §1.8; the rank-$8$ exception $E_8$ is even and does not occur here).
 So $K_P \iso \I_{0,7}$ for every such $P$, and $B\iso U\perp U\perp\I_{0,7}$ with $P$ the isotropic plane of the $U\perp U$ summand — whence any two primitive isotropic planes of $B$ are carried to each other by an isometry of $B$: **one $\Orth(B)$-orbit**, the plane analogue of Step 1 and proved without invoking Wall.
 For the fibre, let $J \definedas [P/2]\leq A_{T_\Co}$ be the order-$4$ isotropic subgroup the plane spans, and compare $\Stab_{\Orth(q)}(J)$ with $\rho\bigl(\Stab_{\Orth(B)}(P)\bigr)$ exactly as in the vector case: the $\Gamma_\Co$-orbits over $J$ are $\Stab_{\Orth(q)}(J)/\rho(\Stab_{\Orth(B)}(P))$, and the $1$-cusp count for $\Gamma$ is the number of $\rho(\Gamma)$-orbits of liftable order-$4$ isotropic subgroups, each fibre being that index.
-The Levi part of $\Stab_{\Orth(B)}(P)$ is $\Orth(\I_{0,7})$, of order $2^7\cdot 7! = 645\,120$, and its image lies in $\Orth(q_{\I_{0,7}(2)}) = \Orth(\generators{-\tfrac12}^{7})$ on the seven coordinates of $K_P/2K_P$; that image is *not* covered by Nikulin's surjectivity, which needs an indefinite lattice, $K_P(2) = \generators{-2}^{7}$ being definite. Deciding whether the image is all of $\Orth(q)$ — the plane analogue of the vector case, where the Eichler transvections filled the kernel — and then counting the liftable order-$4$ subgroups is exactly the computation the library does not yet expose: it needs the $\Gamma$-orbits of primitive isotropic planes of $T_\Co$ with their stabilizers, that is the public call `sage-extensions#286` (the $\Gamma$-orbits of primitive isotropic vectors and planes of $T_\Co$ with incidence, as one call), whose owner is sage-extensions. **No pure-Python orbit computation is run here for it**: the research pages rest on library calls, and this is the missing one.
+The Levi part of $\Stab_{\Orth(B)}(P)$ is $\Orth(\I_{0,7})$, of order $2^7\cdot 7! = 645\,120$, and its image lies in $\Orth(q_{\I_{0,7}(2)}) = \Orth(\generators{-\tfrac12}^{7})$ on the seven coordinates of $K_P/2K_P$; that image is *not* covered by Nikulin's surjectivity, which needs an indefinite lattice, $K_P(2) = \generators{-2}^{7}$ being definite. The exact index and the count of liftable order-$4$ subgroups are exactly the computation the library does not yet expose: it needs the $\Gamma$-orbits of primitive isotropic planes of $T_\Co$ with their stabilizers, that is the public call `sage-extensions#286` (the $\Gamma$-orbits of primitive isotropic vectors and planes of $T_\Co$ with incidence, as one call), whose owner is sage-extensions. **No pure-Python orbit computation is run here for it**: the research pages rest on library calls, and this is the missing one.
+
+::: {.proposition #prop:plane-levi-obstruction title="The plane half is a fibre, and the index is at least $8$"}
+
+Let $P\subset B = U\perp U\perp \I_{0,7}$ be a primitive isotropic plane, $K_P = P^{\perp B}/P\iso\I_{0,7}$, and $J = [P/2]\leq A_{T_\Co}$.
+Then the image of the parabolic $\Stab_{\Orth(B)}(P) = \bigl(\GL(P)\times\Orth(K_P)\bigr)\ltimes N$ in $\Orth(q_{T_\Co})$ acts on $K_P/2K_P$ through $\Orth(\I_{0,7})$ alone, and there its image is the symmetric group $S_7$ of order $5040$; the group $\Orth(q_{\I_{0,7}(2)}) = \Orth(\generators{-\frac12}^{7})$ has order $40\,320$.
+Consequently
+$$
+\bigl[\Stab_{\Orth(q_{T_\Co})}(J) : \rho(\Stab_{\Orth(B)}(P))\bigr] \;\geq\; \frac{40\,320}{5040} = 8 ,
+$$
+so the lifting theorem is **false for planes**: there are elements of the finite stabilizer that no isometry of $B$ preserving $P$ realises.
+The $1$-cusp count is therefore a fibre count with the index above per plane class, not a count of classes.
+:::
+
+::: {.proof}
+
+The Levi decomposition is the one displayed: $\GL(P)$ acts on $P$ and trivially on $K_P$, and the unipotent radical $N$ acts trivially on $P$ and on $K_P$, so the action of the whole parabolic on $K_P$, hence on $K_P/2K_P$, factors through $\Orth(K_P) = \Orth(\I_{0,7}) = \set{\pm1}^{7}\rtimes S_7$.
+Modulo $2$ each sign change is the identity, so only $S_7$ survives, of order $5040$.
+
+For the target group, $K_P(2) = \generators{-2}^{7}$ is even of rank $7$, its discriminant group is $(\ZZ/2)^7$ and its discriminant form is $q = \langle-\tfrac12\rangle^{7}$.
+The computation `computations/reports/coble_plane-half-levi.py` builds $B$ and $P$, verifies $K_P\iso\I_{0,7}$, and returns $\abs{\Orth(q_{\I_{0,7}(2)})} = 40\,320$ for that form; the same run verifies $\abs{\Orth(\I_{0,7})} = 2^7\cdot 7! = 645\,120$ and that the sign changes are trivial modulo $2$.
+
+Since $S_7$ is proper of index $8$ in that orthogonal group, some element $g\in\Stab_{\Orth(q)}(J)$ induces on $K_P/2K_P$ a map outside $S_7$; no element of the parabolic does, so $g\notin\rho(\Stab_{\Orth(B)}(P))$ and the index is at least $8$.
+By @prop:descent-fibre the $\Gamma_\Co$-orbits over $J$ are the cosets of the image of the stabilizer, so the fibre has at least that many points and the count is a fibre count.
+:::
+
 So the $1$-cusp count is *not* a theorem on this page, and #667 is open on exactly that: what the call must return is the orbit decomposition of the $528$ isotropic classes' order-$4$ isotropic subgroups under the acting group, with the stabilizer of a representative of each and the index $[\Stab_{\Orth(q)}(J) : \rho(\Stab_{\Orth(B)}(P))]$ per orbit.
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}

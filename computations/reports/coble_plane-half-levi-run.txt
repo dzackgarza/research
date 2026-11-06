@@ -1,0 +1,33 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+
+(1) B = U + U + I_{0,7}
+  rank 11, determinant -1, signature (2, 9), even False
+  P = <e1, e2> = <(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0), (0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0)>: squares 0, 0, pairing 0
+  e1, e2 primitive together (the submodule generated is saturated): True
+
+  P^perp has rank 9, spanned by e1, e2 and the seven I_{0,7} coordinates: True
+  K_P = P^perp/P: rank 7, determinant -1, signature (0, 7), odd True
+  its Gram matrix is minus the identity: True
+
+(2) K_P(2) = <-2>^7 and its discriminant form   (1 s)
+  |A_{K_P(2)}| = 128, i.e. (Z/2)^7
+  the values of q, as classes: 4 distinct
+  |O(q_{-1/2^7})| = 40320   (34 s)
+
+(3) the image of the Levi part and the index
+  O(I_{0,7}) = {+-1}^7 |x S_7 has order 2^7 * 7! = 645120
+  the sign changes act trivially modulo 2, so the image in O(q_{K_P(2)}) is S_7, of order 5040
+  |O(q)| / |S_7| = 40320 / 5040 = 8
+  and that is a lower bound for [Stab_{O(q)}(J) : rho(P_P)], since the action of the whole
+  parabolic on K_P/2K_P factors through O(I_{0,7}).
+
+CONCLUSION
+  The Levi image is S_7 of order 5040 inside O(q_{K_P(2)}) of order 40320, an index of 8.
+  No element of the parabolic acts on K_P/2K_P outside S_7, so any element of
+  Stab_{O(q)}(J) whose action there does is not in the image; the lifting theorem for planes
+  therefore fails, and the fibre index per plane class is at least 8.
+  Remaining, and not computed here: (i) |Stab_{O(q)}(J)|, hence the exact fibre index;
+  (ii) the plane classes and their number; (iii) the incidence of each plane orbit with the
+  527 0-cusp classes.
