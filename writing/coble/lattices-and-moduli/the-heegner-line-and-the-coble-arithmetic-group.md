@@ -1379,28 +1379,28 @@ So $K_P \iso \I_{0,7}$ for every such $P$, and $B\iso U\perp U\perp\I_{0,7}$ wit
 For the fibre, let $J \definedas [P/2]\leq A_{T_\Co}$ be the order-$4$ isotropic subgroup the plane spans, and compare $\Stab_{\Orth(q)}(J)$ with $\rho\bigl(\Stab_{\Orth(B)}(P)\bigr)$ exactly as in the vector case: the $\Gamma_\Co$-orbits over $J$ are $\Stab_{\Orth(q)}(J)/\rho(\Stab_{\Orth(B)}(P))$, and the $1$-cusp count for $\Gamma$ is the number of $\rho(\Gamma)$-orbits of liftable order-$4$ isotropic subgroups, each fibre being that index.
 The Levi part of $\Stab_{\Orth(B)}(P)$ is $\Orth(\I_{0,7})$, of order $2^7\cdot 7! = 645\,120$, and its image lies in $\Orth(q_{\I_{0,7}(2)}) = \Orth(\generators{-\tfrac12}^{7})$ on the seven coordinates of $K_P/2K_P$; that image is *not* covered by Nikulin's surjectivity, which needs an indefinite lattice, $K_P(2) = \generators{-2}^{7}$ being definite. The exact index and the count of liftable order-$4$ subgroups are exactly the computation the library does not yet expose: it needs the $\Gamma$-orbits of primitive isotropic planes of $T_\Co$ with their stabilizers, that is the public call `sage-extensions#286` (the $\Gamma$-orbits of primitive isotropic vectors and planes of $T_\Co$ with incidence, as one call), whose owner is sage-extensions. **No pure-Python orbit computation is run here for it**: the research pages rest on library calls, and this is the missing one.
 
-::: {.proposition #prop:plane-levi-obstruction title="The plane half is a fibre, and the index is at least $8$"}
+::: {.lemma #prop:plane-levi-obstruction title="The Levi obstruction: the parabolic sees only $S_7$ on $K_P/2K_P$"}
 
 Let $P\subset B = U\perp U\perp \I_{0,7}$ be a primitive isotropic plane, $K_P = P^{\perp B}/P\iso\I_{0,7}$, and $J = [P/2]\leq A_{T_\Co}$.
-Then the image of the parabolic $\Stab_{\Orth(B)}(P) = \bigl(\GL(P)\times\Orth(K_P)\bigr)\ltimes N$ in $\Orth(q_{T_\Co})$ acts on $K_P/2K_P$ through $\Orth(\I_{0,7})$ alone, and there its image is the symmetric group $S_7$ of order $5040$; the group $\Orth(q_{\I_{0,7}(2)}) = \Orth(\generators{-\frac12}^{7})$ has order $40\,320$.
-Consequently
-$$
-\bigl[\Stab_{\Orth(q_{T_\Co})}(J) : \rho(\Stab_{\Orth(B)}(P))\bigr] \;\geq\; \frac{40\,320}{5040} = 8 ,
-$$
-so the lifting theorem is **false for planes**: there are elements of the finite stabilizer that no isometry of $B$ preserving $P$ realises.
-The $1$-cusp count is therefore a fibre count with the index above per plane class, not a count of classes.
+Then the image of the parabolic $\Stab_{\Orth(B)}(P) = \bigl(\GL(P)\times\Orth(K_P)\bigr)\ltimes N$ in $\Orth(q_{T_\Co})$ acts on $K_P/2K_P$ through $\Orth(\I_{0,7})$ alone, and there its image is the symmetric group $S_7$ of order $5040$; the target group $\Orth(q_{\I_{0,7}(2)}) = \Orth(\generators{-\frac12}^{7})$ has order $40\,320$, so $S_7$ has index $8$ in it.
 :::
 
 ::: {.proof}
 
-The Levi decomposition is the one displayed: $\GL(P)$ acts on $P$ and trivially on $K_P$, and the unipotent radical $N$ acts trivially on $P$ and on $K_P$, so the action of the whole parabolic on $K_P$, hence on $K_P/2K_P$, factors through $\Orth(K_P) = \Orth(\I_{0,7}) = \set{\pm1}^{7}\rtimes S_7$.
+The Levi decomposition is the one displayed: $\GL(P)$ acts on $P$ and trivially on $K_P$, and the unipotent radical $N$ acts trivially on both, so the action of the whole parabolic on $K_P$, hence on $K_P/2K_P$, factors through $\Orth(K_P) = \Orth(\I_{0,7}) = \set{\pm1}^{7}\rtimes S_7$.
 Modulo $2$ each sign change is the identity, so only $S_7$ survives, of order $5040$.
 
-For the target group, $K_P(2) = \generators{-2}^{7}$ is even of rank $7$, its discriminant group is $(\ZZ/2)^7$ and its discriminant form is $q = \langle-\tfrac12\rangle^{7}$.
-The computation `computations/reports/coble_plane-half-levi.py` builds $B$ and $P$, verifies $K_P\iso\I_{0,7}$, and returns $\abs{\Orth(q_{\I_{0,7}(2)})} = 40\,320$ for that form; the same run verifies $\abs{\Orth(\I_{0,7})} = 2^7\cdot 7! = 645\,120$ and that the sign changes are trivial modulo $2$.
+For the target group, $K_P(2) = \generators{-2}^{7}$ is even of rank $7$, with discriminant group $(\ZZ/2)^7$ and discriminant form $q = \langle-\tfrac12\rangle^{7}$; `computations/reports/coble_plane-half-levi.py` builds $B$ and $P$, verifies $K_P\iso\I_{0,7}$, and returns $\abs{\Orth(q_{\I_{0,7}(2)})} = 40\,320$.
+:::
 
-Since $S_7$ is proper of index $8$ in that orthogonal group, some element $g\in\Stab_{\Orth(q)}(J)$ induces on $K_P/2K_P$ a map outside $S_7$; no element of the parabolic does, so $g\notin\rho(\Stab_{\Orth(B)}(P))$ and the index is at least $8$.
-By @prop:descent-fibre the $\Gamma_\Co$-orbits over $J$ are the cosets of the image of the stabilizer, so the fibre has at least that many points and the count is a fibre count.
+::: {.remark title="What this does and does not decide about the fibre"}
+
+The index of $S_7$ in $\Orth(q_{\I_{0,7}(2)})$ is a statement about those two groups.
+It is *not* yet a lower bound for the fibre $[\Stab_{\Orth(q_{T_\Co})}(J) : \rho(\Stab_{\Orth(B)}(P))]$, because that needs the restriction $\Stab_{\Orth(q)}(J)\to\Orth(q_{K_P(2)})$ to be onto, and over $\F_2$ in odd dimension the bilinear radical is nonzero, so Witt's extension theorem does not apply without a separate argument.
+So the lifting theorem for planes is *not* refuted here and is *not* established: what is established is that the parabolic's action on the quotient is the proper subgroup $S_7$, of index $8$.
+
+Two computations would decide it, and neither is available: the order of $\Stab_{\Orth(q)}(J)$, which needs the orbit of $J$ among the order-$4$ isotropic subgroups of $A_{T_\Co}$ under the generators of $\Orth(q)$ --- the discriminant module offers no construction of such a subgroup as a subobject and no action on one --- and the order of $\rho(\Stab_{\Orth(B)}(P))$, which needs the discriminant representation applied to the stabilizer's generators.
+The first half of the second is done: `computations/reports/coble_plane-half.py` returns $119$ generators of $\Stab_{\Orth(B)}(P)$ from the lattice side, each verified to be an isometry of $B$ preserving $P$; what fails is the passage to the discriminant, the returned morphisms living in a rebuilt copy of $B$ that the discriminant representation of $T_\Co$ refuses, and $\Orth(q)$ carrying no setwise stabilizer of a subgroup.
 :::
 
 So the $1$-cusp count is *not* a theorem on this page, and #667 is open on exactly that: what the call must return is the orbit decomposition of the $528$ isotropic classes' order-$4$ isotropic subgroups under the acting group, with the stabilizer of a representative of each and the index $[\Stab_{\Orth(q)}(J) : \rho(\Stab_{\Orth(B)}(P))]$ per orbit.
