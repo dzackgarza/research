@@ -1254,6 +1254,7 @@ Item 1 of A20 — the comparison of the Heegner group with the congruence group 
 The first of the two is not needed: generators of the *image* suffice, and they are the nine reflections whose discriminant images @prop:gamma-co-heegner-strict transports, while the congruence subgroup is given by its two factors, whose orders are computed in (1).
 The second is exactly what is missing: block-compatibility of $\gamma$ is a statement about an explicit isometry of torsion forms — that the gluing carries the $U(2)$ summand to the $U(2)$ summand — so the explicit torsion-form isometry that A20 recorded as unavailable is what item 1 still needs, and it is not replaced by anything above.
 `computations/reports/coble_gluing_discriminants.py` builds the two discriminant forms and their anti-isometry; the check wanted is that its $U(2)$ block is carried to the $U(2)$ block.
+That the condition is substantive rather than a formality of the construction is itself computed, on both sides: `computations/reports/coble_gluing_discriminants.py` on $A_{S_\Co}$ (orbits of $\Orth(q_{S_\Co})$ of sizes $1,1,496,496,527,527$, two of them crossing the $U(2)$ block) and `computations/reports/coble_a20-block-invariance.py` on $A_{S_\En}$ (three orbits of sizes $1,496,527$, the $496$ crossing it), so on neither side is the summand decomposition determined by the form.
 What remains of A20 beyond that is item 2, item 3, and the four items of the absorbed swarm (#720), none of which is a comparison of two subgroups of $\Orth(A_{T_\Co},q_{T_\Co})$.
 :::
 
