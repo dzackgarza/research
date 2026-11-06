@@ -72,3 +72,4 @@ writing/talks/**/*.xdv
 # dissertation's submitted copy and the Coble paper's builds, are named by date
 # and are not reproduced by any recipe.
 writing/research-statement/ResearchStatement.pdf
+/tmp/

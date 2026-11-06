@@ -57,7 +57,10 @@ def solutions(target, limit):
     return out
 
 
-order = sorted(((0.0 if False else (k0 * k0) / e, k0, e) for e in (1, 2) for k0 in range(0, BOUND + 1)))
+# Vinberg's recursion enumerates the roots with (e, v_0) > 0, i.e. k_0 >= 1: the roots
+# orthogonal to v_0 are those of the finite system of Stab(v_0) = O(I_{0,8}) = B_8, whose
+# simple system is exactly the initial e_1, ..., e_8.
+order = sorted(((k0 * k0) / e, k0, e) for e in (1, 2) for k0 in range(1, BOUND + 1))
 seen = set(walls)
 found = []
 for nu, k0, eps in order:
