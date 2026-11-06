@@ -1324,6 +1324,8 @@ The labels below are internal finite labels; they are not cusp labels.
 
 : Finite totally singular plane orbits. {#tbl-finite-plane-orbits}
 
+**Status of the two tables.** The vector table is identified and its lift is proved: the four sizes are the orbits of $G_\Co$, the image of the degree-$2$ parabolic stabilizer, and the $\Gamma_\Co$-orbits of primitive isotropic vectors number $527$, one per nonzero isotropic class (@sec-cusp-lifting). The plane table is **unverified**: none of its five sizes has been reproduced by a record in this repository, and the plane orbit decomposition needs the library call filed as sage-extensions#286 (the $\Gamma$-orbits of primitive isotropic vectors and planes of $T_\Co$ with incidence). It is marked unverified pending that call, and #645 (the number of $1$-cusps) is blocked by it.
+
 A later enhanced calculation decorated a finite plane by one of eight ``stars'' in the natural $S_8$-set attached to its $6$-dimensional quotient.
 For a prescribed $S_7$ subgroup it produced seven enhanced plane orbits and thirteen enhanced flag orbits.
 This remains a computational record only: the required identification of that $S_7$ with the image of the integral plane stabilizer has not been proved.
