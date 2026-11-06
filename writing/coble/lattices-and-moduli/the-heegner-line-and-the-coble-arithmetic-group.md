@@ -1068,14 +1068,15 @@ The difference is where the witness comes from: there the nontrivial class was p
 
 ::: {.lemma #lem:coble-stabilizer-discriminant-nontrivial title="The $\tilde h_\Co$-stabilizer of $S_\Co$ has nontrivial discriminant image"}
 
-Let $C = \latI_{1,10}$ be odd unimodular of signature $(1,10)$, so that $C\iso\generators{K}\oplus U\oplus E_8$ with $K^2 = 1$, $U = \generators{F_1,F_2}$ the hyperbolic plane and $E_8$ negative definite (@thm:indefinite-unimodular-classification), and let $S_\Co = C(2)$ with $\tilde h_\Co\in S_\Co$ the degree-$2$ Coble polarization, so that $\tilde h_\Co^2 = 4$ and $\tilde h_\Co^2 = 2$ as a vector of $C$.
-Any $h\in C$ of square $2$ has $h^{\perp C} = \generators{a}\oplus E_8$ with $a^2 = -2$, and the two vectors
+Let $C = \latI_{1,10}$ be the odd unimodular lattice of signature $(1,10)$, so that
 $$
-u \definedas \tfrac12(h+a), \qquad w \definedas \tfrac12(h-a)
+C \;\iso\; \generators{K}\oplus U\oplus E_8(-1),
+\qquad K^2 = -1,
 $$
-are integral, since $b(h\pm a,\cdot)$ is even on $h$, on $a$ and on $h^{\perp C}$, and satisfy $u^2 = w^2 = 0$ and $u\cdot w = 1$; in $S_\Co = C(2)$ they have $u^2 = w^2 = 0$ and $u\cdot w = 2$, and $u+w = \tilde h_\Co$.
-This is the Enriques-type presentation of @def:coble-polarization-classes, $h_\Co = F_1+F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, pulled back along the double cover; in the model it reads $u = F_1$, $w = F_2$, $h = F_1+F_2$.
-Put $v \definedas u-w$.
+with $U = \generators{F_1,F_2}$ the hyperbolic plane and $E_8(-1)$ negative definite (@thm:indefinite-unimodular-classification); the sign of $K$ is forced by the signature, $(0,1)+(1,1)+(0,8) = (1,10)$, and $C$ has determinant $+1$ because $\operatorname{sign}C = (-1)^{10}$.
+Note that this is *not* the odd unimodular lattice $B = \generators{1}\oplus U\oplus E_8(-1)$ of @prop:tco-as-twist, which has signature $(2,9)$; $S_\Co$ lives in signature $(1,10)$.
+Let $S_\Co = C(2)$ with $\tilde h_\Co = F_1+F_2\in S_\Co$ the degree-$2$ Coble polarization of @def:coble-polarization-classes, which is the Enriques-type presentation $h_\Co = F_1+F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$ pulled back along the double cover; in $S_\Co = C(2)$ one has $\tilde h_\Co^2 = 2\cdot 2 = 4$, while $u \definedas F_1$ and $w \definedas F_2$ have $u^2 = w^2 = 0$ and $u\cdot w = 2$, with $u+w = \tilde h_\Co$.
+Put $v \definedas u-w = F_1-F_2$.
 Then $v^2 = -4$, $v$ is primitive, $b(\tilde h_\Co, v) = 0$, and the reflection $s_v$ is an isometry of $S_\Co$ fixing $\tilde h_\Co$ with $\rho_{S_\Co}(s_v)\neq\id$.
 Consequently $\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)\neq1$.
 :::
@@ -1119,33 +1120,36 @@ $[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{W(E_8)} = 696\,729\,600$, the same number
 
 ::: {.proof}
 
-By @prop:theta-co-gluing the index is $\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$. Write $C = \generators{K}\oplus U\oplus E_8$ and $h = \tilde h_\Co$ as in @lem:coble-stabilizer-discriminant-nontrivial, with $u = F_1$, $w = F_2$ in the model, and recall $\Orth(S_\Co) = \Orth(C)$ because $S_\Co = C(2)$.
+By @prop:theta-co-gluing the index is $\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$. Write $C = \generators{K}\oplus U\oplus E_8(-1)$ with $K^2 = -1$ and $h = \tilde h_\Co = F_1+F_2$, as in @lem:coble-stabilizer-discriminant-nontrivial, so that $u = F_1$ and $w = F_2$; recall $\Orth(S_\Co) = \Orth(C)$ because $S_\Co = C(2)$.
 
 *The shape of $h^{\perp C}$.*
-$h^{\perp C} = \generators{K}\oplus\generators{v}\oplus E_8$ with $v = F_1-F_2$, of squares $1$, $-2$ and the $E_8$ form; its determinant is $-2$, since $\det(\ZZ h) = 2$ and $\det C = -1$ give $\det(h^{\perp C}) = \det(C)\cdot[C:\ZZ h\oplus h^{\perp C}]^2/\det(\ZZ h) = -4/2$.
-Its root system — the vectors of square $-2$ — is exactly $\theset{\pm v}$ together with the $240$ roots of $E_8$: a vector $x = aK + bv + e$ has $x^2 = a^2 - 2b^2 + e^2$, which is $-2$ only for $a = 0$ and ($b = 0$, $e$ a root) or ($b = \pm1$, $e = 0$).
+$h^{\perp C} = \generators{K}\oplus\generators{v}\oplus E_8(-1)$ with $K^2 = -1$, $v = F_1-F_2$ of square $-2$ and the $E_8(-1)$ form; it is negative definite and has determinant
+$$
+\det(h^{\perp C}) = \det(C)\cdot\frac{[C:\ZZ h\oplus h^{\perp C}]^2}{\det(\ZZ h)} = 1\cdot\frac{4}{2} = 2,
+$$
+since $\det(\ZZ h) = 2$ and the index is $2$.
+Its root system — the vectors of square $-2$ — is exactly $\theset{\pm v}$ together with the $240$ roots of $E_8(-1)$: a vector $x = aK + bv + e$ has
+$$
+x^2 = -a^2 - 2b^2 + e^2 = -2,
+$$
+which solves as $e^2 = a^2 + 2b^2 - 2$; since $e^2 \in 2\ZZ_{\leq0}$ we need $a^2 + 2b^2 \leq 2$, and the cases are $a = 0$, $b = 0$ giving $e^2 = -2$ with $e$ a root of $E_8(-1)$; $a = 0$, $b = \pm1$ giving $e = 0$; $a = \pm1$, $b = 0$ giving the odd value $e^2 = -1$; and $a = \pm1$, $b = \pm1$ giving the positive value $e^2 = 1$. The last two do not occur.
 
 *The stabilizer.*
 The restriction $\Stab_{\Orth(C)}(h)\to\Orth(h^{\perp C})$ is an isomorphism: an isometry of $h^{\perp C}$ acts trivially on $A_{h^{\perp C}} = \ZZ/2\ZZ$, whose automorphism group is trivial, so the pair $(\id_h,\varphi)$ preserves the glue subgroup of $\ZZ h\oplus h^{\perp C}$ in $C$ and extends by @thm:automorphism-lifting-criterion with $u = \id$.
-On $h^{\perp C}$, an isometry permutes roots, hence preserves the two components $\theset{\pm v}$ and the $E_8$ root system — they have different ranks — and therefore preserves $\generators{v} = \theset{\pm v}\cup\theset{0}$... more precisely preserves $\generators{v}$ and its orthogonal complement $\generators{K}\oplus E_8$, in which the roots span $E_8$; so it preserves $E_8$ and fixes $\generators{K}$.
+On $h^{\perp C}$, an isometry permutes roots, and by the count above the roots are the disjoint union of $\theset{\pm v}$ and the root system of $E_8(-1)$; the two components have different ranks, so an isometry preserves each, hence preserves $\generators{v}$ and also its orthogonal complement $\generators{K}\oplus E_8(-1)$, in which the roots span $E_8(-1)$. It therefore preserves $E_8(-1)$ and fixes $\generators{K}$, which is the orthogonal complement of $\generators{v}\oplus E_8(-1)$.
 Hence
 $$
-\Stab_{\Orth(S_\Co)}(\tilde h_\Co) \;\iso\; \theset{\pm1}_K\times\langle s_v\rangle\times \Orth(E_8), \qquad \abs{\cdot} = 2\cdot2\cdot\abs{W(E_8)} = 4\abs{W(E_8)},
+\Stab_{\Orth(S_\Co)}(\tilde h_\Co) \;\iso\; \theset{\pm1}_K\times\langle s_v\rangle\times \Orth(E_8(-1)), \qquad \abs{\cdot} = 2\cdot2\cdot\abs{W(E_8)} = 4\abs{W(E_8)},
 $$
-using $\Orth(E_8) = W(E_8)$, since $-\id_{E_8} = w_0$ lies in $W(E_8)$.
+using $\Orth(E_8(-1)) = W(E_8)$, since $-\id = w_0$ lies in $W(E_8)$.
 
 *The image.*
 By @prop:twisted-unimodular-discriminant, $\rho_{S_\Co}(g) = \id$ exactly for $g\equiv\id\bmod 2$ on $C/2C$.
-Of the three factors: $1$ and $s_K$ are trivial there, because $s_K(x) = x - 2b(x,K)K$; $-\id_{E_8}$ is trivial because $-1\equiv1\bmod2$; $s_v$ is not, because $s_v(F_1) = F_1 + b(F_1,v)v = F_1 - v = F_2$ and $F_2 - F_1 = -v$ is not in $2C$, $v$ being primitive; and $W(E_8)$ meets the kernel in $\theset{\pm1}$, that being the kernel of $W(E_8)\to\Orth(E_8/2E_8)$ ([@CCN+85], as in @prop:gamma-co-heegner-strict).
+Of the three factors: $1$ and $s_K$ are trivial there, because $s_K(x) = x + 2b(x,K)K$ when $K^2 = -1$; $-\id_{E_8}$ is trivial because $-1\equiv1\bmod2$; $s_v$ is not, because $s_v(F_1) = F_1 + b(F_1,v)v = F_1 - v = F_2$ and $F_2 - F_1 = -v$ is not in $2C$, $v$ being primitive; and $W(E_8)$ meets the kernel in $\theset{\pm1}$, that being the kernel of $W(E_8)\to\Orth(E_8/2E_8)$ ([@CCN+85], as in @prop:gamma-co-heegner-strict).
 So the kernel has order $2\cdot2 = 4$ and
 $$
 \abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))} = \frac{4\abs{W(E_8)}}{4} = \abs{W(E_8)} = 696\,729\,600
 .$$
-:::
-
-::: {.remark title="A step of the argument that is not needed"}
-
-The extension is sometimes justified by counting the vectors of square $-1$ in $h^{\perp C}$, of which one might expect only $\pm K$; that count is wrong, since $K+e$ has square $1-2 = -1$ for every root $e$ of $E_8$, and the count is not needed: an isometry of $h^{\perp C}$ acts trivially on its discriminant group because that group is $\ZZ/2\ZZ$, and that triviality is the whole hypothesis of @thm:automorphism-lifting-criterion with $u = \id$.
 :::
 
 With @prop:gamma-co-heegner-strict, both candidate overgroups of $\Gamma_\Co$ are strictly larger by the *same* factor $\abs{W(E_8)}$; what remains of @prob:group-identification is the direct and geometric comparison (@prob:coble-rigidity, @prob:B24, @prob:B25), and not the $\theta$ one.

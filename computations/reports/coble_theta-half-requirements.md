@@ -16,12 +16,14 @@ $$
 = \abs{W(E_8)} = 696\,729\,600
 ,$$
 
-by hand: $C = \langle K\rangle\oplus U\oplus E_8$ and $h = F_1+F_2$ give
-$h^{\perp C} = \langle K\rangle\oplus\langle v\rangle\oplus E_8$ with $v = F_1-F_2$; the
-restriction $\Stab_{\Orth(C)}(h)\to\Orth(h^{\perp C})$ is an isomorphism because
-$A_{h^{\perp C}}\cong\ZZ/2$ has trivial automorphism group; the root system of $h^{\perp C}$ is
-$\{\pm v\}\cup\Phi(E_8)$, which pins the factors; and the mod-2 kernel is
-$\{\pm1\}_K\times\{\pm\id_{E_8}\}$, of order $4$.
+by hand: $C = \latI_{1,10} = \langle K\rangle\oplus U\oplus E_8(-1)$ with $K^2 = -1$ — the sign
+forced by signature $(1,10)$, and $\det C = +1$ — and $h = F_1+F_2$ give
+$h^{\perp C} = \langle K\rangle\oplus\langle v\rangle\oplus E_8(-1)$ with $v = F_1-F_2$,
+negative definite of determinant $\det(C)\cdot 2^2/2 = 2$; the restriction
+$\Stab_{\Orth(C)}(h)\to\Orth(h^{\perp C})$ is an isomorphism because $A_{h^{\perp C}}\cong\ZZ/2$
+has trivial automorphism group; the root system of $h^{\perp C}$ is $\{\pm v\}\cup\Phi(E_8(-1))$,
+since $-a^2-2b^2+e^2 = -2$ forces $(a,b) = (0,0)$ with $e$ a root or $(0,\pm1)$ with $e = 0$, and
+that pins the factors; and the mod-2 kernel is $\{\pm1\}_K\times\{\pm\id\}$, of order $4$.
 
 ## What the withdrawn request was, and why it was wrong to need it
 
