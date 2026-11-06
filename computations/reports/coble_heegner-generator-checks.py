@@ -194,7 +194,8 @@ print('  strict_checking(True) cannot be left on, because the discriminant modul
 print('  build under it at this pin (pasted above), and the laws it would enable are run by')
 print('  explicit validator calls instead.  Concretely: fixity per generator kept; q-preservation by')
 print('  validate_form_preservation per generator, complete on the module and cheaper than the')
-print('  528-point scan; the rerun under strict_checking(True); and validate_point_closure on')
-print('  the restricted H-set, which the old helper did not do.  All 1984 generators pass.')
+print('  528-point scan; and validate_point_closure on the restricted H-set, which the old helper')
+print('  did not do.  All 1984 generators pass items (1), (2); the H-set passes (4).  Item (3),')
+print('  the global flag, is the one refused, and the transcript of the refusal is above.')
 print('  by-product: the partition is %s, so B3\'s [1, 255, 272] is %s'
       % (sizes, 'AGREE' if sizes == [1, 255, 272] else 'DISAGREE'))

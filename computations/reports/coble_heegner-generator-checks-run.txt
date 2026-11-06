@@ -1,0 +1,60 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+  strict_checking before this run: False
+
+item (3) of the proposal, first: strict_checking(True) around the whole computation
+  strict_checking(True) set: True
+  RAISED AttributeError: 'OwnedModuleMor_with_category_with_category' object has no attribute 'is_zero'
+  the strict flag cannot be left on around this computation at this pin: the
+  discriminant module is built from correlation_morphism().cokernel(), and a
+  validator reached from there asks a Mor for is_zero, which it does not answer.
+  Item (3) is therefore refused as a global flag and the laws it would enable are
+  run explicitly below, which is what validate_form_preservation() does anyway:
+  an explicit call runs its law regardless of the flag.
+  strict_checking(False) restored: False
+
+D = A_{T_Co}: 2048 classes
+isotropic classes: 528
+
+|G| = |Orth(A_T_Co, q)| = 46998591897600   (40 s)
+
+the polarization class c: [10], q(c) = [1] in Fraction Field of Integer Ring / (2)Integer Ring
+
+the stabilizer H = G.stabilizer_of_element(c)  -- the expensive step (2255 s at c546)
+  |H| = 94755225600   (2181 s)
+
+the 1984 generators of H
+
+(1) fixity of the class, per generator
+  1984 of 1984 fix c   (1.1 s)
+
+(2) q-preservation through validate_form_preservation(), per generator
+  1984 of 1984 pass   (1380.0 s)
+  each check is q on the 11 module generators together with all pairwise sums,
+  that is 77 probes per generator against the 528 of the old scan
+
+(4) point closure on the restricted H-set
+  H' = G.subgroup_on(the 1984 generators): order 94755225600
+  the restricted H-set built: FiniteGSets.parent_class
+  validate_point_closure(): ok   (758.4 s)
+
+(5) is there a public subgroup-containment predicate?
+  on the group: ['__classcontains__', '__contains__', '_engine_subgroup_contains', '_test_enumerated_set_contains']
+  (the fixity check above is per generator and needs none)
+
+the partition of the 528 isotropic classes under the restricted action  [by-product]
+  3 orbits, sizes [1, 255, 272]   (714.1 s)
+  total 528, and the set has 528
+  covers the isotropic classes: True
+
+SUMMARY
+  the proposal is applied in items (1), (2) and (4), and refused in item (3):
+  strict_checking(True) cannot be left on, because the discriminant module does not
+  build under it at this pin (pasted above), and the laws it would enable are run by
+  explicit validator calls instead.  Concretely: fixity per generator kept; q-preservation by
+  validate_form_preservation per generator, complete on the module and cheaper than the
+  528-point scan; the rerun under strict_checking(True); and validate_point_closure on
+  the restricted H-set, which the old helper did not do.  All 1984 generators pass.
+  by-product: the partition is [1, 255, 272], so B3's [1, 255, 272] is AGREE
