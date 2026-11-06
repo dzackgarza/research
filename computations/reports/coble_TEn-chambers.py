@@ -13,6 +13,7 @@ passed, so the dictionary of step (ii) is the identity on them.
 import os
 import sys
 import time
+import traceback
 
 sys.stdout.reconfigure(line_buffering=True)
 os.environ["PATH"] = os.path.dirname(os.path.realpath("/sage/.venv/bin/sage")) + os.pathsep + os.environ.get("PATH", "")
@@ -72,6 +73,18 @@ for name, rows in cases:
         for row in G:
             print('    %s' % row)
         print('  norms: %s' % [int(L.pairing(w, w)) for w in walls])
+        try:
+            squares = list(H._chamber_vertex_squares(None, 20, 2000))
+            print('  chamber vertex squares: %s' % squares)
+            print('  ideal vertices (square zero): %d' % sum(1 for x in squares if x == 0))
+        except Exception:                                       # noqa: BLE001
+            print('  vertex squares FAILED; full traceback for sage-extensions#299:')
+            traceback.print_exc(file=sys.stdout)
+        try:
+            print('  is_cocompact: %s' % H.is_cocompact())
+        except Exception:                                       # noqa: BLE001
+            print('  is_cocompact FAILED; full traceback for sage-extensions#299:')
+            traceback.print_exc(file=sys.stdout)
     except Exception as exc:                                    # noqa: BLE001
         print('  FAILED: %s: %s' % (type(exc).__name__, exc))
     print('')
