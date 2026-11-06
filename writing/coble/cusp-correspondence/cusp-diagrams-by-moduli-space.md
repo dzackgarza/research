@@ -71,7 +71,7 @@ The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, correspondi
 :::
 
 We note that $G_{(9, 9, 1)_1}$ has precisely one maximal parabolic subdiagram of the form $\tilde B_7(2)$, verifying that the $0$-cusp represented by $v_0$ is incident to exactly one orbit of adjacent $1$-cusps.
-The count is read off the Coxeter diagram of $(9,9,1)_1$, so it is an $\Orth^+(T_\Co)$-statement; for $\Gamma_\Co$ the $0$-cusp data is finer: it has $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting).
+The count is read off the Coxeter diagram of $(9,9,1)_1$, so it is an $\Orth^+(T_\Co)$-statement; for $\Gamma_\Co$ the $0$-cusp data is finer: it has $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting; proved in prose only, with sage-extensions#286 the computation owed).
 We also note the correspondence between the maximal parabolic $\tilde B_8(2)$ in $\fen$, and $\tilde B_7(2)$ in $\fco$, and furthermore that $G_{(10, 8, 0)_1}$ can be obtained from $G_{(9, 9, 1)_1}$ by inserting one new node.
 This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_1}$ into the $\tilde B_8(2)$ subdiagram of $G_{(10, 8, 0)_1}$.
 

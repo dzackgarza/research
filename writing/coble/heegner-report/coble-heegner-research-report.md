@@ -1191,6 +1191,8 @@ e^\perp/e\cong I_{1,8}(2),
 \qquad
 J^\perp/J\cong I_{0,7}(2).
 \]
+
+The number of orbits here is **proved in prose only**: no computation record decides it, and the library call that would is sage-extensions#286.
 :::
 
 ::: {.proof}
@@ -1236,7 +1238,8 @@ by a citation. What no argument here supplies is the $\Gamma_{\Co}$-analogue of 
 halves stand differently. On lines the refinement is strict and its size is known: $\Gamma_\Co$ has $527$ orbits where
 $\Orth^+(T_\Co)$ has one, one for each nonzero isotropic class of $A_{T_\Co}$
 (@sec-cusp-lifting, where the lifting theorem and the index $1$ of the parabolic stabilizer's image
-are proved, and @prop:coble-cusp-count for the count itself). On planes even the number of orbits is open, and it is not implied
+are proved, and @prop:coble-cusp-count for the count itself, which is proved in prose only with
+sage-extensions#286 the computation owed). On planes even the number of orbits is open, and it is not implied
 by strictness on lines. Nor does properness of a subgroup by itself make its orbits strictly finer: the
 discriminant kernel is strictly larger than $\Gamma_\Co$ and has exactly the same orbits on lines and on
 vectors (@prop:discriminant-kernel-orbits), so the question is decided orbit by orbit through the
