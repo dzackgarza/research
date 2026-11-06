@@ -1154,6 +1154,61 @@ $$
 
 With @prop:gamma-co-heegner-strict, both candidate overgroups of $\Gamma_\Co$ are strictly larger by the *same* factor $\abs{W(E_8)}$; what remains of @prob:group-identification is the direct and geometric comparison (@prob:coble-rigidity, @prob:B24, @prob:B25), and not the $\theta$ one.
 
+## The congruence comparison {#sec-congruence-comparison}
+
+The congruence group of @prob:group-identification is $\Gamma^{\mathrm{cong}}_{\Co,2} = \rho_{T_\Co}^{-1}(P)$ with
+$$
+P \definedas \Orth(q_{U(2)})\times\Orth(q_{E_8(2)}) \leq \Orth(A_{T_\Co}, q_{T_\Co}),
+$$
+made a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ by the identity on $\ZZ\tfrac12\zeta$, which is legitimate because every isometry of $q_{T_\Co}$ fixes that class (@prop:coble-discriminant-group).
+The two other descriptions are preimages of finite subgroups as well, so the comparison of A20 item 1 is a comparison of three subgroups of one finite group, once the orders and the block structure are known.
+
+::: {.proposition #prop:gamma-cong-eq-heegner title="The Heegner description is the congruence description"}
+
+Let $P$ be as above and let $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ be the groups of @prop:gamma-co-in-heegner-group and @prop:gamma-co-in-theta-centralizer.
+Then
+
+1. $\abs{\Orth(q_{U(2)})} = 2$ and $\abs{\Orth(q_{E_8(2)})} = \tfrac12\abs{W(E_8)} = 348\,364\,800$, so
+   $$
+   \abs{P} = 2\cdot 348\,364\,800 = 696\,729\,600 = \abs{W(E_8)}
+   ;$$
+2. $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) = P$;
+3. hence $\Gamma^{\mathrm{Hdg}}_\Co = \Orth^+(T_\Co)\intersect\rho_{T_\Co}^{-1}(P) = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, and $[\Gamma^{\mathrm{cong}}_{\Co,2}:\Gamma_\Co] = \abs{W(E_8)}$;
+4. $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr) = \gamma_\Co\,P_{S_\Co}\,\gamma_\Co^{-1}$ where $P_{S_\Co}\definedas\Orth(q_{U(2)})\times\Orth(q_{E_8(2)})\leq\Orth(A_{S_\Co},q_{S_\Co})$, so $\rho_{T_\Co}(\Gamma^\theta_\Co)$ has order $\abs{W(E_8)} = \abs{P}$, and the $\theta$-description equals the congruence one exactly when that transport is $P$ itself.
+
+So A20 item 1 is settled in the affirmative for the Heegner description, and reduced to a single block-compatibility statement for the $\theta$ one.
+:::
+
+::: {.proof}
+
+(1) $q_{U(2)}$ takes the values $0,0,0,1$ on the four classes of $A_{U(2)}$: the three nonzero classes are $[e'/2]$, $[f'/2]$ and $[(e'+f')/2]$, with squares $0$, $0$ and $1$, and every pair of them has $b = 1$.
+An isometry must therefore fix the class of value $1$ and may or may not swap the other two, and both maps preserve $b$; so $\abs{\Orth(q_{U(2)})} = 2$.
+For $A_{E_8(2)} = E_8/2E_8$ use the page's own count: the reduction $W(E_8)\to\Orth(E_8/2E_8)$ is onto with kernel $\theset{\pm1}$ ([@CCN+85], as in @prop:gamma-co-heegner-strict), so the image has order $\tfrac12\abs{W(E_8)} = 348\,364\,800$, and that is all of the isometry group, since $\abs{\Orth^+_8(2)} = 2q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ at $q = 2$, $m = 4$ is $2\cdot 2^{12}\cdot 15\cdot 3\cdot 15\cdot 63 = 348\,364\,800$; the two computations agree.
+Hence $\abs{P} = 2\cdot 348\,364\,800 = 696\,729\,600 = \abs{W(E_8)}$.
+
+(2) $S_\En = U(2)\oplus E_8(2)$, so $A_{S_\En} = A_{U(2)}\perp A_{E_8(2)}$; and $A^0\cong A_{T_\En} = A_{S_\En}$ under the identification made in the proof of @prop:gamma-co-in-heegner-group, so $P$ is exactly "the block-preserving part of $\Orth(A^0)$".
+Each of the nine generators of @prop:polarization-stabilizer-enriques preserves that splitting: $s_{u_0-w_0}$ acts on the $U(2)$ summand and fixes $E_8(2)$ pointwise, and the eight reflections in simple roots of $E_8(2)$ fix $U(2)$ pointwise; so $\rho_{S_\En}\bigl(\Stab_{\Orth(S_\En)}(h)\bigr)\subseteq P$ after transport by $\gamma$, that is $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)\subseteq P$ by @prop:gamma-co-heegner-strict.
+Both sides have order $\abs{W(E_8)}$ — the left by @prop:gamma-co-heegner-strict, the right by (1) — so they are equal: two subgroups of equal finite order with one inside the other coincide.
+
+(3) $\Gamma^{\mathrm{Hdg}}_\Co$ is the preimage of its own image by @prop:gamma-co-heegner-strict, and the image is $P$ by (2); the index is $\abs{P} = \abs{W(E_8)}$.
+Intersecting with $\Orth^+(T_\Co)$ does not change that index: @prop:gamma-co-heegner-strict produced, for each class, an element of $\Gamma^{\mathrm{Hdg}}_\Co$ with that class *and* in $\Orth^+(T_\Co)$, so the image is the same group inside $\Orth^+$.
+
+(4) The first equality is @prop:theta-co-gluing. That $\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)) = P_{S_\Co}$ is the computation of @prop:theta-co-index: the stabilizer is $\theset{\pm1}_K\times\langle s_v\rangle\times\Orth(E_8(-1))$, its factors act in $K$, in $U$ and in $E_8(-1)$ respectively, its image preserves the three blocks of $A_{S_\Co} = C/2C$ and has order $\abs{W(E_8)} = \abs{P_{S_\Co}}$ by (1), so it is $P_{S_\Co}$.
+An isometry conjugates the block decomposition of one side to *a* block decomposition of the other, and $\gamma_\Co$ is an anti-isometry, so the transported group has order $\abs{W(E_8)}$; it equals $P$ exactly when $\gamma_\Co$ carries the $U(2)$ block of $A_{S_\Co}$ to that of $A_{T_\Co}$.
+:::
+
+::: {.remark title="What part (4) leaves, and what it does not"}
+
+Part (4) is not a gap in the argument but a statement that the page does not fix $\gamma_\Co$ finely enough: the two candidate blocks are distinguished neither by their order — both are four-element subgroups of an elementary abelian group — nor by the values of $q$ on them, and $\gamma_\Co$ is only determined up to the automorphisms of the pair of forms.
+What decides it is the gluing isometry as constructed for the embedding $S_\Co\oplus T_\Co\into\lkt$, block by block; the corpus's own `computations/reports/coble_gluing_discriminants.py` checks that construction block by block, and the statement needed here is that its $U(2)$-block matches.
+With that, $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ as well; without it, $\Gamma^\theta_\Co$ is a third subgroup of index $\abs{W(E_8)}$ over $\Gamma_\Co$, possibly distinct, and the page's data do not decide which.
+:::
+
+::: {.remark title="What this does to A20"}
+Item 1 of A20 — the comparison of the Heegner group with the congruence group — was recorded as blocked on two owner capabilities: explicit generators of $\gent$, and an explicit isometry of torsion forms. Neither is needed: generators of the *image* suffice, and they are the nine reflections whose discriminant images @prop:gamma-co-heegner-strict transports; the congruence subgroup is given by its two factors, whose orders are computed in (1).
+What remains of A20 is item 2 and item 3, and the four items of the absorbed swarm (#720), none of which is a comparison of two subgroups of $\Orth(A_{T_\Co},q_{T_\Co})$.
+:::
+
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
 The two propositions above compare $\Gamma_\Co$ with the larger groups by way of its finite image on $A_{T_\Co}$.
