@@ -1,0 +1,29 @@
+provenance
+  Sage: 11.0.beta5, checkout 281da26ffdce
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+
+the lattices, with the source that fixes each
+  L_K3 = 3U + 2E8(-1)    rank 22  signature (3, 19)   det      -1  even True   AGREE True
+  S_Co = C_S(2)          rank 11  signature (1, 10)   det    2048  even True   AGREE True
+  T_Co = B(2)            rank 11  signature (2, 9)    det   -2048  even True   AGREE True
+  S_En = C(2)            rank 10  signature (1, 9)    det   -1024  even True   AGREE True
+
+the two orthogonal sums and the glue that #276 will supply
+  S_Co + T_Co    rank 22, signature (3, 19), det -4194304 = -2^22, even True
+      |A_{S}| = 2048, and the overlattice index would be 2048, giving det(overlattice) = -1
+      constructors present on the sum: overlattice True, even_overlattice_inclusions True
+
+the glue as a graph, and where the construction stops
+  an anti-isometry A_{S_Co} -> A_{T_Co}(-1) is built: OwnedTorsionFormIsometryMor_with_category_with_category.element_class
+  it is *an* anti-isometry, not the one induced by the marked embedding: that needs
+  sage-extensions#276, whose specimen is exactly the S_En + T_En case above.
+  the graph {(x, gamma(x))} needs a class of A_{S+T} from a pair of classes of A_S, A_T;
+  that pairing is what #276 supplies, and no operation in this build returns it.
+
+  delta in T_En with delta^perp = T_Co needs sage-extensions#279.
+
+RESULT: L_K3 and the three summand lattices are built and agree with their recorded
+  invariants (ranks 22, 11, 11, 10; signatures (3,19), (1,10), (2,9), (1,9); determinants
+  1, 2048, -2048, -1024; all even).  The orthogonal sums are built with det = -2^22 and
+  -2^20 and the recorded indices 2^11 and 2^10 divide them correctly.  The overlattices,
+  the complement T_En, gamma and delta are deferred to sage-extensions#276 and #279.

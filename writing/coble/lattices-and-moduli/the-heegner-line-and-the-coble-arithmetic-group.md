@@ -1287,6 +1287,16 @@ What is handed on, and to where: item 1's remaining statement and item 2 both be
 No further record on this page changes any of that: the issue's remaining content is that one block check, and it lives with the A21 work.
 :::
 
+::: {.remark title="What the block-compatibility test decides, once the gluing of the embedding is in hand"}
+
+The test is not a question about the abstract pair of forms, and the two orbit computations below say why: neither the decomposition of $A_{S_\Co}$ nor that of $A_{S_\En}$ is preserved by the full orthogonal group, so *which* anti-isometry $\gamma$ is being tested is part of the data. The test is therefore stated for one $\gamma$ only — the one **induced by the marked embedding**, that is by the overlattice $\lkt$ of $S_\Co\oplus T_\Co$ of index $2048$, respectively of $S_\En\oplus T_\En$ of index $1024$ — and never for an anti-isometry chosen from the forms.
+Under that hypothesis the criterion is: $\gamma$ is block-compatible when $\gamma\bigl(A_{U(2)}\bigr) = A_{U(2)}$, the four-element subgroup of the target that the $U(2)$ summand cuts out, and the criterion has exactly two outcomes for @prop:gamma-cong-eq-heegner(2):
+if it holds, then $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co) = P$ and $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, while $\rho_{T_\Co}(\Gamma^\theta_\Co) = \gamma_\Co P_{S_\Co}\gamma_\Co^{-1} = P$ gives $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ as well — so the Heegner and $\theta$ descriptions of $\Gamma_\Co$ are the congruence one and A20 item 1 and the $\theta$ entry of @prob:group-identification are settled affirmatively;
+if it fails, then $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)$ is a subgroup of order $\abs{W(E_8)}$ preserving the *transported* blocks $\gamma(A_{U(2)})\perp\gamma(A_{E_8(2)})$ and not equal to $P$, so $\Gamma^{\mathrm{Hdg}}_\Co$ is a proper subgroup of $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ of the same index $\abs{W(E_8)}$ over $\Gamma_\Co$, and the two descriptions are *different* groups — the negative answer, which is an answer.
+What the computation needs, and what the two records above do not supply: the anti-isometry $\gamma$ as a morphism induced by the overlattice, which is `sage-extensions#276` (`gluing_anti_isometry`), and the root $\delta\in T_\En$ with $\delta^{\perp T_\En} = T_\Co$ on the Enriques side, which is `sage-extensions#279`.
+What is built already, and verified without them: $\lkt = 3U\oplus 2E_8(-1)$ and the summands $S_\Co = C_S(2)$, $T_\Co = B(2)$, $S_\En = C(2)$ with the ranks $22, 11, 11, 10$, the signatures $(3,19), (1,10), (2,9), (1,9)$, the determinants $-1, 2048, -2048, -1024$ and evenness, and the two orthogonal sums with $\det = -2^{22}$ and $\det = -2^{20}$, into which the recorded indices $2^{11}$ and $2^{10}$ divide correctly (`computations/reports/coble_a21-embedding-build.py`).
+:::
+
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 
 The two propositions above compare $\Gamma_\Co$ with the larger groups by way of its finite image on $A_{T_\Co}$.
