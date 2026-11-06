@@ -1,0 +1,64 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+Pic(S): rank 11, signature (1, 10), determinant 1
+
+the three classes
+  K_S = -3H + sum E_i     : K^2 = -1
+  h_Co = 6H - 2E_1..E_8 - E_9 - E_10 : h^2 = 2
+  c = -2K_S = 6H - 2 sum E_i         : c^2 = -4
+  h_Co . K_S = 0   (so h_Co lies in K_S^perp, as @def:coble-polarization-classes requires)
+  h_Co . c   = 0   (the WALL: h is orthogonal to the branch curve)
+
+(a) the classes whose effectivity has a named source
+    the ten exceptional curves E_i (DK13 section 3):
+      h_Co . E_i for i = 1..10 : [2, 2, 2, 2, 2, 2, 2, 2, 1, 1]
+      all positive: True
+    the branch sextic c = -2K_S (DK13 section 3), and the null curve C of the one-node
+    member (prop:quasipolarization), whose class is c:
+      h_Co . c = 0
+      that is the wall: h is orthogonal to an effective curve, so h is at best nef and
+      not ample along it.  A zero intersection with an effective curve is a wall, not a
+      failure of nefness.
+
+(b) the (-2)-classes in the window delta.H = a, a = 0..3
+    H^perp = <E_1,...,E_10>: signature (0, 10), definite: True
+    a = 0: square -2 fibre has 180 elements
+    a = 1: square -3 fibre has 960 elements
+    a = 2: square -6 fibre has 16320 elements
+    a = 3: square -11 fibre has 175680 elements
+
+
+    cross-check of the two-pairing shortcut against the owner pairing, on 40 sampled classes:
+      all sampled values agree (h.delta, (-K).delta, delta^2 = -2): True
+
+    193140 (-2)-classes tested in the window
+      h_Co.delta > 0 : 192929
+      h_Co.delta = 0 : 150   (the wall)
+      h_Co.delta < 0 and RR-effective (-K.delta >= 2) : 0
+      h_Co.delta < 0 and effectivity unknown         : 61
+      no effective class with h_Co.delta < 0 in the window
+      reported as unknown effectivity, not as counterexamples:
+        delta = 0H - sum [0, 0, 0, 0, 0, 0, 0, 0, 1, 1] E, h.delta = -2, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [0, 0, 0, 0, 0, 0, 0, 1, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [0, 0, 0, 0, 0, 0, 1, 0, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [0, 0, 0, 0, 0, 1, 0, 0, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [0, 0, 0, 0, 1, 0, 0, 0, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [0, 0, 0, 1, 0, 0, 0, 0, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [0, 0, 1, 0, 0, 0, 0, 0, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [0, 1, 0, 0, 0, 0, 0, 0, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [1, 0, 0, 0, 0, 0, 0, 0, 0, 1] E, h.delta = -3, -K.delta = -2   (RR gives no h^0)
+        delta = 0H - sum [1, 0, 0, 0, 0, 0, 0, 0, 0, -1] E, h.delta = -1, -K.delta = 0   (RR gives no h^0)
+
+RESULT, as computed
+  Against every class whose effectivity is sourced -- the ten exceptional curves and
+  the branch sextic, which is also the null curve of the one-node member -- h_Co is
+  nonnegative, and it is zero exactly on the branch curve: the wall, stated as a wall.
+  In the window delta.H <= 3, no (-2)-class with h_Co.delta < 0 that Riemann-Roch makes
+  effective was found; the classes with h_Co.delta < 0 whose effectivity RR does not
+  decide are listed above and are not counterexamples.
+  This is a computed check on a named list and a bounded window.  It is not a proof of
+  nefness over all curves, and it does not decide the authoring question of which reading
+  of the chamber bullet governs.
