@@ -462,17 +462,33 @@ and $\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $
 
 ::: {.proposition #prop:rank-nine-vector-transitivity title="Primitive isotropic vectors of $\latI_{1,8}$ and of its twist"}
 
-Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$.
-Then $\Orth(L)$ and $\Orth^+(L)$ both act **transitively on the primitive isotropic vectors** of $L$, hence on the lines by $-\id\in\Orth^+(L)$.
+Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$, of signature $(1,8)$, and fix a component $C^+$ of the positive cone $\theset{x\in L\otimes\bR\st x^2>0}$.
+For a primitive isotropic $v\in L$ the sign of $\beta_\bR(v,e)$ is independent of the choice of $e\in C^+$, because $\beta_\bR(v,-)$ has no zero on $C^+$ --- a zero would put the isotropic $v$ in the negative definite hyperplane $e^{\perp}$ --- and $C^+$ is connected; call that sign the **side** of $v$.
+Then
+
+1. $\Orth(L)$ acts transitively on the primitive isotropic vectors of $L$;
+
+2. $\Orth^+(L)$ has exactly two orbits on them, the vectors of side $+1$ and the vectors of side $-1$; $-\id_L$ lies in $\Orth(L)\setminus\Orth^+(L)$ and exchanges the two;
+
+3. every $g\in\Orth(L)$ carrying a vector of side $+1$ to a vector of side $+1$ lies in $\Orth^+(L)$.
 :::
 
 ::: {.proof}
 
-Twisting by $2$ preserves the module and the isometry group as a subgroup of $\GL_9(\ZZ)$, as in @prop:rank-nine-line-transitivity, so it suffices to treat $L = \latI_{1,8}$.
-There, $-\id\in\Orth(L)$ acts by $v\mapsto -v$, so the $\Orth(L)$-orbits of primitive isotropic *vectors* are the same as its orbits of *lines*, which @prop:rank-nine-line-transitivity shows to be a single orbit; what remains is to upgrade that orbit from $\Orth(L)$ to $\Orth^+(L)$, which is done below by exhibiting an element of the other coset that fixes $v$.
+Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\bZ)$ and isotropy, as in @prop:rank-nine-line-transitivity, so it suffices to treat $L=\latI_{1,8}$.
 
-Take $g\in\Orth(L)$ with $g(v) = w$; if $g\in\Orth^+(L)$ there is nothing to do. Otherwise replace $g$ by $s_a g$, where $a\in v^{\perp L}$ has odd square: such an $a$ exists because $v^{\perp L}/v \iso \I_{0,7}$ is odd, and then $s_a$ fixes $v$ (as $a\perp v$) so $s_a g$ still carries $v$ to $w$, while $\spinornorm_\bR(s_a) = [-\tfrac12 a^2]\neq[1]$ for $a^2$ odd, so $s_a\notin\Orth^+(L)$ and $s_a g$ is in the other coset — that is, in $\Orth^+(L)$.
-Hence $\Orth^+(L)\cdot v = \Orth(L)\cdot v$, and by @prop:rank-nine-line-transitivity the primitive isotropic vectors form a single $\Orth^+(L)$-orbit.
+(1) By @prop:rank-nine-line-transitivity there is $g\in\Orth(L)$ with $g(\bZ v)=\bZ v'$, that is $g(v)=\pm v'$; composing with $-\id_L$, which lies in $\Orth(L)$, gives the sign.
+
+(2) By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L)=[(-1)^1]=-1$ because the positive index is $1$, so $-\id_L\notin\Orth^+(L)$ and $\Orth(L)=\Orth^+(L)\cup(-\id_L)\Orth^+(L)$.
+Hence $\Orth(L)\cdot v=\Orth^+(L)\cdot v\cup\Orth^+(L)\cdot(-v)$, and by (1) there are at most two $\Orth^+(L)$-orbits.
+There are at least two: $\Orth^+(L)$ preserves each component of $C^+$ by @prop:spinor-plus-cone-components, so for $g\in\Orth^+(L)$ and $e\in C^+$ one has $ge\in C^+$ and
+$$
+\operatorname{sign}\beta_\bR(gv,e)=\operatorname{sign}\beta_\bR(v,g^{-1}e)=\operatorname{sign}\beta_\bR(v,e),
+$$
+the middle step by invariance of $\beta_\bR$ and the last by $g^{-1}e\in C^+$; so the side is constant on an $\Orth^+(L)$-orbit, while $\operatorname{side}(-v)=-\operatorname{side}(v)$.
+So the two orbits are the two sides.
+
+(3) Let $g\in\Orth(L)$ with $\operatorname{side}(gv)=\operatorname{side}(v)$. If $g$ exchanged the components of $C(L)$ then $ge\in-C^+$ for $e\in C^+$, and $\beta_\bR(gv,ge)=\beta_\bR(v,e)$ together with $\operatorname{sign}\beta_\bR(gv,-C^+)=-\operatorname{side}(gv)$ would give $-\operatorname{side}(gv)=\operatorname{side}(v)$, contradicting the hypothesis. So $g$ preserves the components, that is $g\in\Orth^+(L)$ by @prop:spinor-plus-cone-components.
 :::
 
 ::: {.proof}
@@ -497,28 +513,17 @@ $P'$ exists ($P\cong P'\cong\latI_{1,1}$) and an isometry of $M$ onto $M'$ by th
 together give $g\in\Orth(L)$ carrying the line $\ZZ v$ to the line $\ZZ v'$. So $\Orth(L)$ is transitive on
 lines.
 
-For $\Orth^+(L)$ the component question is settled by the definition and not by a picture:
-@def:period-component-character defines the period character $\chi_{\mathrm{per}}$ of a signature-$(2,n)$
-lattice as the action on the two components of the domain of *oriented positive-definite two-planes*, and
-@prop:period-spinor-character identifies it with the real spinor character. For the Lorentzian $\latI_{1,8}$
-the positive-definite part is a line, the same two components are the two halves of the positive cone, and
-$-\id_L$ negates that line, so $\chi_{\mathrm{per}}(-\id_L) = -1$: $-\id_L$ fixes every line and lies in
-$\Orth(L)\setminus\Orth^+(L)$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ is already in
+For $\Orth^+(L)$ the component question is settled by the spinor norm and not by a picture: by
+@prop:spinor-plus-cone-components, $\Orth^+(\latI_{1,8})$ is the subgroup of $\Orth(\latI_{1,8})$ preserving
+each component of the positive cone, and by @lem:minus-identity-spinor-norm $-\id_L\notin\Orth^+(\latI_{1,8})$,
+since the positive index is $1$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ is already in
 $\Orth^+(L)$, or $(-g)$ is --- $-g$ fixes every line as well --- and $\Orth^+(L)$ is transitive on lines
-too. (This is a statement about signature $(1,8)$; it does not transplant, and the paragraph after
-@thm:plane-transitivity-tco records why.)
+too. (Line transitivity itself is a statement about signature $(1,8)$; it does not transplant, and the
+paragraph after @thm:plane-transitivity-tco records why.)
 :::
 
-Two things this does **not** establish, and an earlier draft of this proposition got both wrong.
-*Vectors rather than lines.* Transitivity on primitive isotropic **vectors** by $\Orth^+$ is not obtained:
-$-g$ sends $v$ to $-v'$, not to $v'$, and the element of $\Orth\setminus\Orth^+$ that an earlier draft
-proposed --- $v\mapsto v$, $w\mapsto w+tv$, $M\mapsto -M$ --- is not an isometry at all, since
-$(w+tv)^2 = 2t$ for $v^2=w^2=0$, $(v,w)=1$. The vector-level statement is open.
-*The rank-$7$ input, now cited rather than assumed.* The uniqueness used above is the book's own
-@thm:definite-unimodular-class-numbers with the table row $1\leq n\leq7$ (one odd class), sourced there to
-Conway--Sloane and cross-checked against OEIS A054911. It is not a new hypothesis and was not one before it
-was looked up: the earlier version of this proposition carried it as an assumption only because the lookup
-had not been made.
+Two scoping remarks. The statement above is about **lines**; on primitive isotropic *vectors* $\Orth^+(L)$ has two orbits and not one, @prop:rank-nine-vector-transitivity, the two sides of the positive cone, so an isometry carrying $v$ to $v'$ is determined only up to replacing $v'$ by $-v'$ until a side is fixed.
+And the rank-$7$ input is the book's own @thm:definite-unimodular-class-numbers with the table row $1\leq n\leq 7$ (one odd class), sourced there to Conway--Sloane and cross-checked against OEIS A054911; it is cited rather than assumed.
 
 ::: {.theorem #thm:plane-transitivity-tco title="Primitive isotropic planes of $T_\Co$"}
 
