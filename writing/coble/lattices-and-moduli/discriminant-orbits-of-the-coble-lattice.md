@@ -359,6 +359,31 @@ In both cases $v$ spans a hyperbolic summand and is orthogonal to the rest, so $
 The invariants are computed in `computations/reports/coble_zero-cusp-lattices.py` and its run, which builds each lattice and prints rank, determinant, signature, the elementary divisors of the Gram matrix, the order of the discriminant group, and whether the values of $q$ are all integral --- that is $\delta$: $U(2)\oplus E_8(2)$ has divisors $[2,\dots,2]$ of length $10$, $\abs{A} = 1024$, all values integral and $\delta = 0$; $\I_{1,8}(2)$ has divisors $[2,\dots,2]$ of length $9$, $\abs{A} = 512$, non-integral values and $\delta = 1$.
 :::
 
+::: {.theorem #thm:zero-cusp-chambers title="The chambers of the two $0$-cusp lattices"}
+
+Let $K_\Co = \I_{1,8}(2)$ and $K_\En = U(2)\oplus E_8(2)$ be the cusp lattices of @prop:zero-cusp-lattices, halves $K'_\Co = \I_{1,8}$ and $K'_\En = U\oplus E_8$, and let $K(2)$ denote $K$ with the form doubled.
+Then
+
+1. $\Orth(K(2)) = \Orth(K)$, and the reflection $s_r$ of @def:spinor-norm is unchanged when the form is scaled, so the Coxeter chamber of $K(2)$ is the chamber of $K$ with every root norm doubled;
+
+2. the chamber of $K_\En$ has **ten** walls, with Coxeter diagram the all-label-$3$ diagram CoxIter records as $\widetilde E_{10}$-shaped, one ideal vertex, and its ten walls are the roots Vinberg's algorithm returns on $E_{10}(2)$:
+$$
+-\eps_3,\ \dots,\ -\eps_{10},\qquad \eps_1-\eps_2,\qquad \eps_2+2\eps_3+3\eps_4+4\eps_5+6\eps_6+5\eps_7+4\eps_8+3\eps_9+2\eps_{10}
+$$
+in the recorded basis $\eps_1,\dots,\eps_{10}$ of $\eta_1^{\perp}/\eta_1$, the coefficients $(2,3,4,6,5,4,3,2)$ being the marks of the highest root of $E_8$;
+
+3. the chamber of $K_\Co$ has **nine** walls and the CoxIter diagram the record describes as a rank-$9$ chain with exactly one label-$4$ edge, with one ideal vertex; this half is a **page proof**, not a computation record, and sage-extensions#285 is the unit that computes it (see the proof).
+:::
+
+::: {.proof}
+
+*The scaling lemma.* The form of $K(2)$ is $2b_K$, so an endomorphism $g$ satisfies $2b_K(gx,gy) = 2b_K(x,y)$ for all $x,y$ exactly when it is an isometry of $K$: $\Orth(K(2)) = \Orth(K)$ as subgroups of $\GL(K)$. The reflection $s_r(x) = x - 2\frac{b(x,r)}{b(r,r)}r$ is homogeneous of degree $0$ in the form, so the reflection in $r$ is the same map for $K$ and for $K(2)$, and the wall it defines has norm $r^2$ in $K$ and $2r^2$ in $K(2)$. Hence the chambers correspond wall by wall, with the norms doubled.
+
+*The Enriques half.* The record is @sec-sterk-root-counts-and-computed-chambers, whose input it names: Vinberg's algorithm on $\eta_1^{\perp}/\eta_1\cong E_{10}(2)$, of type $(10,10,0)$, returns ten roots and one ideal vertex, and the ten roots are printed there in the recorded basis; CoxIter's separate run on the same diagram, @sec-coxiter-results-for-cusp-lattices, reports dimension $9$, one vertex at infinity, Gram field $\QQ$, the simplex $f$-vector of a $9$-simplex, and the diagram as $\widetilde E_{10}$-shaped. Wall count and ideal-vertex count agree between the two, which is the check.
+
+*The Coble half.* No input is named in the tree for the $(9,9,1)$ row of @sec-coxiter-results-for-cusp-lattices: the record there reports the shape, the Gram field $\QQ[\sqrt2]$ and the $f$-vector, but not the diagram it ran CoxIter on, and nothing in the tree derives that diagram from a Vinberg run or from a transcription. By the evidence rule of this project the diagram is therefore a page proof, and the root set of the $I_{1,8}$ chamber --- Vinberg's, with walls of norms $-1$ and $-2$, hence $-2$ and $-4$ in $K_\Co$ --- is what sage-extensions#285 computes when it runs Vinberg anchored at the cusp. The wall count nine and the one label-$4$ edge stand on the record's CoxIter output alone.
+:::
+
 ::: {.remark title="What is not decided here"}
 
 Reflectivity, and the Coxeter diagram the cusp lattice carries, are not decided by that record: deciding them means running Vinberg's algorithm *anchored at the chosen cusp*, which the library does not expose --- the operation would take a hyperbolic lattice together with the isotropic vector defining the cusp and return the chamber's walls with their inner products, and it is sage-extensions#285.
