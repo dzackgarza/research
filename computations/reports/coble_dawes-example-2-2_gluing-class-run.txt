@@ -1,0 +1,40 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap on PATH: /sage/.venv/bin/gap
+
+L = U + A_3: rank 5, signature (1, 4), determinant 4, even True
+
+v_1 = (4, 4, 1, 2, -1): q = 20, primitive True, div_L(v) = 4
+    v^perp: rank 4, signature (0, 4), determinant 5, roots 20, type A4
+
+v_2 = (36, 144, 5, -30, 83): q = 20, primitive True, div_L(v) = 4
+    v^perp: rank 4, signature (0, 4), determinant 5, roots 20, type A4
+
+(a) the complements are isometric, with a witness from the owner
+    N_1.isometry_to(N_2) returned an isometry
+    so A_N1 = A_N2 = Z/5 under that identification
+
+(b) the values of q on A_N = Z/5, which decide the "pure N" gluing class
+    q(0) = [0] in Fraction Field of Integer Ring / (2)Integer Ring, integral: True
+    q([3]) = [(6)/(5)] in Fraction Field of Integer Ring / (2)Integer Ring, integral: False
+    q(2*[3]) = [(4)/(5)] in Fraction Field of Integer Ring / (2)Integer Ring, integral: False
+    q(3*[3]) = [(4)/(5)] in Fraction Field of Integer Ring / (2)Integer Ring, integral: False
+    q(4*[3]) = [(6)/(5)] in Fraction Field of Integer Ring / (2)Integer Ring, integral: False
+    nonzero classes with integral q: 0
+    an overlattice element of the form b*v + m with m of order 5 in A_N has square
+    b^2*20 + m^2, so it is integral only if m^2 is: the "pure N" class is impossible
+    exactly when that count is 0.  Count 0: True
+
+(c) div_L(v), which decides the "pure <v>" gluing class
+    div_L(v_1) = 4
+    div_L(v_2) = 4
+    a vector x with 5x = a*v and a not divisible by 5 has b(x, L) = (a/5)*4*Z, not in Z,
+    since div_L(v) = 4; so that class is impossible for both vectors.
+
+CONCLUSION
+  Both degenerate gluing classes are excluded, so Lambda has both coordinates nonzero;
+  the diagonal classes of P^1(F_5) form one orbit under O(<v>) x O(N) = {+-1} x {+-1}.
+  There is therefore exactly one class of pair (L, v) with v^2 = 20, div = 4 and
+  v^perp/v = A_4, and v_1 ~ v_2 in L under O(L): the claim of @ex:dawes-u-a3 stands and
+  the in-tree v_1 not~ v_2 is withdrawn.

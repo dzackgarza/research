@@ -135,7 +135,7 @@ For Example 2.6, $v_1 = (1,-1,0,0,0)$ and $v_2 = (1,0,1,0,0)$, and both have $v^
 The paper's conclusion is $v_1\sim v_2$ under the group it denotes $\wh{S\Orth}^+(L)$, and the in-tree computation reproduces it.
 :::
 
-::: {.question #qst:dawes-example-22 title="An unreconciled outcome on the first specimen"}
+::: {.question #qst:dawes-example-22 title="The outcome on the first specimen, reconciled"}
 
 Run on Example 2.2 of @ex:dawes-u-a3, the in-tree computation returns $v_1\not\sim v_2$, on the ground that $v_1^{\perp L}$ and $v_2^{\perp L}$ have different discriminants.
 The record attributes the disagreement to a simplified isometry test, but a discriminant is an isometry invariant, so by @prop:orbit-necessary-conditions(3) unequal discriminants refute equivalence under $\Orth(L)$ and under every subgroup of it, whatever isometry test is used downstream.
@@ -147,10 +147,16 @@ Both vectors are primitive, with $q(v) = 20$ and $\div_L(v) = 4$, so by @lem:com
 The recomputation in `computations/reports/coble_dawes-example-2-2_complements.py` finds more than equal determinants: both complements are rank $4$, negative definite, of determinant $5$, with $20$ roots of type $A_4$, and a rank-$4$ lattice whose roots are of type $A_4$ and whose determinant equals $\det A_4$ *is* the root lattice $A_4$, so the two complements are isometric.
 Every invariant of @prop:orbit-necessary-conditions therefore agrees on the pair: equal squares, equal divisibilities, isometric complements, and — the last one, which the same record computes — the same class of $v/\div(v)$ in $A_L$, carrying $q = 5/4$ for both.
 
-*What that leaves.*
+*What settles it, and how.*
 The in-tree run is not evidence against the paper's conclusion: the invariant it named is false for this pair, and the complements it would have had to compute are isometric, so the recorded refutation is withdrawn.
-Neither is the conclusion proved: what is missing is an explicit isometry carrying $v_1$ to $v_2$, equivalently the decision of the orbit of a primitive vector of square $20$ in $L$, and that is the isometry machinery which at this stage is the blocked layer recorded in `computations/reports/coble_gamma_co_two_definitions.py`.
-The question therefore stands open in one direction only: nothing computed here separates the two vectors, and nothing recorded against the paper survives.
+The conclusion itself is then decided in the paper's favour, by the gluing rather than by an exhibited matrix.
+For a primitive $v$ with $v^2\neq0$ the lattice $L$ is an overlattice of $\generators{v}\oplus N$ with $N = v^{\perp L}/v$, the overlattice being determined by the isotropic subgroup $\Lambda\leq A_{\generators{v}}\oplus A_N$ that it cuts out; isomorphisms of the pair $(L,v)$ carry $\Lambda$ to $\Lambda$ up to $\Orth(\generators{v})\times\Orth(N)$, so the $\Orth(L)$-orbit of $v$ *is* the class of $\Lambda$.
+Here $\generators{v}$ has $v^2 = 20$ and $N = A_4$, so $\Lambda$ is an order-$5$ subgroup of $\ZZ/20\oplus\ZZ/5$, classified by a line of $\PP^1(\bF_5)$.
+Two of the three classes are impossible: a "pure $N$" class would produce an element $bv+m$ with $m$ of order $5$ and $m^2\notin\ZZ$, $q$ on the nonzero classes of $A_{A_4}$ taking the values $4/5$ and $6/5$; and a "pure $\generators{v}$" class would produce $x$ with $5x = av$, $a\not\equiv0\pmod 5$, hence $b(x,L) = \frac{a}{5}\cdot4\ZZ\not\subseteq\ZZ$ against $\div_L(v) = 4$.
+The remaining class is a diagonal line of $\PP^1(\bF_5)$, and the four diagonal lines form a single orbit under $\Orth(\generators{v})\times\Orth(A_4) = \set{\pm1}\times\set{\pm1}$, which acts by $(a,b)\mapsto(\pm a,\pm b)$.
+So there is exactly one class of pair $(L,v)$ with $v^2 = 20$, $\div_L(v) = 4$ and $v^{\perp L}/v\cong A_4$, and $v_1\sim v_2$ under $\Orth(L)$: the paper's claim stands, and the sufficiency that an explicit matrix would have supplied is supplied by the count of gluing classes.
+The computation is `computations/reports/coble_dawes-example-2-2_gluing-class.py` with its run, which prints the two complements, an isometry $N_1\iso N_2$ from the owner, the values of $q$ on $A_{A_4}$ and the two divisibilities.
+What it does not print is a matrix for $g\in\Orth(L)$ with $g(v_1) = v_2$: exhibiting one is the job of `primitive_marking_classes` for the pointed shape in `sage_indefinite_port` together with `isometry` of marked lattices, which is not driven here and is recorded as the outstanding step rather than replaced by a search written for the occasion.
 
 *The two complements, printed.* In $L = U\oplus A_3$ the complement of a primitive $v$ has rank $4$ (not $3$: $L$ has rank $5$), and its Gram matrix in a $\ZZ$-basis of $v^{\perp L}$ is, for $v_1$ and $v_2$ as in @ex:dawes-u-a3,
 $$
@@ -160,7 +166,7 @@ G_2 = \begin{pmatrix} -182&-192&-445&-590\\ -192&-206&-476&-631\\ -445&-476&-110
 $$
 with $\det G_1 = \det G_2 = 5$, $20$ roots of type $A_4$ in each, and both negative definite of signature $(0,4)$; a rank-$4$ lattice whose roots are of type $A_4$ and whose determinant equals $\det A_4 = 5$ *is* the $A_4$ root lattice, so $v_1^{\perp L}\iso v_2^{\perp L}\iso -A_4$.
 *The transcription.* $v_1 = (4,4,1,2,-1)$ and $v_2 = (36,144,5,-30,83)$ in the basis of @ex:dawes-u-a3 satisfy $v_i^2 = 20$ with the $U$-part contributing $2a b$ and the $A_3$-part the stated quadratic form, which is the paper's own data; the coordinates are primitive in both cases and the divisibility is $4$. So the transcription is consistent with the paper's Gram matrices and squares, and neither the transcription nor the paper's conclusion is the faulty step.
-*Which step is wrong, and the corrected statement.* The computed complements are the faulty step: the recorded ground for $v_1\not\sim v_2$ — that the complements have different discriminants — is impossible by @lem:complement-determinant, and the complements it names are in fact isometric. The corrected statement is therefore that of @qst:dawes-example-22 above: the in-tree refutation is withdrawn, the paper's conclusion $v_1\sim v_2$ is not contradicted by anything computed here, and what remains is the sufficiency direction — an explicit isometry of $L$ carrying $v_1$ to $v_2$, which the page does not supply.
+*Which step is wrong, and the corrected statement.* The computed complements are the faulty step: the recorded ground for $v_1\not\sim v_2$ — that the complements have different discriminants — is impossible by @lem:complement-determinant, and the complements it names are in fact isometric. The corrected statement is that of @qst:dawes-example-22 above: the in-tree refutation is withdrawn, and the paper's conclusion $v_1\sim v_2$ holds, by the single admissible gluing class and not by a matrix exhibited here.
 
 :::
 
