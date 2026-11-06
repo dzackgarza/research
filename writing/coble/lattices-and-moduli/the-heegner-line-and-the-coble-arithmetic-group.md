@@ -1379,6 +1379,36 @@ So $K_P \iso \I_{0,7}$ for every such $P$, and $B\iso U\perp U\perp\I_{0,7}$ wit
 For the fibre, let $J \definedas [P/2]\leq A_{T_\Co}$ be the order-$4$ isotropic subgroup the plane spans, and compare $\Stab_{\Orth(q)}(J)$ with $\rho\bigl(\Stab_{\Orth(B)}(P)\bigr)$ exactly as in the vector case: the $\Gamma_\Co$-orbits over $J$ are $\Stab_{\Orth(q)}(J)/\rho(\Stab_{\Orth(B)}(P))$, and the $1$-cusp count for $\Gamma$ is the number of $\rho(\Gamma)$-orbits of liftable order-$4$ isotropic subgroups, each fibre being that index.
 The Levi part of $\Stab_{\Orth(B)}(P)$ is $\Orth(\I_{0,7})$, of order $2^7\cdot 7! = 645\,120$, and its image lies in $\Orth(q_{\I_{0,7}(2)}) = \Orth(\generators{-\tfrac12}^{7})$ on the seven coordinates of $K_P/2K_P$; that image is *not* covered by Nikulin's surjectivity, which needs an indefinite lattice, $K_P(2) = \generators{-2}^{7}$ being definite. The exact index and the count of liftable order-$4$ subgroups are exactly the computation the library does not yet expose: it needs the $\Gamma$-orbits of primitive isotropic planes of $T_\Co$ with their stabilizers, that is the public call `sage-extensions#286` (the $\Gamma$-orbits of primitive isotropic vectors and planes of $T_\Co$ with incidence, as one call), whose owner is sage-extensions. **No pure-Python orbit computation is run here for it**: the research pages rest on library calls, and this is the missing one.
 
+::: {.proposition #prop:stabilizers-conjugate title="The stabilizers of the polarized $0$-cusps are conjugate"}
+
+Let $T_\Co = B(2)$ and $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, and let $v, v'\in T_\Co$ be primitive isotropic vectors with $v' = gv$ for some $g\in\Orth(T_\Co)$, which exists by @thm:unpolarized-cusps.
+Then
+
+1. $\Gamma_\Co$ is normal in $\Orth(T_\Co)$, and $\Stab_{\Gamma_\Co}(v') = g\,\Stab_{\Gamma_\Co}(v)\,g^{-1}$;
+
+2. the subgroups of $\Orth(v^{\perp T_\Co}/\generators{v})$ and of $\Orth((v')^{\perp T_\Co}/\generators{v'})$ induced by those stabilizers are carried onto one another by the isometry $\bar g$ that $g$ induces on the quotients;
+
+3. consequently the datum of @qst:sterk-reflection-subgroup is **one** subgroup $G\leq\Orth(\latI_{1,8}(2))$, up to isometry, at every polarized $0$-cusp, and its index is one number and not $527$ of them.
+:::
+
+::: {.proof}
+
+(1) $\Gamma_\Co = \ker\rho_{T_\Co}\cap\ker\varepsilon$ with $\varepsilon$ the orientation character of @prop:spinor-plus-cone-components, so it is the intersection of two kernels and therefore normal.
+For $h\in\Stab_{\Gamma_\Co}(v)$ and $g$ as in the statement, $ghg^{-1}(v') = ghv = gv = v'$, and $ghg^{-1}\in\Gamma_\Co$ by normality; so $g\Stab_{\Gamma_\Co}(v)g^{-1}\subseteq\Stab_{\Gamma_\Co}(v')$, and the reverse inclusion follows by applying the same argument to $g^{-1}$, or by counting cosets of the same index.
+
+(2) An isometry fixing $v$ preserves $v^{\perp}$ and $\generators{v}$, hence descends to the quotient, and the resulting map $g\mapsto\bar g$ is a homomorphism of stabilizers; conjugating on $T_\Co$ becomes conjugating by $\bar g$ on the quotient.
+So the image of $\Stab_{\Gamma_\Co}(v')$ is $\bar g\,\rho_v(\Stab_{\Gamma_\Co}(v))\,\bar g^{-1}$, and $\bar g$ is an isometry of the two cusp lattices.
+
+(3) By @prop:zero-cusp-lattices the quotient is $\latI_{1,8}(2)$ for every such $v$, so (2) exhibits the images as conjugate inside one isometry group, and conjugate subgroups have equal index.
+:::
+
+::: {.remark title="What the index still needs"}
+
+The proposition reduces the $527$ polarized $0$-cusps to one datum, but does not compute it: what is needed is which $g\in\Orth(\latI_{1,8}(2))$ lift into $\Gamma_\Co$, a condition on the action on $A_{T_\Co} = A_{\langle2\rangle}\perp A_{K}$, and then the index $[\Orth^+(\latI_{1,8}(2)) : G]$ in the finite image of that action.
+Both need the wall reflections of Vinberg's $I_{1,8}$ chamber as generators of $\Orth(\latI_{1,8})$, which is the transcription of [@Vin72] that @sec-zero-cusp-lattices records as outstanding, and the index itself is computed in $\GAP$ on the finite image.
+No chamber of $G$ is needed for the index; the chamber is sage-extensions#285 and sage-extensions#297.
+:::
+
 ::: {.theorem #thm:plane-fibre title="The plane fibre, the plane classes and the $1$-cusp count of $\fco$"}
 
 Let $P\subset B = U\perp U\perp \I_{0,7}$ be a primitive isotropic plane, $K_P = P^{\perp B}/P\iso\I_{0,7}$, $J = [P/2]\leq A_{T_\Co}$ the order-$4$ isotropic subgroup it spans, and $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, whose discriminant image is trivial.
