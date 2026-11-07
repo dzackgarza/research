@@ -33,21 +33,25 @@ are mutually isometric is exactly that the subgroups $G_v$ differ.
 
 | $j$ | Sterk's $v$ (4.2.3, p. 16) | $K_j$ (4.3.4, p. 17) | group (page) | our lattice | nodes read from the plate (page, figure) | CoxIter |
 |---|---|---|---|---|---|---|
-| 1 | $e$ | $U(2)\oplus E_8(2)$ | $G_e\cong\{\pm1\}W_e\rtimes S_e$, $S_e\cong\ZZ/2\times\ZZ/2$ (§4.3.5, p. 19) | $K(L_1)$, $(10,10,0)$ | **12** (p. 19, Fig. 4) | 12 |
-| 2 | $e'$ | $U\oplus E_8(2)$ | $G_{e'} = \Orth(H\oplus E_8(-2)) = \{\pm1\}W_{e'}$ (§4.3.6, p. 21) | $K(L_2)$, $(10,8,0)$ | **10** (p. 21, Fig. 6) | 10 |
+| 1 | $e$ | $U(2)\oplus E_8(2)$ | $G_e\cong\{\pm1\}W_e\rtimes S_e$, $S_e\cong\ZZ/2\times\ZZ/2$ (§4.3.5, p. 19) | $K(L_1)$, $(10,10,0)$ | **12** (p. 19, Fig. 4) | 12 (`Sterk1.coxiter`, p. 19) |
+| 2 | $e'$ | $U\oplus E_8(2)$ | $G_{e'} = \Orth(H\oplus E_8(-2)) = \{\pm1\}W_{e'}$ (§4.3.6, p. 21) | $K(L_2)$, $(10,8,0)$ | **10** (p. 21, Fig. 6) | 10 (`Sterk2.coxiter`, p. 21) |
 | 3 | $e'+f'+\bar\alpha_8$ | $U\oplus E_8(2)$ | $G_v = \{\pm1\}W_v\rtimes\ZZ/2$ (§4.3.7, p. 22) | $K(L_2)$ | **12** (p. 22, Fig. 8) | 12 (`Sterk3.coxiter`, p. 22) |
-| 4 | $2e'+f'+\bar\alpha_1$ (§4.3.8, p. 23) | $U\oplus E_8(2)$ | $G_v$, symmetry from $\Gamma_v$ (4.3.10) | $K(L_2)$ | **11** (p. 23, Fig. 10) | 11 |
-| 5 | $2e+2f+\bar\alpha_1$ (§4.3.9, p. 24) | $U\oplus E_8(2)$ | $G_v$, symmetries lift to $\Gamma_v$ (4.3.10) | $K(L_2)$ | **14** (p. 24, Fig. 12) | 14 |
+| 4 | $2e'+f'+\bar\alpha_1$ (§4.3.8, p. 23) | $U\oplus E_8(2)$ | $G_v$, symmetry from $\Gamma_v$ (4.3.10) | $K(L_2)$ | **11** (p. 23, Fig. 10) | 11 (`Sterk4.coxiter`, p. 23) |
+| 5 | $2e+2f+\bar\alpha_1$ (§4.3.9, p. 24) | $U\oplus E_8(2)$ | $G_v$, symmetries lift to $\Gamma_v$ (4.3.10) | $K(L_2)$ | **14** (p. 24, Fig. 12) | 14 (`Sterk5.coxiter`, p. 24) |
 
 ## The plates, read where read
 
-The figures are read from `pdftoppm -r 150` renders of PDF pp. 19-24 of the Sterk scan
-(`.scratch/figtest/st-19..24.png`), with page 22 re-rendered at 300 dpi (`.scratch/figtest/s3-22.png`)
-when the count of Fig. 8 was in question; the captions carry no text, so the counts are read off the
-images.
+The figures are read from `pdftoppm -r 300` renders of the plate pages of the Sterk scan
+(`.scratch/figtest/`: `s3-22.png` and `s-300-{19,23,24}-*`); the captions carry no text and the text
+layer renders every root name as `~`, so both the counts and the bonds below are read off the images.
+The plates' conventions are the ones `computations/coxiter/README.md` records: a single bond is
+$m = 3$, a bold or arrowed bond $m = 4$, an $\infty$-bond is labelled $\infty$.
 
-- **$j = 1$, Fig. 4, p. 19: 12 nodes.** $\alpha_1,\dots,\alpha_{12}$ in a circle-with-cross, the
-  horizontal chain $\alpha_4$–$\alpha_8$ carrying three $\infty$-bonds; the labelled roots
+- **$j = 1$, Fig. 4, p. 19: 12 nodes.** $\alpha_1,\dots,\alpha_{12}$ in a circle-with-cross: the
+  outline $\alpha_1$–$\alpha_3$–$\alpha_4$–$\alpha_5$–$\alpha_6$–$\alpha_7$–$\alpha_8$–$\alpha_{11}$–$\alpha_1$
+  with all eight bonds plain, and the horizontal chain $\alpha_4$–$\alpha_2$–$\alpha_{12}$–$\alpha_9$–
+  $\alpha_{10}$–$\alpha_8$ whose **three middle bonds** $\alpha_2\alpha_{12}$, $\alpha_{12}\alpha_9$,
+  $\alpha_9\alpha_{10}$ are the three $\infty$-bonds, the two end bonds being plain; the labelled roots
   $\alpha_9 = f'-e'$, $\alpha_{10} = \bar\alpha_8+2e'$, $\alpha_{11} = 2e'+2f'+\bar\alpha_1+\bar\alpha_8$,
   $\alpha_{12} = 5e'+3f'+2\bar\alpha_2$. **Agrees with CoxIter's 12.**
 - **$j = 2$, Fig. 6, p. 21: 10 nodes.** $\alpha_1,\alpha_3,\alpha_4,\dots,\alpha_{10}$ on a chain with
@@ -73,10 +77,15 @@ images.
   $\ZZ\{e+f,e-f,-e'+\alpha_1,\alpha_2,\dots,\alpha_8\}$; $\alpha_9 = f-e$, $\alpha_{10} = \bar\alpha_8+2e'$,
   $\alpha_{11} = e+f+\alpha_1-e'$, $\alpha_{12} = 2e-2e'+\bar\alpha_8-\alpha_1$. **Agrees with
   CoxIter's 11.**
-- **$j = 5$, Fig. 12, p. 24: 14 nodes.** Outer octagon $\alpha_6,\alpha_5,\alpha_4,\alpha_2,\alpha_{10},
-  \bar\alpha_8,\alpha_8,\alpha_7$ and inner hexagon $\alpha_{12},\bar\alpha_1,\alpha_{14},\alpha_9,
-  \alpha_{13},\alpha_{11}$, with three $\infty$-bonds; roots span $\ZZ\{\tilde e+\tilde f,\tilde e-\tilde f,
-  \tilde\alpha_1,\dots,\tilde\alpha_8\}$. **Agrees with CoxIter's 14.**
+- **$j = 5$, Fig. 12, p. 24: 14 nodes.** Outer octagon $\alpha_6$–$\alpha_7$–$\alpha_8$–$\bar\alpha_8$–
+  $\alpha_{10}$–$\alpha_2$–$\alpha_4$–$\alpha_5$–$\alpha_6$, all eight bonds plain; the inner vertical
+  $\alpha_6$–$\alpha_{12}$–$\alpha_9$–$\alpha_{11}$–$\alpha_{10}$, all four bonds arrowed; two arrowed
+  diagonals $\alpha_4$–$\alpha_{14}$–$\bar\alpha_1$ and $\bar\alpha_1$–$\alpha_{13}$–$\alpha_8$; and
+  **one** $\infty$-bond, $\alpha_9$–$\bar\alpha_1$. Roots span $\ZZ\{\tilde e+\tilde f,\tilde e-\tilde f,
+  \tilde\alpha_1,\dots,\tilde\alpha_8\}$. **Agrees with CoxIter's 14**, and 17 edges.
+  An earlier entry on this page described this plate as carrying three $\infty$-bonds on an inner
+  hexagon: that was wrong, and the plate at 300 dpi has one, as the reconstruction's Gram has one
+  ($\alpha_9$–$\bar\alpha_1$, pairing 4 between two $(-4)$-vectors).
 
 A note on the representatives: §4.3.8 and §4.3.9 use $2e'+f'+\bar\alpha_1$ and $2e+2f'+\bar\alpha_1$,
 which differ from the Prop. 4.2.3 list ($e'+2f'+\alpha$, $2e+2f+\alpha$) by $\Gamma$-equivalence;
@@ -86,7 +95,7 @@ the lattice $v^{\perp}/\ZZ v$ is $U\oplus E_8(2)$ either way (Lemma 4.3.4, p. 17
 
 The number in @sec-coxiter-results-for-cusp-lattices had no input in `computations/coxiter/` until
 this record: that directory held `10-10-0_1`, `10-8-0_1`, `9-9-1_1`, `Sterk2` and the benchmark
-graphs, and no Sterk 1, 3, 4 or 5. It now holds `Sterk3.coxiter`, and
+graphs, and no Sterk 1, 3, 4 or 5. It now holds all five. The $j = 3$ input is `Sterk3.coxiter`, and
 `computations/reports/coble_sterk3-coxiter-input.py` is what produces it: the twelve roots are written
 from Sterk's closed forms on p. 22 through `cusp_epfpa8()` of
 `computations/scripts/sterk-enriques-cusps/sterk_cusp_diagrams.sage`, their Gram is computed, and each
@@ -126,10 +135,13 @@ Three columns need their page stated exactly:
   pp. 19, 21, 22, 23 and 24 and recorded in this tree at `sec-coxiter-results-for-cusp-lattices`
   (CoxIter runs on the folded diagrams, "Vertices" column: 12, 10, 12, 11, 14) and in
   `qst:sterk-reflection-subgroup`. The plate pages carry no caption text and their figures are not in
-  the text layer: the counts come from `pdftoppm` renders, 150 dpi for the five figures and 300 dpi for
-  Fig. 8 when its count was in question. Two of the five have an input in `computations/coxiter/` —
-  `Sterk2.coxiter` for $j = 2$ and `Sterk3.coxiter` for $j = 3$ — and $j = 1, 4, 5$ have none, which
-  is part of why the subgroup-chamber script below is not run.
+  the text layer: the counts come from `pdftoppm` renders at 300 dpi, and all five now have an input
+  in `computations/coxiter/` — `Sterk1`, `Sterk2`, `Sterk3`, `Sterk4`, `Sterk5`. Cusps 1, 3, 4 and 5
+  are checked against the reconstruction of their roots, by
+  `computations/reports/coble_sterk-cusp-coxiter-inputs.py` for 1, 4 and 5 and by
+  `computations/reports/coble_sterk3-coxiter-input.py` for 3; `Sterk2.coxiter` predates this batch and
+  is not checked. The subgroup-chamber script below is still not run, and now only because the
+  chamber of a prescribed subgroup is the operation this tree does not have.
 - **Signature line:** the five entries $9,1,2$; $9,1,0$; $9,1,2$; $9,1,1$; $9,1,4$ of
   `sec-coxiter-results-for-cusp-lattices` are $(n_+,n_-,n_0)$ of the *sign-flipped* Gram of Sterk's
   roots, $-x\cdot y$ — rank 10, nine space-like and one time-like direction, and the third entry the

@@ -13,12 +13,16 @@ the transcripts of the runs.
 - `9-9-1_1.coxiter`, `10-8-0_1.coxiter`, `10-10-0_1.coxiter` — diagrams named
   by the Nikulin invariants $(r, a, \delta)$ of the two-elementary lattice they
   belong to.
-- `Sterk2.coxiter` — the Sterk 2 cusp diagram.
-- `Sterk3.coxiter` — the Sterk 3 cusp diagram (Sterk Fig. 8, p. 22), twelve vertices
-  $\alpha_1,\dots,\alpha_7,\alpha_9,\dots,\alpha_{13}$. Its vertices and weights are derived from
-  the reconstruction of Sterk's root vectors by
-  `../reports/coble_sterk3-coxiter-input.py`, whose run checks that this file carries exactly that
-  diagram and that CoxIter's Gram matrix for it is the normalised Gram of those roots.
+- `Sterk2.coxiter` — the Sterk 2 cusp diagram (Sterk Fig. 6, p. 21), ten vertices. It predates the
+  batch that produced the four below and is not checked against a reconstruction.
+- `Sterk1.coxiter`, `Sterk3.coxiter`, `Sterk4.coxiter`, `Sterk5.coxiter` — the other four Sterk cusp
+  diagrams, from Sterk's Figs 4, 8, 10 and 12 on pp. 19, 22, 23 and 24. Each carries Sterk's own
+  vertex labels, and each is checked against the reconstruction of the roots he prints beside the
+  figure: `../reports/coble_sterk3-coxiter-input.py` for Fig. 8 and
+  `../reports/coble_sterk-cusp-coxiter-inputs.py` for Figs 4, 10 and 12. Both derive the Gram matrix
+  of the diagram's roots, turn each pairing into a Coxeter weight exactly, and check that the file
+  carries exactly that diagram and that CoxIter's Gram matrix for it is the normalised Gram of those
+  roots. No Sterk input here rests on a plate alone.
 - `F2.coxiter`, `F4.coxiter` — two larger rank-$24$ diagrams.
 - `k4.coxiter`, `5cycle.coxiter` — the complete graph on four vertices and the
   five-cycle, both with every bond $3$; small specimens.
@@ -31,8 +35,9 @@ rootfs (`/usr/local/bin/coxiter`, version 1.3):
 
 - First line, mandatory: `d, n` — `d` the number of vertices and `n` the dimension. The dimension is
   optional; without it CoxIter infers it from the maximal spherical and euclidean subgraphs, and that
-  inference needs the polytope to have at least one vertex. `Sterk3.coxiter` writes the documented
-  `12 9`, and `E6.coxiter` writes the bare count `6`.
+  inference needs the polytope to have at least one vertex. The four Sterk inputs of this batch write
+  it — `12 9`, `12 9`, `11 9`, `14 9` for cusps 1, 3, 4, 5 — and `E6.coxiter` writes the bare count
+  `6`.
 
   The other inputs begin `dimension N`. That is not a form the documentation gives, and it does not
   declare the dimension: measured on all five, CoxIter takes `N` as the vertex count, reports
@@ -59,6 +64,25 @@ CoxIter reads the graph on **standard input**: `./coxiter < file.coxiter`, as it
 puts it, or with `-i file.coxiter`. A bare path argument does not work — it reports
 `Error while reading graph: EMPTY_FILE`.
 
+## The five Sterk cusps
+
+One input and one transcript per cusp, all five in dimension 9, all five non-cocompact with finite
+covolume and Euler characteristic 0. The vertex counts are Sterk's, and each agrees with the node
+count of its plate read at 300 dpi (Figs 4, 6, 8, 10, 12 on pp. 19, 21, 22, 23, 24).
+
+| Cusp | Input | Vertices | Dimension | Finite covolume | Vertices at $\infty$ | Field | $f$-vector | Transcript |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Sterk 1 | `Sterk1.coxiter` | 12 | 9 | yes | 9 | $\QQ$ | $(23, 114, 288, 462, 504, 378, 192, 63, 12, 1)$ | `logs/Sterk1.txt` |
+| Sterk 2 | `Sterk2.coxiter` | 10 | 9 (guessed) | yes | 2 | $\QQ[\sqrt2]$ | $(10, 45, 120, 210, 252, 210, 120, 45, 10, 1)$ | `logs/Sterk2.txt` |
+| Sterk 3 | `Sterk3.coxiter` | 12 | 9 | yes | 4 | $\QQ[\sqrt2]$ | $(33, 164, 398, 602, 616, 434, 208, 65, 12, 1)$ | `logs/Sterk3.txt` |
+| Sterk 4 | `Sterk4.coxiter` | 11 | 9 | yes | 5 | $\QQ[\sqrt2]$ | $(26, 125, 300, 450, 460, 330, 165, 55, 11, 1)$ | `logs/Sterk4.txt` |
+| Sterk 5 | `Sterk5.coxiter` | 14 | 9 | yes | 13 | $\QQ[\sqrt2]$ | $(115, 600, 1352, 1768, 1508, 875, 346, 90, 14, 1)$ | `logs/Sterk5.txt` |
+
+The dimension is the one declared in each input's first line, except for `Sterk2.coxiter`, whose
+`dimension 10` first line leaves it to be guessed (9, see the format section). These are the rows of
+`@sec-coxiter-results-for-cusp-lattices`; `../reports/coble_sterk-cusp-coxiter-inputs.py` compares
+them against the runs for cusps 1, 4 and 5 and reports a disagreement rather than reconciling it.
+
 ## Runs
 
 `logs/*.txt` are the CoxIter transcripts. Those for the three $(r, a, \delta)$-named inputs list the
@@ -67,13 +91,14 @@ orders, and close with the f-vector, the number of vertices at infinity, and the
 characteristic. For `10-8-0_1` the f-vector is $(10, 45, 120, 210, 252, 210, 120, 45, 10, 1)$
 with two vertices at infinity and Euler characteristic $0$.
 
-`logs/Sterk3.txt` is the transcript for `Sterk3.coxiter`: 12 vertices, dimension 9, field
-$\QQ[\sqrt2]$, not cocompact, **finite covolume yes**, f-vector
-$(33, 164, 398, 602, 616, 434, 208, 65, 12, 1)$, 4 vertices at infinity. Its `Signature
-(numerically)` line reads `10,2,0` and is *not* the inertia of the Gram matrix CoxIter prints
-alongside it: that matrix has rank 10 and inertia $(9,1,2)$, which is the sign flip of the
-reconstruction's $(1,9,2)$, as `../reports/coble_sterk3-coxiter-input.py` checks entry by entry.
-Cite the matrix, not that line.
+The `Signature (numerically)` line of every Sterk transcript is **not** the "Signature line" column of
+the cusp table in the writing. It reads 10,2,0 (Sterk 1), 9,1,0 (Sterk 2), 10,2,0 (Sterk 3),
+10,1,0 (Sterk 4) and 13,1,0 (Sterk 5), while that column's 9,1,2; 9,1,0; 9,1,2; 9,1,1; 9,1,4 are the
+inertia of the sign-flipped Gram of each diagram's roots, as
+`../reports/coble_sterk-cusp-signatures-run.txt` reproduces it at all five cusps. The two agree only
+at cusp 2, by coincidence. Cite the Gram matrix or the column, not that line; and whatever is
+disputed about the signature of the third cusp in `logs/Sterk3.txt` is settled by the matrix printed
+beside it, rank 10 with inertia $(9,1,2)$, not by the line.
 
 ## What the preamble owns, and what it does not
 
