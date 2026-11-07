@@ -315,7 +315,13 @@ $\gent = \rho^{-1}(M) = \rho^{-1}(F_q) = F$.
 **The fibre argument.** Define $\varphi$ on primitive isotropic lines by
 $\varphi(\ZZ v) \definedas [v/\operatorname{div}(v)]$ with $\operatorname{div}(v) = \gcd(v,\ten)$;
 this is well defined, since the only other generator of the line is $-v$, which has the same
-divisibility and the negated class, and $A_{\ten}$ is $2$-primary. *Divisibility one:* here
+divisibility and the negated class, and the negated class *equals* the class because
+$A_{\ten}$ has exponent two for this lattice: $A_{\ten}\cong A_{U(2)}\oplus A_{E_8(2)}\cong(\ZZ/2)^2\oplus(\ZZ/2)^8$
+since $U$ is unimodular and contributes nothing while both scaled summands have half-vector
+discriminant groups of exponent two; the computation
+`computations/reports/coble_gammaEn2-planes-published-run.txt` realizes every one of the 1024
+classes as a parity vector in $\ker(G\bmod 2)$, each of order two. A $2$-primary order alone
+would not suffice, and is not what is used. *Divisibility one:* here
 $v\in\ten\subseteq\ten^*$, so $\varphi(\ZZ v) = 0$, and the class is the zero class exactly on
 the divisibility-one lines; these form a *single* $\gent$-orbit, because [@Ste91, Cor. 3.3] at
 $p = 1$ — equal squares, equal divisibility $\ZZ$, and the congruence mod $1\cdot N$, which is
@@ -345,9 +351,24 @@ representative vectors, the reflection subgroup $W(G_v)$ has finite index in $G_
 criterion, verified by the diagrams of 4.3.5–4.3.9, with the diagram symmetries lifting by the
 criterion of 4.3.10–4.3.13), every isotropic line of $v^{\perp}/\ZZ v$ is $W(G_v)$-equivalent to a
 vertex at infinity of the fundamental polyhedron, and those vertices are exactly the maximal
-parabolic subdiagrams enumerated there. The count of $\gent$-orbits of planes is therefore
-Sterk's nine, with @prop:sterk-nine-planes supplying the verified representatives and their
-finite types.
+parabolic subdiagrams enumerated there, and the passage from vector stabilizers to planes is
+4.3.1: a plane $\varPi$ containing $v$ determines the isotropic line $\varPi/\ZZ v$ of
+$v^{\perp}/\ZZ v$, on which $G_v$ acts, and the same plane recurs for different $v$ exactly as
+recorded in 4.3.15–4.3.16 (the interlacing), so the per-vector enumerations combine into nine
+classes. The embeddings behind [@Ste91, Prop. 4.6] are those of Lemma 4.3.4 — under the
+summand-wise isometry $\ten\cong L_- = H\oplus H(2)\oplus E_8(-2)$, the identification
+$(e')^{\perp}/\ZZ e'\cong H\oplus E_8(-2)$ and the single
+$\Orth(H(2)\oplus E_8(-2))$-orbit of primitive isotropic vectors in that lattice — and they give
+the two $\Orth(L_-)$-classes, not the finer $F$-classes.
+
+**Inequivalence, independent of any count.** The nine planes of @prop:sterk-nine-planes are
+pairwise $\gent$-inequivalent by an invariant: the discriminant image of a plane together with
+the $M$-orbit-types of its nonzero classes is preserved by $\gent$ (an element
+$g\in\gent$ conjugates the image subgroup by $\rho(g)\in M$ and permutes the $M$-orbits), and
+the nine orbit-type sets $(2,), (3,), (4,), (5,), (2,4,5), (4,5), (3,5), (3,4), (5,5)$ are
+pairwise distinct. No appeal to the published count enters this inequivalence, nor the
+exhaustion above; the count nine is the output of the enumeration with its Vinberg hypotheses,
+not an input anywhere in the chain.
 :::
 
 
