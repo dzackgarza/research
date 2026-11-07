@@ -274,13 +274,14 @@ respectively, the planes $\langle e, v\rangle$ (labelled $A_7\oplus A_1$, $E_7\o
 $E_8$ by 4.3.15–4.3.16) are all primitive, all have $\abs{\Pi^*/\Pi} = 2$, and all have
 $\Pi^{\perp}/\Pi$ of determinant 256 with exactly **240** roots of square $-4$ and none of square
 $-2$ — the statement of [@Ste91, §4.3.5] that the four types are *not* distinguished by
-$\Pi^{\perp}/\Pi$. The isomorphism with $E_8(-2)$ is exact, and does not rest on the shell counts
-alone: for $\Pi = \langle e, e_1\rangle$ the quotient *is* the $E_8(2)$-summand by construction;
-each of the other three quotients has 240 roots of a single square in rank 8, hence root system
-$E_8$ (the unique rank-8 root system with 240 roots), so it contains the root lattice
-$E_8(-2)$ of determinant 256, and equality of determinants forces the containment to be equality;
-and [@Ste91, Prop. 4.6] gives the same conclusion structurally, since all four planes contain a
-type-1 vector and are therefore one $\Orth(L_-)$-class. Their discriminant images have order 2, with orbit-type $(2,), (3,), (4,), (5,)$
+$\Pi^{\perp}/\Pi$. The isomorphism with $E_8(-2)$ is exact and does not rest on the shell counts:
+for $\Pi = \langle e, e_1\rangle$ the quotient *is* the $E_8(2)$-summand by construction, and
+[@Ste91, Prop. 4.6] identifies the other three with it — its hypothesis, proved there from the
+single $\Orth(H(2)\oplus E_8(-2))$-orbit of primitive isotropic vectors in that lattice, is that
+every primitive isotropic plane containing a divisibility-one vector is $\Orth(L_-)$-equivalent
+to $\ZZ e\oplus\ZZ e'$, and an $\Orth(L_-)$-equivalence of planes induces an isometry of the
+quotients $\Pi^{\perp}/\Pi$. The shell counts (240 roots of square $-4$, none of square $-2$,
+determinant 256) are recorded as checks on this. Their discriminant images have order 2, with orbit-type $(2,), (3,), (4,), (5,)$
 respectively — the four vector types of Prop. 4.2.3 sit in four distinct M-orbits of sizes
 $2, 120, 270, 135$.
 
@@ -311,17 +312,28 @@ same decomposition (its nine generators act on the separate summands) and has or
 $696\,729\,600 = \abs{\Orth(q)}/(2^7\cdot 17\cdot 31) = \abs{F_q}$, so $M = F_q$ and
 $\gent = \rho^{-1}(M) = \rho^{-1}(F_q) = F$.
 
-**The fibre argument.** Let $\ZZ v, \ZZ w$ be primitive isotropic lines whose classes
-$[v/2], [w/2]$ lie in one $M$-orbit. Since $\rho(\gent) = M$, some $g\in\gent$ carries $[v/2]$ to
-$[w/2]$; then $v' \definedas g(v)$ and $w$ are primitive isotropic of the same divisibility with
-the same class, and [@Ste91, Cor. 3.3] at $N = L_- \cong \ten$ — its hypotheses are exactly equal
-squares, equal divisibility $p\ZZ$, and the class congruence, and its proof is the
-Siegel–Eichler step $E_{e,y}$ followed by a divisibility normalization — supplies an element of
-$\Orth'(L_-)$ carrying $v'$ to $\pm w$. Since $\Orth'(L_-) = K\subseteq\gent$ by (H1), that
-element lies in $\gent$. Hence each fibre of lines over an $M$-orbit of classes is a *single*
-$\gent$-orbit, and the inequivalence of the representatives is the second statement of
-[@Ste91, Prop. 4.2.3]. This is Sterk's own proof of 4.2.3 run for the identified group, not a
-citation of its conclusion.
+**The fibre argument.** Define $\varphi$ on primitive isotropic lines by
+$\varphi(\ZZ v) \definedas [v/\operatorname{div}(v)]$ with $\operatorname{div}(v) = \gcd(v,\ten)$;
+this is well defined, since the only other generator of the line is $-v$, which has the same
+divisibility and the negated class, and $A_{\ten}$ is $2$-primary. *Divisibility one:* here
+$v\in\ten\subseteq\ten^*$, so $\varphi(\ZZ v) = 0$, and the class is the zero class exactly on
+the divisibility-one lines; these form a *single* $\gent$-orbit, because [@Ste91, Cor. 3.3] at
+$p = 1$ — equal squares, equal divisibility $\ZZ$, and the congruence mod $1\cdot N$, which is
+vacuous — makes $\Orth'(\ten)$ transitive on them (this is [@Ste91, Lem. 4.2.1]), and
+$\Orth'(\ten) = K\subseteq\gent$. *Divisibility two:* here $v/2\in\ten^*$ and
+$\varphi(\ZZ v) = [v/2]$ is a nonzero isotropic class, since $q([v/2]) = v^2/4 = 0$. Let
+$\ZZ v, \ZZ w$ be divisibility-two lines with $[v/2], [w/2]$ in one $M$-orbit. Since
+$\rho(\gent) = M$, some $g\in\gent$ carries $[v/2]$ to $[w/2]$; put $v' = g(v)$. Then
+$[v'/2] = [w/2]$ in $\ten^*/\ten$, and because the class map is a homomorphism whose zero class
+is $\ten$ itself, this says exactly
+$$ v' - w \in 2\,\ten , $$
+which is the congruence modulo $pN$ at $p = 2$ that [@Ste91, Cor. 3.3] requires alongside equal
+squares and equal divisibility $2\ZZ$. Its proof — the Siegel–Eichler step $E_{e,y}$ normalizing
+$(v,f) = p$, then $E_{f,u}$ — supplies an element of $\Orth'(\ten)$ carrying $v'$ to $\pm w$,
+and $\Orth'(\ten) = K\subseteq\gent$ by (H1). Hence each fibre of lines over an $M$-orbit of
+classes is a *single* $\gent$-orbit, and the inequivalence of the representatives is the second
+statement of [@Ste91, Prop. 4.2.3]. This is Sterk's own proof of 4.2.3 run for the identified
+group, not a citation of its conclusion.
 
 Then the $\gent$-orbits of primitive isotropic lines are **five**: one over the zero class and
 four over the nonzero $M$-orbits of sizes $2, 120, 270, 135$ — the computed partition

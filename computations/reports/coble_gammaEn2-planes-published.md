@@ -70,3 +70,17 @@ wrapper still reported 0: the exit status was masked somewhere in the wrapper/pr
 the zero exit carries no information about the call — consistent with the run-defect paragraph in
 `coble_gammaEn2-sterk-classification.md`.  A missing run result is not evidence of a missing
 library operation; nothing is filed against `stabilizer_generators` on this evidence.
+
+## Addendum (third pass): the fibre map on divisibility, and the complement isomorphisms
+
+The fibre map is $\varphi(\ZZ v) = [v/\operatorname{div}(v)]$: divisibility-one vectors have
+$v \in T_\En$ and class $0$ (their fibre is one orbit by Sterk 4.2.1 = Cor 3.3 at $p=1$, vacuous
+congruence); divisibility-two vectors have $v/2 \in T_\En^*$ and nonzero isotropic class, and
+equal classes give $v'-w \in 2T_\En$ *exactly* — the homomorphism property of the class map with
+zero class $T_\En$ — which is Cor 3.3's congruence mod $pN$ at $p=2$. The complement isomorphisms
+of the four 4.3.16 planes come from Sterk Prop 4.6's plane equivalences (its hypothesis: one
+$\Orth(H(2)\oplus E_8(-2))$-orbit of primitive isotropic vectors there), not from shell counts.
+The public-call comparison (Γ_En,2 `isotropic_orbit_representatives` against the published 5 and
+9) is not blocked by any missing library operation: both calls are running in the preserved jobs
+`jmw6b7spz` and `jmw69fxhq` and had produced no output at this commit; nothing is routed to
+sage-extensions on this evidence.
