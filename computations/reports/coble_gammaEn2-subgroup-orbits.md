@@ -36,6 +36,27 @@ These are lattice orbits with stabilizers, not discriminant walks; the finite st
 `coble_gammaEn2-card-run.txt` (`1 + 4 + 5` over image dimension $0,1,2$, against nine published
 $1$-cusps) are the finite-shadow computation and are not summed into a count.
 
+## The marking, checked rather than assumed
+
+`coble_gammaEn2-marking.py` makes the choice of $\gamma$ explicit and tests it. In each of $\sen$ and
+$	en$ it computes the summand subspace $A_{U(2)}\subseteq A$ from the $U(2)$ slots ($4$ classes) and
+its orthogonal complement $A_{E_8(2)}$ ($256$ classes), then reads off the nine generators' images:
+
+- the eight $E_8(2)$-root reflections must fix $A_{U(2)}$ pointwise and preserve $A_{E_8(2)}$;
+- the $U(2)$ reflection in $u_0-w_0$ must fix $A_{E_8(2)}$ pointwise.
+
+If both hold on both lattices, the summand-wise identification is the canonical marking: the two
+nine-element families correspond generator by generator under it, $\gamma$ is the identity on each
+summand, and $ho_	en(\gent)$ is the group computed from isometries of $	en$ itself. The script
+also prints the $M$-orbit partition on the $528$ isotropic classes on each side, which must agree as
+a multiset — the two lattices' discriminants are distinct quadratic spaces a priori, and this is what
+identifies them.
+
+It also prints the revision *sources* rather than the module paths: the port clone's `git rev-parse
+HEAD`, the provider snapshot's declared version line, and a `sha256` of
+`orthogonal_quotients.py` — the file that owns `discriminant_preimage` and the character-data
+machinery the result rests on.
+
 ## Status
 
 The numbers are being produced by the three jobs named in the commit that added this file:
