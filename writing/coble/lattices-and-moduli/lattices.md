@@ -442,6 +442,22 @@ exhaustion above; the count nine is the output of the enumeration with its Vinbe
 not an input anywhere in the chain.
 :::
 
+::: {.corollary #cor:enriques-plane-fibres title="The plane fibres are single orbits, and the image orbits are exactly nine"}
+Keep the hypotheses and notation of @thm:sterk-line-fibres. The map sending a primitive
+isotropic plane $\varPi$ to its discriminant image $D(\varPi) = \langle[v/2],[w/2]\rangle$
+is $\gent$-equivariant, and every image is realized, so the $\gent$-orbits of planes surject
+onto the $M$-orbits of images. The orbit-type set of @prop:sterk-nine-planes is an invariant
+of the $M$-orbit of the image, and the nine $\gent$-orbits have nine distinct type-sets, so
+there are at least nine $M$-orbits of images; as each supports at least one $\gent$-orbit and
+there are nine in all, there are exactly nine, indexed by the type-sets, and **each fibre over
+an $M$-orbit of images is a single $\gent$-orbit**. For any $\Gamma$ with
+$K\iscontainedin\Gamma\iscontainedin\Orth(\ten)$ the same argument gives a bijection between
+$\Gamma$-orbits of planes and $\rho(\Gamma)$-orbits of images, every fibre a single orbit:
+the fibre index is $1$, where the Coble family's is $8$ (@thm:coble-plane-stabilizer-image) —
+the Enriques promotion through $H(2)$'s evenly-paired isotropic vectors succeeds where the
+Coble definite Levi obstructs.
+:::
+
 
 ::: {.remark #rmk:sterk-one-cusp-types title="The published plane types and their boundary groups"}
 
