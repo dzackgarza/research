@@ -31,9 +31,16 @@ rootfs (`/usr/local/bin/coxiter`, version 1.3):
 
 - First line, mandatory: `d, n` — `d` the number of vertices and `n` the dimension. The dimension is
   optional; without it CoxIter infers it from the maximal spherical and euclidean subgraphs, and that
-  inference needs the polytope to have at least one vertex. `E6.coxiter` writes the bare count `6`
-  and `F2.coxiter` writes `dimension 24`; both are read, and `Sterk3.coxiter` writes the documented
-  `12 9`.
+  inference needs the polytope to have at least one vertex. `Sterk3.coxiter` writes the documented
+  `12 9`, and `E6.coxiter` writes the bare count `6`.
+
+  The other inputs begin `dimension N`. That is not a form the documentation gives, and it does not
+  declare the dimension: measured on all five, CoxIter takes `N` as the vertex count, reports
+  `Dimension: ?`, and guesses. `dimension 10` gives 10 vertices and guessed dimension 9
+  (`10-10-0_1`, `10-8-0_1`, `Sterk2`), `dimension 9` gives 9 vertices and guessed 8 (`9-9-1_1`), and
+  `dimension 24` gives 24 vertices and guessed **18** (`F2`). The first four guesses are the dimension
+  those runs are meant to work in, so they stand; `F2`'s is not, and its first line should carry the
+  dimension as the second token once that dimension is known. It is not guessed here.
 - Second line, optional: `vertices labels: label1 label2 ...`. Without it the vertices are `1..d`.
   A label may carry letters, digits, `-` and `_`, but no space.
 - Every later line: `v1 v2 weight`. Only one line per edge is needed, and weight `2` (no bond) may be
