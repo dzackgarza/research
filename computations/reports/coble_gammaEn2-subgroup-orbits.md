@@ -139,3 +139,28 @@ The numbers are being produced by the three jobs named in the commit that added 
 `jmw6b7spz` (this script), `jmw6ab5wm` (`cusps(1)` and the stabilizer images), `jmw69fxhq`
 (`cusps(2)`). They are folded in here as they land, and only then does the vector/plane comparison
 become a result rather than a route. Nothing above is a count.
+
+## Job jmw69fxhq (full-group cusps(2)): terminated — exit condition established
+
+The job registry shows `jmw69fxhq` **exited** (exit_code 0) after 5.84 h (started 1794047301760,
+ended 1794068317048). Its wrapper log is `exit=0` followed by the three provenance lines of
+`.scratch/cusps2.out` — and that file contains *only* those three lines: the probe
+`probe_cusps2_held.py` printed its header (port, provider, T_En rank/det/signature) and then
+produced no further output and no traceback, although the script's next statements print the
+`cusps(2)` record count. So the run died silently inside the public call `T_En.cusps(2)` at about
+5.8 h, with the wrapper reporting 0 — the same masked-exit, no-traceback signature as `jmw6ab5wm`
+(which died silently inside `stabilizer_generators()` at ~1.5 h).
+
+**Exit condition, as established:** silent termination (no Python traceback, combined stderr
+redirect captured nothing) inside `sage_indefinite_port`'s `cusps(2)` on
+`T_En = U ⊕ U(2) ⊕ E8(2)` built through `Lattices`, under proot with the paired provider
+`cdafca84065405cb810bba047f8a965299b03762` at `/prov` and the held port `991b88b0` at
+`/repo/.scratch/port-held/src`. Consistent with signal death (segfault or OOM kill) in the
+in-process backend; kernel logs are not readable from this VM, so the signal itself is not
+identified. **Two independent silent deaths on heavy indefinite-lattice calls, no traceback in
+either:** that is the concrete evidence; it is *not* proven reproducible (one occurrence each),
+so it is recorded here for routing rather than filed as a certified defect. The reproducibility
+step is a rerun of `probe_cusps2_held.py` with faithful exit propagation (separate stderr, no
+`|| true`-style masking, exit status checked against the probe's completion marker), gated on
+`jmw6b7spz` finishing, per the one-long-run-at-a-time rule. `jmw6b7spz` is preserved and remains
+the only running job; its CPU time was advancing at last sample.
