@@ -164,3 +164,37 @@ step is a rerun of `probe_cusps2_held.py` with faithful exit propagation (separa
 `|| true`-style masking, exit status checked against the probe's completion marker), gated on
 `jmw6b7spz` finishing, per the one-long-run-at-a-time rule. `jmw6b7spz` is preserved and remains
 the only running job; its CPU time was advancing at last sample.
+
+## Correction (#749): the mask is located in proot, reproduced through the same execution path
+
+The causal assertion above ("consistent with signal death in the in-process backend") is
+corrected. A controlled reproduction through the *same* path — same proot binary, same binds,
+same `/prov` provider and held-port `PYTHONPATH`, same `/sage/.venv/bin/python` — with a child
+that prints a marker and then (i) exits 3, (ii) kills itself with SIGSEGV, (iii) raises:
+
+- exit 3: proot returns **3**, marker present — clean exits propagate faithfully;
+- raise: proot returns **1**, traceback present — exceptions propagate faithfully;
+- SIGSEGV: **proot returns 0** — proot eats child signal death and reports success. The child's
+  cysignals banner ("Unhandled SIGSEGV ... Python will now terminate") *did* reach the redirected
+  output file.
+
+Established boundary, replacing the unsupported causal claim: `jmw69fxhq` retains an incomplete
+result (header only) and a wrapper exit 0 that **provably cannot distinguish success from child
+signal death**, because the masking layer is proot (reproduced), not the bash wrapper (which
+faithfully reports proot's status) and not the probe (which prints its result or its exception
+with traceback; it catches `Exception` only). The absence of a cysignals banner in `cusps2.out`
+leaves the specific signal unidentified — SIGKILL (e.g. OOM) is silent, while a SIGSEGV in a
+Sage-wrapped compiled module normally prints the banner — so no engine cause is asserted and
+**no port-implementation defect is filed**; the port pause remains.
+
+**Repaired wrapper pattern** for the resumption of the arithmetic comparison (gated on
+`jmw6b7spz`): capture the child status *inside* the guest, before proot can mask it —
+
+    proot ... /usr/bin/env PATH=... PYTHONPATH=... /bin/sh -c \
+      '/sage/.venv/bin/python /repo/.scratch/probe_cusps2_held.py; echo PYEXIT=$?' \
+      > .scratch/cusps2.out 2>&1
+
+so the output file ends with the probe's own exit status and the run is complete iff the
+`cusps(2) -> N records` line is present; `PYEXIT` plus the result line together are the
+result/failure boundary #749 requires. Reproduction script: `.scratch/repro_exit.py`; outputs
+`.scratch/repro-{exit3,segv,raise}.out`.
