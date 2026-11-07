@@ -32,9 +32,32 @@ $$
 \Gamma_\En = \Orth(\ten),\quad \Gamma_{\mathrm{dP}} = \Orth(T_{\mathrm{dP}}),
 $$
 
-Definition 2.6 of [@AEGS25] states further that $\Gamma_{\En,2} = \Gamma_\En\cap\Gamma_{\mathrm{dP}}$, with
-$[\Gamma_\En : \Gamma_{\En,2}] = 27\cdot 17\cdot 31 = 14229$ by Lemma 2.8 (citing Sterk,
-Remark 2.12), that index being the degree of $\fen\to F_{(10,10,0)}$. `@prop:gamma-en-two-gluing`
+Definition 2.6 of [@AEGS25] states further that $\Gamma_{\En,2} = \Gamma_\En\cap\Gamma_{\mathrm{dP}}$, and
+Lemma 2.8 (citing Sterk, Remark 2.12) gives the index as the degree of $\fen\to F_{(10,10,0)}$:
+
+$$
+[\Gamma_\En : \Gamma_{\En,2}] \;=\; 2^7\cdot 17\cdot 31 \;=\; 67\,456 .
+$$
+
+**This number was misread in the previous batch as $27\cdot17\cdot31 = 14229$**, and the misreading
+came from this repository's own text extraction of the PDF: `pdftotext` drops the exponent, printing
+`27 · 17 · 31`. The published page prints $2^7\cdot17\cdot31$ — read off the page image
+(`pdftoppm -r 400 -f 7 -l 7` of `tmp/sources/aegs-2025-...-degree-2.pdf`, page 7, the last line of
+the proof of Lemma 2.8). The correction matters, because $2^7\cdot17\cdot31$ is exactly the index
+of the computed discriminant image:
+
+$$
+\frac{\abs{\Orth(q_{\ten})}}{\abs{G}} \;=\; \frac{46\,998\,591\,897\,600}{696\,729\,600} \;=\; 67\,456 \;=\; 2^7\cdot17\cdot31 .
+$$
+
+The index of an infinite arithmetic group and the index of a finite discriminant image are different
+kinds of number, and they agree here only through the kernel relation
+$[\Gamma_\En:\Gamma_{\En,2}] = [\rho(\Orth(\ten)):\rho(\Gamma_{\En,2})]\cdot[K:K\cap\Gamma_{\En,2}]$,
+$K = \ker(\Orth(\ten)\to\Orth(q_{\ten}))$. Since the published index equals the finite index
+exactly, $K\subseteq\Gamma_{\En,2}$: the arithmetic group is the full preimage of its discriminant
+image, which is what makes the finite walk a statement about $\Gamma_{\En,2}$ at all and not only
+about $\rho(\Gamma_{\En,2})$. That is the reconciliation, and it is a confirmation of the group
+identification rather than a weakening of it. `@prop:gamma-en-two-gluing`
 gives the discriminant description:
 
 $$
@@ -91,37 +114,92 @@ A primitive isotropic plane $\varPi\subset\ten$ carries the same kind of datum: 
 $\varPi$ in $A_{\ten}$ is a totally isotropic subgroup of dimension $0$, $1$ or $2$ according to
 $\varPi^{*}/\varPi$. Only the $2$-dimensional stratum is a finite-form datum, and there the count is:
 
+All three strata of totally isotropic subgroups of $A_{\sen}$ are now computed
+(`coble_gammaEn2-card-run.txt`):
+
+| stratum: $\dim$ of the image of $\varPi$ in $A$ | finite objects | $G$-orbits | sizes |
+|---|---|---|---|
+| $0$ (trivial subgroup) | 1 | **1** | $1$ |
+| $1$ (isotropic lines) | 527 | **4** | $270, 135, 120, 2$ |
+| $2$ (totally singular 2-spaces) | $23715$ | **5** | $9450, 8640, 3780, 1575, 270$ |
+| | | $\mathbf{10}$ | |
+
+Against the published **nine** 1-cusps [@AEGS25, §3.3, p. 590]. The sum over the strata is **ten**,
+and ten is not nine, so the stratification cannot simply be added up. This is the point at which the
+distinction between the two ways a finite count can fail to be an arithmetic count has to be made,
+and it is the substance of what remains:
+
+- **a stratum can be non-liftable.** A totally isotropic subgroup $\bar\varPi\subseteq A$ need not
+  be the image of a primitive isotropic plane $\varPi\subset\ten$ at all; an object that does not
+  lift contributes a finite orbit and no lattice cusp. Nothing computed so far decides liftability
+  for the strata above, and the vector side shows it is not automatic: there the $\operatorname{div}$
+  value, not the subgroup alone, is the invariant that lifts.
+- **a finite class can hide several lattice orbits, or none.** The finite walk counts orbits of
+  $G$, and the map from lattice orbits to $G$-orbits is surjective with fibres
+  $\Stab_{\Gamma_{\En,2}}(x)$-orbits of the lift. It is a bijection only under two hypotheses:
+  (i) every $G$-orbit in the stratum is realized by a lattice object, and (ii) the stabilizer of one
+  object in $\Gamma_{\En,2}$ acts transitively on the objects of the stratum over its class
+  (Eichler transitivity). The equivariance of $x\mapsto [x/\operatorname{div}(x)]$ gives neither.
+
+For the **vector** side both hypotheses are met, and the file above records the evidence rather than
+assuming it: the two $\Orth(\ten)$-orbits are the $\operatorname{div} = 1,2$ classes [@AEGS25, §3.2],
+the only invariant available is $\operatorname{div}$ (which is what the map to $A$ sees), and the
+index computation above pins $K\subseteq\Gamma_{\En,2}$, so the group acting is the whole preimage
+and not a proper subgroup of it. That is why $5$ is used as the vector total and why the same
+argument is *not* transferred to the planes.
+
+So the 1-cusp side stays **open**, now with a diagnosis rather than a gap: ten finite strata-orbits
+against nine published cusps means at least one of the ten does not lift or does not separate, and
+deciding which requires the lattice-level orbit computation for planes — `T_En.cusps(2)` or its
+subgroup form — not a larger finite walk.
+
+## The lattice-side owners, and the exact revisions of the one call that fails
+
+These are the existing owners of the missing lattice-side computation; no new operation is requested,
+and none of them needs inventing:
+
+| owner (module, operation) | what it would give here |
+|---|---|
+| `sage_extensions` `PredicateSubgroups.isotropic_orbit_representatives(rank, flag=)` | orbits of a **prescribed** subgroup of $\Orth(L)$ on primitive isotropic flags of the lattice — the vector and plane counts without passing through $A$ |
+| `Lattices.cusps(rank)` (→ `Aut().cusps(rank)`) | the full-group cusps, rank 1 and rank 2, with stabilizer generators and transporters |
+| `Lattices.tits_building_incidence()` | the line/plane incidence of the $\Orth(L)$ quotient building, i.e. which cusps are incident |
+| `discriminant_image` (`lattice_morphisms`, `orthogonal_quotients`, `predicate_subgroups`) | the map whose image the finite walk above really computes |
+| `orthogonal_quotients._subgroup_isotropic_orbit_representatives(subgroup, rank, flag=)` | the same for a subgroup, through `OrthogonalCharacterQuotient` splittings |
+
+The subgroup route needs generating *families* for the polarization group and the stable kernel,
+which issue #17 owns; the subgroup orbit computation itself is #286's. Until those land, the only
+group I can name concretely is the nine-generator image $G$ used above, and the lattice-level
+statement ("which finite classes lift, and whether the stabilizer is transitive on a fibre") is not
+computable here.
+
+### The one call that was tried, with its exact provenance
+
+`T_En.cusps(1)` was called and raised inside the port's Eichler machinery:
+
 ```
-  totally singular 2-spaces of A_{S_En}: 23715
-    G-orbits on them: 5, sizes [9450, 8640, 3780, 1575, 270]
+  File "/repos/sage-indefinite-port/src/sage_indefinite_port/indefinite/recursive.py", line 154
+    source_coordinates = tuple(int(coordinates(label)) for label in source_labels)
+TypeError: int() argument must be a string, a bytes-like object or a real number,
+           not 'OwnedJoinCategory.element_class'
 ```
 
-against the published **nine** 1-cusps [@AEGS25, §3.3, p. 590]. The count is therefore **not**
-reproduced, and the reason is precise rather than numerical: the strata of dimension $0$ and $1$ are
-not orbits on $A$, so no finite-form walk can supply them. This is the part of the obligation that
-stays open, and it is open for want of the operations below, not for want of a decision.
+The revisions imported for that call, recorded as required:
 
-## The public operations this needs, stated for filing
+- **sage-extensions**: `.scratch/se-provider-15db925b/src`, pin `15db925b0c92e525f769fcbf57135f1391263a9e`;
+- **sage-indefinite-port**: `/repos/sage-indefinite-port` inside the adopted rootfs, at
+  **`4f0ee50c3ef432681ecdbbd7a5a7f5adb244d83b`** (working tree clean), which is the old image port pin;
+  its `pyproject.toml` declares `sage-extensions @ 7b222e86214524a53802350f3cfda9c513707600`, i.e. a
+  *different* provider than the one on `PYTHONPATH` above — the pair is mixed and that is part of the
+  provenance;
+- **Sage**: `11.0.beta5`.
 
-1. **`orthogonal_group_intersection(L, M)`** — for a primitive sublattice $M\subset L$ (here
-   $\ten\subset T_{\mathrm{dP}}$, resp. the two eigenspaces of $I_\En$ inside $\lkt$), generators of
-   $\Orth(M)\cap\Orth(L)$, equivalently of the isometries of $M$ preserving the gluing subgroup
-   $(L\cap M^{*})/M\subseteq A_M$. Certificate: each returned generator is an isometry of $M$, its
-   induced map on $A_M$ preserves that subgroup, and $\abs{\langle\text{generators}\rangle}$ equals a
-   supplied index (here $14229$). Today the image can only be *constructed* because
-   `@prop:gamma-en-two-gluing` names it as a $\gamma$-transport; it is not computed as an intersection.
-2. **`isotropic_flag_orbits(L, generators, rank, div)`** — orbits of a *prescribed* subgroup of
-   $\Orth(L)$ on the primitive isotropic rank-$k$ flags of the lattice $L$, stratified by
-   $\operatorname{div}$. The existing orbit operations act on the finite discriminant module, and
-   `A.orbits(group=)` additionally builds the full permutation representation of the group on all
-   $\abs{A}$ classes, which is what made the previous run hang. Certificate: orbit representatives with
-   their $\operatorname{div}$ and the lattice $\varPi^{\perp}/\varPi$ (or $v^{\perp}/\ZZ v$), plus
-   transversality $|\Orth(L)| = \sum|\text{orbit}|\cdot|\text{stabilizer}|$ restricted to a stated
-   finite quotient.
-3. **`isotropic_subobjects_by_image(A, rank)`** — for a finite torsion quadratic module, the
-   form-bearing subobjects of rank $k$ grouped by the dimension of their image in $A$ (the strata
-   $\dim = 0,1,2$ above), with one representative of each orbit of the acting group and, for each,
-   the lattice-level lift. This is what turns the 5 computed here into the 9.
+This is the **already tracked** `int(owned element)` failure at the old image port pin, not a new
+defect: held main `991b88b095a42a1e3679569ea42328c900c120f6` contains `ab140b7`, which changes both
+`int()` sites. Reproducing the call against that held revision is owed before anything is filed as
+open, and no port work is authorized. The new published image run already returned $\Orth(T_\Co)$
+generators and discriminant surjectivity at that pin.
 
-Without (1) the group is only inferable from a proposition; without (2) and (3) the 1-cusp side cannot
-be decided, and no count of the Coble side should be accepted before it is.
+So the plane side is open for a reason that is now written down in one place: the finite strata do
+not add up to the published count, and the liftability/transitivity hypotheses that would make them
+add up are lattice-level statements whose owner is the `cusps` / subgroup-orbit chain above, at the
+held revision.

@@ -25,7 +25,9 @@ pair, so the rho-side count is a strict lower bound and does not decide the 5.
 CORRECTION.  The group counted above is Stab_{O(q_T)}([h/2]), the discriminant image of the
 integral stabilizer of the polarization, and it is NOT Gamma_En,2.  AEGS 2025 Def. 2.6 defines
 Gamma_En,2 = im{ g in O(L) | g I_En = I_En g, g(h) = h } = O(T_En) cap O(T_dP), of index
-27*17*31 = 14229 in O(T_En) (Lemma 2.8, after Sterk Rem. 2.12); by @prop:gamma-en-two-gluing its
+2^7*17*31 = 67456 in O(T_En) (Lemma 2.8, after Sterk Rem. 2.12; the published formula is
+2^7 . 17 . 31 and an earlier version of this note misread it as 27 . 17 . 31, the exponent
+having been lost in this repository's text extraction of the PDF); by @prop:gamma-en-two-gluing its
 discriminant image is the gamma-transport of the image of Stab_{O(S_En)}(h) in O(q_{S_En}), of order
 |W(E8)| = 696 729 600.  The group above has order 94 755 225 600 = 136 * 696 729 600, so the
 number above is the count for a group 136 times too large: it is the divisibility split div = 1

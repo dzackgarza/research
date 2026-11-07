@@ -13,7 +13,8 @@ That is not Gamma_En,2.  AEGS 2025 Def. 2.6 defines
     Gamma_En,2 = the image in O(T_En) of { g in O(L) | g I_En = I_En g and g(h) = h },
 
 and states Gamma_En,2 = Gamma_En cap Gamma_dP with Gamma_En = O(T_En), Gamma_dP = O(T_dP); by
-Lemma 2.8 (with Sterk, Remark 2.12) the index is 27 * 17 * 31 = 14229.  The discriminant
+Lemma 2.8 (with Sterk, Remark 2.12) the index is 2^7 * 17 * 31 = 67456, read off the page image
+because the repository text layer drops the exponent.  The discriminant
 description is @prop:gamma-en-two-gluing: with S_En = U(2) + E8(2) the invariant lattice, T_En the
 coinvariant (period) lattice, and gamma: A_{S_En} -> A_{T_En} the gluing anti-isometry,
 
@@ -75,10 +76,11 @@ def invariants(L, name):
     A = L.discriminant_quadratic_form()
     n = int(A.cardinality())
     a = n.bit_length() - 1
-    values = {A.q(x) for x in A.elements()}
-    integral = all(v in ZZ for v in values)
-    print('  %-6s rank %2d, det %s, signature %s, |A| = %d = 2^%d, q takes %d values, delta = %d'
-          % (name, L.rank(), L.determinant(), L.signature_pair(), n, a, len(values), 0 if integral else 1))
+    # delta = 0 iff q is Z-valued, i.e. every value is an integer in Q/2Z.  Compare the lift, not
+    # the class: `v in ZZ` is a membership test on the element and is false even for the class of 1.
+    integral = all(v.lift().denominator() == 1 for v in {A.q(x) for x in A.elements()})
+    print('  %-6s rank %2d, det %s, signature %s, (r,a,delta) = (%d,%d,%d)'
+          % (name, L.rank(), L.determinant(), L.signature_pair(), L.rank(), a, 0 if integral else 1))
     return A
 
 
@@ -111,8 +113,11 @@ print()
 used = 94755225600            # |Stab_{O(q_{T_En})}([h/2])|, computed in coble_TEn-gammaEn2-orbits-run.txt
 print('the group the earlier record used, |Stab_{O(q_T)}([h/2])| = %d' % used)
 print('  correct image |G| = %d, ratio %d' % (int(G.order()), used // int(G.order())))
-print('  the index AEGS Lemma 2.8 gives, [O(T_En) : Gamma_En,2] = 27*17*31 = %d' % (27 * 17 * 31))
+print('  the index AEGS Lemma 2.8 gives, [O(T_En) : Gamma_En,2] = 2^7*17*31 = %d' % (2**7 * 17 * 31))
+print('  [O(q_T) : G] = %d, and the two agree exactly: %s'
+      % (46998591897600 // int(G.order()), 2**7 * 17 * 31 == 46998591897600 // int(G.order())))
 assert used != int(G.order())
+assert 2**7 * 17 * 31 == 46998591897600 // int(G.order())
 
 # ---- coordinates on A_{S_En}, and the nine matrices
 els = list(A_S.elements())
@@ -213,6 +218,33 @@ print('  G-orbits on them: %d, sizes %s   (%.0f s)' % (len(plane_orbits), psizes
 assert sum(psizes) == len(planes)
 print()
 
+# ---- the plane strata: totally isotropic subgroups of A of dimension 0, 1, 2
+lines = frozenset((c,) for c in sorted(iso_coord - {0}))
+# a line is spanned by its nonzero class, so the action on lines is the action on that class
+seen, line_orbits = set(), []
+for seed in sorted(lines):
+    if seed in seen:
+        continue
+    orbit, frontier = {seed}, [seed]
+    seen.add(seed)
+    while frontier:
+        (c,) = frontier.pop()
+        for cols in mats:
+            y = (act(cols, c),)
+            if y not in orbit:
+                orbit.add(y)
+                seen.add(y)
+                frontier.append(y)
+    line_orbits.append(orbit)
+print('the three plane strata, as totally isotropic subgroups of A_{S_En}')
+print('  dimension 0 (the trivial subgroup):            1 orbit')
+print('  dimension 1 (the %d isotropic lines):        %d orbits, sizes %s'
+      % (len(lines), len(line_orbits), sorted((len(o) for o in line_orbits), reverse=True)))
+print('  dimension 2 (the %d planes):        %d orbits, sizes %s'
+      % (len(planes), len(plane_orbits), psizes))
+print('  sum over the strata: %d' % (1 + len(line_orbits) + len(plane_orbits)))
+print()
+
 print('THE CARD')
 print('  vectors, published 5 (AEGS 2025 section 3.3 p. 590; Sterk 1991 Prop. 4.2.3, p. 16):')
 print('    div 1: the zero class                                  %d' % 1)
@@ -222,4 +254,6 @@ print('  planes, published 9 (AEGS 2025 section 3.3 p. 590, nine distinct 1-cusp
 print('    G-orbits on the totally singular 2-spaces               %d' % len(plane_orbits))
 print('')
 print('  vector count agrees with 5: %s' % (1 + len(nonzero) == 5))
-print('  plane count agrees with 9: %s' % (len(plane_orbits) == 9))
+print('  planes, all three strata: %d against the published 9 -- NOT reconciled'
+      % (1 + len(line_orbits) + len(plane_orbits)))
+print('  plane count agrees with 9: %s' % (1 + len(line_orbits) + len(plane_orbits) == 9))

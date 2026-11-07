@@ -10,12 +10,15 @@ CORRECTION (this commit).  This script's first version identified Gamma_En,2 wit
 stabilizer Stab_{O(T_En)}(h) of the polarization h = e + f in U(2), and took its discriminant image
 rho(Stab(h)) = Stab_{O(q_T)}([h/2]) as the group to count.  That identification is false.  AEGS 2025
 Def. 2.6 defines Gamma_En,2 as the image in O(T_En) of { g in O(L) | g I_En = I_En g, g(h) = h } and
-states Gamma_En,2 = O(T_En) cap O(T_dP), of index 27*17*31 = 14229 (Lemma 2.8, after Sterk Rem. 2.12);
+states Gamma_En,2 = O(T_En) cap O(T_dP), of index 2^7*17*31 = 67456 (Lemma 2.8, after Sterk
+Rem. 2.12; the published formula is 2^7 . 17 . 31, and an earlier version of this note read it as
+27 . 17 . 31 because the repository's pdftotext extraction drops the exponent -- see
+coble_gammaEn2-known-family-obligation.md);
 by @prop:gamma-en-two-gluing its discriminant image is the gamma-transport of the image of
 Stab_{O(S_En)}(h), which has order |W(E8)| = 696 729 600, while the group used here has order
 94 755 225 600 = 136 * 696 729 600.  Stab_{O(T_En)}(h) itself has infinite index in O(T_En), since the
 orbit of h is the infinite set of (-4)-vectors of divisibility 2, so it cannot be a subgroup of index
-14229 at all.
+67456 at all.
 
 What the number in the transcript below therefore is: the orbits of a group 136 times too large, i.e.
 two orbits, which are the level sets of b(.,c) -- the divisibility split div = 1 against div = 2.
