@@ -297,19 +297,12 @@ Transitivity of the kernel $K = \ker\rho$ on the fibre is **sufficient** for a s
 What the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$, which `computations/reports/coble_gammaEn2-cusps-lattice.py` computes from the stabilizer generators that `T_En.cusps(1)` retains, for both lines.
 Until that image is known to be the class stabilizer, the finite count $5 = 1+4$ stands as a count of $\rho(\gent)$-orbits on classes and not as the number of $0$-cusps of $\fen$.
 
-*Which plane strata lift, and which do not.*
-A primitive totally isotropic plane $\varPi\subset\ten$ carries the subgroup $\varPi^*/\varPi\subseteq A_\ten$, where $\varPi^* = (\varPi\otimes\QQ)\cap\ten^*$ is totally isotropic of order $1$, $2$ or $4$; those are the $\dim = 0,1,2$ strata of `coble_gammaEn2-card-run.txt`. The order is decided by Smith normal form: with $B$ the $2\times 4$ basis and $G$ the Gram matrix of $\ten$, the group $\varPi^*/\varPi$ is the saturation of the row space of $BG$ in $\ZZ^4$ over that row space itself, and $\varPi$ is primitive in $\ten$ exactly when the same product computed for $B$ alone is $1$.
-Computed in `computations/reports/coble_gammaEn2-plane-strata.py`, over all primitive totally isotropic planes in the coefficient box $\abs{\text{entries}}\le 3$:
-```
-  |Pi*/Pi| = 1 : 0 planes found
-  |Pi*/Pi| = 2 : 1040 planes found
-  |Pi*/Pi| = 4 : 0 planes found
-```
-So in this lattice the only stratum that lifts is the **dimension-one** one: the isotropic lines of $A_\ten$, and the dimension-two planes — the $23715$ totally singular $2$-spaces — are not planes of $\ten$ at all, and the trivial-datum stratum is empty.
-
-The order-$1$ case is a proof, not a search result. Any isotropic $x = ae+bf+s$ has $x^2 = 2ab+s^2$ with $s^2\in 4\ZZ$ because both $U(2)$ and $E_8(2)$ carry even pairings; $ab$ must be even. If one generator has odd $U$-coordinate and the other has the complementary parity class, their pairing is odd and they cannot be orthogonal; if the classes agree, the sum or difference has even $U$-coordinates, so its half belongs to $\ten^*$, and that half leaves $\varPi$ unless the two generators are congruent modulo $2\varPi$. In the remaining case there is $w\in\varPi\cap(U(2))$ primitive with even pairings; $w/2\in\ten^*$. Either $w/2\notin\varPi$ and a dual element exists, or $w/2\in\varPi$ and the argument iterates on $z = w/2\in\varPi$, whose pairings are now integral: halving further would force $w$ into $2^k\varPi$ for arbitrarily large $k$, which is impossible for a nonzero lattice vector, so one of the halves lies in $\ten^*\setminus\varPi$. Every primitive totally isotropic plane therefore satisfies $\varPi^*\supsetneq\varPi$.
-
-Consequence: no sum over all finite strata is an arithmetic cusp count. The $4$ orbits of $G$ on the $527$ isotropic lines are the only finite data that can hold plane classes, and the published **nine** $1$-cusps therefore cannot be those classes one-for-one; they require the further invariants $\varPi^{\perp}/\varPi$ as the Enriques classification states them, which is precisely what discriminates planes with the same finite image. That is now the statement rather than a sum over strata.
+**A bounded rank-4 search, as evidence only.**
+The enumeration that produced those lines asks a decidable finite question and should be read at exactly its scope. For any lattice $L$ of rank $r$ with basis $B$ of a totally isotropic plane $\varPi$ (a $2\times r$ integer matrix) one has $\varPi^*/\varPi = R^{\mathrm{sat}}/R$ where $R$ is the row space of $BG$ in $\ZZ^r$; and $\varPi$ is primitive in $L$ exactly when that product computed for $B$ alone is $1$.
+The script `computations/reports/coble_gammaEn2-plane-strata.py` runs this with $r = 4$, in the rank-$4$ summand $U\oplus U(2)$ **of** $T_\En$ — not in $T_\En$ itself, whose rank is 12, where the basis would be $2\times 12$ and the E_8(2)-components would matter. It then enumerates all primitive totally isotropic **presentations** with entries in $[-3,3]$: bases of planes, not the planes themselves, so the pairwise count double-counts planes with different bases of the same plane and is not a count of planes.
+This is hence *bounded evidence in the rank-$4$ summand only*: it exhibits planes of order $2$ ($1040$ presentations), it finds none of order $1$ or $4$ in that box, and it proves nothing about nonexistence — not there, and still less in $T_\En$, where no reduction to the summand has been proved. The plane $\varPi = \langle e,e'\rangle$ displayed above is the genuine order-$2$ exhibit.
+**What is open.** Order-$1$ and order-$4$, the reduction from the summand to $T_\En$, the availability of a primitive $w\in\varPi\cap U(2)$ on which a halving argument could rest, and the integrality of the next half each remain unproved. The nine published $1$-cusps are not assessed by this search in either direction, and no sum over the finite strata is asserted here as an arithmetic count.
+No conclusion about cusps is drawn from that bounded search: the published nine $1$-cusps remain the source target, and liftability of order-$1$ and order-$4$ stays open rather than being negated.
 
 :::
 
