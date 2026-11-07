@@ -272,35 +272,70 @@ the owned `vectors_of_square`), and every shell count below is an exact owned en
 **(i) The four §4.3.16 planes.** With $e$ a type-1 vector and $v$ of Sterk 4.2.3 type $2, 3, 4, 5$
 respectively, the planes $\langle e, v\rangle$ (labelled $A_7\oplus A_1$, $E_7\oplus A_1$, $D_8$,
 $E_8$ by 4.3.15–4.3.16) are all primitive, all have $\abs{\Pi^*/\Pi} = 2$, and all have
-$\Pi^{\perp}/\Pi \cong E_8(-2)$: determinant 256 with exactly **240** roots of square $-4$ — the
-statement of [@Ste91, §4.3.5] that the four types are *not* distinguished by
-$\Pi^{\perp}/\Pi$. Their discriminant images have order 2, with orbit-type $(2,), (3,), (4,), (5,)$
+$\Pi^{\perp}/\Pi$ of determinant 256 with exactly **240** roots of square $-4$ and none of square
+$-2$ — the statement of [@Ste91, §4.3.5] that the four types are *not* distinguished by
+$\Pi^{\perp}/\Pi$. The isomorphism with $E_8(-2)$ is exact, and does not rest on the shell counts
+alone: for $\Pi = \langle e, e_1\rangle$ the quotient *is* the $E_8(2)$-summand by construction;
+each of the other three quotients has 240 roots of a single square in rank 8, hence root system
+$E_8$ (the unique rank-8 root system with 240 roots), so it contains the root lattice
+$E_8(-2)$ of determinant 256, and equality of determinants forces the containment to be equality;
+and [@Ste91, Prop. 4.6] gives the same conclusion structurally, since all four planes contain a
+type-1 vector and are therefore one $\Orth(L_-)$-class. Their discriminant images have order 2, with orbit-type $(2,), (3,), (4,), (5,)$
 respectively — the four vector types of Prop. 4.2.3 sit in four distinct M-orbits of sizes
 $2, 120, 270, 135$.
 
 **(ii) The five §4.3.17 planes.** Their labels $\{2,4,5\}, \{4,5\}, \{3,5\}, \{3,4\}, \{5,5\}$ are
 exactly the orbit-type sets of the three nonzero classes in their order-4 discriminant image
 $\langle[v/2],[w/2]\rangle$, and all five are primitive with $\abs{\Pi^*/\Pi} = 4$ and
-$\Pi^{\perp}/\Pi$ of determinant 64 with **368** roots of square $-4$ and **16** of square $-2$ —
-one fixed isomorphism type, as required by the second $\Orth(L_-)$-class of [@Ste91, Prop. 4.6].
+$\Pi^{\perp}/\Pi$ of determinant 64 with **368** roots of square $-4$ and **16** of square $-2$.
+No isomorphism between these quotients is inferred from the shared invariants: it follows from
+[@Ste91, Prop. 4.6], which leaves exactly two $\Orth(L_-)$-classes of primitive isotropic planes —
+these five contain no type-1 vector, lie in the second class, and an $\Orth(L_-)$-equivalence of
+planes induces an isometry of the quotients $\Pi^{\perp}/\Pi$. The isomorphism *type* of that
+second class is fixed by these invariants and named by no classification theorem here.
 :::
 
-::: {.theorem #thm:sterk-line-fibres title="The arithmetic fibres of the $0$-cusps, with exact hypotheses"}
+::: {.theorem #thm:sterk-line-fibres title="The arithmetic fibres of the $0$-cusps: the group identified, then the promotion"}
 Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten},q_{\ten})$ be the discriminant representation,
 $K = \ker\rho$, and $\gent$ the degree-$2$ group of @prop:gamma-en-two-gluing with
 $\rho(\gent) = M$. Assume:
 
 - **(H1)** $K\subseteq\gent$ — @prop:gamma-en-two-index;
-- **(H2)** $\rho$ is surjective onto $\Orth(A_{\ten},q_{\ten})$ — @thm:two-elementary-surjectivity;
-- **(H3)** each fibre of primitive isotropic lines over an M-orbit of classes carries a single
-  $\gent$-orbit — the hypothesis supplied by [@Ste91, Prop. 4.2.3 and Cor. 3.3] (five inequivalent
-  vectors; five 0-dimensional boundary components by Remark 4.2.4), whose promotion step is
-  exactly the class-equivalence plus Corollary 3.3's transitivity.
+- **(H2)** $\rho$ is surjective onto $\Orth(A_{\ten},q_{\ten})$ — @thm:two-elementary-surjectivity.
+
+**The group identification.** Under the identification $\ten\cong L_-$, $\gent$ *is* Sterk's $F$.
+By [@Ste91, Prop. 2.7 and Rem. 2.12], $F$ is the full preimage
+$\rho^{-1}(F_q)$ of the subgroup $F_q\leq\Orth(L^*_-/L_-,q)$ preserving the two summands, because
+$\Orth'(L_-) = K\subseteq F$ and $[\Orth(L_-):F] = [\Orth(q):F_q]$. The group $M$ preserves the
+same decomposition (its nine generators act on the separate summands) and has order
+$696\,729\,600 = \abs{\Orth(q)}/(2^7\cdot 17\cdot 31) = \abs{F_q}$, so $M = F_q$ and
+$\gent = \rho^{-1}(M) = \rho^{-1}(F_q) = F$.
+
+**The fibre argument.** Let $\ZZ v, \ZZ w$ be primitive isotropic lines whose classes
+$[v/2], [w/2]$ lie in one $M$-orbit. Since $\rho(\gent) = M$, some $g\in\gent$ carries $[v/2]$ to
+$[w/2]$; then $v' \definedas g(v)$ and $w$ are primitive isotropic of the same divisibility with
+the same class, and [@Ste91, Cor. 3.3] at $N = L_- \cong \ten$ — its hypotheses are exactly equal
+squares, equal divisibility $p\ZZ$, and the class congruence, and its proof is the
+Siegel–Eichler step $E_{e,y}$ followed by a divisibility normalization — supplies an element of
+$\Orth'(L_-)$ carrying $v'$ to $\pm w$. Since $\Orth'(L_-) = K\subseteq\gent$ by (H1), that
+element lies in $\gent$. Hence each fibre of lines over an $M$-orbit of classes is a *single*
+$\gent$-orbit, and the inequivalence of the representatives is the second statement of
+[@Ste91, Prop. 4.2.3]. This is Sterk's own proof of 4.2.3 run for the identified group, not a
+citation of its conclusion.
 
 Then the $\gent$-orbits of primitive isotropic lines are **five**: one over the zero class and
-four over the nonzero M-orbits of sizes $2, 120, 270, 135$ — the computed partition
-$[1, 2, 120, 135, 270]$ of the 528 isotropic classes, matching [@Ste91, Rem. 4.2.4]. The
-$\gent$-orbits of planes are the nine one-cusps of @prop:sterk-nine-planes.
+four over the nonzero $M$-orbits of sizes $2, 120, 270, 135$ — the computed partition
+$[1, 2, 120, 135, 270]$ of the 528 isotropic classes.
+
+**Exhaustion for the planes.** The nine planes of @prop:sterk-nine-planes are representatives,
+and the exhaustion is [@Ste91, §4.3] applied to the identified group: for each of the five
+representative vectors, the reflection subgroup $W(G_v)$ has finite index in $G_v$ (Vinberg's
+criterion, verified by the diagrams of 4.3.5–4.3.9, with the diagram symmetries lifting by the
+criterion of 4.3.10–4.3.13), every isotropic line of $v^{\perp}/\ZZ v$ is $W(G_v)$-equivalent to a
+vertex at infinity of the fundamental polyhedron, and those vertices are exactly the maximal
+parabolic subdiagrams enumerated there. The count of $\gent$-orbits of planes is therefore
+Sterk's nine, with @prop:sterk-nine-planes supplying the verified representatives and their
+finite types.
 :::
 
 
