@@ -194,10 +194,13 @@ The revisions imported for that call, recorded as required:
 - **Sage**: `11.0.beta5`.
 
 This is the **already tracked** `int(owned element)` failure at the old image port pin, not a new
-defect: held main `991b88b095a42a1e3679569ea42328c900c120f6` contains `ab140b7`, which changes both
-`int()` sites. Reproducing the call against that held revision is owed before anything is filed as
-open, and no port work is authorized. The new published image run already returned $\Orth(T_\Co)$
-generators and discriminant surjectivity at that pin.
+defect. **Reproduced and cleared**: at the held main
+`991b88b095a42a1e3679569ea42328c900c120f6` with the provider its `pyproject` declares,
+`sage-extensions cdafca84065405cb810bba047f8a965299b03762`, the same call returns
+`T_En.cusps(1) -> 2 records (326 s)` — the two $\Orth(\ten)$-orbits of primitive isotropic vectors,
+matching [@AEGS25 §3.2]. The call, its imported revisions and its output are in
+`coble_gammaEn2-cusps-lattice.md`; no port work was done. The plane call `T_En.cusps(2)` runs under
+the same pair as job `jmw69fxhq`.
 
 So the plane side is open for a reason that is now written down in one place: the finite strata do
 not add up to the published count, and the liftability/transitivity hypotheses that would make them

@@ -214,6 +214,45 @@ There the stabilizer step is run through $T_\dP$: the isometry group $\Orth(T_\d
 The proof above replaces that detour by the direct gluing computation, which is available here because $T_\Co^{\perp T_\En}\cong\generators{-2}$ is of rank one.
 :::
 
+::: {.proposition #prop:gamma-en-two-index title="The index of $\gent$ and the kernel of its discriminant map"}
+
+Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten}, q_{\ten})$ be the discriminant representation, $K=\ker\rho$, and $\gent$ the degree-$2$ group of @prop:gamma-en-two-gluing. Then
+$$
+[\Gamma_\En : \gent] \;=\; 2^7\cdot 17\cdot 31 \;=\; 67\,456 \;=\; [\Orth(A_{\ten},q_{\ten}) : \rho(\gent)],
+$$
+and consequently $K\subseteq\gent$: the group $\gent$ is the full preimage in $\Orth(\ten)$ of its discriminant image.
+
+:::
+
+::: {.proof}
+
+The index is the degree of $\fen\to\fttz$ [@AEGS25 Lem. 2.8], printed there as $2^7\cdot 17\cdot 31$ with the reference to [@Ste95a, Rem. 2.12].
+The right-hand index is finite and computable: $\abs{\Orth(A_{\ten},q_{\ten})} = 46\,998\,591\,897\,600$ and, by @prop:gamma-en-two-gluing, $\rho(\gent)$ is the $\gamma$-transport of the image of $\Stab_{\Orth(\sen)}(h)$, which is $\abs{W(E_8)} = 696\,729\,600$ by @prop:polarization-stabilizer-enriques and @thm:coble-heegner-finite-orbits; the quotient is $2^7\cdot17\cdot31$.
+For any subgroup the two indices are related by the kernel:
+$$
+[\Orth(\ten) : \gent] \;=\; [\rho(\Orth(\ten)) : \rho(\gent)]\cdot[K : K\cap \gent],
+$$
+and $\rho$ is onto $\Orth(A_{\ten},q_{\ten})$ for this lattice (@thm:two-elementary-surjectivity), so the left-hand side equals the right-hand index exactly when $[K:K\cap\gent] = 1$.
+Both sides being $67\,456$, that factor is one and $K\subseteq\gent$.
+
+The numerical inputs are computed in `computations/reports/coble_gammaEn2-card.py` and its run, which reports both indices as $67456$ and the order $696\,729\,600$ of the discriminant image of the nine generators.
+
+:::
+
+::: {.remark #rmk:gamma-en-two-fibres title="What the index does and does not give for the cusps"}
+
+The $0$-cusps of $\fen$ are the $\gent$-orbits of primitive isotropic $v\in\ten$.
+$[\Gamma_\En : \gent]$ being a finite index of an infinite arithmetic group, and equal to the index of $\rho(\gent)$ in the finite orthogonal group, is what lets a discriminant computation say anything here at all; it is not itself a count of orbits, and two further facts are needed.
+
+*Surjectivity of the divisibility map.*
+A primitive isotropic $v$ with $\operatorname{div}(v) = 2$ satisfies $v^2 = 0$, so $v/2\in\ten^*$ has $q_{\ten}([v/2]) = 0$ and $[v/2]\neq 0$; and $\operatorname{div}(v)=1$ gives the class $0$.
+By [@AEGS25 §3.2] $\Orth(\ten)$ has exactly two orbits on primitive isotropic vectors, $\operatorname{div}=1$ and $\operatorname{div}=2$ — reproduced as a lattice computation by `T_En.cusps(1)`, which returns two $1$-cusps (record `computations/reports/coble_gammaEn2-cusps-lattice.md`) — and $\Orth(A_{\ten},q_{\ten})$ is transitive on the $527$ nonzero isotropic classes, which `coble_gammaEn2-card-run.txt` reports as one orbit before passing to a subgroup. So the image of the $\operatorname{div}=2$ class is a single $\Orth(q)$-orbit, and it is nonempty: every one of the $527$ classes is $[v/2]$ for some primitive isotropic $v$ with $\operatorname{div}(v)=2$. The divisibility map is therefore surjective onto the classes, and $\gent$-orbits map onto $\rho(\gent)$-orbits.
+
+*What is not proved here.*
+Surjectivity of the map on point sets does not make the map on orbits injective: that needs, for one class $c$, the stabilizer $\Stab_{\gent}(c)$ to act transitively on the fibre $\theset{v : [v/2] = c}$, which is a statement about the *kernel* $K$ and is the Eichler transitivity of $\Orth(\ten)$ on isotropic vectors in a fixed discriminant fibre. It is neither the two-unscaled-plane hypothesis nor a consequence of $\rho$ being onto the stabilizer of the class: the stabilizer of a finite class and the stabilizer of a chosen lattice lift differ, and the lattice lift's stabilizer is what the fibre needs. Until that hypothesis is discharged — by computing the image of $\Stab_{\Orth(\ten)}(v)$ in $\Orth(q_{\ten})$ and showing $K$ transitive on the fibre, or by a cited transitivity theorem whose hypotheses are checked on $\ten = U\oplus U(2)\oplus E_8(2)$, in particular that the hyperbolic plane it contains is unscaled — the finite count $5 = 1+4$ stands as a count of $\rho(\gent)$-orbits on classes, not as the number of $0$-cusps of $\fen$.
+
+:::
+
 ::: {.remark #rmk:descent-of-an-equivariant-inclusion title="What the stabilizer statement has to supply"}
 
 The stabilizer step of @thm:normalization is one instance of a criterion for descending a map to a pair of quotients, and the criterion has a weak form and a strong one that are worth separating.
