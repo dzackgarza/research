@@ -115,7 +115,7 @@ vertices" was right, and the defect was the missing input, which now exists. The
 scan is not a property of this record: every root name in the text layer extracts as `~`, so no count
 on this page comes from the text layer — they come from the rendered plates.
 
-Two columns need their page stated exactly:
+Three columns need their page stated exactly:
 
 - **Lattice, $j = 1$:** $U(2)\oplus E_8(2)$ is my $K(L_1)$, which `coble_TEn-chambers.py` builds as
   the Gram matrix $2H\oplus 2E_8(-1)$; the identification is by the invariants of
@@ -130,6 +130,15 @@ Two columns need their page stated exactly:
   Fig. 8 when its count was in question. Two of the five have an input in `computations/coxiter/` —
   `Sterk2.coxiter` for $j = 2$ and `Sterk3.coxiter` for $j = 3$ — and $j = 1, 4, 5$ have none, which
   is part of why the subgroup-chamber script below is not run.
+- **Signature line:** the five entries $9,1,2$; $9,1,0$; $9,1,2$; $9,1,1$; $9,1,4$ of
+  `sec-coxiter-results-for-cusp-lattices` are $(n_+,n_-,n_0)$ of the *sign-flipped* Gram of Sterk's
+  roots, $-x\cdot y$ — rank 10, nine space-like and one time-like direction, and the third entry the
+  nullity, i.e. the number of linear dependencies among that diagram's roots. All five reproduce that
+  way in `computations/reports/coble_sterk-cusp-signatures-run.txt`, which is what identifies the
+  column. It is **not** CoxIter's own `Signature (numerically)` line: at $j = 3$ that line reads
+  `10,2,0` for the Gram of the same diagram, rank 10, inertia $(9,1,2)$ — see the note on
+  `computations/coxiter/logs/Sterk3.txt` in `computations/coxiter/README.md`. Quote one or the other,
+  not the two interchangeably.
 - **Group:** 4.3.1, p. 17, states it as $G_v = \rho(\Stab_{\Gamma}(v))$ — the transcribing sentence
   is quoted above. The *identification* of each $G_v$ with a subgroup of $\mathrm{O}(K_j)$
   computed in this tree is `coble_TEn-sandwich.py`'s $\rho(S_{\eta_j})$, and for $j = 2,\dots,5$ it
