@@ -282,11 +282,24 @@ There is exactly one of those --- that is, the finite count below is exact on th
 $$
 \Gamma_c = \gent_c\cdot H
 \quad\Longleftrightarrow\quad
-\Stab_{\Orth(q_{\ten})}(c) = M_c\cdot\rho(H),
+\rho(\Gamma_c) = M_c\cdot\rho(H)
+\quad\Longleftrightarrow\quad
+\Stab_{\rho(\Gamma_\En)}(c) = M_c\cdot\rho(H),
 $$
-which holds in particular when $\rho(H) = \Stab_{\Orth(q_{\ten})}(c)$: when the discriminant image of the stabilizer of the chosen line is the *whole* stabilizer of its class.
-Transitivity of the kernel $K$ on the fibre is neither necessary nor sufficient for this, since $M_c$ may join several $K$-orbits and $\rho(H)$ may miss a coset of $M_c$; what the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$, which `computations/reports/coble_gammaEn2-cusps-lattice.py` computes from the stabilizer generators that `T_En.cusps(1)` retains, for both lines.
+the middle equality being the image of the first under $\rho$ and the last a rewriting of it; the criterion is stated in $\rho(\Gamma_\En)$, and replacing that group by all of $\Orth(q_{\ten})$ uses the surjectivity of the discriminant representation (@thm:two-elementary-surjectivity), not the definition.
+It holds in particular when $\rho(H) = \Stab_{\rho(\Gamma_\En)}(c)$: when the discriminant image of the stabilizer of the chosen line is the *whole* stabilizer of its class in the image group.
+Transitivity of the kernel $K = \ker\rho$ on the fibre is **sufficient** for a single $\gent$-orbit there, because $K\subseteq\gent$ by @prop:gamma-en-two-index and a transitive subgroup of $\gent_c$ makes the double coset set $\gent_c\backslash\Gamma_c/H$ a single point; it is **not necessary**, since $M_c$ may join several $K$-orbits into one $\gent_c$-orbit, and conversely $\rho(H)$ may miss a coset of $M_c$ even when $K$ is transitive.
+What the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$, which `computations/reports/coble_gammaEn2-cusps-lattice.py` computes from the stabilizer generators that `T_En.cusps(1)` retains, for both lines.
 Until that image is known to be the class stabilizer, the finite count $5 = 1+4$ stands as a count of $\rho(\gent)$-orbits on classes and not as the number of $0$-cusps of $\fen$.
+
+*Which plane strata lift, and which do not.*
+A primitive isotropic plane $\varPi\subset\ten$ carries the subgroup $\varPi^*/\varPi\subseteq A_{\ten}$, where $\varPi^* = (\varPi\otimes\QQ)\cap\ten^*$; it is totally isotropic of order $1$, $2$ or $4$, which is the $\dim = 0,1,2$ stratification of `coble_gammaEn2-card-run.txt`. Liftability is not uniform, and the parity of pairings with the $U$ summand decides part of it.
+Every vector of $U(2)\oplus E_8(2)$ pairs evenly with everything in that summand, since both summands are $2$-scaled; so its half lies in $\ten^*$, and a plane contained in $U(2)\oplus E_8(2)$ has a nontrivial datum. The stratum of order $2$ is inhabited:
+$$
+\varPi = \gens{e, e'},\qquad \varPi^* = \gens{e, \tfrac12 e'},\qquad \varPi^*/\varPi\cong\ZZ/2,
+$$
+where $e$ spans the $U$ summand and $e'$ the $U(2)$ summand: both are isotropic, $(e,e') = 0$, the plane is primitive since the two vectors are primitive in different summands, and $x = ae + be'$ pairs integrally with $\ten$ exactly when $a\in\ZZ$ and $b\in\tfrac12\ZZ$.
+The stratum of order $4$ does not follow from that construction: $\gens{2e, f'}$ has the right quotients but $2e$ is not primitive, so $\ten/\varPi$ has $2$-torsion and $\varPi$ is not a primitive sublattice at all. Whether an order-$4$ plane exists, and whether the order-$1$ stratum is inhabited — a plane with $\varPi^* = \varPi$ needs a generator whose half is *not* integral, hence a vector with an odd pairing with the $U$ summand — is not settled here, and the finite count of $5$ orbits on the $23715$ totally singular $2$-spaces is not a count of planes until it is.
 
 :::
 
