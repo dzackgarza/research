@@ -8,41 +8,29 @@ is cited as such, not under that attachment label.
 
 ## The group, identified against $\Gamma_{\En,2}$ and not confused with $\Orth(\ten)$
 
-Sterk §2 (pp. 6-8) writes $L = L^+\oplus L^-$ for the eigendecomposition associated to an
-Enriques involution $I$, and defines **F** as the image in $\Orth(L^-)$ of
+Sterk §2 (pp. 6-8) introduces $F$ as the image in $\Orth(L^-)$ of
 $\{g\in\Orth(L): g\circ I = I\circ g,\; g(e+f,e+f,0) = (e+f,e+f,0)\}$, which is AEGS Def. 2.6's
-definition of $\Gamma_{\En,2}$ (my $\gent$).
+definition of $\gent$. **The containment is not a direct sum**: $L^+\oplus L^-\subsetneq L$, and the
+embedding is of finite index, $[L:L^+\oplus L^-]=\abs{A_{S_\En}} = 2^{10}$ by the discriminant-form
+gluing. In particular $L$ is not integrally $L^+\oplus L^-$.
 
-**Proposition 2.7 (Sterk, p. 7).** That image $F$ is exactly the set of isometries of $L^-$ whose
-induced map on $L_-^*/L_-\cong\tfrac12 H(2)/H(2)\cong E_8(-2)/E_8(-2)$ **respects the decomposition
-into the two summands**. Its proof proceeds by lifting integral isometries through the invariant
-lattice and its polarization stabilizer, exactly the gluing route of `@prop:gamma-en-two-gluing`.
+**Proposition 2.7 (Sterk, p. 7).** That image $F$ is exactly the set of integral isometries of $L^-$
+whose induced map on the discriminant described there, $L_-^*/L_-\cong
+\tfrac12 H(2)/H(2)\ \oplus\ \tfrac12 E_8(-2)/E_8(-2)$, **respects the decomposition into two
+summands**. Its proof proceeds by lifting integral isometries through the invariant lattice and its
+polarization stabilizer (the same gluing route as `@prop:gamma-en-two-gluing`), and uses the
+decomposition $(e+f)^\perp = \ZZ(e-f)\oplus E_8(-2)\cong A_1(-2)\oplus E_8(-2)$ displayed on that page.
 
-**Remark 2.8 (Sterk, p. 8).** Contrary to what one might hope, $F$ does not equal
-$\{g\in\Orth(L^-): g\ \text{stabilizes } \langle e'-f'\rangle + L\}$. A Siegel-Eichler transformation is
-exhibited that stabilizes that line and lies in $F$.
-
-This is the canonical published identification and it *cannot* be replaced by the
-$\Stab_{\Orth(\ten)}(h)$ of the earlier batch, which Sterk 2.8 excludes by name; it also matches the
-infinite-index argument already on file.
-
-The Enriques group itself is $\Gamma_\En = \Orth(L^-)$, **not** $F$; the degree-$2$ polarized group
-used to classify the cusps of $\fen$ is $F = \Gamma_{\En,2}$.
-
-## How the classification of vectors and planes proceeds (§4.2-§4.3)
-
-- **§4.2.** The zero-dimensional boundary components are the $F$-orbits of primitive isotropic
-  *rank-one sublattices* of $L_-$ — lines, as my record now states and proves from $-\mathrm{id}$.
-- **Lemma 4.3.4.** For each of the five representatives $v$ of Prop. 4.2.3, $v^\perp/\ZZ v$ is the
-  hyperbolic lattice needed for Vinberg: $H\oplus E_8(-2)$ (i.e. $H(+)$ in the notation of Sterk p. 7)
-  for $v\neq e$, and $H(2)\oplus E_8(-2)$ for $v=e$.
-- **§4.3.1.** If $\mathcal F$ is a primitive isotropic plane containing $v$, then $\mathcal F$
-  determines an isotropic line of $v^\perp/\ZZ v$; hence the planes are computed by the maximal
-  parabolic subdiagrams of the chamber diagrams of the reflection groups $G_v$, per v.
-- **§4.3.15.** Whether two primitive isotropic vectors can combine to form a plane is decided by
-  type: "the first isotropic vector of the list (4.2.3) can be combined with any of the other four
-  types to yield a primitive isotropic plane, but there is no isotropic plane all of whose primitive
-  isotropic elements are equivalent to $e$."
+**Remark 2.8 (Sterk, p. 7).** $F$ does not equal the set of stabilizers of the *discriminant element*
+$\tfrac12(e'-f')+L_-$: the transformation computed there satisfies $\psi(\tfrac12(e'-f')+L_-)
+= \tfrac12(e'-f')+L_-$ and yet $\psi\notin\Gamma$. This is a statement about a **finite**
+discriminant-element stabilizer, not about an integral vector stabilizer; it says that preserving the
+class of that vector does not put an isometry in $F$.
+It is not a statement about the integral polarization stabilizer of the gluing construction, and is
+not used here to reject that construction: the integral statement has its own reason for not being
+$F$ (infinite index in $\Orth(\ten)$, established earlier from the index $2^7\cdot17\cdot31$), and is
+independent of this remark. The remark does rule out using $\Stab_{\Orth(q_\ten)}([h/2])$ as the group
+to count with, because that is exactly the discriminant-element stabilizer that is too big.
 
 ## The nine one-cusps and their boundary groups
 
@@ -56,22 +44,23 @@ isotropic plane. Two classes of cases:
   | type | group $\mathcal F(F)\cap SL(\mathcal F)$ |
   |---|---|
   | $\{2,4,5\}$ | $\Gamma(2)$ |
-  | $\{4,5\}$ | $\Gamma_1(2)$ |
-  | $\{3,5\}$ | $E_1(2)$ |
-  | $\{3,4\}$ | $F_1(2)$ |
+  | $\{4,5\}$ | $\Gamma^1(2)$ |
+  | $\{3,5\}$ | $\Gamma^1(2)$ |
+  | $\{3,4\}$ | $\Gamma^1(2)$ |
   | $\{5,5\}$ | $SL_2(\ZZ)$ |
 
-(Labels read from §4.3.17 as printed; $\Gamma(2)$ is the level-2 subgroup, $\Gamma_1(2)$ has the
-$b$-entry even. Notation 3.1 of AEGS follows this same closure labelling.)
+(Read off the summary table in the page image on p. 28: $\Gamma(2)$, and $\Gamma^1(2)$ with the
+superscript 1, not OCR's $E_1(2)$ / $F_1(2)$.)
 
 ## What enters the arithmetic-fibre criterion
 
 Consequence for the plane side of #748: the published classification splits the planes by *type*
 (the parabolic diagram, the vectors each plane contains, and the group $\mathcal F(F)$), not by a
-single scalar invariant like $\varPi^*/\varPi$. The same finite plane image can therefore carry
-several types, and only a theorem about the stabilizer of a chosen lift decides whether they are
-identified by $\gent$. This is why the finite plane strata cannot be summed into a cusp count, and why
-a search by $B$ in rank $4$ would not establish it anyway.
+single scalar invariant like $\varPi^*/\varPi$. Each plane has its own datum and its own boundary
+group, and identities between types must be decided by the stabilizers of lifts, not by summing
+finite-plane orbits. Whether any two types share a finite plane image is a separate check, by
+constructing those representatives' images; it is not inferred here, and is not used as a premise for
+a cusp count.
 
 The operation that decides the question on the full lattice remains
 `Gamma_En,2.isotropic_orbit_representatives(rank=2)` for the group constructed as

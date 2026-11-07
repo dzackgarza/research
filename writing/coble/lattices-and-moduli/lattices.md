@@ -239,10 +239,21 @@ The numerical inputs are computed in `computations/reports/coble_gammaEn2-card.p
 
 ::: {.proposition #prop:sterk-group-identification title="The group, exactly as @Ste91 defines it"}
 
-With $F$ the image in $\Orth(L^-)$ of $\theset{g\in\Orth L : g\circ I = I\circ g,\; g(h) = h}$ — the degree-$2$ definition of @prop:gamma-en-two-gluing — the published statement is:
-1. **Prop. 2.7, [@Ste91], p. 7.** $F$ is exactly the set of integral isometries of $L^-$ whose induced map on $L_-^*/L_-\cong\tfrac12 H(2)/H(2)\cong E_8(-2)/E_8(-2)$ **respects the decomposition into the two summands**; in the notation of `@prop:gamma-en-two-gluing`, that is a condition on the action on $A_{U(2)}\oplus A_{E_8(2)}$.
-2. **Remark 2.8, [@Ste91], p. 8.** $F$ is *not* the stabilizer of $\langle e'-f'\rangle+L$: there is a Siegel-Eichler transformation that stabilizes that line and lies in $F$.
-This supersedes the earlier identification $\Stab_{\Orth(\ten)}(h)$ on two independent grounds (it has infinite index in $\Orth(\ten)$, and Sterk 2.8 excludes it by name), and it is the statement the preimage construction of coble_gammaEn2-subgroup-orbits.py computes: the discriminant group $M$ is built from the images of the $U(2)$ reflection and the eight reflections in the simple roots of $E_8(2)$, which respect the two summands and have order $|W(E_8)|$.
+With $F$ the image in $\Orth(L^-)$ of $\theset{g\in\Orth L : g\circ I = I\circ g,\; g(h) = h}$, where $h = e+f$ — AEGS Def. 2.6's $\gent$ — the following are read directly from the published text, not from a substitute.
+1. **[@Ste91], Prop. 2.7, p. 7.** $F$ is exactly the set of integral isometries of $L^-$ whose induced map on the discriminant described there, $L_-^*/L_-\cong\tfrac12 H(2)/H(2)\ \oplus\ \tfrac12 E_8(-2)/E_8(-2)$, **respects the decomposition into the two summands**. Its proof lifts isometries through the invariant lattice and the polarization stabilizer and uses the displayed $(e+f)^\perp = \ZZ(e-f)\oplus E_8(-2)\cong A_1(-2)\oplus E_8(-2)$.
+2. **[@Ste91], Remark 2.8, p. 7.** $F$ is *not* the stabilizer of the **finite discriminant element** $\tfrac12(e'-f') + L_-$: the exhibited transformation has $\psi\notin\Gamma$ although $\psi$ stabilizes that element.
+So Remark 2.8 excludes $\Stab_{\Orth(q_\ten)}([h/2])$ as the group to count with, because that group is exactly the discriminant-element stabilizer that contains elements outside $F$. It is not a claim about the integral gluing construction, which is rejected for its own independent reason (the index $2^7\cdot17\cdot31$ vs the infinite index of $\Stab_{\Orth(\ten)}(h)$).
+
+In the same source $L^+\oplus L^-\subsetneq L$ with $[L : L^+\oplus L^-] = 2^{10}$, not $L = L^+\oplus L^-$.
+:::
+
+::: {.remark #rmk:sterk-one-cusp-types title="The published plane types and their boundary groups"}
+
+The one-dimensional components are the $F$-orbits of primitive isotropic planes, classified by *type* under $F$, not by a single finite invariant. From the published text via its page images:
+- the four cases of §4.3.16 ($E_8$, $D_8$, $A_7\oplus A_1$, $E_7\oplus A_1$) built from non-equivalent vectors, whose half-plane components show no cusp identification;
+- the five cases of §4.3.17, with $\mathcal F(F)\cap SL(\mathcal F)$ respectively $\Gamma(2)$ for $\{2,4,5\}$, $\Gamma^1(2)$ for $\{4,5\}$, $\Gamma^1(2)$ for $\{3,5\}$, $\Gamma^1(2)$ for $\{3,4\}$, and $SL_2(\ZZ)$ for $\{5,5\}$. The two middle groups have the superscript 1, not the OCR's $E_1(2)$ and $F_1(2)$.
+Total nine one-cusps, as AEGS states at §3.3 p. 590.
+Whether any two types share a finite plane image is a separate computation of those images; it is not asserted by diagram classification and it is not used here.
 :::
 
 ::: {.remark #rmk:sterk-one-cusp-types title="The published plane types"}
