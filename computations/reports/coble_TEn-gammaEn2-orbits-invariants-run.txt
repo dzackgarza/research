@@ -1,0 +1,22 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions pin 15db925b
+
+c = [h/2]: q(c) = [1] in Fraction Field of Integer Ring / (2)Integer Ring  (so c is not isotropic)
+isotropic classes 528, nonzero 527
+
+level sets of b(., c) on the nonzero isotropic classes:
+  b(x,c) = [(1)/(2)] in Fraction Field of Integer Ring / (1)Integer Ring 272 classes
+  b(x,c) = [0] in Fraction Field of Integer Ring / (1)Integer Ring 255 classes
+
+  sizes sorted: [272, 255]
+  the walk of coble_TEn-gammaEn2-orbits.py found two orbits of exactly these sizes:
+    2 orbits, sizes [272, 255]
+
+WHY THIS IS 2 AND NOT MORE: H fixes c, so b(., c) is constant on every H-orbit and each orbit
+lies inside one level set -- at least two orbits.  The walk produces a partition into exactly
+two, so the orbits are the level sets themselves and H is transitive on each.
+
+CONSEQUENCE: the rho-side count is 2 against a published 5.  The fibres of the map from
+Gamma_En,2-orbits of primitive isotropic vectors to H-orbits are not single points for this
+pair, so the rho-side count is a strict lower bound and does not decide the 5.

@@ -1,0 +1,28 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions pin 15db925b
+
+T_En: rank 12, det 1024, signature (2, 10)
+h = slot2 + slot3: square 4, divisibility 2
+|A| = 1024, isotropic classes 528
+c = [h/2]: q = [1] in Fraction Field of Integer Ring / (2)Integer Ring
+|O(q)| = 46998591897600   (38 s)
+H = G.stabilizer_of_element(c)  -- the expensive step
+|H| = 94755225600   (2161 s); expected |O(q)|/496 = 94755225600
+H' built   (26 s), generators 451
+coordinate basis of A: 10 classes, all 1024 elements labelled, addition is xor   (0 s)
+10 x 10 matrices of 451 generators   (4 s)
+check: matrix action equals the provider action on 28 elements x 12 generators: yes
+distinct matrices among the 451 generators: 451
+isotropic classes 528, of which nonzero 527
+the walk: 2 orbits, sizes [272, 255]   (0 s)
+  sum of the orbit sizes: 527 of 527
+exported the 451 distinct matrices to /repo/computations/reports/coble_TEn-gammaEn2-orbits-generators.txt
+
+THE NUMBER
+  H-orbits on the nonzero isotropic classes of A_{T_En}: 2
+  published (AEGS 2025, section 3.3, p. 590: five 0-cusps and nine 1-cusps): 5
+
+DOES NOT agree with the published count; the rho-side method does not see the orbits,
+and the lattice-side count (S_eta-orbits of square-4 divisibility-2 vectors, Eichler
+inside the K-cosets) is the next thing to compute.
