@@ -296,6 +296,34 @@ planes induces an isometry of the quotients $\Pi^{\perp}/\Pi$. The isomorphism *
 second class is fixed by these invariants and named by no classification theorem here.
 :::
 
+::: {.lemma #lem:line-stabilizer-image title="The stabilizer of a primitive isotropic line maps onto the stabilizer of its class"}
+Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten},q_{\ten})$ be the discriminant representation with
+$K = \ker\rho$, and let $\varphi(\ZZ v) = [v/\operatorname{div}(v)]$ be the class of a primitive
+isotropic line. Assume (H1) $K\subseteq\gent$ and (H2) $\rho$ surjective. Then
+$$ \rho\bigl(\Stab_{\Orth(\ten)}(\ZZ v)\bigr) \;=\; \Stab_{\Orth(A_{\ten},q_{\ten})}\bigl(\varphi(\ZZ v)\bigr),
+\qquad
+\rho\bigl(\Stab_{\gent}(\ZZ v)\bigr) \;=\; M_{\varphi(\ZZ v)} \definedas \Stab_M\bigl(\varphi(\ZZ v)\bigr). $$
+:::
+
+::: {.proof}
+The containments "$\subseteq$" are clear: stabilizing $\ZZ v$ stabilizes its class, and
+$\rho(\gent) = M$. For "$\supseteq$" of the first, let $h$ stabilize $c\definedas\varphi(\ZZ v)$
+and, by (H2), write $h = \rho(g)$ with $g\in\Orth(\ten)$. Then $g(v)$ and $v$ are primitive
+isotropic of the same divisibility (an isometry preserves $(v,\ten)$), and
+$\varphi(g(\ZZ v)) = \rho(g)(c) = h(c) = c$, so $[g(v)/2] = [v/2]$ in $\ten^*/\ten$; the class
+map is a homomorphism whose zero class is $\ten$ itself, so this says exactly
+$g(v) - v \in 2\,\ten$ — the congruence modulo $pN$ at
+$p = \operatorname{div}(v)$ required by [@Ste91, Cor. 3.3], whose own structural hypothesis
+holds for this lattice because $\ten = (U\oplus U(2))\oplus E_8(2)$ is of the form $N = A\oplus P$
+with $A = H\oplus H(2)$ and $P = E_8(2)$ even and nondegenerate. Corollary 3.3 supplies
+$k\in\Orth'(\ten)$ with $k(g(v)) = \pm v$; then $k\circ g$ stabilizes $\ZZ v$ and
+$\rho(k\circ g) = h$, because $\Orth'(\ten) = K = \ker\rho$. For the second statement, let
+$h\in M_c$; the first part gives $g\in\Stab_{\Orth(\ten)}(\ZZ v)$ with $\rho(g) = h$, and
+$h\in M = \rho(\gent)$ gives $g_2\in\gent$ with $\rho(g_2) = h$; then
+$gg_2^{-1}\in K\subseteq\gent$ by (H1), so $g = (gg_2^{-1})g_2\in\gent$ lies in
+$\Stab_{\gent}(\ZZ v)$ with image $h$.
+:::
+
 ::: {.theorem #thm:sterk-line-fibres title="The arithmetic fibres of the $0$-cusps: the group identified, then the promotion"}
 Let $\rho\colon\Orth(\ten)\to\Orth(A_{\ten},q_{\ten})$ be the discriminant representation,
 $K = \ker\rho$, and $\gent$ the degree-$2$ group of @prop:gamma-en-two-gluing with
@@ -344,6 +372,27 @@ group, not a citation of its conclusion.
 Then the $\gent$-orbits of primitive isotropic lines are **five**: one over the zero class and
 four over the nonzero $M$-orbits of sizes $2, 120, 270, 135$ — the computed partition
 $[1, 2, 120, 135, 270]$ of the 528 isotropic classes.
+
+**The stabilizer images, and the double-coset criterion.** @lem:line-stabilizer-image identifies
+the two inputs that @rmk:gamma-en-two-fibres lists as remaining: the discriminant image of the
+stabilizer of each line *is* the stabilizer of its class — $M_c$ at the $\gent$ level — so the
+criterion $\rho(\Gamma_c) = M_c\cdot\rho(H)$ of that remark holds with equality
+($M_c\cdot\rho(H) = M_c$), and no counting input beyond the computed class partition enters: the
+number of $0$-cusps is the number of $M$-orbits of isotropic classes, $1 + 4 = 5$, with the
+divisibility-one fibre contributing the one orbit over the zero class. The orders are consistent:
+$\abs{M_c} = \abs{M}/\text{(orbit size)}$, so the four class stabilizers have orders
+$696\,729\,600/2,\ /120,\ /270,\ /135$ respectively.
+
+**Incidence.** The incidence of the nine plane-orbits with the five line-orbits is the type-set:
+a plane $\varPi$ with discriminant image $D = \langle[v/2],[w/2]\rangle$ contains primitive
+isotropic vectors of exactly the vector types realized by the classes of $D\cup\{0\}$ — every
+$d\in D$ is the class of a primitive combination $av+bw$ (the three nonzero classes of the
+$(\ZZ/2)^2$ are realized by $(1,0), (0,1), (1,1)$), and a divisibility-one vector occurs exactly
+when a combination has odd pairing, which is the case precisely for the four 4.3.16 planes. Hence
+the plane of type-set $S$ is incident to exactly the $0$-cusps whose types lie in $S$, which
+reproduces the incidence diagram of [@Ste91, §4.4, Fig. 14]: $\{1,2\},\{1,3\},\{1,4\},\{1,5\}$
+meet the corresponding pairs of $0$-cusps, and $\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\}$ meet
+the $0$-cusps named by their labels.
 
 **Exhaustion for the planes.** The nine planes of @prop:sterk-nine-planes are representatives,
 and the exhaustion is [@Ste91, §4.3] applied to the identified group: for each of the five
@@ -440,8 +489,7 @@ $$
 the middle equality being the image of the first under $\rho$ and the last a rewriting of it; the criterion is stated in $\rho(\Gamma_\En)$, and replacing that group by all of $\Orth(q_{\ten})$ uses the surjectivity of the discriminant representation (@thm:two-elementary-surjectivity), not the definition.
 It holds in particular when $\rho(H) = \Stab_{\rho(\Gamma_\En)}(c)$: when the discriminant image of the stabilizer of the chosen line is the *whole* stabilizer of its class in the image group.
 Transitivity of the kernel $K = \ker\rho$ on the fibre is **sufficient** for a single $\gent$-orbit there: $K\subseteq\gent_c$ by @prop:gamma-en-two-index, so $K$ transitive gives $\Gamma_c = K\cdot H$, whence $\rho(\Gamma_c) = \rho(H)$, and the criterion holds because $M_c\subseteq\rho(\Gamma_c)$. It is **not necessary**, and the obstruction is exactly the lifting of $M_c$: $\gent_c/K\cong M_c$ acts on the set of $K$-orbits in the fibre, the fibre is one $\gent_c$-orbit exactly when that action is transitive, and $M_c$ may permute several $K$-orbits cyclically. That is why the criterion is stated with $\rho(H)$ and not with $K$, and why $K$-transitivity is a sufficient but not a necessary condition.
-What the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$, which `computations/reports/coble_gammaEn2-cusps-lattice.py` computes from the stabilizer generators that `T_En.cusps(1)` retains, for both lines.
-Until that image is known to be the class stabilizer, the finite count $5 = 1+4$ stands as a count of $\rho(\gent)$-orbits on classes and not as the number of $0$-cusps of $\fen$.
+What the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$: by @lem:line-stabilizer-image that image *is* the stabilizer of the class — $M_c$ at the $\gent$ level — so the criterion holds with equality and the finite count $5 = 1+4$ is the number of $0$-cusps of $\fen$, not merely a count of $\rho(\gent)$-orbits on classes. The computational route through `computations/reports/coble_gammaEn2-cusps-lattice.py` (the stabilizer generators that `T_En.cusps(1)` retains, for both lines) remains as an independent check of the lemma; it is not the proof of it.
 
 **A bounded rank-4 search, as evidence only.**
 The enumeration that produced those lines asks a decidable finite question and should be read at exactly its scope. For any lattice $L$ of rank $r$ with basis $B$ of a totally isotropic plane $\varPi$ (a $2\times r$ integer matrix) one has $\varPi^*/\varPi = R^{\mathrm{sat}}/R$ where $R$ is the row space of $BG$ in $\ZZ^r$; and $\varPi$ is primitive in $L$ exactly when that product computed for $B$ alone is $1$.
