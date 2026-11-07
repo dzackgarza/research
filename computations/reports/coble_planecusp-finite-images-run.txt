@@ -1,0 +1,22 @@
+the finite images of the Coble plane cusp-lifting mechanism
+provenance
+  Sage: 11.0.beta5
+  sage-indefinite-port: /repo/.scratch/port-held/src/sage_indefinite_port
+  sage-extensions:      /prov/src/sage_extensions
+
+T_Co: rank 11, det -2048, signature (2, 9)
+isotropic classes: 528 (nonzero 527)
+  the characteristic class w-bar (coordinate 0) vanishes on all isotropic classes: True
+partner counts (isotropic v in u^perp, v not in <u>): distinct values [270]
+  total ordered independent isotropic orthogonal pairs: 142290
+order-4 isotropic subgroups: 527*270/6 = 23715
+  direct enumeration of totally isotropic 2-planes: 23715
+|O(q)| = 46998591897600
+|Stab_{O(q)}(J)| = |O(q)|/23715 = 1981808640
+|H| = 247726080 (on record, 119 generators)
+index |Stab(J)|/|H| = 8
+  the index is 8: either the 119 generators under-generate rho(Stab_{O(B)}(P)),
+  or the fibre over J splits into 8 K-orbits and the lifting theorem fails for planes
+
+summary: 528/527 isotropic classes, 270 partners, 23715 order-4 isotropic subgroups,
+  |Stab(J)| = 1981808640, index over the computed parabolic image = 8
