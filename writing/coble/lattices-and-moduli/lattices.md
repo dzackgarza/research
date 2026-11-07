@@ -482,3 +482,129 @@ plane-stabilizer image $\rho(\Stab_{\Orth(\ten)}(\varPi))$ — the input the for
 the finite partition — is supplied by the pending lattice-orbit computation with its stabilizer
 generators, whose result is not assumed anywhere in this section.
 :::
+
+::: {.theorem #thm:enriques-integral-plane-stabilizers title="The integral plane stabilizers of the two $O(T_\En)$-plane classes, and the Enriques fibre"}
+Throughout, $A = A_{T_\En}$ is the plus-type ten-space, $b([x/2],[y/2]) = (x,y)/2 \bmod \ZZ$ and $D(\varPi) = \im((\varPi_\QQ\cap\ten^*)\to A)$ as in @cor:enriques-plane-fibres. By [@Ste91, Prop. 4.6] there are two $O(T_\En)$-classes of primitive isotropic planes, and their integral stabilizer images differ.
+
+**(i) The class containing a divisibility-one vector, represented by $\varPi_0 = \ZZ e\oplus\ZZ e'$.**
+Its quotient $\varPi_0^{\perp}/\varPi_0 = E_8(2)$ is the definite summand. The integral stabilizer consists of the congruence part $a$ odd, $b$ even in $g(e) = ae+cf'$, $g(f') = be+df'$ of [@Ste91, §4.3.16] — whose discriminant action fixes $[e'/2]$ because $b$ even makes $(b/2)e\in T_\En$ and $ad-bc = \pm 1$ forces $d$ odd — together with $W(E_8)$ on that summand and the even Siegel–Eichler transvections. The key input is *not* Nikulin's surjectivity, which fails for this definite quotient exactly as for the Coble definite Levi: it is the exact sequence
+$$ 1 \to \{\pm\id\} \to W(E_8) \to \Orth^+(8,2) \to 1 , $$
+namely the fact [@CCN+85] that the kernel of $W(E_8)$ on $E_8/2E_8$ is precisely $\{\pm 1\}$, so the image of the Weyl group has order $|W(E_8)|/2 = 348\,364\,800 = |\Orth^+(8,2)|$ and is therefore *all* of $\Orth^+(8,2)$. The even transvections supply the remaining factor $2^8$ (@sec-cusp-lifting's $|N|$ computation: $89\,181\,388\,800 / 348\,364\,800 = 256$), giving
+$$ \rho\bigl(\Stab_{\Orth(T_\En)}(\varPi_0)\bigr) \;=\; \Stab_{\Orth(A,q)}\bigl([e'/2]\bigr),
+\qquad |\cdot| = 89\,181\,388\,800, $$
+so the image is the **full** finite stabilizer — index $1$ — by the order identity, not by asserting it. Its boundary group is the published $\Gamma^1(2)$ (@prop:sterk-e8-computed-example).
+
+**(ii) The other class (all primitive vectors of divisibility two).**
+Its quotient is the even definite rank-$8$ lattice of determinant $64$ on record in
+`computations/reports/coble_gammaEn2-planes-published-run.txt`
+(368 vectors of square $-4$, 16 of square $-2$), so the integral Levi is *finite*, and the finite
+side is the same as the Coble side because the discriminant form is the same plus-ten: the image
+has order $4$, the finite stabilizer $|\Stab(D)| = |\Orth^+(10,2)|/23715 = 1\,981\,808\,640$,
+the finite Levi $S_3\times\Orth^+(6,2)$ with the canonical even-weight complement, and the
+unipotent order $2^{13}$. For this plane we assert **no fullness of the integral Levi**: whether
+the definite quotient's isometry group, applied modulo $2$, covers the finite Levi
+$\Orth^+(6,2)$ is exactly the obstruction, and it is named here as an open step on the page,
+not assumed. What *is* proved is the $\Gamma_{\En,2}$-fibre: by
+@cor:enriques-plane-fibres, whose invariant argument (image order, multiset of orbit-types,
+presence of a divisibility-one vector) uses no stabilizer-image fullness, **the fibre of the
+cusp map over each $M$-orbit of images is a single $\Gamma_{\En,2}$-orbit** — and by the
+double-coset formula of that corollary this is the statement
+$\rho(\Stab_{\Gamma_{\En,2}}(\varPi)) = \Stab_M(D)$ for these planes. For other groups between
+$\ker\rho$ and $\Orth(T_\En)$ the fibre count is returned by the general double-coset formula
+and not by this paragraph's argument, exactly as in @cor:enriques-plane-fibres; a finite
+stabilizer may still permute several $\ker\rho$-orbits within the single
+$\Gamma_{\En,2}$-orbit that it refines.
+:::
+
+
+::: {.remark #rmk:sterk-one-cusp-types title="The published plane types and their boundary groups"}
+
+The one-dimensional components are the $F$-orbits of primitive isotropic planes, classified by *type* under $F$, not by a single finite invariant. From the published text via its page images:
+- the four cases of §4.3.16 ($E_8$, $D_8$, $A_7\oplus A_1$, $E_7\oplus A_1$) built from non-equivalent vectors, whose half-plane components show no cusp identification;
+- the five cases of §4.3.17, with $\mathcal F(F)\cap SL(\mathcal F)$ respectively $\Gamma(2)$ for $\{2,4,5\}$, $\Gamma^1(2)$ for $\{4,5\}$, $\Gamma^1(2)$ for $\{3,5\}$, $\Gamma^1(2)$ for $\{3,4\}$, and $SL_2(\ZZ)$ for $\{5,5\}$. The two middle groups have the superscript 1, not the OCR's $E_1(2)$ and $F_1(2)$.
+Total nine one-cusps, as AEGS states at §3.3 p. 590.
+Whether any two types share a finite plane image is a separate computation of those images; it is not asserted by diagram classification and it is not used here.
+:::
+
+
+
+:::
+
+::: {.lemma #lem:gamma-transport-identity title="The gluing anti-isometry is the identity, and the transport is computed on $\ten$ itself"}
+
+Write $A_{\sen} = A_{U(2)}\oplus A_{E_8(2)}$ and $A_{\ten} = A_U\oplus A_{U(2)}\oplus A_{E_8(2)}$ for the two discriminant groups, summand by summand, with $A_U = 0$ because $U$ is unimodular.
+Under the identification of the common summands the two forms agree, $q_{\ten} = q_{\sen}$; both take values in $\ZZ/2\ZZ$, where $-1 = 1$, so $q_{\ten}\circ\gamma = -q_{\sen}$ holds for $\gamma = \id$.
+Consequently
+$$
+\rho_{\ten}(\gent) \;=\; \rho_{\sen}\bigl(\Stab_{\Orth(\sen)}(h)\bigr) \;\leq\; \Orth(A_{\ten}, q_{\ten}),
+$$
+and that group is generated by the discriminant images of the reflection in $u_0-w_0$ and the eight reflections in the simple roots of $E_8(2)$ — all nine of which are isometries of $\ten$ itself, since $U(2)$ and $E_8(2)$ are summands of $\ten = U\oplus U(2)\oplus E_8(2)$.
+
+:::
+
+::: {.proof}
+
+The discriminant groups of $U(2)$ and of $E_8(2)$ are the same in the two lattices, because both lattices contain those summands isometrically; $U$ contributes nothing. So the canonical identification is an isometry of quadratic spaces, and $\gamma = \id$ is an anti-isometry because negating a $\ZZ/2\ZZ$-valued form changes nothing.
+The generators act on the discriminant through their own summands and trivially on the other, so the images of the nine isometries of $\ten$ are the nine generators of the group in @thm:coble-heegner-finite-orbits' first item and equal the $\gamma$-transport of @prop:gamma-en-two-gluing's image.
+In particular $\gent = \rho_{\ten}^{-1}(M)$ with $M$ built from isometries of $\ten$, which is what makes the preimage construction of `computations/reports/coble_gammaEn2-subgroup-orbits.py` a construction on $\ten$ and not on the glued lattice.
+The number of $\gent$-orbits of primitive isotropic lines, and of planes, is invariant under the choice of admissible $\gamma$, but the invariance is a statement about *integral* orbits and needs a lift: conjugating a finite subgroup of $\Orth(A_{\ten},q_{\ten})$ moves finite orbits, whereas the cusps are orbits on the lattice.
+Two admissible anti-isometries differ by $\tau\in\Orth(A_{\ten},q_{\ten})$, since both satisfy $q_{\ten}(\gamma x) = -q_{\sen}(x)$; by the surjectivity of the discriminant representation (@thm:two-elementary-surjectivity) $\tau = \rho_{\ten}(s)$ for some isometry $s$ of $\ten$, and then
+$$
+\rho_{\ten}^{-1}(\tau M\tau^{-1}) = s\,\rho_{\ten}^{-1}(M)\,s^{-1},
+$$
+so the two preimages are conjugate in $\Orth(\ten)$ and conjugation by a lattice isometry permutes the primitive isotropic lines and planes.
+That lift is the hypothesis the invariance uses, and it is the surjectivity theorem, cited rather than assumed; without it the finite conjugacy says nothing about cusps.
+
+:::
+
+::: {.remark #rmk:gamma-en-two-fibres title="What the index does and does not give for the cusps"}
+
+The $0$-cusps of $\fen$ are the $\gent$-orbits of primitive isotropic $v\in\ten$.
+$[\Gamma_\En : \gent]$ being a finite index of an infinite arithmetic group, and equal to the index of $\rho(\gent)$ in the finite orthogonal group, is what lets a discriminant computation say anything here at all; it is not itself a count of orbits, and two further facts are needed.
+
+*Surjectivity of the divisibility map.*
+A primitive isotropic $v$ with $\operatorname{div}(v) = 2$ satisfies $v^2 = 0$, so $v/2\in\ten^*$ has $q_{\ten}([v/2]) = 0$ and $[v/2]\neq 0$; and $\operatorname{div}(v)=1$ gives the class $0$.
+By [@AEGS25 §3.2] $\Orth(\ten)$ has exactly two orbits on primitive isotropic vectors, $\operatorname{div}=1$ and $\operatorname{div}=2$ — reproduced as a lattice computation by `T_En.cusps(1)`, which returns the two $0$-cusps of $F_{(10,10,0)}$ (record `computations/reports/coble_gammaEn2-cusps-lattice.md`) — and $\Orth(A_{\ten},q_{\ten})$ is transitive on the $527$ nonzero isotropic classes, which `coble_gammaEn2-card-run.txt` reports as one orbit before passing to a subgroup.
+
+The lattice call counts *lines*, and the passage to vectors is a separate step rather than the same statement: a $0$-cusp is a primitive isotropic rank-one subobject $\ZZ v$, not the vector $v$, and $\theset{v,-v}$ are two generators of one line.
+The two counts agree because $-\id_{\ten}\in\Orth(\ten)$ sends $v$ to $-v$, so a line's $\Orth(\ten)$-orbit is the image of a single vector orbit and the map $\text{vector orbits}\to\text{line orbits}$ is bijective: it is onto by definition of the action on subobjects, and injective because the two generators of a line lie in one vector orbit.
+The same argument makes the class $[v/\operatorname{div}(v)]$ an invariant of the line, since $v$ and $-v$ have the same class in $A_{\ten}$. So the image of the $\operatorname{div}=2$ class is a single $\Orth(q)$-orbit, and it is nonempty: every one of the $527$ classes is $[v/2]$ for some primitive isotropic $v$ with $\operatorname{div}(v)=2$. The divisibility map is therefore surjective onto the classes, and $\gent$-orbits map onto $\rho(\gent)$-orbits.
+
+*What is not proved by equivariance alone, and what is.*
+Surjectivity on point sets does not make the map on orbits injective, and the correct criterion is not transitivity of the kernel.
+Let $X$ be a $\Gamma_\En$-orbit of primitive isotropic lines, $x\in X$, $H = \Stab_{\Gamma_\En}(x)$, $c = \varphi(x)$ its class, $M_c = \Stab_M(c)$ for $M = \rho(\gent)$, and $\Gamma_c = \Stab_{\Gamma_\En}(c)$, $\gent_c = \rho^{-1}(M_c)$.
+The $\gent$-orbits on $X$ are the double cosets $\gent\backslash\Gamma_\En/H$, the orbit of $gx$ has size $[\gent : \gent\cap gHg^{-1}]$, and the $\gent$-orbits lying over one $M$-orbit of classes are the double cosets $\gent_c\backslash\Gamma_c/H$.
+There is exactly one of those --- that is, the finite count below is exact on that class --- if and only if
+$$
+\Gamma_c = \gent_c\cdot H
+\quad\Longleftrightarrow\quad
+\rho(\Gamma_c) = M_c\cdot\rho(H)
+\quad\Longleftrightarrow\quad
+\Stab_{\rho(\Gamma_\En)}(c) = M_c\cdot\rho(H),
+$$
+the middle equality being the image of the first under $\rho$ and the last a rewriting of it; the criterion is stated in $\rho(\Gamma_\En)$, and replacing that group by all of $\Orth(q_{\ten})$ uses the surjectivity of the discriminant representation (@thm:two-elementary-surjectivity), not the definition.
+It holds in particular when $\rho(H) = \Stab_{\rho(\Gamma_\En)}(c)$: when the discriminant image of the stabilizer of the chosen line is the *whole* stabilizer of its class in the image group.
+Transitivity of the kernel $K = \ker\rho$ on the fibre is **sufficient** for a single $\gent$-orbit there: $K\subseteq\gent_c$ by @prop:gamma-en-two-index, so $K$ transitive gives $\Gamma_c = K\cdot H$, whence $\rho(\Gamma_c) = \rho(H)$, and the criterion holds because $M_c\subseteq\rho(\Gamma_c)$. It is **not necessary**, and the obstruction is exactly the lifting of $M_c$: $\gent_c/K\cong M_c$ acts on the set of $K$-orbits in the fibre, the fibre is one $\gent_c$-orbit exactly when that action is transitive, and $M_c$ may permute several $K$-orbits cyclically. That is why the criterion is stated with $\rho(H)$ and not with $K$, and why $K$-transitivity is a sufficient but not a necessary condition.
+What the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$: by @lem:line-stabilizer-image that image *is* the stabilizer of the class — $M_c$ at the $\gent$ level — so the criterion holds with equality and the finite count $5 = 1+4$ is the number of $0$-cusps of $\fen$, not merely a count of $\rho(\gent)$-orbits on classes. The computational route through `computations/reports/coble_gammaEn2-cusps-lattice.py` (the stabilizer generators that `T_En.cusps(1)` retains, for both lines) remains as an independent check of the lemma; it is not the proof of it.
+
+**A bounded rank-4 search, as evidence only.**
+The enumeration that produced those lines asks a decidable finite question and should be read at exactly its scope. For any lattice $L$ of rank $r$ with basis $B$ of a totally isotropic plane $\varPi$ (a $2\times r$ integer matrix) one has $\varPi^*/\varPi = R^{\mathrm{sat}}/R$ where $R$ is the row space of $BG$ in $\ZZ^r$; and $\varPi$ is primitive in $L$ exactly when that product computed for $B$ alone is $1$.
+The script `computations/reports/coble_gammaEn2-plane-strata.py` runs this with $r = 4$, in the rank-$4$ summand $U\oplus U(2)$ **of** $T_\En$ — not in $T_\En$ itself, whose rank is 12, where the basis would be $2\times 12$ and the E_8(2)-components would matter. It then enumerates all primitive totally isotropic **presentations** with entries in $[-3,3]$: bases of planes, not the planes themselves, so the pairwise count double-counts planes with different bases of the same plane and is not a count of planes.
+This is hence *bounded evidence in the rank-$4$ summand only*: it exhibits planes of order $2$ ($1040$ presentations), it finds none of order $1$ or $4$ in that box, and it proves nothing about nonexistence — not there, and still less in $T_\En$, where no reduction to the summand has been proved. The plane $\varPi = \langle e,e'\rangle$ displayed above is the genuine order-$2$ exhibit.
+**What is open.** Order-$1$ and order-$4$, the reduction from the summand to $T_\En$, the availability of a primitive $w\in\varPi\cap U(2)$ on which a halving argument could rest, and the integrality of the next half each remain unproved. The nine published $1$-cusps are not assessed by this search in either direction, and no sum over the finite strata is asserted here as an arithmetic count.
+No conclusion about cusps is drawn from that bounded search: the published nine $1$-cusps remain the source target, and liftability of order-$1$ and order-$4$ stays open rather than being negated.
+
+:::
+
+::: {.remark #rmk:descent-of-an-equivariant-inclusion title="What the stabilizer statement has to supply"}
+
+The stabilizer step of @thm:normalization is one instance of a criterion for descending a map to a pair of quotients, and the criterion has a weak form and a strong one that are worth separating.
+Let $f\colon A\injects B$ be an inclusion of sets, with groups $G_A$ and $G_B$ acting on $A$ and on $B$.
+A map of orbit sets $\bar f\colon G_A\backslash A\too G_B\backslash B$ is well defined as soon as $f$ carries orbits into orbits: for every $x\in A$ and every $g_A\in G_A$ there must be some $g_B\in G_B$, allowed to depend on both $x$ and $g_A$, with $g_B f(x) = f(g_A x)$.
+That is all a set-theoretic descent needs, and it is strictly weaker than an equivariance statement.
+The strong form is a uniform assignment, for instance a homomorphism $G_A\too G_B$ with $f\circ g_A = g_B\circ f$ for all $g_A$ at once.
+It is not necessary for $\bar f$ to exist, but it is what the geometric statements here use: it makes $f$ equivariant rather than merely orbit-compatible, it is what identifies quotients rather than just producing a map between them, and it is what any comparison of stabilizers or of orbit decompositions has to stand on.
+For the case at hand, $A = \bD(T_\Co)$ with $G_A = \Orth^+(T_\Co)^*$ and $B = \bD(T_\En)$ with $G_B = \Orth^+(T_\En)^*$, and what the gluing computation above supplies is the strong form, with equality: restriction of $\Stab_{G_B}(T_\Co)$ to $T_\Co$ is exactly $G_A$, so $g_A\mapsto\id_K\oplus g_A$ is a genuine homomorphism and $f$ is $G_A$-equivariant, not merely orbit-compatible.
+It is worth naming what that map is, since the weak form would not have given it: the kernel of restriction is $\{1, s_k\}$, where $s_k$ is the reflection in the $(-2)$-vector $k = \tilde e - \tilde f$ --- it fixes $T_\Co$ pointwise and negates $k$ --- so restriction is two-to-one on the stabilizer and the equivariant assignment is its section, the extension fixing $k$.
+Equality of the images does not give injectivity of $\bar f$: two $G_A$-orbits may still be carried into one $G_B$-orbit, and it is the point of $\bD(T_\Co)$ lying on a second translate $\inverseof{g}(T_\Co)$ that the fibre count has to control.
+:::
