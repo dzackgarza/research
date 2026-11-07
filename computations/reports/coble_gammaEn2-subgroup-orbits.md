@@ -103,7 +103,11 @@ multisets. That run is job `jmw6c9xfj`; its transcript is `coble_gammaEn2-markin
 
 ## The identification, computed
 
-Job `jmw6c9xfj` (exit 0) built $\gamma$ explicitly and tested the generator-level statement:
+The corrected rerun of the marking script in the foreground built $\gamma$ explicitly and tested the
+generator-level statement. Attribution: the first background job `jmw6c9xfj` **failed** (exit 1) on the
+column/bit-mask bug in the same script, not completed; the successful output recorded here comes from
+the corrected foreground run, and that run's exit status was 0. Calling the failed job's status
+"exit 0" in the earlier version of this note was wrong.
 
 ```
 S_En: ten generator classes span 1024 classes (rank 10); A_{U(2)} order 4
