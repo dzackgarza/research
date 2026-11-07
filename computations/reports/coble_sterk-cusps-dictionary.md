@@ -31,13 +31,40 @@ are mutually isometric is exactly that the subgroups $G_v$ differ.
 
 ## The dictionary
 
-| $j$ | Sterk's $v$ (4.2.3, p. 16) | $K_j = v^{\perp}/\ZZ v$ (4.3.4, p. 17) | group | our record's lattice | published walls |
-|---|---|---|---|---|---|
-| 1 | $e$ | $H(2)\oplus E_8(-2) = U(2)\oplus E_8(2)$ | $G_e = \rho(\Stab(e))$ | $K(L_1)$, type $(10,10,0)$ | 12 |
-| 2 | $e'$ | $H\oplus E_8(-2) = U\oplus E_8(2)$ | $G_{e'}$ | $K(L_2)$, type $(10,8,0)$ | 10 |
-| 3 | $e'+f'+\omega$, $\omega^2 = -4$ | $H\oplus E_8(-2)$ | $G_v$ | $K(L_2)$ | 12 |
-| 4 | $e'+2f'+\alpha$, $\alpha^2 = -8$ | $H\oplus E_8(-2)$ | $G_v$ | $K(L_2)$ | 11 |
-| 5 | $2e+2f+\alpha$, $\alpha^2 = -8$ | $H\oplus E_8(-2)$ | $G_v$ | $K(L_2)$ | 14 |
+| $j$ | Sterk's $v$ (4.2.3, p. 16) | $K_j$ (4.3.4, p. 17) | group (page) | our lattice | nodes read from the plate (page, figure) | CoxIter |
+|---|---|---|---|---|---|---|
+| 1 | $e$ | $U(2)\oplus E_8(2)$ | $G_e\cong\{\pm1\}W_e\rtimes S_e$, $S_e\cong\ZZ/2\times\ZZ/2$ (§4.3.5, p. 19) | $K(L_1)$, $(10,10,0)$ | **12** (p. 19, Fig. 4) | 12 |
+| 2 | $e'$ | $U\oplus E_8(2)$ | $G_{e'} = \Orth(H\oplus E_8(-2)) = \{\pm1\}W_{e'}$ (§4.3.6, p. 21) | $K(L_2)$, $(10,8,0)$ | **10** (p. 21, Fig. 6) | 10 |
+| 3 | $e'+f'+\bar\alpha_8$ | $U\oplus E_8(2)$ | $G_v = \{\pm1\}W_v\rtimes\ZZ/2$ (§4.3.7, p. 22) | $K(L_2)$ | **13** (p. 22, Fig. 8) | 12 |
+| 4 | $e'+2f'+\alpha$ | $U\oplus E_8(2)$ | $G_v$ | $K(L_2)$ | not read (pp. 23-24, Figs. 10-13) | 11 |
+| 5 | $2e+2f+\alpha$ | $U\oplus E_8(2)$ | $G_v$ | $K(L_2)$ | not read (pp. 23-24, Figs. 10-13) | 14 |
+
+## The plates, read where read
+
+The figures are read from `pdftoppm -r 150` renders of PDF pp. 19-24 of the Sterk scan
+(`.scratch/figtest/st-19..24.png`); the captions carry no text, so the counts are read off the images.
+
+- **$j = 1$, Fig. 4, p. 19: 12 nodes.** $\alpha_1,\dots,\alpha_{12}$ in a circle-with-cross, the
+  horizontal chain $\alpha_4$–$\alpha_8$ carrying three $\infty$-bonds; the labelled roots
+  $\alpha_9 = f'-e'$, $\alpha_{10} = \bar\alpha_8+2e'$, $\alpha_{11} = 2e'+2f'+\bar\alpha_1+\bar\alpha_8$,
+  $\alpha_{12} = 5e'+3f'+2\bar\alpha_2$. **Agrees with CoxIter's 12.**
+- **$j = 2$, Fig. 6, p. 21: 10 nodes.** $\alpha_1,\alpha_3,\alpha_4,\dots,\alpha_{10}$ on a chain with
+  $\alpha_2$ hanging below $\alpha_4$, one bold (double) bond near the right end and a terminal
+  arrow; legend "$\circ$: $(-4)$-vector, $\bullet$: $(-2)$-vector"; $\alpha_9 = \bar\alpha_8+2f$,
+  $\alpha_{10} = e-f$. **Agrees with CoxIter's 10**, and agrees with the full-group chamber computed in
+  `coble_TEn-chambers.py` — as it must, since Sterk's $G_{e'}$ *is* $\Orth(H\oplus E_8(-2))$ (§4.3.6).
+- **$j = 3$, Fig. 8, p. 22: 13 nodes.** $\alpha_1,\dots,\alpha_{13}$ in a hexagonal ring with
+  $\alpha_{11}$–$\alpha_{10}$ joined by an $\infty$-bond and arrowed bonds on the lower flanks;
+  labelled $\alpha_9 = f-e$, $\alpha_{10} = 2f'+\bar\alpha_8$, $\alpha_{11} = 2e-2f'-\bar\alpha_8$,
+  $\alpha_{12} = 2e+(\bar\alpha_1-\bar\alpha_8)$, $\alpha_{13} = (e+f)+(\bar\alpha_8-f')$; the
+  $\ZZ$-span of the roots is $\ZZ\{\alpha_1,\dots,\alpha_7,\alpha_8-f',e+f,e-f\}$.
+
+**A disagreement, stated as a defect in one of the two and not resolved here:** for $j = 3$ the plate
+(Fig. 8, p. 22) shows **13** nodes while the tree's CoxIter record reports **12** vertices for Sterk 3
+(`sec-coxiter-results-for-cusp-lattices`, "Vertices" column). One of the two is wrong: either the
+CoxIter run was made on a diagram that is not Fig. 8, or a node of Fig. 8 belongs to a different
+figure's count (for instance if Sterk's Fig. 8 includes a root that is not a wall of the chamber).
+This is the next question and is not settled by preferring either number.
 
 Two columns need their page stated exactly:
 
