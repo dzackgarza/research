@@ -16,8 +16,15 @@ step is to stop and report when the rho-side count falls below the published one
 therefore kept ready but has no transcript.  The number it would decide is the number of
 Gamma_En,2-orbits of primitive isotropic planes, which AEGS 2025, section 3.3, p. 590 states as nine.
 
-The group is H = Stab_{O(q)}([h/2]) from the vector half, carried to matrices over GF(2) on ten basis
-classes and exported there -- this script does not recompute the stabilizer, which costs 2190 s.  It
+The group this script would have to act with is Gamma_En,2, and the generators exported by the
+vector half belong to Stab_{O(q_T)}([h/2]), which is 136 times larger and is not Gamma_En,2 (see the
+correction in coble_TEn-gammaEn2-orbits-run.txt).  So this script is not runnable as it stands: it
+needs the nine additive generators of im(Stab_{O(S_En)}(h)) for the correct group, which
+coble_gammaEn2-card.py builds, and it needs the primitive isotropic planes of T_En stratified by
+their image in A_{T_En} -- dimension 0, 1 and 2 -- of which only the 2-dimensional stratum is a
+finite-form datum.  On that stratum the group has 5 orbits of the 23715 totally singular 2-spaces
+(coble_gammaEn2-card-run.txt), against the published 9 one-cusps; the two lower strata are the
+lattice-level part of the obligation.  It
 loads the export, checks that its matrices preserve the quadratic form and that they generate a group
 of the recorded order |H|, and then walks the plane classes under them.  The count is printed beside
 the published 9: AEGS 2025, section 3.3, p. 590, "There are five 0-cusps ... There are also 9 distinct

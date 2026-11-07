@@ -26,3 +26,17 @@ THE NUMBER
 DOES NOT agree with the published count; the rho-side method does not see the orbits,
 and the lattice-side count (S_eta-orbits of square-4 divisibility-2 vectors, Eichler
 inside the K-cosets) is the next thing to compute.
+
+================================================================================
+CORRECTION.  The group counted above is Stab_{O(q_T)}([h/2]), the discriminant image of the
+integral stabilizer of the polarization, and it is NOT Gamma_En,2.  AEGS 2025 Def. 2.6 defines
+Gamma_En,2 = im{ g in O(L) | g I_En = I_En g, g(h) = h } = O(T_En) cap O(T_dP), of index
+27*17*31 = 14229 in O(T_En) (Lemma 2.8, after Sterk Rem. 2.12); by @prop:gamma-en-two-gluing its
+discriminant image is the gamma-transport of the image of Stab_{O(S_En)}(h) in O(q_{S_En}), of order
+|W(E8)| = 696 729 600.  The group above has order 94 755 225 600 = 136 * 696 729 600, so the
+number above is the count for a group 136 times too large: it is the divisibility split div = 1
+against div = 2, i.e. the two 0-cusps of F_(10,10,0) (AEGS 2025 section 3.2), not the cusps of
+F_En,2.  The corrected count for Gamma_En,2 is 5 = 1 + 4, computed with the group Def. 2.6 names in
+computations/reports/coble_gammaEn2-card.py and its run, and agreeing with AEGS 2025 section 3.3
+p. 590 and Sterk 1991 Prop. 4.2.3 p. 16.  The transcript above is unchanged.
+================================================================================

@@ -10,6 +10,12 @@
 H = Stab_{O(q)}(c) and finds two orbits, of sizes 272 and 255.  This record says why that number is 2
 and not an artefact of the walk.
 
+CORRECTION (this commit).  H here is rho(Stab_{O(T_En)}(h)), which is not rho(Gamma_En,2): the group
+Def. 2.6 names has discriminant image of order |W(E8)| = 696 729 600, and this one is 136 times larger.
+So the two level sets below are not the Gamma_En,2-fibres; they are the divisibility split, hence the
+two 0-cusps of F_(10,10,0) (AEGS 2025 section 3.2).  The corrected count is in
+`coble_gammaEn2-card.py`.  The invariant argument itself is unchanged and is what identifies the split.
+
 The invariant.  c = [h/2] has q(c) = 1, so c is not isotropic, and every g in H fixes c; hence
 b(x, c) is constant on each H-orbit, and an H-orbit lies inside one of the level sets of b(., c) on
 the isotropic classes.  The script computes those level sets, and their sizes are exactly the two

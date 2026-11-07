@@ -1,0 +1,40 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+  gap: /sage/.venv/bin/gap
+
+the lattices
+  S_En   rank 10, det -1024, signature (1, 9), |A| = 1024 = 2^10, q takes 2 values, delta = 1
+  T_En   rank 12, det 1024, signature (2, 10), |A| = 1024 = 2^10, q takes 2 values, delta = 1
+  (S_En is the invariant lattice, T_En the coinvariant and period lattice; T_dP = U + Delta^-(U)
+   + E8^2 of rank 18 is the invariant lattice of I_dP and appears in no count here.)
+
+the polarization h = u_0 + w_0 in S_En: h^2 = 4
+  nine integral isometries, each fixing h: True
+  their nine discriminant images in O(A_{S_En}): built in 42 s
+  |O(A_{S_En}, q)| = 46998591897600   (0 s)
+  |G| = 696729600   (W(E8) = 696729600: True)
+
+the group the earlier record used, |Stab_{O(q_T)}([h/2])| = 94755225600
+  correct image |G| = 696729600, ratio 136
+  the index AEGS Lemma 2.8 gives, [O(T_En) : Gamma_En,2] = 27*17*31 = 14229
+the nine matrices on a coordinate basis of A_{S_En}
+  they reproduce the provider action on 19 classes x 9 images, mismatches: 0
+
+isotropic classes of A_{S_En}: 528
+  G-orbits on them: 5, sizes [270, 135, 120, 2, 1]   (0 s)
+  the zero class is its own orbit: True; the nonzero classes give 4 orbits, sizes [270, 135, 120, 2]
+
+totally singular 2-spaces of A_{S_En}: 23715   (0 s)
+  G-orbits on them: 5, sizes [9450, 8640, 3780, 1575, 270]   (0 s)
+
+THE CARD
+  vectors, published 5 (AEGS 2025 section 3.3 p. 590; Sterk 1991 Prop. 4.2.3, p. 16):
+    div 1: the zero class                                  1
+    div 2: the nonzero isotropic classes, 4 orbits        4
+    total                                                  5
+  planes, published 9 (AEGS 2025 section 3.3 p. 590, nine distinct 1-cusps):
+    G-orbits on the totally singular 2-spaces               5
+
+  vector count agrees with 5: True
+  plane count agrees with 9: False

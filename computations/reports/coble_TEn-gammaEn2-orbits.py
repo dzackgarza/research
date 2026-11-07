@@ -6,9 +6,31 @@
         -b <repo>:/repo -w /repo /sage/.venv/bin/python \\
         /repo/computations/reports/coble_TEn-gammaEn2-orbits.py
 
-Gamma_En,2 = Stab_{O(T_En)}(h) with h = e + f in U(2) (slots 2-3), h^2 = 4, div(h) = 2, so its class
-c = [h/2] has q = 1.  rho is onto O(q), so rho(Gamma_En,2) = Stab_{O(q)}(c), of order
-|O(q)|/496 = 94 755 225 600.  Let H denote that subgroup.
+CORRECTION (this commit).  This script's first version identified Gamma_En,2 with the integral
+stabilizer Stab_{O(T_En)}(h) of the polarization h = e + f in U(2), and took its discriminant image
+rho(Stab(h)) = Stab_{O(q_T)}([h/2]) as the group to count.  That identification is false.  AEGS 2025
+Def. 2.6 defines Gamma_En,2 as the image in O(T_En) of { g in O(L) | g I_En = I_En g, g(h) = h } and
+states Gamma_En,2 = O(T_En) cap O(T_dP), of index 27*17*31 = 14229 (Lemma 2.8, after Sterk Rem. 2.12);
+by @prop:gamma-en-two-gluing its discriminant image is the gamma-transport of the image of
+Stab_{O(S_En)}(h), which has order |W(E8)| = 696 729 600, while the group used here has order
+94 755 225 600 = 136 * 696 729 600.  Stab_{O(T_En)}(h) itself has infinite index in O(T_En), since the
+orbit of h is the infinite set of (-4)-vectors of divisibility 2, so it cannot be a subgroup of index
+14229 at all.
+
+What the number in the transcript below therefore is: the orbits of a group 136 times too large, i.e.
+two orbits, which are the level sets of b(.,c) -- the divisibility split div = 1 against div = 2.
+That is a correct count of a different quotient: it is the two 0-cusps of F_(10,10,0) = D(T_En)/O(T_En)
+(AEGS 2025, section 3.2), not the cusps of F_En,2.  The corrected count for Gamma_En,2, with the group
+Def. 2.6 names, is in `coble_gammaEn2-card.py` and its run: 5 = 1 + 4, matching AEGS 2025 section 3.3
+p. 590 and Sterk 1991 Prop. 4.2.3 p. 16.
+
+The lattices and the group, as the sources fix them:
+  S_En = U(2) + E8(2), the invariant lattice, rank 10, signature (1,9), carrying h;
+  T_En = U + U(2) + E8(2), the coinvariant and period lattice, rank 10, signature (2,10);
+  T_dP = U + Delta^-(U) + E8^2, rank 18, the invariant lattice of I_dP, which enters only through
+  Gamma_dP = O(T_dP) in Gamma_En,2 = Gamma_En cap Gamma_dP.
+h = e + f in U(2) (slots 2-3) has h^2 = 4 and div(h) = 2, so its class c = [h/2] has q = 1; rho is
+onto O(q) and |O(q)| = 46 998 591 897 600.
 
 The count computed here is the number of H-orbits on the isotropic classes of A_{T_En} = (Z/2)^10
 other than zero.  It is a LOWER BOUND for the Gamma_En,2-orbit count of primitive isotropic vectors,
