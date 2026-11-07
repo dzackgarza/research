@@ -310,10 +310,13 @@ The containments "$\subseteq$" are clear: stabilizing $\ZZ v$ stabilizes its cla
 $\rho(\gent) = M$. For "$\supseteq$" of the first, let $h$ stabilize $c\definedas\varphi(\ZZ v)$
 and, by (H2), write $h = \rho(g)$ with $g\in\Orth(\ten)$. Then $g(v)$ and $v$ are primitive
 isotropic of the same divisibility (an isometry preserves $(v,\ten)$), and
-$\varphi(g(\ZZ v)) = \rho(g)(c) = h(c) = c$, so $[g(v)/2] = [v/2]$ in $\ten^*/\ten$; the class
-map is a homomorphism whose zero class is $\ten$ itself, so this says exactly
-$g(v) - v \in 2\,\ten$ — the congruence modulo $pN$ at
-$p = \operatorname{div}(v)$ required by [@Ste91, Cor. 3.3], whose own structural hypothesis
+$\varphi(g(\ZZ v)) = \rho(g)(c) = h(c) = c$. Put $p\definedas\operatorname{div}(v)$; an
+isometry preserves the divisibility, so $\operatorname{div}(g(v)) = p$, both $g(v)/p$ and
+$v/p$ lie in $\ten^*$, and the equality of classes reads $[g(v)/p] = [v/p]$ in
+$\ten^*/\ten$. The class map is a homomorphism whose zero class is $\ten$ itself, so this says
+exactly $g(v) - v \in p\,\ten$ — the congruence modulo $pN$ required by [@Ste91, Cor. 3.3] at
+$p = \operatorname{div}(v)$, vacuous for $p = 1$ and the divisibility-two congruence for
+$p = 2$ — whose own structural hypothesis
 holds for this lattice because $\ten = (U\oplus U(2))\oplus E_8(2)$ is of the form $N = A\oplus P$
 with $A = H\oplus H(2)$ and $P = E_8(2)$ even and nondegenerate. Corollary 3.3 supplies
 $k\in\Orth'(\ten)$ with $k(g(v)) = \pm v$; then $k\circ g$ stabilizes $\ZZ v$ and
@@ -404,7 +407,26 @@ parabolic subdiagrams enumerated there, and the passage from vector stabilizers 
 4.3.1: a plane $\varPi$ containing $v$ determines the isotropic line $\varPi/\ZZ v$ of
 $v^{\perp}/\ZZ v$, on which $G_v$ acts, and the same plane recurs for different $v$ exactly as
 recorded in 4.3.15–4.3.16 (the interlacing), so the per-vector enumerations combine into nine
-classes. The embeddings behind [@Ste91, Prop. 4.6] are those of Lemma 4.3.4 — under the
+classes.
+
+**The interlacing, with its data.** The map of 4.3.1, $\varPi\mapsto\varPi/\ZZ v$, places each
+plane in the vector case of every type its type-set contains, so the interlacing is read off the
+computed type-sets: the parabolic classes of case $t$ are the planes whose type-set contains
+$t$ —
+case 1: $\{1,2\},\{1,3\},\{1,4\},\{1,5\}$ (four, as 4.3.5 enumerates);
+case 2: $\{1,2\},\{2,4,5\}$ (two, the two maximal parabolic subdiagrams of 4.3.6);
+case 3: $\{1,3\},\{3,4\},\{3,5\}$ (three);
+case 4: $\{1,4\},\{2,4,5\},\{3,4\},\{4,5\}$ (four);
+case 5: $\{1,5\},\{2,4,5\},\{3,5\},\{4,5\},\{5,5\}$ (five).
+The recurrences Sterk names are exactly these repetitions: the first class of 4.3.6 is the
+$A_7\oplus A_1$ class of 4.3.5 ($\{1,2\}$ recurs in case 2), the $E_7\oplus A_1$ diagram of
+4.3.7 is the class of 4.3.5 ($\{1,3\}$ recurs in case 3), and 4.3.8 shares one class with
+4.3.7 ($\{3,4\}$, the class in both case 3 and case 4) besides the $D_8$ recurrence from 4.3.5.
+Each class is first seen in the case of its least type — four in case 1, then one, two, one,
+one in cases 2–5 — nine in all. (The label list printed in 4.3.9's recurrence sentence is not
+reliably legible in the page images and is not used; the table above predicts case 5's five
+classes, of which $\{2,4,5\},\{3,5\},\{4,5\}$ are shared with earlier cases and $\{5,5\}$ is
+new.) The embeddings behind [@Ste91, Prop. 4.6] are those of Lemma 4.3.4 — under the
 summand-wise isometry $\ten\cong L_- = H\oplus H(2)\oplus E_8(-2)$, the identification
 $(e')^{\perp}/\ZZ e'\cong H\oplus E_8(-2)$ and the single
 $\Orth(H(2)\oplus E_8(-2))$-orbit of primitive isotropic vectors in that lattice — and they give
