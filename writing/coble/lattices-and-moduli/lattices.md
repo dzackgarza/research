@@ -483,40 +483,69 @@ the finite partition — is supplied by the pending lattice-orbit computation wi
 generators, whose result is not assumed anywhere in this section.
 :::
 
-::: {.theorem #thm:enriques-integral-plane-stabilizers title="The integral plane stabilizers of the two $O(T_\En)$-plane classes, and the Enriques fibre"}
-Throughout, $A = A_{T_\En}$ is the plus-type ten-space, $b([x/2],[y/2]) = (x,y)/2 \bmod \ZZ$ and $D(\varPi) = \im((\varPi_\QQ\cap\ten^*)\to A)$ as in @cor:enriques-plane-fibres. By [@Ste91, Prop. 4.6] there are two $O(T_\En)$-classes of primitive isotropic planes, and their integral stabilizer images differ.
+::: {.theorem #thm:enriques-integral-plane-stabilizers title="The integral plane stabilizers of the two $O(T_\En)$-plane classes, with their full discriminant images"}
+Throughout, $A = A_{T_\En}$ and $D(\varPi) = \im((\varPi_\QQ\cap\ten^*)\to A)$.
+The finite-field machinery of this proof uses the exact identification
+$$ A = \ten^*/\ten \;\cong\; K \definedas \ker(G \bmod 2) \;\subseteq\; \ten/2\ten , $$
+where $G$ is the Gram matrix of $\ten = U\perp U(2)\perp E_8(2)$.
+Concretely, $[x/2]\in A$ corresponds to $x\bmod 2$ on the ten scaled coordinates:
+such a class is dual exactly when $(x,\ten)$ is even, and $[x/2] = [y/2]$ iff $x-y \in 2\ten$.
+The record `computations/reports/coble_enriques-plane-stabilizers-exact-run.txt` prints $\dim K = 10$ and $|K| = |A| = 1024$, so no action on the larger parity module $\ten/2\ten$ is substituted for the discriminant action.
+Coefficients of $\F_2$ matrices are written $\beta \definedas 2b \bmod 2$, i.e. $\beta([x/2],[y/2]) = (x,y)_B \bmod 2$.
 
-**(i) The class containing a divisibility-one vector, represented by $\varPi_0 = \ZZ e\oplus\ZZ e'$.**
-Its quotient $\varPi_0^{\perp}/\varPi_0 = E_8(2)$ is the definite summand. The integral stabilizer consists of the congruence part $a$ odd, $b$ even in $g(e) = ae+cf'$, $g(f') = be+df'$ of [@Ste91, §4.3.16] — whose discriminant action fixes $[e'/2]$ because $b$ even makes $(b/2)e\in T_\En$ and $ad-bc = \pm 1$ forces $d$ odd — together with $W(E_8)$ on that summand and the even Siegel–Eichler transvections. The key input is *not* Nikulin's surjectivity, which fails for this definite quotient exactly as for the Coble definite Levi: it is the exact sequence
-$$ 1 \to \{\pm\id\} \to W(E_8) \to \Orth^+(8,2) \to 1 , $$
-namely the fact [@CCN+85] that the kernel of $W(E_8)$ on $E_8/2E_8$ is precisely $\{\pm 1\}$, so the image of the Weyl group has order $|W(E_8)|/2 = 348\,364\,800 = |\Orth^+(8,2)|$ and is therefore *all* of $\Orth^+(8,2)$. The even transvections supply the remaining factor $2^8$ (@sec-cusp-lifting's $|N|$ computation: $89\,181\,388\,800 / 348\,364\,800 = 256$), giving
-$$ \rho\bigl(\Stab_{\Orth(T_\En)}(\varPi_0)\bigr) \;=\; \Stab_{\Orth(A,q)}\bigl([e'/2]\bigr),
-\qquad |\cdot| = 89\,181\,388\,800, $$
-so the image is the **full** finite stabilizer — index $1$ — by the order identity, not by asserting it. Its boundary group is the published $\Gamma^1(2)$ (@prop:sterk-e8-computed-example).
+For a primitive isotropic plane $P = \generators{v,w}$, an integral isometry preserving it satisfies
+$$ g(v) = av + cw, \qquad g(w) = bv + dw, \qquad \det\begin{pmatrix}a&b\\c&d\end{pmatrix} = \pm1 $$
+with $a,b,c,d\in\ZZ$ determined by $g$. The divisibility constraints of $b$ follow from $g(e)$ having $(e,\ten) = \ZZ$ and $g(e')$ having $(e',\ten) = 2\ZZ$, not from an assertion about whole rows.
+For both types the displayed Siegel–Eichler generators are evaluated by the established formula
+$$ E(\eta,w)(x) = x + b(x,w)\eta - b(x,\eta)w - \tfrac12(w,w)b(x,\eta)\eta , $$
+whose dual-basis parameters are exactly the half-basis vectors of $\ten^*$.
+Each candidate in the record is checked for an integral matrix (by membership in $\ZZ$, not by the method call `x.denominator`), for preservation of the form by $S^TGS = G$, and for $g(P) = P$ by an exact integral solve.
 
-**(ii) The other class (all primitive vectors of divisibility two).**
-Its quotient is the even definite rank-$8$ lattice of determinant $64$ on record in
-`computations/reports/coble_gammaEn2-planes-published-run.txt`
-(368 vectors of square $-4$, 16 of square $-2$), so the integral Levi is *finite*, and the finite
-side is the same as the Coble side because the discriminant form is the same plus-ten: the image
-has order $4$, the finite stabilizer $|\Stab(D)| = |\Orth^+(10,2)|/23715 = 1\,981\,808\,640$,
-the finite Levi $S_3\times\Orth^+(6,2)$ with the canonical even-weight complement, and the
-unipotent order $2^{13}$. For this plane we assert **no fullness of the integral Levi**: whether
-the definite quotient's isometry group, applied modulo $2$, covers the finite Levi
-$\Orth^+(6,2)$ is exactly the obstruction, and it is named here as an open step on the page,
-not assumed. What *is* proved is the $\Gamma_{\En,2}$-fibre: by
-@cor:enriques-plane-fibres, whose invariant argument (image order, multiset of orbit-types,
-presence of a divisibility-one vector) uses no stabilizer-image fullness, **the fibre of the
-cusp map over each $M$-orbit of images is a single $\Gamma_{\En,2}$-orbit** — and by the
-double-coset formula of that corollary this is the statement
-$\rho(\Stab_{\Gamma_{\En,2}}(\varPi)) = \Stab_M(D)$ for these planes. For other groups between
-$\ker\rho$ and $\Orth(T_\En)$ the fibre count is returned by the general double-coset formula
-and not by this paragraph's argument, exactly as in @cor:enriques-plane-fibres; a finite
-stabilizer may still permute several $\ker\rho$-orbits within the single
-$\Gamma_{\En,2}$-orbit that it refines.
+**(i) The plane containing a divisibility-one vector, $\varPi_0 = \ZZ e\oplus\ZZ e'$.**
+The quotient Gram is the definite summand $Q = E_8(2)$, printed in the record.
+The admitted integral Levi is $W(E_8)$ on that definite quotient, together with the congruence part $a$ odd, $b$ even above and the displayed dual-basis transvections.
+The owned definite isometry computation on $Q^*/Q$ returns
+$$ \abs{\induced O(Q)\text{ on }Q^*/Q} = 348\,364\,800 = \abs{\Orth^+(8,2)} . $$
+Nine accepted integral plane-stabilizing Eichler matrices generate a discriminant image of order $256$.
+Since $\rho(U)$ for the unipotent radical $U$ fixing $P$ and $P^\perp/P$ lies in the order-$2^8$ normal unipotent radical of $\Stab_{O(q)}([e'/2])$,
+the block arithmetic gives the full image, not merely a lower bound:
+$$ \rho\bigl(\Stab_{\Orth(T_\En)}(\varPi_0)\bigr)
+ = \Stab_{\Orth(A,q)}\bigl([e'/2]\bigr), \qquad
+348\,364\,800 \times 256 = 89\,181\,388\,800 = \abs{\Stab_{O(q)}([e'/2])}. $$
+The relation $[O^+(8,2):\rho(L)] = 1$ is the exact sequence compute:
+$\ker(W(E_8)\to O(E_8/2E_8)) = \{\pm1\}$ [@CCN+85], so $348\,364\,800 = |W(E_8)|/2$.
+
+**(ii) The class with all primitive vectors of divisibility two, represented by $P = \generators{e',z}$ with $z = 2e+2f+\alpha$ for a pair $\alpha$ of orthogonal E_8 roots.**
+Its exact quotient Gram $Q = P^\perp/P$ has determinant $64$; the record prints it, then certifies the integral identification with $D_8^*(2)$ in the negative convention by the matrix
+$$ R = \begin{pmatrix}
+ 1 & 2 & 3 & 4 & 5 & 0 & 0 & 1\\
+-1 & 0 & 1 & 2 & 3 &-2 &-1 & 0\\
+ 0 & 0 & 0 & 0 & 0 &-1 & 0 & 0\\
+ 0 &-1 &-2 &-3 &-4 &-1 & 0 &-1\\
+ 0 &-1 &-2 &-3 &-4 & 0 & 0 & 0\\
+ 0 &-1 &-2 &-3 &-3 & 0 & 0 & 0\\
+ 0 &-1 &-2 &-2 &-2 & 0 & 0 & 0\\
+ 0 &-1 &-1 &-1 &-1 & 0 & 0 & 0
+ \end{pmatrix},
+ \qquad R^T(-Q)R = 2(D_8)^{-1}. $$
+Thus the claimed identification is proved by an explicit isometry, not inferred from norms. The native definite isometry group induced on $Q^*/Q$ has order $40320 = |\Orth^+(6,2)|$, the full finite Levi.
+Fifteen accepted integral plane-stabilizing matrices generate a discriminant image of order $49152 = 8192\cdot 6$, the full order-$2^{13}$ unipotent radical together with its $GL_2(\F_2)$-part on the plane. Consequently
+$$ \rho\bigl(\Stab_{\Orth(T_\En)}(P)\bigr) = \Stab_{\Orth(A,q)}(D),
+ \qquad 40320\times 49152 = 1\,981\,808\,640 = \abs{\Stab_{\Orth(A,q)}(D)}. $$
+For definiteness, the three nonzero classes of $D$ in the record are
+$[z/2]$ (bit string `000011000000`), $[e'/2]$ (`001000000000`), and their sum (`001011000000`), each counted with multiplicity one; no ordered pair is collapsed into a set of distinct vector types.
+
+**Specialization to $\Gamma_{\En,2}$.**
+Write $Q_0 = \rho(\Orth(T_\En))$, $H_0 = \rho(\Gamma)$ with $\ker\rho\subseteq\Gamma\subseteq\Orth(T_\En)$, $F = \Stab_{Q_0}(D)$ and $S = \rho(\Stab_{\Orth(T_\En)}(P))$.
+Items (i) and (ii) prove $S = F$ for every finite type under consideration, and for any such $\Gamma$ the two-preimage argument gives
+$$ \rho\bigl(\Stab_\Gamma(P)\bigr) = \rho\bigl(\Stab_{\Orth(T_\En)}(P)\bigr)\cap H_0 = \Stab_{H_0}(D), $$
+because if $h = \rho(g) = \rho(g_2)$ with $g$ in the integral stabilizer and $g_2\in\Gamma$, then $gg_2^{-1}\in\ker\rho\subseteq\Gamma$, so $g\in\Gamma$.
+For $\Gamma = \Gamma_{\En,2}$, with $H_0 = M$, the double-coset fibre of @cor:enriques-plane-fibres therefore has count
+$$ \bigl(q^{-1}H_0q\intersect F\bigr)\bigl\backslash F \big/ S = F/F = 1 $$
+per $M$-orbit of images: the fibre of primitive isotropic planes over each image is a single $\Gamma_{\En,2}$-orbit.
+This equality of images is *proved from the integral candidates and their orders*, not inferred from a single orbit over an $M$-orbit or from the finite partition.
+For other $\Gamma\supseteq\ker\rho$ the general double-coset formula of that corollary governs; no fibre count is asserted from the reported orbit padding alone.
 :::
-
-
 ::: {.remark #rmk:sterk-one-cusp-types title="The published plane types and their boundary groups"}
 
 The one-dimensional components are the $F$-orbits of primitive isotropic planes, classified by *type* under $F$, not by a single finite invariant. From the published text via its page images:
