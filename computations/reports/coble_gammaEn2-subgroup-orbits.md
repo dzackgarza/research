@@ -72,6 +72,35 @@ HEAD`, the provider snapshot's declared version line, and a `sha256` of
 `orthogonal_quotients.py` — the file that owns `discriminant_preimage` and the character-data
 machinery the result rests on.
 
+## The first marking run, collected
+
+Job `jmw6bcuf0` finished (exit 0, 21 min 42 s) and printed, for both lattices, the $M$-orbit partition
+on the 528 isotropic classes:
+
+```
+S_En: A_{U(2)} = 4 classes; isotropic classes 528
+  M-orbits on the isotropic classes: 5, sizes [270, 135, 120, 2, 1]
+T_En: A_{U(2)} = 4 classes; isotropic classes 528
+  M-orbits on the isotropic classes: 5, sizes [270, 135, 120, 2, 1]
+```
+
+That is the same partition as `coble_gco_orbit-decomposition-run.txt` and `coble_gammaEn2-card-run.txt`,
+and it is *not* an identification: equal multisets, as the section above says, do not identify two
+marked actions.
+
+Two of that run's three structural checks were also invalid as coded: `A_{E8(2)}` was tested as the
+**set** complement of `A_{U(2)}` (1020 classes) rather than as its **orthogonal** complement (256
+classes), so "the eight root reflections preserve $A_{E8(2)}$" was vacuous and "the $U(2)$ swap fixes
+$A_{E8(2)}$ pointwise" reported `False` about the wrong set. The script has been rewritten: it now
+computes $A_{E8(2)}$ as the span of the $E_8(2)$-slot classes, builds the anti-isometry $\gamma$
+explicitly as the $10\times10$ matrix over $F_2$ matching the ten summand generators slot by slot,
+checks that $\gamma$ preserves $q$ on all 1024 classes, and then tests the identification itself:
+
+$$\gamma\,\rho_{\sen}(g_i)\,\gamma^{-1} = \rho_{\ten}(g_i)\quad\text{on all 1024 classes, for } i = 1,\dots,9,$$
+
+together with the pointwise agreement of the two orbit partitions under $\gamma$ rather than their
+multisets. That run is job `jmw6c9xfj`; its transcript is `coble_gammaEn2-marking-run.txt`.
+
 ## Status
 
 The numbers are being produced by the three jobs named in the commit that added this file:
