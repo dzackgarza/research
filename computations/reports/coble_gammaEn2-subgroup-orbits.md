@@ -101,6 +101,34 @@ $$\gamma\,\rho_{\sen}(g_i)\,\gamma^{-1} = \rho_{\ten}(g_i)\quad\text{on all 1024
 together with the pointwise agreement of the two orbit partitions under $\gamma$ rather than their
 multisets. That run is job `jmw6c9xfj`; its transcript is `coble_gammaEn2-marking-run.txt`.
 
+## The identification, computed
+
+Job `jmw6c9xfj` (exit 0) built $\gamma$ explicitly and tested the generator-level statement:
+
+```
+S_En: ten generator classes span 1024 classes (rank 10); A_{U(2)} order 4
+T_En: ten generator classes span 1024 classes (rank 10); A_{U(2)} order 4
+  coordinate matrices of the ten generators: det(S) = 1, det(T) = 1
+  gamma as a 10 x 10 matrix over F_2: invertible = True
+  gamma preserves q on all 1024 classes: True
+
+the identification, generator by generator
+  generator 1 ... 9: transported equals the T_En counterpart on all 1024 classes: True
+  identification holds for all nine: True
+  gamma maps the isotropic classes onto the isotropic classes: True
+```
+
+So the transport is not merely *an* admissible anti-isometry: there is an explicit $\gamma$, carrying
+the ten summand generators of $A_{\sen}$ to the ten summand generators of $A_{\ten}$ slot by slot,
+which preserves $q$ on all 1024 classes and satisfies
+
+$$\gamma\,\rho_{\sen}(g_i)\,\gamma^{-1} = \rho_{\ten}(g_i)\qquad (i = 1,\dots,9)$$
+
+on all 1024 classes. The two nine-generator groups are therefore the same subgroup of the same
+orthogonal group under this identification, and $\rho_\ten(\gent) = M$ *is* the transport of
+$\rho_{\sen}(\Stab_{\Orth(\sen)}(h))$ — the geometric identification of `@lem:gamma-transport-identity`,
+now checked generator by generator rather than inferred from equal orbit sizes.
+
 ## Status
 
 The numbers are being produced by the three jobs named in the commit that added this file:

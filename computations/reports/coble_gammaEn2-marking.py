@@ -150,7 +150,9 @@ assert GS.det() == 1 and GT.det() == 1
 gamma = GT * GS.inverse()
 print('  gamma as a 10 x 10 matrix over F_2: invertible = %s' % (gamma.det() == 1))
 
-perm = [act(tuple(int(gamma[i][j]) for i in range(10)), x) for x in range(1024)]
+gamma_cols = tuple(sum(int(gamma[i][j]) << i for i in range(10)) for j in range(10))
+assert len(set(gamma_cols)) == 10 and all(0 <= c < 1024 for c in gamma_cols)
+perm = [act(gamma_cols, x) for x in range(1024)]
 qS = {data['S_En']['coord'][e]: data['S_En']['A'].q(e).lift() for e in data['S_En']['els']}
 qT = {data['T_En']['coord'][e]: data['T_En']['A'].q(e).lift() for e in data['T_En']['els']}
 print('  gamma preserves q on all 1024 classes: %s' % all(qS[x] == qT[perm[x]] for x in range(1024)))

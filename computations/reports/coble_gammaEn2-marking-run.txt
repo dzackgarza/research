@@ -1,0 +1,26 @@
+provenance, from the sources themselves
+  Sage: 11.0.beta5
+  port clone /repo/.scratch/port-held at git HEAD 991b88b095a42a1e3679569ea42328c900c120f6
+  provider snapshot /prov, sha256(orthogonal_quotients.py) = daa41042df4849be
+  imported from: /repo/.scratch/port-held/src/sage_indefinite_port / /prov/src/sage_extensions
+
+S_En: ten generator classes span 1024 classes (rank 10); A_{U(2)} order 4
+T_En: ten generator classes span 1024 classes (rank 10); A_{U(2)} order 4
+  coordinate matrices of the ten generators: det(S) = 1, det(T) = 1
+  gamma as a 10 x 10 matrix over F_2: invertible = True
+  gamma preserves q on all 1024 classes: True
+
+the identification, generator by generator
+  generator 1: transported equals the T_En counterpart on all 1024 classes: True
+  generator 2: transported equals the T_En counterpart on all 1024 classes: True
+  generator 3: transported equals the T_En counterpart on all 1024 classes: True
+  generator 4: transported equals the T_En counterpart on all 1024 classes: True
+  generator 5: transported equals the T_En counterpart on all 1024 classes: True
+  generator 6: transported equals the T_En counterpart on all 1024 classes: True
+  generator 7: transported equals the T_En counterpart on all 1024 classes: True
+  generator 8: transported equals the T_En counterpart on all 1024 classes: True
+  generator 9: transported equals the T_En counterpart on all 1024 classes: True
+  identification holds for all nine: True
+
+isotropic classes: 528
+  gamma maps the isotropic classes onto the isotropic classes: True
