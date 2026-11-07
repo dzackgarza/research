@@ -36,7 +36,21 @@ T_En.cusps(1) -> 2 records   (326 s)
 So the failure was the tracked `int(owned element)` defect at the old image pin, not a defect of the
 current port.
 
+## The reproducible script
+
+Everything here is in one script, `coble_gammaEn2-cusps-lattice.py`, with the call, the provenance it
+needs and the order of the stages in its header; its transcript is
+`coble_gammaEn2-cusps-lattice-run.txt`. The two runs recorded below were made before it was
+consolidated, as jobs `jmw6ab5wm` (`cusps(1)` and the stabilizer images) and `jmw69fxhq` (`cusps(2)`),
+under exactly the pair above; their outputs are folded in when they land.
+
 ## What the two records are
+
+A cusp here is a primitive isotropic rank-one *subobject* $\ZZ v$, not the vector $v$. The count is
+therefore a count of lines, and its agreement with a count of vectors is a separate step: since
+$-\id_{\ten}\in\Orth(\ten)$, the two generators of a line lie in one vector orbit, so the map from
+vector orbits to line orbits is a bijection. The script records this where it matters — it takes a
+generator through the subobject's inclusion before asking for its square, divisibility and class.
 
 `T_En.cusps(1)` returns the $\Orth(\ten)$-orbits of primitive isotropic rank-one subobjects, i.e. the
 $0$-cusps of $F_{(10,10,0)} = \bD(\ten)/\Orth(\ten)$, each with its parabolic subgroup, its stabilizer
@@ -48,6 +62,15 @@ This is the anchor the stage-1 batch lacked. It confirms, on the lattice, that t
 classes are two $\Orth(\ten)$-orbits, which is one of the two inputs of the surjectivity argument in
 `@rmk:gamma-en-two-fibres`; the other, transitivity of $\Orth(A_\ten,q_\ten)$ on the $527$ nonzero
 isotropic classes, is in `coble_gammaEn2-card-run.txt`.
+
+## The stabilizer images
+
+The same script asks, for each of the two cusps, for the stabilizer generators the record retains,
+their discriminant images, the order of the group they generate, and the order of the stabilizer of
+the class $[v/\operatorname{div}(v)]$ inside $\Orth(A_\ten,q_\ten)$. Equality of the two orders is the
+statement that the discriminant image of the integral stabilizer of $v$ is the whole stabilizer of
+its class — the input the fibre argument needs, and the script prints `false` rather than assuming
+it. Those numbers are pending in job `jmw6ab5wm`.
 
 ## The plane side
 
