@@ -36,8 +36,8 @@ are mutually isometric is exactly that the subgroups $G_v$ differ.
 | 1 | $e$ | $U(2)\oplus E_8(2)$ | $G_e\cong\{\pm1\}W_e\rtimes S_e$, $S_e\cong\ZZ/2\times\ZZ/2$ (§4.3.5, p. 19) | $K(L_1)$, $(10,10,0)$ | **12** (p. 19, Fig. 4) | 12 |
 | 2 | $e'$ | $U\oplus E_8(2)$ | $G_{e'} = \Orth(H\oplus E_8(-2)) = \{\pm1\}W_{e'}$ (§4.3.6, p. 21) | $K(L_2)$, $(10,8,0)$ | **10** (p. 21, Fig. 6) | 10 |
 | 3 | $e'+f'+\bar\alpha_8$ | $U\oplus E_8(2)$ | $G_v = \{\pm1\}W_v\rtimes\ZZ/2$ (§4.3.7, p. 22) | $K(L_2)$ | **13** (p. 22, Fig. 8) | 12 |
-| 4 | $e'+2f'+\alpha$ | $U\oplus E_8(2)$ | $G_v$ | $K(L_2)$ | not read (pp. 23-24, Figs. 10-13) | 11 |
-| 5 | $2e+2f+\alpha$ | $U\oplus E_8(2)$ | $G_v$ | $K(L_2)$ | not read (pp. 23-24, Figs. 10-13) | 14 |
+| 4 | $2e'+f'+\bar\alpha_1$ (§4.3.8, p. 23) | $U\oplus E_8(2)$ | $G_v$, symmetry from $\Gamma_v$ (4.3.10) | $K(L_2)$ | **11** (p. 23, Fig. 10) | 11 |
+| 5 | $2e+2f+\bar\alpha_1$ (§4.3.9, p. 24) | $U\oplus E_8(2)$ | $G_v$, symmetries lift to $\Gamma_v$ (4.3.10) | $K(L_2)$ | **14** (p. 24, Fig. 12) | 14 |
 
 ## The plates, read where read
 
@@ -58,6 +58,20 @@ The figures are read from `pdftoppm -r 150` renders of PDF pp. 19-24 of the Ster
   labelled $\alpha_9 = f-e$, $\alpha_{10} = 2f'+\bar\alpha_8$, $\alpha_{11} = 2e-2f'-\bar\alpha_8$,
   $\alpha_{12} = 2e+(\bar\alpha_1-\bar\alpha_8)$, $\alpha_{13} = (e+f)+(\bar\alpha_8-f')$; the
   $\ZZ$-span of the roots is $\ZZ\{\alpha_1,\dots,\alpha_7,\alpha_8-f',e+f,e-f\}$.
+
+- **$j = 4$, Fig. 10, p. 23: 11 nodes.** Chain $\alpha_{11},\alpha_3,\alpha_4,\dots,\alpha_8,\alpha_{12},\alpha_9$
+  with $\alpha_2$ below $\alpha_4$ and $\alpha_{10}$ below $\alpha_8$, an arrow at each end; roots span
+  $\ZZ\{e+f,e-f,-e'+\alpha_1,\alpha_2,\dots,\alpha_8\}$; $\alpha_9 = f-e$, $\alpha_{10} = \bar\alpha_8+2e'$,
+  $\alpha_{11} = e+f+\alpha_1-e'$, $\alpha_{12} = 2e-2e'+\bar\alpha_8-\alpha_1$. **Agrees with
+  CoxIter's 11.**
+- **$j = 5$, Fig. 12, p. 24: 14 nodes.** Outer octagon $\alpha_6,\alpha_5,\alpha_4,\alpha_2,\alpha_{10},
+  \bar\alpha_8,\alpha_8,\alpha_7$ and inner hexagon $\alpha_{12},\bar\alpha_1,\alpha_{14},\alpha_9,
+  \alpha_{13},\alpha_{11}$, with three $\infty$-bonds; roots span $\ZZ\{\tilde e+\tilde f,\tilde e-\tilde f,
+  \tilde\alpha_1,\dots,\tilde\alpha_8\}$. **Agrees with CoxIter's 14.**
+
+A note on the representatives: §4.3.8 and §4.3.9 use $2e'+f'+\bar\alpha_1$ and $2e+2f'+\bar\alpha_1$,
+which differ from the Prop. 4.2.3 list ($e'+2f'+\alpha$, $2e+2f+\alpha$) by $\Gamma$-equivalence;
+the lattice $v^{\perp}/\ZZ v$ is $U\oplus E_8(2)$ either way (Lemma 4.3.4, p. 17).
 
 **A disagreement, stated as a defect in one of the two and not resolved here:** for $j = 3$ the plate
 (Fig. 8, p. 22) shows **13** nodes while the tree's CoxIter record reports **12** vertices for Sterk 3
