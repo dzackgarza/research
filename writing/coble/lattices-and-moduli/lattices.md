@@ -237,6 +237,23 @@ Both sides being $67\,456$, that factor is one and $K\subseteq\gent$.
 
 The numerical inputs are computed in `computations/reports/coble_gammaEn2-card.py` and its run, which reports both indices as $67456$ and the order $696\,729\,600$ of the discriminant image of the nine generators.
 
+::: {.proposition #prop:sterk-group-identification title="The group, exactly as @Ste91 defines it"}
+
+With $F$ the image in $\Orth(L^-)$ of $\theset{g\in\Orth L : g\circ I = I\circ g,\; g(h) = h}$ — the degree-$2$ definition of @prop:gamma-en-two-gluing — the published statement is:
+1. **Prop. 2.7, [@Ste91], p. 7.** $F$ is exactly the set of integral isometries of $L^-$ whose induced map on $L_-^*/L_-\cong\tfrac12 H(2)/H(2)\cong E_8(-2)/E_8(-2)$ **respects the decomposition into the two summands**; in the notation of `@prop:gamma-en-two-gluing`, that is a condition on the action on $A_{U(2)}\oplus A_{E_8(2)}$.
+2. **Remark 2.8, [@Ste91], p. 8.** $F$ is *not* the stabilizer of $\langle e'-f'\rangle+L$: there is a Siegel-Eichler transformation that stabilizes that line and lies in $F$.
+This supersedes the earlier identification $\Stab_{\Orth(\ten)}(h)$ on two independent grounds (it has infinite index in $\Orth(\ten)$, and Sterk 2.8 excludes it by name), and it is the statement the preimage construction of coble_gammaEn2-subgroup-orbits.py computes: the discriminant group $M$ is built from the images of the $U(2)$ reflection and the eight reflections in the simple roots of $E_8(2)$, which respect the two summands and have order $|W(E_8)|$.
+:::
+
+::: {.remark #rmk:sterk-one-cusp-types title="The published plane types"}
+
+Under the same $F$, the one-dimensional boundary components are the $F$-orbits of primitive isotropic planes, classified by **type**, not by a single finite invariant.
+The four cases of [@Ste91] §4.3.16 ($E_8$, $D_8$, $A_7\oplus A_1$, $E_7\oplus A_1$) are built from inequivalent isotropic vectors and give half-plane components with no cusp identification; the five of §4.3.17 are determined by Siegel-Eichler transformations, with $\mathcal F(F)\cap SL(\mathcal F)$ respectively $\Gamma(2)$ for $\{2,4,5\}$, $\Gamma_1(2)$ for $\{4,5\}$, $E_1(2)$ for $\{3,5\}$, $F_1(2)$ for $\{3,4\}$, and $SL_2(\ZZ)$ for $\{5,5\}$ (as printed there).
+Total nine one-cusps, the AEGS number.
+A plane's type-data is its parabolic diagram together with the primitive isotropic vectors it contains and its group $\mathcal F(F)$; a finite image in $A_{\sen}$ cannot separate the types on its own, and the classification is a statement about stabilizers of lifts rather than about a finite plane stratum.
+:::
+
+
 :::
 
 ::: {.lemma #lem:gamma-transport-identity title="The gluing anti-isometry is the identity, and the transport is computed on $\ten$ itself"}
