@@ -73,6 +73,40 @@ A note on the representatives: §4.3.8 and §4.3.9 use $2e'+f'+\bar\alpha_1$ and
 which differ from the Prop. 4.2.3 list ($e'+2f'+\alpha$, $2e+2f+\alpha$) by $\Gamma$-equivalence;
 the lattice $v^{\perp}/\ZZ v$ is $U\oplus E_8(2)$ either way (Lemma 4.3.4, p. 17).
 
+### The record's own input for $j = 3$, traced
+
+The number in @sec-coxiter-results-for-cusp-lattices comes from the per-figure vertex maps in the
+Sage artifact `.scratch/sterk_figure_labels-reps-run.txt`, whose block for this cusp reads
+
+```
+3.3.10  v = e' + f' + abar_8    |Aut| = 2, so the map is determined up to 2 relabellings
+   script a_{i+1} -> manuscript vertex 0..11
+   one representative: [6, 9, 5, 4, 3, 2, 1, 8, 10, 11, 7, 0]
+```
+
+so the diagram the record ran CoxIter on has **twelve** vertices, $0..11$, with a representative
+permutation of twelve entries --- not thirteen. Two consequences, both recorded:
+
+1. **No `Sterk3.coxiter` input exists in `computations/coxiter/`** (that directory holds
+   `10-10-0_1`, `10-8-0_1`, `9-9-1_1`, `Sterk2`, and the benchmark graphs, and no Sterk 1, 3, 4 or
+   5). The record's "Sterk 3: 12 vertices" is therefore a number without a reproducible input, which
+   is a record defect whatever Fig. 8 says.
+2. The artifact and the plate do not describe the same vertex set: the artifact's twelve vertices
+   against Fig. 8's thirteen. So the answer to the question is **not** "the record's input omitted a
+   root of Fig. 8" in the sense of a transcription slip: the input is a twelve-vertex diagram, and the
+   question is which of Fig. 8's thirteen nodes is the extra one.
+
+The candidates are narrow, from Sterk's own labels on p. 22: $\alpha_{11} = (e+f)-\alpha_9-\alpha_{10}$
+is determined by $\alpha_9 = f-e$ and $\alpha_{10} = 2f'+\bar\alpha_8$, and the $\ZZ$-span of the roots is
+the nine-generator lattice $\ZZ\{\alpha_1,\dots,\alpha_7,\alpha_8-f',e+f,e-f\}$. The node not pinned by
+those relations is $\alpha_{12} = 2e+(\bar\alpha_1-\bar\alpha_8)$, which is the candidate for the
+thirteenth.
+
+**Not yet decided**, and the deciding computation needs one reading first: the $\Gamma$-transform
+$\bar\alpha_i$ is defined earlier in Sterk than p. 22, and without its definition the vectors
+$\alpha_{10},\alpha_{12},\alpha_{13}$ cannot be written in the §4.3.7 basis $e,f,\alpha_1,\dots,\alpha_7,
+-f'+\alpha_8$. Guessing them would put an unverifiable Gram matrix under a real citation.
+
 **A disagreement, stated as a defect in one of the two and not resolved here:** for $j = 3$ the plate
 (Fig. 8, p. 22) shows **13** nodes while the tree's CoxIter record reports **12** vertices for Sterk 3
 (`sec-coxiter-results-for-cusp-lattices`, "Vertices" column). One of the two is wrong: either the
