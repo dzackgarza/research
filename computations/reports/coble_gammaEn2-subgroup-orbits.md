@@ -47,10 +47,25 @@ its orthogonal complement $A_{E_8(2)}$ ($256$ classes), then reads off the nine 
 
 If both hold on both lattices, the summand-wise identification is the canonical marking: the two
 nine-element families correspond generator by generator under it, $\gamma$ is the identity on each
-summand, and $ho_	en(\gent)$ is the group computed from isometries of $	en$ itself. The script
-also prints the $M$-orbit partition on the $528$ isotropic classes on each side, which must agree as
-a multiset — the two lattices' discriminants are distinct quadratic spaces a priori, and this is what
-identifies them.
+summand, and $
+ho_	en(\gent)$ is the group computed from isometries of $	en$ itself. The script
+also prints the $M$-orbit partition on the $528$ isotropic classes on each side.
+
+**Equal orbit-size multisets do not identify the two marked actions**, and an earlier version of this
+paragraph said they do. Two separate statements are needed, and only the second is what a count
+requires:
+
+*Identification.* What makes the $\sen$-side family and the $\ten$-side family the *same* family is a
+generator-level statement: with $\gamma$ the summand-wise map, one must have
+$\gamma\rho_{\sen}(g_i)\gamma^{-1} = \rho_{\ten}(g_i)$ on all $1024$ classes, generator by
+generator. The summand-fixing tests in the script are the first half of that check — they show each
+generator acts on the correct summand — and not the whole of it.
+
+*Invariance of the count.* This is all the cusp number needs, and it does not need identification: two
+admissible anti-isometries differ by an isometry $\tau\in\Orth(A_\ten,q_\ten)$, since
+$q_\ten(\gamma'\gamma^{-1}y) = q_\ten(y)$ for both being anti-isometries; then
+$M' = \tau M\tau^{-1}$, and conjugating by an isometry permutes the orbit partition pointwise, so the
+number of orbits — hence the predicted number of cusps — is the same for every admissible marking.
 
 It also prints the revision *sources* rather than the module paths: the port clone's `git rev-parse
 HEAD`, the provider snapshot's declared version line, and a `sha256` of
