@@ -387,16 +387,26 @@ divisibility-one fibre contributing the one orbit over the zero class. The order
 $\abs{M_c} = \abs{M}/\text{(orbit size)}$, so the four class stabilizers have orders
 $696\,729\,600/2,\ /120,\ /270,\ /135$ respectively.
 
-**Incidence.** The incidence of the nine plane-orbits with the five line-orbits is the type-set:
-a plane $\varPi$ with discriminant image $D = \langle[v/2],[w/2]\rangle$ contains primitive
-isotropic vectors of exactly the vector types realized by the classes of $D\cup\{0\}$ — every
-$d\in D$ is the class of a primitive combination $av+bw$ (the three nonzero classes of the
-$(\ZZ/2)^2$ are realized by $(1,0), (0,1), (1,1)$), and a divisibility-one vector occurs exactly
-when a combination has odd pairing, which is the case precisely for the four 4.3.16 planes. Hence
-the plane of type-set $S$ is incident to exactly the $0$-cusps whose types lie in $S$, which
-reproduces the incidence diagram of [@Ste91, §4.4, Fig. 14]: $\{1,2\},\{1,3\},\{1,4\},\{1,5\}$
-meet the corresponding pairs of $0$-cusps, and $\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\}$ meet
-the $0$-cusps named by their labels.
+**Incidence.** The incidence of the nine plane-orbits with the five line-orbits is the type-set,
+with the zero class kept apart from the nonzero ones.
+Let $\varPi$ be a plane with discriminant image $D$.
+Every *nonzero* class $d\in D$ is the class of a primitive isotropic vector of $\varPi$: for
+$D = \langle[v/2],[w/2]\rangle$ of order four the three nonzero classes of the $(\ZZ/2)^2$ are
+realized by the primitive combinations $(1,0), (0,1), (1,1)$, and for $D$ of order two its single
+nonzero class is realized by the second generator.
+Such a vector has divisibility two, so these are the divisibility-two line types of the plane.
+The zero class is not of that kind, and membership $0\in D$ does not realize it: by
+@lem:zero-datum-divisibility a primitive isotropic line has datum zero exactly when it has
+divisibility one, and a divisibility-one vector occurs in $\varPi$ exactly when a combination
+$av+bw$ has odd pairing, which is the case precisely for the four 4.3.16 planes; the five 4.3.17
+planes have every primitive isotropic vector of divisibility two, so they carry no line of the
+zero class.
+Hence the type-set of a plane is the set of types of the nonzero classes of its image, together
+with type $1$ exactly when the plane contains a divisibility-one vector; and the plane of type-set
+$S$ is incident to exactly the $0$-cusps whose types lie in $S$, which reproduces the incidence
+diagram of [@Ste91, §4.4, Fig. 14]: $\{1,2\},\{1,3\},\{1,4\},\{1,5\}$ meet the corresponding pairs
+of $0$-cusps, and $\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\}$ meet the $0$-cusps named by their
+labels.
 
 **Exhaustion for the planes.** The nine planes of @prop:sterk-nine-planes are representatives,
 and the exhaustion is [@Ste91, §4.3] applied to the identified group: for each of the five
