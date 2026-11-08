@@ -177,6 +177,15 @@ $$
 D(P)^{\perp}/D(P)=H/(L+N_V).
 $$
 
+The subgroup $D(P)$ is determined by $V$ alone and is totally isotropic: since $L\cap V=P$ and $N_V\subseteq V$, the map $N_V\to A_L$ has kernel $N_V\cap L=P$, so
+$$
+D(P)=N_V/L\cong N_V/P,
+\qquad
+\cardinality{D(P)}=[N_V:P],
+$$
+and every class of $D(P)$ has a representative in the totally isotropic subspace $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even, $q_{A_L}$ vanishes there as well.
+This is the isotropy that makes $D(P)^{\perp}/D(P)$ a quadratic subquotient, and it is a property of $P$ alone.
+
 :::
 
 The first lemma is the only place where the metric dual of the quotient is compared with the metric dual of $L$; it is what an element of $Q^{\#}$ uses to obtain a representative in $N$.
@@ -218,7 +227,7 @@ Then:
 
 *Item 1.* For $m\in M$ the value $\beta_{Q_{\bQ}}(y,\bar m)$ is $\beta_{L_{\bQ}}(\tilde y,m)$, because $\tilde y$ represents $y\in W/V$ and $\beta_{L_{\bQ}}$ vanishes on $V$ in either argument; so the hypothesis $y\in Q^{\#}$ gives $\beta_{L_{\bQ}}(\tilde y,M)\subseteq\bZ$.
 
-*Item 2.* By item 1 the functional $\ell\mapsto\beta_{L_{\bQ}}(\tilde y,\ell)$ vanishes on $M$, so it descends to $\bar\lambda\colon L/M\too\bQ/\bZ$.
+*Item 2.* By item 1 the functional $\ell\mapsto\beta_{L_{\bQ}}(\tilde y,\ell)$ is integral on $M$, so its reduction modulo $\bZ$ vanishes on $M$ and it descends to a functional $\bar\lambda\colon L/M\too\bQ/\bZ$.
 By @lem:isotropic-reduction-pairing choose $u\in V$ with $\theta(u)\equiv-\bar\lambda$, that is $\beta_{L_{\bQ}}(u,\ell)\equiv-\beta_{L_{\bQ}}(\tilde y,\ell)\pmod{\bZ}$ for all $\ell\in L$; then $\tilde y+u\in N$.
 If $u,u'$ both have this property, then $\beta_{L_{\bQ}}(u-u',L)\subseteq\bZ$, so $u-u'\in N\cap V=N_V$; conversely adding an element of $N_V$ preserves the property because $\beta_{L_{\bQ}}(N_V,L)\subseteq\bZ$.
 
@@ -261,7 +270,7 @@ $$
 where the $v$–$v$ block vanishes by isotropy, the $v$–$u$ block vanishes because $u\subseteq M=P^{\perp_L}$, and $G_Q$ is the Gram matrix of the basis $\bar u$ of $Q$.
 Since $\det G\neq0$, an element $x=\sum_i\lambda_i v_i$ with $B^{\mathsf T}\lambda=0$ satisfies $\beta_{L_{\bQ}}(x,w_j)=0$ for every $j$, while $\beta_{L_{\bQ}}(x,u)=0$ because $u\subseteq M=P^{\perp_L}$ and $\beta_{L_{\bQ}}(x,v)=0$ by isotropy; then $x$ is orthogonal to $L_{\bQ}$ and is zero by nondegeneracy, so $\lambda=0$ and $B$ is invertible.
 
-Over $\bQ$, first replace $w_j$ by $w_j-\sum_\ell\qty(G_Q^{-1}C_{\cdot j})_\ell u_\ell$, which is legitimate because $\det G_Q=\pm\disc Q\neq0$: the radical of the form on $Q_{\bQ}=W/V$ is $W\cap W^{\perp}=W\cap V=0$, since $V$ is totally isotropic, so $Q_{\bQ}$ is nondegenerate. This kills the $u$–$w$ block while preserving the $v$–$u$ and $v$–$v$ blocks.
+Over $\bQ$, first replace $w_j$ by $w_j-\sum_\ell\qty(G_Q^{-1}C_{\cdot j})_\ell u_\ell$, which is legitimate because $\det G_Q=\pm\disc Q\neq0$. Indeed, on the subspace $W$ the radical of the restricted form is $W\cap W^{\perp_{L_{\bQ}}}=W\cap V=V$, since $V\subseteq W$ is totally isotropic, so the radical of the quotient $Q_{\bQ}=W/V$ is $V/V=0$ and the induced form on $Q_{\bQ}$ is nondegenerate. This kills the $u$–$w$ block while preserving the $v$–$u$ and $v$–$v$ blocks.
 Then replace the new $w_j$ by $w_j-\tfrac12\sum_k\qty(B^{-\mathsf T}E'_{\cdot j})_k v_k$, where $E'$ is the resulting $w$–$w$ block; this is legitimate because $B$ is invertible, it kills $E'$ because $E'$ is symmetric, and it does not disturb the other blocks since $V$ is totally isotropic and $\beta_{L_{\bQ}}(u,v)=0$.
 In the resulting $\bQ$-basis $(v,u,w'')$ the Gram matrix is $\begin{pmatrix}0&B&0\\B^{\mathsf T}&0&0\\0&0&G_Q\end{pmatrix}$ after reordering, so
 $$
@@ -271,6 +280,34 @@ $$
 It remains to identify $\det(B)$ with $[N_V:P]$. An element $x=\sum_i\lambda_i v_i$ of $V$ lies in $N$ exactly when $\beta_{L_{\bQ}}(x,L)\subseteq\bZ$, and since $\beta_{L_{\bQ}}(x,M)=0$ this is the single condition $B^{\mathsf T}\lambda\in\bZ^r$.
 Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
 With $\cardinality{A_L}=\abs{\det G}$ and $\cardinality{A_Q}=\abs{\det G_Q}=\abs{\disc Q}$, the displayed identity follows.
+:::
+
+The count of $\cardinality{D(P)^{\perp}/D(P)}$ is a separate statement about the finite form, and it must not be read off from the map whose bijectivity is being proved.
+It is duality for an isotropic subgroup of a nondegenerate finite form, and it uses the nondegeneracy of $A_L$ of @prop:discriminant-nondegenerate together with the isotropy recorded in @not:isotropic-reduction-setup.
+
+::: {.lemma #lem:isotropic-subgroup-quotient-order title="The order of the orthogonal subquotient of an isotropic subgroup"}
+
+Let $A$ be a finite abelian group with a nondegenerate pairing $\beta\colon A\times A\too\bQ/\bZ$, and let $D\leq A$ satisfy $D\subseteq D^{\perp}$ for $D^{\perp}=\theset{a\in A\st\beta(a,d)=0 \text{ for all } d\in D}$.
+Then the pairing induces an isomorphism $A/D^{\perp}\isoto\Hom_{\bZ\text{-}\mathbf{Mod}}(D,\bQ/\bZ)$, and
+$$
+\cardinality{D^{\perp}/D}=\frac{\cardinality{A}}{\cardinality{D}^2}.
+$$
+:::
+
+::: {.proof}
+
+The prescription $\Phi(\bar a)=\beta(a,\cdot)|_D$ is well defined because $\beta(D^{\perp},D)=0$, and it is additive.
+Its kernel is $D^{\perp}$ by definition of $D^{\perp}$, so $\Phi$ is injective.
+For surjectivity, let $\lambda\colon D\too\bQ/\bZ$ be a homomorphism; since $\bQ/\bZ$ is a divisible group, $\lambda$ extends to a homomorphism $\Lambda\colon A\too\bQ/\bZ$, and nondegeneracy of $\beta$ on the finite group $A$ provides $a\in A$ with $\Lambda=\beta(a,\cdot)$.
+Hence $\Phi$ is an isomorphism and $\cardinality{A/D^{\perp}}=\cardinality{D^{\vee}}=\cardinality{D}$.
+
+Since $D\subseteq D^{\perp}$, the quotient $D^{\perp}/D$ is defined and
+$$
+\cardinality{D^{\perp}/D}
+=\frac{\cardinality{D^{\perp}}}{\cardinality{D}}
+=\frac{\cardinality{A}/\cardinality{D}}{\cardinality{D}}
+=\frac{\cardinality{A}}{\cardinality{D}^2}.
+$$
 :::
 
 ::: {.theorem #thm:isotropic-reduction-discriminant title="The discriminant form of an isotropic reduction: $A_Q\isoto D(P)^{\perp}/D(P)$"}
@@ -309,7 +346,12 @@ A_{gQ} &\xrightarrow{\ \varphi_{gP}\ } & D(gP)^{\perp}/D(gP)
 \end{aligned}
 $$
 commutes, where $\bar g_Q$ is the isometry of $Q$ induced by $g$.
-In particular $\Stab_{\Orth(L)}(P)$ acts on $A_Q$ through an isomorphism onto the stabilizer of $D(P)$ in $\rho_L(\Orth(L))$, compatibly with the action on $A_L$.
+Setting $Q_0\definedas\rho_L(\Orth(L))$, naturality gives the containment
+$$
+\rho_L\qty(\Stab_{\Orth(L)}(P))\subseteq\Stab_{Q_0}\qty(D(P)),
+$$
+and the action of $\Stab_{\Orth(L)}(P)$ on $A_Q$ is transported by $\varphi_P$ to its action on $D(P)^{\perp}/D(P)$ through $\rho_L$.
+Nothing more is asserted: the exact image is $\rho_L(\Stab_{\Orth(L)}(P))$, and equality with the full finite stabilizer is a lifting statement of @cor:isotropic-reduction-stabilizer.
 :::
 
 ::: {.proof}
@@ -326,14 +368,17 @@ $$
 because $\tilde y\in W=V^{\perp}$ and $V$ is totally isotropic.
 Hence $\ell\in P^{\perp_L}=M$, and $y=[\tilde y]=[\ell]\in M/P=Q$, that is $y=0$ in $A_Q$.
 
-*Surjectivity.* By @lem:isotropic-reduction-index the finite groups $A_Q$ and $D(P)^{\perp}/D(P)$ have the same order, so the injective morphism is bijective.
+*Surjectivity.* The target has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup; that count is a statement about the finite form and does not use $\varphi_P$.
+With $\cardinality{D(P)}=[N_V:P]$ and @lem:isotropic-reduction-index this equals $\cardinality{A_Q}$.
+An injective morphism between finite groups of the same order is bijective.
 
 *The bilinear form.* Write $\hat y=\tilde y+u$ and $\hat y'=\tilde y'+u'$ as above, so $\hat y-\tilde y\in V$ and $\hat y'-\tilde y'\in V$.
-As $\beta_{L_{\bQ}}$ vanishes on $V$ in both arguments and $W=V^{\perp}$, all cross terms vanish and
+Here $u,u'\in V=W^{\perp_{L_{\bQ}}}$, so $\beta_{L_{\bQ}}(\tilde y,u')=0$ and $\beta_{L_{\bQ}}(u,\tilde y')=0$; and $V$ is totally isotropic, so $\beta_{L_{\bQ}}(u,u')=0$.
+Hence
 $$
 \beta_{L_{\bQ}}(\hat y,\hat y')=\beta_{L_{\bQ}}(\tilde y,\tilde y')=\beta_{Q_{\bQ}}(y,y'),
 $$
-the last equality because $\tilde y,\tilde y'$ represent $y,y'$ in $W/V\supseteq Q_{\bQ}$.
+the last equality because $\tilde y,\tilde y'$ represent $y,y'$ in $W/V\supseteq Q_{\bQ}$ and $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and on $W\times V$.
 Passing to $\bQ/\bZ$ gives the displayed identity of discriminant forms.
 
 *The quadratic form.* Let $L$ be even; then $Q=M/P$ is even because the norms of $M$ are norms of $L$.
@@ -343,6 +388,29 @@ Hence $q_{A_L}(\varphi_P(y))=\hat y^2\bmod2\bZ=y^2\bmod2\bZ=q_{A_Q}(y)$.
 *Naturality.* Let $g\in\Orth(L)$ and let $\hat y\in H$ represent $\varphi_P(y)$. Then $g\hat y\in L^{\#}$, and $g\hat y-g\tilde y=gu\in gV$, while $g\tilde y\in gW$ lifts $\bar g_Q y$; by the choice independence of @lem:isotropic-reduction-extension the class of $g\hat y$ is $\varphi_{gP}(\bar g_Qy)$.
 Its image modulo $D(gP)$ is $\rho_L(g)\qty(\hat y+D(P))$, because $g$ preserves $N$ and carries $V=P_{\bQ}$ to $(gP)_{\bQ}$, so $g(N_V)=L^{\#}\cap(gP)_{\bQ}$ and $\rho_L(g)D(P)=D(gP)$.
 The commutativity of the square follows, and restricting to $g\in\Stab_{\Orth(L)}(P)$ gives the stabilizer statement.
+:::
+
+::: {.corollary #cor:isotropic-reduction-stabilizer title="The exact image of the parabolic stabilizer, and the action on the subquotient"}
+
+Let the data and hypotheses be those of @thm:isotropic-reduction-discriminant, put $Q_0=\rho_L(\Orth(L))$ for the discriminant representation $\rho_L$ of @def:discriminant-rep, and let
+$$
+C\definedas\ker\qty(\Stab_{Q_0}\qty(D(P))\too\Aut\qty(D(P)^{\perp}/D(P))).
+$$
+Then:
+
+1. the image of $\Stab_{\Orth(L)}(P)$ in $\Orth(A_L)$ is exactly $\rho_L(\Stab_{\Orth(L)}(P))$, and it is contained in $\Stab_{Q_0}(D(P))$; it consists of those elements of the finite stabilizer that are realised by an integral isometry preserving $P$;
+2. the induced isometry of $A\definedas A_Q$ is $\varphi_P^{-1}\circ\rho_L(g)|_{D(P)^{\perp}}\circ\varphi_P$, so the homomorphism $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ has the same kernel as $\Stab_{\Orth(L)}(P)\too\Aut(D(P)^{\perp}/D(P))$, namely $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$;
+3. equality $\rho_L(\Stab_{\Orth(L)}(P))=\Stab_{Q_0}(D(P))$ is a lifting statement about the integral stabilizer and is **not** proved here; neither is injectivity of the action in item 2.
+:::
+
+::: {.proof}
+
+Item 1 is the containment of @thm:isotropic-reduction-discriminant read as a statement about the image, together with the description of $\rho_L$ as the map that records the action on $A_L$.
+For item 2, the commuting square gives $\varphi_P\circ\bar g_Q=\rho_L(g)\circ\varphi_P$ for $g\in\Stab_{\Orth(L)}(P)$; since $\varphi_P$ is an isomorphism and $\rho_L(g)$ preserves $D(P)$ and hence $D(P)^{\perp}$, this is the displayed formula, and it identifies the two kernels.
+For item 3, the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ is $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$ by item 2, and it contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel of @def:discriminant-rep: those isometries act trivially on $A_L$, hence on every subgroup and subquotient of it, and hence on $A_Q$ by item 2.
+So the action in item 2 is faithful exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and in particular it fails to be faithful whenever $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
+Equality in item 3 is a different statement again: it would require an integral isometry preserving $P$ for each element of the finite stabilizer of $D(P)$ in $Q_0$, whereas the commuting square constrains only those elements that already have an integral lift.
+So the square neither implies equality in item 3 nor is implied by it, and the isometry $\varphi_P$ of @thm:isotropic-reduction-discriminant is not a substitute for the computation of the integral stabilizer's image.
 :::
 
 Two specializations are worth recording, since both are easy to get wrong.
