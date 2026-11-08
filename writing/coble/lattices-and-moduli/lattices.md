@@ -629,18 +629,19 @@ Every $\Gamma$-orbit is therefore a single $\Gamma^+$-orbit.
 The criterion is a statement about a chosen set $X$, not about the group: agreement on one $\Gamma$-set says nothing about another.
 It is the form taken here by the fibre-level criterion of @prop:descent-spinor-fibre, with the stabilizer of the individual object in place of the stabilizer inside a discriminant fibre.
 
-::: {.theorem #thm:enriques-spinor-orbit-agreement title="Spinor agreement for every polarization family of $\ten$: lines, planes and flags"}
+::: {.theorem #thm:enriques-spinor-orbit-agreement title="Spinor agreement for every polarization family of $\ten$: isotropic lines and planes"}
 
 Let $N=\ten=U\oplus U(2)\oplus E_8(2)$ with signature $(2,10)$, let $\rho$ be its quadratic discriminant representation and $\widetilde\Orth(N)=\ker\rho$ its discriminant kernel, and let $\Gamma\leq\Orth(N)$ be a subgroup with $\widetilde\Orth(N)\subseteq\Gamma$.
 Every subgroup obtained as a finite-character preimage $\rho^{-1}(M)$ with $M\leq\Orth(A_\ten,q_\ten)$ is of this form, and so is the value of `coinvariant_extension_subgroup()` for any source-defined polarization family.
 Put $\Gamma^+=\Gamma\intersect\Orth^+(N)$.
 Then $\Gamma$ and $\Gamma^+$ have the same orbits on
 
-1. the primitive isotropic lines of $N$; equivalently, since $-\id_N\in\Orth(N)$, the primitive isotropic vectors;
-2. the primitive isotropic planes of $N$;
-3. the flags $\ell\subset P$ consisting of a primitive isotropic line contained in a primitive isotropic plane.
+1. the primitive isotropic lines of $N$;
+2. the primitive isotropic planes of $N$.
 
-Consequently the three counts of isotropic lines, isotropic planes and their incidences, evaluated on the preimage $\Gamma$, are the corresponding counts of $\Gamma^+$.
+For the lines the same holds for primitive isotropic vectors: $-\id_N$ lies in $\ker\rho$ and in $\Orth^+(N)$, being level two because $A_\ten$ is annihilated by $2$ and spinor-positive by @lem:minus-identity-spinor-norm at positive index two, so $-\id_N\in\Gamma\intersect\Gamma^+$ and the two generators of a line lie in one orbit of both groups.
+Consequently the counts $\#I_1$ and $\#I_2$, evaluated on the preimage $\Gamma$, are the corresponding counts of $\Gamma^+$.
+The flag count $\#I_{12}$ is not covered by this theorem: @prop:enriques-flag-stabilizers determines what decides the flag stabilizers and which flags are already settled.
 :::
 
 ::: {.proof}
@@ -657,37 +658,68 @@ $$
 So $\tau\in\widetilde\Orth(N)\setminus\Orth^+(N)$.
 
 *The standard objects $\tau$ stabilizes.* By construction $\tau(e)=e$ and $\tau(e')=-e'$, and $\tau$ fixes $z$ and $\alpha$.
-Hence $\tau$ stabilizes the lines $\ZZ e$, $\ZZ e'$, $\ZZ z$ and the planes $P_1=\generators{e,e'}$ and $P_2=\generators{z,e'}$.
-A primitive isotropic plane of rank two contains exactly two isotropic lines, since the isotropic locus in it is the cone $xy=0$ in two coordinates; for $P_1$ these are $\ZZ e$ and $\ZZ e'$, and for $P_2$ they are $\ZZ z$ and $\ZZ e'$.
-So $\tau$ stabilizes *every* flag over $P_1$ and over $P_2$, not merely the planes.
+Hence $\tau$ stabilizes the lines $\ZZ e$, $\ZZ e'$, $\ZZ z$ and, setwise, the planes $P_1=\generators{e,e'}$ and $P_2=\generators{z,e'}$.
 
-*Transport.* $\widetilde\Orth(N)$ is normal in $\Orth(N)$ as the kernel of $\rho$, and $\spinornorm_\bR(g\tau g^{-1})=\spinornorm_\bR(\tau)$ because the spinor norm is a homomorphism; so for $g\in\Orth(N)$ the conjugate $\tau_g\definedas g\tau g^{-1}$ lies in $\widetilde\Orth(N)\setminus\Orth^+(N)$ and stabilizes $g$ applied to every object stabilized by $\tau$.
+*Transport.* $\widetilde\Orth(N)$ is normal in $\Orth(N)$ as the kernel of $\rho$, and $\spinornorm_\bR(g\tau g^{-1})=\spinornorm_\bR(\tau)$ because the spinor norm is a homomorphism; so for $g\in\Orth(N)$ the conjugate $\tau_g\definedas g\tau g^{-1}$ lies in $\widetilde\Orth(N)\setminus\Orth^+(N)$ and stabilizes every object $\tau$ stabilizes, after $g$.
 Since $\widetilde\Orth(N)\subseteq\Gamma$, each $\tau_g$ lies in the relevant stabilizer inside $\Gamma$.
 
-*Covering all objects.* The primitive isotropic lines of $\ten$ form exactly two $\Orth(\ten)$-orbits, distinguished by $\div\in\theset{1,2}$ [@AEGS25 §3.2], reproduced as a lattice computation by `T_En.cusps(1)` with representatives $\ZZ e$ and $\ZZ e'$; and the primitive isotropic planes form exactly two $\Orth(\ten)$-classes [@Ste91 Prop. 4.6], with representatives $P_1$ and $P_2$ by @thm:enriques-integral-plane-stabilizers.
+*Covering all lines and planes.* The primitive isotropic lines of $\ten$ form exactly two $\Orth(\ten)$-orbits, distinguished by $\div\in\theset{1,2}$ [@AEGS25 §3.2], reproduced as a lattice computation by `T_En.cusps(1)`, with representatives $\ZZ e$ and $\ZZ e'$; and the primitive isotropic planes form exactly two $\Orth(\ten)$-classes [@Ste91 Prop. 4.6], with representatives $P_1$ and $P_2$ by @thm:enriques-integral-plane-stabilizers.
 Given a line $\ell$, choose $g$ with $g\ZZ e=\ell$ or $g\ZZ e'=\ell$; then $\tau_g\in\Stab_\Gamma(\ell)\setminus\Orth^+(N)$.
-Given a plane $P$, choose $g$ with $gP_1=P$ or $gP_2=P$; then $\tau_g$ lies in $\Stab_\Gamma(P)\setminus\Orth^+(N)$ and, because it stabilizes both isotropic lines of $P$, it also lies in the stabilizer of every flag over $P$.
-The hypothesis of @lem:spinor-orbit-agreement therefore holds at every object of the three kinds, and the orbit sets coincide.
+Given a plane $P$, choose $g$ with $gP_1=P$ or $gP_2=P$; then $\tau_g\in\Stab_\Gamma(P)\setminus\Orth^+(N)$.
+The hypothesis of @lem:spinor-orbit-agreement therefore holds at every line and at every plane, and the orbit sets coincide on those two families.
 :::
 
-The three isotropic families are therefore not a place where the preimage and its spinor-positive half differ, and that conclusion is reached object by object: the hypothesis of @lem:spinor-orbit-agreement is verified at a witness in each stabilizer and transported, so it does not rest on any agreement of table values, and equal counts would not have established it.
-A tabulated count of $\Gamma_h^+$-orbits and a computation run for the preimage are consistent for exactly this reason, and neither is evidence for the other.
+::: {.proposition #prop:enriques-flag-stabilizers title="Flag stabilizers of $\ten$: the reduction, the congruence determination, and the input that decides them"}
 
-::: {.corollary #cor:enriques-preimage-vs-positive title="Which subgroup a discriminant-preimage comparison tests"}
+Let $P$ be a primitive isotropic plane of $\ten=U\oplus U(2)\oplus E_8(2)$, let $\ell\subset P$ be a primitive isotropic line, and let $\Gamma$ be as in @thm:enriques-spinor-orbit-agreement.
 
-In the situation of @thm:enriques-spinor-orbit-agreement, with $\Gamma=\rho^{-1}(M)$:
-
-1. $\Gamma^+=\rho^{-1}(M)\intersect\Orth^+(N)$ has index two in $\Gamma$ and satisfies $\rho(\Gamma^+)=M$; it is the source's group $\Gamma_h^+$ of [@DH23 eq. (4)] whenever $\rho(\Gamma_h^+)=M$.
-2. A finite-character preimage construction returns $\Gamma$, not $\Gamma^+$: it returns the full preimage, whose order is twice that of the group the source's tables describe.
-3. Consequently a comparison of the counts of isotropic lines, isotropic planes and their incidences may be run against either group without error (@thm:enriques-spinor-orbit-agreement), while a comparison of the group order, of any count of isometries, or of orbits on any other $\Gamma$-set is answered only by the group actually supplied: by @lem:spinor-orbit-agreement those orbits agree exactly on the sets whose stabilizers all meet $\Orth(N)\setminus\Orth^+(N)$, and that has been verified here for the three isotropic families and for nothing else.
+1. *The plane's own geometry.* The restricted form on $P$ vanishes identically, since $P$ is totally isotropic; hence every vector of $P$ is isotropic, every primitive vector of $P$ spans an isotropic line, and $\PP(P)=\PP^1(\bQ)$ is infinite. The two generators of a standard plane are therefore not its only isotropic lines, and no statement about a plane's two coordinate lines is a statement about its flags.
+2. *A plane witness is not a flag witness.* The isometry $\tau$ of @thm:enriques-spinor-orbit-agreement acts on $P_2=\generators{z,e'}$ in the basis $(z,e')$ by $\mathrm{diag}(1,-1)$ and carries the line $\ZZ(z+e')$ to $\ZZ(z-e')$, a different line. It stabilizes $P_2$ and is spinor-negative, so it is a negative element of the plane stabilizer; it is not an element of the flag stabilizer of $(\ZZ(z+e'),P_2)$.
+3. *Reduction to one transitivity.* Let $\tau_0\in\Stab_\Gamma(P)$ be spinor-negative and let $\ell\subset P$. If $\upsilon\in\Stab_\Gamma(P)\intersect\Orth^+(N)$ satisfies $\upsilon(\tau_0\ell)=\ell$, then
+$$
+\upsilon\tau_0\in\Stab_\Gamma(\ell\subset P)\setminus\Orth^+(N),
+$$
+because it fixes $\ell$, stabilizes $P$, and has $\spinornorm_\bR(\upsilon\tau_0)=-\spinornorm_\bR(\upsilon)$. Since $\tau_0$ is level two, $\tau_0\ell$ and $\ell$ have the same class in $\PP(P/2P)$; so flags over $P$ have negative witnesses as soon as the spinor-positive part of $\Stab_\Gamma(P)$ is transitive on each class of $\PP(P)$ modulo $2$.
+4. *The congruence determination for the divisibility-one class.* Let $g\in\Orth(\ten)$ stabilize $P_1=\generators{e,e'}$ and act there by $M=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in GL_2(\bZ)$. Since $g$ preserves the divisibility of every vector, $\gcd(a,2c)=\div(e)=1$ and $\gcd(b,2d)=\div(e')=2$; so $a$ and $d$ are odd and $b$ is even, and the image of $\Stab_{\Orth(\ten)}(P_1)$ in $GL_2(\bF_2)$ lies in the unipotent subgroup
+$$
+\left\{\begin{pmatrix}1&0\\ \bar c&1\end{pmatrix}\right\}.
+$$
+Consequently every element of that stabilizer preserves the class $01$ of $\PP(P_1/2P_1)$ — the divisibility-two lines — and either fixes or swaps the two divisibility-one classes $10$ and $11$; the divisibility of a line in $P_1$ is invariant. The plane stabilizer therefore has at most two orbits on the divisibility-one lines of $P_1$, and the question whether it has one is the question whether an integral plane-stabilizing isometry with $\bar c=1$ exists.
+5. *What is proved, and what decides the rest.* The transports of $\tau$ supply a spinor-negative level-two element for the flags
+$$
+\ZZ e\subset P_1,\qquad \ZZ e'\subset P_1,\qquad \ZZ e'\subset P_2,\qquad \ZZ z\subset P_2,
+$$
+and for every flag in the $\Orth(\ten)$-orbit of one of these four, by conjugation as in @thm:enriques-spinor-orbit-agreement. Beyond them item 3 needs, for each plane class, an element of $\Stab_\Gamma(P)\intersect\Orth^+(N)$ realising $\mu\mapsto-\mu$ on $\PP(P)$ in a coordinate $\mu$ in which $\tau_0$ acts by $\mu\mapsto-\mu$; equivalently an element carrying $\tau_0$'s fixed lines into the remaining classes of $\PP(P/2P)$. Whether such elements exist integrally is not decided by @thm:enriques-integral-plane-stabilizers, whose content is the image of the plane stabilizer in the definite quotient $Q^{\#}/Q$ together with the integral reflection lifts, not its Levi image in $GL(P)$. That Levi image — a subgroup of the congruence parabolic of item 4 — is the datum that decides the flag orbits, and hence the one a comparison of $\#I_{12}$ has to compute.
 :::
 
 ::: {.proof}
 
-For item 1: $\tau\in\widetilde\Orth(N)\subseteq\Gamma$ is spinor-negative, so for $g\in\Gamma$ with $\rho(g)\in M$ one has $g\tau\in\Gamma$ with the same image and with $\spinornorm_\bR(g\tau)=-\spinornorm_\bR(g)$, hence $g\in\Gamma^+$ whenever $g\in\Orth^+(N)$ and $g\tau\in\Gamma^+$ otherwise; so $\rho(\Gamma^+)=M$.
-The kernel of $\rho|_{\Gamma^+}$ is $\widetilde\Orth(N)\intersect\Orth^+(N)=\widetilde\Orth^+(N)$, of index two in $\widetilde\Orth(N)$ exactly because $\tau$ lies in the latter and not the former; hence $[\Gamma:\Gamma^+]=2$.
-For item 2: the preimage is $\rho^{-1}(M)$ by the defining property of a discriminant preimage, and its order is $2\abs{M}\abs{\widetilde\Orth^+(N)}$, twice the order of $\Gamma^+$.
-Item 3 is @lem:spinor-orbit-agreement applied to the three families of @thm:enriques-spinor-orbit-agreement, together with the observation that the criterion is stated per set.
+Item 1: on a totally isotropic subspace the form vanishes, so the isotropic locus is all of $P$; a rank-two lattice with zero form has $\PP(P)=\PP^1(\bQ)$.
+Item 2: $\tau(z)=z$, $\tau(e')=-e'$, so $\tau(z+e')=z-e'$, and $z-e'$ is not a multiple of $z+e'$ since $z$ and $e'$ are linearly independent; the two lines differ.
+Item 3: $\upsilon\tau_0\ell=\upsilon(\tau_0\ell)=\ell$ and $\upsilon\tau_0 P=\upsilon P=P$; the spinor class is multiplicative and $\spinornorm_\bR(\tau_0)=-1$, so the product is spinor-negative. That $\tau_0\ell$ lies in the class of $\ell$ in $\PP(P/2P)$ is the statement that $\tau_0$ acts trivially on $P/2P$, which holds for an isometry congruent to the identity modulo $2$ on $P$.
+Item 4: for $x\in N$ the value $\beta(x,N)$ is a subgroup of $\bZ$, and an isometry carries it to itself; for $x=ae+ce'$ it is $\gcd(a,2c)\bZ$ because $\beta(e,N)=\bZ$ and $\beta(e',N)=2\bZ$. Hence $a$ is odd, and symmetrically $b$ is even and $d$ is odd, which is $\bar M=\begin{pmatrix}1&0\\ \bar c&1\end{pmatrix}$; that matrix fixes the class $01$ and, for $\bar c=1$, swaps $10$ and $11$.
+Item 5: the four listed flags are fixed by $\tau$ itself, as $\tau(e)=e$, $\tau(e')=-e'$ and $\tau(z)=z$; the transport argument of @thm:enriques-spinor-orbit-agreement applies verbatim. The remaining class of statements is the existence of the positive transporters of item 3, and no computation on this page describes the action of $\Stab_{\Orth(\ten)}(P)$ on $\PP(P)$.
+:::
+
+The two isotropic families of @thm:enriques-spinor-orbit-agreement are therefore not a place where the preimage and its spinor-positive half differ, and that conclusion is reached object by object: the hypothesis of @lem:spinor-orbit-agreement is verified at a witness in each stabilizer and transported, so it does not rest on any agreement of table values, and equal counts would not have established it.
+A tabulated count of $\Gamma_h^+$-orbits and a computation run for the preimage are consistent for $\#I_1$ and $\#I_2$ for exactly this reason, and neither is evidence for the other.
+The flag count is different: @prop:enriques-flag-stabilizers shows that a plane witness does not fix a flag, proves the witnesses for the four standard flags, reduces the rest to a transitivity of the plane stabilizer on $\PP(P)$, and determines the congruence parabolic that any such transporter must lie in.
+
+::: {.corollary #cor:enriques-preimage-vs-positive title="Which subgroup a discriminant-preimage comparison tests"}
+
+Let $M\leq\Orth(A_\ten,q_\ten)$ and $\Gamma=\rho^{-1}(M)$, so that $\rho(\Gamma)=M$ by @thm:two-elementary-surjectivity; put $\Gamma^+=\Gamma\intersect\Orth^+(N)$.
+
+1. $\Gamma^+$ has *index two* in $\Gamma$, and $\rho(\Gamma^+)=\rho(\Gamma)=M$: for $g\in\Gamma$ the element $g\tau$ has the same image as $g$ and the opposite spinor sign.
+2. A finite-character preimage construction returns $\Gamma$, not $\Gamma^+$: it returns the full preimage, and the two are infinite arithmetic groups of the same rank, differing by the spinor sign and not by a factor of finite order.
+3. Consequently a comparison of the counts $\#I_1$ and $\#I_2$ may be run against either group without error (@thm:enriques-spinor-orbit-agreement), while a comparison of $\#I_{12}$, of any count of isometries, or of orbits on any other $\Gamma$-set is answered only by the group actually supplied: by @lem:spinor-orbit-agreement those orbits agree exactly on the sets whose stabilizers all meet $\Orth(N)\setminus\Orth^+(N)$, and that is verified here for isotropic lines and planes only.
+:::
+
+::: {.proof}
+
+For item 1: $\tau\in\widetilde\Orth(N)\subseteq\Gamma$ is spinor-negative, so for $g\in\Gamma$ one has $g\tau\in\Gamma$ with $\rho(g\tau)=\rho(g)$ and $\spinornorm_\bR(g\tau)=-\spinornorm_\bR(g)$; thus every class of $\Gamma$ modulo $\Orth^+$ is met in $\Gamma^+$ after multiplication by $\tau$ as needed, which gives both $\Gamma=\Gamma^+\sqcup\Gamma^+\tau$ and $\rho(\Gamma^+)=\rho(\Gamma)$.
+The kernel of $\rho|_{\Gamma^+}$ is $\widetilde\Orth(N)\intersect\Orth^+(N)=\widetilde\Orth^+(N)$, of index two in $\widetilde\Orth(N)$ because $\tau$ lies in the latter and not the former, so $\Gamma^+$ has index two.
+For item 2: the preimage is $\rho^{-1}(M)$ by the defining property of a discriminant preimage, and $\Gamma=\Gamma^+\sqcup\Gamma^+\tau$ exhibits it as the union of two cosets of a subgroup of index two; both are infinite arithmetic groups of the same rank, so no finite factor relates their orders — there are none.
+Item 3 is @lem:spinor-orbit-agreement applied to the two families of @thm:enriques-spinor-orbit-agreement, together with the flag determination of @prop:enriques-flag-stabilizers, which settles four flag types and leaves the rest to the Levi image named there.
 :::
 
 ::: {.lemma #lem:gamma-transport-identity title="The gluing anti-isometry is the identity, and the transport is computed on $\ten$ itself"}
