@@ -637,11 +637,12 @@ Put $\Gamma^+=\Gamma\intersect\Orth^+(N)$.
 Then $\Gamma$ and $\Gamma^+$ have the same orbits on
 
 1. the primitive isotropic lines of $N$;
-2. the primitive isotropic planes of $N$.
+2. the primitive isotropic planes of $N$;
+3. the flags $\ell\subset P$ with $P$ in the class of $P_1$, that is the class of planes containing a divisibility-one vector, and, over the class of $P_2$, the flags whose line lies in the class of $\ZZ z$ or of $\ZZ e'$,
 
 For the lines the same holds for primitive isotropic vectors: $-\id_N$ lies in $\ker\rho$ and in $\Orth^+(N)$, being level two because $A_\ten$ is annihilated by $2$ and spinor-positive by @lem:minus-identity-spinor-norm at positive index two, so $-\id_N\in\Gamma\intersect\Gamma^+$ and the two generators of a line lie in one orbit of both groups.
 Consequently the counts $\#I_1$ and $\#I_2$, evaluated on the preimage $\Gamma$, are the corresponding counts of $\Gamma^+$.
-The flag count $\#I_{12}$ is not covered by this theorem: @prop:enriques-flag-stabilizers determines what decides the flag stabilizers and which flags are already settled.
+Items 1--3 are the families whose stabilizers are settled in @thm:enriques-flag-witnesses by explicit level-two witnesses; the flags over the class of $P_2$ whose line lies in the remaining parity class, that of $\ZZ(z+e')$, are not among them.
 :::
 
 ::: {.proof}
@@ -669,41 +670,75 @@ Given a plane $P$, choose $g$ with $gP_1=P$ or $gP_2=P$; then $\tau_g\in\Stab_\G
 The hypothesis of @lem:spinor-orbit-agreement therefore holds at every line and at every plane, and the orbit sets coincide on those two families.
 :::
 
-::: {.proposition #prop:enriques-flag-stabilizers title="Flag stabilizers of $\ten$: the reduction, the congruence determination, and the input that decides them"}
+::: {.lemma #lem:congruence-two-transitivity title="The principal congruence subgroup of level two is transitive on each residue class of primitive vectors"}
 
-Let $P$ be a primitive isotropic plane of $\ten=U\oplus U(2)\oplus E_8(2)$, let $\ell\subset P$ be a primitive isotropic line, and let $\Gamma$ be as in @thm:enriques-spinor-orbit-agreement.
-
-1. *The plane's own geometry.* The restricted form on $P$ vanishes identically, since $P$ is totally isotropic; hence every vector of $P$ is isotropic, every primitive vector of $P$ spans an isotropic line, and $\PP(P)=\PP^1(\bQ)$ is infinite. The two generators of a standard plane are therefore not its only isotropic lines, and no statement about a plane's two coordinate lines is a statement about its flags.
-2. *A plane witness is not a flag witness.* The isometry $\tau$ of @thm:enriques-spinor-orbit-agreement acts on $P_2=\generators{z,e'}$ in the basis $(z,e')$ by $\mathrm{diag}(1,-1)$ and carries the line $\ZZ(z+e')$ to $\ZZ(z-e')$, a different line. It stabilizes $P_2$ and is spinor-negative, so it is a negative element of the plane stabilizer; it is not an element of the flag stabilizer of $(\ZZ(z+e'),P_2)$.
-3. *Reduction to one transitivity.* Let $\tau_0\in\Stab_\Gamma(P)$ be spinor-negative and let $\ell\subset P$. If $\upsilon\in\Stab_\Gamma(P)\intersect\Orth^+(N)$ satisfies $\upsilon(\tau_0\ell)=\ell$, then
-$$
-\upsilon\tau_0\in\Stab_\Gamma(\ell\subset P)\setminus\Orth^+(N),
-$$
-because it fixes $\ell$, stabilizes $P$, and has $\spinornorm_\bR(\upsilon\tau_0)=-\spinornorm_\bR(\upsilon)$. Since $\tau_0$ is level two, $\tau_0\ell$ and $\ell$ have the same class in $\PP(P/2P)$; so flags over $P$ have negative witnesses as soon as the spinor-positive part of $\Stab_\Gamma(P)$ is transitive on each class of $\PP(P)$ modulo $2$.
-4. *The congruence determination for the divisibility-one class.* Let $g\in\Orth(\ten)$ stabilize $P_1=\generators{e,e'}$ and act there by $M=\begin{pmatrix}a&b\\c&d\end{pmatrix}\in GL_2(\bZ)$. Since $g$ preserves the divisibility of every vector, $\gcd(a,2c)=\div(e)=1$ and $\gcd(b,2d)=\div(e')=2$; so $a$ and $d$ are odd and $b$ is even, and the image of $\Stab_{\Orth(\ten)}(P_1)$ in $GL_2(\bF_2)$ lies in the unipotent subgroup
-$$
-\left\{\begin{pmatrix}1&0\\ \bar c&1\end{pmatrix}\right\}.
-$$
-Consequently every element of that stabilizer preserves the class $01$ of $\PP(P_1/2P_1)$ — the divisibility-two lines — and either fixes or swaps the two divisibility-one classes $10$ and $11$; the divisibility of a line in $P_1$ is invariant. The plane stabilizer therefore has at most two orbits on the divisibility-one lines of $P_1$, and the question whether it has one is the question whether an integral plane-stabilizing isometry with $\bar c=1$ exists.
-5. *What is proved, and what decides the rest.* The transports of $\tau$ supply a spinor-negative level-two element for the flags
-$$
-\ZZ e\subset P_1,\qquad \ZZ e'\subset P_1,\qquad \ZZ e'\subset P_2,\qquad \ZZ z\subset P_2,
-$$
-and for every flag in the $\Orth(\ten)$-orbit of one of these four, by conjugation as in @thm:enriques-spinor-orbit-agreement. Beyond them item 3 needs, for each plane class, an element of $\Stab_\Gamma(P)\intersect\Orth^+(N)$ realising $\mu\mapsto-\mu$ on $\PP(P)$ in a coordinate $\mu$ in which $\tau_0$ acts by $\mu\mapsto-\mu$; equivalently an element carrying $\tau_0$'s fixed lines into the remaining classes of $\PP(P/2P)$. Whether such elements exist integrally is not decided by @thm:enriques-integral-plane-stabilizers, whose content is the image of the plane stabilizer in the definite quotient $Q^{\#}/Q$ together with the integral reflection lifts, not its Levi image in $GL(P)$. That Levi image — a subgroup of the congruence parabolic of item 4 — is the datum that decides the flag orbits, and hence the one a comparison of $\#I_{12}$ has to compute.
+Let $\Gamma(2)=\ker\qty(\SL_2(\bZ)\too\SL_2(\bF_2))$, and let $(a,c)\in\bZ^2$ be primitive. Then the $\Gamma(2)$-orbit of $(a,c)$ is determined by, and equal to, the class of $(a,c)$ in $\PP^1(\bF_2)$; that is, $\Gamma(2)$ acts transitively on primitive vectors congruent to a fixed one modulo $2$, and its orbits on $\PP(\bZ^2)$ are the three classes $[1:0]$, $[0:1]$, $[1:1]$.
 :::
 
 ::: {.proof}
 
-Item 1: on a totally isotropic subspace the form vanishes, so the isotropic locus is all of $P$; a rank-two lattice with zero form has $\PP(P)=\PP^1(\bQ)$.
-Item 2: $\tau(z)=z$, $\tau(e')=-e'$, so $\tau(z+e')=z-e'$, and $z-e'$ is not a multiple of $z+e'$ since $z$ and $e'$ are linearly independent; the two lines differ.
-Item 3: $\upsilon\tau_0\ell=\upsilon(\tau_0\ell)=\ell$ and $\upsilon\tau_0 P=\upsilon P=P$; the spinor class is multiplicative and $\spinornorm_\bR(\tau_0)=-1$, so the product is spinor-negative. That $\tau_0\ell$ lies in the class of $\ell$ in $\PP(P/2P)$ is the statement that $\tau_0$ acts trivially on $P/2P$, which holds for an isometry congruent to the identity modulo $2$ on $P$.
-Item 4: for $x\in N$ the value $\beta(x,N)$ is a subgroup of $\bZ$, and an isometry carries it to itself; for $x=ae+ce'$ it is $\gcd(a,2c)\bZ$ because $\beta(e,N)=\bZ$ and $\beta(e',N)=2\bZ$. Hence $a$ is odd, and symmetrically $b$ is even and $d$ is odd, which is $\bar M=\begin{pmatrix}1&0\\ \bar c&1\end{pmatrix}$; that matrix fixes the class $01$ and, for $\bar c=1$, swaps $10$ and $11$.
-Item 5: the four listed flags are fixed by $\tau$ itself, as $\tau(e)=e$, $\tau(e')=-e'$ and $\tau(z)=z$; the transport argument of @thm:enriques-spinor-orbit-agreement applies verbatim. The remaining class of statements is the existence of the positive transporters of item 3, and no computation on this page describes the action of $\Stab_{\Orth(\ten)}(P)$ on $\PP(P)$.
+The matrices $\begin{pmatrix}1&2\\0&1\end{pmatrix}$ and $\begin{pmatrix}1&0\\2&1\end{pmatrix}$ lie in $\Gamma(2)$ and act by $(a,c)\mapsto(a+2c,c)$ and $(a,c)\mapsto(a,c+2a)$. Both operations preserve the parity of both coordinates and preserve primitivity.
+
+If $a$ and $c$ are both odd, subtract twice the smaller absolute value from the larger as long as the larger exceeds the other: this is the Euclidean algorithm with the difference that only even multiples are subtracted, and since both entries stay odd, neither ever becomes $0$. The absolute values strictly decrease until both are $1$, up to sign, so $(a,c)$ is carried to $\pm(1,1)$.
+If $a$ is odd and $c$ even, the same procedure reduces $|c|$ while keeping it even and reduces $|a|$ until the pair is $\pm(1,0)$; if $a$ is even and $c$ odd, it reaches $\pm(0,1)$.
+Therefore every primitive vector is carried to the representative of its parity class, and the three classes are distinct because both generators are congruent to the identity modulo $2$.
+:::
+
+::: {.theorem #thm:enriques-flag-witnesses title="Flag stabilizers of $\ten$: the explicit level-two witnesses"}
+
+Let $N=\ten=U\oplus U(2)\oplus E_8(2)$, with $e,f$ the basis of $U$, $e',f'$ that of $U(2)$, $\alpha$ a pair of orthogonal roots of $E_8(2)$ and $z=2e+2f+\alpha$; let $P_1=\generators{e,e'}$ and $P_2=\generators{z,e'}$, and let $\Gamma\leq\Orth(N)$ contain $\ker\rho$.
+The following are integral isometries of $N$ lying in $\widetilde\Orth(N)=\ker\rho$:
+$$
+\sigma_U=-\id_U\oplus\id_{U(2)}\oplus\id_{E_8},\qquad
+\tau_0=\id_U\oplus(-\id_{U(2)})\oplus\id_{E_8},\qquad
+E_1=E_{e',f},\qquad E_2=E_{e,f'},\qquad E_3=E_{z,f'},
+$$
+where $E_{\eta,w}$ is the Eichler--Siegel transvection of @def:eichler-siegel.
+Of these $\sigma_U$ and $\tau_0$ are spinor-negative by @lem:minus-identity-spinor-norm on the signature-$(1,1)$ summands $U$ and $U(2)$.
+Their action on the primitive isotropic lines of the two planes, in the coordinates $[a:c]$ of $\ZZ(ae+ce')$ and $\ZZ(az+ce')$, is:
+$$
+\begin{array}{llll}
+\sigma_U\colon[a:c]\mapsto[a:-c],&\quad&\tau_0\colon[a:c]\mapsto[a:-c],&\\[2pt]
+E_1|_{P_1}\colon[a:c]\mapsto[a:a+c],&\quad&E_2|_{P_1}\colon[a:c]\mapsto[a+2c:c],&\\[2pt]
+E_1|_{P_2}\colon[a:c]\mapsto[a:c+2a],&\quad&E_3|_{P_2}\colon[a:c]\mapsto[a+2c:c].&
+\end{array}
+$$
+Consequently:
+
+1. the image of $\widetilde\Orth(N)\intersect\Stab_{\Orth(N)}(P_1)$ in the projective action on $\PP(P_1)$ contains $\Gamma(2)$ and the element $\begin{pmatrix}1&0\\1&1\end{pmatrix}$, so its orbits on $\PP(P_1)$ are exactly the two divisibility classes, which are the divisibility classes of @thm:enriques-spinor-orbit-agreement;
+2. for every primitive isotropic line $\ell\subset P_1$ the flag stabilizer $\Stab_{\Gamma}(\ell\subset P_1)$ contains an element of $\ker\rho$ with spinor norm $-1$;
+3. the image of $\widetilde\Orth(N)\intersect\Stab_{\Orth(N)}(P_2)$ contains $\Gamma(2)$, so its orbits are unions of the three parity classes, and for every primitive isotropic line $\ell\subset P_2$ lying in the class of $\ZZ z$ or of $\ZZ e'$ the same conclusion holds;
+4. the remaining class over $P_2$, that of $\ZZ(z+e')$, is not settled by these elements: a negative witness there is furnished by an element with
+$$
+\bar M=\begin{pmatrix}1&0\\1&1\end{pmatrix}
+$$
+on $P_2$ applied to $\tau_0$, and whether the integral plane stabilizer contains such an element is not decided here.
+:::
+
+::: {.proof}
+
+*Integral, level two and spinor signs.* Each generator is an Eichler--Siegel transvection $E_{\eta,w}$ with $\eta$ isotropic, $\beta(\eta,w)=0$ and $w^2=0$, hence integral and an isometry: for $E_1=E_{e',f}$ one has $\beta(e',f)=0$ and $f^2=0$; for $E_2=E_{e,f'}$, $\beta(e,f')=0$ and $f'^2=0$; for $E_3=E_{z,f'}$, $\beta(z,f')=0$ and $f'^2=0$.
+Level two: $N^{\#}=U\oplus\tfrac12U(2)\oplus\tfrac12E_8(2)$, since $U$ is unimodular, and $A_\ten$ is annihilated by $2$. For $x\in\tfrac12 U(2)$ and $x'\in\tfrac12E_8(2)$ the transvections act by $E_1(f')=f'-2f\equiv f'$, $E_1(x')=x'$, $E_2(f')=f'$, $E_2(e')=e'+2e\equiv e'$, $E_3(e')=e'+2z\equiv e'$, $E_3(f')=f'$; and each fixes $E_8(2)$ pointwise. Hence all three act trivially on $A_\ten$. The sign changes act as $-\id$ on one summand, which is the identity on a module annihilated by $2$, and as $\id$ elsewhere, so they too act trivially.
+The spinor statements are @lem:minus-identity-spinor-norm applied to the summands $U$ and $U(2)$, both of signature $(1,1)$: $\spinornorm_\bR(-\id)=[(-1)^1]=-1$, while the other summands contribute $\id$.
+
+*The actions.* Directly from the definition: $\sigma_U$ fixes $e$ and negates $e'$, so it acts as $[a:c]\mapsto[a:-c]$ and stabilizes $P_1$; it does not stabilize $P_2$, whose vector $z$ has components in $U$. $\tau_0$ fixes $z$ and negates $e'$, so it acts as $[a:c]\mapsto[a:-c]$ and stabilizes $P_2$; it stabilizes $P_1$ as well. $E_1$ sends $e\mapsto e+e'$ and $e'\mapsto e'$, so on $P_1$ it is $[a:c]\mapsto[a:a+c]$, and it sends $z\mapsto z+2e'$, so on $P_2$ it is $[a:c]\mapsto[a:c+2a]$. $E_2$ sends $e\mapsto e$ and $e'\mapsto e'+2e$, so on $P_1$ it is $[a:c]\mapsto[a+2c:c]$; it moves $z$ to $z-2f'$, hence does not stabilize $P_2$. $E_3$ sends $z\mapsto z$ and $e'\mapsto e'+2z$, so on $P_2$ it is $[a:c]\mapsto[a+2c:c]$; it moves $e$ and hence does not stabilize $P_1$.
+
+*Item 1.* The matrices displayed for $E_1,E_2$ on $P_1$ are $\begin{pmatrix}1&0\\1&1\end{pmatrix}$ and $\begin{pmatrix}1&2\\0&1\end{pmatrix}$; $\begin{pmatrix}1&0\\2&1\end{pmatrix}=\begin{pmatrix}1&0\\1&1\end{pmatrix}^2$ is realized as well, and these two generate $\Gamma(2)$, which is transitive on each parity class by @lem:congruence-two-transitivity, and the first swaps the classes $[1:0]$ and $[1:1]$ while fixing $[0:1]$. So the realized image has exactly the two divisibility classes as orbits.
+
+*Item 2.* Fix a primitive $\ell\subset P_1$, with class $[a:c]$ modulo $2$.
+If $[a:c]=[1:0]$, by item 1 choose $\gamma$ in the realized image of $\Gamma(2)$ with $\gamma[1:0]=\ell$; then $\gamma\sigma_U\gamma^{-1}$ has spinor norm $-1$, lies in $\ker\rho$ by normality, and fixes $\ell$ and $P_1$.
+If $[a:c]=[0:1]$, the same with the fixed line of $\sigma_U$ of class $[0:1]$, namely $\ZZ e'$.
+If $[a:c]=[1:1]$, then $\theta=E_1\sigma_UE_1^{-1}$ has spinor norm $-1$, lies in $\ker\rho$, fixes $E_1\ZZ e=\ZZ(e+e')$ of class $[1:1]$ and stabilizes $P_1$; choose $\gamma$ in the realized $\Gamma(2)$ with $\gamma\ZZ(e+e')=\ell$, and use $\gamma\theta\gamma^{-1}$.
+The three classes exhaust $\PP(P_1)$ by @lem:congruence-two-transitivity, so every flag over $P_1$ is settled.
+
+*Item 3.* The matrices displayed for $E_1,E_3$ on $P_2$ are $\begin{pmatrix}1&0\\2&1\end{pmatrix}$ and $\begin{pmatrix}1&2\\0&1\end{pmatrix}$, which generate $\Gamma(2)$; so the realized image's orbits are unions of the three parity classes. The fixed lines of $\tau_0$ are $\ZZ z$, of class $[1:0]$, and $\ZZ e'$, of class $[0:1]$; conjugating $\tau_0$ by the realized $\Gamma(2)$ settles every flag over $P_2$ whose line lies in either of those two classes, exactly as in item 2.
+
+*Item 4.* The two fixed classes of $\tau_0$ are invariant under the whole realized image, since that image is contained in $\Gamma(2)$ and $\Gamma(2)$ fixes each parity class; so no conjugate of $\tau_0$ by an element stabilizing $P_2$ reaches the class $[1:1]$. What is needed there is an element of $\Stab_{\Orth(N)}(P_2)$ acting by $\begin{pmatrix}1&0\\1&1\end{pmatrix}$, whose product with $\tau_0$ would then fix a line of class $[1:1]$. Whether the integral stabilizer contains such an element is not decided by the generators computed here. It is not excluded by the discriminant: the induced map on $A_\ten$ would send $[e'/2]$ to $[e'/2]+[z/2]$, and since $\beta_{A_\ten}([e'/2],[z/2])=\tfrac14\beta(e',z)=0$ and both classes are isotropic, that map preserves the restricted form on the two-dimensional span, which vanishes identically.
 :::
 
 The two isotropic families of @thm:enriques-spinor-orbit-agreement are therefore not a place where the preimage and its spinor-positive half differ, and that conclusion is reached object by object: the hypothesis of @lem:spinor-orbit-agreement is verified at a witness in each stabilizer and transported, so it does not rest on any agreement of table values, and equal counts would not have established it.
 A tabulated count of $\Gamma_h^+$-orbits and a computation run for the preimage are consistent for $\#I_1$ and $\#I_2$ for exactly this reason, and neither is evidence for the other.
-The flag count is different: @prop:enriques-flag-stabilizers shows that a plane witness does not fix a flag, proves the witnesses for the four standard flags, reduces the rest to a transitivity of the plane stabilizer on $\PP(P)$, and determines the congruence parabolic that any such transporter must lie in.
+For flags the mechanism is different and is proved in @thm:enriques-flag-witnesses: a plane witness does not fix a flag, and the witnesses there are conjugates of $\sigma_U$ and of $\tau_0$ by the explicit level-two transvections $E_1,E_2,E_3$, transported by the principal congruence subgroup of level two. That settles every flag over the divisibility-one plane class and two of the three parity classes over the divisibility-two class.
 
 ::: {.corollary #cor:enriques-preimage-vs-positive title="Which subgroup a discriminant-preimage comparison tests"}
 
@@ -719,7 +754,7 @@ Let $M\leq\Orth(A_\ten,q_\ten)$ and $\Gamma=\rho^{-1}(M)$, so that $\rho(\Gamma)
 For item 1: $\tau\in\widetilde\Orth(N)\subseteq\Gamma$ is spinor-negative, so for $g\in\Gamma$ one has $g\tau\in\Gamma$ with $\rho(g\tau)=\rho(g)$ and $\spinornorm_\bR(g\tau)=-\spinornorm_\bR(g)$; thus every class of $\Gamma$ modulo $\Orth^+$ is met in $\Gamma^+$ after multiplication by $\tau$ as needed, which gives both $\Gamma=\Gamma^+\sqcup\Gamma^+\tau$ and $\rho(\Gamma^+)=\rho(\Gamma)$.
 The kernel of $\rho|_{\Gamma^+}$ is $\widetilde\Orth(N)\intersect\Orth^+(N)=\widetilde\Orth^+(N)$, of index two in $\widetilde\Orth(N)$ because $\tau$ lies in the latter and not the former, so $\Gamma^+$ has index two.
 For item 2: the preimage is $\rho^{-1}(M)$ by the defining property of a discriminant preimage, and $\Gamma=\Gamma^+\sqcup\Gamma^+\tau$ exhibits it as the union of two cosets of a subgroup of index two; both are infinite arithmetic groups of the same rank, so no finite factor relates their orders — there are none.
-Item 3 is @lem:spinor-orbit-agreement applied to the two families of @thm:enriques-spinor-orbit-agreement, together with the flag determination of @prop:enriques-flag-stabilizers, which settles four flag types and leaves the rest to the Levi image named there.
+Item 3 is @lem:spinor-orbit-agreement applied to the families of @thm:enriques-spinor-orbit-agreement: the isotropic lines and planes, and the flags of @thm:enriques-flag-witnesses.
 :::
 
 ::: {.lemma #lem:gamma-transport-identity title="The gluing anti-isometry is the identity, and the transport is computed on $\ten$ itself"}
