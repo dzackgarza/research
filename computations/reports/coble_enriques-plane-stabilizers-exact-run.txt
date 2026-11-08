@@ -96,7 +96,7 @@ type-II integral Levi lifts and the D^perp/D exact sequence
   gluing basis 5: q = (9, 9, 0, 0, 3/2, 0, -6, -9, -15/2, -6, -4, -2); q+u = (7, 7, -2, 0, 1/2, -1, -6, -9, -15/2, -6, -4, -2); K class = [0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
   gluing basis 6: q = (6, 6, 0, 0, 1, 0, -4, -6, -5, -4, -3, -3/2); q+u = (4, 4, -2, 0, 0, -1, -4, -6, -5, -4, -3, -3/2); K class = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
   gluing basis 7: q = (3, 3, 0, 0, 1/2, 0, -2, -3, -5/2, -2, -3/2, -1); q+u = (1, 1, -2, 0, -1/2, -1, -2, -3, -5/2, -2, -3/2, -1); K class = [0, 0, 1, 0, 0, 0, 1, 0, 1, 0]
-  explicit gluing matrix J, inducing Q*/Q ~= D^perp/D:
+  explicit gluing matrix J; rank(J)=6 and rank([J|D])=8:
 [0 0 0 0 0 0]
 [0 0 0 0 0 0]
 [0 1 0 1 0 1]
@@ -107,6 +107,7 @@ type-II integral Levi lifts and the D^perp/D exact sequence
 [1 0 1 0 0 0]
 [0 0 0 0 0 1]
 [1 0 1 0 1 0]
+  quotient injectivity: every nonzero vector of im(J) lies outside D
   all 64 classes satisfy j(A_Q) inside D^perp and q_Q = q_T mod 2Z
   all 112 integral lifts agree with their dual Q*/Q actions transported by J
   every one of the fifteen Eichler matrices acts trivially on D^perp/D

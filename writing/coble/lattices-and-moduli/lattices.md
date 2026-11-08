@@ -543,7 +543,7 @@ The dual-coordinate convention is explicit. If $\Delta=UQV$ is the Smith form of
 
 **Identification with $D^\perp/D$.** Put $M=P^\perp$. For $y\in M^*$, choose $u\in(M_\QQ)^\perp$ with $y+u\in\ten^*$. The natural gluing map is
 $$ j:A_Q\longrightarrow D^\perp/D,\qquad [y]\longmapsto[y+u]+D. $$
-Changing the representative in $A_Q$ or the complementary vector changes only the displayed class by an element of $D$; surjectivity follows by projecting a class in $D^\perp$ to $M^*$. In particular $j$ is an isometry of the norm-valued discriminant forms. The record prints an injective $10\times6$ matrix for $j$, verifies all $64$ classes in $D^\perp$, and checks $q_Q=q_\ten\pmod{2\ZZ}$ on every one. It also checks, for each of the $112$ integral reflections, that its direct action on $A$ agrees modulo $D$ with its dual $Q^*/Q$ action transported by $j$. Consequently $j$ identifies the lifted Levi with the full action on $D^\perp/D$.
+Changing the representative in $A_Q$ or the complementary vector changes only the displayed class by an element of $D$; surjectivity follows by projecting a class in $D^\perp$ to $M^*$. In particular $j$ is an isometry of the norm-valued discriminant forms. The record prints a $10\times6$ matrix $J$ for $j$, checks $\rank(J)=6$ and $\rank([J\mid d_0,d_1])=8$, and verifies directly that all $63$ nonzero vectors of $\im J$ avoid $D$. This proves injectivity *after* quotienting by $D$, not merely in the rank-$10$ module. It also verifies all $64$ classes in $D^\perp$, checks $q_Q=q_\ten\pmod{2\ZZ}$ on every one, and checks for each of the $112$ integral reflections that its direct action on $A$ agrees modulo $D$ with its dual $Q^*/Q$ action transported by $j$. Consequently $j$ identifies the lifted Levi with the full action on $D^\perp/D$.
 
 **The kernel, including its plane block.** Let
 $$ F=\Stab_{\Orth(A,q)}(D),\qquad C=\ker\bigl(F\to\Orth(D^\perp/D)\bigr). $$
@@ -574,6 +574,24 @@ $$ \rho\bigl(\Stab_{\Gamma^+}(P)\bigr)=\Stab_{H_0^+}(D). $$
 In particular, with $\Gamma_{\En,2}^+=\Gamma_{\En,2}\intersect\Orth^+(\ten)$ and $M^+=\rho(\Gamma_{\En,2}^+)$, the plane fibre over each $M^+$-orbit is a single $\Gamma_{\En,2}^+$-orbit by the same double-coset formula. This supplies the containment and stabilizer witness that the full-$O$ kernel argument alone does not provide.
 
 For other $\Gamma\supseteq\ker\rho$ the general double-coset formula of that corollary governs; no fibre count is asserted from the reported orbit padding alone.
+:::
+
+::: {.theorem #thm:enriques-degree-two-arithmetic title="The source-defined degree-two Enriques family: five 0-cusps, nine 1-cusps, and their incidence"}
+Let $\gent$ be the group of [@AEGS25, Def. 2.6], namely the image in $\Orth(\ten)$ of
+$$ \theset{g\in\Orth(L)\mid g\circ I_\En=I_\En\circ g,\;g(h)=h}. $$
+The source's arithmetic convention is the full orthogonal group: $\Gamma_\En=\Orth(\ten)$ and $\gent=\Gamma_\En\cap\Gamma_{\mathrm{dP}}$, with no intersection with $\Orth^+(\ten)$ implicit in the definition. Then $\gent=F=\rho^{-1}(M)$, and:
+
+1. The map $\ZZ v\mapsto[v/\operatorname{div}(v)]$ on primitive isotropic lines has exactly five $\gent$-orbits. There is one divisibility-one orbit over the zero class, and four divisibility-two orbits over the $M$-orbits of sizes $2,120,270,135$. Each fibre over an $M$-orbit is a single $\gent$-orbit, not merely a surjective finite image.
+2. The map $\varPi\mapsto D(\varPi)$ on primitive isotropic planes has exactly nine $\gent$-orbits, labelled by the four 4.3.16 types and the five 4.3.17 types. Each fibre over an $M$-orbit of discriminant images is a single $\gent$-orbit.
+3. Their incidences are exactly $\{1,2\},\{1,3\},\{1,4\},\{1,5\}$ among the first four and $\{2,4,5\},\{4,5\},\{3,5\},\{3,4\},\{5,5\}$ among the last five, as in the source's cusp diagram.
+
+The positive-spinor assertion of the preceding theorem is an additional restricted-group statement; it is not a replacement for this full-$O$ arithmetic result.
+:::
+
+::: {.proof}
+The group identification is @thm:sterk-line-fibres, which uses @prop:gamma-en-two-index for $\ker\rho\subseteq\gent$ and @thm:two-elementary-surjectivity for surjectivity of $\rho$. The same theorem proves item 1 with both divisibilities separated and applies [@Ste91, Cor. 3.3] to the corresponding congruence on each fibre.
+
+For item 2, @thm:sterk-line-fibres' plane exhaustion supplies the nine representatives and its triple invariant proves them pairwise inequivalent. @cor:enriques-plane-fibres proves that their fibres are single $\gent$-orbits. Independently of that direct source-fibre argument, @thm:enriques-integral-plane-stabilizers proves both full integral stabilizer images and returns one double coset in the same formula for every $M$-orbit. Thus the nine count does not depend on a pending lattice-orbit run or on multiplying two unrelated finite group orders. Item 3 is the incidence computation in @thm:sterk-line-fibres. These are the boundary orbits of the Baily--Borel compactification of $\mathcal D(\ten)/\gent$, giving five 0-cusps and nine 1-cusps for the source's $F_{\En,2}$.
 :::
 ::: {.remark #rmk:sterk-one-cusp-types title="The published plane types and their boundary groups"}
 

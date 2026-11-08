@@ -290,7 +290,7 @@ def canonical_classes(H):
         reps.append(tuple(rep))
 
     def canonical(m):
-        rr = list(Uinv * vector(QQ, m))
+        rr = list(Um * vector(QQ, m))
         return tuple(int(rr[i]) % divisors[i] for i in range(len(divisors)))
 
     return reps, canonical, divisors, total, Uinv
@@ -471,7 +471,7 @@ for bits in range(1024):
         for ybits in (1, 2, 4, 8, 16, 32, 64, 128, 256, 512):
             y = vector(ZZ, list(vector(F2, [(ybits >> i) & 1 for i in range(10)]) * Kb))
             beta_change = QQ(pairing(x + 2 * vector(ZZ, t), y) - pairing(x, y)) / 2
-            assert beta_change in ZZ
+            assert beta_change % 2 == 0
 print("  q=x^2/4 mod 2Z, half norm=x^2/8 mod Z, beta=(x,y)/2 mod 2: representative-independent")
 
 # Natural gluing j: [q] -> [q+u]+D, with q in Q*, u orthogonal to P^perp,
@@ -502,8 +502,13 @@ for i in range(2, 8):
           % (i, q0, found, list(k)))
 J = matrix(F2, 10, 6, lambda r, c: Jcolumns[c][r])
 assert J.rank() == 6
-print("  explicit gluing matrix J, inducing Q*/Q ~= D^perp/D:")
+JD = J.augment(matrix(F2, 10, 2, lambda r, c: (d0 if c == 0 else d1)[r]))
+assert JD.rank() == 8
+assert all(not in_D(J * vector(F2, [(bits >> i) & 1 for i in range(6)]))
+           for bits in range(1, 64))
+print("  explicit gluing matrix J; rank(J)=6 and rank([J|D])=8:")
 print(J)
+print("  quotient injectivity: every nonzero vector of im(J) lies outside D")
 for m in reps:
     k = J * vector(F2, list(m[2:]))
     assert k in Dperp
