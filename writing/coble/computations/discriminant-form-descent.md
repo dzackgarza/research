@@ -130,6 +130,114 @@ Then the flags over $(J,C)$ are governed by
 $$ (\Gamma\cap\rho^{-1}(F_{J,C}))\bigl\backslash\rho^{-1}(F_{J,C})\bigr/\Stab_{\rho^{-1}(F_{J,C})}(P,L). $$
 If $K\subseteq\Gamma$, this reduces to the corresponding double coset with $H\cap F_{J,C}$ on the left and $\rho(\Stab_{\Orth(L)}(P)\cap\Stab_{\Orth(L)}(L))$ on the right. A table saying only that $C$ is contained in $J$ proves containment. The extra mathematical content is transitivity of the integral plane stabilizer on the primitive lines in a fixed discriminant subgroup; that supplies the flag-fibre alignment while the plane is held fixed.
 
+## Forgetting a flag, and the incidence bijections {#sec-descent-forget}
+
+The object families of @sec-descent-fibre are not independent: a flag has a line and a plane, and both forgetting maps carry discriminant data to discriminant data.
+The applications need exactly this, because what the integral theorems compute is the stabilizer of the plane or of the line, not that of the flag.
+This section proves the compatibility, and then states which declaration supplies each hypothesis for the two families.
+
+::: {.lemma #lem:flag-datum-compatibility title="The datum of a flag is the chain of the data of its components"}
+
+Let $L$ be even and nondegenerate, let $x=(\ell\subset P)$ be a flag of primitive isotropic sublattices with $\rank\ell=1$ and $\rank P=2$, and put
+$$ C\definedas D(\ell)\in A_L,\qquad J\definedas D(P)\leq A_L . $$
+Then $C\subseteq J$, both are isotropic, and $D(x)=(C,J)$ in the sense of @sec-descent-fibre.
+For every $g\in\Orth(L)$,
+$$ D(g\ell)=\rho_{L,q}(g)(C),\qquad D(gP)=\rho_{L,q}(g)(J), $$
+so the forgetting maps $\pi_\ell\colon(\ell\subset P)\mapsto\ell$ and $\pi_P\colon(\ell\subset P)\mapsto P$ are $\Orth(L)$-equivariant and compatible with the datum.
+Consequently, for every subgroup $\Gamma\leq\Orth(L)$, every chain $(C',J')$ of isotropic subgroups of $A_L$, and the ambient orbits $\mathcal X_{\mathrm{fl}}=\Orth(L)\cdot x$, $\mathcal X_\ell=\Orth(L)\cdot\ell$, $\mathcal X_P=\Orth(L)\cdot P$,
+$$ \pi_\ell\qty(\mathcal F_{\mathcal X_{\mathrm{fl}}}(C',J'))\subseteq\mathcal F_{\mathcal X_\ell}(C'),\qquad
+   \pi_P\qty(\mathcal F_{\mathcal X_{\mathrm{fl}}}(C',J'))\subseteq\mathcal F_{\mathcal X_P}(J'), $$
+and the induced maps on $\Gamma$-orbit sets are well defined.
+The two inclusions are not equalities of sets: the fibre of $\pi_\ell$ over a primitive isotropic line $\ell'$ is the set of primitive isotropic planes containing $\ell'$, and the fibre of $\pi_P$ over $P'$ is the set of primitive isotropic lines contained in $P'$.
+:::
+
+::: {.proof}
+
+For the containment, let $\ell=\ZZ v$ with $v$ primitive.
+Then $v/\div_L(v)\in L^\sharp$ by @lem:descent-subobject-data and $v/\div_L(v)\in P_\QQ$ because $v\in\ell\subset P$; so its class, which is $C$, lies in the image of $P_\QQ\cap L^\sharp\to A_L$, which is $J$.
+Isotropy of $J$ is @lem:descent-subobject-data, and that of $C$ follows from $C\subseteq J$ with $J$ totally isotropic.
+
+The equivariance is @lem:descent-subobject-data applied to the line and to the plane, together with the definition $D(x)=(D(\ell),D(P))$: for a flag the datum is the pair of component data, so $\pi_\ell$ and $\pi_P$ carry it to its components, and the two displayed identities say precisely that forgetting commutes with $\rho_{L,q}$.
+
+For the fibre inclusions, let $y=(\ell_y\subset P_y)$ be a flag with $D(y)=(C',J')$; then $D(\pi_\ell y)=D(\ell_y)=C'$ and $D(\pi_P y)=D(P_y)=J'$, so $\pi_\ell y\in\mathcal F_{\mathcal X_\ell}(C')$ and $\pi_P y\in\mathcal F_{\mathcal X_P}(J')$.
+A $\Gamma$-orbit of flags is carried into a $\Gamma$-orbit of lines, and likewise of planes, because the maps are $\Gamma$-equivariant; the induced maps on orbit sets are therefore defined.
+
+The description of the fibres is by definition of the forgetting maps, and it shows that neither is injective.
+:::
+
+::: {.proposition #prop:flag-incidence-bijection title="Flags over a plane orbit are the plane stabilizer's orbits on the lines of the plane"}
+
+Let $L$ be even and nondegenerate, let $\Gamma\leq\Orth(L)$, let $P$ be a primitive isotropic plane with $D(P)=J$, and let $\Pi_1(P)$ be the set of primitive isotropic lines contained in $P$.
+Then the map
+$$ \Gamma\backslash\theset{\text{flags }(\ell\subset P')\st P'\in\Gamma P}\ \longrightarrow\ \Stab_\Gamma(P)\backslash\Pi_1(P),\qquad
+   \Gamma\cdot(\ell\subset P)\longmapsto\Stab_\Gamma(P)\cdot\ell $$
+is a bijection.
+It is compatible with the datum: $\rho_{L,q}$ carries $\Stab_\Gamma(P)$ into $\Stab_Q(J)=F$, the class map $\ell\mapsto D(\ell)$ takes values in the subgroups of $J$ and is $\Stab_\Gamma(P)$-equivariant, and consequently the flags in the fibre over a chain $(C,J)$ correspond to the $\Stab_\Gamma(P)$-orbits of primitive isotropic lines $\ell\subset P$ with $D(\ell)=C$.
+
+Dually, with $\Pi_2(\ell)$ the set of primitive isotropic planes containing a primitive isotropic line $\ell$,
+$$ \Gamma\backslash\theset{\text{flags }(\ell'\subset P)\st\ell'\in\Gamma\ell}\ \longrightarrow\ \Stab_\Gamma(\ell)\backslash\Pi_2(\ell) $$
+is a bijection, and the flags over the chain $(C,J)$ with $D(\ell)=C$ correspond to the $\Stab_\Gamma(\ell)$-orbits of primitive isotropic planes through $\ell$ with $D(P)=J$.
+:::
+
+::: {.proof}
+
+The flags whose plane lies in $\Gamma P$ are the set $\Gamma\cdot\theset{(\ell\subset P)\st\ell\in\Pi_1(P)}$, and every $\Gamma$-orbit inside it meets the displayed set, because a flag with plane $gP$ is the image under $g$ of a flag over $P$.
+Two members $(\ell\subset P)$ and $(\ell'\subset P)$ of that displayed set lie in one $\Gamma$-orbit exactly when some $g\in\Gamma$ carries one to the other; such a $g$ must satisfy $gP=P$, that is $g\in\Stab_\Gamma(P)$, and then $g\ell=\ell'$.
+So the $\Gamma$-orbits correspond bijectively to the $\Stab_\Gamma(P)$-orbits on $\Pi_1(P)$, by the orbit–stabilizer correspondence applied to the action of $\Stab_\Gamma(P)$ on the lines of $P$.
+
+For the compatibility, let $g\in\Stab_\Gamma(P)$ and $\ell\in\Pi_1(P)$.
+Then $D(g\ell)=\rho_{L,q}(g)(D(\ell))$ and $\rho_{L,q}(g)(J)=D(gP)=J$ by @lem:flag-datum-compatibility, so $\rho_{L,q}(\Stab_\Gamma(P))\leq\Stab_Q(J)$ and the class map is equivariant.
+Hence for a fixed subgroup $C\leq J$ the lines $\ell$ with $D(\ell)=C$ form a $\Stab_\Gamma(P)$-invariant subset of $\Pi_1(P)$, and its orbits are the flags over the chain $(C,J)$ by the bijection already proved.
+The dual statement is the same argument with the roles of line and plane exchanged; there the class map sends $\Stab_\Gamma(\ell)$ into $\Stab_Q(C)$ because $\rho_{L,q}(g)(C)=D(g\ell)=C$ for $g\in\Stab_\Gamma(\ell)$.
+:::
+
+::: {.lemma #lem:stabilizer-image-intersection title="An intersection of stabilizer images is the image of the intersection only under a lifting hypothesis"}
+
+Let $A,B\leq\Orth(L)$ be subgroups with $\ker\rho_{L,q}\subseteq A$.
+Then
+$$ \rho_{L,q}(A\intersect B)=\rho_{L,q}(A)\intersect\rho_{L,q}(B). $$
+In particular, for a flag $x=(\ell\subset P)$ the flag stabilizer image
+$$ S_{C,J}\definedas\rho_{L,q}\qty(\Stab_{\Orth(L)}(P)\intersect\Stab_{\Orth(L)}(\ell)) $$
+satisfies
+$$ S_{C,J}\subseteq\rho_{L,q}\qty(\Stab_{\Orth(L)}(P))\intersect\rho_{L,q}\qty(\Stab_{\Orth(L)}(\ell)), $$
+and this inclusion is an equality when $\ker\rho_{L,q}$ is contained in one of the two stabilizers.
+:::
+
+::: {.proof}
+
+The inclusion $\subseteq$ is clear.
+For the converse let $h=\rho_{L,q}(a)=\rho_{L,q}(b)$ with $a\in A$ and $b\in B$; then $\rho_{L,q}(ab^{-1})=\id$, so $ab^{-1}\in\ker\rho_{L,q}\subseteq A$, hence $b=(ab^{-1})^{-1}a\in A$, and $b\in A\intersect B$ with $\rho_{L,q}(b)=h$.
+
+The last sentence applies this to $A=\Stab_{\Orth(L)}(P)$ and $B=\Stab_{\Orth(L)}(\ell)$, whose intersection is the flag stabilizer, and symmetrically with $A$ and $B$ exchanged.
+:::
+
+The double-coset formula of @thm:descent-double-coset for a flag therefore needs $S_{C,J}$ itself, and @lem:stabilizer-image-intersection says that $S_{C,J}$ cannot be replaced by the intersection of the plane and line images without proving the lifting hypothesis.
+Substituting that intersection is the flag-level form of replacing the integral stabilizer image $S$ by the finite stabilizer $F$, which @sec-descent-fibre already rejects for the plane.
+@prop:flag-incidence-bijection is the alternative that the applications use: the flag orbits over a chain are read off from the action of the stabilizer of one component on the incident objects of the other, which is a smaller group acting on a lower-dimensional set.
+
+## The application hypotheses, and their owners {#sec-descent-hypotheses}
+
+@thm:descent-double-coset needs four items: the even lattice, the coefficient group $Q=\rho_{L,q}(\Orth(L))$, the kernel containment $\ker\rho_{L,q}\subseteq\Gamma$, and the integral stabilizer image $S=\rho_{L,q}(\Stab_{\Orth(L)}(x))$ of the object at hand.
+@prop:descent-spinor-fibre needs, in addition, a spinor-negative element of $\Stab_{\mathcal G_D\cap\Gamma}(x)$.
+@prop:flag-incidence-bijection needs, for flags, the action of the plane or line stabilizer on the incident objects.
+The two families of this chapter supply these as follows, and in each case the stabilizer image is an *integral* statement, not a finite model.
+
+**Enriques degree two**, $L=T_\En$ even of signature $(2,10)$ with $\Gamma_{\En,2}=\rho^{-1}(M)$.
+Lines: $S=\Stab_Q(c)$ exactly, by @lem:line-stabilizer-image, which uses the integrality $K\subseteq\gent$ of @prop:gamma-en-two-index and the surjectivity of @thm:two-elementary-surjectivity; in the divisibility-two case the lift is Sterk's congruence step, not a finite model.
+Planes: $S=F$ for both plane classes, by @thm:enriques-integral-plane-stabilizers, which exhibits the integral reflection lifts, the gluing $A_Q\to D^\perp/D$ and the kernel $C$ of order $49152$; the positive-spinor restriction there is supplied by direct witnesses in the two plane stabilizers.
+Spinor: $\sigma_U$ and $\tau$ of @thm:enriques-spinor-orbit-agreement are spinor-negative elements of $\ker\rho$ fixing the line and plane representatives, @thm:enriques-flag-witnesses produces such an element in each flag stabilizer, and in each case the conjugates reach every object of the family by normality of $\ker\rho$; so @prop:descent-spinor-fibre applies at every line, plane and flag, not only at representatives.
+Flags: not needed. The boundary strata of $\bD(T_\En)$ are the lines and the planes, and the incidence of the nine plane orbits with the five line orbits is computed from the discriminant type-sets in @thm:sterk-line-fibres, so no flag-stabilizer image is required and none is claimed.
+
+**Coble**, the lattice $T_\Co$ of @sec-lattices, with $B=U\perp U\perp\generators{-1}^{7}$ the odd unimodular model of rank $11$ used in @thm:coble-plane-stabilizer-image (so that $T_\Co=B(2)$ and $A_{T_\Co}\cong B/2B$) and $\Gamma_\Co=\ker\rho\intersect\Orth^+(B)$.
+Lines: the line row of @sec-descent-coble proves, from the integral line stabilizer together with its Eichler transvections, that each line datum carries a single $\ker\rho$-orbit, which is the hypothesis @thm:descent-double-coset needs at the $\ker\rho$ level; the datum is a class of $A_{T_\Co}$, whose exponent is two, so the vector stabilizer and the line stabilizer agree, as recorded there.
+Planes: $S=\rho(\Stab_{\Orth(B)}(P))$ of order $247\,726\,080$, which is a *proper* subgroup of $F=\Stab_Q(J)$ of index $8$ by @thm:coble-plane-stabilizer-image; the definite quotient $\generators{-1}^{7}$ admits only the $S_7$ image, so no integral isometry supplies the missing eight cosets, and $S=F$ is false here.
+Spinor: the Levi element $\tau=-\id_{U_1}\oplus\id$ is integral, level two, stabilizes the standard plane, and is spinor-negative; its conjugates reach every plane of every fibre, so @prop:descent-spinor-fibre applies plane by plane.
+Flags: the plane stabilizer's exact image $\Gamma(P)=\theset{A\in SL(P):A\equiv I\pmod2}$ is transitive on the primitive lines of $P$ within each nonzero class $c\in J$, by @prop:coble-arithmetic-flag-incidence; by @prop:flag-incidence-bijection this bijects the flag orbits over a plane orbit with those classes, so the flag count is obtained without computing the flag stabilizer image $S_{C,J}$, which no integral computation of this chapter supplies.
+
+Neither column asserts that a finite stabilizer is the integral image: in the Enriques plane case the equality $S=F$ is proved from the integral lifts, and in the Coble plane case it is *disproved*, with $[F:S]=8$.
+What remains outside this page for both columns is the public comparison of the arithmetic counts with the known-family cards: for the Coble family that is the lattice-orbit computation `sage-extensions#286`, cited throughout this page, and for the Enriques family the public call of the degree-two evaluation.
+The implications proved here are the mechanism and its hypotheses; no count is certified by them.
+
 ## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}
 
 The finite data of a commensurability class give the integral stabilizer exactly, but they give its discriminant image only at a modulus refined enough to make the discriminant representation descend.
