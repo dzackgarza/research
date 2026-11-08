@@ -606,6 +606,90 @@ Whether any two types share a finite plane image is a separate computation of th
 
 :::
 
+::: {.lemma #lem:spinor-orbit-agreement title="When the orbits of a subgroup and of its spinor-positive half agree"}
+
+Let $L$ be a lattice for which $\Orth^+(L)$ of @def:lattice-spinor-kernels has index two in $\Orth(L)$, let $\Gamma\leq\Orth(L)$ satisfy $\Gamma\not\subseteq\Orth^+(L)$, put $\Gamma^+=\Gamma\intersect\Orth^+(L)$, and let $X$ be a $\Gamma$-set.
+Then $\Gamma$ and $\Gamma^+$ have the same orbits on $X$ if and only if $\Stab_\Gamma(x)\not\subseteq\Orth^+(L)$ for every $x\in X$.
+:::
+
+::: {.proof}
+
+Since $[\Gamma:\Gamma^+]=2$, the complement $\Gamma\setminus\Gamma^+$ is a coset of $\Gamma^+$, so a product of two elements of $\Gamma\setminus\Gamma^+$ lies in $\Gamma^+$, and a product of one element of each lies in $\Gamma\setminus\Gamma^+$.
+
+Suppose first that $\Stab_\Gamma(x)\subseteq\Orth^+(L)$ for some $x$, and choose $\gamma\in\Gamma\setminus\Gamma^+$.
+If $\gamma x=\gamma' x$ with $\gamma'\in\Gamma^+$, then $\gamma'^{-1}\gamma\in\Stab_\Gamma(x)\subseteq\Orth^+(L)$, contradicting $\gamma'^{-1}\gamma\in\Gamma\setminus\Gamma^+$.
+Hence $\gamma x$ lies in the $\Gamma$-orbit of $x$ but not in its $\Gamma^+$-orbit, and the orbit sets differ.
+
+Conversely suppose $\Stab_\Gamma(x)\not\subseteq\Orth^+(L)$ for every $x$, and let $y=\gamma x$ with $\gamma\in\Gamma$.
+If $\gamma\in\Gamma^+$ then $y\in\Gamma^+x$.
+If not, choose $\tau\in\Stab_\Gamma(x)\setminus\Orth^+(L)$; then $\gamma\tau\in\Gamma^+$ and $\gamma\tau x=\gamma x=y$, so again $y\in\Gamma^+x$.
+Every $\Gamma$-orbit is therefore a single $\Gamma^+$-orbit.
+:::
+
+The criterion is a statement about a chosen set $X$, not about the group: agreement on one $\Gamma$-set says nothing about another.
+It is the form taken here by the fibre-level criterion of @prop:descent-spinor-fibre, with the stabilizer of the individual object in place of the stabilizer inside a discriminant fibre.
+
+::: {.theorem #thm:enriques-spinor-orbit-agreement title="Spinor agreement for every polarization family of $\ten$: lines, planes and flags"}
+
+Let $N=\ten=U\oplus U(2)\oplus E_8(2)$ with signature $(2,10)$, let $\rho$ be its quadratic discriminant representation and $\widetilde\Orth(N)=\ker\rho$ its discriminant kernel, and let $\Gamma\leq\Orth(N)$ be a subgroup with $\widetilde\Orth(N)\subseteq\Gamma$.
+Every subgroup obtained as a finite-character preimage $\rho^{-1}(M)$ with $M\leq\Orth(A_\ten,q_\ten)$ is of this form, and so is the value of `coinvariant_extension_subgroup()` for any source-defined polarization family.
+Put $\Gamma^+=\Gamma\intersect\Orth^+(N)$.
+Then $\Gamma$ and $\Gamma^+$ have the same orbits on
+
+1. the primitive isotropic lines of $N$; equivalently, since $-\id_N\in\Orth(N)$, the primitive isotropic vectors;
+2. the primitive isotropic planes of $N$;
+3. the flags $\ell\subset P$ consisting of a primitive isotropic line contained in a primitive isotropic plane.
+
+Consequently the three counts of isotropic lines, isotropic planes and their incidences, evaluated on the preimage $\Gamma$, are the corresponding counts of $\Gamma^+$.
+:::
+
+::: {.proof}
+
+Write $e,f$ for the basis of the summand $U$, $e',f'$ for that of $U(2)$, and $\alpha$ for the pair of orthogonal $E_8$-roots, so that $z=2e+2f+\alpha$ is the divisibility-two isotropic vector of @thm:enriques-integral-plane-stabilizers.
+Put
+$$
+\tau\definedas\id_U\oplus(-\id_{U(2)})\oplus\id_{E_8(2)} .
+$$
+
+*$\tau$ is level two.* The discriminant form of $\ten$ is the orthogonal sum of those of the three summands, $A_U=0$, and $A_{U(2)}$ and $A_{E_8(2)}$ are annihilated by $2$; on a module annihilated by $2$ the map $-\id$ is the identity, so $\tau$ acts trivially on $A_\ten$ and $\tau\in\widetilde\Orth(N)$.
+
+*$\tau$ is spinor-negative.* The normalized real spinor norm is a homomorphism on $\Orth(N)$ and multiplicative over orthogonal sums, and $\tau$ is $\id$ on $U\perp E_8(2)$; hence $\spinornorm_\bR(\tau)=\spinornorm_\bR(-\id_{U(2)})$, which is $[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, the summand $U(2)$ having positive index one.
+So $\tau\in\widetilde\Orth(N)\setminus\Orth^+(N)$.
+
+*The standard objects $\tau$ stabilizes.* By construction $\tau(e)=e$ and $\tau(e')=-e'$, and $\tau$ fixes $z$ and $\alpha$.
+Hence $\tau$ stabilizes the lines $\ZZ e$, $\ZZ e'$, $\ZZ z$ and the planes $P_1=\generators{e,e'}$ and $P_2=\generators{z,e'}$.
+A primitive isotropic plane of rank two contains exactly two isotropic lines, since the isotropic locus in it is the cone $xy=0$ in two coordinates; for $P_1$ these are $\ZZ e$ and $\ZZ e'$, and for $P_2$ they are $\ZZ z$ and $\ZZ e'$.
+So $\tau$ stabilizes *every* flag over $P_1$ and over $P_2$, not merely the planes.
+
+*Transport.* $\widetilde\Orth(N)$ is normal in $\Orth(N)$ as the kernel of $\rho$, and $\spinornorm_\bR(g\tau g^{-1})=\spinornorm_\bR(\tau)$ because the spinor norm is a homomorphism; so for $g\in\Orth(N)$ the conjugate $\tau_g\definedas g\tau g^{-1}$ lies in $\widetilde\Orth(N)\setminus\Orth^+(N)$ and stabilizes $g$ applied to every object stabilized by $\tau$.
+Since $\widetilde\Orth(N)\subseteq\Gamma$, each $\tau_g$ lies in the relevant stabilizer inside $\Gamma$.
+
+*Covering all objects.* The primitive isotropic lines of $\ten$ form exactly two $\Orth(\ten)$-orbits, distinguished by $\div\in\theset{1,2}$ [@AEGS25 §3.2], reproduced as a lattice computation by `T_En.cusps(1)` with representatives $\ZZ e$ and $\ZZ e'$; and the primitive isotropic planes form exactly two $\Orth(\ten)$-classes [@Ste91 Prop. 4.6], with representatives $P_1$ and $P_2$ by @thm:enriques-integral-plane-stabilizers.
+Given a line $\ell$, choose $g$ with $g\ZZ e=\ell$ or $g\ZZ e'=\ell$; then $\tau_g\in\Stab_\Gamma(\ell)\setminus\Orth^+(N)$.
+Given a plane $P$, choose $g$ with $gP_1=P$ or $gP_2=P$; then $\tau_g$ lies in $\Stab_\Gamma(P)\setminus\Orth^+(N)$ and, because it stabilizes both isotropic lines of $P$, it also lies in the stabilizer of every flag over $P$.
+The hypothesis of @lem:spinor-orbit-agreement therefore holds at every object of the three kinds, and the orbit sets coincide.
+:::
+
+The three isotropic families are therefore not a place where the preimage and its spinor-positive half differ, and that conclusion is reached object by object: the hypothesis of @lem:spinor-orbit-agreement is verified at a witness in each stabilizer and transported, so it does not rest on any agreement of table values, and equal counts would not have established it.
+A tabulated count of $\Gamma_h^+$-orbits and a computation run for the preimage are consistent for exactly this reason, and neither is evidence for the other.
+
+::: {.corollary #cor:enriques-preimage-vs-positive title="Which subgroup a discriminant-preimage comparison tests"}
+
+In the situation of @thm:enriques-spinor-orbit-agreement, with $\Gamma=\rho^{-1}(M)$:
+
+1. $\Gamma^+=\rho^{-1}(M)\intersect\Orth^+(N)$ has index two in $\Gamma$ and satisfies $\rho(\Gamma^+)=M$; it is the source's group $\Gamma_h^+$ of [@DH23 eq. (4)] whenever $\rho(\Gamma_h^+)=M$.
+2. A finite-character preimage construction returns $\Gamma$, not $\Gamma^+$: it returns the full preimage, whose order is twice that of the group the source's tables describe.
+3. Consequently a comparison of the counts of isotropic lines, isotropic planes and their incidences may be run against either group without error (@thm:enriques-spinor-orbit-agreement), while a comparison of the group order, of any count of isometries, or of orbits on any other $\Gamma$-set is answered only by the group actually supplied: by @lem:spinor-orbit-agreement those orbits agree exactly on the sets whose stabilizers all meet $\Orth(N)\setminus\Orth^+(N)$, and that has been verified here for the three isotropic families and for nothing else.
+:::
+
+::: {.proof}
+
+For item 1: $\tau\in\widetilde\Orth(N)\subseteq\Gamma$ is spinor-negative, so for $g\in\Gamma$ with $\rho(g)\in M$ one has $g\tau\in\Gamma$ with the same image and with $\spinornorm_\bR(g\tau)=-\spinornorm_\bR(g)$, hence $g\in\Gamma^+$ whenever $g\in\Orth^+(N)$ and $g\tau\in\Gamma^+$ otherwise; so $\rho(\Gamma^+)=M$.
+The kernel of $\rho|_{\Gamma^+}$ is $\widetilde\Orth(N)\intersect\Orth^+(N)=\widetilde\Orth^+(N)$, of index two in $\widetilde\Orth(N)$ exactly because $\tau$ lies in the latter and not the former; hence $[\Gamma:\Gamma^+]=2$.
+For item 2: the preimage is $\rho^{-1}(M)$ by the defining property of a discriminant preimage, and its order is $2\abs{M}\abs{\widetilde\Orth^+(N)}$, twice the order of $\Gamma^+$.
+Item 3 is @lem:spinor-orbit-agreement applied to the three families of @thm:enriques-spinor-orbit-agreement, together with the observation that the criterion is stated per set.
+:::
+
 ::: {.lemma #lem:gamma-transport-identity title="The gluing anti-isometry is the identity, and the transport is computed on $\ten$ itself"}
 
 Write $A_{\sen} = A_{U(2)}\oplus A_{E_8(2)}$ and $A_{\ten} = A_U\oplus A_{U(2)}\oplus A_{E_8(2)}$ for the two discriminant groups, summand by summand, with $A_U = 0$ because $U$ is unimodular.
