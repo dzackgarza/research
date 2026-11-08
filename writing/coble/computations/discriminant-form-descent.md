@@ -173,14 +173,15 @@ Let $L$ be even and nondegenerate, $\Gamma\leq\Orth(L)$, $Q=\rho_{L,q}(\Orth(L))
 Put
 $$ F_{C,J}\definedas\Stab_Q(C)\intersect\Stab_Q(J),\qquad \Gamma_{(C,J)}\definedas\Gamma\intersect\rho_{L,q}^{-1}\qty(F_{C,J}), $$
 and write
-$$ \Phi(C,J)\definedas\theset{\text{flags }(\ell\subset P)\st D(\ell)=C,\ D(P)=J},\qquad
-   \Sigma_2(J)\definedas\theset{P\st D(P)=J},\qquad
-   \Sigma_1(C)\definedas\theset{\ell\st D(\ell)=C} $$
-for the flags of datum $(C,J)$, the planes of datum $J$ and the lines of datum $C$, inside the full orbits.
-Then $\Gamma_{(C,J)}$ acts on each of these three sets, and $\Gamma$ itself acts on the sets of *all* flags, all planes and all lines, and on no one of the three displayed sets unless $\rho_{L,q}(\Gamma)\subseteq F_{C,J}$.
+$$ \Phi(C,J)\definedas\theset{\text{primitive isotropic flags }(\ell\subset P)\st D(\ell)=C,\ D(P)=J}, $$
+$$ \Sigma_2(J)\definedas\theset{\text{primitive isotropic planes }P\st D(P)=J},\qquad
+   \Sigma_1(C)\definedas\theset{\text{primitive isotropic lines }\ell\st D(\ell)=C} $$
+for the flags of datum $(C,J)$, the planes of datum $J$ and the lines of datum $C$, taken over *all* objects of the indicated ranks with that datum and not only over those in a chosen full orbit; the full-orbit statements are those of @lem:flag-datum-compatibility and are separate.
+Then $\Gamma_{(C,J)}$ acts on each of these three sets, and for $\Gamma$ itself the three conditions separate: if $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(C)$ then $\Gamma$ preserves $\Sigma_1(C)$; if $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(J)$ then $\Gamma$ preserves $\Sigma_2(J)$; and if $\rho_{L,q}(\Gamma)\subseteq F_{C,J}$ then $\Gamma$ preserves all three, in particular $\Phi(C,J)$.
+Each of these implications is an implication, not an equivalence: the condition is necessary as well only when the set in question is nonempty, and then an object of the set exhibits it.
 Moreover the forgetting maps of @lem:flag-datum-compatibility restrict to $\Gamma_{(C,J)}$-equivariant maps
 $$ \Phi(C,J)\longrightarrow\Sigma_1(C),\qquad \Phi(C,J)\longrightarrow\Sigma_2(J), $$
-surjective onto their images; the first has image all of $\Sigma_1(C)$ exactly when every line of datum $C$ occurs as the line component of a flag of datum $(C,J)$, which is an incidence statement.
+surjective onto their images; the first has image all of $\Sigma_1(C)$ exactly when every primitive isotropic line of datum $C$ occurs as the line component of a flag of datum $(C,J)$, which is an incidence statement, and dually for planes.
 :::
 
 ::: {.proof}
@@ -189,7 +190,10 @@ For $g\in\Gamma_{(C,J)}$ and a flag $y=(\ell\subset P)$ of datum $(C,J)$ one has
 $$ D(g\ell)=\rho_{L,q}(g)(C)=C,\qquad D(gP)=\rho_{L,q}(g)(J)=J, $$
 because $\rho_{L,q}(g)\in F_{C,J}$; hence $g y\in\Phi(C,J)$.
 The same two identities give the action on $\Sigma_2(J)$ and on $\Sigma_1(C)$.
-For the last sentence: an element $g\in\Gamma$ carries $\Phi(C,J)$ onto $\Phi\qty(\rho_{L,q}(g)(C),\rho_{L,q}(g)(J))$ by the equivariance proved in @lem:flag-datum-compatibility, so it preserves $\Phi(C,J)$ only if $\rho_{L,q}(g)$ stabilizes $C$ and $J$, and the same holds for $\Sigma_2(J)$ and $\Sigma_1(C)$.
+For the separate conditions: by @lem:flag-datum-compatibility an element $g\in\Gamma$ carries a line of datum $C'$ to a line of datum $\rho_{L,q}(g)(C')$, a plane of datum $J'$ to a plane of datum $\rho_{L,q}(g)(J')$, and a flag of datum $(C',J')$ to a flag of datum $\qty(\rho_{L,q}(g)(C'),\rho_{L,q}(g)(J'))$.
+So $\rho_{L,q}(g)$ stabilizing $C$ preserves $\Sigma_1(C)$, stabilizing $J$ preserves $\Sigma_2(J)$, and stabilizing both preserves $\Phi(C,J)$; that gives the three sufficient conditions.
+For the necessity under nonemptiness, let $\ell\in\Sigma_1(C)$; then $g\ell\in\Sigma_1(C)$ forces $\rho_{L,q}(g)(C)=D(g\ell)=C$, so $\rho_{L,q}(\Gamma)$ fixes $C$; the same argument with a plane in $\Sigma_2(J)$ gives the condition for $J$; and a flag in $\Phi(C,J)$ gives both at once.
+If the set is empty the implications are vacuous and no necessity is asserted.
 
 For the restriction statement: by @lem:flag-datum-compatibility the forgetting maps commute with the datum and are $\Orth(L)$-equivariant, hence $\Gamma_{(C,J)}$-equivariant, and they carry $\Phi(C,J)$ into $\Sigma_1(C)$ and into $\Sigma_2(J)$ respectively.
 :::
@@ -204,8 +208,9 @@ Consequently a primitive isotropic plane $P$ realizes the zero line datum exactl
 
 ::: {.proof}
 
-If $\div_L(v)=1$ then $v/\div_L(v)=v\in L$, so its class in $A_L=L^\sharp/L$ is zero and $C=\langle 0\rangle=0$.
-Conversely if $C=0$ then $v/\div_L(v)\in L$; that vector is primitive of divisibility $\div_L(v)/\div_L(v)=1$ in $L$, and it generates $\ell$, so $\ell$ has a generator of divisibility one and $\div_L(v)$ is the least positive value of $\beta(\ell,L)$, namely $1$.
+Write $d\definedas\div_L(v)$, so that the class generating $C$ is that of $v/d$.
+If $d=1$ then $v/d=v\in L$, so its class in $A_L=L^\sharp/L$ is zero and $C=\langle 0\rangle=0$.
+Conversely if $C=0$ then $v/d\in L$; since $v=d\cdot(v/d)$ is a multiple of a lattice vector and $v$ is primitive, $d=\pm1$, and $d>0$ gives $d=1$.
 
 For the last sentence: $0\subseteq D(P)$ holds for every plane because $D(P)$ is a subgroup, whereas $P$ realizes the zero datum exactly when one of its primitive isotropic lines has divisibility one, and a plane all of whose primitive isotropic vectors have divisibility two realizes no such line.
 :::
@@ -232,7 +237,7 @@ The last sentence applies this to $A=\Stab_{\Orth(L)}(P)$ and $B=\Stab_{\Orth(L)
 
 ::: {.proposition #prop:flag-incidence-bijection title="Flags over a plane orbit, and the bijection over a fixed chain"}
 
-Let $L$ be even and nondegenerate, $\Gamma\leq\Orth(L)$, and $P$ a primitive isotropic plane with $J=D(P)$; let $\Pi_1(P)$ be the set of primitive isotropic lines contained in $P$, and for $C\leq J$ let $\Pi_1^C(P)\definedas\theset{\ell\in\Pi_1(P)\st D(\ell)=C}$.
+Let $L$ be even and nondegenerate, $\Gamma\leq\Orth(L)$, and $P$ a primitive isotropic plane with $J=D(P)$; let $\Pi_1(P)$ be the set of primitive isotropic lines contained in $P$, and for $C\leq J$ let $\Pi_1^C(P)\definedas\theset{\ell\in\Pi_1(P)\st D(\ell)=C}$; dually, for a primitive isotropic line $\ell$ with $C=D(\ell)$, let $\Pi_2(\ell)$ be the set of primitive isotropic planes containing $\ell$ and, for $J\geq C$, $\Pi_2^J(\ell)\definedas\theset{P\in\Pi_2(\ell)\st D(P)=J}$.
 
 1. **Unrestricted.** The map
 $$ \Gamma\backslash\theset{\text{flags }(\ell\subset P')\st P'\in\Gamma P}\ \longrightarrow\ \Stab_\Gamma(P)\backslash\Pi_1(P),\qquad
@@ -275,8 +280,9 @@ Let $\Gamma\leq\Orth(L)$, let $\mathcal P=\Gamma P_0$ be a $\Gamma$-orbit of pri
 Say that $\mathcal P$ and $\mathcal L$ are **incident** when a plane of $\mathcal P$ contains a line of $\mathcal L$.
 
 1. **(Necessity.)** If $\mathcal P$ and $\mathcal L$ are incident, then some $C'\in\bar C$ satisfies $C'\subseteq J$.
-2. **(Sufficiency.)** Suppose that for every $C'\in\bar C$ the primitive isotropic lines with datum $C'$ form a single $\Gamma$-orbit. If some primitive isotropic line $\ell\subset P_0$ has $D(\ell)\in\bar C$, then $\mathcal P$ and $\mathcal L$ are incident.
-3. **(The zero datum.)** For $C=0$ the hypothesis of item 2 is the existence of a primitive isotropic vector of divisibility one in $P_0$, by @lem:zero-datum-divisibility; the containment $0\subseteq J$ alone does not supply it.
+2. **(Sufficiency.)** Suppose that any two primitive isotropic lines with the same datum are $\Gamma$-equivalent, in the sense that for subgroups $C'$ and primitive isotropic lines $\ell_1,\ell_2$ with $D(\ell_1)=D(\ell_2)=C'$ there is $g\in\Gamma$ with $g\ell_1=\ell_2$; equivalently, each attained datum fibre $\Sigma_1(C')$ lies in a single $\Gamma$-orbit.
+If some primitive isotropic line $\ell\subset P_0$ has $D(\ell)\in\bar C$, then $\mathcal P$ and $\mathcal L$ are incident.
+3. **(The zero datum.)** For $C=0$ the second requirement of item 2 is the existence of a primitive isotropic vector of divisibility one in $P_0$, by @lem:zero-datum-divisibility; the containment $0\subseteq J$, true for every plane, does not supply it.
 :::
 
 ::: {.proof}
@@ -290,7 +296,8 @@ Take $C'=D(h\ell_0)$.
 
 *Item 2.*
 Let $\ell\subset P_0$ satisfy $D(\ell)=C'\in\bar C$; by definition of $\bar C$ there is $h\in\Gamma$ with $C'=\rho_{L,q}(h)(C)$, so $D(h^{-1}\ell)=\rho_{L,q}(h)^{-1}(C')=C$.
-The lines of datum $C$ form a single $\Gamma$-orbit by hypothesis, so $h^{-1}\ell=g\ell_0$ for some $g\in\Gamma$, hence $\ell=hg\ell_0$ lies in $\mathcal L$ and is contained in $P_0$.
+The lines $h^{-1}\ell$ and $\ell_0$ have the same datum $C$, so by the hypothesis there is $g\in\Gamma$ with $g(h^{-1}\ell)=\ell_0$, hence $\ell=hg^{-1}\ell_0$ lies in $\mathcal L$ and is contained in $P_0$.
+The hypothesis is an equivalence condition inside the slice of a fixed datum, not an action of $\Gamma$ on that slice: it says only that lines of equal datum are $\Gamma$-equivalent, which is what the argument uses.
 
 *Item 3.*
 That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisibility one for a primitive isotropic line.
@@ -316,7 +323,7 @@ At the Coble family this is the case at $\Gamma=\ker\rho$ with $\Gamma^+=\Gamma_
 Lines: $S=\Stab_Q(c)$ exactly, by @lem:line-stabilizer-image, whose integral inputs are $K\subseteq\gent$ (@prop:gamma-en-two-index) and the surjectivity of @thm:two-elementary-surjectivity; at divisibility two the lift is Sterk's congruence step, and each fibre of lines over an $M$-orbit of classes is a single $\gent$-orbit.
 Planes: $S=F$ for both plane classes, by @thm:enriques-integral-plane-stabilizers, which supplies the integral reflection lifts, the gluing $A_Q\to D^\perp/D$ and the kernel of order $49152$; its positive-spinor restriction carries its own witnesses.
 Spinor: $\sigma_U$ and $\tau$ of @thm:enriques-spinor-orbit-agreement are spinor-negative elements of $\ker\rho$ fixing the line and plane representatives, @thm:enriques-flag-witnesses supplies such an element in each flag stabilizer, and the conjugates reach every object by normality of $\ker\rho$; so @prop:descent-spinor-fibre applies at every line, plane and flag, and $\Gamma_{\En,2}$ and $\Gamma_{\En,2}^+$ have the same orbits on the three families.
-Incidence: item 1 of @prop:line-plane-incidence is necessary here in its data-orbit form, because $M$ moves the classes; item 2 needs the single-line-orbit hypothesis, which is the fibre statement of @thm:sterk-line-fibres, and its realization statement, which that theorem states with the zero class separated from the nonzero ones:
+Incidence: item 1 of @prop:line-plane-incidence is necessary here in its data-orbit form, because $M$ moves the classes; item 2 needs its equivalence condition — any two primitive isotropic lines with the same datum are $\gent$-equivalent — which is exactly what the fibre statement of @thm:sterk-line-fibres gives, since each fibre of lines over an $M$-orbit of classes is a single $\gent$-orbit and two lines of one class lie in one fibre; and it needs the realization statement, which that theorem states with the zero class separated from the nonzero ones:
 every *nonzero* class $d$ of the image $D$ is the class of a primitive combination $av+bw$ of divisibility two — the three nonzero classes of the $(\ZZ/2)^2$ realized by $(1,0),(0,1),(1,1)$ — while the zero class is realized only by a divisibility-one vector, which occurs exactly when a combination has odd pairing, that is precisely for the four $4.3.16$ planes.
 By @lem:zero-datum-divisibility the zero line datum is exactly the divisibility-one condition, and the containment $0\subseteq D(P)$, true for every plane and in particular for the five $4.3.17$ planes, does not supply it.
 With those inputs the incidence of the nine plane orbits with the five line orbits is: the line orbits whose classes lie in the $M$-orbit of the nonzero classes of the plane's image, together with the divisibility-one line orbit exactly for the four planes that contain a divisibility-one vector — the incidence computed in @thm:sterk-line-fibres, with zero and nonzero kept apart.
@@ -329,7 +336,7 @@ Lines: the line row of @sec-descent-coble proves, from the integral line stabili
 Planes: $S=\rho(\Stab_{\Orth(B)}(P))$ of order $247\,726\,080$, a proper subgroup of $F=\Stab_Q(J)$ of index $8$ by @thm:coble-plane-stabilizer-image, whose item 4 shows that no integral isometry supplies the missing eight cosets; so $S=F$ fails at this family, and the plane fibre carries eight $\ker\rho$-orbits.
 Spinor: the Levi element $\tau=-\id_{U_1}\oplus\id$ is integral, congruent to the identity modulo $2$, stabilizes the standard plane and is spinor-negative; its conjugates reach every plane of every fibre, so the eight $\ker\rho$-orbits descend to $\Gamma_\Co$.
 Flags and incidence: the image $\Gamma(P)=\theset{A\in SL(P)\st A\equiv I\pmod2}$ of $\Stab_{\Gamma_\Co}(P)$ on $P$ is transitive on the primitive lines of $P$ within each nonzero class $c\in J$, by @prop:coble-arithmetic-flag-incidence, and this is transitivity of $\Stab_{\Gamma_\Co}(P)$ itself; since $\Gamma_\Co$ fixes all data, that is item 2 of @prop:flag-incidence-bijection with $\Gamma_{(C,J)}=\Gamma_\Co$ and $\Gamma_{P,C}=\Stab_{\Gamma_\Co}(P)$, so there is one flag orbit over each plane orbit for each nonzero class of $J$.
-The same transitivity is the realization input of item 2 of @prop:line-plane-incidence and the line row is its single-orbit input, so the three incidences of each plane node are proved, not assumed; the flag stabilizer image $S_{C,J}$ is not needed for either.
+The same transitivity is the realization input of item 2 of @prop:line-plane-incidence, and the line row supplies its equivalence condition, since any two lines of one datum lie in a single $\ker\rho$-orbit; so the three incidences of each plane node are proved, not assumed, and the flag stabilizer image $S_{C,J}$ is not needed for either.
 
 Neither column asserts that a finite stabilizer is the integral image: at Enriques planes the equality $S=F$ is proved from the integral lifts, and at Coble planes it is disproved, with $[F:S]=8$.
 What remains outside this page is the public comparison of the arithmetic counts with the known-family cards, which for the Coble family is the lattice-orbit computation `sage-extensions#286` cited throughout this page and for the Enriques family the public call of the degree-two evaluation.
