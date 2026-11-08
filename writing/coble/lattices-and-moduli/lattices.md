@@ -491,7 +491,12 @@ where $G$ is the Gram matrix of $\ten = U\perp U(2)\perp E_8(2)$.
 Concretely, $[x/2]\in A$ corresponds to $x\bmod 2$ on the ten scaled coordinates:
 such a class is dual exactly when $(x,\ten)$ is even, and $[x/2] = [y/2]$ iff $x-y \in 2\ten$.
 The record `computations/reports/coble_enriques-plane-stabilizers-exact-run.txt` prints $\dim K = 10$ and $|K| = |A| = 1024$, so no action on the larger parity module $\ten/2\ten$ is substituted for the discriminant action.
-Coefficients of $\F_2$ matrices are written $\beta \definedas 2b \bmod 2$, i.e. $\beta([x/2],[y/2]) = (x,y)_B \bmod 2$.
+Using the norm-valued quadratic refinement of @def:discriminant, the forms on these representatives are
+$$ b\bigl([x/2],[y/2]\bigr) = \frac{(x,y)}4 \pmod \ZZ, \qquad
+q\bigl([x/2]\bigr) = \frac{x^2}{4} \pmod {2\ZZ}, \qquad
+\beta \definedas 2b,\quad \beta\bigl([x/2],[y/2]\bigr) = \frac{(x,y)}2 \pmod 2. $$
+The equivalent half-norm value is $x^2/8\pmod\ZZ$, *not* modulo $2\ZZ$.
+Under $x\mapsto x+2t$ with $t\in\ten$, the norm value changes by $(x,t)+t^2\in2\ZZ$ and the half-norm value by half of that in $\ZZ$, while the finite polar value is unchanged; the record checks these identities on every class.
 
 For a primitive isotropic plane $P = \generators{v,w}$, an integral isometry preserving it satisfies
 $$ g(v) = av + cw, \qquad g(w) = bv + dw, \qquad \det\begin{pmatrix}a&b\\c&d\end{pmatrix} = \pm1 $$
@@ -528,10 +533,27 @@ $$ R = \begin{pmatrix}
  0 &-1 &-1 &-1 &-1 & 0 & 0 & 0
  \end{pmatrix},
  \qquad R^T(-Q)R = 2(D_8)^{-1}. $$
-Thus the claimed identification is proved by an explicit isometry, not inferred from norms. The native definite isometry group induced on $Q^*/Q$ has order $40320 = |\Orth^+(6,2)|$, the full finite Levi.
-Fifteen accepted integral plane-stabilizing matrices generate a discriminant image of order $49152 = 8192\cdot 6$, the full order-$2^{13}$ unipotent radical together with its $GL_2(\F_2)$-part on the plane. Consequently
-$$ \rho\bigl(\Stab_{\Orth(T_\En)}(P)\bigr) = \Stab_{\Orth(A,q)}(D),
- \qquad 40320\times 49152 = 1\,981\,808\,640 = \abs{\Stab_{\Orth(A,q)}(D)}. $$
+Thus the claimed identification is proved by an explicit isometry, not inferred from norms.
+
+**The integral Levi lifts.** The owned exact shell of $Q$ has $368$ vectors of square $-4$. Of these, $112$ have representatives $r\in P^\perp\intersect2\ten^*$; for each, the reflection
+$$ s_r(x)=x+\frac{(x,r)}2r $$
+is integral on $\ten$, preserves its form, and fixes $e'$ and $z$ pointwise. These are therefore actual lifts from the *embedded* plane, not automorphisms of an unrelated copy of $Q$. The remaining $256$ shell vectors are not used. The record verifies every integral reflection matrix and its induced quotient matrix.
+
+The dual-coordinate convention is explicit. If $\Delta=UQV$ is the Smith form of the Gram matrix $Q$, a Smith residual $r$ represents $Q^{-1}U^{-1}r\in Q^*/Q$; a column isometry $X$ of $Q$ acts on its numerator by $X^{-T}$. The record proves this convention on all $64$ classes, including identity, composition and invariance under adding $Q\ZZ^8$. With this action, the native group $O(Q)$ has image of order $40320$, and the $112$ integral reflection lifts have the same image. Thus they generate the full finite Levi action.
+
+**Identification with $D^\perp/D$.** Put $M=P^\perp$. For $y\in M^*$, choose $u\in(M_\QQ)^\perp$ with $y+u\in\ten^*$. The natural gluing map is
+$$ j:A_Q\longrightarrow D^\perp/D,\qquad [y]\longmapsto[y+u]+D. $$
+Changing the representative in $A_Q$ or the complementary vector changes only the displayed class by an element of $D$; surjectivity follows by projecting a class in $D^\perp$ to $M^*$. In particular $j$ is an isometry of the norm-valued discriminant forms. The record prints an injective $10\times6$ matrix for $j$, verifies all $64$ classes in $D^\perp$, and checks $q_Q=q_\ten\pmod{2\ZZ}$ on every one. It also checks, for each of the $112$ integral reflections, that its direct action on $A$ agrees modulo $D$ with its dual $Q^*/Q$ action transported by $j$. Consequently $j$ identifies the lifted Levi with the full action on $D^\perp/D$.
+
+**The kernel, including its plane block.** Let
+$$ F=\Stab_{\Orth(A,q)}(D),\qquad C=\ker\bigl(F\to\Orth(D^\perp/D)\bigr). $$
+Write $A=D\oplus D^\vee\oplus(D^\perp/D)$ with the first two summands hyperbolic. In matrix form on these summands, the quadratic-preservation equations for an element of $C$ leave one $GL_2(\F_2)$ block, $12$ bits for the maps $D^\perp/D\to D$, and one further alternating bit. Hence
+$$ \abs C=|GL_2(\F_2)|\cdot2^{13}=6\cdot8192=49152. $$
+Each of the fifteen integral plane-stabilizing Eichler matrices above is checked to lie in $C$. Their generated group has order $49152$, so it is $C$, not merely a subgroup with an unrelated matching order. As a further direct check, its action on $D$ is all of $GL_2(\F_2)$, and its pointwise-on-$D$ subgroup has order $8192$ and index $6$.
+
+The integral reflection lifts surject to $\Orth(D^\perp/D)$, of order $40320=|\Orth^+(6,2)|$, while the kernel of that same quotient map on $F$ is exactly $C$. Therefore $\rho(\Stab_{\Orth(\ten)}(P))$ contains the full kernel and the full quotient of $F$, and
+$$ \rho\bigl(\Stab_{\Orth(T_\En)}(P)\bigr) = F=\Stab_{\Orth(A,q)}(D),
+ \qquad 40320\times 49152 = 1\,981\,808\,640 = \abs F. $$
 For definiteness, the three nonzero classes of $D$ in the record are
 $[z/2]$ (bit string `000011000000`), $[e'/2]$ (`001000000000`), and their sum (`001011000000`), each counted with multiplicity one; no ordered pair is collapsed into a set of distinct vector types.
 
@@ -543,7 +565,14 @@ because if $h = \rho(g) = \rho(g_2)$ with $g$ in the integral stabilizer and $g_
 For $\Gamma = \Gamma_{\En,2}$, with $H_0 = M$, the double-coset fibre of @cor:enriques-plane-fibres therefore has count
 $$ \bigl(q^{-1}H_0q\intersect F\bigr)\bigl\backslash F \big/ S = F/F = 1 $$
 per $M$-orbit of images: the fibre of primitive isotropic planes over each image is a single $\Gamma_{\En,2}$-orbit.
-This equality of images is *proved from the integral candidates and their orders*, not inferred from a single orbit over an $M$-orbit or from the finite partition.
+This equality of images is *proved from the integral reflection lifts, the explicit gluing, and the kernel inclusion*, not inferred from a single orbit over an $M$-orbit or from the finite partition.
+
+**The positive-spinor restriction.** Put $\Gamma^+=\Gamma\intersect\Orth^+(\ten)$ and $H_0^+=\rho(\Gamma^+)$. The isometry
+$$ \tau=-\id_{U(2)}\oplus\id_{U\perp E_8(2)} $$
+belongs to $\ker\rho$, stabilizes both $P=\langle e,e'\rangle$ and $P=\langle e',z\rangle$ (it sends $e'$ to $-e'$ and fixes $e$ and $z$), and has normalized real spinor norm $-1$ by @lem:minus-identity-spinor-norm, since $U(2)$ has positive index one. The two-preimage argument therefore survives the spinor restriction: if $g\in\Stab_{\Orth(\ten)}(P)$ and $g_2\in\Gamma^+$ have the same discriminant image, then $gg_2^{-1}\in\ker\rho$. If $g$ is spinor-negative, replace it by $\tau g$, which is spinor-positive and has the same discriminant image. The resulting element lies in $\Gamma^+$, and
+$$ \rho\bigl(\Stab_{\Gamma^+}(P)\bigr)=\Stab_{H_0^+}(D). $$
+In particular, with $\Gamma_{\En,2}^+=\Gamma_{\En,2}\intersect\Orth^+(\ten)$ and $M^+=\rho(\Gamma_{\En,2}^+)$, the plane fibre over each $M^+$-orbit is a single $\Gamma_{\En,2}^+$-orbit by the same double-coset formula. This supplies the containment and stabilizer witness that the full-$O$ kernel argument alone does not provide.
+
 For other $\Gamma\supseteq\ker\rho$ the general double-coset formula of that corollary governs; no fibre count is asserted from the reported orbit padding alone.
 :::
 ::: {.remark #rmk:sterk-one-cusp-types title="The published plane types and their boundary groups"}
