@@ -1,0 +1,10 @@
+#667 integral lifting: exact block and orientation certificates
+q_T([x/2]) = B(x,x)/2 mod 2Z is well defined on all 2048 classes under x -> x+2t
+characteristic line: q=b=-7/2 = 1/2 in the respective targets; V6 nondegenerate
+V6: 64 even-weight classes, 36 zeros of q2, 28 nonzero values (plus type)
+Witt Levi: GL(P) and contragredient GL(P*) are exact integral isometries
+central Eichler block preserves q on every J^perp class and is trivial on J^perp/J
+E(eta,w): integral, form-preserving, plane-preserving; D^ev classes cover all 64 V6 classes
+line witness id_U1+(-id_K): fixes e1, identity mod 2, spinor_R=-1
+plane witness -id_U1+id: stabilizes <e1,e2>, identity mod 2, spinor_R=-1
+STRUCTURAL CERTIFICATE COMPLETE

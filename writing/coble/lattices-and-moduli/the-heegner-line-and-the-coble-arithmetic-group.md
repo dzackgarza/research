@@ -1339,20 +1339,20 @@ and likewise for primitive isotropic planes $P\subset T_\Co$, whose image is the
 *Step 1: $\Orth(B)$ is transitive.* $B = \generators{1}\perp U\perp E_8(-1)$ is odd, unimodular, indefinite, of rank $11$. Wall classifies the orbits of $\Orth(B)$ on primitive vectors of an indefinite unimodular lattice of rank $\ge3$ by norm and type, characteristic or ordinary ([@Wal62], Theorem 1.2 and §1.3). A primitive isotropic $v$ has $v^2 = 0$, and it is *not* characteristic: a characteristic vector $w$ of a unimodular lattice satisfies $w^2\equiv \sigma(B) \pmod 8$ (van der Blij; [@Nik80], §1.9), and here $\sigma(B) = 2-9 = -7\equiv 1\pmod 8$, so $w^2$ is odd, while $v^2 = 0$ is even. So all primitive isotropic vectors of $B$ have norm $0$ and ordinary type, and there is exactly **one** $\Orth(B)$-orbit of them.
 Consequently the class $[v/2]\in B/2B$ is *not* an $\Orth(B)$-invariant — an isometry moves it by $\bar g$ — while it *is* a $\Gamma_\Co$-invariant, since $\Gamma_\Co$ is the congruence subgroup $\bar g = \id$. So $\Gamma_\Co$ does not act transitively, and the finite lists cannot be its orbits.
 
-*Step 2: the fibres are cosets of the stabilizer image.* $\rho_{T_\Co}\colon\Orth(B)\to\Orth(q_{T_\Co})$ is onto for a $2$-elementary lattice ([@Nik80], 1.14.2 and Theorem 3.6.3 — @thm:two-elementary-surjectivity), and $\Gamma_\Co = \ker\rho$ is normal. For a primitive isotropic $v$ with class $c = [v/2]$ the orbit $\Gamma_\Co\cdot v$ depends only on the coset of $\Orth(B)$ modulo $\Gamma_\Co$, so
+*Step 2: the fibres are cosets of the stabilizer image.* $\rho_{T_\Co}\colon\Orth(B)\to\Orth(q_{T_\Co})$ is onto for a $2$-elementary lattice ([@Nik80], 1.14.2 and Theorem 3.6.3 — @thm:two-elementary-surjectivity). Write $K=\ker\rho$, which is normal, and $\Gamma_\Co=K\intersect\Orth^+(B)$. For a primitive isotropic $v$ with class $c = [v/2]$ the orbit $K\cdot v$ depends only on the coset of $\Orth(B)$ modulo $K$, so
 $$
-\theset{\Gamma_\Co\text{-orbits inside } \Orth(B)\cdot v \text{ with class } c}
+\theset{K\text{-orbits inside } \Orth(B)\cdot v \text{ with class } c}
 \;\iso\;
 \Stab_{\Orth(q)}(c)\,\big/\,\rho\bigl(\Stab_{\Orth(B)}(v)\bigr),
 $$
-and the number of $\Gamma_\Co$-orbits of primitive isotropic vectors is
+and the number of $K$-orbits of primitive isotropic vectors is
 $$
 \sum_{c}\;\bigl[\Stab_{\Orth(q)}(c) : \rho(\Stab_{\Orth(B)}(v_c))\bigr],
 $$
 the sum over the isotropic classes $c\in A_{T_\Co}$, which are the $528$ classes of @prop:coble-q-fibers, with $v_c$ any primitive isotropic lift.
 
 *The classes that lift, and the lifting theorem.* The $528$ classes of @prop:coble-q-fibers include the zero class, since $A_{T_\Co} = B/2B = \F_2^{11}$ and $1+135+2+270+120 = 528$ counts the solutions of $x^2\equiv0 \pmod 4$ with $x = 0$ included. The zero class is $[v/2]$ only for $v\in 2B$, which is not primitive, so it contributes no term. Which classes do lift is decided as follows.
-Let $\bar w$ be the class of the characteristic vector: it is the unique class with $b(\bar w,\bar x) = q(\bar x)$ for all $\bar x$, hence $\Orth(q)$-invariant, and $A_{T_\Co} = \generators{\bar w}\perp \bar w^{\perp}$ with $q(\bar w) = \tfrac12$. On $\bar w^{\perp}$, of dimension $10$, the form $q$ is $\F_2$-valued, nondegenerate and of **plus** type: its nonzero singular vectors number $(2^5-1)(2^4+1) = 527$, and $\abs{\Orth(q)} = \abs{\Orth^+_{10}(2)} = 46\,998\,591\,897\,600$ is the order @prop:coble-discriminant-group records. By Witt's theorem for quadratic forms over $\F_2$ that group is transitive on those $527$ vectors.
+Let $\bar w$ be the class of a characteristic vector $w$ of $B$: it is the unique class with $b(\bar w,\bar x)=q(\bar x)$ for all $\bar x$ in the common $\F_2$ reduction, hence $\Orth(q)$-invariant. Since $b(\bar w,\bar w)=w^2/2$ is nonzero modulo $\ZZ$, $A_{T_\Co}=\generators{\bar w}\perp\bar w^\perp$, and $w^2\equiv1\pmod8$ gives $q(\bar w)=w^2/2\equiv1/2\pmod{2\ZZ}$ (taking $w^2=1$). On $\bar w^{\perp}$, of dimension $10$, the form $q$ is $\F_2$-valued, nondegenerate and of **plus** type: its nonzero singular vectors number $(2^5-1)(2^4+1) = 527$, and $\abs{\Orth(q)} = \abs{\Orth^+_{10}(2)} = 46\,998\,591\,897\,600$ is the order @prop:coble-discriminant-group records. By Witt's theorem for quadratic forms over $\F_2$ that group is transitive on those $527$ vectors.
 Now combine the three: Step 1 gives one $\Orth(B)$-orbit of primitive isotropic vectors; $\rho$ is onto; and $\rho$ carries $\Orth(B)$-orbits to $\Orth(q)$-orbits. So the classes $[v/2]$ of primitive isotropic vectors form a single $\Orth(q)$-orbit of isotropic classes, which by the count above is the set of all $527$ nonzero isotropic classes. That is the lifting theorem:
 $$
 \theset{[v/2] : v\in T_\Co \text{ primitive isotropic}} = \theset{\text{the } 527 \text{ nonzero isotropic classes}},
@@ -1368,7 +1368,9 @@ The images $\rho(E(v,k))$ lie in $N$, and $\rho(E(v,k)) = \id\iff k\in \ZZ v + 2
 $$
 \abs{\Orth(q)}/\abs{\Stab_{\Orth(q)}(c)} = 527,
 $$
-one per nonzero isotropic class. Since $-\id\in\ker\rho_{T_\Co}$, vectors and lines give the same count.
+one per nonzero isotropic class. Since $-\id\in\ker\rho_{T_\Co}\intersect\Orth^+(B)$ (signature $(2,9)$), vectors and lines give the same count.
+
+*The spinor restriction does not split a fibre.* The preceding computation is for $K=\ker\rho$, whereas $\Gamma_\Co=K\intersect\Orth^+(B)$. Write $B=U_1\perp K$ with $v=e_1$ in the first hyperbolic plane and $K\cong\I_{1,8}$. The isometry $g=\id_{U_1}\oplus(-\id_K)$ fixes $e_1$, is the identity modulo $2$ on both blocks, and is spinor-negative: $\spinornorm_\bR(-\id_K)=-1$ by @lem:minus-identity-spinor-norm at positive index one. Hence $g\in K\intersect\Stab_{\Orth(B)}(e_1)\setminus\Orth^+(B)$. Since $[K:\Gamma_\Co]=2$ and the stabilizer of $e_1$ in $K$ likewise meets both spinor classes, the $K$-orbit and the $\Gamma_\Co$-orbit of $e_1$ have the same cardinality; in fact they coincide, because every vector of the former is reached by an element which can be corrected by $g$ or by the identity. Conjugating this witness within $\rho^{-1}(\Stab(c))$ gives the same conclusion at every liftable class $c$: no $\Gamma_\Co$-class loses an orbit when $\Gamma_\Co$ replaces $K$. The $527$ fibres therefore remain singletons under the actual stable group, not merely under the full discriminant kernel. The exact line and plane witnesses, together with the integral block maps used below, are checked in `computations/reports/coble_integral-lifting-structure.py` and its run.
 
 *Consequences, and where the finite lists sit.* For any group $\Gamma$ with $\ker\rho\iscontainedin\Gamma\iscontainedin\Orth(B)$, the $\Gamma$-orbits of primitive isotropic vectors are in bijection with the $\rho(\Gamma)$-orbits on the $527$ nonzero isotropic classes, the $527$ being **proved in prose only**, with sage-extensions#286 the computation owed. The four finite orbits $135,\,2,\,270,\,120$ are therefore exactly the orbits for $\Gamma = \rho^{-1}(G_\Co)$, where $G_\Co$ is the image of the degree-$2$ parabolic stabilizer of order $\abs{W(E_8)}$ (@prop:polarization-stabilizer-enriques, @prop:gamma-co-heegner-strict), and the computation `computations/reports/coble_gco_orbit-decomposition.py` gives them. The page's stable group is $\Gamma_\Co = \Orth^+(B)\intersect\ker\rho$, whose image is trivial, so its $0$-cusp count is $527$; for $O(B)$ itself it is $1$, the transitivity of @thm:unpolarized-cusps. The four numbers are the count for the *intermediate* group $\rho^{-1}(G_\Co)$, not for $\Gamma_\Co$.
 
@@ -1402,7 +1404,7 @@ Let $B = U\perp U\perp\generators{-1}^{7}$ with isotropic generators $e_1,f_1$ a
 $$ b\bigl([x/2],[y/2]\bigr) = \tfrac{(x,y)_B}{2}\ \mathrm{mod}\ \ZZ, \qquad q\bigl([x/2]\bigr) = \tfrac{(x,x)_B}{2}\ \mathrm{mod}\ 2\ZZ . $$
 $U$ fixes $P$ and $P^{\perp B}/P$ pointwise, so $\rho(U)$ fixes $J$ and $J^{\perp}/J$ pointwise and lies in the unipotent radical of $\Stab_{\Orth(q)}(J)$; the Levi image is $S_3\times S_7$ of order $30240$. The unipotent radical's order $2^{13}$ is read off the block parameters: in the Witt block order $J\oplus J^*\oplus V_6$ of the plus-type ten-space $\bar w^{\perp}$ (matching $P\oplus P^*\oplus D$ on the integral side), its elements are the block matrices with identity diagonal blocks, the free parameters being the $\Hom(J,V_6)$-blocks — $2\times 6$ over $\F_2$, hence $2^{12}$ — and the $J$-valued block, whose two surviving elements are derived from its quadratic equations: a $J$-block map $\bar x\mapsto\bar x + a_1\beta_1 j_1 + a_2\beta_1 j_2 + a_3\beta_2 j_1 + a_4\beta_2 j_2$ (with $\beta_i = \beta(\bar x,j_i)$, $a_i\in\F_2$) preserves $q$ iff $a_1\beta_1 + (a_2+a_3)\beta_1\beta_2 + a_4\beta_2 \equiv 0$ identically — since $q(\bar x+\delta) = q(\bar x)+\beta(\bar x,\delta)$ and $q(\delta) = 0$ on $J$ — which forces $a_1 = a_4 = 0$ and $a_2 = a_3$, leaving exactly the identity and the transvection $\bar x\mapsto\bar x+\beta(\bar x,j_1)j_2+\beta(\bar x,j_2)j_1$. So $2^{12}\cdot 2 = 2^{13}$. The integral generators attain each block: the classes $[w/2]$ of the even sublattice $D^{\mathrm{ev}}$ are exactly the even-weight classes, i.e. all of $V_6$, so the $E_{e_i,w}$ realize the full $\Hom(\generators{j_i},V_6)$ for each $i$, and $\sigma = E_{e_1,e_2}$ realizes the central block. Hence
 $$ \abs{\rho\bigl(\Stab_{\Orth(B)}(P)\bigr)} \;=\; 30240\cdot 2^{13} \;=\; 247\,726\,080 , $$
-and the $119$ verified setwise-stabilizer generators recorded in `computations/reports/coble_plane-half-f2.py` have image of exactly this order, confirming the blockwise attainment: the generators are exhaustive and the computed order $|H|$ is a *consequence* of the structure, not an assumption.
+and the $119$ verified setwise-stabilizer generators recorded in `computations/reports/coble_plane-half-f2.py` have image of exactly this order, confirming the blockwise attainment: the generators are exhaustive and the computed order $|H|$ is a *consequence* of the structure, not an assumption. Independently of that order computation, `computations/reports/coble_integral-lifting-structure-run.txt` checks the Witt Levi blocks, every integral Eichler block, the characteristic-line and $V_6$ forms, and both spinor witnesses used in the fibre argument.
 
 4. **(The index is structural.)** $\bqty{\Stab_{\Orth(q)}(J) : \rho(\Stab_{\Orth(B)}(P))} = 8 = \bqty{\Orth^+(6,2) : S_7} = \bqty{S_8 : S_7}$. Here $J^{\perp}/J$ is seven-dimensional over $\F_2$, spanned by the classes $\bar d_i = [d_i/2]$, and carries the descended quadratic form ($J$ is totally isotropic and $b(J,J^{\perp}) = 0$, so $q(x+j) = q(x)$). The characteristic class is $\bar w' = [w/2]$ with $w = \sum_i d_i$: $B(w,w) = -7$, so $q(\bar w') = -\tfrac72 \equiv \tfrac12$ and — the point the bilinear normalization settles — $b(\bar w',\bar w') = -\tfrac72 \equiv \tfrac12 \neq 0$: the characteristic line is **not** in the bilinear radical. Its canonical orthogonal complement is
 $$ V_6 \definedas (\bar w')^{\perp} \cap J^{\perp}/J = \theset{\text{even-weight classes } \textstyle\sum c_i \bar d_i : \sum c_i \equiv 0 \pmod 2} , $$
@@ -1464,7 +1466,7 @@ $$
 $$
 \frac{\abs{\Orth(q)}}{\abs{\rho(S)}} = \frac{46\,998\,591\,897\,600}{89\,181\,388\,800} = 527 = 527\,c ,
 $$
-$\Gamma_\Co$ has $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class --- computed here rather than asserted.
+$\Gamma_\Co$ has $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class --- a page proof, with the public lattice-orbit computation remaining sage-extensions#286.
 :::
 
 ::: {.proof}
@@ -1508,12 +1510,12 @@ $$
 
 2. the liftable order-$4$ isotropic subgroups are the $\Orth(q_{T_\Co})$-orbit of $J$, of size $23\,715$, which is the total the five sizes $1575, 270, 9450, 3780, 8640$ of @sec-open-problems sum to;
 
-3. hence $\fco$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps for $\Gamma_\Co$, one fibre of eight over each liftable $J$.
+3. hence $\fco$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps for $\Gamma_\Co$, one fibre of eight over each liftable $J$: a page proof, with the public lattice-orbit computation remaining sage-extensions#286.
 :::
 
 ::: {.proof}
 
-Everything is finite linear algebra over $\F_2$: $T_\Co = B(2)$ with $B$ unimodular, so $A_{T_\Co} = B/2B\cong\F_2^{11}$ with $q(x) = \tfrac12(x,x)_B \bmod 2$, and the discriminant action of $g\in\Orth(B)$ is $g\bmod 2$.
+Everything is finite linear algebra over $\F_2$: $T_\Co = B(2)$ with $B$ unimodular, so $A_{T_\Co} = B/2B\cong\F_2^{11}$. Since the coordinates are in the unscaled $B$, the norm-valued discriminant form is $q([x/2])=B(x,x)/2\pmod{2\ZZ}$; on the exponent-two complement it takes the $\F_2$ values used by the matrix computation. The discriminant action of $g\in\Orth(B)$ is $g\bmod 2$.
 
 The record is `computations/reports/coble_plane-half-f2.py` and its run.
 It realises $A_{T_\Co}\cong B/2B$ by masks, builds $G = \Orth(q)$ as a matrix group over $\GF(2)$ from the orthogonal group's four generators and verifies $\abs{G} = 46\,998\,591\,897\,600 = \abs{\Orth(q)}$; it reduces the $119$ lattice generators of $\Stab_{\Orth(B)}(P)$, each of which the companion record `computations/reports/coble_plane-half.py` verifies to be an isometry of $B$ preserving $P$, to matrices over $\GF(2)$ and forms $H$, with $\abs{H} = 247\,726\,080$; it presents $J$ to $\Stab(G,J,\mathrm{OnSubspacesByCanonicalBasis})$ as its canonical-basis matrix, obtaining $\abs{\Stab} = 1\,981\,808\,640$, and to $\mathrm{Orbit}(G,J,\cdot)$, obtaining $23\,715$ with
@@ -1530,7 +1532,7 @@ By the index $1$ of @sec-cusp-lifting, two primitive isotropic vectors of $T_\Co
 The incidence matrix of $0$-cusps with plane classes therefore has one row for each of the $527$ nonzero isotropic classes and one column for each of the $23\,715$ plane classes, its entry being $1$ exactly when the class is one of the three in $J$; each column has three entries, and the row sums are the number of plane classes through a given $0$-cusp.
 :::
 
-What is left open here is only the five-way refinement of the $23\,715$ under the smaller group, and the convention check above: what the call must return is the orbit decomposition of the $528$ isotropic classes' order-$4$ isotropic subgroups under the acting group, with the stabilizer of a representative of each and the index $[\Stab_{\Orth(q)}(J) : \rho(\Stab_{\Orth(B)}(P))]$ per orbit.
+The public lattice computation remains sage-extensions#286. It is additional owner evidence for the page's $527$ and $189\,720$ page proofs and must also supply the five-way refinement of the $23\,715$ under the smaller group: the orbit decomposition of the $528$ isotropic classes' order-$4$ isotropic subgroups under the acting group, with a representative stabilizer of each orbit. The five published sizes are not inferred from the integral fibre theorem.
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
 

@@ -226,7 +226,7 @@ and consequently $K\subseteq\gent$: the group $\gent$ is the full preimage in $\
 
 ::: {.proof}
 
-The index is the degree of $\fen\to\fttz$ [@AEGS25 Lem. 2.8], printed there as $2^7\cdot 17\cdot 31$ with the reference to [@Ste95a, Rem. 2.12].
+The index is the degree of the forgetful map $\fen\to F_{(10,10,0)}$ [@AEGS25 Lem. 2.8], printed there as $2^7\cdot 17\cdot 31$ with the reference to [@Ste95a, Rem. 2.12].
 The right-hand index is finite and computable: $\abs{\Orth(A_{\ten},q_{\ten})} = 46\,998\,591\,897\,600$ and, by @prop:gamma-en-two-gluing, $\rho(\gent)$ is the $\gamma$-transport of the image of $\Stab_{\Orth(\sen)}(h)$, which is $\abs{W(E_8)} = 696\,729\,600$ by @prop:polarization-stabilizer-enriques and @thm:coble-heegner-finite-orbits; the quotient is $2^7\cdot17\cdot31$.
 For any subgroup the two indices are related by the kernel:
 $$
