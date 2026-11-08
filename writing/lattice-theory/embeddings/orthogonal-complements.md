@@ -177,13 +177,14 @@ $$
 D(P)^{\perp}/D(P)=H/(L+N_V).
 $$
 
-The subgroup $D(P)$ is determined by $V$ alone and is totally isotropic: since $L\cap V=P$ and $N_V\subseteq V$, the map $N_V\to A_L$ has kernel $N_V\cap L=P$, so
+The subgroup $D(P)$ is the image of $N_V$ in the ambient group $A_L=N/L$, so it is the subquotient
 $$
-D(P)=N_V/L\cong N_V/P,
+D(P)=\frac{N_V+L}{L}\cong\frac{N_V}{N_V\cap L}=\frac{N_V}{P},
 \qquad
 \cardinality{D(P)}=[N_V:P],
 $$
-and every class of $D(P)$ has a representative in the totally isotropic subspace $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even, $q_{A_L}$ vanishes there as well.
+the middle isomorphism being Noether's, with $N_V\cap L=N\cap V\cap L=P$ because $L\cap V=P$.
+The subgroup is determined by $V$ alone, and it is totally isotropic: every class of $D(P)$ has a representative in the totally isotropic subspace $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even, $q_{A_L}$ vanishes there as well.
 This is the isotropy that makes $D(P)^{\perp}/D(P)$ a quadratic subquotient, and it is a property of $P$ alone.
 
 :::
@@ -225,7 +226,7 @@ Then:
 
 ::: {.proof}
 
-*Item 1.* For $m\in M$ the value $\beta_{Q_{\bQ}}(y,\bar m)$ is $\beta_{L_{\bQ}}(\tilde y,m)$, because $\tilde y$ represents $y\in W/V$ and $\beta_{L_{\bQ}}$ vanishes on $V$ in either argument; so the hypothesis $y\in Q^{\#}$ gives $\beta_{L_{\bQ}}(\tilde y,M)\subseteq\bZ$.
+*Item 1.* For $m\in M$ the value $\beta_{Q_{\bQ}}(y,\bar m)$ is $\beta_{L_{\bQ}}(\tilde y,m)$, because $\tilde y$ represents $y\in W/V$ with $m\in M\subseteq W$, and on the restricted form of $W$ the subspace $V$ satisfies $\beta_{L_{\bQ}}(V,V)=0$ and $\beta_{L_{\bQ}}(W,V)=0$, so replacing $\tilde y$ by another lift in $W$ changes it by an element of $V$ and does not change the value; the hypothesis $y\in Q^{\#}$ therefore gives $\beta_{L_{\bQ}}(\tilde y,M)\subseteq\bZ$.
 
 *Item 2.* By item 1 the functional $\ell\mapsto\beta_{L_{\bQ}}(\tilde y,\ell)$ is integral on $M$, so its reduction modulo $\bZ$ vanishes on $M$ and it descends to a functional $\bar\lambda\colon L/M\too\bQ/\bZ$.
 By @lem:isotropic-reduction-pairing choose $u\in V$ with $\theta(u)\equiv-\bar\lambda$, that is $\beta_{L_{\bQ}}(u,\ell)\equiv-\beta_{L_{\bQ}}(\tilde y,\ell)\pmod{\bZ}$ for all $\ell\in L$; then $\tilde y+u\in N$.
@@ -296,9 +297,14 @@ $$
 
 ::: {.proof}
 
-The prescription $\Phi(\bar a)=\beta(a,\cdot)|_D$ is well defined because $\beta(D^{\perp},D)=0$, and it is additive.
-Its kernel is $D^{\perp}$ by definition of $D^{\perp}$, so $\Phi$ is injective.
-For surjectivity, let $\lambda\colon D\too\bQ/\bZ$ be a homomorphism; since $\bQ/\bZ$ is a divisible group, $\lambda$ extends to a homomorphism $\Lambda\colon A\too\bQ/\bZ$, and nondegeneracy of $\beta$ on the finite group $A$ provides $a\in A$ with $\Lambda=\beta(a,\cdot)$.
+The prescription
+$$
+\Psi\colon A\longrightarrow\Hom_{\bZ\text{-}\mathbf{Mod}}(D,\bQ/\bZ),
+\qquad
+\Psi(a)=\beta(a,\cdot)|_D,
+$$
+is additive, and its kernel is $D^{\perp}$ by the definition of $D^{\perp}$; write $\Phi\colon A/D^{\perp}\to\Hom(D,\bQ/\bZ)$ for the induced map on the quotient, which is therefore well defined and injective.
+For surjectivity, let $\lambda\colon D\too\bQ/\bZ$ be a homomorphism; since $\bQ/\bZ$ is a divisible group, $\lambda$ extends to a homomorphism $\Lambda\colon A\too\bQ/\bZ$, and nondegeneracy of $\beta$ on the finite group $A$ provides $a\in A$ with $\Lambda=\beta(a,\cdot)$, that is $\Phi(\bar a)=\lambda$.
 Hence $\Phi$ is an isomorphism and $\cardinality{A/D^{\perp}}=\cardinality{D^{\vee}}=\cardinality{D}$.
 
 Since $D\subseteq D^{\perp}$, the quotient $D^{\perp}/D$ is defined and
@@ -341,11 +347,17 @@ Finally $\varphi_P$ is natural in the pair $(L,P)$: for $g\in\Orth(L)$ the isome
 $$
 \begin{aligned}
 A_Q &\xrightarrow{\ \varphi_P\ } & D(P)^{\perp}/D(P)\\
-\downarrow{\bar g_Q} & & \downarrow{\bar g}\\
+\downarrow{\bar g_Q} & & \downarrow{\bar g_D}\\
 A_{gQ} &\xrightarrow{\ \varphi_{gP}\ } & D(gP)^{\perp}/D(gP)
 \end{aligned}
 $$
-commutes, where $\bar g_Q$ is the isometry of $Q$ induced by $g$.
+commutes, where $\bar g_Q$ is the isometry of $Q$ induced by $g$ and $\bar g_D$ is the map of subquotients
+$$
+\bar g_D\colon D(P)^{\perp}/D(P)\longrightarrow D(gP)^{\perp}/D(gP),
+\qquad
+\bar g_D\qty(c+D(P))=\rho_L(g)(c)+D(gP),
+$$
+which is well defined because $\rho_L(g)$ preserves $\beta_{A_L}$ and carries $D(P)$ onto $D(gP)$; for $g\in\Stab_{\Orth(L)}(P)$ it is an automorphism of $D(P)^{\perp}/D(P)$.
 Setting $Q_0\definedas\rho_L(\Orth(L))$, naturality gives the containment
 $$
 \rho_L\qty(\Stab_{\Orth(L)}(P))\subseteq\Stab_{Q_0}\qty(D(P)),
@@ -399,14 +411,22 @@ $$
 Then:
 
 1. the image of $\Stab_{\Orth(L)}(P)$ in $\Orth(A_L)$ is exactly $\rho_L(\Stab_{\Orth(L)}(P))$, and it is contained in $\Stab_{Q_0}(D(P))$; it consists of those elements of the finite stabilizer that are realised by an integral isometry preserving $P$;
-2. the induced isometry of $A\definedas A_Q$ is $\varphi_P^{-1}\circ\rho_L(g)|_{D(P)^{\perp}}\circ\varphi_P$, so the homomorphism $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ has the same kernel as $\Stab_{\Orth(L)}(P)\too\Aut(D(P)^{\perp}/D(P))$, namely $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$;
-3. equality $\rho_L(\Stab_{\Orth(L)}(P))=\Stab_{Q_0}(D(P))$ is a lifting statement about the integral stabilizer and is **not** proved here; neither is injectivity of the action in item 2.
+2. for $g\in\Stab_{\Orth(L)}(P)$ let $\bar g_D$ be the automorphism of $D(P)^{\perp}/D(P)$ induced by $\rho_L(g)$ through the representative action
+   $$
+   \bar g_D\qty(c+D(P))=\rho_L(g)(c)+D(P),
+   $$
+   which is well defined because $\rho_L(g)$ carries $D(P)$ to $D(gP)=D(P)$ and preserves $\beta_{A_L}$, hence preserves $D(P)^{\perp}$; then the isometry of $A\definedas A_Q$ induced by $g$ is
+   $$
+   \bar g_Q=\varphi_P^{-1}\circ\bar g_D\circ\varphi_P,
+   $$
+   so $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ has the same kernel as $\Stab_{\Orth(L)}(P)\too\Aut(D(P)^{\perp}/D(P))$, namely $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$;
+3. equality $\rho_L(\Stab_{\Orth(L)}(P))=\Stab_{Q_0}(D(P))$ is a lifting statement about the integral stabilizer and is **not** proved here; neither is injectivity of the map in item 2.
 :::
 
 ::: {.proof}
 
 Item 1 is the containment of @thm:isotropic-reduction-discriminant read as a statement about the image, together with the description of $\rho_L$ as the map that records the action on $A_L$.
-For item 2, the commuting square gives $\varphi_P\circ\bar g_Q=\rho_L(g)\circ\varphi_P$ for $g\in\Stab_{\Orth(L)}(P)$; since $\varphi_P$ is an isomorphism and $\rho_L(g)$ preserves $D(P)$ and hence $D(P)^{\perp}$, this is the displayed formula, and it identifies the two kernels.
+For item 2, the commuting square of @thm:isotropic-reduction-discriminant states $\bar g_D\circ\varphi_P=\varphi_{gP}\circ\bar g_Q$; when $g\in\Stab_{\Orth(L)}(P)$ one has $gP=P$ and $gQ=Q$, so it reads $\bar g_D\circ\varphi_P=\varphi_P\circ\bar g_Q$, that is the displayed formula, and composing with $\varphi_P$ identifies the two kernels.
 For item 3, the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ is $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$ by item 2, and it contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel of @def:discriminant-rep: those isometries act trivially on $A_L$, hence on every subgroup and subquotient of it, and hence on $A_Q$ by item 2.
 So the action in item 2 is faithful exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and in particular it fails to be faithful whenever $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
 Equality in item 3 is a different statement again: it would require an integral isometry preserving $P$ for each element of the finite stabilizer of $D(P)$ in $Q_0$, whereas the commuting square constrains only those elements that already have an integral lift.
