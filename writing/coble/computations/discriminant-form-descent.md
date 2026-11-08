@@ -48,17 +48,24 @@ $v$ primitive means $v/\div_L(v) \in L^\sharp$, so $v^*$ is a class, and $q_L(v^
 An isometry preserves $\beta$, hence $\div_L(gv) = \div_L(v)$, and it passes to $A_L$ because it maps $L$ to $L$; so $(gv)^* = \rho_{L,q}(g)(v^*)$.
 :::
 
-So the class is an invariant of the orbit, and the orbits of $\Gamma\leq\Orth(L)$ map onto the orbits of $\rho_{L,q}(\Gamma)$ on the *finite* set $\mathcal C(L)$.
-Everything that can still differ inside a fibre is the subject of the next section.
+Define the attained subset
+$$ \mathcal C_{\mathrm{prim}}(L) \definedas \theset{[v/\div_L(v)]\in\mathcal C(L)\st v\in L^{\mathrm{prim}}[0]}. $$
+Then the class is an invariant of the orbit, and attained $\Gamma\leq\Orth(L)$-orbits map onto the corresponding $\rho_{L,q}(\Gamma)$-orbits inside $\mathcal C_{\mathrm{prim}}(L)$. This is not an assertion that every isotropic class lifts. Surjectivity to $\mathcal C(L)$ requires a separate lift theorem; the general fibre theorem below is stated only for a fixed integral orbit and its attained data.
 
 ## The integral orbit-fibre formula {#sec-descent-fibre}
 
 For a primitive isotropic plane $P\subset L$, define its discriminant image intrinsically by
 $$ D(P)\definedas\im\bigl((P_{\QQ}\cap L^\sharp)\to A_L\bigr). $$
-For a flag $x=(X_1\subsetneq\cdots\subsetneq X_r)$ of primitive isotropic sublattices, put $D(x)=(D(X_1),\dots,D(X_r))$. A line has $D(\ZZ v)=[v/\div(v)]$, so this specializes to @def:descent-class. The integral object must be fixed before any finite quotient is taken.
+For a flag $x=(X_1\subsetneq\cdots\subsetneq X_r)$ of primitive isotropic sublattices, put $D(x)=(D(X_1),\dots,D(X_r))$. Keep the actual objects and their stabilizers distinct:
+
+- for a primitive isotropic **vector** $v$, $D(v)=[v/\div_L(v)]$ is one class, with the point stabilizer $\Stab_Q(D(v))$;
+- for an unoriented **line** $X=\ZZ v$, $D(X)=\langle[v/\div_L(v)]\rangle$ is a cyclic subgroup, with $\Stab_Q(D(X))$ possibly smaller than the point stabilizer—outside the two-torsion case it does not generally contain the map sending $[v/\div_L(v)]$ to its negative;
+- for a plane or a flag, the data are the corresponding subgroups or chains of subgroups, again with matching stabilizers.
+
+The integral object must be fixed before any finite quotient is taken, and the exponent-two examples are not used in the general formulas.
 
 ::: {.theorem #thm:descent-double-coset title="The orbit fibre over one discriminant datum: the actual double cosets"}
-Let $L$ be even and nondegenerate, and let $Q=\rho_{L,q}(\Orth(L))$. Choose a full $\Orth(L)$-orbit $\mathcal X=\Orth(L)\cdot x$ of a primitive isotropic flag $x$, and let $D=D(x)$. Put
+Let $L$ be even and nondegenerate, and let $Q=\rho_{L,q}(\Orth(L))$. Fix $x$, either a primitive isotropic vector or a primitive isotropic flag, and define $D(x)$ accordingly: its individual class, or its chain of cyclic subgroups. Choose the full integral orbit $\mathcal X=\Orth(L)\cdot x$, and let $D=D(x)$. Put
 $$ F=\Stab_Q(D),\qquad \mathcal G_D=\rho_{L,q}^{-1}(F). $$
 If the orbit-fibre $\mathcal F_{\mathcal X}(D)=\{y\in\mathcal X:D(y)=D\}$ is nonempty, then $\mathcal G_D$ acts transitively on it. Thus $\mathcal F_{\mathcal X}(D)$ is the single orbit $\mathcal G_D\cdot x$, even when $D(x)$ has several different lifts in the finite data.
 
@@ -84,14 +91,18 @@ The two input groups are genuinely different: $F$ stabilizes a finite datum, whe
 
 ## Spinor restriction {#sec-descent-spinor}
 
-::: {.proposition #prop:descent-spinor-fibre title="When a spinor-restricted group has the same fibre"}
-Put $\Gamma^+=\Gamma\cap\Orth^+(L)$, where $\Orth^+(L)$ is the normalized real spinor kernel. Suppose that $\Stab_{\mathcal G_D\cap\Gamma}(x)$ contains a spinor-negative element. Then $\Gamma$ and $\Gamma^+$ have exactly the same orbits on $\mathcal F_{\mathcal X}(D)$. The criterion is transported by the same integral group: a conjugate of such a witness supplies the required element at every point of the fibre.
+::: {.proposition #prop:descent-spinor-fibre title="Orbit-by-orbit spinor restriction"}
+Put $\Gamma^+=\Gamma\cap\Orth^+(L)$, where $\Orth^+(L)$ is the normalized real spinor kernel, and fix one $\Gamma$-orbit $\mathcal O=\Gamma x\subseteq\mathcal F_{\mathcal X}(D)$. If $\Stab_{\mathcal G_D\cap\Gamma}(x)$ contains a spinor-negative element, then $\mathcal O$ is still one $\Gamma^+$-orbit.
 
-Consequently the double-coset formula of @thm:descent-double-coset is unchanged on passing from $\Gamma$ to $\Gamma^+$, with $H$ replaced by $\rho_{L,q}(\Gamma^+)$ where appropriate.
+Consequently, when this hypothesis holds at a point $x$, the $\Gamma^+$-orbits inside $\mathcal G_D\cdot x$ are computed by the *unreduced* double cosets
+$$ (\Gamma^+\cap\mathcal G_D)\bigl\backslash\mathcal G_D\bigl/\Stab_{\mathcal G_D}(x). $$
+If $K=\ker\rho_{L,q}\subseteq\Gamma^+$, these reduce to $(H^+\cap F)\backslash F/S$ with $H^+=\rho_{L,q}(\Gamma^+)$. That last simplification is *not* allowed merely because $K\subseteq\Gamma$: $\Gamma^+$ need not contain $K$.
 :::
 
 ::: {.proof}
-For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $\tau g\in\Gamma^+$ also takes $x$ to $y$. At $y=gx$, use $g\tau g^{-1}$; it is still spinor-negative and stabilizes $y$. Thus the required witness exists at every point of the fibre. Selecting an arbitrary isometry taking a fixed model vector $e$ to a particular vector $v$ is allowed; the witness must not be restricted to the stabilizer of the class of $v$ alone.
+For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$; this still says nothing about another $\Gamma$-orbit within the same $\mathcal G_D$-fibre. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
+
+The displayed formula is @thm:descent-double-coset applied with $\Gamma^+$ substituted for $\Gamma$. Only when $K\subseteq\Gamma^+$ does its final reduction modulo $K$ apply; replacing $H$ by $H^+$ without this containment would discard the $\Gamma^+$-ineffective double cosets.
 :::
 
 ## Flags: why containment is not enough {#sec-descent-flags}
