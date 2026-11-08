@@ -130,6 +130,218 @@ Then the flags over $(J,C)$ are governed by
 $$ (\Gamma\cap\rho^{-1}(F_{J,C}))\bigl\backslash\rho^{-1}(F_{J,C})\bigr/\Stab_{\rho^{-1}(F_{J,C})}(P,L). $$
 If $K\subseteq\Gamma$, this reduces to the corresponding double coset with $H\cap F_{J,C}$ on the left and $\rho(\Stab_{\Orth(L)}(P)\cap\Stab_{\Orth(L)}(L))$ on the right. A table saying only that $C$ is contained in $J$ proves containment. The extra mathematical content is transitivity of the integral plane stabilizer on the primitive lines in a fixed discriminant subgroup; that supplies the flag-fibre alignment while the plane is held fixed.
 
+## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}
+
+The finite data of a commensurability class give the integral stabilizer exactly, but they give its discriminant image only at a modulus refined enough to make the discriminant representation descend.
+This section proves that refinement, states the finite objects and the map, and identifies what the alternative route through the discriminant isometries of the orbit lattices does and does not supply.
+
+::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
+
+Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$, let $M\subseteq V$ be an integral nondegenerate lattice, that is $M\subseteq M^\sharp$, and let $L\subseteq M$ be a full sublattice.
+Let $G\leq\Orth(V)$ be a subgroup preserving $M$, so $gM=M$ for every $g\in G$.
+Write $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$ for the reduction modulo $mM$ and $\bar L_m\definedas L/mM$ for the image of $L$ in $M/mM$; put
+$$ \bar K_m\definedas\ker\pi_m,\qquad \bar H_m\definedas\Stab_{\pi_m(G)}(\bar L_m). $$
+Because $L\subseteq M$ one has $M\subseteq L^\sharp$, and the two quotients
+$$ M/L,\qquad L^\sharp/M $$
+are finite abelian groups; put
+$$ e_1\definedas\exp(M/L),\qquad e_2\definedas\exp(L^\sharp/M), $$
+so that $e_1$ is the least positive integer with $e_1M\subseteq L$ and $e_2$ the least with $e_2L^\sharp\subseteq M$.
+The $\bZ$-module $L^\sharp/L=A_L$ carries the discriminant form of @def:discriminant, and $\rho_L$ denotes the discriminant representation of @def:discriminant-rep.
+:::
+
+::: {.lemma #lem:orbit-permutation-not-module-action title="The action on the orbit of submodules is not the module action"}
+
+Let $m\geq1$ with $mM\subseteq L$, let $\Sigma_m\definedas\pi_m(G)\bar L_m$ be the orbit of $\bar L_m$ in $M/mM$ under the finite image $\pi_m(G)$, and let
+$$ \sigma_m\colon G\too\Sym(\Sigma_m) $$
+be the action on that orbit, with kernel $\kappa_m\definedas\ker\sigma_m$.
+Then:
+
+1. $\bar K_m\subseteq\kappa_m$;
+2. if $L=M$, then $\bar L_m=M/mM$ is the whole module, $\Sigma_m$ is a single point, and $\kappa_m=G$ for every $m$, whereas $\bar K_m=\ker\pi_m$ is a proper subgroup of $G$ as soon as $\pi_m$ is nontrivial;
+3. $\sigma_m$ neither proves $\bar K_m\subseteq\ker\rho_L$ nor defines a map to $\Orth(A_L)$.
+:::
+
+::: {.proof}
+
+An element of $\bar K_m$ acts trivially on $M/mM$, hence fixes every element of $\Sigma_m$, which is item 1.
+
+For item 2, if $L=M$ then $\bar L_m=L/mM=M/mM$ is the whole of $M/mM$, whose orbit is itself; so $\Sigma_m$ is a single point, $\sigma_m$ is trivial, $\kappa_m=G$, and $\bar K_m$ is the congruence subgroup modulo $mM$, a proper subgroup of $G$ when $\pi_m$ is nontrivial.
+
+Item 3 is then immediate in general and follows from an explicit element for the Enriques lattice: let $N=T_\En$ of @sec-lattices, $L=M=N$ and $m=2$, so that $\kappa_2=\Orth(N)$ by item 2; the isometry interchanging $e'\leftrightarrow f'$ in the summand $U(2)$ and fixing $U\oplus E_8(2)$ is integral and carries the class of $e'/2$ to the class of $f'/2$, so it acts nontrivially on $A_N$ while lying in $\kappa_2$.
+Hence an element of $\kappa_m$ need not act trivially on $A_L$, and passing to the permutation image loses the module action that $\Phi_m$ is defined on.
+:::
+
+::: {.lemma #lem:congruence-stabilizer-preimage title="The integral stabilizer is an exact residue preimage"}
+
+Let $m\geq1$ satisfy $mM\subseteq L$.
+Then $\bar L_m$ is a submodule of $M/mM$, the finite group $\pi_m(G)$ acts on $M/mM$, and
+$$ \Stab_G(L)=G\intersect\pi_m^{-1}\bigl(\bar H_m\bigr). $$
+:::
+
+::: {.proof}
+
+Since $mM\subseteq L\subseteq M$, the submodule $\bar L_m$ is defined.
+Both inclusions are checked separately.
+If $gL=L$, then $\pi_m(g)\bar L_m=\overline{gL}=\bar L_m$, so $\Stab_G(L)\subseteq G\intersect\pi_m^{-1}(\bar H_m)$.
+
+Conversely let $g\in G$ with $\pi_m(g)\bar L_m=\bar L_m$, that is $gL+mM=L$.
+Since $mM\subseteq L$ one has $L+mM=L$, so the equality reads $gL\subseteq L$; and $gL\subseteq M$ because $gM=M$ and $L\subseteq M$.
+A $\bQ$-linear automorphism of $V$ carries lattices to lattices of covolume scaled by $\abs{\det g}$, and $\det g=\pm1$ for an isometry of a nondegenerate form, so $[L:gL]=\abs{\det g}=1$ and $gL=L$.
+:::
+
+::: {.lemma #lem:congruence-kernel-discriminant title="The congruence kernel acts trivially on the dual lattice modulo the lattice"}
+
+Let $m\geq1$ satisfy $mM\subseteq L$, and let $f\geq1$ satisfy $fL^\sharp\subseteq M$ and $\frac{m}{f}M\subseteq L$.
+Then $\bar K_m\subseteq\ker\rho_L$.
+:::
+
+::: {.proof}
+
+Let $g\in\bar K_m$ and let $\theta\definedas\frac{1}{m}\qty(g-\id)$ be the induced $\bQ$-linear endomorphism of $V$.
+The congruence $g\equiv\id\pmod{mM}$ says $(g-\id)(M)\subseteq mM$, hence $\theta(M)\subseteq M$.
+
+Let $y\in L^\sharp$.
+Then $fy\in M$, so $\theta(fy)\in M$ and, by $\bQ$-linearity of $\theta$,
+$$ \theta(y)=\frac{1}{f}\theta(fy)\in\frac{1}{f}M, $$
+hence
+$$ (g-\id)(y)=m\theta(y)\in\frac{m}{f}M\subseteq L. $$
+So $g$ acts trivially on the classes of $L^\sharp$ modulo $L$.
+It remains to see that $g$ acts on $A_L$ at all: by @lem:congruence-stabilizer-preimage (applied to $mM\subseteq L$) one has $gL=L$, and an isometry carrying $L$ to itself carries $L^\sharp=\theset{y\in V\st\beta(y,L)\subseteq\bZ}$ to itself; so $\rho_L(g)$ is defined and, by the display, equals the identity.
+:::
+
+::: {.corollary #cor:stabilizer-modulus title="A sufficient modulus, and the least one this argument gives"}
+
+Let $m\geq1$ satisfy $mM\subseteq e_2L$.
+Then $\bar K_m\subseteq\Stab_G(L)\intersect\ker\rho_L$.
+The integers with $mM\subseteq e_2L$ are exactly the multiples of $\exp(M/e_2L)$, and $e_1e_2$ is one of them.
+In particular, if $L=M$, then $e_1=1$ and the modulus $e_2=\exp(A_M)$ satisfies $e_2M\subseteq e_2L$; reduction modulo $\exp(A_M)\cdot M$ therefore determines the action of $\Orth(M)$ on the discriminant module $A_M$.
+:::
+
+::: {.proof}
+
+By hypothesis $mM\subseteq e_2L\subseteq L$, so the first hypothesis of @lem:congruence-kernel-discriminant holds; the second is its hypothesis $e_2L^\sharp\subseteq M$, and the third is $\frac{m}{e_2}M\subseteq L$, which is $mM\subseteq e_2L$.
+The set $\theset{m\geq1\st mM\subseteq N}$ for a lattice $N$ with $N\subseteq M$ is the set of multiples of $\exp(M/N)$; take $N=e_2L$.
+Finally $e_1e_2M=e_2\qty(e_1M)\subseteq e_2L$ because $e_1M\subseteq L$, and for $L=M$ one has $e_1=1$.
+:::
+
+::: {.theorem #thm:stabilizer-discriminant-image title="The discriminant image of an integral stabilizer, computed from one finite quotient"}
+
+Let $m\geq1$ satisfy $mM\subseteq e_2L$, so that @cor:stabilizer-modulus gives $\bar K_m\subseteq\Stab_G(L)\intersect\ker\rho_L$.
+Let $\bar H_m=\Stab_{\pi_m(G)}(\bar L_m)$ be the orbit-point stabilizer of $\bar L_m$ inside the finite image $\pi_m(G)\leq\Aut_{\bZ}(M/mM)$ of the module action: the stabilizer is taken in that image, not in $\Aut_{\bZ}(M/mM)$ and not in the permutation image of $\pi_m(G)$ on the orbit of $\bar L_m$.
+Then:
+
+1. $\Stab_G(L)=G\intersect\pi_m^{-1}(\bar H_m)$, so the integral stabilizer is the exact preimage of the finite orbit-point stabilizer;
+2. the assignment
+$$ \Phi_m\colon\bar H_m\too\Orth(A_L,q_L),\qquad \pi_m(g)\longmapsto\rho_L(g) $$
+is a well-defined group homomorphism, with kernel $\pi_m(\Stab_G(L)\intersect\ker\rho_L)$;
+3. $\Phi_m(\bar H_m)=\rho_L(\Stab_G(L))$; and if $\bar h_1,\dots,\bar h_r$ generate $\bar H_m$ and $g_i\in G$ is any lift of $\bar h_i$, then
+$$ \rho_L(\Stab_G(L))=\generators{\rho_L(g_1),\dots,\rho_L(g_r)}\leq\Orth(A_L,q_L); $$
+4. every lift $g_i$ is an integral self-isometry of $L$, so the endomorphism case of the discriminant morphism applies to $\restrictionof{g_i}{L}\colon L\to L$.
+
+The construction therefore returns the exact subgroup $\rho_L(\Stab_G(L))$ from finitely many objects: the lattice $M$, the submodule $\bar L_m$ of $M/mM$, the finite group $\pi_m(G)$, and one lift per generator of the finite stabilizer.
+No generating family of $\Stab_G(L)$ itself is materialized.
+:::
+
+::: {.proof}
+
+Item 1 is @lem:congruence-stabilizer-preimage applied at the modulus $m$.
+
+For item 2, let $g\in G$ with $\pi_m(g)\in\bar H_m$; by item 1 $g\in\Stab_G(L)$, so $\rho_L(g)$ is defined.
+If $g'\in G$ is another lift of the same element, then $\pi_m(g^{-1}g')=\id$, that is $g^{-1}g'\in\bar K_m$, and $\bar K_m\subseteq\ker\rho_L$ by @cor:stabilizer-modulus, so $\rho_L(g)=\rho_L(g')$.
+Multiplicativity of $\rho_L$ gives that of $\Phi_m$, and $\Phi_m(\bar h)=\id$ holds exactly when the coset $\pi_m^{-1}(\bar h)\intersect\Stab_G(L)$ meets $\ker\rho_L$, which is the displayed kernel.
+
+Item 3 follows from item 1: $\rho_L(\Stab_G(L))=\rho_L(\pi_m^{-1}(\bar H_m)\intersect G)=\Phi_m(\bar H_m)$, and $\bar H_m$ is generated by the $\bar h_i$, so its image is generated by the $\rho_L(g_i)$.
+
+For item 4, use item 1: an element of $G$ preserving $L$ restricts to an isometry $L\to L$ of lattices, and $\rho_L$ of @def:discriminant-rep is that restriction's discriminant morphism.
+:::
+
+The congruence route uses only $\pi_m$ and $\rho_L$ as they are defined: no element of $\Stab_G(L)$ beyond the lifts is formed, and the modulus is the one supplied by @cor:stabilizer-modulus rather than the exponent $e_1$ of $M/L$ alone.
+In the vocabulary of the finite commensurability quotient, $M$ is the invariant module, $\bar L_m$ is the orbit point, $\bar H_m$ is its stabilizer in the image of the module action $G\to\Aut_{\bZ}(M/mM)$, and the modulus is the parameter of that construction: $e_1$ is the parameter that makes the stabilizer exact, and a multiple of $\exp(M/e_2L)$ is the parameter that also makes its discriminant image exact.
+The module action is needed as a matrix action: by @lem:orbit-permutation-not-module-action the permutation representation on the orbit of $\bar L_m$ has kernel $\kappa_m\supseteq\bar K_m$, which for $L=M$ is all of $G$, and a computation inside that permutation image neither proves $\bar K_m\subseteq\ker\rho_L$ nor defines a map to $\Orth(A_L)$.
+The reason $e_1$ alone does not suffice is exactly @lem:congruence-kernel-discriminant: the congruence acts on $L^\sharp$, where the relevant bound involves $L^\sharp/M$, and not only on $M/L$.
+
+::: {.theorem #thm:discriminant-transport-functor title="The discriminant isometries of the orbit lattices form a functor of the action groupoid"}
+
+Let $\mathcal O=G\cdot L$ be the orbit of $L$ under $G$, regarded as the object set of the translation groupoid $G\ltimes\mathcal O$, whose morphisms $L_0\to L_1$ are the elements $g\in G$ with $gL_0=L_1$.
+For $g\in G$ and a full lattice $L_0\subseteq V$:
+
+1. $(gL_0)^\sharp=g\qty(L_0^\sharp)$, and
+$$ \alpha_g(L_0)\colon A_{L_0}\isoto A_{gL_0},\qquad [y]\longmapsto[gy] $$
+is a well-defined isomorphism of discriminant forms;
+2. $\alpha_{\id}(L_0)=\id$ and $\alpha_{g_1g_2}(L_0)=\alpha_{g_1}(g_2L_0)\circ\alpha_{g_2}(L_0)$;
+3. if $gL_0=L_0$, then $\alpha_g(L_0)=\rho_{L_0}(g)$;
+4. $\alpha_g(L_0)$ is the discriminant morphism of the isometry of lattices $g|_{L_0}\colon L_0\to gL_0$.
+
+Hence $L_0\mapsto A_{L_0}$, $g\mapsto\alpha_g$ is a functor from $G\ltimes\mathcal O$ to the groupoid of discriminant forms with isometries, and the discriminant construction is natural in the lattice variable, not only for self-isometries.
+:::
+
+::: {.proof}
+
+For $y\in(gL_0)^\sharp$ one has $\beta(y,gL_0)\subseteq\bZ$, that is $\beta(g^{-1}y,L_0)\subseteq\bZ$, that is $g^{-1}y\in L_0^\sharp$; so $(gL_0)^\sharp=gL_0^\sharp$, and $gy$ depends only on the class of $y$ modulo $L_0$.
+Form preservation $\beta(gy,gy')=\beta(y,y')$ gives that $\alpha_g(L_0)$ is an isometry of $A_{L_0}$ onto $A_{gL_0}$ for the bilinear forms, and $(gy)^2=y^2$ for the quadratic refinements of @def:discriminant.
+Functoriality is immediate from $g_1(g_2y)=(g_1g_2)y$; for a self-isometry, $\alpha_g(L_0)$ is the map of @def:discriminant-rep; and the description $[y]\mapsto[gy]$ is the dual of the inverse of $g|_{L_0}$, which is the discriminant morphism of that isometry.
+:::
+
+::: {.corollary #cor:orbit-uniform-modulus title="One modulus serves the whole orbit, and the images are conjugate"}
+
+For $L_0\in\mathcal O$ write $e_2(L_0)\definedas\exp(L_0^\sharp/M)$, so that $e_2=e_2(L)$. Let $m\geq1$ with $mM\subseteq e_2(L)L$. Then for every $L_0\in\mathcal O$:
+
+1. $mM\subseteq e_2(L_0)L_0$, so $\bar K_m\subseteq\Stab_G(L_0)\intersect\ker\rho_{L_0}$ and @thm:stabilizer-discriminant-image applies at $L_0$;
+2. $\rho_{L_0}(\Stab_G(L_0))=\Phi_{L_0,m}\bigl(\Stab_{\pi_m(G)}(\bar L_{0,m})\bigr)$;
+3. for $g\in G$, $\rho_{gL_0}(\Stab_G(gL_0))=\alpha_g(L_0)\rho_{L_0}(\Stab_G(L_0))\alpha_g(L_0)^{-1}$, and $\Stab_G(gL_0)=g\Stab_G(L_0)g^{-1}$.
+
+In particular $e_2(L_0)=e_2(L)$ for every $L_0\in\mathcal O$, and the finite quotient $\pi_m(G)$ computes the discriminant image of the stabilizer at every lattice of the orbit at once.
+:::
+
+::: {.proof}
+
+Let $L_0=gL$. Then $L_0^\sharp=gL^\sharp$, so $e_2(L)L_0^\sharp=ge_2(L)L^\sharp\subseteq gM=M$, and $e_2(L_0)\mid e_2(L)$ by minimality; applying the same argument to $g^{-1}$ gives equality.
+Next $mM=gmM\subseteq g\qty(e_2(L)L)=e_2(L)L_0$, which is item 1; item 2 is @thm:stabilizer-discriminant-image at $L_0$.
+For item 3, $\Stab_G(gL_0)=g\Stab_G(L_0)g^{-1}$ is immediate, and @thm:discriminant-transport-functor gives $\rho_{gL_0}(gkg^{-1})=\alpha_g(L_0)\rho_{L_0}(k)\alpha_g(L_0)^{-1}$ for $k\in\Stab_G(L_0)$, since $gkg^{-1}$ acts on $A_{gL_0}$ through $\alpha_g(L_0)$.
+:::
+
+Two statements delimit what this functor supplies, and both follow from the previous results.
+
+*It descends to the finite quotient.*
+If $mM\subseteq e_2L$ and $g,g'\in G$ satisfy $\pi_m(g)=\pi_m(g')$, then $g^{-1}g'\in\bar K_m$; by @cor:orbit-uniform-modulus the hypothesis of @lem:congruence-kernel-discriminant holds at every $L_0\in\mathcal O$, so $g^{-1}g'$ acts trivially on $A_{L_0}$ for every such $L_0$, and $\alpha_g(L_0)=\alpha_{g'}(L_0)$.
+The functor therefore factors through the finite groupoid $\pi_m(G)\ltimes\{\bar L_{0,m}\}$, and the retained finite data are the finite set of submodules $\bar L_{0,m}=L_0/mM$ together with the isomorphisms induced by the elements of $\pi_m(G)$.
+
+*It does not by itself compute the loop group.*
+The loops at $L_0$ in $G\ltimes\mathcal O$ are the elements of $\Stab_G(L_0)$, an infinite group, so the functor evaluates to the image $\rho_{L_0}(\Stab_G(L_0))$ at the single lattice $L_0$ only after those loops are known; transport along an orbit does not decide which words return to $L_0$.
+What the functor adds is that the answer is an invariant of the orbit rather than of the chosen lattice, and that a modulus valid at one orbit point is valid at all of them, which is the next corollary.
+
+The two routes are now comparable on their actual requirements.
+The congruence route needs the lattice $M$, the finite module action $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$, the submodule $\bar L_m$, the stabilizer of $\bar L_m$ inside $\pi_m(G)$, and the modulus refined from $e_1$ to a multiple of $\exp(M/e_2L)$; no element of $\Stab_G(L)$ beyond one lift per generator of $\bar H_m$ is formed, and no lattice of the orbit beyond $M$ and $L$ is needed.
+The functor route works with the isometries of lattices $g|_{L_0}\colon L_0\to gL_0$ for $g$ in a generating set of $G$ and $L_0$ in the orbit $\mathcal O$, whose discriminant morphisms are the $\alpha_g(L_0)$: that is $\abs{\text{letters}}\cdot\abs{\mathcal O}$ maps before any reduction, and a bound of the form $\abs{\text{letters}}+\abs{\mathcal O}$ is not a consequence of functoriality; what the functor gives, together with @lem:congruence-kernel-discriminant, is that $\alpha_g(L_0)$ depends only on the pair $\qty(\pi_m(g),\bar L_{0,m})$, so at most $\abs{\pi_m(G)}\cdot\abs{\bar{\mathcal O}_m}$ maps remain distinct and all of them are read off the same finite module action.
+It also still needs a finite quotient to identify the loops, since the loop group at $L_0$ is the infinite stabilizer.
+So the functor does not replace the refined congruence quotient for computing the image, and the refined congruence quotient does not by itself compare the images at different lattices; @cor:orbit-uniform-modulus is the comparison, and it is proved through the functor.
+
+::: {.proposition #prop:spinor-congruence-obstruction title="The real spinor character does not descend to the congruence quotient in general"}
+
+Let $m\geq1$ with $mM\subseteq e_2L$ and let $\spinornorm_\bR\colon\Orth(V_\bR)\to\bR^\times/(\bR^\times)^2=\theset{\pm1}$ be the normalized real spinor norm of @def:spinor-norm, restricted to $G\leq\Orth(V)$.
+
+1. The composite $\Stab_G(L)\to\theset{\pm1}$, $g\mapsto\spinornorm_\bR(g)$, factors through $\pi_m$ if and only if $\spinornorm_\bR$ is trivial on $\Stab_G(L)\intersect\bar K_m$.
+2. The condition of item 1 fails in general, and it fails for the Enriques lattice at modulus $2$: with $N=T_\En$ of @sec-lattices, $L=M=N$ and $m=2$, the isometry
+$$ \sigma_U=-\id_U\oplus\id_{U(2)}\oplus\id_{E_8(2)}\in\Orth(N) $$
+satisfies $\sigma_U\equiv\id\pmod{2N}$ and $\spinornorm_\bR(\sigma_U)=-1$.
+Consequently two lifts of one element of $\bar H_2$ can carry opposite spinor signs, and no function of the congruence class alone returns the spinor norm of an element of $\Stab_G(L)$.
+3. For the Enriques family the sign is not needed for the primitive isotropic line, plane and flag counts, and that is a consequence of a theorem rather than of a computation at a finite quotient: by @thm:enriques-spinor-orbit-agreement the groups $\Gamma$ and $\Gamma^+=\Gamma\intersect\Orth^+(N)$ have the same orbits on those three families for every $\Gamma\supseteq\ker\rho$, and the proof exhibits for each object of each family a spinor-negative element of $\ker\rho\subseteq\Gamma$ in its stabilizer.
+Those witnesses are elements of $\ker\rho$, so they are invisible to $\rho_N$, and they supply the orbit identity without any spinor character being evaluated.
+They do not make $\spinornorm_\bR$ a function of the congruence class: items 1 and 2 stand unchanged, so the character remains a separate obligation for any use beyond these three families, and neither the witnesses nor @thm:stabilizer-discriminant-image give a factorization of it through $\pi_m$.
+:::
+
+::: {.proof}
+
+Item 1 is the factorization criterion: $\spinornorm_\bR$ restricted to $\Stab_G(L)$ induces a map on the cosets of $\Stab_G(L)\intersect\bar K_m$ exactly when it is constant on each such coset, that is trivial on that kernel.
+
+For item 2, $\sigma_U$ negates $U$ and fixes the other two summands, so $\sigma_U-\id$ is $-2$ on $U$ and zero elsewhere, and $(\sigma_U-\id)(N)\subseteq 2N$ because $2U\subseteq 2N$; that is $\sigma_U\in\bar K_2$.
+Its spinor norm is $\spinornorm_\bR(-\id_U)=[(-1)^1]=-1$ by @lem:minus-identity-spinor-norm, the summand $U$ having positive index one, and the spinor norm of an orthogonal sum is the product of those of the summands.
+The choice $L=M=N$, $m=2$ satisfies $mM\subseteq e_2L$ because $e_2=\exp(N^\sharp/N)=2$ and $2N\subseteq 2N$.
+At that modulus $\bar K_2$ meets $\Stab_G(L)$ whenever $\sigma_U\in G$, and $\sigma_U\in\Orth(N)$; so with $G=\Orth(N)$ the sign is not a function of $\pi_2(g)$, while $\rho_N$ is one by @cor:stabilizer-modulus.
+
+Item 3 records the consequence of the Enriques subgroup theorem: the three families are compared object by object through witnesses in $\ker\rho$, and a witness in $\ker\rho$ is invisible to $\rho_L$, so the discriminant computation of @thm:stabilizer-discriminant-image and the orbit identity of @thm:enriques-spinor-orbit-agreement are consistent and neither requires the other's input.
+:::
+
 ## Supporting lift theorems {#sec-descent-eichler}
 
 ::: {.proposition #prop:descent-eichler title="Eichler filling, with its hypotheses stated"}
