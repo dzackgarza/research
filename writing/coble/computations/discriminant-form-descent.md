@@ -51,94 +51,73 @@ An isometry preserves $\beta$, hence $\div_L(gv) = \div_L(v)$, and it passes to 
 So the class is an invariant of the orbit, and the orbits of $\Gamma\leq\Orth(L)$ map onto the orbits of $\rho_{L,q}(\Gamma)$ on the *finite* set $\mathcal C(L)$.
 Everything that can still differ inside a fibre is the subject of the next section.
 
-## The fibre over a class {#sec-descent-fibre}
+## The integral orbit-fibre formula {#sec-descent-fibre}
 
-::: {.proposition #prop:descent-fibre title="The fibre index"}
+For a primitive isotropic plane $P\subset L$, define its discriminant image intrinsically by
+$$ D(P)\definedas\im\bigl((P_{\QQ}\cap L^\sharp)\to A_L\bigr). $$
+For a flag $x=(X_1\subsetneq\cdots\subsetneq X_r)$ of primitive isotropic sublattices, put $D(x)=(D(X_1),\dots,D(X_r))$. A line has $D(\ZZ v)=[v/\div(v)]$, so this specializes to @def:descent-class. The integral object must be fixed before any finite quotient is taken.
 
-Let $L$ be an even nondegenerate lattice whose quadratic discriminant representation is *onto* its image group, so that $\rho_{L,q}(\Orth(L)) = \Orth(A_L,q_L)$; this is hypothesis (H1) below.
-Let $c \in \mathcal C(L)$ be a class attained by a primitive isotropic vector $v$, and put
-$$
-\iota(c) \definedas \qty[\Stab_{\Orth(A_L,q_L)}(c) : \rho_{L,q}\qty(\Stab_{\Orth(L)}(v))].
-$$
-Then the primitive isotropic vectors of $L$ with $v^* = c$ meet exactly $\iota(c)$ orbits of $\Orth(L)$, and $\iota(c)$ does not depend on the choice of the vector $v$ representing $c$.
+::: {.theorem #thm:descent-double-coset title="The orbit fibre over one discriminant datum: the actual double cosets"}
+Let $L$ be even and nondegenerate, and let $Q=\rho_{L,q}(\Orth(L))$. Choose a full $\Orth(L)$-orbit $\mathcal X=\Orth(L)\cdot x$ of a primitive isotropic flag $x$, and let $D=D(x)$. Put
+$$ F=\Stab_Q(D),\qquad \mathcal G_D=\rho_{L,q}^{-1}(F). $$
+If the orbit-fibre $\mathcal F_{\mathcal X}(D)=\{y\in\mathcal X:D(y)=D\}$ is nonempty, then $\mathcal G_D$ acts transitively on it. Thus $\mathcal F_{\mathcal X}(D)$ is the single orbit $\mathcal G_D\cdot x$, even when $D(x)$ has several different lifts in the finite data.
+
+For $\Gamma\leq\Orth(L)$, write $\mathcal G_D(x)=\Stab_{\mathcal G_D}(x)$. The $\Gamma$-orbits in this fibre are exactly
+$$ (\Gamma\cap\mathcal G_D)\bigl\backslash\mathcal G_D\bigr/\mathcal G_D(x). $$
+In particular, if $K=\ker\rho_{L,q}\subseteq\Gamma$, set $H=\rho_{L,q}(\Gamma)$ and $S=\rho_{L,q}(\Stab_{\Orth(L)}(x))$. The orbit count is
+$$ (H\cap F)\bigl\backslash F\bigl/S. $$
+For any translated datum $qD$ with $q\in Q$ and $\widetilde q\in\Orth(L)$ a lift of $q$, the fibre over $qD$ is $\widetilde q\,\mathcal F_{\mathcal X}(D)$ and, under the same kernel hypothesis, its $\Gamma$-orbits are
+$$ (q^{-1}Hq\cap F)\bigl\backslash F\bigl/S. $$
 :::
 
 ::: {.proof}
+Let $y\in\mathcal F_{\mathcal X}(D)$. Since $\mathcal X$ is one $\Orth(L)$-orbit, some $g\in\Orth(L)$ satisfies $gx=y$. Equivariance gives $\rho_{L,q}(g)D=D$, hence $g\in\mathcal G_D$. Therefore $\mathcal G_D$ acts transitively on the fibre. The distinction between the whole class $\{y:D(y)=D\}$ and $\mathcal F_{\mathcal X}(D)$ matters when the full integral group has several orbits: every formula here is for a fixed $\mathcal X$, not silently for all primitive objects.
 
-Write $\mathcal F_c$ for the set of primitive isotropic $v$ with $v^*=c$, and let $v\in\mathcal F_c$.
-An isometry $g$ carries $v$ into $\mathcal F_c$ exactly when $\rho_{L,q}(g)$ fixes $c$: indeed $(gv)^* = \rho_{L,q}(g)(c)$ by @lem:descent-well-defined, and $\rho_{L,q}(g)$ fixing $c$ is what makes that class equal to $c$.
-Consequently the isometries carrying $v$ to a point of $\mathcal F_c$ are those with $\rho_{L,q}(g) \in \Stab_{\Orth(A_L,q_L)}(c)$.
-
-For $w \in \mathcal F_c$ choose $g$ with $gv = w$; then $\rho_{L,q}(g)$ fixes $c$, and the set of isometries carrying $v$ to $w$ is the coset $g\,\Stab_{\Orth(L)}(v)$.
-Its image under $\rho_{L,q}$ is the coset $\rho_{L,q}(g)\,\rho_{L,q}(\Stab_{\Orth(L)}(v))$ of the subgroup $\rho_{L,q}(\Stab_{\Orth(L)}(v))$ inside $\Stab_{\Orth(A_L,q_L)}(c)$, so two points of $\mathcal F_c$ lie in the same orbit exactly when these cosets agree; and conversely every coset is realized, by (H1), by taking $g$ with the required image.
-So the orbits on $\mathcal F_c$ are the cosets of $\rho_{L,q}(\Stab_{\Orth(L)}(v))$ in $\Stab_{\Orth(A_L,q_L)}(c)$, and their number is the index.
-
-For independence of $v$: if $w = gv$ then $\Stab_{\Orth(L)}(w) = g\Stab_{\Orth(L)}(v)g^{-1}$, whose image is the conjugate $\rho_{L,q}(g)\rho_{L,q}(\Stab_{\Orth(L)}(v))\rho_{L,q}(g)^{-1}$ inside $\Stab_{\Orth(A_L,q_L)}(c)$, and conjugates have equal index.
+For $\Gamma$, the left action of $\Gamma\cap\mathcal G_D$ on the fibre has stabilizer $\mathcal G_D(x)$ on the right, so its orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift.
 :::
 
-::: {.corollary #cor:descent-count title="The count of orbits by classes"}
+::: {.corollary #cor:descent-finite-orbit-sum title="The sum over finite orbits"}
+With $\mathcal X$ as above, let $\mathcal R$ be a set of representatives of the $H=\rho_{L,q}(\Gamma)$-orbits on the finite data attained by $\mathcal X$. If $K\subseteq\Gamma$, the total number of $\Gamma$-orbits in $\mathcal X$ is the sum over $D\in\mathcal R$ of the double-coset counts in @thm:descent-double-coset. No surjectivity assumption on $\rho_{L,q}(\Gamma)$ is used. Surjectivity of $\rho_{L,q}$ on $\Orth(L)$ is used only to choose an integral lift of any desired $q\in Q$.
+:::
 
-Keep (H1) and let $\Gamma\leq\Orth(L)$ be a subgroup with $\rho_{L,q}(\Gamma) = \Orth(A_L,q_L)$ as well.
-Let $\mathcal O$ be a set of representatives of the orbits of $\rho_{L,q}(\Gamma)$ on the attained classes of $\mathcal C(L)$.
-Then the number of $\Gamma$-orbits of primitive isotropic vectors of $L$ is
-$$
-\sum_{c\in\mathcal O}\qty[\Stab_{\Orth(A_L,q_L)}(c) : \rho_{L,q}(\Stab_\Gamma(v_c))],
-$$
-where $v_c$ is any primitive isotropic vector with $v_c^* = c$.
-In particular, for $\Gamma$ inside the discriminant kernel — where $\rho_{L,q}(\Gamma) = 1$ and every attained class is its own orbit — the sum collapses to one orbit per class as soon as each fibre is filled in the sense of @prop:descent-eichler.
+The two input groups are genuinely different: $F$ stabilizes a finite datum, whereas $S$ is the image of the actual integral stabilizer of the chosen object. Replacing $S$ by $F$ silently asserts a lifting theorem. Independent computations of $|F|$ and of a native quotient group do not supply it.
+
+## Spinor restriction {#sec-descent-spinor}
+
+::: {.proposition #prop:descent-spinor-fibre title="When a spinor-restricted group has the same fibre"}
+Put $\Gamma^+=\Gamma\cap\Orth^+(L)$, where $\Orth^+(L)$ is the normalized real spinor kernel. Suppose that $\Stab_{\mathcal G_D\cap\Gamma}(x)$ contains a spinor-negative element. Then $\Gamma$ and $\Gamma^+$ have exactly the same orbits on $\mathcal F_{\mathcal X}(D)$. The criterion is transported by the same integral group: a conjugate of such a witness supplies the required element at every point of the fibre.
+
+Consequently the double-coset formula of @thm:descent-double-coset is unchanged on passing from $\Gamma$ to $\Gamma^+$, with $H$ replaced by $\rho_{L,q}(\Gamma^+)$ where appropriate.
 :::
 
 ::: {.proof}
-
-A $\Gamma$-orbit lies inside a single fibre, because the class is $\rho_{L,q}(\Gamma)$-invariant (@lem:descent-well-defined), and $\rho_{L,q}(\Gamma)$ acts transitively on the classes of each of its orbits, so the fibres over one $\rho_{L,q}(\Gamma)$-orbit contribute together.
-Within the fibre over $c$, the coset argument of @prop:descent-fibre applies with $\Orth(L)$ replaced by $\Gamma$ and hypothesis (H1) by $\rho_{L,q}(\Gamma) = \Orth(A_L,q_L)$: the orbits are the cosets of $\rho_{L,q}(\Stab_\Gamma(v_c))$ in $\Stab_{\Orth(A_L,q_L)}(c)$, and their number is the index shown.
+For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $\tau g\in\Gamma^+$ also takes $x$ to $y$. At $y=gx$, use $g\tau g^{-1}$; it is still spinor-negative and stabilizes $y$. Thus the required witness exists at every point of the fibre. Selecting an arbitrary isometry taking a fixed model vector $e$ to a particular vector $v$ is allowed; the witness must not be restricted to the stabilizer of the class of $v$ alone.
 :::
 
-## When the fibre is a single orbit {#sec-descent-eichler}
+## Flags: why containment is not enough {#sec-descent-flags}
 
-::: {.proposition #prop:descent-eichler title="Eichler filling"}
+Apply @thm:descent-double-coset to the full flag $x=(P,L)$ with $L\subset P$. Set $J=D(P)$, $c=D(L)$, and
+$$ F_{J,c}=\Stab_Q(J)\cap\Stab_Q(c). $$
+Then the flags over $(J,c)$ are governed by
+$$ (\Gamma\cap\rho^{-1}(F_{J,c}))\bigl\backslash\rho^{-1}(F_{J,c})\bigr/\Stab_{\rho^{-1}(F_{J,c})}(P,L). $$
+If $K\subseteq\Gamma$, this reduces to the corresponding double coset with $H\cap F_{J,c}$ on the left and $\rho(\Stab_{\Orth(L)}(P)\cap\Stab_{\Orth(L)}(L))$ on the right. A table saying only $c\in J$ proves containment. The extra mathematical content is transitivity of the integral plane stabilizer on the primitive lines in a fixed class; that supplies the flag-fibre alignment while the plane is held fixed.
 
-Let $L$ contain $U\perp U_1\perp L_0$ as an orthogonal summand, with $U_1$ a second hyperbolic plane.
-Then for primitive isotropic $v,v'$ with $v^* = v'^*$ in $A_L$ there is $g\in\widetilde{\SO}^+(L)$ with $g(v) = v'$; in particular every fibre of the descent map is a single orbit of the discriminant kernel, $\iota(c) = 1$, and for every $\Gamma$ with $\widetilde{\SO}^+(L)\subseteq\Gamma\subseteq\Orth^+(L)$ the $\Gamma$-orbits of primitive isotropic vectors are exactly the $\rho_{L,q}(\Gamma)$-orbits of the classes in $\mathcal C(L)$.
+## Supporting lift theorems {#sec-descent-eichler}
+
+::: {.proposition #prop:descent-eichler title="Eichler filling, with its hypotheses stated"}
+Suppose $L$ contains $U\perp U_1\perp L_0$ as an orthogonal summand, with $U_1$ a second hyperbolic plane. For primitive isotropic $v,v'$ with fixed full $\Orth(L)$-orbit and $v^*=v'^*$, @thm:eichler-criterion supplies $g\in\widetilde{\SO}^+(L)$ with $g(v)=v'$, where the hypotheses on squares, divisibilities and congruence class are checked, not inferred from the class alone. Then the orbit-fibre has index one. Any $\Gamma$ containing $\widetilde{\SO}^+(L)$ inherits the corresponding fibre statement, provided the chosen lift belongs to $\Gamma$.
 :::
 
-::: {.proof}
+Whether this proposition applies is a property of the integral embedding and its congruence class. It does not apply to a definite quotient such as the Coble plane quotient $I_{0,7}$, and it does not replace the integral plane-stabilizer computation.
 
-This is @thm:eichler-criterion with $v_1^2 = v_2^2 = 0$: equal squares and equal classes are its two hypotheses, and its conclusion is an element of $\widetilde{\SO}^+(L)$ carrying $v$ to $v'$.
-A single orbit on the fibre means the index of @prop:descent-fibre is $1$; and a $\Gamma$ containing the kernel inherits the transitivity on each fibre while acting on the set of fibres through $\rho_{L,q}(\Gamma)$.
-:::
+## Proved instances {#sec-descent-coble}
 
-The two propositions measure the two ways the mechanism can fail to give a count directly: the *lattice* can fail to contain two hyperbolic planes, or the *group* can fail to see enough of $\Orth(A_L,q_L)$.
-What neither covers is the case in which the descent is run against a different lattice, or in which the fibre itself needs a gluing invariant; those are entries in the register below.
+**Enriques degree two.** The full integral stabilizer images for the primitive isotropic lines and for the two $O(T_\En)$-plane classes are proved in @lem:line-stabilizer-image and @thm:enriques-integral-plane-stabilizers. In the divisibility-two plane, the actual integral reflection lifts, their dual action through the proved gluing $Q^*/Q\simeq D^\perp/D$, and the generated full kernel establish the equality. An order-$40320$ action on $Q^*/Q$ alone would not have been a substitute. For the source-defined full-$O$ group $\Gamma_{\En,2}=\rho^{-1}(M)$, the finite formula therefore returns one double coset per $M$-orbit. The line type-set produces five arithmetic 0-cusps and the plane type-set nine arithmetic 1-cusps. The plane spinor restriction is covered by the negative level-two witness in @thm:enriques-integral-plane-stabilizers.
 
-## The register of failures {#sec-descent-failures}
+**Coble vectors.** For $\Gamma_\Co=\ker\rho\cap\Orth^+(B)$, the full integral line-stabilizer image with its Eichler transvections gives a single $\ker\rho$-orbit over each of the $527$ nonzero isotropic classes. The witness $\id_{U_1}\oplus(-\id_{K_v})$, with $K_v$ the complement of $e_1$, is level-two and spinor-negative, so the same statement holds for $\Gamma_\Co$. The numerical count remains a **page proof with the public Coble computation sage-extensions#286**, not a new computed invariant.
 
-| Work unit | What was attempted | Evidence | Replacement in use |
-|:---|:---|:---|:---|
-| $F_{\ten}$ 0-cusps, #684 | Descent to an auxiliary lattice $K=U\oplus E_8\oplus \latI_{1,1}$ of a *different* discriminant, $A_K=0$ against $A_{\ten}\cong(\bZ/2)^{10}$ | `computations/reports/coble_enriques-zero-cusps.py` and its run: $\abs{A_{\ten}} = 1024$, $q$ integral, $527$ nonzero isotropic classes | Withdrawn; the count is proved in `sections/1-part-combinatorial/3-chapter-enriques-k3/450-scattone.md` from the type trichotomy, which needs no descent at all |
-| Dawes' Example 2.2, #662 | Equal square, equal divisibility, isometric complement and equal class in $A_L$, read as one orbit | `computations/reports/coble_dawes-example-2-2_gluing-class.py`: the fibre over the class also needs the gluing class of $\Lambda\leq A_{\generators{v}}\oplus A_N$, and here two of its three classes are excluded by integrality | The gluing class, counted as one class, so that $v_1\sim v_2$ |
-| Coble plane half, #667 and #737 | The filling step of @prop:descent-eichler applied to the plane quotient $P^{\perp}/P\cong\latI_{0,7}$ | `computations/reports/coble_theta-half-requirements.md` | Open; see @sec-descent-coble |
-| $\Gamma_\Co$ stabilizer, #689 | $\Orth(A,q)$ acting on the $2048$ classes, and `stabilizer_of_element` on a class | `computations/reports/coble_discriminant-stabilizer-orbits.py`: the call did not return in $900$ s or $1800$ s, while $|\Orth(A,q)|$ took $83$ s | Subgroup on generators, then the action restricted to the isotropic classes; the full-module orbit call does not finish |
-| Heegner generator checks, #722 | The global `strict_checking(True)` around the discriminant form | `computations/reports/coble_heegner-generator-checks.py`: $T.\texttt{discriminant\_quadratic\_form}()$ raises `AttributeError: 'OwnedModuleMor…' object has no attribute 'is_zero'` through `correlation_morphism().cokernel()` | The flag stays off, and the three checks that do not need it are applied |
-| $O(T_\Co)$ surjectivity, #667 | `discriminant_quadratic_form()` on the odd lattice $B$ | `computations/reports/coble_tco_surjectivity_specimen-port991b88b0-run.txt` | The even twist $B(2) = T_\Co$ of @prop:tco-as-twist, on which the refinement exists |
+**Coble planes.** The integral parabolic image is the proper subgroup $S$ of the full finite stabilizer $F$ described by @thm:coble-plane-stabilizer-image: the definite quotient $I_{0,7}$ induces only $S_7$ in $\Orth^+(6,2)$. Hence $|F/S|=8$. The full finite stabilizer cannot be substituted for $S$, and this is a proved counterexample to any claim that discriminant-form lifting is automatic. The hyperbolic-plane spinor-negative witness in the same theorem shows that the eight $\ker\rho$-orbits do not split under $\Gamma_\Co$. The $189\,720$ total is likewise a **page proof with sage-extensions#286**, while the liftability and finite discriminant counts have their own computation records.
 
-: Failures of discriminant-form descent in this tree. {#tbl:descent-failures}
+**Coble plane-line flags.** The integral plane Levi gives $GL(P)$. Level two and the real spinor character select $\{A\in SL(P):A\equiv I\pmod2\}$. If primitive vectors $v,w$ have the same parity and are completed to $M_v=[v,z_v],M_w=[w,z_w]$, then $\det(c,z_w-z_v)=0$ in $\F_2$ for their common nonzero first column $c$, hence $z_w-z_v=tc$, because the kernel of $x\mapsto\det(c,x)$ is $\langle c\rangle$. Replacing $z_w$ by $z_w-tw$ aligns the completions. The adjusted $M_wM_v^{-1}$ is level two and sends $v$ to $w$. Thus the plane stabilizer is transitive within each parity class but cannot permute the three classes. Each arithmetic plane orbit and each of the three line classes has exactly one arithmetic flag orbit. There are $24$ flag orbits over one $J$; there is no extra hidden flag splitting. This local flag statement is also a page proof with sage-extensions#286, not a finite containment table repackaged as an orbit computation. Its proof is @prop:coble-arithmetic-flag-incidence.
 
-## The Coble case {#sec-descent-coble}
-
-Take $T_\Co = B(2)$ with $B = \generators{1}\oplus U\oplus E_8(-1)$ (@prop:tco-as-twist), so that $\Orth(T_\Co) = \Orth(B)$ as subgroups of $\GL(B)$ and the discriminant form is that of $B$.
-The provider run in `computations/reports/coble_528_isotropic_classes.py` returns $2048$ classes for $A_{T_\Co}$, of which $528$ are isotropic, the zero class among them; so $\mathcal C(T_\Co)$ has $527$ nonzero elements.
-The order is $|\Orth(A,q)| = 46\,998\,591\,897\,600$, and $\rho_{T_\Co,q}$ is onto $\Orth(A,q)$ by @thm:two-elementary-surjectivity, so (H1) holds.
-
-*The vector half, a page proof whose computation is owed.* For $\Gamma_\Co$ the descent group is the kernel, $\rho_{T_\Co,q}(\Gamma_\Co) = 1$; every isotropic class is then its own orbit, and @cor:descent-count with the filling of @prop:descent-eichler — $T_\Co$ contains $U\perp U(2)$, two hyperbolic planes — gives $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class.
-That number is **proved in prose only**: no computation record decides it, and the library call that would is sage-extensions#286, the same unit the plane half below names. Nothing in this paragraph is a computed count. That is the count recorded in `computations/reports/coble_isotropic_orbits.py`, and it is what the $0$-cusp statements of @sec-discriminant-orbits use.
-
-*The plane half, open.* For a primitive isotropic plane $P$ the same mechanism would run on the quotient $P^{\perp}/P$, which is $\latI_{0,7}$; the fibre over the class of $P$ is governed by
-$$
-\Stab_{\Orth(A,q)}(c_P)\,\big/\,\rho_{T_\Co,q}\qty(\Stab_{\Orth(B)}(P)),
-$$
-and filling it requires the image of $\Orth(\latI_{0,7})$, of order $2^7\cdot 7! = 645\,120$, in $\Orth(\generators{-\tfrac12}^{7})$.
-Hypothesis (H1) is not available there: $\latI_{0,7}$ is negative definite, and the surjectivity of @thm:two-elementary-surjectivity is a statement about indefinite lattices.
-The missing hypothesis is exactly that surjectivity, equivalently the provider operation that returns the image of $\Orth$ of a *definite* lattice in the orthogonal group of its discriminant form, which is sage-extensions#286; the plane table $1575, 270, 9450, 3780, 8640$ of @sec-open-problems is marked unverified for this reason, and `computations/reports/coble_theta-half-requirements.md` states the requirement in full.
-
-The pages that use the mechanism are @sec-isotropic-orbits-and-tits-buildings for the orbit algorithms, @sec-discriminant-orbits for the $0$-cusp count; and the Enriques section of `sections/1-part-combinatorial/3-chapter-enriques-k3/450-scattone.md` reaches its count through the type trichotomy instead, recording why descent is not needed there.
+The discriminant approach remains conditional on the actual integral stabilizer at every stage. The public Coble computation remains sage-extensions#286; those calls and any known-family cards used by other pages retain their own dependencies.
