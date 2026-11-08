@@ -133,20 +133,33 @@ If $K\subseteq\Gamma$, this reduces to the corresponding double coset with $H\ca
 ## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}
 
 The finite data of a commensurability class give the integral stabilizer exactly, but they give its discriminant image only at a modulus refined enough to make the discriminant representation descend.
-This section proves that refinement, states the finite objects and the map, and identifies what the alternative route through the discriminant isometries of the orbit lattices does and does not supply.
+This section proves that refinement, states the finite objects and the map, and proves the alternative route through the discriminant isometries of the orbit lattices as a second complete construction, comparing the two index sets rather than ranking them.
 
 ::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
 
-Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$, let $M\subseteq V$ be an integral nondegenerate lattice, that is $M\subseteq M^\sharp$, and let $L\subseteq M$ be a full sublattice.
+Let $V$ be a finite-dimensional vector space over $\bQ$ with a nondegenerate symmetric bilinear form $\beta$.
+Let $L\subseteq V$ be an integral nondegenerate lattice, so $L\subseteq L^\sharp$, and let $M\subseteq V$ be a finitely generated full $\bZ$-submodule with $L\subseteq M$.
+The form need not be integral on $M$, and $M$ need not be contained in $L^\sharp$; @ex:non-integral-invariant-module is an instance of the commensurability contract in which both fail.
 Let $G\leq\Orth(V)$ be a subgroup preserving $M$, so $gM=M$ for every $g\in G$.
-Write $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$ for the reduction modulo $mM$ and $\bar L_m\definedas L/mM$ for the image of $L$ in $M/mM$; put
-$$ \bar K_m\definedas\ker\pi_m,\qquad \bar H_m\definedas\Stab_{\pi_m(G)}(\bar L_m). $$
-Because $L\subseteq M$ one has $M\subseteq L^\sharp$, and the two quotients
-$$ M/L,\qquad L^\sharp/M $$
+Since $M$ and $L^\sharp$ are finitely generated full $\bZ$-submodules of $V$, their intersection is full and of finite index in each, so the two quotients
+$$ M/L,\qquad L^\sharp/(L^\sharp\intersect M) $$
 are finite abelian groups; put
-$$ e_1\definedas\exp(M/L),\qquad e_2\definedas\exp(L^\sharp/M), $$
-so that $e_1$ is the least positive integer with $e_1M\subseteq L$ and $e_2$ the least with $e_2L^\sharp\subseteq M$.
-The $\bZ$-module $L^\sharp/L=A_L$ carries the discriminant form of @def:discriminant, and $\rho_L$ denotes the discriminant representation of @def:discriminant-rep.
+$$ e_1\definedas\exp(M/L),\qquad e_2\definedas\exp\qty(L^\sharp/(L^\sharp\intersect M)). $$
+Then $e_1$ is the least positive integer with $e_1M\subseteq L$, and $e_2$ the least positive integer with $e_2L^\sharp\subseteq L^\sharp\intersect M$, equivalently with $e_2L^\sharp\subseteq M$.
+Write $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$ for the reduction modulo $mM$, and for $m$ with $mM\subseteq L$ write $\bar L_m\definedas L/mM$ for the image of $L$ in $M/mM$ and put
+$$ \bar K_m\definedas\ker\pi_m,\qquad \bar H_m\definedas\Stab_{\pi_m(G)}(\bar L_m). $$
+The $\bZ$-module $L^\sharp/L=A_L$ carries the bilinear discriminant form of @def:discriminant, and $\rho_L$ denotes the bilinear discriminant representation of @def:discriminant-rep; if $L$ is even, $A_L$ carries the quadratic refinement $q_L$ as well and $\rho_L=j_q\circ\rho_{L,q}$ is the composite of the quadratic representation with the forgetful monomorphism.
+:::
+
+::: {.example #ex:non-integral-invariant-module title="The invariant module need not be integral, nor contained in the dual of $L$"}
+
+Let $L=U=\bZ e\oplus\bZ f$ with $\beta(e,f)=1$, so that $L$ is unimodular and $L^\sharp=L$, and let $g$ be the rational map $g(e)=f/2$, $g(f)=2e$.
+It is an isometry: $(f/2,f/2)=(2e,2e)=0$ and $(f/2,2e)=1=\beta(e,f)$, and $g^2=\id$.
+Then
+$$ M\definedas L+gL=\bZ e\oplus\bZ\qty(f/2) $$
+is a finitely generated full $\bZ$-submodule containing $L$ with $gM=M$, and $M/L\cong\bZ/2$, so the triple $(G,M,L)$ with $G=\generators{g}$ satisfies the module contract of @def:stabilizer-congruence-data.
+But $\beta(e,f/2)=1/2$, so $M$ is not integral, and $f/2\notin L=L^\sharp$, so $M$ is not contained in $L^\sharp$; the quotient $L^\sharp/M$ of an integral invariant module does not exist here.
+The exponents of the definition are $e_1=\exp(M/L)=2$ and $e_2=\exp\qty(L^\sharp/(L^\sharp\intersect M))=1$, the latter because $L^\sharp\intersect M=L\cap M=L$; the modulus condition $mM\subseteq e_2L=L$ holds for $m=2$.
 :::
 
 ::: {.lemma #lem:orbit-permutation-not-module-action title="The action on the orbit of submodules is not the module action"}
@@ -232,14 +245,16 @@ Then:
 
 1. $\Stab_G(L)=G\intersect\pi_m^{-1}(\bar H_m)$, so the integral stabilizer is the exact preimage of the finite orbit-point stabilizer;
 2. the assignment
-$$ \Phi_m\colon\bar H_m\too\Orth(A_L,q_L),\qquad \pi_m(g)\longmapsto\rho_L(g) $$
+$$ \Phi_m\colon\bar H_m\too\Orth(A_L),\qquad \pi_m(g)\longmapsto\rho_L(g) $$
 is a well-defined group homomorphism, with kernel $\pi_m(\Stab_G(L)\intersect\ker\rho_L)$;
 3. $\Phi_m(\bar H_m)=\rho_L(\Stab_G(L))$; and if $\bar h_1,\dots,\bar h_r$ generate $\bar H_m$ and $g_i\in G$ is any lift of $\bar h_i$, then
-$$ \rho_L(\Stab_G(L))=\generators{\rho_L(g_1),\dots,\rho_L(g_r)}\leq\Orth(A_L,q_L); $$
+$$ \rho_L(\Stab_G(L))=\generators{\rho_L(g_1),\dots,\rho_L(g_r)}\leq\Orth(A_L); $$
 4. every lift $g_i$ is an integral self-isometry of $L$, so the endomorphism case of the discriminant morphism applies to $\restrictionof{g_i}{L}\colon L\to L$.
 
-The construction therefore returns the exact subgroup $\rho_L(\Stab_G(L))$ from finitely many objects: the lattice $M$, the submodule $\bar L_m$ of $M/mM$, the finite group $\pi_m(G)$, and one lift per generator of the finite stabilizer.
+The construction therefore returns the exact subgroup $\rho_L(\Stab_G(L))$ from finitely many objects: the module $M$, the submodule $\bar L_m$ of $M/mM$, the finite group $\pi_m(G)$, and one lift per generator of the finite stabilizer.
 No generating family of $\Stab_G(L)$ itself is materialized.
+
+If $L$ is even, the same assignment lands in $\Orth(A_{L,q})$: an isometry stabilizing $L$ preserves $\beta$ and hence the norm of every element of $L^\sharp$, so it preserves the quadratic refinement $q_L$, and $\Phi_m$ is $\Phi_{m,q}$ followed by the forgetful monomorphism of @def:discriminant-rep.
 :::
 
 ::: {.proof}
@@ -295,7 +310,7 @@ In particular $e_2(L_0)=e_2(L)$ for every $L_0\in\mathcal O$, and the finite quo
 
 ::: {.proof}
 
-Let $L_0=gL$. Then $L_0^\sharp=gL^\sharp$, so $e_2(L)L_0^\sharp=ge_2(L)L^\sharp\subseteq gM=M$, and $e_2(L_0)\mid e_2(L)$ by minimality; applying the same argument to $g^{-1}$ gives equality.
+Let $L_0=gL$. Then $L_0^\sharp=gL^\sharp$ and $g\qty(L^\sharp\intersect M)=gL^\sharp\intersect gM=L_0^\sharp\intersect M$, so $g$ induces an isomorphism $L^\sharp/(L^\sharp\intersect M)\cong L_0^\sharp/(L_0^\sharp\intersect M)$ and $e_2(L_0)=e_2(L)$.
 Next $mM=gmM\subseteq g\qty(e_2(L)L)=e_2(L)L_0$, which is item 1; item 2 is @thm:stabilizer-discriminant-image at $L_0$.
 For item 3, $\Stab_G(gL_0)=g\Stab_G(L_0)g^{-1}$ is immediate, and @thm:discriminant-transport-functor gives $\rho_{gL_0}(gkg^{-1})=\alpha_g(L_0)\rho_{L_0}(k)\alpha_g(L_0)^{-1}$ for $k\in\Stab_G(L_0)$, since $gkg^{-1}$ acts on $A_{gL_0}$ through $\alpha_g(L_0)$.
 :::
@@ -306,15 +321,61 @@ Two statements delimit what this functor supplies, and both follow from the prev
 If $mM\subseteq e_2L$ and $g,g'\in G$ satisfy $\pi_m(g)=\pi_m(g')$, then $g^{-1}g'\in\bar K_m$; by @cor:orbit-uniform-modulus the hypothesis of @lem:congruence-kernel-discriminant holds at every $L_0\in\mathcal O$, so $g^{-1}g'$ acts trivially on $A_{L_0}$ for every such $L_0$, and $\alpha_g(L_0)=\alpha_{g'}(L_0)$.
 The functor therefore factors through the finite groupoid $\pi_m(G)\ltimes\{\bar L_{0,m}\}$, and the retained finite data are the finite set of submodules $\bar L_{0,m}=L_0/mM$ together with the isomorphisms induced by the elements of $\pi_m(G)$.
 
-*It does not by itself compute the loop group.*
-The loops at $L_0$ in $G\ltimes\mathcal O$ are the elements of $\Stab_G(L_0)$, an infinite group, so the functor evaluates to the image $\rho_{L_0}(\Stab_G(L_0))$ at the single lattice $L_0$ only after those loops are known; transport along an orbit does not decide which words return to $L_0$.
-What the functor adds is that the answer is an invariant of the orbit rather than of the chosen lattice, and that a modulus valid at one orbit point is valid at all of them, which is the next corollary.
+*It descends to the orbit, and the loops are then reached by Schreier generators.*
+The loops at $L_0$ in $G\ltimes\mathcal O$ are the elements of $\Stab_G(L_0)$, an infinite group, so the functor does not by itself exhibit them; what it does give is that the answer is an invariant of the orbit rather than of the chosen lattice, and that a modulus valid at one orbit point is valid at every one of them (@cor:orbit-uniform-modulus).
+The loops are recovered exactly, without any kernel computation, by passing to the finite orbit of the residue submodule and using Schreier's lemma on it: this is the content of @lem:schreier-stabilizer and @thm:schreier-discriminant-image, and it is a second complete construction of the same image.
 
-The two routes are now comparable on their actual requirements.
-The congruence route needs the lattice $M$, the finite module action $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$, the submodule $\bar L_m$, the stabilizer of $\bar L_m$ inside $\pi_m(G)$, and the modulus refined from $e_1$ to a multiple of $\exp(M/e_2L)$; no element of $\Stab_G(L)$ beyond one lift per generator of $\bar H_m$ is formed, and no lattice of the orbit beyond $M$ and $L$ is needed.
-The functor route works with the isometries of lattices $g|_{L_0}\colon L_0\to gL_0$ for $g$ in a generating set of $G$ and $L_0$ in the orbit $\mathcal O$, whose discriminant morphisms are the $\alpha_g(L_0)$: that is $\abs{\text{letters}}\cdot\abs{\mathcal O}$ maps before any reduction, and a bound of the form $\abs{\text{letters}}+\abs{\mathcal O}$ is not a consequence of functoriality; what the functor gives, together with @lem:congruence-kernel-discriminant, is that $\alpha_g(L_0)$ depends only on the pair $\qty(\pi_m(g),\bar L_{0,m})$, so at most $\abs{\pi_m(G)}\cdot\abs{\bar{\mathcal O}_m}$ maps remain distinct and all of them are read off the same finite module action.
-It also still needs a finite quotient to identify the loops, since the loop group at $L_0$ is the infinite stabilizer.
-So the functor does not replace the refined congruence quotient for computing the image, and the refined congruence quotient does not by itself compare the images at different lattices; @cor:orbit-uniform-modulus is the comparison, and it is proved through the functor.
+::: {.lemma #lem:schreier-stabilizer title="Schreier generators for the stabilizer of a point"}
+
+Let a group $G$ act on a set $\Sigma$, let $S\subseteq G$ satisfy $G=\generators{S}$ and $S^{-1}=S$, let $\alpha\in\Sigma$, and for each $\beta$ in the orbit $G\alpha$ choose $t_\beta\in G$ with $t_\beta\alpha=\beta$ and $t_\alpha=\id$.
+Then
+$$ \Stab_G(\alpha)=\generators{t_{s\beta}^{-1}\,s\,t_\beta\st s\in S,\ \beta\in G\alpha}. $$
+:::
+
+::: {.proof}
+
+Each $t_{s\beta}^{-1}st_\beta$ carries $\alpha$ to $t_{s\beta}^{-1}(s\beta)=\alpha$, so the right-hand group lies in $\Stab_G(\alpha)$.
+
+Conversely let $g\in\Stab_G(\alpha)$ and write $g=s_1\cdots s_r$ with $s_i\in S$; put $g_i\definedas s_1\cdots s_i$, $g_0\definedas\id$ and $\beta_i\definedas g_i\alpha$.
+Then $t_{s_i\beta_{i-1}}\alpha=s_i\beta_{i-1}=\beta_i=t_{\beta_i}\alpha$, so $t_{\beta_i}^{-1}s_it_{\beta_{i-1}}$ is one of the displayed elements, and the telescoping product
+$$ \prod_{i=1}^{r}t_{\beta_i}^{-1}s_it_{\beta_{i-1}}=t_{\beta_r}^{-1}\,g\,t_{\beta_0} $$
+equals $t_\alpha^{-1}gt_\alpha=g$, because $g\in\Stab_G(\alpha)$ gives $\beta_r=\alpha$.
+So $g$ lies in the displayed subgroup.
+:::
+
+::: {.theorem #thm:schreier-discriminant-image title="The Schreier data give the exact image, with no kernel computation"}
+
+Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$; let $S\subseteq G$ satisfy $G=\generators{S}$ and $S^{-1}=S$.
+Let $\Sigma_m$ be the orbit of $\bar L_m$ in the finite module $M/mM$ under $\pi_m(G)$, for each $p\in\Sigma_m$ choose $t_p\in G$ with $\pi_m(t_p)\bar L_m=p$ and $t_{\bar L_m}=\id$, and put $L_p\definedas t_pL$.
+For $s\in S$ and $p\in\Sigma_m$ put
+$$ k_{s,p}\definedas t_{sp}^{-1}\,s\,t_p. $$
+Then:
+
+1. $\pi_m(k_{s,p})$ fixes $\bar L_m$, so $k_{s,p}\in\Stab_G(L)$ by @lem:congruence-stabilizer-preimage, and $k_{s,p}$ is an integral self-isometry of $L$;
+2. $\Stab_G(L)=\generators{k_{s,p}\st s\in S,\ p\in\Sigma_m}$;
+3. consequently
+$$ \rho_L(\Stab_G(L))=\generators{\rho_L(k_{s,p})},\qquad \rho_L(k_{s,p})=\alpha_{t_{sp}}(L)^{-1}\circ\alpha_s(L_p)\circ\alpha_{t_p}(L), $$
+a composite of discriminant isometries between the representative lattices $L_p=t_pL$ of the orbit;
+4. the finite objects used are the orbit $\Sigma_m$ of submodules, the transversal elements $t_p$, the lattices $L_p$, and the maps $\alpha_s(L_p)$; no congruence kernel is proved trivial, and no stabilizer inside a finite matrix group is computed.
+:::
+
+::: {.proof}
+
+For item 1, $\pi_m(k_{s,p})$ carries $\bar L_m$ to $\pi_m(t_{sp})^{-1}\pi_m(s)p=\pi_m(t_{sp})^{-1}(sp)=\bar L_m$; so $k_{s,p}\in\Stab_G(\bar L_m)$, which is $\Stab_G(L)$ by @lem:congruence-stabilizer-preimage at the modulus $m$ with $mM\subseteq L$.
+
+Item 2 is @lem:schreier-stabilizer applied to the action of $G$ on the orbit $\Sigma_m$ of $\bar L_m$: the displayed elements there are exactly the $k_{s,p}$, the orbit of $\bar L_m$ is $\Sigma_m$, and its stabilizer is $\Stab_G(L)$ by item 1.
+
+For item 3, $\rho_L(k_{s,p})=\alpha_{k_{s,p}}(L)$ by @thm:discriminant-transport-functor, since $k_{s,p}$ stabilizes $L$; functoriality of $\alpha$ gives
+$$ \alpha_{k_{s,p}}(L)=\alpha_{t_{sp}^{-1}}\qty(sp)\circ\alpha_s(L_p)\circ\alpha_{t_p}(L), $$
+and $\alpha_{t_{sp}^{-1}}(sp)=\alpha_{t_{sp}}(L)^{-1}$ because $\alpha_{t_{sp}^{-1}t_{sp}}(L)=\alpha_{\id}(L)=\id$.
+Item 4 records the objects and maps appearing in items 1 to 3; the modulus enters only through the definition of $\bar L_m$ and the finiteness of $\Sigma_m$, so $m=e_1$ is enough here.
+:::
+
+The two constructions are both complete, and their index sets differ.
+The congruence construction needs the finite module action $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$, the submodule $\bar L_m$, the stabilizer of $\bar L_m$ inside $\pi_m(G)$, and the modulus condition $mM\subseteq e_2L$ of @cor:stabilizer-modulus; it then needs one lift per generator of that finite stabilizer, and it evaluates $\abs{\text{generators of }\bar H_m}$ discriminant images.
+The Schreier construction needs the generating set $S$, the finite orbit $\Sigma_m$ with its transversal words, one representative lattice $L_p$ per orbit point, and the per-letter maps $\alpha_s(L_p)$ for $s\in S$ and $p\in\Sigma_m$; that is a letter-by-orbit family of $\abs{S}\cdot\abs{\Sigma_m}$ maps, and by @thm:schreier-discriminant-image it returns the exact image with $m=e_1$ alone and with no triviality statement.
+Neither index set is a function of the other, so neither construction subsumes the other: the congruence one is smaller exactly when the finite stabilizer has few generators compared with $\abs{S}\cdot\abs{\Sigma_m}$, and it pays for that with the refined modulus and the kernel argument, while the Schreier one needs neither and carries the larger family.
+What both need is $\bar L_m$ and the finiteness of $M/mM$; @cor:orbit-uniform-modulus is what lets either be run at one lattice and read at the others.
 
 ::: {.proposition #prop:spinor-congruence-obstruction title="The real spinor character does not descend to the congruence quotient in general"}
 
