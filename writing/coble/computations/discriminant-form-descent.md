@@ -158,7 +158,7 @@ It is an isometry: $(f/2,f/2)=(2e,2e)=0$ and $(f/2,2e)=1=\beta(e,f)$, and $g^2=\
 Then
 $$ M\definedas L+gL=\bZ e\oplus\bZ\qty(f/2) $$
 is a finitely generated full $\bZ$-submodule containing $L$ with $gM=M$, and $M/L\cong\bZ/2$, so the triple $(G,M,L)$ with $G=\generators{g}$ satisfies the module contract of @def:stabilizer-congruence-data.
-But $\beta(e,f/2)=1/2$, so $M$ is not integral, and $f/2\notin L=L^\sharp$, so $M$ is not contained in $L^\sharp$; the quotient $L^\sharp/M$ of an integral invariant module does not exist here.
+But $\beta(e,f/2)=1/2$, so $M$ is not integral, and $f/2\notin L=L^\sharp$, so $M$ is not contained in $L^\sharp$; a quotient of $L^\sharp$ by $M$ is therefore not defined, which is exactly the case that the exponent $\exp(L^\sharp/(L^\sharp\intersect M))$ of @def:stabilizer-congruence-data covers.
 The exponents of the definition are $e_1=\exp(M/L)=2$ and $e_2=\exp\qty(L^\sharp/(L^\sharp\intersect M))=1$, the latter because $L^\sharp\intersect M=L\cap M=L$; the modulus condition $mM\subseteq e_2L=L$ holds for $m=2$.
 :::
 
@@ -273,7 +273,7 @@ For item 4, use item 1: an element of $G$ preserving $L$ restricts to an isometr
 The congruence route uses only $\pi_m$ and $\rho_L$ as they are defined: no element of $\Stab_G(L)$ beyond the lifts is formed, and the modulus is the one supplied by @cor:stabilizer-modulus rather than the exponent $e_1$ of $M/L$ alone.
 In the vocabulary of the finite commensurability quotient, $M$ is the invariant module, $\bar L_m$ is the orbit point, $\bar H_m$ is its stabilizer in the image of the module action $G\to\Aut_{\bZ}(M/mM)$, and the modulus is the parameter of that construction: $e_1$ is the parameter that makes the stabilizer exact, and a multiple of $\exp(M/e_2L)$ is the parameter that also makes its discriminant image exact.
 The module action is needed as a matrix action: by @lem:orbit-permutation-not-module-action the permutation representation on the orbit of $\bar L_m$ has kernel $\kappa_m\supseteq\bar K_m$, which for $L=M$ is all of $G$, and a computation inside that permutation image neither proves $\bar K_m\subseteq\ker\rho_L$ nor defines a map to $\Orth(A_L)$.
-The reason $e_1$ alone does not suffice is exactly @lem:congruence-kernel-discriminant: the congruence acts on $L^\sharp$, where the relevant bound involves $L^\sharp/M$, and not only on $M/L$.
+The reason $e_1$ alone does not suffice is exactly @lem:congruence-kernel-discriminant: the congruence acts on $L^\sharp$, where the relevant bound involves the quotient $L^\sharp/(L^\sharp\intersect M)$, and not only on $M/L$.
 
 ::: {.theorem #thm:discriminant-transport-functor title="The discriminant isometries of the orbit lattices form a functor of the action groupoid"}
 
@@ -299,7 +299,7 @@ Functoriality is immediate from $g_1(g_2y)=(g_1g_2)y$; for a self-isometry, $\al
 
 ::: {.corollary #cor:orbit-uniform-modulus title="One modulus serves the whole orbit, and the images are conjugate"}
 
-For $L_0\in\mathcal O$ write $e_2(L_0)\definedas\exp(L_0^\sharp/M)$, so that $e_2=e_2(L)$. Let $m\geq1$ with $mM\subseteq e_2(L)L$. Then for every $L_0\in\mathcal O$:
+For $L_0\in\mathcal O$ write $e_2(L_0)\definedas\exp\qty(L_0^\sharp/(L_0^\sharp\intersect M))$, so that $e_2=e_2(L)$. Let $m\geq1$ with $mM\subseteq e_2(L)L$. Then for every $L_0\in\mathcal O$:
 
 1. $mM\subseteq e_2(L_0)L_0$, so $\bar K_m\subseteq\Stab_G(L_0)\intersect\ker\rho_{L_0}$ and @thm:stabilizer-discriminant-image applies at $L_0$;
 2. $\rho_{L_0}(\Stab_G(L_0))=\Phi_{L_0,m}\bigl(\Stab_{\pi_m(G)}(\bar L_{0,m})\bigr)$;
@@ -336,27 +336,50 @@ $$ \Stab_G(\alpha)=\generators{t_{s\beta}^{-1}\,s\,t_\beta\st s\in S,\ \beta\in 
 
 Each $t_{s\beta}^{-1}st_\beta$ carries $\alpha$ to $t_{s\beta}^{-1}(s\beta)=\alpha$, so the right-hand group lies in $\Stab_G(\alpha)$.
 
-Conversely let $g\in\Stab_G(\alpha)$ and write $g=s_1\cdots s_r$ with $s_i\in S$; put $g_i\definedas s_1\cdots s_i$, $g_0\definedas\id$ and $\beta_i\definedas g_i\alpha$.
-Then $t_{s_i\beta_{i-1}}\alpha=s_i\beta_{i-1}=\beta_i=t_{\beta_i}\alpha$, so $t_{\beta_i}^{-1}s_it_{\beta_{i-1}}$ is one of the displayed elements, and the telescoping product
-$$ \prod_{i=1}^{r}t_{\beta_i}^{-1}s_it_{\beta_{i-1}}=t_{\beta_r}^{-1}\,g\,t_{\beta_0} $$
-equals $t_\alpha^{-1}gt_\alpha=g$, because $g\in\Stab_G(\alpha)$ gives $\beta_r=\alpha$.
+Conversely let $g\in\Stab_G(\alpha)$.
+Since $S^{-1}=S$ and $G=\generators{S}$, write $g$ as a word in the letters of $S$ and write it in decreasing index order,
+$$ g=s_r\,s_{r-1}\cdots s_1,\qquad s_i\in S; $$
+put $g_0\definedas\id$, $g_i\definedas s_i g_{i-1}=s_i\,s_{i-1}\cdots s_1$ and $\beta_i\definedas g_i\alpha$, so that each $g_i$ is an initial segment of the word for $g$ read from the right.
+Then
+$$ s_i\beta_{i-1}=s_i\,g_{i-1}\alpha=g_i\alpha=\beta_i=t_{\beta_i}\alpha, $$
+so $k_i\definedas t_{\beta_i}^{-1}s_it_{\beta_{i-1}}$ is one of the displayed elements.
+The product taken in decreasing index order telescopes,
+$$ k_r\,k_{r-1}\cdots k_1=\qty(t_{\beta_r}^{-1}s_rt_{\beta_{r-1}})\qty(t_{\beta_{r-1}}^{-1}s_{r-1}t_{\beta_{r-2}})\cdots\qty(t_{\beta_1}^{-1}s_1t_{\beta_0})=t_{\beta_r}^{-1}\,s_r s_{r-1}\cdots s_1\,t_{\beta_0}=t_{\beta_r}^{-1}\,g\,t_{\beta_0}, $$
+and $\beta_r=g\alpha=\alpha$ because $g\in\Stab_G(\alpha)$, so $t_{\beta_r}=t_\alpha=\id$ and $t_{\beta_0}=t_\alpha=\id$; hence $k_r\cdots k_1=g$.
 So $g$ lies in the displayed subgroup.
+:::
+
+::: {.lemma #lem:orbit-reduction-injective title="Reduction modulo $mM$ is injective on the orbit"}
+
+Let $m\geq1$ with $mM\subseteq L$, and let $\mathcal O=G\cdot L$.
+Then $mM\subseteq L_0$ for every $L_0\in\mathcal O$, and the map
+$$ \mathcal O\too\qty{\text{submodules of }M/mM},\qquad L_0\longmapsto\bar L_{0,m}\definedas L_0/mM $$
+is injective.
+:::
+
+::: {.proof}
+
+For $L_0=gL$ one has $mM=gmM\subseteq gL=L_0$, so $\bar L_{0,m}$ is defined.
+If $L_1,L_2\in\mathcal O$ have equal images, then $L_1+mM=L_2+mM$, and $L_i+mM=L_i$ because $mM\subseteq L_i$; hence $L_1=L_2$.
 :::
 
 ::: {.theorem #thm:schreier-discriminant-image title="The Schreier data give the exact image, with no kernel computation"}
 
-Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$; let $S\subseteq G$ satisfy $G=\generators{S}$ and $S^{-1}=S$.
-Let $\Sigma_m$ be the orbit of $\bar L_m$ in the finite module $M/mM$ under $\pi_m(G)$, for each $p\in\Sigma_m$ choose $t_p\in G$ with $\pi_m(t_p)\bar L_m=p$ and $t_{\bar L_m}=\id$, and put $L_p\definedas t_pL$.
-For $s\in S$ and $p\in\Sigma_m$ put
+Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, and let $S\subseteq G$ be a finite symmetric generating set: $G=\generators{S}$, $S^{-1}=S$ and $\abs{S}<\infty$.
+Let $\Sigma_m$ be the orbit of $\bar L_m$ in the finite module $M/mM$ under $\pi_m(G)$.
+For each $p\in\Sigma_m$ choose $t_p\in G$ with $\pi_m(t_p)\bar L_m=p$ and $t_{\bar L_m}=\id$, and put $L_p\definedas t_pL$; by @lem:orbit-reduction-injective the lattice $L_p$ depends only on $p$, so it is a representative of the orbit point, not of the transversal.
+For $s\in S$ and $p\in\Sigma_m$, with $sp$ denoting the image of $p$ under $\pi_m(s)$, put
 $$ k_{s,p}\definedas t_{sp}^{-1}\,s\,t_p. $$
 Then:
 
 1. $\pi_m(k_{s,p})$ fixes $\bar L_m$, so $k_{s,p}\in\Stab_G(L)$ by @lem:congruence-stabilizer-preimage, and $k_{s,p}$ is an integral self-isometry of $L$;
 2. $\Stab_G(L)=\generators{k_{s,p}\st s\in S,\ p\in\Sigma_m}$;
 3. consequently
-$$ \rho_L(\Stab_G(L))=\generators{\rho_L(k_{s,p})},\qquad \rho_L(k_{s,p})=\alpha_{t_{sp}}(L)^{-1}\circ\alpha_s(L_p)\circ\alpha_{t_p}(L), $$
-a composite of discriminant isometries between the representative lattices $L_p=t_pL$ of the orbit;
-4. the finite objects used are the orbit $\Sigma_m$ of submodules, the transversal elements $t_p$, the lattices $L_p$, and the maps $\alpha_s(L_p)$; no congruence kernel is proved trivial, and no stabilizer inside a finite matrix group is computed.
+$$ \rho_L(\Stab_G(L))=\generators{\rho_L(k_{s,p})},\qquad \rho_L(k_{s,p})=\alpha_{t_{sp}^{-1}}(L_{sp})\circ\alpha_s(L_p)\circ\alpha_{t_p}(L) $$
+with $L_{sp}\definedas sL_p$, a composite of discriminant isometries between integral lattices of the orbit.
+The lattice $L_{sp}$ is integral because $s\in\Orth(V)$ carries the lattice $L_p$ to a lattice, and it satisfies $L_{sp}=t_{sp}L$: both contain $mM$ and both reduce to the submodule $sp$, so @lem:orbit-reduction-injective applies.
+Hence $\alpha_{t_{sp}^{-1}}(L_{sp})=\alpha_{t_{sp}}(L)^{-1}$, and every factor of the composite is a map between integral lattices, indexed by lattices and not by residue submodules;
+4. the finite objects used are the finite orbit $\Sigma_m$ of submodules, the finitely many transversal elements $t_p$, the lattices $L_p$, and the maps $\alpha_s(L_p)$ for $s$ in the finite set $S$ and $p\in\Sigma_m$; no congruence kernel is proved trivial, and no stabilizer inside a finite matrix group is computed.
 :::
 
 ::: {.proof}
@@ -365,9 +388,9 @@ For item 1, $\pi_m(k_{s,p})$ carries $\bar L_m$ to $\pi_m(t_{sp})^{-1}\pi_m(s)p=
 
 Item 2 is @lem:schreier-stabilizer applied to the action of $G$ on the orbit $\Sigma_m$ of $\bar L_m$: the displayed elements there are exactly the $k_{s,p}$, the orbit of $\bar L_m$ is $\Sigma_m$, and its stabilizer is $\Stab_G(L)$ by item 1.
 
-For item 3, $\rho_L(k_{s,p})=\alpha_{k_{s,p}}(L)$ by @thm:discriminant-transport-functor, since $k_{s,p}$ stabilizes $L$; functoriality of $\alpha$ gives
-$$ \alpha_{k_{s,p}}(L)=\alpha_{t_{sp}^{-1}}\qty(sp)\circ\alpha_s(L_p)\circ\alpha_{t_p}(L), $$
-and $\alpha_{t_{sp}^{-1}}(sp)=\alpha_{t_{sp}}(L)^{-1}$ because $\alpha_{t_{sp}^{-1}t_{sp}}(L)=\alpha_{\id}(L)=\id$.
+For item 3, $\rho_L(k_{s,p})=\alpha_{k_{s,p}}(L)$ by @thm:discriminant-transport-functor, since $k_{s,p}$ stabilizes $L$; functoriality of $\alpha$ along $L\xrightarrow{t_p}L_p\xrightarrow{s}L_{sp}\xrightarrow{t_{sp}^{-1}}L$ gives
+$$ \alpha_{k_{s,p}}(L)=\alpha_{t_{sp}^{-1}}(L_{sp})\circ\alpha_s(L_p)\circ\alpha_{t_p}(L), $$
+and $\alpha_{t_{sp}^{-1}}(L_{sp})=\alpha_{t_{sp}}(L)^{-1}$ because $\alpha_{t_{sp}^{-1}t_{sp}}(L)=\alpha_{\id}(L)=\id$; the equality $L_{sp}=t_{sp}L$ was proved in item 3.
 Item 4 records the objects and maps appearing in items 1 to 3; the modulus enters only through the definition of $\bar L_m$ and the finiteness of $\Sigma_m$, so $m=e_1$ is enough here.
 :::
 
