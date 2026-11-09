@@ -383,9 +383,22 @@ so $H_3$ and $H_4$ both have base field $K = \QQ(\sqrt5)$, and their Gram forms 
 For $m = 8$ the base field is $\QQ(\sqrt{2+\sqrt2})$, of degree $4$ over $\QQ$ by @prop:coxeter-base-field-degree.
 :::
 
-::: {.remark #rmk:galois-conjugate-gram-form title="Galois conjugates of a Gram form"}
+::: {.example #ex:galois-conjugate-gram-form title="Galois conjugates of a Gram form"}
 
 Let $M$ be a Coxeter matrix with base field $K = K(M)$, a totally real number field, and let $\sigma\in\gal(K/\QQ)$.
-Applying $\sigma$ entrywise to $G(M)$ produces a symmetric $K$-valued form $\sigma(G(M))$ of the same rank, with the same diagonal $-2$.
-Its signature is not determined by that of $G(M)$: the signature of a symmetric form over a totally real field is not a Galois invariant, as the rank-one forms $\generators{1-\sqrt2}$ and $\generators{1+\sqrt2}$ over $\QQ(\sqrt2)$ show.
+Applying $\sigma$ entrywise to $G(M)$ produces a symmetric $K$-valued form $\sigma(G(M))$ with the same diagonal $-2$.
+It has the same rank as $G(M)$, because $\sigma$ maps each minor of $G(M)$ to the corresponding minor of $\sigma(G(M))$ and maps only $0$ to $0$.
+Its signature can differ from that of $G(M)$.
+Let $M$ be the rank-three Coxeter matrix with $m_{12} = 2$, $m_{13} = 3$, $m_{23} = 8$, so that, with $c \definedas 2\cos(\pi/8) = \sqrt{2+\sqrt2}$,
+$$
+G(M) = \begin{pmatrix} -2 & 0 & 1 \\ 0 & -2 & c \\ 1 & c & -2 \end{pmatrix},
+\qquad
+\det G(M) = 2c^2 - 6 = 2\sqrt2 - 2 > 0
+.
+$$
+The base field is $K = \QQ(\sqrt{2+\sqrt2})$, which contains $\sqrt2 = c^2 - 2$, and there is $\sigma\in\gal(K/\QQ)$ with $\sigma(c) = \sqrt{2-\sqrt2}$, so $\sigma(\sqrt2) = -\sqrt2$.
+Both forms are nondegenerate, and on the span of the first two basis vectors both restrict to $\operatorname{diag}(-2,-2)$, so each has a negative definite subspace of dimension $2$.
+By @thm:sylvester each form has an orthogonal basis, in which its Gram matrix is $\operatorname{diag}(d_1,d_2,d_3)$, and $d_1d_2d_3$ differs from the determinant in the original basis by the square of a nonzero real number, so it has the same sign.
+Since $\det G(M) > 0$ and at least two of the $d_i$ are negative, exactly two are, and $G(M)$ has signature $(1,2)$; it is hyperbolic in the sense of @def:coxeter-system-type.
+Since $\det\sigma(G(M)) = 2\sigma(c)^2 - 6 = -2 - 2\sqrt2 < 0$, all three $d_i$ are negative, and $\sigma(G(M))$ is negative definite (@def:definiteness).
 :::

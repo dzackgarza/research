@@ -60,12 +60,12 @@ For $x = x_1 + x_2$ in an orthogonal direct sum, $x^2 = x_1^2 + x_2^2$, so the s
 ::: {.theorem #thm:coeven-duality title="Duality for coeven lattices"}
 
 If $S$ is even hyperbolic $2$-elementary and coeven with invariants $(r, a, 0)$, then $S^{\dagger} = \dualof{S}(2)$ is again even hyperbolic and coeven, with invariants $(r, r - a, 0)$.
-The Coxeter diagrams $\Gamma_r(S)$ and $\Gamma_r(S^{\dagger})$ are dual, in that the short and long roots are interchanged, and this duality induces a bijection between the maximal parabolic subdiagrams of the two, interchanging the odd and even ordinary types of @thm:isotropic-trichotomy.
+The Coxeter diagrams $\Gamma_r(S)$ and $\Gamma_r(S^{\dagger})$ correspond to each other with the short and long roots interchanged, and there is a bijection between the maximal parabolic subdiagrams of the two.
 :::
 
 ::: {.proof}
 
-This is [@Ale22 §3].
+This is [@Ale22, §3, paragraph "Other coeven lattices"].
 :::
 
 ## The decomposition of even hyperbolic two-elementary lattices
@@ -113,7 +113,7 @@ $$
 
 ::: {.proof}
 
-This is [@Ale22 §2].
+This is [@Ale22, §2].
 :::
 
 ::: {.example #ex:coble-picard-decomposition title="The decomposition of $S_\Co$"}
@@ -357,13 +357,23 @@ By @thm:reflection-group-quotient, $W_r(S_\Co)/W_2(S_\Co)\cong W(T_{2,3,7})$ is 
 
 ::: {.theorem #thm:elliptic-fibrations-isotropic title="Elliptic fibrations and isotropic vectors"}
 
-Let $X$ be a K3 surface with Picard lattice $S_X$.
-The primitive isotropic vectors $v\in S_X$ correspond bijectively to the elliptic fibrations $X\to\PP^1$, a fibration having $v$ as the class of its fiber.
+Let $X$ be a complex projective K3 surface with Picard lattice $S_X$.
+
+1. Sending an elliptic fibration $\pi\colon X\to\PP^1$ to the class of its fibre is a bijection from the elliptic fibrations of $X$, taken up to automorphisms of $\PP^1$, onto the nonzero primitive isotropic classes $v\in S_X$ that are nef.
+
+2. For every nonzero isotropic $v\in S_X$, one of $\pm v$ is mapped to a nef class by a product of reflections in classes of $(-2)$-curves.
 :::
 
 ::: {.proof}
 
-This is [@Huy16 §11.1]; the correspondence in the form used here is [@Ale22 §1].
+(1) Let $F$ be the class of a fibre of $\pi$.
+The fibres are the members of the base-point-free pencil $\pi^*\abs{\OO_{\PP^1}(1)}$, so $F^2 = 0$ and $F\cdot C\geq 0$ for every curve $C$, that is, $F$ is nef.
+A smooth fibre is an integral curve of arithmetic genus one [@Huy16, Def. 11.1.1], so $F$ is primitive and $h^0(X,\OO(F)) = 2$ [@Huy16, Rem. 2.3.13(i)]; hence $\abs{F}$ is the pencil of fibres, and $\pi$ is the morphism defined by $\abs{F}$, up to an automorphism of $\PP^1$, so the map is injective.
+Conversely let $v\neq 0$ be primitive, isotropic and nef, and let $L$ be the line bundle of class $v$.
+By [@Huy16, Prop. 2.3.10], $L$ is base point free and $L\cong\OO(mE)$ for a smooth fibre $E$ of an elliptic fibration $X\to\PP^1$ and some $m > 0$.
+Since $v$ is primitive, $m = 1$, so $v$ is the fibre class of that fibration and the map is surjective.
+
+(2) Replacing $v$ by $-v$ we may take $v$ in the closure of the positive cone; then a finite product of reflections $s_{[C]}$ in $(-2)$-curves $C$ maps $v$ to a nef class [@Huy16, Rem. 8.2.13].
 :::
 
 ## The ample cone

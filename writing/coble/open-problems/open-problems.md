@@ -62,7 +62,7 @@ An instance is the uniqueness of $\wB_7(2)$ as a maximal parabolic subdiagram of
 
 ::: {.conjecture #conj:galois-invariance-parabolics title="Open problem: Galois invariance of the maximal parabolic count"}
 
-Let $\Sigma$ be a Coxeter--Vinberg diagram whose Gram form $G$ is defined over a totally real number field $K$, and let $\sigma\in\gal(K/\QQ)$ be such that $\sigma(G)$ is again hyperbolic; the signature of $\sigma(G)$ is not determined by that of $G$ (@rmk:galois-conjugate-gram-form).
+Let $\Sigma$ be a Coxeter--Vinberg diagram whose Gram form $G$ is defined over a totally real number field $K$, and let $\sigma\in\gal(K/\QQ)$ be such that $\sigma(G)$ is again hyperbolic; the signature of $\sigma(G)$ is not determined by that of $G$ (@ex:galois-conjugate-gram-form).
 Then $\Sigma$ and $\sigma(\Sigma)$ have the same number of maximal parabolic subdiagrams.
 :::
 

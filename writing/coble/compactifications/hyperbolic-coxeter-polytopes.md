@@ -234,3 +234,43 @@ By @prop:parabolic-subdiagram-product, $W_I$ is the direct product of the irredu
 By @thm:coxeter-type-and-geometry(2), each $W_{I_j}$ acts on a euclidean space of dimension $\abs{I_j} - 1$ with a euclidean simplex as fundamental domain.
 These dimensions add up to $\sum_j(\abs{I_j}-1) = \rank\Sigma_I = n-1$, so the product of these simplices is a compact fundamental domain for $W_I$ on $\EE^{\,n-1}$.
 :::
+
+::: {.proposition #prop:maximal-parabolic-ideal-vertices title="Maximal parabolic subdiagrams of a finite-volume Coxeter polytope"}
+
+Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls $H_s = \alpha_s^{\perp}$, $s\in S$, and Coxeter--Vinberg diagram $\Sigma$, and suppose $\vol(P) < \infty$.
+
+1. Sending an ideal vertex of $P$ to the set of walls of $P$ through it is a bijection from the ideal vertices of $P$ onto the maximal parabolic subdiagrams of $\Sigma$ (@def:parabolic-subdiagram), and every maximal parabolic subdiagram of $\Sigma$ has rank $n-1$.
+
+2. If every $\alpha_s$ lies in $L$, then every ideal vertex of $P$ is $[\eta]$ for a unique primitive isotropic vector $\eta\in L$ in the closure of $C_L^+$.
+
+3. Let $M$ be a lattice of signature $(2,n+1)$, let $I\iscontainedin M$ be a primitive isotropic sublattice of rank $1$, and let $L = I^{\perp M}/I$.
+   Then $J\mapsto J/I$ is a bijection from the primitive totally isotropic sublattices $J\iscontainedin M$ of rank $2$ that contain $I$ onto the primitive isotropic sublattices of $L$ of rank $1$.
+   For an arithmetic group $\Gamma\leq\Orth(M)$ that preserves a connected component $D$ of the period domain of $M$, the rational boundary component of each such $J$ contains that of $I$ in its boundary, and the $1$-cusps of $\bbcpt{D/\Gamma}$ incident to the $0$-cusp of $I$, in the sense of [@Sca87, (2.1.10)], are the $\Gamma$-orbits of these $J$.
+:::
+
+::: {.proof}
+
+(1) By @cor:ideal-vertices-are-parabolic the map is injective, and its values are maximal parabolic subdiagrams of rank $n-1$.
+Let $\Sigma_J$ be a parabolic subdiagram.
+By @cor:coxeter-polytope-acute, $P$ is acute-angled, so [@Vin85, Ch. I, Prop. 3.2] applies: let $c_j > 0$, $j\in J$, be the coefficients of a linear relation among the rows of $G[J,J]$; then $u \definedas \sum_{j\in J} c_j\alpha_j$ is nonzero, isotropic and orthogonal to every $\alpha_j$ with $j\in J$, and $[u]\in\overline P$.
+Let $\hat P$ be the continuation of $P$ in the projective sphere [@Vin85, Ch. I, §4.1]; it is the convex hull of its finitely many vertices, and since $\vol(P) < \infty$ it equals $\overline P$ [@Vin85, Ch. I, §4.1].
+Let $F$ be the face of $\hat P$ that contains $[u]$ in its relative interior.
+Then $F\iscontainedin\overline P\iscontainedin\overline{\HH^n_L}$, and in an affine chart $\overline{\HH^n_L}$ is a closed ellipsoid, which is strictly convex; a segment in it whose interior meets the boundary is a single point, so $F = \theset{[u]}$ is a vertex of $\hat P$.
+Since $\vol(P) < \infty$, the complex of $\hat P$ equals the extended complex of $P$ [@Vin85, Ch. I, §4.1], so the vertex $[u]$, which lies on the boundary of $\HH^n_L$, is a vertex at infinity of $P$.
+By [@Vin85, Ch. I, Thm. 3.2], the set of walls through $[u]$ is a parabolic subdiagram of rank $n-1$, and it contains $J$ because $u\perp\alpha_j$ for $j\in J$.
+So every maximal parabolic subdiagram $\Sigma_J$ has rank $n-1$ and is the set of walls through $[u]$.
+By @prop:polytope-vertex-subdiagram(2), $[u]$ is the point cut out by $\Sigma_J$, and it lies in $\overline P$, so it is an ideal vertex of $P$ with set of walls $J$; the map is surjective.
+
+(2) Let $[\eta]$ be an ideal vertex and $K\iscontainedin S$ its set of walls.
+By @prop:polytope-vertex-subdiagram(2), $\RR\eta = A_K^{\perp}$, and $A_K$ is spanned by vectors of $L$, so $A_K^{\perp}$ is spanned by a vector of $L\tensor_\ZZ\QQ$.
+Hence $\RR\eta\intersect L$ is a primitive sublattice of rank $1$ of $L$, spanned by $\pm\eta_0$ with $\eta_0$ primitive and isotropic, and exactly one of $\pm\eta_0$ lies in the closure of $C_L^+$.
+
+(3) A totally isotropic $J\containing I$ lies in $I^{\perp M}$, and the form of $L$ is induced from that of $I^{\perp M}$, so $J/I$ is isotropic.
+The sublattice $I^{\perp M}$ is primitive in $M$, so $J$ is primitive in $M$ if and only if it is primitive in $I^{\perp M}$, that is, $I^{\perp M}/J\cong L/(J/I)$ is torsion-free, that is, $J/I$ is primitive in $L$.
+Conversely the preimage in $I^{\perp M}$ of a primitive isotropic sublattice $\ell\iscontainedin L$ of rank $1$ is a sublattice $J$ of rank $2$ containing $I$; the product of two vectors of $J$ equals the product of their images in $\ell$, which is $0$, so $J$ is totally isotropic, and it is primitive by the previous sentence.
+The two constructions are inverse to each other.
+
+The primitive totally isotropic sublattices of $M$ correspond to the rational boundary components of $D$, compatibly with the action of $\Gamma$, and $E\iscontainedin E'$ if and only if the boundary component of $E$ lies in the boundary of that of $E'$ [@Sca87, §2.1]; this gives the first assertion.
+The $0$-cusps and $1$-cusps of $\bbcpt{D/\Gamma}$ are the $\Gamma$-orbits of those of rank $1$ and $2$ [@Sca87, §2.1, (2.1.3)--(2.1.4)], and the $1$-cusp of $E$ is incident to the $0$-cusp of $I$ when every $\Gamma$-translate of $I$ lies in some $\Gamma$-translate of $E$ [@Sca87, (2.1.10)].
+Since $\gamma I\iscontainedin\gamma' E$ implies $\delta\gamma I\iscontainedin\delta\gamma' E$ for every $\delta\in\Gamma$, this holds if and only if $I\iscontainedin\gamma E$ for some $\gamma\in\Gamma$, that is, if and only if the $\Gamma$-orbit of $E$ contains a sublattice $J\containing I$.
+:::

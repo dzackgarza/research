@@ -181,7 +181,7 @@ The natural candidate for $W_j$ is the reflection subgroup induced on $\eta_j^{\
 ::: {.question #qst:sterk-ideal-vertices title="How do the ideal vertices correspond?"}
 
 The computed chambers have one or two isotropic rays, and the published diagrams have $9, 2, 4, 5, 13$ vertices at infinity.
-Ideal vertices of a chamber correspond bijectively to the rank-$(n-1)$ parabolic subdiagrams of its Coxeter--Vinberg diagram (@cor:ideal-vertices-are-parabolic), hence to the $1$-cusps adjacent to the $0$-cusp in question (@def:parabolic-subdiagram).
+For a chamber of finite volume, the ideal vertices correspond bijectively to the maximal parabolic subdiagrams of its Coxeter--Vinberg diagram, all of rank $n-1$, and each is the line of a primitive isotropic vector of $\eta_j^{\perp}/\eta_j$; the orbits, under the arithmetic group acting on $\ten$, of the corresponding primitive totally isotropic sublattices of rank $2$ containing $\ZZ\eta_j$ are the $1$-cusps incident to the $0$-cusp of $\eta_j$ (@prop:maximal-parabolic-ideal-vertices).
 Under a chamber decomposition answering @qst:sterk-reflection-subgroup, determine which ideal vertices of the union are ideal vertices of the constituent chambers and which arise on interior walls.
 :::
 

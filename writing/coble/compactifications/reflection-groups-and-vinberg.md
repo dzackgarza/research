@@ -251,9 +251,6 @@ For roots of norm $+2$, the three conditions of @def:elliptic-subdiagram read po
 ::: {.definition #def:parabolic-subdiagram}
 
 A parabolic subdiagram is **maximal** if it is not properly contained in a larger parabolic subdiagram.
-
-Let $L$ have signature $(2,n)$, let $I\subset L$ be a primitive isotropic line, and let $\overline{L}_I \definedas I^{\perp L}/I$ be the hyperbolic lattice at the $0$-cusp $[I]$.
-The maximal parabolic subdiagrams of the Coxeter--Vinberg diagram of a fundamental chamber for a reflection group acting on $\overline{L}_I$ correspond bijectively to the primitive isotropic lines of $\overline{L}_I$ met by that chamber, that is, to the rank-$2$ primitive isotropic sublattices $J\subseteq L$ containing $I$; passing to orbits under the stabilizer of $I$ in the arithmetic group gives the $1$-cusps adjacent to the $0$-cusp $[I]$ in the Baily--Borel compactification.
 :::
 
 ## Vinberg's algorithm

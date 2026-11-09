@@ -36,7 +36,7 @@ $$
 $$
 
 Each folded root corresponds to a folded node in the Dynkin diagram.
-For an involution $I$, $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i) \in L^G$.
+For an involution $I$, the orbit $[\alpha_i]$ is $\theset{\alpha_i}$ or $\theset{\alpha_i, I(\alpha_i)}$, so $\beta_{[\alpha_i]} = \alpha_i$ if $I(\alpha_i) = \alpha_i$ and $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i)$ otherwise.
 :::
 
 ## Examples
@@ -67,20 +67,55 @@ $\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long root
 
 ::: {.lemma #lem:root-folding-tdp title="Root folding criterion"}
 
-Let $\Phi(\tdp)$ be the root system of $\tdp$ and $I = -\Ien$ the induced involution on $\tdp$ whose fixed lattice is $\ten$.
+Let $\Phi(\tdp) = \Phi^2(\tdp)\union\Phi^4(\tdp)$ be the set of roots of $\tdp$ (@def:2elementary-roots), let $I = -\Ien$ be the involution of $\tdp$ induced by $\Ien$, whose fixed lattice is $\ten$, and write $x\cdot y$ for the form of $\tdp$.
+For $v\in\Phi(\tdp)$ let $\beta_{[v]}\in\ten$ be the folded vector of its $\generators{I}$-orbit (@def:folded-root): $\beta_{[v]} = v$ if $I(v) = v$, and $\beta_{[v]} = v + I(v)$ otherwise.
+Then $\beta_{[v]}\in\Phi(\ten)$ if and only if exactly one of the following holds:
 
-The folded roots $\beta_{[v]} \in \Phi\left( \tdp^{\generators{I}} \right)$ arise in exactly one of the following ways:
+1. $I(v) = v$ and $v\in\Phi^2(\tdp)$, in which case $\beta_{[v]} = v\in\Phi^2(\ten)$;
 
-1. $v \in \Phi^2(\tdp)$ and $\beta_{[v]} \in \Phi(\ten)$;
+2. $I(v) = v$ and $v\in\Phi^4(\tdp)$, in which case $\beta_{[v]} = v\in\Phi^4(\ten)$; or
 
-2. $v \in \Phi^4(\tdp)$ and $\beta_{[v]} \in \Phi(\ten)$; or
+3. $v\in\Phi^2(\tdp)$ and $v\cdot I(v) = 0$, in which case $\beta_{[v]} = v + I(v)\in\Phi^4(\ten)$ is the sum of two orthogonal roots in $\Phi^2(\tdp)$.
 
-3. $v \in \Phi^2(\tdp) \intersect I(v)^{\perp \tdp}$, and so $\beta_{[v]} \definedas v + I(v) \in \Phi^4(\ten)$ is the sum of orthogonal roots in $\Phi^2(\tdp)$.
+In particular, a long root $v\in\Phi^4(\tdp)$ with $I(v)\neq v$ never folds to a root of $\ten$.
 :::
 
 ::: {.proof}
 
-The folded diagram is computed from the involution by the recipe of @def:folded-root: an orbit of roots under the involution is a single node of the folded diagram, and its bond order to another orbit is the number of simple reflections relating them.
+By @def:lattice-involutions-k3 [@AEGS25, Def. 2.3], $\tdp = \lkt^{\Idp = -1}$ consists of the vectors $(u_1, w, -w, \alpha_1, \alpha_2)$ with $u_1, w\in U$ and $\alpha_1,\alpha_2\in E_8$.
+Write such a vector as $(u, \alpha_1, \alpha_2)$ with $u = (u_1, w, -w)$ in the sublattice $N\cong U\oplus U(2)$ formed by the first three coordinates, so that $\tdp = N\perp E_8\perp E_8$.
+Then $I(u, \alpha_1, \alpha_2) = -\Ien(u, \alpha_1, \alpha_2) = (u, -\alpha_2, -\alpha_1)$, whose fixed vectors $(u, \alpha, -\alpha)$ form $\lkt^{\Ien = -1} = \ten$.
+By @prop:k3-cover-eigenlattices both $\tdp$ and $\ten$ are even and $2$-elementary, so their roots are the two types of @def:2elementary-roots.
+
+Suppose $I(v) = v$, so $\beta_{[v]} = v\in\ten$.
+If $v = m y$ with $y\in\ten$ then $y\in\tdp$, so $v$ is primitive in $\ten$ because it is primitive in $\tdp$.
+If $v^2 = -2$, then $v\in\Phi^2(\ten)$.
+If $v^2 = -4$, then $v\cdot\ten\iscontainedin v\cdot\tdp\iscontainedin 2\ZZ$, so $v$ satisfies the integrality condition of @def:k-root in $\ten$, and $v\in\Phi^4(\ten)$ by @prop:root-integrality.
+So in this case $\beta_{[v]}\in\Phi(\ten)$, and (1) or (2) holds according to $v^2$.
+
+Suppose $I(v)\neq v$, so $\beta = \beta_{[v]} = v + I(v)$.
+Because $I$ is an isometry,
+$$
+\beta^2 = 2v^2 + 2\,v\cdot I(v),
+\qquad
+\beta\cdot x = v\cdot x + v\cdot I(x) = 2\,v\cdot x
+\quad\text{for } x\in\ten
+.
+$$
+In coordinates $\beta = (2u, \alpha_1 - \alpha_2, \alpha_2 - \alpha_1)$, so $\beta^2 = 4u^2 + 2(\alpha_1-\alpha_2)^2\in 4\ZZ$, since $N$ and $E_8$ are even.
+So $\beta^2\neq -2$, and by @def:2elementary-roots $\beta\in\Phi(\ten)$ exactly when $\beta^2 = -4$ and $\div_\ten(\beta) = 2$.
+If $\beta^2 = -4$ and $\beta = m y$ with $y\in\ten$, then $y^2 = -4/m^2$ lies in $2\ZZ$, so $m = \pm1$ and $\beta$ is primitive; and $\beta\cdot\ten\iscontainedin 2\ZZ$ by the displayed identity, so $\div_\ten(\beta) = 2$.
+Hence $\beta\in\Phi(\ten)$ if and only if $v^2 + v\cdot I(v) = -2$.
+
+For $v\in\Phi^2(\tdp)$ this is the condition $v\cdot I(v) = 0$ of (3), and then $v$ and $I(v)$ are orthogonal roots in $\Phi^2(\tdp)$.
+For $v\in\Phi^4(\tdp)$ it would require $v\cdot I(v) = 2$.
+But $\div_\tdp(v) = 2$ gives $u\cdot N\iscontainedin 2\ZZ$ and $\alpha_j\cdot E_8\iscontainedin 2\ZZ$.
+As $E_8$ is unimodular, $\alpha_j\in 2E_8$, so $\alpha_1\cdot\alpha_2\in 4\ZZ$.
+Writing $u = u' + u''$ with $u'\in U$ and $u''\in U(2)$, unimodularity of $U$ gives $u'\in 2U$, so $u'^2\in 8\ZZ$, while $u''^2\in 4\ZZ$ because the form of $U(2)$ is twice an even form.
+So $v\cdot I(v) = u^2 - 2\,\alpha_1\cdot\alpha_2\in 4\ZZ$, which excludes $v\cdot I(v) = 2$.
+
+The three cases are mutually exclusive: (1) and (2) differ in $v^2$, and in (3) $v\cdot I(v) = 0\neq v^2$, so $I(v)\neq v$.
+This is the forward direction of [@AEGS25, Lemma 3.4], which assumes in addition that $\beta_{[v]}^2 < 0$.
 :::
 
 ## Mirror moves
