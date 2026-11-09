@@ -33,7 +33,7 @@ The last section lists the questions that a finite derivation or computation dec
 | Unknown | Stated in |
 |:---|:---|
 | **The reflection subgroup of each Sterk fundamental domain** | @qst:sterk-reflection-subgroup, @qst:sterk-ideal-vertices |
-| **Global questions on hyperbolic Coxeter diagrams** | @qst:maximal-parabolic-complexity, @conj:galois-invariance-parabolics, @qst:parabolic-count-growth, @qst:arithmeticity, @qst:exact-covolume, @qst:regularized-theta |
+| **Global questions on hyperbolic Coxeter diagrams** | @qst:maximal-parabolic-complexity, @conj:galois-invariance-parabolics, @qst:parabolic-count-growth, @qst:exact-covolume, @qst:regularized-theta |
 
 : {tbl-colwidths="[35,65]"}
 
@@ -41,14 +41,14 @@ The last section lists the questions that a finite derivation or computation dec
 
 | Unknown | Stated in |
 |:---|:---|
-| **A generating set of the group $\Gamma_\Co$** | @prob:coxeter-completeness; the reflective set is decided — it is exactly the short roots, @prop:gamma-co-reflective-set — and what is open is the index $[\Gamma_\Co : W(T_\Co)]$ |
-| **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison; reduced to finite groups by @prop:gamma-co-two-definitions, and the Heegner and $\theta$ overgroups are strictly larger, both with index $\abs{W(E_8)}$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index); under block-compatibility of the gluing — an instance of @prob:coble-rigidity, and a *real* condition, since both summand decompositions fail to be $\Orth(q)$-invariant (computed: `computations/reports/coble_gluing_discriminants.py`, `computations/reports/coble_a20-block-invariance.py`) — the Heegner description is the congruence one cut down to $\Orth^+$, the index being $\abs{W(E_8)} = 696\,729\,600$ inside $\Orth^+$ and $2\abs{W(E_8)} = 1\,393\,459\,200$ for the full preimage, both unconditional (@prop:gamma-cong-eq-heegner); what is open is the comparison with the direct and geometric entries (@prob:coble-rigidity, @prob:B24, @prob:B25) together with the same block-compatibility for $\gamma_\Co$, which would identify the $\theta$ description with them; `computations/reports/smw0_accepted-proofs.md`, `computations/reports/coble_gamma_co_two_definitions.py` |
+| **A generating set of the group $\Gamma_\Co$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
+| **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison |
 | **Labeled Coble rigidity** | @prob:coble-rigidity, @prob:effective-cone-agreement, @prob:twist-identification, @rmk:a21-open |
 | **Projective coverage and the moduli equivalence** | @prob:projective-coverage, @prob:cover-singular-equivalence, @prob:period-diagram |
 | **The Enriques-to-Coble cusp correspondence** | @sec-enriques-coble-correspondence; the reduction @prop:cusp-map-separates-mod-two |
 | **The Coble cusps in the morphism chain** | @sec-cusp-correspondence-morphism-chain |
-| **The distinguished elliptic fibration of the K3 cover** | @sec-open-problems |
+| **The distinguished elliptic fibration of the K3 cover** | @qst:distinguished-elliptic-fibration |
 | **The home of the group action** | @qst:coble-mukai-naturality |
 
 : {tbl-colwidths="[35,65]"}

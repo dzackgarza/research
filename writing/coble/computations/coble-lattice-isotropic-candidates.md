@@ -12,12 +12,6 @@ notes: >-
 
 # Candidate isotropic vectors in $T_{\Co}$ {#sec-coble-lattice-isotropic-candidates}
 
-::: {.remark title="The open problem"}
-
-The enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$ is open ([Open problems](#sec-open-problems)), and so is the uniqueness of the $\discriminantkernel{T}$-orbit in divisibility $2$, which the proof of @lem:divisibilityTcoOne assumes.
-This section lists candidate representatives.
-:::
-
 ## The lattices as constructed
 
 $$
@@ -25,7 +19,7 @@ T_{\Co} = \generators{2} \oplus E_{10}(2) = \generators{2}\oplus U(2)\oplus E_8(
 \qquad
 S_{\Co} = \generators{-2} \oplus E_{10}(2),
 $$
-of rank 11, matching this project's $T_{\Co} = (11,11,1)_2$ and $S_{\Co} = (11,11,1)_1$.
+of rank 11, with $T_{\Co} = (11,11,1)_2$ and $S_{\Co} = (11,11,1)_1$.
 
 ## The 18 candidate vectors
 
@@ -49,22 +43,11 @@ The same 18 vectors are mapped term-by-term along the embedding chain $T_{\Co}\i
 - into $\ten = U \oplus U(2) \oplus E_8(2)$ by $h \mapsto e+f$;
 
 - into $\tdp = U \oplus U(2) \oplus E_8^{\oplus 2}$ by $a_i \mapsto a_i + b_i$.
-
-This yields a parallel norm and divisibility table across all three lattices, which is exactly the vector-by-vector form in which the Enriques-to-Coble cusp correspondence becomes checkable.
-:::
-
-## Orbit machinery available
-
-::: {.remark title="Orbit representatives from sage-indefinite-port"}
-
-The function `vector_orbit_representatives` of `sage-indefinite-port` computes orbit representatives of isotropic vectors for indefinite forms.
-Applied to $T_\Co$, it computes the open orbit count.
 :::
 
 ::: {.definition title="The isotropic trichotomy used as a separating invariant"}
 
 A primitive isotropic vector is classified as **Odd**, **Even ordinary**, or **Even characteristic**, by testing $(v^\perp/v)^\perp$ against $U$, $U(2)$ and $I_{1,1}(2)$.
-The cusp correspondence sections use this trichotomy.
 :::
 
 ## Sterk's five representatives, for comparison
