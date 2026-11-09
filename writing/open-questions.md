@@ -50,7 +50,7 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **KSBA versus semitoroidal** | @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss, @conj:restricted_ramification_semifan |
+| **KSBA versus semitoroidal** | @conj:coble-ksba-semitoroidal-morphism, @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss, @conj:restricted_ramification_semifan |
 | **Admissibility of Coble roots at a cusp** | @qst:coble_cusp_admissibility |
 | **An equivariant triangulation compatible with the marked root** | @qst:equivariant_triangulation |
 | **Is $\mch^*_{10A_1}$ empty, and where do the three semifans sit** | @qst:coble-arrangement-empty, @qst:semifan-poset-position |
