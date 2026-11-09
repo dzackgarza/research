@@ -129,7 +129,7 @@ The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from 
 
 ::: {.question title="Open problem: Coble-specific dlt models and pot geometry"}
 
-- **Coble pot geometry.** Construct the stable pair $(\mcv, \mcd)$ whose pot component is a rational Coble surface carrying a $\tfrac14(1,1)$ cyclic quotient singularity corresponding to the nodes of the rational sextic $C$, the singularity of @conj:coble_quarter_singularity (cf. @def:dlt-involution-pair and @def:coble-divisor-model).
+- **Coble pot geometry.** Construct the stable pair $(\mcv, \mcd)$ whose pot component is a rational Coble surface carrying a $\tfrac14(1,1)$ cyclic quotient singularity corresponding to the nodes of the rational sextic $C$, the singularity of @prop:coble-quarter-singularity (cf. @def:dlt-involution-pair and @def:coble-divisor-model).
 
 - **Stalk assembly.** Describe the transition of the stalk assembly and the integral-affine configuration as the Enriques surface log-collapses onto the discriminant divisor $\Delta$, where the K3 cover becomes nodal.
 :::

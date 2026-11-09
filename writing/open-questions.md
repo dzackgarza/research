@@ -50,8 +50,6 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **Root-orbit uniqueness under $\gent$** | @qst:coble_root_orbit_uniqueness |
-| **The quarter singularity** | @conj:coble_quarter_singularity |
 | **KSBA versus semitoroidal** | @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss, @conj:restricted_ramification_semifan |
 | **Admissibility of Coble roots at a cusp** | @qst:coble_cusp_admissibility |
 | **An equivariant triangulation compatible with the marked root** | @qst:equivariant_triangulation |

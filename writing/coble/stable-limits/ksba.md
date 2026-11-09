@@ -111,13 +111,36 @@ $$
 Is $R_{\bar S}$ $\QQ$-Cartier and ample, and is $(\bar S, \eps R_{\bar S})$ slc?
 For ampleness, one route descends the ample ramification divisor from the K3 cover: $K_{\bar S} + \eps R_{\bar S}$ pulls back to $\eps R_X$, with $R_X$ coming from the $(2,2)$-divisor on $Y = \PP^1 \times \PP^1$.
 For the slc condition, one route runs through the du Val singularities on the K3 cover and a finite quotient that is quasi-étale in codimension one.
-How does the anti-bicanonical $(-4)$-curve of the smooth Coble resolution appear on $\bar S$?
 :::
 
-::: {.conjecture #conj:coble_quarter_singularity}
+::: {.proposition #prop:coble-quarter-singularity title="The node fixed by the involution descends to a $\frac{1}{4}(1,1)$ point"}
 
-On the stable quotient $\bar S$, an $A_1$-node of the K3 cover fixed by $\ien$ descends to a cyclic quotient singularity of type $\frac{1}{4}(1,1)$, and the anti-bicanonical $(-4)$-curve on the smooth Coble resolution is the curve contracted to this point.
-In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@Hor77], the local input producing the $A_1$-node on the double cover is a $\tau$-invariant $(4,4)$-curve passing through a $\tau$-fixed point with nondegenerate quadratic term.
+Let $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$, let $B = (f = 0)$ be a $\tau$-invariant curve of bidegree $(4,4)$, and let $X^\sharp = \theset{z^2 = f(x,y)}$ be the double cover of $Y$ branched along $B$ [@Hor77, p. 54].
+Suppose that $B$ passes through exactly one $\tau$-fixed point $p$, that the quadratic term of $f$ at $p$ is nondegenerate, and that $B$ is smooth away from $p$.
+Let $\iota_{\Co}(x,y,z) = (-x,-y,-z)$; this is the formula of the Enriques involution $\ien$ of @sec-aegs-projective.
+
+1. The curve $B$ has an ordinary node at $p$, and $X^\sharp$ has an $A_1$ singularity over $p$ that $\iota_{\Co}$ fixes.
+
+2. The quotient $\bar S = X^\sharp/\iota_{\Co}$ has a cyclic quotient singularity of type $\frac{1}{4}(1,1)$ at the image of this $A_1$ point.
+
+3. Let $r \colon \wX \to X^\sharp$ be the minimal resolution, with exceptional curve $E$, let $\psi \colon \wX \to \wV$ be the quotient by the lift of $\iota_{\Co}$, and let $C = \psi(E)$. Then $C^2 = -4$ and $\abs{-2K_{\wV}} = \theset{C}$. The morphism $\mu \colon \wV \to \bar S$ induced by $r$ contracts $C$ to the $\frac{1}{4}(1,1)$ point and is an isomorphism over its complement.
+:::
+
+::: {.proof}
+
+(1) The curve $B$ has an ordinary node at $p$ by @lem:node-condition.
+By the proof of @prop:local-quarter, $X^\sharp$ is analytically $\theset{xy - z^2 = 0}$ over $p$, which is an $A_1$ singularity.
+This point is $(p, 0)$, because $f(p) = 0$, and $\iota_{\Co}(p, 0) = (\tau(p), 0) = (p, 0)$.
+
+(2) This is @prop:local-quarter.
+
+(3) $C^2 = -4$ is computed in @sec-anti-bicanonical, and $\abs{-2K_{\wV}} = \theset{C}$ is @prop:antibicanonical-system.
+Let $q \colon X^\sharp \to \bar S$ be the quotient map.
+The resolution $r$ commutes with the two involutions, so it induces $\mu$ with $\mu \circ \psi = q \circ r$.
+Hence $\mu(C) = q(r(E))$, which is the image of the $A_1$ point, and by (2) this is the $\frac{1}{4}(1,1)$ point.
+The curve $E$ is $\iota_{\Co}$-invariant, so $\psi^{-1}(C) = E$.
+Over the complement of the $A_1$ point, $r$ restricts to an equivariant isomorphism $\wX \setminus E \to X^\sharp \setminus r(E)$.
+So $\mu$ restricts to an isomorphism $\wV \setminus C \to \bar S \setminus \mu(C)$.
 :::
 
 ## The restricted ramification semifan
@@ -137,7 +160,7 @@ After normalization, the KSBA compactification of the polarized Coble locus agre
 
 ::: {.conjecture #conj:no_moduli_loss}
 
-The stable quotient determines its marked Coble root: the $\frac{1}{4}(1,1)$ singularity of the quarter-singularity conjecture (@conj:coble_quarter_singularity) -- equivalently, the contracted anti-bicanonical $(-4)$-curve on the resolution -- recovers it, so that degenerations differing only by their marked root are not identified.
+The stable quotient determines its marked Coble root: the $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity -- equivalently, the contracted anti-bicanonical $(-4)$-curve on the resolution -- recovers it, so that degenerations differing only by their marked root are not identified.
 Without this injectivity the restricted semifan would be too fine for the actual KSBA boundary, and the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) would fail.
 :::
 
