@@ -142,8 +142,8 @@ $$
 \theset{[x]\in\PP(\ten\tensor\CC) \mid x\cdot x = 0,\ x\cdot\bar x > 0}
 .
 $$
-Let $\Gamma_{\En} = \Orth(\ten)$, and let $\Delta\subset D(\ten)/\Gamma_{\En}$ be the divisor $\alpha^\perp$ of the unique $\Gamma_{\En}$-orbit of vectors $\alpha\in\ten$ with $\alpha^2 = -2$.
-Then the points of $(D(\ten)\setminus\Delta)/\Gamma_{\En}$ are in bijection with the isomorphism classes of Enriques surfaces [@AEGS25, Defs. 2.5–2.7].
+Let $\Gamma^K_{\En} = \Orth(\ten)$, and let $\Delta\subset D(\ten)/\Gamma^K_{\En}$ be the divisor $\alpha^\perp$ of the unique $\Gamma^K_{\En}$-orbit of vectors $\alpha\in\ten$ with $\alpha^2 = -2$.
+Then the points of $(D(\ten)\setminus\Delta)/\Gamma^K_{\En}$ are in bijection with the isomorphism classes of Enriques surfaces [@AEGS25, Defs. 2.5–2.7].
 :::
 
 ## $ADE$ and $BC$ surfaces

@@ -17,7 +17,7 @@ tags:
 Let $\fttz=\bD(\tdp)/\Gamma_\dP$ be the moduli space of K3 surfaces of degree $4$ with a del Pezzo involution [@AEGS25, §1, Def. 2.7].
 
 1. The inclusion $\bD(T_\En)\subset\bD(\tdp)$ induces a finite, generically injective morphism $\fentwo\to\fttz$, and $\fentwo$ is the normalization of a closed subvariety of $\fttz$ [@AEGS25, Lemma 2.8].
-2. The inclusion $\gent\subseteq\Gamma_\En$ of a subgroup of finite index induces a morphism $\fentwo\to F_{(10,10,0)}=\bD(T_\En)/\Gamma_\En$ of degree $2^7\cdot17\cdot31$ [@AEGS25, §2.3; @Ste91, Rem. 2.12].
+2. The inclusion $\gent\subseteq\Gamma^K_\En$ of a subgroup of finite index induces a morphism $\fentwo\to F_{(10,10,0)}=\bD(T_\En)/\Gamma^K_\En$ of degree $2^7\cdot17\cdot31$ [@AEGS25, §2.3; @Ste91, Rem. 2.12].
 :::
 
 ::: {.construction title="The embedding and its two extensions"}

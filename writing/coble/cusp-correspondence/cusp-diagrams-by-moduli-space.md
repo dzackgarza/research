@@ -37,7 +37,21 @@ The unique maximal parabolic $\wE_8(2)$ in $\EnriquesInvariants_1$, correspondin
 ::: {#fig-enriques-maximal-parabolics-10-8-0 .figure}
 \input{tikz/fig_Maximal_Parabolics_E8_B8_En_10_8_0.tex}
 
-The two maximal parabolics $\wE_8$, $\wB_8$ in $(10, 8, 0)_1$ corresponding to the 1-cusps $(8, 8, 0)_0$ and $(8, 6, 0)_0$ respectively.
+The two maximal parabolics $\wE_8(2)$, $\wB_8(2)$ in $(10, 8, 0)_1$ corresponding to the 1-cusps $(8, 8, 0)_0$ and $(8, 6, 0)_0$ respectively.
+:::
+
+::: {.example #ex:enriques-10-8-0-parabolic-types title="The types of the maximal parabolics of $G_{(10,8,0)_1}$ and $G_{(9,9,1)_1}$"}
+
+In @fig-enriques-coxeter-diagrams the diagram $G_{(10,8,0)_1}$ has nine roots of square $-4$, numbered $1,\ldots,9$ as the diagram $E_9$ in Bourbaki's numbering, and one root $10$ of square $-2$, joined to root $9$ by an edge of weight $4$.
+The diagram $G_{(9,9,1)_1}$ of @fig-coble-coxeter-diagrams has eight roots of square $-4$, numbered as $E_8$, and one root $9$ of square $-2$, joined to root $8$ by an edge of weight $4$.
+For roots $h_i$, $h_j$ joined by an edge of weight $m$, $\abs{h_i\cdot h_j} = \sqrt{h_i^2h_j^2}\cos(\pi/m)$, so $h_i\cdot h_j = 2$ for each edge of both diagrams.
+
+1. On the vertex set $\theset{1,\ldots,9}$ of $G_{(10,8,0)_1}$, minus the Gram matrix of the roots is $2$ times the Cartan matrix of $\wE_8$, so this parabolic is $\wE_8(2)$.
+2. On the vertex set $\theset{2,\ldots,10}$ of $G_{(10,8,0)_1}$, minus the Gram matrix of the roots is $2$ times the Gram matrix of the simple roots $-(e_1+e_2), e_1-e_2, \ldots, e_7-e_8, e_8$ of $\wB_8$, whose short roots have square $1$ as in @def:root-system-Bn-Cn. So this parabolic is $\wB_8(2)$.
+3. On the vertex set $\theset{2,\ldots,9}$ of $G_{(9,9,1)_1}$, the same comparison with $\wB_7$ gives $\wB_7(2)$.
+
+Each of these matrices is positive semidefinite of rank $8$, $8$ and $7$ respectively.
+This is a computation in SageMath with exact rational arithmetic.
 :::
 
 ## The Coble moduli space

@@ -3,7 +3,9 @@
 Let $S$ be a terminal Coble surface of K3 type with $\abs{-2K_S} = \theset{C}$, where $C = C_1 + \cdots + C_n$ is a disjoint union of $n$ $(-4)$-curves, and let $f\colon X\to S$ be its K3 double cover.
 By @prop:coble-k3-cover, $S$ is the blowup of $\PP^2$ at a set $\Sigma$ of $\abs{\Sigma} = 9+n$ points, possibly infinitely near, and $K_S^2 = -n$.
 For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice $M$ of rank $r = 10+n$ with $a(M) = 12-n$, and the ramification divisor of $f$ is as in @prop:nikulin-fixed-locus with $g = 0$ and $k = n-1$.
-@tbl-coble-lattices lists these lattices $M$ [@CDL25, Table 5.1, p. 553], and @prop:coble-table-invariants gives their orthogonal complements $N$ in $\lkt$.
+@tbl-coble-lattices lists these lattices $M$.
+It is [@CDL25, Table 5.1, p. 553] with the entries at $n=2$ and $n=10$ corrected by @prop:coble-table-cdl-corrections.
+@prop:coble-table-invariants gives the orthogonal complements $N$ of the lattices $M$ in $\lkt$.
 
 | $n$ | $\abs{\Sigma}$ | $K_{\mathrm{V}}^{2}$ | $M = (r, l, \delta)$ | 2-elementary lattice $M$ | $N=M^{\perp}$ |
 | :-- | :------------- | :------------------- | :------------------- | :-------------------------------------------------------------------------------- | :------------------------- |
@@ -73,20 +75,32 @@ In [@CDL25, Table 5.1, p. 553] the number $n$ of components of $C$ is written $k
 
 :::
 
-::: {.example #ex:coble-table-cdl-rows title="The rows $n=2$ and $n=10$ of the Coble table"}
+::: {.proposition #prop:coble-table-cdl-corrections title="The rows $n=2$ and $n=10$ of the Coble table"}
 
-The rows of @tbl-coble-lattices are those of [@CDL25, Table 5.1, p. 553] except in two entries.
+1. For a general $S$ with $n=2$, $\Pic(X)\cong\mathrm{E}_8(2)\oplus\mathrm{U}\oplus\mathrm{A}_1^{\oplus 2}$.
+   The lattice $\mathrm{E}_{10}(2)\oplus\mathrm{A}_1^{\oplus 2}$ of the row $k=2$ of [@CDL25, Table 5.1, p. 553] has $a = 12$, so it does not have the invariants $(12,10,1)$ of that row.
+2. For $n=10$, $\abs{\Sigma} = 19$.
+   The row $k=10$ of [@CDL25, Table 5.1, p. 553] gives $N = 20$, which contradicts $K_{\mathrm V}^2 = -10$.
 
-1. The row $k=2$ of [@CDL25, Table 5.1] has invariants $(r,l,\delta)=(12,10,1)$ and lattice $\mathrm{E}_{10}(2)\oplus\mathrm{A}_1^{\oplus 2}$.
-   Since $\mathrm{E}_{10}$ is unimodular, @prop:scaled-discriminant-ses gives $A_{\mathrm{E}_{10}(2)}\cong(\bZ/2)^{10}$, so
+The other entries of @tbl-coble-lattices are those of [@CDL25, Table 5.1, p. 553]. At $n=10$ that table writes $N = M^\perp$ as $\generators{2}^{\oplus 2}$, which is $\latI_{2,0}(2)$.
+
+:::
+
+::: {.proof}
+
+1. By @cor:coble-k3-cover-lattice-chain, for a general $S$ the lattice $f^*\Pic(S)\cong\latI_{1,11}(2)$ has finite index in $\Pic(X)$, so $\Pic(X)$ has signature $(1,11)$.
+   By @prop:coble-k3-cover (6), $\Pic(X)$ is $2$-elementary with $a = 12-n = 10$, and $\delta = 1$ is the entry of [@CDL25, Table 5.1, p. 553] at $k=2$.
+   The lattice $L\definedas\mathrm{E}_8(2)\oplus\mathrm{U}\oplus\mathrm{A}_1^{\oplus 2}$ is even.
+   It has signature $(0,8)+(1,1)+(0,2) = (1,11)$, and $a(L) = 8+0+2 = 10$ by the summand values in the proof of @prop:coble-table-invariants.
+   The basis vector $x$ of $\mathrm{A}_1 = \generators{-2}$ gives the class of $x/2$ in $A_L$, with $q_L(x/2) = -\tfrac12\notin\bZ/2\bZ$, so $\delta(L) = 1$.
+   By @thm:two-elementary-classification, the signature, $a$ and $\delta$ determine an indefinite even $2$-elementary lattice up to isometry, so $\Pic(X)\cong L$.
+   For the lattice of [@CDL25, Table 5.1, p. 553], $\mathrm{E}_{10}$ is unimodular, and @prop:scaled-discriminant-ses gives $A_{\mathrm{E}_{10}(2)}\cong(\bZ/2)^{10}$, so
    $$
-   a\qty(\mathrm{E}_{10}(2)\oplus\mathrm{A}_1^{\oplus 2}) = 10+2 = 12 \neq 10 .
+   a\qty(\mathrm{E}_{10}(2)\oplus\mathrm{A}_1^{\oplus 2}) = 10+2 = 12 \neq 10
+   .
    $$
-   The value $l=12-n=10$ is the one forced by $l(D(M)) = l(\mathrm{I}^{1,N}(2)) - 2(n-1) = 21-N$ [@CDL25, p. 552].
-   The lattice $\mathrm{E}_8(2)\oplus\mathrm{U}\oplus\mathrm{A}_1^{\oplus 2}$ has rank $8+2+2=12$ and $a=8+0+2=10$, and it is the entry of @tbl-coble-lattices at $n=2$.
-
-2. The row $k=10$ of [@CDL25, Table 5.1] has $K_{\mathrm V}^2=-10$ and $N=20$.
-   By [@CDL25, (5.4.1)], $K_{\mathrm V}^2 = 9-N = -n$, so $K_{\mathrm V}^2=-10$ gives $N=19$, the entry of @tbl-coble-lattices at $n=10$.
-   This agrees with [@CDL25, Example 5.4.4], where the blow-up of the $15$ singular points of ten lines on a quintic del Pezzo surface has $N=19$ and realizes this row.
+2. By [@CDL25, (5.4.1), p. 552], $K_{\mathrm V}^2 = 9-N = -n$, so $n=10$ gives $N = 19$.
+   This agrees with [@CDL25, Example 5.4.4 (2), p. 553], where the blowup of the $15$ intersection points of the ten lines on a quintic del Pezzo surface has $N=19$ and realizes the bottom row of the table.
+   The lattices $\generators{2}^{\oplus 2}$ and $\latI_{2,0}(2)$ have the same Gram matrix $\diag(2,2)$.
 
 :::

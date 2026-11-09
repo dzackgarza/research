@@ -133,31 +133,37 @@ The first index is $2$, so $T$ is of type IV in the sense of @prop:type-iv-dimen
 For $M=S_\Co$ of rank $11$ the complement has signature $(2,9)$, giving $\dim_\CC D_{T_\Co}=9$.
 :::
 
-Letting $E_{10} \definedas U \oplus E_8$, one can similarly consider the Enriques lattices $\sen := E_{10}(2)$ with $\ten = U \oplus E_{10}(2)$.
-Letting
+::: {.definition #def:heegner-divisor title="Heegner divisor"}
 
+Let $N$ be an even lattice of signature $(2, m)$, and let $\mathcal{D}(N) = \theset{[\omega]\in\PP(N\tensor\CC) \suchthat \omega\cdot\omega = 0,\ \omega\cdot\bar\omega > 0}$.
+For $d\in\ZZ$, the **$(-2d)$-Heegner divisor** of $\mathcal{D}(N)$ is
 $$
-\mch_{-2d} = \Union_{\delta^2 = -2d} \delta^{\perp D_T}
-,
+\mch_{-2d} \definedas \Union_{\delta\in N,\ \delta^2 = -2d} \theset{[\omega]\in\mathcal{D}(N) \suchthat \omega\cdot\delta = 0}
 $$
+[@DK13, §3].
+:::
 
-be the union of the hyperplane sections cut out by the vectors $\delta$ of norm $-2d$, as in @fig-period-domain-hyperplanes, one can thus present
+::: {.proposition #prop:enriques-nodal-coble-heegner title="Enriques, nodal Enriques and Coble surfaces in the Enriques period domain"}
 
-$$
-\begin{aligned}
-\fen &= \qty{D_{\ten} \sm \mch_{-2}} / \Orth^+(\ten)^* \\
-\fco &= \mch_{-2} / \Orth^+(\ten)^* \\
-F_{\Nod} &= \qty{\mch_{-4} \sm \mch_{-2}} / \Orth^+(\ten)^*
-\end{aligned}
-$$
+Let $\ten = U\oplus E_{10}(2)$ be the orthogonal complement in $\lkt$ of the pullback $E_{10}(2)$ of the numerical lattice of an Enriques surface to its K3 cover.
+The group $\Orth(\ten)$ is the group $\Gamma^K_\En$ of the opening display, and it contains the group $\Orth^+(\ten)^*$ of $\fen$.
 
-where surfaces along the divisor $\mch_{-2}$ in $\fen$ correspond precisely to Coble surfaces and those along $\mch_{-4}\sm \mch_{-2}$ correspond to Enriques surfaces with $A_1$ singularities.
+1. The period point of the K3 cover of an Enriques surface does not lie in $\mch_{-2}$.
+   The quotient $\mathcal{D}(\ten)/\Orth(\ten)$ is a normal quasi-projective variety of dimension $10$, and $\qty{\mathcal{D}(\ten)\sm\mch_{-2}}/\Orth(\ten)$ is the moduli space $\mcm_\En$ of Enriques surfaces [@DK13, §3].
+2. There are two $\Orth(\ten)$-orbits of $(-4)$-vectors in $\ten$ [@AEGS25, §2.3].
+   One orbit consists of the vectors $\delta$ with $\delta^{\perp\ten}\cong T_\Nod = U\oplus\generators{4}\oplus E_8(2)$; let $\mch^{\mathrm{nod}}_{-4}\iscontainedin\mch_{-4}$ be the union of their hyperplanes.
+   The divisor $\mcm^{\mathrm{nod}}_\En \definedas \qty{\mch^{\mathrm{nod}}_{-4}\sm\mch_{-2}}/\Orth(\ten)$ parametrizes nodal Enriques surfaces [@AEGS25, §2.3].
+   The quotient $\mathcal{D}(T_\Nod)/\Orth(T_\Nod)$ is a quasi-projective variety of dimension $9$, and $\mcm^{\mathrm{nod}}_\En$ is birationally isomorphic to it [@DK13, §3, Prop. 3.1].
+   The other orbit gives the divisor of unigonal Enriques surfaces (@prop:coble-and-unigonal-heegner-divisors).
+3. The quotient $\mch_{-2}/\Orth(\ten)$ is birationally isomorphic to the moduli space $\mcm_\Co$ of Coble surfaces (@prop:coble-moduli-heegner-divisor).
+
+:::
 
 ::: {#fig-period-domain-hyperplanes .figure}
 \input{tikz/fig_type_iv_hsd.tex}
 
 The period domain $D_{\ten}$ together with the hyperplanes $v_i^{\perp\ten}$ cut out by vectors $v_i$ of fixed negative norm.
-The Coble surfaces are precisely the periods lying on the hyperplanes of $\mch_{-2}$.
+The quotient by $\Orth(\ten)$ of the union $\mch_{-2}$ of the hyperplanes of the vectors of norm $-2$ is birationally isomorphic to $\mcm_\Co$ (@prop:coble-moduli-heegner-divisor).
 :::
 
 ::: {.proposition #prop:coble-period-domain title="The period domain of Coble surfaces"}

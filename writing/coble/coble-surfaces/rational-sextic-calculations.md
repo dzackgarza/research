@@ -90,17 +90,32 @@ $$
 ,
 $$
 so sextic curves form a $\PP^{27}$.
-Requiring a singular point at a prescribed $p\in\PP^2$ imposes three linear conditions on this space.
-Ten prescribed points therefore impose $30$ conditions on a $27$-dimensional projective space, and for a general choice of $p_1,\dots,p_{10}$ no sextic is singular at all ten.
-A sextic singular at all of $p_1, \ldots, p_{10}$ exists if and only if the thirty conditions have rank at most $27$.
+Requiring a singular point at a prescribed $p\in\PP^2$ imposes at most three linear conditions on this space.
+A sextic singular at all of $p_1, \ldots, p_{10}$ exists if and only if the resulting thirty conditions have rank at most $27$.
+There is a nonempty Zariski-open subset $\mathcal U\iscontainedin(\PP^2)^{10}$ such that for $(p_1, \ldots, p_{10})\in\mathcal U$ the thirty conditions have rank $28$, and no sextic is singular at all ten points.
 :::
 
 ::: {.proof}
 
 The monomials $x^iy^jz^k$ with $i+j+k=6$ number $\binom{6+2}{2} = 28$, giving the stated dimension.
 For a fixed $p$, singularity of $\theset{F = 0}$ at $p$ is the vanishing of the three partial derivatives $\del_x F(p)$, $\del_y F(p)$, $\del_z F(p)$; each is a linear condition on the coefficients of $F$, and $F(p) = 0$ follows from Euler's identity $\Sum_i x_i\,\del_i F = 6F$.
-Imposing this at ten points gives $30$ linear conditions on a space of projective dimension $27$, so the general such linear system has empty intersection.
-The thirty conditions form a linear map $H^0\bigl(\PP^2, \OO_{\PP^2}(6)\bigr)\cong\CC^{28}\to\CC^{30}$, and a sextic singular at all ten points is a nonzero vector of its kernel. The kernel is nonzero if and only if the rank is at most $27$.
+Choose representatives $\tilde p_i\in\CC^3\setminus\theset{0}$ of the points $p_i$.
+The thirty conditions form the linear map $M(\tilde p_1, \ldots, \tilde p_{10})\colon H^0\bigl(\PP^2, \OO_{\PP^2}(6)\bigr)\cong\CC^{28}\to\CC^{30}$ that sends $F$ to the values of $\del_x F$, $\del_y F$, $\del_z F$ at the $\tilde p_i$.
+A sextic singular at all ten points is a nonzero vector of its kernel, and the kernel is nonzero if and only if the rank is at most $27$.
+
+The partial derivatives are homogeneous of degree $5$, so replacing $\tilde p_i$ by $\lambda\tilde p_i$ multiplies three rows by $\lambda^5$ and does not change the rank.
+The locus where the rank is $28$ is the complement of the common zero set of the $28\times 28$ minors, which are polynomials in the coordinates of the $\tilde p_i$; it therefore descends to a Zariski-open subset $\mathcal U\iscontainedin(\PP^2)^{10}$.
+The subset $\mathcal U$ is nonempty by @ex:sextic-node-conditions-rank.
+:::
+
+::: {.example #ex:sextic-node-conditions-rank title="Ten points at which the node conditions have full rank"}
+
+For the ten points
+$$
+(1:0:0),\ (0:1:0),\ (0:0:1),\ (1:1:1),\ (1:2:3),\ (1:-1:2),\ (2:1:-1),\ (1:3:-2),\ (3:-2:1),\ (1:4:5)
+$$
+the $30\times 28$ matrix over $\QQ$ of the map $M$ of @prop:sextic-node-conditions, in the monomial basis $x^iy^jz^{6-i-j}$, has rank $28$.
+This is a computation in SageMath with exact rational arithmetic.
 :::
 
 ::: {.proposition #prop:sextic-equisingular-dimension title="Dimension of the space of sextics of a fixed singular type"}

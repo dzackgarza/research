@@ -269,11 +269,11 @@ The group definition is geometric: it is taken from the common K3 lattice, the i
 This is the standard that any direct Coble group must meet.
 
 ::: {.proposition #prop:coble-and-unigonal-heegner-divisors title="The Coble divisor and the unigonal divisor"}
-Let $\Gamma_{\mathrm{En}}=O(T_{\mathrm{En}})$, so that $\mcf_{(10,10,0)}=\bD(T_{\mathrm{En}})/\Gamma_{\mathrm{En}}$.
+Let $\Gamma^K_{\mathrm{En}}=O(T_{\mathrm{En}})$, so that $\mcf_{(10,10,0)}=\bD(T_{\mathrm{En}})/\Gamma^K_{\mathrm{En}}$.
 
-1. Up to $\Gamma_{\mathrm{En}}$ there is a unique $(-2)$-vector $\alpha\in T_{\mathrm{En}}$. The discriminant divisor $\Delta=\alpha^\perp\subset\bD(T_{\mathrm{En}})/\Gamma_{\mathrm{En}}$ parameterizes quotients of nodal K3 surfaces by an involution that fixes a node. These quotients are rational Coble surfaces with a $\frac{1}{4}(1,1)$ singularity.
+1. Up to $\Gamma^K_{\mathrm{En}}$ there is a unique $(-2)$-vector $\alpha\in T_{\mathrm{En}}$. The discriminant divisor $\Delta=\alpha^\perp\subset\bD(T_{\mathrm{En}})/\Gamma^K_{\mathrm{En}}$ parameterizes quotients of nodal K3 surfaces by an involution that fixes a node. These quotients are rational Coble surfaces with a $\frac{1}{4}(1,1)$ singularity.
 
-2. There are two $\Gamma_{\mathrm{En}}$-orbits of $(-4)$-vectors $\beta\in T_{\mathrm{En}}$. The divisor of the vector with $\beta^\perp\cong\langle4\rangle\oplus U\oplus E_8(2)$ parameterizes nodal Enriques surfaces. The divisor of the other orbit parameterizes the unigonal Enriques surfaces, which are double covers of $\bP(1,1,2)$.
+2. There are two $\Gamma^K_{\mathrm{En}}$-orbits of $(-4)$-vectors $\beta\in T_{\mathrm{En}}$. The divisor of the vector with $\beta^\perp\cong\langle4\rangle\oplus U\oplus E_8(2)$ parameterizes nodal Enriques surfaces. The divisor of the other orbit parameterizes the unigonal Enriques surfaces, which are double covers of $\bP(1,1,2)$.
 
 3. On the unigonal Heegner divisor of $\mcf_{\mathrm{En},2}$, the projective diagram of @sec-aegs-projective is replaced by the diagram with $(Y,L)=(\bP(1,1,2),\mathcal O(4))$, a singular quadric.
 

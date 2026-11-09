@@ -154,7 +154,18 @@ q_{S_\Co} \cong \generators{\tfrac{1}{2}}\oplus\generators{-\tfrac{1}{2}}^{10}
 $$
 so $S_\Co$ is $2$-elementary of rank $r = 11$ and length $a = 11$.
 Because $q_{S_\Co}$ takes the value $\tfrac{1}{2}\notin\bZ$, one has $\delta = 1$, giving $(r, a, \delta) = (11, 11, 1)$.
-For a nonsymplectic involution whose fixed locus is a single rational curve, the fixed-locus formula of @prop:nikulin-fixed-locus assigns the invariant lattice these same invariants $(r, a, \delta) = (11, 11, 1)$, so $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
+
+The involution $\sigma$ acts as $-\id$ on $T(X)$, and $H^2(X, \bZ)^\sigma = \Pic(X)^{\sigma^*}$.
+The lattice $\NS(X) = H^{1,1}(X)\intersect H^2(X, \bZ)\cong\Pic(X)$ is primitive in $H^2(X, \bZ)$, and $T(X) = \NS(X)^{\perp}$ [@Huy16, Ch. 3, Def. 2.5 and Lemma 3.1].
+The sublattice $S_\Co = f^*\Pic(S)$ lies in $\Pic(X)$, and it has finite index in $H^2(X, \bZ)^\sigma$, so $H^2(X, \bQ)^\sigma = S_\Co\tensor\bQ\iscontainedin\NS(X)\tensor\bQ$.
+Primitivity of $\NS(X)$ gives $H^2(X, \bZ)^\sigma\iscontainedin H^2(X, \bZ)\intersect(\NS(X)\tensor\bQ) = \NS(X)$, hence $H^2(X, \bZ)^\sigma = \Pic(X)^{\sigma^*}$.
+It also gives $T(X) = \NS(X)^\perp\iscontainedin(H^2(X, \bZ)^\sigma)^\perp$, which is the coinvariant lattice of @def:invariant_coinvariant_lattices.
+By @prop:involution_eigenspaces, $\sigma^*$ acts as $-1$ on the rational span of the coinvariant lattice, so $\sigma^*$ acts as $-\id$ on $T(X)$.
+
+So @prop:nikulin-fixed-locus applies to $\sigma$ and to $M = \Pic(X)^{\sigma^*} = H^2(X, \bZ)^\sigma$.
+The fixed locus $R$ is nonempty and is not a union of two elliptic curves, so it has the form $C^{(g)}+\Sum_{i=1}^k R_i$.
+A single smooth rational curve gives $g = 0$ and $k = 0$, so $22-r-a = 0$ and $r-a = 0$, that is $r = a = 11$.
+As $M$ is $2$-elementary with $a = 11$, $\abs{\det H^2(X, \bZ)^\sigma} = 2^{11}$.
 Since $S_\Co \iscontainedin H^2(X, \bZ)^\sigma$ have equal rank $11$ and equal absolute determinant $2^{11}$, the index $[H^2(X, \bZ)^\sigma : S_\Co]$ is $1$: the two coincide, and by @thm:invariants-coinvariants-integral the invariant lattice -- hence $S_\Co$ -- is primitive in $H^2(X, \bZ)$.
 That the invariants $(11, 11, 1)_1$ determine the isometry class $\generators{2}\oplus\generators{-2}^{10}\cong\generators{-2}\oplus E_{10}(2)$ is Nikulin's classification of indefinite even $2$-elementary lattices [@Nik80].
 :::
