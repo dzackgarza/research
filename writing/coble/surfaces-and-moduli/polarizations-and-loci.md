@@ -44,7 +44,6 @@ $$
 ,
 $$
 the rank-$10$, $2$-elementary, signature-$(1,9)$ lattice of type $(10,10,0)$ (see the Enriques-lattice definition (@def:enriques-lattice) and the Special Lattices section).
-The appearance of these extra invariant classes in $\NS$ is what cuts out the locus.
 :::
 
 ::: {.remark title="KSBA limits and non-normality"}
@@ -61,7 +60,6 @@ The space fails to be normal along the boundary, due to branching and boundary d
 
 ::: {.remark}
 
-On the K3 cover of a Coble surface with $n = 1$ there are two distinct divisor classes of square $2$, and the K3 cover, and a third class of square $4$; keeping them apart is what makes the comparison with $F_{\En, 2}$ well posed.
 Throughout, $S = \Bl_{p_1,\dots,p_{10}}\PP^2$ is the ten-point blowup, $\Pic(S) = \generators{H, E_1,\dots,E_{10}}\cong\latI_{1,10}$ is its Picard lattice with $H^2 = 1$, $E_i^2 = -1$ and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$, and $f\colon X\to S$ is the K3 double cover.
 :::
 
@@ -87,7 +85,7 @@ $$
 
 ::: {.proof}
 
-The expression for $K_S$ is the blowup formula, and $D\cdot K_S = -3a - \Sum_i(-b_i)(-1)\cdot(-1)$ evaluates to $3a - \Sum_i b_i$ up to sign, giving the stated condition.
+The expression for $K_S$ is the blowup formula, and $D\cdot K_S = -3a + \Sum_i b_i$, which vanishes if and only if $\Sum_i b_i = 3a$.
 Since $K_S^2 = 9 - 10 = -1$, the rank-one sublattice $\generators{K_S}\cong\generators{-1}$ is unimodular, so by the unimodular-splitting proposition (@prop:unimodular-splits) it splits $\Pic(S)$ and its complement $K_S^{\perp}$ is unimodular of signature $(1, 9)$.
 That complement is even: for $D = aH - \Sum_i b_iE_i$ with $\Sum_i b_i = 3a$,
 $$
@@ -102,27 +100,37 @@ Finally $C = -2K_S = 6H - 2\Sum_i E_i$ by the description of $K_S$.
 
 ::: {.definition #def:coble-polarization-classes title="The hyperplane class and the degree-2 numerical polarization"}
 
-The two classes to be distinguished are:
+Let $f\colon X\to S$ be the K3 double cover.
 
-1. the **hyperplane class** $H\in\Pic(S)$, the pullback of $c_1(\OO_{\PP^2}(1))$, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3);
+1. The **hyperplane class** is $H\in\Pic(S)$, the pullback of $c_1(\OO_{\PP^2}(1))$, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3).
 
-2. the **degree-$2$ numerical polarization** $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$, of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
+2. The **degree-$2$ numerical polarization** is a class $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$ of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
 
-3. the **chamber**, and which roots cut it: for the K3 cover $X$ of $S$, $\mathfrak c$ is the component of $\mathcal C_X\setminus\bigcup_{\delta}\delta^{\perp}$ containing the Kähler cone, the union running over $\Delta_X$, the set of classes of square $-2$ that are **effective on that member** — not over the classes the lattice alone provides. So $\mathfrak c$ is data of the member, and the labels $(T_\Co, \tilde h_\Co, \alpha)$ determine it only through $\Delta_X$.
-
-   *Why this is the reading and not the other, and what separates them.* (i) Every use of the definition is a statement about $\Delta_X$: @lem:face-at-H(4) writes a test class as $\delta = \sum a_iC_i$ over irreducible curves of the member, and concludes that the only wall through $H_b$ is $\alpha_b^{\perp}$; @prop:chamber-pinned pins $\mathfrak c_b$ *among the components cut by $\Delta_b$*; @prop:chamber-conditional states the chamber clause as the equality $\gamma\Delta_b = \Delta_{b'}$ of effective-root sets; and the nefness computation `computations/reports/coble_nefness-one-node.py` tests $h_\Co$ against classes declared effective by a source or by Riemann–Roch on the member. Under a reading that names the chamber from the labels alone none of those proofs closes, since each uses the effectivity of the class it tests. (ii) The two readings differ, and a class separates them: on the bitangent witness of the one-node family there are effective classes $\delta$ with $\delta^2 = -2$ and $\delta\cdot H = 1$, and on a member with $\nu=0$ there are none — members with the same labels $(S_\Co, H, \alpha)$ whose effective-root sets, hence whose chambers, differ. That is a class in $\Delta_X$ for one member and in no $\Delta_X$ for the other, so no label-only reading can be the one the lemmas use.
+3. Let $\Delta_X$ be the set of classes of square $-2$ that are effective on $X$. The **chamber** $\mathfrak c$ of $X$ is the component of $\mathcal C_X\setminus\bigcup_{\delta\in\Delta_X}\delta^{\perp}$ that contains the Kähler cone.
 :::
 
-::: {.remark title="Nefness of $h_\Co$, computed in a window"}
+::: {.example #ex:coble-polarization-small-degree title="$h_\Co$ against $(-2)$-classes of $H$-degree at most $3$"}
+Let $h_\Co = 6H-2\Sum_{i\le8}E_i-E_9-E_{10}$, as in @prop:coble-cover-marking.
+On unnodal members $\abs{2h_\Co}$ is base-point-free [@CD12, Lemmas 3.7--3.10].
 
-A source for $h_\Co$ supplies nefness only on the *unnodal* members, where $\abs{2h_\Co}$ is base-point-free ([@CD12], Lemmas 3.7--3.10), and not on the one-node members of @prop:quasipolarization. The computation `computations/reports/coble_nefness-one-node.py` tests $h_\Co$ against the classes whose effectivity has a named source — the ten exceptional curves $E_i$, with $h_\Co\cdot E_i = 2$ for $i\le8$ and $1$ for $i = 9,10$, and the branch sextic $\mathfrak c = -2K_S$, on which $h_\Co\cdot\mathfrak c = 0$, a wall — and against the $193\,140$ classes $\delta$ with $\delta^2 = -2$ and $\delta\cdot H\le3$: none of those with $h_\Co\cdot\delta<0$ is made effective by Riemann--Roch, and for $61$ of them Riemann--Roch does not decide effectivity. So $h_\Co$ is nonnegative on every class with a sourced effectivity and on every $(-2)$-class $\delta$ with $\delta\cdot H\le3$ that Riemann--Roch makes effective.
+The class $h_\Co$ meets the exceptional curves as $h_\Co\cdot E_i = 2$ for $i\le8$ and $h_\Co\cdot E_i = 1$ for $i = 9,10$, and it meets the anti-bicanonical curve $C = 6H-2\Sum_iE_i$ as $h_\Co\cdot C = 36-32-4 = 0$.
+
+Let $\delta = aH-\Sum_ib_iE_i\in\Pic(S)$ with $\delta^2 = -2$ and $0\le\delta\cdot H = a\le 3$, so that $\Sum_ib_i^2 = a^2+2$.
+For $a = 0,1,2,3$ there are $180$, $960$, $16\,320$ and $175\,680$ such classes, $193\,140$ in all.
+By Riemann--Roch, $\chi(\delta) = 1+\tfrac12\delta\cdot(\delta-K_S) = -\tfrac12\delta\cdot K_S$, and $h^0(K_S-\delta) = 0$ because $H$ is nef and $H\cdot(K_S-\delta) = -3-a<0$.
+So $\delta$ is effective when $\delta\cdot K_S = \Sum_ib_i-3a\le-2$.
+Among the $193\,140$ classes, those with $h_\Co\cdot\delta = 6a-2\Sum_{i\le8}b_i-b_9-b_{10}<0$ all have $\delta\cdot K_S\ge0$, and there are $61$ of them.
+
+So $h_\Co$ is nonnegative on each $E_i$, on $C$, and on every class $\delta$ with $\delta^2=-2$, $0\le\delta\cdot H\le3$ and $\delta\cdot K_S\le-2$.
 :::
 
-::: {.remark title="Why the two must not be identified"}
+::: {.lemma #lem:hyperplane-class-not-coble-polarization title="$H$ and $h_\Co$ are different classes"}
+$H\cdot K_S = -3$ and $h_\Co\cdot K_S = 0$. So $H\notin K_S^{\perp}$ and $H\neq h_\Co$.
+:::
 
-Both $H$ and $h_\Co$ have square $2$ after pullback and square $2$ downstairs respectively, so the numerical coincidence is easy to mistake for an identity.
-They are different classes: $H\notin K_S^{\perp}$, since $H\cdot K_S = -3\neq 0$, whereas $h_\Co$ lies in $K_S^{\perp}$ by definition, and their pullbacks have different squares, $e_0^2 = 2$ against $\tilde h_\Co^2 = 4$.
+::: {.proof}
+By @prop:canonical-perp-is-e10, $K_S = -3H+\Sum_iE_i$, so $H\cdot K_S = -3$.
+By @def:coble-polarization-classes, $h_\Co\in K_S^{\perp}$.
+:::
 
-The analogue of the Enriques degree-$2$ polarization is $h_\Co$: polarization: for a degree-$2$ Enriques surface the numerical polarization has $h^2 = 2$ in $\Num(Z)\cong E_{10}$ while the K3-side vector $h = e + f\in U(2)$ has $h^2 = 4$ (the discriminant description of $\Gamma_{\En,2}$ (@prop:gamma-en-two-gluing)), exactly the pattern of $h_\Co$ and $\tilde h_\Co$.
-Any comparison of Coble and Enriques polarized moduli, and any pairing of a polarization class against roots of a Coxeter diagram, must first record which of these classes is meant and in which lattice it lives.
 :::

@@ -54,7 +54,7 @@ The five $0$-cusps of $\fentwo$ have boundary lattices $(10,10,0)_1$ for cusp $1
 
 ::: {.remark}
 
-The $0$-cusps and $1$-cusps of $\fco$ are the $\Gamma_\Co$-orbits of primitive isotropic lines and planes of $T_\Co$, where $\Gamma_\Co = \Orth^+(T_\Co)^*$. By @thm:cusp-lifting these orbits are in bijection with finite orbit sets in the discriminant group $A_{T_\Co}$: there are $527$ orbits of lines and $189\,720$ orbits of planes.
+The $0$-cusps and $1$-cusps of $\fco$ are the $\Gamma_\Co$-orbits of primitive isotropic lines and planes of $T_\Co$, where $\Gamma_\Co = \Orth^+(T_\Co)^*$; they are classified by @thm:cusp-lifting.
 :::
 
 ::: {.remark title="The GIT model"}

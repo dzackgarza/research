@@ -1,23 +1,16 @@
 # Cusp Diagrams
 
-::: {.remark}
-
-We recall the mirror move algorithm from [@AE22].
-We have Nikulin's 2-elementary diagram:
-:::
-
 ::: {#fig-nikulin-table .figure}
 \begin{tikzpicture}[x=0.6cm, y=0.6cm]
 \pic {object=nikulin/two-elementary-table};
 \end{tikzpicture}
 
-White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 0,1$.
+Nikulin's table of even $2$-elementary lattices. White nodes are $\delta=0$, black are $\delta=1$, double circled are $\delta = 0,1$.
 :::
 
 ## Mirror moves {#sec-mirror-moves}
 
-Having identified the 2-elementary lattice $S_\Co = (11, 11, 1)_1$, one can apply the mirror move algorithm of [@AE22 Thm. 5.10] to determine the 0-cusps and 1-cusps of $\fco$.
-The outcome of the algorithm is summarized by the following tree:
+The mirror move algorithm of [@AE22, Thm. 5.10], applied to the $2$-elementary lattice $S_\Co = (11, 11, 1)_1$, gives the 0-cusps and 1-cusps of $\fco$ in @fig-mirror-moves-coble.
 
 ::: {#fig-mirror-moves-coble .figure}
 \begin{tikzpicture}
@@ -27,13 +20,14 @@ The outcome of the algorithm is summarized by the following tree:
 Blue (resp. red) indicate lattices which are valid (resp. invalid) targets of mirror moves.
 :::
 
-Thus there is one $\Orth^+(T_\Co)$-orbit of $0$-cusps, represented by an isotropic vector $v_0$ with
+By @thm:unpolarized-cusps there is one $\Orth^+(T_\Co)$-orbit of $0$-cusps, represented by an isotropic vector $v_0$ with
 
 $$
 v_0^{\perp T_{\Co}}/\generators{v_0} \cong (9,9,1)_1 \cong \generators{2} \oplus E_{8}(2)
 $$
 
-The arithmetic group $\Gamma_\Co$ is strictly smaller — the transposition of the two isotropic generators of the $U(2)$ summand is an integral isometry of $T_\Co$ lying in $\Orth^+(T_\Co)$ and not in $\Gamma_\Co$ (`computations/reports/coble_congruence_witness.py`) — so its orbit decomposition of primitive isotropic vectors is finer than this one (@lem:stable-orthogonal-not-transitive) and is known exactly: $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting); the cusp diagram computed below is the one attached to $v_0$.
+The group $\Gamma_\Co$ is not transitive on the primitive isotropic vectors (@lem:stable-orthogonal-not-transitive); it has $527$ orbits of them, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
+The cusp diagram below is the one attached to $v_0$.
 This $0$-cusp $v_0$ is incident to one $\Orth^+(T_\Co)$-orbit of $1$-cusps, represented by an isotropic plane $J = \generators{v_0, v_1}$ with
 
 $$
@@ -51,35 +45,22 @@ In the diagrammatic language of [@AE22 Fig. 1, Thm. 5.10], this corresponds to a
 The mirror moves for $S_{\Co} = (11,11,1)_1$.
 :::
 
-Note that $v_0$ corresponds to a Type $\rm{III}$ boundary, while $C_0$ corresponds to a type $\rm{II}$ boundary.
-It is easily verified that the Coxeter diagram $G_{(9,9,1)_1}$ at $v_0$ has precisely one maximal parabolic subdiagram, corresponding to a finite-index root lattice of type $B_7$.
-We note that by [@AE22 §5], such isotropic vectors are unique up to $\Orth(T_\Co)$, and so we can choose representatives:
+The $0$-cusp $v_0$ corresponds to a Type $\rm{III}$ boundary, and $C_0$ to a type $\rm{II}$ boundary.
+By [@AE22, §5] such isotropic vectors are unique up to $\Orth(T_\Co)$, with representatives
 
 - $v_0 = e'$,
 
 - $v_1 = 2h + \alpha_1 + \alpha_2$.
 
-Calculations verify that $v_0^2 = v_1^2 = 0$, that $v_1 \in v_0^{\perp T_{\Co}}/\generators{v_0}$, and that $v_0v_1 = 0$, and thus $J \definedas \generators{v_0, v_1}$ is an admissible choice of an isotropic plane.
-We further note that $\div_{T_{\Co}}(v_0) = \div_{T_{\Co}}(v_1) = 2$, which will be an important invariant for establishing a correspondence to cusps of other moduli spaces.
-For an isotropic plane $J$, we denote the divisibilities of the constituent generating vectors as a tuple $(d_1, d_2)$, and in this convention we have $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
+Then $v_0^2 = v_1^2 = 0$, $v_1 \in v_0^{\perp T_{\Co}}/\generators{v_0}$ and $v_0v_1 = 0$, so $J \definedas \generators{v_0, v_1}$ is an isotropic plane.
+Write $\div_{T_{\Co}}(v_0, v_1) \definedas \bigl(\div_{T_{\Co}}(v_0), \div_{T_{\Co}}(v_1)\bigr)$; then $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
 
 By [@CDL25 Prop. 5.4.6], there is a locally closed immersion $\fco \injects \mch_{-2}/\Gamma_\En \subset \fen$ whose image is open in the Heegner divisor $H_{-2}$, realizing $\fco$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
 The image is an open subset of a closed irreducible subset of $\mch_{-2}/\Gamma_\En$.
 By [@CDL25 Thm. 5.8.2], the coarse space of $\fco$ is a rational variety, and since $\fen$ is quasiprojective, so too is $\fco$.
 Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\mch_{-2}$ contains the modular curve $X$.
 
-::: {.remark}
-
-We note the divisibilities of the $v_i$ under various lattice embeddings:
-
-| Coble Vector | Representative | $\mathrm{div}_{T_{\Co}}$ | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{\tdp}$ |
-| :----------- | :------------------------- | :----------------------- | :----------------------- | :----------------------- |
-| $v_0$ | $e'$ | 2 | 2 | 2 |
-| $v_1$ | $2h + \alpha_1 + \alpha_2$ | 2 | 2 | 1 |
-
-: Divisibilities of the isotropic vectors $v_0, v_1$ under the embeddings of $T_{\Co}$. {#tbl-coble-vector-divisibilities}
-
-More concisely:
+::: {.example #ex:coble-cusp-divisibilities title="Divisibilities of $v_0$ and $v_1$"}
 
 | Lattice | Image of $v_0$ | Image of $v_1$ | Divisibility |
 | :-------- | :------------- | :----------------------------------------------------------------- | :----------- |
@@ -92,11 +73,8 @@ More concisely:
 The divisibilities in $\tdp$ can be seen as follows: the image of $v_0$ in $\tdp$ is $e'\in U(2)$ and $e'f' = 2$, while $\div_{\tdp}(v_1) = 1$ follows from the fact that $v_1\alpha_3 = 1$.
 :::
 
-::: {.remark}
+::: {.example #ex:coble-cusp-parabolic title="The maximal parabolic subdiagram at $v_0$"}
 
-As further proof that the cusp diagram of $\fco$ is correct, we can use the theory of Coxeter diagrams.
-Given an isotropic vector $e\in L$ a lattice of signature $(2, n)$, the lattice $e^{\perp L}/\generators{e}$ is a hyperbolic lattice equipped with a root system $R_e$ with a Coxeter diagram $G_e$.
-Generally, when $e$ corresponds to a 0-cusp in a Baily-Borel compactification, the adjacent 1-cusps correspond precisely to maximal parabolic subdiagrams of $G_e$.
-The cusp diagram of $\fco$ suggests that the 0-cusp $v_0$ should have a Coxeter diagram $G_{v_0}$ with precisely one maximal parabolic subdiagram.
-One can run Vinberg's algorithm to determine the Coxeter diagram for $v_0$, and it is a straightforward check to determine that there is indeed a unique maximal parabolic subdiagram of the form $\tilde B_7(2)$; see @fig-coble-cusp-9-9-1-parabolics.
+The Coxeter diagram $G_{(9,9,1)_1}$ of $v_0^{\perp T_\Co}/\generators{v_0}\cong\generators{2}\oplus E_8(2)$ (@fig-coble-coxeter-diagrams) has exactly one maximal parabolic subdiagram, of type $\wB_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
+By @thm:unpolarized-cusps the $0$-cusp $v_0$ is incident to exactly one $\Orth^+(T_\Co)$-orbit of $1$-cusps.
 :::

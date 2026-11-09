@@ -28,52 +28,13 @@ header-includes:
     \newtheorem{warning}[theorem]{Warning}
 ---
 
-## Introduction and logical status {#sec-introduction}
-
-### Purpose {#sec-purpose}
-
-This report fixes a common mathematical language for the study of the degree-2 Coble locus associated with the $(-2)$-Heegner arrangement in the period space of numerically degree-$2$ polarized Enriques surfaces.
-It has four purposes.
-
-1. It records the definitions, constructions, lattice identifications, local calculations, and numerical formulas that have been isolated with a level of precision suitable for further research.
-
-2. It distinguishes those statements that follow from standard results or direct calculations from those that remain comparison theorems, lifting problems, or compactification problems.
-
-3. It formulates two principal approaches to the compactification problem: the **Heegner-restriction approach** and the **autonomous Coble approach**.
-
-4. It gives a theorem-by-theorem research program for completing either approach and later identifying the two constructions.
-
-The intended reader is assumed to know the theory of K3 and Enriques surfaces, integral lattices, type-IV period domains, Baily--Borel and toroidal compactifications, Kulikov models, KSBA stable pairs, Nikulin's theory of $2$-elementary involutions, and the compactification framework developed by Alexeev and Engel.
-Standard terminology is cited rather than reproved; see @sec-terminology and the bibliography.
-
-The report is not a proof of the final Coble compactification theorem.
-It is a mathematical specification of the objects and the exact statements that a proof must establish.
-This distinction is essential because several plausible computations discussed below are computations of finite quadratic spaces or hyperplane slices, which do not by themselves compute arithmetic cusps or Vinberg chambers.
-
-### Convention on logical status {#sec-status-convention}
-
-The following convention is used throughout.
-
-- A statement labeled **Theorem**, **Proposition**, **Lemma**, or **Corollary** is either a standard cited result, a result of AEGS, or a direct calculation whose hypotheses are stated explicitly.
-
-- A statement labeled **Required theorem**, **Required lemma**, or **Problem** is not presently established in the Coble setting.
-  It records an exact unit of work needed by one of the proposed strategies.
-
-- A **Candidate construction** is a mathematically defined construction whose relation to the desired moduli problem has not yet been proved.
-
-- A **Computational record** is a reproducible finite or symbolic calculation.
-  It is not promoted to an arithmetic or geometric theorem unless the relevant lifting or realization statement is separately proved.
-
-- A **Warning** records an invalid inference or a conflation of two distinct objects.
+## Introduction {#sec-introduction}
 
 ### Central compactification problem {#sec-central-problem}
 
 Let $T_{\mathrm{En}} \cong U\oplus U(2)\oplus E_8(2)$ be the Enriques anti-invariant lattice in the AEGS degree-$2$ construction, and let $\alpha\in T_{\mathrm{En}}$ be a primitive vector with $\alpha^2=-2$.
 The hyperplane $\bD(T_{\mathrm{En}})\intersect\alpha^\perp$ is the period domain of the Coble Heegner locus.
 The final problem is to identify the normalization of the KSBA closure of that locus as an explicit semitoroidal compactification, including the arithmetic group, all Baily--Borel cusps, the cusp reflection chambers, the integral-affine and dlt models, the relevant semifans, and the toroidal versus strictly semitoroidal locus.
-
-The ambient AEGS theorem supplies the model for the required level of specificity: the compactification is meaningful only after the lattices, groups, divisors, cusp data, Coxeter data, and stable-pair contractions have all been identified.
-Those data are part of the theorem, not optional consequences.
 
 ### Principal distinction between the two strategies {#sec-two-strategies}
 
@@ -88,7 +49,10 @@ There are two conceptually different ways to organize the proof.
 
 The second strategy avoids using the Enriques compactification as a black box, but it creates a separate comparison theorem at the end.
 
-The second strategy asks for a *commuting del Pezzo involution* on the Coble covers, and that is a geometric requirement: an involution of the surface. What the lattice records is weaker, and the two must not be conflated. On the covers of [@DK13, section 3] the distinguished root $\alpha$ is the class of the ramification curve and is effective; the lattice candidate carried by the two isotropic summands of the polarization is orthogonal to $\alpha$ and carries it to $-\alpha$, so that candidate is not the action of an automorphism in the marking of the construction (@cor:no-del-pezzo-involution-coble-cover). That is a statement about one lattice candidate. It does not show that no commuting del Pezzo involution exists, and no source exhibits one; the geometric requirement stands as stated.
+The del Pezzo involution of the second strategy is an involution of the surface.
+On the covers of the direct projective construction it exists and commutes with the Coble involution (@prop:tuple-of-the-construction).
+On the covers of [@DK13, section 3], the isometry of $H^2(X,\ZZ)$ defined by the two isotropic summands of the polarization is not the action of an automorphism in the marking of the construction (@cor:no-del-pezzo-involution-coble-cover).
+
 The first strategy uses more existing geometry, but it requires careful normalization and monodromy arguments that cannot be replaced by the phrase “restrict the semifan.”
 
 ## Terminology, notation, and standard background {#sec-terminology}
@@ -164,7 +128,7 @@ The singular quotient is the natural $K$-trivial object for the small-coefficien
 
 A **quasipolarization** is a nef and big line bundle.
 A polarization is ample.
-This distinction is essential in the Coble setting: the natural class on $\wV$ is orthogonal to the anti-bicanonical $(-4)$-curve and is therefore not ample.
+In the Coble setting, the natural class on $\wV$ is orthogonal to the anti-bicanonical $(-4)$-curve and is therefore not ample.
 It becomes ample after contracting the complete null locus.
 
 ### Period domains and Heegner divisors {#sec-period-terminology}
@@ -282,12 +246,8 @@ is unique up to $O(L_{K3})$.
 
 This is [@AEGS25, §3].
 
-Uniqueness up to $O(L_{K3})$ means that every embedding of $T_{\mathrm{En}}$ into $L_{K3}$ extending the chosen one differs by an isometry of the ambient lattice, so no construction built from the chain can depend on a choice of primitive complement.
-That is the sense in which the statement is a model for the labeled rigidity the Coble problem needs: the label is the extra structure -- in this case the involution and the polarization -- and the question is whether it too is unique up to the stabilizer rather than only up to the full orthogonal group.
+Uniqueness up to $O(L_{K3})$ means that every embedding of $T_{\mathrm{En}}$ into $L_{K3}$ extending the chosen one differs by an isometry of $L_{K3}$, so no construction built from the chain can depend on a choice of primitive complement.
 :::
-
-This theorem is the model for the stronger labeled rigidity statement needed for the Coble problem.
-It prevents later constructions from depending on a hidden coordinate choice.
 
 ### AEGS arithmetic groups and period maps {#sec-aegs-groups}
 
@@ -334,8 +294,6 @@ The proof has the following indispensable stages.
 
 10. prove that the classifying map is finite and that no further coarsening occurs.
 
-This architecture will be used repeatedly below as a list of theorem types, not as a black-box proof of the Coble case.
-
 ## Direct Coble geometry from invariant $(4,4)$ curves {#sec-projective-coble}
 
 ### The invariant linear system {#sec-invariant-system}
@@ -364,10 +322,6 @@ The first condition says that $p\in B$.
 Invariance kills the linear part.
 The second condition says that the quadratic tangent cone is nondegenerate.
 This is the analytic criterion for an ordinary plane node.
-
-A general member satisfying these conditions is smooth away from $p$.
-This is an open condition, and it is enough to exhibit one member having no other singularities.
-A symbolic example is recorded in @sec-computational-record.
 :::
 
 ### Toric interpretation {#sec-coble-toric-model}
@@ -440,12 +394,7 @@ The invariant $(4,4)$ family obtained by varying $a_{00}$ gives an explicit equi
 By @prop:local-quarter the singular quotient is $\bA^2/\mu_4$ of type $\frac14(1,1)$ at the image of the node, and the smoothing is the family obtained by restoring the constant term killed there.
 For $a_{00}\ne0$ the branch curve misses the four $\tau$-fixed points, so the K3 cover is smooth over the corresponding fibre and the involution $\iota_{\Co}$ acts on it without fixed points; a fixed-point-free involution on a K3 surface is Enriques by definition, so the quotient is Enriques and the fibre is smooth.
 Varying $a_{00}$ through $0$ gives a one-parameter family whose general fibre is that quotient and whose special fibre is the singular one, which is a smoothing, and the involution acts on the whole family, which is the equivariance.
-
-The proposition asserts existence of one mechanism and nothing more: it does not claim that every abstract smoothing of the K3 cover extends the node-fixing involution, and that gap is genuine rather than an omission -- an abstract smoothing need not be equivariant, and a non-equivariant one would not quotient to a family of Enriques surfaces at all.
 :::
-
-This proposition proves existence of one smoothing mechanism.
-It does not imply that every abstract smoothing of the K3 cover carries an extension of the node-fixing involution.
 
 ### Dimension and coverage {#sec-projective-coverage}
 
@@ -460,9 +409,6 @@ The quotient of the open nodal invariant $(4,4)$ locus by the full centralizer o
 Equivalently, the projective diagram can be reconstructed intrinsically from the Coble pair, and the resulting period map has image the full relevant period-domain component.
 :::
 
-A dimension count and one explicit family do not prove this theorem.
-A proof must establish irreducibility at the level of the actual arithmetic group and recover the K3 cover, the two involutions, and the degree-$4$ class from the Coble datum.
-
 ## The Coble lattice package {#sec-coble-lattices}
 
 ### The orthogonal complement lattice {#sec-orthogonal-complement}
@@ -472,8 +418,6 @@ Write $T_{\mathrm{En}} \cong U\oplus E(2)$ and $E=U\oplus E_8$.
 Choose a standard basis $e,f$ of the first copy of $U$, and define $\alpha=e-f$ and $\eta=e+f$.
 
 Then $\alpha^2=-2$, $\eta^2=2$, and $(\alpha,\eta)=0$.
-
-The notation $\eta$ is deliberately used here: the letter $H$ is reserved for the degree-$4$ K3 polarization in the AEGS construction.
 
 ::: {.proposition #prop:coble-transcendental title="Coble anti-invariant lattice"}
 The orthogonal complement of $\alpha$ in $T_{\mathrm{En}}$ is
@@ -568,7 +512,7 @@ S_{\Co}
 
 ::: {.proof}
 
-*The eigenspaces over* $\bQ$. The involution $I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$, and $w_\alpha$ fixes $\alpha^\perp$ and sends $\alpha\mapsto-\alpha$, so over $\bQ$ the composite $I_\Co = w_\alpha I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}\oplus\bZ\alpha$ and as $-1$ on $\alpha^{\perp T_{\mathrm{En}}} = T_\Co$. Three points of integrality have to be checked, and are not assumptions.
+*The eigenspaces over* $\bQ$. The involution $I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}$ and as $-1$ on $T_{\mathrm{En}}$, and $w_\alpha$ fixes $\alpha^\perp$ and sends $\alpha\mapsto-\alpha$, so over $\bQ$ the composite $I_\Co = w_\alpha I_{\mathrm{En}}$ acts as $+1$ on $S_{\mathrm{En}}\oplus\bZ\alpha$ and as $-1$ on $\alpha^{\perp T_{\mathrm{En}}} = T_\Co$.
 
 *The gluing, and the extension of the factors.* $S_\En\oplus T_\En\subseteq\lkt$ has index $2^{10}$ with the full graph gluing of its two discriminant forms; $I_\En$ acts trivially on $A_{S_\En}\oplus A_{T_\En}$ because the forms are $2$-elementary and $-\id$ is the identity there, so the gluing subgroup is preserved and $I_\En$ extends to an integral isometry of $\lkt$. And $w_\alpha(x) = x+(x\cdot\alpha)\alpha$ is integral on $\lkt$ because $x\cdot\alpha\in\bZ$ for $x\in\lkt$. Hence $I_\Co = w_\alpha I_\En\in\Orth(\lkt)$.
 
@@ -580,11 +524,18 @@ and the $(-1)$-eigenspace is $T_\Co$ by the same computation with the sign rever
 
 *The type.* The summands $S_\En\cong U(2)\oplus E_8(2)$ and $\bZ\alpha\cong\langle-2\rangle$ are orthogonal, so the invariant lattice is $U(2)\oplus E_8(2)\oplus\langle-2\rangle$, of signature $(1,\ 1+8+1) = (1,10)$ (summing to the rank $11$), determinant $(-2)\det S_\En = 2048$ and discriminant group $(\bZ/2)^{11}$: the even $2$-elementary lattice $I_{1,10}(2)$. The invariant lattice and $T_\Co$ are mutually orthogonal complements in $\lkt$ of ranks $11+11 = 22$, and $S_\Co\oplus T_\Co$ has index $2^{11}$ there.
 
-*The root is a choice, and what is computed is not uniqueness.* The twist above uses the displayed root $\alpha=e-f$ of $T_\En$, a choice made by the construction itself, not a computation about the lattice: $T_\En = U\oplus U(2)\oplus E_8(2)$ has many further vectors of square $-2$ — for example $\beta = (e+f)+v$ with $v^2 = -4$ in the $E_8(2)$ summand, $240$ of which exist (`computations/reports/ten_roots_twist.py`) — so not every such vector lies in $U$, because of the compensation between summands the example exhibits: $2ab = 2$ in $U$ balances $v^2 = -4$. The swap $e\leftrightarrow f$ and the sign act on the chosen root, and @cons:reflection-twist is lattice data on that chosen root. Whether the twist pair built from another root is conjugate to this one by an isometry of $\lkt$ is open; and the identification of the construction's own involutions with this twist is the same open problem as at @rmk:a21-open. The type of @prop:coble-transcendental and the eigenspace computation above depend only on the chosen root.
+:::
 
-That the abstract type agrees with the period theory of [@DK13] is a check on the computation; it does not show that every family of direct Coble data realizes the same labeled embedding in $L_{K3}$, which is the labeled rigidity question of @sec-surface-divisors.
+::: {.example #ex:roots-of-t-en-outside-u title="roots of $T_\En$ outside $U$"}
+Let $e,f$ be the isotropic basis of the summand $U$ of $T_\En = U\oplus U(2)\oplus E_8(2)$, with $e\cdot f = 1$, so that $\alpha = e-f$.
+Since $E_8$ is negative definite, the vectors of square $-4$ in $E_8(2)$ are the $240$ roots of $E_8$.
+For each such $v$ the vector $\beta = (e+f)+v$ has $\beta^2 = 2-4 = -2$, and $\beta\notin U$.
+So $T_\En$ has vectors of square $-2$ outside $U$, and @cons:reflection-twist depends on the choice of $\alpha$.
+:::
 
-
+::: {.question #qst:twist-root-conjugacy title="conjugacy of reflection twists"}
+Let $\beta\in T_\En$ be a vector of square $-2$.
+Is the pair $(I_\En, w_\beta I_\En)$ conjugate to the pair $(I_\En, w_\alpha I_\En)$ by an isometry of $\lkt$?
 :::
 
 ### The local geometric meaning of the root {#sec-root-geometry}
@@ -625,12 +576,6 @@ where
 
 - the product $I_{\Co}I_{\mathrm{dP}}$ has the required symplectic character.
 
-**The geometric reading and a weaker lattice reading.** The five conditions are geometric: $I_{\Co}$ and $I_{\mathrm{dP}}$ are involutions of the K3 cover, $H$ and $\alpha$ are classes on it, and $\mcc$ is a chamber in $H$'s cone. Nothing in them is a statement about a lattice alone. A *weaker* reading asks only for lattice data: an involution of $L_{K3}$ with invariant lattice $\sdp = U(2)$, containing $H$, commuting with $I_{\mathrm{dP}}$'s counterpart $I_{\Co}$. The results below belong to that weaker reading: @prop:del-pezzo-placement says which placements of $\sdp$ the weaker conditions leave open, and @cor:no-del-pezzo-involution-coble-cover excludes one of them as the action of an automorphism in the marking of the construction. Neither is a statement about the tuple, and neither closes it.
-
-**No condition relates $I_{\mathrm{dP}}$ to $\alpha$.** Of the five bullets, three mention $I_{\mathrm{dP}}$ (the first, second and fifth) and two mention $\alpha$ (the third and fourth); none mentions both, so no condition relates $I_{\mathrm{dP}}$ to $\alpha$. The condition on $\alpha$ is that $I_{\Co}$ fix it, and the chamber condition is on the class $H$.
-
-**On the fourth and fifth bullets.** The fourth is a definition of the chosen chamber, not an assertion that $H$ is nef and big on any particular surface: $H$ is nef and big in $\mcc$ exactly when the downstairs class $h_\Co$ is nef, bigness of $H$ then being automatic from $H^2=4>0$ (@prop:nef-big-finite-cover), and no cited source proves that $h_\Co$ is nef. The fifth is a consequence rather than independent data once the first bullet's commutation is granted: for commuting involutions the product is an involution, and it acts on the one-dimensional $H^{2,0}$ by $(-1)(-1) = +1$ (@prop:product-of-involutions).
-
 ::: {.problem #prob:coble-rigidity title="Required theorem (labeled Coble rigidity)"}
 Any two tuples $\mathfrak L_{\Co,2}$ arising from the direct projective construction are conjugate by an element of $O(L_{K3})$ preserving the labels, the degree-$4$ class, the effective root, and the chosen chamber.
 :::
@@ -638,37 +583,115 @@ Any two tuples $\mathfrak L_{\Co,2}$ arising from the direct projective construc
 This is stronger than uniqueness of a primitive embedding of $S_{\Co}$ into $L_{K3}$.
 It is the Coble analogue of the AEGS embedding-rigidity lemma and is needed before any direct period quotient can be declared coordinate independent.
 
-**What the construction's involutions give.** The construction's own involutions are local and explicit: on $X^\sharp = \set{z^2 = f(x,y)}$ at the $\tau$-fixed point, $\iota_{\mathrm{dP}}(x,y,z) = (x,y,-z)$ and $\iota_\Co(x,y,z) = (-x,-y,-z)$. They commute; with $\omega = \frac{dx\wedge dy}{2z}$ one has $\iota_{\mathrm{dP}}^*\omega = -\omega$ and $\iota_\Co^*\omega = -\omega$ while the product scales $\omega$ by $+1$, so both are nonsymplectic and the product is symplectic, as the bullets require. $\mathrm{Fix}(\iota_{\mathrm{dP}})$ is the branch curve, nodal at $p$; $\mathrm{Fix}(\iota_\Co)$ is carried by the singular $\tau$-fixed points, since $\iota_\Co(x,y,z) = (x,y,z)$ forces $x = y = z = 0$ and $f(0,0) = 0$, and $f$ being $\tau$-invariant vanishes there to even order — so $\iota_\Co$ has no isolated fixed point, which its nonsymplecticity demands (@prop:local-operators).
+The tuple of the direct projective construction is @prop:tuple-of-the-construction.
+On the one-node locus its labels are conjugate (@thm:a21-labels), and its chamber clause is @prob:effective-cone-agreement.
 
-On the resolution, $\widehat\iota_\Co$ acts trivially on the exceptional $\PP^2$ and fixes the exceptional curve $D_g$ pointwise, while $\widehat\iota_{\mathrm{dP}}$ acts by $[X:Y:Z]\mapsto[X:Y:-Z]$ and fixes on $D_g$ exactly the two points $[1:\pm i:0]$, which are also the two points where the proper transform of the branch curve meets it. So $\mathrm{Fix}(\widehat\iota_{\mathrm{dP}})$ is the normalization of the branch curve, of Euler characteristic $2k-16$ for $k$ nodes, and Lefschetz gives invariant rank $2+k$ (@prop:del-pezzo-type-on-the-resolution). The invariant lattice contains $\pi^*\Pic(\PP^1\times\PP^1)\perp\ZZ D_1\perp\cdots\perp\ZZ D_k = U(2)\perp\langle-2\rangle^{\oplus k}$; equality is a saturation question and is not settled here.
+::: {.lemma #lem:one-node-picard-rank title="the invariant lattices of a one-node member"}
+Let $b$ be a one-node member of @prop:one-node-family.
+Then
+$$S_{\mathrm{dP},b}\subseteq S_{\Co,b}\subseteq\Pic(\widehat X_b),\qquad \rk S_{\mathrm{dP},b} = 3,\qquad \rk S_{\Co,b} = 11,$$
+and in particular $\rk\Pic(\widehat X_b)\ge11$.
+:::
 
-Two consequences follow. First, the del Pezzo type $U(2)$ occurs only for $k = 0$, where $\mathrm{Fix}(I_\Co)$ is empty and the quotient is Enriques rather than Coble: every Coble member has $k\ge1$ and invariant rank at least $3$. Second, the root $\alpha$ is one of the exceptional curves $D_g$ — effective, of square $-2$, $I_\Co$-invariant, of degree $0$ against $H$ — and it is preserved by $\widehat\iota_{\mathrm{dP}}$, so the slot *fixes* the root instead of reversing it and the effectivity argument that forbids a reversal has nothing to forbid (@rmk:a21-open).
+::: {.proof}
+The ranks are part (5) of @prop:tuple-of-the-construction with $k=1$.
+By part (4) of the same proposition $I_{\Co,b}$ is nonsymplectic, so it acts by $-1$ on $H^{2,0}(\widehat X_b)$ and on $H^{0,2}(\widehat X_b)$.
+An $I_{\Co,b}$-invariant integral class is therefore orthogonal to $H^{2,0}\oplus H^{0,2}$, hence of type $(1,1)$, hence in $\Pic(\widehat X_b)$ by the Lefschetz $(1,1)$ theorem.
+This gives $S_{\Co,b}\subseteq\Pic(\widehat X_b)$.
 
-**The tuple is not empty.** All five bullets hold on it: $H = \pi^*\OO_{\PP^1\times\PP^1}(1,1)$ is fixed by both involutions and is nef and big with $H^2 = 4$ because $\OO(1,1)$ is very ample, $H\cdot D_g = 0$ and $\alpha = [D_g]$ is the class of an effective curve, the two involutions are nonsymplectic with symplectic product, and the invariant ranks are $k+2$ and $k+10$ by Lefschetz (@prop:tuple-of-the-construction). So what is open here is the rigidity statement of @prob:coble-rigidity, not the existence of a tuple; an empty labelled set is not an available answer, and the effectivity argument that closes the $U(2)$ slots has no purchase on this one.
+By @prop:det-saturation-del-pezzo, $S_{\mathrm{dP},b} = \langle e_b,f_b,[D_b]\rangle$, where $e_b$ and $f_b$ are the pullbacks of the two ruling classes of $Y=\PP^1\times\PP^1$.
+The involution $\iota_\Co$ covers $\tau$, and $\tau$ acts by $[-1]$ on each factor, so $\tau$ fixes each ruling class and $I_{\Co,b}$ fixes $e_b$ and $f_b$.
+The class $[D_b]=\alpha_b$ is fixed by $I_{\Co,b}$ by part (2) of @prop:tuple-of-the-construction.
+Hence $S_{\mathrm{dP},b}\subseteq S_{\Co,b}$.
+:::
 
-**The one-node comparison: the labels are conjugate; the chamber is a separate condition.** The one-nodal invariant locus is a nonempty Zariski-open of the hyperplane $\{f(p)=0\}$ in the invariant system — the explicit polynomial of @sec-explicit-curve makes it nonempty, and the openness is the point — so it is connected (@prop:one-node-connected). The construction is a smooth proper equivariant family over it carrying the relative polarization $\pi^*\OO(1,1)$ and the exceptional divisor, and parallel transport along a path is an isometry of $H^2$ carrying the two invariant lattices, $H$ and $\alpha$ of one member to those of the other. So for any two one-node members there is $\gamma\in\Orth(\lkt)$ conjugating the involutions, the degree-$4$ class and the effective root (@thm:a21-labels). That is three of the four clauses of @prob:coble-rigidity, for every pair on the locus. The chamber clause is separate: the root is the only effective class of square $-2$ orthogonal to $H$ (@lem:face-at-H), so the labels pin a chamber of the arrangement cut by a member's own effective roots, and the transported chamber coincides with the target's chamber exactly when no extra effective root cuts it (@prop:chamber-conditional) — a condition on the effective cones, hence on the period, and not a statement about the local system. So what remains of @prob:coble-rigidity on the one-node locus is exactly that condition: agreement of the effective roots across the locus.
+::: {.proposition #prop:one-node-period-image title="the period map of the one-node family"}
+Let $B$ be the one-node locus of @prop:one-node-family.
+Let $\Gamma_{\mathrm{lab}}\subseteq\Orth(T_\Co)$ be the image of the stabilizer in $\Orth(\lkt)$ of the labels $(S_\Co,S_{\mathrm{dP}},H,\alpha)$, and let
+$$\mathcal P\colon B\too\Gamma_{\mathrm{lab}}\backslash\bD(T_\Co)$$
+be the period map of the family.
+Let $G$ be the stabilizer of the point $p$ of @prop:one-node-family in the centralizer of $\tau$ in $\Aut(Y)$.
+Then:
 
-**The node count, separately.** Away from the one-node locus the invariant rank of $I_{\mathrm{dP}}$ is $k+2$, and a conjugation preserving the labels preserves it, so a one-node and a two-node member are not conjugate (@prop:node-count-invariant). The one-node question does not use this statement.
+1. the fibres of $\mathcal P$ are the $G$-orbits in $B$;
+2. the image of $\mathcal P$ contains a nonempty Zariski-open subset of a component of $\Gamma_{\mathrm{lab}}\backslash\bD(T_\Co)$, and the differential of $\mathcal P$ has rank $9$ on a dense open subset of $B$;
+3. $\Pic(\widehat X_b) = S_{\Co,b}$ for a very general $b\in B$.
+:::
 
-What that leaves. The negative statements proved in the Coble chapter — @prop:no-rank-one-automorphism and @prop:rank-two-slot-boundary — are about a slot whose invariant lattice is $U(2)$ and whose fixed lattice in $S_\Co$ is $\ZZ H$ or all of $S_\Co$. They do not describe the tuple of this construction, whose invariant rank is $2+k\ge3$ and which meets $S_\Co$ in rank $2+k=\rk S_{\mathrm{dP}}$, the two lattices both containing $\pi^*\Pic(\PP^1\times\PP^1)\perp\bigoplus\ZZ D_g$.
+::: {.proof}
+*The map.* By part (4) of @prop:tuple-of-the-construction, $I_{\Co,b}$ is nonsymplectic, so $H^{2,0}(\widehat X_b)\subseteq T_{\Co,b}\otimes\bC$.
+By @cor:construction-monodromy the monodromy of the family preserves the labels, so a marking that carries the labels of $\widehat X_b$ to $(S_\Co,S_{\mathrm{dP}},H,\alpha)$ is defined up to the stabilizer of the labels, and the period of $\widehat X_b$ is a point of $\bD(T_\Co)$ defined up to $\Gamma_{\mathrm{lab}}$.
+The family is smooth and proper over the smooth quasi-projective variety $B$, so $\mathcal P$ is holomorphic and lifts locally to $\bD(T_\Co)$.
+The group $\Gamma_{\mathrm{lab}}$ is arithmetic, being the image of the stabilizer of lattice data, so $\Gamma_{\mathrm{lab}}\backslash\bD(T_\Co)$ is quasi-projective.
+After passage to a neat subgroup of finite index and the corresponding finite étale cover of $B$, Borel's extension theorem [@Bor72] makes $\mathcal P$ algebraic.
 
-**Labeled rigidity on the one-node locus.** The computations cited below are in `computations/reports/` and `formalization/coble-enriques/A21Arithmetic.lean`.
-1. *The one-node locus is a nonempty open, path-connected subset of the hyperplane $\{f(p)=0\}$ in the invariant system*: nonempty by the polynomial of @sec-explicit-curve, open because escape-to-$p$ is excluded by a uniform inverse-function theorem on the Hessian (@lem:node-condition nondegeneracy preserved on the family), connected because for two members $f_0,f_1$ the pencil $\ell = \langle f_0,f_1\rangle$ is a pencil without fixed component (a member $f = gh$ of $B$ would satisfy $C_g \cap C_h = \{p\}$, against the even positive global intersection number $(a,b)\cdot(4-a,4-b)$ — local multiplicity $1$ at $p$ — so no factor share exists, after which Bertini for pencils on a smooth surface applies), the bad members of $\ell$ are closed and finitely many, and the locus is path-connected (@prop:one-node-connected). So the labels of any two members are conjugate (@thm:a21-labels): $S_\Co$, $S_{\mathrm{dP}}$, $H$, $\alpha$.
-2. *Every one-node member has* $\rk \Pic \ge 11$: the nonsymplectic $I_\Co$ has anti-invariant $H^{2,0}\oplus H^{0,2}$, so $S_\Co\subseteq H^{1,1}(\widetilde X_b)\cap H^2(\widetilde X_b,\ZZ) = \Pic(\widetilde X_b)$, of rank $11$ (@sec-labeled-lattice-data). What the rulings give is instead: the flat lattice $\Lambda = \langle e_b, f_b, [D_b]\rangle$ lies in $S_{\mathrm{dP}}$, since its classes are invariant under the deck involution (classes of the ruling fibrations' fibres) and the exceptional curve's class, and it lies in $S_\Co$ as well, since $\tau$ preserves each ruling fibration fibrewise. $\Lambda\cong U(2)\perp\langle-2\rangle$, det $8$; $\rk S_{\mathrm{dP}} = 3 = \rk\Lambda$ (Lefschetz, ranks only), so the index is $1$ or $2$, and it is $1$ by @prop:det-saturation-del-pezzo: $S_{\mathrm{dP}} = \Lambda$. Since $\Lambda\subseteq S_\Co$, also $S_{\mathrm{dP}}\subseteq S_\Co$.
-3. *The image of the period map has dimension $9$, and its differential has generic rank $9$.* The one-node family is algebraic (it is the universal family over the one-node locus $B$, a nonempty Zariski-open subset of the hyperplane $|\{f(p)=0\}|\cong\PP^{11}$, with the relative polarization and the node section, by @prop:one-node-family), so its period map $p\colon B \to D(T_\Co)/\Gamma$ exists as a holomorphic map into the period domain's quotient by the arithmetic group (an orbifold of complex dimension $9$, which for dimensional statements may be lifted locally to $D(T_\Co)$), and it is algebraic on $B$ by Borel's extension theorem [@Bor72]: a holomorphic map from a smooth quasi-projective variety, which $B$ is, to the quotient of a hermitian symmetric domain by an arithmetic group, that lifts locally to the domain — which the period map does with the local system trivialised — is algebraic. Its fibres are exactly the $\Aut(Y)^\tau$-orbits of members. Because the four labels are flat in the family, monodromy lands in their stabiliser in $\Orth(L_{K3})$; its image in $\Orth(T_\Co)$ is the *label-stabiliser group* (image of $Z_{\Orth(L_{K3})}(I_\Co,I_{\mathrm{dP}})_{H,\alpha}$ in $\Orth(T_\Co)$), and the marked periods descend well-definedly to $D(T_\Co)$ modulo that subgroup; equality there means *some* element of the label-stabiliser group carries one period to the other, and that element fixes the labels, in particular the flat ample class $2H-\alpha$, ample on every member by the same Nakai--Moishezon argument used in the positive half, so strong Torelli [@BHPV04, Ch. VIII, Thm. 11.1] gives isomorphic $H$-polarized pairs, and $\varphi_H$'s Segre recovery of $(Y,B)$ ($h^0(H) = 4$, $\pi_*\OO_X = \OO_Y\oplus K_Y$) gives the same member; an automorphism of $Y$ preserving $(Y,B)$ conversely gives equal periods mod that subgroup. The label-stabiliser group is not identified with the direct labeled centralizer group $\Gamma_{\Co,2}^{\mathrm{dir}}$ of @def:direct-group, which centralises the datum with the chamber $\mcc$ as well, or with the geometric monodromy of @def:geometric-monodromy; that identification is @prob:group-identification, which is open. This item uses the label-stabiliser group alone. On the dense open subset of $B$ where the $\Aut^0(Y)^\tau$-stabiliser is **finite** (its complement is one proper closed subset: for the action of the algebraic torus $\Aut^0(Y)^\tau$ on $B$ the function $b\mapsto\dim\stab(b)$ is upper semi-continuous by the source-semicontinuity of fibre dimensions, EGA IV(13.1.3), so $\{b:\dim\stab(b)\ge1\}$ is closed; it is proper because the member of @sec-explicit-curve has finite stabiliser; and *finite* means dimension $0$, an orbit of dimension $2-0 = 2$), each fibre is a $2$-dimensional orbit (with the ruling swap accounting for the $\mathbb Z/2$ component of the stabiliser). By the generic fibre-dimension and generic-rank theorems (Stacks tag 02FZ and its standard corollaries; EGA IV(13.1)), the image of $p$ has dimension $\dim B - 2 = 11 - 2 = 9$ at its generic point: since the target has dimension $9$, the image contains a nonempty Zariski-open subset of $D(T_\Co)/\Gamma$, and the differential of $p$ has generic rank $9$ at a dense set of members. The pointwise inequality "dimension of a fibre at $b$ ≥ $11 - \rank_b(dp)$" fails in general (the map $(u,v)\mapsto(u^2,uv)$ at the origin is a counterexample) and is not used: the Baire/Noether–Lefschetz step that follows uses only that the image of $p$ is Zariski-dense (contains a Zariski-open subset of the target), with each Noether–Lefschetz locus of a nonzero $\delta\in T_\Co$ the zero locus of a manifestly nonzero linear holomorphic function on the target's period domain, whose pullback to $B$ is then proper analytic. Consequently $\Pic = S_\Co$ for a very general member (proper analytic NL loci over that generic image; Baire).
-4. *The chamber clause of @prob:coble-rigidity is false* when the fourth bullet is read as a chamber of the arrangement cut by the member's own effective roots. The statement is pair-specific:
-(a) *The census pair $b_0, b_\star$.* For two members $b_0,b_\star$ (membership computed in `computations/reports/sm00_audit-witnesses-run.txt`), $\nu(b) = \#\{\delta:\delta^2=-2,\ \delta\cdot H_b = 1\}$ has the values $0$ and $4$ (`sm00_chamber-negative-half.md` with its scripts and logs). In each reading where the chamber's span is its own ambient space — the nef reading (span $= \mathrm{NS}_\bR$), the ample reading (span $= \mathrm{NS}_\bR$), the Kähler reading ($c = \mathcal K$ open in $H^{1,1}(X,\bR)$ of signature $(1,19)$, whence span $= W$ and $\operatorname{Pic} = W\cap L$), and the positivity reading — equality of chambers forces an isomorphism of the Picard lattices *by the span argument alone*; no Pic-recovery hypothesis enters. In the positive-region reading of the fourth bullet — chambers in the positive region $\{x^2>0\}$ of $H^2(X,\bR)$ (where $\{x^2=1\}$ is not hyperbolic space and the Kähler cone is not a subspace-version of the chamber at all) — the ambient-free facet construction (`sm00_chamber-negative-half.md`: the facet of $\overline{\mathfrak c_{b_\star}}$ at $C_+$, with a Grauert-free wall-free ball computed from an integral class, and the census argument) applies directly: the facet-normal $|H\cdot|$-census differs exactly, $0$ against $\ge 2$ at degree $1$, so no label-preserving isometry carries one chamber to the other. The Kähler cone itself is $\mathcal K_X = \operatorname{int}\operatorname{Nef}(X) \subset H^{1,1}(X,\bR)$, whose trace in $\operatorname{Pic}(X)\otimes\bR$ is the **ample** cone — never a Kähler cone in $\operatorname{Pic}\otimes\bR$.
-(b) *The Pic-baseline pair (a very general member against $F'$).* By step 3 a member $b$ with $\Pic(X_b) = S_{\Co,b}$ exists; the member $F'$ (computed in `computations/reports/sm57_verify_special_member.py`) has an anti-invariant extremal $(-2)$-curve class $[C_1]$. Under every reading in which the span argument at (a) applies, chamber equality would force $\gamma(\operatorname{Pic}(X_b)) = \operatorname{Pic}(X_{F'})$, while label preservation gives $\gamma(S_{\Co,b}) = S_{\Co,F'}$; but $\operatorname{Pic}(X_b) = S_{\Co,b}$, so $\gamma(\operatorname{Pic}(X_b)) = \gamma(S_{\Co,b}) = S_{\Co,F'} \subsetneq \operatorname{Pic}(X_{F'})$, since $[C_1]\in\operatorname{Pic}(X_{F'})\setminus S_{\Co,F'}$: impossible. This argument is stated only for the readings in which the span argument applies; the census pair of (a) covers the positive-region reading. The failure is therefore dense on the locus beyond a single pair: the NL strata are dense under the open period image of step 3.
-The universal statement that chamber equality forces an identification of the Picard lattices in the full $H^2$ reading is open; this item does not use it.
-5. *Alternative semantics:* under the label-own reading of the fourth bullet — walls only from the labels' own lattice — the clause closes by @lem:face-at-H, and the chamber clause holds: the only wall through $H$ is $\alpha^\perp$, two chambers have $H$ in their closure, one is $\alpha$-positive. The two readings give opposite answers, so the statement of @prob:coble-rigidity has to fix the reading.
-6. *The arithmetic of the tuple.* The determinants, the evenness of each lattice (from the diagonal Gram entries), the $H$-degree condition inside $U(2)\perp\langle-2\rangle$ and the twist root are computed in `formalization/coble-enriques/A21Arithmetic.lean` and `computations/reports/sm57_matrices_gen.txt`. The gluing indices $2^{10}$ and $2^{11}$ follow from the determinants and primitivity.
-7. *Open points.* The twist identification (item 8) is open: the literal slot is refuted there under one reading (8(a)), the second involution is unresolved (8(b)), and lattice-level conjugacy of the reflected pair is proved (8(d)(1)). The saturation of $\Lambda$ in $S_{\mathrm{dP}}$ is proved by @prop:det-saturation-del-pezzo for $k = 1$, with one ordinary node at a $\tau$-fixed point and the branch curve irreducible; the same argument gives $U(2)$ for $k = 0$. For $k\ge2$ the saturation is open: the half-class criterion changes shape (`computations/reports/smtw_os_fibre-m6.md`). The open points are: the reading of the fourth bullet (item 5); the identification of Picard lattices from chamber equality (item 4); the second involution (item 8(b)); and the $k\ge2$ saturation, which the one-node question does not need.
+*The fibres.* Let $b,b'\in B$ with $\mathcal P(b) = \mathcal P(b')$.
+Then there is a Hodge isometry $g\colon H^2(\widehat X_b,\bZ)\to H^2(\widehat X_{b'},\bZ)$ that carries the labels of $b$ to the labels of $b'$.
+Each involution acts by $+1$ on its invariant lattice and by $-1$ on the orthogonal complement, so $g$ intertwines the involutions of $b$ and $b'$.
+Let $\sigma\colon\widehat Y=\Bl_{p_0}Y\to Y$ be the blow-up and $e$ its exceptional curve.
+By part (1) of @lem:face-at-H, $\alpha_b = \widehat\pi_b^*e$, and $H_b = \widehat\pi_b^*\sigma^*\OO_Y(1,1)$, so
+$$2H_b-\alpha_b = \widehat\pi_b^*\bigl(\sigma^*\OO_Y(2,2)-e\bigr) = \widehat\pi_b^*(-K_{\widehat Y}).$$
+The surface $\widehat Y$ is a del Pezzo surface of degree $7$, so $-K_{\widehat Y}$ is ample, and $\widehat\pi_b$ is finite, so $2H_b-\alpha_b$ is ample.
+The isometry $g$ carries $2H_b-\alpha_b$ to the ample class $2H_{b'}-\alpha_{b'}$, so by the strong Torelli theorem [@BHPV04, Ch. VIII, Thm. 11.1] $g = \varphi^*$ for an isomorphism $\varphi\colon\widehat X_{b'}\to\widehat X_b$.
+The action of the automorphism group of a K3 surface on its second cohomology is faithful, so $\varphi$ conjugates $\widehat\iota_{\mathrm{dP},b'}$ to $\widehat\iota_{\mathrm{dP},b}$ and $\widehat\iota_{\Co,b'}$ to $\widehat\iota_{\Co,b}$.
+So $\varphi$ descends to an automorphism of $\widehat X_b/\widehat\iota_{\mathrm{dP},b} = \widehat Y$ that commutes with $\tau$, carries the branch curve of $b'$ to the branch curve of $b$, and preserves $e$ because $g(\alpha_b)=\alpha_{b'}$.
+It therefore descends to an element of $G$ that carries $b'$ to $b$.
+Conversely, an element of $G$ that carries $b'$ to $b$ lifts to an isomorphism $\widehat X_{b'}\to\widehat X_b$ that commutes with both involutions and preserves $H$ and $\alpha$, so $\mathcal P(b) = \mathcal P(b')$.
+This proves (1).
 
-8. *The twist identification (@prob:twist-identification).* @cons:reflection-twist defines one involution, $I_\Co:=w_\alpha I_{\mathrm{En}}$; it does not define a second involution of a pair, and the geometric $I_{\mathrm{dP}}$ part of the labeled construction (its action on the exceptional curve, @sec-root-geometry) requires a global rigidity theorem that is open. Four statements follow.
-(a) *Conditional obstructions.* If "the twist pair" is taken to be $\langle I_\Co^{\mathrm{tw}}, I_{\mathrm{En}}\rangle$, conjugacy fails by a conjugacy invariant of pairs: the joint $(\mathbb Z/2\times\mathbb Z/2)$ character multiplicities are $(10,1,0,11)$ model-side against $(3,8,0,11)$ construction-side, and the product's anti-invariant lattice has rank $1$ against $8$ (computed in `computations/reports/smtw_ot_neg-m2.md`). This conclusion depends on that reading; it does not supply the missing second involution.
-(b) *The second involution.* @cons:reflection-twist and its cited sources supply no second involution completing $I_\Co$ to a pair congruent to the construction's pair. That datum is open; the rank computation of (a) does not determine it.
-(c) *The reflected-pair candidate is a separate, lattice-consistent fact.* The twist applied to both AEGS involutions, $(J_\Co,J_{\mathrm{dP}})=(w_\alpha I_{\mathrm{En}},w_\alpha I_{\mathrm{dP}})$, has eigenspace ranks $(11,3)$, joint invariant lattice $\Lambda=U(2)\perp\langle-2\rangle$ and symplectic product of rank $14$ — the four numbers of the construction's pair — and all single-lattice types match: $S_{\mathrm{dP},b}=\Lambda$ is proved in @prop:det-saturation-del-pezzo, whose only computational input is the census of the two even half-classes, computed in `computations/reports/sdp_discriminant_referee-run.txt`; and $S_{\mathrm{Co},b}$ has the twist's type $U(2)\perp E_8(-2)\perp\langle-2\rangle$ ($a=11$, $\delta=1$) by Nikulin's classification for the fixed locus $D_b$ (Theorem 3.1 of `computations/reports/smtw_ot_types-m8.md`). Abstract type does not decide the labelled embedding and gluing; (d)(1) treats them.  The auxiliary binary that @rmk:a21-open records as open at $k=0$ is decided by the same primitivity argument: $S_{\mathrm{dP}}\cong U(2)$ at $k=0$, not the unimodular overlattice $U$.
-(d) *Nikulin's primitive embeddings, and what the labelled statement needs in addition.* By [@Nik80, Prop. 1.15.1], the primitive embeddings of an even lattice $S$ into an even lattice with invariants $(m_{(+)},m_{(-)},q)$ are determined by data $(H_S,H_q,\gamma;K,\gamma_K)$: subgroups $H_S\subseteq A_S$ and $H_q\subseteq A_q$, an isomorphism $\gamma\colon q_S|_{H_S}\to q|_{H_q}$ of the restricted forms, an even lattice $K$ (the orthogonal complement of $S$), and an isomorphism of forms $\gamma_K$; the proposition also states when two such data give isomorphic embeddings, in terms of $O(q)$ and $\operatorname{Isom}(K,K')$. So the *lattice blocks* of this comparison can be handled block by block at discriminant-form level. For the blocks in question: the types $U(2)\perp E_8(-2)\perp\langle-2\rangle$ and $\langle2\rangle\perp U(2)\perp E_8(-2)$ are common to both sides (computed in `computations/reports/smtw_ot_types-m8.md` and `coble_aegs_involutions-run.txt`); the discriminant forms of the $T_\Co$ family are anti-isometric (computed in `coble_gluing_discriminants.py`); and each piece of the joint-eigenspace decomposition of the reflected pair is isometric to the corresponding piece of the construction's pair (computed in `coble_reflected_pair-run.txt`). *What the block-wise machinery does not establish.* A conjugacy of **operators** of the comparison — a statement about two *involutions of $L_{K3}$*, their invariant lattices, and the placed classes $(H,\alpha)$ — is stronger than every identified primitive embedding of one lattice block into the same ambient unimodular lattice, and the double-coset enumeration of block embeddings does not give it: it asks that *one* isometry of $L_{K3}$ carry not only each eigenlattice but also the pair of commuting involutions defined by the sign-changes across those eigenlattices, and the placed classes, neither of which is part of any block-embedding problem. The equality of types, joint decompositions and gluing anti-isometries of the eigenlattice blocks on the two sides is the piecewise basis of that step. In particular: (1) the extension of a piecewise isometry to an integral isometry conjugating the pair $(w_\alpha I_{\mathrm{En}}, w_\alpha I_{\mathrm{dP}})$ with the construction's pair $(I_{\Co,b}, I_{\mathrm{dP},b})$, at the operator level and carrying the placed classes $(H,\alpha)$, holds at lattice level for every irreducible one-nodal member $b$ (proof in `computations/reports/smwg_operator-extension.md`). The gluing of the joint pieces is a full graph, and one lift from Nikulin's surjectivity theorem for even indefinite $2$-elementary lattices [@Nik80, Theorem 3.6.3], applied to the rank-$11$ block only, matches any two gluings, so the double coset collapses. The construction side's $(+-)$-piece is $E_8(-2)$ because it is the coinvariant lattice of the product involution, which is symplectic, whose action on $H^2$ of a K3 is unique up to isometry [@Nik79, Thm. 4.7]; this excludes the $\langle-2\rangle^{\oplus 8}$ alternative for the complement. The corner classes come from the construction ($H_b = \pi^*\OO_Y(1,1) = e_b+f_b$ of the $U(2)$ ruling frame, $\alpha_b = [D_b]$, index one from @prop:det-saturation-del-pezzo), the marked orbit of such corner pairs is transitive, and the integral isometry of the rank-$3$ piece is realized through the flag by the graph-compatibility equation $\bar\psi\gamma = \gamma(\bar\varphi\oplus\mathrm{id})$. The conclusion is $g\in\Orth(\lkt)$ conjugating the pairs with $g(H)=H_b$, $g(\alpha)=\alpha_b$, for every $b$ directly, with no transport step. It is a lattice statement, not a Hodge-isometry or chamber statement. An unlabelled discriminant surjectivity alone does not give it; the marked orbit and stabilizer and the gluing compatibility supply the rest. (2) @cons:reflection-twist defines no second involution, and (1) does not define one. (3) Lattice-level conjugacy does not imply the chamber clause, $(Lat)\nRightarrow(Chm)$; item 4 decides the chamber clause independently of (1). The open part of the twist identification is the second involution of (b).
+*The image.* The identity component of the centralizer of $\tau$ in $\Aut(Y)$ is the product of the diagonal tori of the two factors $\mathrm{PGL}_2$, which fixes each $\tau$-fixed point.
+So $\dim G = 2$, and by (1) every fibre of $\mathcal P$ has dimension at most $2$.
+By @prop:one-node-connected, $B$ is a nonempty open subset of a projective space of dimension $11$, so the closure of the image of $\mathcal P$ has dimension at least $11-2 = 9$.
+The target has dimension $\rk T_\Co-2 = 9$, so the closure of the image is a component of the target.
+By Chevalley's theorem the image is constructible, so it contains a nonempty Zariski-open subset of that component.
+By generic smoothness in characteristic $0$, the differential of $\mathcal P$ has rank $9$ on a dense open subset of $B$.
+This proves (2).
+
+*The very general member.* Let $v\in T_\Co$ be nonzero.
+The set $\bD(T_\Co)\cap v^\perp$ has dimension $8$, so by (2) the set of $b\in B$ whose period is orthogonal to a $\Gamma_{\mathrm{lab}}$-translate of $v$ is a proper closed analytic subset of the irreducible variety $B$.
+There are countably many $v$, so a very general $b$ lies in none of these subsets, and for such $b$ no nonzero class of $T_{\Co,b}$ is orthogonal to $H^{2,0}(\widehat X_b)$, that is, $T_{\Co,b}\cap\Pic(\widehat X_b) = 0$.
+Let $x\in\Pic(\widehat X_b)$.
+The automorphism $\widehat\iota_{\Co,b}$ preserves $\Pic(\widehat X_b)$, so $x-I_{\Co,b}x$ lies in $T_{\Co,b}\cap\Pic(\widehat X_b) = 0$, and $x\in S_{\Co,b}$.
+With @lem:one-node-picard-rank this gives $\Pic(\widehat X_b) = S_{\Co,b}$.
+This proves (3).
+:::
+
+::: {.question #qst:chamber-clause-one-node title="the chamber clause on the one-node locus"}
+Are there one-node members $b,b'$ such that no isometry of $\lkt$ that carries the labels of $b$ to the labels of $b'$ carries the chamber of the tuple at $b$ to the chamber of the tuple at $b'$?
+:::
+
+::: {.question #qst:del-pezzo-saturation-higher-k title="the del Pezzo invariant lattice for several nodes"}
+Let the branch curve have $k\ge2$ ordinary nodes at $\tau$-fixed points and be otherwise smooth.
+Is $S_{\mathrm{dP}} = \pi^*\Pic(Y)\perp\ZZ D_1\perp\cdots\perp\ZZ D_k$?
+:::
+
+::: {.proposition #prop:twist-pair-not-construction-pair title="the pair $\{I_\En,I_\Co\}$ is not the pair of a one-node member"}
+Let $b$ be a one-node member.
+No isometry of $\lkt$ conjugates the set $\{I_\En,I_\Co\}$ of @cons:reflection-twist to the set $\{I_{\Co,b},I_{\mathrm{dP},b}\}$.
+:::
+
+::: {.proof}
+For commuting involutions $A,A'$ of $\lkt$ and signs $\epsilon,\epsilon'\in\{\pm1\}$, let $r_{\epsilon\epsilon'}(A,A')$ be the rank of the subspace of $\lkt\otimes\bQ$ on which $A$ acts by $\epsilon$ and $A'$ acts by $\epsilon'$.
+A conjugation preserves these four ranks, and exchanging $A$ and $A'$ exchanges $r_{+-}$ and $r_{-+}$.
+So the multiset of the four ranks is an invariant of the set $\{A,A'\}$ under conjugation.
+
+The involutions $I_\Co$ and $I_\En$ commute, because $I_\En(\alpha) = -\alpha$.
+By @prop:coble-eigenspaces, over $\bQ$ the involution $I_\Co$ acts by $+1$ on $S_\En\oplus\bZ\alpha$ and by $-1$ on $T_\Co$, and $I_\En$ acts by $+1$ on $S_\En$ and by $-1$ on $\bZ\alpha\oplus T_\Co\subseteq T_\En$.
+So
+$$\bigl(r_{++},r_{+-},r_{-+},r_{--}\bigr)(I_\Co,I_\En) = (10,1,0,11).$$
+
+For the member $b$, @lem:one-node-picard-rank gives $\rk S_{\mathrm{dP},b} = 3$, $\rk S_{\Co,b} = 11$ and $S_{\mathrm{dP},b}\subseteq S_{\Co,b}$.
+So $r_{++} = \rk S_{\mathrm{dP},b} = 3$, $r_{+-} = 11-3 = 8$, $r_{-+} = 0$ because the $(+1)$-eigenspace of $I_{\mathrm{dP},b}$ lies in that of $I_{\Co,b}$, and $r_{--} = 22-11 = 11$:
+$$\bigl(r_{++},r_{+-},r_{-+},r_{--}\bigr)(I_{\Co,b},I_{\mathrm{dP},b}) = (3,8,0,11).$$
+The multisets $\{10,1,0,11\}$ and $\{3,8,0,11\}$ differ.
+:::
+
+::: {.question #qst:reflected-pair-conjugacy title="the reflected pair"}
+Let $I_{\mathrm{dP}}$ be the del Pezzo involution of [@AEGS25], and suppose that $w_\alpha I_{\mathrm{dP}}$ is an involution that commutes with $w_\alpha I_\En$.
+For a one-node member $b$, is there $g\in\Orth(\lkt)$ with
+$$g\,(w_\alpha I_\En)\,g^{-1} = I_{\Co,b},\qquad g\,(w_\alpha I_{\mathrm{dP}})\,g^{-1} = I_{\mathrm{dP},b},\qquad g(H) = H_b,\qquad g(\alpha) = \alpha_b?$$
+:::
+
 ### The embedded comparison chain {#sec-embedded-chain}
 
 The Heegner strategy uses the chain
@@ -801,9 +824,8 @@ $$
 Adjunction for $R_{\wV}$ gives
 $$
 2p_a(R_{\wV})-2=R_{\wV}^2+K_{\wV}\cdot R_{\wV}=7-1=6,
-\qquad\text{so } p_a(R_{\wV})=4,
+\qquad\text{so } p_a(R_{\wV})=4.
 $$
-an integer, as the consistency check requires.
 
 The divisor $R_{\wV}$ is not the anti-bicanonical curve $C$.
 It is the divisor relevant to the KSBA polarization.
@@ -1007,23 +1029,8 @@ Prove
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 :::
 
-**Consequence for the direct group.** The labelled tuple of @prob:coble-rigidity is open for the direct-projective construction (@rmk:a21-open), and what is settled there is that the lifted del Pezzo involution has invariant rank $2+k\ge3$ rather than $U(2)$ (@prop:del-pezzo-type-on-the-resolution). So the pair $(I_\Co,I_{\mathrm{dP}})$ whose centralizer defines $\Gamma^{\mathrm{dir}}_{\Co,2}$ is a pair of lattice involutions and of a local model rather than of two automorphisms of one Coble cover; the definition itself stands, being taken in $\Orth(L_{K3})$, and what a comparison with $\Gamma^{\mathrm{geom}}_{\Co,2}$ needs is precisely the missing geometric realisation. The comparisons with $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and with the congruence group are lattice statements about $\Orth(L_{K3})$ and are untouched by that.
-
-Defining one of these groups to be “the group for which the desired semifan works” is circular.
-
-::: {.remark title="What the four-group problem reduces to"}
-
-Two of the four are explicitly built over the stable group $\Gamma_\Co = \Orth^+(T_\Co)^*$ and differ from it by a finite subgroup of $\Orth(A_{T_\Co}, q_{T_\Co})$.
-$\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group of @prop:gamma-co-in-heegner-group, the root $\alpha$ fixed above being the vector $\delta$ of @lem:coble-heegner-vector and $\Gamma_{\mathrm{En},2}$ being $\gent$: it contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$, and its quotient has order exactly $\abs{W(E_8)}$ (@prop:gamma-cong-eq-heegner(2)); it is the group $P$ below if and only if the gluing $\gamma$ is block-compatible in the sense of that proposition.
-$\Gamma^{\mathrm{cong}}_{\Co,2}$ is by definition the full preimage of a subgroup $P$ under $\rho_{T_\Co}$ — the $P$ defined above, made a subgroup of $\Orth(A_{T_\Co},q_{T_\Co})$ by the identity on $\ZZ\tfrac12\zeta$ — so its kernel is $\ker\rho_{T_\Co}$.
-$P$ is nontrivial — it contains the swap of the two isotropic classes of $A_{U(2)}$ — and that swap is realised by an integral isometry of $T_\Co$, the reflection $s_{e'-f'}$ in a vector of square $-4$, which lies in $\Orth^+(T_\Co)$ and fixes the class $\eta/2$ (`computations/reports/coble_congruence_witness.py`, and @sec-gamma-co-comparison).
-So the congruence group strictly contains the stable group, and so do the Heegner group, by @prop:gamma-co-heegner-strict, and the $\theta$-group, by @prop:theta-co-index, both with index exactly $\abs{W(E_8)} = 696\,729\,600$. Moreover, under block-compatibility of the gluing, $\Gamma^{\mathrm{Hdg}}_{\Co,2} = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$: the two quotients are then both $P$, computed in @prop:gamma-cong-eq-heegner, which reduces the comparison of the Heegner group with the congruence group to that one statement about the gluing. The indices are unconditional: $[\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co):\Gamma_\Co] = \abs{W(E_8)}$ and $[\Gamma^{\mathrm{cong}}_{\Co,2}:\Gamma_\Co] = 2\abs{W(E_8)} = 1\,393\,459\,200$. Of the four groups of @prob:group-identification what remains open is the comparison with the direct and geometric entries (@prob:coble-rigidity, @prob:B24, @prob:B25), and for the $\theta$-group the block-compatibility of $\gamma_\Co$.
-The four-group identification therefore cannot be an identification with $\Gamma_\Co$: what it asserts is that four overgroups of $\Gamma_\Co$ coincide, which is a statement about subgroups of one finite quadratic space and nothing more.
-
-The other two are not of that kind.
-$\Gamma^{\mathrm{dir}}_{\Co,2}$ is the image of a centralizer in $\Orth(L_{K3})$ of the labeled Coble datum, and comparing it with $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ needs an isometry of $L_{K3}$ carrying the Coble-labeled primitive embedding to the Enriques-labeled one and $\tilde h_\Co$ to $h$; that is @prob:coble-rigidity, which is exactly what @warn:isometry-rigidity warns cannot be replaced by an abstract lattice isometry.
-$\Gamma^{\mathrm{geom}}_{\Co,2}$ is a monodromy group of a moduli stack, and no lattice computation reaches it: it needs the direct global Torelli and direct monodromy theorems, @prob:B24 and @prob:B25.
-:::
+With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
+The images of $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in $\Orth(q_{T_\Co})$, their indices over $\Gamma_\Co$, and the condition under which the two groups coincide are @prop:gamma-cong-eq-heegner.
 
 ### A lattice-theoretic stabilizer sequence {#sec-stabilizer-sequence}
 
@@ -1059,7 +1066,7 @@ The exact sequence is the one relating the two orthogonal groups through the ind
 *Surjectivity.*
 An isometry $g\in O^+(T_{\Co})$ preserves the discriminant form $q_{T_{\Co}}$, since $A_{T_{\Co}}$ is computed from $T_{\Co}$ alone.
 To extend it must also fix the gluing class $[\eta/2]$, and it does: by @prop:coble-discriminant-group the discriminant representation of $\Orth(T_{\Co})$ factors through the isomorphism $\Orth(A_{T_{\Co}}, q_{T_{\Co}})\iso\Orth(A^0, q_{T_{\Co}}|_{A^0})$, where $A^0$ is the index-$2$ subgroup carrying the classes of integral $q$-value, and injectivity of that restriction together with the orthogonality of the decomposition $A_{T_{\Co}} = \ZZ\overline{h}\perp A^0$ forces the image of $\overline{h} = [\eta/2]$ to be $\overline{h}$ itself.
-The $q$-value does not single the class out: the classes of $q$-value $\tfrac12$ modulo $\ZZ$ are exactly the coset $\overline{h} + A^0$, of order $2^{10}$, so fixing $\overline{h}$ is a genuine condition and not a formality — only the restriction isomorphism above shows that it holds for every isometry.
+The classes of $q$-value $\tfrac12$ modulo $\ZZ$ form the coset $\overline{h} + A^0$, of order $2^{10}$, so the value of $q$ alone does not determine $\overline{h}$.
 So $g$ preserves the gluing subgroup $H$ of @thm:nikulin-gluing determined by the primitive vector $\eta$, and hence extends to the overlattice: by the gluing criterion, isometries of the two summands preserving $H$ glue to an isometry of the overlattice.
 The two choices of sign of the action on the line $\ZZ\alpha$ are the two extensions, and both lie in $O^+(T_{\En})$ because $\alpha$ is negative and the positive plane is untouched.
 
@@ -1068,9 +1075,6 @@ The kernel of the restriction is the subgroup of $\Stab_{O^+(T_{\En})}(\bZ\alpha
 Such an isometry preserves $\alpha$ (the stabilizer condition) and the whole of $T_{\Co}$, and acts trivially there; it therefore acts by a scalar on the rank-one complement $\bZ\alpha$, and being an isometry with $\alpha^2=-2$ the only scalars are $\pm1$.
 The scalar $+1$ is the identity, and the scalar $-1$ is the reflection $w_\alpha$ in the root $\alpha$.
 So the kernel is $\langle w_\alpha\rangle$, of order $2$.
-
-This lemma is a lattice statement.
-It does not identify the degree-$2$ monodromy group and does not solve the integral isotropic-subspace lifting problem.
 :::
 
 ### Period domains {#sec-coble-period-domains}
@@ -1209,10 +1213,34 @@ Consequently, an orbit calculation in $O(A_{T_{\Co}})$ does not classify Baily--
 ### Orbits in the finite quadratic space {#sec-finite-orbits}
 
 ::: {.example #ex:gco-finite-orbits title="Orbits of $G_\Co$ on singular vectors and totally singular planes"}
-In the $10$-dimensional plus-type quadratic space $A_{S_\En}$ over $\bF_2$, the group $G_\Co$, the image of the degree-$2$ parabolic stabilizer, has four orbits of nonzero singular vectors and five orbits of totally singular planes, with the sizes of @tbl-finite-vector-orbits and @tbl-finite-plane-orbits (`computations/reports/coble_gco_orbit-decomposition.py`, `computations/reports/coble_gco_plane-orbits.py`).
-The type of a plane lists the types of its three nonzero vectors.
-By @lem:gco-orbit-transfer, $A_{T_\Co} = A_{\generators{2}}\perp A_{S_\En}$, the isotropic classes of $A_{T_\Co}$ are those of the summand $A_{S_\En}$, and $G_\Co$ acts as $\id\oplus\rho_{S_\En}$.
-So the four vector orbits partition the $527$ nonzero isotropic classes of $A_{T_\Co}$, and the five plane orbits partition its $23\,715$ order-$4$ isotropic subgroups (@prop:coble-planecusp-finite).
+By @lem:gco-orbit-transfer, the isotropic classes of $A_{T_\Co}$ are those of the summand $A_{S_\En} = A_{U(2)}\perp A_{E_8(2)}$, and by @thm:coble-heegner-finite-orbits the group $G_\Co$ acts there as $P = \Orth(q_{U(2)})\times\Orth(q_{E_8(2)})$.
+Write a class as $(a,y)$ with $a\in A_{U(2)} = \{0,[u_0/2],[w_0/2],[h/2]\}$ and $y\in E_8/2E_8$, and identify the values $0,\tfrac12$ of the bilinear form with $\bF_2$.
+The form $q_{U(2)}$ takes the values $0,0,1$ on $[u_0/2],[w_0/2],[h/2]$, and two distinct nonzero classes of $A_{U(2)}$ pair to $1$.
+The form $q_{E_8(2)}$ is a nondegenerate plus-type form on the $8$-dimensional space $E_8/2E_8$, with $135$ nonzero singular vectors and $120$ nonsingular vectors.
+
+*Vectors.* By part (2) of @thm:coble-heegner-finite-orbits, the nonzero isotropic classes fall into four $P$-orbits:
+
+- type $A$: $(0,s)$ with $s$ nonzero singular, $135$ classes;
+- type $B$: $([u_0/2],0)$ and $([w_0/2],0)$, $2$ classes;
+- type $C$: $([u_0/2],s)$ and $([w_0/2],s)$ with $s$ nonzero singular, $270$ classes;
+- type $D$: $([h/2],t)$ with $t$ nonsingular, $120$ classes.
+
+*Planes.* The type of an order-$4$ isotropic subgroup lists the types of its three nonzero classes.
+Two classes of type $B$ pair to $1$, and so do a class of type $B$ and a class of type $C$ or $D$ with a different $U(2)$-coordinate.
+A sum of two classes of type $C$ with the same $U(2)$-coordinate has type $A$, and with different $U(2)$-coordinates has type $D$; a sum of two classes of type $D$ has type $A$.
+So the possible types are $AAA$, $ABC$, $ACC$, $ADD$ and $CCD$.
+For a nonzero singular $s\in E_8/2E_8$, the space $s^\perp/\bF_2s$ is a nondegenerate plus-type space of dimension $6$, with $36$ singular and $28$ nonsingular vectors; so $s^\perp$ contains $72$ singular and $56$ nonsingular vectors, and $136-72 = 64$ nonzero singular vectors $t$ have $b(s,t) = 1$.
+The counts are:
+
+- $AAA$: totally singular planes of $E_8/2E_8$; there are $135\cdot70$ ordered pairs $(s,t)$ of distinct nonzero orthogonal singular vectors, and each plane has $6$ ordered bases, so there are $1575$;
+- $ABC$: $\{([u_0/2],0),(0,s),([u_0/2],s)\}$ and its image under $u_0\leftrightarrow w_0$, so $2\cdot135 = 270$;
+- $ACC$: $\{(0,s),(a,t),(a,s+t)\}$ with $a\in\{[u_0/2],[w_0/2]\}$ and $\langle s,t\rangle$ totally singular, determined by $a$, the plane $\langle s,t\rangle$ and the element $s$ of it, so $2\cdot1575\cdot3 = 9450$;
+- $ADD$: $\{(0,s),([h/2],t),([h/2],s+t)\}$ with $s$ nonzero singular and $t\in s^\perp$ nonsingular, so $135\cdot56/2 = 3780$;
+- $CCD$: $\{([u_0/2],s),([w_0/2],t),([h/2],s+t)\}$ with $s,t$ singular and $b(s,t) = 1$, so $135\cdot64 = 8640$.
+
+The sum is $23\,715$, the number of order-$4$ isotropic subgroups of @prop:coble-planecusp-finite.
+Within each type, Witt's extension theorem for $q_{E_8(2)}$, together with the swap $u_0\leftrightarrow w_0$ in $\Orth(q_{U(2)})$, makes $P$ transitive, so each type is one orbit.
+The sizes are @tbl-finite-vector-orbits and @tbl-finite-plane-orbits.
 :::
 
 | Finite vector type | Orbit size |
@@ -1441,9 +1469,6 @@ Whether the displayed walls form a complete simple system is @prob:coxeter-compl
 
 The raw numbers of maximal parabolic faces in the four sliced arrangements are $1$, $3$, $3$, $9$.
 
-These counts are diagnostic data only.
-They disagree with some finite-shadow orbit counts, which indicates that chamber completeness, arithmetic diagram automorphisms, and the calibration of finite orbits must all be resolved before boundary strata are enumerated.
-
 ::: {.problem #prob:coxeter-completeness title="Required theorem (Coble Vinberg and root completeness)"}
 For every polarized Coble $0$-cusp:
 
@@ -1458,11 +1483,7 @@ For every polarized Coble $0$-cusp:
 5. enumerate all maximal parabolic and elliptic subdiagrams modulo the full arithmetic group.
 :::
 
-A list of vectors or a finite Gram-matrix computation is not a Coxeter theorem without these steps.
-
-The five items are stated for the cusp lattices, and they are the right site for them: item 2 is Vinberg's algorithm, which is a statement about a lattice of signature $(1,n)$, and the transcendental lattice $T_\Co$ of signature $(2,9)$ is not one.
-For $T_\Co$ itself the corresponding question is the reflective-lattice one, and its first half holds: by @prop:gamma-co-reflective-set the reflections lying in the stable group $\Gamma_\Co$ are exactly those in the short roots, no long root qualifying.
-What remains open for $T_\Co$, and is not one of the five items above, is the index of the group generated by that reflective set in $\Gamma_\Co$.
+The reflections of $T_\Co$ that lie in $\Gamma_\Co$ are given by @prop:gamma-co-reflective-set, and the index in $\Gamma_\Co$ of the group they generate is @qst:gamma-co-generators.
 
 ## Integral-affine structures, dlt quotients, and stable models {#sec-integral-affine}
 
@@ -1795,8 +1816,6 @@ Target theorem B is the comparison theorem of @sec-central-problem.
 Target theorem A is a substantial independent theorem and an intermediate strategy, but it becomes a proof of the Heegner statement only after Target theorem B is established.
 
 ## Proof strategies and research programs {#sec-strategies}
-
-This section states five proof strategies, the theorem chain each requires, and the inferences each must avoid.
 
 ### Strategy A: normalize the Heegner closure inside the AEGS compactification {#sec-strategy-heegner}
 
@@ -2350,7 +2369,8 @@ The table lists each statement, whether it is proved, and the section that prove
 
 ### Explicit invariant branch curve {#sec-explicit-curve}
 
-On the affine chart $x_0=y_0=1$, consider the invariant polynomial
+::: {.example #ex:one-node-branch-curve title="an invariant $(4,4)$ curve with one node"}
+On the affine chart $x_0=y_0=1$ of $Y$, let
 
 \[
 \begin{aligned}
@@ -2361,30 +2381,17 @@ f(x,y)={}&29x^4y^4+23x^4y^2+19x^4
 \end{aligned}
 \]
 
-Its quadratic part is $x^2+xy+2y^2$, with discriminant $-7$.
-Gr\"obner-basis calculations on the four standard affine charts give one singular point, at $(0,0)$ on the displayed chart, and no singularities on the other charts.
+Each monomial of $f$ has exponents at most $4$ in each variable and even total degree, so $f$ is a $\tau$-invariant section of $\mathcal O_Y(4,4)$.
+The constant term of $f$ is $0$, and its quadratic part $x^2+xy+2y^2$ has discriminant $1-8=-7\ne0$.
+So by @lem:node-condition the curve $B=(f=0)$ has an ordinary node at the $\tau$-fixed point $p=(0,0)$.
 
-So the open one-node invariant family is nonempty.
+On the chart $(x,y)$ the ideal $(f,\partial_xf,\partial_yf)$ has reduced lexicographic Gröbner basis $\{x,y\}$.
+On each of the other three standard affine charts of $Y=\bP^1\times\bP^1$, the ideal of the dehomogenized equation and its two partial derivatives has Gröbner basis $\{1\}$.
+So $p$ is the only singular point of $B$.
 
-### Lattice calculations {#sec-computational-lattices}
-
-Symbolic Gram-matrix computations give:
-
-- the signature and determinant of the displayed $T_{\Co}$ and $S_{\Co}$ decompositions;
-
-- the eigenspaces of the reflection twist on an explicit model;
-
-- the rank of the ambient square-diagram Gram matrix for $(\alpha_{20},\alpha_{21})=2$ and for $(\alpha_{20},\alpha_{21})=4$ (@sec-gram-correction).
-
-
-### Finite cusp computations {#sec-computational-cusps}
-
-The finite-orbit data of @sec-finite-orbits are orbits of $H = \rho_{T_\Co}(\Gamma)$ on nonzero isotropic classes, on pairs $(J,s)$ of an order-$4$ isotropic subgroup and a star, and on triples $(J,s,c)$; by @thm:cusp-lifting they count the $\Gamma$-orbits of primitive isotropic lines, planes and flags of $T_\Co$.
-
-### Wall-slice computations {#sec-computational-slices}
-
-The ambient Gram matrix of @sec-gram-correction gives the selected wall-link roots and the four candidate arrangements.
-The scripts test root integrality for the displayed vectors and enumerate parabolic and elliptic subgraphs of the candidate graphs.
+Smoothness away from $p$ is a Zariski-open condition on the irreducible linear system of invariant curves through $p$, and $B$ satisfies it.
+So a general invariant curve with an ordinary node at $p$ is smooth away from $p$.
+:::
 
 
 ## Appendix: candidate wall-slice arrangements {#sec-appendix-wall-slices}
