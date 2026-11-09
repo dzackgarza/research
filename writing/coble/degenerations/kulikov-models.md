@@ -1,10 +1,5 @@
 # Kulikov models and limiting mixed Hodge structures {#sec-kulikov-models}
 
-::: {.remark}
-
-We collect the local structure theory attached to a one-parameter degeneration of K3 surfaces: the Kulikov models that provide a well-behaved semistable representative of a degeneration, the trichotomy of such models by the nilpotency of the log monodromy operator, and the limiting mixed Hodge structure whose monodromy weight filtration records the same trichotomy on the Baily--Borel boundary.
-:::
-
 ## Kulikov degenerations
 
 ::: {.definition #def:kulikov-model title="Kulikov models"}
@@ -72,9 +67,8 @@ The boundary components of $\bbcpt{\ftd}$ are classified by the nilpotency index
 
 The construction of the limiting mixed Hodge structure is the nilpotent orbit theorem together with the Clemens-Schmid sequence [@Sch73; @Cle77], and the relation between the nilpotency index of $N$ and the type of the degeneration is Kulikov's classification [$@Kul77; @PP81].
 
-The graded piece is identified in the book's notation as follows.
 For a degeneration of type II the monodromy is unipotent with $N\neq0$, $N^2=0$, so the weight filtration has the three steps $0\subset W_1\subset W_2\subset W_3$ with $\Gr^W_i=0$ otherwise; the primitive part of $H^2$ contributing to $\Gr^W_2$ is annihilated by $N$ and by its transpose, hence is the orthogonal complement of the isotropic subspace $I$ of the special fibre, quotiented by $I$ itself, which is $\overline{T}_I$ of the boundary lattice.
-So the pure Hodge structure of weight $2$ on $\Gr^W_2$ is the one on $\overline{T}_I$, and by @def:signature its signature is $(2-k,n-k)$ for $\rank I=k$, which is the statement of the toroidal boundary that this chapter uses.
+So the pure Hodge structure of weight $2$ on $\Gr^W_2$ is the one on $\overline{T}_I$, and by @def:signature its signature is $(2-k,n-k)$ for $\rank I=k$.
 For type III the index is $3$ and the weight filtration has the maximal length, which is why the dual complex of the special fibre is two-dimensional, and the tripod description of @sec-ias-degenerations is that geometry.
 :::
 

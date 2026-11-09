@@ -143,9 +143,8 @@ Hence $N_q(L)=\operatorname{lcm}_{1\leq i\leq n}N_q(L_i)$, and the quadratic dis
 
 ## Isotropic reduction and the cusp quotient {#sec-isotropic-reduction}
 
-A primitive totally isotropic sublattice $P\leq L$ carries the cusp lattice $Q=P^{\perp_L}/P$, and every discriminant statement about $Q$ has to be recovered from the discriminant group of $L$ rather than from a fresh basis of $Q$.
-The finite subgroup of $A_L$ cut out by $P$ is the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup; the content of this section is that the passage from the forms of $L$ to the forms of $Q$ is exactly the passage to $D(P)^{\perp}/D(P)$, so that a computation of classes in $A_L$ computes the discriminant form of the cusp lattice.
-The construction of the comparison map, and the two lemmas it rests on, are stated for a general rank $r$, not only for the rank-one case of @prop:primitive-isotropic-complement.
+A primitive totally isotropic sublattice $P\leq L$ determines the cusp lattice $Q=P^{\perp_L}/P$.
+The finite subgroup of $A_L$ cut out by $P$ is the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup, and $A_Q\isoto D(P)^{\perp}/D(P)$ by @thm:isotropic-reduction-discriminant.
 
 ::: {.notation #not:isotropic-reduction-setup title="The data of an isotropic reduction"}
 

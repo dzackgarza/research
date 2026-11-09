@@ -12,7 +12,6 @@ The $f_i$ come from an *isotropic sequence* and are obtained by modifying the ba
 
 ::: {.remark}
 
-We recall the objects whose stable limits are taken.
 A Coble surface is a smooth rational projective surface $S$ with $\abs{-K_S} = \varnothing$ but $\abs{-2K_S} \neq \varnothing$ [@DM20; @DK25].
 It is *terminal of K3 type* when $\abs{-2K_S}$ contains a reduced divisor $C = C_1 + \cdots + C_n$ of disjoint smooth rational curves with $C_i^2 = -4$; the $C_i$ are the *boundary components*, and one has
 $$

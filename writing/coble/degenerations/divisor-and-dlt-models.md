@@ -1,15 +1,5 @@
 # Divisor models and dlt degenerations
 
-::: {.remark}
-
-This section collects three models used to describe degenerations of K3 and Enriques surfaces and their KSBA stable limits: the *dlt* models of Enriques degenerations, the *divisor models* of a degeneration of pairs, and the *half-divisor models* obtained by an involution quotient.
-The three are related: the dlt model is the quotient of a Kulikov model by the Enriques involution, the half-divisor model is the quotient of a divisor model by the same involution, and the strata of the quotients carry the combinatorial data.
-:::
-
-::: {.remark}
-The dlt, divisor and half-divisor models here are those of the Alexeev--Engel--Garza--Schaffler degree-$2$ Enriques program [@AEGS25], used in the Morrison degenerations section in the same form.
-:::
-
 ## dlt models and involution pairs
 
 Here the *dlt model* of a Kulikov model $\mcx \to (C,0)$ on which $\iota_\En$ acts regularly is the quotient $\mcz \definedas \mcx/\iota_\En$ [@AEGS25 Def. 4.7]; the dual complex of $\mcz_0$ is the boundary stratum, and the definition below records the involution pair $(X, D, \iota)$ it comes from.

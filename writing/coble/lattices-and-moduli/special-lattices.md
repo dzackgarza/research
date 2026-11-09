@@ -1,7 +1,5 @@
 # K3 and Enriques lattice applications {#sec-k3-enriques-lattices}
 
-The lattice definitions used here are collected in [Lattices and discriminant forms](#sec-lattices-discriminant) and [Basic invariants of a lattice](#sec-basic-invariants). This chapter records only their roles in the K3, Enriques, and Coble constructions.
-
 ## The Enriques lattice in geometry
 
 ::: {.remark title="Role in Enriques moduli"}

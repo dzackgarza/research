@@ -1,9 +1,5 @@
 # K3 double covers and their involutions {#sec-k3-covers-involutions}
 
-This section records the general machinery of the K3 double cover of a rational surface, the distinguished geometric involutions it carries, and the lattice involutions they induce on $H^2$ together with their invariant and coinvariant sublattices.
-The Coble-specific instance of the double-cover construction — where the base is a terminal Coble surface and the branch locus is the anticanonical curve — is treated in the section on K3 covers of Coble surfaces; here we develop the construction for a general base and the involution-theoretic apparatus common to the del Pezzo, Enriques, and Nikulin quotients.
-The general invariant/coinvariant lattice formalism $L^G$, $L_G$ is developed in the invariant/coinvariant-lattice definition (@def:invariant_coinvariant_lattices) and the involution-eigenspace proposition (@prop:involution_eigenspaces); we cross-reference it rather than restating it.
-
 ## The double cover construction
 
 ::: {.remark #rmk:k3-double-cover-construction title="The K3 double cover construction"}

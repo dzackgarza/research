@@ -98,7 +98,6 @@ Z_{n-1}(C) & {}
 ```
 whose rows are exact by @thm:chain-complexes-abelian and whose two ends the snake lemma of @thm:diagram-lemmas identifies as $H_n(C)$ and $H_{n-1}(A)$.
 Applying it to the translate $[n]$ gives the sequence in every degree at once, and naturality is functoriality of the snake lemma.
-The snake lemma is thus the one input this chapter takes without deriving.
 :::
 
 ## Translation, truncation, and the mapping cone {#sec-translation-cone}

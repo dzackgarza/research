@@ -29,8 +29,4 @@ As described in [@DZ99], the double cover $\pi: X\to S$ realizes $X$ as a degene
 It seems that these degenerations correspond to the (weakly projective) **flowerpot** degenerations of [@Mor81], and I conjecture that the corresponding Kulikov models correspond to integral-affine discs (as opposed to spheres or real projective spaces).
 :::
 
-::: {.question}
-For introduction, need to say more about how the nonsymplectic involution machinery is being used in this particular case?
-:::
-
 [^coble-note-2]: An unpublished note of Dolgachev: <https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf>

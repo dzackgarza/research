@@ -1,8 +1,5 @@
 # The moduli space $\fentwo$: main results
 
-Here we collect the principal structural results for the KSBA compactification $\ksbacpt{\fentwo}$ of the moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces: the identification of the normalized compactification with a semitoroidal model, the realization of $\fentwo$ as a normalization inside the degree-$(2,2,0)$ K3 moduli space, and the enumeration of the five $0$-cusps together with their folded Coxeter data.
-These describe the *ambient* degree-$2$ Enriques picture, into which the polarized Coble locus is later cut by an admissible root (cf. the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan)).
-
 ## The main theorem
 
 ::: {.theorem #thm:fen2_main title="Compactification of $\fentwo$"}

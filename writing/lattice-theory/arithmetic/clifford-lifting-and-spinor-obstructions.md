@@ -4,9 +4,7 @@ The occurrence of arithmetic orthogonal groups as monodromy groups motivates the
 $$
 \operatorname{Mon}(\mathcal L)=\widetilde O^+(L)
 $$
-is a theorem about a specified moduli problem and its integral variation $\mathcal L$. The algebraic group on the right is constructed from the lattice: it is the common kernel of the discriminant action and the real spinor character. These constructions, and the hypotheses under which their kernels agree with integral or rational Clifford lifting images, are the subject of this chapter.
-
-We begin with Clifford lifting over a commutative ring. For a perfect quadratic module, its obstruction is a discriminant module; square classes arise through the Kummer sequence. We then compare integral, rational, and real kernels and impose the discriminant-kernel condition. Kneser's theorem supplies an equality of these algebraic groups under explicit lattice hypotheses [@HO89, §7.2C; @GHS08, Theorem 1.1 and Corollary 1.2]. Period domains provide a geometric interpretation of the real character, and the lattice-polarized K3 example records an application [@Daw22, §§1.3–1.4; @Dol96, §3].
+is a theorem about a specified moduli problem and its integral variation $\mathcal L$. The algebraic group on the right is constructed from the lattice: it is the common kernel of the discriminant action and the real spinor character.
 
 ## Quadratic modules and Clifford lifts
 
