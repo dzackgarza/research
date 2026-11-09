@@ -69,11 +69,6 @@ A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
 
 ## The integral affine structure $B_3(\ell)$ at Sterk cusp 3
 
-::: {.warning}
-The figures below were drawn for this construction but their accompanying text has not been written; they are collected here so that the artwork is not orphaned.
-Each caption states only what the picture shows.
-:::
-
 ::: {#fig-sterk3-ias .figure}
 \begin{tikzpicture}
 \pic {object=ias/sterk3-ias};

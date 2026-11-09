@@ -165,8 +165,7 @@ Without a reduced member the cover acquires worse singularities along the non-re
 
 ::: {.remark title="Why this matters for the Halphen program"}
 
-The project's [Halphen surfaces](#sec-halphen-surfaces) note records the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program). The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
-The Jacobian branch has no counterpart anywhere in the project.
+[Halphen surfaces](#sec-halphen-surfaces) describes the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program). The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
 :::
 
 ## Rational log Enriques surfaces of index 2
@@ -194,8 +193,8 @@ The dual graph of the chains is a hand-drawn figure in the source and was not tr
 
 ## Dolgachev-Kondo geometry of the degree 2 polarization
 
-The project's [geometric stable-limits note](#sec-geometric-preliminaries) records the map $\phi_{ij}$ onto a quartic del Pezzo surface and the key fact that it is **never finite** in the Coble case.
-The following incidence data accompanying it is absent.
+[The geometric preliminaries](#sec-geometric-preliminaries) introduce the map $\phi_{ij}$ onto a quartic del Pezzo surface, which is **never finite** in the Coble case.
+The remark below gives the incidence data of this map.
 
 ::: {.remark title="The branch geometry"}
 
@@ -219,9 +218,6 @@ A Coble surface arises as a degeneration of an Enriques surface exactly when the
 Dolgachev-Kondo prove $\fco$ rational by comparison with $\mcm_{\cusp} = U/\PGL_3$, the moduli of cuspidal plane quintics.
 They show $\mcm_{\cusp} \birationaliso \mcm_{\En}$, which is 10-dimensional, and that a distinguished codimension one locus $\mcm'_{\cusp} \cong \mcm_{\Co}$.
 The locus is explicit: for $C$ a plane quintic with cusp $p$ and $L$ the tangent line to $C$ at $p$, it is the case where $L$ is **also** tangent to $C$ at a smooth point $q \in C$.
-
-The project states only that $\fco$ is rational "by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics".
-The tangency condition above is what cuts out that subvariety.
 :::
 
 Related: [The research program for $F_{\Co,n}$, $2 \leq n \leq 10$](#sec-coble-families-research-program), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program), [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain).

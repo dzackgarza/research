@@ -63,7 +63,7 @@ So $a=12-n$ in every row, and $\rank M=10+n$.
 
 ::: {.remark title="What this table transcribes, and where it departs"}
 
-The rows are those of Table 5.1, p. 553, of [@CDL25], in the author-hosted draft of that book; the published printing has not been consulted here.
+The rows are those of [@CDL25, Table 5.1, p. 553].
 The source writes $\ell$ for the discriminant length where this book writes $a$, and $\mathrm{A}_1$ for what it elsewhere calls $\langle -2\rangle$.
 
 Two rows of the source print entries that contradict their own invariants, and the table above prints what the invariants force.

@@ -73,7 +73,7 @@ Eichler transvections are not named as a tool in the current [Open problems](#se
 ::: {.remark title="The GIT birational model"}
 
 $\fco \definedas D_{T_{\Co}}/\Orth(T_{\Co})$ is claimed birational to the GIT quotient $(\PP^2)^{10}\modmod\PGL_3$.
-This gives an independent handle on the dimension 9 already asserted in the project, and an avenue for comparing GIT and KSBA compactifications.
+This gives an independent computation of $\dim\fco = 9$, and an avenue for comparing GIT and KSBA compactifications.
 :::
 
 ## Terminal Coble surfaces

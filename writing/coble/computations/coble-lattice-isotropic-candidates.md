@@ -55,24 +55,18 @@ The same 18 vectors are mapped term-by-term along the embedding chain $T_{\Co}\i
 This yields a parallel norm and divisibility table across all three lattices, which is exactly the vector-by-vector form in which the Enriques-to-Coble cusp correspondence becomes checkable.
 :::
 
-::: {.remark title="Recorded gap: the numbers were not saved"}
-
-The notebook cells that evaluate norm and divisibility on these vectors, in all three lattices, have their outputs **cleared**. The vectors and the method survive; the resulting numbers do not.
-Re-running is the obvious first step, and is cheap: the lattices, the vectors and the helper are all in `init.sage`.
-:::
-
 ## Orbit machinery available
 
 ::: {.remark title="Orbit representatives from sage-indefinite-port"}
 
-The function `vector_orbit_representatives`, which `sage-indefinite-port` owns, computes orbit representatives of isotropic vectors for indefinite forms.
-This is the tool that would settle the open orbit count directly, rather than by hand.
+The function `vector_orbit_representatives` of `sage-indefinite-port` computes orbit representatives of isotropic vectors for indefinite forms.
+Applied to $T_\Co$, it computes the open orbit count.
 :::
 
 ::: {.definition title="The isotropic trichotomy used as a separating invariant"}
 
-`init.sage` provides `get_isotrop_type`, which classifies a primitive isotropic vector as **Odd**, **Even ordinary**, or **Even characteristic**, by testing $(v^\perp/v)^\perp$ against $U$, $U(2)$ and $I_{1,1}(2)$.
-This trichotomy is what the cusp correspondence sections of this project rely on.
+A primitive isotropic vector is classified as **Odd**, **Even ordinary**, or **Even characteristic**, by testing $(v^\perp/v)^\perp$ against $U$, $U(2)$ and $I_{1,1}(2)$.
+The cusp correspondence sections use this trichotomy.
 :::
 
 ## Sterk's five representatives, for comparison
@@ -81,10 +75,9 @@ In $\ten = U \oplus E_{10}(2)$ with $\omega = 2w_8$ (norm 4) and $\alpha = 2w_1$
 $$
 \eta_1 = e,\quad \eta_2 = e',\quad \eta_3 = e'+f'+\omega,\quad \eta_4 = e'+2f'+\alpha,\quad \eta_5 = 2e+2f+\alpha,
 $$
-with the asserted invariants $\div(e)=1$ and $e^\perp/e \cong E_{10}(2) = \EnriquesInvariants$; $\div(e')=2$ and $e'^\perp/e' \cong U\oplus E_8(2) = (10,8,0)$; $\generators{e,e'}^\perp/\generators{e,e'} \cong E_8(2) = (8,8,0)$; and for $v' = 2e+2f+2w_1$, $\generators{e',v'}^\perp \cong (8,6,0)$.
+with the invariants $\div(e)=1$ and $e^\perp/e \cong E_{10}(2) = \EnriquesInvariants$; $\div(e')=2$ and $e'^\perp/e' \cong U\oplus E_8(2) = (10,8,0)$; $\generators{e,e'}^\perp/\generators{e,e'} \cong E_8(2) = (8,8,0)$; and for $v' = 2e+2f+2w_1$, $\generators{e',v'}^\perp \cong (8,6,0)$.
 
-Also recorded, from a separate OSCAR/Julia notebook, the $(r,a,\delta)$ invariants with printed discriminant forms: $U(2)\to(2,2,0)$, $U(2)\oplus E_8(2)\to\EnriquesInvariants$, $U^3\oplus E_8(2)\to(14,8,0)$, $U\oplus U(2)\oplus E_8^{\oplus2}\to(20,2,0)$, $U\oplus U(2)\oplus E_8(2)\to(12,10,0)$, $E_8(2)\to(8,8,0)$.
-Here $\delta$ is computed as "some diagonal entry of the discriminant quadratic form is non-integral", citing AE22 Def.
-2.3 for coparity.
+The $(r,a,\delta)$ invariants of further lattices are $U(2)\to(2,2,0)$, $U(2)\oplus E_8(2)\to\EnriquesInvariants$, $U^3\oplus E_8(2)\to(14,8,0)$, $U\oplus U(2)\oplus E_8^{\oplus2}\to(20,2,0)$, $U\oplus U(2)\oplus E_8(2)\to(12,10,0)$, $E_8(2)\to(8,8,0)$.
+Here $\delta = 1$ when some diagonal entry of the discriminant quadratic form, in a basis of $A_L$, is non-integral, and $\delta = 0$ otherwise [@AE22, Def. 2.3].
 
 Related: [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe).

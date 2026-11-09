@@ -90,7 +90,7 @@ so that $s^3_{11} = I(v_{20})$ and $s^3_{12} = I(v_{18})$.
 
 ::: {.construction title="Sterk 4: 11 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4)$"}
 
-The notebook records a genuine subtlety here: $s^4_{12} = v_{22}+v_{21}$ is invariant under the involution but **is not a root**, and is therefore dropped.
+$s^4_{12} = v_{22}+v_{21}$ is invariant under the involution but **is not a root**, and is therefore dropped.
 This is why Sterk 4 has 11 nodes rather than 12.
 :::
 
@@ -124,21 +124,16 @@ with $\infty$-labelled edges handled as $\sqrt{v_i^2 v_j^2}$.
 | Coxeter Sterk 3, 12 roots | $(-4,-4,-4,-4,-2,-4,-4,-2,-4,-4,-4,-4)$ | 10 |
 | Folded Sterk 3 | full Gram of $U(2)\oplus E_8\oplus E_8$ in Bourbaki basis, folded along the diagonal symmetry | - |
 
-## An unresolved discrepancy in the $(18,2,0)$ diagram
-
-
-> Note: this is slightly different to $(18,2,0)$ in AET19, very mysterious!
+## The $(18,2,0)$ diagrams of Scattone and of AET19
 
 ::: {.question title="Do Scattone and AET19 give the same diagram?"}
 
 Scattone's Figure 6.3.1 is the Coxeter diagram of the full reflection group of $\generators{-4}\oplus U \oplus E_8^{\oplus2}$, reached through his $F_4$ boundary computation.
 AET19 gives a Coxeter diagram for the lattice with invariants $(18,2,0)$.
-These should be the same diagram, and the author recorded that they are not, without resolving how they differ or which is right.
+The two diagrams differ slightly; how they differ, and which is correct, is open.
 :::
 
-This is the only unresolved research observation found in that whole source tree, and it bears directly on the table of 22 roots above, which is written in the $(18,2,0)$ presentation.
-Anything derived from $\Phi_{(18,2,0)}$, including the folded Sterk diagrams and the $\theta$ matrix the open problems demand, inherits whatever the discrepancy is.
-Settling it is a prerequisite, not a footnote.
+The table of $22$ roots above is written in the $(18,2,0)$ presentation, so everything derived from $\Phi_{(18,2,0)}$, including the folded Sterk diagrams and the $\theta$ matrix of the open problems, depends on the answer.
 
 ::: {.remark title="Toroidal 0-cusps"}
 

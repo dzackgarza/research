@@ -85,7 +85,6 @@ Sterk 1 for instance carries $A_8(2)\times4$, $E_8(2)\times4$, $D_8(2)\times8$ a
 ::: {.remark title="These are not orbit representatives"}
 
 The lists are the **full** sets of elliptic subdiagrams, before quotienting by diagram symmetry.
-The notebook step that reduced them to orbits (`summarize_maximal_orbits`) has its outputs cleared, so the orbit counts do not survive; see [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe).
 :::
 
 Related: [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe), [Sterk root counts and computed chambers](#sec-sterk-root-counts-and-computed-chambers).

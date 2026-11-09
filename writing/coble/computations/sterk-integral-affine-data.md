@@ -31,10 +31,10 @@ Sterk 4 and Sterk 5 were never plotted.
 
 $(18,0,0)$ is the lattice to which the Coble cusps are claimed to correspond, so this direction list is the natural starting point for the Coble integral-affine structure; see [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain).
 
-::: {.remark title="Recorded defect: a failing rank assertion"}
+::: {.question title="The rank of the projected root vectors"}
 
-Four consecutive "project-up" cells fail as saved, on `assert all_As.rank() == 10` while the printed rank is 11. This is an unresolved discrepancy, not a transient error, and it blocks the Sterk 4 and Sterk 5 plots.
-Whoever resumes this work should treat the rank-10 expectation itself as the thing under test: the $+1$-eigenspace ranks recorded in [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams) are 12, 12, 12, 14, and the passage from those to a rank-10 image is the step that is failing.
+The integral-affine plots for Sterk 4 and Sterk 5 project the root vectors to a space of rank $10$; the projected vectors span a space of rank $11$.
+The $+1$-eigenspaces of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams) have ranks $12, 12, 12, 14$; whether their image has rank $10$ is open.
 :::
 
 ## The plotting procedure

@@ -6,7 +6,7 @@ For each of the main works cited in the Coble chapters, this appendix gives a su
 
 [@ABE22]
 
-*Abstract.* KSBA and toroidal compactifications for elliptic K3 surfaces, used in the paper as background for stable-pair compactification techniques.
+*Summary.* KSBA and toroidal compactifications for elliptic K3 surfaces, used in the paper as background for stable-pair compactification techniques.
 
 - **Used here for:** background on stable-pair compactifications of K3 moduli, especially in the IAS / stable-limits context.
 
@@ -47,7 +47,7 @@ Contents:
 
 [@AET23]
 
-*Abstract.* Stable-pair compactification for degree-2 K3 surfaces, providing a direct KSBA model for a key K3 moduli problem adjacent to the Coble and Enriques constructions.
+*Summary.* Stable-pair compactification for degree-2 K3 surfaces, providing a direct KSBA model for a key K3 moduli problem adjacent to the Coble and Enriques constructions.
 
 - **Used here for:** the stable-pair side of degree-2 K3 compactifications in the stable-limits discussion.
 
@@ -57,7 +57,7 @@ Contents:
 
 [@AN06]
 
-*Abstract.* Reference on del Pezzo and K3 surfaces used for Coxeter diagrams, reflective lattices, and parabolic subdiagram calculations.
+*Summary.* Reference on del Pezzo and K3 surfaces used for Coxeter diagrams, reflective lattices, and parabolic subdiagram calculations.
 
 - **Used here for:** the Coble Coxeter diagrams and the identification of maximal parabolic subdiagrams.
 
@@ -67,7 +67,7 @@ Contents:
 
 [@AS15]
 
-*Abstract.* Study of order-4 nonsymplectic symmetries on K3 surfaces, used here for the branched-cover and Hurwitz-type calculations behind the classical Coble sextic construction.
+*Summary.* Study of order-4 nonsymplectic symmetries on K3 surfaces, used here for the branched-cover and Hurwitz-type calculations behind the classical Coble sextic construction.
 
 - **Used here for:** the Hurwitz-type calculation that identifies the proper transform of the rational sextic with the anti-bicanonical divisor in the classical Coble construction.
 
@@ -77,7 +77,7 @@ Contents:
 
 [@BHO+12]
 
-*Abstract.* Appendix reference for the Severi variety $V_{6,10}$ of rational plane sextics with ten nodes.
+*Summary.* Appendix reference for the Severi variety $V_{6,10}$ of rational plane sextics with ten nodes.
 
 - **Used here for:** the statement that the nodal rational sextics relevant to the classical Coble construction form a Severi variety $V_{6,10}$ whose generic point has ten $A_1$-singularities.
 
@@ -87,7 +87,7 @@ Contents:
 
 [@CD12]
 
-*Abstract.* Reference on rational surfaces with large automorphism groups, including Cremona-special point sets, Coble and Halphen surfaces, and moduli consequences.
+*Summary.* Reference on rational surfaces with large automorphism groups, including Cremona-special point sets, Coble and Halphen surfaces, and moduli consequences.
 
 - **Used here for:** Cremona-special and unnodal Coble surfaces, the Halphen blowdown lemma, and the modular-curve description of Enriques and Coble cusps.
 
@@ -97,7 +97,7 @@ Contents:
 
 [@CDL25]
 
-*Abstract.* Draft reference on Enriques and Coble surfaces used throughout the paper for 2-elementary lattice tables, fixed loci, and Coble/Halphen geometry.
+*Summary.* Reference on Enriques and Coble surfaces used throughout the paper for 2-elementary lattice tables, fixed loci, and Coble/Halphen geometry.
 
 - **Used here for:** the lattice table for Coble surfaces, fixed-locus formulas for the K3 cover involution, boundary-component geometry, and Halphen/Coble results.
 
@@ -107,7 +107,7 @@ Contents:
 
 [@Cob19]
 
-*Abstract.* Classical source for the rational sextic with ten nodes and the associated Coble surface construction.
+*Summary.* Classical source for the rational sextic with ten nodes and the associated Coble surface construction.
 
 - **Used here for:** the original plane-sextic construction of the classical Coble surface.
 
@@ -117,7 +117,7 @@ Contents:
 
 [@Cob29]
 
-*Abstract.* Classical monograph on point configurations, Cremona geometry, and the background of Coble surfaces.
+*Summary.* Classical monograph on point configurations, Cremona geometry, and the background of Coble surfaces.
 
 - **Used here for:** classical background on point configurations and the historical geometry surrounding Coble surfaces.
 
@@ -127,7 +127,7 @@ Contents:
 
 [@DK25]
 
-*Abstract.* Draft reference used for terminal Coble surfaces of K3 type, K3 double covers, basic rational surface structure, and Halphen constructions.
+*Summary.* Reference used for terminal Coble surfaces of K3 type, K3 double covers, basic rational surface structure, and Halphen constructions.
 
 - **Used here for:** the double-cover construction $X \to S$, the structure of terminal Coble surfaces of K3 type, and the Halphen-surface description.
 
@@ -137,7 +137,7 @@ Contents:
 
 [@DM20]
 
-*Abstract.* Source used for the definition of Coble surfaces and related Enriques-surface geometry.
+*Summary.* Source used for the definition of Coble surfaces and related Enriques-surface geometry.
 
 - **Used here for:** an explicit modern definition of Coble surfaces.
 
@@ -147,7 +147,7 @@ Contents:
 
 [@Dol12]
 
-*Abstract.* Modern reference on classical algebraic geometry, used here for the geometric degeneration picture of Coble surfaces and the quartic del Pezzo model coming from isotropic sequences.
+*Summary.* Modern reference on classical algebraic geometry, used here for the geometric degeneration picture of Coble surfaces and the quartic del Pezzo model coming from isotropic sequences.
 
 - **Used here for:** the geometric description of Coble surfaces as degenerations of Enriques/K3 quotients and the linear systems $|2f_i+2f_j|$ mapping to quartic del Pezzo surfaces.
 
@@ -157,7 +157,7 @@ Contents:
 
 [@Dol17]
 
-*Abstract.* Background source on Enriques-surface automorphisms and lattice-theoretic constructions.
+*Summary.* Background source on Enriques-surface automorphisms and lattice-theoretic constructions.
 
 - **Used here for:** the geometric remark on degenerating an Enriques K3 cover to the Coble case.
 
@@ -167,7 +167,7 @@ Contents:
 
 [@DZ99]
 
-*Abstract.* Foundational paper on Coble rational surfaces, including their relationship to Halphen surfaces and degenerations of Enriques surfaces.
+*Summary.* Foundational paper on Coble rational surfaces, including their relationship to Halphen surfaces and degenerations of Enriques surfaces.
 
 - **Used here for:** the relation between Coble surfaces and Halphen surfaces, and for the broader geometry of Coble rational surfaces.
 
@@ -177,7 +177,7 @@ Contents:
 
 [@GK20]
 
-*Abstract.* Appendix reference for rational plane sextics with worse singularities, used to note that rational sextics need not lie in the ten-node Severi stratum.
+*Summary.* Appendix reference for rational plane sextics with worse singularities, used to note that rational sextics need not lie in the ten-node Severi stratum.
 
 - **Used here for:** the example that rational sextics can have fewer than ten $A_1$-points when more degenerate singularities such as $A_2$ occur.
 
@@ -187,7 +187,7 @@ Contents:
 
 [@Hor77]
 
-*Abstract.* Classical period-domain source behind the Horikawa model for Enriques and Coble surfaces.
+*Summary.* Classical period-domain source behind the Horikawa model for Enriques and Coble surfaces.
 
 - **Used here for:** the $\mathbf{P}^1 \times \mathbf{P}^1$ model with a $\tau$-invariant anti-bicanonical branch curve.
 
@@ -197,7 +197,7 @@ Contents:
 
 [@KK72]
 
-*Abstract.* Technical compactification result used to extend locally closed period-domain embeddings to Baily-Borel compactifications.
+*Summary.* Technical compactification result used to extend locally closed period-domain embeddings to Baily-Borel compactifications.
 
 - **Used here for:** extending the lattice-induced embeddings on period spaces to morphisms of Baily-Borel compactifications.
 
@@ -207,7 +207,7 @@ Contents:
 
 [@Mor81]
 
-*Abstract.* Original source for flower, stalk, pot, and flowerpot degenerations of Enriques-type surfaces.
+*Summary.* Original source for flower, stalk, pot, and flowerpot degenerations of Enriques-type surfaces.
 
 - **Used here for:** the flowerpot description of degenerations expected to model parts of the Coble boundary.
 
@@ -217,7 +217,7 @@ Contents:
 
 [@Nik80]
 
-*Abstract.* Fundamental reference for 2-elementary lattices, discriminant forms, primitive embeddings, and orthogonal-group surjectivity.
+*Summary.* Fundamental reference for 2-elementary lattices, discriminant forms, primitive embeddings, and orthogonal-group surjectivity.
 
 - **Used here for:** classification of 2-elementary lattices, uniqueness of primitive embeddings, and surjectivity statements for orthogonal groups.
 
@@ -227,7 +227,7 @@ Contents:
 
 [@Nue15]
 
-*Abstract.* Reference used for the statement that the nodal quotient appearing on the Enriques boundary is a Coble surface.
+*Summary.* Reference used for the statement that the nodal quotient appearing on the Enriques boundary is a Coble surface.
 
 - **Used here for:** the identification of a quotient with a Coble surface in the Enriques-boundary construction.
 
@@ -237,7 +237,7 @@ Contents:
 
 [@Ols04]
 
-*Abstract.* Foundational treatment of semistable degenerations and period spaces for polarized K3 surfaces, used here for flowerpot degenerations and their relation to Coble boundary behavior.
+*Summary.* Foundational treatment of semistable degenerations and period spaces for polarized K3 surfaces, used here for flowerpot degenerations and their relation to Coble boundary behavior.
 
 - **Used here for:** the flower, stalk, and pot terminology and the Type I / flowerpot degeneration picture applied to Coble surfaces.
 
@@ -247,7 +247,7 @@ Contents:
 
 [@PS71]
 
-*Abstract.* Classical Torelli theorem for algebraic K3 surfaces, used to pass from lattice data to period-domain moduli.
+*Summary.* Classical Torelli theorem for algebraic K3 surfaces, used to pass from lattice data to period-domain moduli.
 
 - **Used here for:** the Torelli input behind the direct period-domain construction of $F_{\Co}$.
 
@@ -257,7 +257,7 @@ Contents:
 
 [@Sha81a]
 
-*Abstract.* Projective-degeneration source for Enriques surfaces, cited alongside Morrison in the discussion of flowerpot degenerations.
+*Summary.* Projective-degeneration source for Enriques surfaces, cited alongside Morrison in the discussion of flowerpot degenerations.
 
 - **Used here for:** projective degenerations related to the flowerpot picture.
 
