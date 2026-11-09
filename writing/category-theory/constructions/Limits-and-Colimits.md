@@ -176,8 +176,6 @@ Consequently a category with equalizers and all small products is complete, and 
 ::: {.proof}
 
 This is [@Mac98, §V.2, Theorem 1 and Corollaries 1-2].
-
-Cited. The construction is the cited one: the equalizer of the two maps out of the product of the indexing objects, over the product of the targets. The book uses it only to inherit finite completeness from products and equalizers, which is the corollary form of the citation.
 :::
 
 A terminal object and pullbacks also suffice for finite completeness: the product $X\times Y$ is the pullback of $X\to *\from Y$, and the equalizer of $f,g\colon X\to Y$ is the pullback of $(\id,f)$ and $(\id,g)\colon X\to X\times Y$.
@@ -236,6 +234,4 @@ Hence the left Kan extension $\operatorname{Lan}_{!}T$ is the colimit of $T$, wi
 ::: {.proof}
 
 This is [@Mac98, §X.7].
-
-Cited. A limit is the right Kan extension of the diagram along the terminal functor, and the colimit the dual; the book uses it to place limits in the Kan-extension calculus rather than to compute with it, so no derivation is given.
 :::

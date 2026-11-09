@@ -275,8 +275,6 @@ The algorithm terminates in finitely many steps if and only if $\Gamma$ has fini
 ::: {.proof}
 
 This is [@Vin75].
-
-Cited: Vinberg algorithm and its termination criterion, from the original paper. The book applies it as a computational procedure and records the results in `sec-coxiter-results`, so the statement is quoted in the source form.
 :::
 
 ::: {.remark}

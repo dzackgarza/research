@@ -1,4 +1,4 @@
-ter---
+---
 title: Orbits of isotropic vectors and the Tits building of a cusp configuration
 unit: method
 status: reusable
@@ -132,25 +132,17 @@ For Example 2.2 of [@Daw22], $v_1 = (4,4,1,2,-1)$ and $v_2 = (36,144,5,-30,83)$,
 The paper's conclusion is $v_1\sim v_2$ under the group it denotes $\wh{\Orth}^+(L)$.
 
 For Example 2.6, $v_1 = (1,-1,0,0,0)$ and $v_2 = (1,0,1,0,0)$, and both have $v^2 = -2$.
-The paper's conclusion is $v_1\sim v_2$ under the group it denotes $\wh{S\Orth}^+(L)$, and the in-tree computation reproduces it.
+The paper's conclusion is $v_1\sim v_2$ under the group it denotes $\wh{S\Orth}^+(L)$.
 :::
 
-::: {.question #qst:dawes-example-22 title="An unreconciled outcome on the first specimen"}
+::: {.question #qst:dawes-example-22 title="The orbit of the first specimen"}
 
-Run on Example 2.2 of @ex:dawes-u-a3, the in-tree computation returns $v_1\not\sim v_2$, on the ground that $v_1^{\perp L}$ and $v_2^{\perp L}$ have different discriminants.
-The record attributes the disagreement to a simplified isometry test, but a discriminant is an isometry invariant, so by @prop:orbit-necessary-conditions(3) unequal discriminants refute equivalence under $\Orth(L)$ and under every subgroup of it, whatever isometry test is used downstream.
-The disagreement therefore lies in one of three places: the conclusion of [@Daw22], the transcription of the vectors or of the Gram matrix, or the computed complements.
-The squares recorded in @ex:dawes-u-a3 are consistent with the stated Gram matrices, which settles the transcription of the vectors; recomputing the two complements and their discriminants settles the rest.
+For Example 2.2 of @ex:dawes-u-a3, both vectors are primitive, with $q(v) = 20$ and $\div_L(v) = 4$, so by @lem:complement-determinant both complements $v_1^{\perp L}$ and $v_2^{\perp L}$ have determinant $4\cdot 20/4^{2} = 5$.
+`computations/reports/coble_dawes-example-2-2_complements.py` computes both complements: each is rank $4$, negative definite, of determinant $5$, with $20$ roots of type $A_4$, and a rank-$4$ lattice whose roots are of type $A_4$ and whose determinant equals $\det A_4$ *is* the root lattice $A_4$, so the two complements are isometric.
+The same script computes the class of $v/\div(v)$ in $A_L$, which carries $q = 5/4$ for both vectors.
+So every invariant of @prop:orbit-necessary-conditions agrees on the pair: equal squares, equal divisibilities, isometric complements, and equal classes in $A_L$.
 
-*The recorded ground is impossible, and the complements are isometric.*
-Both vectors are primitive, with $q(v) = 20$ and $\div_L(v) = 4$, so by @lem:complement-determinant both complements have determinant $4\cdot 20/4^{2} = 5$: unequal discriminants are not something a correct computation could have found.
-The recomputation in `computations/reports/coble_dawes-example-2-2_complements.py` finds more than equal determinants: both complements are rank $4$, negative definite, of determinant $5$, with $20$ roots of type $A_4$, and a rank-$4$ lattice whose roots are of type $A_4$ and whose determinant equals $\det A_4$ *is* the root lattice $A_4$, so the two complements are isometric.
-Every invariant of @prop:orbit-necessary-conditions therefore agrees on the pair: equal squares, equal divisibilities, isometric complements, and — the last one, which the same record computes — the same class of $v/\div(v)$ in $A_L$, carrying $q = 5/4$ for both.
-
-*What that leaves.*
-The in-tree run is not evidence against the paper's conclusion: the invariant it named is false for this pair, and the complements it would have had to compute are isometric, so the recorded refutation is withdrawn.
-Neither is the conclusion proved: what is missing is an explicit isometry carrying $v_1$ to $v_2$, equivalently the decision of the orbit of a primitive vector of square $20$ in $L$, and that is the isometry machinery which at this stage is the blocked layer recorded in `computations/reports/coble_gamma_co_two_definitions.py`.
-The question therefore stands open in one direction only: nothing computed here separates the two vectors, and nothing recorded against the paper survives.
+Deciding the conclusion $v_1\sim v_2$ of [@Daw22] needs an explicit isometry carrying $v_1$ to $v_2$, equivalently the decision of the orbit of a primitive vector of square $20$ in $L$.
 :::
 
 ::: {.remark title="Buildings by descent along a subgroup"}

@@ -284,8 +284,6 @@ between the GIT compactification of $\mcm_T$ and the Looijenga compactification 
 ::: {.proof}
 
 This is [@YZZ25 §4.1, §4.2; @Sha80; @Loo02].
-
-Cited: the identification of the geometric invariant theory quotient with Looijenga compactification, in the form of Yu-Zheng-Zhang Sections 4.1 and 4.2, building on Shah and Looijenga. The book uses the identification as the comparison between two compactifications it computes separately.
 :::
 
 ::: {.remark title="The arithmetic group as a normalizer"}

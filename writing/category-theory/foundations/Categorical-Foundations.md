@@ -167,8 +167,6 @@ In a commutative diagram with exact rows and five vertical morphisms, if the fou
 ::: {.proof}
 
 This is [@Mac98, §VIII.4, Lemmas 1, 4 and 5].
-
-The three lemmas are cited. They are used in exactly two places in the book: `thm:homology-les`, which applies the snake lemma to the square of rows Z_{n-1} over C_n/B_n, and the five lemma as stated. Nothing here is re-derived, and a reader who wants the argument should have Mac Lane open.
 :::
 
 Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c$ with $gf=0$ is exact at $b$ when the monomorphism $\operatorname{Im}(f)\to b$ and the kernel of $g$ represent the same subobject of $b$ (@def:subobject-relation).
@@ -248,8 +246,6 @@ are fully faithful: natural transformations between represented functors corresp
 ::: {.proof}
 
 This is [@Rie16, Theorem 2.2.4; @Mac98, §III.2].
-
-Cited. The form stated here is the two claims the book uses: the bijection natural in the representing object, and its converse identifying natural transformations with elements of the value at the representing object. Both are the cited statement read in the unenriched setting.
 :::
 
 ::: {.corollary #cor:representations-unique title="Uniqueness of representations"}

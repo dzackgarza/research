@@ -46,12 +46,12 @@ The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $\fentwo
 The Sterk cusp diagram was first given by Sterk (1991).
 :::
 
-::: {.remark title="A cheap consistency check on the whole correspondence"}
+::: {.remark title="A consistency check on the correspondence"}
 
-The dissertation proves that Sterk cusp 1 gives an $\RP^2$ integral-affine structure and that cusps 2 through 5 give $\DD^2$.
-The author independently claims, from the divisibility computation, that **Coble degenerations are $\DD^2$-type rather than $\RP^2$-type**, which is the ingredient needed to build the correct dlt models.
-Combined with the conjecture above, "Coble sits at Sterk cusp 2" *implies* $\DD^2$-type.
-The two claims were derived by different routes, so their agreement is a real, and currently unexercised, consistency check on the entire cusp correspondence.
+By @ex:fen2_five_cusps, Sterk cusp 1 gives an $\RP^2$ integral-affine structure and cusps 2 through 5 give $\DD^2$.
+The divisibility computation predicts that **Coble degenerations are $\DD^2$-type rather than $\RP^2$-type**, which is the input needed to build the dlt models.
+The conjecture above, that the Coble $0$-cusp is Sterk cusp 2, also implies $\DD^2$-type.
+The two arguments are independent, so their agreement is a consistency check on the cusp correspondence.
 :::
 
 ## The lattice-theoretic method

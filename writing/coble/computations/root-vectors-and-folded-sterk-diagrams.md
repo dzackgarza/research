@@ -107,7 +107,7 @@ This is an independent confirmation that the folding construction reproduces Ste
 
 ## Eigenspace ranks of the Sterk involution
 
-On the 22-dimensional root space, the $+1$-eigenspace ranks are 12, 12, 12, 14 for Sterk 1, 3, 4, 5 respectively (Sterk 2 not recorded).
+On the 22-dimensional root space, the $+1$-eigenspace ranks are 12, 12, 12, 14 for Sterk 1, 3, 4, 5 respectively.
 The induced root-image matrices have shape $(20,12)$ or $(20,14)$ and are asserted to have rank 10.
 
 ## Rank checks

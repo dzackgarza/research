@@ -569,8 +569,8 @@ $\latI_{p,q}$ is characteristic when $p-q\not\equiv0\pmod8$, and nothing here as
 And the transitivity proved is for the full component-preserving group of the unpolarized lattice; the
 arithmetic subgroup $\Gamma_\Co$ is strictly smaller and its orbits are finer, which is a different question.
 
-The same splitting *is* available for $T_\Co$, by untwisting, and the earlier claim that
-non-unimodularity obstructs it is withdrawn. Write $T_\Co = B(2)$ with $B=\latI_{2,9}$ unimodular
+The same splitting is available for $T_\Co$, by untwisting, although $T_\Co$ is not
+unimodular. Write $T_\Co = B(2)$ with $B=\latI_{2,9}$ unimodular
 (@prop:tco-as-twist). Twisting by $2$ preserves the underlying module, takes isometries to isometries and
 preserves isotropy, so $\Orth(T_\Co)=\Orth(B)$ as subgroups of $\GL(B)$ and the primitive isotropic lines
 and planes of the two are the same sets. Splitting the unimodular $B$ at a primitive isotropic line $l$

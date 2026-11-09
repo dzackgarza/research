@@ -64,8 +64,6 @@ This is the existence and uniqueness classification [@Nik80, Thm. 3.6.2].
 ::: {.proof}
 
 This is [@Nik80, Thm. 3.6.2].
-
-Cited: Nikulin 3.6.2 states both the uniqueness of the isometry class in terms of signature, generator length and coparity, and the exact list of admissible triples. The book restates the conditions in its own language (`def:two-elementary-isotropic-types`, and the delta of this page); no argument is added.
 :::
 
 ::: {.theorem #thm:two-elementary-surjectivity title="Nikulin's surjectivity theorem"}
@@ -80,8 +78,6 @@ This is [@Nik80, Thm. 3.6.3].
 ::: {.proof}
 
 This is [@Nik80, Thm. 3.6.3].
-
-Cited: Nikulin 3.6.3 is the surjectivity of the quadratic discriminant representation for an even indefinite 2-elementary lattice. The exact sequence displayed is the translation of that surjectivity into the book notation for the discriminant kernel.
 :::
 
 ::: {.corollary #cor:twoelementary-complement-lifting title="Extension of isometries across a $2$-elementary complement"}
@@ -130,6 +126,4 @@ In every case $\qty{v^{\perp_S}}^{\mathrm{nd}}$ is even negative definite of ran
 ::: {.proof}
 
 This is [@AE22, Prop. 5.5].
-
-Cited: the trichotomy of primitive isotropic vectors by divisibility and norm is Alexeev-Engel 5.5. The book applies it to the Coxeter diagrams of the hyperbolic 2-elementary lattices, which is a use rather than a strengthening, so the statement is quoted in the source form.
 :::

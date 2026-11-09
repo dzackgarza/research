@@ -49,7 +49,7 @@ To this end, we prove the following:
 \input{tikz/baily_borel_schematic.tikz}
 
 The Baily--Borel compactification of $F_{2d} = D_{L_{2d}}/\Gamma_{L_{2d}}$.
-:::
+:::z
 
 ::: {#fig-coxeter-fan-cone .figure}
 \input{tikz/hyperbolic_cone_fundamental_domain.tikz}

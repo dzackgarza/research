@@ -66,8 +66,6 @@ In a simple-root basis the matrix of the restricted form is the negative of its 
 ::: {.proof}
 
 This is [@Bou08, Ch. VI; @Hum90, Chs. 1-2].
-
-Cited: the Cartan-Killing classification of connected positive definite Cartan matrices. The list of types and their diagrams is exactly the cited one, and the book uses it as the input to the folding computations rather than re-deriving it.
 :::
 
 ## The $ADE$ lattices

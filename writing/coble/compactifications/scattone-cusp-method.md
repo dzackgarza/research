@@ -188,7 +188,6 @@ All four Type II curves meet transversely at the unique Type III point.
 ::: {.remark}
 
 @ex:scattone-f2-diagram is the cusp diagram of the *degree-two K3* moduli space $F_2$, and is distinct from the Coble and Enriques cusp diagrams computed in the Cusp Correspondence section: there the transcendental lattice $T_\Co = (11,11,1)_1$ produces a single $0$-cusp incident to a single $1$-cusp via the mirror-move algorithm, with divisibility data $(2,2)$.
-We record the $F_2$ numbers here only as the illustrative instance of Scattone's general method and do not reuse them for the Coble computation.
 :::
 
 ## Type III degenerations: the Friedman--Scattone analysis

@@ -146,12 +146,12 @@ Cusp 2 is the Sterk cusp to which the Coble $0$-cusp is claimed to correspond ([
 Every primitive isotropic vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only cusps $2$ to $5$ are in play there ([KSBA stable limits](#sec-ksba)). Those are exactly the four with mutually isometric quotients $\eta_j^{\perp}/\eta_j\cong U\oplus E_8(2)$ and pairwise inequivalent published diagrams, which is the configuration @qst:sterk-reflection-subgroup is about.
 :::
 
-## Hypotheses of the recorded runs
+## Sign convention
 
-::: {.warning title="The sign convention of the recorded runs is not recorded"}
+::: {.warning title="Sign convention of the computed roots"}
 
 The Vinberg implementation used takes a lattice of signature $(n,1)$, while this project's convention is $(1,n)$ ([reflection groups and Vinberg](#sec-reflection-groups-and-vinberg)). The intended transport negates the form before the call and negates the returned roots afterwards.
-Which of $L$ and $L(-1)$ the recorded runs were given is not part of the record, and the roots quoted above should be reproduced with the convention fixed before they are used as input to a further computation.
+Whether the roots quoted above were computed for $L$ or for $L(-1)$ is unknown; recompute them with this transport before they are used as input to a further computation.
 :::
 
 ::: {.remark title="Gram fields"}

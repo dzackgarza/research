@@ -45,8 +45,6 @@ These are theorems of Tits, recorded in [@Bou08; @Hum90].
 ::: {.proof}
 
 This is [@Bou08; @Hum90].
-
-Cited: the Tits representation and the description of the fundamental cone, in Bourbaki Chapter V and Humphreys. The book uses the cone only to state the chamber description of `def:coxeter-polytope`, which is the cited result read in its own notation.
 :::
 
 ::: {.remark}
@@ -147,8 +145,6 @@ These are Vinberg's criteria [@Vin67; @Vin85].
 ::: {.proof}
 
 This is [@Vin67; @Vin85].
-
-Cited: Vinberg volumes of hyperbolic Coxeter polytopes, from the two papers named. The book quotes the compact and finite-volume criteria rather than re-deriving them, because they are used as a test on computed diagrams.
 :::
 
 ::: {.remark}

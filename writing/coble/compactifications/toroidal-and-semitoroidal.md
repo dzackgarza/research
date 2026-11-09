@@ -56,7 +56,7 @@ of morphisms over $\bbcpt{\FG}$ [@AE23, Thm. 5.14].
 
 This is [@AE23, Thm. 5.14].
 
-Cited: semitoroidal compactifications of type IV arithmetic quotients are exactly the normal compactifications that are images of a toroidal compactification and dominate the Baily--Borel compactification, a characterization the source proves and records as not previously in the literature. The forward implication is immediate on refining the semifan to a fan; the converse reconstructs the semifan as the images of the cones of maximal dimension. The tower of @def:semitoroidal-compactification is the special case in which $\overline F$ is itself semitoroidal.
+The forward implication is immediate on refining the semifan to a fan; the converse reconstructs the semifan as the images of the cones of maximal dimension. The tower of @def:semitoroidal-compactification is the special case in which $\overline F$ is itself semitoroidal.
 :::
 
 ::: {.remark title="Polarized Coble trace restriction"}
@@ -164,8 +164,6 @@ If $R$ is recognizable, then the normalization of the KSBA compactification $\oF
 ::: {.proof}
 
 This is [@AE23].
-
-Cited: recognizability of a divisor implying the comparison morphism with the semitoroidal compactification, from Alexeev-Engel. The book applies it to the restricted ramification divisor, which is where the hypothesis is checked.
 :::
 
 ::: {.example #ex:recognizable-divisors}

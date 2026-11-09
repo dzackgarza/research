@@ -37,13 +37,12 @@ $$
 classified by CoxIter as **Perron, not Pisot, not Salem**. Each output also lists every connected spherical subgraph by rank with its vertex set, and every spherical *product* with multiplicity $N$ and Weyl group order; for example Sterk 1 at rank 9 records $A_1 \oplus E_8$ with $N = 4$ and order $1393459200$.
 :::
 
-::: {.remark title="Consistency with the dissertation"}
+::: {.remark title="Ray counts and CoxIter vertex counts"}
 
-The dissertation records two ray counts for each cusp.
-The rays of the Coxeter compactification are the orbits, under the symmetries of the Coxeter diagram, of its maximal parabolic subdiagrams (Type II) and of its elliptic subdiagrams of rank $9$ (Type III): $4+4$, $2+8$, $3+15$, $4+12$, $5+17$ for Sterk 1 to 5.
-The rays of the semifans are the subset of these that survive the removal of every subdiagram with a connected component of irrelevant roots: $2+0$, $2+7$, $2+7$, $4+7$, $3+0$.
+The rays of the Coxeter compactification are the orbits, under the symmetries of the Coxeter diagram, of its maximal parabolic subdiagrams (Type II) and of its elliptic subdiagrams of rank $9$ (Type III): $4+4$, $2+8$, $3+15$, $4+12$, $5+17$ for Sterk 1 to 5 [@AEGS25, Lem. 5.2].
+The rays of the semifans are the subset of these that survive the removal of every subdiagram with a connected component of irrelevant roots: $2+0$, $2+7$, $2+7$, $4+7$, $3+0$ [@AEGS25, Lem. 5.8].
 CoxIter counts the same subdiagrams before the quotient by the diagram symmetries: an ideal vertex of the Coxeter polytope is a maximal parabolic subdiagram and a finite vertex is an elliptic subdiagram of rank $9$.
-For Sterk 1 the dissertation counts nine labelled maximal parabolic subdiagrams, reduced to four orbits by a symmetry group of order $4$, and the table above reports nine vertices at infinity.
+For Sterk 1 the table above reports nine vertices at infinity, and they fall into the four Type II orbits of [@AEGS25, Lem. 5.2].
 The orbit counts themselves are not among the CoxIter outputs, which take no quotient by the diagram symmetries.
 :::
 

@@ -1,12 +1,10 @@
 # Extracted references
 
-This appendix imports the per-paper literature-summary notes verbatim from the project knowledge base.
-Each entry preserves the note's original "Used here for" and "Project relevance" lines and its abstract as written; only the citation key has been remapped to its canonical build key where the note's filename key was stale (the remap is stated in each entry).
-The `Papers Index` navigation note is not imported.
+For each of the main works cited in the Coble chapters, this appendix gives a summary, its use here, and its relevance to the Coble problem.
 
 ## ABE22 — Valery Alexeev, Adrian Brunyate, Philip Engel (2022): Compactifications of moduli of elliptic K3 surfaces
 
-Bibkey: `ABE22` (imported from note `AB21`; remapped `AB21` to `ABE22`). Cited as [@ABE22].
+[@ABE22]
 
 *Abstract.* KSBA and toroidal compactifications for elliptic K3 surfaces, used in the paper as background for stable-pair compactification techniques.
 
@@ -16,11 +14,11 @@ Bibkey: `ABE22` (imported from note `AB21`; remapped `AB21` to `ABE22`). Cited a
 
 ## AEGS25 — Valery Alexeev, Philip Engel, D. Zack Garza, Luca Schaffler (2023): Compact Moduli of Enriques Surfaces with a Numerical Polarization of Degree 2
 
-Bibkey: `AEGS25` (imported from note `AEGS23`; remapped `AEGS23` to `AEGS25`). Cited as [@AEGS25].
+[@AEGS25]
 
 *Abstract.* We describe a geometric, stable pair compactification of the moduli space of Enriques surfaces with a numerical polarization of degree 2, and identify it with a semitoroidal compactification of the period space.
 
-Contents of the note (the paper's table of contents):
+Contents:
 
 
 - 1. Introduction — 1
@@ -47,8 +45,7 @@ Contents of the note (the paper's table of contents):
 
 ## AET23 — Valery Alexeev, Philip Engel, Alan Thompson (2023): Stable pair compactification of moduli of K3 surfaces of degree 2
 
-Bibkey: `AET23` (unchanged).
-Cited as [@AET23].
+[@AET23]
 
 *Abstract.* Stable-pair compactification for degree-2 K3 surfaces, providing a direct KSBA model for a key K3 moduli problem adjacent to the Coble and Enriques constructions.
 
@@ -58,8 +55,7 @@ Cited as [@AET23].
 
 ## AN06 — Valery Alexeev, Viacheslav V. Nikulin (2006): Del Pezzo and K3 surfaces
 
-Bibkey: `AN06` (unchanged; not listed in the citation-key audit — used as-is).
-Cited as [@AN06].
+[@AN06]
 
 *Abstract.* Reference on del Pezzo and K3 surfaces used for Coxeter diagrams, reflective lattices, and parabolic subdiagram calculations.
 
@@ -69,9 +65,7 @@ Cited as [@AN06].
 
 ## AS15 — Michela Artebani, Alessandra Sarti (2015): Symmetries of order four on K3 surfaces
 
-Bibkey: `AS15` (unchanged; not remapped in the audit — used as-is.
-Note: the audit records that at one *citation site* — the Rational Sextic Hurwitz/Lemma 2.2 attribution — the key `AS15` was wrong and was corrected to `AD18`; that correction concerns the site, not this Artebani–Sarti note, whose key is retained).
-Cited as [@AS15].
+[@AS15]
 
 *Abstract.* Study of order-4 nonsymplectic symmetries on K3 surfaces, used here for the branched-cover and Hurwitz-type calculations behind the classical Coble sextic construction.
 
@@ -81,10 +75,7 @@ Cited as [@AS15].
 
 ## BHO+12 — Blekherman, Hauenstein, Ottem, Ranestad, Sturmfels (2012): Algebraic boundaries of Hilbert's SOS cones
 
-Bibkey: `BHO+12` (imported from note `BHO+11`; remapped `BHO+11` to `BHO+12` per the audit's year-drift resolution, arXiv 2011 to Compositio Math.
-148 (2012), Zotero `GJZ44LJI`. Note: the original note frontmatter carried only the placeholder title "BHO+11"; the author/title/year shown here are supplied from the audit's resolution of the work.
-The audit is internally inconsistent about this work — the "RESOLVED" block pins it to `BHO+12`, while a later verification line states it is "not in Zotero, still unresolved"; the resolved key is used here).
-Cited as [@BHO+12].
+[@BHO+12]
 
 *Abstract.* Appendix reference for the Severi variety $V_{6,10}$ of rational plane sextics with ten nodes.
 
@@ -94,7 +85,7 @@ Cited as [@BHO+12].
 
 ## CD12 — Serge Cantat, Igor Dolgachev (2012): Rational surfaces with a large group of automorphisms
 
-Bibkey: `CD12` (unchanged; audit confirms `CD12` = Cantat–Dolgachev, live Zotero `PMC33V8M`). Cited as [@CD12].
+[@CD12]
 
 *Abstract.* Reference on rational surfaces with large automorphism groups, including Cremona-special point sets, Coble and Halphen surfaces, and moduli consequences.
 
@@ -104,7 +95,7 @@ Bibkey: `CD12` (unchanged; audit confirms `CD12` = Cantat–Dolgachev, live Zote
 
 ## CDL25 — Francois Cossec, Igor Dolgachev, Christian Liedtke (2024): Enriques surfaces I
 
-Bibkey: `CDL25` (imported from note `CDL24`; remapped `CDL24` to `CDL25`). Cited as [@CDL25].
+[@CDL25]
 
 *Abstract.* Draft reference on Enriques and Coble surfaces used throughout the paper for 2-elementary lattice tables, fixed loci, and Coble/Halphen geometry.
 
@@ -114,8 +105,7 @@ Bibkey: `CDL25` (imported from note `CDL24`; remapped `CDL24` to `CDL25`). Cited
 
 ## Cob19 — Arthur B. Coble (1919): The ten nodes of the rational sextic and of the Cayley symmetroid
 
-Bibkey: `Cob19` (unchanged).
-Cited as [@Cob19].
+[@Cob19]
 
 *Abstract.* Classical source for the rational sextic with ten nodes and the associated Coble surface construction.
 
@@ -125,8 +115,7 @@ Cited as [@Cob19].
 
 ## Cob29 — Arthur B. Coble (1929): Algebraic geometry and theta functions
 
-Bibkey: `Cob29` (unchanged).
-Cited as [@Cob29].
+[@Cob29]
 
 *Abstract.* Classical monograph on point configurations, Cremona geometry, and the background of Coble surfaces.
 
@@ -136,7 +125,7 @@ Cited as [@Cob29].
 
 ## DK25 — Igor Dolgachev, Shigeyuki Kondo (2024): Enriques surfaces II
 
-Bibkey: `DK25` (imported from note `DK24`; remapped `DK24` to `DK25`). Cited as [@DK25].
+[@DK25]
 
 *Abstract.* Draft reference used for terminal Coble surfaces of K3 type, K3 double covers, basic rational surface structure, and Halphen constructions.
 
@@ -146,7 +135,7 @@ Bibkey: `DK25` (imported from note `DK24`; remapped `DK24` to `DK25`). Cited as 
 
 ## DM20 — Igor Dolgachev, Dimitri Markushevich (2020): Lagrangian tens of planes, Enriques surfaces and holomorphic symplectic fourfolds
 
-Bibkey: `DM20` (imported from note `DM19`; remapped `DM19` to `DM20`). Cited as [@DM20].
+[@DM20]
 
 *Abstract.* Source used for the definition of Coble surfaces and related Enriques-surface geometry.
 
@@ -156,8 +145,7 @@ Bibkey: `DM20` (imported from note `DM19`; remapped `DM19` to `DM20`). Cited as 
 
 ## Dol12 — Igor V. Dolgachev (2012): Classical algebraic geometry
 
-Bibkey: `Dol12` (unchanged; the audit remaps a specific *site* from `Dol12` to `Dol17` but does not retire the `Dol12` key, which is this note's Classical Algebraic Geometry reference).
-Cited as [@Dol12].
+[@Dol12]
 
 *Abstract.* Modern reference on classical algebraic geometry, used here for the geometric degeneration picture of Coble surfaces and the quartic del Pezzo model coming from isotropic sequences.
 
@@ -167,8 +155,7 @@ Cited as [@Dol12].
 
 ## Dol17 — Igor Dolgachev (2017): Salem numbers and Enriques surfaces
 
-Bibkey: `Dol17` (unchanged).
-Cited as [@Dol17].
+[@Dol17]
 
 *Abstract.* Background source on Enriques-surface automorphisms and lattice-theoretic constructions.
 
@@ -178,8 +165,7 @@ Cited as [@Dol17].
 
 ## DZ99 — Igor Dolgachev, D. Zhang (1999): Coble rational surfaces
 
-Bibkey: `DZ99` (unchanged).
-Cited as [@DZ99].
+[@DZ99]
 
 *Abstract.* Foundational paper on Coble rational surfaces, including their relationship to Halphen surfaces and degenerations of Enriques surfaces.
 
@@ -189,8 +175,7 @@ Cited as [@DZ99].
 
 ## GK20 — Golla and Kütle, Symplectic isotopy of rational cuspidal sextics and septics (appendix reference)
 
-Bibkey: `GK20`. The work is Golla--Kütle, *Symplectic isotopy of rational cuspidal sextics and septics* (2020, arXiv:2008.10923), which is the entry the key resolves to in the bibliography.
-Cited as [@GK20].
+[@GK20]
 
 *Abstract.* Appendix reference for rational plane sextics with worse singularities, used to note that rational sextics need not lie in the ten-node Severi stratum.
 
@@ -200,9 +185,7 @@ Cited as [@GK20].
 
 ## Hor77 — Eiji Horikawa (1977): On the periods of Enriques surfaces, II
 
-Bibkey: `Hor77`, the note in Proceedings of the Japan Academy 53 (1977), 53--55.
-The periods papers of Horikawa are carried as three keys, and no one of them is a renaming of another: `Hor77` is the 1977 Japan Academy note, `Hor78` is *On the periods of Enriques surfaces. I*, Math. Ann. 234 (1978), 73--88, and `Hor78a` is *On the periods of Enriques surfaces. II*, Math. Ann. 235 (1978), 217--246.
-Cited as [@Hor77].
+[@Hor77]
 
 *Abstract.* Classical period-domain source behind the Horikawa model for Enriques and Coble surfaces.
 
@@ -212,8 +195,7 @@ Cited as [@Hor77].
 
 ## KK72 — Peter Kiernan, Shoshichi Kobayashi (1972): Satake compactification and extension of holomorphic mappings
 
-Bibkey: `KK72` (unchanged).
-Cited as [@KK72].
+[@KK72]
 
 *Abstract.* Technical compactification result used to extend locally closed period-domain embeddings to Baily-Borel compactifications.
 
@@ -223,8 +205,7 @@ Cited as [@KK72].
 
 ## Mor81 — David R. Morrison (1981): Semistable degenerations of Enriques' and hyperelliptic surfaces
 
-Bibkey: `Mor81` (unchanged).
-Cited as [@Mor81].
+[@Mor81]
 
 *Abstract.* Original source for flower, stalk, pot, and flowerpot degenerations of Enriques-type surfaces.
 
@@ -234,8 +215,7 @@ Cited as [@Mor81].
 
 ## Nik80 — V. V. Nikulin (1979): Integer symmetric bilinear forms and some of their geometric applications
 
-Bibkey: `Nik80` (imported from note `Nik79`; remapped `Nik79` to `Nik80`, the global key for the Integer Symmetric Bilinear Forms paper).
-Cited as [@Nik80].
+[@Nik80]
 
 *Abstract.* Fundamental reference for 2-elementary lattices, discriminant forms, primitive embeddings, and orthogonal-group surjectivity.
 
@@ -245,8 +225,7 @@ Cited as [@Nik80].
 
 ## Nue15 — Howard Nuer (2016): Unirationality of moduli spaces of special cubic fourfolds and K3 surfaces
 
-Bibkey: `Nue15` (unchanged; the audit maps `Nue16` to `Nue15` as the single global entry).
-Cited as [@Nue15].
+[@Nue15]
 
 *Abstract.* Reference used for the statement that the nodal quotient appearing on the Enriques boundary is a Coble surface.
 
@@ -256,8 +235,7 @@ Cited as [@Nue15].
 
 ## Ols04 — Martin C. Olsson (2004): Semistable degenerations and period spaces for polarized K3 surfaces
 
-Bibkey: `Ols04` (unchanged).
-Cited as [@Ols04].
+[@Ols04]
 
 *Abstract.* Foundational treatment of semistable degenerations and period spaces for polarized K3 surfaces, used here for flowerpot degenerations and their relation to Coble boundary behavior.
 
@@ -267,8 +245,7 @@ Cited as [@Ols04].
 
 ## PS71 — I. I. Pjateckii-Shapiro, I. R. Shafarevich (1971): A Torelli theorem for algebraic surfaces of type K3
 
-Bibkey: `PS71` (unchanged).
-Cited as [@PS71].
+[@PS71]
 
 *Abstract.* Classical Torelli theorem for algebraic K3 surfaces, used to pass from lattice data to period-domain moduli.
 
@@ -278,7 +255,7 @@ Cited as [@PS71].
 
 ## Sha81a — Jayant Shah (1981): Projective degenerations of Enriques' surfaces
 
-Bibkey: `Sha81a` (imported from note `Sha81`; remapped `Sha81` to `Sha81a`, distinguishing Shah's Enriques paper from the global `Sha81`). Cited as [@Sha81a].
+[@Sha81a]
 
 *Abstract.* Projective-degeneration source for Enriques surfaces, cited alongside Morrison in the discussion of flowerpot degenerations.
 
@@ -286,12 +263,9 @@ Bibkey: `Sha81a` (imported from note `Sha81`; remapped `Sha81` to `Sha81a`, dist
 
 - **Project relevance:** forms part of the classical degeneration background that the paper interprets on the Coble boundary.
 
-## Ste91 — Hans Sterk (1991): Sterk 1991 note
+## Ste91 — Hans Sterk (1991): Compactifications of the period space of Enriques surfaces. I
 
-Bibkey: `Ste91` (imported from note `Ste91-note`; remapped the note's `Ste91-note` filename key to the work's citation key `Ste91`, which the audit confirms exists in the global bib).
-Cited as [@Ste91].
-
-*Abstract.* Supplemental note linking the existing Ste91 extraction to its role in the Coble paper.
+[@Ste91]
 
 - **Used here for:** divisibilities of isotropic vectors, cusp labels, and the identification of Sterk cusp 2.
 
