@@ -64,9 +64,7 @@ The following convention is used throughout.
 - A **Computational record** is a reproducible finite or symbolic calculation.
   It is not promoted to an arithmetic or geometric theorem unless the relevant lifting or realization statement is separately proved.
 
-- A **Warning** records a point at which an earlier line of reasoning made an invalid inference or conflated two distinct objects.
-
-Thus the report uses formal mathematical language without disguising the logical status of unfinished comparison statements.
+- A **Warning** records an invalid inference or a conflation of two distinct objects.
 
 ### Central compactification problem {#sec-central-problem}
 
@@ -75,7 +73,7 @@ The hyperplane $\bD(T_{\mathrm{En}})\intersect\alpha^\perp$ is the period domain
 The final problem is to identify the normalization of the KSBA closure of that locus as an explicit semitoroidal compactification, including the arithmetic group, all Baily--Borel cusps, the cusp reflection chambers, the integral-affine and dlt models, the relevant semifans, and the toroidal versus strictly semitoroidal locus.
 
 The ambient AEGS theorem supplies the model for the required level of specificity: the compactification is meaningful only after the lattices, groups, divisors, cusp data, Coxeter data, and stable-pair contractions have all been identified.
-The research prompt explicitly treats those data as part of the theorem rather than optional consequences.
+Those data are part of the theorem, not optional consequences.
 
 ### Principal distinction between the two strategies {#sec-two-strategies}
 
@@ -90,7 +88,7 @@ There are two conceptually different ways to organize the proof.
 
 The second strategy avoids using the Enriques compactification as a black box, but it creates a separate comparison theorem at the end.
 
-The second strategy asks for a *commuting del Pezzo involution* on the Coble covers, and that is a geometric requirement: an involution of the surface. What the lattice records is weaker, and the two must not be conflated. On the covers of [@DK13, section 3] the distinguished root $\alpha$ is the class of the ramification curve and is effective; the lattice candidate carried by the two isotropic summands of the polarization is orthogonal to $\alpha$ and carries it to $-\alpha$, so that candidate is not the action of an automorphism in the marking of the construction (@cor:no-del-pezzo-involution-coble-cover). That is a statement about one lattice candidate. It does not show that no commuting del Pezzo involution exists, and no source exhibits one; the geometric requirement is retained as authored and is not replaced by the lattice statement.
+The second strategy asks for a *commuting del Pezzo involution* on the Coble covers, and that is a geometric requirement: an involution of the surface. What the lattice records is weaker, and the two must not be conflated. On the covers of [@DK13, section 3] the distinguished root $\alpha$ is the class of the ramification curve and is effective; the lattice candidate carried by the two isotropic summands of the polarization is orthogonal to $\alpha$ and carries it to $-\alpha$, so that candidate is not the action of an automorphism in the marking of the construction (@cor:no-del-pezzo-involution-coble-cover). That is a statement about one lattice candidate. It does not show that no commuting del Pezzo involution exists, and no source exhibits one; the geometric requirement stands as stated.
 The first strategy uses more existing geometry, but it requires careful normalization and monodromy arguments that cannot be replaced by the phrase “restrict the semifan.”
 
 ## Terminology, notation, and standard background {#sec-terminology}
@@ -282,7 +280,7 @@ is unique up to $O(L_{K3})$.
 
 ::: {.proof}
 
-This is [@AEGS25, §3] and is quoted rather than derived here.
+This is [@AEGS25, §3].
 
 Uniqueness up to $O(L_{K3})$ means that every embedding of $T_{\mathrm{En}}$ into $L_{K3}$ extending the chosen one differs by an isometry of the ambient lattice, so no construction built from the chain can depend on a choice of primitive complement.
 That is the sense in which the statement is a model for the labeled rigidity the Coble problem needs: the label is the extra structure -- in this case the involution and the polarization -- and the question is whether it too is unique up to the stabilizer rather than only up to the full orthogonal group.
@@ -710,7 +708,7 @@ After contracting the full $L$-null configuration, its descent is ample.
 
 ::: {.proof}
 
-Against the fixed curve: $\psi^*L=H$ and $\psi^*C=2E$, so $2\,L\cdot C=\psi^*L\cdot\psi^*C=H\cdot(2E)=2\,H\cdot E=0$, whence $L\cdot C=0$; and $H^2 = (\psi^*L)^2 = \deg\psi\cdot L^2 = 2\,L^2$ (pullback by a finite morphism of degree $\deg\psi$ scales squares by $\deg\psi$, and here $H^2 = 4$), so $L^2 = H^2/\deg\psi = 2$, using that $\psi$ has degree $2$, being the quotient by the involution $\iota_{\Co}$. (The earlier printing wrote the identity backwards, as $L^2 = \deg\psi\cdot H^2$.)
+Against the fixed curve: $\psi^*L=H$ and $\psi^*C=2E$, so $2\,L\cdot C=\psi^*L\cdot\psi^*C=H\cdot(2E)=2\,H\cdot E=0$, whence $L\cdot C=0$; and $H^2 = (\psi^*L)^2 = \deg\psi\cdot L^2 = 2\,L^2$ (pullback by a finite morphism of degree $\deg\psi$ scales squares by $\deg\psi$, and here $H^2 = 4$), so $L^2 = H^2/\deg\psi = 2$, using that $\psi$ has degree $2$, being the quotient by the involution $\iota_{\Co}$.
 
 Not ample: an ample class meets every curve positively, and $L\cdot C=0$ with $C$ a curve.
 
@@ -937,8 +935,6 @@ After accounting for the Weyl ambiguity of the exceptional root, contraction, ca
 The equivalence is compatible with base change and automorphisms.
 :::
 
-This theorem is the direct replacement for silently identifying a Heegner period point with a geometric Coble pair.
-
 ### Four arithmetic groups that must not be conflated {#sec-four-groups}
 
 Fix an embedded root $\alpha\in T_{\mathrm{En}}$ and put $T_{\Co}=\alpha^\perp$.
@@ -1011,7 +1007,7 @@ Prove
 Each equality requires a separate argument: global Torelli and parallel transport for the first, labeled embedding comparison for the second, and discriminant-form gluing for the third.
 :::
 
-**What the first problem's state does to the second.** The labelled tuple of @prob:coble-rigidity is open for the direct-projective construction (@rmk:a21-open), and what is settled there is that the lifted del Pezzo involution has invariant rank $2+k\ge3$ rather than $U(2)$ (@prop:del-pezzo-type-on-the-resolution). So the pair $(I_\Co,I_{\mathrm{dP}})$ whose centralizer defines $\Gamma^{\mathrm{dir}}_{\Co,2}$ is, for the moment, a pair of lattice involutions and of a local model rather than of two automorphisms of one Coble cover; the definition itself stands, being taken in $\Orth(L_{K3})$, and what a comparison with $\Gamma^{\mathrm{geom}}_{\Co,2}$ needs is precisely the missing geometric realisation. The comparisons with $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and with the congruence group are lattice statements about $\Orth(L_{K3})$ and are untouched by that.
+**Consequence for the direct group.** The labelled tuple of @prob:coble-rigidity is open for the direct-projective construction (@rmk:a21-open), and what is settled there is that the lifted del Pezzo involution has invariant rank $2+k\ge3$ rather than $U(2)$ (@prop:del-pezzo-type-on-the-resolution). So the pair $(I_\Co,I_{\mathrm{dP}})$ whose centralizer defines $\Gamma^{\mathrm{dir}}_{\Co,2}$ is a pair of lattice involutions and of a local model rather than of two automorphisms of one Coble cover; the definition itself stands, being taken in $\Orth(L_{K3})$, and what a comparison with $\Gamma^{\mathrm{geom}}_{\Co,2}$ needs is precisely the missing geometric realisation. The comparisons with $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and with the congruence group are lattice statements about $\Orth(L_{K3})$ and are untouched by that.
 
 Defining one of these groups to be “the group for which the desired semifan works” is circular.
 
@@ -1194,8 +1190,6 @@ J^\perp/J\cong I_{0,7}(2).
 
 ::: {.proof}
 
-The two halves of the statement rest on different sources and are attributed separately.
-
 *Lines.* Transitivity on primitive isotropic lines of $I_{2,9}$ follows from James' integral Witt theorem
 [@Jam68, Theorem, p. 303] applied directly to the odd unimodular lattice: an isometry between primitive
 sublattices extends when $r-|s|\geq2(r(J)+1)$, which for rank-one $J$ reads $11-7=4\geq4$, provided it
@@ -1222,9 +1216,7 @@ Dolgachev--Kondo [@DK13] is about rationality of moduli spaces; it introduces $O
 Wall [@Wal62] is described in the secondary literature as a classification of vectors by norm, divisor, index and type under $r-\abs{\fs}\geq4$, which the James argument agrees with. And $r-\abs{\fs}=4$ does not reach the rank-two case of James' inequality,
 which would need $2(2+1)=6$.
 
-So the plane-transitivity obligation recorded in earlier revisions is discharged, by an argument rather than
-by a citation. What no argument here supplies is the $\Gamma_{\Co}$-analogue of either half, and the two
-halves stand differently. On lines the refinement is strict: $\Gamma_\Co$ has at least $527$ orbits where
+The $\Gamma_{\Co}$-analogue of either half is not proved here, and the two halves stand differently. On lines the refinement is strict: $\Gamma_\Co$ has at least $527$ orbits where
 $\Orth^+(T_\Co)$ has one, one for each nonzero isotropic class of $A_{T_\Co}$
 (@prop:coble-stable-cusp-lower-bound). On planes even the number of orbits is open, and it is not implied
 by strictness on lines. Nor does properness of a subgroup by itself make its orbits strictly finer: the
@@ -1248,11 +1240,10 @@ $-\id$ is *inside* $\Orth^+$, its determinant on the positive plane being $(-1)^
 anything between components. With lines transitive under $\Orth^+(B)$, primitive isotropic *vectors* are too:
 a transiting $g$ sends $v$ to $\pm v'$, and $-\id\in\Orth^+$ supplies the sign.
 
-The two complements are computed rather than quoted, and they are what the rest of the section uses.
 For a primitive isotropic $e$ in a lattice $L$ of signature $(2,9)$, the quotient $e^\perp/e$ is a lattice of signature $(1,8)$ and inherits the discriminant form of $L$ up to the factor $1/p^2$ that $\div$-scaling forces; for $T_{\Co}=I_{2,9}(2)$ and $\div(e)=2$ it is $I_{1,8}(2)$, and for a primitive isotropic plane $J$ the quotient $J^\perp/J$ has signature $(0,7)$ and is $I_{0,7}(2)$.
 So the two boundary strata are single orbits and the lattices attached to them are as displayed.
 
-The scope of the statement is part of it: it is a statement about $O^+(T_{\Co})$ acting on $\bD_{\Co}$, and the arithmetic subgroup $\Gamma_{\Co,2}$ is strictly smaller, so the orbits for the polarized problem are a refinement of these and are not determined here.
+The statement is about $O^+(T_{\Co})$ acting on $\bD_{\Co}$, and the arithmetic subgroup $\Gamma_{\Co,2}$ is strictly smaller, so the orbits for the polarized problem are a refinement of these and are not determined here.
 :::
 
 This theorem concerns the full orthogonal group.
@@ -1291,8 +1282,7 @@ The standard ways to solve this problem are:
 
 ### Computational record in the finite quadratic space {#sec-finite-orbits}
 
-A finite calculation was carried out in a $10$-dimensional plus-type quadratic space over $\bF_2$ for the subgroup associated with the proposed degree-$2$ congruence condition.
-It produced four orbits of nonzero singular vectors and five orbits of totally singular planes.
+In the $10$-dimensional plus-type quadratic space over $\bF_2$, the subgroup associated with the proposed degree-$2$ congruence condition has four orbits of nonzero singular vectors and five orbits of totally singular planes.
 The labels below are internal finite labels; they are not cusp labels.
 
 | Finite vector type | Orbit size |
@@ -1314,9 +1304,9 @@ The labels below are internal finite labels; they are not cusp labels.
 
 : Finite totally singular plane orbits. {#tbl-finite-plane-orbits}
 
-A later enhanced calculation decorated a finite plane by one of eight ``stars'' in the natural $S_8$-set attached to its $6$-dimensional quotient.
-For a prescribed $S_7$ subgroup it produced seven enhanced plane orbits and thirteen enhanced flag orbits.
-This remains a computational record only: the required identification of that $S_7$ with the image of the integral plane stabilizer has not been proved.
+A finer calculation decorates a finite plane by one of eight ``stars'' in the natural $S_8$-set attached to its $6$-dimensional quotient.
+For a prescribed $S_7$ subgroup there are seven enhanced plane orbits and thirteen enhanced flag orbits.
+The identification of that $S_7$ with the image of the integral plane stabilizer is not proved.
 
 ::: {.problem #prob:cusp-lifting title="Required theorem (integral cusp lifting)"}
 Determine the exact images of the integral isotropic-line and isotropic-plane stabilizers in the finite orthogonal group and use them to classify
@@ -1335,7 +1325,7 @@ and the incident flags.
 Give explicit integral representatives and stabilizers.
 :::
 
-**State, and the answer.** Settled in §@sec-cusp-lifting: $\Orth(B)$ is transitive on primitive isotropic vectors ([@Wal62], Theorem 1.2, an isotropic vector being non-characteristic since a characteristic one has $w^2\equiv\sigma(B)\equiv1 \pmod 8$), every nonzero isotropic class is $[v/2]$ for a primitive isotropic $v$ and the zero class is not, and $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}([v/2])$ with the Eichler transvections accounting for the kernel of order $2^8$. Hence the $\Gamma_\Co$-orbits of primitive isotropic lines are the $527$ nonzero isotropic classes, and for $\Gamma = \rho^{-1}(G_\Co)$ they are the four orbits $135, 2, 270, 120$. The plane case is the same two steps with the index for $\Stab(P)$, which is not computed here. The finite half on record: the group whose orbits are the reported $135, 2, 270, 120$ is $G_\Co = \rho_{S_\En}(\Stab_{\Orth(S_\En)}(h))$, the image of the degree-$2$ parabolic stabilizer, of order $\abs{W(E_8)}$, and the orbit partition $[1,2,120,135,270]$ of the $528$ isotropic classes is computed in `computations/reports/coble_gco_orbit-decomposition.py`. The integral half is open and is stated in §@sec-cusp-lifting: the map $\Gamma_\Co\cdot v\mapsto[v/2]$ is well defined because $\Gamma_\Co$ acts trivially on $A_{T_\Co}$, it is **not** injective, its fibres are the $\Gamma_\Co$-orbits inside a single class, and what is missing is transitivity of the congruence subgroup $\ker\rho_{T_\Co}$ on a class — available for $\Orth(B)$ by Eichler's criterion ([@Eic74]), not for $\ker\rho$.
+**The line case.** By §@sec-cusp-lifting: $\Orth(B)$ is transitive on primitive isotropic vectors ([@Wal62], Theorem 1.2, an isotropic vector being non-characteristic since a characteristic one has $w^2\equiv\sigma(B)\equiv1 \pmod 8$), every nonzero isotropic class is $[v/2]$ for a primitive isotropic $v$ and the zero class is not, and $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}([v/2])$ with the Eichler transvections accounting for the kernel of order $2^8$. Hence the $\Gamma_\Co$-orbits of primitive isotropic lines are the $527$ nonzero isotropic classes, and for $\Gamma = \rho^{-1}(G_\Co)$ they are the four orbits $135, 2, 270, 120$. The plane case is the same two steps with the index for $\Stab(P)$, which is not computed here. The finite half: the group whose orbits are the reported $135, 2, 270, 120$ is $G_\Co = \rho_{S_\En}(\Stab_{\Orth(S_\En)}(h))$, the image of the degree-$2$ parabolic stabilizer, of order $\abs{W(E_8)}$, and the orbit partition $[1,2,120,135,270]$ of the $528$ isotropic classes is computed in `computations/reports/coble_gco_orbit-decomposition.py`. The integral half is open and is stated in §@sec-cusp-lifting: the map $\Gamma_\Co\cdot v\mapsto[v/2]$ is well defined because $\Gamma_\Co$ acts trivially on $A_{T_\Co}$, it is **not** injective, its fibres are the $\Gamma_\Co$-orbits inside a single class, and what is missing is transitivity of the congruence subgroup $\ker\rho_{T_\Co}$ on a class — available for $\Orth(B)$ by Eichler's criterion ([@Eic74]), not for $\ker\rho$.
 
 ### Necessary restrictions on maps to Enriques cusps {#sec-possible-cusp-images}
 
@@ -1354,8 +1344,6 @@ The only possible Enriques $1$-cusp images are therefore $34,\ 35,\ 45,\ 55$.
 This is a necessary-condition argument, not an integral orbit classification.
 It does not determine how many Coble cusps lie above any of the four possible image cusps.
 :::
-
-An earlier finite-orbit calibration that assigned a Coble branch to cusp $245$ is therefore not compatible with the embedded root criterion and must not be used.
 
 ## Reflection theory and Coxeter data {#sec-coxeter}
 
@@ -1478,7 +1466,7 @@ In the square ambient K3 cusp diagram, the two black roots $\alpha_{20}$ and $\a
 The edge joining them is thick.
 Therefore $(\alpha_{20},\alpha_{21})=4$.
 
-The previously used value $2$ gives a Gram matrix of rank $20$, incompatible with the rank-$18$ cusp lattice.
+The value $2$ gives a Gram matrix of rank $20$, incompatible with the rank-$18$ cusp lattice.
 The value $4$ gives the correct rank $18$.
 
 ### Candidate wall-slice diagrams {#sec-wall-slices}
@@ -1496,11 +1484,11 @@ G_{\mathrm{slice}}^4,
 G_{\mathrm{slice}}^5.
 \]
 
-The chosen roots in the previously used labeling were $\alpha_{10}$, $\alpha_0$, $\alpha_6$, and $\alpha_{16}$, respectively.
+The chosen roots are $\alpha_{10}$, $\alpha_0$, $\alpha_6$, and $\alpha_{16}$, respectively.
 Each displayed sliced wall is a genuine root in the orthogonal lattice in the cases checked symbolically.
-No proof was given that the displayed walls form a complete simple system.
+That the displayed walls form a complete simple system is not proved.
 
-The raw numbers of maximal parabolic faces in the four sliced arrangements were $1$, $3$, $3$, $9$.
+The raw numbers of maximal parabolic faces in the four sliced arrangements are $1$, $3$, $3$, $9$.
 
 These counts are diagnostic data only.
 They disagree with some finite-shadow orbit counts, which indicates that chamber completeness, arithmetic diagram automorphisms, and the calibration of finite orbits must all be resolved before boundary strata are enumerated.
