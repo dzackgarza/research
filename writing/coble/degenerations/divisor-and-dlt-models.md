@@ -48,6 +48,11 @@ A *divisor model* for a degeneration $\pi\colon \mcx \to C$ of K3 (or Enriques) 
 The geometry is encoded by an *integral-affine divisor* $R_{\IA} \subset \Gamma(\mcx_0)$, which assigns weights to the double curves reflecting the intersection with $\mcr_0$, satisfying a balancing condition at every vertex.
 :::
 
+::: {.conjecture #conj:classification-ia-data title="Integral-affine data determine the stable limit"}
+
+Among divisor models $(\mcx,\mcr)\to C$ with a fixed Picard--Lefschetz monodromy, the pair $(\Gamma(\mcx_0),R_{\IA})$ determines the KSBA stable limit of $(\mcx_t,\epsilon\mcr_t)$.
+:::
+
 ## Half-divisor models
 
 ::: {.definition #def:coble-half-divisor-model title="Half-divisor model"}

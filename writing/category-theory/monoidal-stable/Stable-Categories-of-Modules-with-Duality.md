@@ -115,7 +115,7 @@ $L^{0}_{U}(A,\epsilon)$ is the Witt group of nonsingular $\epsilon$-symmetric fo
 
 This is [@Ran98, Ex. 20.11].
 In dimension $0$ a Poincaré complex of @def:poincare-complex is a chain complex concentrated in degree $0$ together with a symmetric or quadratic structure whose component $\phi_0\colon C^0\to C_0$ is a chain equivalence, which is exactly a nonsingular form on $C_0$ in the sense of @def:polarization; cobordism of such complexes is Witt equivalence of @def:witt-class, and the intermediate $L$-group is the quotient by the forms admitting a lagrangian, which is @def:lagrangian.
-That last identification is the one this book uses, and it is where @prop:metabolic-witt-trivial applies: a hyperbolic form is one admitting a lagrangian, so its class in $L^0$ is zero, the same conclusion the Witt ring gives.
+A hyperbolic form admits a lagrangian, so its class in $L^0$ is zero, as is its Witt class by @prop:metabolic-witt-trivial.
 :::
 
 For $A=R$ a Dedekind domain with the identity involution and $\epsilon=1$, the group $L^{0}_{\widetilde K_0(R)}(R,1)$ is the additive group of the Witt ring $W(R)$ of @thm:witt-ring, and by @prop:hyperbolic-metabolic every hyperbolic form of @def:hyperbolic-form has the zero class in it.

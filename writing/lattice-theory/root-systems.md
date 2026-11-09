@@ -169,7 +169,7 @@ The remaining finite reflection groups $H_3$, $H_4$ and $I_2(p)$ for $p\notin\th
 
 ::: {.proof}
 
-The finite crystallographic Coxeter systems are the spherical ones whose orders lie in {2,3,4,6}, so the statement is the intersection of `thm:ADE-root-lattice-classification` with `def:crystallographic-coxeter`; the proof is that intersection, performed on the list.
+The finite crystallographic Coxeter systems are the spherical ones whose orders lie in {2,3,4,6}, so the statement is the intersection of @thm:ADE-root-lattice-classification with @def:crystallographic-coxeter; the proof is that intersection, performed on the list.
 :::
 
 ::: {.definition #def:root-system-Bn-Cn}

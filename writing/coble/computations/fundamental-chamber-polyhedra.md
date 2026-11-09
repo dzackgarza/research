@@ -87,10 +87,10 @@ From the presentation of @cons:chamber-cone one reads off:
 The last two are the data of the chamber as a subset of $L$, and are what a computation inside $C\intersect L$ requires.
 :::
 
-::: {.remark title="The recorded specimen"}
+::: {.example title="The chamber of the $22$ roots of $\Phi_{(18,2,0)}$"}
 
-These cells were run over the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams)) and over their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
-The chamber there is full-dimensional, closed and non-compact, with the ray and integral-point data extracted through a Normaliz backend, and containment was checked by sampling $x\in C$ and testing $\beta_L(r_i,x)\geq 0$ for every root.
+Let $C$ be the cone cut out by the $22$ roots of $\Phi_{(18,2,0)}$ in $U(2)\oplus E_8^{\oplus 2}$ ([root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams)), or by their restriction to the rank-$10$ invariant sublattice of the block-exchange involution.
+In both cases $C$ is full-dimensional, closed and non-compact.
 :::
 
 ## An exact invariant for a pair of walls

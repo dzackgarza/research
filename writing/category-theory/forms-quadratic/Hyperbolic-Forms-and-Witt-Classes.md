@@ -149,7 +149,7 @@ Then $X\perp Y$ is metabolic, with lagrangian $N_X\perp N_Y$, and $X\otimes Z$, 
 ::: {.proof}
 
 Both closures are [@MH73, Lem. I.7.2], which states that Witt equivalence is compatible with orthogonal sum and with tensor product, and proves the compatibility by exhibiting exactly these lagrangians.
-What the book's version adds is that the tensor-product closure needs nothing of $N_X$ beyond being a lagrangian: the form of @def:form-tensor vanishes on $(N_X\tensor Z)^{\otimes2}$ immediately, and the converse uses only that $b_Z$ is perfect.
+The tensor-product closure uses only that $N_X$ is a lagrangian: the form of @def:form-tensor vanishes on $(N_X\tensor Z)^{\otimes2}$ immediately, and the converse uses only that $b_Z$ is perfect.
 :::
 
 ::: {.proposition #prop:negation-is-metabolic title="A form orthogonally summed with its twist"}
@@ -358,10 +358,9 @@ with $\langle1\rangle$ as in @ex:rank-one-forms and [@MH73, Ch. II §4].
 ::: {.proof}
 
 The isomorphism is [@MH73, Ch. II §4].
-The route recorded here is shorter and runs through this book: with $\sigma(L)=p-q$ for the signature of @def:signature, $\sigma$ is additive and multiplicative on representatives, because orthogonality concatenates diagonalizations and a tensor product of diagonalizations is diagonal (@thm:sylvester); it vanishes on metabolic forms, a lagrangian having dimension $\tfrac12\dim$ and a totally isotropic subspace of a real form of signature $(p,q)$ at most $\min(p,q)$; so it descends.
+Alternatively, with $\sigma(L)=p-q$ the signature of @def:signature, $\sigma$ is additive and multiplicative on representatives, because orthogonality concatenates diagonalizations and a tensor product of diagonalizations is diagonal (@thm:sylvester); it vanishes on metabolic forms, a lagrangian having dimension $\tfrac12\dim$ and a totally isotropic subspace of a real form of signature $(p,q)$ at most $\min(p,q)$; so it descends.
 Surjectivity is $n\langle1\rangle$ for $n\geq0$ and $m\langle-1\rangle$ for $m\leq0$.
-Injectivity is the one step that uses the book's own classification rather than a computation: a unimodular lattice with $\sigma(L)=0$ is $0$, or definite of rank $0$, or indefinite with $p=q$, hence a sum of copies of $\langle1\rangle\perp\langle-1\rangle$ or of the hyperbolic plane by @thm:indefinite-unimodular-classification, both metabolic.
-That classification is stated later in the volume, and the part landing page records the forward reference.
+For injectivity, a unimodular lattice with $\sigma(L)=0$ is $0$, or definite of rank $0$, or indefinite with $p=q$, hence a sum of copies of $\langle1\rangle\perp\langle-1\rangle$ or of the hyperbolic plane by @thm:indefinite-unimodular-classification, both metabolic.
 :::
 
 ::: {.example #ex:witt-classes-over-z title="Witt classes over $\mathbb Z$"}

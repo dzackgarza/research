@@ -216,5 +216,4 @@ A vertex lying outside $\overline{\HH^n_L}$ contributes an end of infinite volum
 ::: {.remark title="Invariants computed from the diagram"}
 
 The data separating these cases --- the dimension, the number of vertices at infinity, the $f$-vector of the polytope, the covolume through the Euler characteristic in even dimension, and the growth series of the Coxeter system --- are computed from the Coxeter--Vinberg diagram alone by Guglielmetti's implementation of Vinberg's criteria [@Gug15].
-The runs recorded for the lattices of this monograph are collected in the Computations section.
 :::

@@ -22,8 +22,6 @@ of semifans, one for each $0$-cusp of the Baily--Borel compactification $\bbcpt{
 ::: {.proof}
 
 This is [@AEGS25].
-
-Cited from AEGS, in the section the statement names. The book uses the comparison as the target of its own normalization theorem, so it is quoted.
 :::
 
 ::: {.remark title="Fan versus strict-semifan bookkeeping"}

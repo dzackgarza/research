@@ -206,5 +206,5 @@ and @thm:milgram gives $\signature{S}+\signature{T}\equiv0\pmod8$.
 
 ::: {.proof}
 
-The signature of a primitive complement is the difference of signatures, which is additivity of `def:signature` over the orthogonal splitting of `thm:orthogonal-decomposition`, applied to the embedding whose complement is primitive.
+The signature of a primitive complement is the difference of signatures, which is additivity of @def:signature over the orthogonal splitting of @thm:orthogonal-decomposition, applied to the embedding whose complement is primitive.
 :::

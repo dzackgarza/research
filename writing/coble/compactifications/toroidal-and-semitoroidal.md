@@ -165,3 +165,8 @@ Two basic examples of recognizable divisors:
 
 2. The **ramification divisor** $R_\iota$ of a nonsymplectic involution.
 :::
+
+::: {.question #qst:recognizable-semifan title="The semifan of a recognizable divisor"}
+
+Describe the semifan $\mcf_R$ of @thm:recognizable-semitoroidal for a recognizable divisor $R$, and in particular for the rational curve divisor $R_{\rcop}$ of @ex:recognizable-divisors.
+:::

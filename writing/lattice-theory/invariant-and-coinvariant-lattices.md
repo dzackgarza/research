@@ -332,7 +332,7 @@ The involution restricts to the identity on the discriminant quadratic module $A
 
 ::: {.proof}
 
-The corollary specializes `thm:unimodular-finite-group-gluing` to the case of a single involution, where the group ring is Z[t]/(t^2-1) and the two gluing classes are the two eigenspace lattices of `prop:involution_eigenspaces`.
+The corollary specializes @thm:unimodular-finite-group-gluing to the case of a single involution, where the group ring is Z[t]/(t^2-1) and the two gluing classes are the two eigenspace lattices of @prop:involution_eigenspaces.
 :::
 
 ::: {.example #ex:swap-involution-u2 title="Exchange of two hyperbolic planes"}

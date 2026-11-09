@@ -83,7 +83,7 @@ The folded roots $\beta_{[v]} \in \Phi\left( \tdp^{\generators{I}} \right)$ aris
 
 ::: {.proof}
 
-The folded diagram is computed from the involution by the recipe of `def:folded-root`: an orbit of roots under the involution is a single node of the folded diagram, and its bond order to another orbit is the number of simple reflections relating them. The lemma is that computation at the node in question.
+The folded diagram is computed from the involution by the recipe of @def:folded-root: an orbit of roots under the involution is a single node of the folded diagram, and its bond order to another orbit is the number of simple reflections relating them. The lemma is that computation at the node in question.
 :::
 
 This criterion governs how roots in the boundary lattices at the $0$-cusps of $\fttz$ descend or combine when passing to the $I$-invariant sublattices corresponding to $\fentwo$.

@@ -148,7 +148,7 @@ The object $\operatorname{Im}(f)$ is the domain of $m$ and $\operatorname{Coim}(
 
 This is [@Mac98, §VIII.3, Proposition 1].
 
-The factorization, its functoriality and the identification of the two objects are the cited proposition. The degreewise use of it, in `thm:chain-complexes-abelian`, is: since kernels and cokernels there are taken degreewise, this factorization is too, which is what makes the canonical morphism an isomorphism of complexes rather than only of objects.
+The factorization, its functoriality and the identification of the two objects are the cited proposition. The degreewise use of it, in @thm:chain-complexes-abelian, is: since kernels and cokernels there are taken degreewise, this factorization is too, which is what makes the canonical morphism an isomorphism of complexes rather than only of objects.
 :::
 
 ::: {.theorem #thm:diagram-lemmas title="Diagram lemmas"}

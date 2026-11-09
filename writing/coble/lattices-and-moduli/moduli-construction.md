@@ -240,8 +240,6 @@ The description of the image restates, at the level of moduli spaces, the equisi
 ::: {.proof}
 
 This is [@YZZ25 §3.1; §1, §3.2, §3.3, §6.2].
-
-Cited from Yu-Zheng-Zhang, in the sections named in the statement. The book uses the period map for the sextic locus only to place the Coble moduli problem inside it, so the statement is quoted rather than re-proved.
 :::
 
 ::: {.theorem #thm:git-equals-looijenga title="The GIT compactification is a Looijenga compactification"}

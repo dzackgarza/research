@@ -594,7 +594,7 @@ For a degenerate $b$ the same conclusions hold with $r=\dim\radic(V)$ nonzero, a
 ::: {.proof}
 
 This is [@MH73, III §2.5].
-The one hypothesis of the book's that has to be spent is that an ordered field has characteristic $0$, hence $2$ is a unit and
+An ordered field has characteristic $0$, hence $2$ is a unit and
 $$
 2\,b(u,v)=b(u+v,u+v)-b(u,u)-b(v,v).
 $$
