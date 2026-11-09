@@ -1460,7 +1460,7 @@ This suggests the cusp-level candidate $J_{\Co}=w_{\bar\alpha}J_{\mathrm{En}}$, 
 This formula is not yet a direct folding theorem.
 One must prove that the cusp action lifts through the full discriminant gluing and corresponds to the geometric involution, just as AEGS separately prove their lifting lemma.
 
-### Corrected ambient square Gram data {#sec-gram-correction}
+### Ambient square Gram data {#sec-gram-correction}
 
 In the square ambient K3 cusp diagram, the two black roots $\alpha_{20}$ and $\alpha_{21}$ both have square $-4$.
 The edge joining them is thick.
@@ -2363,11 +2363,11 @@ The arithmetic cusp classification precedes the Coxeter theorem because the latt
 The stable-model analysis precedes the relevance marking because relevance is defined by the relative Proj.
 Any proof order that reverses either dependency risks classifying the wrong objects.
 
-## Consolidated status ledger {#sec-status-ledger}
+## Summary of results {#sec-status-ledger}
 
-The following table summarizes the present mathematical status.
+The table lists each statement, whether it is proved, and the section that proves or states it.
 
-| Item | Status | Controlling section |
+| Statement | Status | Section |
 | :--- | :--- | :--- |
 | Local invariant $(4,4)$ node construction | established | @sec-invariant-system |
 | Local $\frac{1}{4}(1,1)$ quotient | established | @sec-cover-quotient |
