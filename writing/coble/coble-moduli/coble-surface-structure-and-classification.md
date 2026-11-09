@@ -12,209 +12,188 @@ tags:
 
 ## Negative curves
 
-::: {.proposition title="Norms of smooth rational negative curves"}
+::: {.proposition #prop:coble-negative-curve-norms title="Norms of smooth rational negative curves"}
 
-Let $S$ be a Coble surface with anti-bicanonical divisor $D$.
-Every smooth rational negative curve $E \iscontainedin S$ satisfies
+Let $S$ be a terminal Coble surface of K3 type with anti-bicanonical curve $C$.
+Every smooth rational curve $E \iscontainedin S$ with $E^2 < 0$ satisfies
 $$
 E^2 \in \theset{-1,\, -2,\, -4},
 $$
-and if $E^2 = -4$ then $E$ is a component of $D$.
+and if $E^2 = -4$ then $E$ is an irreducible component of $C$ [@DK25, Lem. 9.1.2].
 :::
 
 ::: {.proof}
 
-Cited: [@DZ99, §2] for the trichotomy of the norm.
-The trichotomy has three values; the argument is:
-
-Adjunction on the smooth rational curve $E$ gives $E^2 = -2 - E\cdot K_S$, so the possible values of $E^2$ are read off the intersection numbers of $E$ with $-K_S$.
-A Coble surface has $|-2K_S| = \{D\}$ with $D$ nonempty and $D$ a sum of $(-4)$-curves, $\tfrac12D$ being a *divisor* representative of $-K_S$ that is not integral: the class $-K_S$ is integral as a class, and by the definition [@DK13, §3] gives it is ineffective, $|-K_S| = \emptyset$, while $2(-K_S) = [D]$ is effective.
-For $E$ not a component of $D$ the intersection $E\cdot D$ is a nonnegative even integer, $E\cdot K_S = -\tfrac12 E\cdot D$, and $E^2 = -2+\tfrac12 E\cdot D$; the values $E\cdot D = 0, 2$ give $E^2 = -2, -1$, and $E\cdot D\geq4$ would give $E^2\geq0$, contradicting negativity.
-For $E$ a component of $D$ one has $D = E + D'$ with $D'$ effective and not containing $E$, and $E^2 = -4$ is the value forced by the classification of the components of $D$.
+Adjunction on the smooth rational curve $E$ gives $E^2 = -2 - E\cdot K_S$.
+Since $C\sim -2K_S$, this is $E^2 = -2 + \tfrac12\,E\cdot C$.
+If $E$ is not a component of $C$, then $E\cdot C\geq 0$, and $E\cdot C = -2E\cdot K_S$ is even.
+The values $E\cdot C = 0$ and $E\cdot C = 2$ give $E^2 = -2$ and $E^2 = -1$, and $E\cdot C\geq 4$ gives $E^2\geq 0$, which is excluded.
+If $E$ is a component of $C$, then $E$ is a boundary component and $E^2 = -4$ by @def:coble-surface.
 :::
-
-This is the fact that makes the $(-4)$-curves intrinsic: they cannot occur away from the boundary.
-It is the surface-level counterpart of the $-2$ / $-4$ norm dichotomy that governs the Coxeter diagrams in [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams).
 
 ## Automorphisms
 
-::: {.theorem title="Coble's theorem, lattice form"}
+::: {.theorem #thm:coble-aut-lattice title="Coble's theorem, lattice form"}
 
-Write $M_S \definedas K_S^{\perp\, \Pic(S)}$.
-Then $\Aut(S)$ is isomorphic to a finite-index subgroup $H \leq \Orth(M_S)$, and
-$$
-\Orth(M_S)/\theset{\pm1} \cong W(E_{10}).
-$$
-For general $C$, $H \cong W(E_{10})(2)$, the level 2 congruence subgroup.
+Let $S$ be the blowup of $\PP^2$ at the ten nodes of an irreducible rational plane sextic whose singular points are ordinary nodes, and let $M_S \definedas K_S^{\perp\, \Pic(S)}$.
+The Cremona equivalence class of such a sextic is the union of finitely many projective equivalence classes.
+Then $\Aut(S)$ is isomorphic to a subgroup of finite index in $\Orth(M_S)$.
+For a general such sextic, this subgroup is isomorphic to the congruence subgroup of level $2$ of $\Orth(M_S)/\theset{\pm1}$, and $\Orth(M_S)/\theset{\pm1}$ is isomorphic to the Weyl group $W(E_{10})$ [@DZ99, Introduction].
 :::
 
-::: {.proof}
+::: {.proposition #prop:coble-negative-curves-finite title="Finiteness of negative curves modulo automorphisms"}
 
-Cited: [@DO88] for the description of $\Aut(S)$ through the action on $M_S$, and [@CDL25, Ch. 5] for the level 2 structure.
-
-The two groups are read as follows.
-$\Aut(S)$ acts on $\Pic(S)$ preserving $K_S$ and the intersection form, hence on $M_S = K_S^{\perp\,\Pic(S)}$; that the resulting homomorphism is injective with image of finite index is the cited part, and the image is the group $H$.
-$\Orth(M_S)/\{\pm1\}\cong W(E_{10})$ identifies the full orthogonal group modulo its center with the Coxeter group; for general $C$ the finite-index subgroup $H$ is the level 2 congruence subgroup of that $W(E_{10})$ [@DZ99, Introduction].
+Let $S$ be the blowup of $\PP^2$ at the ten nodes of an irreducible plane sextic.
+Then the set of smooth rational curves on $S$ with negative self-intersection is finite modulo $\Aut(S)$.
+This finiteness fails for a general blowup of $\PP^2$ at $9$ or more points [@DZ99, Introduction].
 :::
 
-::: {.remark title="Finiteness of negative curves modulo automorphisms"}
+::: {.question #qst:coble-negative-curves-finite title="Rational surfaces with finitely many negative curves modulo automorphisms"}
 
-Let $A_1(S)^{\mathrm{sm,rat},<0}$ denote the smooth rational curves of negative self-intersection.
-Then $A_1(S)^{\mathrm{sm,rat},<0}/\Aut(S)$ is **finite**: up to automorphism a Coble surface carries only finitely many smooth rational negative curves.
-Classifying all surfaces with this property is an open question recorded in the source.
+Which rational surfaces have only finitely many smooth rational curves of negative self-intersection modulo their automorphism group?
+In particular, does every Coble surface of rational type in the sense of @def:coble-elliptic-rational-type contain only finitely many smooth rational curves of negative self-intersection [@DZ99, Introduction]?
 :::
 
 ## The Coble-Mukai lattice
 
-::: {.definition title="Coble-Mukai lattice"}
+::: {.definition #def:coble-mukai-lattice title="Coble-Mukai lattice"}
 
-With $B_1,\ldots,B_n$ the boundary components, set
+Let $S$ be a terminal Coble surface of K3 type with boundary components $C_1,\ldots,C_n$, and let $\beta_i\in\Pic(S)$ be the class of $C_i$.
+Let $\widetilde{\Pic}(S)$ be the $\ZZ$-submodule of $\Pic(S)_\QQ$ spanned by $\Pic(S)$ and $\tfrac12\beta_1,\ldots,\tfrac12\beta_n$.
+The **Coble-Mukai lattice** of $S$ is
 $$
-L \definedas \generators{\NS(S),\ \tfrac12 B_1,\ \ldots,\ \tfrac12 B_n}_\ZZ
-\iscontainedin \NS(S)_\QQ,
-\qquad
-\CM(S) \definedas \generators{B_1,\ldots,B_n}_\ZZ^{\perp L}.
+\CM(S) \definedas \theset{x\in\widetilde{\Pic}(S) \suchthat x\cdot\beta_i = 0 \text{ for } i = 1,\ldots,n}
+,
 $$
-The half-classes are adjoined one at a time, so $L$ is an integral overlattice of $\NS(S)$ exactly when every $B_i$ is $2$-divisible, that is when $B_i \cdot D$ is even for every $D\in\NS(S)$; we assume this in what follows, and it is where the Coble boundary configuration earns the name.
-$\CM(S)$ serves as the replacement for $\NS(S)$ in the Coble setting.
+with the restriction of the intersection form of $\Pic(S)_\QQ$ [@DK25, §9.2].
 :::
 
-Three computations about the defining data, since they decide what $\CM(S)$ can be.
+::: {.proposition #prop:coble-mukai-lattice title="The Coble-Mukai lattice is the Enriques lattice"}
 
-The index. One has $2\cdot\tfrac12 B_i = B_i \in \NS(S)$, and $\sum_i \tfrac12 B_i = \tfrac12(-2K_S) = -K_S\in\NS(S)$ because $|-2K_S|=\{D\}$ gives $D=-2K_S$; so $L/\NS(S)$ is an $\mathbb{F}_2$-vector space spanned by the $n$ classes of the $\tfrac12 B_i$ subject to the single relation $\sum_i[\tfrac12 B_i] = 0$, hence of dimension at most $n-1$, and of dimension exactly $n-1$ when the classes are independent:
-$$
-[L : \NS(S)] = 2^{\,n-1}.
-$$
-In particular $L = \NS(S)$ exactly when $n = 1$: then $\tfrac12 B_1 = -K_S$ is already integral, and the half-class adjoined carries nothing.
+Let $S$ be a terminal Coble surface of K3 type with $n$ boundary components.
 
-The rank and signature. Since $L \iscontainedin \NS(S)_\QQ$ the two have the same rank $11$ and the same signature $(1,10)$.
-The $B_i$ are mutually orthogonal of square $-4$, so $\generators{B_1,\dots,B_n}_\ZZ$ is negative definite of rank $n$ and primitive in $L$; a primitive negative definite sublattice has orthogonal complement of
-$$
-\rank \CM(S) = 11 - n,
-\qquad
-\text{signature } \CM(S) = (1,\,10-n).
-$$
-At $n=1$ this is rank $10$ of signature $(1,9)$, the Enriques lattice $E_{10}$, and indeed $\CM(S) = K_S^{\perp \NS(S)}$ there, isometric to $S_\Co$.
+1. The form on $\CM(S)$ takes integer values [@DK25, §9.2].
+2. The quotient $\widetilde{\Pic}(S)/\Pic(S)$ is an $\mathbb{F}_2$-vector space of dimension at most $n-1$.
+3. $\CM(S)$ has rank $10$ and signature $(1,9)$.
+4. $\Aut(S)$ permutes the curves $C_1,\ldots,C_n$ and so acts on $\CM(S)$ [@DK25, §9.2].
+5. If $n = 1$, then $\CM(S) = K_S^{\perp\,\Pic(S)}$, and it is isomorphic to the Enriques lattice $E_{10}$ [@DK25, §9.2].
+6. Over $\CC$, $\CM(S)$ is isomorphic to $E_{10}$ for every $n$ [@DK25, Thm. 9.2.14].
 
-The embedding. $\CM(S)\hookrightarrow L$ is primitive, being an orthogonal direct summand, while $\CM(S)\hookrightarrow\NS(S)$ is not primitive once $n\geq 2$, since $L$ is strictly larger.
-So a relation between $\CM(S)$ and $S_\Co$ compares complements of different configurations inside the same K3 lattice, and the lattice to compare with $\Pic(X)$ of the K3 cover is $L$, not $\NS(S)$.
+:::
+
+::: {.proof}
+
+(1) Let $x, x'\in\CM(S)$, and write $x = y + \tfrac12\Sum_i r_i\beta_i$ and $x' = y' + \tfrac12\Sum_i r'_i\beta_i$ with $y, y'\in\Pic(S)$ and $r_i, r'_i\in\ZZ$.
+By @prop:coble-boundary-intersections, $\beta_i\cdot\beta_j = -4\delta_{ij}$.
+Since $x\cdot\beta_i = x'\cdot\beta_i = 0$,
+$$
+y\cdot y' = x\cdot x' + \tfrac14\Sum_i r_i r'_i\,\beta_i^2 = x\cdot x' - \Sum_i r_i r'_i
+,
+$$
+so $x\cdot x' = y\cdot y' + \Sum_i r_i r'_i\in\ZZ$.
+
+(2) The quotient is spanned by the classes of $\tfrac12\beta_1,\ldots,\tfrac12\beta_n$, and $2\cdot\tfrac12\beta_i = \beta_i\in\Pic(S)$, so it is an $\mathbb{F}_2$-vector space.
+Since $C\sim -2K_S$, $\Sum_i\tfrac12\beta_i = \tfrac12[C] = -K_S\in\Pic(S)$, so the $n$ spanning classes satisfy a nontrivial relation.
+
+(3) By @prop:terminal-coble-basic-rational and @prop:blowup-geometric-basis, $\Pic(S)\cong\latI_{1,9+n}$, of rank $10+n$ and signature $(1, 9+n)$.
+$\CM(S)\tensor\QQ$ is the orthogonal complement in $\Pic(S)_\QQ$ of the span of $\beta_1,\ldots,\beta_n$.
+By @prop:coble-boundary-intersections, that span is negative definite of rank $n$.
+So its orthogonal complement has rank $10$ and signature $(1,9)$.
+
+:::
 
 ::: {.question #qst:coble-mukai-naturality title="Is the Coble--Mukai lattice the natural home for the group action?"}
 
 Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\Co}$, and how are the two related?
-
-In particular, is the group acting on $\CM(S)$ the stable orthogonal group of $L$ or the subgroup induced from $\NS(S)$?
-The rank $11-n$ and signature $(1,10-n)$ of $\CM(S)$ do not determine its discriminant form, on which that group depends.
-
-What can be said is why the question is not idle.
-$S_{\Co}\cong\generators{-2}\oplus E_{10}(2)$ is $2$-elementary, so $A_{S_{\Co}}=(\bZ/2)^{11}$ and the discriminant representation of @thm:two-elementary-surjectivity is surjective; the two mod-$2$ invariants $(r,a,\delta)$ that classify a $2$-elementary lattice are then the only handles on $\Orth(S_{\Co})$, and in the inert case $n_1=n_2=10$ they are the ones that take equal values.
-A complement of the boundary configuration inside $\NS(S)$ is not $2$-elementary in general -- the $B_i$ have square $-4$, so odd primes enter the discriminant of the boundary lattice and hence, by @prop:scaled-discriminant-ses, into the gluing between $\CM(S)$ and its complement.
-If $\Gamma_{\Co}$ acts on $\CM(S)$ compatibly with that gluing, the odd part of the discriminant group is an invariant the $2$-elementary data of $S_{\Co}$ cannot see, and it would be visible exactly where those data stop separating cases.
-Whether that is what happens is open.
 :::
 
 ## The Dolgachev-Zhang classification
 
-::: {.definition title="Elliptic and rational types"}
+::: {.definition #def:coble-elliptic-rational-type title="Elliptic and rational types"}
 
-A Coble surface is of **elliptic type** when there is $S \birationaliso Y$ with $|-K_Y|$ a singleton and the mobile part of $|-2K_Y|$ generically a smooth elliptic curve.
-Elliptic type splits further:
-
-- **Halphen type**: blowups of singular points, and their infinitely near points, on a non-multiple fibre of a minimal rational elliptic surface with one multiple fibre of multiplicity 2.
-
-- **Jacobian type**: blowdowns of disjoint sections, and possibly components of one fibre, of a non-minimal rational elliptic surface with a section.
-
-It is of **rational type** when the mobile part of $|-2K_Y|$ consists of divisors $D$ with $p_a(D) = 0$, $D$ not necessarily irreducible.
-These are blowups of minimal rational surfaces.
+Let $X$ be a Coble surface, let $E$ be a $(-1)$-curve on $X$ with blowdown $\pi\colon X\to Y$, and assume that $p_a(-2K_X + 2E) = 1$.
+Write $\abs{-2K_X + 2E} = \abs{M} + P$, where $\abs{M}$ is the mobile part and $P$ is the fixed part.
+Then $X$ is of **elliptic type with respect to $E$** if $p_a(M) = 1$, and of **rational type with respect to $E$** if $p_a(M) = 0$ [@DZ99, 2.1].
+A Coble surface is of **elliptic type** if it is of Halphen type or of Jacobian type, and of **rational type** if it is not of elliptic type [@DZ99, 2.9].
 :::
 
-::: {.theorem title="K3 type criterion, Dolgachev-Zhang Thm. 6.5"}
+::: {.theorem #thm:coble-elliptic-type-classification title="Coble surfaces of elliptic type"}
 
-Let $X$ be a Coble surface with $M^2 = 0$.
+A Coble surface of elliptic type admits a birational morphism onto a surface $Y$ such that $\abs{-K_Y}$ has exactly one member and a general member of the mobile part of $\abs{-2K_Y}$ is a smooth elliptic curve.
+It is obtained in one of two ways:
 
-- If $X$ is of Halphen type, obtained from a minimal Halphen surface $Y_m$ of index 2 by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type **if and only if** $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
+- **Halphen type**: as a blowup of singular points, and their infinitely near points, of a non-multiple fibre of a minimal rational elliptic surface with one multiple fibre, of multiplicity $2$;
 
-- If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface by blowing up a singular point of one fibre $F$ and at least one singular point, with infinitely near points, on another fibre $F_1$, then $X$ is of K3 type **if and only if** each of $F$ and $F_1$ has type $I_n$, $\II$, $\III$ or $\IV$.
+- **Jacobian type**: as a blowdown of some disjoint sections, and possibly of components of one fibre, of a non-minimal rational elliptic surface with a section.
+
+A Coble surface of elliptic type admits a birational morphism onto $\PP^2$ [@DZ99, Introduction].
 :::
 
-::: {.proof}
+::: {.theorem #thm:dz-k3-type-criterion title="K3 type criterion"}
 
-This is [@DZ99, Thm. 6.5], stated here with its hypotheses spelled out because the page's use of it depends on them: $M^2 = 0$ is required, and in each branch the surface must be obtained by exactly the blowups described, at singular points of the stated fibres.
+Let $X$ be a Coble surface with $M^2 = 0$, for $M$ as in @def:coble-elliptic-rational-type.
 
-The list $I_n, \II, \III, \IV$ is the list of fibre types whose Kodaira type is not multiple, i.e. the fibre is reduced; a fibre of type $I_n^*$, $\II^*$, $\III^*$ or $\IV^*$ is not, and that is the content of the criterion, not an additional condition.
+- If $X$ is of Halphen type, obtained from a minimal Halphen surface $Y_m$ of index $2$ by one blowup of a singular point on its non-multiple fibre $F$, then $X$ is of K3 type if and only if $F$ has type $I_n$, $\II$, $\III$ or $\IV$.
+
+- If $X$ is of Jacobian type, obtained from a minimal Jacobian rational elliptic surface by blowing up a singular point of one fibre $F$ and at least one singular point, with its infinitely near points, of another fibre $F_1$, then $X$ is of K3 type if and only if each of $F$ and $F_1$ has type $I_n$, $\II$, $\III$ or $\IV$.
+
+[@DZ99, Thm. 6.5]
 :::
 
-::: {.lemma title="Dolgachev-Zhang Lem. 6.2"}
+::: {.lemma #lem:dz-k3-type-double-cover title="K3 type and the double cover"}
 
 For a Coble surface $X$ the following are equivalent:
 
-1. $|-2K_X|$ contains a reduced divisor;
+1. $\abs{-2K_X}$ contains a reduced divisor;
 
-2. there is a double cover $\tilde X \to X$ with $\tilde X$ a K3 surface having at worst ordinary double points.
-:::
+2. there is a double cover $\tilde X \to X$ with $\tilde X$ a K3 surface with at most ordinary double points.
 
-::: {.proof}
-
-This is [@DZ99, Lem. 6.2].
-The mechanism: $|-2K_X|$ nonempty is the datum of a $\bZ/2$-cover, branched over a divisor in that class, and the condition that a member be reduced is what keeps the branch divisor smooth enough for the cover to have only ordinary double points.
-Without a reduced member the cover acquires worse singularities along the non-reduced part.
-:::
-
-::: {.remark title="Why this matters for the Halphen program"}
-
-[Halphen surfaces](#sec-halphen-surfaces) describes the Coble-to-Halphen blowdown and conjectures a correspondence of moduli spaces along the $g=0$ line of Nikulin's triangle; see [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program). The elliptic/rational dichotomy and Theorem 6.5 are the classification that the conjecture must respect: they say exactly which Halphen and Jacobian configurations produce K3-type Cobles, and so which fibres of the conjectured correspondence are nonempty.
+[@DZ99, Lem. 6.2]
 :::
 
 ## Rational log Enriques surfaces of index 2
 
-::: {.definition title="Rational log Enriques surface of index 2"}
+::: {.definition #def:rational-log-enriques title="Rational log Enriques surface of index 2"}
 
-A normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$.
+A **rational log Enriques surface of index $2$** is a normal rational surface $\bar X$ with at worst quotient singularities such that $\OO(-2K_{\bar X}) \cong \OO_{\bar X}$ [@DZ99, §6].
 :::
 
-::: {.theorem title="Terminal Cobles are resolutions of these"}
+::: {.theorem #thm:coble-log-enriques-resolution title="Terminal Coble surfaces are resolutions of log Enriques surfaces"}
 
-A terminal Coble surface is the minimal resolution of a **maximum** rational log Enriques surface of index 2. Conversely, the minimal resolution $X$ of a rational log Enriques surface $\bar X$ of index 2 is a Coble surface with $h^0(-2K_X) = 1$, whose unique member $D \in |-2K_X|$ is reduced and each of whose connected components is either a single $(-4)$-curve or a linear chain with a prescribed dual graph.
-:::
+1. The minimal resolution $X$ of a rational log Enriques surface of index $2$ is a Coble surface with $h^0(-2K_X) = 1$. The unique member $D\in\abs{-2K_X}$ is reduced, and each connected component of $D$ is either a single $(-4)$-curve or a linear chain with dual graph
+$$
+(-3) - (-2) - \cdots - (-2) - (-3)
+.
+$$
+Conversely, a Coble surface with these properties is the minimal resolution of a rational log Enriques surface of index $2$.
+2. A Coble surface is terminal if and only if it has exactly one anti-bicanonical divisor $D$, and $D$ is reduced and a disjoint union of $(-4)$-curves.
+3. The minimal resolution of a rational normal surface with at worst singularities of type $\tfrac14(1,1)$ is a terminal Coble surface, and conversely.
 
-::: {.proof}
-
-Cited: [@DZ99, §3] for both directions.
-
-The characterization is a minimal-resolution statement and its content is which surfaces resolve to a terminal Coble.
-Resolving a rational log Enriques surface of index 2 replaces the quotient singularities by configurations of rational curves, and terminality of the resolution is exactly the condition that no $(-1)$-curve remains, which is what forces each connected component of the exceptional divisor to be a single $(-4)$-curve or a chain of the stated shape.
-The converse direction is the same computation read backwards, together with $h^0(-2K_X)=1$: on a Coble surface $|-2K_X|$ is a single member, so the resolution contributes no further sections.
-
-The dual graph of the chains is a hand-drawn figure in the source and was not transcribed here; it must be recovered from [@DZ99, §3] before the characterization is used.
+[@DZ99, Prop. 6.4]
+A terminal Coble surface is the minimal resolution of a maximum rational log Enriques surface of index $2$ [@DZ99, Introduction].
 :::
 
 ## Dolgachev-Kondo geometry of the degree 2 polarization
 
-[The geometric preliminaries](#sec-geometric-preliminaries) introduce the map $\phi_{ij}$ onto a quartic del Pezzo surface, which is **never finite** in the Coble case.
-The remark below gives the incidence data of this map.
+::: {.proposition #prop:coble-degree-two-branch-geometry title="The branch geometry of a degree 2 polarization"}
 
-::: {.remark title="The branch geometry"}
+Let $S$ be a Coble surface with no $(-2)$-curves, and let $h = [F_1 + F_2] \in \Pic(S)$ be a polarization of degree $2$.
+Then $\abs{2h}$ defines a morphism $\phi_h\colon S \to \PP^4$ whose image $\mathsf{D}$ is a $4$-nodal quartic del Pezzo surface.
+Let $\sigma$ be its deck transformation, and let $C \in \abs{-2K_S}$ be the anti-bicanonical curve.
 
-Take $h = [F_1 + F_2] \in \Pic(S)$ of degree 2, so $|h|$ defines $\phi_{|h|}: S \to \PP^4$ with image $D$ a 4-nodal quartic del Pezzo surface.
-Let $\sigma$ be the deck transformation.
-Then:
+1. $\Fix(\sigma)$ is the union of a smooth curve $\bar W$ of genus $4$ and three isolated points.
+2. $\phi_h(C) = \theset{q}$ is a singular point of $\mathsf{D}$, and the other three singular points of $\mathsf{D}$ are the images of the isolated fixed points.
+3. $\bar W$ meets $C$ in two points.
+4. $W \definedas \phi_h(\bar W)$ has $p_a(W) = 5$ and a double point at $q$, and it is the complete intersection of a net of quadrics.
 
-- $\Fix(\sigma) = \bar W$ is a smooth genus 4 curve together with 3 isolated points;
-
-- $\phi_h(C) = \theset{q}$ is a **singular point** of $D$, where $C \in |-2K_S|$ is the Coble curve;
-
-- $\bar W \intersect C = \theset{p_1, p_2}$;
-
-- $W \definedas \phi_h(\bar W)$ has $p_a(W) = 5$ and a double point at $q$.
-
-A Coble surface arises as a degeneration of an Enriques surface exactly when the branch curve $W$ passes through a singular point of $D$.
+So a Coble surface is obtained as a degeneration of an Enriques surface when the branch curve $W$ of $\phi_h$ passes through a singular point of $\mathsf{D}$ [@DK13, §8].
 :::
 
-::: {.remark title="The rationality correspondence in its explicit form"}
+::: {.proposition #prop:cuspidal-quintics-enriques title="Cuspidal quintics and Enriques surfaces"}
 
-Dolgachev-Kondo prove $\fco$ rational by comparison with $\mcm_{\cusp} = U/\PGL_3$, the moduli of cuspidal plane quintics.
-They show $\mcm_{\cusp} \birationaliso \mcm_{\En}$, which is 10-dimensional, and that a distinguished codimension one locus $\mcm'_{\cusp} \cong \mcm_{\Co}$.
-The locus is explicit: for $C$ a plane quintic with cusp $p$ and $L$ the tangent line to $C$ at $p$, it is the case where $L$ is **also** tangent to $C$ at a smooth point $q \in C$.
+Let $\mcm_{\cusp}$ be the moduli space of cuspidal plane quintics, the GIT quotient of the projective space of cuspidal plane quintics by $\PGL_3$.
+Then $\mcm_{\cusp}$ is a rational variety, birationally isomorphic to the moduli space $\mcm_{\En}$ of Enriques surfaces [@DK13, §4].
+The locus $\mcm'_{5,\cusp}$ of @thm:coble-moduli-rational is a rational variety of dimension $9$ [@DK13, Thm. 4.1].
 :::
 
 Related: [The research program for $F_{\Co,n}$, $2 \leq n \leq 10$](#sec-coble-families-research-program), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program), [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain).

@@ -1,32 +1,22 @@
 # Moduli
 
-::: {.remark title="Coble moduli as a divisor in Enriques moduli"}
+::: {.proposition #prop:coble-from-nodal-enriques-cover title="Coble surfaces from nodal K3 covers of Enriques surfaces"}
 
-For each $1\leq n \leq 10$, there is a moduli space of Coble surfaces with $n$ boundary components.
-As noted, we will primarily be interested in the $n=1$ case.
-In this case, we have two distinct constructions of a moduli space of such Coble surfaces.
-Coble surfaces appear as degenerations of Enriques surfaces, and in fact they form a boundary divisor $\mch_{-2}$ in the 10-dimensional moduli space $\fen$ of Enriques surfaces.
-Thus they form a 9-dimensional moduli space.
-These are realized by allowing the K3 cover of an Enriques surface to acquire an $A_1$ singularity fixed by the Enriques involution; the resulting quotient has a quartic singularity whose resolution is an irreducible smooth rational curve $C$ satisfying $C^2 = -4$, and by [@Nue15 p. 8] is thus a Coble surface $S$.
+Let the K3 cover of an Enriques surface acquire an ordinary double point that the Enriques involution fixes.
+Then the quotient surface has a quartic singularity whose resolution is an irreducible smooth rational curve $D_0$ with $D_0^2 = -4$.
+The resolved surface $S$ is a Coble surface.
+It is the blowup of $\PP^2$ at the $10$ nodes of a rational plane sextic, and the proper transform of the sextic is $D_0\in\abs{-2K_S}$ [@Nue15, §3, p. 8].
+
 :::
 
-:::: {.remark title="Hodge/lattice theoretic moduli"}
+::: {.proposition #prop:coble-k3-cover-degenerates-enriques-cover title="The K3 cover of a Coble surface as a degeneration"}
 
-Separately, one can construct a Hodge-theoretic period domain directly using lattice theory.[^coble-note-2] Write $\abs{-2K_S} = \theset{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible components.
-By adjunction and the genus formula, $C_i\cong \PP^1$ and $C_i^2 = -4$, so $K_S^2 = -n$.
-Let $\Sigma$ be a sufficiently general Coble set of ten points in $\PP^2$.
-There are 10 irreducible families of K3s obtained as the double cover of $S$ branched over $C$, where the fixed locus of the deck transformation is comprised of $n$ smooth rational curves.
-Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - \abs{\Sigma}$.
+A double cover of a Coble surface branched along the proper transform of a reduced sextic is a K3 surface, and it is a degeneration of the K3 cover of an Enriques surface [@DZ99, Introduction].
 
-See [the Coble lattice table](#sec-coble-lattice-table).
-
-The case of interest to us is $n=1$, and thus the lattice $M = (11, 11, 1) = A_1 \oplus E_{10}(2)$ and its complement $N$ in the K3 lattice will be used to construct a period domain quotiented by an appropriate arithmetic subgroup, producing the coarse moduli space of interest.
-::::
-
-::: {.remark title="On nonsymplectic involutions"}
-
-As described in [@DZ99], the double cover $\pi: X\to S$ realizes $X$ as a degeneration of a K3 cover of an Enriques surface, which thus describes a family of K3s equipped with a nonsymplectic involution as studied in [@AE22] and a corresponding family of Enriques surfaces as studied in [@AEGS25].
-It seems that these degenerations correspond to the (weakly projective) **flowerpot** degenerations of [@Mor81], and I conjecture that the corresponding Kulikov models correspond to integral-affine discs (as opposed to spheres or real projective spaces).
 :::
 
-[^coble-note-2]: An unpublished note of Dolgachev: <https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf>
+::: {.conjecture #conj:coble-degenerations-flower-pot title="Coble degenerations are flower pot degenerations"}
+
+The degenerations of @prop:coble-k3-cover-degenerates-enriques-cover correspond to the weakly projective flower pot degenerations of [@Mor81, Example 1.6], and their Kulikov models correspond to integral-affine discs, not to integral-affine spheres or real projective spaces.
+
+:::

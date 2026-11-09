@@ -18,18 +18,30 @@ notes: |-
 
 ::: {.construction title="The lattices from a Coble set"}
 
-Let $\Sigma$ be a general **Coble set** of points in $\PP^2$, so that the blowup $S$ of $\PP^2$ along $\Sigma$ is a Coble surface double covered by a K3 surface $X$ branched along $C = C_1 + \cdots + C_n$.
-The construction used for $n=1$ (the divisors $e_0,\ldots,e_{10}$ in $X$, with $e_0$ the pullback of the hyperplane class and $e_i$ the preimages of the exceptional divisors over the nodes) yields, in general, a collection of primitively embedded 2-elementary sublattices $L_1,\ldots,L_{10} \iscontainedin \Pic(X)$ with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
-Applying the period domain construction to these lattices yields ten moduli spaces $F_{\Co,n}$.
+Let $S$ be a terminal Coble surface of K3 type with $n$ boundary components, and let $X$ be its K3 double cover, branched along $C = C_1 + \cdots + C_n$.
+For a general such $S$, $\Pic(X)$ is the $2$-elementary lattice $M$ of @tbl-coble-lattices with invariants $(r,a,\delta) = (10+n,\, 12-n,\, \delta)$.
+The period domain construction of @sec-moduli-construction, applied to $M$ and its orthogonal complement $N = M^{\perp\lkt}$, gives the moduli spaces $F_{\Co,n}$.
 :::
 
-::: {.remark title="Position in Nikulin's triangle"}
+::: {.corollary #cor:coble-lattices-genus-zero title="The Coble lattices have $g = 0$"}
 
-This collection of ten lattices **coincides precisely with the $g=0$ line** of Nikulin's triangular table of 2-elementary lattices (AE22, Fig. 1). That identification is the organizing observation behind the whole program, and is also what ties the Coble families to the index 2 Halphen families; see [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program).
+For each lattice $M$ of @tbl-coble-lattices, the invariant $g = \tfrac12(22-r-a)$ of @prop:nikulin-fixed-locus is $0$, and $k = \tfrac12(r-a) = n-1$.
+
 :::
 
-The moduli spaces $F_{\Co,n}$ for $n \geq 2$ have not appeared in the literature.
-The $n=1$ case is the subject of the current project.
+::: {.proof}
+
+By @prop:coble-table-invariants, $r = 10+n$ and $a = 12-n$, so $22-r-a = 0$ and $r-a = 2n-2$.
+
+:::
+
+::: {.proposition #prop:coble-families-in-enriques-moduli title="Each Coble family lies in the Coble divisor of Enriques moduli"}
+
+For each lattice $M$ of rank $10+n$ in @tbl-coble-lattices, the moduli functor of $M$-polarized K3 surfaces of [@CDL25, §5.4] embeds into the moduli functor of $E_{10}(2)$-polarized K3 surfaces.
+Its image is an open subset of an irreducible closed subset of codimension $n-1$ of the quotient $\Gamma^\sharp_{\mathrm{Enr}}\backslash\mch(-2)$ of the $(-2)$-Heegner divisor of the Enriques period domain, and it is a coarse moduli space of Coble surfaces with $n$ boundary components [@CDL25, §5.4, Prop. 5.4.6 and the paragraph after it].
+For $n = 1$, the image under the period map is an open subset of $\mcm_{\mathrm{Coble}}$, and the coarse moduli space is the coarse moduli space of marked Coble surfaces with $n = 1$ [@CDL25, Prop. 5.4.6].
+
+:::
 
 ## The conjectural program
 
@@ -37,13 +49,11 @@ The $n=1$ case is the subject of the current project.
 
 The Baily-Borel boundaries of all ten families can be described by the techniques used for $n=1$.
 The boundary incidence diagrams are computable by the algorithms of [@AE22] for nonsymplectic involutions.
-This would be the first explicit study of these boundaries in the literature.
 :::
 
 ::: {.conjecture title="Recognizability of the ramification locus"}
 
-The ramification locus of the K3 cover of $S$ is described in *Enriques Surfaces I*, Eqn.
-5.3.1. The conjecture has two parts:
+The ramification locus of the K3 cover of $S$ is described in @prop:nikulin-fixed-locus. The conjecture has two parts:
 
 1. the corresponding involutions are nonsymplectic;
 
@@ -56,17 +66,6 @@ Under part 2, AEH21 Thm.
 ::: {.conjecture title="The semifans refine or coarsen the Coxeter fans"}
 
 These semifans are either refinements or coarsenings of the canonical Coxeter fans at the Baily-Borel cusps, and admit an explicit description via an extension of the theory of ADE surfaces (AT21). From that data one extracts a classification of dlt models for KSBA stable limits, hence a first description of $\partial\overline{F}_{\Co,n}$, as AEGS23 did for numerically polarized Enriques surfaces.
-:::
-
-::: {.remark title="Each family embeds into unpolarized Enriques moduli"}
-
-By *Enriques Surfaces I*, Prop.
-5.4.6, for each rank-$(10+n)$ lattice in [the Coble lattice table](#sec-coble-lattice-table) there is an embedding
-$$
-F_{\Co,n} \injects \fen
-$$
-into the moduli space of Enriques surfaces, constructed from $E_{10}(2)$-polarized K3 surfaces.
-Consequently the integral-affine structures, and hence the dlt and stable models, can be obtained by restricting the K3 boundary data of AE22. This is the mechanism that makes the whole family tractable at once, rather than one $n$ at a time.
 :::
 
 Related: [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program), [The nodal Enriques moduli program](#sec-nodal-enriques-moduli-program).

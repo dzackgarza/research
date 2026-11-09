@@ -1,10 +1,9 @@
 # Coble lattices {#sec-coble-lattice-table}
 
-The following can be found in an unpublished note of Dolgachev.[^coble-note] Write $\abs{-2K_S} = \theset{C}$ where $C = C_1 + \cdots + C_n$ has $n$ irreducible components.
-By adjunction, $C_i\cong \PP^1$ and $C_i^2 = -4$, so $K_S^2 = -n$.
-Let $\Sigma$ be a general Coble set of points in $\PP^2$.
-There are 10 irreducible families of K3s obtained as the double cover of $S$ branched over $C$, where the fixed point locus of the deck transformation consists of $n$ smooth rational curves.
-Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - \abs{\Sigma} = -n$.
+Let $S$ be a terminal Coble surface of K3 type with $\abs{-2K_S} = \theset{C}$, where $C = C_1 + \cdots + C_n$ is a disjoint union of $n$ $(-4)$-curves, and let $f\colon X\to S$ be its K3 double cover.
+By @prop:coble-k3-cover, $S$ is the blowup of $\PP^2$ at a set $\Sigma$ of $\abs{\Sigma} = 9+n$ points, possibly infinitely near, and $K_S^2 = -n$.
+For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice $M$ of rank $r = 10+n$ with $a(M) = 12-n$, and the ramification divisor of $f$ is as in @prop:nikulin-fixed-locus with $g = 0$ and $k = n-1$.
+@tbl-coble-lattices lists these lattices $M$ [@CDL25, Table 5.1, p. 553], and @prop:coble-table-invariants gives their orthogonal complements $N$ in $\lkt$.
 
 | $n$ | $\abs{\Sigma}$ | $K_{\mathrm{V}}^{2}$ | $M = (r, l, \delta)$ | 2-elementary lattice $M$ | $N=M^{\perp}$ |
 | :-- | :------------- | :------------------- | :------------------- | :-------------------------------------------------------------------------------- | :------------------------- |
@@ -22,7 +21,7 @@ Generally the rank of $\Pic(X)$ is $r=10+n$ and $\ell = 12-n$, and $K_S^2 = 9 - 
 
 : Table of Coble lattices {#tbl-coble-lattices}
 
-::: {.proposition #prop:coble-table-invariants title="The table is internally consistent"}
+::: {.proposition #prop:coble-table-invariants title="Invariants of the Coble lattices"}
 
 Each row of the table satisfies $\rank M = 10+n$, $a(M)=12-n$, and $K_S^2=-n$, where $a=\dim_{\bF_2}(A_M/2A_M)$ is the generator length of @def:p-elementary; and the orthogonal complement $N=M^{\perp\lkt}$ has rank $22-(10+n)=12-n$ and is as listed.
 
@@ -61,44 +60,33 @@ Row by row this gives
 
 So $a=12-n$ in every row, and $\rank M=10+n$.
 
-::: {.remark title="What this table transcribes, and where it departs"}
-
-The rows are those of [@CDL25, Table 5.1, p. 553].
-The source writes $\ell$ for the discriminant length where this book writes $a$, and $\mathrm{A}_1$ for what it elsewhere calls $\langle -2\rangle$.
-
-Two rows of the source print entries that contradict their own invariants, and the table above prints what the invariants force.
-
-The row $n=2$ prints $\mathrm{E}_{10}(2)\oplus \mathrm{A}_1^{\oplus 2}$.
-Twisting a unimodular lattice multiplies its discriminant group by its own mod-$2$ reduction, so $a(L(2)) = \rank L$ for $L$ unimodular, by @prop:scaled-discriminant-ses; hence that lattice has $a = 10 + 2 = 12$, against the printed $(12,10,1)$.
-The lattice with the printed invariants is $\mathrm{E}_8(2)\oplus \mathrm{U}\oplus \mathrm{A}_1^{\oplus 2}$, of $a = 8 + 0 + 2 = 10$, and it is printed here.
-Which of the two printed entries is the error is not a matter of taste: the invariant is derived in the paragraph preceding the table, from $a(M) = a(\mathrm{I}_{1,N}(2)) - 2(n-1) = 12 - n$, while the summand decomposition is not, so it is the decomposition that is wrong.
-
-The last row prints $N = 20$, while the source's own $K_V^2 = 9 - N$ with $K_V^2 = -10$ forces $N = 19$; the table prints $19$, for the same reason.
-
-:::
-
 For the complement, $M$ is primitive in $\lkt$ of rank $22$ and signature $(3,19)$, so by @thm:orthogonal-decomposition $N$ has rank $22-(10+n) = 12-n$ and signature $(2,\,19-(9+n)) = (2,10-n)$.
 The lattice $\latI_{2,m}$ has rank $m+2$ and signature $(2,m)$, so the one of the listed shape with that rank is $\latI_{2,10-n}(2)$: it has rank $12-n$, signature $(2,10-n)$, and $a = 12-n$.
-The exception is the row with $\delta = 0$, where $N$ is not of that shape but $\mathrm{U}(2)^{\oplus 2}$: this is the row $n=8$, where $12-8 = 4$ is the rank of $\mathrm{U}(2)^{\oplus 2}$ and $(2,10-8) = (2,2)$ its signature, so the rank and signature formulas hold there too while the shape differs and the parity is $0$ rather than $1$.
-Equivalently, $\mathrm{U}(2)^{\oplus 2}$ is the only candidate of rank $4$ and signature $(2,2)$ available at that row, and it is not a twist of an indefinite odd unimodular lattice, which is why the complement changes shape exactly where $\delta$ changes.
-Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the fourth column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
-
-Every row of this table agrees with the invariants printed beside it in the source, with the two exceptions recorded above, where it is the source's printed summand decomposition rather than its printed invariants that is inconsistent.
+The exception is the row with $\delta = 0$, where $N$ is not of that shape but $\mathrm{U}(2)^{\oplus 2}$: this is the row $n=8$, where $12-8 = 4$ is the rank of $\mathrm{U}(2)^{\oplus 2}$ and $(2,10-8) = (2,2)$ its signature, so the rank and signature formulas hold there too, and the parity is $0$ rather than $1$.
+Finally $K_S^2=-n$: since $-2K_S=C=C_1+\cdots+C_n$ with $C_i^2=-4$ and $C_i\cdot C_j=0$, $K_S^2=\tfrac14C^2=-\tfrac14\cdot4n=-n$, which is the entry in the $K_{\mathrm V}^2$ column, and $K_S^2=9-\abs{\Sigma}$ together with $K_S^2=-n$ fixes $\abs{\Sigma}=9+n$.
 :::
 
-This table is reproduced in [@CDL25 Table 5.1, p.553].
-The fixed point locus is described by [@CDL25 Eqn. 5.3.1]:
+::: {.notation title="Coble table invariants"}
 
-$$
-X^{g}=\left\{\begin{array}{ll}
-\emptyset & \text { if }(r, l, \delta)=\EnriquesInvariants, \\
-C_{1}^{(1)}+C_{2}^{(1)} & \text { if }(r, l, \delta)=(10,8,0), \\
-C^{(g)}+\Sum_{i=1}^{k} R_{i} & \text { otherwise }
-\end{array}\right.
-$$
+In @tbl-coble-lattices, $l$ is the invariant $a(M)$ of @def:p-elementary and $\delta$ is the coparity $\delta_M$ of @def:p-elementary.
+In [@CDL25, Table 5.1, p. 553] the number $n$ of components of $C$ is written $k$, the number $\abs{\Sigma}$ of blown-up points is written $N$, and $a(M)$ is written $l$.
 
-where $C^{(g)}$ denotes a curve of genus $g \geq 0$, $R_{i}$ are disjoint $(-2)$-curves, and $$g=\frac{1}{2}(22-r-l), \quad k=\frac{1}{2}(r-l).$$
+:::
 
-The ramification divisor for the involution on the K3 cover is described by $g=0$ and $k=n-1$ by [@CDL25 Def. 5.4.3].
+::: {.example #ex:coble-table-cdl-rows title="The rows $n=2$ and $n=10$ of the Coble table"}
 
-[^coble-note]: <https://homepage.mi-ras.ru/~prokhoro/conf/isk20/Dolgachev.pdf>
+The rows of @tbl-coble-lattices are those of [@CDL25, Table 5.1, p. 553] except in two entries.
+
+1. The row $k=2$ of [@CDL25, Table 5.1] has invariants $(r,l,\delta)=(12,10,1)$ and lattice $\mathrm{E}_{10}(2)\oplus\mathrm{A}_1^{\oplus 2}$.
+   Since $\mathrm{E}_{10}$ is unimodular, @prop:scaled-discriminant-ses gives $A_{\mathrm{E}_{10}(2)}\cong(\bZ/2)^{10}$, so
+   $$
+   a\qty(\mathrm{E}_{10}(2)\oplus\mathrm{A}_1^{\oplus 2}) = 10+2 = 12 \neq 10 .
+   $$
+   The value $l=12-n=10$ is the one forced by $l(D(M)) = l(\mathrm{I}^{1,N}(2)) - 2(n-1) = 21-N$ [@CDL25, p. 552].
+   The lattice $\mathrm{E}_8(2)\oplus\mathrm{U}\oplus\mathrm{A}_1^{\oplus 2}$ has rank $8+2+2=12$ and $a=8+0+2=10$, and it is the entry of @tbl-coble-lattices at $n=2$.
+
+2. The row $k=10$ of [@CDL25, Table 5.1] has $K_{\mathrm V}^2=-10$ and $N=20$.
+   By [@CDL25, (5.4.1)], $K_{\mathrm V}^2 = 9-N = -n$, so $K_{\mathrm V}^2=-10$ gives $N=19$, the entry of @tbl-coble-lattices at $n=10$.
+   This agrees with [@CDL25, Example 5.4.4], where the blow-up of the $15$ singular points of ten lines on a quintic del Pezzo surface has $N=19$ and realizes this row.
+
+:::

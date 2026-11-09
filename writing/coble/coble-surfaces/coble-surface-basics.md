@@ -1,40 +1,63 @@
 # Basics of Coble surfaces
 
-::: {.remark title="On defining Cobles"}
+::: {.proposition #prop:coble-k3-type-snc title="Coble surfaces of K3 type and their terminal models"}
 
-For the general theory of Coble surfaces, we refer to [@CDL25; @DK25], along with [@DM20; @DZ99; @DK13; @CD85; @CD12; @Dol17].
-Following [@DM20 §5.1], a **Coble surface** is a smooth projective rational surface with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S} \neq \emptyset$.
-Such surfaces were first studied in [@Cob19], [@Cob29], and were ultimately classified in [@DZ99].
-We say $S$ is **terminal of K3 type** if $\abs{-2K_S}$ contains a smooth divisor $C = C_1 + \cdots + C_{n}$, the disjoint union of $n$ reduced smooth rational curves $C_i$ satisfying $C_i^2 = -4$, and thus $C_i C_j = -4\delta_{ij}$. More generally, the smoothness hypothesis can be relaxed to a reduced simple normal crossings divisor [@DK25].
-The equality $C_i^2=-4$ follows from the genus formula: $p_a(C_i)=1+\frac12(C_i^2+C_i\cdot K_S)=0$, hence $C_i^2=4K_S^2=-4$ when $K_S^2=-1$ [@CD12 §3.1].
-We refer to $C$ as the *anti-bicanonical curve* of $S$, and note that $K_S\cdot C_i = -2$.
-The $C_i$ are referred to as the *boundary components* of $S$.
-One can show $n = -K_S^2$ and $n\leq 10$, c.f. [@DK25 Cor. 9.1.5].
+Let $S$ be a Coble surface of K3 type, so that $\abs{-2K_S} = \theset{C}$ with $C$ a reduced divisor.
+Then $C$ is a reduced union of smooth rational curves and is a simple normal crossing divisor.
+Blowing up the singular points of $C$ gives a terminal Coble surface of K3 type in the sense of @def:coble-surface [@DK25, §9.1].
+
 :::
 
-::: {.remark title="Cobles as blowups"}
+::: {.proposition #prop:coble-boundary-intersections title="Intersection numbers of the boundary components"}
 
-Such a Coble surface $S$ can be shown to be a *basic rational surface* [@Dol17 §5.1; @DK25 Prop. 9.1.3], i.e. it admits a birational morphism to $\pi: S\to \PP^2$ which decomposes as blowups of $N$ points. The number of points $N$ depends on $n$; more precisely, one can show $N = 9+n$.
-The image of $C$ is a divisor in $\abs{-2K_{\PP^2}} = \abs{\OO_{\PP^2}(6)}$ and is thus always a sextic curve, generically a nodal plane sextic where the images of the $C_i$ are its irreducible components.
-We primarily restrict to the case $n=1$, whence $K_S^2=-1$ and $S$ is obtained as the blowup of a special set of ten points in $\theset{p_1,\cdots, p_{10}} \subset \PP^2$.
+Let $S$ be a terminal Coble surface of K3 type with boundary components $C_1, \ldots, C_n$.
+Then
+$$
+C_i\cdot C_j = -4\,\delta_{ij},
+\qquad
+K_S\cdot C_i = 2
+.
+$$
 
-In this case, $\tilde C \definedas \pi(C)$ is an irreducible rational sextic plane curve, and the ten points $p_i$ are precisely its 10 $A_1$ singularities, some of which may be infinitely near.
-This is the classical example studied in [@Cob19] and [@Cob29] -- the blowup $S$ of $\PP^2$ at the ten $A_1$ singularities of an irreducible plane sextic curve with at worst $A_1$ singularities, corresponding to the $n=1, N=10$ case above.
-[@Cob19] shows, among other things, that there are finitely many $\Aut(S)$-orbits of smooth rational curves of negative self-intersection.
-
-Note that conversely, starting with such a plane sextic $\tilde C$, one can show that the proper transform $C$ of $\tilde C$ is in $\abs{-2K_S}$.
-We say $S$ is **minimal** if the blowdown of any $(-1)$-curve on $S$ is no longer a Coble surface, or equivalently if $S$ does not admit a birational but not biregular morphism onto another Coble surface; the sources use *terminal* for the same condition.
-Blowing up the singularities of $C$ yields the minimal Coble surface of its birational class, with smooth anti-bicanonical divisor and no $(-1)$-curve left to blow down.
 :::
 
-::: {.remark title="On the importance of Cobles"}
+::: {.proof}
 
-Following [@CD12 §1.4], a point set $\mathcal{P}=\theset{p_{1}, \ldots, p_{n}}$ of $\PP^{2}$ is called **Cremona special** if $n \geq 9$ and if the surface $S$ obtained by blowing up $\mathcal{P}$ is such that $\Aut^*(S)$, the image of $\Aut(S)$ in $\Orth(\Pic(S))$, has finite index in the infinite Weyl group $W_{S}$.
-The surface $S$ is then also called Cremona special.
-The index is finite, so $\Aut^*(S)$ and $W_S$ are commensurable.
-A point set is called *unnodal* if its blowup does not contain any $(-2)$-curves.
-In [@CD12], it is proved that a Cremona special complex rational surface is either an unnodal Halphen surface (with $n=9$) or an unnodal Coble surface (with $n=10$), that unnodal point sets define a Zariski open subset in the moduli space of point sets defining Halphen and Coble surfaces, and that Cremona special Halphen and Coble surfaces are precisely the unnodal ones.
+By @def:coble-surface, the curves $C_i$ are disjoint and $C_i^2 = -4$, so $C_i\cdot C_j = -4\delta_{ij}$.
+Since $C = C_1+\cdots+C_n \sim -2K_S$, intersecting with $C_i$ gives $-2K_S\cdot C_i = C\cdot C_i = C_i^2 = -4$, so $K_S\cdot C_i = 2$.
+
 :::
 
+::: {.definition #def:minimal-coble-surface title="Minimal Coble surface"}
 
+A Coble surface $S$ is **minimal** if, for every $(-1)$-curve $E$ on $S$, the surface obtained by blowing down $E$ is not a Coble surface [@DK25, proof of Prop. 9.1.4].
 
+:::
+
+::: {.proposition #prop:coble-one-boundary-minimal title="One boundary component implies minimal"}
+
+A terminal Coble surface of K3 type with $n = 1$ is minimal in the sense of @def:minimal-coble-surface [@DK25, proof of Prop. 9.1.4].
+
+:::
+
+::: {.definition #def:cremona-special title="Cremona special and unnodal point sets"}
+
+Let $\mathcal{P} = \theset{p_1, \ldots, p_n}\iscontainedin\PP^2$ be a set of points, some possibly infinitely near, and let $S$ be the blowup of $\PP^2$ at $\mathcal{P}$.
+Let $\Aut(S)^*$ be the image of $\Aut(S)$ in $\Orth(\Pic(S))$.
+For a geometric basis $e_0, \ldots, e_n$ of $\Pic(S)$, let $W_S$ be the group of isometries of $\Pic(S)$ generated by the reflections in the classes $e_0 - e_1 - e_2 - e_3$ and $e_i - e_{i+1}$ for $1\leq i\leq n-1$.
+
+1. $\mathcal{P}$ is **Cremona special** if $n\geq 9$ and $\Aut(S)^*$ has finite index in $W_S$. Then $S$ is also called Cremona special.
+2. $\mathcal{P}$ is **unnodal** if $S$ contains no smooth rational curve of self-intersection $-2$. Then $S$ is also called unnodal.
+
+The group $W_S$ does not depend on the choice of geometric basis [@CD12, §1.1, §1.3, §1.4].
+
+:::
+
+::: {.theorem #thm:cremona-special-classification title="Cremona special point sets over the complex numbers"}
+
+Let $\mathcal{P}\iscontainedin\PP^2_\CC$ be a Cremona special point set.
+Then $\mathcal{P}$ is unnodal, and either $n = 9$ and $\mathcal{P}$ is a Halphen set, or $n = 10$ and $\mathcal{P}$ is a Coble set: the set of the ten points blown up to give a Coble surface $S$ with $K_S^2 = -1$ and $\abs{-2K_S}$ consisting of one irreducible curve.
+Conversely, every unnodal Halphen set and every unnodal Coble set is Cremona special.
+Unnodal point sets form a Zariski open subset of the variety of point sets that define Halphen and Coble surfaces [@CD12, §1.4, Main Theorem; @CD12, §3].
+
+:::

@@ -2,52 +2,16 @@
 
 ## The Enriques lattice in geometry
 
-::: {.remark title="Role in Enriques moduli"}
+::: {.proposition #prop:enriques-numerical-lattice title="The numerical lattice of an Enriques surface"}
 
-For an Enriques surface $Z$ the second integral cohomology $H^2(Z,\bZ)$ has a torsion summand,
+Let $Z$ be a complex Enriques surface.
+Then
 $$
-\NS(Z)\cong H^2(Z;\ZZ)\cong\ZZ^{10}\oplus\ZZ/2\ZZ,
+\Num(Z) = \NS(Z)/\mathrm{Tors} = \NS(Z)/(K_Z) \cong U\oplus E_8 = E_{10}
+,
 $$
-and the intersection pairing endows the free part $H^2(Z;\ZZ)_f$ with the structure of an even unimodular lattice of signature $(1,9)$.
-By @def:enriques-lattice there is an isometry
-$$
-H^2(Z;\ZZ)_f\iso E_{10},
-$$
-and a **marking** of $Z$ is a choice of such an isometry [@CDL25].
-The lattice $E_{10}$ is therefore the numerical lattice of an Enriques surface.
-:::
+the Enriques lattice of @def:enriques-lattice, which is even and unimodular of rank $10$ and signature $(1,9)$.
+The first Chern class gives an isometry $\Num(Z)\cong H^2(Z;\ZZ)/\mathrm{Tors}$ [@CDL25, Prop. 1.5.1 and its proof].
+A **marking** of $Z$ is an isomorphism $\Num(Z)\to E_{10}$ [@CDL25, Def. 5.3.5].
 
-::: {.remark title="The Enriques period lattice"}
-
-The corresponding twist is $E_{10}(2)=U(2)\oplus E_8(2)$, whose $2$-elementary invariants are computed in the doubled-Enriques-lattice proposition (@prop:doubled-enriques-lattice).
-This is the lattice denoted $\sen=E_{10}(2)$ in the lattice summary, and it recurs in the Coble tables as the base summand appearing alongside $U(2)$ and the root lattices; compare [the Coble lattice table](#sec-coble-lattice-table).
-:::
-
-## Degree $2d$ K3 periods
-
-::: {.remark}
-
-A primitive degree-$2d$ polarization class $h\in\lkt$ has orthogonal complement
-$$
-h^{\perp\lkt}\cong L_{\Kthree,2d}
-$$
-by @prop:degree-2d-k3-complement.
-Thus the lattice $L_{\Kthree,2d}$ is the primitive period lattice for degree-$2d$ polarized K3 surfaces; its Hodge-theoretic use is developed in [K3 periods and monodromy](#sec-k3-periods-monodromy).
-:::
-
-## Coble instances of the $2$-elementary building blocks
-
-::: {.remark}
-
-The Coble lattices of [the Coble lattice table](#sec-coble-lattice-table) are instances of @thm:two-elementary-hyperbolic-decomposition.
-For example, the table contains
-$$
-E_8(2)\oplus U\oplus A_1^{\oplus2}
-$$
-at $n=2$ and
-$$
-E_8\oplus D_8\oplus U(2)
-$$
-at $n=8$.
-These are applications of the general $2$-elementary decomposition, not additional definitions of the underlying lattices.
 :::

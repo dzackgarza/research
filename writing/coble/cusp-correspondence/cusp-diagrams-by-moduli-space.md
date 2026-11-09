@@ -1,11 +1,8 @@
 # Cusp diagrams of the Enriques, Coble and Sterk moduli spaces {#sec-cusp-diagrams-by-moduli-space}
 
-The mirror move algorithm of @sec-mirror-moves is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fentwo$.
-Each section records the cusp diagram, the Coxeter diagrams of its 0-cusps, and the maximal parabolic subdiagrams that determine the adjacent 1-cusps.
-
 ## The Enriques moduli space
 
-We recall from [@AEGS25] the cusp diagram for $\fen$, the moduli space of unpolarized Enriques surfaces, in @fig-enriques-cusps and the corresponding Coxeter diagrams in @fig-enriques-coxeter-diagrams.
+@fig-enriques-cusps is the cusp diagram of the moduli space $\fen$ of unpolarized Enriques surfaces [@AEGS25], and @fig-enriques-coxeter-diagrams gives the corresponding Coxeter diagrams.
 
 ::: {#fig-enriques-cusps .figure}
 \input{tikz/fig_Cusp_Diagram_En.tex}
@@ -13,7 +10,7 @@ We recall from [@AEGS25] the cusp diagram for $\fen$, the moduli space of unpola
 Cusp diagram for $\fen = F_{\EnriquesInvariants}$ corresponding to $\ten = U \oplus E_{10}(2)$.
 :::
 
-This can be recovered using the mirror move algorithm:
+The mirror moves of @sec-mirror-moves in @fig-mirror-moves-enriques-simplified give the same diagram.
 
 ::: {#fig-mirror-moves-enriques-simplified .figure}
 \begin{tikzpicture}
@@ -45,7 +42,7 @@ The two maximal parabolics $\wE_8$, $\wB_8$ in $(10, 8, 0)_1$ corresponding to t
 
 ## The Coble moduli space
 
-Applying the same mirror moves, we obtain the cusp diagram for $\fco$, the moduli space of unpolarized Coble surfaces, shown in @fig-coble-cusps.
+The same mirror moves give the cusp diagram of the moduli space $\fco$ of unpolarized Coble surfaces in @fig-coble-cusps.
 
 ::: {#fig-coble-cusps .figure}
 \input{tikz/fig_Cusp_Diagram_Co.tex}
@@ -53,8 +50,8 @@ Applying the same mirror moves, we obtain the cusp diagram for $\fco$, the modul
 Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \generators{2} \oplus E_{10}(2)$.
 :::
 
-The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS25], and shown in @fig-coble-coxeter-diagrams.
-Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in @fig-coble-cusp-9-9-1-parabolics.
+@fig-coble-coxeter-diagrams gives the corresponding Coxeter diagram [@AN06; @AEGS25].
+The 1-cusps are determined by the maximal parabolic subdiagrams of $(9, 9, 1)_1$, in @fig-coble-cusp-9-9-1-parabolics.
 
 ::: {#fig-coble-coxeter-diagrams .figure}
 \begin{tikzpicture}
@@ -70,17 +67,15 @@ The Coxeter diagram $G_{(9,9,1)_1} = G_{\generators{2} \oplus E_8(2)}$.
 The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, corresponding to single one-cusp $(7, 7, 1)_0$ in $\fco$.
 :::
 
-We note that $G_{(9, 9, 1)_1}$ has precisely one maximal parabolic subdiagram of the form $\tilde B_7(2)$, verifying that the $0$-cusp represented by $v_0$ is incident to exactly one orbit of adjacent $1$-cusps.
-The count is read off the Coxeter diagram of $(9,9,1)_1$, so it is an $\Orth^+(T_\Co)$-statement; for $\Gamma_\Co$ the $0$-cusp data is finer: it has $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
-We also note the correspondence between the maximal parabolic $\tilde B_8(2)$ in $\fen$, and $\tilde B_7(2)$ in $\fco$, and furthermore that $G_{(10, 8, 0)_1}$ can be obtained from $G_{(9, 9, 1)_1}$ by inserting one new node.
-This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_1}$ into the $\tilde B_8(2)$ subdiagram of $G_{(10, 8, 0)_1}$.
+::: {.example #ex:coble-cusp-9-9-1-parabolic title="The 1-cusps adjacent to the 0-cusp of $\fco$"}
+
+The Coxeter diagram $G_{(9, 9, 1)_1}$ has exactly one maximal parabolic subdiagram, of type $\tilde B_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
+So, for the group $\Orth^+(T_\Co)$, the $0$-cusp represented by $v_0$ is incident to exactly one orbit of adjacent $1$-cusps.
+For the group $\Gamma_\Co$, the primitive isotropic lines of $T_\Co$ form $527$ orbits, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
+
+:::
 
 ## Sterk's moduli space and the K3 cusps
-
-::: {.remark}
-
-We recall Sterk's cusp diagram for $\fentwo$:
-:::
 
 ::: {#fig-sterk-cusp-diagram .figure}
 \begin{tikzpicture}
@@ -90,8 +85,9 @@ We recall Sterk's cusp diagram for $\fentwo$:
 Sterk's cusp diagram for $\fentwo$.
 :::
 
-::: {.remark}
-We have the following divisibilities in various lattices:
+::: {.example #ex:sterk-isotropic-divisibilities title="Divisibilities of the Sterk isotropic vectors"}
+
+The isotropic vectors that represent the cusps of @fig-sterk-cusp-diagram have the following divisibilities in $\ten$ and in $T_{\Kthree}$.
 
 | Sterk Cusp | Vector | $\mathrm{div}_{\ten}$ | $\mathrm{div}_{T_{\Kthree}}$ |
 | :--------- | :------------------------------- | :--------------------- | :------------------------------- |
@@ -102,11 +98,6 @@ We have the following divisibilities in various lattices:
 | 5 | $2e + 2f + \overline{\alpha}_1$ | 2 | 1 |
 
 : Isotropic vectors in $\fentwo$ and their divisibilities.
-:::
-
-::: {.remark}
-
-We recall the cusp diagram for $\fttz$:
 :::
 
 ::: {#fig-220-cusp-diagram .figure}

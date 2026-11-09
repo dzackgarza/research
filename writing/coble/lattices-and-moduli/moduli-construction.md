@@ -27,10 +27,7 @@ The stable Coble group $\Gamma_\Co = \Orth^+(T_\Co)^*$ is the kernel of the acti
 
 ::: {.question}
 What is an explicit description of $\Gamma_{\Co, 2}$?
-Degree-$2$ polarized Coble surfaces do not appear in the literature cited here, which treats Coble surfaces with $n$ boundary components.
 :::
-
-We note, as in [@DK13], that $T_{\Co} \cong v^{\perp \ten}$ for some $v^2=-2$, which implies that there is a birational isomorphism $\fco \birationaliso \mch_{-2}/\Orth^+(\ten)^*$.
 
 ```{.tikz}
 %%| filename: moduli-tower
@@ -56,37 +53,45 @@ The map $F_{\Co,2}\to \fco$ marked $?$ is undetermined, since $\Gamma_{\Co,2}$ h
 
 ## The GIT construction
 
-::: {.remark title="GIT construction"}
+::: {.proposition #prop:coble-moduli-git title="The GIT construction of the Coble moduli space"}
 
-Following [@DK13], by varying the coefficients of $p_i$ in the planar blowup construction, one can construct $\fco$ as a locally closed subvariety of $(\PP^2)^{10}/\PGL_3$, which is of dimension
-
+1. The moduli space $\mcm_\Co$ of blowups of $\PP^2$ at the ten nodes of an irreducible plane sextic is a locally closed subvariety of the GIT quotient of the variety $(\PP^2)^{10}$ of $10$-tuples of points in $\PP^2$ by $\PGL_3$ [@DK13, §3].
+2. A general point of $(\PP^2)^{10}$ has trivial stabilizer in $\PGL_3$, so its $\PGL_3$-orbit has dimension $\dim\PGL_3 = 3^2-1 = 8$ and codimension
 $$
-\dim (\PP^2)^{10}/\PGL_3 = \dim (\PP^2)^{10} - \dim \PGL_3 = 2\cdot 10 - (3^2-1) = 12
+\dim (\PP^2)^{10} - \dim \PGL_3 = 2\cdot 10 - 8 = 12
 .
 $$
+3. The set of ten nodes of an irreducible plane sextic is subject to three conditions and contains nine absolute constants [@Cob19, §2, (10)].
 
-A Coble surface has $9$ moduli, so the configuration of $10$ points satisfies $3$ conditions: the *discriminant conditions* of [@Cob19 §2, Prop. (10)].
-Letting $D$ be the corresponding discriminant locus, we can identify $\fco$ as an open subset of $\qty{ (\PP^2)^{10} \sm D }/\PGL_3$ at the level of coarse moduli spaces.
+:::
+
+::: {.proof}
+
+For (2), a general $10$-tuple contains four points $q_1, \ldots, q_4$, no three of them on a line.
+Choose coordinates with $q_1 = [1:0:0]$, $q_2 = [0:1:0]$, $q_3 = [0:0:1]$ and $q_4 = [1:1:1]$.
+A matrix $g\in\GL_3$ that fixes the lines spanned by the first three standard basis vectors is diagonal.
+If $g$ also fixes the line spanned by $(1,1,1)$, its diagonal entries are equal, so $g$ is a scalar and its class in $\PGL_3$ is the identity.
+So the stabilizer is trivial, and the orbit map $\PGL_3\to(\PP^2)^{10}$ has image of dimension $\dim\PGL_3$.
+
 :::
 
 ## The Horikawa model
 
-::: {.remark title="Horikawa's construction"}
+::: {.proposition #prop:horikawa-model title="The Horikawa model"}
 
-Alternatively, Horikawa [@Hor77] and more recently [@AEGS25] consider the following: let $Y\definedas \PP^1\times \PP^1$ and define an involution $\tau(x,y) \definedas (-x,-y)$.
-Letting $B\in\abs{-2K_Y}^\tau$ be a $\tau$-invariant anti-bicanonical curve in $Y$, if $B$ passes through a $\tau$-fixed point $x,y\in \theset{0, \pm \infty}$, then the corresponding double branched cover branched over $B$ is a nodal K3 surface $X$ with $A_1$ singularities and covering involution $\idp$ such that $Y = X/\generators{\idp}$.
-Letting $\ien$ be a lift of $\tau$, the quotient $Z\definedas X/\generators{\ien}$ is a Coble surface.
-The case in which $B$ does not pass through a $\tau$-invariant point yields an Enriques surface $Z$, and an analysis of the corresponding moduli is carried out in [@AEGS25].
+Let $Y = \PP^1\times\PP^1$ with the involution $\tau(x,y) = (-x,-y)$, and let $B\in\abs{-2K_Y}$ be a $\tau$-invariant divisor with at worst ADE singularities that does not pass through the four points with $x, y\in\theset{0,\infty}$ fixed by $\tau$.
 
-It is well-known that there consequently exists a Coble surface $S$ and a blowdown $S\to X/\iota$ along the strict transform of $B$.
-In this way, one realizes the moduli space $\fco$ of unpolarized Coble surfaces as a divisor in $\fen$, the 10-dimensional moduli space of unpolarized Enriques surfaces.
+1. The double cover $\pi\colon X\to Y$ branched in $B$ is a K3 surface with a del Pezzo involution $\idp$ such that $Y = X/\idp$. The involution $\tau$ lifts to a basepoint-free involution $\ien$ of $X$ that commutes with $\idp$, and $Z = X/\ien$ is an Enriques surface [@AEGS25, §2.1, p. 584].
+2. Certain mildly singular $\tau$-invariant equations $f(x,y)$ of bidegree $(4,4)$ that vanish at a torus-fixed point correspond to Coble surfaces, which are $\ZZ/2$ quotients of nodal K3 surfaces [@AEGS25, §2.1, p. 585; @Hor77].
+3. There is a unique $(-2)$-vector $\alpha\in\ten$ modulo $\Orth(\ten)$. The divisor $\Delta = \alpha^\perp\iscontainedin\bD(\ten)/\Orth(\ten)$ parametrizes quotients of nodal K3 surfaces by an involution that fixes a node. These are rational Coble surfaces with a $\tfrac14(1,1)$ singularity [@AEGS25, §2.3, p. 587].
+
 :::
 
 ## Period domains
 
 By passing to the K3 cover, one can embed $\fco$ into an arithmetic quotient of a 9-dimensional Hermitian symmetric domain of type $\rm{IV}$.
 Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
-We recall that for any primitively embedded lattice $S\injects \lkt$, letting $T \definedas S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \definedas D_T/\Orth^+(T)^*$$
+For any primitively embedded lattice $S\injects \lkt$, letting $T \definedas S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \definedas D_T/\Orth^+(T)^*$$
 
 where $\Orth^+(T)^* \definedas \Orth^+(T) \intersect \ker\qty{\Orth(T) \to \Orth(q_T)}$, the group $\Orth^+(T)$ is the index-two subgroup of $\Orth(T)$ preserving the component $D_T$, and $D_T$ is a connected component of
 
@@ -121,7 +126,7 @@ For the Coble lattices $\rank(S_\Co) = 11$, so $\dim_\CC D_{T_\Co} = 9$.
 
 ::: {.proof}
 
-The K3 lattice has rank $22$ and signature $(3,19)$. The embedding is primitive, which gives a splitting over $\mathbb{Q}$ and not over $\mathbb{Z}$: $M$ and $T$ span $\lkt\otimes\QQ$ orthogonally, so their ranks and signatures add, while $M\oplus T$ has index $|\det M| = |\det T|$ in $\lkt$ and the integral statement is the gluing $A_M\cong A_T$ rather than a direct sum (the same point as in @sec-enriques-coble-correspondence, where the corresponding inclusion for $T_\Co\subset\ten$ is treated). Orthogonal decomposition over $\mathbb{Z}$ needs the embedded form to be perfect (@thm:orthogonal-decomposition), which $M = S_\Co$ is not: its determinant is $2^{11}$. The formal counterpart of that statement is `formalization/coble-enriques/Splitting.lean`'s `splits_of_unimodular`: unimodularity of the restricted Gram is exactly the hypothesis, and primitivity alone is not.
+The K3 lattice has rank $22$ and signature $(3,19)$. The embedding is primitive, which gives a splitting over $\mathbb{Q}$ and not over $\mathbb{Z}$: $M$ and $T$ span $\lkt\otimes\QQ$ orthogonally, so their ranks and signatures add, while $M\oplus T$ has index $|\det M| = |\det T|$ in $\lkt$ and the integral statement is the gluing $A_M\cong A_T$ rather than a direct sum. Orthogonal decomposition over $\mathbb{Z}$ needs the embedded form to be perfect (@thm:orthogonal-decomposition), which $M = S_\Co$ is not: its determinant is $2^{11}$.
 Ranks add, so $\rank(T)=22-\rank(M)$.
 Signatures add too, by @def:signature applied to the orthogonal sum of the two real forms, so if $M$ has signature $(1,\rank(M)-1)$ then $T$ has signature $(3-1,\,19-(\rank(M)-1))=(2,\,20-\rank(M))$.
 The first index is $2$, so $T$ is of type IV in the sense of @prop:type-iv-dimension, whose dimension for a type IV lattice of signature $(2,m)$ is $m$; with $m=20-\rank(M)$ that is the displayed dimension.
@@ -155,28 +160,39 @@ The period domain $D_{\ten}$ together with the hyperplanes $v_i^{\perp\ten}$ cut
 The Coble surfaces are precisely the periods lying on the hyperplanes of $\mch_{-2}$.
 :::
 
-Alternatively, one can construct the period domain for $\fco$ directly.
-Following [@DK13 Prop. 3.1] almost verbatim, let $S$ be the blowup of $\PP^2$ along 10 $A_1$ singularities of a rational sextic curve $C$.
-The double branched cover $f:X\to S$ branched along the proper transform of $C$ contains the pullback of ten exceptional classes $E_1,\cdots, E_{10}$ over the ten $A_1$ singularities, as well as $E_0$, the pullback of a hyperplane class.
-Since $E_i^2 = -2$ for $1\leq i \leq 10$, and one can show that $E_0^2 = 2$, the $E_i$ generate a lattice isometric to
+::: {.proposition #prop:coble-period-domain title="The period domain of Coble surfaces"}
 
+Let $C\iscontainedin\PP^2$ be an irreducible plane sextic with ten nodes $p_1, \ldots, p_{10}$, let $S$ be the blowup of $\PP^2$ at $p_1, \ldots, p_{10}$, and let $X$ be the double cover of $S$ branched along the proper transform of $C$.
+Let $E_0$ be the pullback to $X$ of a line in $\PP^2$, and let $E_1, \ldots, E_{10}$ be the inverse images in $X$ of the exceptional curves over $p_1, \ldots, p_{10}$.
+
+1. $X$ is a K3 surface, and the classes $e_0, e_1, \ldots, e_{10}$ of $E_0, E_1, \ldots, E_{10}$ span a sublattice of $\Pic(X)$ isometric to
 $$
 S_\Co \definedas \generators{2}\oplus \generators{-2}^{10} = \latI_{1, 10}(2) = (11, 11, 1)_1 \cong \generators{-2} \oplus E_{10}(2)
 .
 $$
-
-This follows from the fact that $S_{\Co}$ is a 2-elementary lattice of signature $(1, 10)$ with discriminant group $(\bZ/2\bZ)^{11}$ and thus uniquely determined up to isometry by its invariants $(r,a,\delta)$.
-Similarly, its orthogonal complement $T_{\Co}$ in the K3 lattice $\lkt$ is a 2-elementary lattice of signature $(2, 9)$ and satisfies $q_{S_{\Co}} = -q_{T_{\Co}}$.
-The isomorphism class of $q_{T_{\Co}}$ determines $T_\Co$, and thus one has
-
+The lattice $S_\Co$ is $2$-elementary of signature $(1, 10)$ with $A_{S_\Co}\cong(\bZ/2\bZ)^{11}$ [@DK13, §3].
+2. The orthogonal complement of this sublattice in $H^2(X,\ZZ)\cong\lkt$ is a $2$-elementary lattice of signature $(2, 9)$ with discriminant form $-q_{S_\Co}$ [@DK13, §3; @Nik80, Cor. 1.6.2]. Its isomorphism class is determined by $-q_{S_\Co}$ [@DK13, §3; @Nik80, Thm. 3.6.2], so
 $$
 T_\Co \definedas S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \generators{2} \oplus E_{10}(2)
 .
 $$
+3. The quotient $\bD(T_\Co)/\Orth(T_\Co)$ is a normal quasi-projective variety of dimension $9$. By the Torelli theorem for algebraic K3 surfaces [@PS71], the moduli space $\mcm_\Co$ of @prop:coble-moduli-git is isomorphic to an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ [@DK13, §3, Prop. 3.2].
 
-Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@AE22 Thm. 5.10] applied to $S_\Co =(11, 11, 1)_1$.
-We obtain $\fco$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\Co)^*$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71].
-We note that [@DK13] shows that $\fco$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
+:::
+
+::: {.proposition #prop:coble-moduli-heegner-divisor title="The Coble moduli space as a Heegner divisor"}
+
+The lattice $T_\Co\cong\generators{2}\oplus E_{10}(2)$ is isometric to the orthogonal complement of a $(-2)$-vector in $\ten = U\oplus E_{10}(2)$.
+The quotient of the $(-2)$-Heegner divisor $\mch_{-2}$ in $\bD(\ten)$ by $\Orth(\ten)$ is birationally isomorphic to $\mcm_\Co$ [@DK13, §3].
+
+:::
+
+::: {.theorem #thm:coble-moduli-rational title="Rationality of the Coble moduli space"}
+
+Let $\mcm'_{5,\cusp}$ be the moduli space of plane quintics $C$ with a cusp $p$ such that the tangent line $L$ of $C$ at $p$ is tangent to $C$ at a nonsingular point $q$ of $C$.
+Then $\mcm_\Co$ is birationally isomorphic to $\mcm'_{5,\cusp}$ [@DK13, §4, Thm. 6.3], and $\mcm_\Co$ is a rational variety [@DK13, Thm. 6.4].
+
+:::
 
 ## The sextic moduli construction
 
@@ -213,11 +229,17 @@ With $H^2 = 2$ and $L = A_1^{\oplus 10} = \generators{-2}^{\oplus 10}$ this is $
 Taking orthogonal complements in $\lkt$ gives $Q = T_\Co$, and the polarized-K3 dimension corollary (@cor:m-polarized-k3-dimension) gives the dimension.
 :::
 
-::: {.remark title="The involution acts trivially on the root lattice"}
+::: {.proposition #prop:sextic-cover-involution-on-root-lattice title="The covering involution on the root lattice"}
 
-For a general singular type the covering involution $\iota$ acts on $L$ by $-w_0(L)$, where $w_0$ is the longest element of $W(L)$ [@YZZ25 §5.2], and this action folds the root lattice.
-For $L$ of type $A_1$ one has $-w_0 = \id$, so in the type $10A_1$ the involution fixes $L$ pointwise and no folding occurs; the sublattice of $H^2(S;\ZZ)$ spanned by the exceptional classes of $S\to\PP^2$ then becomes $L$ after scaling by $2$ [@YZZ25 §5.3].
-That is the same twist by $2$ recorded geometrically in the K3-cover twist remark (@rmk:k3-cover-twist): the Coble Picard lattice is the blowup lattice $\latI_{1,10}$ scaled by $2$, with no folding correction.
+In the setting of @not:sextic-singular-type, let $\iota$ be the covering involution of $X$, let $p\colon X\to S = X/\iota$ be the quotient map, and let $f\colon S\to\PP^2$ be the minimal blowup such that the strict transform of $Z$ is smooth.
+Then $H^2(S,\ZZ)\cong\generators{f^*h}\oplus\Lambda_S$, where $h$ is the class of a line and $\Lambda_S$ is the lattice that arises from the blowup $f$ [@YZZ25, §5.2].
+Let $L^\iota$ be the sublattice of $L$ fixed by $\iota$.
+
+1. $\iota = -w_0(L)$ as automorphisms of $L$, where $w_0(L)$ is the longest element of $W(L)$ with respect to $\Delta$ [@YZZ25, §5.2].
+2. The map $p^*\colon H^2(S,\ZZ)(2)\to H^2(X,\ZZ)$ is an injective morphism of lattices that maps $f^*h$ to $H$, and it induces a finite-index extension $\Lambda_S(2)\injects L^\iota$ [@YZZ25, §5.3].
+3. $L^\iota/\Lambda_S(2)\cong(\ZZ/2)^m$, where $m$ is the number of exceptional curves of $S$ that lie in the branch locus of $p$ [@YZZ25, §5.3].
+4. If $Z$ has only singularities of types $A_1$, $D_{2n}$ with $n\geq 2$, $E_7$ and $E_8$, then $L^\iota = L$. If $Z$ has only singularities of type $A_1$, then $\Lambda_S(2)\cong L$ as lattices [@YZZ25, §5.3].
+
 :::
 
 ::: {.theorem #thm:occult-period-map-sextics title="The occult period map and its image"}
@@ -234,7 +256,6 @@ $$
 $$
 is an algebraic open embedding with image $\Gamma_T\backslash\bigl(D(Q) - \mch_T\bigr)$, where $\mch_T$ is the arrangement of hyperplanes $r^{\perp Q}$ for roots $r$ orthogonal to $H$ and not lying in $L$.
 When $T$ is a nodal type, $\per_T$ is moreover an isomorphism of orbifolds onto $P\Gamma_T\backslash(D(Q) - \mch_T)$ [@YZZ25 §1, §3.2, §3.3, §6.2].
-The description of the image restates, at the level of moduli spaces, the equisingular deformation theory of Urabe [@Ura88].
 :::
 
 ::: {.proof}
@@ -263,50 +284,38 @@ between the GIT compactification of $\mcm_T$ and the Looijenga compactification 
 This is [@YZZ25 §4.1, §4.2; @Sha80; @Loo02].
 :::
 
-::: {.remark title="The arithmetic group as a normalizer"}
+::: {.proposition #prop:sextic-group-as-normalizer title="The arithmetic group as a normalizer"}
 
-$\Gamma_T$ admits a second description: it is the restriction to $Q$ of the normalizer of the Weyl group $W(L)$ inside $\Gamma_1$ [@YZZ25 §4.2].
-For $T = 10A_1$ this reads
+Let $\Gamma_W$ be the normalizer of the Weyl group $W = W(L)$ in the group $\Gamma_1$ of @thm:git-equals-looijenga, transported to $H^2(X;\ZZ)$ by a marking.
+Then $\Gamma_T$ is the restriction $\Gamma_W|_Q$ of $\Gamma_W$ to $Q$ [@YZZ25, §4.2].
+For $T = 10A_1$, $L = \bigoplus_{i=1}^{10}\ZZ\alpha_i$ with $\alpha_i^2 = -2$, and $W(L)$ is generated by the reflections $s_{\alpha_i}$, each of which acts by $-1$ on $\ZZ\alpha_i$ and fixes the other summands, so
 $$
 W(L) = \theset{\pm 1}^{10},
 \qquad
 \Gamma_{10A_1} = \Gamma_W|_{Q},
 \qquad
 \Gamma_W = N_{\Gamma_1}\bigl(\theset{\pm1}^{10}\bigr)
-,
+.
 $$
-and the normalizer contains the permutations of the ten nodes, so the induced action on $A_P\cong(\ZZ/2)^{11}$ is through $\mfS_{10}$.
-This is a description of an arithmetic group acting on $D(T_\Co)$ obtained from the ambient degree-$2$ K3 group rather than from the Enriques side, and it is therefore independent of the description of $\Gamma_\Co$ as a stabilizer and centralizer inside $\Orth(\ten)$ recorded in the Open Problems section.
+
 :::
 
 ::: {.question #qst:sextic-group-comparison title="Which quotient of $D(T_\Co)$ is $\fco$?"}
 
-$\fco$ is defined above as an open subset of $D(T_\Co)/\Orth^+(T_\Co)^*$, a quotient by the stable orthogonal group, whereas $\mcm_{10A_1}$ is a quotient by $\Gamma_{10A_1}$, which contains $\Orth^+(T_\Co)^*$ and may be strictly larger.
-Identifying the two constructions of the Coble moduli space therefore requires the comparison
+$\fco$ is the quotient of $D(T_\Co)$ by the stable orthogonal group $\Orth^+(T_\Co)^*$, and $\mcm_\Co$ is an open subset of the quotient of $D(T_\Co)$ by $\Orth(T_\Co)$ (@prop:coble-period-domain).
+The moduli space $\mcm_{10A_1}$ is a quotient of an open subset of $D(T_\Co)$ by $\Gamma_{10A_1}$, which contains $\Orth^+(T_\Co)^*$ (@thm:occult-period-map-sextics).
+In the chain
 $$
 \Orth^+(T_\Co)^* \;\iscontainedin\; \Gamma_{10A_1} \;\iscontainedin\; \Orth(T_\Co)
 ,
 $$
-together with the comparison of both against the polarized group $\Gamma_{\Co,2}$.
-Until the first inclusion is shown to be an equality, $\mcm_{10A_1}$ and $\fco$ are two arithmetic quotients of the same period domain by two different groups, not the same space under two names.
+is either inclusion an equality?
+How do these groups compare with the polarized group $\Gamma_{\Co,2}$?
 :::
 
-::: {.remark title="The other singular types"}
+::: {.proposition #prop:sextic-root-lattice-counts title="Root lattices of plane sextics"}
 
-The same theorems hold for every singular type of plane sextic with simple singularities, of which the root lattices have been classified by Urabe [@Ura88] and Yang [@Yan96]: the maximal rank is $19$, and the number of root lattices of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$ respectively [@YZZ25 §1].
-Each such type therefore determines both an arithmetic model of its moduli space and a Looijenga model of its GIT compactification.
-The Coble families with $n$ boundary components are indexed by the number of irreducible components of the branch sextic ([the Coble lattice table](#sec-coble-lattice-table)) rather than by its singular type.
-:::
+The root lattices $R$ that arise from a singular type of plane sextic with simple singularities have been classified [@Ura88; @Yan96].
+The maximal rank of such an $R$ is $19$, and the number of such $R$ of rank $19$, $18$, $17$, $16$ is $519$, $987$, $975$, $782$ respectively [@YZZ25, §1; @Yan96, Thm. 2.1].
 
-## KSBA spaces
-
-::: {.remark}
-
-By @lem:locally_closed_embedding_BB, there are morphisms $\overline{\fco}^{\bb} \to \overline{\fen}^{\bb}$ and $\overline{\fco}^{\bb} \to \overline{\fttz}^{\bb}$ which induce correspondences between the boundary cusps.
-:::
-
-::: {.remark}
-
-We set up the moduli space of KSBA stable pairs for Coble surfaces, possibly using the ramification divisor of the K3 involution (which is in this case not fixed-point free).
-The above embeddings should allow us to take closures of stable pairs in already existing moduli spaces.
 :::

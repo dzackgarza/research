@@ -1,24 +1,23 @@
 # Formulae
 
-::: {.remark}
+::: {.proposition #prop:canonical-class-of-blowup title="Canonical class of a blowup"}
 
-Let $f: Y = \Bl_V X \birationaliso X$ be the blowup of $X$ along a subvariety $V$.
-Then one has the adjunction formula
-
+Let $X$ be a nonsingular variety, let $V\iscontainedin X$ be a nonsingular subvariety of codimension $r\geq 2$, let $f\colon Y = \Bl_V X\to X$ be the blowup of $X$ along $V$, and let $E = f^{-1}(V)$.
+Then
 $$
-K_Y = f^* K_X + (\codim_V(X) - 1)E
-    .
+K_Y = f^* K_X + (r - 1)E
 $$
-
-Note that if $X$ is a surface and $V$ is a point, this recovers $$K_Y = f^* K_X + E.$$
+[@Har77, II Ex. 8.5(b)].
+If $X$ is a nonsingular projective surface and $V$ is a point, then $K_Y = f^*K_X + E$ and $K_Y^2 = K_X^2 - 1$ [@Har77, V.3.3].
 :::
 
-::: {.remark}
+::: {.proposition #prop:ramification-formula-curves title="Canonical divisors under a finite separable morphism of curves"}
 
-Let $f: Y\to X$ be a branched cover with branch locus $B$ and ramification locus $R$.
-Then
-
+Let $k$ be an algebraically closed field, and let $f\colon Y\to X$ be a finite separable morphism of complete nonsingular curves over $k$.
+The **ramification divisor** of $f$ is
 $$
-K_Y = f^* K_X + R, \qquad R \definedas \Sum_{p\in Y} \mathrm{len}\qty{ \Omega_{Y/X, p}} [p],
+R \definedas \Sum_{p\in Y} \mathrm{len}\qty{\Omega_{Y/X, p}}\, p
+.
 $$
+Then $K_Y \sim f^* K_X + R$ [@Har77, IV.2.3 and the definition before it].
 :::

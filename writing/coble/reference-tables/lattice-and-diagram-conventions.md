@@ -14,7 +14,7 @@ The length $\ell(L)$ is defined in [Discriminant forms and genus](#sec-discrimin
 
 ## Length table
 
-$\ell(L)$ is the minimal number of generators of the discriminant group $A_L$.
+$\ell(L)$ is the minimal cardinality of a set of group generators of the discriminant group $A_L$.
 
 | $L$ | $A_L$ | $\ell(L)$ |
 | --- | --- | --- |
@@ -34,11 +34,6 @@ $\ell(L)$ is the minimal number of generators of the discriminant group $A_L$.
 | $V(2)$ | $C_2\times C_6$ | 2 |
 | $L_{2d}$ | $C_{2d}$ | 1 |
 | $L_{K3}$ | $0$ | 0 |
-
-::: {.remark title="The row that matters here"}
-
-$A_{E_{10}(2)} = C_2^{10}$ with $\ell = 10$ is the datum behind $A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \generators{2}\oplus E_{10}(2)$ contributes one further $C_2$.
-:::
 
 ## Coxeter-Vinberg diagram conventions
 
@@ -134,11 +129,5 @@ $$
 \#\Orth(A_{E_8(2)}) = 2^{13}\cdot3^5\cdot5^2\cdot7 .
 $$
 The covering $F_{\En,2}\to F_{K3,\En}$ is finite of degree $2^7\cdot17\cdot31$.
-
-::: {.remark title="Use in the Coble problem"}
-
-$A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \generators{2}\oplus E_{10}(2)$ adds one $C_2$ to $A_{E_{10}(2)} = C_2^{10}$.
-The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $\Gamma_{\Co}$-orbit problem to a finite computation in $A_{T_{\Co}}$, which is the method recorded in [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain). The group orders bound the index computations in that reduction.
-:::
 
 Related: [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [CoxIter results for the Sterk cusps and the 0-cusp lattices](#sec-coxiter-results-for-cusp-lattices), [Candidate isotropic vectors in $T_{\Co}$](#sec-coble-lattice-isotropic-candidates).
