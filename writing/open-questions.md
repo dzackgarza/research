@@ -9,13 +9,6 @@ tags:
 
 # Open questions and conjectures {#sec-open-questions}
 
-::: {.remark title="Scope"}
-
-This page lists the questions, conjectures and required theorems of this book whose answer is not known, each with the block or section that states it.
-Items stated in the dissertation are cited by their path under `writing/dissertation/`.
-The last section lists the questions that a finite derivation or computation decides.
-:::
-
 ## Category theory
 
 | Unknown | Stated in |

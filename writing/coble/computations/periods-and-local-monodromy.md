@@ -15,7 +15,6 @@ notes: |-
 
 
 @def:kulikov-types classifies a degeneration by the nilpotency index of $N = \log T$, and @thm:lmhs reads the boundary stratum off the same operator.
-This page records how $T$ and $N$ are computed for an explicit one-parameter family, by two constructions with different hypotheses and different failure modes.
 
 ## Periods and the period map
 

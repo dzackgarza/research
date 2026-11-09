@@ -1,14 +1,5 @@
 # The classifying map and the Enriques involution
 
-::: {.remark title="Orientation"}
-
-The results collected here are the intended culmination of the compactification program for $\fentwo$: the classifying morphism $\phi$ from the normalized Noether--Lefschetz closure $\normalize{B}$ to the KSBA compactification of the polarized moduli space should be shown to be an isomorphism, so that the geometric KSBA limits are identified with the explicitly constructible semitoroidal boundary.
-The three ingredients are a *global extension of the Enriques involution* over $B$, a *finiteness statement* for $\phi$, and the *application of Zariski's Main Theorem* that combines them.
-
-They are stated conjecturally throughout, and they are exactly parallel to the open comparison of the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison). The period-domain counterpart of the finiteness step is the normalization theorem (@thm:normalization), which is proved; what is open here is the KSBA-side statement for $\phi$.
-Zariski's Main Theorem itself is a classical, proven theorem; only its application to $\phi$ is conjectural here.
-:::
-
 ::: {.remark}
 The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har77].
 :::

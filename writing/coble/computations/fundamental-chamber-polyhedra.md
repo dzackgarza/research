@@ -14,7 +14,6 @@ notes: |-
 
 
 @thm:coxeter-type-and-geometry presents the fundamental chamber of a hyperbolic Coxeter system by its half-spaces inside $\HH^{n}$, and @thm:coxeter-polytope-volume decides its volume from its ordinary and ideal vertices.
-This page records the same object as a polyhedral cone in $L_\RR$, in the coordinates a polyhedral solver takes, and the form the volume criterion assumes when the input is that cone.
 
 ## The half-space presentation in coordinates
 
