@@ -48,7 +48,7 @@ To this end, we prove the following:
 ::: {#fig-baily-borel-schematic .figure}
 \input{tikz/baily_borel_schematic.tikz}
 
-Schematic of a Baily--Borel compactification: the shaded arithmetic quotient together with the boundary strata adjoined at its cusps.
+The Baily--Borel compactification of $F_{2d} = D_{L_{2d}}/\Gamma_{L_{2d}}$.
 :::
 
 ::: {#fig-coxeter-fan-cone .figure}
