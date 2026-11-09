@@ -103,10 +103,8 @@ So a relation between $\CM(S)$ and $S_\Co$ compares complements of different con
 
 Is $\CM(S)$ rather than $S_{\Co}$ the natural home for the action of $\Gamma_{\Co}$, and how are the two related?
 
-Neither the source nor this book answers this.
-The prerequisites are settled above: $\CM(S)$ has rank $11-n$ and signature $(1,10-n)$, the boundary configuration is primitive in $L$ but not in $\NS(S)$ for $n\geq 2$, and $\CM(S)\hookrightarrow L$ is primitive while $\CM(S)\hookrightarrow\NS(S)$ is not.
-What remains open is whether the group acting on $\CM(S)$ is the stable orthogonal group of $L$ or the subgroup induced from $\NS(S)$.
-What the rank and signature do not determine is the discriminant form of $\CM(S)$ along the boundary, and that is where the group action lives.
+In particular, is the group acting on $\CM(S)$ the stable orthogonal group of $L$ or the subgroup induced from $\NS(S)$?
+The rank $11-n$ and signature $(1,10-n)$ of $\CM(S)$ do not determine its discriminant form, on which that group depends.
 
 What can be said is why the question is not idle.
 $S_{\Co}\cong\generators{-2}\oplus E_{10}(2)$ is $2$-elementary, so $A_{S_{\Co}}=(\bZ/2)^{11}$ and the discriminant representation of @thm:two-elementary-surjectivity is surjective; the two mod-$2$ invariants $(r,a,\delta)$ that classify a $2$-elementary lattice are then the only handles on $\Orth(S_{\Co})$, and in the inert case $n_1=n_2=10$ they are the ones that take equal values.

@@ -26,7 +26,7 @@ $$
 \eta_5 = 2e+2f+\alpha
 $$
 of $\ten = U\oplus E_{10}(2)$, with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)). Each determines a rank-$10$ hyperbolic lattice $\eta_j^{\perp}/\eta_j$, and hence a copy of $\HH^9$ (@def:hyperbolic-model) on which reflection groups act.
-The isometry tests recorded with the computation give
+By [@Ste91 Lemma 4.3.4],
 $$
 \eta_1^{\perp}/\eta_1 \cong U(2)\oplus E_8(2) = E_{10}(2),
 \qquad
@@ -39,7 +39,6 @@ of two-elementary types $(10,10,0)$ and $(10,8,0)$ respectively.
 
 Sterk's published fundamental domains have $12, 10, 12, 11, 14$ walls, with the norm breakdowns $12\times(-4)$; $9\times(-4)$, $1\times(-2)$; $10\times(-4)$, $2\times(-2)$; $9\times(-4)$, $2\times(-2)$; and $10\times(-4)$, $4\times(-2)$ [@Ste91].
 Vinberg's algorithm run on the five quotient lattices returns $10$ roots for each, with $1$ ideal vertex for $\eta_1$ and $2$ for the others.
-A second, independent implementation returns $9$ roots for $\eta_1$ and $10$ for the others.
 :::
 
 | Cusp | Published walls | Vinberg walls | Ideal vertices |
@@ -49,8 +48,6 @@ A second, independent implementation returns $9$ roots for $\eta_1$ and $10$ for
 | 3 | 12 | 10 | 2 |
 | 4 | 11 | 10 | 2 |
 | 5 | 14 | 10 | 2 |
-
-The two computed root sets, their coordinates in the recorded basis of each rank-$10$ quotient, and Sterk's own hand-entered root sets in both the $\ten$ and $L_{20,2,0}$ models are recorded in the Sage initialization computation.
 
 ## The computed chambers are hyperbolic simplices
 
@@ -66,14 +63,7 @@ By @thm:coxeter-polytope-volume(1), a Coxeter polytope of finite volume in $\HH^
 Indeed a bounded $n$-dimensional polytope that is not a point has at least $n+1$ facets, since a vertex is the intersection of at least $n$ facets in a simple polytope and a bounded polytope has a vertex, or, equivalently, since with $k\leq n$ facets the polytope spans an affine subspace of dimension at most $k-1$.
 
 With $n=9$ this gives at least $10$ facets, that is at least $10$ walls.
-So an output of nine roots is not the correct set of walls of any finite-volume chamber in $\HH^9$: whatever reflection group those nine roots generate, the chamber they bound is not finite-volume, and the missing wall is a root the algorithm would have to find.
 By @thm:vinberg-algorithm a terminating run on a rank-$10$ hyperbolic lattice returns at least ten roots.
-:::
-
-::: {.remark title="Consequence for the two implementations"}
-
-Vinberg's algorithm terminates when the accepted walls bound a polyhedron of finite volume (@thm:vinberg-algorithm), so a terminating run on a rank-$10$ hyperbolic lattice returns at least $10$ roots.
-The nine-root output for $\eta_1$ therefore does not present a finite-volume chamber, and the ten-root output is the one to compare against.
 :::
 
 ::: {.observation #obs:chambers-are-simplices title="Exactly ten walls means a simplex"}
@@ -94,7 +84,7 @@ Wall count and ideal-vertex count agree in both cases.
 
 ::: {.remark title="The shape of the computed root sets"}
 
-In the recorded basis $\eps_1,\dots,\eps_{10}$ of $\eta_1^{\perp}/\eta_1$, the ten roots returned are
+Let $\eps_1,\eps_2$ be the isotropic basis of the summand $U(2)$ of $\eta_1^{\perp}/\eta_1\cong U(2)\oplus E_8(2)$, or of the summand $U$ of $\eta_2^{\perp}/\eta_2\cong U\oplus E_8(2)$, and let $\eps_{2+i} = \alpha_i$ for the simple roots $\alpha_1,\dots,\alpha_8$ of $E_8(2)$ in Bourbaki numbering. The ten roots returned for $\eta_1^{\perp}/\eta_1$ are
 $$
 -\eps_3,\ -\eps_4,\ \dots,\ -\eps_{10},
 \qquad
@@ -103,7 +93,8 @@ $$
 \eps_2 + 2\eps_3 + 3\eps_4 + 4\eps_5 + 6\eps_6 + 5\eps_7 + 4\eps_8 + 3\eps_9 + 2\eps_{10},
 $$
 and for $\eta_2^{\perp}/\eta_2$ the same list with the coefficient of $\eps_2$ in the last root equal to $2$.
-The coefficients $(2,3,4,6,5,4,3,2)$ on $\eps_3,\dots,\eps_{10}$ are the marks of the highest root of $E_8$, which is the affine extension pattern CoxIter records when it describes the $(10,10,0)_1$ diagram as $\widetilde E_{10}$-shaped.
+The coefficients $(2,3,4,6,5,4,3,2)$ on $\eps_3,\dots,\eps_{10}$ are the marks of the highest root of $E_8$.
+For $\eta_1$ the ten roots have square $-4$, form a $\ZZ$-basis of $\eta_1^{\perp}/\eta_1$, and have Coxeter diagram $T_{2,3,7}$. For $\eta_2$ the root $\eps_1-\eps_2$ has square $-2$ and meets the last root with label $4$, and the other nine roots have square $-4$, as in Sterk's breakdown $9\times(-4)$, $1\times(-2)$.
 :::
 
 ## The question the discrepancy poses
@@ -138,7 +129,7 @@ Under a chamber decomposition answering @qst:sterk-reflection-subgroup, determin
 ::: {.remark title="Cusp 2 is the case where the two agree"}
 
 The published Sterk 2 diagram has ten walls, two vertices at infinity, and the simplex $f$-vector, matching the Vinberg chamber of $U\oplus E_8(2)$ in every recorded invariant.
-Cusp 2 is the Sterk cusp to which the Coble $0$-cusp is claimed to correspond ([cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain)), and it is the one cusp for which @qst:sterk-reflection-subgroup already has the answer $W_2 = W(\eta_2^{\perp}/\eta_2)$.
+By @conj:coble-zero-cusp-sterk-two, cusp $2$ is the Sterk cusp of the Coble $0$-cusp, and it is the one cusp for which @qst:sterk-reflection-subgroup already has the answer $W_2 = W(\eta_2^{\perp}/\eta_2)$.
 :::
 
 ::: {.remark title="The four cusps the Coble boundary sees are exactly the four that force the question"}

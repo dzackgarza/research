@@ -102,12 +102,12 @@ $$
 (18,0,0)_1 = U \oplus E_8^2
 ,$$
 corresponding to the two 0-cusps of the Baily-Borel compactification $\bbcpt{\fttz}$, and distinguished by the divisibility $\div_{\tdp}(\eta)$ of $\eta$ in $\tdp$.
-From a similar analysis of $\bbcpt{\fen}$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities
+From a similar analysis of $\bbcpt{\fen}$, the moduli space of *unpolarized* Enriques surfaces, one finds that there are similarly two possibilities, which are the two orbits of @prop:fen-two-zero-cusps and are separated by $\div_{\ten}(\eta)$
 $$
 \bdlattice{\ten}{\eta}: \quad
-\EnriquesInvariants_1 = U(2) \oplus E_8(2)
-,\quad\textor\quad
-(10,8,0)_1 = U \oplus E_8(2)
+\div_{\ten}(\eta) = 1\colon\ \EnriquesInvariants_1 = U(2) \oplus E_8(2)
+,\quad
+\div_{\ten}(\eta) = 2\colon\ (10,8,0)_1 = U \oplus E_8(2)
 .$$
 Both possibilities for $\bdlattice{\tdp}{\eta}$ are hyperbolic, 2-elementary lattices with induced involutions $\bar{I}_{\En}$ and $\bar{I}_{\dP}$, and if we write $J\definedas -\bar{I}_{\En}$ then we recover $\bdlattice{\tdp}{\eta}^J = \bdlattice{\ten}{\eta}$ as the invariant sublattice.
 We immediately note that the involution $J$ is highly sensitive to the choice of $\eta$, as are the isometry classes of $\bdlattice{\tdp}{\eta}$ and thus $\bdlattice{\ten}{\eta}$ -- in our situation, this highly depends on the geometry of the moduli spaces $\fentwo$ and $\fttz$.
@@ -352,7 +352,7 @@ T: \begin{cases}
 $$
 
 Sterk then shows that under the full isometry group $\Orth(\ten)$, the four divisibility-two orbits collapse to a single orbit, and the divisibility-one orbit remains unique.
-Therefore, up to $O(\ten)$, there are exactly two orbits of primitive isotropic vectors, partially affirming the know cusp diagram of $\fen$ shown in the previous section.
+So up to $\Orth(\ten)$ there are exactly two orbits of primitive isotropic vectors --- which is @prop:fen-two-zero-cusps, where it is proved from @thm:isotropic-trichotomy and the vanishing of $\delta(\ten)$ rather than by merging these five --- while the five remain distinct under the smaller group $\Gamma_{\En,2}$, which is why $\fentwo$ has five 0-cusps and $\fen$ has two.
 
 #### Folded Coxeter Diagrams
 

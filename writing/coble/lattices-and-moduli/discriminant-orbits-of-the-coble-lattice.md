@@ -229,7 +229,7 @@ For the full orthogonal group, @thm:unpolarized-cusps states that $\Orth^+(T_\Co
 For a subgroup $\Gamma\leq\Orth(T_\Co)$ the passage runs the other way and is not automatic.
 The reduction map sends $\Gamma$-orbits of primitive isotropic vectors to $\rho(\Gamma)$-orbits of nonzero isotropic classes, but the integral parabolic stabilizer can have proper image in the finite stabilizer, so a finite orbit may split.
 Conversely a *smaller* group need not have strictly finer orbits: by @lem:character-kernel-orbits the partitions of a group and of a subgroup agree exactly when every orbit's stabilizer meets the subgroup, and @prop:discriminant-kernel-orbits exhibits the case that matters here, the discriminant kernel being strictly larger than $\Gamma_\Co$ with the same orbits.
-The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in @thm:coble-heegner-finite-orbits, and the lift of that finite decomposition to primitive isotropic vectors of $T_\Co$ is open.
+The $\gent$-induced orbit decomposition of the $528$ isotropic classes is computed in @thm:coble-heegner-finite-orbits, and it lifts: by @sec-cusp-lifting the parabolic stabilizer's image is the whole finite stabilizer, so each finite orbit is exactly one class of primitive isotropic vectors and not several.
 :::
 
 ::: {.lemma #lem:stable-orthogonal-not-transitive title="The stable orthogonal group is not transitive on isotropic lines"}
@@ -253,36 +253,34 @@ But $e$ and $f$ are two elements of a $\ZZ$-basis of $B$, and the coordinates of
 
 The number of $0$-cusps is a property of the pair $(T_\Co,\Gamma_\Co)$ and not of the lattice: with $\Orth^+(T_\Co)$ in place of $\Gamma_\Co$ it is one (@thm:unpolarized-cusps), and the group attached to $\fco$ is the stable one throughout (@sec-moduli-construction).
 
-The lemma gives two orbits; the discriminant form gives the bound of the next proposition, and no upper bound.
+The lemma gives two orbits of the full orthogonal group; for $\Gamma_\Co$ the count is $527$, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting), so the discriminant form does give the exact number and not only a lower bound.
 :::
 
-::: {.proposition #prop:coble-stable-cusp-lower-bound title="At least $527$ $0$-cusps"}
+::: {.proposition #prop:coble-cusp-count title="The $0$-cusp count of $\fco$"}
 
 Let $\rho_{T_\Co}\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ be the discriminant representation and let $v\in T_\Co$ be primitive isotropic.
-The number of $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$ is
-$$
-527\cdot\bigl[\Stab_{\Orth(q_{T_\Co})}(v^*) : \rho_{T_\Co}\bigl(\Stab_{\Orth(T_\Co)}(v)\bigr)\bigr],
-$$
-one orbit for each nonzero isotropic class of $A_{T_\Co}$ when the stabilizer of $v$ maps onto the stabilizer of its class, and more otherwise.
-The number of $\Gamma_\Co$-orbits of primitive isotropic lines is the same, so $\overline{F_\Co}^{\bb}$ has at least $527$ $0$-cusps.
+Then the number of $\Gamma_\Co$-orbits of primitive isotropic vectors of $T_\Co$ is $527$, one for each nonzero isotropic class of $A_{T_\Co}$; the number of $\Gamma_\Co$-orbits of primitive isotropic lines is the same, so $\overline{F_\Co}^{\bb}$ has exactly $527$ $0$-cusps.
 :::
 
 ::: {.proof}
 
 $\Gamma_\Co$ acts trivially on $A_{T_\Co}$, so for $g\in\Gamma_\Co$ the class of $g(v)$ is $g(\tfrac12 v)+T_\Co = v^*$: primitive isotropic vectors with different classes lie in different $\Gamma_\Co$-orbits.
 The classes attained by primitive isotropic vectors form one orbit of $\rho_{T_\Co}(\Orth(T_\Co))$, because $\Orth^+(T_\Co)$ is transitive on primitive isotropic lines (@thm:unpolarized-cusps) and $-\id\in\Gamma_\Co$, so $\Orth(T_\Co)$ is transitive on primitive isotropic vectors.
-$T_\Co$ is even, indefinite and $2$-elementary, so $\rho_{T_\Co}$ is surjective (@thm:two-elementary-surjectivity), and that orbit is an orbit of $\Orth(q_{T_\Co})$; by @prop:coble-primitive-isotropic-classes it contains a nonzero isotropic class, so by @thm:coble-isotropic-class-orbits it is the set of all $527$ nonzero isotropic classes.
-Hence there are at least $527$ orbits.
+$T_\Co$ is even, indefinite and $2$-elementary, so $\rho_{T_\Co}$ is surjective (@thm:two-elementary-surjectivity) --- the surjectivity that [discriminant-form descent](#sec-discriminant-descent) names as its hypothesis (H1) --- and that orbit is an orbit of $\Orth(q_{T_\Co})$; by @prop:coble-primitive-isotropic-classes it contains a nonzero isotropic class, so by @thm:coble-isotropic-class-orbits it is the set of all $527$ nonzero isotropic classes.
+So the $527$ nonzero isotropic classes give $527$ pairwise distinct orbits, and no vector has a class outside them: the count is $527$.
 
 For the exact count, let $K = \ker\rho_{T_\Co}$; it has the same orbits as $\Gamma_\Co$ (@prop:discriminant-kernel-orbits).
 $K$ is normal in $\Orth(T_\Co)$ with quotient $\Orth(q_{T_\Co})$, and $\Orth(T_\Co)$ acts transitively with stabilizer $S = \Stab_{\Orth(T_\Co)}(v)$, so the $K$-orbits correspond to the cosets of $KS$ in $\Orth(T_\Co)$, and their number is $[\Orth(q_{T_\Co}) : \rho_{T_\Co}(S)]$.
-Since $\rho_{T_\Co}(S)$ fixes $v^*$, it lies in $\Stab_{\Orth(q_{T_\Co})}(v^*)$, whose index in $\Orth(q_{T_\Co})$ is the orbit length $527$; the displayed product follows.
+Since $\rho_{T_\Co}(S)$ fixes $v^*$, it lies in $\Stab_{\Orth(q_{T_\Co})}(v^*)$, whose index in $\Orth(q_{T_\Co})$ is the orbit length $527$.
+
+That inclusion is an equality, and it is the content of @sec-cusp-lifting: writing $B = U\perp K$ with $\latI_{1,8}\cong K$, the Levi part $\Orth(K)$ maps onto the Levi quotient of $\Stab_{\Orth(q)}(v^*)$ and the Eichler transvections $E(v,k)$ supply the kernel, of order $2^8 = 89\,181\,388\,800/348\,364\,800$, so $\rho_{T_\Co}(S) = \Stab_{\Orth(q_{T_\Co})}(v^*)$ and the index is $1$.
+Hence the count is $527$ and not merely at least that.
 Vectors and lines give the same count because $-\id\in\Gamma_\Co$, as in the proof of @prop:discriminant-kernel-orbits.
 :::
 
 ::: {.remark}
 
-What the finite calculation determines is the other end: @thm:coble-isotropic-class-orbits shows the $527$ nonzero isotropic *classes* form a single orbit under $\Orth(q_{T_\Co})$, so a count in $A_{T_\Co}$ is a statement about the finite group, and the passage to the cusps of $\fco$ is the index in @prop:coble-stable-cusp-lower-bound.
+What the finite calculation determines is the other end: @thm:coble-isotropic-class-orbits shows the $527$ nonzero isotropic *classes* form a single orbit under $\Orth(q_{T_\Co})$, so a count in $A_{T_\Co}$ is a statement about the finite group, and the passage to the cusps of $\fco$ is the index of @prop:coble-cusp-count.
 :::
 
 ::: {.lemma #lem:character-kernel-orbits title="Orbits of a group and of the kernel of a character"}
@@ -317,7 +315,7 @@ Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the dis
 1. $K\neq\Gamma_\Co$, and $[K:\Gamma_\Co]=2$;
 2. $K$ and $\Gamma_\Co$ have the same orbits on the primitive isotropic vectors of $T_\Co$, and the same orbits on the primitive isotropic lines.
 
-The number of orbits is not determined here: it is at least $527$ (@prop:coble-stable-cusp-lower-bound) and no upper bound follows from anything in this section.
+The number of $\Gamma_\Co$-orbits is $527$ (@sec-cusp-lifting): the lifting theorem makes the $\Gamma_\Co$-orbits of primitive isotropic vectors correspond to the nonzero isotropic classes of $A_{T_\Co}$, of which there are $527$ (@prop:coble-q-fibers), which is the count of @prop:coble-cusp-count.
 :::
 
 ::: {.proof}
@@ -339,4 +337,55 @@ An orbit statement for $T_\Co$ therefore needs a different mechanism.
 For the full orthogonal group, @thm:unpolarized-cusps gives transitivity using @prop:tco-split-maximal, and for the odd $B = \latI_{2,9}$ that transitivity has a direct source which does not go through the even-lattice results at all: James' integral Witt theorem [@Jam68] applies with $r - \abs{\fs} = 11 - 7 = 4 = 2(1+1)$, and its characteristic clause is vacuous because a characteristic vector of $\latI_{p,q}$ has odd coordinates and square $\equiv p-q \equiv 1 \pmod 8$, never $0$. So transitivity on primitive isotropic *vectors* is settled for $B$; the rank-two case is not, the inequality there needing $6$, and it is recorded at @thm:split-maximal-isotropic-transitivity.
 
 For a subgroup specified by its image in $\Orth(q)$, the algorithms of [@Daw22] do *not* apply as the citation would suggest, and the mismatch is worth stating because it is on both sides. Dawes' setup assumes even lattices from §1.1, and the split-maximal stabilizer results of §3.1 and §3.2 assume a $U^{\oplus2}$ decomposition. The Coble lattice is even but not $U^{\oplus2}$-decomposable --- as the Eichler remark below proves, $T_\Co$ contains no copy of $U$ at all --- while the odd lattice $B$ with the decomposition is outside the parity hypothesis. So neither presentation satisfies both hypotheses, and the passage from $\rho(\Gamma)$-orbits on the finite group to $\Gamma$-orbits on primitive isotropic vectors is not available from that source for $\Gamma_\Co$. What the finite computation can still do is bound: since $\Gamma_\Co$ fixes every class of $A_{T_\Co}$, vectors with different classes lie in different $\Gamma_\Co$-orbits, so the finite orbit count is a lower bound for the integral one and never an upper one.
+:::
+
+## The two $0$-cusp lattices {#sec-zero-cusp-lattices}
+
+::: {.proposition #prop:zero-cusp-lattices title="The $0$-cusp lattices of $\fen$ and of $\fco$"}
+
+Let $T$ be $T_\En = U\perp U(2)\perp E_8(2)$ or $T_\Co = B(2)$ with $B = U\perp U\perp \I_{0,7}$, and let $v$ be a primitive isotropic vector: the isotropic generator of a hyperbolic summand in either case.
+Then the cusp lattice $v^{\perp T}/\generators{v}$ is
+
+1. for $T_\En$, $U(2)\oplus E_8(2)$: rank $10$, determinant $-2^{10}$, signature $(1,9)$, even $2$-elementary with invariants $(r,a,\delta) = (10,10,0)$;
+2. for $T_\Co$, $U(2)\oplus\generators{-2}^{7} = \I_{1,8}(2)$: rank $9$, determinant $2^{9}$, signature $(1,8)$, even $2$-elementary with invariants $(r,a,\delta) = (9,9,1)$.
+:::
+
+::: {.proof}
+
+In both cases $v$ spans a hyperbolic summand and is orthogonal to the rest, so $v^{\perp T} = \generators{v}\perp (\text{the remaining summand})$ and the quotient by $\generators{v}$ drops the hyperbolic direction: for $T_\En = U\perp U(2)\perp E_8(2)$ this leaves $U(2)\oplus E_8(2)$, and for $T_\Co = U(2)\oplus U(2)\oplus\I_{0,7}(2)$ from the splitting of @prop:tco-split-maximal it leaves $U(2)\oplus\I_{0,7}(2) = U(2)\oplus\generators{-2}^{7}$, which is $2\cdot\I_{1,8}$ because $U\oplus\generators{-1}^{7}$ is the odd unimodular lattice of signature $(1,8)$.
+
+The invariants are computed in `computations/reports/coble_zero-cusp-lattices.py` and its run, which builds each lattice and prints rank, determinant, signature, the elementary divisors of the Gram matrix, the order of the discriminant group, and whether the values of $q$ are all integral --- that is $\delta$: $U(2)\oplus E_8(2)$ has divisors $[2,\dots,2]$ of length $10$, $\abs{A} = 1024$, all values integral and $\delta = 0$; $\I_{1,8}(2)$ has divisors $[2,\dots,2]$ of length $9$, $\abs{A} = 512$, non-integral values and $\delta = 1$.
+:::
+
+::: {.theorem #thm:zero-cusp-chambers title="The chambers of the two $0$-cusp lattices"}
+
+Let $K_\Co = \I_{1,8}(2)$ and $K_\En = U(2)\oplus E_8(2)$ be the cusp lattices of @prop:zero-cusp-lattices, halves $K'_\Co = \I_{1,8}$ and $K'_\En = U\oplus E_8$, and let $K(2)$ denote $K$ with the form doubled.
+Then
+
+1. $\Orth(K(2)) = \Orth(K)$, and the reflection $s_r$ of @def:spinor-norm is unchanged when the form is scaled, so the Coxeter chamber of $K(2)$ is the chamber of $K$ with every root norm doubled;
+
+2. the chamber of $K_\En$ has **ten** walls, with Coxeter diagram $T_{2,3,7}$, all of whose edges have label $3$, one ideal vertex, and its ten walls are the roots Vinberg's algorithm returns on $E_{10}(2)$:
+$$
+-\eps_3,\ \dots,\ -\eps_{10},\qquad \eps_1-\eps_2,\qquad \eps_2+2\eps_3+3\eps_4+4\eps_5+6\eps_6+5\eps_7+4\eps_8+3\eps_9+2\eps_{10}
+$$
+in the recorded basis $\eps_1,\dots,\eps_{10}$ of $\eta_1^{\perp}/\eta_1$, the coefficients $(2,3,4,6,5,4,3,2)$ being the marks of the highest root of $E_8$;
+
+3. the chamber of $K_\Co$ has **nine** walls: in the negative-square convention a chain of eight nodes of norms $(-2,\dots,-2,-1)$ with seven label-$3$ edges and **one** label-$4$ edge at the end, and a ninth node of norm $-2$ joined to the *third* node of the chain by a label-$3$ edge --- the chain with a leaf at node $3$, which is the row $5\leq n\leq 9$ of [@Vin72, Table 5, article p. 31] at $n = 8$, and the Gram field is $\QQ[\sqrt2]$.
+
+4. the two $0$-cusps of $T_\En$ have chambers of the same shape: on $K(L_1) = U(2)\oplus E_8(2)$ (the div-$1$ class, $\eta = e_1$) and on $K(L_2) = U\oplus E_8(2)$ (the div-$2$ class, $\eta = e_3$) the chamber has **ten** walls, with $b = 2$ between the pairs $(1,3),(2,4),(3,4),(4,5),(5,6),(6,7),(7,8),(8,10),(9,10)$; all ten walls have norm $-4$ in $K(L_1)$, and nine have norm $-4$ and one norm $-2$ in $K(L_2)$, so the diagram has nine label-$3$ edges in $K(L_1)$ and eight label-$3$ edges and one label-$4$ edge in $K(L_2)$. The chamber of $K(L_1)$ has **one ideal vertex** and Gram field $\QQ$, that of $K(L_2)$ has **two ideal vertices** and Gram field $\QQ[\sqrt2]$, and both have the $f$-vector $(10,45,120,210,252,210,120,45,10,1)$ of a $9$-simplex and finite covolume, so both cusp lattices are reflective.
+
+:::
+
+::: {.proof}
+
+*The scaling lemma.* The form of $K(2)$ is $2b_K$, so an endomorphism $g$ satisfies $2b_K(gx,gy) = 2b_K(x,y)$ for all $x,y$ exactly when it is an isometry of $K$: $\Orth(K(2)) = \Orth(K)$ as subgroups of $\GL(K)$. The reflection $s_r(x) = x - 2\frac{b(x,r)}{b(r,r)}r$ is homogeneous of degree $0$ in the form, so the reflection in $r$ is the same map for $K$ and for $K(2)$, and the wall it defines has norm $r^2$ in $K$ and $2r^2$ in $K(2)$. Hence the chambers correspond wall by wall, with the norms doubled.
+
+*The Enriques half.* The record is @sec-sterk-root-counts-and-computed-chambers, whose input it names: Vinberg's algorithm on $\eta_1^{\perp}/\eta_1\cong E_{10}(2)$, of type $(10,10,0)$, returns ten roots and one ideal vertex, and the ten roots are printed there in the recorded basis; CoxIter's separate run on the same diagram, @sec-coxiter-results-for-cusp-lattices, reports dimension $9$, one vertex at infinity, Gram field $\QQ$, the simplex $f$-vector of a $9$-simplex, on the diagram $T_{2,3,7}$ of `computations/coxiter/10-10-0_1.coxiter`.
+
+*The Coble half.* Computed by the recursion of [@Vin72, p. 30]: on $\I_{1,8}$ with basis $v_0,\dots,v_8$ of squares $(1,-1,\dots,-1)$, the initial roots are $e_i = -v_i+v_{i+1}$ and $e_8 = -v_8$, and the candidates are the $k_1^2+\dots+k_8^2 = k_0^2+\epsilon$ with $k_0\geq 1$, $k_1\geq\dots\geq k_8\geq0$, taken in increasing $k_0^2/\epsilon$ and kept when they pair $\geq0$ with every wall already found --- the negative-square convention, where adjacent walls of a chamber pair positively.
+The roots with $k_0 = 0$ lie in $v_0^{\perp}$, whose isometry group is $\Orth(\I_{0,8})$, of type $B_8$, and their simple system is exactly the initial $e_1,\dots,e_8$; the recursion enumerates only the walls with $(e,v_0)>0$.
+The record, `computations/reports/coble_I18_vinberg-chamber.py` and its run, prints nine walls. Eight of them form the chain $e_1,\dots,e_8$ with norms $(-2,\dots,-2,-1)$, seven label-$3$ edges and one label-$4$ edge; the ninth is $v_0+v_1+v_2+v_3$, of norm $-2$ and $\nu = \tfrac12$, joined to $e_3$ by a label-$3$ edge.
+So the diagram agrees with the published row, including the position of the leaf.
+
+*The two cusps of $T_\En$.* Vinberg's algorithm on $K(L_1)$ and on $K(L_2)$ returns the ten walls whose Gram matrices `computations/reports/coble_TEn-chambers-run.txt` prints, and CoxIter on the two graphs `computations/reports/coble_TEn-chambers_K1.coxiter` and `_K2.coxiter` returns the ideal vertices, the Gram fields, the $f$-vectors and the finite covolumes. The walls lift into $T_\En = U\oplus U(2)\oplus E_8(2)$ through $K(L_1) = e_1^{\perp}/\generators{e_1}$ on the slots $e_3,f_3,\dots$ and through $K(L_2) = e_3^{\perp}/\generators{e_3}$ on the slots $e_1,f_1,\dots$, and `computations/reports/coble_TEn-dictionaries.py` checks that each lifted Gram matrix equals the Gram matrix of the walls in the cusp lattice.
 :::

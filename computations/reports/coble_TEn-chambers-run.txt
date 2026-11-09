@@ -1,0 +1,182 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions pin 15db925b
+
+K(L_1) = U(2) + E8(2): rank 10, det -1024, signature (1, 9)
+  vinberg_simple_roots: 10 walls   (3 s)
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+    [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+    [0, -1, -2, -3, -4, -6, -5, -4, -3, -2]
+  Gram matrix of the walls:
+    [-4, 0, 2, 0, 0, 0, 0, 0, 0, 0]
+    [0, -4, 0, 2, 0, 0, 0, 0, 0, 0]
+    [2, 0, -4, 2, 0, 0, 0, 0, 0, 0]
+    [0, 2, 2, -4, 2, 0, 0, 0, 0, 0]
+    [0, 0, 0, 2, -4, 2, 0, 0, 0, 0]
+    [0, 0, 0, 0, 2, -4, 2, 0, 0, 0]
+    [0, 0, 0, 0, 0, 2, -4, 2, 0, 0]
+    [0, 0, 0, 0, 0, 0, 2, -4, 0, 2]
+    [0, 0, 0, 0, 0, 0, 0, 0, -4, 2]
+    [0, 0, 0, 0, 0, 0, 0, 2, 2, -4]
+  norms: [-4, -4, -4, -4, -4, -4, -4, -4, -4, -4]
+  vertex squares FAILED; full traceback for sage-extensions#299:
+Traceback (most recent call last):
+  File "/repo/computations/reports/coble_TEn-chambers.py", line 77, in <module>
+    squares = list(H._chamber_vertex_squares(None, 20, 2000))
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/repos/sage-extensions/src/sage_extensions/categories/hyperbolic_lattices.py", line 650, in _chamber_vertex_squares
+    wall_normals = [engine_vector(_framing_coordinates(root)) * gram for root in roots]
+                    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "sage/modules/free_module_element.pyx", line 594, in sage.modules.free_module_element.vector
+    v, R = prepare(v, R, degree)
+  File "sage/modules/free_module_element.pyx", line 695, in sage.modules.free_module_element.prepare
+    raise TypeError("unable to find a common ring for all elements")
+TypeError: unable to find a common ring for all elements
+  is_cocompact FAILED; full traceback for sage-extensions#299:
+Traceback (most recent call last):
+  File "/repo/computations/reports/coble_TEn-chambers.py", line 84, in <module>
+    print('  is_cocompact: %s' % H.is_cocompact())
+                                 ~~~~~~~~~~~~~~^^
+  File "/repos/sage-extensions/src/sage_extensions/categories/hyperbolic_lattices.py", line 681, in is_cocompact
+    return all(square != 0 for square in self._chamber_vertex_squares(controlling_vector, max_roots, max_decompositions))
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repos/sage-extensions/src/sage_extensions/categories/hyperbolic_lattices.py", line 650, in _chamber_vertex_squares
+    wall_normals = [engine_vector(_framing_coordinates(root)) * gram for root in roots]
+                    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "sage/modules/free_module_element.pyx", line 594, in sage.modules.free_module_element.vector
+    v, R = prepare(v, R, degree)
+  File "sage/modules/free_module_element.pyx", line 695, in sage.modules.free_module_element.prepare
+    raise TypeError("unable to find a common ring for all elements")
+TypeError: unable to find a common ring for all elements
+
+K(L_2) = U    + E8(2): rank 10, det -256, signature (1, 9)
+  vinberg_simple_roots: 10 walls   (2 s)
+    [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, 1, 0, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+    [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+    [0, -2, -2, -3, -4, -6, -5, -4, -3, -2]
+  Gram matrix of the walls:
+    [-4, 0, 2, 0, 0, 0, 0, 0, 0, 0]
+    [0, -4, 0, 2, 0, 0, 0, 0, 0, 0]
+    [2, 0, -4, 2, 0, 0, 0, 0, 0, 0]
+    [0, 2, 2, -4, 2, 0, 0, 0, 0, 0]
+    [0, 0, 0, 2, -4, 2, 0, 0, 0, 0]
+    [0, 0, 0, 0, 2, -4, 2, 0, 0, 0]
+    [0, 0, 0, 0, 0, 2, -4, 2, 0, 0]
+    [0, 0, 0, 0, 0, 0, 2, -4, 0, 2]
+    [0, 0, 0, 0, 0, 0, 0, 0, -2, 2]
+    [0, 0, 0, 0, 0, 0, 0, 2, 2, -4]
+  norms: [-4, -4, -4, -4, -4, -4, -4, -4, -2, -4]
+  vertex squares FAILED; full traceback for sage-extensions#299:
+Traceback (most recent call last):
+  File "/repo/computations/reports/coble_TEn-chambers.py", line 77, in <module>
+    squares = list(H._chamber_vertex_squares(None, 20, 2000))
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/repos/sage-extensions/src/sage_extensions/categories/hyperbolic_lattices.py", line 650, in _chamber_vertex_squares
+    wall_normals = [engine_vector(_framing_coordinates(root)) * gram for root in roots]
+                    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "sage/modules/free_module_element.pyx", line 594, in sage.modules.free_module_element.vector
+    v, R = prepare(v, R, degree)
+  File "sage/modules/free_module_element.pyx", line 695, in sage.modules.free_module_element.prepare
+    raise TypeError("unable to find a common ring for all elements")
+TypeError: unable to find a common ring for all elements
+  is_cocompact FAILED; full traceback for sage-extensions#299:
+Traceback (most recent call last):
+  File "/repo/computations/reports/coble_TEn-chambers.py", line 84, in <module>
+    print('  is_cocompact: %s' % H.is_cocompact())
+                                 ~~~~~~~~~~~~~~^^
+  File "/repos/sage-extensions/src/sage_extensions/categories/hyperbolic_lattices.py", line 681, in is_cocompact
+    return all(square != 0 for square in self._chamber_vertex_squares(controlling_vector, max_roots, max_decompositions))
+                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/repos/sage-extensions/src/sage_extensions/categories/hyperbolic_lattices.py", line 650, in _chamber_vertex_squares
+    wall_normals = [engine_vector(_framing_coordinates(root)) * gram for root in roots]
+                    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "sage/modules/free_module_element.pyx", line 594, in sage.modules.free_module_element.vector
+    v, R = prepare(v, R, degree)
+  File "sage/modules/free_module_element.pyx", line 695, in sage.modules.free_module_element.prepare
+    raise TypeError("unable to find a common ring for all elements")
+TypeError: unable to find a common ring for all elements
+
+
+================================================================
+CoxIter on the two T_En cusp chambers (graphs from the printed Gram matrices)
+coxiter reads the graph on standard input; a file argument gives EMPTY_FILE.
+
+--- K1: coble_TEn-chambers_K1.coxiter ---
+10 9
+1 3 3
+2 4 3
+3 4 3
+4 5 3
+5 6 3
+6 7 3
+7 8 3
+8 10 3
+9 10 3
+--- output ---
+Reading graph: 
+	Number of vertices: 10
+	Dimension: 9
+	Vertices: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+	Field generated by the entries of the Gram matrix: Q
+File read
+
+Finding connected subgraphs......
+Finding graphs products......
+Computations......
+	Computation time: 0.194111s
+
+Information
+	Cocompact: no
+	Finite covolume: yes
+	f-vector: (10, 45, 120, 210, 252, 210, 120, 45, 10, 1)
+	Number of vertices at infinity: 1
+	Alternating sum of the components of the f-vector: 2
+	Euler characteristic: 0
+	Signature (numerically): 9,1,0
+
+--- K2: coble_TEn-chambers_K2.coxiter ---
+10 9
+1 3 3
+2 4 3
+3 4 3
+4 5 3
+5 6 3
+6 7 3
+7 8 3
+8 10 3
+9 10 4
+--- output ---
+Reading graph: 
+	Number of vertices: 10
+	Dimension: 9
+	Vertices: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+	Field generated by the entries of the Gram matrix: Q[sqrt(2)]
+File read
+
+Finding connected subgraphs......
+Finding graphs products......
+Computations......
+	Computation time: 0.201724s
+
+Information
+	Cocompact: no
+	Finite covolume: yes
+	f-vector: (10, 45, 120, 210, 252, 210, 120, 45, 10, 1)
+	Number of vertices at infinity: 2
+	Alternating sum of the components of the f-vector: 2
+	Euler characteristic: 0
+	Signature (numerically): 9,1,0

@@ -29,7 +29,7 @@ Sterk 4 and Sterk 5 were never plotted.
 
 - For $(18,0,0)$: 17 directions, including $(-1,4), (-2,5), (-2,3), (-2,1), (-2,-1), (-2,-3), (-2,-5), (-1,-4)$.
 
-$(18,0,0)$ is the lattice to which the Coble cusps are claimed to correspond, so this direction list is the natural starting point for the Coble integral-affine structure; see [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain).
+The Coble $0$-cusp maps to the $0$-cusp $(18,0,0)_1$ of $\fttz$ (@lem:cusp_map_dP).
 
 ::: {.question title="The rank of the projected root vectors"}
 

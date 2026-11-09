@@ -1,0 +1,37 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+
+(1) T_Co = <2> perp U(2) perp E8(2)
+  rank 11, determinant -2048, signature (2, 9)
+  S_En = U(2) perp E8(2): rank 10, determinant -1024
+
+(2) class sets   (7 s)
+  |A_{T_Co}| = 2048,  |A_{S_En}| = 1024
+  isotropic classes: T_Co 528, S_En 528
+
+(3) the value modules
+  values of q on A_{T_Co}: ['[(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring', '[(3)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring', '[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  values of q on A_{S_En}: ['[0] in Fraction Field of Integer Ring / (2)Integer Ring', '[1] in Fraction Field of Integer Ring / (2)Integer Ring']
+  zeta has square 2, and the class of zeta/2 has q = [(1)/(2)] in Fraction Field of Integer Ring / (2)Integer Ring
+
+(4) the zeta-coordinate of the isotropic classes
+  isotropic classes of A_{T_Co} with zero zeta-coordinate: 528, with nonzero: 0
+  AGREE with |isotropic classes of A_{S_En}| = 528: True
+
+(5) the nine generators fix zeta and preserve the zeta-coordinate
+  the nine vectors: u_0 - w_0 (square -4) and eight of square -4
+  they lie in the S_En summand, so they are orthogonal to zeta: True
+  each reflection fixes zeta: True
+  each discriminant image preserves the zeta-coordinate of the class of zeta/2: True
+  each image fixes the whole A_<2> block, i.e. carries every class with zero
+  zeta-coordinate into that block: True
+
+CONCLUSION
+  (3) q on A_{T_Co} takes the values 0, 1/2, 1, 3/2 and q on A_{S_En} is Z/2-valued;
+  (4) the isotropic classes of A_{T_Co} are exactly those with zero zeta-coordinate,
+      and there are 528 of them, as on A_{S_En};
+  (5) each of the nine generators fixes zeta, hence acts as id perp rho_{S_En}(g_i).
+  So the orbits of G_Co on the 528 isotropic classes of A_{T_Co} are its orbits on the
+  528 isotropic classes of A_{S_En}, with the same sizes: [1, 2, 120, 135, 270], of which
+  the four nonzero ones are 135, 2, 270, 120.

@@ -1,0 +1,38 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions pin 15db925b
+
+c = [h/2]: q(c) = [1] in Fraction Field of Integer Ring / (2)Integer Ring  (so c is not isotropic)
+isotropic classes 528, nonzero 527
+
+level sets of b(., c) on the nonzero isotropic classes:
+  b(x,c) = [(1)/(2)] in Fraction Field of Integer Ring / (1)Integer Ring 272 classes
+  b(x,c) = [0] in Fraction Field of Integer Ring / (1)Integer Ring 255 classes
+
+  sizes sorted: [272, 255]
+  the walk of coble_TEn-gammaEn2-orbits.py found two orbits of exactly these sizes:
+    2 orbits, sizes [272, 255]
+
+WHY THIS IS 2 AND NOT MORE: H fixes c, so b(., c) is constant on every H-orbit and each orbit
+lies inside one level set -- at least two orbits.  The walk produces a partition into exactly
+two, so the orbits are the level sets themselves and H is transitive on each.
+
+CONSEQUENCE: the rho-side count is 2 against a published 5.  The fibres of the map from
+Gamma_En,2-orbits of primitive isotropic vectors to H-orbits are not single points for this
+pair, so the rho-side count is a strict lower bound and does not decide the 5.
+
+================================================================================
+CORRECTION.  The group counted above is Stab_{O(q_T)}([h/2]), the discriminant image of the
+integral stabilizer of the polarization, and it is NOT Gamma_En,2.  AEGS 2025 Def. 2.6 defines
+Gamma_En,2 = im{ g in O(L) | g I_En = I_En g, g(h) = h } = O(T_En) cap O(T_dP), of index
+2^7*17*31 = 67456 in O(T_En) (Lemma 2.8, after Sterk Rem. 2.12; the published formula is
+2^7 . 17 . 31 and an earlier version of this note misread it as 27 . 17 . 31, the exponent
+having been lost in this repository's text extraction of the PDF); by @prop:gamma-en-two-gluing its
+discriminant image is the gamma-transport of the image of Stab_{O(S_En)}(h) in O(q_{S_En}), of order
+|W(E8)| = 696 729 600.  The group above has order 94 755 225 600 = 136 * 696 729 600, so the
+number above is the count for a group 136 times too large: it is the divisibility split div = 1
+against div = 2, i.e. the two 0-cusps of F_(10,10,0) (AEGS 2025 section 3.2), not the cusps of
+F_En,2.  The corrected count for Gamma_En,2 is 5 = 1 + 4, computed with the group Def. 2.6 names in
+computations/reports/coble_gammaEn2-card.py and its run, and agreeing with AEGS 2025 section 3.3
+p. 590 and Sterk 1991 Prop. 4.2.3 p. 16.  The transcript above is unchanged.
+================================================================================

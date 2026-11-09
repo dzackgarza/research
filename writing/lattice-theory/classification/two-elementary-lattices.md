@@ -107,9 +107,9 @@ Nikulin's indefinite classification @thm:two-elementary-classification makes the
 :::
 
 
-::: {.theorem #thm:isotropic-trichotomy title="Primitive isotropic vectors in a hyperbolic $2$-elementary lattice"}
+::: {.theorem #thm:isotropic-trichotomy title="Primitive isotropic vectors in an indefinite $2$-elementary lattice"}
 
-Let $S$ be an even hyperbolic $2$-elementary lattice with invariants $(r,a,\delta)$, and let $v\in S^{\mathrm{prim}}[0]$.
+Let $S$ be an even indefinite $2$-elementary lattice of signature $(n_+,n_-)$ with invariants $(r,a,\delta)$, and let $v\in S^{\mathrm{prim}}[0]$.
 Let $\kappa_v\colon v^{\perp_S}\injects S$ be the right orthogonal-complement kernel of $\iota_v\colon\generators{v}_{\bZ}\injects S$ from @def:orthogonal-complement. By @prop:primitive-isotropic-complement its nondegenerate reduction is $\qty{v^{\perp_S}}^{\mathrm{nd}}$.
 
 Then exactly one of the following holds [@AE22, Prop. 5.5]:
@@ -120,7 +120,9 @@ Then exactly one of the following holds [@AE22, Prop. 5.5]:
 
 3. If $v$ is even characteristic, $S\isoto\latI_{1,1}(2)\perp\qty{v^{\perp_S}}^{\mathrm{nd}}$, necessarily $\delta=1$, and $\qty{v^{\perp_S}}^{\mathrm{nd}}$ has invariants $(r-2,a-2,0)$.
 
-In every case $\qty{v^{\perp_S}}^{\mathrm{nd}}$ is even negative definite of rank $r-2$.
+Conversely, a primitive isotropic vector of a given one of the three types exists in $S$ if and only if an even $2$-elementary lattice with the corresponding invariants and signature $(n_+-1,n_--1)$ exists, and in that case the vectors of that type form a single $\Orth(S)$-orbit [@AE22, Prop. 5.5].
+
+In every case $\qty{v^{\perp_S}}^{\mathrm{nd}}$ is even of rank $r-2$ and signature $(n_+-1,n_--1)$, in particular negative definite when $S$ is hyperbolic.
 :::
 
 ::: {.proof}

@@ -1,0 +1,23 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+
+B = U + U + I_{0,7}: rank 11, det -1, signature (2, 9);  T = B(2): det -2048
+P = <e1,e2>: rank 2, primitive
+
+A_{T_Co}: 2048 classes;  |O(q)| = 46998591897600   (43 s)
+
+J = [P/2]: classes of e1/2 and e2/2; q-values [0] in Fraction Field of Integer Ring / (2)Integer Ring and [0] in Fraction Field of Integer Ring / (2)Integer Ring
+  could not form the subobject: AttributeError: 'OwnedJoinCategory.parent_class[_PresentedModule].ObjectType' object has no attribute 'primitive_isotropic_subobject'
+
+stage 1a: Stab_{O(B)}(P) from the lattice side, setwise
+  the stabilizer returns 119 generators   (106 s)
+  each is an isometry of B: True
+  each preserves P: True
+  FAILED: ValueError: the isometry Morphism from Integral lattice of rank 11 and signature (2, 9) to Integral lattice of rank 11 and signature (2, 9) goes from Integral lattice of rank 11 and signature (2, 9) to Integral lattice of rank 11 and signature (2, 9), so it is not an isometry from Integral lattice of rank 11 and signature (2, 9) to Integral lattice of rank 11 and signature (2, 9)
+
+stage 2: |Stab_{O(q)}(J)|, by orbit-stabilizer on the order-4 isotropic subgroups
+  FAILED: AttributeError: 'OwnedTorsionFormOrthogonalGroup_with_category_with_category' object has no attribute 'stabilizer'
+
+THE INDEX IS NOT DETERMINED BY THIS RUN
+  order of the image: None; order of the stabilizer: None

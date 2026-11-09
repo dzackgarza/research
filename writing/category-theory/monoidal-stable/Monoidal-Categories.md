@@ -90,7 +90,7 @@ $$
 \qquad
 (\operatorname{ev}_a\tensor 1_{a^\vee})\circ(1_{a^\vee}\tensor\operatorname{coev}_a)=1_{a^\vee}
 $$
-[@PS13, Def. 2.1].
+[@PS14, Def. 2.1].
 :::
 
 ::: {.proposition #prop:projective-dualizable title="Finitely generated projective modules are dualizable"}

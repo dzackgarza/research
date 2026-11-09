@@ -1,0 +1,118 @@
+embedded-plane stabilizer images, on A = T*/T
+provenance
+  Sage: 11.0.beta5
+  sage-indefinite-port: /repo/.scratch/port-held/src/sage_indefinite_port
+  sage-extensions:      /prov/src/sage_extensions
+T_En: rank 12 det 1024 signature (2, 10)
+K = ker(G mod 2): dimension 10, cardinality 1024, owned |A| = 1024
+K basis (the discriminant submodule, not all of T/2T):
+[0 0 1 0 0 0 0 0 0 0 0 0]
+[0 0 0 1 0 0 0 0 0 0 0 0]
+[0 0 0 0 1 0 0 0 0 0 0 0]
+[0 0 0 0 0 1 0 0 0 0 0 0]
+[0 0 0 0 0 0 1 0 0 0 0 0]
+[0 0 0 0 0 0 0 1 0 0 0 0]
+[0 0 0 0 0 0 0 0 1 0 0 0]
+[0 0 0 0 0 0 0 0 0 1 0 0]
+[0 0 0 0 0 0 0 0 0 0 1 0]
+[0 0 0 0 0 0 0 0 0 0 0 1]
+
+
+type I
+  plane generators: [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+  discriminant image D: order 2, nonzero classes ['001000000000']
+  exact quotient Gram Q = P^perp/P: [-4  0  2  0  0  0  0  0]
+[ 0 -4  0  2  0  0  0  0]
+[ 2  0 -4  2  0  0  0  0]
+[ 0  2  2 -4  2  0  0  0]
+[ 0  0  0  2 -4  2  0  0]
+[ 0  0  0  0  2 -4  2  0]
+[ 0  0  0  0  0  2 -4  2]
+[ 0  0  0  0  0  0  2 -4]
+  accepted induced discriminant action (eta index 1, w index 4): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 5): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 6): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 7): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 1, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 8): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 9): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 10): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 11): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 2): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  dual-basis transvections accepted (integral, form-preserving, plane-preserving): 9
+  candidates rejected on integrality: 10
+  | generated discriminant image of these integral stabilizers | = 256
+  stated finite target |Stab(D)| = 89181388800
+  native GAP coefficient object is Z(2), with K dimension 10
+  target / computed generated image = 348364800
+
+type II
+  plane generators: [[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [2, 2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0]]
+  discriminant image D: order 4, nonzero classes ['000011000000', '001000000000', '001011000000']
+  exact quotient Gram Q = P^perp/P: [ -4  -3   8  -6  -2   0   0   0]
+[ -3  -4   8  -6  -2   0   0   0]
+[  8   8 -20  14   4   0   0   0]
+[ -6  -6  14 -12  -2   0   0   0]
+[ -2  -2   4  -2  -4   2   0   0]
+[  0   0   0   0   2  -4   2   0]
+[  0   0   0   0   0   2  -4   2]
+[  0   0   0   0   0   0   2  -4]
+  display the integral identification matrix R, certified R^T(-Qgram)R = 2 D_8^{-1}: True
+  accepted induced discriminant action (eta index 0, w index 4): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 5): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 6): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 7): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 1, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 8): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 9): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 10): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [1, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [1, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 11): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [1, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 0, w index 2): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 8): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 1, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 1, 1, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 9): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0, 1, 0, 0], [0, 0, 1, 1, 0, 1, 0, 1, 0, 0], [0, 0, 1, 1, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 1, 1, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 10): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0, 0, 1, 0], [0, 0, 1, 1, 0, 1, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 1, 1, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 1, 1, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 11): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 1, 1, 0, 0, 0, 0, 1], [0, 0, 1, 1, 0, 1, 0, 0, 0, 1], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 1, 1, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 2): [[1, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 1, 1, 1, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 1, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  accepted induced discriminant action (eta index 1, w index 3): [[1, 0, 1, 1, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 1, 0, 0, 1, 0, 0, 0, 0, 0], [0, 1, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]]
+  dual-basis transvections accepted (integral, form-preserving, plane-preserving): 15
+  candidates rejected on integrality: 0
+  | generated discriminant image of these integral stabilizers | = 49152
+  stated finite target |Stab(D)| = 1981808640
+  native GAP coefficient object is Z(2), with K dimension 10
+  target / computed generated image = 40320
+
+
+type-II integral Levi lifts and the D^perp/D exact sequence
+  the actual P^perp basis and Q basis are the ones used in the quotient certificate
+  Smith dual convention proved on all 64 representatives: Q^-1 U^-1 r
+  | native O(Q) action on Q*/Q, using X^(-T)U^(-1) | = 40320
+  square-(-4) vectors of Q: 368; actual integral P-pointwise reflection lifts: 112
+  shell vectors not used because no P-translate lies in 2T*: 256
+  | action of the integral reflection lifts on Q*/Q | = 40320
+  dual action certificates: identity, composition, and invariance modulo Q Z^8
+  |D| = 4, |D^perp| = 256, |D^perp/D| = 64; BK = (x,y)/2 mod 2 is nonzero
+  q=x^2/4 mod 2Z, half norm=x^2/8 mod Z, beta=(x,y)/2 mod 2: representative-independent
+  gluing basis 2: q = (-3, -3, 0, 0, -1, 0, 3/2, 5/2, 2, 3/2, 1, 1/2); q+u = (-5, -5, -2, 0, -2, -1, 3/2, 5/2, 2, 3/2, 1, 1/2); K class = [0, 0, 0, 0, 1, 1, 0, 1, 0, 1]
+  gluing basis 3: q = (10, 10, 0, 0, 3/2, 0, -7, -10, -8, -6, -4, -2); q+u = (8, 8, -2, 0, 1/2, -1, -7, -10, -8, -6, -4, -2); K class = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+  gluing basis 4: q = (12, 12, 0, 0, 2, 0, -8, -12, -10, -15/2, -5, -5/2); q+u = (10, 10, -2, 0, 1, -1, -8, -12, -10, -15/2, -5, -5/2); K class = [0, 0, 0, 0, 0, 0, 0, 1, 0, 1]
+  gluing basis 5: q = (9, 9, 0, 0, 3/2, 0, -6, -9, -15/2, -6, -4, -2); q+u = (7, 7, -2, 0, 1/2, -1, -6, -9, -15/2, -6, -4, -2); K class = [0, 0, 1, 0, 0, 0, 1, 0, 0, 0]
+  gluing basis 6: q = (6, 6, 0, 0, 1, 0, -4, -6, -5, -4, -3, -3/2); q+u = (4, 4, -2, 0, 0, -1, -4, -6, -5, -4, -3, -3/2); K class = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+  gluing basis 7: q = (3, 3, 0, 0, 1/2, 0, -2, -3, -5/2, -2, -3/2, -1); q+u = (1, 1, -2, 0, -1/2, -1, -2, -3, -5/2, -2, -3/2, -1); K class = [0, 0, 1, 0, 0, 0, 1, 0, 1, 0]
+  explicit gluing matrix J; rank(J)=6 and rank([J|D])=8:
+[0 0 0 0 0 0]
+[0 0 0 0 0 0]
+[0 1 0 1 0 1]
+[0 0 0 0 0 0]
+[1 0 0 0 0 0]
+[1 0 0 0 0 0]
+[0 0 0 1 0 1]
+[1 0 1 0 0 0]
+[0 0 0 0 0 1]
+[1 0 1 0 1 0]
+  quotient injectivity: every nonzero vector of im(J) lies outside D
+  all 64 classes satisfy j(A_Q) inside D^perp and q_Q = q_T mod 2Z
+  all 112 integral lifts agree with their dual Q*/Q actions transported by J
+  every one of the fifteen Eichler matrices acts trivially on D^perp/D
+  | generated kernel group | = 49152
+  | generated action on D | = 6
+  | pointwise-on-D subgroup | and its index = 8192 6
+  orientation witness tau=-id_U(2)+id: ker(rho), both plane stabilizers, det=1, spinor_R=-1
+TYPE-II CERTIFICATE COMPLETE: lifted Levi, exact gluing, kernel 8192 x GL_2, orientation

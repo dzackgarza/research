@@ -1,0 +1,7 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions pin 15db925b
+
+T_En = U + U(2) + E8(2): rank 12, det 1024, signature (2, 10)
+  |A| = 1024, isotropic classes 528, distinct values of q: 2   (22 s)
+  |O(q_{T_En})| = 46998591897600   (42 s)

@@ -1,0 +1,20 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: pin 15db925b0c92
+
+K_En = U(2) + E8(2)  (Sterk, the Enriques 0-cusp)
+  rank 10, determinant -1024, signature (1, 9), even True
+  |A| = 1024; the elementary divisors of the Gram matrix: [2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+  the value module of q has 2 element(s) after reduction mod Z; every value integral: True
+  2-elementary iff every class has order 2... a = dim_{F_2}(A) = 10
+  delta: 0   (0 iff q is Z/2-valued, 1 otherwise)
+  (19 s)
+
+K_Co = U(2) + <-2>^7 = I_{1,8}(2)  (the Coble 0-cusp)
+  rank 9, determinant 512, signature (1, 8), even True
+  |A| = 512; the elementary divisors of the Gram matrix: [2, 2, 2, 2, 2, 2, 2, 2, 2]
+  the value module of q has 4 element(s) after reduction mod Z; every value integral: False
+  2-elementary iff every class has order 2... a = dim_{F_2}(A) = 9
+  delta: 1   (0 iff q is Z/2-valued, 1 otherwise)
+  (6 s)
+

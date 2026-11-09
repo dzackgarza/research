@@ -257,7 +257,6 @@ Algebraic $K$-theory of a ring and of an exact category, and the groups $K_n(A)=
 
 A stabilization of $\mathbf{Lat}_R$ by an endofunctor $F_M$ of @def:hyperbolic-stabilization is asked to do two things at once: to become invertible, so that it presents a stable category, and to move the Witt class, so that it shifts an invariant.
 @thm:invertible-summand shows that on $\mathbf{Lat}_R$ these two demands are incompatible: an $M$ with $[M]\neq0$ has $b_M\neq0$ and so $F_M$ is not an equivalence, while an $M$ for which $F_M$ is an equivalence has $[M]=0$ and induces the identity on $W(R)$.
-The three statements below are not proved in this book.
 
 ::: {.question}
 Let $R$ be a Dedekind domain with $4\cdot1_R\neq0$ and let $S=F_{H(R)}$ be the hyperbolic stabilization of $\mathbf{Lat}_R$ (@def:hyperbolic-stabilization).

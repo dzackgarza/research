@@ -1,0 +1,21 @@
+j = 1  v = e                cusp_e()
+      12 vertices, Gram of rank 10, inertia (1, 9, 2) of  x.y , i.e. (9, 1, 2) of  -x.y
+      page: 12 vertices, 9,1,2   MATCH
+j = 2  v = e'               cusp_ep()
+      10 vertices, Gram of rank 10, inertia (1, 9, 0) of  x.y , i.e. (9, 1, 0) of  -x.y
+      page: 10 vertices, 9,1,0   MATCH
+j = 3  v = e' + f' + abar_8 cusp_epfpa8()
+      12 vertices, Gram of rank 10, inertia (1, 9, 2) of  x.y , i.e. (9, 1, 2) of  -x.y
+      page: 12 vertices, 9,1,2   MATCH
+j = 4  v = 2e' + f' + abar_1 cusp_2epfpa1()
+      11 vertices, Gram of rank 10, inertia (1, 9, 1) of  x.y , i.e. (9, 1, 1) of  -x.y
+      page: 11 vertices, 9,1,1   MATCH
+j = 5  v = 2e + 2f + abar_1 cusp_2e2fa1()
+      14 vertices, Gram of rank 10, inertia (1, 9, 4) of  x.y , i.e. (9, 1, 4) of  -x.y
+      page: 14 vertices, 9,1,4   MATCH
+
+All five rows of the column are the inertia of the sign-flipped Gram of the roots.
+CoxIter's own "Signature (numerically)" line is not that number: at Sterk 3 it reads
+10,2,0 for a Gram of rank 10 and inertia (9,1,2) (computations/coxiter/logs/Sterk3.txt).
+
+VERDICT: the column reproduces as (9, 1, nullity) of the Schlaefli form at all five cusps.

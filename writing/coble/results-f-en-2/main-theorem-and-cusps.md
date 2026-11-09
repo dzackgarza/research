@@ -12,18 +12,14 @@ Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the collection of folded s
 
 1. The normalization $\normksbacpt{\fentwo}$ is isomorphic to the semitoroidal compactification $\semifancpt{\fentwo}{\semitorfan}$ [@AEGS25 Thm. 1].
 
-2. This compactification is toroidal over cusps $2$, $4$, their adjacent $1$-cusps, and cusp $35$, and strictly semitoroidal over all other cusps.
+2. This compactification is toroidal over the $0$-cusps $2$ and $4$, their adjacent $1$-cusps, and the $1$-cusp $35$, and strictly semitoroidal over all other cusps [@AEGS25 Lem. 5.7].
 
 3. The isomorphism is established via an intermediate normalization $\normalize{B}$ of the Zariski closure of the Noether--Lefschetz locus inside the K3 compactification $\ksbacpt{\fttz}$ [@AEGS25 Sec. 6].
 :::
 
 ::: {.proof}
 
-Clause (1) is [@AEGS25, Thm. 1] and clause (3) is [@AEGS25, §6]; clause (2) is the part that is not a direct quotation, and it is where the folded semifans of this book enter.
-
-The transport: AEGS identify the normalization of the KSBA compactification with a semitoroidal compactification for a semifan cut out of the cusps of $\fentwo$, and clause (1) is that identity.
-Clause (2) records which cusps are toroidal for the *chosen* semitoroidal structure and which are only semitoroidal, which is a statement about the folded semifans $\semifan{F}_k$ of @sec-toroidal-and-semitoroidal rather than about the AEGS semifan; it follows cusp by cusp from the folding computation, and cusps $2$, $4$, $35$ together with the adjacent $1$-cusps are the ones where the folding is trivial, so the fan is already a genuine fan there.
-Clause (3) names the intermediate object -- the normalization $\normalize{B}$ of the Zariski closure of the Noether-Lefschetz locus inside the K3 compactification -- through which the comparison runs, and that is the only route in the literature that reaches clause (1) at all.
+Clause (1) is [@AEGS25, Thm. 1], clause (2) is [@AEGS25, Lem. 5.7], and clause (3) is [@AEGS25, §6].
 
 
 :::
@@ -33,7 +29,7 @@ The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in the five-cusp example (
 $$
 12,\quad 13,\quad 14,\quad 15,\quad 245,\quad 34,\quad 35,\quad 45,\quad 55 .
 $$
-So "cusp $35$" in part 2 is the $1$-cusp whose closure contains the $0$-cusps $3$ and $5$, not the pair of $0$-cusps: part 2 is [@AEGS25 Lem. 5.7] verbatim, and the $0$-cusps $3$ and $5$ are strictly semitoroidal, as the five-cusp example (@ex:fen2_five_cusps) records.
+In part 2, the $1$-cusp $35$ is the one whose closure contains the $0$-cusps $3$ and $5$; the $0$-cusps $3$ and $5$ are strictly semitoroidal (@ex:fen2_five_cusps).
 :::
 
 ::: {.remark}

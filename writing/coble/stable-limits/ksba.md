@@ -174,8 +174,8 @@ Without this injectivity the restricted semifan would be too fine for the actual
 
 ::: {.remark}
 
-The KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) remains open on four counts: root-orbit uniqueness (the root-orbit uniqueness question (@qst:coble_root_orbit_uniqueness)), the ramification-semifan restriction identity (the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan)), the no-moduli-loss conjecture (@conj:no_moduli_loss), and the exact cusp enumeration.
-The boundary dictionaries and cusp tables appearing in preliminary work remain unverified pending the restriction theorem and an explicit cusp computation.
+The KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) remains open on three counts: root-orbit uniqueness (the root-orbit uniqueness question (@qst:coble_root_orbit_uniqueness)), the ramification-semifan restriction identity (the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan)), and the no-moduli-loss conjecture (@conj:no_moduli_loss).
+The Baily--Borel compactification of $\fco$ has $527$ $0$-cusps and $189\,720$ $1$-cusps (@thm:cusp-lifting).
 :::
 
 ::: {.remark}

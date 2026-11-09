@@ -1,0 +1,15 @@
+12 9
+vertices labels: a1 a2 a3 a4 a5 a6 a7 a8 a9 a10 a11 a12
+a1 a3 3
+a1 a11 3
+a2 a4 3
+a2 a12 0
+a3 a4 3
+a4 a5 3
+a5 a6 3
+a6 a7 3
+a7 a8 3
+a8 a10 3
+a8 a11 3
+a9 a10 0
+a9 a12 0

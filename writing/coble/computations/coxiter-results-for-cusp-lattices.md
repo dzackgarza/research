@@ -50,20 +50,13 @@ The orbit counts themselves are not among the CoxIter outputs, which take no quo
 
 | Lattice $(r,a,\delta)$ | Diagram | Field | Dim | Vertices at $\infty$ | $f$-vector | $\chi$ |
 | --- | --- | --- | --- | --- | --- | --- |
-| $(9,9,1)_1$ | rank-9 chain, one label-4 edge | $\QQ[\sqrt2]$ | 8 | 1 | $(9,36,84,126,126,84,36,9,1)$ | $17/1393459200$ |
-| $(10,8,0)_1$ | rank-10 chain, one label-4 edge | $\QQ[\sqrt2]$ | 9 | 2 | $(10,45,120,210,252,210,120,45,10,1)$ | $0$ |
-| $(10,10,0)_1$ | rank-10, all edges label 3, $\tilde E_{10}$-shaped | $\QQ$ | 9 | 1 | $(10,45,120,210,252,210,120,45,10,1)$ | $0$ |
+| $(9,9,1)_1$ | nine nodes, arms of lengths $1,2,5$ at a branch node, label 4 on the last edge of the long arm | $\QQ[\sqrt2]$ | 8 | 1 | $(9,36,84,126,126,84,36,9,1)$ | $17/1393459200$ |
+| $(10,8,0)_1$ | ten nodes, arms of lengths $1,2,6$ at a branch node, label 4 on the last edge of the long arm | $\QQ[\sqrt2]$ | 9 | 2 | $(10,45,120,210,252,210,120,45,10,1)$ | $0$ |
+| $(10,10,0)_1$ | $T_{2,3,7}$: ten nodes, arms of lengths $1,2,6$ at a branch node, all edges label 3 | $\QQ$ | 9 | 1 | $(10,45,120,210,252,210,120,45,10,1)$ | $0$ |
 
-::: {.remark title="Why (9,9,1) matters here"}
+::: {.remark}
 
-$(9,9,1)$ is the **Coble 0-cusp lattice** named in this project's own text, alongside the 1-cusp $(7,7,1)$.
-$(10,10,0)$ and $(10,8,0)$ are the two Enriques 0-cusps to which the Coble cusps are claimed to map.
-So this table is direct computational evidence bearing on the cusp correspondence; see [the cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).
-:::
-
-::: {.remark title="Benchmarks, not results"}
-
-The same directory holds CoxIter runs on $E_6$, $F_4$ and $F_2$ (the last: 24 vertices, dimension 19, $\chi = -219323026921/45201995813229523107840000$). These are standard reference diagrams used to check the tool, not lattices of either project.
+The lattice of type $(9,9,1)$ is $\I_{1,8}(2)$, the Coble $0$-cusp lattice, and the lattices of types $(10,10,0)$ and $(10,8,0)$ are $U(2)\oplus E_8(2)$ and $U\oplus E_8(2)$, the two Enriques $0$-cusp lattices (@thm:zero-cusp-chambers).
 :::
 
 ## Elliptic subdiagram enumerations

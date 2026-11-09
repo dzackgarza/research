@@ -155,3 +155,7 @@ Pandoc's HTML writer omits a raw `tex` block or inline.
 A figure whose source the TikZ filter does not recognise therefore renders as its caption alone, with no warning, and the gate passes because nothing is unresolved.
 `tikzcd.lua` recognises a block that opens `tikzpicture` or `tikzcd`, an `\input` of a `.tikz`/`.tikzcd` file or of any file whose body opens one of those environments, and an inline `\dynkin`.
 After adding a figure in another form, look at the rendered page.
+
+## `coxiter` reads its graph on standard input
+
+`/usr/local/bin/coxiter` (in the Sage image at that path) takes the Coxeter graph from *standard input*: passing a file path, `-f path`, or an option such as `--help` all give `Error while reading graph: EMPTY_FILE`, even when the file is present inside the proot. The format is one header line `<vertices> <dimension>` and then one line `<i> <j> <m>` per edge, 1-indexed, `m` the Coxeter weight (`0` for infinity, `1` for a dotted edge); unlisted pairs are orthogonal. Worked inputs and full outputs: `computations/reports/coble_TEn-chambers_K1.coxiter`, `_K2.coxiter`, and the run file beside them.

@@ -1,0 +1,21 @@
+provenance
+  sage-extensions provider pin: c546077dce79a76eb32e92d080aa9c44e4c67552
+  preamble source root: /repo/.scratch/se-provider-c546/src (bound read-only at /repo)
+  engine source root in the traceback: /repos/sage-indefinite-port/src (inside the image)
+  Sage: 11.0.beta5
+  image rootfs: $HOME/sage-image/rootfs, read-only; repository bound at /repo
+  sage_extensions package file: /repo/.scratch/se-provider-15db925b/src/sage_extensions/__init__.py
+
+construction: Lattices(ZZ)(Gram of <2> + U(2) + E8(2))
+  rank 11, determinant -2048, signature (2, 9), even True
+call: L.discriminant_representation_is_surjective()
+  returned True
+
+control specimens, same call, same session:
+  S_Co = <2> + <-2>^10                       -> True
+  M = S_En + <delta> = U(2) + E8(2) + <-2>   -> True
+
+handoff: expected semantic operation is discriminant_representation_is_surjective() for the
+2-elementary indefinite lattice T_Co, i.e. surjectivity of O(L) -> O(A_L) read off the
+discriminant reduction sequence; the mathematical content is thm:two-elementary-surjectivity,
+which the manuscript states as a theorem independently of this runtime failure.

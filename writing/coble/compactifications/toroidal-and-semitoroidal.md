@@ -61,9 +61,7 @@ The forward implication is immediate on refining the semifan to a fan; the conve
 
 ::: {.remark title="Polarized Coble trace restriction"}
 
-The polarized Coble compactification program does not build a new semifan from scratch; it uses a Coble-specific restriction of the Enriques ramification semifan.
-Concretely, one takes the **trace** of the Enriques ramification semifan on a Coble hyperplane, together with an admissibility condition selecting which restricted walls survive.
-This is the semitoroidal side of the Coble comparison problem, @conj:restricted_ramification_semifan; the trace identity is not proved.
+@conj:restricted_ramification_semifan states that the semifan for the polarized Coble compactification is the **trace** of the Enriques ramification semifan on a Coble hyperplane, together with an admissibility condition selecting which restricted walls survive.
 :::
 
 ## Generalized Coxeter semifans

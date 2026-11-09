@@ -1,0 +1,9 @@
+isotropic primitive vectors in the box: 184
+primitive planes checked: 3100
+  |Pi*/Pi| = 1 : 0 planes found
+  |Pi*/Pi| = 2 : 1040 planes found
+      x = (-3, -2, -3, 1), y = (-3, 0, 0, 1)
+      x = (-3, -2, -3, 1), y = (-2, -2, -2, 1)
+      x = (-3, -2, -3, 1), y = (-1, 0, -1, 0)
+      x = (-3, -2, -3, 1), y = (0, -2, -3, 0)
+  |Pi*/Pi| = 4 : 0 planes found

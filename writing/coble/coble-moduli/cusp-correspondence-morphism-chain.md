@@ -14,66 +14,52 @@ tags:
 
 ::: {.remark title="The four-term chain"}
 
-The claimed chain is
+The moduli spaces are related by the maps
 $$
 \fco \too \fen \too \fentwo \longleftarrow \fttz ,
 $$
-where $\fttz$ is the moduli space of quartic hyperelliptic K3 surfaces used in AEGS. The purpose of the chain is to transport the KSBA/semitoroidal comparison proved for $\fentwo$ back to $\fco$.
+where $\fttz$ is the moduli space of quartic hyperelliptic K3 surfaces of [@AEGS25], and the normalized KSBA compactification of $\fentwo$ is a semitoroidal compactification [@AEGS25 Thm. 1].
 :::
 
 ::: {.construction title="The embedding and its two extensions"}
 
-An embedding $\fco \injects \fen$ into unpolarized Enriques moduli is claimed, together with two extensions to Baily-Borel compactifications:
+By @lem:locally_closed_embedding_BB, the lattice embeddings $T_\Co\injects\ten$ and $T_\Co\injects\tdp$ induce locally closed embeddings $\fco\injects\fen$ and $\fco\injects\fttz$, which extend to morphisms of Baily--Borel compactifications:
 $$
 \eta: \bbcpt{\fco} \to \bbcpt{\fen},
 \qquad
 \tilde\eta: \bbcpt{\fco} \to \bbcpt{\fttz} .
 $$
-The stratification of $\partial\bbcpt{\fco}$ is obtained by applying the *mirror moves* of AE22 to $S_{\Co} = (11,11,1)_1$.
-The boundary correspondence induced by $\eta$ is claimed to be determined by the divisibility invariant.
+The stratification of $\partial\bbcpt{\fco}$ is obtained by applying the mirror moves of [@AE22] to $S_{\Co} = (11,11,1)_1$.
+On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of $\fco$ to the $0$-cusps of $\fen$ of divisibility $2$ (@prop:cusp-map-injective, @prop:cusp-map-not-onto).
 :::
 
 ## The two cusp identifications
 
-::: {.conjecture title="Coble cusps under the extension to F_(2,2,0)"}
+::: {.remark title="Coble cusps under the extension to $\fttz$"}
 
-Under $\tilde\eta$, the Coble cusps correspond to $U \oplus E_8^{\oplus 2}$, the lattice with invariants $(18,0,0)_1$.
+Under $\tilde\eta$, the $0$-cusp of the vector $v_1$ of @lem:divisibilityTcoOne maps to the $0$-cusp $(18,0,0)_1 = U\oplus E_8^{\oplus 2}$ of $\fttz$, and the $1$-cusp of $J$ maps to a $1$-cusp with boundary lattice $(16,0,0)_0\cong D_{16}^+$ (@lem:cusp_map_dP, @prop:rank_16_cusp_D16).
 :::
 
-::: {.conjecture title="The Coble 0-cusp is Sterk cusp 2"}
+::: {.conjecture #conj:coble-zero-cusp-sterk-two title="The Coble $0$-cusp is Sterk cusp $2$"}
 
-The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $\fentwo$.
-The Sterk cusp diagram was first given by Sterk (1991).
+The Coble $0$-cusp corresponds to cusp $2$ of the cusp diagram of $\fentwo$ [@Ste91].
 :::
 
-::: {.remark title="A consistency check on the correspondence"}
+::: {.remark}
 
-By @ex:fen2_five_cusps, Sterk cusp 1 gives an $\RP^2$ integral-affine structure and cusps 2 through 5 give $\DD^2$.
-The divisibility computation predicts that **Coble degenerations are $\DD^2$-type rather than $\RP^2$-type**, which is the input needed to build the dlt models.
-The conjecture above, that the Coble $0$-cusp is Sterk cusp 2, also implies $\DD^2$-type.
-The two arguments are independent, so their agreement is a consistency check on the cusp correspondence.
+The five $0$-cusps of $\fentwo$ have boundary lattices $(10,10,0)_1$ for cusp $1$ and $(10,8,0)_1$ for cusps $2$ to $5$ [@AEGS25 Lemmas 3.9, 3.10]. The Coble $0$-cusp maps to the $0$-cusp $(10,8,0)_1$ of $\fen$ (@lem:w1_perp_calculation), so a cusp of $\fentwo$ over its image is one of cusps $2$ to $5$, whose integral-affine structures are all $\DD^2$ (@ex:fen2_five_cusps). Cusp $2$ is the only one of these folded from $(18,0,0)_1$, by the reflection $\alpha_k\mapsto\alpha_{20-k}$ of its Coxeter diagram [@AEGS25 Lemma 3.9].
 :::
 
-## The lattice-theoretic method
+## Orbits of isotropic sublattices
 
-::: {.remark title="Reduction to the discriminant group, and Eichler transformations"}
+::: {.remark}
 
-The stated method for the $\Gamma_{\Co}$-orbit classification, where $\Gamma_{\Co} \leq \Orth(T_{\Co})$ is the relevant subgroup and $D_{\Co}/\Gamma_{\Co}$ the relevant period domain:
-
-1. Careful study of the discriminant groups $A_{T_{\Co}}$ and $A_{\ten}$.
-
-2. Techniques reducing the classification of orbits of isotropic vectors in $T_{\Co}$ to finite computable problems in $A_{T_{\Co}}$.
-
-3. **Explicit construction of Eichler transformations** proving that vectors with prescribed numerical invariants lie in one $\Gamma_{\Co}$-orbit.
-
-This adapts Sterk's and Scattone's techniques to new lattices.
-Eichler transvections are not named as a tool in the current [Open problems](#sec-open-problems) note, which cites Sterk lifting and $\Orth(q_{T_{\Co}})$-orbits instead.
+The $0$-cusps and $1$-cusps of $\fco$ are the $\Gamma_\Co$-orbits of primitive isotropic lines and planes of $T_\Co$, where $\Gamma_\Co = \Orth^+(T_\Co)^*$. By @thm:cusp-lifting these orbits are in bijection with finite orbit sets in the discriminant group $A_{T_\Co}$: there are $527$ orbits of lines and $189\,720$ orbits of planes.
 :::
 
-::: {.remark title="The GIT birational model"}
+::: {.remark title="The GIT model"}
 
-$\fco \definedas D_{T_{\Co}}/\Orth(T_{\Co})$ is claimed birational to the GIT quotient $(\PP^2)^{10}\modmod\PGL_3$.
-This gives an independent computation of $\dim\fco = 9$, and an avenue for comparing GIT and KSBA compactifications.
+The moduli space of Coble surfaces obtained by blowing up the ten nodes of a rational plane sextic is a locally closed subvariety of the GIT quotient $(\PP^2)^{10}\modmod\PGL_3$, and an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ [@DK13 §3].
 :::
 
 ## Terminal Coble surfaces

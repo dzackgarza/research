@@ -13,13 +13,7 @@ By [@DK25 Prop. 9.1.4], any terminal Coble surface of K3 type is isomorphic to o
 This is used in [@DK25 Cor. 9.1.5] to show that $K_S^2 \geq -10$, and since $K_S^2 = -n$, this shows that such Coble surfaces have at most ten boundary components.
 
 Of most immediate relevance to us is the case considered in [@Cob19] where $n=1$.
-Following [@DK25 Ex. 9.1.7], the image $W \definedas V(f_6) \definedas \eta(C)$ is an irreducible plane sextic with 10 $A_1$ singularities (or $A_2$ singularities in the indicated variant). One can find a cubic $V(f_3)$ passing through nine of them and form a pencil $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints is a Halphen surface of index 2. The proof of [@DK25 Prop. 9.1.8] indicates that the moduli space of general Halphen surfaces of index 2 has dimension 9.
-:::
-
-::: {.warning}
-Attribution unverified: Prop.
-9.1.8 as published computes $h^1(\Theta_{V/k}) = 10+2n$; neither it nor its proof mentions the dimension of Halphen moduli.
-Locate the intended source.
+Following [@DK25 Ex. 9.1.7], the image $W \definedas V(f_6) \definedas \eta(C)$ is an irreducible plane sextic with 10 $A_1$ singularities (or $A_2$ singularities in the indicated variant). One can find a cubic $V(f_3)$ passing through nine of them and form a pencil $V(\lambda f_6 + \mu f_3^2)$ such that the minimal resolution of its basepoints is a Halphen surface of index 2. A terminal Coble surface $V$ of K3 type with $n$ boundary components $C$ has $h^1(\Theta_{V/k}) = 10+2n$ [@DK25 Prop. 9.1.8] and $h^1(\Theta_{V/k}(-C)) = 10-n$ [@DK25 Rem. 9.1.9]; for $n=1$ the number of moduli is $9$, which is also the number of moduli of general Halphen surfaces of index 2 [@DK25 Rem. 9.1.9].
 :::
 
 The following is [@CD12 Prop. 3.1]:

@@ -135,6 +135,6 @@ Absent such a triangulation, the marked-root prescription remains a construction
 
 ::: {.remark}
 
-Under the cusp correspondence, the Coble $0$-cusp corresponds to Sterk cusp $2$, realized as the folding of the cusp $(18,0,0)_1$ by the horizontal symmetry of its Coxeter diagram [@AEGS25].
-The associated integral affine and Kulikov models therefore have dual complex a disc, $\Gamma(\mcz_0) \cong \bD^2$, matching the folding involution of Sterk $2$; the Coble boundary is expected to produce dual complexes that are discs rather than spheres or $\mathbf{RP}^2$, in agreement with the flowerpot degenerations of Morrison [@Mor81; @AEGS25].
+By @lem:cusp_map_dP the Coble $0$-cusp maps under $\tilde\eta$ to $(18,0,0)_1$, and Sterk cusp $2$ is the folding of $(18,0,0)_1$ by the reflection $\alpha_k\mapsto\alpha_{20-k}$ of its Coxeter diagram [@AEGS25 Lemma 3.9].
+Under @conj:coble-zero-cusp-sterk-two, the integral-affine and Kulikov models at the Coble $0$-cusp have dual complex a disc, $\Gamma(\mcz_0) \cong \bD^2$, as at Sterk cusp $2$, and not a sphere or $\mathbf{RP}^2$; this agrees with the flowerpot degenerations of Morrison [@Mor81; @AEGS25].
 :::

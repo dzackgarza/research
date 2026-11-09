@@ -1,0 +1,42 @@
+the I_{1,8} basis inside B
+  squares: [1, -1, -1, -1, -1, -1, -1, -1, -1]
+  Gram: [[1, 0, 0, 0, 0, 0, 0, 0, 0], [0, -1, 0, 0, 0, 0, 0, 0, 0], [0, 0, -1, 0, 0, 0, 0, 0, 0], [0, 0, 0, -1, 0, 0, 0, 0, 0], [0, 0, 0, 0, -1, 0, 0, 0, 0], [0, 0, 0, 0, 0, -1, 0, 0, 0], [0, 0, 0, 0, 0, 0, -1, 0, 0], [0, 0, 0, 0, 0, 0, 0, -1, 0], [0, 0, 0, 0, 0, 0, 0, 0, -1]]
+  orthogonal to v = e_1: True
+  determinant of the three-vector block: 1
+
+the nine walls in B coordinates, with their squares
+  [0, 0, -1, 1, 0, 0, 0, 0, 0, 0, 0]   square -2
+  [0, 0, 0, -1, -1, 1, 0, 0, 0, 0, 0]   square -2
+  [0, 0, 0, 0, 0, -1, 1, 0, 0, 0, 0]   square -2
+  [0, 0, 0, 0, 0, 0, -1, 1, 0, 0, 0]   square -2
+  [0, 0, 0, 0, 0, 0, 0, -1, 1, 0, 0]   square -2
+  [0, 0, 0, 0, 0, 0, 0, 0, -1, 1, 0]   square -2
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 1]   square -2
+  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1]   square -1
+  [0, 0, 2, 2, 3, 1, 0, 0, 0, 0, 0]   square -2
+
+the Gram matrix of the substituted walls
+  [-2, 1, 0, 0, 0, 0, 0, 0, 0]
+  [1, -2, 1, 0, 0, 0, 0, 0, 0]
+  [0, 1, -2, 1, 0, 0, 0, 0, 1]
+  [0, 0, 1, -2, 1, 0, 0, 0, 0]
+  [0, 0, 0, 1, -2, 1, 0, 0, 0]
+  [0, 0, 0, 0, 1, -2, 1, 0, 0]
+  [0, 0, 0, 0, 0, 1, -2, 1, 0]
+  [0, 0, 0, 0, 0, 0, 1, -1, 0]
+  [0, 0, 1, 0, 0, 0, 0, 0, -2]
+  it equals the printed chamber Gram matrix: True
+
+the O(q) images on the eleven coordinates of B/2B
+  the even sublattice basis, with squares: [4, 0, 0, 0, 0, 0, 0, 0, 0]
+  every reflection preserves q: True
+  every kernel transvection preserves q: True
+
+THE NUMBERS
+  |rho(W)|       = 348364800
+  |rho(ker pi)|  = 256
+  |<rho(W), rho(ker pi)>| = 89181388800
+  c = |rho(W)| |rho(ker pi)| / |rho(S)| = 1
+  [O(K) : G] = |rho(W)| / c = 348364800
+  |O(q)| / |rho(S)| = 527
+  527 * c            = 527

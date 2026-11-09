@@ -1,0 +1,9 @@
+nonzero singular vectors: 527  totally singular planes: 23715
+G_Co-orbit sizes on nonzero singular vectors: [2, 120, 135, 270]
+  plane orbit of size   270; vector-orbit sizes of its nonzero classes: [(2, 135, 270)]
+  plane orbit of size  1575; vector-orbit sizes of its nonzero classes: [(135, 135, 135)]
+  plane orbit of size  3780; vector-orbit sizes of its nonzero classes: [(120, 120, 135)]
+  plane orbit of size  8640; vector-orbit sizes of its nonzero classes: [(120, 270, 270)]
+  plane orbit of size  9450; vector-orbit sizes of its nonzero classes: [(135, 270, 270)]
+star-decorated plane orbits: 7 [2160, 3150, 7560, 9450, 22680, 69120, 75600]
+star-decorated flag orbits: 13 [2160, 2160, 2160, 7560, 9450, 15120, 22680, 28350, 45360, 69120, 75600, 138240, 151200]

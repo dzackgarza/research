@@ -460,6 +460,39 @@ Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signatur
 and $\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $L$.
 :::
 
+::: {.proposition #prop:rank-nine-vector-transitivity title="Primitive isotropic vectors of $\latI_{1,8}$ and of its twist"}
+
+Let $L$ be $\latI_{1,8}$ or $\latI_{1,8}(2)$, of signature $(1,8)$, and fix a component $C^+$ of the positive cone $\theset{x\in L\otimes\bR\st x^2>0}$.
+For a primitive isotropic $v\in L$ the sign of $\beta_\bR(v,e)$ is independent of the choice of $e\in C^+$, because $\beta_\bR(v,-)$ has no zero on $C^+$ --- a zero would put the isotropic $v$ in the negative definite hyperplane $e^{\perp}$ --- and $C^+$ is connected; call that sign the **side** of $v$.
+Then
+
+1. $\Orth(L)$ acts transitively on the primitive isotropic vectors of $L$;
+
+2. $\Orth^+(L)$ has exactly two orbits on them, the vectors of side $+1$ and the vectors of side $-1$; $-\id_L$ lies in $\Orth(L)\setminus\Orth^+(L)$ and exchanges the two;
+
+3. every $g\in\Orth(L)$ carrying a vector of side $+1$ to a vector of side $+1$ lies in $\Orth^+(L)$.
+
+The numerical inputs of the proof are computed in `computations/reports/coble_I18_two_orbits.py`: $\latI_{1,8}$ of rank $9$, signature $(1,8)$, odd and unimodular; $-\id$ with spinor norm $[(-1)^1] = -1$, hence outside $\Orth^+$ and exchanging the two sides; an explicit isometry carrying one primitive isotropic vector to another; and the reflections inside $v^{\perp}$ with their spinor norm $1$.
+:::
+
+::: {.proof}
+
+Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\bZ)$ and isotropy, as in @prop:rank-nine-line-transitivity, so it suffices to treat $L=\latI_{1,8}$.
+
+(1) By @prop:rank-nine-line-transitivity there is $g\in\Orth(L)$ with $g(\bZ v)=\bZ v'$, that is $g(v)=\pm v'$; composing with $-\id_L$, which lies in $\Orth(L)$, gives the sign.
+
+(2) By @lem:minus-identity-spinor-norm, $\spinornorm_\bR(-\id_L)=[(-1)^1]=-1$ because the positive index is $1$, so $-\id_L\notin\Orth^+(L)$ and $\Orth(L)=\Orth^+(L)\cup(-\id_L)\Orth^+(L)$.
+Hence $\Orth(L)\cdot v=\Orth^+(L)\cdot v\cup\Orth^+(L)\cdot(-v)$, and by (1) there are at most two $\Orth^+(L)$-orbits.
+There are at least two: $\Orth^+(L)$ preserves each component of $C^+$ by @prop:spinor-plus-cone-components, so for $g\in\Orth^+(L)$ and $e\in C^+$ one has $ge\in C^+$ and
+$$
+\operatorname{sign}\beta_\bR(gv,e)=\operatorname{sign}\beta_\bR(v,g^{-1}e)=\operatorname{sign}\beta_\bR(v,e),
+$$
+the middle step by invariance of $\beta_\bR$ and the last by $g^{-1}e\in C^+$; so the side is constant on an $\Orth^+(L)$-orbit, while $\operatorname{side}(-v)=-\operatorname{side}(v)$.
+So the two orbits are the two sides.
+
+(3) Let $g\in\Orth(L)$ with $\operatorname{side}(gv)=\operatorname{side}(v)$. If $g$ exchanged the components of $C(L)$ then $ge\in-C^+$ for $e\in C^+$, and $\beta_\bR(gv,ge)=\beta_\bR(v,e)$ together with $\operatorname{sign}\beta_\bR(gv,-C^+)=-\operatorname{side}(gv)$ would give $-\operatorname{side}(gv)=\operatorname{side}(v)$, contradicting the hypothesis. So $g$ preserves the components, that is $g\in\Orth^+(L)$ by @prop:spinor-plus-cone-components.
+:::
+
 ::: {.proof}
 
 Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\ZZ)$ and isotropy, so it
@@ -474,7 +507,7 @@ each rank $1\leq n\leq7$ is unique by @thm:definite-unimodular-class-numbers and
 it records. So $M\cong\latI_{0,7}$ for every such $v$, and the complements of two primitive isotropic
 vectors are isometric.
 
-A note on the type of $v$, since James and Wall classify by it: no primitive isotropic vector of
+No primitive isotropic vector of
 $\latI_{1,8}$ is characteristic. A characteristic vector of $\latI_{p,q}$ has all coordinates odd, hence
 square $\equiv p-q\equiv1-8\equiv1\pmod 8$, while an isotropic vector has square $0$; so the class of
 primitive isotropic vectors carries no type split, and the line statement has one orbit and not two. Given $v$ and $v'$ with splittings $P\perp M$ and $P'\perp M'$, an isometry of $P$ onto
@@ -482,26 +515,14 @@ $P'$ exists ($P\cong P'\cong\latI_{1,1}$) and an isometry of $M$ onto $M'$ by th
 together give $g\in\Orth(L)$ carrying the line $\ZZ v$ to the line $\ZZ v'$. So $\Orth(L)$ is transitive on
 lines.
 
-For $\Orth^+(L)$ the component question is settled by the definition and not by a picture:
-@def:period-component-character defines the period character $\chi_{\mathrm{per}}$ of a signature-$(2,n)$
-lattice as the action on the two components of the domain of *oriented positive-definite two-planes*, and
-@prop:period-spinor-character identifies it with the real spinor character. For the Lorentzian $\latI_{1,8}$
-the positive-definite part is a line, the same two components are the two halves of the positive cone, and
-$-\id_L$ negates that line, so $\chi_{\mathrm{per}}(-\id_L) = -1$: $-\id_L$ fixes every line and lies in
-$\Orth(L)\setminus\Orth^+(L)$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ is already in
+By @prop:spinor-plus-cone-components, $\Orth^+(\latI_{1,8})$ is the subgroup of $\Orth(\latI_{1,8})$ preserving
+each component of the positive cone, and by @lem:minus-identity-spinor-norm $-\id_L\notin\Orth^+(\latI_{1,8})$,
+since the positive index is $1$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ is already in
 $\Orth^+(L)$, or $(-g)$ is --- $-g$ fixes every line as well --- and $\Orth^+(L)$ is transitive on lines
-too. (This is a statement about signature $(1,8)$; it does not transplant, and the paragraph after
-@thm:plane-transitivity-tco records why.)
+too.
 :::
 
-Two things this does **not** establish.
-*Vectors rather than lines.* Transitivity on primitive isotropic **vectors** by $\Orth^+$ is not obtained:
-$-g$ sends $v$ to $-v'$, not to $v'$, and the map $v\mapsto v$, $w\mapsto w+tv$, $M\mapsto -M$, which would lie in $\Orth\setminus\Orth^+$,
-is not an isometry at all, since
-$(w+tv)^2 = 2t$ for $v^2=w^2=0$, $(v,w)=1$. The vector-level statement is open.
-*The rank-$7$ input.* The uniqueness used above is
-@thm:definite-unimodular-class-numbers with the table row $1\leq n\leq7$ (one odd class), sourced there to
-Conway--Sloane and cross-checked against OEIS A054911.
+On primitive isotropic *vectors* $\Orth^+(L)$ has two orbits, the two sides of the positive cone (@prop:rank-nine-vector-transitivity), so an isometry carrying $\ZZ v$ to $\ZZ v'$ carries $v$ to $\pm v'$.
 
 ::: {.theorem #thm:plane-transitivity-tco title="Primitive isotropic planes of $T_\Co$"}
 
@@ -516,13 +537,11 @@ as subgroups of $\GL(B)$ and the primitive isotropic *planes* of the two are the
 
 Let $l$ be a primitive isotropic line of $B$ and split $B=P\perp M$ with $P=\latI_{1,1}$ by
 @cor:hyperbolic-splitting; then $M\cong\latI_{1,8}$ by @thm:indefinite-unimodular-classification, and
-$l^\perp/l\cong M$ --- the check is that for $l=\ZZ(v+w)$ in $P=\diag(1,-1)$ one has
-$l^{\perp B}=l\perp M$, which is computed in
-`computations/reports/split_quotient_I18.py`: $l^\perp/l$ has rank $9$, signature $(1,8)$ and determinant
-$\pm1$. So isotropic planes through $l$ correspond to primitive isotropic lines of $M\cong\latI_{1,8}$.
+$l^\perp/l\cong M$: for $l=\ZZ(v+w)$ with $v^2=1$, $w^2=-1$ and $v\cdot w=0$ in $P$, an element
+$av+bw+m$ with $m\in M$ is orthogonal to $l$ exactly when $a=b$, so $l^{\perp B}=l\perp M$. So isotropic planes through $l$ correspond to primitive isotropic lines of $M\cong\latI_{1,8}$.
 
 Every isometry of $M$ extends to $B$ as $\id_P\perp\varphi$, which fixes $P$ pointwise and hence fixes $l$.
-Its component is computed from @def:period-component-character rather than assumed: $B$ has signature $(2,9)$,
+Its component is computed from @def:period-component-character: $B$ has signature $(2,9)$,
 so its period domain is the space of *oriented positive-definite two-planes*, and the positive plane of
 $B=P\perp M$ is $E_P\oplus E_M$ with $E_P$, $E_M$ the positive lines of the two factors. An isometry
 $\id_P\perp\varphi$ acts on it by $\id$ on $E_P$ and by $\varphi$ on $E_M$, so
@@ -531,13 +550,11 @@ the sign being the determinant on the oriented plane. Hence $\id_P\perp\varphi\i
 $\varphi\in\Orth^+(M)$, and the restriction
 $$\Stab_{\Orth^+(B)}(l)\longrightarrow\Orth^+\bigl(l^{\perp B}/l\bigr)$$
 is *surjective* in this model, with no discriminant condition: the lifting is $\varphi\mapsto\id_P\perp\varphi$.
-Note that $-\id_B$ is *inside* $\Orth^+(B)$, since $\det$ on the positive plane is $(-1)^2=+1$; the
-component-reversing element used for the $\latI_{1,8}$ statement above therefore does not transfer, which is
-why the line statement for the ambient $(2,9)$ lattice is proved here from the splitting instead.
+Here $-\id_B\in\Orth^+(B)$, since $\det$ on the positive plane is $(-1)^2=+1$, so $-\id_B$ cannot
+replace an isometry carrying $l$ to $l'$ by one in $\Orth^+(B)$.
 
 Now let $J,J'$ be primitive isotropic planes. Choose primitive isotropic lines $l\subset J$ and $l'\subset J'$,
-which are primitive in $B$ since $J,J'$ are. Line transitivity for the *ambient* group is not the
-$(1,8)$ statement and is obtained here directly: split $B=P\perp M=P'\perp M'$ at $l$ and $l'$; the
+which are primitive in $B$ since $J,J'$ are. Split $B=P\perp M=P'\perp M'$ at $l$ and $l'$; the
 complements are both $\latI_{1,8}$, so $P\cong P'$ and $M\cong M'$ and an isometry $g$ of $B$ carries
 $l$ to $l'$ --- $\psi\perp\vartheta$, with $\psi$ the isometry of $\latI_{1,1}$ interchanging its two
 isotropic lines. If $g\notin\Orth^+(B)$,
@@ -554,20 +571,10 @@ to the other. Its extension $\id_{P'}\perp\varphi$ lies in $\Stab_{\Orth^+(B)}(l
 so $(\id_{P'}\perp\varphi)\circ g$ carries $J$ to $J'$.
 :::
 
-A remark on the component. For signature $(2,9)$ the
-centre $-\id$ is *inside* $\Orth^+$: it acts on the positive plane with determinant $(-1)^2=+1$, so it
-preserves each component of the period domain, and it therefore cannot be used to move a transiting isometry
-into $\Orth^+$ --- although it fixes every line. The element that does that job here is
-the same construction at the target line, $\id_{P'}\perp(-\id_{M'})$, with character $-1$; and the element
-that does *not* preserve the component of $T_\Co$ is likewise not $-\id$ but any isometry acting with
-determinant $-1$ on the positive plane.
-
-Two scoping remarks. The characteristic-vector statement above is used only for $\latI_{1,8}$, where
-$p-q\equiv1\pmod8$; it is false in general --- in $\latI_{1,1}$ the vector $(1,1)$ is characteristic and
-isotropic, since $1-1\equiv0\pmod8$ --- so the correct general form is that no primitive isotropic vector of
-$\latI_{p,q}$ is characteristic when $p-q\not\equiv0\pmod8$, and nothing here asserts more.
-And the transitivity proved is for the full component-preserving group of the unpolarized lattice; the
-arithmetic subgroup $\Gamma_\Co$ is strictly smaller and its orbits are finer, which is a different question.
+No primitive isotropic vector of $\latI_{p,q}$ is characteristic when $p-q\not\equiv0\pmod8$. The
+congruence is needed: in $\latI_{1,1}$ the vector $(1,1)$ is characteristic and isotropic. The arithmetic subgroup $\Gamma_\Co$ has
+$527$ orbits of primitive isotropic lines and $189\,720$ orbits of primitive isotropic planes of $T_\Co$
+(@thm:cusp-lifting).
 
 The same splitting is available for $T_\Co$, by untwisting, although $T_\Co$ is not
 unimodular. Write $T_\Co = B(2)$ with $B=\latI_{2,9}$ unimodular
@@ -580,22 +587,9 @@ gives
 $$T_\Co = \latI_{1,1}(2)\perp\latI_{1,8}(2) = U(2)\perp U(2)\perp\latI_{0,7}(2),$$
 using $\latI_{1,8}=\latI_{1,1}\perp\latI_{0,7}$ again. The two presentations $\generators{2}\oplus U(2)\oplus E_8(2)$
 and $U(2)\oplus U(2)\oplus\latI_{0,7}(2)$ agree in rank $11$, in signature $(2,9)$, in determinant $-2^{11}$
-and in two-elementary type $(11,11,1)$ with $\abs{A}=2048$, which is checked in
-`computations/reports/scaled_splitting_invariants.py`. The quotient $l^{\perp T_\Co}/l\cong\latI_{1,8}(2)$ is one of the factors, and its
+and in two-elementary type $(11,11,1)$ with $\abs{A}=2048$
+(`computations/reports/scaled_splitting_invariants.py`). The quotient $l^{\perp T_\Co}/l\cong\latI_{1,8}(2)$ is one of the factors, and its
 primitive isotropic lines are transitive by the proposition above.
-
-So the plane question moves into the unimodular lattice, where the tools do apply: it is equivalent to
-transitivity of $\Orth^+(B)=\Orth^+(T_\Co)$ on primitive isotropic *planes* of $B=\latI_{2,9}$, and planes
-through a fixed line $l$ correspond to primitive isotropic lines of $l^{\perp B}/l\cong\latI_{1,8}$, where
-lines are transitive by the proposition above and where no primitive isotropic vector is characteristic, so
-there is one class of lines and not two. What plane transitivity needs beyond that is that the restriction
-$$\Stab_{\Orth^+(T_\Co)}(l)\longrightarrow\Orth^+\bigl(l^{\perp T_\Co}/l\bigr)$$
-meet the cosets that move one isotropic line of the quotient to another -- a statement about the full
-component-preserving group and its stabilizer in a unimodular ambient lattice, not about a discriminant
-kernel, and no discriminant-kernel constraint is claimed here.
-What this does *not* give: transitivity on primitive isotropic *planes*, which is a statement about
-subspaces rather than vectors and is not a corollary of the argument above; and any statement about a
-proper arithmetic subgroup, whose orbits are finer than those of $\Orth(L)$.
 
 ## Finiteness of embedding orbits
 
