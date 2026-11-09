@@ -13,9 +13,7 @@ notes: |-
 
 # Explicit root vectors and the folded Sterk diagrams {#sec-root-vectors-and-folded-sterk-diagrams}
 
-Absent from the dissertation, which states only the generic fact that roots have norm $-2$ or $-4$ with divisibility 2.
-
-::: {.remark title="Why this is the highest-value computational note for this project"}
+::: {.remark title="Use in the Coble problem"}
 
 [Open problems](#sec-open-problems) poses, as an open conjecture, the horizontal folding involution $\theta$ with $\lkt^\theta \cong T_{\Co}$ and $\lkt^{-\theta}\cong S_{\Co}$, and explicitly demands the $22\times22$ matrix of $\theta$ and the horizontal folding of the $(18,0,0)_1$ diagram.
 Those are stated in exactly the coordinates tabulated below.
@@ -104,7 +102,7 @@ $s^5_k = v_{2k-2} + 2 v_{2k-1} + v_{2k}$.
 ::: {.remark title="Independent verification against Sterk's published basis"}
 
 Each folded diagram is cross-checked against Sterk's own published root basis (in terms of $\alpha'_i, e, f, e', f', w'_i$), producing the same norm multisets in permuted order.
-This is an independent confirmation that the folding construction reproduces Sterk's diagrams, and is the strongest surviving validation in the corpus.
+This is an independent confirmation that the folding construction reproduces Sterk's diagrams.
 :::
 
 ## Eigenspace ranks of the Sterk involution
@@ -142,10 +140,10 @@ This is the only unresolved research observation found in that whole source tree
 Anything derived from $\Phi_{(18,2,0)}$, including the folded Sterk diagrams and the $\theta$ matrix the open problems demand, inherits whatever the discrepancy is.
 Settling it is a prerequisite, not a footnote.
 
-::: {.remark title="A related contradiction, resolved"}
+::: {.remark title="Toroidal 0-cusps"}
 
-Two blocks of the same archived outline disagree about which 0-cusps of $\fentwo$ carry toroidal rather than strictly semitoroidal compactifications: one says cusps 2 and 4, the other says cusps 2 and 3. The dissertation settles it as **cusps 2 and 4**, together with the adjacent 1-cusps and 1-cusp 35, citing AEGS Thm.
-5.9. This matters here because the Coble 0-cusp is claimed to be Sterk cusp 2, which is toroidal under either reading; see @sec-cusp-correspondence-morphism-chain.
+The 0-cusps of $\fentwo$ whose compactifications are toroidal rather than strictly semitoroidal are **cusps 2 and 4**, together with the adjacent 1-cusps and 1-cusp 35 (AEGS Thm. 5.9).
+The Coble 0-cusp is conjecturally Sterk cusp 2, which is toroidal; see @sec-cusp-correspondence-morphism-chain.
 :::
 
 Related: [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe), [lattice and diagram conventions](#sec-lattice-and-diagram-conventions), [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).

@@ -10,12 +10,7 @@ tags:
 
 # Lattice length table and Coxeter-Vinberg diagram conventions {#sec-lattice-and-diagram-conventions}
 
-::: {.provenance title="Provenance"}
-Archived thesis appendix tables and figures, sections A.1.3, A.2.1, A.2.2, and A.4, drawing on the archived notes on discriminant bilinear/quadratic forms, Coxeter--Vinberg diagrams, and root-lattice labelling conventions.
-:::
-None of these tables appear in the dissertation.
-
-This project defines the length $\ell(L)$ in [Discriminant forms and genus](#sec-discriminant-genus) but tabulates no values.
+The length $\ell(L)$ is defined in [Discriminant forms and genus](#sec-discriminant-genus).
 
 ## Length table
 
@@ -43,7 +38,6 @@ $\ell(L)$ is the minimal number of generators of the discriminant group $A_L$.
 ::: {.remark title="The row that matters here"}
 
 $A_{E_{10}(2)} = C_2^{10}$ with $\ell = 10$ is the datum behind $A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \generators{2}\oplus E_{10}(2)$ contributes one further $C_2$.
-This is the only place the corpus records that value explicitly.
 :::
 
 ## Coxeter-Vinberg diagram conventions
@@ -79,11 +73,11 @@ $|h_1 h_2| = \sqrt{h_1^2 h_2^2}\, w_{12}$ with $w_{12}$ from the table above.
 | black, black, thick | $-4$ | $-4$ | 4 |
 | black, black, dotted | $-4$ | $-4$ | $>4$ |
 
-This project's [Reflection groups and Vinberg](#sec-reflection-groups-and-vinberg) note describes dotted edges in prose only; the tables above are the corresponding numerical conventions, and are what the reconstruction formula
+The tables above give the numerical conventions for the diagrams of [Reflection groups and Vinberg](#sec-reflection-groups-and-vinberg), and the reconstruction formula
 $$
 \langle v_i, v_j\rangle = \sqrt{\abs{v_i^2}\,\abs{v_j^2}}\,\cos\!\left(\frac{\pi}{m_{ij}}\right)
 $$
-of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams) depends on.
+of [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams) uses them.
 
 ## Cusp type classification
 
@@ -121,19 +115,7 @@ G_{E_8}^{-1} = \begin{pmatrix}
 $$
 The rows of $G_{E_8}^{-1}$ are the highest-root expansions used in the folded Sterk 3 rank check.
 
-::: {.remark title="Not carried over"}
-
-The source file also holds a Niemeier lattice table, a mass formula table, and a table of unimodular lattices by dimension.
-These are standard and available in Conway-Sloane; they are noted here rather than reproduced.
-The source file is internally corrupted in that region: rows $n = 6\ldots9$ of the mass-formula table are orphaned after the following section, and the label A.1.3 is used twice.
-Its figure section lists captions only, with all images dead `cdn.mathpix.com` links.
-:::
-
 ## Discriminant group cardinalities and orders
-
-::: {.provenance title="Provenance for this section"}
-Archived thesis-outline parts 0 and 1. The statements are given there without derivation and marked `audited: false`. They are recorded because they are tedious to recompute, not because the source is authoritative: re-derive before relying on them.
-:::
 
 Writing $A_L = I^0(A_L) \amalg I^1(A_L)$ with $I^i = \{x : q_L(x)\equiv i \bmod 2\ZZ\}$:
 
@@ -153,7 +135,7 @@ $$
 $$
 The covering $F_{\En,2}\to F_{K3,\En}$ is recorded as finite of degree $2^7\cdot17\cdot31$.
 
-::: {.remark title="Why these belong in this project"}
+::: {.remark title="Use in the Coble problem"}
 
 $A_{T_{\Co}} \cong (\ZZ/2)^{11}$, since $T_{\Co} = \generators{2}\oplus E_{10}(2)$ adds one $C_2$ to $A_{E_{10}(2)} = C_2^{10}$.
 The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $\Gamma_{\Co}$-orbit problem to a finite computation in $A_{T_{\Co}}$, which is the method recorded in [The Coble cusp correspondence and the morphism chain](#sec-cusp-correspondence-morphism-chain). The group orders bound the index computations in that reduction.

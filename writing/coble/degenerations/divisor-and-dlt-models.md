@@ -6,11 +6,6 @@ This section collects three models used to describe degenerations of K3 and Enri
 The three are related: the dlt model is the quotient of a Kulikov model by the Enriques involution, the half-divisor model is the quotient of a divisor model by the same involution, and the strata of the quotients carry the combinatorial data.
 :::
 
-::: {.question}
-The source notes describe the relationship of these models to the KSBA program (below); they do not discuss the relationship to Kulikov models explicitly.
-If a Kulikov comparison is intended here, supply it.
-:::
-
 ::: {.remark}
 The dlt, divisor and half-divisor models here are those of the Alexeev--Engel--Garza--Schaffler degree-$2$ Enriques program [@AEGS25], used in the Morrison degenerations section in the same form.
 :::

@@ -9,11 +9,7 @@ tags:
 
 # The nodal Enriques moduli program {#sec-nodal-enriques-moduli-program}
 
-::: {.provenance title="Provenance"}
-The research statement, section "Future Work / Nodal Enriques surfaces", together with the archived thesis outline and archived nodal-Enriques notes. Absent from the dissertation entirely.
-:::
-
-The lattices themselves are **already recorded** in [Nodal Enriques lattices](#sec-nodal-enriques-lattices). This note records the research program and one discrepancy.
+The lattices are defined in [Nodal Enriques lattices](#sec-nodal-enriques-lattices).
 
 ## Setting
 

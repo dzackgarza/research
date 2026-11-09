@@ -63,7 +63,7 @@ Cited: semitoroidal compactifications of type IV arithmetic quotients are exactl
 
 The polarized Coble compactification program does not build a new semifan from scratch; it uses a Coble-specific restriction of the Enriques ramification semifan.
 Concretely, one takes the **trace** of the Enriques ramification semifan on a Coble hyperplane, together with an admissibility condition selecting which restricted walls survive.
-This is the semitoroidal side of the Coble comparison problem, recorded here as @conj:restricted_ramification_semifan; the trace identity is not yet proved, and is kept explicitly conjectural.
+This is the semitoroidal side of the Coble comparison problem, @conj:restricted_ramification_semifan; the trace identity is not proved.
 :::
 
 ## Generalized Coxeter semifans

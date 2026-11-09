@@ -281,7 +281,7 @@ Cited: Vinberg algorithm and its termination criterion, from the original paper.
 
 ::: {.remark}
 
-The source note states step 3 as "discard those roots whose hyperplanes do not intersect $\tilde P$ transversely"; the explicit inequality $v\cdot r_i\geq 0$ recorded above is Vinberg's acceptance criterion for that condition in the algebraic-geometry sign convention [@Vin75].
+In step 3, the inequality $v\cdot r_i\geq 0$ is Vinberg's acceptance criterion [@Vin75], in the algebraic-geometry sign convention, for the hyperplane of $r_i$ to meet $\tilde P$ transversely.
 :::
 
 ::: {.definition #def:lanner-subgraph title="Lannér subgraph"}

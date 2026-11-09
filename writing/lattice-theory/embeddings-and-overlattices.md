@@ -439,8 +439,8 @@ $\equiv-7\equiv1\pmod 8$, while an isotropic vector has square $0$. Hence both $
 non-characteristic, the clause is vacuous, and the isometry extends.
 :::
 
-Why the statement cannot be generalised to "every unimodular $L$ with $r-\abs{\fs}\geq4$", which is
-what an earlier version of this proposition said. The congruence above is special to $B$, and without it
+The statement does not generalise to "every unimodular $L$ with $r-\abs{\fs}\geq4$".
+The congruence above is special to $B$, and without it
 characteristic isotropic vectors can exist: $\latI_{2,2}$ has $r-\abs{\fs}=4-0=4$ and carries both
 $c=(1,1,1,1)$, which is characteristic of square $0$, and $v=(1,0,1,0)$, which is not characteristic and
 also of square $0$. Isometries preserve characteristic status, so no isometry carries one to the other and
@@ -494,16 +494,14 @@ too. (This is a statement about signature $(1,8)$; it does not transplant, and t
 @thm:plane-transitivity-tco records why.)
 :::
 
-Two things this does **not** establish, and an earlier draft of this proposition got both wrong.
+Two things this does **not** establish.
 *Vectors rather than lines.* Transitivity on primitive isotropic **vectors** by $\Orth^+$ is not obtained:
-$-g$ sends $v$ to $-v'$, not to $v'$, and the element of $\Orth\setminus\Orth^+$ that an earlier draft
-proposed --- $v\mapsto v$, $w\mapsto w+tv$, $M\mapsto -M$ --- is not an isometry at all, since
+$-g$ sends $v$ to $-v'$, not to $v'$, and the map $v\mapsto v$, $w\mapsto w+tv$, $M\mapsto -M$, which would lie in $\Orth\setminus\Orth^+$,
+is not an isometry at all, since
 $(w+tv)^2 = 2t$ for $v^2=w^2=0$, $(v,w)=1$. The vector-level statement is open.
-*The rank-$7$ input, now cited rather than assumed.* The uniqueness used above is the book's own
+*The rank-$7$ input.* The uniqueness used above is
 @thm:definite-unimodular-class-numbers with the table row $1\leq n\leq7$ (one odd class), sourced there to
-Conway--Sloane and cross-checked against OEIS A054911. It is not a new hypothesis and was not one before it
-was looked up: the earlier version of this proposition carried it as an assumption only because the lookup
-had not been made.
+Conway--Sloane and cross-checked against OEIS A054911.
 
 ::: {.theorem #thm:plane-transitivity-tco title="Primitive isotropic planes of $T_\Co$"}
 
@@ -519,7 +517,7 @@ as subgroups of $\GL(B)$ and the primitive isotropic *planes* of the two are the
 Let $l$ be a primitive isotropic line of $B$ and split $B=P\perp M$ with $P=\latI_{1,1}$ by
 @cor:hyperbolic-splitting; then $M\cong\latI_{1,8}$ by @thm:indefinite-unimodular-classification, and
 $l^\perp/l\cong M$ --- the check is that for $l=\ZZ(v+w)$ in $P=\diag(1,-1)$ one has
-$l^{\perp B}=l\perp M$, which is computed at the owner in
+$l^{\perp B}=l\perp M$, which is computed in
 `computations/reports/split_quotient_I18.py`: $l^\perp/l$ has rank $9$, signature $(1,8)$ and determinant
 $\pm1$. So isotropic planes through $l$ correspond to primitive isotropic lines of $M\cong\latI_{1,8}$.
 
@@ -556,7 +554,7 @@ to the other. Its extension $\id_{P'}\perp\varphi$ lies in $\Stab_{\Orth^+(B)}(l
 so $(\id_{P'}\perp\varphi)\circ g$ carries $J$ to $J'$.
 :::
 
-A remark on the component, since it is the step most easily got wrong. For signature $(2,9)$ the
+A remark on the component. For signature $(2,9)$ the
 centre $-\id$ is *inside* $\Orth^+$: it acts on the positive plane with determinant $(-1)^2=+1$, so it
 preserves each component of the period domain, and it therefore cannot be used to move a transiting isometry
 into $\Orth^+$ --- although it fixes every line. The element that does that job here is

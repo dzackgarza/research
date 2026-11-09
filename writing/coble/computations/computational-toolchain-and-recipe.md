@@ -49,24 +49,4 @@ notes: |-
 | Coxeter graph module | A `CoxeterGraph(Graph)` class: matrix-graph conversion, `is_elliptic_matrix` / `is_parabolic_matrix`, connected-subgraph enumeration, ADE type labelling, colour conventions for $-2$ and $-4$ nodes |
 | `hyperbolic_diagrams.sage` | Poincare-disc and upper-half-plane figure generation |
 
-## Known defects in the corpus
-
-::: {.remark title="Recorded so they are not rediscovered"}
-
-- The **Vinberg implementations are missing**: `viberg-algorithm/` holds three empty directories (`vinal`, `AlVin`, `VinbergsAlgorithmNF`), and `init.sage` hard-codes an absolute path to a `vinal` checkout.
-  Step 2 of the recipe cannot run as shipped.
-
-- Every notebook exists in four encodings (`.ipynb`, `.py`, a code-only Python export, and an LLM-clean text export). Only the `.ipynb` files carry cell outputs; the other three are code-only.
-  Read the notebooks, not the exports.
-
-- `Maximal Elliptic Subdiagram Class.ipynb` is an abandoned prototype whose definiteness test is demonstrably broken: it returns `False` on its own example, because Coxeter labels were passed where inner products were required.
-  It is superseded by step 5 above.
-
-- The `summarize_maximal_orbits` cells have empty outputs and two stored errors, so the orbit-reduced subdiagram counts do not survive.
-
-- The Coble norm and divisibility cells have cleared outputs; see [Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates).
-
-- `Sterk IAS Plotting.ipynb` has four cells failing a rank assertion; see [Sterk integral-affine data](#sec-sterk-integral-affine-data).
-:::
-
 Related: [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices), [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates), [Sterk integral-affine data](#sec-sterk-integral-affine-data), [lattice algorithms by signature](#sec-lattice-algorithms-by-signature), [fundamental chamber polyhedra](#sec-fundamental-chamber-polyhedra), [isotropic orbits and Tits buildings](#sec-isotropic-orbits-and-tits-buildings).

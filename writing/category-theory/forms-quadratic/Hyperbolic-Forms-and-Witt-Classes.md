@@ -381,7 +381,7 @@ Conversely such an orthogonal sum is metabolic over any $R$, by @prop:hyperbolic
 ::: {.proof}
 
 This is [@MH73, Lem. I.6.3].
-The computation is kept because it is short and it shows where the hypothesis on $2$ is spent: nothing else in it uses that $2$ is a unit.
+The computation shows where the hypothesis on $2$ is spent: nothing else in it uses that $2$ is a unit.
 
 Let $(M,b)$ be metabolic and perfect with lagrangian $N$ and complement $W$, so $M=N\oplus W$ with $\rank N=\rank W=n$.
 In an adapted basis the Gram matrix is

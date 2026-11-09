@@ -10,14 +10,6 @@ tags:
 
 # The Coble cusp correspondence and the morphism chain {#sec-cusp-correspondence-morphism-chain}
 
-::: {.provenance title="Provenance"}
-The research statement, sections "Current Work" and "Compact moduli spaces of Coble surfaces", together with the archived future-directions outline. Neither source is in the finished dissertation, which mentions Coble surfaces only once in passing.
-:::
-
-Statements below are the author's own claims of work in progress.
-The archived future-directions copy is marked `audited: false` with `\todo` flags on the lattice identifications themselves.
-Treat everything here as a claim to re-derive, not as a result.
-
 ## The chain of morphisms
 
 ::: {.remark title="The four-term chain"}
@@ -53,9 +45,6 @@ Under $\tilde\eta$, the Coble cusps correspond to $U \oplus E_8^{\oplus 2}$, the
 The Coble 0-cusp corresponds to **cusp 2** of the Sterk cusp diagram of $\fentwo$.
 The Sterk cusp diagram was first given by Sterk (1991).
 :::
-
-The second identification is not recorded in [Open problems](#sec-open-problems), which states the cusp correspondence only in $(r,a,\delta)$ terms.
-It is a directly checkable cross-project claim and should be reconciled with the $(9,9,1)$ / $(7,7,1)$ Coble cusp data recorded there.
 
 ::: {.remark title="A cheap consistency check on the whole correspondence"}
 

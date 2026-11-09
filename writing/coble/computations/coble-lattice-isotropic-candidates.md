@@ -67,7 +67,6 @@ Re-running is the obvious first step, and is cheap: the lattices, the vectors an
 
 The function `vector_orbit_representatives`, which `sage-indefinite-port` owns, computes orbit representatives of isotropic vectors for indefinite forms.
 This is the tool that would settle the open orbit count directly, rather than by hand.
-A raw trace of an earlier run on a rank-10 form with diagonal $(-4,-4,-4,-4,-2,-4,-4,-4,-4,-2)$ survives in the archived computational report; its two input Gram matrices are worth keeping even though the remaining 8800 lines are per-iteration bookkeeping.
 :::
 
 ::: {.definition title="The isotropic trichotomy used as a separating invariant"}

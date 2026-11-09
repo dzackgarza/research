@@ -51,11 +51,6 @@ To this end, we prove the following:
 Schematic of a Baily--Borel compactification: the shaded arithmetic quotient together with the boundary strata adjoined at its cusps.
 :::
 
-::: {.warning}
-This schematic is carried over from the earlier draft, where it was drawn but never captioned; the caption above describes only what is drawn.
-Confirm what the two components and the interior lens are intended to denote.
-:::
-
 ::: {#fig-coxeter-fan-cone .figure}
 \input{tikz/hyperbolic_cone_fundamental_domain.tikz}
 

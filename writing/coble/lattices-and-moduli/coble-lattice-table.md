@@ -61,7 +61,7 @@ Row by row this gives
 
 So $a=12-n$ in every row, and $\rank M=10+n$.
 
-::: {.remark title="What this table transcribes, and where it departs}
+::: {.remark title="What this table transcribes, and where it departs"}
 
 The rows are those of Table 5.1, p. 553, of [@CDL25], in the author-hosted draft of that book; the published printing has not been consulted here.
 The source writes $\ell$ for the discriminant length where this book writes $a$, and $\mathrm{A}_1$ for what it elsewhere calls $\langle -2\rangle$.
@@ -74,10 +74,6 @@ The lattice with the printed invariants is $\mathrm{E}_8(2)\oplus \mathrm{U}\opl
 Which of the two printed entries is the error is not a matter of taste: the invariant is derived in the paragraph preceding the table, from $a(M) = a(\mathrm{I}_{1,N}(2)) - 2(n-1) = 12 - n$, while the summand decomposition is not, so it is the decomposition that is wrong.
 
 The last row prints $N = 20$, while the source's own $K_V^2 = 9 - N$ with $K_V^2 = -10$ forces $N = 19$; the table prints $19$, for the same reason.
-
-One row was for a time in the opposite situation.
-Rows $n=4$ and $n=5$ both carry $\mathrm{U}(2)$ in the source, and both are consistent with their invariants: $\mathrm{E}_7\oplus\mathrm{A}_1^{\oplus5}\oplus\mathrm{U}(2)$ has $a = 1+5+2 = 8$ and $\mathrm{E}_8\oplus\mathrm{A}_1^{\oplus5}\oplus\mathrm{U}(2)$ has $a = 0+5+2 = 7$.
-An earlier version of this table replaced row $n=4$ by $\mathrm{D}_4^{\oplus2}\oplus\mathrm{A}_1^{\oplus4}\oplus\mathrm{U}$, which has the same rank $14$, length $8$, signature $(1,13)$ and $\delta$, and is therefore isometric to the source's lattice by the uniqueness of the indefinite $2$-elementary lattice with given invariants [@Nik80] — but it is not the source's decomposition, and a table that transcribes is not free to substitute an isometric lattice.
 
 :::
 

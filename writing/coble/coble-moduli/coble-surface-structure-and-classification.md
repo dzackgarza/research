@@ -10,14 +10,6 @@ tags:
 
 # Structure and classification facts for Coble surfaces
 
-::: {.provenance title="Provenance"}
-Archived Coble-surface, Coble-moduli, and introductory reading notes dated 2023-03 to 2024-05. These are the author's notes on Dolgachev-Zhang 1999, Dolgachev's 1988 monograph, Dolgachev-Kondo 2013, and Cossec-Dolgachev-Liedtke.
-:::
-
-Everything here is literature, not new work.
-It is recorded because the project's own `content_pandoc/sections/Coble_Surfaces/` carries the definition, the terminal/minimal distinction and the basic-rational property, but none of the items below.
-Each was checked absent from `content_pandoc` and `knowledge` before being written down.
-
 ## Negative curves
 
 ::: {.proposition title="Norms of smooth rational negative curves"}

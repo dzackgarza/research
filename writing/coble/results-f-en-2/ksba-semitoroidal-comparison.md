@@ -48,7 +48,7 @@ The passage from the ambient K3 picture to the Enriques space is the semitoroida
 :::
 
 ::: {.warning}
-The source note states the reduction to Alexeev--Engel but does not carry out the cusp-by-cusp identification of $\semitorfan$ nor the descent of the semifan; these are recorded here (the descent as the semitoroidal-data descent conjecture (@conj:descent_semitoroidal_data_En2)) rather than proved in full.
+The reduction to Alexeev--Engel leaves two steps open: the cusp-by-cusp identification of $\semitorfan$, and the descent of the semifan (@conj:descent_semitoroidal_data_En2).
 :::
 
 ::: {.remark title="Role of the normalization"}
@@ -71,10 +71,6 @@ Imposing the involution constraints on this restricted structure produces a coll
 The folded semifans $\semifan{F}_k$ determine the semitoroidal compactification $\semifancpt{\fentwo}{\semitorfan}$ appearing in the KSBA--semitoroidal isomorphism theorem (@thm:ksba_semitoroidal_En2), and they define the combinatorial stratification of its boundary, which maps directly onto the KSBA strata.
 The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter through the stable-pair family and the locally closed embeddings of @lem:locally_closed_embedding_BB; the descent here is the Enriques (involution-quotient) analogue of the Coble semifan restriction of @conj:restricted_ramification_semifan.
 
-:::
-::: {.warning}
-The source note is tagged as a proposition but reproduces no proof or proof reference for the descent/restriction itself (that $\semifan{F}_{\ram}$ restricts to $\normalize{B}$ and folds to the $\semifan{F}_k$); it is recorded here as a conjecture pending that argument.
-Within the settled degree-$2$ Enriques case [@AEGS25] this descent is expected to hold, and the statement may be upgraded to a proposition once the restriction-and-folding argument is written or cited.
 :::
 
 ## The polarized Coble analogue

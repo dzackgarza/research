@@ -11,8 +11,6 @@ notes: |-
 
 # Integral-affine edge-length data for the Sterk cusps {#sec-sterk-integral-affine-data}
 
-Absent from the dissertation, which treats integral-affine structures theoretically without tabulating edge lengths.
-
 ## Edge-length vectors and polygon symmetry
 
 For each cusp, $\ell$ is the ordered vector of integral-affine edge lengths of the boundary polygon $P$, obtained by solving $\Sum_i \ell_i v_i = 0$ over the ordered primitive boundary directions $v_i \in \ZZ^2$.
