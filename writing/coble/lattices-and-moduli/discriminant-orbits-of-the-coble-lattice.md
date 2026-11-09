@@ -329,14 +329,16 @@ The number of $\Gamma_\Co$-orbits is $527$ (@sec-cusp-lifting): the lifting theo
 
 ## The Eichler criterion and its hypothesis
 
-::: {.remark title="Why the Eichler criterion is unavailable for $T_\Co$"}
+::: {.proposition #prop:tco-no-hyperbolic-plane title="$T_\Co$ contains no copy of $U$"}
 
-By @thm:eichler-criterion, for lattices containing $U^{\oplus 2}$, $\widetilde{\SO}^+(L)$-equivalence of primitive vectors is determined by the pair $(v^2, v^*\bmod L)$.
-For $T_\Co$, @prop:tco-as-twist implies that every value of $\beta_{T_\Co}$ is even, so no two vectors pair to $1$ and $T_\Co$ contains no copy of $U$; the same obstruction is recorded after @thm:eichler-criterion for $S_\Co$ and $\sen$.
-An orbit statement for $T_\Co$ therefore needs a different mechanism.
-For the full orthogonal group, @thm:unpolarized-cusps gives transitivity using @prop:tco-split-maximal, and for the odd $B = \latI_{2,9}$ that transitivity has a direct source which does not go through the even-lattice results at all: James' integral Witt theorem [@Jam68] applies with $r - \abs{\fs} = 11 - 7 = 4 = 2(1+1)$, and its characteristic clause is vacuous because a characteristic vector of $\latI_{p,q}$ has odd coordinates and square $\equiv p-q \equiv 1 \pmod 8$, never $0$. So transitivity on primitive isotropic *vectors* is settled for $B$; the rank-two case is not, the inequality there needing $6$, and it is recorded at @thm:split-maximal-isotropic-transitivity.
+Every value of $\beta_{T_\Co}$ is even. Hence $T_\Co$ contains no sublattice isometric to $U$, and
+@thm:eichler-criterion does not apply to $T_\Co$.
+:::
 
-For a subgroup specified by its image in $\Orth(q)$, the algorithms of [@Daw22] do *not* apply as the citation would suggest, and the mismatch is worth stating because it is on both sides. Dawes' setup assumes even lattices from §1.1, and the split-maximal stabilizer results of §3.1 and §3.2 assume a $U^{\oplus2}$ decomposition. The Coble lattice is even but not $U^{\oplus2}$-decomposable --- as the Eichler remark below proves, $T_\Co$ contains no copy of $U$ at all --- while the odd lattice $B$ with the decomposition is outside the parity hypothesis. So neither presentation satisfies both hypotheses, and the passage from $\rho(\Gamma)$-orbits on the finite group to $\Gamma$-orbits on primitive isotropic vectors is not available from that source for $\Gamma_\Co$. What the finite computation can still do is bound: since $\Gamma_\Co$ fixes every class of $A_{T_\Co}$, vectors with different classes lie in different $\Gamma_\Co$-orbits, so the finite orbit count is a lower bound for the integral one and never an upper one.
+::: {.proof}
+
+By @prop:tco-as-twist, $T_\Co=B(2)$, so $\beta_{T_\Co}=2\beta_B$ takes even values. A sublattice isometric
+to $U$ contains two vectors with pairing $1$.
 :::
 
 ## The two $0$-cusp lattices {#sec-zero-cusp-lattices}

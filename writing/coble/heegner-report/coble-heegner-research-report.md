@@ -1165,18 +1165,6 @@ The arithmetic group $\Gamma_e$, not the full orthogonal group of $\oT_e$, is th
 
 ### The unpolarized Coble boundary {#sec-unpolarized-cusps}
 
-Since scaling a form does not change its integral orthogonal group, $O(T_{\Co})=O(I_{2,9})$.
-
-Standard transitivity results for indefinite odd unimodular forms imply the following [@Wal62; @DK13].
-
-::: {.proof}
-
-The cited transitivity is Wall's description of the orthogonal group of an indefinite odd unimodular lattice [@Wal62], applied to $I_{2,9}$ as in [@DK13].
-
-The reduction: $T_{\Co}$ is not unimodular, but it is $I_{2,9}(2)$ by @prop:coble-transcendental, and scaling a form by a unit does not change its orthogonal group, so $O(T_{\Co})=O(I_{2,9}(2))=O(I_{2,9})$ as groups acting on the same lattice.
-That is the step that puts the unpolarized Coble question inside Wall's classification of orbits in an odd unimodular lattice, rather than leaving it as a question about a non-unimodular form of type $(2,9)$.
-:::
-
 ::: {.theorem #thm:unpolarized-cusps title="unpolarized Coble cusps"}
 The quotient $O^+(T_{\Co})\backslash\bD_{\Co}$ has one orbit of primitive isotropic lines and one orbit of primitive isotropic planes.
 For representatives $e$ and $J$,
@@ -1190,58 +1178,9 @@ J^\perp/J\cong I_{0,7}(2).
 :::
 
 ::: {.proof}
-
-*Lines.* Transitivity on primitive isotropic lines of $I_{2,9}$ follows from James' integral Witt theorem
-[@Jam68, Theorem, p. 303] applied directly to the odd unimodular lattice: an isometry between primitive
-sublattices extends when $r-|s|\geq2(r(J)+1)$, which for rank-one $J$ reads $11-7=4\geq4$, provided it
-preserves characteristic status --- and here the clause is vacuous, since a characteristic vector of
-$I_{p,q}$ has odd coordinates and square $\equiv p-q\equiv-7\equiv1\pmod 8$, never $0$. So no isotropic
-line is characteristic and any two are isometric. This is the argument of
-@prop:odd-unimodular-rank-one-transitivity, and it is a full-$O$ statement, as Wall's [@Wal62] is; the
-component-preserving refinement is not part of either.
-
-Wall's own theorem is the general statement behind the line case, and it is a theorem about *vectors*.
-It determines the transitivity class of a vector of an odd unimodular lattice under its orthogonal group by
-the four invariants norm, divisor, index and type (ordinary or characteristic), under the restriction
-$r(L)-\abs{\fs(L)}\geq4$ [@Wal62]. For a primitive isotropic vector of $I_{2,9}$ the invariants are
-$(0,\ 1,\ 1,\ \text{ordinary})$: norm $0$, divisor $1$ and index $1$ because the lattice is unimodular,
-and ordinary by the congruence above. So there is exactly one class, which is the line half of the
-statement; James' extension theorem is the special case of this that gives the isometry explicitly.
-
-*Planes.* Transitivity on primitive isotropic planes is proved in this book, at
-@thm:plane-transitivity-tco: it follows from the split unimodular model $B=\latI_{2,9}=\latI_{1,1}\perp
-\latI_{1,8}$, in which planes through a line are the isotropic lines of the quotient, every isometry of the
-quotient lifts as $\id\perp\varphi$ with the component character computed from
-@def:period-component-character, and lines are transitive there. Neither [@Wal62] nor [@DK13] supplies either half of that.
-Dolgachev--Kondo [@DK13] is about rationality of moduli spaces; it introduces $O(L)$, $O(A_L)$ and $O(L)^*$ in its §2 and the period domains in §3, and it contains no orbit statement for vectors or planes.
-Wall [@Wal62] is described in the secondary literature as a classification of vectors by norm, divisor, index and type under $r-\abs{\fs}\geq4$, which the James argument agrees with. And $r-\abs{\fs}=4$ does not reach the rank-two case of James' inequality,
-which would need $2(2+1)=6$.
-
-The $\Gamma_\Co$-orbits refine both halves strictly: $\Gamma_\Co$ has $527$ orbits of primitive isotropic lines and $189\,720$ orbits of primitive isotropic planes, where $\Orth^+(T_\Co)$ has one of each (@thm:cusp-lifting). A proper subgroup need not have strictly finer orbits: the
-discriminant kernel is strictly larger than $\Gamma_\Co$ and has exactly the same orbits on lines and on
-vectors (@prop:discriminant-kernel-orbits), so the question is decided orbit by orbit through the
-stabilizers, as @lem:character-kernel-orbits states.
-
-Both are statements about $O(T_{\Co})=O(I_{2,9})$, by the observation above; the exceptional case $I_{2,2}$,
-where a characteristic isotropic vector does exist and line transitivity fails, shows why the congruence in
-the line argument is doing real work (computations/reports/james_characteristic_counterexample.py).
-
-*The component.* What the two halves above give is transitivity under $\Orth$, and the theorem asserts it
-for $\Orth^+$. The step is the same in the two and happens at a primitive isotropic
-line: split $B=P'\perp M'$ at the target line $l'$ by @cor:hyperbolic-splitting, and put
-$\sigma'=\id_{P'}\perp(-\id_{M'})$, which fixes $l'$ pointwise and has
-$\chi_{\mathrm{per},B}(\sigma')=(+1)\cdot\chi_{\mathrm{per},M'}(-\id_{M'})=-1$ by the product formula
-@thm:plane-transitivity-tco derives from @def:period-component-character, so a transiting isometry that
-lands in the wrong component is corrected by multiplying it by $\sigma'$ on the left. The Lorentzian
-shortcut does not transfer: $-g$ has the same action on lines as $g$, but for signature $(2,9)$ the centre
-$-\id$ is *inside* $\Orth^+$, its determinant on the positive plane being $(-1)^2=+1$, so it cannot move
-anything between components. With lines transitive under $\Orth^+(B)$, primitive isotropic *vectors* are too:
-a transiting $g$ sends $v$ to $\pm v'$, and $-\id\in\Orth^+$ supplies the sign.
-
-For a primitive isotropic $e$ in a lattice $L$ of signature $(2,9)$, the quotient $e^\perp/e$ is a lattice of signature $(1,8)$ and inherits the discriminant form of $L$ up to the factor $1/p^2$ that $\div$-scaling forces; for $T_{\Co}=I_{2,9}(2)$ and $\div(e)=2$ it is $I_{1,8}(2)$, and for a primitive isotropic plane $J$ the quotient $J^\perp/J$ has signature $(0,7)$ and is $I_{0,7}(2)$.
-So the two boundary strata are single orbits and the lattices attached to them are as displayed.
-
-The statement is about $O^+(T_{\Co})$ acting on $\bD_{\Co}$, and the arithmetic subgroup $\Gamma_{\Co,2}$ is strictly smaller, so the orbits for the polarized problem refine these; @thm:cusp-lifting counts them.
+By @prop:tco-as-twist, $T_\Co=I_{2,9}(2)$, so $O^+(T_\Co)=O^+(I_{2,9})$ and the two lattices have the same
+primitive isotropic lines and planes. Transitivity on lines is @lem:I29-plus-line-transitivity, and on
+planes it is @thm:plane-transitivity-tco. The quotients are given by @cor:tco-isotropic-splitting.
 :::
 
 ### Reduction to the discriminant form {#sec-finite-shadow}
@@ -1267,12 +1206,14 @@ The integral parabolic stabilizer can have a proper image in the finite stabiliz
 Consequently, an orbit calculation in $O(A_{T_{\Co}})$ does not classify Baily--Borel cusps without a separate integral lifting theorem.
 :::
 
-For $T_\Co$ the line map is a bijection and the plane map is not: over each order-$4$ isotropic subgroup lie eight $\ker\rho_{T_\Co}$-orbits of planes (@thm:cusp-lifting).
-
 ### Orbits in the finite quadratic space {#sec-finite-orbits}
 
-In the $10$-dimensional plus-type quadratic space $A_{S_\En}$ over $\bF_2$, the group $G_\Co$, the image of the degree-$2$ parabolic stabilizer, has four orbits of nonzero singular vectors and five orbits of totally singular planes (`computations/reports/coble_gco_orbit-decomposition.py`, `computations/reports/coble_gco_plane-orbits.py`).
+::: {.example #ex:gco-finite-orbits title="Orbits of $G_\Co$ on singular vectors and totally singular planes"}
+In the $10$-dimensional plus-type quadratic space $A_{S_\En}$ over $\bF_2$, the group $G_\Co$, the image of the degree-$2$ parabolic stabilizer, has four orbits of nonzero singular vectors and five orbits of totally singular planes, with the sizes of @tbl-finite-vector-orbits and @tbl-finite-plane-orbits (`computations/reports/coble_gco_orbit-decomposition.py`, `computations/reports/coble_gco_plane-orbits.py`).
 The type of a plane lists the types of its three nonzero vectors.
+By @lem:gco-orbit-transfer, $A_{T_\Co} = A_{\generators{2}}\perp A_{S_\En}$, the isotropic classes of $A_{T_\Co}$ are those of the summand $A_{S_\En}$, and $G_\Co$ acts as $\id\oplus\rho_{S_\En}$.
+So the four vector orbits partition the $527$ nonzero isotropic classes of $A_{T_\Co}$, and the five plane orbits partition its $23\,715$ order-$4$ isotropic subgroups (@prop:coble-planecusp-finite).
+:::
 
 | Finite vector type | Orbit size |
 | :--- | ---: |
@@ -1293,13 +1234,21 @@ The type of a plane lists the types of its three nonzero vectors.
 
 : Finite totally singular plane orbits. {#tbl-finite-plane-orbits}
 
-By @lem:gco-orbit-transfer, $A_{T_\Co} = A_{\generators{2}}\perp A_{S_\En}$, the isotropic classes of $A_{T_\Co}$ are those of the summand $A_{S_\En}$, and $G_\Co$ acts as $\id\oplus\rho_{S_\En}$.
-So the four vector orbits partition the $527$ nonzero isotropic classes of $A_{T_\Co}$, and the five plane orbits partition its $23\,715$ order-$4$ isotropic subgroups (@prop:coble-planecusp-finite).
-
-*Stars.*
+::: {.definition #def:plane-star title="Stars of an order-$4$ isotropic subgroup"}
 Let $J$ be an order-$4$ isotropic subgroup and let $V = J^{\perp}/J$, the perpendicular taken in $A_{S_\En}$.
+A **star** of $J$ is a set of seven nonsingular vectors of $V$ that are pairwise non-orthogonal.
+:::
+
+::: {.lemma #lem:plane-stars title="Stars and the plane orbits over $J$"}
+Let $J$ be an order-$4$ isotropic subgroup and $F = \Stab_{\Orth(q)}(J)$.
+
+1. $J$ has eight stars, and $F$ permutes them transitively.
+2. For a primitive isotropic plane $P$ with $J(P) = J$, the group $\rho(\Stab_{\Orth(B)}(P))$ is the stabilizer in $F$ of exactly one star $s(P)$, and $s(gP) = \rho(g)\,s(P)$ for $g\in\Orth(B)$.
+3. The map $P\mapsto s(P)$ induces a bijection from the eight $\ker\rho$-orbits of primitive isotropic planes over $J$ onto the eight stars of $J$.
+:::
+
+::: {.proof}
 In the coordinates of @thm:coble-plane-stabilizer-image(4), $V$ is the six-dimensional plus-type space $V_6$ of even-weight classes $\sum c_i\bar d_i$, and $\beta(x,y)$ is the parity of the number of common coordinates.
-A *star* of $J$ is a set of seven nonsingular vectors of $V$ that are pairwise non-orthogonal.
 The nonsingular vectors of $V_6$ are the $21$ classes of weight $2$ and the $7$ classes of weight $6$.
 The weight-$6$ classes form a star $s_0$; for each $i$, the six classes $\bar d_i+\bar d_j$ with $j\neq i$ and the weight-$6$ class without $\bar d_i$ form a star $s_i$; these are the eight stars.
 The stabilizer $F = \Stab_{\Orth(q)}(J)$ acts on them through its Levi quotient $\Orth^+(6,2)\cong S_8$.
@@ -1308,6 +1257,7 @@ The group $F$ is transitive on the stars: otherwise $S_8$ fixes $s_0$ and acts t
 Since $[F:S] = 8$, the group $S$ is the stabilizer of $s_0$.
 So each primitive isotropic plane $P$ determines one star $s(P)$ of $J(P)$, the star fixed by $\rho(\Stab_{\Orth(B)}(P))$, and $s(gP) = \rho(g)\,s(P)$.
 Over each $J$, the map $P\mapsto s(P)$ is a bijection from the eight $\ker\rho$-orbits of planes (@thm:coble-plane-stabilizer-image(5)) onto the eight stars: if $s(gP) = s(P)$ with $\rho(g)\in F$, then $\rho(g) = \rho(h)$ for some $h\in\Stab_{\Orth(B)}(P)$, and $gP = (gh^{-1})P$ with $gh^{-1}\in\ker\rho$.
+:::
 
 ::: {.theorem #thm:cusp-lifting title="Integral cusp lifting"}
 Let $\Gamma$ be a group with $\ker\rho_{T_\Co}\subseteq\Gamma\subseteq\Orth(T_\Co)$, and let $H = \rho_{T_\Co}(\Gamma)$.
@@ -1323,27 +1273,28 @@ For $\rho_{T_\Co}^{-1}(G_\Co)$ they are $4$, $7$ and $13$.
 
 ::: {.proof}
 Since $\ker\rho\subseteq\Gamma$, each part reduces to the $\ker\rho$-orbits over a fixed finite datum.
-Part 1: every nonzero isotropic class is $[v/2]$ for a primitive isotropic $v$, the zero class is not, and $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}([v/2])$ (@sec-cusp-lifting), so each fibre is one $\ker\rho$-orbit; since $-\id\in\ker\rho$, vector orbits are line orbits.
-Part 2 is the bijection of the $\ker\rho$-orbits over $J$ with the stars of $J$ above.
+Part 1: every nonzero isotropic class is $[v/2]$ for a primitive isotropic $v$, the zero class is not, and $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}([v/2])$ (@lem:isotropic-classes-lift, @lem:cusp-vector-stabilizer-image(1)), so each fibre is one $\ker\rho$-orbit; since $-\id\in\ker\rho$, vector orbits are line orbits.
+Part 2 is @lem:plane-stars(3).
 Part 3: two flags with the same triple lie on planes in one $\ker\rho$-orbit by part 2, and with the plane fixed, the line action of $\Stab_{\Gamma_\Co}(P)$ in the proof of @prop:coble-arithmetic-flag-incidence carries one line of class $c$ to the other.
-Part 4: the spinor witnesses $\id_{U_1}\oplus(-\id_{K_v})$ and $-\id_{U_1}\oplus\id$ of @sec-cusp-lifting lie in $\ker\rho$, lie outside $\Orth^+(T_\Co)$, and stabilize the vector and the plane, and so do their conjugates; so no orbit splits.
+Part 4: the spinor witnesses of @lem:cusp-vector-stabilizer-image(2) and @thm:coble-plane-stabilizer-image(5) lie in $\ker\rho$, lie outside $\Orth^+(T_\Co)$, and stabilize the vector and the plane, and so do their conjugates; so no orbit splits.
 For $\Gamma_\Co$ the group $H$ is trivial.
-For $\rho^{-1}(G_\Co)$ the counts are the orbit numbers of @tbl-finite-vector-orbits and of $G_\Co$ on pairs $(J,s)$, of sizes $2160, 3150, 7560, 9450, 22680, 69120, 75600$, and on triples $(J,s,c)$ (`computations/reports/coble_gco_plane-orbits.py`).
+For $\rho^{-1}(G_\Co)$ the counts are the orbit numbers of @tbl-finite-vector-orbits and of $G_\Co$ on pairs $(J,s)$, of sizes $2160, 3150, 7560, 9450, 22680, 69120, 75600$, and on triples $(J,s,c)$.
 :::
 
 ### Necessary restrictions on maps to Enriques cusps {#sec-possible-cusp-images}
 
-Suppose the comparison map to the Enriques period quotient has been constructed.
-Let $e$ be a Coble isotropic line.
-The root $\alpha$ lies in $e^\perp$ and gives a $(-2)$ class in the Enriques cusp lattice.
-Therefore an Enriques $0$-cusp whose hyperbolic lattice has all norms divisible by $4$ cannot contain a Coble branch.
-In the AEGS numbering, this excludes cusp $1$ and leaves only cusps $2,3,4,5$ as possible images.
+::: {.proposition #prop:possible-cusp-images title="Enriques cusps that can contain Coble cusps"}
+Let $e$ be a primitive isotropic line and $J$ a primitive isotropic plane of $T_\Co = \alpha^{\perp}_{T_\En}$, viewed in $T_\En$.
 
-Similarly, if $J$ is a Coble isotropic plane, the class of $\alpha$ gives a $(-2)$ vector in $J^\perp/J$.
-Hence a Type II Enriques cusp whose negative quotient is $E_8(2)$ cannot contain a Coble branch.
-Reading the border types in AEGS Figure 4, the double-rectangle cusps $12,\ 13,\ 14,\ 15,\ 245$ map to the segment-flipping $E_8(2)$ cusp and are excluded.
-The only possible Enriques $1$-cusp images are therefore $34,\ 35,\ 45,\ 55$.
+1. The lattice $e^{\perp T_\En}/e$ has a vector of square $-2$. So in the AEGS numbering the Enriques $0$-cusp of $e$ is not cusp $1$, and it is one of $2,3,4,5$.
+2. The lattice $J^{\perp T_\En}/J$ has a vector of square $-2$. So the Enriques $1$-cusp of $J$ is not one of the double-rectangle cusps $12,\ 13,\ 14,\ 15,\ 245$, and it is one of $34,\ 35,\ 45,\ 55$.
+:::
 
+::: {.proof}
+The sublattice $T_\Co$ is primitive in $T_\En$, being an orthogonal complement, so $e$ and $J$ are primitive and isotropic in $T_\En$. Since $e, J\subset\alpha^{\perp}$, the root $\alpha$ lies in $e^{\perp T_\En}$ and in $J^{\perp T_\En}$. Adding an isotropic vector orthogonal to $\alpha$ does not change $\alpha^2$, so the class of $\alpha$ in each quotient has square $-2$.
+The hyperbolic lattice of the Enriques $0$-cusp $1$ has all norms divisible by $4$, so it has no vector of square $-2$.
+The double-rectangle cusps $12,\ 13,\ 14,\ 15,\ 245$ lie over the segment-flipping $1$-cusp, whose negative quotient is $E_8(2)$ [@AEGS25, Fig. 4], and $E_8(2)$ has all norms divisible by $4$.
+:::
 
 ## Reflection theory and Coxeter data {#sec-coxeter}
 
@@ -2533,13 +2484,6 @@ c_9==c_{11},
 \qquad
 c_{11}\cdots c_{12}.
 \]
-
-### Star-decorated plane orbits {#sec-discarded-cusp-calibration}
-
-Decorate each totally singular plane of $A_{T_\Co}$ by one of its eight stars.
-$G_\Co$ has seven orbits on these pairs, of sizes $2160$, $3150$, $7560$, $9450$, $22680$, $69120$ and $75600$, and $13$ orbits on the triples $(J,s,c)$ (`computations/reports/coble_gco_plane-orbits.py`).
-By @thm:cusp-lifting (2) and (3), these are the $\rho_{T_\Co}^{-1}(G_\Co)$-orbits of primitive isotropic planes and of flags of $T_\Co$.
-By @sec-possible-cusp-images, their possible images among the Enriques $1$-cusps are $34$, $35$, $45$ and $55$.
 
 ## Residual open points {#sec-residual-open-points}
 

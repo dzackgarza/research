@@ -408,17 +408,29 @@ Let $L'$ be an *even* maximal $U^{\oplus2}$-decomposable lattice of signature $(
 Both statements are in [@Daw22 §3.1]: Algorithm 3.3 constructs $\tau(x,y)$ from the
 two displayed hyperbolic summands, and the Attwell-Duval criterion gives the second
 orbit statement.
-
-The hypotheses are those of the source, and the two are needed separately. Dawes' setup assumes *even*
-lattices from §1.1 onward, and §3.1 supplies both the construction of $\tau(x,y)$ from the two hyperbolic
-summands and the Attwell--Duval criterion for the second statement. So the theorem above carries evenness
-and the $U^{\oplus2}$ decomposition, and neither can be dropped in favour of the other: an odd
-$U^{\oplus2}$-decomposable lattice has the splitting but not the parity, and an even maximal lattice of
-signature $(2,n)$ with $n\geq5$ has the parity and, by @thm:maximal-splits-for-large-n, the splitting
-only through that theorem.
 :::
 
-For the odd case there is a separate result, and it is weaker in three ways at once.
+::: {.definition #def:characteristic-vector title="Characteristic vectors"}
+
+A vector $c$ of a unimodular lattice $L$ is **characteristic** if $c\cdot x\equiv x^2\pmod 2$ for every
+$x\in L$.
+:::
+
+::: {.lemma #lem:characteristic-vectors-of-Ipq title="Characteristic vectors of $\latI_{p,q}$"}
+
+Every characteristic vector of $\latI_{p,q}$ has square $\equiv p-q\pmod 8$. Hence, if
+$p-q\not\equiv0\pmod 8$, no isotropic vector of $\latI_{p,q}$ is characteristic.
+:::
+
+::: {.proof}
+
+Let $e_1,\dots,e_{p+q}$ be the standard orthogonal basis, with $e_i^2=1$ for $i\leq p$ and $e_i^2=-1$ for
+$i>p$, and let $c=\sum_ic_ie_i$ be characteristic. For $x=e_i$ the condition reads $\pm c_i\equiv\pm1\pmod 2$,
+so every $c_i$ is odd and $c_i^2\equiv1\pmod 8$. Hence
+$c^2=\sum_{i\leq p}c_i^2-\sum_{i>p}c_i^2\equiv p-q\pmod 8$; this is the case $L=\latI_{p,q}$ of van der
+Blij's congruence $c^2\equiv\sigma(L)\pmod 8$ [@Nik80, §1.9]. An isotropic vector has square $0$, so it is
+not characteristic when $p-q\not\equiv0\pmod 8$.
+:::
 
 ::: {.proposition #prop:odd-unimodular-rank-one-transitivity title="The odd lattice $B = \latI_{2,9}$: primitive isotropic vectors, full orthogonal group"}
 
@@ -433,31 +445,66 @@ if it carries characteristic vectors to characteristic vectors. For $B=\latI_{2,
 $r-\abs{\fs}=11-7=4=2(1+1)$, so the inequality holds for a primitive rank-one $J$ with equality, and
 it is the only hypothesis besides the characteristic clause. Given two primitive isotropic vectors $v$,
 $w$, the isometry $\langle v\rangle\to\langle w\rangle$, $v\mapsto w$, therefore extends provided
-neither line is characteristic. Neither is: a characteristic vector of $\latI_{p,q}$ has all coordinates
-odd in the standard basis, so its square is $\equiv p-q\pmod 8$; for $\latI_{2,9}$ that is
-$\equiv-7\equiv1\pmod 8$, while an isotropic vector has square $0$. Hence both $v$ and $w$ are
-non-characteristic, the clause is vacuous, and the isometry extends.
+neither line is characteristic. Neither is, by @lem:characteristic-vectors-of-Ipq, since
+$2-9=-7\not\equiv0\pmod 8$; so the clause is vacuous and the isometry extends.
 :::
 
-The statement does not generalise to "every unimodular $L$ with $r-\abs{\fs}\geq4$".
-The congruence above is special to $B$, and without it
-characteristic isotropic vectors can exist: $\latI_{2,2}$ has $r-\abs{\fs}=4-0=4$ and carries both
-$c=(1,1,1,1)$, which is characteristic of square $0$, and $v=(1,0,1,0)$, which is not characteristic and
-also of square $0$. Isometries preserve characteristic status, so no isometry carries one to the other and
-$\Orth(\latI_{2,2})$ is *not* transitive on primitive isotropic vectors. Both vectors and both status
-checks are in `computations/reports/james_characteristic_counterexample.py`.
+::: {.example #ex:I22-two-isotropic-orbits title="Two orbits of primitive isotropic vectors of $\latI_{2,2}$"}
 
-What the $B$ statement does **not** give, and what must not be promoted from it: the component-preserving
-subgroup, since the theorem produces an element of $\Orth(L)$ and says nothing about its image in
-$\Orth(L)/\Orth^+(L)$; primitive isotropic *planes*, where the inequality would require $2(2+1)=6$ and
-$B$ has $4$; and any statement about the image of a prescribed arithmetic subgroup in $\Orth(q_L)$, which
-is a different question with its own sources. Each of those needs its own argument, and the Coble chapter's
-uses are labelled accordingly.
+The lattice $\latI_{2,2}$ has $r-\abs{\fs}=4-0=4$, and $2-2\equiv0\pmod 8$. The vectors $c=(1,1,1,1)$ and
+$v=(1,0,1,0)$ are primitive and isotropic. The vector $c$ is characteristic, since
+$c\cdot x=x_1+x_2-x_3-x_4\equiv x^2\pmod 2$ for every $x$; the vector $v$ is not, since $v\cdot e_2=0$
+and $e_2^2=1$. An isometry preserves the characteristic condition, so no isometry carries $c$ to $v$, and
+$\Orth(\latI_{2,2})$ is not transitive on primitive isotropic vectors.
+:::
+
+::: {.lemma #lem:odd-unimodular-isotropic-splitting title="Splitting an odd unimodular lattice at a primitive isotropic line"}
+
+Let $L$ be an odd unimodular lattice of signature $(p,q)$ and let $l$ be a primitive isotropic line of $L$.
+Then $L=P\perp M$ with $l\subset P\cong\latI_{1,1}$ and $M$ unimodular of signature $(p-1,q-1)$, and
+$l^{\perp L}=l\perp M$, so $l^{\perp L}/l\cong M$. Moreover:
+
+1. if $L=\latI_{2,9}$, then $M\cong\latI_{1,8}$;
+2. if $L=\latI_{1,8}$, then $M\cong\latI_{0,7}$.
+:::
+
+::: {.proof}
+
+By @cor:hyperbolic-splitting, $L$ being odd, $L=P\perp M$ with $l\subset P\cong\latI_{1,1}$, and $M$ is
+unimodular of signature $(p-1,q-1)$ because $P$ is unimodular of signature $(1,1)$. Let $e,f$ be an
+orthogonal basis of $P$ with $e^2=1$, $f^2=-1$. The primitive isotropic vectors of $P$ are $\pm(e\pm f)$,
+so after replacing $f$ by $-f$ one has $l=\ZZ(e+f)$. An element $ae+bf+m$ with $m\in M$ is orthogonal to
+$l$ exactly when $a=b$, so $l^{\perp L}=l\perp M$.
+
+(1) An even unimodular lattice has signature $\equiv0\pmod 8$, and $1-8\not\equiv0\pmod 8$, so $M$ is odd
+and indefinite of signature $(1,8)$, and $M\cong\latI_{1,8}$ by @thm:indefinite-unimodular-classification.
+
+(2) An even unimodular definite lattice has rank divisible by $8$, so $M$, of rank $7$, is odd. The odd
+definite unimodular lattice of rank $7$ is unique by @thm:definite-unimodular-class-numbers and the first
+row of @tbl-unimodular-definite-class-numbers, for the negative-definite sign by the sign twist that theorem
+records. So $M\cong\latI_{0,7}$.
+:::
 
 ::: {.proposition #prop:rank-nine-line-transitivity title="Primitive isotropic lines of $\latI_{1,8}$ and of its twist"}
 
 Let $L$ be $\latI_{1,8}$ or its twist $\latI_{1,8}(2)$, of rank $9$ and signature $(1,8)$. Then $\Orth(L)$
 and $\Orth^+(L)$ both act transitively on the primitive isotropic **lines** of $L$.
+:::
+
+::: {.proof}
+
+Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\ZZ)$ and isotropy, so it
+suffices to treat $L=\latI_{1,8}$.
+
+Let $\ZZ v$ and $\ZZ v'$ be primitive isotropic lines. By @lem:odd-unimodular-isotropic-splitting(2),
+$L=P\perp M=P'\perp M'$ with $v\in P$, $v'\in P'$, $P\cong P'\cong\latI_{1,1}$ and $M\cong M'\cong\latI_{0,7}$,
+and $v=\pm(e+f)$, $v'=\pm(e'+f')$ in orthogonal bases of $P$ and $P'$ as there. The isometry $P\to P'$ with
+$e\mapsto e'$, $f\mapsto f'$ and an isometry $M\to M'$ together give $g\in\Orth(L)$ with $g(\ZZ v)=\ZZ v'$.
+So $\Orth(L)$ is transitive on lines.
+
+By @lem:minus-identity-spinor-norm, $-\id_L\notin\Orth^+(L)$, since the positive index is $1$, and
+$\Orth^+(L)$ has index $2$ in $\Orth(L)$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ or $-g$ lies
+in $\Orth^+(L)$, and $-g$ also carries $\ZZ v$ to $\ZZ v'$. So $\Orth^+(L)$ is transitive on lines too.
 :::
 
 ::: {.proposition #prop:rank-nine-vector-transitivity title="Primitive isotropic vectors of $\latI_{1,8}$ and of its twist"}
@@ -472,7 +519,6 @@ Then
 
 3. every $g\in\Orth(L)$ carrying a vector of side $+1$ to a vector of side $+1$ lies in $\Orth^+(L)$.
 
-The numerical inputs of the proof are computed in `computations/reports/coble_I18_two_orbits.py`: $\latI_{1,8}$ of rank $9$, signature $(1,8)$, odd and unimodular; $-\id$ with spinor norm $[(-1)^1] = -1$, hence outside $\Orth^+$ and exchanging the two sides; an explicit isometry carrying one primitive isotropic vector to another; and the reflections inside $v^{\perp}$ with their spinor norm $1$.
 :::
 
 ::: {.proof}
@@ -493,36 +539,42 @@ So the two orbits are the two sides.
 (3) Let $g\in\Orth(L)$ with $\operatorname{side}(gv)=\operatorname{side}(v)$. If $g$ exchanged the components of $C(L)$ then $ge\in-C^+$ for $e\in C^+$, and $\beta_\bR(gv,ge)=\beta_\bR(v,e)$ together with $\operatorname{sign}\beta_\bR(gv,-C^+)=-\operatorname{side}(gv)$ would give $-\operatorname{side}(gv)=\operatorname{side}(v)$, contradicting the hypothesis. So $g$ preserves the components, that is $g\in\Orth^+(L)$ by @prop:spinor-plus-cone-components.
 :::
 
-::: {.proof}
+::: {.lemma #lem:split-isometry-spinor-norm title="Spinor norm of an isometry fixing a summand"}
 
-Twisting by $2$ preserves the module, the isometry group as a subgroup of $\GL_9(\ZZ)$ and isotropy, so it
-suffices to treat $L=\latI_{1,8}$.
-
-Let $v$ be primitive isotropic. By @cor:hyperbolic-splitting --- which needs a primitive isotropic vector in
-a unimodular lattice and, $L$ being odd, produces the *odd* hyperbolic plane $\latI_{1,1}$, not $U$ ---
-$L = P\perp M$ with $P=\latI_{1,1}$ hyperbolic and $M$ unimodular of signature $(0,7)$. Rank $7$ forces $M$
-odd, since an even unimodular lattice has rank divisible by $8$, and the odd definite unimodular lattice in
-each rank $1\leq n\leq7$ is unique by @thm:definite-unimodular-class-numbers and the first row of
-@tbl-unimodular-definite-class-numbers; the theorem covers the negative-definite sign too, by the sign twist
-it records. So $M\cong\latI_{0,7}$ for every such $v$, and the complements of two primitive isotropic
-vectors are isometric.
-
-No primitive isotropic vector of
-$\latI_{1,8}$ is characteristic. A characteristic vector of $\latI_{p,q}$ has all coordinates odd, hence
-square $\equiv p-q\equiv1-8\equiv1\pmod 8$, while an isotropic vector has square $0$; so the class of
-primitive isotropic vectors carries no type split, and the line statement has one orbit and not two. Given $v$ and $v'$ with splittings $P\perp M$ and $P'\perp M'$, an isometry of $P$ onto
-$P'$ exists ($P\cong P'\cong\latI_{1,1}$) and an isometry of $M$ onto $M'$ by the hypothesis, and the two
-together give $g\in\Orth(L)$ carrying the line $\ZZ v$ to the line $\ZZ v'$. So $\Orth(L)$ is transitive on
-lines.
-
-By @prop:spinor-plus-cone-components, $\Orth^+(\latI_{1,8})$ is the subgroup of $\Orth(\latI_{1,8})$ preserving
-each component of the positive cone, and by @lem:minus-identity-spinor-norm $-\id_L\notin\Orth^+(\latI_{1,8})$,
-since the positive index is $1$. Hence for $g$ carrying $\ZZ v$ to $\ZZ v'$, either $g$ is already in
-$\Orth^+(L)$, or $(-g)$ is --- $-g$ fixes every line as well --- and $\Orth^+(L)$ is transitive on lines
-too.
+Let $B=P\perp M$ be an orthogonal splitting of a nondegenerate lattice and let $\varphi\in\Orth(M)$. Then
+$\spinornorm_\bR(\id_P\perp\varphi)=\spinornorm_\bR(\varphi)$, so $\id_P\perp\varphi\in\Orth^+(B)$ exactly
+when $\varphi\in\Orth^+(M)$.
 :::
 
-On primitive isotropic *vectors* $\Orth^+(L)$ has two orbits, the two sides of the positive cone (@prop:rank-nine-vector-transitivity), so an isometry carrying $\ZZ v$ to $\ZZ v'$ carries $v$ to $\pm v'$.
+::: {.proof}
+
+By the Cartan--Dieudonné theorem write $\varphi\otimes\bR=s_{u_1}\cdots s_{u_k}$ with anisotropic
+$u_i\in M\otimes\bR$. Each reflection $s_{u_i}$ of $B\otimes\bR$ fixes $P\otimes\bR$ pointwise and restricts
+to the reflection $s_{u_i}$ of $M\otimes\bR$, so $\id_P\perp\varphi=s_{u_1}\cdots s_{u_k}$ in
+$\Orth(B\otimes\bR)$, and the two spinor norms agree by @def:spinor-norm. The group $\Orth^+$ is the kernel
+of the real spinor norm.
+:::
+
+::: {.lemma #lem:I29-plus-line-transitivity title="$\Orth^+(\latI_{2,9})$ on primitive isotropic lines and vectors"}
+
+$\Orth^+(\latI_{2,9})$ acts transitively on the primitive isotropic lines and on the primitive isotropic
+vectors of $\latI_{2,9}$.
+:::
+
+::: {.proof}
+
+Let $B=\latI_{2,9}$ and let $l,l'$ be primitive isotropic lines. By
+@lem:odd-unimodular-isotropic-splitting(1), $B=P\perp M=P'\perp M'$ with $l=\ZZ(e+f)\subset P$,
+$l'=\ZZ(e'+f')\subset P'$ and $M\cong M'\cong\latI_{1,8}$. The isometry $\psi\colon P\to P'$ with
+$e\mapsto e'$, $f\mapsto f'$ and an isometry $\vartheta\colon M\to M'$ give $g=\psi\perp\vartheta\in\Orth(B)$
+with $g(l)=l'$. Put $\sigma'=\id_{P'}\perp(-\id_{M'})$. It fixes $l'$, and $\sigma'\notin\Orth^+(B)$ by
+@lem:split-isometry-spinor-norm, since $-\id_{M'}\notin\Orth^+(M')$ by @lem:minus-identity-spinor-norm.
+As $\Orth^+(B)$ has index $2$ in $\Orth(B)$, one of $g$ and $\sigma'g$ lies in $\Orth^+(B)$ and carries $l$
+to $l'$.
+
+For primitive isotropic vectors $v,v'$, an element $g\in\Orth^+(B)$ with $g(\ZZ v)=\ZZ v'$ has $g(v)=\pm v'$,
+and $-\id_B\in\Orth^+(B)$ by @lem:minus-identity-spinor-norm, since the positive index is $2$.
+:::
 
 ::: {.theorem #thm:plane-transitivity-tco title="Primitive isotropic planes of $T_\Co$"}
 
@@ -531,65 +583,46 @@ $\Orth^+(T_\Co)$ acts transitively on the primitive isotropic planes of $T_\Co$.
 
 ::: {.proof}
 
-Work in the unimodular model, where the group is the same one. By @prop:tco-as-twist $T_\Co=B(2)$ with
-$B=\latI_{2,9}$, and twisting preserves the module, isometries and isotropy, so $\Orth^+(T_\Co)=\Orth^+(B)$
-as subgroups of $\GL(B)$ and the primitive isotropic *planes* of the two are the same set.
+By @prop:tco-as-twist $T_\Co=B(2)$ with $B=\latI_{2,9}$. Twisting by $2$ preserves the module, isometries,
+orthogonality and isotropy, so $\Orth^+(T_\Co)=\Orth^+(B)$ as subgroups of $\GL(B)$, and the primitive
+isotropic planes of the two lattices are the same set.
 
-Let $l$ be a primitive isotropic line of $B$ and split $B=P\perp M$ with $P=\latI_{1,1}$ by
-@cor:hyperbolic-splitting; then $M\cong\latI_{1,8}$ by @thm:indefinite-unimodular-classification, and
-$l^\perp/l\cong M$: for $l=\ZZ(v+w)$ with $v^2=1$, $w^2=-1$ and $v\cdot w=0$ in $P$, an element
-$av+bw+m$ with $m\in M$ is orthogonal to $l$ exactly when $a=b$, so $l^{\perp B}=l\perp M$. So isotropic planes through $l$ correspond to primitive isotropic lines of $M\cong\latI_{1,8}$.
-
-Every isometry of $M$ extends to $B$ as $\id_P\perp\varphi$, which fixes $P$ pointwise and hence fixes $l$.
-Its component is computed from @def:period-component-character: $B$ has signature $(2,9)$,
-so its period domain is the space of *oriented positive-definite two-planes*, and the positive plane of
-$B=P\perp M$ is $E_P\oplus E_M$ with $E_P$, $E_M$ the positive lines of the two factors. An isometry
-$\id_P\perp\varphi$ acts on it by $\id$ on $E_P$ and by $\varphi$ on $E_M$, so
-$$\chi_{\mathrm{per},B}(\id_P\perp\varphi) \;=\; (+1)\cdot\chi_{\mathrm{per},M}(\varphi),$$
-the sign being the determinant on the oriented plane. Hence $\id_P\perp\varphi\in\Orth^+(B)$ exactly when
-$\varphi\in\Orth^+(M)$, and the restriction
-$$\Stab_{\Orth^+(B)}(l)\longrightarrow\Orth^+\bigl(l^{\perp B}/l\bigr)$$
-is *surjective* in this model, with no discriminant condition: the lifting is $\varphi\mapsto\id_P\perp\varphi$.
-Here $-\id_B\in\Orth^+(B)$, since $\det$ on the positive plane is $(-1)^2=+1$, so $-\id_B$ cannot
-replace an isometry carrying $l$ to $l'$ by one in $\Orth^+(B)$.
-
-Now let $J,J'$ be primitive isotropic planes. Choose primitive isotropic lines $l\subset J$ and $l'\subset J'$,
-which are primitive in $B$ since $J,J'$ are. Split $B=P\perp M=P'\perp M'$ at $l$ and $l'$; the
-complements are both $\latI_{1,8}$, so $P\cong P'$ and $M\cong M'$ and an isometry $g$ of $B$ carries
-$l$ to $l'$ --- $\psi\perp\vartheta$, with $\psi$ the isometry of $\latI_{1,1}$ interchanging its two
-isotropic lines. If $g\notin\Orth^+(B)$,
-multiply it on the left by the same construction at the *target*: $\sigma'=\id_{P'}\perp(-\id_{M'})$ fixes
-$P'$, hence $l'\subset P'$, pointwise, and $\chi_{\mathrm{per},B}(\sigma')=(+1)(-1)=-1$ by the formula above;
-$\chi_{\mathrm{per},B}$ being the character @prop:period-spinor-character identifies it with,
-$\chi_{\mathrm{per},B}(\sigma'g)=(-1)(-1)=+1$ and $\sigma'g$ carries $l$ to $\sigma'(l')=l'$. So
-some $g\in\Orth^+(B)$ carries $l$ to $l'$. Then $g(J)$ and $J'$ are two isotropic planes through $l'$, hence
-correspond to two isotropic lines of $l'^{\perp B}/l'\cong\latI_{1,8}$, and by line transitivity there
-(again @prop:rank-nine-line-transitivity, whose type analysis shows a single class because
-$\latI_{1,8}$ has no characteristic isotropic vector: a characteristic vector of $\latI_{p,q}$ has odd
-coordinates and square $\equiv p-q$, and $1-8=-7\equiv1\pmod 8$) there is $\varphi\in\Orth^+(M')$ carrying one
-to the other. Its extension $\id_{P'}\perp\varphi$ lies in $\Stab_{\Orth^+(B)}(l')$ and carries $g(J)$ to $J'$,
-so $(\id_{P'}\perp\varphi)\circ g$ carries $J$ to $J'$.
+Let $J,J'$ be primitive isotropic planes of $B$, and choose primitive isotropic lines $l\subset J$ and
+$l'\subset J'$; a primitive vector of a primitive sublattice is primitive in $B$. By
+@lem:I29-plus-line-transitivity some $g\in\Orth^+(B)$ carries $l$ to $l'$. Split $B=P'\perp M'$ at $l'$ by
+@lem:odd-unimodular-isotropic-splitting(1), so $l'^{\perp B}=l'\perp M'$ with $M'\cong\latI_{1,8}$. An
+isotropic plane $K\supset l'$ lies in $l'^{\perp B}$, and $K=l'\oplus(K\cap M')$ with $K\cap M'$ a primitive
+isotropic line of $M'$, because the $M'$-component of an element of $K$ lies in $K$. Apply this to $K=g(J)$
+and $K=J'$. By @prop:rank-nine-line-transitivity some $\varphi\in\Orth^+(M')$ carries $g(J)\cap M'$ to
+$J'\cap M'$. Then $\id_{P'}\perp\varphi\in\Orth^+(B)$ by @lem:split-isometry-spinor-norm, it fixes $l'$, and it
+carries $g(J)$ to $J'$. So $(\id_{P'}\perp\varphi)\circ g\in\Orth^+(B)$ carries $J$ to $J'$.
 :::
 
-No primitive isotropic vector of $\latI_{p,q}$ is characteristic when $p-q\not\equiv0\pmod8$. The
-congruence is needed: in $\latI_{1,1}$ the vector $(1,1)$ is characteristic and isotropic. The arithmetic subgroup $\Gamma_\Co$ has
-$527$ orbits of primitive isotropic lines and $189\,720$ orbits of primitive isotropic planes of $T_\Co$
-(@thm:cusp-lifting).
+::: {.corollary #cor:tco-isotropic-splitting title="Isotropic quotients of $T_\Co$"}
 
-The same splitting is available for $T_\Co$, by untwisting, although $T_\Co$ is not
-unimodular. Write $T_\Co = B(2)$ with $B=\latI_{2,9}$ unimodular
-(@prop:tco-as-twist). Twisting by $2$ preserves the underlying module, takes isometries to isometries and
-preserves isotropy, so $\Orth(T_\Co)=\Orth(B)$ as subgroups of $\GL(B)$ and the primitive isotropic lines
-and planes of the two are the same sets. Splitting the unimodular $B$ at a primitive isotropic line $l$
-gives $B=\latI_{1,1}\perp M$ with $M$ unimodular of signature $(1,8)$, hence $M\cong\latI_{1,8}$ by
-@thm:indefinite-unimodular-classification; twisting that splitting distributes over the orthogonal sum and
-gives
-$$T_\Co = \latI_{1,1}(2)\perp\latI_{1,8}(2) = U(2)\perp U(2)\perp\latI_{0,7}(2),$$
-using $\latI_{1,8}=\latI_{1,1}\perp\latI_{0,7}$ again. The two presentations $\generators{2}\oplus U(2)\oplus E_8(2)$
-and $U(2)\oplus U(2)\oplus\latI_{0,7}(2)$ agree in rank $11$, in signature $(2,9)$, in determinant $-2^{11}$
-and in two-elementary type $(11,11,1)$ with $\abs{A}=2048$
-(`computations/reports/scaled_splitting_invariants.py`). The quotient $l^{\perp T_\Co}/l\cong\latI_{1,8}(2)$ is one of the factors, and its
-primitive isotropic lines are transitive by the proposition above.
+Let $l$ be a primitive isotropic line and $J$ a primitive isotropic plane of $T_\Co$. Then
+$T_\Co=\latI_{1,1}(2)\perp\latI_{1,8}(2)$ with $l\subset\latI_{1,1}(2)$, and
+$$
+l^{\perp T_\Co}/l\cong\latI_{1,8}(2),\qquad J^{\perp T_\Co}/J\cong\latI_{0,7}(2).
+$$
+Moreover $T_\Co\cong U(2)\perp U(2)\perp\latI_{0,7}(2)$.
+:::
+
+::: {.proof}
+
+By @prop:tco-as-twist, $T_\Co=B(2)$ with $B=\latI_{2,9}$. Twisting by $2$ preserves the underlying module,
+orthogonality and isotropy, so it suffices to prove the untwisted statements for $B$ and twist the result.
+The splitting and $l^{\perp B}/l\cong\latI_{1,8}$ are @lem:odd-unimodular-isotropic-splitting(1).
+
+For $J$, choose a primitive isotropic line $l\subset J$ and split $B=P\perp M$ at $l$. As in the proof of
+@thm:plane-transitivity-tco, $J=l\oplus\ZZ m$ with $\ZZ m$ a primitive isotropic line of
+$M\cong\latI_{1,8}$. Then $J^{\perp B}=\theset{x\in l\perp M\st x\cdot m=0}=l\perp m^{\perp M}$, and
+$m^{\perp M}=\ZZ m\perp N$ with $N\cong\latI_{0,7}$ by @lem:odd-unimodular-isotropic-splitting(2). Hence
+$J^{\perp B}=J\perp N$ and $J^{\perp B}/J\cong\latI_{0,7}$.
+
+The lattice $U\perp U\perp\latI_{0,7}$ is odd, unimodular and indefinite of signature $(2,9)$, so it is
+isometric to $B$ by @thm:indefinite-unimodular-classification.
+:::
 
 ## Finiteness of embedding orbits
 
