@@ -15,33 +15,46 @@ notes: |-
 
 ## The lattices and the two computations
 
-::: {.remark title="The five cusps and their hyperbolic quotients"}
+::: {.proposition #prop:sterk-cusp-quotients title="The five cusps and their hyperbolic quotients"}
 
-Sterk's five cusp representatives are the primitive isotropic vectors
+Let $\Gamma$ be Sterk's group, identified with $\gent$ in @thm:sterk-line-fibres.
+Every primitive isotropic vector of $\ten = U\oplus E_{10}(2)$ lies in the $\Gamma$-orbit of exactly one of
 $$
 \eta_1 = e,\quad
 \eta_2 = e',\quad
 \eta_3 = e'+f'+\omega,\quad
 \eta_4 = e'+2f'+\alpha,\quad
-\eta_5 = 2e+2f+\alpha
+\eta_5 = 2e+2f+\alpha,
 $$
-of $\ten = U\oplus E_{10}(2)$, with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)). Each determines a rank-$10$ hyperbolic lattice $\eta_j^{\perp}/\eta_j$, and hence a copy of $\HH^9$ (@def:hyperbolic-model) on which reflection groups act.
-By [@Ste91 Lemma 4.3.4],
+with $\omega = 2w_8$ and $\alpha = 2w_1$ in the dual basis ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)) [@Ste91, Prop. 4.2.3].
+Each quotient $\eta_j^{\perp}/\eta_j$ is a hyperbolic lattice of rank $10$, so it determines a copy of $\HH^9$ (@def:hyperbolic-model), and
 $$
 \eta_1^{\perp}/\eta_1 \cong U(2)\oplus E_8(2) = E_{10}(2),
 \qquad
-\eta_j^{\perp}/\eta_j \cong U\oplus E_8(2) \quad (j = 2,3,4,5),
+\eta_j^{\perp}/\eta_j \cong U\oplus E_8(2) \quad (j = 2,3,4,5)
 $$
-of two-elementary types $(10,10,0)$ and $(10,8,0)$ respectively.
+[@Ste91, Lem. 4.3.4].
+These lattices are even and $2$-elementary (@def:p-elementary) of types $(10,10,0)$ and $(10,8,0)$ respectively.
 :::
 
-::: {.remark title="The counts"}
+::: {.proof}
 
-Sterk's published fundamental domains have $12, 10, 12, 11, 14$ walls, with the norm breakdowns $12\times(-4)$; $9\times(-4)$, $1\times(-2)$; $10\times(-4)$, $2\times(-2)$; $9\times(-4)$, $2\times(-2)$; and $10\times(-4)$, $4\times(-2)$ [@Ste91].
-Vinberg's algorithm run on the five quotient lattices returns $10$ roots for each, with $1$ ideal vertex for $\eta_1$ and $2$ for the others.
+The orbit statement and the two isometries are the cited results.
+For an even unimodular lattice $N$, the discriminant group of $N(2)$ is $\tfrac12 N(2)/N(2)\cong(\ZZ/2)^{\rank N}$, and its quadratic form takes the value $\tfrac12 y^2_N\in\ZZ$ on the class of $\tfrac12 y$, because $N$ is even.
+The lattice $U$ is unimodular, and $U(2)$ and $E_8(2)$ are of the form $N(2)$, so $A_{U(2)\oplus E_8(2)}\cong(\ZZ/2)^{10}$ and $A_{U\oplus E_8(2)}\cong(\ZZ/2)^{8}$, both with quadratic values in $\ZZ/2\ZZ\subseteq\QQ/2\ZZ$.
+By the definition of the coparity in @thm:two-elementary-classification, $\delta = 0$ in both cases.
 :::
 
-| Cusp | Published walls | Vinberg walls | Ideal vertices |
+::: {.proposition #prop:sterk-reflection-subgroup-diagrams title="Sterk's diagrams of the reflection subgroups"}
+
+For $v = \eta_j$, let $G_v$ be the image in $\Orth(v^{\perp}/\ZZ v)$ of the stabilizer of $v$ in $\Gamma$, and let $W_v\leq G_v$ be its reflection subgroup.
+The Coxeter diagram of $W_{\eta_j}$ has $12, 10, 12, 11, 14$ nodes for $j = 1,\dots,5$.
+The squares of the corresponding roots are, in the same order,
+$12\times(-4)$; $9\times(-4)$ and $1\times(-2)$; $10\times(-4)$ and $2\times(-2)$; $9\times(-4)$ and $2\times(-2)$; and $10\times(-4)$ and $4\times(-2)$
+[@Ste91, §§4.3.5--4.3.9, Figs. 4, 6, 8, 10, 12].
+:::
+
+| Cusp | Nodes of the Sterk diagram | Vinberg walls | Ideal vertices of the Vinberg chamber |
 | --- | --- | --- | --- |
 | 1 | 12 | 10 | 1 |
 | 2 | 10 | 10 | 2 |
@@ -66,35 +79,92 @@ With $n=9$ this gives at least $10$ facets, that is at least $10$ walls.
 By @thm:vinberg-algorithm a terminating run on a rank-$10$ hyperbolic lattice returns at least ten roots.
 :::
 
-::: {.observation #obs:chambers-are-simplices title="Exactly ten walls means a simplex"}
+::: {.corollary #cor:ten-walls-is-simplex title="Exactly ten walls means a simplex"}
 
-A finite-volume polyhedron in $\HH^9$ with exactly $10$ facets is a $9$-simplex, the case of @cor:coxeter-simplex-volume, whose face numbers are $f_k = \binom{10}{k+1}$, that is
+A finite-volume Coxeter polytope in $\HH^9$ with exactly $10$ walls is a $9$-simplex, the case of @cor:coxeter-simplex-volume.
+Its face numbers are $f_k = \binom{10}{k+1}$, that is
 $$
 (f_0,\dots,f_9) = (10, 45, 120, 210, 252, 210, 120, 45, 10, 1).
 $$
-This is the $f$-vector CoxIter reports for the folded Sterk 2 diagram and for both rank-$10$ $0$-cusp diagrams $(10,8,0)_1$ and $(10,10,0)_1$ ([CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices)). The Sterk 1, 3, 4 and 5 diagrams have $f$-vectors beginning $23, 33, 26, 115$, so those four polyhedra have more vertices than a simplex.
 :::
 
-::: {.example title="Chambers of the rank-$10$ quotient lattices"}
+::: {.proof}
 
-CoxIter, run on the $0$-cusp diagram of $(10,10,0)_1$, reports dimension $9$, one vertex at infinity, Gram field $\QQ$, and the simplex $f$-vector; run on $(10,8,0)_1$ it reports dimension $9$, two vertices at infinity, Gram field $\QQ[\sqrt2]$, and the same $f$-vector.
+By @thm:coxeter-polytope-volume(1) the closure $\overline P$ of the polytope in the projective model is a compact convex $9$-dimensional polytope with $10$ facets.
+In an affine chart with an interior point of $\overline P$ as origin, the polar polytope of $\overline P$ is a $9$-dimensional polytope with one vertex for each facet of $\overline P$, so it has $10$ vertices.
+Ten points that span an affine space of dimension $9$ are affinely independent, so the polar polytope is a $9$-simplex, and $\overline P$, the polar of a simplex, is a $9$-simplex.
+The $k$-faces of a $9$-simplex correspond to the $(k+1)$-element subsets of its $10$ vertices, which gives $f_k = \binom{10}{k+1}$.
+:::
+
+::: {.example #ex:coxiter-f-vectors-of-sterk-diagrams title="Face numbers of the folded Sterk diagrams"}
+
+CoxIter returns the simplex $f$-vector of @cor:ten-walls-is-simplex for the folded Sterk 2 diagram and for both rank-$10$ $0$-cusp diagrams $(10,8,0)_1$ and $(10,10,0)_1$ ([CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices)).
+For the Sterk 1, 3, 4 and 5 diagrams it returns $f_0 = 23, 33, 26, 115$, so those four polyhedra have more vertices than a simplex.
+:::
+
+::: {.example #ex:vinberg-chambers-of-cusp-quotients title="Chambers of the rank-$10$ quotient lattices"}
+
+CoxIter, run on the $0$-cusp diagram of $(10,10,0)_1$, returns dimension $9$, one vertex at infinity, Gram field $\QQ$, and the simplex $f$-vector; run on $(10,8,0)_1$ it returns dimension $9$, two vertices at infinity, Gram field $\QQ[\sqrt2]$, and the same $f$-vector.
 Vinberg's algorithm on $\eta_1^{\perp}/\eta_1 \cong E_{10}(2)$, of type $(10,10,0)$, returns ten roots and one ideal vertex; on $\eta_j^{\perp}/\eta_j\cong U\oplus E_8(2)$, of type $(10,8,0)$, it returns ten roots and two ideal vertices for each of $j = 2,3,4,5$.
-Wall count and ideal-vertex count agree in both cases.
 :::
 
-::: {.example title="The simple roots of the computed chambers"}
+::: {.lemma #lem:computed-chamber-roots-gram title="The ten roots and their Gram matrix"}
 
-Let $\eps_1,\eps_2$ be the isotropic basis of the summand $U(2)$ of $\eta_1^{\perp}/\eta_1\cong U(2)\oplus E_8(2)$, or of the summand $U$ of $\eta_2^{\perp}/\eta_2\cong U\oplus E_8(2)$, and let $\eps_{2+i} = \alpha_i$ for the simple roots $\alpha_1,\dots,\alpha_8$ of $E_8(2)$ in Bourbaki numbering. The ten roots returned for $\eta_1^{\perp}/\eta_1$ are
+Let $E_8$ be negative-definite, let $N_1 = U(2)\oplus E_8(2)$ and $N_2 = U\oplus E_8(2)$, and for $c = 1,2$ let $\eps_1,\eps_2$ be the isotropic basis of the hyperbolic summand of $N_c$, so that $\eps_1\cdot\eps_2 = 2$ in $N_1$ and $\eps_1\cdot\eps_2 = 1$ in $N_2$.
+Let $\eps_{2+i} = \alpha_i$ for the simple roots $\alpha_1,\dots,\alpha_8$ of $E_8(2)$ in Bourbaki numbering, and set
+$$
+r_c = c\,\eps_2 + 2\eps_3 + 3\eps_4 + 4\eps_5 + 6\eps_6 + 5\eps_7 + 4\eps_8 + 3\eps_9 + 2\eps_{10}.
+$$
+The coefficients $(2,3,4,6,5,4,3,2)$ are the marks of the highest root of $E_8$.
+Consider the ten vectors
 $$
 -\eps_3,\ -\eps_4,\ \dots,\ -\eps_{10},
 \qquad
 \eps_1 - \eps_2,
 \qquad
-\eps_2 + 2\eps_3 + 3\eps_4 + 4\eps_5 + 6\eps_6 + 5\eps_7 + 4\eps_8 + 3\eps_9 + 2\eps_{10},
+r_c
 $$
-and for $\eta_2^{\perp}/\eta_2$ the same list with the coefficient of $\eps_2$ in the last root equal to $2$.
-The coefficients $(2,3,4,6,5,4,3,2)$ on $\eps_3,\dots,\eps_{10}$ are the marks of the highest root of $E_8$.
-For $\eta_1$ the ten roots have square $-4$, form a $\ZZ$-basis of $\eta_1^{\perp}/\eta_1$, and have Coxeter diagram $T_{2,3,7}$. For $\eta_2$ the root $\eps_1-\eps_2$ has square $-2$ and meets the last root with label $4$, and the other nine roots have square $-4$, as in Sterk's breakdown $9\times(-4)$, $1\times(-2)$.
+of $N_c$.
+
+1. In $N_1$ all ten have square $-4$ and divisibility $2$, so they are long roots (@def:2elementary-roots). They form a $\ZZ$-basis of $N_1$, and their Coxeter diagram is $T_{2,3,7}$ with every edge of label $3$.
+2. In $N_2$ the vector $\eps_1-\eps_2$ has square $-2$ and is a short root, and the other nine have square $-4$ and divisibility $2$ and are long roots. They span a sublattice of index $2$ in $N_2$. Their Coxeter diagram has the same underlying graph as in (1), with label $4$ on the edge joining $\eps_1-\eps_2$ and $r_2$ and label $3$ on every other edge.
+3. In both cases distinct vectors of the list have products in $\{0,2\}$.
+:::
+
+::: {.proof}
+
+Order the vectors as $-\eps_3,\dots,-\eps_{10},\ \eps_1-\eps_2,\ r_c$.
+In $N_1$ their Gram matrix is
+$$
+\begin{pmatrix}
+-4 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & -4 & 0 & 2 & 0 & 0 & 0 & 0 & 0 & 0\\
+2 & 0 & -4 & 2 & 0 & 0 & 0 & 0 & 0 & 0\\
+0 & 2 & 2 & -4 & 2 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 2 & -4 & 2 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 2 & -4 & 2 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 2 & -4 & 2 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0 & 2 & -4 & 0 & 2\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & -4 & 2\\
+0 & 0 & 0 & 0 & 0 & 0 & 0 & 2 & 2 & -4
+\end{pmatrix},
+$$
+and in $N_2$ it is the same matrix with the entry in position $(9,9)$ replaced by $-2$.
+The matrix expressing the ten vectors in the basis $\eps_1,\dots,\eps_{10}$ has determinant $1$ for $c=1$ and $2$ for $c=2$, which gives the $\ZZ$-basis in (1) and the index in (2).
+
+Every product of two vectors of $N_1 = (U\oplus E_8)(2)$ is even, so every vector of $N_1$ has even divisibility; the ten vectors are primitive, so each has divisibility $2$.
+In $N_2$ the vectors $-\eps_{2+i}$ are orthogonal to $U$ and pair evenly with $E_8(2)$, and $r_2$ has $r_2\cdot\eps_1 = 2$, $r_2\cdot\eps_2 = 0$ and pairs evenly with $E_8(2)$; so these nine vectors have divisibility $2$.
+
+The bond invariant of @def:bond-invariant is $t = 4\cdot 2^2/((-4)(-4)) = 1$ for two vectors of square $-4$ with product $2$, which is label $3$, and $t = 4\cdot 2^2/((-2)(-4)) = 2$ for $\eps_1-\eps_2$ and $r_2$ in $N_2$, which is label $4$.
+The nonzero off-diagonal entries join $-\eps_3,-\eps_5,-\eps_6,-\eps_7,-\eps_8,-\eps_9,-\eps_{10},\ r_c,\ \eps_1-\eps_2$ in a chain, with $-\eps_4$ attached to $-\eps_6$.
+The three arms at $-\eps_6$ have $2$, $3$ and $7$ nodes counted with $-\eps_6$, which is the graph $T_{2,3,7}$.
+:::
+
+::: {.example #ex:computed-chamber-simple-roots title="The simple roots of the computed chambers"}
+
+Under the isometries of @prop:sterk-cusp-quotients, $\eta_1^{\perp}/\eta_1\cong N_1$ and $\eta_2^{\perp}/\eta_2\cong N_2$ in the notation of @lem:computed-chamber-roots-gram.
+The ten roots that Vinberg's algorithm returns for $\eta_1^{\perp}/\eta_1$ are the ten vectors of @lem:computed-chamber-roots-gram with $c = 1$, and those for $\eta_2^{\perp}/\eta_2$ are the ten vectors with $c = 2$.
+For $\eta_2$ the squares are $9\times(-4)$ and $1\times(-2)$, the same as for Sterk's cusp-$2$ diagram in @prop:sterk-reflection-subgroup-diagrams.
 :::
 
 ## The question the discrepancy poses
@@ -115,29 +185,10 @@ Ideal vertices of a chamber correspond bijectively to the rank-$(n-1)$ parabolic
 Under a chamber decomposition answering @qst:sterk-reflection-subgroup, determine which ideal vertices of the union are ideal vertices of the constituent chambers and which arise on interior walls.
 :::
 
-::: {.remark title="Cusp 2 is the case where the two agree"}
+::: {.example #ex:gram-fields-of-sterk-diagrams title="Gram fields of the folded Sterk diagrams"}
 
-The published Sterk 2 diagram has ten walls, two vertices at infinity, and the simplex $f$-vector, matching the Vinberg chamber of $U\oplus E_8(2)$ in every recorded invariant.
-By @conj:coble-zero-cusp-sterk-two, cusp $2$ is the Sterk cusp of the Coble $0$-cusp, and it is the one cusp for which @qst:sterk-reflection-subgroup already has the answer $W_2 = W(\eta_2^{\perp}/\eta_2)$.
-:::
-
-::: {.remark title="The four cusps the Coble boundary sees are exactly the four that force the question"}
-
-Every primitive isotropic vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only cusps $2$ to $5$ are in play there ([KSBA stable limits](#sec-ksba)). Those are exactly the four with mutually isometric quotients $\eta_j^{\perp}/\eta_j\cong U\oplus E_8(2)$ and pairwise inequivalent published diagrams, which is the configuration @qst:sterk-reflection-subgroup is about.
-:::
-
-## Sign convention
-
-::: {.warning title="Sign convention of the computed roots"}
-
-The Vinberg implementation used takes a lattice of signature $(n,1)$, while this project's convention is $(1,n)$ ([reflection groups and Vinberg](#sec-reflection-groups-and-vinberg)). The intended transport negates the form before the call and negates the returned roots afterwards.
-Whether the roots quoted above were computed for $L$ or for $L(-1)$ is unknown; recompute them with this transport before they are used as input to a further computation.
-:::
-
-::: {.remark title="Gram fields"}
-
-The base field of a Coxeter matrix is generated by the values $2\cos(\pi/m_{st})$ (@def:coxeter-base-field), and is a real cyclotomic field of the degree computed in @prop:coxeter-base-field-degree.
-CoxIter reports Gram field $\QQ$ for the folded Sterk 1 diagram and for $(10,10,0)_1$, and $\QQ[\sqrt2]$ for the other four folded diagrams and for $(10,8,0)_1$ and $(9,9,1)_1$; the $\sqrt2$ is $2\cos(\pi/4)$, the label-$4$ bond of the $B$-type diagrams.
+CoxIter returns Gram field $\QQ$ for the folded Sterk 1 diagram and for $(10,10,0)_1$, and $\QQ[\sqrt2]$ for the other four folded diagrams and for $(10,8,0)_1$ and $(9,9,1)_1$.
+Here $\sqrt2 = 2\cos(\pi/4)$ comes from the label-$4$ bonds of these diagrams.
 :::
 
 Related: [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices), [root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [fundamental chamber polyhedra](#sec-fundamental-chamber-polyhedra), [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).

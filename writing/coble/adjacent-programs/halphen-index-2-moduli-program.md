@@ -24,29 +24,35 @@ A **Halphen pencil of index $m$** is a pencil of degree $3m$ curves in $\PP^2$ w
 Every relatively minimal rational elliptic surface is Halphen of some index.
 :::
 
-::: {.remark title="What is already constructed in the literature"}
+::: {.proposition #prop:known-halphen-moduli title="Moduli of rational elliptic surfaces of index $1$ and $2$"}
 
-- $M_{H,1}$ is an open subset of the Grassmannian $\Gr_2(10)$ of pencils of plane cubics, irreducible of dimension 8.
+1. Marked rational elliptic surfaces of index $1$ depend on $8$ parameters and are parametrized by an open subset of the Grassmannian $\Gr(2,10)$ of pencils of plane cubics.
+   Marked rational elliptic surfaces of index at least $2$ depend on $9$ parameters; the additional parameter is the choice of the multiple fiber [@MZ21, §1].
 
-- $M_{H,m}$ for $m\geq 2$ fibers over $M_{H,1}$ with 1-dimensional fibers, conjecturally irreducible of dimension 9.
+2. A rational Weierstrass fibration $X\to\PP^1$ is defined by a pair of forms $(A,B)$, up to the action of $k^*\times\SL(V_1)$.
+   The point of the GIT quotient of [@Mir81, §4] represented by $(A,B)$ is stable if and only if $X$ has a smooth generic fibre and the associated elliptic surface has only reduced fibres [@Mir81, Thm. 6.2].
+   The stable locus $W_1$ is a coarse moduli space for stable rational Weierstrass fibrations, and the GIT quotient of [@Mir81, §4] is a compactification $\overline W_1$ of it [@Mir81, Thm. 7.2 and §7].
 
-- Miranda (1981) compactifies $M_{H,1}$ by GIT applied to Weierstrass models.
+3. A moduli space for marked rational elliptic surfaces of index $2$ exists as a noncomplete toric variety of dimension $9$, the quotient of an affine toric variety by an action of $\mathbb G_m$.
+   It has compactifications that are complete toric varieties, the quotients of $\mathbb A^{12}$ by actions of $\mathbb G_m^3$ [@MZ21, Thm. 1.1].
 
-- Miranda (2021) constructs $M_{H,2}$ and shows it is a **toric variety of dimension 9**.
-
-- Zanardini (2023) studies GIT stability of index 2 Halphen pencils in $\PP^2$, toward a GIT compactification of $M_{H,2}$.
+4. Let $V = H^0(\PP^2,\mathcal O_{\PP^2}(1))$.
+   A Halphen pencil of index $2$ is a point of $\Gr(2, S^6V^*)$, and [@Zan23, Thms. 1.4--1.6] give the criteria for its stability and semistability under $\SL(V)$ by the types of the singular fibers of its rational elliptic surface.
 :::
 
 ## The lattice matching
 
-::: {.remark title="Where the Coble lattices reappear"}
+::: {.proposition #prop:halphen-k3-lattices title="The $2$-elementary lattices of Halphen K3 surfaces"}
 
-In AE22, the case $S = \HalphenInvariants$ corresponds to K3 surfaces $X$ with a nonsymplectic involution $\iota$ such that $Y \definedas X/\iota$ is an index 2 Halphen pencil.
-More generally, by AE22 section 4C, the lattices $S = (10+n,\, 12-n,\, \delta)$ for $1\leq n\leq 9$ give index 2 Halphen K3 surfaces $X$ with an $I_{2k}$ fiber, and contracting the $(-1)$-curves in the special fiber yields index 2 Halphen pencils with an $I_k$ fiber.
+Let $X$ be a K3 surface with a nonsymplectic involution $\iota$ and $2$-elementary Picard lattice $S$, and let $Y \definedas X/\iota$.
 
-These are the rows $n = 1, \dots, 9$ of [the Coble lattice table](#sec-coble-lattice-table), nine of the ten Coble families of [the Coble families research program](#sec-coble-families-research-program); the table's remaining rows, $(18,4,0)$ and the $n = 10$ row $(20,2,1)$, lie outside the Halphen range $1 \leq n \leq 9$.
-The lattice coincidence is the whole content of the conjecture: two geometrically different families of surfaces are attached to one line of Nikulin's triangle.
+1. If $S = \HalphenInvariants$, then $Y$ is an index $2$ Halphen pencil, and the fixed locus $X^\iota$ is a smooth elliptic fiber that does not ramify over the unique multiple fiber of $Y$ [@AE22, Thm. 4.1(3)].
+
+2. If $S = (10+k,\, 12-k,\, \delta)$ with $1\leq k\leq 9$, then $X$ is an index $2$ Halphen K3 surface with an $I_{2k}$ fiber, and contracting the $(-1)$-curves in the special fiber of $Y$ gives a rational index $2$ Halphen pencil with an $I_k$ fiber [@AE22, §4C].
 :::
+
+The lattices of @prop:halphen-k3-lattices(2) are the rows with $n = 1, \dots, 9$ of [the Coble lattice table](#sec-coble-lattice-table), both rows with $n = 8$ included.
+The remaining row is $n = 10$, the lattice $(20,2,1)$.
 
 ## The program
 
@@ -60,12 +66,11 @@ The normalizations of the stable pair compactifications $\overline{M_{H,2,k}}^R$
 
 A Halphen surface of index $m\geq 2$ has a unique multiple fiber of multiplicity $m$.
 That fiber can be used to construct a recognizable divisor $R$.
-This conjecture is what supplies the $R$ that the previous one needs.
 :::
 
-## The stated starting point
+## The program for $S = \HalphenInvariants$
 
-The Coxeter diagram for $S \definedas \HalphenInvariants$ is well known and the K3 moduli theory is developed, so the program begins there:
+Let $S \definedas \HalphenInvariants$.
 
 1. Construct the period domain $F_S$.
 
@@ -79,14 +84,6 @@ The Coxeter diagram for $S \definedas \HalphenInvariants$ is well known and the 
 
 6. Find a recognizable divisor $R$ and construct $\overline{F_S}^R$.
 
-7. Use AE22 to construct dlt models and integral-affine structures classifying $\partial\overline{F_S}^R$.
-
-Steps 3 through 5 are exactly the recipe recorded in [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe), applied to a new lattice.
-
-::: {.remark title="Motivation"}
-
-It opens a comparison between GIT and KSBA compactifications, since $M_{H,1}$ and $M_{H,2}$ already have GIT compactifications in the literature while their KSBA compactifications do not exist.
-Generalizing to $\overline{M_{H,m}}^R$ for $m>2$ would give new moduli spaces of general rational elliptic surfaces with no restriction on fiber type.
-:::
+7. Use [@AE22] to construct dlt models and integral-affine structures classifying $\partial\overline{F_S}^R$.
 
 Related: [Coble families research program](#sec-coble-families-research-program), [nodal Enriques moduli program](#sec-nodal-enriques-moduli-program), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe).

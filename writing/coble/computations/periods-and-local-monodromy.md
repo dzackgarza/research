@@ -14,8 +14,6 @@ notes: |-
 # Periods, Picard--Fuchs operators, and local monodromy of a one-parameter family
 
 
-@def:kulikov-types classifies a degeneration by the nilpotency index of $N = \log T$, and @thm:lmhs reads the boundary stratum off the same operator.
-
 ## Periods and the period map
 
 ::: {.definition #def:period-map title="Period matrix and period map"}
@@ -94,20 +92,34 @@ Let $k$ have characteristic $0$ and let $f\in k[x_0,\dots,x_{n-1},t]$ present a 
    This is the multiplicative Jordan decomposition of $T$: the first factor is its semisimple part, the second its unipotent part.
 :::
 
-::: {.remark title="The relation to the log monodromy"}
+::: {.corollary #cor:pf-unipotent-monodromy title="Unipotency and the log monodromy"}
 
-$T$ is unipotent exactly when $R_s = 0$, and in that case
-$$
-N \;=\; \log T \;=\; 2\pi i\, R_n ,
-$$
-so the nilpotency index of the operator $N$ of @def:kulikov-types is the nilpotency index of the residue matrix $R_n$, and the Jordan block sizes of $T$ are those of $R$.
-Verifying $R_s = 0$ is therefore the unipotency check that @def:kulikov-types presupposes, carried out algebraically on the indicial polynomial.
+Let $T$, $R = R_s + R_n$ and $\alpha_1,\dots,\alpha_\mu$ be as in @cons:pf-from-jacobian.
+
+1. $T$ is unipotent if and only if every exponent $\alpha_j$ is an integer.
+
+2. In that case
+   $$
+   N \;=\; \log T \;=\; 2\pi i\, R_n ,
+   $$
+   so the nilpotency index of $N$ is the nilpotency index of $R_n$, and the Jordan block sizes of $T$ are those of $R$.
+
+3. The Jordan type of $T$, and hence the nilpotency index of $N$ and the type of @def:kulikov-types, is the same in every basis of the fiber cohomology.
 :::
 
-::: {.warning title="Jordan block sizes come from the decomposition data"}
+::: {.proof}
 
-The block sizes are part of the Jordan decomposition of step 5, and are the values to use.
-Recovering them instead by scanning the superdiagonal of a computed Jordan form is correct only for one normalization of that form, and mis-segments a differently normalized one.
+For (1), step 6 of @cons:pf-from-jacobian gives $\exp(2\pi i R_s) = \diag(e^{2\pi i\alpha_j})$ as the semisimple part of $T$.
+By uniqueness of the multiplicative Jordan decomposition, $T$ is unipotent exactly when its semisimple part is the identity, that is, when $e^{2\pi i\alpha_j} = 1$ for every $j$.
+
+For (2), integral exponents give $\exp(2\pi i R_s) = I$, so $T = \exp(2\pi i R_n)$.
+The series $\exp$ and $\log$ are inverse bijections between nilpotent and unipotent matrices, so $\log T = 2\pi i R_n$.
+A nonzero scalar multiple of $R_n$ has the nilpotency index and Jordan type of $R_n$.
+The matrix $R$ is in Jordan form, so on each Jordan block of $R$ the part $R_s$ is the scalar $\alpha_j$ and $R_n$ is a single nilpotent Jordan block of the same size.
+On that block $T - I = 2\pi i R_n\, u$ with $u = \Sum_{k\geq0} (2\pi i R_n)^k/(k+1)!$ invertible and commuting with $R_n$, so $\ker (T-I)^k = \ker R_n^k$ for every $k$, and $T$ has the Jordan block sizes of $R_n$.
+
+For (3), a change of basis conjugates $T$ by an invertible matrix, and conjugates $N = \log T$ by the same matrix.
+The Jordan type and the nilpotency index are invariant under conjugation.
 :::
 
 ## The Legendre specimen
@@ -129,18 +141,18 @@ $$
 a single Jordan block, so $T$ is unipotent with $N\neq 0$ and $N^2 = 0$.
 :::
 
-::: {.remark title="The normalization of the computed values"}
+::: {.proposition #prop:legendre-monodromy-basis-not-integral title="The Legendre monodromy is not written in an integral basis"}
 
-The coefficient list depends on the choice of the form $P$ and of the monomial basis $B$, so it is a statement about this normalization of @cons:pf-from-jacobian.
-The indicial polynomial is determined up to a scalar by the same choices; its mathematical content is the pair of roots, a double exponent $0$.
-The entry $2\pi i$ shows that $T$ is written in a period basis of the relevant cohomology and not in an integral basis of the homology of the fiber, so the values above cannot be compared directly with the Picard--Lefschetz formula for a nodal degeneration.
-[@Mov21] gives the explicit Picard--Fuchs matrix and the Gauss--Manin basis, [@Gri69] the regular-singularity statement, and SGA 7, Exposé XV the monodromy in an integral basis.
+The basis in which @ex:legendre-monodromy writes $T$ is not a $\ZZ$-basis of $H_1(X_t,\ZZ)$ or of $H^1(X_t,\ZZ)$.
+The Jordan type of the monodromy in any basis of $H^1(X_t,\CC)$ is one Jordan block of size $2$.
 :::
 
-::: {.remark title="The invariant that survives the change of basis"}
+::: {.proof}
 
-The Jordan type of a matrix is invariant under conjugation, so the nilpotency index of $N$, and hence the Kulikov type of @def:kulikov-types, is unaffected by which basis of the fiber cohomology the monodromy is written in.
-The computed $T$ determines that type once the period basis is identified with a basis of the integral local system; the numerical values of the entries have no meaning without that identification, and the block structure has meaning as soon as it is established.
+The monodromy is induced by parallel transport along a loop in the base, which is a homeomorphism of the fiber.
+It therefore preserves $H_1(X_t,\ZZ)\cong\ZZ^2$ and $H^1(X_t,\ZZ)$, and its matrix in a $\ZZ$-basis of either lies in $\GL_2(\ZZ)$.
+The matrix $T$ of @ex:legendre-monodromy has the entry $2\pi i\notin\ZZ$.
+The second statement is @cor:pf-unipotent-monodromy(3) applied to the single Jordan block of $T$.
 :::
 
 ## The topological construction
@@ -151,49 +163,6 @@ For a smooth projective hypersurface $X$, an iterated Lefschetz pencil $X\dashri
 At each critical value there is a vanishing cycle $\delta_i\in H_{n-1}(X_b)$ in the homology of a nearby fiber, and a thimble $\Delta_i\in H_n(Y,Y_b)$ with $\partial\Delta_i = \delta_i$.
 Integrating a basis of rational differential forms over the thimbles gives the period matrix; a homology modification corrects $H_n(Y)$ to $H_n(X)$ across the blow-up.
 The monodromy around a critical value is the Picard--Lefschetz twist along the corresponding vanishing cycle, and continuing the periods numerically around each critical value returns the monodromy matrices on $H_{n-1}(X_b)$ in an explicit homology basis.
-:::
-
-::: {.remark title="What each construction delivers"}
-
-@cons:pf-from-jacobian is exact and produces the Gauss--Manin connection matrix, the Picard--Fuchs operator, Hodge numbers and the Hodge filtration through graded Jacobian-ring data, and period vectors and Hodge loci for special families.
-It applies where the Jacobian-ring reduction terminates.
-
-@cons:lefschetz-periods is numerical with interval-arithmetic error bounds, and produces an explicit homology basis, the intersection product on it, integral monodromy matrices, and the period matrix; it does not produce the Gauss--Manin connection, the Hodge filtration, or Hodge loci.
-It applies to arbitrary smooth hypersurfaces, to elliptic surfaces over $\PP^1$ together with their Mordell--Weil and Néron--Severi lattices, to double covers of $\PP^2$ branched along a sextic, and to fiber products of elliptic surfaces.
-
-The two compute the same objects; the exact construction gives structure and the numerical one gives an integral basis, which is the datum the previous remark identifies as missing.
-:::
-
-::: {.remark title="Reduction of rational forms and annihilators"}
-
-Both constructions rest on the reduction of a rational differential form modulo exact forms and the Jacobian ideal, the algorithmic form of Griffiths' residue calculus [@Gri69].
-The same reduction, applied to a rational function of several variables with a distinguished parameter, produces an annihilating differential operator for its periods, and the generating function of the constant terms of the Laurent powers of a rational function and the diagonal of a rational function are transformed into period problems and answered by the same reduction.
-Exact linear algebra over $\QQ(t)$ in that reduction is carried out by computing over finite fields and reconstructing the rational functions and operator coefficients in characteristic zero.
-:::
-
-## What is and is not computed
-
-::: {.remark title="The three levels"}
-
-For a pure Hodge structure on a fixed smooth hypersurface, computing means producing a basis of de Rham cohomology, grading it by Hodge level, computing Hodge numbers, computing periods against chosen cycles, computing the intersection form, and identifying Hodge classes in middle cohomology.
-
-For a variation of Hodge structure, it means the Gauss--Manin connection matrices, the Picard--Fuchs operators, the period vectors or their Taylor expansions, and the local monodromy data near singular fibers.
-
-For a degeneration, it means the de Rham, Gauss--Manin and Picard--Fuchs data for the explicit family, the local monodromy and the nilpotent part in the one-parameter case, and the material for experiments toward a limiting Hodge structure.
-The limiting mixed Hodge structure of an arbitrary degeneration, the nearby- and vanishing-cycle formalism in general, mixed Hodge structures of arbitrary singular varieties, and cycle classes of arbitrary subvarieties are outside what these two constructions supply.
-:::
-
-## Where this meets the Coble program
-
-::: {.remark title="The K3 cover as a double cover"}
-
-The K3 cover of a Coble surface is the double cover of $\PP^2$ branched along the rational sextic $C$, with equation $w^2 = F(x,y,z)$ in $\PP(1,1,1,3)$ ([Open problems and technical gaps](#sec-open-problems)). Double covers of $\PP^2$ branched along a sextic are one of the classes @cons:lefschetz-periods handles directly, so a worked instance of $F$ is the entire input its periods and monodromy require, and the open problem asking for such an instance is what stands between this program and a period computation for its own surfaces.
-:::
-
-::: {.remark title="The object the construction is a functor out of"}
-
-The datum @cons:pf-from-jacobian consumes is a family $X\to S$ over a one-dimensional base together with a point of $S$, and the datum it produces is variation of Hodge structure data: a Gauss--Manin connection, a Picard--Fuchs $D$-module, and a limit mixed Hodge structure at the chosen point.
-Stated at that level the local monodromy is a question asked of the connection at a point of $S$, with the multiplicative Jordan decomposition read from the connection data.
 :::
 
 Related: [Kulikov models and limiting mixed Hodge structures](#sec-kulikov-models), [Open problems and technical gaps](#sec-open-problems), [Toolchain and recipe for a hyperbolic 2-elementary lattice](#sec-computational-toolchain-and-recipe).

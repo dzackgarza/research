@@ -13,14 +13,12 @@ notes: |-
 
 # Explicit root vectors and the folded Sterk diagrams {#sec-root-vectors-and-folded-sterk-diagrams}
 
-::: {.remark}
+## Coordinates
 
-The conjectural involution $\theta$ of @sec-open-problems, with $\lkt^\theta \cong T_{\Co}$ and $\lkt^{-\theta}\cong S_{\Co}$, its $22\times22$ matrix, and its folding of the $(18,0,0)_1$ diagram are written in the coordinates below.
+::: {.notation title="Coordinates on $L_{20,2,0}$"}
+
+Work in $L_{20,2,0} = U \oplus U(2) \oplus E_8 \oplus E_8$, with $e,f$ the $U$ basis, $e',f'$ the $U(2)$ basis, $\alpha_i$ and $\tilde\alpha_i$ the simple roots of the two $E_8$ summands, and $w_i, \tilde w_i$ the bases of the dual lattices $E_8^\# = E_8$ dual to them.
 :::
-
-## Ambient lattice and notation
-
-Work in $L_{20,2,0} = U \oplus U(2) \oplus E_8 \oplus E_8$, with $e,f$ the $U$ basis, $e',f'$ the $U(2)$ basis, $\alpha_i$ and $\tilde\alpha_i$ the simple roots of the two $E_8$ summands, and $w_i, \tilde w_i$ the corresponding dual weights.
 
 ## The $(18,2,0)_1$ diagram: 22 roots
 
@@ -67,7 +65,9 @@ Folding is performed by summing a root with its image under the relevant involut
 
 ::: {.construction title="Sterk 1: 12 nodes, all of norm -4"}
 
-$s^1_k = v_k + v_{k+8}$, together with $s^1_{10} = v_{21}$ and $s^1_{11} = v_{22}$.
+The involution is $v_k\leftrightarrow v_{k+8}$ for $1\le k\le 8$, $v_{17}\leftrightarrow v_{19}$, $v_{18}\leftrightarrow v_{20}$, with $v_{21}$ and $v_{22}$ fixed; it preserves the products of @prop:eighteen-two-zero-vinberg-diagram.
+The nodes are $s^1_k = v_k + v_{k+8}$ for $1\le k\le 8$, $s^1_9 = v_{17}+v_{19}$, $s^1_{10} = v_{18}+v_{20}$, $s^1_{11} = v_{21}$ and $s^1_{12} = v_{22}$.
+Their Gram matrix has rank $10$.
 :::
 
 ::: {.construction title="Sterk 2: 10 nodes, norms $(-4^{\times 8}, -2, -4)$"}
@@ -89,8 +89,8 @@ so that $s^3_{11} = I(v_{20})$ and $s^3_{12} = I(v_{18})$.
 
 ::: {.construction title="Sterk 4: 11 nodes, norms $(-2,-4,-4,-4,-4,-4,-4,-4,-2,-4,-4)$"}
 
-$s^4_{12} = v_{22}+v_{21}$ is invariant under the involution but **is not a root**, and is therefore dropped.
-This is why Sterk 4 has 11 nodes rather than 12.
+$s^4_{12} = v_{22}+v_{21}$ is invariant under the involution.
+It has square $v_{21}^2 + v_{22}^2 + 2(v_{21},v_{22}) = -4-4+8 = 0$ (@prop:eighteen-two-zero-vinberg-diagram), so it is not a root and is dropped.
 :::
 
 ::: {.construction title="Sterk 5: 14 nodes, norms $(-4^{\times 8}, -2,-2,-2,-2, -4,-4)$"}
@@ -98,34 +98,39 @@ This is why Sterk 4 has 11 nodes rather than 12.
 $s^5_k = v_{2k-2} + 2 v_{2k-1} + v_{2k}$.
 :::
 
-::: {.remark title="Independent verification against Sterk's published basis"}
+::: {.example #ex:folded-sterk-norm-multisets title="Squares of the folded nodes"}
 
-Each folded diagram is cross-checked against Sterk's own published root basis (in terms of $\alpha'_i, e, f, e', f', w'_i$), producing the same norm multisets in permuted order.
-This is an independent confirmation that the folding construction reproduces Sterk's diagrams.
+For $j = 1,\dots,5$, the multiset of squares of the nodes of the folded Sterk $j$ diagram above is the multiset of squares of the roots of the diagram of $W_{\eta_j}$ in @prop:sterk-reflection-subgroup-diagrams:
+
+| Diagram | Nodes | Squares |
+| --- | --- | --- |
+| Sterk 1 | 12 | $12\times(-4)$ |
+| Sterk 2 | 10 | $9\times(-4)$, $1\times(-2)$ |
+| Sterk 3 | 12 | $10\times(-4)$, $2\times(-2)$ |
+| Sterk 4 | 11 | $9\times(-4)$, $2\times(-2)$ |
+| Sterk 5 | 14 | $10\times(-4)$, $4\times(-2)$ |
 :::
 
 ## Eigenspace ranks of the Sterk involution
 
 On the 22-dimensional root space, the $+1$-eigenspace ranks are 12, 12, 12, 14 for Sterk 1, 3, 4, 5 respectively.
-The induced root-image matrices have shape $(20,12)$ or $(20,14)$ and are asserted to have rank 10.
 
 ## Rank checks
 
-The Gram matrix is reconstructed from a Coxeter diagram by
-$$
-\inner{v_i}{v_j} = \sqrt{v_i^2\, v_j^2}\,\cos\!\left(\frac{\pi}{m_{ij}+2}\right),
-$$
-with $\infty$-labelled edges handled as $\sqrt{v_i^2 v_j^2}$.
+::: {.example #ex:gram-ranks-of-root-systems title="Ranks of Gram matrices"}
 
-| Case | Norms | Asserted rank |
+| Root set | Squares | Rank of the Gram matrix |
 | --- | --- | --- |
-| Coxeter $(18,2,0)$, 22 roots | $(-2^{\times20}, -4, -4)$ | 18 |
-| Coxeter Sterk 3, 12 roots | $(-4,-4,-4,-4,-2,-4,-4,-2,-4,-4,-4,-4)$ | 10 |
-| Folded Sterk 3 | full Gram of $U(2)\oplus E_8\oplus E_8$ in Bourbaki basis, folded along the diagonal symmetry | - |
+| $v_1,\dots,v_{22}$ of $\Phi_{(18,2,0)}$ | $(-2^{\times20}, -4, -4)$ | 18 |
+| roots of Sterk's diagram of $W_{\eta_j}$, $j = 1,2,3,4$ [@Ste91, §§4.3.5--4.3.8] | as in @ex:folded-sterk-norm-multisets | 10 |
+
+The Gram matrix of $v_1,\dots,v_{22}$ is the one given by the products in the proof of @prop:eighteen-two-zero-vinberg-diagram.
+The vectors $v_1,\dots,v_{22}$ span a sublattice of rank $18$ of $U(2)\oplus E_8^{\oplus2}$.
+:::
 
 ## Comparison with the published $(18,2,0)$ diagram
 
-::: {.proposition title="The 22 roots give the Vinberg diagram of $(18,2,0)$"}
+::: {.proposition #prop:eighteen-two-zero-vinberg-diagram title="The 22 roots give the Vinberg diagram of $(18,2,0)$"}
 
 Put $\epsilon_i = -1$ for $i\in\theset{2,10,17,19,21,22}$ and $\epsilon_i = 1$ otherwise.
 Then $(\epsilon_i v_i,\epsilon_j v_j)\geq 0$ for all $i\neq j$, and the Coxeter diagram of $\epsilon_1v_1,\ldots,\epsilon_{22}v_{22}$ is the diagram of the lattice $(18,2,0)$ in [@AE22, Fig. 4].
@@ -153,12 +158,12 @@ the four vertices $v_{17}, v_{18}, v_{19}, v_{20}$ joined by single edges to $v_
 This is the $(18,2,0)$ diagram of [@AE22, Fig. 4], with $v_1, v_5, v_9, v_{13}$ the four corners of its square.
 :::
 
-The Coxeter diagram of [@AET23, Fig. 1] belongs to a different lattice, $U\oplus E_8^{\oplus 2}\oplus A_1$ of type $(19,1,1)$, with $24$ roots, and the diagram of [@Sca87, Fig. 6.3.1] belongs to $\generators{-4}\oplus U\oplus E_8^{\oplus2}$; both lattices have rank $19$.
+The Coxeter diagram of [@AET23, Fig. 1] has $24$ nodes and describes a fundamental chamber of $W(N)$ for $N = U\oplus E_8^{\oplus 2}\oplus A_1$, of rank $19$ and type $(19,1,1)$ [@AET23, §4].
 
-::: {.remark title="Toroidal 0-cusps"}
+::: {.proposition #prop:aegs-toroidal-cusps title="Toroidal cusps of the stable-pair compactification"}
 
-The 0-cusps of $\fentwo$ whose compactifications are toroidal rather than strictly semitoroidal are **cusps 2 and 4**, together with the adjacent 1-cusps and 1-cusp 35 (AEGS Thm. 5.9).
-Sterk cusp $2$, the conjectural image of the Coble $0$-cusp (@conj:coble-zero-cusp-sterk-two), is toroidal.
+The normalization of $\ofentwo$ is semitoroidal for the semifans $\mathfrak F^k$, $k = 1,\dots,5$, of [@AEGS25, §5.2].
+It is toroidal over the $0$-cusps $2$ and $4$, over the $1$-cusps adjacent to them and over the $1$-cusp $35$, and strictly semitoroidal over the remaining cusps [@AEGS25, Thm. 5.9].
 :::
 
 Related: [CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe), [lattice and diagram conventions](#sec-lattice-and-diagram-conventions), [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain).
