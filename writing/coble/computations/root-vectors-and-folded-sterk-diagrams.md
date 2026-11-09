@@ -124,16 +124,37 @@ with $\infty$-labelled edges handled as $\sqrt{v_i^2 v_j^2}$.
 | Coxeter Sterk 3, 12 roots | $(-4,-4,-4,-4,-2,-4,-4,-2,-4,-4,-4,-4)$ | 10 |
 | Folded Sterk 3 | full Gram of $U(2)\oplus E_8\oplus E_8$ in Bourbaki basis, folded along the diagonal symmetry | - |
 
-## The $(18,2,0)$ diagrams of Scattone and of AET19
+## Comparison with the published $(18,2,0)$ diagram
 
-::: {.question title="Do Scattone and AET19 give the same diagram?"}
+::: {.proposition title="The 22 roots give the Vinberg diagram of $(18,2,0)$"}
 
-Scattone's Figure 6.3.1 is the Coxeter diagram of the full reflection group of $\generators{-4}\oplus U \oplus E_8^{\oplus2}$, reached through his $F_4$ boundary computation.
-AET19 gives a Coxeter diagram for the lattice with invariants $(18,2,0)$.
-The two diagrams differ slightly; how they differ, and which is correct, is open.
+Put $\epsilon_i = -1$ for $i\in\theset{2,10,17,19,21,22}$ and $\epsilon_i = 1$ otherwise.
+Then $(\epsilon_i v_i,\epsilon_j v_j)\geq 0$ for all $i\neq j$, and the Coxeter diagram of $\epsilon_1v_1,\ldots,\epsilon_{22}v_{22}$ is the diagram of the lattice $(18,2,0)$ in [@AE22, Fig. 4].
 :::
 
-The table of $22$ roots above is written in the $(18,2,0)$ presentation, so everything derived from $\Phi_{(18,2,0)}$, including the folded Sterk diagrams and the $\theta$ matrix of the open problems, depends on the answer.
+::: {.proof}
+
+The nonzero products $(v_i,v_j)$ with $i<j$ are as follows.
+
+| Value | Pairs $\theset{i,j}$ |
+| --- | --- |
+| $1$ | $\theset{1,16}$, $\theset{3,4}$, $\theset{4,5}$, $\theset{5,6}$, $\theset{5,18}$, $\theset{6,7}$, $\theset{7,8}$, $\theset{8,9}$, $\theset{11,12}$, $\theset{12,13}$, $\theset{13,14}$, $\theset{13,20}$, $\theset{14,15}$, $\theset{15,16}$ |
+| $-1$ | $\theset{1,2}$, $\theset{1,17}$, $\theset{2,3}$, $\theset{9,10}$, $\theset{9,19}$, $\theset{10,11}$ |
+| $2$ | $\theset{17,21}$, $\theset{19,21}$ |
+| $-2$ | $\theset{18,22}$, $\theset{20,22}$ |
+| $4$ | $\theset{21,22}$ |
+
+Each pair with a negative product contains exactly one index $i$ with $\epsilon_i = -1$, and each pair with a positive product contains zero or two such indices, so the signs $\epsilon_i$ make every product nonnegative.
+With the conventions of [@AE22, Sec. 3A], two $(-2)$-roots with product $1$ are joined by a single edge, a $(-2)$-root and a $(-4)$-root with product $2$ by a double edge, and the two $(-4)$-roots $v_{21}, v_{22}$ with product $4$ by a thick edge.
+The diagram is therefore the $16$-cycle
+$$
+v_1, v_2, v_3, v_4, v_5, v_6, v_7, v_8, v_9, v_{10}, v_{11}, v_{12}, v_{13}, v_{14}, v_{15}, v_{16},
+$$
+the four vertices $v_{17}, v_{18}, v_{19}, v_{20}$ joined by single edges to $v_1, v_5, v_9, v_{13}$, and the two black vertices $v_{21}, v_{22}$ joined to each other by a thick edge, with $v_{21}$ joined by double edges to $v_{17}, v_{19}$ and $v_{22}$ to $v_{18}, v_{20}$.
+This is the $(18,2,0)$ diagram of [@AE22, Fig. 4], with $v_1, v_5, v_9, v_{13}$ the four corners of its square.
+:::
+
+The Coxeter diagram of [@AET23, Fig. 1] belongs to a different lattice, $U\oplus E_8^{\oplus 2}\oplus A_1$ of type $(19,1,1)$, with $24$ roots, and the diagram of [@Sca87, Fig. 6.3.1] belongs to $\generators{-4}\oplus U\oplus E_8^{\oplus2}$; both lattices have rank $19$.
 
 ::: {.remark title="Toroidal 0-cusps"}
 

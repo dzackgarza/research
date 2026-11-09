@@ -103,7 +103,6 @@ The last section lists the questions that a finite derivation or computation dec
 
 | Unknown | Stated in |
 |:---|:---|
-| **Scattone's diagram against the AET19 diagram** | @sec-root-vectors-and-folded-sterk-diagrams |
 | **Dawes' Example 2.2** | @qst:dawes-example-22; the two complements are isometric (@lem:complement-determinant, `computations/reports/coble_dawes-example-2-2_complements.py`) |
 
 : {tbl-colwidths="[35,65]"}

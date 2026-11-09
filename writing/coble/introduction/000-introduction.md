@@ -4,7 +4,7 @@
 
 A Coble surface is a smooth projective rational surface $S$ with $\abs{-K_S} = \emptyset$ but $\abs{-2K_S}\neq \emptyset$.
 Such surfaces arise from the work of [@Cob19] and [@Cob29] on Cremona transformations of $\PP^2$ preserving an irreducible rational sextic $C$ with ten nodes -- the blowup $S$ along these nodes yields a Coble surface.
-[@Cob19] shows that the Cremona class of such a curve $C$ can be written as a union of finitely many projective equivalence classes, and that if $C$ is sufficiently general then $\Aut(S) \cong W(E_{10})$, the Weyl group of an infinite root system of type $E_{10}$.
+[@Cob19] shows that the Cremona class of such a curve $C$ can be written as a union of finitely many projective equivalence classes, and that if $C$ is sufficiently general then $\Aut(S) \cong W(E_{10})(2)$, the level $2$ congruence subgroup of $\Orth(M_S)/\theset{\pm 1} \cong W(E_{10})$, where $M_S = K_S^{\perp\,\Pic(S)}$ and $W(E_{10})$ is the Weyl group of the infinite root system of type $E_{10}$ [@DZ99, Introduction].
 Moreover, he shows that modulo $\Aut(S)$, there are only finitely many smooth rational negative curves on $S$.
 
 Coble surfaces occur as degenerations of Enriques surfaces and were ultimately classified in [@DZ99].

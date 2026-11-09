@@ -53,9 +53,8 @@ For general $C$, $H \cong W(E_{10})(2)$, the level 2 congruence subgroup.
 Cited: [@DO88] for the description of $\Aut(S)$ through the action on $M_S$, and [@CDL25, Ch. 5] for the level 2 structure.
 
 The two groups are read as follows.
-$\Aut(S)$ acts on $\Pic(S)$ preserving $K_S$ and the intersection form, hence on $M_S = K_S^{\perp\,\Pic(S)}$; that the resulting homomorphism is injective with finite image is the cited part, and the image is the group $H$.
-$\Orth(M_S)/\{\pm1\}\cong W(E_{10})$ identifies the *full* orthogonal group with the Coxeter group, so the quotient is by the central $\pm1$ and not by anything else; for general $C$ the finite-index subgroup $H$ is then the level 2 congruence subgroup of that $W(E_{10})$.
-The two statements are therefore consistent, and the difference between them is the difference between the full orthogonal group and the image of one particular surface's automorphism group.
+$\Aut(S)$ acts on $\Pic(S)$ preserving $K_S$ and the intersection form, hence on $M_S = K_S^{\perp\,\Pic(S)}$; that the resulting homomorphism is injective with image of finite index is the cited part, and the image is the group $H$.
+$\Orth(M_S)/\{\pm1\}\cong W(E_{10})$ identifies the full orthogonal group modulo its center with the Coxeter group; for general $C$ the finite-index subgroup $H$ is the level 2 congruence subgroup of that $W(E_{10})$ [@DZ99, Introduction].
 :::
 
 ::: {.remark title="Finiteness of negative curves modulo automorphisms"}
