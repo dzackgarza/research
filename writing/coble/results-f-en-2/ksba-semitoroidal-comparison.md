@@ -77,5 +77,5 @@ The ambient degree-$(2,2,0)$ K3 picture and the Noether--Lefschetz locus enter t
 
 ::: {.remark}
 
-The polarized Coble compactification records the same comparison as an open program rather than a theorem: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan (@conj:ksba_semitoroidal_comparison, @conj:restricted_ramification_semifan). Its extra difficulties are exactly the ones absent from the Enriques theorem above: the root stabilizers of the branches, the ramification-semifan restriction identity, and the absence of moduli loss (@conj:no_moduli_loss).
+For the polarized Coble compactification the same comparison is conjectural: after normalization the KSBA compactification of the polarized Coble locus is conjectured to agree with the semitoroidal compactification induced by the *restricted* ramification semifan (@conj:ksba_semitoroidal_comparison, @conj:restricted_ramification_semifan). Its extra difficulties are exactly the ones absent from the Enriques theorem above: the root stabilizers of the branches, the ramification-semifan restriction identity, and the absence of moduli loss (@conj:no_moduli_loss).
 :::

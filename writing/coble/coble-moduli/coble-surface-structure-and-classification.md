@@ -58,8 +58,6 @@ $\Orth(M_S)/\{\pm1\}\cong W(E_{10})$ identifies the *full* orthogonal group with
 The two statements are therefore consistent, and the difference between them is the difference between the full orthogonal group and the image of one particular surface's automorphism group.
 :::
 
-The project's introduction records $\Aut(S)\cong W(E_{10})$ for general $C$; the refinement to the level 2 congruence subgroup, and the quotient statement for $\Orth(M_S)$, are the sharper forms.
-
 ::: {.remark title="Finiteness of negative curves modulo automorphisms"}
 
 Let $A_1(S)^{\mathrm{sm,rat},<0}$ denote the smooth rational curves of negative self-intersection.

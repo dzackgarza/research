@@ -130,18 +130,18 @@ $$
 a single Jordan block, so $T$ is unipotent with $N\neq 0$ and $N^2 = 0$.
 :::
 
-::: {.remark title="What the recorded values assert"}
+::: {.remark title="The normalization of the computed values"}
 
 The coefficient list depends on the choice of the form $P$ and of the monomial basis $B$, so it is a statement about this normalization of @cons:pf-from-jacobian.
 The indicial polynomial is determined up to a scalar by the same choices; its mathematical content is the pair of roots, a double exponent $0$.
-The entry $2\pi i$ shows that $T$ is written in a period basis of the relevant cohomology and not in an integral basis of the homology of the fiber, so the values above are not comparisons against the Picard--Lefschetz statement for a nodal degeneration.
-The sources identified as those that would ground each assertion are [@Mov21] for the explicit Picard--Fuchs matrix and the Gauss--Manin basis, [@Gri69] for the regular-singularity statement, and SGA 7, Exposé XV for the monodromy in an integral basis; the values above stand against none of them.
+The entry $2\pi i$ shows that $T$ is written in a period basis of the relevant cohomology and not in an integral basis of the homology of the fiber, so the values above cannot be compared directly with the Picard--Lefschetz formula for a nodal degeneration.
+[@Mov21] gives the explicit Picard--Fuchs matrix and the Gauss--Manin basis, [@Gri69] the regular-singularity statement, and SGA 7, Exposé XV the monodromy in an integral basis.
 :::
 
 ::: {.remark title="The invariant that survives the change of basis"}
 
 The Jordan type of a matrix is invariant under conjugation, so the nilpotency index of $N$, and hence the Kulikov type of @def:kulikov-types, is unaffected by which basis of the fiber cohomology the monodromy is written in.
-What is missing for the recorded output to determine that type is the comparison identifying the period basis with a basis of the integral local system; the numerical values of the entries have no meaning without it, and the block structure has meaning as soon as it is established.
+The computed $T$ determines that type once the period basis is identified with a basis of the integral local system; the numerical values of the entries have no meaning without that identification, and the block structure has meaning as soon as it is established.
 :::
 
 ## The topological construction

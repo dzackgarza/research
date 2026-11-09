@@ -7,7 +7,7 @@ $$
 \begin{aligned}
     \sen &\injects S_{\Nod} \\
     U(2) \oplus E_{8}(2) &\injects U \oplus \generators{-4}  \oplus E_8(2) \\
-    ( (e, f), x) &\mapsto ( (2\tilde f + \tilde g + h, \tilde g), x)
+    ( (e, f), x) &\mapsto ( (2\tilde f + \tilde e + h, \tilde e), x)
 \end{aligned}
 $$
 

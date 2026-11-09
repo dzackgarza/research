@@ -133,7 +133,7 @@ $$
 \qquad
 \#\Orth(A_{E_8(2)}) = 2^{13}\cdot3^5\cdot5^2\cdot7 .
 $$
-The covering $F_{\En,2}\to F_{K3,\En}$ is recorded as finite of degree $2^7\cdot17\cdot31$.
+The covering $F_{\En,2}\to F_{K3,\En}$ is finite of degree $2^7\cdot17\cdot31$.
 
 ::: {.remark title="Use in the Coble problem"}
 

@@ -12,10 +12,10 @@ notes: >-
 
 # Candidate isotropic vectors in $T_{\Co}$ {#sec-coble-lattice-isotropic-candidates}
 
-::: {.remark title="What open problem this addresses"}
+::: {.remark title="The open problem"}
 
-[Open problems](#sec-open-problems) records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\discriminantkernel{T}$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.
-This note records the concrete candidate list and the machinery assembled to settle it.
+The enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$ is open ([Open problems](#sec-open-problems)), and so is the uniqueness of the $\discriminantkernel{T}$-orbit in divisibility $2$, which the proof of @lem:divisibilityTcoOne assumes.
+This section lists candidate representatives.
 :::
 
 ## The lattices as constructed

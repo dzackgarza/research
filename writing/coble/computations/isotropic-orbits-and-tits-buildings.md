@@ -169,19 +169,13 @@ The results reported there are that the arithmetic groups arising from polarized
 
 ::: {.observation #obs:enriques-orbit-lattice-is-tdp title="The lattice of that computation is $\tdp$"}
 
-The specification records the target lattice by the shorthand $U\oplus 2U\oplus 2E_8(-1)$, in which the prefix $2$ has two different meanings, and by two unambiguous invariants: rank $20$ and signature $(2,18)$.
+The target lattice is written $U\oplus 2U\oplus 2E_8(-1)$, a shorthand in which the prefix $2$ has two different meanings; its rank $20$ and signature $(2,18)$ are unambiguous.
 Those invariants force the reading
 $$
 M \;=\; U\oplus U(2)\oplus E_8^{\oplus 2},
 $$
 with $E_8$ negative definite, since no other assignment of the shorthand to scalings and multiplicities of $U$ and $E_8$ has rank $20$.
 This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in which the root configuration $\Phi_{(18,2,0)}$ and the folded Sterk diagrams are written ([root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams)), and in which the embedding chain $T_\Co\injects \ten\injects \tdp$ terminates ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)). The isotropic-orbit algorithms are therefore already stated for the ambient lattice of this project, and the residue is their transport along that chain.
-:::
-
-::: {.remark title="Scope of the exercised cases"}
-
-The orbit algorithm was exercised on the family $U\oplus U(2)\oplus X$ with $X$ successively $0$, $A_2$, $A_3$, $A_2^{\oplus 2}$ and $E_8^{\oplus 2}$, and on $U^{\oplus 2}\oplus E_7$, at target norm $0$; the last of the first family is $M$ itself.
-The resulting orbit counts are not part of the record.
 :::
 
 ::: {.remark title="The implementation named in the recipe"}

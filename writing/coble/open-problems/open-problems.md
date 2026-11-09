@@ -3,9 +3,9 @@
 ::: {.remark title="Orientation"}
 
 This section records the known open problems and computational obstacles of the Coble moduli program.
-Each entry is a genuine gap between the results established elsewhere in this document and the fully rigorous, coordinate-explicit statements one would want for parity with the Enriques degree-$2$ program of [@AEGS25].
+Each entry is a statement, not proved elsewhere in this document, that the Coble analogue of the Enriques degree-$2$ program of [@AEGS25] needs in a rigorous, coordinate-explicit form.
 The problems are grouped by theme: lattice-theoretic verifications, the enumeration of isotropic orbits and cusps together with the reflection-group combinatorics, the *dlt* and KSBA stable models, and the foundational equations and computational checks.
-None of the statements below is claimed to be settled; several cross-reference partial results already in the text, and in each case the *residue* that remains open is stated explicitly.
+Where the text proves part of a statement, the entry cross-references that part and states the part that remains open.
 :::
 
 ## Lattice-theoretic gaps

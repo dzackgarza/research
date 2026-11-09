@@ -27,21 +27,19 @@ $$
 the generic Picard lattice of the K3 cover $X$ and its transcendental lattice.
 $F_{\Nod}$ is realized as the divisor $\mch_{-4}/\Orth(\ten)$, a 9-dimensional irreducible quasiprojective variety.
 
-::: {.remark title="Discrepancy to reconcile: two forms of the embedding"}
+::: {.remark title="Two forms of the embedding"}
 
-The primitive embedding $\sen\injects S_{\Nod}$ is
+[@CDL25, p. 561] gives the primitive embedding $\sen\injects S_{\Nod}$ as
 $$
-((e,f), x) \mapsto \big((2\tilde f + \tilde g + h,\ \tilde g),\ x\big),
+((e,f), x) \mapsto \big((2\tilde f + \tilde e + h,\ \tilde e),\ x\big),
 $$
-attributed to Cossec-Dolgachev-Liedtke p. 561. The research statement records it, citing *Enriques Surfaces I* Def.
-5.6.3, as
+and [@CD89, Def. 5.6.3] gives it as
 $$
-((e_1,f_1), x) \mapsto \big(f_2,\ 2e_2+f_2+h,\ x\big),
+((e,f), x) \mapsto \big((\tilde f,\ 2\tilde e + \tilde f + h),\ x\big),
 $$
-with $h$ a generator of $\generators{-4}$.
-Both are the identity on the $E_8(2)$ factor and both are claimed to exhibit $F_{\Nod}\injects \fen$.
-They are written in different bases and have not been checked against each other.
-Reconciling them, or identifying which is correct, is a small and worthwhile task.
+where $U(2) = \generators{e,f}$, $U = \generators{\tilde e,\tilde f}$ and $\generators{-4} = \generators{h}$.
+Both are the identity on the $E_8(2)$ factor.
+The second is the first composed with the isometry $e\leftrightarrow f$ of $U(2)$ on the source and the isometry $\tilde e\leftrightarrow\tilde f$ of $U$ on the target, so the two are the same embedding up to isometries of $\sen$ and of $S_{\Nod}$.
 :::
 
 ## The program
