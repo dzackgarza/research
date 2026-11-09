@@ -11,7 +11,7 @@ Zariski's Main Theorem itself is a classical, proven theorem; only its applicati
 :::
 
 ::: {.remark}
-The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har10a].
+The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har77].
 :::
 
 ## Global extension of the Enriques involution
@@ -29,7 +29,6 @@ The quotient $(\mcx_B, \eps \mcr_B) / \ien$ would then form a flat family of sta
 
 The uniqueness of the extension is the expected consequence of the separatedness of KSBA stable limits: on the smooth locus the involution is the fixed-point-free deck transformation $\ien$ of the canonical cover, and a fiberwise automorphism of a family of stable pairs extends across the boundary by uniqueness of the limit [@AEGS25; @Kol23a].
 This is the same extension-by-uniqueness step invoked in the proposed KSBA-to-semitoroidal comparison (the comparison conjecture (@conj:ksba_semitoroidal_comparison)), where the Enriques involution is extended over the stable limits and the ramification divisor descended.
-The source note asserted the extension, the preservation of the slc structure and of $\mcr_B$, the commutation with $\idp$, and the flatness of the quotient family, without proof; each remains an obligation of the program.
 :::
 
 ## Finiteness of the classifying map
@@ -45,7 +44,7 @@ from the normalization $B^\nu$ of the Noether--Lefschetz closure is finite.
 
 ::: {.remark title="Proposed combinatorial argument"}
 
-The source note proposes to establish finiteness by a combinatorial comparison of semifans.
+Finiteness would follow from a combinatorial comparison of semifans.
 The normal KSBA compactification induces its own semifans $\semifan{G}_k$, which are coarsenings of the folded Coxeter semifans $\semifan{F}_k$.
 The map is finite if and only if no coarsening occurs, i.e. $\semifan{G}_k = \semifan{F}_k$ for all $k$.
 
@@ -77,14 +76,14 @@ A finite morphism is affine, so locally $Y = \Spec A$ and $X = \Spec B$ with $B$
 Since $Y$ is normal, $A$ is integrally closed in $K$, and $B$ is integral over $A$, so $B = A$.
 
 This is the form the classifying map needs, and it is the case of Zariski's Main Theorem in which the map is finite.
-The classical statement assumes quasi-finiteness instead and concludes only that $f$ is an isomorphism onto an open subset [@Har10a, §V.5]; properness of $f$ upgrades that, and a finite morphism is proper.
+The classical statement assumes quasi-finiteness instead and concludes only that $f$ is an isomorphism onto an open subset [@Har77, §V.5]; properness of $f$ upgrades that, and a finite morphism is proper.
 Normality of the source is a hypothesis of neither form, so the hypotheses to check below are birationality, finiteness, and normality of the target.
 
 
 :::
 ::: {.remark}
 
-Zariski's Main Theorem (@thm:zariski_main_theorem) is a classical theorem [@Har10a]; a finite birational morphism onto a normal variety is an isomorphism.
+Zariski's Main Theorem (@thm:zariski_main_theorem) is a classical theorem [@Har77]; a finite birational morphism onto a normal variety is an isomorphism.
 It is invoked here only as an external tool; the content below -- that the classifying map $\phi$ satisfies its hypotheses -- is the program's own claim.
 :::
 
