@@ -736,5 +736,4 @@ An equivalence is a morphism satisfying @def:equivalence-of-categories.
 
 The notation $a=b$, $a\cong b$, and $a\simeq b$ records these three claims.
 No univalence principle is assumed.
-Chosen comparison maps are treated in @sec-identification.
 :::

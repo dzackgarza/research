@@ -1,7 +1,6 @@
 # Bilinear and quadratic forms {#sec-form-theory}
 
 Fix a commutative ring $R$ and an $R$-module $W$, the *value module* of the forms below.
-The category $R\text{-}\mathbf{Mod}$ and extension of scalars are defined in @sec-module-categories.
 
 ::: {.definition #def:form-presheaves title="Bilinear and quadratic form presheaves"}
 
@@ -124,7 +123,7 @@ $$
 
 Alternating forms are skew-symmetric.
 The converse holds when multiplication by $2$ on $W$ is a monomorphism.
-When multiplication by $2$ is an epimorphism, every bilinear form is even; quadratic refinements retain additional information.
+When multiplication by $2$ is an epimorphism, every bilinear form is even.
 :::
 
 ::: {.definition #def:polarization title="Adjoints, radicals, and nondegeneracy"}
@@ -354,7 +353,6 @@ T^\perp
 \definedas
 \bigl(T^\perp_{\mathbf{BilMod}_R}\bigr)^{\mathrm{nd}}.
 $$
-Thus the orthogonal complement in the lattice category is the nondegenerate reduction of the right orthogonal-complement kernel in $\mathbf{BilMod}_R$.
 :::
 
 ::: {.theorem #thm:orthogonal-decomposition title="Orthogonal decomposition"}
@@ -377,7 +375,6 @@ is an isomorphism [@MH73, I §3.1].
 
 This is [@MH73, I §3.1].
 The argument needs nothing of $M$: for $m\in M$ the functional $t\mapsto b(m,\iota(t))$ equals $b(t_0,\iota(t))$ for a unique $t_0\in T$ by perfectness of $b|_T$, and then $m-\iota(t_0)\in T^{\perp}$; injectivity is that $T\cap T^{\perp}$ is the kernel of the perfect form $b_T$.
-So the statement holds with $M$ an arbitrary bilinear module, not only a nondegenerate lattice, which is why the hypothesis names only $T$.
 :::
 
 ## Gram matrices and the determinant {#sec-gram-determinant}
@@ -397,7 +394,7 @@ Every family $(G_{ij})_{i,j\in I}$ in $R$ arises uniquely in this way.
 ::: {.proof}
 
 The first claim is bilinearity applied to two finite sums, and the second is that a bilinear form is determined by its values on pairs of basis vectors, with the displayed formula reconstructing it.
-This is the standard bijection between forms and matrices on a free module [@MH73, I §2.1]; it is stated for an arbitrary index set, which is what the finite support of the coordinates supplies.
+This is the standard bijection between forms and matrices on a free module [@MH73, I §2.1].
 :::
 
 ::: {.proposition #prop:gram-congruence title="Congruence"}
@@ -439,7 +436,6 @@ G_{ij}=d_j\,A_{ij}.
 $$
 
 Normalizing by the first index instead produces the transpose of $A$, and the second identity then reads $G_{ij}=d_iA_{ij}$.
-The two conventions give transposed matrices and different symmetrization indices; this book uses the one displayed above.
 
 $G$ is symmetric, while $A$ need not be, so a Cartan matrix with $d_i\neq d_j$ is not a Gram matrix.
 Take $\ell=2$ with
@@ -483,8 +479,16 @@ $$
 If every $b(e_i,e_i)$ vanishes then $b(x,x)=0$ for every $x$; conversely $b(e_i,e_i)=0$ is the case $x=e_i$.
 :::
 
-::: {.remark}
-The symmetric form on $\bZ^{2}$ with Gram matrix $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$ has vanishing diagonal and $b(e_1+e_2,e_1+e_2)=2$.
+::: {.example #ex:symmetric-zero-diagonal-not-alternating title="A symmetric form with vanishing diagonal that is not alternating"}
+
+Let $b$ be the symmetric form on $\bZ^{2}$ with Gram matrix $\left(\begin{smallmatrix}0&1\\1&0\end{smallmatrix}\right)$ in the standard basis $e_1,e_2$.
+Then $b(e_1,e_1)=b(e_2,e_2)=0$, and
+$$
+b(e_1+e_2,e_1+e_2)=b(e_1,e_1)+2\,b(e_1,e_2)+b(e_2,e_2)=2\neq0,
+$$
+so $b$ is not alternating (@def:form-axioms).
+The form $b$ is not skew-symmetric, because $b(e_2,e_1)=1\neq-1=-b(e_1,e_2)$.
+So @prop:alternating-gram fails without its skew-symmetry hypothesis.
 :::
 
 ## Tensor product and twisting {#sec-form-tensor}
@@ -598,10 +602,11 @@ An ordered field has characteristic $0$, hence $2$ is a unit and
 $$
 2\,b(u,v)=b(u+v,u+v)-b(u,u)-b(v,v).
 $$
-That identity is what guarantees a vector of nonzero square and hence, by @thm:orthogonal-decomposition, an orthogonal basis: without it a perfect symmetric form over a field of characteristic $2$ need have none, and the diagonalization argument does not start.
+That identity gives a vector of nonzero square and hence, by @thm:orthogonal-decomposition, an orthogonal basis.
 Given an orthogonal basis, $V=V^{+}\perp V^{-}$ with the two summands definite, and $\dim V^{+}$ is maximal among positive definite subspaces because such a subspace meets $V^{-}$ only at $0$.
 
-The degenerate clause is not part of the cited statement and is derived here: for a complement $N$ of $\radic(V)$, every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
+For degenerate $b$, let $N$ be a complement of $\radic(V)$.
+Every pairing with $\radic(V)$ vanishes, so $V\cong\radic(V)\perp N$; the restriction $b|_N$ is perfect, because an element of $N$ pairing to zero with $N$ pairs to zero with all of $V$; and the perfect case applied to $N$ gives $V\cong V^{+}\perp V^{-}\perp\radic(V)$ and $p+q+r=\dim V$.
 :::
 
 ::: {.definition #def:definiteness title="Definiteness"}
@@ -666,13 +671,12 @@ Here $\dim S=2\,i(V)$ and $\dim A=\dim V-2\,i(V)$.
 ::: {.proof}
 
 This is [@MH73, III §1.1 and §1.7].
-Two of the clauses are where the hypotheses are spent.
 
 Existence does not need $2$ to be a unit: if $v$ is isotropic and $b(v,w)=\lambda\neq0$, then $P=\langle v,w\rangle$ has Gram matrix with determinant $-1$, a unit in every ring, so $P$ splits off by @thm:orthogonal-decomposition, and the line $\langle v\rangle$ is a lagrangian of $P$ because $b(v,\alpha v+\beta w)=\beta\lambda$ vanishes exactly on $\langle v\rangle$ — whatever $b(w,w)$ is.
 So the induction produces $S\perp A$ with $A$ anisotropic over any field.
 
-What is cited rather than derived is (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace [@MH73, III §1.2], and (ii) Witt cancellation for the uniqueness of $A$ [@MH73, III §1.7].
-Neither is bookkeeping: the first fails without the hypothesis on $A$, since $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic with index $1$ while neither summand contains an isotropic vector, and the standard proof of the second splits a rank-one summand off both sides, which needs a vector of nonzero square and so is not available in characteristic $2$.
+The proof uses (i) that $i(V)=i(S)$ when $A$ is anisotropic, which is Witt's extension theorem applied to a maximal totally isotropic subspace [@MH73, III §1.2], and (ii) the uniqueness of the anisotropic representative of a Witt class, which [@MH73, III Thm. 1.7] proves for every field, characteristic $2$ included.
+Clause (i) needs the hypothesis on $A$: $\langle1\rangle\perp\langle-1\rangle$ is hyperbolic with index $1$, while neither summand contains an isotropic vector.
 :::
 
 ::: {.example #ex:witt-index-over-Q title="Witt index and signature"}
@@ -685,11 +689,9 @@ The form $x^{2}+y^{2}-3z^{2}$ has signature $(2,1,0)$, so $\min(p,q)=1$, and it 
 For a primitive integral solution of $x^{2}+y^{2}=3z^{2}$, reduction modulo $3$ forces $3\mid x$ and $3\mid y$ because $-1$ is not a square modulo $3$; then $9\mid3z^{2}$ gives $3\mid z$, contradicting primitivity.
 :::
 
-::: {.remark #rmk:three-integers title="Signature, signature difference, and Witt index"}
-Three integers are attached to a nondegenerate symmetric form over an ordered field, and they are distinct invariants.
-The pair $(p,q)$ is the signature of @def:signature.
-The integer $p-q$ is called the signature of the form in [@MH73, III §2.5], where it is the value of a ring homomorphism from the Witt ring to $\bZ$.
-The Witt index of @def:witt-index is a third quantity, equal to $\min(p,q)$ over a real closed field and smaller over $\bQ$ in the case above.
+::: {.notation title="The signature as a pair and as an integer"}
+For a nondegenerate symmetric form over an ordered field $F$, the signature is the pair $(p,q)$ of @def:signature.
+[@MH73, III §2.5] calls the integer $p-q$ the signature at the ordering; it depends only on the Witt class, is additive over orthogonal sums and multiplicative over tensor products, and so defines a ring homomorphism $W(F)\to\bZ$ [@MH73, III Lem. 2.6].
 :::
 
 ## Diagonal and polarization {#sec-polarization-functors}
@@ -726,5 +728,3 @@ $$
 $$
 followed by polarization gives the bilinearization functor from $\bQ/2\bZ$-valued quadratic forms to $\bQ/\bZ$-valued symmetric bilinear forms.
 :::
-
-Bilinear forms on the underlying module of an associative unital $R$-algebra are treated in @sec-algebra-module-forms: module bilinear forms are $\Hom_{R\text{-}\mathbf{Mod}}(M\tensor_R M,R)$, and algebra bilinear forms are $\Hom_{R\text{-}\mathbf{Alg}}(A\tensor_R A,R)$ with the tensor product taken in $R\text{-}\mathbf{Alg}$.

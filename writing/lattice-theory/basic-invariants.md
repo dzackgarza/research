@@ -1,7 +1,6 @@
 # Basic invariants of a lattice {#sec-basic-invariants}
 
 Throughout, $R$ is a Dedekind domain with fraction field $K$, the main case being $R=\bZ$ and $K=\bQ$, and $L\in\mathbf{Lat}_R$ is a lattice as in @def:lattice.
-The invariants below are the ones the rest of the part evaluates: the norm of a vector and the shell it cuts out, its divisibility, and the discriminant class it represents.
 
 ::: {.notation #def:lattice-basic-invariants title="Norm and norm shells"}
 

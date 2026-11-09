@@ -1,8 +1,6 @@
 # Generating families, presentations, and finiteness {#sec-generators-presentations}
 
 Fix a commutative ring $R$.
-The isomorphism-invariant properties of $R$-modules used below are @def:module-subcategories.
-Whether a lift along a forgetful functor is a property or a chosen structure is decided by @def:property-structure-stuff.
 
 ## Generating frames {#sec-generating-frames}
 
@@ -22,7 +20,8 @@ A *generating frame* on $M$ indexed by $I$ is an object $(M,s)$ of this category
 _I(R)$"}
 
 For objects $(M,s)$ and $(N,t)$ there is a morphism $(M,s)\to(N,t)$ exactly when $\ker s\iscontainedin\ker t$, and it is then the only one.
-So $\operatorname{GenFrame}_I(R)$ is a preorder, and its hom-sets are genuinely sometimes empty.
+So $\operatorname{GenFrame}_I(R)$ is a preorder.
+For $R=\bZ$ and $I=\{1,2\}$, some pairs of its objects admit no morphism in either direction.
 :::
 
 ::: {.proof}
@@ -52,7 +51,6 @@ $$
 \operatorname{GenFrame}_I(R)\too\operatorname{Coord}_I(R).
 $$
 
-The two categories answer different questions.
 The frame-preserving one classifies a chosen frame as structure, by @prop:generating-frame-is-structure.
 The coordinatized one is the setting for matrix calculus: a morphism there has a matrix relative to the two chosen frames, and change of frame acts by the congruence of @prop:gram-congruence.
 The basis case of the pair is @def:based-module and @prop:basis-is-structure.
@@ -62,7 +60,7 @@ The basis case of the pair is @def:based-module and @prop:basis-is-structure.
 
 An $R$-module $M$ is *cyclic* if it admits a generating frame indexed by a one-element set, and *finitely generated* if it admits one indexed by a finite set.
 A cyclic module is isomorphic to $R/\Ann_R(x)$ for the image $x$ of the standard generator, and the cyclic modules form a replete full subcategory of the finitely generated ones.
-Finite generation is the property recorded in @def:module-subcategories: it asserts that the set of finite generating frames on $M$ is nonempty, and it retains none of the data of a chosen frame.
+Finite generation is the property of @def:module-subcategories that asserts that the set of finite generating frames on $M$ is nonempty.
 :::
 
 ::: {.definition #def:finite-module title="Finiteness of the underlying set"}
@@ -119,13 +117,34 @@ Since $R^{n}$ is projective and $q_N$ is surjective, $fq_M\colon R^{n}\to N$ fac
 Then $q_NA_0d_M=fq_Md_M=0$, so $A_0d_M$ lands in $\ker q_N=\im d_N$; since $R^{m}$ is projective and $R^{m'}\to\im d_N$ is surjective, $A_0d_M$ factors as $d_NA_1$ for some $A_1\colon R^{m}\to R^{m'}$.
 :::
 
-::: {.remark}
+::: {.example #ex:presentation-lift-not-unique title="Lifts to presentations are not unique"}
 
-The pair $(A_1,A_0)$ produced by @prop:presentation-lift is not determined by $f$.
-The relation identifying two lifts of one $R$-linear map is the chain homotopy of @thm:resolution-comparison, which is stated for resolutions rather than for two-term presentations.
+Let $R\neq0$.
+Take the finite presentation $R\xrightarrow{\ \id\ }R\too0\too0$ of the zero module, with $m=n=1$, as both source and target, and let $f=0$.
+For every $r\in R$ the pair $(A_1,A_0)=(r,r)$ is a morphism of $\operatorname{FinPres}(R)$ over $f$.
+The left square commutes because $\id\circ r=r\circ\id$, and the right square commutes because both composites $R\to0$ are zero.
+Since $0\neq1$ in $R$, the pairs $(0,0)$ and $(1,1)$ are two different lifts of $f$.
+So the pair $(A_1,A_0)$ of @prop:presentation-lift is not determined by $f$.
+:::
 
-Forgetting $A_1$ and $A_0$ gives the category on the same objects whose morphisms are the $R$-linear maps alone.
-That is the distinction of @def:coordinatized-module one level up: the lifted morphisms carry the matrices, the abstract ones carry only the module map they present.
+::: {.proposition #prop:presentation-lifts-homotopic title="Two lifts of one map are chain homotopic"}
+
+Let $(A_1,A_0)$ and $(A_1',A_0')$ be morphisms of $\operatorname{FinPres}(R)$ between the same two finite presentations, both over $f\colon M\to N$.
+Extend the presentation of $M$ to a projective resolution $P$ of $M$ with $P_1\to P_0$ equal to $d_M$, and the presentation of $N$ to a resolution $Q$ of $N$ with $Q_1\to Q_0$ equal to $d_N$.
+Then each of the two morphisms extends to a chain map $P\to Q$ over $f$, and any two such chain maps are chain homotopic.
+In particular $A_0-A_0'=d_Nh_0$ for some $R$-linear map $h_0\colon R^{n}\to R^{m'}$.
+:::
+
+::: {.proof}
+
+The extensions exist: by @def:resolution the modules $\ker d_M$ and $\ker d_N$ have projective resolutions, and splicing them onto the presentations gives $P$ and $Q$.
+The pair $(A_1,A_0)$ is a chain map $P\to Q$ in degrees $0$ and $1$ over $f$, because the two squares of @def:presentation-category commute.
+For degree $2$, the composite $A_1d^P_2$ satisfies $d_NA_1d^P_2=A_0d_Md^P_2=0$, so it lands in $\ker d_N=\im d^Q_2$, by exactness of $Q$.
+Since $P_2$ is projective, it lifts along $Q_2\twoheadrightarrow\im d^Q_2$ to $f_2$ with $d^Q_2f_2=A_1d^P_2$.
+The higher degrees follow by the same induction as in the proof of @thm:resolution-comparison.
+The same argument extends $(A_1',A_0')$.
+Both chain maps lift $f$, so they are chain homotopic by @thm:resolution-comparison.
+A chain homotopy $s$ satisfies $f_0-f_0'=d^Q_1s_0$ in degree $0$, because $P_{-1}=0$, and this is the last assertion with $h_0=s_0$.
 :::
 
 ::: {.definition #def:fp-n title="Modules of type $FP_n$"}
@@ -141,18 +160,24 @@ A chosen partial resolution finitely generated through degree $n$ is structure o
 
 ## Automorphisms acting on frames {#sec-frames-and-automorphisms}
 
-The endomorphism monoid $\Hom_{\mcc}(X,X)$ and the automorphism group $\Aut_{\mcc}(X)$ of an object are defined at @def:endomorphism-monoid; for a lattice $L$ the instance $O(L)=\Aut(L)$ is in @sec-isometry-groups.
-
 ::: {.proposition #prop:automorphisms-act-on-frames title="The action on the fibre"}
 Let $I$ be a set and let $M$ be an $R$-module.
-Precomposition, $(M,s)\cdot u=(M,su)$ for $u\in\Aut_R\bigl(R^{(I)}\bigr)$, is a right action of $\Aut_R\bigl(R^{(I)}\bigr)$ on the fibre $U_I^{-1}(M)$ of @prop:generating-frame-is-structure, and the action is free.
+Precomposition, $(M,s)\cdot u=(M,su)$ for $u$ in the automorphism group $\Aut_R\bigl(R^{(I)}\bigr)$ of @def:endomorphism-monoid, is a right action of $\Aut_R\bigl(R^{(I)}\bigr)$ on the fibre $U_I^{-1}(M)$ of @prop:generating-frame-is-structure.
+The stabilizer of $(M,s)$ is the subgroup of those $u$ with $(u-\id)\bigl(R^{(I)}\bigr)\subseteq\ker s$.
 If $s$ and $s'$ are both isomorphisms, then $u=s^{-1}s'$ is the unique element with $su=s'$.
 :::
 
 ::: {.proof}
 The assignment is a right action because composition is associative, and $su$ is surjective when $s$ is.
-If $su=s$ then $u=\id$, because $s$ is epic; so the action is free.
-For $s,s'$ isomorphisms, $s^{-1}s'$ is an automorphism of $R^{(I)}$ with $s(s^{-1}s')=s'$, and it is unique by freeness.
+The equation $su=s$ holds if and only if $s\circ(u-\id)=0$, that is, if and only if the image of $u-\id$ lies in $\ker s$.
+For $s,s'$ isomorphisms, $s^{-1}s'$ is an automorphism of $R^{(I)}$ with $s(s^{-1}s')=s'$.
+If also $su=s'$, then $u=s^{-1}s'$, because $s$ is monic.
+:::
+
+::: {.example #ex:frame-stabilizer-nontrivial title="A frame with a nontrivial stabilizer"}
+Let $R\neq0$, let $I=\{1,2\}$, let $M=R$ and let $s\colon R^2\to R$ be $s(a,b)=a$.
+The map $u(a,b)=(a,a+b)$ is an automorphism of $R^2$ with inverse $(a,b)\mapsto(a,b-a)$, and $u\neq\id$.
+Since $su(a,b)=a=s(a,b)$, the element $u$ fixes $(M,s)$, so the action of @prop:automorphisms-act-on-frames is not free.
 :::
 
 ## The free module functor {#sec-free-module-functor}

@@ -1,6 +1,5 @@
 # Orthogonal complements of lattice embeddings {#sec-lattice-orthogonal-complements}
 
-The left and right orthogonal-complement kernels are defined in @def:orthogonal-complement.
 For $\iota_v\colon\generators{v}_{\bZ}\injects L$, write $\kappa_v\colon v^{\perp_L}\injects L$ for its right orthogonal-complement kernel.
 When $v$ is isotropic, $v^{\perp_L}$ is degenerate with nondegenerate reduction $\qty{v^{\perp_L}}^{\mathrm{nd}}$.
 
@@ -144,7 +143,6 @@ Hence $N_q(L)=\operatorname{lcm}_{1\leq i\leq n}N_q(L_i)$, and the quadratic dis
 ## Isotropic reduction and the cusp quotient {#sec-isotropic-reduction}
 
 A primitive totally isotropic sublattice $P\leq L$ determines the cusp lattice $Q=P^{\perp_L}/P$.
-The finite subgroup of $A_L$ cut out by $P$ is the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup, and $A_Q\isoto D(P)^{\perp}/D(P)$ by @thm:isotropic-reduction-discriminant.
 
 ::: {.notation #not:isotropic-reduction-setup title="The data of an isotropic reduction"}
 
@@ -176,7 +174,7 @@ $$
 D(P)^{\perp}/D(P)=H/(L+N_V).
 $$
 
-The subgroup $D(P)$ is the image of $N_V$ in the ambient group $A_L=N/L$, so it is the subquotient
+The subgroup $D(P)$ is the image of $N_V$ in $A_L=N/L$, so it is the subquotient
 $$
 D(P)=\frac{N_V+L}{L}\cong\frac{N_V}{N_V\cap L}=\frac{N_V}{P},
 \qquad
@@ -184,11 +182,8 @@ D(P)=\frac{N_V+L}{L}\cong\frac{N_V}{N_V\cap L}=\frac{N_V}{P},
 $$
 the middle isomorphism being Noether's, with $N_V\cap L=N\cap V\cap L=P$ because $L\cap V=P$.
 The subgroup is determined by $V$ alone, and it is totally isotropic: every class of $D(P)$ has a representative in the totally isotropic subspace $V$, so $\beta_{L_{\bQ}}$ vanishes on $V\times V$ and, when $L$ is even, $q_{A_L}$ vanishes there as well.
-This is the isotropy that makes $D(P)^{\perp}/D(P)$ a quadratic subquotient, and it is a property of $P$ alone.
 
 :::
-
-The first lemma is the only place where the metric dual of the quotient is compared with the metric dual of $L$; it is what an element of $Q^{\#}$ uses to obtain a representative in $N$.
 
 ::: {.lemma #lem:isotropic-reduction-pairing title="The pairing of the isotropic subspace with $L/M$, and the metric dual it computes"}
 
@@ -241,8 +236,6 @@ A change $\tilde y\mapsto\tilde y+m$ with $m\in M$ changes $\hat y=\tilde y+u$ b
 Both changes therefore leave the class in $H/(L+N_V)$ fixed.
 :::
 
-The two lemmas give the comparison map. Its injectivity is formal; its surjectivity is where an index identity is needed, and @lem:isotropic-reduction-index supplies one rather than a matching of invariant factors. That identity is proved first, since the theorem's surjectivity is read off from it.
-
 ::: {.lemma #lem:isotropic-reduction-index title="The index identity of an isotropic reduction"}
 
 With the data of @not:isotropic-reduction-setup,
@@ -281,9 +274,6 @@ It remains to identify $\det(B)$ with $[N_V:P]$. An element $x=\sum_i\lambda_i v
 Hence $N_V=(B^{\mathsf T})^{-1}\bZ^r$, whose covolume in $V$ is $\abs{\det B}^{-1}$ times that of $P=\sum_i\bZ v_i$; therefore $[N_V:P]=\abs{\det B}$.
 With $\cardinality{A_L}=\abs{\det G}$ and $\cardinality{A_Q}=\abs{\det G_Q}=\abs{\disc Q}$, the displayed identity follows.
 :::
-
-The count of $\cardinality{D(P)^{\perp}/D(P)}$ is a separate statement about the finite form, and it must not be read off from the map whose bijectivity is being proved.
-It is duality for an isotropic subgroup of a nondegenerate finite form, and it uses the nondegeneracy of $A_L$ of @prop:discriminant-nondegenerate together with the isotropy recorded in @not:isotropic-reduction-setup.
 
 ::: {.lemma #lem:isotropic-subgroup-quotient-order title="The order of the orthogonal subquotient of an isotropic subgroup"}
 
@@ -362,7 +352,6 @@ $$
 \rho_L\qty(\Stab_{\Orth(L)}(P))\subseteq\Stab_{Q_0}\qty(D(P)),
 $$
 and the action of $\Stab_{\Orth(L)}(P)$ on $A_Q$ is transported by $\varphi_P$ to its action on $D(P)^{\perp}/D(P)$ through $\rho_L$.
-Nothing more is asserted: the exact image is $\rho_L(\Stab_{\Orth(L)}(P))$, and equality with the full finite stabilizer is a lifting statement of @cor:isotropic-reduction-stabilizer.
 :::
 
 ::: {.proof}
@@ -379,7 +368,7 @@ $$
 because $\tilde y\in W=V^{\perp}$ and $V$ is totally isotropic.
 Hence $\ell\in P^{\perp_L}=M$, and $y=[\tilde y]=[\ell]\in M/P=Q$, that is $y=0$ in $A_Q$.
 
-*Surjectivity.* The target has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup; that count is a statement about the finite form and does not use $\varphi_P$.
+*Surjectivity.* The target has $\cardinality{D(P)^{\perp}/D(P)}=\cardinality{A_L}/\cardinality{D(P)}^2$ by @lem:isotropic-subgroup-quotient-order, applied to the nondegenerate form of $A_L$ of @prop:discriminant-nondegenerate and the isotropic subgroup $D(P)$ of @not:isotropic-reduction-setup.
 With $\cardinality{D(P)}=[N_V:P]$ and @lem:isotropic-reduction-index this equals $\cardinality{A_Q}$.
 An injective morphism between finite groups of the same order is bijective.
 
@@ -419,7 +408,7 @@ Then:
    \bar g_Q=\varphi_P^{-1}\circ\bar g_D\circ\varphi_P,
    $$
    so $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ has the same kernel as $\Stab_{\Orth(L)}(P)\too\Aut(D(P)^{\perp}/D(P))$, namely $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$;
-3. equality $\rho_L(\Stab_{\Orth(L)}(P))=\Stab_{Q_0}(D(P))$ is a lifting statement about the integral stabilizer and is **not** proved here; neither is injectivity of the map in item 2.
+3. the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel of @def:discriminant-rep; so the map of item 2 is injective exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and it is not injective when $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
 :::
 
 ::: {.proof}
@@ -428,22 +417,23 @@ Item 1 is the containment of @thm:isotropic-reduction-discriminant read as a sta
 For item 2, the commuting square of @thm:isotropic-reduction-discriminant states $\bar g_D\circ\varphi_P=\varphi_{gP}\circ\bar g_Q$; when $g\in\Stab_{\Orth(L)}(P)$ one has $gP=P$ and $gQ=Q$, so it reads $\bar g_D\circ\varphi_P=\varphi_P\circ\bar g_Q$, that is the displayed formula, and composing with $\varphi_P$ identifies the two kernels.
 For item 3, the kernel of $\Stab_{\Orth(L)}(P)\too\Orth(A_Q)$ is $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)$ by item 2, and it contains $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)$, where $\widetilde\Orth(L)=\ker\rho_L$ is the discriminant kernel of @def:discriminant-rep: those isometries act trivially on $A_L$, hence on every subgroup and subquotient of it, and hence on $A_Q$ by item 2.
 So the action in item 2 is faithful exactly when $\Stab_{\Orth(L)}(P)\cap\rho_L^{-1}(C)=1$, and in particular it fails to be faithful whenever $\Stab_{\Orth(L)}(P)\cap\widetilde\Orth(L)\neq1$.
-Equality in item 3 is a different statement again: it would require an integral isometry preserving $P$ for each element of the finite stabilizer of $D(P)$ in $Q_0$, whereas the commuting square constrains only those elements that already have an integral lift.
-So the square neither implies equality in item 3 nor is implied by it, and the isometry $\varphi_P$ of @thm:isotropic-reduction-discriminant is not a substitute for the computation of the integral stabilizer's image.
 :::
 
-Two specializations are worth recording, since both are easy to get wrong.
+::: {.corollary #cor:isotropic-reduction-rank-one title="Isotropic reduction along a primitive isotropic vector"}
 
-*An integral representative needs the correction.*
-An element $\tilde y\in W$ that already lies in $L$ lies in $L\cap W=M$, and its class in $A_L$ is the zero class; the map $[y]\mapsto[\tilde y]$ on such representatives therefore carries all of $A_Q$ to the single class $D(P)$ and is not the comparison of @thm:isotropic-reduction-discriminant.
-What makes the comparison work is the correction along $V$ of @lem:isotropic-reduction-extension: it moves the representative into $N$ while leaving its pairing with $M$ and its square unchanged, and it is exactly that movement which records the position of $y$ in $A_Q$.
-Equivalently, $\varphi_P(y)$ is the class modulo $L+N_V$ of the unique element of $N$ in the coset $\tilde y+V$, so no choice of basis of $Q$ and no listing of $Q^{\#}$ enters.
+Let $L\in\mathbf{Lat}_{\bZ}^{\mathrm{nd}}$ be integral and let $v\in L$ be primitive and isotropic, with divisibility $\div_L(v)$ of @def:lattice-divisibility.
+Put $P=\generators{v}_{\bZ}$ and $c\definedas[v/\div_L(v)]\in A_L$.
+Then $N_V=\bZ\,v/\div_L(v)$, $[N_V:P]=\div_L(v)$, $D(P)=\generators{c}$, and $\varphi_P$ of @thm:isotropic-reduction-discriminant is an isometry
+$$
+A_{v^{\perp_L}/v}\isoto\generators{c}^{\perp}/\generators{c}.
+$$
+:::
 
-*The rank-one case.*
-For $r=1$ and $P=\generators{v}$ primitive isotropic, $N_V$ is the cyclic module generated by $v/\div_L(v)$, so $[N_V:P]=\div_L(v)$ and $D(P)=\generators{[v/\div_L(v)]}$; the theorem then identifies $A_{v^{\perp_L}/v}$ with the orthogonal complement of that class modulo itself,
-$$
-A_{v^{\perp_L}/v}\isoto\generators{c}^{\perp}/\generators{c},
-\qquad
-c=[v/\div_L(v)]\in A_L .
-$$
-This is the general form of the cyclic statement, and it holds for every divisibility: the factor $\div_L(v)$ enters only through $\cardinality{D(P)}$.
+::: {.proof}
+
+Here $r=1$ and $V=\bQ v$ in @not:isotropic-reduction-setup.
+An element $tv$ with $t\in\bQ$ lies in $N=L^{\#}$ exactly when $t\,\beta_L(v,x)\in\bZ$ for every $x\in L$.
+By @def:lattice-divisibility the values $\beta_L(v,x)$ for $x\in L$ form the ideal $\div_L(v)\bZ$, so the condition is $t\,\div_L(v)\in\bZ$, and $N_V=N\cap V=\bZ\,v/\div_L(v)$.
+Hence $[N_V:P]=\div_L(v)$, and $D(P)$, the image of $N_V$ in $A_L$, is the cyclic group $\generators{c}$.
+Since $M=P^{\perp_L}=v^{\perp_L}$ and $Q=M/P=v^{\perp_L}/v$, the isometry is @thm:isotropic-reduction-discriminant.
+:::

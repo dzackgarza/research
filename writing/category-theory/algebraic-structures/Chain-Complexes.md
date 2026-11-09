@@ -10,7 +10,6 @@ The object $C_n$ is the domain of $d^C_n$ and the codomain of $d^C_{n+1}$, so th
 A chain complex is therefore the same datum as a family of morphisms $(d_n)_{n\in\bZ}$ of $\mca$ in which the codomain of $d_{n+1}$ is the domain of $d_n$ and every composite $d_nd_{n+1}$ vanishes.
 
 An additive functor $F\colon\mca\to\mathcal B$ induces $\mathbf{Ch}(F)\colon\mathbf{Ch}(\mca)\to\mathbf{Ch}(\mathcal B)$ with $\mathbf{Ch}(F)(C)_n=F(C_n)$ and differentials $F(d^C_n)$, and this assignment respects composition of additive functors.
-The hypotheses this construction places on $\mca$ are collected in @sec-additive-hypotheses.
 
 ::: {.theorem #thm:chain-complexes-abelian title="Complexes over an abelian category"}
 
@@ -148,7 +147,6 @@ and $f$ is a quasi-isomorphism if and only if $\cone(f)$ is exact [@Wei94, Cor. 
 
 Work in $\mathbf{Ch}(R\text{-}\mathbf{Mod})$.
 A $W$-valued bilinear form on an $R$-module $M$ is an element of $\Hom_R(M\tensor_RM,W)$ (@def:module-bilinear-form), and the form categories $\mathcal B_{R,W}$ of @def:form-categories are the categories of elements of the presheaves so obtained.
-At the level of complexes the tensor square is the tensor product complex and the value module is placed in a chosen degree.
 
 ::: {.definition #def:complex-tensor-product title="The tensor product of complexes"}
 
@@ -276,17 +274,30 @@ $$
 b_p(x,y)=b_{p-1}(d^Cx,d^Cy)=b_{p-2}\bigl((d^C)^2x,(d^C)^2y\bigr)=b_{p-2}(0,0)=0,
 $$
 the last step because $(d^C)^2=0$ and a bilinear form vanishes on a pair with a zero entry.
-Nothing is assumed about $C$ beyond the differentials, and the hypothesis is used in two adjacent degrees, which is why the family is indexed by all of $\bZ$.
 :::
 
-::: {.remark}
-Let $C$ be concentrated in degree $m$ and let $n=2m$.
-Then $(C\tensor_RC)_n=C_m\tensor_RC_m$, the compatibility condition of @def:complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def:form-presheaves.
-For a general $C$ and $n=2m$, a symmetric form of degree $n$ induces on $H_m(C)$ a pairing satisfying
+::: {.proposition #prop:complex-form-degree-2m title="Forms of degree $2m$"}
+
+Let $C\in\mathbf{Ch}(R\text{-}\mathbf{Mod})$ and let $n=2m$.
+
+1. If $C$ is concentrated in degree $m$, then $(C\tensor_RC)_n=C_m\tensor_RC_m$, the compatibility condition of @def:complex-form is vacuous, and a $W$-valued bilinear form of degree $n$ on $C$ is a $W$-valued bilinear form on the module $C_m$ in the sense of @def:form-presheaves.
+
+2. For every $C$, a symmetric form $\beta$ of degree $n$ induces on $H_m(C)$ a pairing satisfying
 $$
 \bar\beta_{m,m}(\eta,\xi)=(-1)^m\,\bar\beta_{m,m}(\xi,\eta),
 $$
 so that pairing is symmetric for even $m$ and skew-symmetric for odd $m$ (@def:form-axioms).
+:::
+
+::: {.proof}
+
+For (1), $C_p=0$ for $p\neq m$, so the only summand $C_p\tensor_RC_q$ of $(C\tensor_RC)_n$ that can be nonzero is $C_m\tensor_RC_m$.
+In the compatibility condition of @def:complex-form, $p+q=2m+1$, so $p\neq m$ or $q\neq m$; then $x=0$ or $y=0$, and both terms vanish.
+A form of degree $n$ is therefore one $R$-linear map $C_m\tensor_RC_m\to W$, that is, an element of $\Bil_{R,W}(C_m)$ of @def:form-presheaves.
+
+For (2), the pairing $\bar\beta_{m,m}$ on $H_m(C)$ is well defined and $R$-bilinear by @prop:form-on-homology.
+The symmetry condition of @def:complex-form with $p=q=m$ gives $\beta_{m,m}(y,x)=(-1)^{m^2}\beta_{m,m}(x,y)$ for $x,y\in C_m$, and $(-1)^{m^2}=(-1)^m$.
+For cycles $x,y$ with $\xi=[x]$ and $\eta=[y]$, this is the displayed identity.
 :::
 
 ## Resolutions {#sec-resolutions}
@@ -316,7 +327,7 @@ Every morphism $f'\colon M\to N$ lifts to a chain map $f\colon P\to Q$ with $\et
 This is [@Wei94, Thm. 2.2.6].
 The lift is built degree by degree: $f_0$ lifts $f'\epsilon$ along the epimorphism $\eta$ because $P_0$ is projective, and $f_n$ lifts $f_{n-1}d^P_n$ along $Q_n\twoheadrightarrow\operatorname{im}d^Q_n$ for the same reason, the composite landing in $\ker d^Q_{n-1}=\operatorname{im}d^Q_n$ by exactness of $Q$ and $d^Pd^P=0$.
 The homotopy is built by the same induction, from the observation that $d^Q_n\bigl(f_n-g_n-s_{n-1}d^P_n\bigr)=0$, so the difference lifts again.
-Only projectivity of the $P_n$, exactness of both augmented complexes and additivity are used; the $Q_n$ need not be projective, which is why the statement calls $Q$ a resolution and not a projective one.
+Only projectivity of the $P_n$, exactness of both augmented complexes and additivity are used; the $Q_n$ need not be projective.
 :::
 
 ::: {.definition #def:syzygy title="Syzygies"}
@@ -340,9 +351,8 @@ Every finitely generated graded $R$-module has a graded free resolution of lengt
 ::: {.proof}
 
 This is [@Eis95, Thm. 1.13].
-Two of its inputs are cited rather than derived here: exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Ch. 17], and the coincidence of the minimal resolution with the computation of Tor [@Eis95, Ch. 20].
+The proof uses exactness of the Koszul complex $K(x_1,\dots,x_r)$ on a regular sequence, which makes it a free resolution of $k$ of length $r$ [@Eis95, Ch. 17], and the coincidence of the minimal resolution with the computation of Tor [@Eis95, Ch. 20].
 With those, the bound is $\Tor^R_i(M,k)\cong F_i\tensor_Rk$ for the minimal resolution $F$ of $M$, which vanishes for $i>r$ because $K(x)$ does, so $F_i=0$ for $i>r$.
-The existence of a finite graded resolution, by contrast, is derived here and needs only that $R$ is Noetherian.
 :::
 
 ::: {.definition #def:minimal-resolution title="Minimal free resolutions"}
@@ -382,7 +392,7 @@ $$
 [@Wei94, §2.7].
 For projective $A$, $\Tor^R_n(A,B)=0$ for $n\ne0$ [@Wei94, §2.6] and $\Ext^i_R(A,B)=0$ for $i\ne0$ [@Wei94, §2.5].
 
-These vanishings are the hypotheses used in @thm:localization-les: for a lattice $L$, projectivity kills $\Tor^R_1(L,K/R)$ and keeps $\Hom_R(L,-)$ exact on the coefficient sequence
+For a lattice $L$, projectivity kills $\Tor^R_1(L,K/R)$ and keeps $\Hom_R(L,-)$ exact on the coefficient sequence
 $$
 0\to R\to K\to K/R\to0.
 $$

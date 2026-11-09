@@ -220,14 +220,12 @@ Index $1$ holds exactly for the isometries.
 
 $Q_f$ is finitely generated because $L$ is, and torsion because $f$ is injective with $L,M$ of equal rank, so $\rank Q_f=0$ over the domain $\bZ$.
 
-For the matrix identity, apply the adjoint formula of @prop:adjoint-matrix: the morphism $G_L=A^{\mathsf T}G_MA$ is the coordinate statement of $f^{*}b_M=b_L$, which is what makes $f$ a morphism of $\mathbf{Lat}_\bZ$.
+For the matrix identity, apply the adjoint formula of @prop:adjoint-matrix: the identity $G_L=A^{\mathsf T}G_MA$ is the coordinate statement of $f^{*}b_M=b_L$, the condition for $f$ to be a morphism of $\mathbf{Lat}_\bZ$.
 Then $\det G_L=\det(A)^{2}\det G_M$, and by @def:determinant-class $\det b_L$ and $\det b_M$ are the classes of these determinants up to squares of units, so $\det(b_L)=\det(b_M)[M:f(L)]^{2}$ once $\abs{\det A}=[M:f(L)]$ is known.
 That last equality is the index formula for a map of free $\bZ$-modules of equal rank: $Q_f\cong\bZ^{n}/A\bZ^{n}$, of order $\abs{\det A}$.
 
 Index $1$ is $\abs{\det A}=1$, that is $A\in\GL_n(\bZ)$, that is $A$ invertible over $\bZ$; and $G_L=A^{\mathsf T}G_MA$ with $A$ invertible is exactly $f\in O(L)$ by @prop:adjoint-matrix.
 :::
-
-Reflections and their integrality are treated in @sec-reflections, which carries the proofs.
 
 ## Matrix realizations
 
@@ -251,7 +249,7 @@ $$
 ::: {.proof}
 
 Conjugation by the coordinate isomorphism is an isomorphism of groups, and it carries $f$ to a matrix $A$; $f$ preserves $b_L$ exactly when $A^{\mathsf T}G_LA=G_L$ by @prop:adjoint-matrix, and $f$ invertible exactly when $A\in\GL_n(R)$.
-The determinant of $G_L$ is a unit, since $L$ is nondegenerate and free, so the condition forces $\det(A)^{2}=1$ and $A$ is indeed invertible — the constraint does not have to be imposed separately, which is why the displayed set is a group and not a subset with a condition on determinants.
+The determinant of $G_L$ is a unit, since $L$ is nondegenerate and free, so the condition forces $\det(A)^{2}=1$, and $A$ is invertible.
 Changing the basis replaces $G_L$ by $P^{\mathsf T}G_LP$ for $P$ the change-of-basis matrix, by @prop:gram-congruence, so the subgroup is carried to a conjugate one.
 
 For the endomorphism ring, $\Hom_\bZ(\bZ/d_j\bZ,\bZ/d_i\bZ)\cong\bZ/d_i\bZ$ with the morphism determined by the image of $1$, which must be killed by $d_j$; that is the condition $d_j a_{ij}=0$ in $\bZ/d_i\bZ$, and composition is matrix multiplication under it.
@@ -302,10 +300,7 @@ If $G$ is finite, $[G:H]=\cardinality{G}/\cardinality{H}$.
 In an abelian category, the analogous cardinality of a cokernel is used only after the relevant monomorphism and finiteness hypotheses have been stated.
 :::
 
-## The Miranda--Morrison sequence
-
-The exact sequence, the connecting morphism, and Nikulin's vanishing criterion are stated with their proofs in @sec-miranda-morrison, together with the obstruction and genus groups that their statements name.
-Only the genus itself is used here, and it is defined next.
+## The genus
 
 ::: {.definition #def:genus title="Genus and class set"}
 

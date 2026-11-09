@@ -114,7 +114,7 @@ $$
 
 A composable pair $F\to E\to B$ is a *fiber sequence* when $F$ is equivalent to the homotopy fiber over a specified basepoint of $B$.
 Applying homotopy groups gives the long exact sequence.
-Its component-level portion is the pointed-set sequence recorded in @sec-pi0-fiber.
+Its component-level portion is the pointed-set sequence of @sec-pi0-fiber.
 :::
 
 ## Extending the sequences {#sec-extended-sequences}

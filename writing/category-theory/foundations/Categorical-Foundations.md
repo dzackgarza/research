@@ -1,8 +1,5 @@
 # Categorical constructions {#sec-constructions}
 
-Fix the variance and universal properties of the categorical constructions used by the algebraic and lattice chapters.
-Core and groupoid completion are defined in @def:core.
-
 ::: {.definition #def:groupoid-cardinality title="Groupoid cardinality"}
 
 An ordinary groupoid $\mathcal G$ is **essentially finite** when $\pi_0(\mathcal G)$ is finite and $\Aut_{\mathcal G}(x)$ is finite for every $x\in\mathcal G$.
@@ -33,7 +30,7 @@ For a covariant functor $C\to\mathbf{Set}$ the corresponding projection is a dis
 
 For a pseudofunctor $F\colon C^{\opop}\to\mathbf{Cat}$, the Grothendieck construction $\int_C F\to C$ is a fibration.
 The category of elements is its $\mathbf{Set}$-valued special case [@nlab:grothendieck_construction].
-A general forgetful functor need not arise from a category of elements; later chapters specify each forgetful functor directly.
+A general forgetful functor need not arise from a category of elements.
 
 ::: {.definition #def:subcategory title="Subobjects, full and replete subcategories"}
 
@@ -78,7 +75,6 @@ Taking $T$ or $S$ to be a functor $\mathbf 1\to\mcc$, that is an object of $\mcc
 :::
 
 For an ordinary category $C$, the arrow category is also $[[1],C]$, and evaluation at the source and target gives a functor to $C\times C$.
-Local hom-objects and walking-arrow categories in $\mathbf{Cat}_{\infty,\infty}$ are defined in @def:internal-hom and @def:mapping-spaces.
 
 ::: {.definition #def:universal-arrow title="Universal arrows"}
 
@@ -147,8 +143,6 @@ The object $\operatorname{Im}(f)$ is the domain of $m$ and $\operatorname{Coim}(
 ::: {.proof}
 
 This is [@Mac98, §VIII.3, Proposition 1].
-
-The factorization, its functoriality and the identification of the two objects are the cited proposition. The degreewise use of it, in @thm:chain-complexes-abelian, is: since kernels and cokernels there are taken degreewise, this factorization is too, which is what makes the canonical morphism an isomorphism of complexes rather than only of objects.
 :::
 
 ::: {.theorem #thm:diagram-lemmas title="Diagram lemmas"}

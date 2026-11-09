@@ -55,7 +55,27 @@ where $\pi_M([x])=p_M(x)$. The homogeneous quadratic module is presented by the 
 An $R$-module morphism $F_R(M)\to W$ is uniquely determined by its values $q(x)$ on the generators. Its restriction to $K_R(M)$ vanishes if and only if the cross-effect $d_q$ is additive in both variables and satisfies $d_q(rx,sy)=rs\,d_q(x,y)$ and each second scalar cross-action $q_{[r]}$ is $R$-linear. These are the conditions of @def:R-quadratic-maps; the cokernel universal property establishes the first representing isomorphism. Adding $[rx]=r^2[x]$ forces homogeneity, giving the second representing isomorphism. The resulting degree-two homogeneous relations are the relations for the degree-two summand of the divided-power algebra.
 :::
 
-::: {.remark title="Sources and conventions"}
+::: {.proposition #prop:quad-presheaf-homogeneous title="Quadratic forms are homogeneous quadratic maps"}
 
-The distinction between general $R$-quadratic and homogeneous quadratic maps, the representing module $P_R^2(M)$, and the degree-two divided-power module $\Gamma_R^2(M)$ are established by Henri Gaudier and Manfred Hartl, *Quadratic maps between modules*, *Journal of Algebra* **322** (2009), 1667–1688, Proposition 1.5 and §2, DOI 10.1016/j.jalgebra.2009.05.016. The form-valued quadratic presheaf in @def:form-presheaves is the homogeneous specialization, represented by $\Gamma_R^2$.
+For $M\in R\text{-}\mathbf{Mod}$, precomposition with $\gamma_M$ is an isomorphism of $R$-modules
+$$
+\operatorname{Quad}_{R,W}(M)\xrightarrow{\sim}\operatorname{HQuad}_R(M,W),
+\qquad
+g\longmapsto g\circ\gamma_M,
+$$
+between the quadratic-form presheaf of @def:form-presheaves and the homogeneous quadratic maps of @def:R-quadratic-maps.
+It is natural in $M$: for $f\colon M\to N$ it takes the pullback $f^*$ of @def:form-presheaves to precomposition with $f$.
+:::
+
+::: {.proof}
+
+By @def:form-presheaves, $\operatorname{Quad}_{R,W}(M)$ is the $R$-module of $R$-linear maps $\Gamma_R^2(M)\to W$, and $\gamma_M$ is universal among maps $q\colon M\to W$ with $q(rx)=r^2q(x)$ for all $r\in R$ and $R$-bilinear polarization $d_q$.
+These conditions say that $q_{[r]}=0$ for every $r$ and that $d_q$ is $R$-bilinear; since the zero map is a morphism of $R$-modules, they are exactly the conditions of @def:R-quadratic-maps for a homogeneous quadratic map.
+So the universal property of $\gamma_M$ states that $g\mapsto g\circ\gamma_M$ is a bijection onto $\operatorname{HQuad}_R(M,W)$, and it is $R$-linear in $g$.
+In particular the module $\Gamma_R^2(M)$ of @def:form-presheaves and the one of @def:quadratic-representing-modules represent the same functor through the same kind of universal map, so they are isomorphic by a unique isomorphism compatible with the two maps $\gamma_M$.
+
+For $f\colon M\to N$ and $g\in\operatorname{Quad}_{R,W}(N)$, the definition $\Gamma_R^2(f)[x]=[f(x)]$ gives $\Gamma_R^2(f)\circ\gamma_M=\gamma_N\circ f$, so
+$$
+\bigl(f^*g\bigr)\circ\gamma_M=g\circ\Gamma_R^2(f)\circ\gamma_M=(g\circ\gamma_N)\circ f.
+$$
 :::

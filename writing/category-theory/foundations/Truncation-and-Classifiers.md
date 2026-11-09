@@ -19,8 +19,20 @@ If $U$ is fully faithful, then it induces an equivalence from $\mcs$ to its repl
 An isomorphism-invariant property $P$ of objects of $\mcc$ defines the replete full subcategory $\mcc_P$ spanned by the objects satisfying $P$.
 :::
 
-For higher categories, the same classification can be read from the homotopy fibers of $U$: empty or contractible fibers give property, discrete fibers give structure, and general fibers retain stuff.
-The definitions of truncated spaces and morphisms are in @def:truncated.
+::: {.proposition #prop:forgetful-homotopy-fibers title="Forgetfulness read from homotopy fibers"}
+Let $U\colon\mcs\to\mcc$ be a functor between groupoids.
+For $x\in\mcc$, the homotopy fiber $U^{-1}(x)$ is the groupoid of objects $e\in\mcs$ with an isomorphism $U(e)\cong x$, and of morphisms of $\mcs$ compatible with these isomorphisms.
+
+- If every $U^{-1}(x)$ is a $(-1)$-groupoid, that is, empty or equivalent to a point, then $U$ forgets at most properties.
+- If every $U^{-1}(x)$ is a $0$-groupoid, that is, equivalent to a set, then $U$ forgets at most structure.
+- If the $U^{-1}(x)$ are arbitrary groupoids, then $U$ forgets stuff.
+
+[@BS07, §2, Fact 3]
+:::
+
+::: {.proof}
+This is [@BS07, §2, Fact 3].
+:::
 
 ## Chosen structure
 
@@ -71,10 +83,6 @@ Naturality identifies pullback of $p$ along $f\colon X\to B$ with the family cor
 Thus the equivalence $\eta$ records existence, equivalences between presentations, and automorphisms of families; mere existence of some pullback presentation is not a universal property.
 :::
 
-::: {.remark}
-A property, equation, or forgetful functor acquires classifying terminology only from such a represented functor or universal property.
-:::
-
 ## Operations and endomorphism operads {#sec-operations}
 
 Let $\mcc$ have finite products.
@@ -96,4 +104,3 @@ In a 2-category, a weak version may instead include a chosen invertible 2-cell b
 
 An operad $\mathcal O$ specifies operations, symmetric-group actions, units, and composition.
 An $\mathcal O$-algebra is defined by a morphism of operads $\mathcal O\to\Endo_{\mcc}(X)$.
-Claims involving $A_\infty$, $E_n$, or $E_\infty$ structures name the chosen operad or a cited equivalent model.

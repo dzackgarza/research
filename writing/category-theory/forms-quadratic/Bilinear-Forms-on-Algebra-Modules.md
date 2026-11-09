@@ -1,7 +1,6 @@
 # Bilinear forms on the underlying module of an algebra {#sec-algebra-module-forms}
 
 Fix a commutative ring $R$.
-Free modules $M\cong R^{(I)}$ are defined in @def:module-subcategories.
 The tensor-hom adjunction of $R\text{-}\mathbf{Mod}$ identifies $R$-bilinear maps $M\times M\to R$ with $R$-module homomorphisms $M\tensor_R M\to R$ [@MM12]; the former are $\Bil_{R,R}(M)$ in @def:form-presheaves.
 
 ## Associative unital $R$-algebras {#sec-r-algebras}
@@ -24,8 +23,6 @@ $$
 for the functor that retains the $R$-module.
 Write $R\text{-}\mathbf{CAlg}$ for the full subcategory of $R\text{-}\mathbf{Alg}$ on commutative objects [@nlab:associative_algebra].
 :::
-
-The algebra $A$ is already an $R$-module; $U$ names that functor.
 
 ## Module bilinear forms and algebra bilinear forms {#sec-two-homs}
 
@@ -70,19 +67,6 @@ Finite algebra generation does not imply that $U(A)$ is finitely generated.
 The polynomial ring $R[x]$ is generated as a unital $R$-algebra by $\{x\}$, and is free as an $R$-module on $\{x^n:n\ge 0\}$.
 :::
 
-## Gram matrices {#sec-gram-on-algebras}
-
-The Gram matrix of a module bilinear form on a free module is @prop:gram-matrix-free-module, and its change under a change of basis is @prop:gram-congruence.
-For an algebra $A$ free as an $R$-module on $E$, both apply to $U(A)$ with the module basis $E$.
-
-::: {.remark}
-
-Let $S$ generate $A$ as a unital $R$-algebra and let $\pi\colon R\langle S\rangle\to A$ be the surjection of @def:algebra-generating-set.
-For $v,w\in A$ and any $f_v,f_w$ with $\pi(f_v)=v$ and $\pi(f_w)=w$ one has $B(v,w)=B(\pi f_v,\pi f_w)$, which is a restatement of $\pi f_v=v$ and carries no further information.
-So algebra generators supply *expressions* for the two arguments of $B$; they do not supply its values, and by @prop:generators-insufficient the values on a generating set do not determine the form.
-If $A$ is free on a module basis $E$, such an expression is expanded in $E$ and evaluated by @prop:gram-matrix-free-module, the Gram matrix being indexed by $E$ and not by $S$.
-:::
-
 ## Associative bilinear forms {#sec-associative-forms}
 
 ::: {.definition #def:associative-bilinear-form title="Associative bilinear forms"}
@@ -117,11 +101,6 @@ Associativity of $B$ in the form $B(xy,z)=B(x,yz)$ applied with $z=1_A$ gives $B
 Applying it with $x=1_A$ gives $B(1_A,y)=B(1_A,y\,1_A)=B(y,1_A)=\eps(y)$, so the two readings agree.
 
 From (2) to (1): if $B(x,y)=\eps(xy)$ then $B(xy,z)=\eps((xy)z)=\eps(x(yz))=B(x,yz)$, which is associativity by @def:associative-bilinear-form.
-:::
-
-::: {.remark}
-
-The identification $\eps(x)=B(x,1_A)$ uses the unit of $A$: without $\eta$ there is no element $1_A$ to evaluate against, and $B(xy,z)=B(x,yz)$ need not be expressible as a single linear functional.
 :::
 
 ::: {.definition #def:frobenius-form title="Frobenius forms"}
@@ -191,7 +170,7 @@ are distinct and both vanish on $M\times M$, because every element of $M$ is a c
 Both are bilinear by @prop:gram-matrix-free-module, applied to their Gram matrices.
 
 A finite algebra generating set spans only finitely many basis vectors, so the same construction applies to the submodule it spans.
-The hypothesis that $E$ is infinite is what supplies $e\notin E_0$; when $U(A)$ is finitely generated the argument has no $e$ to choose, which is why the statement excludes that case.
+The hypothesis that $E$ is not finite supplies $e\notin E_0$.
 :::
 
 ## Algebra bilinear forms {#sec-algebra-morphisms-tensor}
@@ -223,14 +202,14 @@ $$
 $$
 So $\phi$ is determined by the pair, and $\chi_L(1_A)=\phi(1_A\tensor_R1_A)=1_R$ by unitality of $\phi$.
 
-That each $\chi$ is itself multiplicative, which is what makes the classification a bijection onto pairs of algebra homomorphisms, uses the tensor product being that of $R\text{-}\mathbf{Alg}$ and the codomain $R$ being commutative:
+Each $\chi$ is multiplicative, because the tensor product is that of $R\text{-}\mathbf{Alg}$ and the codomain $R$ is commutative:
 $$
 \chi_L(ab)=\phi\bigl(ab\tensor_R1_A\bigr)=\phi\bigl(\iota_L(a)\iota_L(b)\bigr)=\phi(\iota_La)\phi(\iota_Lb)=\chi_L(a)\chi_L(b),
 $$
 and likewise for $\chi_R$; conversely a pair of $R$-algebra homomorphisms defines $\phi(a\tensor_Rb)\definedas\chi_L(a)\chi_R(b)$, which is multiplicative because both factors are and $R$ is commutative.
 :::
 
-::: {.remark}
+::: {.proposition #prop:calg-product-coproduct title="Products and coproducts of commutative algebras"}
 For objects $A,B,C$ of $R\text{-}\mathbf{CAlg}$, the product $A\times B$ and the coproduct $A\tensor_R B$ give
 $$
 \Hom_{R\text{-}\mathbf{CAlg}}(C,A\times B)
@@ -246,11 +225,35 @@ $$
 \times
 \Hom_{R\text{-}\mathbf{CAlg}}(B,C).
 $$
-
+Here $A\times B$ is the product $R$-module with componentwise multiplication and unit $(1_A,1_B)$, and $A\tensor_RB$ has the multiplication $(a\tensor_Rb)(a'\tensor_Rb')=aa'\tensor_Rbb'$ of @def:algebra-bilinear-form.
 :::
 
-::: {.remark}
-If $\phi\circ\tau=\phi$ for the flip $\tau(a\tensor_R b)=b\tensor_R a$, then $\chi_L=\chi_R$.
+::: {.proof}
+
+For the product, the two projections are homomorphisms of $R$-algebras.
+For homomorphisms $f\colon C\to A$ and $g\colon C\to B$, the map $c\mapsto(f(c),g(c))$ is $R$-linear, multiplicative and unital because each component is.
+It is the unique map whose composites with the projections are $f$ and $g$.
+The algebra $A\times B$ is commutative because $A$ and $B$ are.
+
+For the coproduct, let $f\colon A\to C$ and $g\colon B\to C$ be homomorphisms.
+The map $(a,b)\mapsto f(a)g(b)$ is $R$-bilinear, so it induces an $R$-linear map $h\colon A\tensor_RB\to C$ with $h(a\tensor_Rb)=f(a)g(b)$.
+On pure tensors,
+$$
+h\bigl((a\tensor_Rb)(a'\tensor_Rb')\bigr)=f(aa')g(bb')=f(a)g(b)\,f(a')g(b'),
+$$
+because $C$ is commutative, and $R$-bilinearity of the multiplication extends this to all elements; also $h(1_A\tensor_R1_B)=1_C$.
+The inclusions $a\mapsto a\tensor_R1_B$ and $b\mapsto1_A\tensor_Rb$ are homomorphisms, and their composites with $h$ are $f$ and $g$.
+Any homomorphism $h'$ with these composites satisfies $h'(a\tensor_Rb)=h'\bigl((a\tensor_R1_B)(1_A\tensor_Rb)\bigr)=f(a)g(b)$, and pure tensors span $A\tensor_RB$, so $h'=h$.
+The algebra $A\tensor_RB$ is commutative because $A$ and $B$ are.
+:::
+
+::: {.corollary #cor:symmetric-algebra-form-one-character title="Symmetric algebra bilinear forms"}
+In the setting of @prop:characters-pair, if $\phi\circ\tau=\phi$ for the flip $\tau(a\tensor_R b)=b\tensor_R a$, then $\chi_L=\chi_R$.
+:::
+
+::: {.proof}
+
+For $a\in A$, $\chi_R(a)=\phi(1_A\tensor_Ra)=\phi\bigl(\tau(a\tensor_R1_A)\bigr)=\phi(a\tensor_R1_A)=\chi_L(a)$, by the definitions of $\chi_L$ and $\chi_R$ in @prop:characters-pair.
 :::
 
 ::: {.example #ex:two-characters-polynomials title="Evaluation at two points"}
@@ -273,5 +276,5 @@ The first sentence is @prop:characters-pair evaluated on a pair of basis vectors
 So the Gram matrix of $U(\phi)$ is the rank-one matrix $\chi_L\chi_R^{\mathsf T}$ over the basis $E$, and in particular it has rank at most one whatever the size of $E$.
 
 For the second, a unital $R$-algebra homomorphism $\chi\colon A\to R$ out of a generated algebra is determined by its restriction to the generators, since $\chi$ is $R$-linear and multiplicative and every element of $A$ is a polynomial in $S$.
-Not every assignment extends: $\chi$ must kill the relations, which is exactly the content of the universal property of $R\langle S\rangle$ in @def:algebra-generating-set, and the assignments that extend are the homomorphisms $R\langle S\rangle/(\text{relations})\to R$.
+Not every assignment extends: $\chi$ must kill the relations, and by the universal property of $R\langle S\rangle$ in @def:algebra-generating-set the assignments that extend are the homomorphisms $R\langle S\rangle/(\text{relations})\to R$.
 :::

@@ -1,6 +1,6 @@
 # Torsion pairings and linking forms {#sec-torsion-linking-forms}
 
-Let $R$ be a Dedekind domain with fraction field $K$. The general pairing category $\mathbf{Pair}_{R,W}$ and its adjoints are defined in @def:module-pairing and @def:pairing-adjoints.
+Let $R$ be a Dedekind domain with fraction field $K$.
 
 ## Torsion-valued pairings {#sec-torsion-pairings}
 

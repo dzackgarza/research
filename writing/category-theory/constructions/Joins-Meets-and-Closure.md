@@ -33,23 +33,14 @@ It is the least upper bound in $\operatorname{RFull}(C)$.
 Thus disjunction of two object properties is a valid property and defines a full subcategory.
 :::
 
-::: {.remark}
-The categorical coproduct $A\sqcup B$ remembers which summand supplied an object.
-Its universal property differs from the least-upper-bound property of the join.
-:::
-
 ## Closure under specified operations
 
 Suppose a family of operations on subcategories has been specified.
 The closure of a family $\{A_i\}$ is the meet in $\operatorname{RFull}(C)$ of all replete full subcategories containing every $A_i$ and closed under those operations.
 Since $C$ is $\mathcal U$-small, this collection is a $\mathcal U$-set.
-The operations and the required closure conditions are part of the definition.
 
 ## Categories of structured objects
 
 The compatible combination of forgetful functors $U\colon\mathcal A\to C$ and $V\colon\mathcal B\to C$ is the pseudo-pullback $\mathcal A\times_C\mathcal B$ from @sec-pullback-cat.
 When both functors identify replete full subcategories, this pseudo-pullback represents their meet in $\operatorname{RFull}(C)$.
 A general pair of forgetful functors specifies structured objects over $C$ and hence lies outside that preorder.
-
-Implementation functions whose names include "join" or "meet" are interpreted only after their own order convention and universal property have been stated.
-The Sage convention is documented in the Sage realization chapters.

@@ -253,7 +253,7 @@ $$
 O_{\mathrm{sp}}^+(L)=K_{\mathbb R}(L)
 =\ker\bigl(\operatorname{sgn}\circ\theta_{\mathbb Q}^L\bigr).
 $$
-This is the group denoted $O^+(L)$ in [@Daw22, §1.3]. The subscript distinguishes it from Hahn–O'Meara's rotation group $O_{\mathrm{rot}}(L)$. The following proposition identifies its real spinor character with the action on period components.
+This is the group denoted $O^+(L)$ in [@Daw22, §1.3]. The subscript distinguishes it from Hahn–O'Meara's rotation group $O_{\mathrm{rot}}(L)$.
 
 ::: {.definition #def:period-component-character title="Period-component character"}
 

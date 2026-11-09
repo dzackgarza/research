@@ -8,7 +8,8 @@ Write $A_L$ and $A_{L,q}$ for the bilinear and quadratic discriminant objects of
 
 ::: {.definition #def:coble-discriminant-forms title="Length of a lattice"}
 
-Recall the length $\ell(A)$ of a finite $\bZ$-module $A$ and define $\ell(L)\definedas\ell(A_L)$.
+For a finite $\bZ$-module $A$, let $\ell(A)$ be the minimal cardinality of a set of module generators of $A$ [@Nik80, §1.9].
+Define $\ell(L)\definedas\ell(A_L)$.
 :::
 
 ::: {.proposition #prop:discriminant-nondegenerate title="Nondegeneracy and polarization of discriminant forms"}
@@ -62,8 +63,6 @@ The determinant of the twisted adjoint is $m^{\rank L}$ times the determinant of
 
 ## The genus, class set, and spinor genera
 
-The genus groupoid $\operatorname{Gen}(L)$, its class set $\Cl(L)$, and its class number $\cl(L)$ are defined in @def:genus.
-
 ::: {.definition #def:spinor-genus-partition title="Spinor genera"}
 
 Let $R$ be the ring of integers of a global field $K$, let
@@ -111,9 +110,16 @@ The resulting equivalence classes partition $\Cl(L)$; their set is denoted
 $\operatorname{SpinGen}(L)$.
 :::
 
-::: {.remark title="Choice of adelic representative"}
-If $\alpha,\alpha'\in\Orth(V_{\mathbb A_f})$ both satisfy $\alpha(\widehat L)=\widehat M=\alpha'(\widehat L)$, then $\alpha^{-1}\alpha'\in\Orth(\widehat L)$.
-Hence membership in $\Orth(V)\,\Theta_{\mathbb A_f}(V)\,\Orth(\widehat L)$ is independent of the choice of $\alpha$.
+::: {.proposition #prop:spinor-genus-representative-independent title="The spinor genus does not depend on the adelic representative"}
+In @def:spinor-genus-partition, let $\alpha,\alpha'\in\Orth(V_{\mathbb A_f})$ both satisfy $\alpha(\widehat L)=\widehat M=\alpha'(\widehat L)$.
+Then $\alpha\in\Orth(V)\,\Theta_{\mathbb A_f}(V)\,\Orth(\widehat L)$ if and only if $\alpha'\in\Orth(V)\,\Theta_{\mathbb A_f}(V)\,\Orth(\widehat L)$.
+:::
+
+::: {.proof}
+Put $u\definedas\alpha^{-1}\alpha'$.
+Then $u(\widehat L)=\alpha^{-1}(\widehat M)=\widehat L$, so $u\in\Orth(\widehat L)$, and $\alpha'=\alpha u$.
+Since $\Orth(\widehat L)$ is a group, $\Orth(V)\,\Theta_{\mathbb A_f}(V)\,\Orth(\widehat L)\,u=\Orth(V)\,\Theta_{\mathbb A_f}(V)\,\Orth(\widehat L)$.
+So $\alpha$ lies in this set if and only if $\alpha u=\alpha'$ does.
 :::
 
 ::: {.example #ex:rank16-genus-spinor-partition title="A rank-16 genus and its spinor partition"}

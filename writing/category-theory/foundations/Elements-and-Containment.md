@@ -2,7 +2,7 @@
 
 ## Elements {#sec-elements}
 
-A generalized element with domain $T$ is defined in @def:generalized-element; it is a morphism $T\to X$.
+A generalized element of $X$ with domain $T$ is a morphism $T\to X$ (@def:generalized-element).
 If $F\colon C^{\opop}\to\mathbf{Set}$ is a presheaf, an element $x\in F(T)$ is the object $(T,x)$ of $\int_C F$ defined in @def:category-of-elements.
 
 ::: {.definition #def:element-functor title="Elements as maps from a corepresenting object"}

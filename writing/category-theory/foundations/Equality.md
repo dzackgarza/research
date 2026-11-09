@@ -1,27 +1,22 @@
 # Equality
 
-What the framework encodes by "equality of objects" — more than a path, less than a strict identity — and how it reduces to the propositional equality that Lean and Sage actually compute with.
-The construction is recorded from the design discussions; its one open point, a canonical equality-bearing universe, is marked as such.
-
 ## What equality should encode {#sec-equality-encodes}
 
 Colloquially, $a = b$ should mean there is an *essentially unique* way to identify $a$ with $b$.
-Two objects equal in several genuinely different ways is not a notion ordinary mathematics wants — it is hard to name an object one would want that of, and it is a focal point of contention in Mochizuki's work.
+Two objects equal in several genuinely different ways is not a notion ordinary mathematics wants.
 So equality is neither mere existence of an identification (inhabitedness of a path space) nor the demand that the whole space of identifications be contractible without regard to the symmetries of the endpoints.
 The right notion sits between, and it must be compatible with reflexivity, $a = a$.
 
 ## The identification space {#sec-identification-space}
 
-Work in $\mathbf{Cat}_{\infty,\infty}$ (@def:infinity-category-universe); the subcategory, quotient, and fiber constructions below use @sec-loops-suspension.
-For objects $C,D$, the internal hom
+Work in $\mathbf{Cat}_{\infty,\infty}$ (@def:infinity-category-universe), with the subcategory, quotient, and fiber constructions of @sec-loops-suspension.
+For objects $C,D$, let
 $$
 [C,D]_{\mathbf{Cat}_{\infty,\infty}}
 \in
 \mathbf{Cat}_{\infty,\infty}
 $$
-
-is defined in @def:internal-hom.
-Let
+be the internal hom of @def:internal-hom, and let
 $$
 \operatorname{Eq}(C, D)
 \hookrightarrow
@@ -94,11 +89,13 @@ If $C$ and $D$ are both terminal objects of the same category of cones, or more 
 Which identifications *count* is fixed by placing the objects over a higher category $W$, with $p_C \colon C \to W$ and $p_D \colon D \to W$, and taking $\operatorname{Way}(C, D)$ to be the equivalences in the slice $\mathbf{Cat}_{\infty,\infty}/W$.
 Such an equivalence lifts $\id_W$.
 
-*Open.* A fully canonical choice of $W$, and hence of $\operatorname{Way}$, is not settled; the orbit-and-reflexivity predicate above is conditional on that subcategory.
+::: {.question #qst:canonical-equality-universe title="A canonical equality-bearing universe"}
+Is there a fully canonical choice of $W$, and hence of $\operatorname{Way}$?
+The orbit-and-reflexivity predicate of @sec-equality-predicate depends on that subcategory.
+:::
 
-## The reduction to Lean {#sec-equality-reduction}
+## Truncation to propositional equality {#sec-equality-reduction}
 
-Type theory is a shadow of higher-category theory: the homotopy-type functor $\Pi_\infty \colon \mathbf{Cat}_{\infty,\infty} \to \mathcal S = \mathbf{Types}$ (@def:core) strictly loses data.
-The framework is therefore developed synthetically — in $\infty$-categories, not committed to a model such as simplicial sets and Kan complexes — and the encodable notions are recovered by applying that functor.
-The equality above is then *relaxed*: for the $1$-categorical work that is almost all of the program (sets, rings, modules, algebras, lattices — all of SageCat), it truncates to Lean's propositional or definitional equality (@def:equality-of-objects), so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
+The homotopy-type functor $\Pi_\infty \colon \mathbf{Cat}_{\infty,\infty} \to \mathcal S = \mathbf{Types}$ (@def:core) strictly loses data.
+For $1$-categories (sets, rings, modules, algebras, lattices), the equality above truncates to the propositional or definitional equality of @def:equality-of-objects, so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
 The truncation loses information exactly at the identification of points carrying nontrivial automorphisms — inertia or stabilizers on a stack.

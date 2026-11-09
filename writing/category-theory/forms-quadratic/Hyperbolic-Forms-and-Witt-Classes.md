@@ -119,8 +119,8 @@ A *lagrangian* of $(M,b)$ is a direct summand $N\iscontainedin M$ with $N=N^{\pe
 The form $(M,b)$ is *metabolic* if it admits a lagrangian [@MH73, §I.6; @Ran98, Def. 20.1].
 :::
 
-::: {.remark}
-[@MH73] writes *split* for this condition and attributes the term *metabolic* to Knebusch.
+::: {.notation title="Split and metabolic"}
+[@MH73, Def. I.6.1] calls a metabolic form *split*; the term *metabolic* is due to Knebusch [@MH73, §I.6].
 :::
 
 ::: {.proposition #prop:hyperbolic-metabolic title="Hyperbolic forms are metabolic"}
@@ -302,7 +302,8 @@ The set $W(R)$ of Witt classes of unimodular $R$-lattices is a commutative ring 
 ::: {.proof}
 
 The two operations are well defined on Witt classes by @lem:witt-equivalence, and the axioms are [@MH73, Thm. I.7.3].
-Two clauses are where the hypotheses enter: the tensor product of unimodular lattices is unimodular by the perfectness clause of @def:form-tensor, and the additive inverse of $[X]$ is $[X(-1)]$, exhibited by @prop:negation-is-metabolic.
+The tensor product of unimodular lattices is unimodular by the perfectness clause of @def:form-tensor.
+The additive inverse of $[X]$ is $[X(-1)]$, by @prop:negation-is-metabolic.
 :::
 
 ::: {.proposition #prop:metabolic-witt-trivial title="Metabolic lattices have Witt class zero"}
@@ -380,7 +381,6 @@ Conversely such an orthogonal sum is metabolic over any $R$, by @prop:hyperbolic
 ::: {.proof}
 
 This is [@MH73, Lem. I.6.3].
-The computation shows where the hypothesis on $2$ is spent: nothing else in it uses that $2$ is a unit.
 
 Let $(M,b)$ be metabolic and perfect with lagrangian $N$ and complement $W$, so $M=N\oplus W$ with $\rank N=\rank W=n$.
 In an adapted basis the Gram matrix is
@@ -394,7 +394,6 @@ $$
 P^{T}GP=\begin{pmatrix}0&A\\A^{T}&\psi^{T}A+A^{T}\psi+B\end{pmatrix}=\begin{pmatrix}0&A\\A^{T}&0\end{pmatrix},
 $$
 and $\operatorname{diag}(A^{-T},I)$ conjugates this to $\begin{pmatrix}0&I\\I&0\end{pmatrix}$, the Gram matrix of $H(R)^{\perp n}$ by @ex:hyperbolic-plane.
-The halving in $\psi$ is the whole use of the hypothesis.
 :::
 
 ::: {.example #ex:metabolic-over-z title="A metabolic lattice over $\mathbb Z$"}
@@ -408,6 +407,3 @@ Both $X$ and $H(\bZ)$ are unimodular of signature $(1,1)$.
 Since $b(e_1,e_1)=1$, the lattice $X$ is odd, while $H(\bZ)$ is even, so $X$ and $H(\bZ)$ are not isometric.
 In $\bZ$ the element $2$ is not a unit, and the hypothesis of @thm:metabolic-is-hyperbolic fails.
 :::
-
-The Witt group of nonsingular $\epsilon$-symmetric forms over a ring with involution is the zero-dimensional $L$-group of that ring, and a form admitting a lagrangian is zero in it [@Ran98, Ex. 20.11].
-The homological setting in which the $L$-groups of every dimension are defined is @sec-stable-duality.

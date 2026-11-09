@@ -30,7 +30,7 @@ in $\mathbf{BilMod}_{\bZ}$, characterized by
 L \arrow[r] \arrow[d,two heads,"c"'] & (M\perp N)^\# \arrow[d,two heads,"\pi_{M\perp N}"] \\
 H \arrow[r,hook,"U_{\mathrm{mod}}(h)"'] & A_{M\perp N}^\sharp
 ```
-The gluing datum is the isotropic subobject $h$ of $A_{M\perp N}$, whose value module is $W_b(M\perp N)$ of @def:discriminant. Its canonical common-value description in terms of $A_M$ and $A_N$ is @prop:discriminant-orthogonal-sum.
+The gluing datum is the isotropic subobject $h$ of $A_{M\perp N}$, whose value module is $W_b(M\perp N)$ of @def:discriminant.
 
 If $L,M,N$ are even, $h$ refines to
 $h_q\colon(H,0)\injects A_{M\perp N,q}$

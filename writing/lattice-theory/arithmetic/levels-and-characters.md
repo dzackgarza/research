@@ -37,26 +37,13 @@ Equivalently, the rational quadratic space $L_\bQ$ admits a similarity of multip
 For $N=1$ this is unimodularity.
 :::
 
-::: {.observation #obs:homothetic-modularity title="Homothetic modularity"}
-
-The homothetic condition is stronger: multiplication by $N$ on $L^\#$ factors through $\iota_L\colon L\injects L^\#$ as an isomorphism
-$$
-h_N\colon L^\#\isoto L
-$$
-such that
-$$
-\iota_L\circ h_N=[N]_{L^\#}.
-$$
-This implies $N$-modularity but records a specified rational realization rather than only the similarity class.
-:::
-
 ::: {.definition #def:lattice-bad-primes title="Bad primes of an integral lattice"}
 
 For a nondegenerate integral lattice $L$, define
 $$
 \Sigma_L
 \definedas
-\Sigma_L\definedas\theset{p\text{ prime}\st p\mid2\disc{L}}.
+\theset{p\text{ prime}\st p\mid2\disc{L}}.
 $$
 For every odd prime $p\notin\Sigma_L$, the reduction
 $$

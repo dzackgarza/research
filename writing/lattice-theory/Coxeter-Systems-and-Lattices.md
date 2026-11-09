@@ -1,7 +1,6 @@
 # Coxeter systems and lattices {#sec-coxeter-systems}
 
 Let $(W,S)$ be a Coxeter system with $S$ finite, presented by the orders $m(s,t)$ of the products $st$, and let $V$ be the real vector space with basis $\{\alpha_s\}_{s\in S}$.
-Lattices, the signature of a form and the radical of a form are defined in @def:lattice, @def:signature and @def:polarization.
 
 ## The canonical form {#sec-coxeter-form}
 
@@ -39,10 +38,6 @@ unconditionally, with $A$ symmetric.
 
 By @def:cartan-matrix, $A_{ij}=2b(\alpha_i,\alpha_j)/b(\alpha_j,\alpha_j)$, and the normalizing factor is $b(\alpha_j,\alpha_j)=-2$ for every $j$, whatever the off-diagonal entries are.
 So $A_{ij}=-b(\alpha_i,\alpha_j)=-G_{ij}$, which is the displayed identity, and $A$ is symmetric because $b$ is.
-
-This is where $A=-G$ differs from the classical Cartan matrix of a non-simply-laced root system: there the roots have two lengths, the diagonal entries of $G$ differ, and $A$ is only symmetrizable, by $G_{ij}=d_jA_{ij}$ as in @def:cartan-matrix.
-That case is the one of $B_n$, $C_n$, $F_4$ and $G_2$, and the specimen of @def:cartan-matrix has squares $-2$ and $-4$.
-The form here gives every simple root the same length, which is what forces the unconditional identity.
 :::
 
 ::: {.theorem #thm:coxeter-signature-type title="Signature type of a connected diagram"}
@@ -62,9 +57,6 @@ For $n=3$ the remaining possibility is signature $(1,2,0)$ [@Hum90, §6.7].
 ::: {.proof}
 
 The three clauses are [@Hum90, §6.4] (finite exactly when positive definite for the source's $B$, hence negative definite for $b=-2B$), [@Hum90, §2.6] (positive semidefinite and degenerate forces a one-dimensional radical, so the signature is $(0,n-1,1)$), and [@Hum90, §6.7] for the rank-three statement.
-
-The middle clause is an *exclusive* alternative: for an irreducible system $b$ cannot be both semidefinite and indefinite, and the positive semidefinite degenerate case cannot have a radical of rank $\geq2$.
-That is the content of [@Hum90, §2.6], and it is what makes the three names in @def:coxeter-system-type exhaust the connected diagrams up to the residual case of the last sentence.
 :::
 
 ::: {.theorem #thm:parabolic-radical title="The radical of a parabolic system"}
@@ -120,12 +112,11 @@ When $b$ has signature $(1,n-1,0)$, one component of $\{\lambda\in V\mid b(\lamb
 ::: {.proof}
 
 The finiteness criterion is [@Hum90, §6.8]: the covolume is finite exactly for the finite and the hyperbolic systems, with the cone condition of @def:hyperbolic-coxeter included, and not for the merely Lorentzian ones.
-That the condition on $C$ has to be there is visible in the definition: a Lorentzian form gives the hyperboloid a hyperbolic metric whatever the chamber looks like, so the geometry alone cannot detect the finiteness of the covolume, and it is the chamber, not the form, that carries it.
 
 The hyperboloid claim reduces to @def:hyperbolic-model.
 Let $S^{n-1}\subseteq V$ be a component of $\{v\mid b(v,v)=1\}$; the orthogonal projection $v\mapsto v-\tfrac12b(v,v)\lambda$ for $\lambda$ the model point gives a well-defined positive definite metric on each tangent space, and $\{b=1\}$ with it is the hyperboloid model.
 Rescaling by $\lambda\mapsto\sqrt2\,\lambda$ identifies $\{b=2\}$ with $\{b=1\}$ up to the constant factor $2$, and a homothety is an isometry of the two models up to a constant, so one component of $\{b=2\}$ is the same hyperbolic space.
-The sign $(1,n-1,0)$ is what makes the restriction of $b$ to a tangent space of the hyperboloid definite, of the opposite sign to $b$ on the model points; that is the hypothesis the clause uses.
+Since $b$ has signature $(1,n-1,0)$, its restriction to a tangent space of the hyperboloid is definite, of the opposite sign to $b$ on the model points.
 :::
 
 ## Coxeter systems in a lattice {#sec-coxeter-in-lattice}
@@ -177,6 +168,4 @@ The determinant formula and the criterion are @prop:embedding-index applied to $
 For the vanishing, let $Q\definedas L/\iota(\langle\Phi\rangle)$.
 Primitivity of $\iota$ in the sense of @def:primitive-embedding is exactly that $Q$ is torsion-free, and equal ranks give $\rank Q=\rank L-\rank\langle\Phi\rangle=0$, the ranks being additive in a short exact sequence of finitely generated modules over the domain $\ZZ$.
 A finitely generated torsion-free module of rank $0$ is $0$, hence $Q=0$ and $\iota$ is surjective, so it is an isometry by the criterion above.
-
-Consequently the embedding carries no invariant of its own on $\mathbf{Cox}_{\mathbb Z}$, which is why what is recorded instead is the orthogonal complement $\iota(\langle\Phi\rangle)^{\perp L}\injects L$ of @def:orthogonal-complement together with its restricted form: that is a subobject of $L$ whose isometry class varies with $\iota$, and by @thm:orthogonal-decomposition it is a complement when the embedded form is perfect.
 :::

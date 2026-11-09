@@ -1,8 +1,6 @@
 # Limits and colimits {#sec-limits-colimits}
 
-Limits, colimits, products, and coproducts are defined once for an arbitrary category, and each particular category supplies its instances.
 Throughout, $\mcc$ is a category and $J$ is a small category, the *shape* of the diagrams considered.
-The higher-categorical constructions of the same names are in @sec-higher-categories-universes and @sec-loops-suspension.
 
 ## Diagrams and cones {#sec-diagrams-cones}
 
@@ -48,11 +46,6 @@ Equivalently, $\lambda$ is a terminal object of the category of cones over $D$.
 Dually, a *colimit* of $D$ is a representation of $\operatorname{Cone}(D,-)$, equivalently an initial object of the category of cocones under $D$ [@Rie16, Definitions 3.1.5 and 3.1.6].
 
 Limits of $D$ are unique up to a unique isomorphism compatible with the limit cones, since terminal objects are.
-:::
-
-::: {.remark}
-The universal property is the natural isomorphism: it names the morphism that factors a given cone, and its naturality identifies the factorization of a cone with the factorization of any cone obtained from it by composing with a morphism of apexes.
-The same standard governs classifying objects in @def:classifying-object.
 :::
 
 ## Named shapes {#sec-named-shapes}
@@ -110,8 +103,6 @@ X\amalg_Z Y
 \end{tikzcd}
 ```
 :::
-
-The equality $fh=gk$ is part of the datum of the cone with apex $W$.
 
 ## Shape categories {#sec-shape-categories}
 
@@ -193,8 +184,6 @@ The dual conditions define preservation, reflection, and creation of colimits [@
 
 If $F$ creates limits of a class of diagrams and $\mcd$ has those limits, then $\mcc$ has them and $F$ preserves them [@Rie16, Proposition 3.3.3].
 :::
-
-Which forgetful functors create which limits is recorded in @sec-creation.
 
 ## Kan extensions {#sec-kan}
 

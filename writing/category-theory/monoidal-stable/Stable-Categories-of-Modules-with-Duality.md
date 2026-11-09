@@ -1,8 +1,5 @@
 # Stable categories of modules with duality {#sec-stable-duality}
 
-The constructions of this chapter take place over the additive category of modules over a ring, and a form on a module is a morphism of that category.
-@sec-form-morphisms lists the hypothesis each construction states, and @sec-hyperbolic-witt gives the hyperbolic forms and Witt classes that the zero-dimensional case reproduces.
-
 ## Rings with involution and duality {#sec-ring-with-involution}
 
 ::: {.definition #def:ring-with-involution title="Involutions and the duality functor"}
@@ -147,7 +144,6 @@ The cofibrant replacement of an object of $\mca$ concentrated in degree $0$ is a
 
 The model structure is [@Qui67, Ch. I §1, Ex. B]; the axioms are checked there for the three classes named.
 
-The identification of the cofibrant replacement is the part read off the hypotheses, and it is what makes @sec-derived-functors legitimate.
 A cofibrant object is one for which $\varnothing\to C$ is a cofibration, that is, injective with a projective cokernel in each degree; a complex concentrated in degree $0$ in $\mca$ is not cofibrant in general, because its cokernel is the object itself and need not be projective.
 A cofibrant replacement $P\to A$ is a degreewise map from such a $P$ to $A$ in degree $0$ and to $0$ elsewhere, a weak equivalence by hypothesis; being a degreewise epimorphism with projective terms it is a projective resolution of $A$, and exactness of the augmented complex is the vanishing of homology above degree $0$ required by the weak equivalence.
 :::
@@ -210,10 +206,10 @@ The $\infty$-category of spectra is $\mathrm{Sp}=\mathrm{Sp}(\mcs_{*})=\mathrm{S
 
 ::: {.proof}
 
-The clauses are the cited items, and two of them read differently in the source.
-$\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is a definition, not a theorem, in [@Lur09, Def. 8.4]; $\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is then the case $\mcc=\mcs$ together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
-The universal property is stated in [@Lur09] as an equivalence $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ [@Lur09, Prop. 10.12], whose content is the same, and the paper's introduction draws the corollary in the form used here.
-Free generation by the sphere spectrum is [@Lur09, Cor. 15.6], whose statement is that evaluation on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
+$\mathrm{Stab}(\mcc)=\mathrm{Sp}(\mcc_{*})$ is [@Lur09, Def. 8.4].
+$\mathrm{Sp}=\mathrm{Stab}(\mcs)$ in [@Lur09, Def. 9.1] is the case $\mcc=\mcs$, together with the identification $\mcs_{*}=\mcs$ up to the trivial fibration of [@Lur09, Rem. 8.5].
+The universal property is the equivalence $\mathrm{Exc}(\mathcal{C},\mathrm{Stab}(\mathcal{D}))\simeq\mathrm{Exc}(\mathcal{C},\mathcal{D})$ of [@Lur09, Prop. 10.12].
+Free generation by the sphere spectrum is [@Lur09, Cor. 15.6]: evaluation on the sphere spectrum induces $\operatorname{Pr}^{\mathrm L}(\mathrm{Sp},\mathcal{D})\simeq\mathcal{D}$ for stable presentable $\mathcal{D}$.
 :::
 
 ::: {.theorem #thm:derived-category-heart title="The derived $\infty$-category"}
@@ -224,9 +220,7 @@ Then $\mcd^{-}(\mca)$ is a stable $\infty$-category, the subcategories of comple
 
 ::: {.proof}
 
-All three clauses are [@Lur09, Prop. 13.10], and they are the three numbered parts of that proposition: stability, the $t$-structure given by the vanishing conditions on homology in negative and positive degrees, and the identification of the heart with the nerve of $\mca$.
-
-The hypothesis is used once and is not decorative: enough projectives is what supplies the map $P_\bullet\to A_\bullet$ with projective terms that the proof of the source's part (2) needs, and it is the same hypothesis that makes the cofibrant replacement of @thm:projective-model-structure a projective resolution.
+The three clauses are the three numbered parts of [@Lur09, Prop. 13.10]: stability, the $t$-structure given by the vanishing conditions on homology in negative and positive degrees, and the identification of the heart with the nerve of $\mca$.
 :::
 
 Taking $\mca=A\text{-}\mathbf{Mod}$ places the complexes of @def:poincare-complex in the stable $\infty$-category $\mcd^{-}(A\text{-}\mathbf{Mod})$, whose heart is $A\text{-}\mathbf{Mod}$, and the duality functor of @def:ring-with-involution extends to complexes by @def:n-dual-complex.
