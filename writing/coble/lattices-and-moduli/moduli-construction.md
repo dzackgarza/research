@@ -182,13 +182,6 @@ We note that [@DK13] shows that $\fco$ is rational by relating it to a codimensi
 
 ## The sextic moduli construction
 
-::: {.remark title="Orientation"}
-
-The constructions above start from the surface: from the Coble surface $S$ and its K3 cover, or from the Enriques period domain in which the Coble locus is a Heegner divisor.
-A third route starts from the *branch curve* and never mentions $S$: one takes the moduli space of plane sextics of a fixed singularity type, and maps it to an arithmetic quotient by the periods of the associated K3. Yu--Zheng--Zhong carry this out for every singular type $T$ of plane sextic with simple singularities [@YZZ25], and the Coble case is the type $T = 10A_1$.
-What this route supplies that the two above do not is a compactification of the open moduli space by geometry of the curves, namely the geometric invariant theory quotient, together with an identification of that compactification in arithmetic terms.
-:::
-
 ::: {.notation #not:sextic-singular-type title="Moduli of sextics of a fixed singular type"}
 
 For a singular type $T$ with root lattice $R$, write $\mcv_T$ for the space of sextic curves $Z\subset\PP^2$ with singularities exactly of type $T$, and

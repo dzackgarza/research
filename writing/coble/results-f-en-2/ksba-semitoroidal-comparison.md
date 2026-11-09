@@ -1,12 +1,5 @@
 # KSBA and semitoroidal compactifications of $\fentwo$
 
-::: {.remark title="Orientation"}
-
-This section records the degree-$2$ Enriques side of the KSBA--semitoroidal comparison: the compactification of $\fentwo$, the moduli space of degree-$2$ numerically polarized Enriques surfaces.
-Here the comparison is a theorem, obtained by reducing to the recognizable-divisor machinery of Alexeev--Engel (@thm:recognizable-semitoroidal, @thm:tower-semitoroidal); the ambient degree-$2$ Enriques KSBA compactification is itself settled [@AEGS25; @CDL25].
-This is the established counterpart of the polarized *Coble* comparison, which remains an open program: see @conj:ksba_semitoroidal_comparison for the Coble isomorphism target and @conj:restricted_ramification_semifan for the Coble semifan-restriction analogue of the descent below.
-:::
-
 ## The isomorphism theorem
 
 ::: {.theorem #thm:ksba_semitoroidal_En2 title="Isomorphism between KSBA and semitoroidal compactifications of $\fentwo$"}

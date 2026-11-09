@@ -1,12 +1,5 @@
 # Toroidal and semitoroidal compactifications {#sec-toroidal-and-semitoroidal}
 
-::: {.remark title="Orientation"}
-
-This section collects the general definitions of the compactification types used throughout the monograph -- toroidal, semitoroidal, KSBA, and Looijenga compactifications, together with generalized Coxeter semifans and recognizable divisors.
-The material here is background and vocabulary: it fixes the constructions in their natural generality.
-The Coble-specific application of these constructions -- the KSBA stable pair, the restricted ramification semifan, and the comparison between the two compactifications -- is developed in the Stable Limits section; see in particular @conj:restricted_ramification_semifan and @conj:ksba_semitoroidal_comparison.
-:::
-
 ## Toroidal compactifications
 
 ::: {.definition #def:toroidal-compactification}

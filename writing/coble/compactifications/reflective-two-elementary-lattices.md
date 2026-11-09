@@ -1,12 +1,8 @@
 # Reflective two-elementary lattices {#sec-reflective-two-elementary}
 
-::: {.remark title="Orientation"}
+::: {.notation title="Sign convention"}
 
-Every lattice in [the Coble table](#sec-coble-lattice-table) satisfies $r + a = 22$: the row indexed by $n$ has $r = 10 + n$ and $a = 12 - n$.
-The line $r + a = 22$ is exactly the range in which Alexeev classifies the reflective even hyperbolic $2$-elementary lattices and computes their Coxeter diagrams and maximal parabolic subdiagrams [@Ale22], so that classification is a classification of the Coble Picard lattices.
-This section records it, together with the reflection-theoretic vocabulary it needs, and the consequences for the automorphism groups of the K3 covers.
-
-We work with the sign convention of the Hyperbolic Reflection Groups section: hyperbolic means signature $(1, r-1)$, root lattices are negative definite, and the roots of an even $2$-elementary lattice are the short roots $v^2 = -2$ and the long roots $v^2 = -4$ with $\div_L(v) = 2$ (@def:2elementary-roots).
+Hyperbolic means signature $(1, r-1)$, root lattices are negative definite, and the roots of an even $2$-elementary lattice are the short roots $v^2 = -2$ and the long roots $v^2 = -4$ with $\div_L(v) = 2$ (@def:2elementary-roots).
 :::
 
 ## Reflective and two-reflective lattices
@@ -226,7 +222,7 @@ $$
 \wB_9(2)
 ,
 $$
-both of even ordinary type, so there are two $\Orth^+(S_\Co)$-orbits of primitive isotropic vectors in $S_\Co$.
+both of even ordinary type, so the primitive isotropic vectors of $S_\Co$ in the closure of the positive cone form two $\Orth^+(S_\Co)$-orbits.
 :::
 
 ::: {.proof}
@@ -234,14 +230,17 @@ both of even ordinary type, so there are two $\Orth^+(S_\Co)$-orbits of primitiv
 This is [@Ale22 §3], the case $(11,11,1)$ of @thm:maximal-parabolic-counts.
 :::
 
-::: {.remark title="What the two orbits do and do not count"}
+::: {.corollary #cor:coble-picard-cusp-quotients title="The two quotient lattices of $S_\Co$"}
 
-Both subdiagrams of @thm:coble-picard-parabolics have rank $9 = r - 2$, as a maximal parabolic subdiagram of a rank-$11$ hyperbolic lattice must, and both are of even ordinary type, so by @thm:isotropic-trichotomy each associated quotient $v^{\perp}/v$ has invariants $(9, 9, 1)$.
-The two orbits are therefore *not* separated by the invariants of the quotient lattice.
+Let $v_1,v_2\in S_\Co$ represent the two orbits of @thm:coble-picard-parabolics.
+Then $\qty{v_1^{\perp}}^{\mathrm{nd}}$ and $\qty{v_2^{\perp}}^{\mathrm{nd}}$ are negative definite even $2$-elementary lattices with invariants $(9,9,1)$, and they are not isometric.
+:::
 
-These are orbits of isotropic vectors in the algebraic lattice $S_\Co$, which by @thm:elliptic-fibrations-isotropic count the elliptic fibrations of the K3 cover of a Coble surface.
-They are not the $0$-cusps of the Coble period space: those are the orbits of primitive isotropic vectors in the *transcendental* lattice $T_\Co$ of signature $(2,9)$, of which there is exactly one under the full orthogonal group (@thm:unpolarized-cusps).
-The two lattices share the invariants $(11,11,1)$ but not the signature, and the counts attached to them are different counts.
+::: {.proof}
+
+Both vectors are even ordinary, so by @thm:isotropic-trichotomy (2) each reduction is negative definite with invariants $(11-2,11-2,1)=(9,9,1)$.
+The isometry $-1$ exchanges the two components of the positive cone, so $\Orth(S_\Co)=\Orth^+(S_\Co)\times\{\pm1\}$, and an element of $\Orth(S_\Co)$ that maps $v_1$ to a vector in the closure of the positive cone lies in $\Orth^+(S_\Co)$.
+So $v_1$ and $v_2$ lie in distinct $\Orth(S_\Co)$-orbits, and by @thm:isotropic-trichotomy their reductions are not isometric.
 :::
 
 ## Reflection groups and automorphisms of the K3 cover

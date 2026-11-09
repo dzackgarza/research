@@ -1,12 +1,5 @@
 # Scattone's method for cusp enumeration {#sec-scattone-cusp-method}
 
-::: {.remark title="Orientation"}
-
-The Cusp Correspondence section computes the specific cusp diagrams of the Coble and Enriques moduli spaces $\fco$ and $\fen$.
-Here we record the *general* arithmetic machinery underlying those computations, following Scattone [@Sca87]: the boundary components of a Baily--Borel compactification are enumerated by the orbits of primitive isotropic subspaces of a lattice under an arithmetic group, and those orbits are separated by two invariants --- **divisibility** and the image in the **discriminant group** --- via Eichler's criterion and its transvection refinement.
-The concrete cusp counts of $\fco$, $\fen$, and the degree-two K3 space $F_2$ are instances of this method; we cross-reference them below rather than recomputing them.
-:::
-
 ## The cusp--isotropic-subspace correspondence
 
 ::: {.remark title="Boundary components of the Baily–Borel compactification"}

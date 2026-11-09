@@ -101,10 +101,6 @@ ranks summing to $22 = \rank\lkt$. {#tbl-k3-cover-coinvariant-lattices}
 
 ## Two constraints on involutions of a K3
 
-The lattice decompositions above describe the abstract involutions of $\lkt$.
-Whether a given K3 surface carries one of them as an automorphism is a separate question.
-Two statements used elsewhere in the book are refined here: a necessary condition on the invariant lattice of a del Pezzo involution, which any representative of the Coble tuple's del Pezzo slot has to satisfy (@prop:coble-cover-marking), and the exact hypothesis under which a product of two involutions is again an involution, which is what any claim about the symplectic character of such a product has to carry.
-
 ::: {.proposition #prop:del-pezzo-invariant-has-no-roots title="The del Pezzo invariant lattice contains no class of square $-2$"}
 
 Let $X$ be a K3 surface and let $\iota\in\Aut(X)$ be an involution whose invariant lattice is $H^2(X,\ZZ)^{\iota}\cong\sdp = U(2)$.
@@ -116,10 +112,11 @@ Then $H^2(X,\ZZ)^{\iota}$ contains no class of square $-2$, and consequently $\i
 With isotropic generators $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
 :::
 
-::: {.remark title="What this does and does not rule out"}
+::: {.example title="A class of square $-2$ in $\tdp$"}
 
-The condition is necessary and not sufficient, and the hypothesis is that the invariant lattice *is* $\sdp$, of rank $2$: an involution whose invariant lattice merely contains $\sdp$ is not covered.
-It says nothing against the existence of such an involution, because the anti-invariant lattice can itself contain classes of square $-2$: in $\tdp = U\oplus U(2)\oplus E_8^2$ the sum of $E+F$ for a hyperbolic basis of $U$, of square $2$, and of a vector of $U(2)$ of square $-4$ has square $-2$; the lemma constrains which rational curves are *fixed* and not which curves the surface carries.
+Let $E,F$ be a hyperbolic basis of $U$ and $a,b$ isotropic generators of $U(2)$ with $a\cdot b=2$.
+In $\tdp=U\oplus U(2)\oplus E_8^2$ the class $E+F+a-b$ has square $2-4=-2$.
+So the anti-invariant lattice of an involution as in @prop:del-pezzo-invariant-has-no-roots can contain classes of square $-2$.
 :::
 
 ::: {.proposition #prop:product-of-involutions title="When a product of involutions is an involution"}

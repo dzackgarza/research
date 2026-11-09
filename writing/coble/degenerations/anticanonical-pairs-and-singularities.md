@@ -1,10 +1,5 @@
 # Anticanonical pairs, charge, and MMP singularities
 
-::: {.remark title="Orientation"}
-
-The components of a Type III degeneration are anticanonical pairs, and the combinatorics of such degenerations is controlled by a single additive invariant, the *charge*. We collect the definitions here, together with the singularity classes of the minimal model program that govern which limits are admissible in KSBA moduli.
-:::
-
 ## Anticanonical pairs and their charge
 
 ::: {.definition #def:anticanonical-pair}

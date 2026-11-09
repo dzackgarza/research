@@ -1,8 +1,6 @@
 # Coxeter systems and their classification
 
-::: {.remark title="Orientation and sign convention"}
-
-A Coxeter--Vinberg diagram (@def:coxeter-vinberg-diagram) is the combinatorial record of a symmetric bilinear form, and the geometry on which the associated reflection group acts is determined by the definiteness of that form.
+::: {.notation title="Sign convention"}
 
 Simple roots are negative-definite directions of norm $-2$, following the algebraic-geometry convention of @def:root-lattice, so a spherical Coxeter system has a negative definite Gram form.
 :::

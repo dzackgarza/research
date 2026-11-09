@@ -1,11 +1,8 @@
 # Hyperbolic reflection groups and Vinberg's algorithm {#sec-reflection-groups-and-vinberg}
 
-::: {.remark title="Orientation and sign convention"}
+::: {.notation title="Sign convention"}
 
-The Baily--Borel and semitoroidal compactifications of the period domains attached to Coble and Enriques surfaces are governed by the action of arithmetic reflection groups on hyperbolic space.
-This section collects the reflection-group and hyperbolic-polytope combinatorics used elsewhere in the monograph, culminating in Vinberg's algorithm for a fundamental chamber and the Coxeter--Vinberg diagram that encodes it.
-
-We work throughout with the algebraic-geometry sign convention (see the Lattice Theory section): roots are *negative-definite* directions, a **short root** having norm $v^2 = -2$ and a **long root** norm $v^2 = -4$.
+Roots are *negative-definite* directions, a **short root** having norm $v^2 = -2$ and a **long root** norm $v^2 = -4$.
 An indefinite lattice $L$ of signature $(1, n)$ is called **hyperbolic**; its **positive cone**
 $$
 C_L \definedas \theset{ v\in L_\RR \mid v^2 > 0 }

@@ -75,14 +75,14 @@ $$
 This is the $f$-vector CoxIter reports for the folded Sterk 2 diagram and for both rank-$10$ $0$-cusp diagrams $(10,8,0)_1$ and $(10,10,0)_1$ ([CoxIter results for cusp lattices](#sec-coxiter-results-for-cusp-lattices)). The Sterk 1, 3, 4 and 5 diagrams have $f$-vectors beginning $23, 33, 26, 115$, so those four polyhedra have more vertices than a simplex.
 :::
 
-::: {.remark title="The computed chambers match the CoxIter runs on the quotient lattices"}
+::: {.example title="Chambers of the rank-$10$ quotient lattices"}
 
 CoxIter, run on the $0$-cusp diagram of $(10,10,0)_1$, reports dimension $9$, one vertex at infinity, Gram field $\QQ$, and the simplex $f$-vector; run on $(10,8,0)_1$ it reports dimension $9$, two vertices at infinity, Gram field $\QQ[\sqrt2]$, and the same $f$-vector.
 Vinberg's algorithm on $\eta_1^{\perp}/\eta_1 \cong E_{10}(2)$, of type $(10,10,0)$, returns ten roots and one ideal vertex; on $\eta_j^{\perp}/\eta_j\cong U\oplus E_8(2)$, of type $(10,8,0)$, it returns ten roots and two ideal vertices for each of $j = 2,3,4,5$.
 Wall count and ideal-vertex count agree in both cases.
 :::
 
-::: {.remark title="The shape of the computed root sets"}
+::: {.example title="The simple roots of the computed chambers"}
 
 Let $\eps_1,\eps_2$ be the isotropic basis of the summand $U(2)$ of $\eta_1^{\perp}/\eta_1\cong U(2)\oplus E_8(2)$, or of the summand $U$ of $\eta_2^{\perp}/\eta_2\cong U\oplus E_8(2)$, and let $\eps_{2+i} = \alpha_i$ for the simple roots $\alpha_1,\dots,\alpha_8$ of $E_8(2)$ in Bourbaki numbering. The ten roots returned for $\eta_1^{\perp}/\eta_1$ are
 $$
@@ -106,17 +106,6 @@ The published diagrams for those four cusps have $10, 12, 11, 14$ walls and $2, 
 A datum beyond the isometry class of $\eta_j^{\perp}/\eta_j$ therefore distinguishes them, and the candidate is the group: for each $j$, identify the subgroup $W_j \leq W(\eta_j^{\perp}/\eta_j)$ for which the published diagram is a Coxeter polytope (@def:coxeter-polytope), and exhibit the published domain as a union of chambers of the full group.
 
 The natural candidate for $W_j$ is the reflection subgroup induced on $\eta_j^{\perp}/\eta_j$ by the stabilizer of $\eta_j$ in the arithmetic group acting on $\ten$, which depends on how the quotient sits inside $\ten$ and not only on its isometry class.
-:::
-
-::: {.remark title="The index is a covolume ratio, and the Euler characteristic does not supply it"}
-
-If $W_j \leq W$ has finite index then
-$$
-\vol(\HH^9/W_j) = [W : W_j]\cdot \vol(\HH^9/W),
-$$
-so the index is determined by the two covolumes and is the sharpest available test of @qst:sterk-reflection-subgroup.
-The Euler characteristic vanishes in odd dimension, and CoxIter reports $\chi = 0$ for all five nine-dimensional Sterk runs, so the Euler-characteristic route to the covolume gives no information here.
-Settling the index requires either a direct covolume computation or a comparison of the growth series of the two Coxeter systems, of which CoxIter records one: the Sterk 1 growth rate $2.6246613781819533651112379994955986218$, Perron and neither Pisot nor Salem.
 :::
 
 ::: {.question #qst:sterk-ideal-vertices title="How do the ideal vertices correspond?"}

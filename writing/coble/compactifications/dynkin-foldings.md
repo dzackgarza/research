@@ -1,9 +1,8 @@
 # Foldings of Dynkin diagrams {#sec-dynkin-foldings}
 
-::: {.remark title="Orientation"}
+::: {.notation title="Sign convention"}
 
-This section collects the folding constructions that produce non-simply-laced root systems from simply-laced ones by summing the roots in each orbit of a diagram automorphism, together with the specific root-folding criterion governing the involution $I = -\Ien$ on $\tdp$ and the *mirror moves* used to navigate the pyramid of $2$-elementary lattices.
-As in the root systems material we work in the algebraic-geometry sign convention: root lattices are negative definite and roots have norm $-2$ (see @def:root-lattice).
+Root lattices are negative definite and roots have norm $-2$ (@def:root-lattice).
 :::
 
 ## Foldings of simply-laced diagrams
