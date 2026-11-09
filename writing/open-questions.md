@@ -37,7 +37,7 @@ tags:
 | **A generating set of the group $\Gamma_\Co$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
 | **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison |
-| **Labeled Coble rigidity** | @prob:coble-rigidity, @prob:effective-cone-agreement, @prob:twist-identification, @rmk:a21-open |
+| **Labeled Coble rigidity** | @prob:coble-rigidity, @qst:chamber-clause-one-node, @qst:reflected-pair-conjugacy, @qst:del-pezzo-saturation-higher-k |
 | **Projective coverage and the moduli equivalence** | @prob:projective-coverage, @prob:cover-singular-equivalence, @prob:period-diagram |
 | **The Enriques-to-Coble cusp correspondence** | @sec-enriques-coble-correspondence; the reduction @prop:cusp-map-separates-mod-two |
 | **The Coble cusps in the morphism chain** | @sec-cusp-correspondence-morphism-chain |
