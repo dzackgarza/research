@@ -38,7 +38,7 @@ $$\div_\ten(\eta(v)) = \gcd\bigl(\div_{T_\Co}(v),\ \beta_\ten(\eta(v),\tilde e)\
 the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Second, both entries of the gcd are even. $\div_{T_\Co}$ is even for every vector, since the Gram of $T_\Co$ is even entrywise; and if $v = ah + y$ with $y$ in the $U(2)\oplus E_8(2)$ block, then $v^2 = 2a^2 + y^2$ with $y^2\equiv0 \pmod 4$, that block being twice an even lattice, so $v$ isotropic forces $a^2$ even and $a$ even. Hence $\div_\ten(\eta(v))$ is even, and being a primitive vector of a $2$-elementary lattice it is $2$.
 
 So the image lies in the divisibility-$2$ classes, and the $(10,10,0)_1$ cusp is missed.
-The identities and the two parity facts are checked on the representatives in `computations/reports/coble_enriques_cusp_orbit_map.py`, which also reproduces the two boundary lattices by the maintained two-elementary route: $\tilde e^{\perp\ten}/\tilde e\cong(10,10,0)_1$ of determinant $-1024$, and $\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1$ of determinant $-256$.
+The identities and the two parity facts are checked on the representatives in `computations/reports/coble_enriques_cusp_orbit_map.py`, which also computes the two boundary lattices as $2$-elementary lattices: $\tilde e^{\perp\ten}/\tilde e\cong(10,10,0)_1$ of determinant $-1024$, and $\eta(v_1)^{\perp\ten}/\eta(v_1)\cong(10,8,0)_1$ of determinant $-256$.
 :::
 
 *The fibre, with the two actions on the correct sides.* Fix the left action convention, $\gamma\cdot x = \gamma x$. The fibre of $\Phi$ over the target class $[\tilde w]$ consists of the source classes $[v]$ with $\gamma\eta(v) = \tilde w$ for some $\gamma\in\Gamma_\En$, so put

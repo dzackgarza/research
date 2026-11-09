@@ -200,7 +200,7 @@ The zero class is fixed, and by @prop:coble-q-fibers there are $528 - 1 = 527$ n
 
 ::: {.remark}
 
-The statement is also checked at the maintained action in `computations/reports/coble_isotropic_orbits.py`, and the check is worth reading as a warning: the orbit partition of the $2048$ classes has six orbits, of sizes $1, 1, 496, 496, 527, 527$, and the two orbits of size $527$ are *not* both isotropic --- one is the nonzero isotropic classes and the other lies in the fiber $q = \tfrac12$. Classified by the value of $q$ they are $(1,0)$, $(1,\tfrac12)$, $(496,1)$, $(496,\tfrac32)$, $(527,0)$ and $(527,\tfrac12)$, and restricting to $\inverseof{q}(0)$ leaves exactly the orbits of sizes $1$ and $527$ claimed above.
+`computations/reports/coble_isotropic_orbits.py` computes the action. Its orbit partition of the $2048$ classes has six orbits, of sizes $1, 1, 496, 496, 527, 527$, and the two orbits of size $527$ are *not* both isotropic --- one is the nonzero isotropic classes and the other lies in the fiber $q = \tfrac12$. Classified by the value of $q$ they are $(1,0)$, $(1,\tfrac12)$, $(496,1)$, $(496,\tfrac32)$, $(527,0)$ and $(527,\tfrac12)$, and restricting to $\inverseof{q}(0)$ leaves exactly the orbits of sizes $1$ and $527$ claimed above.
 :::
 
 ## From discriminant classes to lattice vectors
