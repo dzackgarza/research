@@ -72,14 +72,6 @@ Among divisor models $(\mcx,\mcr)\to C$ with a fixed Picard--Lefschetz monodromy
 
 ## Half-divisor models
 
-::: {.definition #def:coble-half-divisor-model title="Half-divisor model"}
-
-A *half-divisor model* is a pair $(\mcz, \mcr_{\mcz})$ over a base curve $C$ that arises as the quotient of a divisor model $(\mcx, \mcr) \to C$ by a fixed-point-free involution $\tau$ under which $\mcr$ is $\tau$-invariant, $\tau^*\mcr = \mcr$.
-The class $\mcr$ descends to $\mcz$ only up to the $2$-torsion twist $K_{\mcz}$ (the two $\ZZ/2$-linearizations of the invariant $\mcr$ differ by the sign character of $\tau$); this is why $\mcr_{\mcz}$ is Weil but not Cartier, while $2\mcr_{\mcz}$ is Cartier.
-
-Boundary strata for Enriques stable limits are modeled by pairs $(\mcz_0, \tfrac{1}{2}\mcr_{\mcz_0})$ with $K_{\mcz_0} + \tfrac{1}{2}\mcr_{\mcz_0}$ ample and slc singularities.
-:::
-
 ::: {.proposition #prop:half-divisor-stable-limit title="Stable limits from half-divisor models"}
 
 Let $(\mcz,\mcr_\mcz)\to(C,0)$ be a half-divisor model (@def:dlt-model) for $\fentwo$ for the divisor models of [@AEGS25, Prop. 4.5].
@@ -89,4 +81,6 @@ $$
 \Proj_C \bigoplus_{n\geq0} H^0(\mcz, n\mcr_\mcz)
 $$
 [@AEGS25, Cor. 4.9].
+This stable limit is a point of $\ksbacpt{\fentwo}$, whose points are the pairs $(Z, \eps R_Z)$ and their KSBA stable limits [@AEGS25, Sec. 5.3].
+These are pairs $(Z, \eps R_Z)$ with slc singularities and $K_Z\equiv 0$, in which $R_Z$ is an ample $\QQ$-Cartier divisor [@AEGS25, Sec. 1].
 :::

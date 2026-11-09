@@ -28,7 +28,7 @@ For $\fttz$ the semifan of this compactification is the ramification semifan $\s
 
 Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$.
 The Enriques involution extends to the pulled-back family over $B$, and there is a classifying morphism $\normalize{B}\to\ksbacpt{\fentwo}$ (@prop:enriques-involution-extends).
-The normalization $\normalize{B}$ is the semitoroidal compactification of $B$ induced by $\semifan{F}_{\ram}$.
+The normalization $\normalize{B}$ is the semitoroidal compactification of $B$ induced by $\semifan{F}_{\ram}$ (@prop:normalized-nl-closure-semitoroidal).
 This gives a family of KSBA-stable pairs over the induced compactification of $\fentwo$, whose normalization is the semitoroidal compactification for the collection $\semitorfan$ of @prop:enriques-semifan-coarsening [@AEGS25, Def. 5.3, Lem. 5.5].
 
 It remains to show that $\normalize{B}\to\ksbacpt{\fentwo}$ is finite.
@@ -40,9 +40,21 @@ The toroidal and strictly semitoroidal cusps are given by [@AEGS25, Lem. 5.7].
 
 ## Descent of semitoroidal data
 
-::: {.conjecture #conj:descent_semitoroidal_data_En2 title="Descent of semifans to $\normalize{B}$"}
+::: {.proposition #prop:normalized-nl-closure-semitoroidal title="Descent of semifans to $\normalize{B}$"}
 
-The normalization $\normalize{B} \to B$ of the Noether--Lefschetz closure $B$ yields a normal projective variety.
-The semitoroidal structure on $\semifancpt{\fttz}{\semifan{F}_{\ram}}$ defined by the ramification semifan $\semifan{F}_{\ram}$ restricts to $\normalize{B}$.
-Imposing the involution constraints on this restricted structure produces a collection of *folded semifans* $\semifan{F}_k$.
+Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$ (@prop:enriques-involution-extends).
+
+1. The normalization $\normalize{B}$ is the semitoroidal compactification of the Noether--Lefschetz locus $B$ induced by the ramification semifan $\semifan{F}_{\ram}$, which gives the normalization $\normksbacpt{\fttz}$ [@AEGS25, proof of Thm. 5.9].
+
+2. For each $0$-cusp of $\fentwo$, the semifan $\semifan{F}_k$ is the intersection of the semifan $\semifan{F}_{\ram}(\overline{T}_{\mathrm{dP}})$, for $\overline{T}_{\mathrm{dP}} = (18,0,0)_1$ or $(18,2,0)_1$, with the subspace $\overline{T}_{\mathrm{En}} = (10,10,0)_1$ or $(10,8,0)_1$ [@AEGS25, Def. 5.3].
+   The subspace $\overline{T}_{\mathrm{En}}$ is the $(+1)$-eigenspace of the involution $J$ of $\overline{T}_{\mathrm{dP}}$ in @prop:fen2-folded-coxeter [@AEGS25, Def. 3.5].
+
+3. The semifans $\semifan{F}_k$ are the generalized Coxeter semifans of the folded Coxeter diagrams of @prop:fen2-folded-coxeter, in which the irrelevant roots are the foldings of the irrelevant roots of $\semifan{F}_{\ram}$ [@AEGS25, Sec. 5.2, Def. 5.4, Lem. 5.5].
+
+4. The family of KSBA-stable pairs over $\normalize{B}$ gives a family over the induced compactification of $\fentwo$, and the normalization of this compactification is $\semifancpt{\fentwo}{\semitorfan}$ for the collection $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ [@AEGS25, proof of Thm. 5.9].
+:::
+
+::: {.conjecture #conj:descent_semitoroidal_data_En2 title="Projectivity of $\normalize{B}$"}
+
+The normalization $\normalize{B}$ of the Noether--Lefschetz closure $B$ is a projective variety.
 :::

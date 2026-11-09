@@ -4,12 +4,11 @@
 
 ::: {.definition #def:anticanonical-pair}
 
-An **anticanonical pair** $(V, D)$ consists of a smooth projective rational surface $V$ together with a reduced effective snc divisor $D$ such that
-$$
-K_V + D \sim_{\QQ} 0
-.
-$$
-Anticanonical pairs are also known as **log Calabi--Yau surfaces**.
+An **anticanonical pair** $(V, D)$ consists of a smooth rational surface $V$ and a divisor $D\in\abs{-K_V}$ that is a reduced cycle of rational curves $D = \sum_{i=1}^r D_i$, with $i$ taken mod $r$, together with an orientation of $D$.
+For $r\geq 2$, each $D_i$ is a smooth rational curve, and $D_i$ meets $D_{i\pm1}$ transversally.
+For $r = 1$, $D = D_1$ is an irreducible nodal curve.
+The integer $r = r(D)$ is the **length** of $D$.
+The pair is **labeled** if the components of $D$ are indexed as above [@Fri15, Sec. 1].
 :::
 
 ::: {.definition #def:charge}
@@ -104,7 +103,9 @@ The pair $(X, D)$ is **divisorial log terminal (dlt)** if there is a closed subs
 
 ::: {.definition #def:demi-normal-slc}
 
-- A variety $X$ is **demi-normal** if it is reduced, satisfies Serre's condition $S_2$, and has at worst normal crossings in codimension $1$.
+- A scheme $X$ is **demi-normal** if it satisfies Serre's condition $S_2$ and each of its codimension-$1$ points is a regular point or a node [@Kol23a, Def. 11.10].
 
-- A pair $(X, D)$ is **semi-log canonical (slc)** if $X$ is demi-normal and the normalization, taken with the conductor divisor, $(X^\nu, D^\nu)$ is log canonical.
+- Let $X$ be demi-normal, with normalization $\pi\colon\bar X\to X$ and conductors $\Sigma\subset X$ and $\bar\Sigma\subset\bar X$.
+  Let $D$ be an effective $\RR$-divisor on $X$ whose support contains no irreducible component of $\Sigma$, and let $\bar D$ be the divisorial part of $\pi^{-1}(D)$.
+  The pair $(X, D)$ is **semi-log canonical (slc)** if $K_X + D$ is $\RR$-Cartier and $(\bar X, \bar\Sigma + \bar D)$ is log canonical [@Kol23a, Def. 11.11].
 :::

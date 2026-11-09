@@ -64,8 +64,8 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **The classifying map of $\fentwo$** | @conj:enriques_involution_extension, @conj:classifying_map_finite, @conj:classifying_map_isomorphism; `sections/3-part-main-theorem/6-chapter/600-finite-coarsening.md` |
-| **Descent of the semitoroidal data** | @conj:descent_semitoroidal_data_En2, @warn:restrict-semifan; `sections/3-part-main-theorem/6-chapter/500-descent-semitor.md` |
+| **The classifying map of $\fentwo$** | @conj:enriques_involution_extension, @conj:classifying_map_isomorphism |
+| **Descent of the semitoroidal data** | @conj:descent_semitoroidal_data_En2, @prob:restricted-semifan |
 
 : {tbl-colwidths="[35,65]"}
 

@@ -155,7 +155,14 @@ The root lattices $A_n$, $D_n$ and $E_n$ here are negative definite, with roots 
 
 ::: {.definition #def:ade-surface title="ADE surface"}
 
-An **$ADE$ surface** $(Y, C)$ is a log canonical, **non-klt** del Pezzo pair of index two -- $-(K_Y + C)$ is ample and $2(K_Y + C)$ is Cartier, with nonempty non-klt locus -- whose boundary $C$ has dual intersection graph a simply-laced Dynkin diagram ($A_n$, $D_n$, or $E_n$).
+An **$ADE$ surface** is a normal surface $(Y, C)$ with reduced boundary $C$ given by one of the explicit constructions of [@AT17, Sec. 3, Def. 3.1].
+
+1. The $ADE$ surfaces of pure shape are toric. They are defined by the polytopes of [@AT17, Sec. 3A, Def. 3.5, Table 1].
+2. The $ADE$ surfaces of primed shape are obtained from surfaces of pure shape by priming (@def:priming; [@AT17, Sec. 3C, Def. 3.15]).
+
+Each $ADE$ surface is a log del Pezzo surface of index $2$: the pair $(Y, C)$ is log canonical, and the divisor $-2(K_Y + C)$ is Cartier and ample [@AT17, Def. 3.1].
+The $ADE$ surfaces are of type III in the sense of [@AT17, Lem. 2.5], so the pair $(Y, C)$ is not klt [@AT17, Def. 3.1, Lem. 2.5].
+The construction associates to each $ADE$ surface a shape: a decorated $ADE$ Dynkin diagram, and the $ADE$ root lattice obtained by deleting the decorations [@AT17, Sec. 3].
 :::
 
 ::: {.definition #def:priming title="Priming"}

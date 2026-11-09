@@ -2,13 +2,6 @@
 
 ## Global extension of the Enriques involution
 
-::: {.conjecture #conj:enriques_involution_extension title="Global extension of the Enriques involution"}
-
-Over the Noether--Lefschetz closure $B \iscontainedin \ksbacpt{\fttz}$ of the Enriques Noether--Lefschetz-locus definition (@def:nl-locus-enriques), there is a universal KSBA family $(\mcx_B, \eps \mcr_B)$.
-The fixed-point-free Enriques involution $\ien$ on the smooth fibers extends uniquely to an involution of $\mcx_B$.
-This involution preserves the slc pair structure and the ramification divisor $\mcr_B$, and commutes with the del Pezzo involution $\idp$, so the quotient $(\mcx_B, \eps \mcr_B) / \ien$ is a flat family of stable Enriques pairs over $B$.
-:::
-
 ::: {.proposition #prop:enriques-involution-extends title="Extension of the Enriques involution and the classifying morphism"}
 
 Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$, and let $(\mcx_B, \eps\mcr_B)\to B$ be the pullback of the universal family of KSBA-stable pairs.
@@ -22,15 +15,22 @@ Its general fibre is a pair $(X, \eps R)$ of an Enriques K3 surface $X$ and the 
 [@AEGS25, Lem. 2.8 and proof of Thm. 5.9].
 :::
 
+::: {.conjecture #conj:enriques_involution_extension title="Uniqueness and compatibility of the extended involution"}
+
+Let $B$ be the Noether--Lefschetz closure of @prop:enriques-involution-extends.
+The involution of $(\mcx_B, \eps\mcr_B)$ in @prop:enriques-involution-extends(1) is the unique involution that extends $\ien$, and it commutes with the del Pezzo involution $\idp$.
+The quotient $(\mcz, \eps\mcr_\mcz)\to B$ is a flat family of KSBA-stable Enriques pairs over $B$.
+:::
+
 ## Finiteness of the classifying map
 
-::: {.conjecture #conj:classifying_map_finite title="Finiteness of the classifying map"}
+::: {.theorem #thm:classifying-map-finite title="Finiteness of the classifying map"}
 
 The classifying morphism
 $$
 \phi\colon \normalize{B} \to \ksbacpt{\fentwo}
 $$
-from the normalization $B^\nu$ of the Noether--Lefschetz closure is finite.
+of @prop:enriques-involution-extends(2), from the normalization $\normalize{B}$ of the Noether--Lefschetz closure, is finite [@AEGS25, proof of Thm. 5.9].
 :::
 
 ::: {.proposition #prop:enriques-semifan-coarsening title="The semifans of the normalized KSBA compactification"}
@@ -74,7 +74,9 @@ is an isomorphism.
 
 Let $\phi\colon\normalize{B}\to\normksbacpt{\fentwo}$ be a morphism that is an isomorphism over $\fentwo$ and has finite fibres.
 Then $\phi$ is an isomorphism.
-In particular, @conj:classifying_map_finite implies @conj:classifying_map_isomorphism for every such morphism $\phi$.
+In particular, let $\psi\colon\normalize{B}\to\normksbacpt{\fentwo}$ be a morphism whose composite with the normalization morphism $\normksbacpt{\fentwo}\to\ksbacpt{\fentwo}$ is the classifying morphism of @thm:classifying-map-finite.
+Each fibre of $\psi$ is contained in a fibre of the classifying morphism, so it is finite.
+So if $\psi$ is an isomorphism over $\fentwo$, then $\psi$ is an isomorphism, and @conj:classifying_map_isomorphism holds.
 :::
 
 ::: {.proof}
