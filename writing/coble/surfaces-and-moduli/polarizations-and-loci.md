@@ -5,34 +5,16 @@
 ::: {.definition #def:numerical-polarization title="Numerical polarization"}
 
 A **numerical polarization** $[h]$ on an algebraic surface $Z$ --- for instance an Enriques surface --- is the numerical class of $h \definedas c_1(\mcl)$ for an ample line bundle $\mcl\in\Pic(Z)$, often written $[\mcl]$.
-:::
-
-::: {.remark title="Numerical classes on an Enriques surface"}
-
-For an Enriques surface $Z$ the first Chern class induces an isomorphism
-$$
-c_1\colon \Pic(Z)\xrightarrow{\ \sim\ } H^2(Z; \ZZ)
-,
-$$
-so that the free part $H^2(Z; \ZZ)_f$ is identified with the group of numerical divisor classes $\Num(Z)$.
-Under the intersection pairing this free part is the even unimodular lattice of signature $(1, 9)$, i.e. the Enriques lattice $E_{10}$ of the Enriques-lattice definition (@def:enriques-lattice) [@CDL25]; the numerical polarization $[h]$ is thus an ample class in $\Num(Z)\iso E_{10}$.
-:::
-
-::: {.remark title="Degree of a numerical polarization"}
-
-The **degree** of a numerical polarization $[h]$ is its self-intersection $h^2$ computed in $\Num(Z)$.
-We are primarily interested in the **degree-$2$** case $h^2 = 2$; the corresponding moduli space of degree-$2$ numerically polarized Enriques surfaces is the space $\fentwo$ appearing below.
+The **degree** of $[h]$ is its self-intersection $h^2$, computed in $\Num(Z)$.
 :::
 
 ## The Noether–Lefschetz locus for Enriques surfaces
 
-::: {.remark title="The canonical cover and its involutions"}
+::: {.proposition #prop:enriques-cover-two-involutions title="The two involutions on the K3 cover of a degree-$2$ polarized Enriques surface"}
 
-The canonical double cover $\pi\colon X\to Z$ of a degree-$2$ polarized Enriques surface yields a K3 surface $X$ carrying two commuting involutions: the fixed-point-free **Enriques involution** $\ien$ (the deck transformation of the canonical cover) and the **del Pezzo involution** $\idp$ [@AEGS25].
-:::
-
-::: {.remark}
-The numerical polarization and the $\Num$ marking are those of [@CDL25]; the canonical cover with its two involutions, the map $j\colon \fentwo\to \fttz$, the locus $\mathrm{NL}_{S_{\mathrm{En}}}$ and the KSBA-limit closure $B$ are those of [@AEGS25].
+Let $Z$ be an Enriques surface with a numerical polarization $[\mcl_Z]$ of degree $2$, and let $\pi\colon X\to Z$ be its canonical double cover.
+Then the K3 surface $X$ has two commuting involutions: the fixed-point-free **Enriques involution** $\ien$, which is the deck transformation of $\pi$, and the **del Pezzo involution** $\idp$.
+The surface $X$ and both involutions are determined by the pair $(Z,[\mcl_Z])$ [@AEGS25, §2.1, Rem. 2.2].
 :::
 
 ::: {.definition #def:nl-locus-enriques title="Noether–Lefschetz locus \\mathrm{NL}_{S_{\\mathrm{En}}}"}
@@ -44,23 +26,18 @@ $$
 ,
 $$
 the rank-$10$, $2$-elementary, signature-$(1,9)$ lattice of type $(10,10,0)$ (see the Enriques-lattice definition (@def:enriques-lattice) and the Special Lattices section).
-:::
-
-::: {.remark title="KSBA limits and non-normality"}
-
-The Zariski closure
+The **Noether–Lefschetz closure** is the Zariski closure
 $$
 B \definedas \overline{j(\fentwo)}\iscontainedin \ksbacpt{\fttz}
+.
 $$
-parameterizes all KSBA limits of these double covers.
-The space fails to be normal along the boundary, due to branching and boundary divisor intersections.
 :::
 
 ## Two polarization classes on a Coble surface
 
-::: {.remark}
+::: {.notation #not:coble-ten-point-blowup title="The ten-point blowup and its K3 double cover"}
 
-Throughout, $S = \Bl_{p_1,\dots,p_{10}}\PP^2$ is the ten-point blowup, $\Pic(S) = \generators{H, E_1,\dots,E_{10}}\cong\latI_{1,10}$ is its Picard lattice with $H^2 = 1$, $E_i^2 = -1$ and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$, and $f\colon X\to S$ is the K3 double cover.
+In this section, $S = \Bl_{p_1,\dots,p_{10}}\PP^2$ is the ten-point blowup, $\Pic(S) = \generators{H, E_1,\dots,E_{10}}\cong\latI_{1,10}$ is its Picard lattice with $H^2 = 1$, $E_i^2 = -1$ and $H\cdot E_i = E_i\cdot E_j = 0$ for $i\neq j$, and $f\colon X\to S$ is the K3 double cover.
 :::
 
 ::: {.proposition #prop:canonical-perp-is-e10 title="The canonical complement is the Enriques lattice"}
@@ -133,4 +110,3 @@ By @prop:canonical-perp-is-e10, $K_S = -3H+\Sum_iE_i$, so $H\cdot K_S = -3$.
 By @def:coble-polarization-classes, $h_\Co\in K_S^{\perp}$.
 :::
 
-:::

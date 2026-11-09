@@ -2,32 +2,23 @@
 
 ## How a stable limit is obtained
 
-::: {.remark}
+::: {.proposition #prop:fen2-limits-are-k3-quotients title="Enriques stable limits are quotients of K3 stable limits"}
 
-A KSBA stable limit here is never constructed directly.
-The pair is $(Z, \eps R_Z)$ for an Enriques or Coble surface $Z$ and $0 < \eps \ll 1$, and $Z$ is a quotient of its K3 cover; the stable limits are correspondingly the *quotients of the stable limits of the K3 pairs $(X, \eps R)$ by the involution* [@AEGS25 §7.3].
-So the work happens upstairs, on the K3 side, where Kulikov models and their dual complexes are available (the singular-IAS definition (@def:singular_ias)), and the Enriques or Coble limit is read off by descending along $\ien$.
+Let $(Z, \eps R_Z)$, $0 < \eps \ll 1$, be the pair of a degree-$2$ numerically polarized Enriques surface $Z \in \fentwo$.
+Every KSBA stable limit of such pairs is the quotient of a KSBA stable limit of K3 pairs $(X, \eps R)$, $X \in \fttz$, by an Enriques involution [@AEGS25, §7.3].
 :::
 
-::: {.remark}
+::: {.proposition #prop:fen2-stable-limit-strata title="Boundary strata of $\ksbacpt{\fentwo}$ from folded Coxeter diagrams"}
 
-Which limit one obtains is determined by combinatorics rather than by geometry.
-Over a $0$-cusp the semifan is a generalized Coxeter fan, and its cones are indexed by subdiagrams of the folded Coxeter diagram of that cusp [@AEGS25 §5.1]:
+For $k = 1, \dots, 5$ let $G_k$ be the folded Coxeter diagram of the $0$-cusp $k$ of $\fentwo$.
 
-- a **Type III** limit corresponds to an *elliptic* subdiagram.
-  Each relevant connected component contributes an ADE surface, and the limit is their union glued along the double curves [@AEGS25 §7.1].
+1. The semifan $\semifan{F}_k$ of the $0$-cusp $k$ is the generalized Coxeter semifan (@def:generalized-coxeter-semifan) of $G_k$, with irrelevant roots the foldings of the irrelevant roots of the K3 diagrams [@AEGS25, Def. 5.4 and Lemma 5.5].
 
-- a **Type II** limit corresponds to a *maximal parabolic* subdiagram.
-  After the irrelevant components are discarded, each remaining component is an $\wA\wD\wE$ diagram [@AEGS25 §7.2].
+2. The faces of the Coxeter fan of $G_k$ are of two types: Type II rays, in bijection with the maximal parabolic subdiagrams of $G_k$, and Type III cones, in bijection with the elliptic subdiagrams of $G_k$ [@AEGS25, §5.1].
 
-The irrelevant roots are exactly those the generalized Coxeter semifan collapses, which is why the compactification is toroidal over some cusps and strictly semitoroidal over the rest.
-:::
+3. For a Type III stable limit $Z = X/\ien$ at the $0$-cusp $k$, the largest irreducible components of $X$ and of $Z$ are described by the maximal connected elliptic subdiagrams of the Coxeter diagram at that cusp. Every other irreducible component corresponds to a subdiagram of one of these that is preserved by the folding symmetry, and the components are glued according to the Coxeter diagram [@AEGS25, §7.3].
 
-::: {.remark}
-
-For the Coble locus one further restriction applies, and it is the content of the rest of this chapter.
-A polarized Coble surface corresponds to a point of the Heegner divisor $\delta^{\perp}$ cut out by an admissible root $\delta$ in the Enriques period domain, so its stable limits are those Enriques limits lying over $\delta^{\perp}$.
-Making that precise means restricting the semifan $\semifan{F}_{\ram}$ along $\bD(\delta^{\perp})$, which is the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan), and identifying the resulting singularity type, which is the quarter-singularity conjecture (@conj:coble_quarter_singularity).
+4. The irreducible components of a Type II stable limit are described by the relevant connected components of the maximal parabolic subdiagrams of $G_k$ [@AEGS25, §7.4].
 :::
 
 ## A worked integral affine structure
@@ -46,99 +37,87 @@ $$
 \mcx_0 = \wV_1 \union_E \wV_2 ,
 $$
 two copies of the same $\wD_8$ involution pair glued along the elliptic curves $E \in \abs{-K_{\wV_1}}$ with a twist by $2$-torsion.
+
+The Enriques involution flips the segment $\Gamma(\mcx_0)$, so the Enriques equator is not a subcomplex of $\Gamma(\mcx_0)$ [@AEGS25, Ex. 4.16].
 :::
 
-::: {.warning}
-The Enriques involution *flips* this segment.
-So the Enriques equator is not a subcomplex of $\Gamma(\mcx_0)$, which is what the equivariant-triangulation machinery usually assumes: this ray is one of the cases where that hypothesis has to be dropped [@AEGS25 Ex. 4.16].
-Compare the equivariant-triangulation question (@qst:equivariant_triangulation).
-:::
+## The polarized Coble locus
 
-## The polarized Coble locus and its branches
+::: {.proposition #prop:gamma-co-2-line-stabilizer title="$\Gamma_{\Co, 2}$ is the stabilizer of the Heegner line"}
 
-::: {.remark}
-
-The stable limits below compactify the polarized Coble locus, which we realize inside the moduli space $\fentwo$ of degree-$2$ numerically polarized Enriques surfaces: one takes the Coble Heegner divisor cut out inside $\fentwo$ and normalizes it.
-Because the polarized arithmetic group $\gent$ has finite index in the full Enriques group $\Gamma^K_\En$, a single unpolarized root orbit can split into several polarized orbits.
-Until root-orbit uniqueness is established for $\gent$, the polarized Coble locus is therefore described as the union of the quotients $\bD(\delta^{\perp})/\Stab_{\gent}(\delta)$, one for each orbit of admissible Coble roots, rather than as a single global quotient.
-:::
-
-::: {.remark}
-
-Each branch has its own arithmetic group.
-Fixing an admissible Coble root $\delta$ -- a primitive $(-2)$-vector in the polarized Enriques period lattice -- the group governing the corresponding branch is the image in $\Orth(\delta^\perp)$ of the stabilizer of $\bZ\delta$ inside $\gent$; this is the minimal group making the period-domain inclusion
+Let $\delta \in \ten$ be the $(-2)$ vector of @lem:coble-heegner-vector, so that $\delta^{\perp \ten} = T_\Co$, and let $\Gamma_{\Co, 2} = \Stab_{\Orth(\ten)}(T_\Co)$ as in @sec-moduli-construction.
+Then
 $$
-\bD(\delta^\perp) \injects \bD(\ten)
+\Gamma_{\Co, 2} \;=\; \Stab_{\Orth(\ten)}(\ZZ\delta)
+\;\containing\; \Stab_{\Orth(\ten)}(\delta) ,
 $$
-equivariant.
-Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], this refines the arithmetic group $\Gamma_{\Co, 2}$ of the moduli summary, and the two descriptions agree exactly when the polarized root orbit is unique.
-
-:::
-::: {.remark #rmk:gamma-co-2-two-definitions title="The two definitions of $\Gamma_{\Co, 2}$ agree on lines, not on vectors"}
-
-These notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; @sec-moduli-construction defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
-The bridge $T_\Co \cong \delta^{\perp \ten}$ identifies the two only after restriction to $T_\Co$, because the ambient groups differ: the first lives in $\gent$, which is a proper subgroup of $\Orth(\ten)$, while the second is taken in the full group $\Gamma^K_\En = \Orth(\ten)$.
-The restriction of $\Stab_{\gent}(\ZZ\delta)$ to $T_\Co$ is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en, and its relation to the stable group $\Gamma_\Co$ is @prop:gamma-co-in-heegner-group: it contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$ and is larger by a finite subgroup.
-So the identification of complements settles the line-versus-vector question below and does not by itself identify the two arithmetic groups.
-
-An isometry of $\ten$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so $\Stab(\delta) \iscontainedin \Stab(T_\Co)$.
-Conversely an isometry preserving $T_\Co$ preserves its orthogonal complement in $\ten$, which is the rank-one lattice $\generators{\delta}$, so it sends $\delta \mapsto \pm\delta$.
-Hence
-$$
-\Stab_{\Orth(\ten)}(T_\Co) \;=\; \Stab_{\Orth(\ten)}(\generators{\delta})
-\;\containing\; \Stab_{\Orth(\ten)}(\delta)
-$$
-with index at most $2$, the two differing exactly by whether $-1$ on $\generators{\delta}$ is admitted.
-The stabilizer of the *line* is the right object: it is what acts on the period domain $\bD(\delta^{\perp})$, on which $\pm\delta$ have the same effect.
+and the inclusion has index $2$.
 :::
 
-::: {.question #qst:coble_root_orbit_uniqueness}
+::: {.proof}
 
-Is the orbit of admissible Coble roots under $\gent$ unique, so that the union of branches collapses to a single normalized divisor?
-Two routes to an affirmative answer are available: an arithmetic double-coset computation for the polarized subgroup $\gent$, or a geometric argument that the $D_4$-symmetry of the Horikawa model acts transitively on the torus-fixed-point branches.
+Write $\ten = U \oplus U(2) \oplus E_8(2)$ with $U = \ZZ u \oplus \ZZ w$ as in @lem:coble-heegner-vector, so $\delta = u - w$ and $T_\Co = \ZZ\zeta \oplus U(2) \oplus E_8(2)$ with $\zeta = u + w$.
+A vector $x = au + bw + y$ with $y \in U(2) \oplus E_8(2)$ is orthogonal to $T_\Co$ exactly when $x \cdot \zeta = a + b = 0$ and $y$ is orthogonal to $U(2) \oplus E_8(2)$.
+That lattice is nondegenerate, so $y = 0$ and $x = a\delta$.
+Hence $T_\Co^{\perp \ten} = \ZZ\delta$.
+
+An isometry $g$ of $\ten$ with $g(\ZZ\delta) = \ZZ\delta$ preserves $\delta^{\perp \ten} = T_\Co$.
+Conversely, if $g$ preserves $T_\Co$, then it preserves $T_\Co^{\perp \ten} = \ZZ\delta$.
+So $\Stab_{\Orth(\ten)}(T_\Co) = \Stab_{\Orth(\ten)}(\ZZ\delta)$.
+
+For $g$ in this group, $g(\delta) \in \ZZ\delta$ and $g(\delta)^2 = -2$, so $g(\delta) = \epsilon(g)\,\delta$ with $\epsilon(g) \in \theset{\pm 1}$.
+The map $\epsilon$ is a homomorphism with kernel $\Stab_{\Orth(\ten)}(\delta)$.
+It is surjective, since $-\id_{\ten}$ preserves $\ZZ\delta$ and $\epsilon(-\id_{\ten}) = -1$.
+So the index is $2$.
 :::
 
-::: {.warning}
-The root-orbit uniqueness is Namikawa's [@Nam85], and is stated there modulo the full Enriques group $\Gamma^K_\En$.
-It does not settle the corresponding question for the finite-index subgroup $\gent$, which is what the polarized problem needs.
+::: {.corollary #cor:coble-root-orbit-unique title="The $(-2)$ vectors of $\ten$ form one $\gent$-orbit"}
+
+Let $\delta \in \ten$ be the $(-2)$ vector of @lem:coble-heegner-vector.
+
+1. Every $(-2)$ vector of $\ten$ lies in the $\gent$-orbit of $\delta$.
+
+2. The image in $\fentwo = \bD(\ten)/\gent$ of the union of the hyperplane sections $\bD(\alpha^{\perp})$ over all $(-2)$ vectors $\alpha \in \ten$ equals the image of $\bD(\delta^{\perp})$, and the map $\bD(\delta^{\perp}) \to \fentwo$ factors through $\bD(\delta^{\perp})/\Stab_{\gent}(\ZZ\delta)$.
+:::
+
+::: {.proof}
+
+(1) Let $\alpha \in \ten$ have $\alpha^2 = -2$.
+By @thm:coble-heegner-line-unique there is $g \in \gent$ with $g(\ZZ\delta) = \ZZ\alpha$, so $g(\delta) = \pm\alpha$.
+The isometry $-\id$ of $\lkt$ preserves $\ten$ and $\tdp$, so it lies in $\gent = \Orth(\ten) \intersect \Orth(\tdp)$ (@sec-moduli-construction), and it acts on $\ten$ as $-\id_{\ten}$.
+Replacing $g$ by $-g$ when $g(\delta) = -\alpha$ gives an element of $\gent$ that sends $\delta$ to $\alpha$.
+
+(2) By (1), for each $\alpha$ there is $g \in \gent$ with $g(\bD(\delta^{\perp})) = \bD(\alpha^{\perp})$, so the two hyperplane sections have the same image in the quotient by $\gent$.
+An element of $\Stab_{\gent}(\ZZ\delta)$ preserves $\delta^{\perp}$ and hence $\bD(\delta^{\perp})$, and it identifies points of $\bD(\delta^{\perp})$ that already have the same image in $\fentwo$.
+So the map factors through the quotient by $\Stab_{\gent}(\ZZ\delta)$.
 :::
 
 ## The KSBA stable pair
 
-::: {.remark}
+::: {.theorem #thm:fen2-ksba-pair title="The degree-$2$ Enriques stable pair"}
 
-The ambient degree-$2$ Enriques picture is settled.
-For a degree-$2$ numerically polarized Enriques surface $(Z, [\mcl_Z])$, the ramification divisor $R_Z$ of the associated double cover of a quartic del Pezzo surface is ample, $\QQ$-Cartier, and lies in the polarizing system, so the pair $(Z, \eps R_Z)$ is log canonical for $0 < \eps \ll 1$ and $\fentwo$ admits a KSBA compactification $\ksbacpt{\fentwo}$ [@CDL25; @AEGS25].
-The Coble stable pair is the descent of this picture along the quotient by the Enriques involution $\ien$, which for Coble surfaces is *not* fixed-point free.
+Let $Z$ be an Enriques surface with ADE singularities and $[\mcl_Z] \in \Pic Z/\ZZ_2$ an ample numerical polarization of degree $2$, and put $M = \mcl_Z^{\tensor 2}$.
+The linear system $\abs{M}$ is basepoint free and defines a double cover $\rho \colon Z \to W$ of a quartic del Pezzo surface with $4A_1$ or $A_3 + 2A_1$ singularities.
+The ramification divisor $R_Z \in \abs{M}$ of $\rho$ is ample, and the pair $(Z, \eps R_Z)$ is log canonical for $0 < \eps \ll 1$.
+Hence $\fentwo$ has a compactification $\ksbacpt{\fentwo}$ in the KSBA moduli space of pairs $(Z, \eps R_Z)$ with semi log canonical singularities, $K_Z \equiv 0$ and $R_Z$ an ample $\QQ$-Cartier divisor [@AEGS25, §1].
 :::
 
-::: {.remark}
+::: {.question #qst:coble-stable-pair title="Is the descended Coble pair KSBA stable?"}
 
-The intended KSBA boundary object is a pair
+Let $\bar S$ be the stable quotient surface and $R_{\bar S}$ the descended ramification divisor, and consider the pair
 $$
-(\bar S, \eps R_{\bar S}), \qquad 0 < \eps \ll 1,
+(\bar S, \eps R_{\bar S}), \qquad 0 < \eps \ll 1 .
 $$
-where $\bar S$ is the stable quotient surface and $R_{\bar S}$ is the descended ramification divisor.
-The divisor is identified; establishing that this pair is KSBA stable remains a research program with the following open obligations:
-
-- that $R_{\bar S}$ is $\QQ$-Cartier;
-
-- that $R_{\bar S}$ is ample -- expected to follow by descending the ample ramification divisor from the K3 cover, that is, by pulling back $K_{\bar S} + \eps R_{\bar S}$ to $\eps R_X$ with $R_X$ coming from the $(2,2)$-divisor on $Y = \PP^1 \times \PP^1$, rather than by asserting stability of the quotient directly;
-
-- that $(\bar S, \eps R_{\bar S})$ is slc, for which one proposed route runs through the du Val singularities on the K3 cover and a finite quasi-étale quotient in codimension one;
-
-- and a controlled account of how the anti-bicanonical $(-4)$-curve is seen on the smooth resolution versus on the stable model.
+Is $R_{\bar S}$ $\QQ$-Cartier and ample, and is $(\bar S, \eps R_{\bar S})$ slc?
+For ampleness, one route descends the ample ramification divisor from the K3 cover: $K_{\bar S} + \eps R_{\bar S}$ pulls back to $\eps R_X$, with $R_X$ coming from the $(2,2)$-divisor on $Y = \PP^1 \times \PP^1$.
+For the slc condition, one route runs through the du Val singularities on the K3 cover and a finite quotient that is quasi-étale in codimension one.
+How does the anti-bicanonical $(-4)$-curve of the smooth Coble resolution appear on $\bar S$?
 :::
 
 ::: {.conjecture #conj:coble_quarter_singularity}
 
 On the stable quotient $\bar S$, an $A_1$-node of the K3 cover fixed by $\ien$ descends to a cyclic quotient singularity of type $\frac{1}{4}(1,1)$, and the anti-bicanonical $(-4)$-curve on the smooth Coble resolution is the curve contracted to this point.
 In the Horikawa model on $Y = \PP^1 \times \PP^1$ with $\tau(x,y) = (-x,-y)$ [@Hor77], the local input producing the $A_1$-node on the double cover is a $\tau$-invariant $(4,4)$-curve passing through a $\tau$-fixed point with nondegenerate quadratic term.
-:::
-
-::: {.remark}
-
-The local singularity data of the quarter-singularity conjecture (@conj:coble_quarter_singularity) is central to the program but remains unproved; it is precisely the input awaited by the slc and ampleness verifications above.
 :::
 
 ## The restricted ramification semifan
@@ -149,17 +128,7 @@ The semitoroidal model of the polarized Coble locus is obtained by restricting t
 Under this restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant.
 :::
 
-::: {.remark}
-
-Proving that this restriction defines the semitoroidal fan requires showing that no extra roots appear after restriction, that no essential Enriques wall collapses or restricts trivially, and that running Vinberg's algorithm on the restricted lattice is not conflated with a proof of the fan itself.
-:::
-
 ## Comparison with the KSBA compactification
-
-::: {.remark}
-
-The KSBA stable limits sit inside the K3 stable-pair family of the degree-$(2,2,0)$ problem via the Baily--Borel embedding lemma (@lem:locally_closed_embedding_BB). The proposed comparison proceeds by restricting the universal K3 stable-pair family over $\fttz$ to the Coble Noether-Lefschetz locus $\bD(r^\perp)$, extending the Enriques involution over the stable limits by uniqueness of KSBA limits, descending the ramification divisor, and matching the induced boundary stratification against the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan).
-:::
 
 ::: {.conjecture #conj:ksba_semitoroidal_comparison}
 
@@ -172,35 +141,34 @@ The stable quotient determines its marked Coble root: the $\frac{1}{4}(1,1)$ sin
 Without this injectivity the restricted semifan would be too fine for the actual KSBA boundary, and the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) would fail.
 :::
 
-::: {.remark}
-
-The KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) remains open on three counts: root-orbit uniqueness (the root-orbit uniqueness question (@qst:coble_root_orbit_uniqueness)), the ramification-semifan restriction identity (the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan)), and the no-moduli-loss conjecture (@conj:no_moduli_loss).
-:::
-
-::: {.remark}
-
-A second semitoroidal model of the *unpolarized* Coble period domain is available and is not an input to any of the four: the GIT compactification of the moduli of ten-nodal sextics is a Looijenga compactification (the GIT--Looijenga theorem (@thm:git-equals-looijenga)), whose semifan is determined by an arrangement of hyperplanes rather than by degenerations of stable pairs.
-Its semifan and the restricted ramification semifan of the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan) are computed from unrelated data, so neither determines the other.
-:::
-
 ## Boundary cusp data
 
-::: {.remark}
+::: {.proposition #prop:coble-isotropic-even-in-ten title="Isotropic vectors of $T_\Co$ have even divisibility in $\ten$"}
 
-The boundary is organized by cusp pairs marked with a Coble root.
-A $0$-cusp is modeled by an orbit of a pair $(I, r)$ consisting of an isotropic line $I$ and a compatible Coble root $r$, and a $1$-cusp by an orbit of a pair $(J, r)$ consisting of an isotropic plane $J$ and the same root, with incidence recorded by the containment $I \subset J$ preserving $r$.
-A root $r$ is *admissible* at a cusp when it lifts to a primitive $(-2)$-root of the ambient Enriques lattice lying in the designated Coble orbit; this is the datum that promotes plain Enriques cusp data to polarized Coble cusp data, and it must be preserved along the incidence $I \subset J$.
+Let $\eta \colon T_\Co \injects \ten$ be the primitive embedding of @lem:primitive_embedding_eta.
+For every isotropic $e \in T_\Co$, every value $\eta(e) \cdot x$ with $x \in \ten$ is even.
+Hence, for $e$ primitive and nonzero, $\div_{\ten}(\eta(e))$ is even, and the line $\ZZ\eta(e)$ lies in the $0$-cusp $(10,8,0)_1$ of $F^K_{\En}$.
+:::
+
+::: {.proof}
+
+By @cor:eta-is-heegner-complement, $\eta(T_\Co) = \ZZ\zeta \oplus U(2) \oplus E_8(2)$ inside $\ten = U \oplus U(2) \oplus E_8(2)$, with $U = \ZZ u \oplus \ZZ w$ and $\zeta = u + w$.
+Write $\eta(e) = a\zeta + y$ with $a \in \ZZ$ and $y \in U(2) \oplus E_8(2) = E_{10}(2)$.
+The lattice $E_{10}$ is even, so $y^2 \in 4\ZZ$.
+From $0 = \eta(e)^2 = 2a^2 + y^2$ it follows that $a^2$ is even, so $a$ is even.
+Now $\eta(e) \cdot u = \eta(e) \cdot w = a$, and $\eta(e) \cdot z = y \cdot z \in 2\ZZ$ for $z \in E_{10}(2)$.
+These vectors span $\ten$, so every value $\eta(e) \cdot x$ is even.
+
+For $e$ primitive and nonzero, $\eta(e)$ is primitive and isotropic in $\ten$, and its divisibility is even.
+The two $0$-cusps of $F^K_{\En}$ are distinguished by the divisibility $1$ or $2$ of a primitive isotropic vector [@AEGS25, §3.2].
+By @thm:cusp_correspondence the vector $\eta(v_1)$ has divisibility $2$ and boundary lattice $(10,8,0)_1$.
+So the divisibility-two $0$-cusp is $(10,8,0)_1$, and $\ZZ\eta(e)$ lies in it.
 :::
 
 ::: {.question #qst:coble_cusp_admissibility}
 
-What is the precise admissibility test for Coble roots at a cusp, formulated against the folded K3-to-Enriques Coxeter data?
+Model a $0$-cusp marked with a Coble root as an orbit of pairs $(I, r)$, with $I$ a primitive isotropic line and $r$ a Coble root compatible with $I$, and a marked $1$-cusp as an orbit of pairs $(J, r)$ with $J$ a primitive isotropic plane; $(I, r)$ is incident to $(J, r)$ when $I \subset J$.
+Admissibility requires at least that $r$ lifts to a $(-2)$ vector of $\ten$, and by @cor:coble-root-orbit-unique every such vector lies in the $\gent$-orbit of the Coble root.
+What is the precise admissibility test for Coble roots at a cusp, formulated against the folded K3-to-Enriques Coxeter data, and is it preserved along each incidence $I \subset J$?
 Sterk cusps $3$ and $5$ are the delicate cases where additional reflection data may intervene.
-:::
-
-::: {.remark}
-
-Any actual cusp count must reduce to explicit lattice-orbit work -- through Sterk's representatives (five $0$-cusps and nine $1$-cusps for the Enriques space [@Ste91]) together with their stabilizers, or direct period-domain enumeration -- and discriminant-form shortcuts suggest candidates but do not by themselves prove the cusp diagram.
-One durable exclusion is nonetheless available: since primitive isotropic vectors of $T_\Co$ pair evenly in the ambient Enriques lattice, they have divisibility $2$ (the divisibility lemma (@lem:divisibilityAlwaysTwoTco)), so the divisibility-one Sterk cusp $1$ does not occur on the polarized Coble boundary and only the divisibility-two Sterk cusps $2$--$5$ are in play.
-This is consistent with the cusp-correspondence theorem (@thm:cusp_correspondence), under which the unique Coble $0$-cusp corresponds to a divisibility-two Enriques cusp.
 :::

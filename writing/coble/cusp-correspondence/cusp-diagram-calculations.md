@@ -27,7 +27,6 @@ v_0^{\perp T_{\Co}}/\generators{v_0} \cong (9,9,1)_1 \cong \generators{2} \oplus
 $$
 
 The group $\Gamma_\Co$ is not transitive on the primitive isotropic vectors (@lem:stable-orthogonal-not-transitive); it has $527$ orbits of them, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
-The cusp diagram below is the one attached to $v_0$.
 This $0$-cusp $v_0$ is incident to one $\Orth^+(T_\Co)$-orbit of $1$-cusps, represented by an isotropic plane $J = \generators{v_0, v_1}$ with
 
 $$
@@ -45,7 +44,7 @@ In the diagrammatic language of [@AE22 Fig. 1, Thm. 5.10], this corresponds to a
 The mirror moves for $S_{\Co} = (11,11,1)_1$.
 :::
 
-The $0$-cusp $v_0$ corresponds to a Type $\rm{III}$ boundary, and $C_0$ to a type $\rm{II}$ boundary.
+The $0$-cusp $v_0$ corresponds to a Type $\rm{III}$ boundary, and the $1$-cusp $J$ to a Type $\rm{II}$ boundary.
 By [@AE22, §5] such isotropic vectors are unique up to $\Orth(T_\Co)$, with representatives
 
 - $v_0 = e'$,
@@ -54,11 +53,6 @@ By [@AE22, §5] such isotropic vectors are unique up to $\Orth(T_\Co)$, with rep
 
 Then $v_0^2 = v_1^2 = 0$, $v_1 \in v_0^{\perp T_{\Co}}/\generators{v_0}$ and $v_0v_1 = 0$, so $J \definedas \generators{v_0, v_1}$ is an isotropic plane.
 Write $\div_{T_{\Co}}(v_0, v_1) \definedas \bigl(\div_{T_{\Co}}(v_0), \div_{T_{\Co}}(v_1)\bigr)$; then $\div_{T_{\Co}}(v_0, v_1) = (2, 2)$.
-
-By [@CDL25 Prop. 5.4.6], there is a locally closed immersion $\fco \injects \mch_{-2}/\Gamma_\En \subset \fen$ whose image is open in the Heegner divisor $H_{-2}$, realizing $\fco$ as the coarse space of marked Coble surfaces with $n=1$, where $n$ is the number of boundary components in $C = C_1 + \cdots + C_n$.
-The image is an open subset of a closed irreducible subset of $\mch_{-2}/\Gamma_\En$.
-By [@CDL25 Thm. 5.8.2], the coarse space of $\fco$ is a rational variety, and since $\fen$ is quasiprojective, so too is $\fco$.
-Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two modular curves $X$ and $X_0(2)$ by [@CDL25 Thm. 5.9.8], and the closure of $\mch_{-2}$ contains the modular curve $X$.
 
 ::: {.example #ex:coble-cusp-divisibilities title="Divisibilities of $v_0$ and $v_1$"}
 
@@ -70,7 +64,7 @@ Moreover, $\partial \overline{\fen}^{\mathrm{BB}}$ consists of $\fco$ and two mo
 
 : Images of the isotropic vectors of $T_{\Co}$ and their divisibilities. {#tbl-coble-cusp-divisibilities}
 
-The divisibilities in $\tdp$ can be seen as follows: the image of $v_0$ in $\tdp$ is $e'\in U(2)$ and $e'f' = 2$, while $\div_{\tdp}(v_1) = 1$ follows from the fact that $v_1\alpha_3 = 1$.
+In $\tdp$ the image of $v_0$ is $e'\in U(2)$ and $e'f' = 2$, so $\div_{\tdp}(v_0) = 2$. Since $v_1\alpha_3 = 1$, $\div_{\tdp}(v_1) = 1$.
 :::
 
 ::: {.example #ex:coble-cusp-parabolic title="The maximal parabolic subdiagram at $v_0$"}

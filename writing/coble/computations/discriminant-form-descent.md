@@ -17,7 +17,6 @@ notes: |-
 # Discriminant-form descent {#sec-discriminant-descent}
 
 A counting problem about primitive isotropic vectors of an indefinite lattice is often attacked by passing to the discriminant group, where the set of classes is finite and the isometries act through the representation $\rho_{L,q}$.
-This page states the mechanism, the hypotheses under which it holds, and the cases in the tree where it was tried and did not hold, each with the record that shows it.
 
 ## The mechanism {#sec-descent-mechanism}
 
@@ -50,7 +49,7 @@ An isometry preserves $\beta$, hence $\div_L(gv) = \div_L(v)$, and it passes to 
 
 Define the attained subset
 $$ \mathcal C_{\mathrm{prim}}(L) \definedas \theset{[v/\div_L(v)]\in\mathcal C(L)\st v\in L^{\mathrm{prim}}[0]}. $$
-Then the class is an invariant of the orbit, and attained $\Gamma\leq\Orth(L)$-orbits map onto the corresponding $\rho_{L,q}(\Gamma)$-orbits inside $\mathcal C_{\mathrm{prim}}(L)$. This is not an assertion that every isotropic class lifts. Surjectivity to $\mathcal C(L)$ requires a separate lift theorem; the general fibre theorem below is stated only for a fixed integral orbit and its attained data.
+By @lem:descent-well-defined the class is an invariant of the orbit, and the $\Gamma$-orbits of primitive isotropic vectors, for $\Gamma\leq\Orth(L)$, map onto the $\rho_{L,q}(\Gamma)$-orbits in $\mathcal C_{\mathrm{prim}}(L)$.
 
 ## The integral orbit-fibre formula {#sec-descent-fibre}
 
@@ -63,9 +62,7 @@ For a flag $x=(X_1\subsetneq\cdots\subsetneq X_r)$ of primitive isotropic sublat
   $$ \Stab_Q(D(v))\leq\Stab_Q(D(X)). $$
   Outside the two-torsion case the larger group typically also contains automorphisms sending $D(v)$ to $-D(v)$; for example, when $A_L$ has an element of order three represented by $c$, multiplication by $-1$ stabilizes $\langle c\rangle$ but not $c$;
 - for a plane, $D(P)$ is the isotropic subgroup displayed above and need not be cyclic;
-- for a flag, $D(x)$ is the chain of those discriminant subgroups, again with the stabilizer of the chain. No plane or flag datum is assumed cyclic.
-
-The integral object must be fixed before any finite quotient is taken, and the exponent-two examples are not used in the general formulas.
+- for a flag, $D(x)$ is the chain of those discriminant subgroups, again with the stabilizer of the chain.
 
 ::: {.lemma #lem:descent-subobject-data title="The subobject data are well defined and equivariant"}
 For every primitive isotropic sublattice $X\leq L$, the subgroup $D(X)$ is isotropic. If $X=\ZZ v$ is primitive, then
@@ -95,7 +92,7 @@ $$ (q^{-1}Hq\cap F)\bigl\backslash F\bigl/S. $$
 :::
 
 ::: {.proof}
-Let $y\in\mathcal F_{\mathcal X}(D)$. Since $\mathcal X$ is one $\Orth(L)$-orbit, some $g\in\Orth(L)$ satisfies $gx=y$. Equivariance gives $\rho_{L,q}(g)D=D$, hence $g\in\mathcal G_D$. Therefore $\mathcal G_D$ acts transitively on the fibre. The distinction between the whole class $\{y:D(y)=D\}$ and $\mathcal F_{\mathcal X}(D)$ matters when the full integral group has several orbits: every formula here is for a fixed $\mathcal X$, not silently for all primitive objects.
+Let $y\in\mathcal F_{\mathcal X}(D)$. Since $\mathcal X$ is one $\Orth(L)$-orbit, some $g\in\Orth(L)$ satisfies $gx=y$. Equivariance gives $\rho_{L,q}(g)D=D$, hence $g\in\mathcal G_D$. Therefore $\mathcal G_D$ acts transitively on the fibre.
 
 For $\Gamma$, the left action of $\Gamma\cap\mathcal G_D$ on the fibre has stabilizer $\mathcal G_D(x)$ on the right, so its orbits are the displayed double cosets. If $K\subseteq\Gamma$, reduction modulo $K$ is faithful on these double cosets: the group $\mathcal G_D$ is $\rho^{-1}(F)$, $\Gamma\cap\mathcal G_D$ is $\rho^{-1}(H\cap F)$, and $\mathcal G_D(x)$ maps to $S$. Conjugation by $\widetilde q$ identifies the new fibre with the old one and replaces $H$ by $q^{-1}Hq$; the order of a double-coset family is therefore independent of the chosen representative and lift.
 :::
@@ -104,7 +101,7 @@ For $\Gamma$, the left action of $\Gamma\cap\mathcal G_D$ on the fibre has stabi
 With $\mathcal X$ as above, let $\mathcal R$ be a set of representatives of the $H=\rho_{L,q}(\Gamma)$-orbits on the finite data attained by $\mathcal X$. If $K\subseteq\Gamma$, the total number of $\Gamma$-orbits in $\mathcal X$ is the sum over $D\in\mathcal R$ of the double-coset counts in @thm:descent-double-coset. No surjectivity assumption on $\rho_{L,q}(\Gamma)$ is used. Surjectivity of $\rho_{L,q}$ on $\Orth(L)$ is used only to choose an integral lift of any desired $q\in Q$.
 :::
 
-The two input groups are genuinely different: $F$ stabilizes a finite datum, whereas $S$ is the image of the actual integral stabilizer of the chosen object. Replacing $S$ by $F$ silently asserts a lifting theorem. Independent computations of $|F|$ and of a native quotient group do not supply it.
+Here $S\leq F$, because $\Stab_{\Orth(L)}(x)$ preserves $D(x)$ by @lem:descent-subobject-data; the fibre over $D$ is one $\Gamma$-orbit exactly when $(H\cap F)S=F$.
 
 ## Spinor restriction {#sec-descent-spinor}
 
@@ -117,24 +114,20 @@ If $K=\ker\rho_{L,q}\subseteq\Gamma^+$, these reduce to $(H^+\cap F)\backslash F
 :::
 
 ::: {.proof}
-For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$; this still says nothing about another $\Gamma$-orbit within the same $\mathcal G_D$-fibre. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
+For $y=gx$ with $g\in\Gamma$, if $g\notin\Orth^+(L)$ and $\tau\in\Stab_{\mathcal G_D\cap\Gamma}(x)$ is spinor-negative, then $g\tau\in\Gamma^+$ also takes $x$ to $y$ (the product $g\tau$ has positive spinor norm). Conjugation by the same $g$ keeps $\Gamma$ stable, so the hypothesis at $x$ gives the required witness at every point of $\mathcal O$. If the hypothesis holds at a representative of every $\Gamma$-orbit, every $\Gamma$-orbit in the fibre remains one $\Gamma^+$-orbit.
 
 The displayed formula is @thm:descent-double-coset applied with $\Gamma^+$ substituted for $\Gamma$. Only when $K\subseteq\Gamma^+$ does its final reduction modulo $K$ apply; replacing $H$ by $H^+$ without this containment would discard the $\Gamma^+$-ineffective double cosets.
 :::
 
-## Flags: why containment is not enough {#sec-descent-flags}
+## Flags {#sec-descent-flags}
 
 Apply @thm:descent-double-coset to the full flag $x=(P,L)$ with $L\subset P$. Set $J=D(P)$ and $C=D(L)$, both as isotropic subgroups of $A_L$, and
 $$ F_{J,C}=\Stab_Q(J)\cap\Stab_Q(C). $$
 Then the flags over $(J,C)$ are governed by
 $$ (\Gamma\cap\rho^{-1}(F_{J,C}))\bigl\backslash\rho^{-1}(F_{J,C})\bigr/\Stab_{\rho^{-1}(F_{J,C})}(P,L). $$
-If $K\subseteq\Gamma$, this reduces to the corresponding double coset with $H\cap F_{J,C}$ on the left and $\rho(\Stab_{\Orth(L)}(P)\cap\Stab_{\Orth(L)}(L))$ on the right. A table saying only that $C$ is contained in $J$ proves containment. The extra mathematical content is transitivity of the integral plane stabilizer on the primitive lines in a fixed discriminant subgroup; that supplies the flag-fibre alignment while the plane is held fixed.
+If $K\subseteq\Gamma$, this reduces to the corresponding double coset with $H\cap F_{J,C}$ on the left and $\rho(\Stab_{\Orth(L)}(P)\cap\Stab_{\Orth(L)}(L))$ on the right.
 
 ## Forgetting a flag, and the incidence bijections {#sec-descent-forget}
-
-The object families of @sec-descent-fibre are not independent: a flag has a line and a plane, and both forgetting maps carry discriminant data to discriminant data.
-But a group that moves discriminant data does not preserve the set of flags of a *fixed* datum, so the fibres over a datum are acted on only by the subgroup that stabilizes the datum.
-This section fixes that group, proves the bijections over it, and then states the incidence criterion in the same form.
 
 ::: {.lemma #lem:flag-datum-compatibility title="The datum of a flag is the chain of the data of its components"}
 
@@ -176,9 +169,9 @@ and write
 $$ \Phi(C,J)\definedas\theset{\text{primitive isotropic flags }(\ell\subset P)\st D(\ell)=C,\ D(P)=J}, $$
 $$ \Sigma_2(J)\definedas\theset{\text{primitive isotropic planes }P\st D(P)=J},\qquad
    \Sigma_1(C)\definedas\theset{\text{primitive isotropic lines }\ell\st D(\ell)=C} $$
-for the flags of datum $(C,J)$, the planes of datum $J$ and the lines of datum $C$, taken over *all* objects of the indicated ranks with that datum and not only over those in a chosen full orbit; the full-orbit statements are those of @lem:flag-datum-compatibility and are separate.
-Then $\Gamma_{(C,J)}$ acts on each of these three sets, and for $\Gamma$ itself the three conditions separate: if $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(C)$ then $\Gamma$ preserves $\Sigma_1(C)$; if $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(J)$ then $\Gamma$ preserves $\Sigma_2(J)$; and if $\rho_{L,q}(\Gamma)\subseteq F_{C,J}$ then $\Gamma$ preserves all three, in particular $\Phi(C,J)$.
-Each of these implications is an implication, not an equivalence: the condition is necessary as well only when the set in question is nonempty, and then an object of the set exhibits it.
+for the flags of datum $(C,J)$, the planes of datum $J$ and the lines of datum $C$, taken over *all* objects of the indicated ranks with that datum.
+Then $\Gamma_{(C,J)}$ acts on each of these three sets, and for $\Gamma$ itself: if $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(C)$ then $\Gamma$ preserves $\Sigma_1(C)$; if $\rho_{L,q}(\Gamma)\subseteq\Stab_Q(J)$ then $\Gamma$ preserves $\Sigma_2(J)$; and if $\rho_{L,q}(\Gamma)\subseteq F_{C,J}$ then $\Gamma$ preserves all three, in particular $\Phi(C,J)$.
+When the set in question is nonempty, each of these conditions is also necessary.
 Moreover the forgetting maps of @lem:flag-datum-compatibility restrict to $\Gamma_{(C,J)}$-equivariant maps
 $$ \Phi(C,J)\longrightarrow\Sigma_1(C),\qquad \Phi(C,J)\longrightarrow\Sigma_2(J), $$
 surjective onto their images; the first has image all of $\Sigma_1(C)$ exactly when every primitive isotropic line of datum $C$ occurs as the line component of a flag of datum $(C,J)$, which is an incidence statement, and dually for planes.
@@ -193,7 +186,6 @@ The same two identities give the action on $\Sigma_2(J)$ and on $\Sigma_1(C)$.
 For the separate conditions: by @lem:flag-datum-compatibility an element $g\in\Gamma$ carries a line of datum $C'$ to a line of datum $\rho_{L,q}(g)(C')$, a plane of datum $J'$ to a plane of datum $\rho_{L,q}(g)(J')$, and a flag of datum $(C',J')$ to a flag of datum $\qty(\rho_{L,q}(g)(C'),\rho_{L,q}(g)(J'))$.
 So $\rho_{L,q}(g)$ stabilizing $C$ preserves $\Sigma_1(C)$, stabilizing $J$ preserves $\Sigma_2(J)$, and stabilizing both preserves $\Phi(C,J)$; that gives the three sufficient conditions.
 For the necessity under nonemptiness, let $\ell\in\Sigma_1(C)$; then $g\ell\in\Sigma_1(C)$ forces $\rho_{L,q}(g)(C)=D(g\ell)=C$, so $\rho_{L,q}(\Gamma)$ fixes $C$; the same argument with a plane in $\Sigma_2(J)$ gives the condition for $J$; and a flag in $\Phi(C,J)$ gives both at once.
-If the set is empty the implications are vacuous and no necessity is asserted.
 
 For the restriction statement: by @lem:flag-datum-compatibility the forgetting maps commute with the datum and are $\Orth(L)$-equivariant, hence $\Gamma_{(C,J)}$-equivariant, and they carry $\Phi(C,J)$ into $\Sigma_1(C)$ and into $\Sigma_2(J)$ respectively.
 :::
@@ -297,53 +289,44 @@ Take $C'=D(h\ell_0)$.
 *Item 2.*
 Let $\ell\subset P_0$ satisfy $D(\ell)=C'\in\bar C$; by definition of $\bar C$ there is $h\in\Gamma$ with $C'=\rho_{L,q}(h)(C)$, so $D(h^{-1}\ell)=\rho_{L,q}(h)^{-1}(C')=C$.
 The lines $h^{-1}\ell$ and $\ell_0$ have the same datum $C$, so by the hypothesis there is $g\in\Gamma$ with $g(h^{-1}\ell)=\ell_0$, hence $\ell=hg^{-1}\ell_0$ lies in $\mathcal L$ and is contained in $P_0$.
-The hypothesis is an equivalence condition inside the slice of a fixed datum, not an action of $\Gamma$ on that slice: it says only that lines of equal datum are $\Gamma$-equivalent, which is what the argument uses.
 
 *Item 3.*
 That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisibility one for a primitive isotropic line.
 :::
 
-The double-coset formula of @thm:descent-double-coset for a flag needs the flag stabilizer image $S_{C,J}=\rho_{L,q}\qty(\Stab_{\Orth(L)}(P)\intersect\Stab_{\Orth(L)}(\ell))$ itself; by @lem:stabilizer-image-intersection it is in general a proper subgroup of $\rho_{L,q}(\Stab_{\Orth(L)}(P))\intersect\rho_{L,q}(\Stab_{\Orth(L)}(\ell))$, and substituting that intersection is the flag-level form of replacing the integral $S$ by the finite stabilizer $F$, which @sec-descent-fibre already rejects for the plane.
-Item 2 of @prop:flag-incidence-bijection is the alternative: the flag orbits over a fixed chain are read off from a stabilizer of a representative plane, at the cost of assembling over the plane orbits of $\Gamma_{(C,J)}$ rather than of $\Gamma$, and @prop:line-plane-incidence reduces the incidence question to two integral statements about a plane, in data-orbit form.
+## The descent inputs at $T_\En$ and at $T_\Co$ {#sec-descent-hypotheses}
 
-## The application hypotheses, and their owners {#sec-descent-hypotheses}
+::: {.proposition #prop:descent-inputs-enriques-coble title="The stabilizer images and spinor witnesses at $T_\En$ and at $T_\Co$"}
 
-@thm:descent-double-coset needs the even lattice, the coefficient group $Q=\rho_{L,q}(\Orth(L))$, the kernel containment $\ker\rho_{L,q}\subseteq\Gamma$, and the integral stabilizer image $S=\rho_{L,q}(\Stab_{\Orth(L)}(x))$ of the object at hand.
-@prop:descent-spinor-fibre needs a spinor-negative element of $\Stab_{\mathcal G_D\cap\Gamma}(x)$.
-@prop:flag-incidence-bijection needs, over a fixed chain, the groups $\Gamma_{(C,J)}$ and $\Gamma_{P,C}$ of @lem:chain-stabilizer and item 2.
-@prop:line-plane-incidence needs, for a pair of orbits, the two implications of its items 1 and 2 in data-orbit form.
-Every row below is an integral statement; none is a finite model, and the two families supply the inputs in two different shapes.
+1. Let $L=T_\En$ of @sec-lattices, $\Gamma=\Gamma_{\En,2}=\rho^{-1}(M)$ and $\Gamma^+=\Gamma\intersect\Orth^+(L)$. Then $Q=\Orth(A_L,q_L)$, $\ker\rho\subseteq\Gamma$, and:
+   a. for a primitive isotropic line $\ell=\ZZ v$, $S=\rho(\Stab_{\Orth(L)}(\ell))=\Stab_Q(D(\ell))$;
+   b. for every primitive isotropic plane $P$, $S=\rho(\Stab_{\Orth(L)}(P))=F=\Stab_Q(D(P))$, so the planes over each $M$-orbit of discriminant images form one $\Gamma$-orbit;
+   c. $\Gamma$ and $\Gamma^+$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags;
+   d. the divisibility-one line orbit is incident exactly to the four plane orbits of [@Ste91, §4.3.16], although $0\subseteq D(P)$ for all nine plane orbits.
+2. Let $L=T_\Co=B(2)$ with $B=U_1\perp U_2\perp\generators{-1}^{7}$, $\Gamma=\ker\rho$ and $\Gamma^+=\Gamma_\Co=\ker\rho\intersect\Orth^+(B)$. Then $Q=\Orth(q)$, and:
+   a. $\rho(\Gamma_\Co)=1$, so $\Gamma_{(C,J)}=\Gamma_\Co$ for every chain $(C,J)$ of @lem:chain-stabilizer;
+   b. for the standard plane $P=\generators{e_1,e_2}$ with $J=D(P)$, $[F:S]=8$, so the planes over $J$ form eight $\ker\rho$-orbits;
+   c. $\ker\rho$ and $\Gamma_\Co$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags;
+   d. for each $\Gamma_\Co$-orbit of planes over $J$ and each nonzero $c\in J$, there is exactly one $\Gamma_\Co$-orbit of flags $(\ell\subset P')$ with $P'$ in that orbit and $D(\ell)=\generators{c}$.
+:::
 
-**The shape of the spinor step.**
-@thm:descent-double-coset is applied at a group containing $\ker\rho_{L,q}$.
-When the group of interest is $\Gamma^+=\Gamma\intersect\Orth^+(L)$ with $\ker\rho_{L,q}\not\subseteq\Gamma^+$, the kernel containment is *not* a hypothesis of $\Gamma^+$: the theorem is applied at $\Gamma$, which contains the kernel, and @prop:descent-spinor-fibre descends to $\Gamma^+$ afterwards, which is legitimate exactly when each relevant stabilizer contains a spinor-negative element.
-At the Coble family this is the case at $\Gamma=\ker\rho$ with $\Gamma^+=\Gamma_\Co$, since $\Gamma_\Co=\ker\rho\intersect\Orth^+(B)$ does not contain $\ker\rho$.
+::: {.proof}
 
-**Enriques degree two**, $L=T_\En$ even of signature $(2,10)$, $\Gamma_{\En,2}=\rho^{-1}(M)$, so $\bar\rho=M$; this group *moves* discriminant data, and the data-orbit form of @prop:line-plane-incidence is the applicable one.
-Lines: $S=\Stab_Q(c)$ exactly, by @lem:line-stabilizer-image, whose integral inputs are $K\subseteq\gent$ (@prop:gamma-en-two-index) and the surjectivity of @thm:two-elementary-surjectivity; at divisibility two the lift is Sterk's congruence step, and each fibre of lines over an $M$-orbit of classes is a single $\gent$-orbit.
-Planes: $S=F$ for both plane classes, by @thm:enriques-integral-plane-stabilizers, which supplies the integral reflection lifts, the gluing $A_Q\to D^\perp/D$ and the kernel of order $49152$; its positive-spinor restriction carries its own witnesses.
-Spinor: $\sigma_U$ and $\tau$ of @thm:enriques-spinor-orbit-agreement are spinor-negative elements of $\ker\rho$ fixing the line and plane representatives, @thm:enriques-flag-witnesses supplies such an element in each flag stabilizer, and the conjugates reach every object by normality of $\ker\rho$; so @prop:descent-spinor-fibre applies at every line, plane and flag, and $\Gamma_{\En,2}$ and $\Gamma_{\En,2}^+$ have the same orbits on the three families.
-Incidence: item 1 of @prop:line-plane-incidence is necessary here in its data-orbit form, because $M$ moves the classes; item 2 needs its equivalence condition — any two primitive isotropic lines with the same datum are $\gent$-equivalent — which is exactly what the fibre statement of @thm:sterk-line-fibres gives, since each fibre of lines over an $M$-orbit of classes is a single $\gent$-orbit and two lines of one class lie in one fibre; and it needs the realization statement, which that theorem states with the zero class separated from the nonzero ones:
-every *nonzero* class $d$ of the image $D$ is the class of a primitive combination $av+bw$ of divisibility two — the three nonzero classes of the $(\ZZ/2)^2$ realized by $(1,0),(0,1),(1,1)$ — while the zero class is realized only by a divisibility-one vector, which occurs exactly when a combination has odd pairing, that is precisely for the four $4.3.16$ planes.
-By @lem:zero-datum-divisibility the zero line datum is exactly the divisibility-one condition, and the containment $0\subseteq D(P)$, true for every plane and in particular for the five $4.3.17$ planes, does not supply it.
-With those inputs the incidence of the nine plane orbits with the five line orbits is: the line orbits whose classes lie in the $M$-orbit of the nonzero classes of the plane's image, together with the divisibility-one line orbit exactly for the four planes that contain a divisibility-one vector — the incidence computed in @thm:sterk-line-fibres, with zero and nonzero kept apart.
-Flags are not needed for the boundary strata of $\bD(T_\En)$, which are the lines and the planes; where a flag statement is wanted, item 2 of @prop:flag-incidence-bijection applies, and the flag stabilizer image $S_{C,J}$ is not computed on this page and is not claimed.
+Part 1. The group $Q$ is $\Orth(A_L,q_L)$ by @thm:two-elementary-surjectivity, and $\ker\rho\subseteq\Gamma$ is @prop:gamma-en-two-index.
+Item a is @lem:line-stabilizer-image; since $A_L$ has exponent two, the stabilizer of a class $c$ is the stabilizer of the subgroup $\generators{c}$.
+Item b is @thm:enriques-integral-plane-stabilizers, and the orbit statement is then @thm:descent-double-coset with $(H\cap F)\backslash F/S=(H\cap F)\backslash F/F$, one double coset.
+Item c is @thm:enriques-spinor-orbit-agreement.
+Item d is item 3 of @thm:enriques-degree-two-arithmetic together with @lem:zero-datum-divisibility: by @thm:sterk-line-fibres the line orbit of type $1$ is the divisibility-one orbit, and the four §4.3.16 planes contain a vector of divisibility one while the five §4.3.17 planes do not.
 
-**Coble**, the lattice $T_\Co$ of @sec-lattices with the odd unimodular model $B=U\perp U\perp\generators{-1}^{7}$ of rank $11$ (so $T_\Co=B(2)$ and $A_{T_\Co}\cong B/2B$), and $\Gamma_\Co=\ker\rho\intersect\Orth^+(B)$, whose discriminant image is trivial.
-The theorem is applied at $\Gamma=\ker\rho$, for which the kernel containment is immediate, and the spinor step then gives $\Gamma_\Co$; no kernel containment is attributed to $\Gamma_\Co$.
-Because $\rho_{L,q}(\Gamma_\Co)=1$, every datum is fixed by $\Gamma_\Co$: here $\Gamma_{(C,J)}=\Gamma_\Co$ for every chain, so @lem:chain-stabilizer gives that $\Gamma_\Co$ acts on each fixed-chain fibre, and both the unrestricted bijection of item 1 and the refined one of item 2 of @prop:flag-incidence-bijection are available, the second splitting the fibre by line class.
-Lines: the line row of @sec-descent-coble proves, from the integral line stabilizer with its Eichler transvections, that each line datum carries a single $\ker\rho$-orbit, and the spinor witness keeps it single under $\Gamma_\Co$.
-Planes: $S=\rho(\Stab_{\Orth(B)}(P))$ of order $247\,726\,080$, a proper subgroup of $F=\Stab_Q(J)$ of index $8$ by @thm:coble-plane-stabilizer-image, whose item 4 shows that no integral isometry supplies the missing eight cosets; so $S=F$ fails at this family, and the plane fibre carries eight $\ker\rho$-orbits.
-Spinor: the Levi element $\tau=-\id_{U_1}\oplus\id$ is integral, congruent to the identity modulo $2$, stabilizes the standard plane and is spinor-negative; its conjugates reach every plane of every fibre, so the eight $\ker\rho$-orbits descend to $\Gamma_\Co$.
-Flags and incidence: the image $\Gamma(P)=\theset{A\in SL(P)\st A\equiv I\pmod2}$ of $\Stab_{\Gamma_\Co}(P)$ on $P$ is transitive on the primitive lines of $P$ within each nonzero class $c\in J$, by @prop:coble-arithmetic-flag-incidence, and this is transitivity of $\Stab_{\Gamma_\Co}(P)$ itself; since $\Gamma_\Co$ fixes all data, that is item 2 of @prop:flag-incidence-bijection with $\Gamma_{(C,J)}=\Gamma_\Co$ and $\Gamma_{P,C}=\Stab_{\Gamma_\Co}(P)$, so there is one flag orbit over each plane orbit for each nonzero class of $J$.
-The same transitivity is the realization input of item 2 of @prop:line-plane-incidence, and the line row supplies its equivalence condition, since any two lines of one datum lie in a single $\ker\rho$-orbit; so the three incidences of each plane node hold without the flag stabilizer image $S_{C,J}$.
-
-At Enriques planes the integral lifts prove $S=F$; at Coble planes $[F:S]=8$.
+Part 2. The group $Q$ is $\Orth(q)$ by @thm:two-elementary-surjectivity.
+Item a holds because $\Gamma_\Co\subseteq\ker\rho$, so $\rho(\Gamma_\Co)=1\leq F_{C,J}$.
+Item b is item 4 of @thm:coble-plane-stabilizer-image, and the count is its item 5 with $H=1$: the double cosets $1\backslash F/S$ number $[F:S]=8$.
+The group $\Gamma_\Co$ does not contain $\ker\rho$, so @thm:descent-double-coset is applied at $\Gamma=\ker\rho$ and @prop:descent-spinor-fibre then passes to $\Gamma^+=\Gamma_\Co$.
+Its hypothesis is part 4 of @thm:cusp-lifting: each line, plane and flag has a spinor-negative element of $\ker\rho$ in its stabilizer. This gives item c.
+Item d is item 2 of @prop:coble-arithmetic-flag-incidence, which is item 2 of @prop:flag-incidence-bijection with $\Gamma_{(C,J)}=\Gamma_\Co$ and $\Gamma_{P,C}=\Stab_{\Gamma_\Co}(P)$ by item a.
+:::
 
 ## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}
-
-The finite data of a commensurability class give the integral stabilizer exactly, but they give its discriminant image only at a modulus refined enough to make the discriminant representation descend.
-This section proves that refinement, states the finite objects and the map, and proves the alternative route through the discriminant isometries of the orbit lattices as a second complete construction, comparing the two index sets rather than ranking them.
 
 ::: {.definition #def:stabilizer-congruence-data title="The congruence data of a lattice stabilizer"}
 
@@ -358,7 +341,7 @@ $$ e_1\definedas\exp(M/L),\qquad e_2\definedas\exp\qty(L^\sharp/(L^\sharp\inters
 Then $e_1$ is the least positive integer with $e_1M\subseteq L$, and $e_2$ the least positive integer with $e_2L^\sharp\subseteq L^\sharp\intersect M$, equivalently with $e_2L^\sharp\subseteq M$.
 Write $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$ for the reduction modulo $mM$, and for $m$ with $mM\subseteq L$ write $\bar L_m\definedas L/mM$ for the image of $L$ in $M/mM$ and put
 $$ \bar K_m\definedas\ker\pi_m,\qquad \bar H_m\definedas\Stab_{\pi_m(G)}(\bar L_m). $$
-The $\bZ$-module $L^\sharp/L=A_L$ carries the bilinear discriminant form of @def:discriminant, and $\rho_L$ denotes the bilinear discriminant representation of @def:discriminant-rep; if $L$ is even, $A_L$ carries the quadratic refinement $q_L$ as well and $\rho_L=j_q\circ\rho_{L,q}$ is the composite of the quadratic representation with the forgetful monomorphism.
+The $\bZ$-module $L^\sharp/L=A_L$ has the bilinear discriminant form of @def:discriminant, and $\rho_L$ denotes the bilinear discriminant representation of @def:discriminant-rep; if $L$ is even, $A_L$ also has the quadratic refinement $q_L$ and $\rho_L=j_q\circ\rho_{L,q}$ is the composite of the quadratic representation with the forgetful monomorphism.
 :::
 
 ::: {.example #ex:non-integral-invariant-module title="The invariant module need not be integral, nor contained in the dual of $L$"}
@@ -404,7 +387,6 @@ $$ \Stab_G(L)=G\intersect\pi_m^{-1}\bigl(\bar H_m\bigr). $$
 ::: {.proof}
 
 Since $mM\subseteq L\subseteq M$, the submodule $\bar L_m$ is defined.
-Both inclusions are checked separately.
 If $gL=L$, then $\pi_m(g)\bar L_m=\overline{gL}=\bar L_m$, so $\Stab_G(L)\subseteq G\intersect\pi_m^{-1}(\bar H_m)$.
 
 Conversely let $g\in G$ with $\pi_m(g)\bar L_m=\bar L_m$, that is $gL+mM=L$.
@@ -461,9 +443,6 @@ is a well-defined group homomorphism, with kernel $\pi_m(\Stab_G(L)\intersect\ke
 $$ \rho_L(\Stab_G(L))=\generators{\rho_L(g_1),\dots,\rho_L(g_r)}\leq\Orth(A_L); $$
 4. every lift $g_i$ is an integral self-isometry of $L$, so the endomorphism case of the discriminant morphism applies to $\restrictionof{g_i}{L}\colon L\to L$.
 
-The construction therefore returns the exact subgroup $\rho_L(\Stab_G(L))$ from finitely many objects: the module $M$, the submodule $\bar L_m$ of $M/mM$, the finite group $\pi_m(G)$, and one lift per generator of the finite stabilizer.
-No generating family of $\Stab_G(L)$ itself is materialized.
-
 If $L$ is even, the same assignment lands in $\Orth(A_{L,q})$: an isometry stabilizing $L$ preserves $\beta$ and hence the norm of every element of $L^\sharp$, so it preserves the quadratic refinement $q_L$, and $\Phi_m$ is $\Phi_{m,q}$ followed by the forgetful monomorphism of @def:discriminant-rep.
 :::
 
@@ -479,11 +458,6 @@ Item 3 follows from item 1: $\rho_L(\Stab_G(L))=\rho_L(\pi_m^{-1}(\bar H_m)\inte
 
 For item 4, use item 1: an element of $G$ preserving $L$ restricts to an isometry $L\to L$ of lattices, and $\rho_L$ of @def:discriminant-rep is that restriction's discriminant morphism.
 :::
-
-The congruence route uses only $\pi_m$ and $\rho_L$ as they are defined: no element of $\Stab_G(L)$ beyond the lifts is formed, and the modulus is the one supplied by @cor:stabilizer-modulus rather than the exponent $e_1$ of $M/L$ alone.
-In the vocabulary of the finite commensurability quotient, $M$ is the invariant module, $\bar L_m$ is the orbit point, $\bar H_m$ is its stabilizer in the image of the module action $G\to\Aut_{\bZ}(M/mM)$, and the modulus is the parameter of that construction: $e_1$ is the parameter that makes the stabilizer exact, and a multiple of $\exp(M/e_2L)$ is the parameter that also makes its discriminant image exact.
-The module action is needed as a matrix action: by @lem:orbit-permutation-not-module-action the permutation representation on the orbit of $\bar L_m$ has kernel $\kappa_m\supseteq\bar K_m$, which for $L=M$ is all of $G$, and a computation inside that permutation image neither proves $\bar K_m\subseteq\ker\rho_L$ nor defines a map to $\Orth(A_L)$.
-The reason $e_1$ alone does not suffice is exactly @lem:congruence-kernel-discriminant: the congruence acts on $L^\sharp$, where the relevant bound involves the quotient $L^\sharp/(L^\sharp\intersect M)$, and not only on $M/L$.
 
 ::: {.theorem #thm:discriminant-transport-functor title="The discriminant isometries of the orbit lattices form a functor of the action groupoid"}
 
@@ -525,15 +499,34 @@ Next $mM=gmM\subseteq g\qty(e_2(L)L)=e_2(L)L_0$, which is item 1; item 2 is @thm
 For item 3, $\Stab_G(gL_0)=g\Stab_G(L_0)g^{-1}$ is immediate, and @thm:discriminant-transport-functor gives $\rho_{gL_0}(gkg^{-1})=\alpha_g(L_0)\rho_{L_0}(k)\alpha_g(L_0)^{-1}$ for $k\in\Stab_G(L_0)$, since $gkg^{-1}$ acts on $A_{gL_0}$ through $\alpha_g(L_0)$.
 :::
 
-Two statements delimit what this functor supplies, and both follow from the previous results.
+::: {.lemma #lem:orbit-reduction-injective title="Reduction modulo $mM$ is injective on the orbit"}
 
-*It descends to the finite quotient.*
-If $mM\subseteq e_2L$ and $g,g'\in G$ satisfy $\pi_m(g)=\pi_m(g')$, then $g^{-1}g'\in\bar K_m$; by @cor:orbit-uniform-modulus the hypothesis of @lem:congruence-kernel-discriminant holds at every $L_0\in\mathcal O$, so $g^{-1}g'$ acts trivially on $A_{L_0}$ for every such $L_0$, and $\alpha_g(L_0)=\alpha_{g'}(L_0)$.
-The functor therefore factors through the finite groupoid $\pi_m(G)\ltimes\{\bar L_{0,m}\}$, and the retained finite data are the finite set of submodules $\bar L_{0,m}=L_0/mM$ together with the isomorphisms induced by the elements of $\pi_m(G)$.
+Let $m\geq1$ with $mM\subseteq L$, and let $\mathcal O=G\cdot L$.
+Then $mM\subseteq L_0$ for every $L_0\in\mathcal O$, and the map
+$$ \mathcal O\too\qty{\text{submodules of }M/mM},\qquad L_0\longmapsto\bar L_{0,m}\definedas L_0/mM $$
+is injective.
+:::
 
-*It descends to the orbit, and the loops are then reached by Schreier generators.*
-The loops at $L_0$ in $G\ltimes\mathcal O$ are the elements of $\Stab_G(L_0)$, an infinite group, so the functor does not by itself exhibit them; what it does give is that the answer is an invariant of the orbit rather than of the chosen lattice, and that a modulus valid at one orbit point is valid at every one of them (@cor:orbit-uniform-modulus).
-The loops are recovered exactly, without any kernel computation, by passing to the finite orbit of the residue submodule and using Schreier's lemma on it: this is the content of @lem:schreier-stabilizer and @thm:schreier-discriminant-image, and it is a second complete construction of the same image.
+::: {.proof}
+
+For $L_0=gL$ one has $mM=gmM\subseteq gL=L_0$, so $\bar L_{0,m}$ is defined.
+If $L_1,L_2\in\mathcal O$ have equal images, then $L_1+mM=L_2+mM$, and $L_i+mM=L_i$ because $mM\subseteq L_i$; hence $L_1=L_2$.
+:::
+
+::: {.corollary #cor:transport-descends-mod-m title="The transport functor descends to the finite quotient"}
+
+Let $m\geq1$ with $mM\subseteq e_2L$, let $L_0\in\mathcal O$, and let $g,g'\in G$ satisfy $\pi_m(g)=\pi_m(g')$.
+Then $gL_0=g'L_0$ and $\alpha_g(L_0)=\alpha_{g'}(L_0)$.
+Hence $L_0\mapsto A_{L_0}$, $\pi_m(g)\mapsto\alpha_g$ is a functor on the finite translation groupoid of $\pi_m(G)$ acting on the set $\theset{\bar L_{0,m}=L_0/mM\st L_0\in\mathcal O}$.
+:::
+
+::: {.proof}
+
+Put $k\definedas g^{-1}g'$, so $\pi_m(k)=\id$ and $k\in\bar K_m$.
+By item 1 of @cor:orbit-uniform-modulus, $k\in\Stab_G(L_0)\intersect\ker\rho_{L_0}$, so $kL_0=L_0$ and $g'L_0=gL_0$.
+Items 2 and 3 of @thm:discriminant-transport-functor give $\alpha_{g'}(L_0)=\alpha_g(kL_0)\circ\alpha_k(L_0)=\alpha_g(L_0)\circ\rho_{L_0}(k)=\alpha_g(L_0)$.
+Since $mM\subseteq e_2L\subseteq L$, @lem:orbit-reduction-injective identifies $\mathcal O$ with the set of the $\bar L_{0,m}$, and the first two statements make the assignment on morphisms well defined.
+:::
 
 ::: {.lemma #lem:schreier-stabilizer title="Schreier generators for the stabilizer of a point"}
 
@@ -559,37 +552,20 @@ and $\beta_r=g\alpha=\alpha$ because $g\in\Stab_G(\alpha)$, so $t_{\beta_r}=t_\a
 So $g$ lies in the displayed subgroup.
 :::
 
-::: {.lemma #lem:orbit-reduction-injective title="Reduction modulo $mM$ is injective on the orbit"}
-
-Let $m\geq1$ with $mM\subseteq L$, and let $\mathcal O=G\cdot L$.
-Then $mM\subseteq L_0$ for every $L_0\in\mathcal O$, and the map
-$$ \mathcal O\too\qty{\text{submodules of }M/mM},\qquad L_0\longmapsto\bar L_{0,m}\definedas L_0/mM $$
-is injective.
-:::
-
-::: {.proof}
-
-For $L_0=gL$ one has $mM=gmM\subseteq gL=L_0$, so $\bar L_{0,m}$ is defined.
-If $L_1,L_2\in\mathcal O$ have equal images, then $L_1+mM=L_2+mM$, and $L_i+mM=L_i$ because $mM\subseteq L_i$; hence $L_1=L_2$.
-:::
-
-::: {.theorem #thm:schreier-discriminant-image title="The Schreier data give the exact image, with no kernel computation"}
+::: {.theorem #thm:schreier-discriminant-image title="The Schreier elements give the discriminant image of the stabilizer"}
 
 Take the data of @def:stabilizer-congruence-data with $m\geq1$ and $mM\subseteq L$, and let $S\subseteq G$ be a finite symmetric generating set: $G=\generators{S}$, $S^{-1}=S$ and $\abs{S}<\infty$.
 Let $\Sigma_m$ be the orbit of $\bar L_m$ in the finite module $M/mM$ under $\pi_m(G)$.
-For each $p\in\Sigma_m$ choose $t_p\in G$ with $\pi_m(t_p)\bar L_m=p$ and $t_{\bar L_m}=\id$, and put $L_p\definedas t_pL$; by @lem:orbit-reduction-injective the lattice $L_p$ depends only on $p$, so it is a representative of the orbit point, not of the transversal.
+For each $p\in\Sigma_m$ choose $t_p\in G$ with $\pi_m(t_p)\bar L_m=p$ and $t_{\bar L_m}=\id$, and put $L_p\definedas t_pL$; by @lem:orbit-reduction-injective the lattice $L_p$ depends only on $p$.
 For $s\in S$ and $p\in\Sigma_m$, with $sp$ denoting the image of $p$ under $\pi_m(s)$, put
 $$ k_{s,p}\definedas t_{sp}^{-1}\,s\,t_p. $$
 Then:
 
 1. $\pi_m(k_{s,p})$ fixes $\bar L_m$, so $k_{s,p}\in\Stab_G(L)$ by @lem:congruence-stabilizer-preimage, and $k_{s,p}$ is an integral self-isometry of $L$;
 2. $\Stab_G(L)=\generators{k_{s,p}\st s\in S,\ p\in\Sigma_m}$;
-3. consequently
-$$ \rho_L(\Stab_G(L))=\generators{\rho_L(k_{s,p})},\qquad \rho_L(k_{s,p})=\alpha_{t_{sp}^{-1}}(L_{sp})\circ\alpha_s(L_p)\circ\alpha_{t_p}(L) $$
-with $L_{sp}\definedas sL_p$, a composite of discriminant isometries between integral lattices of the orbit.
-The lattice $L_{sp}$ is integral because $s\in\Orth(V)$ carries the lattice $L_p$ to a lattice, and it satisfies $L_{sp}=t_{sp}L$: both contain $mM$ and both reduce to the submodule $sp$, so @lem:orbit-reduction-injective applies.
-Hence $\alpha_{t_{sp}^{-1}}(L_{sp})=\alpha_{t_{sp}}(L)^{-1}$, and every factor of the composite is a map between integral lattices, indexed by lattices and not by residue submodules;
-4. the finite objects used are the finite orbit $\Sigma_m$ of submodules, the finitely many transversal elements $t_p$, the lattices $L_p$, and the maps $\alpha_s(L_p)$ for $s$ in the finite set $S$ and $p\in\Sigma_m$; no congruence kernel is proved trivial, and no stabilizer inside a finite matrix group is computed.
+3. with $L_{sp}\definedas sL_p$, one has $L_{sp}=t_{sp}L$, and
+$$ \rho_L(\Stab_G(L))=\generators{\rho_L(k_{s,p})},\qquad \rho_L(k_{s,p})=\alpha_{t_{sp}}(L)^{-1}\circ\alpha_s(L_p)\circ\alpha_{t_p}(L), $$
+a composite of discriminant isometries between integral lattices of the orbit $\mathcal O$.
 :::
 
 ::: {.proof}
@@ -598,17 +574,12 @@ For item 1, $\pi_m(k_{s,p})$ carries $\bar L_m$ to $\pi_m(t_{sp})^{-1}\pi_m(s)p=
 
 Item 2 is @lem:schreier-stabilizer applied to the action of $G$ on the orbit $\Sigma_m$ of $\bar L_m$: the displayed elements there are exactly the $k_{s,p}$, the orbit of $\bar L_m$ is $\Sigma_m$, and its stabilizer is $\Stab_G(L)$ by item 1.
 
-For item 3, $\rho_L(k_{s,p})=\alpha_{k_{s,p}}(L)$ by @thm:discriminant-transport-functor, since $k_{s,p}$ stabilizes $L$; functoriality of $\alpha$ along $L\xrightarrow{t_p}L_p\xrightarrow{s}L_{sp}\xrightarrow{t_{sp}^{-1}}L$ gives
+For item 3, the lattices $L_{sp}=st_pL$ and $t_{sp}L$ lie in $\mathcal O$, so both contain $mM$ by @lem:orbit-reduction-injective, and both reduce to the submodule $sp$; that lemma then gives $L_{sp}=t_{sp}L$.
+Since $k_{s,p}$ stabilizes $L$, $\rho_L(k_{s,p})=\alpha_{k_{s,p}}(L)$ by item 3 of @thm:discriminant-transport-functor, and functoriality of $\alpha$ along $L\xrightarrow{t_p}L_p\xrightarrow{s}L_{sp}\xrightarrow{t_{sp}^{-1}}L$ gives
 $$ \alpha_{k_{s,p}}(L)=\alpha_{t_{sp}^{-1}}(L_{sp})\circ\alpha_s(L_p)\circ\alpha_{t_p}(L), $$
-and $\alpha_{t_{sp}^{-1}}(L_{sp})=\alpha_{t_{sp}}(L)^{-1}$ because $\alpha_{t_{sp}^{-1}t_{sp}}(L)=\alpha_{\id}(L)=\id$; the equality $L_{sp}=t_{sp}L$ was proved in item 3.
-Item 4 records the objects and maps appearing in items 1 to 3; the modulus enters only through the definition of $\bar L_m$ and the finiteness of $\Sigma_m$, so $m=e_1$ is enough here.
+with $\alpha_{t_{sp}^{-1}}(L_{sp})=\alpha_{t_{sp}}(L)^{-1}$ because $\alpha_{t_{sp}^{-1}t_{sp}}(L)=\alpha_{\id}(L)=\id$.
+The image statement follows from item 2.
 :::
-
-The two constructions are both complete, and their index sets differ.
-The congruence construction needs the finite module action $\pi_m\colon G\to\Aut_{\bZ}(M/mM)$, the submodule $\bar L_m$, the stabilizer of $\bar L_m$ inside $\pi_m(G)$, and the modulus condition $mM\subseteq e_2L$ of @cor:stabilizer-modulus; it then needs one lift per generator of that finite stabilizer, and it evaluates $\abs{\text{generators of }\bar H_m}$ discriminant images.
-The Schreier construction needs the generating set $S$, the finite orbit $\Sigma_m$ with its transversal words, one representative lattice $L_p$ per orbit point, and the per-letter maps $\alpha_s(L_p)$ for $s\in S$ and $p\in\Sigma_m$; that is a letter-by-orbit family of $\abs{S}\cdot\abs{\Sigma_m}$ maps, and by @thm:schreier-discriminant-image it returns the exact image with $m=e_1$ alone and with no triviality statement.
-Neither index set is a function of the other, so neither construction subsumes the other: the congruence one is smaller exactly when the finite stabilizer has few generators compared with $\abs{S}\cdot\abs{\Sigma_m}$, and it pays for that with the refined modulus and the kernel argument, while the Schreier one needs neither and carries the larger family.
-What both need is $\bar L_m$ and the finiteness of $M/mM$; @cor:orbit-uniform-modulus is what lets either be run at one lattice and read at the others.
 
 ::: {.proposition #prop:spinor-congruence-obstruction title="The real spinor character does not descend to the congruence quotient in general"}
 
@@ -619,9 +590,7 @@ Let $m\geq1$ with $mM\subseteq e_2L$ and let $\spinornorm_\bR\colon\Orth(V_\bR)\
 $$ \sigma_U=-\id_U\oplus\id_{U(2)}\oplus\id_{E_8(2)}\in\Orth(N) $$
 satisfies $\sigma_U\equiv\id\pmod{2N}$ and $\spinornorm_\bR(\sigma_U)=-1$.
 Consequently two lifts of one element of $\bar H_2$ can carry opposite spinor signs, and no function of the congruence class alone returns the spinor norm of an element of $\Stab_G(L)$.
-3. For the Enriques family the sign is not needed for the primitive isotropic line, plane and flag counts, and that is a consequence of a theorem rather than of a computation at a finite quotient: by @thm:enriques-spinor-orbit-agreement the groups $\Gamma$ and $\Gamma^+=\Gamma\intersect\Orth^+(N)$ have the same orbits on those three families for every $\Gamma\supseteq\ker\rho$, and the proof exhibits for each object of each family a spinor-negative element of $\ker\rho\subseteq\Gamma$ in its stabilizer.
-Those witnesses are elements of $\ker\rho$, so they are invisible to $\rho_N$, and they supply the orbit identity without any spinor character being evaluated.
-They do not make $\spinornorm_\bR$ a function of the congruence class: items 1 and 2 stand unchanged, so the character remains a separate obligation for any use beyond these three families, and neither the witnesses nor @thm:stabilizer-discriminant-image give a factorization of it through $\pi_m$.
+3. For every $\Gamma\leq\Orth(N)$ with $\ker\rho\subseteq\Gamma$, the groups $\Gamma$ and $\Gamma^+=\Gamma\intersect\Orth^+(N)$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags, and each such object has a spinor-negative element of $\ker\rho$ in its stabilizer.
 :::
 
 ::: {.proof}
@@ -633,23 +602,16 @@ Its spinor norm is $\spinornorm_\bR(-\id_U)=[(-1)^1]=-1$ by @lem:minus-identity-
 The choice $L=M=N$, $m=2$ satisfies $mM\subseteq e_2L$ because $e_2=\exp(N^\sharp/N)=2$ and $2N\subseteq 2N$.
 At that modulus $\bar K_2$ meets $\Stab_G(L)$ whenever $\sigma_U\in G$, and $\sigma_U\in\Orth(N)$; so with $G=\Orth(N)$ the sign is not a function of $\pi_2(g)$, while $\rho_N$ is one by @cor:stabilizer-modulus.
 
-Item 3 records the consequence of the Enriques subgroup theorem: the three families are compared object by object through witnesses in $\ker\rho$, and a witness in $\ker\rho$ is invisible to $\rho_L$, so the discriminant computation of @thm:stabilizer-discriminant-image and the orbit identity of @thm:enriques-spinor-orbit-agreement are consistent and neither requires the other's input.
+Item 3 is @thm:enriques-spinor-orbit-agreement, whose proof gives the spinor-negative elements of $\ker\rho$.
 :::
 
 ## Supporting lift theorems {#sec-descent-eichler}
 
-::: {.proposition #prop:descent-eichler title="Eichler filling, with its hypotheses stated"}
-Suppose $L$ contains $U\perp U_1\perp L_0$ as an orthogonal summand, with $U_1$ a second hyperbolic plane. For primitive isotropic $v,v'$ with fixed full $\Orth(L)$-orbit and $v^*=v'^*$, @thm:eichler-criterion supplies $g\in\widetilde{\SO}^+(L)$ with $g(v)=v'$, where the hypotheses on squares, divisibilities and congruence class are checked, not inferred from the class alone. Then the orbit-fibre has index one. Any $\Gamma$ containing $\widetilde{\SO}^+(L)$ inherits the corresponding fibre statement, provided the chosen lift belongs to $\Gamma$.
+::: {.proposition #prop:descent-eichler title="Eichler filling"}
+Let $L\cong U\perp U_1\perp L_0$, with $U_1$ a second hyperbolic plane. If $v,v'\in L$ are primitive isotropic with $v^*=v'^*$ in $A_L$, then there is $g\in\widetilde{\SO}^+(L)$ with $g(v)=v'$. Consequently, for every $\Gamma\leq\Orth(L)$ with $\widetilde{\SO}^+(L)\subseteq\Gamma$, the primitive isotropic vectors with a fixed descent class form one $\Gamma$-orbit.
 :::
 
-Whether this proposition applies is a property of the integral embedding and its congruence class. It does not apply to a definite quotient such as the Coble plane quotient $I_{0,7}$, and it does not replace the integral plane-stabilizer computation.
+::: {.proof}
+Apply @thm:eichler-criterion to $v_1=v$ and $v_2=v'$: both squares are $0$, and $v_1^*=v_2^*$ by hypothesis.
+:::
 
-## Proved instances {#sec-descent-coble}
-
-**Enriques degree two.** The full integral stabilizer images for the primitive isotropic lines and for the two $O(T_\En)$-plane classes are proved in @lem:line-stabilizer-image and @thm:enriques-integral-plane-stabilizers. Since $A_{T_\En}$ has exponent two, the point stabilizer of a vector class agrees with the subgroup stabilizer of the corresponding line. The plane datum $D(P)$ is an isotropic subgroup: order two in the divisibility-one class and a noncyclic order-four subgroup in the divisibility-two class. In the latter, the actual integral reflection lifts, their dual action through the proved gluing $Q^*/Q\simeq D^\perp/D$, and the generated full kernel establish the equality. For the source-defined full-$O$ group $\Gamma_{\En,2}=\rho^{-1}(M)$, which contains $\ker\rho$, the finite formula returns one double coset per $M$-orbit. The line type-set produces five arithmetic 0-cusps and the plane type-set nine arithmetic 1-cusps. The positive-spinor statement is used only where the level-two negative witness has been transported within the relevant $\Gamma_{\En,2}$-orbit; the two full-$O$ plane representatives carry such witnesses directly in @thm:enriques-integral-plane-stabilizers.
-
-**Coble vectors.** For $\Gamma_\Co=\ker\rho\cap\Orth^+(B)$, the full integral line-stabilizer image with its Eichler transvections gives a single $\ker\rho$-orbit over each attained nonzero line datum. Here $A_{T_\Co}$ has exponent two, so the vector class and the line subgroup determine the same stabilizer. To check the spinor hypothesis at every relevant orbit, let $g=\id_{U_1}\oplus(-\id_{K_v})$ be the negative witness at $e_1$. For any chosen primitive representative $v_c$ of an attained line class, choose $h\in\Orth(B)$ with $h(e_1)=v_c$ (the full transitivity of @thm:unpolarized-cusps); then $hgh^{-1}$ is still level-two by normality of $\ker\rho$, still spinor-negative, and stabilizes the line $\ZZ v_c$. Thus the witness reaches every relevant line orbit, and the $\ker\rho$-orbits do not split under $\Gamma_\Co$, as in part (1) of @thm:cusp-lifting.
-
-**Coble planes.** The integral parabolic image is the proper subgroup $S$ of the full finite stabilizer $F$ described by @thm:coble-plane-stabilizer-image: the definite quotient $I_{0,7}$ induces only $S_7$ in $\Orth^+(6,2)$. Hence $|F/S|=8$. Let $\tau=-\id_{U_1}\oplus\id$ be the negative witness at the standard plane $P$. For any plane $Q$, choose $h\in\Orth(B)$ with $h(P)=Q$ (again @thm:unpolarized-cusps); then $h\tau h^{-1}$ is again level-two and spinor-negative, so the witness reaches every plane and in particular a representative of every $\ker\rho$-orbit in every fibre. Therefore the eight $\ker\rho$-orbits do not split under $\Gamma_\Co$, as in part (2) of @thm:cusp-lifting.
-
-**Coble plane-line flags.** The integral plane Levi gives $GL(P)$. Level two and the real spinor character select $\{A\in SL(P):A\equiv I\pmod2\}$. If primitive vectors $v,w$ have the same parity and are completed to $M_v=[v,z_v],M_w=[w,z_w]$, then $\det(c,z_w-z_v)=0$ in $\F_2$ for their common nonzero first column $c$, hence $z_w-z_v=tc$, because the kernel of $x\mapsto\det(c,x)$ is $\langle c\rangle$. Replacing $z_w$ by $z_w-tw$ aligns the completions. The adjusted $M_wM_v^{-1}$ is level two and sends $v$ to $w$. Thus the plane stabilizer is transitive within each parity class but cannot permute the three classes. Each arithmetic plane orbit and each of the three line classes has exactly one arithmetic flag orbit. There are $24$ flag orbits over one $J$ (@prop:coble-arithmetic-flag-incidence).

@@ -12,13 +12,12 @@ tags:
 
 ## The chain of morphisms
 
-::: {.remark title="The four-term chain"}
+::: {.proposition #prop:fen2-forgetful-maps title="The two morphisms out of $\fentwo$"}
 
-The moduli spaces are related by the maps
-$$
-\fco \too \fen \too \fentwo \longleftarrow \fttz ,
-$$
-where $\fttz$ is the moduli space of quartic hyperelliptic K3 surfaces of [@AEGS25], and the normalized KSBA compactification of $\fentwo$ is a semitoroidal compactification [@AEGS25 Thm. 1].
+Let $\fttz=\bD(\tdp)/\Gamma_\dP$ be the moduli space of K3 surfaces of degree $4$ with a del Pezzo involution [@AEGS25, §1, Def. 2.7].
+
+1. The inclusion $\bD(T_\En)\subset\bD(\tdp)$ induces a finite, generically injective morphism $\fentwo\to\fttz$, and $\fentwo$ is the normalization of a closed subvariety of $\fttz$ [@AEGS25, Lemma 2.8].
+2. The inclusion $\gent\subseteq\Gamma_\En$ of a subgroup of finite index induces a morphism $\fentwo\to F_{(10,10,0)}=\bD(T_\En)/\Gamma_\En$ of degree $2^7\cdot17\cdot31$ [@AEGS25, §2.3; @Ste91, Rem. 2.12].
 :::
 
 ::: {.construction title="The embedding and its two extensions"}
@@ -35,31 +34,27 @@ On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of $\fco$
 
 ## The two cusp identifications
 
-::: {.remark title="Coble cusps under the extension to $\fttz$"}
+::: {.proposition #prop:fen2-zero-cusp-lattices title="The lattices of the five $0$-cusps of $\fentwo$"}
 
-Under $\tilde\eta$, the $0$-cusp of the vector $v_1$ of @lem:divisibilityTcoOne maps to the $0$-cusp $(18,0,0)_1 = U\oplus E_8^{\oplus 2}$ of $\fttz$, and the $1$-cusp of $J$ maps to a $1$-cusp with boundary lattice $(16,0,0)_0\cong D_{16}^+$ (@lem:cusp_map_dP, @prop:rank_16_cusp_D16).
+Let $e\in\ten$ be a primitive isotropic vector, and number the $0$-cusps of $\fentwo$ as in [@Ste91].
+
+1. The lattice $e^{\perp}/e$ is $U(2)\oplus E_8(2)=(10,10,0)_1$ when $e$ represents cusp $1$, and $U\oplus E_8(2)=(10,8,0)_1$ when $e$ represents one of cusps $2$ to $5$ [@AEGS25, Lemmas 3.9, 3.10].
+2. The Coxeter diagram of cusp $2$ is the folding of the Coxeter diagram of $(18,0,0)_1$ by the reflection $\alpha_k\mapsto\alpha_{20-k}$ [@AEGS25, Lemma 3.9]. The Coxeter diagrams of cusps $1$, $3$, $4$ and $5$ are foldings of the Coxeter diagram of $(18,2,0)_1$ [@AEGS25, Lemma 3.10].
+:::
+
+::: {.corollary #cor:coble-zero-cusp-over-sterk-two-to-five title="The $0$-cusps of $\fentwo$ over the $0$-cusp $(9,9,1)_1$ of $\fco$"}
+
+Every $0$-cusp of $\fentwo$ over the image in $\fen$ of the $0$-cusp $(9,9,1)_1$ of $\fco$ is one of cusps $2$ to $5$. The reduced dual complex $\Gamma(\mcz_0)$ of each of these cusps is the disc $\Dc^2$.
+:::
+
+::: {.proof}
+
+The morphism $\fentwo\to\fen$ of @prop:fen2-forgetful-maps sends the $0$-cusp of a primitive isotropic vector $e\in\ten$ to the $0$-cusp of the same vector $e$, so it preserves the lattice $e^{\perp}/e$. By @lem:w1_perp_calculation the image of $(9,9,1)_1$ is the $0$-cusp $(10,8,0)_1$ of $\fen$. By @prop:fen2-zero-cusp-lattices the cusps of $\fentwo$ with $e^{\perp}/e=(10,8,0)_1$ are cusps $2$ to $5$. Their dual complexes are listed in @ex:fen2_five_cusps.
 :::
 
 ::: {.conjecture #conj:coble-zero-cusp-sterk-two title="The Coble $0$-cusp is Sterk cusp $2$"}
 
-The Coble $0$-cusp corresponds to cusp $2$ of the cusp diagram of $\fentwo$ [@Ste91].
-:::
-
-::: {.remark}
-
-The five $0$-cusps of $\fentwo$ have boundary lattices $(10,10,0)_1$ for cusp $1$ and $(10,8,0)_1$ for cusps $2$ to $5$ [@AEGS25 Lemmas 3.9, 3.10]. The Coble $0$-cusp maps to the $0$-cusp $(10,8,0)_1$ of $\fen$ (@lem:w1_perp_calculation), so a cusp of $\fentwo$ over its image is one of cusps $2$ to $5$, whose integral-affine structures are all $\DD^2$ (@ex:fen2_five_cusps). Cusp $2$ is the only one of these folded from $(18,0,0)_1$, by the reflection $\alpha_k\mapsto\alpha_{20-k}$ of its Coxeter diagram [@AEGS25 Lemma 3.9].
-:::
-
-## Orbits of isotropic sublattices
-
-::: {.remark}
-
-The $0$-cusps and $1$-cusps of $\fco$ are the $\Gamma_\Co$-orbits of primitive isotropic lines and planes of $T_\Co$, where $\Gamma_\Co = \Orth^+(T_\Co)^*$; they are classified by @thm:cusp-lifting.
-:::
-
-::: {.remark title="The GIT model"}
-
-The moduli space of Coble surfaces obtained by blowing up the ten nodes of a rational plane sextic is a locally closed subvariety of the GIT quotient $(\PP^2)^{10}\modmod\PGL_3$, and an open subset of $\bD(T_\Co)/\Orth(T_\Co)$ [@DK13 §3].
+The $0$-cusp $(9,9,1)_1$ of $\fco$ corresponds to cusp $2$ of the cusp diagram of $\fentwo$ [@Ste91].
 :::
 
 ## Terminal Coble surfaces
@@ -69,5 +64,3 @@ The moduli space of Coble surfaces obtained by blowing up the ten nodes of a rat
 A Coble surface is **terminal** when it is not the image of any birational but not biregular morphism from another Coble surface.
 The $n=1$ case, the blowup of a plane sextic at $N=10$ ordinary double points (some possibly infinitely near), is terminal.
 :::
-
-Related: [The research program for $F_{\Co,n}$, $2 \leq n \leq 10$](#sec-coble-families-research-program), [Candidate isotropic vectors in $T_{\Co}$](#sec-coble-lattice-isotropic-candidates), [Moduli of index 2 Halphen and rational elliptic surfaces](#sec-halphen-index-2-moduli-program).
