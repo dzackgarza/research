@@ -2,68 +2,64 @@
 
 ## The cusp--isotropic-subspace correspondence
 
-::: {.remark title="Boundary components of the Baily–Borel compactification"}
+::: {.theorem #thm:baily-borel-isotropic-boundary title="Boundary components of the Baily–Borel compactification"}
 
-Let $\ftd$ be the moduli space of $2d$-polarized K3 surfaces, realized as a quotient $D_{L_{2d}}/\Gamma_{2d}$ of a type IV period domain by an arithmetic group $\Gamma_{2d}$ acting on a lattice $L_{2d}$ of signature $(2, 19)$.
-Scattone [@Sca87] gives a concrete arithmetic approach to enumerating the $0$-cusps of the Baily--Borel compactification $\bbcpt{\ftd}$.
+Let $d\geq 1$, let $\lkttd\cong\langle -2d\rangle\oplus U^2\oplus E_8^2$ be the lattice of signature $(2,19)$ of @def:degree-2d-k3-period-data, let $D$ be a connected component of the type IV domain $\Omega_{\lkttd}$, and let $\Gamma\leq\Orth(\lkttd)$ be an arithmetic subgroup that preserves $D$.
+Then the boundary of the Baily--Borel compactification $\bbcpt{D/\Gamma}$ is the disjoint union of
 
-The boundary of $\bbcpt{\ftd}$ is stratified by $\Gamma_{2d}$-orbits of primitive isotropic subspaces of $L_{2d}$:
+1. one point $p_v$, a **$0$-cusp** (Type III boundary component), for each $\Gamma$-orbit of primitive isotropic lines $\ZZ v\iscontainedin\lkttd$, and
 
-1. the **$0$-cusps** (Type III boundary points) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *lines* $I\iscontainedin L_{2d}$;
+2. one curve $C_E$, a **$1$-cusp** (Type II boundary component), for each $\Gamma$-orbit of primitive totally isotropic planes $E\iscontainedin\lkttd$
 
-2. the **$1$-cusps** (Type II boundary curves) correspond bijectively to $\Gamma_{2d}$-orbits of primitive isotropic *planes* (rank-$2$ isotropic sublattices) $J\iscontainedin L_{2d}$.
-
-Each $0$-cusp records a degeneration of the underlying K3 surfaces, whose limiting Hodge structure is encoded by the lattice $I^{\perp}/I$; likewise each $1$-cusp carries the boundary lattice $J^{\perp}/J$.
-Thus the enumeration of boundary components reduces to a purely lattice-theoretic orbit problem for primitive isotropic sublattices of $L_{2d}$.
-:::
-
-::: {.remark title="Scattone’s 1987 memoir"}
-
-Scattone's 1987 memoir [@Sca87] carries out this classification by lattice theory, without Hodge-theoretic input.
-Its three technical ingredients are:
-
-- **Discriminant-form analysis**: separating boundary components by their discriminant quadratic forms;
-
-- **Isotropic-sublattice classification**: the bijective correspondence, above, between boundary components and $\Gamma_{2d}$-orbits of primitive isotropic sublattices of the period lattice $L_{2d}$ of signature $(2, 19)$, on which $\Gamma_{2d}$ acts;
-
-- **Arithmetic group theory**: Eichler's criterion together with the properties of the group $\Orth^+(L_{2d})$.
-
-For $d = 1$ the classification uses primitive embeddings into the $24$ Niemeier lattices to distinguish the four types of rank-$17$ boundary lattices; see @rmk:niemeier-enumeration and @ex:scattone-f2-diagram.
+[@Sca87, §2.1, (2.1.7)–(2.1.8)].
 :::
 
 ## Divisibility and the discriminant group
 
-The two invariants that separate isotropic orbits are the divisibility of a primitive vector and its image in the discriminant group.
-Recall from the Lattice Theory section that the **divisibility** $\div_L(v)$ of $v\in L$ is the positive generator of the ideal $\beta_L(v, L)\iscontainedin\ZZ$, and that $v^* \definedas v/\div_L(v)$.
-
 ::: {.proposition #prop:coble-divisibility-discriminant}
 
-Let $L$ be a nondegenerate lattice and $v\in L$ an arbitrary (not necessarily isotropic) vector.
-Then $v^* \definedas v/\div_L(v)\in \dualof{L}$ is primitive in the dual lattice, and its image in the discriminant group $A_L \definedas \dualof{L}/L$ has order $\div_L(v)$.
+Let $L$ be an integral nondegenerate lattice and $v\in L$ a nonzero primitive vector, not necessarily isotropic, with divisibility $\div_L(v)$ of @def:lattice-divisibility and dual vector $v^*$ of @def:lattice-discriminant-class.
+Then $v^*$ is primitive in $L^\#$, and its image $[v^*]$ in the discriminant group $A_L = L^\#/L$ has order $\div_L(v)$.
 
 In particular $\div_L(v)$ divides $\abs{A_L} = \abs{\disc{L}}$.
 :::
 
 ::: {.proof}
 
-The two clauses are the standard divisibility facts for a vector in a nondegenerate lattice, proved here because the Eichler criterion below is stated in terms of the same pair.
+Write $d = \div_L(v)$.
+By @def:lattice-discriminant-class, $v^*\in L^\#$.
+Suppose $v^* = m y$ with $m\geq 1$ and $y\in L^\#$.
+Then $\beta_L(v,x) = dm\,\beta_L(y,x)\in dm\ZZ$ for every $x\in L$, so $dm$ divides $d$ by @def:lattice-divisibility, and $m = 1$.
 
-Both clauses come from the divisibility of @def:lattice-divisibility: $v^*=v/\div_L(v)$ lies in $L^\#$ because $\beta_L(v^*,x)=\beta_L(v,x)/\div_L(v)$ is an integer for every $x$, and it is primitive there because any $m$ with $v^*\in mL^\#$ would give $v\in m\div_L(v)L$, forcing $m=\pm1$ by primitivity of $v$ in $L$.
-Its image in $A_L$ has order exactly $\div_L(v)$, that being the least $n$ with $nv\in L\cdot\div_L(v)$.
-Since $A_L$ is finite of order $\abs{\disc L}$, the order of an element divides the order of the group, which is the last clause.
-:::
-
-::: {.remark}
-
-Consequently the pair
-$$
-\bigl(\div_L(v),\ [v^*]\in A_L\bigr)
-$$
-is a well-defined isometry invariant attached to any primitive $v$, refining its length $v^2$.
-Eichler's criterion asserts that, in the presence of two hyperbolic summands, these invariants are *complete*.
+For $n\in\ZZ$, $nv^* = (n/d)v$.
+Write $n/d = a/b$ with $\gcd(a,b) = 1$ and $b\geq 1$.
+If $av\in bL$, choose $s,t\in\ZZ$ with $sa + tb = 1$; then $v = s(av) + tbv\in bL$, so $b = 1$ by primitivity of $v$.
+Hence $nv^*\in L$ if and only if $d$ divides $n$, and $[v^*]$ has order $d$.
+The order of an element of the finite group $A_L$, of order $\abs{\disc L}$, divides $\abs{A_L}$, which is the last clause.
 :::
 
 ## Eichler's criterion
+
+::: {.theorem #thm:eichler-transvection title="Scattone’s condition for Eichler transvection orbits"}
+
+Let $L$ be an even lattice admitting a splitting $L \isoto U^{2}\oplus M$, and let $E(L)\leq\Orth(L)$ be the subgroup generated by the transvections $E_{e,a}$ of @def:eichler-siegel with $e, a\in L$, $e^2 = 0$ and $ea = 0$.
+Then $E(L)\leq\discriminantkernel{L}$.
+Fix $k\in\ZZ$ and write $L[k] \definedas \theset{ x\in L \mid x^2 = k }$.
+For primitive $v, w\in L[k]$,
+$$
+v \sim_{E(L)} w
+\iff
+[v^*] = [w^*]\in A_L
+,
+$$
+where $\sim_{E(L)}$ denotes $E(L)$-equivalence.
+:::
+
+::: {.proof}
+
+This is [@Sca87, Prop. 3.7.3], and $E(L)\leq\discriminantkernel{L}$ is [@Sca87, §3.7].
+The elementary transformation $E_{f,x}$ of [@Sca87, §3.7] is the transvection $E_{f,-x}$ of @def:eichler-siegel, so the two groups $E(L)$ agree.
+:::
 
 ::: {.theorem #thm:scattone-eichler-criterion title="Eichler’s criterion"}
 
@@ -75,127 +71,92 @@ v^2 = w^2
 [v^*] = [w^*]\in A_L
 .
 $$
-Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group [@Eic74; @Sca87].
+Equivalently, the $\discriminantkernel{L}$-orbit of a primitive vector is determined by its length together with the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ in the discriminant group.
 :::
 
 ::: {.proof}
 
-This is [@Eic74] with the formulation of [@Sca87].
-
-The class $[v^*]\in A_L$ of @prop:coble-divisibility-discriminant determines $\div_L(v)$, because $\div_L(v)$ was shown above to be the order of $[v^*]$; so the pair $(\div_L, [v^*])$ listed first and the pair $(\div_L, v/\div_L\bmod L)$ listed second carry the same information, and the two phrasings of the criterion agree.
-What the criterion says is that for $L$ containing $U^2$ these invariants are complete: length and discriminant class together determine the orbit under the subgroup acting trivially on $A_L$, so no further invariant separates two primitive vectors of equal length and equal class.
-
-The hypothesis $U^2$ is what the transvections need: an Eichler transvection in the direction of an isotropic $e\in L$ with a partner $f$ satisfying $\beta_L(e,f)=1$ moves $v$ by an integral multiple of $e$ without changing $v$'s class in $A_L$, and two summands give enough room to move any primitive $v$ to any $w$ with the same invariants.
+If $v^2 = w^2$ and $[v^*] = [w^*]$, then @thm:eichler-transvection gives $\phi\in E(L)$ with $\phi(v) = w$, and $E(L)\leq\discriminantkernel{L}$.
+Conversely, let $\phi\in\discriminantkernel{L}$ with $\phi(v) = w$.
+By @prop:orbit-necessary-conditions, $v^2 = w^2$ and the isometry induced by $\phi$ on $A_L$ sends $[v^*]$ to $[w^*]$; this isometry is the identity, so $[v^*] = [w^*]$.
+By @prop:coble-divisibility-discriminant, $\div_L(v)$ is the order of $[v^*]$, and $v/\div_L(v)\bmod L$ is $[v^*]$, so the pair $\bigl(\div_L(v),\ v/\div_L(v)\bmod L\bigr)$ and the class $[v^*]$ determine each other.
 :::
 
-::: {.theorem #thm:eichler-transvection title="Scattone’s condition for Eichler transvection orbits"}
+## Sterk's orbit criterion
 
-Let $L$ be an even lattice admitting a splitting $L \isoto U^{2}\oplus M$ with $M$ an arbitrary lattice, and fix $k\in\ZZ$.
-Write $L[k] \definedas \theset{ x\in L \mid x^2 = k }$.
-Then for $v, w\in L[k]$,
-$$
-v \sim_{E(L)} w
-\iff
-[v^*] = [w^*]\in A_L
-,
-$$
-where $E(L)$ is the **Eichler transvection group** and $\sim_{E(L)}$ denotes $E(L)$-equivalence [@Sca87].
-:::
+::: {.theorem #thm:sterk-orbit title="Sterk's orbit criterion"}
 
-::: {.proof}
+Let $P$ be an even nondegenerate lattice and let $T = U\oplus U(2)\oplus P$.
+Let $\eta_1, \eta_2\in T$ be primitive vectors satisfying
 
-This is [@Sca87, Ch. 1].
-The relation to @thm:scattone-eichler-criterion: this one fixes the length $k$ and asks for equivalence under the transvection subgroup $E(L)$, whereas Eichler's criterion asks for equivalence under the full discriminant kernel.
-Since $E(L)\leq\discriminantkernel{L}$ by definition, equivalence under $E(L)$ implies equivalence under the kernel, so the criterion here is finer; the hypothesis $U^2$ is the same in both, being what makes the transvections act.
-:::
-
-::: {.remark}
-
-@thm:eichler-transvection is the engine that separates orbits of isotropic vectors: it reduces the orbit question to computing the image $[v^*]$ in the *finite* discriminant group $A_L$.
-Since $E(L)\leq\Orth(L)$ is generated by Eichler transvections, the criterion also refines @thm:scattone-eichler-criterion by pinning the equivalence to the transvection subgroup on each fixed length level $L[k]$.
-:::
-
-## Orbit classification in $T = U\oplus\oT_\eta$
-
-Sterk's refinement extends the transvection method to isotropic vectors of arbitrary divisibility, and is the form directly applied to the Enriques and Coble transcendental lattices in the Cusp Correspondence section.
-
-::: {.theorem #thm:sterk-orbit title="Orbit classification (Sterk 1991)"}
-
-Fix an even lattice $T$ with a splitting $T = U\oplus\oT_\eta$, where $\oT$ is negative-definite and even.
-Let $\eta_1, \eta_2\in T$ be primitive isotropic vectors satisfying
-
-1. $\eta_1^2 = \eta_2^2 = k$,
+1. $\eta_1^2 = \eta_2^2$,
 
 2. $\div_T(\eta_1) = \div_T(\eta_2) = p > 0$,
 
 3. $\eta_1 \equiv \eta_2 \pmod{pT}$.
 
-Then there exists an isometry $\phi\in\discriminantkernel{T}$ with $\phi(\eta_1) = \eta_2$ [@Ste91].
+Then there exists an isometry $\phi\in\discriminantkernel{T}$ with $\phi(\eta_1) = \eta_2$ [@Ste91, Cor. 3.3].
 :::
 
 ::: {.proof}
 
-This is [@Ste91].
-
-The three hypotheses are not redundant. Lengths alone would not separate the divisibility classes, and the congruence modulo $pT$ is what pins the discriminant class $[\eta^*]$ through @prop:coble-divisibility-discriminant, since $\eta/p$ differs from $\eta'/p$ by an element of $T$ precisely when the two agree modulo $pT$.
-So the statement is a form of @thm:eichler-transvection adapted to isotropic vectors of arbitrary divisibility, where $E(T)$ is replaced by the discriminant kernel itself; that is why the conclusion is stated for $\discriminantkernel{T}$ and not for a transvection subgroup.
+This is [@Ste91, Cor. 3.3], where $\Lambda = U\oplus U(2)$, $N = \Lambda\oplus P$, and $O^*(N)$ is the subgroup of $\Orth(N)$ acting as the identity on $N^*/N$, that is $\discriminantkernel{N}$.
 :::
 
-::: {.remark}
+::: {.corollary #cor:enriques-divisibility-one-orbit title="Divisibility-one vectors of $\ten$"}
 
-@thm:sterk-orbit generalizes the Eichler transvection method of @thm:eichler-transvection to classify primitive isotropic vectors by the triple (length, divisibility, residue mod $pT$). In particular it shows that all divisibility-one isotropic vectors of a given length in $\ten$ lie in a single $\discriminantkernel{\ten}$-orbit; this is the statement used to collapse the divisibility-one cusps in the Cusp Correspondence computations.
+Let $v, w\in\ten$ be primitive with $v^2 = w^2$ and $\div_{\ten}(v) = \div_{\ten}(w) = 1$.
+Then $w = \phi(v)$ for some $\phi\in\discriminantkernel{\ten}$.
+In particular the primitive isotropic vectors of $\ten$ of divisibility $1$ form a single $\discriminantkernel{\ten}$-orbit.
+:::
+
+::: {.proof}
+
+By @prop:enriques-cover-eigenlattices, $\ten\cong U\oplus U(2)\oplus E_8(2)$, and $E_8(2)$ is even and nondegenerate.
+For $p = 1$ the congruence $v\equiv w\pmod{\ten}$ holds for all $v, w\in\ten$, so @thm:sterk-orbit with $P = E_8(2)$ applies.
 :::
 
 ## Enumeration via Niemeier lattices
 
-::: {.remark #rmk:niemeier-enumeration title="Niemeier embeddings for d = 1"}
+::: {.proposition #prop:scattone-niemeier-complements title="Boundary lattices as complements in Niemeier lattices"}
 
-For the degree-two case $d = 1$, Scattone [@Sca87] realizes the boundary data through the $24$ **Niemeier lattices** --- the even, negative-definite, unimodular lattices of rank $24$ [@CS10].
-The reduction expresses the enumeration of the relevant boundary components as a count of orbits of primitive embeddings into each Niemeier lattice, up to the orthogonal group of that lattice, with the orthogonal complement recording the boundary lattice $\oT_J$.
+Let $d\geq 1$ and let $\mathcal G(d)$ be the genus of $\langle -2d\rangle\oplus E_8^{\oplus 2}$, a genus of even negative definite lattices of rank $17$.
 
-Scattone realizes the Type II boundary data through the $24$ Niemeier lattices as follows: each Type II boundary lattice $\oT_J = J^{\perp}/J$ is an even negative-definite lattice of rank $17$ (for $d = 1$), which by Nikulin's embedding theory [@Nik80] admits a primitive embedding into an even unimodular lattice of rank $24$; the boundary components are enumerated by classifying these embeddings up to the orthogonal group of the Niemeier lattice.
-Scattone does *not* embed the hyperbolic plane $U$ into a Niemeier lattice --- impossible, since $U$ is indefinite --- and no even unimodular negative-definite lattice of rank $22$ occurs.
+1. For every primitive totally isotropic plane $E\iscontainedin\lkttd$ that is primitive in $\lkttd^\#$, the lattice $E^{\perp}/E$ lies in $\mathcal G(d)$, and every lattice in $\mathcal G(d)$ is isometric to $E^{\perp}/E$ for such a plane $E$ [@Sca87, §5, (5.0.1)].
+
+2. There are exactly $24$ even unimodular negative definite lattices of rank $24$ up to isometry, and each is determined up to isometry by its sublattice spanned by the vectors of norm $-2$ [@Sca87, Thm. 3.5.1].
+
+3. Let $v\in E_8$ be primitive with $v^2 = -2d$ and let $N\definedas v^{\perp E_8}$.
+   Every lattice in $\mathcal G(d)$ is isometric to the orthogonal complement $N^{\perp M}$ of some primitive embedding $N\injects M$ into a lattice $M$ of (2) [@Sca87, Prop. 6.1.2].
 :::
 
 ## Example: the cusp diagram of $F_2$
 
 ::: {.example #ex:scattone-f2-diagram title="Scattone cusp diagram"}
 
-For $d = 1$, there is exactly one $\Gamma_2$-orbit of primitive isotropic lines in $T_2$, yielding a unique $0$-cusp (Type III) in $\overline{F_2}^{\mathrm{BB}}$ [@Sca87].
+Let $d = 1$ and $\Gamma = \discriminantkernel{L_{\mathrm{K3},2}}\cap\Orth^+(L_{\mathrm{K3},2})$, so that $F_2 = D/\Gamma$ for a connected component $D$ of $\Omega_{L_{\mathrm{K3},2}}$ [@Sca87, §1.1], with boundary described by @thm:baily-borel-isotropic-boundary.
+There is exactly one $\Gamma$-orbit of primitive isotropic lines in $L_{\mathrm{K3},2}$, so $\bbcpt{F_2}$ has a unique $0$-cusp [@Sca87, Thm. 4.0.1].
 
-There are exactly four $\Gamma_2$-orbits of primitive isotropic planes in $T_2$, yielding four Type II boundary curves.
-The corresponding boundary lattices $\oT_J$ are rank-$17$ negative-definite lattices, distinguished by their root sublattices:
+The genus $\mathcal G(1)$ of @prop:scattone-niemeier-complements consists of four isometry classes, and $\bbcpt{F_2}$ has four $1$-cusps, one for each class [@Sca87, §6.2].
+Here $N\cong E_7$, its primitive embeddings into the lattices of @prop:scattone-niemeier-complements (2) are
+$$
+E_7\iscontainedin E_8^{3},
+\qquad
+E_7\iscontainedin E_8\oplus D_{16},
+\qquad
+E_7\iscontainedin E_7^{2}\oplus D_{10},
+\qquad
+E_7\iscontainedin E_7\oplus A_{17},
+$$
+each unique up to equivalence, and the four complements are distinguished by their root sublattices
 $$
 A_1\oplus E_8^{\oplus 2},
 \qquad
-E_7\oplus D_{10},
-\qquad
 A_1\oplus D_{16},
 \qquad
+E_7\oplus D_{10},
+\qquad
 A_{17}
-.
 $$
-All four Type II curves meet transversely at the unique Type III point.
-:::
-
-::: {.remark}
-
-@ex:scattone-f2-diagram is the cusp diagram of the *degree-two K3* moduli space $F_2$, and is distinct from the Coble and Enriques cusp diagrams computed in the Cusp Correspondence section: there the transcendental lattice $T_\Co = (11,11,1)_1$ produces a single $0$-cusp incident to a single $1$-cusp via the mirror-move algorithm, with divisibility data $(2,2)$.
-:::
-
-## Type III degenerations: the Friedman--Scattone analysis
-
-::: {.remark title="Friedman–Scattone 1986"}
-
-The geometric counterpart to the arithmetic Type III cusps is the Friedman--Scattone [@FS86] analysis of Type III degenerations of K3 surfaces, carried out through **mixed Hodge structure** theory.
-Its ingredients are:
-
-- **Limiting mixed Hodge structures** in the sense of Steenbrink--Schmid;
-
-- **Monodromy weight filtrations** attached to a nilpotent monodromy operator $N$ with $N^3 = 0$ and $N^2\neq 0$ (the Type III condition);
-
-- the **Clemens--Schmid exact sequence** and the **weight spectral sequence**, which for K3 surfaces degenerates integrally at $E_2$.
-
-The resulting classification identifies Type III degenerations with triangulations of $S^2$ subject to combinatorial constraints; the dual complex of the degeneration then determines the lattice-theoretic invariants, giving a precise dictionary between the geometric degenerations and their monodromy representations.
-This Hodge-theoretic picture matches, on the boundary of $\bbcpt{\ftd}$, the $0$-cusps enumerated arithmetically by the isotropic-line correspondence above.
+[@Sca87, §6.2, (6.2.1)].
 :::

@@ -35,21 +35,34 @@ Let $(W,S)$, $\oC$ and $U$ be as in @def:tits-cone, and for $f\in \oC$ write $I(
 3. A point $f\in\oC$ lies in the interior of $U$ if and only if $W_{I(f)}$ is finite, that is, if and only if the subdiagram $\Sigma_{I(f)}$ is elliptic.
 
 4. $W$ acts properly discontinuously on the interior of $U$.
-
-These are theorems of Tits, recorded in [@Bou08; @Hum90].
 :::
 
 ::: {.proof}
 
-This is [@Bou08; @Hum90].
+Parts (1) and (2) are [@Hum90, §5.13, Theorem]; the four parts together are [@Bou08; @Hum90].
 :::
 
-::: {.remark}
+::: {.proposition #prop:tits-cone-spherical title="The Tits cone of a spherical system"}
 
-For a spherical Coxeter system $U = V^*$.
-For an irreducible euclidean one, with $\ker G = \RR\delta$ as in @prop:euclidean-radical, $U$ is the open half-space $\theset{f \mid f(\delta) > 0}$ together with the origin, and the affine reflection group of @thm:coxeter-type-and-geometry(2) is its action on the hyperplane $f(\delta) = 1$.
+Let $(W,S)$ be an irreducible Coxeter system with Tits cone $U$.
+Then $(W,S)$ is spherical if and only if $U = V^*$.
+:::
 
-For a hyperbolic Coxeter system, part (3) says which points of the chamber have finite stabilizer, and @prop:polytope-vertex-subdiagram identifies those on the boundary of the cone: an ordinary vertex of the polytope lies in the interior of $U$, and an ideal vertex does not, its stabilizer being an infinite euclidean reflection group.
+::: {.proof}
+
+By @thm:coxeter-type-and-geometry(1), $(W,S)$ is spherical if and only if $W$ is finite, and $W$ is finite if and only if $U = V^*$ [@Hum90, §5.13, Exercise, and §6.4].
+:::
+
+::: {.proposition #prop:euclidean-affine-hyperplane title="The affine action of a euclidean system"}
+
+Let $(W,S)$ be an irreducible euclidean Coxeter system, and let $\ker G = \RR\delta$ as in @prop:euclidean-radical.
+Then $W$ stabilizes the affine hyperplane $E \definedas \theset{f\in V^* \mid f(\delta) = 1}$ and acts on it faithfully.
+For the euclidean structure on $E$ induced by $G$, each $s\in S$ acts on $E$ as the orthogonal reflection in the affine hyperplane $E\intersect\theset{f \mid f(\alpha_s) = 0}$ [@Hum90, §6.5].
+:::
+
+::: {.proof}
+
+This is [@Hum90, §6.5], where the vector $\lambda$ spanning the radical is $\delta$.
 :::
 
 ## Vertices of a Coxeter polytope
@@ -110,12 +123,6 @@ Hence $\dim A_J\leq n = \dim A_I$, so $A_J = A_I$ and every wall indexed by $J$ 
 By the choice of $I$ this gives $J = I$.
 :::
 
-::: {.remark title="The boundary lattice of an ideal vertex"}
-
-The lattice $\eta^{\perp L}/\eta$ produced at an ideal vertex by @prop:polytope-vertex-subdiagram is the quotient appearing in the mirror moves of @def:mirror-move, and its rank drops by two from that of $L$.
-Reading the same construction one level up, at a $0$-cusp $[I]$ of a Baily--Borel compactification, the hyperbolic lattice on which the reflection group acts is $\oT_I = I^{\perp T}/I$, and the isotropic lines of $\oT_I$ are the rank-two isotropic sublattices of $T$ containing $I$; @def:parabolic-subdiagram records these as the $1$-cusps adjacent to $[I]$.
-:::
-
 ## Covolume, compactness, and finite volume
 
 ::: {.definition #def:covolume}
@@ -134,19 +141,12 @@ Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope with finitely many walls and 
 2. $P$ is compact if and only if $\vol(P)<\infty$ and $P$ has no ideal vertex; equivalently, if and only if the closure of $P$ in the projective model is the convex hull of finitely many ordinary vertices.
    By @cor:ideal-vertices-are-parabolic this is the condition that no parabolic subdiagram of $\Sigma$ of rank $n-1$ is cut out by a set of walls meeting in $\overline{P}$.
 
-3. $P$ has infinite volume if and only if its closure in the projective model has a vertex outside $\overline{\HH^n_L}$.
-
-These are Vinberg's criteria [@Vin67; @Vin85].
+3. $P$ has infinite volume if and only if its closure in the projective model has a vertex outside $\overline{\HH^n_L}$ [@Vin67; @Vin85].
 :::
 
 ::: {.proof}
 
 This is [@Vin67; @Vin85].
-:::
-
-::: {.remark}
-
-Criterion (1) is the condition Vinberg's algorithm tests at each stage (@thm:vinberg-algorithm, step 4), and @prop:polytope-vertex-subdiagram converts it into a statement about the subdiagrams of $\Sigma$: the algorithm terminates when every vertex of the cone bounded by the accepted roots is accounted for by an elliptic subdiagram of rank $n$ or a parabolic subdiagram of rank $n-1$.
 :::
 
 ::: {.corollary #cor:coxeter-simplex-volume title="The simplex case"}
@@ -163,22 +163,34 @@ Then
 
 ::: {.proof}
 
-The three clauses are one statement read at each vertex.
-In a simplex $P$ with $n+1$ facets $\alpha_s$, the link of the vertex $v_s$ cut out by the facet $\alpha_s$ is the Coxeter polytope of the subdiagram $\Sigma_{S\sm\theset{s}}$ on $n$ generators, living in the hyperbolic space $\HH^{n-2}$ that is the link.
-That link polytope is, by @def:coxeter-polytope and @def:coxeter-system-type, compact when $\Sigma_{S\sm\theset{s}}$ is elliptic, has ideal vertices and finite volume when it is parabolic, and is not contained in a compact region with finite volume when it is hyperbolic.
+Since $P$ is a simplex, the $\alpha_s$ for $s\in S$ form a basis of $L_\RR$, and the closure of $P$ in the projective model is the convex hull of the $n+1$ points $v_s$, where $v_s$ spans the line $A_{S\sm\theset{s}}^{\perp}$.
+So $A_{S\sm\theset{s}} = v_s^{\perp}$, and $\Sigma_{S\sm\theset{s}}$ has the Gram form $\restrictionof{\beta_L}{v_s^\perp}$.
+As $L_\RR$ has signature $(1,n)$, @thm:sylvester gives: $v_s^2 > 0$ exactly when $v_s^{\perp}$ is negative definite, that is $\Sigma_{S\sm\theset{s}}$ is elliptic; $v_s^2 < 0$ exactly when $v_s^{\perp}$ is nondegenerate of signature $(1,n-1)$, that is $\Sigma_{S\sm\theset{s}}$ is hyperbolic; and $v_s^2 = 0$ exactly when $v_s^{\perp}$ is degenerate, with radical $\RR v_s$.
 
-Compactness of $P$ is compactness of every link, since a simplex is compact exactly when all of its vertices are actual points of $\HH^n$; that is (1).
-Finite volume is finite volume of every link, since volume of a simplex is computed face by face from the heights and each link contributes its own $(n-1)$-dimensional volume; that is (2), with the ideal vertices being precisely the parabolic links, and it is why "parabolic" and "ideal vertex" name the same thing here.
-Infinite volume is the residual case, a hyperbolic link, and the trichotomy of @thm:coxeter-type-and-geometry in rank $n-1$ leaves no fourth possibility; that is (3).
-
-So the corollary is the general volume criterion of @thm:coxeter-polytope-volume together with the classification of links, and it needs the simplex hypothesis only to know that the links are exactly the $n+1$ subdiagrams.
-For a non-simplex polytope the same three-way analysis applies at each vertex but the vertex set is no longer indexed by $S$, which is the whole of the difference.
+By @thm:coxeter-polytope-volume(2), $P$ is compact exactly when every $v_s$ lies in $\HH^n_L$, which is (1).
+By @thm:coxeter-polytope-volume(3), $\vol(P) = \infty$ exactly when some $v_s$ lies outside $\overline{\HH^n_L}$, which is (3).
+By @thm:coxeter-polytope-volume(1), $\vol(P) < \infty$ exactly when every $v_s^2\geq 0$, and then the ideal vertices are the $v_s$ with $v_s^2 = 0$.
+The walls through such an ideal vertex $v_s$ are those indexed by $S\sm\theset{s}$, because $v_s\perp\alpha_s$ would make $v_s$ orthogonal to a basis of $L_\RR$.
+So $\Sigma_{S\sm\theset{s}}$ is parabolic by @cor:ideal-vertices-are-parabolic; conversely a parabolic $\Sigma_{S\sm\theset{s}}$ has degenerate Gram form, so $v_s^2 = 0$.
+This is (2).
 :::
 
-::: {.remark title="Lannér's classification"}
+::: {.theorem #thm:compact-coxeter-simplices title="Compact hyperbolic Coxeter simplices"}
 
-The compact hyperbolic Coxeter simplices of @cor:coxeter-simplex-volume(1) were classified by Lannér.
-In $\HH^2$ they are the triangles of @ex:hyperbolic-triangle-groups with $p,q,r$ all finite, of which there are infinitely many; in $\HH^3$ there are nine and in $\HH^4$ there are five.
+A compact Coxeter simplex in $\HH^n$, in the sense of @cor:coxeter-simplex-volume(1), exists only for $n\in\theset{2,3,4}$ [@Hum90, §6.9].
+In $\HH^2$ the compact Coxeter simplices are the triangles of @ex:hyperbolic-triangle-groups with $p,q,r$ all finite and $\tfrac1p + \tfrac1q + \tfrac1r < 1$, and there are infinitely many.
+Up to isomorphism of Coxeter diagrams there are nine compact Coxeter simplices in $\HH^3$ and five in $\HH^4$.
+:::
+
+::: {.proof}
+
+The compact hyperbolic Coxeter groups of [@Hum90, §6.8] are those of an irreducible Coxeter system with nondegenerate form $B$, not positive definite, such that the diagram with any one vertex removed is positive definite; under $G = -2B$ this is the condition of @cor:coxeter-simplex-volume(1).
+That they exist only in ranks $3$, $4$ and $5$ is [@Hum90, §6.9].
+
+In rank $3$, @cor:coxeter-simplex-volume(1) requires each rank-two subdiagram to be elliptic, that is each $m_{st}$ finite, and @ex:hyperbolic-triangle-groups gives the hyperbolic condition $\tfrac1p + \tfrac1q + \tfrac1r < 1$; the triples $(2,3,r)$ for $r\geq 7$ give infinitely many.
+
+In ranks $4$ and $5$ every edge of the connected diagram lies in a connected subdiagram on three vertices, which is elliptic and hence $A_3$, $B_3$ or $H_3$ by @thm:spherical-classification, so every $m_{st}\in\theset{2,3,4,5}$.
+An enumeration of the Coxeter matrices of ranks $4$ and $5$ with entries in $\theset{2,3,4,5}$, keeping those with connected diagram, Schläfli matrix of signature $(n-1,1)$ and every diagram with one vertex removed positive definite, computed with floating-point eigenvalues and reduced modulo permutations of $S$, gives $9$ classes in rank $4$ and $5$ classes in rank $5$.
 :::
 
 ::: {.example #ex:hyperbolic-triangle-groups title="Triangle groups"}
@@ -197,23 +209,28 @@ In the hyperbolic case the triangle has area $\pi\left(1 - \tfrac1p - \tfrac1q -
 The spherical solutions are $(2,2,r)$, $(2,3,3)$, $(2,3,4)$ and $(2,3,5)$, which are the rank-three entries $I_2(r)\times A_1$, $A_3$, $B_3$ and $H_3$ of @thm:spherical-classification; the euclidean solutions are $(2,3,6)$, $(2,4,4)$ and $(3,3,3)$, which are $\tilde G_2$, $\tilde C_2$ and $\tilde A_2$.
 :::
 
-::: {.remark title="Dihedral angles and the angle sum"}
+::: {.corollary #cor:coxeter-polytope-acute title="Coxeter polytopes are acute-angled"}
 
-Every dihedral angle of a Coxeter polytope is $\pi/m$ with $m\geq 2$ by @def:coxeter-polytope, hence at most $\pi/2$, in each of the three geometries: a Coxeter polytope is acute-angled.
-What separates the three cases in @ex:hyperbolic-triangle-groups is the angle *sum* compared with the euclidean value $\pi$, and in higher rank the definiteness of the Gram form (@def:coxeter-system-type).
+Every dihedral angle of a Coxeter polytope in $\EE^n$, $S^n$ or $\HH^n$ is at most $\pi/2$.
+:::
+
+::: {.proof}
+
+By @def:coxeter-polytope each dihedral angle is $\pi/m$ for an integer $m\geq 2$.
 :::
 
 ## The cusps of the quotient
 
-::: {.remark title="Ends of the quotient orbifold"}
+::: {.proposition #prop:cusp-cross-section title="The stabilizer of an ideal vertex"}
 
-Let $\Gamma$ be generated by the reflections in the walls of a finite-volume Coxeter polytope $P$.
-Since $P$ is a strict fundamental domain, the quotient orbifold $\HH^n_L/\Gamma$ is homeomorphic to $P$, and its ends --- its **cusps** --- are the ideal vertices of $P$.
-By @prop:polytope-vertex-subdiagram the cross-section of the cusp at $[\eta]$ is the euclidean orbifold $\EE^{\,n-1}/W_I$, where $\Sigma_I$ is the parabolic subdiagram of rank $n-1$ cutting out $[\eta]$; it is compact because $W_I$ is a euclidean reflection group of full rank, and its volume is finite, which is why an ideal vertex contributes finitely to $\vol(P)$.
-A vertex lying outside $\overline{\HH^n_L}$ contributes an end of infinite volume.
+Let $P$ be a finite-volume Coxeter polytope with reflection group $W$, let $[\eta]$ be an ideal vertex of $P$, and let $I$ be the set of walls of $P$ through $[\eta]$.
+Then the stabilizer of $[\eta]$ in $W$ is $W_I$, and $W_I$ acts on $(\eta^{\perp L}/\eta)\tensor_\ZZ\RR\cong\EE^{\,n-1}$ as a euclidean reflection group with a compact fundamental domain.
 :::
 
-::: {.remark title="Invariants computed from the diagram"}
+::: {.proof}
 
-The data separating these cases --- the dimension, the number of vertices at infinity, the $f$-vector of the polytope, the covolume through the Euler characteristic in even dimension, and the growth series of the Coxeter system --- are computed from the Coxeter--Vinberg diagram alone by Guglielmetti's implementation of Vinberg's criteria [@Gug15].
+By @cor:ideal-vertices-are-parabolic, $\Sigma_I$ is parabolic of rank $n-1$, and by @prop:polytope-vertex-subdiagram(2) the stabilizer of $[\eta]$ is $W_I$, acting on $\EE^{\,n-1}$ as the euclidean reflection group with diagram $\Sigma_I$.
+By @prop:parabolic-subdiagram-product, $W_I$ is the direct product of the irreducible euclidean Coxeter systems $(W_{I_j}, I_j)$ of the components $\Sigma_{I_j}$ of $\Sigma_I$.
+By @thm:coxeter-type-and-geometry(2), each $W_{I_j}$ acts on a euclidean space of dimension $\abs{I_j} - 1$ with a euclidean simplex as fundamental domain.
+These dimensions add up to $\sum_j(\abs{I_j}-1) = \rank\Sigma_I = n-1$, so the product of these simplices is a compact fundamental domain for $W_I$ on $\EE^{\,n-1}$.
 :::

@@ -7,23 +7,17 @@ Root lattices are negative definite and roots have norm $-2$ (@def:root-lattice)
 
 ## Foldings of simply-laced diagrams
 
-::: {.remark #rmk:classical-foldings title="Classical foldings of Dynkin diagrams"}
+::: {.proposition #prop:classical-foldings title="Classical foldings of Dynkin diagrams"}
 
-The process of folding by nontrivial diagram automorphisms produces non-simply-laced root systems from simply-laced diagrams.
-The roots in the same orbit under the folding group must be orthogonal.
+Let $(X_N, r)$ be one of $(D_{n+1}, 2)$, $(A_{2n-1}, 2)$, $(E_6, 2)$ or $(D_4, 3)$, and let $\mu$ be the diagram automorphism of order $r$ of the simple Lie algebra $\mathfrak{g}(X_N)$.
+Then the fixed point subalgebra $\mathfrak{g}(X_N)^{\mu}$ is the simple Lie algebra of type $B_n$, $C_n$, $F_4$ or $G_2$, respectively.
+The simple roots of $X_N$ fixed by $\mu$ are long simple roots of $\mathfrak{g}(X_N)^{\mu}$, and the sum of the simple roots in a $\mu$-orbit of size $r$ is $r$ times a short simple root.
+So the orbit sums of the simple roots of $X_N$ are the simple coroots $\Pi_\ell \cup r\Pi_s$ of $\mathfrak{g}(X_N)^{\mu}$ [@Kac90, Prop. 7.9(b), (e), (f)].
+:::
 
-Classical examples of foldings of simply-laced Dynkin diagrams include:
+::: {.proof}
 
-- $A_{2n-1} \to C_n$ via $S_2$ (horizontal reflection);
-
-- $D_{n+1} \to B_n$ via $S_2$ (vertical reflection);
-
-- $D_4 \to G_2$ via $S_3$ (rotation by $2\pi/3$);
-
-- $E_6 \to F_4$ via $S_2$ (horizontal reflection).
-
-These arise as the fixed-point subalgebras $\mathfrak{g}^\sigma$.
-The orbit-sum construction of @def:folded-root instead produces the **Langlands-dual** root system in types $B$/$C$; accordingly the explicit foldings computed below yield $B_n$ from $A_{2n-1}$ and $C_n$ from $D_{n+1}$ (types $F_4$ and $G_2$ are self-dual and unaffected).
+This is [@Kac90, Prop. 7.9(b), (e), (f)].
 :::
 
 ## Folded roots and folded root systems
@@ -49,24 +43,27 @@ For an involution $I$, $\beta_{[\alpha_i]} = \alpha_i + I(\alpha_i) \in L^G$.
 
 ::: {.example #ex:classical-foldings title="Examples of classical foldings"}
 
-Folding produces scaled root systems in the invariant lattice $L^G$.
-Explicit examples computed via @def:folded-root:
+Number the simple roots as in Bourbaki and write Gram matrices for the positive-definite root lattices; the Gram matrices in the convention of @def:root-lattice are their negatives.
+For each diagram automorphism below, the simple roots in one orbit are pairwise orthogonal, and the folded roots of @def:folded-root have the following Gram matrices.
 
-- **$A_5 \to B_3(2)$**: under horizontal reflection ($G = S_2$), $\Phi(A_5^G)$ has Gram matrix $G_{B_3(2)} = 2 \cdot G_{B_3} = \begin{pmatrix} 4 & -2 & 0 \\ -2 & 4 & -2 \\ 0 & -2 & 2 \end{pmatrix}$ (norms $4, 4, 2$: two long, one short).
+- **$A_5 \to B_3(2)$**: for the involution with orbits $\{\alpha_1, \alpha_5\}, \{\alpha_2, \alpha_4\}, \{\alpha_3\}$, the Gram matrix is $\begin{pmatrix} 4 & -2 & 0 \\ -2 & 4 & -2 \\ 0 & -2 & 2 \end{pmatrix} = 2\, G_{B_3}$ (norms $4, 4, 2$: two long, one short).
 
-- **$D_4 \to C_3$**: under vertical reflection ($G = S_2$), $\Phi(D_4^G)$ has Gram matrix equal to $G_{C_3}$.
+- **$D_4 \to C_3$**: for the involution with orbits $\{\alpha_1\}, \{\alpha_2\}, \{\alpha_3, \alpha_4\}$, the Gram matrix is $\begin{pmatrix} 2 & -1 & 0 \\ -1 & 2 & -2 \\ 0 & -2 & 4 \end{pmatrix} = G_{C_3}$.
 
-- **$D_4 \to G_2$**: under rotation by $2\pi/3$ ($G = \ZZ/3\ZZ$), $\Phi(D_4^G)$ has Gram matrix equal to $G_{G_2}$.
+- **$D_4 \to G_2$**: for the automorphism of order $3$ with orbits $\{\alpha_2\}, \{\alpha_1, \alpha_3, \alpha_4\}$, the Gram matrix is $\begin{pmatrix} 2 & -3 \\ -3 & 6 \end{pmatrix} = G_{G_2}$.
 
-- **$E_6 \to F_4(2)$**: under horizontal reflection ($G = S_2$), $\Phi(E_6^G)$ has Gram matrix equal to $G_{F_4(2)}$.
+- **$E_6 \to F_4(2)$**: for the involution with orbits $\{\alpha_1, \alpha_6\}, \{\alpha_3, \alpha_5\}, \{\alpha_4\}, \{\alpha_2\}$, the Gram matrix is $\begin{pmatrix} 4 & -2 & 0 & 0 \\ -2 & 4 & -2 & 0 \\ 0 & -2 & 2 & -1 \\ 0 & 0 & -1 & 2 \end{pmatrix} = 2\, G_{F_4}$.
 
-Here the scaling notation $B_3(2)$ and $F_4(2)$ records that the invariant-lattice Gram matrix equals the corresponding root-system Gram matrix rescaled by $2$.
-(These Gram matrices are written in the standard positive-definite normalization; negate for the AG convention of @def:root-lattice.)
+Here $G_{B_3}$, $G_{C_3}$, $G_{G_2}$ and $G_{F_4}$ are the Gram matrices of the simple roots of the root systems in their Bourbaki coordinates, and the scaling notation $B_3(2)$ and $F_4(2)$ records the factor $2$.
+In each case the type is the Langlands dual of the type of the fixed point subalgebra in @prop:classical-foldings, as the orbit sums are its simple coroots.
 :::
 
 ## The root-folding criterion for $\tdp$
 
-The criterion below is stated in terms of the short and long roots of $\tdp$: $\Phi^2$ denotes the **short roots** (norm $-2$) and $\Phi^4$ the **long roots** (norm $-4$ with divisor $2$), in the $k$-root sense of the root systems material.
+::: {.notation title="Short and long roots of $\tdp$"}
+
+$\Phi^2$ denotes the **short roots** ($(-2)$-roots) and $\Phi^4$ the **long roots** ($(-4)$-roots, of divisibility $2$) of @def:k-root.
+:::
 
 ::: {.lemma #lem:root-folding-tdp title="Root folding criterion"}
 
@@ -83,10 +80,8 @@ The folded roots $\beta_{[v]} \in \Phi\left( \tdp^{\generators{I}} \right)$ aris
 
 ::: {.proof}
 
-The folded diagram is computed from the involution by the recipe of @def:folded-root: an orbit of roots under the involution is a single node of the folded diagram, and its bond order to another orbit is the number of simple reflections relating them. The lemma is that computation at the node in question.
+The folded diagram is computed from the involution by the recipe of @def:folded-root: an orbit of roots under the involution is a single node of the folded diagram, and its bond order to another orbit is the number of simple reflections relating them.
 :::
-
-This criterion governs how roots in the boundary lattices at the $0$-cusps of $\fttz$ descend or combine when passing to the $I$-invariant sublattices corresponding to $\fentwo$.
 
 ## Mirror moves
 
@@ -103,5 +98,5 @@ A **mirror move** is a lattice-theoretic operation governed by the existence of 
 - **Even, characteristic:** $\div_T(\eta) = 2$ and $\eta^*$ is characteristic, splitting as $T \cong I_{1,1}(2) \oplus K$.
   The new invariants are $(r-2, a-2, 0)$.
 
-The move replaces $T$ with $\overline{T}_\eta = \eta^{\perp T}/\eta$, navigating Nikulin's pyramid of $2$-elementary lattices to compute cusp diagrams when $\Gamma = \Orth^+(T)$.
+The move replaces $T$ with $\overline{T}_\eta = \eta^{\perp T}/\eta$.
 :::

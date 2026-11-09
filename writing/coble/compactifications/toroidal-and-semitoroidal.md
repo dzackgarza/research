@@ -7,36 +7,52 @@
 A **toroidal compactification** $\torcpt{\FG}$ refines the singular cusps of the Baily--Borel compactification by choosing an admissible rational polyhedral fan $\torfan_I$ for each cusp $I$.
 
 Locally, the boundary is modeled on toric varieties $X_{\torfan_I}$.
-This resolves the singularities of $\bbcpt{\FG}$, providing a proper algebraic variety with a divisorial boundary (often snc).
-
-The choice of fans makes the construction non-canonical.
-However, it often allows the extension of period maps and universal families over boundary strata.
-There is a proper $\Gamma$-equivariant morphism $\torcpt{\FG} \to \bbcpt{\FG}$.
 :::
 
 ## Semitoroidal compactifications
 
 ::: {.definition #def:semitoroidal-compactification}
 
-Introduced by Looijenga [@Loo02], a **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the strict fans of toroidal compactifications with $\Gamma$-admissible **semifans** $\mcf_I$.
+A **semitoroidal compactification** $\semitorcpt{\FG}$ replaces the fans of a toroidal compactification with $\Gamma$-admissible **semifans** $\mcf_I$ [@Loo02, Def. 6.1; @AE23, Def. 5.11].
 
-A semifan $\mcf_I$ carries the same data as a fan, except that its cones need only be locally polyhedral in $C_I$ rather than rational polyhedral, together with a compatibility condition at each $1$-cusp: for $I = \ZZ\delta \oplus \ZZ\lambda$ a primitive rank two isotropic lattice, the tiles of the periodic tiling of $I^{\perp}/I$ induced by the cones of $\mcf_I$ containing $\ZZ\lambda$ are of the form $B \times (H_I \otimes \RR)$ for bounded polytopes $B$, and the primitive sublattice $H_I$ is required not to depend on the choice of $\delta\in I$ [@AE23, Def. 5.11; @Loo02, Def. 6.1].
-Local finiteness is not among the relaxed axioms, and every fan is a semifan.
+A semifan $\mcf_I$ consists of the same data as a fan, except that its cones need only be locally polyhedral in $C_I$ rather than rational polyhedral, together with a compatibility condition at each $1$-cusp: for $I = \ZZ\delta \oplus \ZZ\lambda$ a primitive rank two isotropic lattice, the tiles of the periodic tiling of $I^{\perp}/I$ induced by the cones of $\mcf_I$ containing $\ZZ\lambda$ are of the form $B \times (H_I \otimes \RR)$ for bounded polytopes $B$, and the primitive sublattice $H_I$ is required not to depend on the choice of $\delta\in I$ [@AE23, Def. 5.11; @Loo02, Def. 6.1].
+As for a fan, the cones of $\mcf_I$ are locally finite in $C_I$.
+:::
 
-When $\overline F$ is semitoroidal the comparison morphisms assemble into a tower of proper birational morphisms:
+::: {.proposition #prop:semifan-refinement-morphism title="Morphisms from refinements"}
+
+Let $\mcf$ and $\mathfrak{G}$ be semifans for $\FG$ such that $\mathfrak{G}$ refines $\mcf$.
+Then there is a morphism $\overline{F}^{\mathfrak{G}} \to \overline{F}^{\mcf}$ that maps strata to strata [@AE23, Thm. 5.13; @Loo02, Lem. 6.6].
+:::
+
+::: {.proof}
+
+This is [@AE23, Thm. 5.13], which cites [@Loo02, Lem. 6.6].
+:::
+
+::: {.corollary #cor:toroidal-to-baily-borel title="The tower over the Baily--Borel compactification"}
+
+Let $\torfan$ be a fan and $\mcf$ a semifan for $\FG$ such that $\torfan$ refines $\mcf$.
+Then there are morphisms
 $$
 \torcpt{\FG} \too
 \semitorcpt{\FG} \too
 \bbcpt{\FG}
 .
 $$
-They are critical for modeling KSBA boundaries where the relevant semifans are not fans.
+:::
+
+::: {.proof}
+
+Every fan is a semifan, and the semifan $\{C_I^+\}$ defines the Baily--Borel compactification [@AE23, Ex. 5.12].
+Every semifan refines $\{C_I^+\}$, because its cones lie in $C_I^+$.
+Apply @prop:semifan-refinement-morphism to $\torfan$ refining $\mcf$ and to $\mcf$ refining $\{C_I^+\}$.
 :::
 
 ::: {.theorem #thm:tower-semitoroidal}
 
 Let $F$ be a type IV arithmetic quotient and $\overline F$ a normal compactification of $F$.
-Then $\overline F$ is a semitoroidal compactification, for some semifan $\mcf_I$, if and only if it sits between some toroidal and the Baily--Borel compactification, that is if there is a fan $\FG$ and a tower
+Then $\overline F$ is a semitoroidal compactification, for some semifan $\mcf_I$, if and only if it sits between some toroidal and the Baily--Borel compactification, that is if there is a fan $\torfan$ and a tower
 $$
 \torcpt{\FG} \too
 \overline F \too
@@ -49,54 +65,37 @@ of morphisms over $\bbcpt{\FG}$ [@AE23, Thm. 5.14].
 
 This is [@AE23, Thm. 5.14].
 
-The forward implication is immediate on refining the semifan to a fan; the converse reconstructs the semifan as the images of the cones of maximal dimension. The tower of @def:semitoroidal-compactification is the special case in which $\overline F$ is itself semitoroidal.
-:::
-
-::: {.remark title="Polarized Coble trace restriction"}
-
-@conj:restricted_ramification_semifan states that the semifan for the polarized Coble compactification is the **trace** of the Enriques ramification semifan on a Coble hyperplane, together with an admissibility condition selecting which restricted walls survive.
+The forward implication follows on refining the semifan to a fan.
+For the converse, the maximal cones of the semifan are the unions of the classes of maximal cones of $\torfan$ under the equivalence relation generated by sharing a codimension one face whose one-dimensional boundary stratum is contracted by $\torcpt{\FG} \to \overline F$.
 :::
 
 ## Generalized Coxeter semifans
 
 ::: {.definition #def:generalized-coxeter-semifan}
 
-The main geometric application of folded Coxeter--Vinberg diagrams is the construction of semitoroidal compactifications of moduli spaces $\FG$ via **generalized Coxeter semifans**.
+Let $\eta$ be a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, reflection group $W$ and fundamental chamber $\mathfrak{C}$.
+Partition the vertices of $G(\Gamma_\eta)$, that is the simple roots, into $\Phi = \Phi^{\relevant} \sqcup \Phi^{\irrelevant}$, the **relevant** and the **irrelevant roots**.
+Let $W^{\irrelevant} \subseteq W$ be the subgroup generated by the reflections in the irrelevant roots.
 
-For a $0$-cusp with Coxeter diagram $G(\Gamma_\eta)$, partition the simple roots into $\Phi = \Phi^{\relevant} \sqcup \Phi^{\irrelevant}$ [@AT17]:
-
-- **Irrelevant roots** ($\Phi^{\irrelevant}$): correspond to strata that are contracted in the KSBA stable model over $\eta$.
-
-- **Relevant roots** ($\Phi^{\relevant}$): the active walls where combinatorial types of stable models change.
-
-The **generalized Coxeter semifan** $\mcf_{\mathrm{gen}}$ is obtained by omitting the walls defined by irrelevant roots [@AT17, Def. 4.16].
-Its maximal cones are unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$.
+The **generalized Coxeter semifan** $\mcf_{\mathrm{gen}}$ has, modulo $W$, the unique maximal cone $\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})$; its other cones are the faces of $\mathfrak{C}$ and their $W$-translates [@AE22, Def. 9.1].
+Its maximal cones are the unions of Weyl chambers $g\big(\Union_{h \in W^{\irrelevant}} h(\mathfrak{C})\big)$ for $g \in W$.
 :::
 
-::: {.remark title="Toroidal versus strictly semitoroidal"}
+::: {.proposition #prop:generalized-coxeter-semifan-is-fan title="When a generalized Coxeter semifan is a fan"}
 
-Unlike classical toroidal compactifications, where all walls of the Weyl chamber are preserved, semitoroidal compactifications allow certain irrelevant roots to be removed.
-The distinction between toroidal and strictly semitoroidal behavior depends on the order of the irrelevant root subgroup $W^{\irrelevant}$:
-
-- **Toroidal**: $|W^{\irrelevant}| < \infty$ (finite irrelevant subgroups).
-
-- **Strictly semitoroidal**: $|W^{\irrelevant}| = \infty$ (infinite irrelevant subgroups, so the semifan is not locally finite).
+The generalized Coxeter semifan $\mcf_{\mathrm{gen}}$ of @def:generalized-coxeter-semifan is a fan if and only if $W$ has finite covolume and $W^{\irrelevant}$ is finite, that is, the irrelevant roots span an elliptic subdiagram [@AE22, Rem. 9.11].
 :::
 
-::: {.remark title="Polarized Coble trace picture"}
+::: {.proof}
 
-For the polarized Coble program, the generalized Coxeter semifan of the Enriques cusp is restricted to a Coble hyperplane: one asks for the trace of the Enriques ramification semifan on that hyperplane, together with an admissibility condition determining which restricted walls survive.
-Under the proposed restriction, a Coble wall is irrelevant precisely when every Enriques wall restricting to it is already irrelevant; see @conj:restricted_ramification_semifan.
+This is [@AE22, Rem. 9.11].
 :::
 
 ## KSBA compactifications
 
 ::: {.definition #def:ksba-compactification}
 
-The **KSBA compactification** generalizes the Deligne--Mumford compactification of curves to higher dimensions.
-It compactifies moduli of varieties of log general type by considering **stable slc pairs** $(X, D)$ [@KS88; @Ale96].
-
-A pair $(X, D = \Sum b_j D_j)$ is **KSBA-stable** if:
+A pair $(X, D = \Sum b_j D_j)$ is **KSBA-stable** [@KS88; @Ale96] if:
 
 1. $X$ is a projective demi-normal variety;
 
@@ -107,13 +106,7 @@ A pair $(X, D = \Sum b_j D_j)$ is **KSBA-stable** if:
 4. $K_X + D$ is ample and $\QQ$-Cartier.
 
 For K-trivial varieties (like K3 or Enriques surfaces), one uses pairs $(X, \eps R)$ for $0 < \eps \ll 1$ and a polarizing divisor $R$.
-The KSBA moduli space $\oF_\Gamma$ provides a modular, proper, algebraic compactification where boundary divisors correspond to geometric stable degenerations [@AET23; @AEGS25].
-:::
-
-::: {.remark title="Polarized Coble application"}
-
-The Coble-specific stable-pair construction extracted from this framework -- the descended ramification divisor on the stable quotient surface, together with its KSBA obligations ($\QQ$-Cartierness, ampleness, and slc control) -- is developed in the Stable Limits section rather than restated here.
-The resulting comparison target between the KSBA and semitoroidal compactifications remains an open program rather than a settled theorem; see @conj:ksba_semitoroidal_comparison.
+For a choice of polarizing divisor $R$ on the K3 surfaces of an open subset $U \subseteq F$, the **KSBA compactification** $\oF^R$ is the coarse space of the closure of $U$ in the moduli stack of stable pairs $(X, \eps R)$ [@AE23, Def. 6.11].
 :::
 
 ## Looijenga compactifications
@@ -121,23 +114,20 @@ The resulting comparison target between the KSBA and semitoroidal compactificati
 ::: {.definition #def:looijenga-compactification}
 
 Let $\mch$ be a $\Gamma$-invariant arrangement of hyperplane sections of the period domain $D$.
-The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\mch}$ is the compactification of the arrangement complement $\Gamma\backslash(D - \mch)$ determined by $\mch$ [@Loo02].
-It is a semitoroidal compactification in the sense of @def:semitoroidal-compactification, so it sits in the same tower over the Baily--Borel compactification; the semifan it defines at a $0$-cusp is read off the traces of the hyperplanes of $\mch$ on the boundary of that cusp.
-When $\mch$ is empty the construction returns the Baily--Borel compactification.
+The **Looijenga compactification** $\overline{\Gamma\backslash D}^{\,\mch}$ is the compactification of the arrangement complement $\Gamma\backslash(D - \mch)$ determined by $\mch$ [@Loo02, Thm. 7.4].
 :::
 
-::: {.remark title="Three semifans, independently determined"}
+::: {.corollary #cor:looijenga-empty-arrangement title="The empty arrangement"}
 
-Three semifans are in play for a single period domain, and they are produced by three unrelated inputs:
+If $\mch$ is empty, then the Looijenga compactification of @def:looijenga-compactification is the Baily--Borel compactification $\bbcpt{\FG}$.
+:::
 
-- the **Coxeter semifan** of a $0$-cusp, cut out by the walls of a fundamental chamber of the reflection group of the cusp lattice (@def:generalized-coxeter-semifan);
+::: {.proof}
 
-- the **KSBA semifan**, determined by which degenerations of stable pairs occur (@def:ksba-compactification), and in the cases treated here a coarsening of the Coxeter semifan obtained by deleting irrelevant walls;
-
-- the **Looijenga semifan** of an arrangement $\mch$, determined by the arithmetic of $\mch$ alone.
-
-The identification of a GIT compactification with a Looijenga compactification therefore carries no information about the KSBA semifan: the two are computed from different data, and knowing one does not constrain the other.
-Where the three sit relative to one another in the refinement order is a question in its own right, recorded among the open problems.
+The hypothesis of [@Loo02, Cor. 7.5] holds vacuously for the empty arrangement, and the arrangement complement is $D$.
+So the Looijenga compactification is the proj of the algebra of $\Gamma$-automorphic forms on $D$ [@Loo02, Cor. 7.5].
+The automorphic line bundle on $\bbcpt{\FG}$ is ample, and the sections of its $k$-th tensor power are the $\Gamma$-automorphic forms of degree $k$ [@Loo02, Thm. 2.4].
+So this proj is $\bbcpt{\FG}$.
 :::
 
 ## Recognizable divisors
@@ -149,12 +139,12 @@ A polarizing divisor $R$ on the generic surface in $F_S$ is **recognizable** if,
 
 ::: {.theorem #thm:recognizable-semitoroidal}
 
-If $R$ is recognizable, then the normalization of the KSBA compactification $\oF^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mcf_R}$, defined by a specific semifan $\mcf_R$ [@AE23].
+If $R$ is recognizable, then the normalization of the KSBA compactification $\oF^R$ is isomorphic to a semitoroidal compactification $\overline{F_S}^{\mcf_R}$, defined by a specific semifan $\mcf_R$ [@AE23, Thm. 9.1].
 :::
 
 ::: {.proof}
 
-This is [@AE23].
+This is [@AE23, Thm. 9.1].
 :::
 
 ::: {.example #ex:recognizable-divisors}

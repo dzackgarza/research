@@ -35,21 +35,28 @@ read on the diagonal as $G(M)_{ss} = 2\cos\pi = -2$, and as $G(M)_{st} = 2$ when
 Each $\alpha_s$ has norm $-2$ and is therefore a short root in the sense of @def:2elementary-roots; the reflections $s_{\alpha_s}$ of @def:reflection preserve $G(M)$, and $s\mapsto s_{\alpha_s}$ extends to an injective homomorphism $W(M)\to \Orth(\RR^S, G(M))$ [@Bou08; @Hum90].
 :::
 
-::: {.remark title="Normalized pairings"}
+::: {.proposition #prop:coxeter-normalized-pairing title="Normalized pairings of a Coxeter matrix"}
 
-Dividing by the norms recovers the quantity that labels the edges of a Coxeter--Vinberg diagram: with $\alpha_s^2 = \alpha_t^2 = -2$,
+Let $M$ be a Coxeter matrix on $S$ and $s\neq t$ in $S$.
+The normalized pairing of @def:coxeter-vinberg-diagram of the simple roots $\alpha_s,\alpha_t$ of @def:coxeter-gram-form is
 $$
 g_{st} = \frac{\beta(\alpha_s,\alpha_t)}{\sqrt{\alpha_s^2\,\alpha_t^2}}
 = \frac{G(M)_{st}}{2}
 = \cos\!\left(\frac{\pi}{m_{st}}\right)
 ,
 $$
-which is the normalization of @def:coxeter-vinberg-diagram.
-A Coxeter matrix produces only the values $g_{st}\leq 1$; Vinberg's diagrams admit in addition the ultraparallel case $g_{st} > 1$, which corresponds to no finite $m_{st}$ and is drawn dotted.
+read as $g_{st} = 1$ when $m_{st} = \infty$.
+In particular $g_{st}\leq 1$.
 :::
 
-::: {.remark #rmk:coxeter-form-values title="The values at small orders"}
+::: {.proof}
 
+By @def:coxeter-gram-form, $\alpha_s^2 = \alpha_t^2 = -2$, so $\sqrt{\alpha_s^2\,\alpha_t^2} = 2$, and $\beta(\alpha_s,\alpha_t) = G(M)_{st}$ is $2\cos(\pi/m_{st})$ for $m_{st} < \infty$ and $2$ for $m_{st} = \infty$.
+:::
+
+::: {.example #ex:coxeter-form-values title="The values at small orders"}
+
+The entries $2\cos(\pi/m)$ of @def:coxeter-gram-form at the orders $m\leq 6$ and $m = \infty$ are
 $$
 \begin{array}{c|cccccc}
 m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
@@ -58,33 +65,10 @@ m & 2 & 3 & 4 & 5 & 6 & \infty \\\hline
 $$
 :::
 
-::: {.remark #rmk:gram-versus-cartan title="Gram and Cartan matrices"}
-
-Let $\theset{\alpha_s}_{s\in S}$ be simple roots in a lattice $L$.
-Two matrices are attached to them.
-The **Gram matrix** is $G_{st} = \beta_L(\alpha_s,\alpha_t)$; it is symmetric and records the form.
-The **Cartan matrix** is
-$$
-A_{st} \definedas \frac{2\,\beta_L(\alpha_s,\alpha_t)}{\beta_L(\alpha_t,\alpha_t)}
-,
-$$
-so that $A_{ss} = 2$ and $s_{\alpha_t}(\alpha_s) = \alpha_s - A_{st}\alpha_t$; it records the reflections and is symmetric only when all the $\alpha_s$ have equal norm.
-The two are related by a diagonal factor on the right,
-$$
-A = G\cdot\diag\!\left(\frac{2}{G_{11}},\dots,\frac{2}{G_{nn}}\right),
-\qquad
-G = A\cdot\diag\!\left(\frac{G_{11}}{2},\dots,\frac{G_{nn}}{2}\right)
-,
-$$
-so $G$ is the Cartan matrix symmetrized by the root lengths.
-In the simply-laced case, where every $\alpha_s^2 = -2$, one has $A = -G$.
-When two root lengths occur the two matrices record different data: for $\alpha_s^2 = -2$ and $\alpha_t^2 = -4$ with $\beta_L(\alpha_s,\alpha_t) = 2$, the Cartan entries are $A_{st} = 1$ and $A_{ts} = 2$.
-:::
-
-::: {.remark #rmk:schlafli-sign title="The opposite normalization"}
+::: {.notation title="The opposite normalization"}
 
 Much of the reflection-group literature normalizes simple roots to $\alpha_s^2 = +2$ and attaches to $M$ the **Schläfli matrix** $C_{st} = -2\cos(\pi/m_{st})$, with $C_{ss} = 2$.
-Then $C = -G(M)$, and every definiteness statement below is read with the opposite sign: a spherical system has $C$ positive definite.
+Then $C = -G(M)$, and the definiteness conditions of @def:coxeter-system-type are read with the opposite sign: a spherical system has $C$ positive definite.
 :::
 
 ## Classification by definiteness
@@ -105,10 +89,18 @@ A Gram form of signature $(p,q)$ with $p\geq 2$ falls under none of the three.
 For subdiagrams, @def:elliptic-subdiagram names the corresponding conditions **elliptic**, **parabolic**, and **hyperbolic**. An elliptic subdiagram is one all of whose components are spherical; a parabolic subdiagram on $k$ vertices with $c$ connected components has kernel of rank $c$, hence rank $k-c$.
 :::
 
-::: {.remark}
+::: {.proposition #prop:coxeter-type-signature title="The three types by signature"}
 
-By Sylvester's law of inertia, invoked in the Lattice Theory section to define the signature, the numbers $n_+$ and $n_-$ of positive and negative squares in a diagonalization of $G$ over $\RR$, and the rank of $\ker G$, are independent of the basis.
-The three conditions of @def:coxeter-system-type are therefore properties of the form $G$ rather than of the matrix representing it: spherical is $(n_+,n_-) = (0,n)$, euclidean is $(0,n-1)$ with a one-dimensional kernel, and hyperbolic is $(1,n-1)$.
+Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$, and let $\operatorname{sig}(\RR^S, G) = (p,q,r)$ be the signature of @def:signature.
+Then $(W,S)$ is spherical if and only if $(p,q,r) = (0,n,0)$, euclidean if and only if $(p,q,r) = (0,n-1,1)$, and hyperbolic if and only if $(p,q,r) = (1,n-1,0)$.
+:::
+
+::: {.proof}
+
+By @thm:sylvester, $p+q+r = n$.
+The form $G$ is negative definite exactly when $q = n$.
+It is negative semidefinite exactly when $p = 0$, and then $\ker G$ has rank $1$ exactly when $r = 1$, that is $q = n-1$.
+It is nondegenerate of signature $(1,n-1)$ exactly when $r = 0$, $p = 1$ and $q = n-1$.
 :::
 
 ::: {.theorem #thm:coxeter-type-and-geometry title="The geometry of the three types"}
@@ -131,15 +123,9 @@ Let $(W,S)$ be an irreducible Coxeter system of rank $n$ with Gram form $G$.
 
 All three are [@Bou08, Ch. V §4 and Ch. VI §4; @Hum90, §§2.3, 6.4 and 6.8], with $G = -2B$ for $B$ the sources' invariant form, so that definite for $B$ is the corresponding definite sign for $G$.
 
-What the clauses add to the cited statements is which space these forms act on, and that is the only part read off @def:coxeter-system-type.
-In (1) the source's sphere belongs to $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain, so the citation covers the clause as written.
-In (2) the euclidean space is $\RR^S/\ker G$, of dimension $n-1$; the affine reflections are the $s_{\alpha_s}$, and the discreteness asserted is properness of the action, which is how the source states it.
-In (3) the hyperboloid inside the nondegenerate space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber of @def:coxeter-polytope; this is the one clause where nondegeneracy rather than definiteness is what is needed.
-:::
-
-::: {.remark}
-
-Statement (3) asserts nothing about the volume of $P$: the finite-volume and compact cases are separated by the criterion of @thm:coxeter-polytope-volume.
+In (1) the sphere of the sources is that of $(\RR^S,2B)$, which is $(\RR^S,-G)$; rescaling a metric by a positive constant preserves the sphere, the reflections and their fundamental domain.
+In (2) the euclidean space is $\RR^S/\ker G$, of dimension $n-1$; the affine reflections are the $s_{\alpha_s}$, and discreteness is properness of the action.
+In (3) the hyperboloid inside the nondegenerate space $(\RR^S,G)$ is the model of $\HH^{n-1}$ of @def:hyperbolic-model, and $P$ is the chamber of @def:coxeter-polytope.
 :::
 
 ## Subdiagrams and the inheritance of signature
@@ -156,11 +142,23 @@ $$
 is the **standard parabolic subgroup** determined by $I$, and $(W_I, I)$ is a Coxeter system with Coxeter matrix $M[I,I]$ [@Bou08].
 :::
 
-::: {.remark title="Parabolic subgroups and parabolic subdiagrams"}
+::: {.notation title="Parabolic subgroups and parabolic subdiagrams"}
 
-The two uses of *parabolic* are independent.
 The subgroup $W_I$ is a standard parabolic subgroup for every subset $I\iscontainedin S$, whatever the definiteness of $G[I,I]$.
-The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram), and then $(W_I, I)$ is a product of irreducible euclidean Coxeter systems, one for each component.
+The subdiagram $\Sigma_I$ is parabolic when each of its connected components is euclidean (@def:elliptic-subdiagram).
+:::
+
+::: {.proposition #prop:parabolic-subdiagram-product title="The Coxeter system of a parabolic subdiagram"}
+
+Let $\Sigma_I$ be a parabolic subdiagram with connected components $\Sigma_{I_1},\dots,\Sigma_{I_r}$.
+Then $W_I$ is the direct product of the standard parabolic subgroups $W_{I_1},\dots,W_{I_r}$, and each $(W_{I_j}, I_j)$ is an irreducible euclidean Coxeter system.
+:::
+
+::: {.proof}
+
+By @def:coxeter-subdiagram, $(W_I, I)$ is a Coxeter system with Coxeter diagram $\Sigma_I$.
+For any Coxeter system, $W$ is the direct product of the standard parabolic subgroups of the connected components of its Coxeter diagram, and each of these is an irreducible Coxeter system [@Hum90, §6.1, Proposition].
+Each $\Sigma_{I_j}$ is euclidean because $\Sigma_I$ is parabolic.
 :::
 
 ::: {.proposition #prop:signature-under-restriction title="Restriction cannot increase the positive index"}
@@ -196,11 +194,6 @@ For (1), the restriction of a negative definite form to a subspace is negative d
 For (2), apply the upper bound of @prop:signature-under-restriction with $n_+(G) = 1$.
 :::
 
-::: {.remark}
-
-Part (1) is what makes an enumeration of the elliptic subdiagrams of a Coxeter--Vinberg diagram tractable: a subset that fails to be elliptic can be discarded together with all subsets containing it, so the search runs over the order ideal of elliptic subsets rather than over all of $2^{S}$.
-:::
-
 ## The spherical and euclidean classifications
 
 ::: {.theorem #thm:spherical-classification title="Classification of spherical Coxeter systems"}
@@ -224,13 +217,22 @@ and diagrams from distinct entries of this list are not isomorphic [@Bou08; @Hum
 
 This is the Cartan--Killing classification, [@Bou08, Ch. VI §4, Théorème 1] and [@Hum90, §2.4 and §3.6].
 
-The cited statements classify connected Coxeter graphs carrying positive definite forms, which is the same list under $G = -2B$.
+The cited statements classify the connected Coxeter graphs whose form $B$ is positive definite, and $G = -2B$.
 :::
 
-::: {.remark}
+::: {.notation title="The diagrams $I_2(p)$"}
 
-Here $I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_2$, $I_2(4)\cong B_2$ and $I_2(6)\cong G_2$; the list above records each isomorphism class once.
-The root systems $B_n$ and $C_n$ of @def:root-system-Bn-Cn have the same Coxeter matrix and so contribute a single entry, the two being distinguished by their root lengths rather than by their Coxeter system.
+$I_2(p)$ denotes the rank-two diagram with $m_{12} = p$, so that $I_2(3)\cong A_2$, $I_2(4)\cong B_2$ and $I_2(6)\cong G_2$.
+:::
+
+::: {.proposition #prop:bn-cn-coxeter-system title="$B_n$ and $C_n$ have one Coxeter system"}
+
+The root systems $B_n$ and $C_n$ of @def:root-system-Bn-Cn are distinct crystallographic root systems with the same Weyl group, the Coxeter group of type $B_n$ [@Hum90, §2.9].
+:::
+
+::: {.proof}
+
+This is [@Hum90, §2.9].
 :::
 
 ::: {.theorem #thm:euclidean-classification title="Classification of euclidean Coxeter systems"}
@@ -247,15 +249,13 @@ $$
 \tilde G_2
 ,
 $$
-each of rank $n+1$ and drawn in the diagram table of the Diagrams appendix [@Bou08].
+each of rank $n+1$ [@Bou08].
 The diagram $\tilde A_1$ has two vertices joined by a bond with $m_{12} = \infty$, and $\tilde A_n$ for $n\geq 2$ is the cycle on $n+1$ vertices with all bonds $m_{ij} = 3$.
 :::
 
 ::: {.proof}
 
 This is the classification of irreducible affine Coxeter diagrams, [@Bou08, Ch. VI §4, Théorème 2] and [@Hum90, §2.5 and §6.5].
-
-The sources list the affine diagrams together with their completed Dynkin diagrams; the Dynkin diagram is the affine one with the vertex that $\delta$ of @prop:euclidean-radical meets with coefficient $1$ adjoined.
 :::
 
 ::: {.proposition #prop:euclidean-radical title="The radical of a euclidean diagram"}
@@ -272,20 +272,19 @@ unique up to scalar, and $\delta^2 = 0$ [@Bou08; @Hum90].
 
 ::: {.proof}
 
-That $\ker G[I,I]$ is one-dimensional with a generating vector of strictly positive coordinates is [@Bou08, Ch. VI §2.3, Proposition 6] and [@Hum90, §2.5]; the cited statement is for the positive semidefinite normalization, and invertibility of the sign change in @thm:coxeter-type-and-geometry preserves kernels, so the kernel is the same subspace here.
-
-Two clauses follow formally once the generators are known:
-$\delta^2 = \beta(\delta,\delta) = 0$, since $\delta$ lies in the kernel of the form;
-and the uniqueness up to scalar is the one-dimensionality, an irreducible euclidean diagram being connected so that its Gram form is not a direct sum.
-
-The positivity is the substantive part and is not formal: it says $\delta$ lies in the closed cone spanned by the simple roots, not merely in the kernel of the form.
-That is what the remark below uses, and it is proved in the cited places by checking that the coefficients of the affine diagram's highest root, or an explicit solution of $G[I,I]x = 0$, are positive in each type.
+That $\ker G[I,I]$ is one-dimensional and spanned by a vector of strictly positive coordinates is [@Bou08, Ch. VI §2.3, Proposition 6] and [@Hum90, §2.5]; the cited statement is for the positive semidefinite form $B$, and $G = -2B$ has the same kernel.
+Uniqueness up to scalar is the one-dimensionality, and $\delta^2 = \beta(\delta,\delta) = 0$ because $\delta$ lies in the kernel of the form.
 :::
 
-::: {.remark}
+::: {.example #ex:affine-e8-radical title="The radical of $\tilde E_8$"}
 
-The positivity of the coefficients $n_s$ is what places $\delta$ in the closure of a cone rather than merely in the kernel of a form, and is the reason a parabolic subdiagram of a hyperbolic Coxeter polytope determines an ideal point of the boundary rather than an arbitrary isotropic line; see @prop:polytope-vertex-subdiagram.
-For $\tilde E_8$ the coefficients are the marks $(1,2,3,4,6,5,4,3,2)$ of the highest root of $E_8$.
+Number the vertices of $\tilde E_8$ as $\alpha_0,\alpha_1,\dots,\alpha_8$, with $\alpha_1,\dots,\alpha_8$ the simple roots of $E_8$ in Bourbaki numbering and $\alpha_0$ the added vertex, joined to $\alpha_8$.
+The kernel of the Gram form $G[I,I]$ is spanned by
+$$
+\delta = \alpha_0 + 2\alpha_1 + 3\alpha_2 + 4\alpha_3 + 6\alpha_4 + 5\alpha_5 + 4\alpha_6 + 3\alpha_7 + 2\alpha_8
+,
+$$
+whose coefficients at $\alpha_1,\dots,\alpha_8$ are those of the highest root of $E_8$.
 :::
 
 ## Crystallographic Coxeter systems
@@ -297,24 +296,19 @@ A Coxeter matrix $M$ on $S$ is **crystallographic** if $m_{st}\in\theset{2,3,4,6
 
 ::: {.theorem #thm:crystallographic-lattice}
 
-A Coxeter matrix $M$ is crystallographic if and only if the group $W(M)$ preserves a lattice of full rank in $\RR^S$ [@Bou08; @Hum90].
+Let $M$ be a Coxeter matrix on $S$, and let $W(M)$ act on $\RR^S$ by the reflections $s_{\alpha_s}$ of @def:coxeter-gram-form.
+If the Coxeter diagram $\Sigma(M)$ contains no circuit, then $W(M)$ preserves a lattice of full rank in $\RR^S$ if and only if $M$ is crystallographic.
+In general, $W(M)$ preserves a lattice of full rank in $\RR^S$ if and only if $M$ is crystallographic and every circuit in $\Sigma(M)$ has an even number of edges labelled $4$ and an even number of edges labelled $6$ [@Hum90, §6.6, Proposition].
 :::
 
 ::: {.proof}
 
-This is [@Bou08, Ch. VI §4, no. 1] and [@Hum90, §2.11].
-
-The forward direction is the one with content: for $m\in\{2,3,4,6\}$ the number $2\cos(\pi/m)$ is an integer, so $G[I,I]$ is an integral Gram matrix in the basis $\alpha_s$ by @prop:gram-form-integrality, and the span of that basis is then a full-rank lattice preserved by the reflections of @def:coxeter-gram-form, which act by the integral matrices $s_{\alpha_t}(\alpha_s) = \alpha_s - G_{st}\alpha_t$.
-
-Conversely, if $W$ preserves a full-rank lattice $L$ then in a basis of $L$ the reflections act by integral matrices, and the entry $(s_{\alpha_t}(\alpha_s) : \alpha_t)$ is $-G_{st} = -2\cos(\pi/m_{st})$, an integer.
-Write $\lambda \definedas 2\cos(\pi/m)$; it is an algebraic integer, being $\zeta+\zeta^{-1}$ for a root of unity $\zeta$, and lying in $\QQ$ it is then an integer in $[-2,2]$.
-The values $2\cos(\pi/m)$ in that range are $2, 1, 0, -1, -2$ at $m = \infty, 3, 2, 4, 6$ respectively, and no other order qualifies, since $2\cos(\pi/m)$ is then strictly between $-2$ and $2$ and irrational by @prop:coxeter-base-field-degree.
-So $m\in\{2,3,4,6,\infty\}$, which is @def:crystallographic-coxeter.
+This is [@Hum90, §6.6, Proposition], stated there for the geometric representation with form $B$; the reflections of @def:coxeter-gram-form are those of $B$, since $G = -2B$.
 :::
 
 ::: {.example #ex:crystallographic-rescaling title="Rescaling to an integral form"}
 
-The equal-norm normalization $\alpha_s^2 = -2$ of @def:coxeter-gram-form does not itself make the form integral, and a crystallographic $M$ becomes integral only after the simple roots are rescaled.
+For a crystallographic $M$ with some $m_{st}\in\theset{4,6}$, the Gram form $G(M)$ is not integral by @prop:gram-form-integrality, and rescaling simple roots makes the pairings integral.
 For $m_{st} = 4$ one has $\beta(\alpha_s,\alpha_t) = 2\cos(\pi/4) = \sqrt2$; replacing $\alpha_t$ by $\alpha_t' \definedas \sqrt2\,\alpha_t$ gives
 $$
 \alpha_s^2 = -2,
@@ -369,7 +363,7 @@ Among the Coxeter matrices with every $m_{st}$ finite, these are exactly the sim
 :::
 
 ::: {.proof}
-The entries are the values of @rmk:coxeter-form-values, and an entry lies in $\ZZ$ only if it lies in $\QQ$.
+The entries are the values $2\cos(\pi/m_{st})$ of @def:coxeter-gram-form (@ex:coxeter-form-values), and an entry lies in $\ZZ$ only if it lies in $\QQ$.
 By @prop:coxeter-base-field-degree the degree of $\QQ(2\cos(\pi/m))$ over $\QQ$ is $\tfrac12\#(\ZZ/2m\ZZ)^\times$, which equals $1$ exactly when $2m\in\theset{4,6}$, that is when $m\in\theset{2,3}$; the value at $m=\infty$ is $2$.
 The remaining orders therefore give irrational entries, and the three admissible orders give $0$, $1$ and $2$.
 :::
@@ -394,14 +388,4 @@ For $m = 8$ the base field is $\QQ(\sqrt{2+\sqrt2})$, of degree $4$ over $\QQ$ b
 Let $M$ be a Coxeter matrix with base field $K = K(M)$, a totally real number field, and let $\sigma\in\gal(K/\QQ)$.
 Applying $\sigma$ entrywise to $G(M)$ produces a symmetric $K$-valued form $\sigma(G(M))$ of the same rank, with the same diagonal $-2$.
 Its signature is not determined by that of $G(M)$: the signature of a symmetric form over a totally real field is not a Galois invariant, as the rank-one forms $\generators{1-\sqrt2}$ and $\generators{1+\sqrt2}$ over $\QQ(\sqrt2)$ show.
-Whether every nontrivial conjugate of a hyperbolic Gram form is negative definite is a condition on $M$ that must be computed, and is the arithmeticity question recorded in the Open Problems section.
-:::
-
-## Origins
-
-::: {.remark title="Attribution"}
-
-Coxeter introduced the matrices and diagrams now named after him and classified the finite reflection groups, obtaining the list of @thm:spherical-classification with its two non-crystallographic exceptional types $H_3$ and $H_4$; the euclidean classification of @thm:euclidean-classification grew out of Weyl's theory of root systems and the affine reflection groups.
-Both are given in Bourbaki [@Bou08] and in Humphreys [@Hum90], and the geometric and topological theory of general Coxeter groups in Davis [@Dav08].
-The hyperbolic theory --- the polytope picture, the finite-volume criterion, and the algorithm of @thm:vinberg-algorithm --- is due to Vinberg [@Vin67; @Vin75; @Vin85]; Lannér classified the compact hyperbolic Coxeter simplices, and Vinberg and Kaplinskaja determined the reflection groups of the odd unimodular hyperbolic lattices $\latI_{18,1}$ and $\latI_{19,1}$ [@VK78], which are the ranks the moduli theory of this monograph meets.
 :::
