@@ -180,7 +180,7 @@ This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in whi
 
 ::: {.remark title="The implementation named in the recipe"}
 
-Step 6 of the recipe in [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe) asks for orbit representatives through the function `vector_orbit_representatives`, which `sage-indefinite-port` owns. That is the second algorithm above, and the separating invariants the recipe pairs with it, $\div(v)$ and $v^{\perp}/v$ matched against the table of $2$-elementary lattices keyed by $(r,a,\delta)$, are the invariants under which the orbit representatives it returns are recognized.
+Step 6 of [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe) computes orbit representatives with the function `vector_orbit_representatives` of `sage-indefinite-port`. That is the second algorithm above; the recipe recognizes the representatives it returns by the separating invariants $\div(v)$ and $v^{\perp}/v$, matched against the table of $2$-elementary lattices keyed by $(r,a,\delta)$.
 :::
 
 ## What remains for the Coble lattices

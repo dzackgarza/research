@@ -83,7 +83,7 @@ The Coxeter diagram for $S \definedas \HalphenInvariants$ is well known and the 
 
 Steps 3 through 5 are exactly the recipe recorded in [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe), applied to a new lattice.
 
-::: {.remark title="Why the program is stated as worth doing"}
+::: {.remark title="Motivation"}
 
 It opens a comparison between GIT and KSBA compactifications, since $M_{H,1}$ and $M_{H,2}$ already have GIT compactifications in the literature while their KSBA compactifications do not exist.
 Generalizing to $\overline{M_{H,m}}^R$ for $m>2$ would give new moduli spaces of general rational elliptic surfaces with no restriction on fiber type.

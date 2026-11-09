@@ -40,8 +40,6 @@ $$
 \end{aligned}
 $$
 
-Norm and divisibility were evaluated on each by a helper `divisibility(v, L)` returning the minimum of $|\inner{v}{x}|$ over nonzero $x$, together with the full list of inner products.
-
 ## The images under the embedding chain
 
 ::: {.construction title="Term-by-term transport along the embedding chain"}

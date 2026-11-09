@@ -1239,7 +1239,7 @@ An isometry preserves $b(x,x)$ and $b$, so it fixes that class, and $\gamma_\Co$
 
 ::: {.remark title="What part (4) leaves, and what it does not"}
 
-Part (4) is not a gap in the argument but a statement that the page does not fix $\gamma_\Co$ finely enough: the two candidate blocks are distinguished neither by their order — both are four-element subgroups of an elementary abelian group — nor by the values of $q$ on them, and $\gamma_\Co$ is only determined up to the automorphisms of the pair of forms.
+Part (4) leaves two candidate blocks because $\gamma_\Co$ is determined only up to the automorphisms of the pair of forms: the two blocks are distinguished neither by their order — both are four-element subgroups of an elementary abelian group — nor by the values of $q$ on them.
 What decides it is the gluing isometry as constructed for the embedding $S_\Co\oplus T_\Co\into\lkt$, block by block; `computations/reports/coble_gluing_discriminants.py` checks that construction block by block, and the statement needed here is that its $U(2)$-block matches.
 This is the same block-compatibility of @prop:gamma-cong-eq-heegner(2), for $\gamma_\Co$ instead of $\gamma$: with it, $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ as well; without it, $\Gamma^\theta_\Co$ is a subgroup of index $\abs{W(E_8)}$ over $\Gamma_\Co$ which need not be that one, and the page's data do not decide which.
 :::

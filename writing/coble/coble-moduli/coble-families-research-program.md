@@ -36,7 +36,7 @@ The $n=1$ case is the subject of the current project.
 ::: {.conjecture title="Boundary incidence diagrams are computable for all n"}
 
 The Baily-Borel boundaries of all ten families can be described by the techniques used for $n=1$.
-Several of the boundary incidence diagrams have already been computed by the author using the algorithms of AE22 (nonsymplectic involutions); the remaining ones are similarly computable.
+The boundary incidence diagrams are computable by the algorithms of [@AE22] for nonsymplectic involutions.
 This would be the first explicit study of these boundaries in the literature.
 :::
 

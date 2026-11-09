@@ -38,9 +38,8 @@ where $\tdp$ is described in [@AEGS25].
 Note that we implicitly use the embedding $\eta\colon T_\Co\injects\ten$ of @lem:primitive_embedding_eta.
 
 ::: {.question}
-Degree 2 polarized Coble surfaces do not seem to appear in previous literature, merely (unpolarized?)
-Cobles with $n$ boundary components.
-So I can not yet determine a more explicit description of $\Gamma_{\Co, 2}$.
+What is an explicit description of $\Gamma_{\Co, 2}$?
+Degree-$2$ polarized Coble surfaces do not appear in the literature cited here, which treats Coble surfaces with $n$ boundary components.
 :::
 
 We note, as in [@DK13], that $T_{\Co} \cong v^{\perp \ten}$ for some $v^2=-2$, which implies that there is a birational isomorphism $\fco \birationaliso \mch_{-2}/\Orth^+(\ten)^*$.
@@ -65,7 +64,7 @@ F_{\mathrm{En}}
 ```
 
 The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}$, $\fentwo$, their unpolarized quotients $\fco$, $\fen$, and the degree-$(2,2,0)$ K3 moduli space $\fttz\injects F_4$.
-The map $F_{\Co,2}\to \fco$ marked $?$ is the one not yet determined, for the reason above: $\Gamma_{\Co,2}$ has no explicit description.
+The map $F_{\Co,2}\to \fco$ marked $?$ is undetermined, since $\Gamma_{\Co,2}$ has no explicit description.
 
 ## The GIT construction
 
