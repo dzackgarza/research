@@ -2,52 +2,57 @@
 
 ## The double cover construction
 
-::: {.remark #rmk:k3-double-cover-construction title="The K3 double cover construction"}
+::: {.proposition #prop:double-cover-canonical-bundle title="Canonical bundle of a double cover"}
 
-A standard method to produce Calabi-Yau varieties involves taking a double cover $\pi: X \to Y$ branched over a reduced divisor $B$.
-If $B \in \abs{-2K_Y}$, one takes $\mcl = -K_Y$.
-The cover $X$ is defined via the $\OO_Y$-algebra
-$$
-\mca = \OO_Y \oplus \inverseof{\mcl}
-.
-$$
-
-For the double cover branched along $B \in \abs{-2\mcl}$ the canonical bundle formula gives
+Let $Y$ be a smooth projective surface, let $B\subset Y$ be a smooth divisor, and let $\mcl$ be a line bundle on $Y$ with $\mcl^{\tensor 2}\cong\OO_Y(B)$.
+Let $\pi\colon X\to Y$ be the double cover branched along $B$ and determined by $\mcl$.
+Then $\pi_*\OO_X\cong\OO_Y\oplus\inverseof{\mcl}$ and
 $$
 K_X = \pi^*(K_Y + \mcl)
-,
+.
 $$
-and substituting $\mcl = -K_Y$ gives $K_X = \OO_X$, so that $X$ has trivial canonical bundle.
-
-Here $\tau$ is the involution
-$$
-\tau(x, y) = (-x, -y)
-$$
-of $Y = \PP^1\times\PP^1$, the involution covered by the Enriques and Nikulin involutions of the geometric-involutions remark (@rmk:geometric-involutions); the del Pezzo involution covers the identity.
-Its fixed locus is the four torus-fixed points, those with $x, y\in\theset{0, \infty}$.
-By taking $B \subset Y$ to be a smooth $\tau$-invariant curve in $\abs{-2K_Y} = \abs{\OO_Y(4,4)}$, we obtain a $10$-dimensional family of K3 surfaces, after quotienting by the toric automorphisms $D_4 \semidirect (\CC^\times)^2$.
+In particular, if $B\in\abs{-2K_Y}$ and $\mcl = -K_Y$, then $K_X = \OO_X$.
 :::
 
-::: {.remark}
+::: {.proof}
 
-The specialization of the K3 double-cover construction (@rmk:k3-double-cover-construction) to a terminal Coble surface of K3 type is carried out in the section on K3 covers of Coble surfaces: there one takes $\mcl = \OO_S(-K_S)$ for $S$ the (rational) base and a section $s \in H^0(\mcl^{\tensor_{\OO_S} 2})$ cutting out the anticanonical curve $C$, and the resulting double cover $f: X \to S$ is a smooth K3 surface with $\Pic(X)$ a $2$-elementary lattice of invariants $(r,a,\delta)_1 = (10+n, 12-n, \delta)_1$ [@DK25 Prop. 9.1.1; @CDL25 Def. 5.4.3].
+The first two statements are the case $n = 2$ of [@BHPV04, Lemmas I.17.1(iii) and I.17.2].
+Substituting $\mcl = -K_Y$ gives $K_X = \pi^*(K_Y - K_Y) = \OO_X$.
+:::
+
+::: {.proposition #prop:coble-canonical-cover title="The canonical cover of a terminal Coble surface"}
+
+Let $S$ be a terminal Coble surface of K3 type over $\CC$, with $\abs{-2K_S} = \theset{C}$ and $C = C_1+\cdots+C_n$ a disjoint union of $n$ smooth rational curves of square $-4$.
+Let $\mcl = \OO_S(-K_S)$, let $s\in H^0(\mcl^{\tensor_{\OO_S} 2})$ be a section with zero locus $C$, and let $f\colon X\to S$ be the double cover defined by $(\mcl, s)$.
+Then $X$ is a smooth K3 surface [@DK25, Prop. 9.1.1].
+For a general such $S$, $\Pic(X)$ is a $2$-elementary lattice of rank $10+n$ whose discriminant group has rank $12-n$ over $\FF_2$ [@CDL25, Sec. 5.4].
 :::
 
 ## Geometric involutions on the double cover
 
-::: {.remark #rmk:geometric-involutions title="Geometric involutions on the K3 double cover"}
+::: {.proposition #prop:k3-cover-p1xp1-involutions title="The K3 double cover of $\PP^1\times\PP^1$ and its involutions"}
 
-For the K3 double cover $X \to Y = \PP^1\times\PP^1$, there are three distinguished involutions acting on the coordinates $(x,y,z)$:
+Let $Y = \PP^1\times\PP^1$ and let $\tau$ be the involution
+$$
+\tau(x, y) = (-x, -y)
+$$
+of $Y$.
+The fixed points of $\tau$ are the four torus-fixed points, those with $x, y\in\theset{0, \infty}$.
+Let $B\in\abs{-2K_Y} = \abs{\OO_Y(4,4)}$ be a $\tau$-invariant divisor with at worst ADE singularities that does not pass through these four points, and let $\pi\colon X\to Y$ be the double cover branched in $B$.
+Write $X$ as the hypersurface $z^2 + f(x,y) = 0$, where $f$ is the $\tau$-invariant polynomial of bidegree $(4,4)$ that defines $B$.
+Then the following hold [@AEGS25, Sec. 2.1].
 
-- $\idp(x,y,z) = (x,y,-z)$: the **del Pezzo** (deck) involution, the generator of the deck transformations of the double cover.
-  Its quotient is a K3 quotient and $\idp^*\omega_X = -\omega_X$.
+1. $X$ is a K3 surface. The deck involution of $\pi$ is the **del Pezzo** involution $\idp(x,y,z) = (x,y,-z)$, and $X/\idp = Y$.
 
-- $\ien(x,y,z) = (-x,-y,-z)$: the **Enriques** involution, with smooth Enriques quotient $Z$, satisfying $\ien^*\omega_X = -\omega_X$.
+2. The involution $\tau$ has two lifts to $X$:
+   - the **Enriques** involution $\ien(x,y,z) = (-x,-y,-z)$, which is basepoint-free, and whose quotient $Z = X/\ien$ is an Enriques surface;
+   - the **Nikulin** involution $\inik(x,y,z) = (-x,-y,z)$, whose quotient $Z' = X/\inik$ is a K3 surface with eight $A_1$ singularities and possibly more.
 
-- $\inik(x,y,z) = (-x,-y,z)$: the **Nikulin** involution, with singular K3 quotient $Z'$ carrying $\geq 8 A_1$ singularities, satisfying $\inik^*\omega_X = +\omega_X$.
+3. The involutions $\idp$, $\ien$ and $\inik$ commute, and with the identity they form a Klein four-group in $\Aut(X)$.
 
-These generate a faithful representation of the Klein four-group $\ZZ_2^2 \hookrightarrow \Aut(X)$.
-The del Pezzo and Enriques involutions act on the holomorphic $2$-form by $-1$ (they are nonsymplectic), whereas the Nikulin involution acts by $+1$ (it is symplectic); consistently with the group law, $\ien\circ\idp = \inik$.
+4. Let $\omega$ be a nonvanishing $2$-form on $X$. Then $\idp^*\omega = \ien^*\omega = -\omega$ and $\inik^*\omega = \omega$. So $\idp$ and $\ien$ are nonsymplectic, and $\inik$ is symplectic.
+
+5. The $\tau$-invariant polynomials $f$ of bidegree $(4,4)$ are the linear combinations of $13$ monomials. They define a point of an open subset $U\subset\PP^{12}$, and the quotient $U/(D_4 \semidirect (\CC^\times)^2)$ has dimension $10$.
 :::
 
 ## Induced lattice involutions on $H^2$
@@ -55,30 +60,50 @@ The del Pezzo and Enriques involutions act on the holomorphic $2$-form by $-1$ (
 ::: {.definition #def:lattice-involutions-k3 title="Lattice involutions for K3 covers"}
 
 Fix a basis of the K3 lattice $\lkt$ corresponding to the decomposition $U^3 \oplus E_8^2$, and write a general vector as $(u_1, u_2, u_3, \alpha_1, \alpha_2)$ with $u_i \in U$ and $\alpha_j \in E_8$.
-The three geometric involutions $\idp$, $\ien$, and $\inik$ of the geometric-involutions remark (@rmk:geometric-involutions) induce isometries of $\lkt$, denoted $\Idp$, $\Ien$, and $\Inik$ respectively, given in this basis by
+The three geometric involutions $\idp$, $\ien$, and $\inik$ of @prop:k3-cover-p1xp1-involutions induce isometries of $\lkt$, denoted $\Idp$, $\Ien$, and $\Inik$ respectively, given in this basis by
 $$
 \begin{aligned}
     \Idp(u_1, u_2, u_3, \alpha_1, \alpha_2)        &= (-u_1,\, u_3,\, u_2,\, -\alpha_1,\, -\alpha_2), \\
     \Ien(u_1, u_2, u_3, \alpha_1, \alpha_2) &= (-u_1,\, u_3,\, u_2,\, \alpha_2,\, \alpha_1), \\
-    \Inik(u_1, u_2, u_3, \alpha_1, \alpha_2) &= (u_1,\, u_2,\, u_3,\, -\alpha_2,\, -\alpha_1).
+    \Inik(u_1, u_2, u_3, \alpha_1, \alpha_2) &= (u_1,\, u_2,\, u_3,\, -\alpha_2,\, -\alpha_1)
 \end{aligned}
 $$
+[@AEGS25, Def. 2.3].
 :::
 
-::: {.remark title="Properties of the lattice involutions"}
+::: {.proposition #prop:k3-cover-lattice-involutions-klein title="The lattice involutions form a Klein four-group"}
 
-The lattice involutions satisfy the following.
-
-- The group $\generators{\Idp, \Ien, \Inik}$ is isomorphic to $\ZZ_2^2$; in particular these involutions mutually commute, and $\Ien\circ \Idp = \Inik$.
-
-- For each involution $I_\star$, the **invariant sublattice** is denoted $S_\star \definedas \lkt^{I_\star = 1}$ and the **coinvariant sublattice** is $T_\star \definedas \lkt^{I_\star = -1}$, in the sense of the invariant/coinvariant-lattice definition (@def:invariant_coinvariant_lattices): $S_\star$ is the $+1$-eigenlattice and $T_\star$ the $-1$-eigenlattice of $I_\star$, and by the involution-eigenspace proposition (@prop:involution_eigenspaces) these are orthogonal and rationally span $\lkt_\QQ$.
-
-- The transcendental lattices $T_Z$ of the Enriques surfaces $Z$ primitively embed into these invariant sublattices.
+The isometries $\Idp$, $\Ien$ and $\Inik$ of @def:lattice-involutions-k3 are involutions that commute pairwise, and $\Ien\circ\Idp = \Idp\circ\Ien = \Inik$.
+So $\theset{\id, \Idp, \Ien, \Inik}$ is a subgroup of $\Orth(\lkt)$ isomorphic to $\ZZ_2^2$.
 :::
 
-The isometry classes of the invariant and coinvariant sublattices of the three involutions, together with their $2$-elementary invariants $(r,a,\delta)_n$ (where $n = n_+$ is the number of positive eigenvalues) and discriminant groups $A_L$, are collected in @tbl-k3-cover-coinvariant-lattices.
-For the del Pezzo and Enriques involutions these lattices also appear in @sec-lattices alongside the sequence of primitive embeddings (@lem:sequence_of_embeddings). The Enriques (co)invariant lattices are built from the twist $E_{10}(2) = U(2)\oplus E_8(2)$ ($\sen = E_{10}(2)$, $\ten = U\oplus E_{10}(2)$), whereas the del Pezzo lattices $\sdp = U(2)$, $\tdp = U\oplus U(2)\oplus E_8^2$ retain an untwisted $E_8^2$.
-The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of the coinvariant $2$-elementarity proposition (@prop:coinvariant_involution_2elementary), and their classification is Nikulin's [@Nik80].
+::: {.proof}
+
+Each formula in @def:lattice-involutions-k3 changes signs of summands and exchanges two summands of the same isometry class, so its square is the identity.
+For $v = (u_1, u_2, u_3, \alpha_1, \alpha_2)$, the formulas give
+$$
+\begin{aligned}
+\Ien(\Idp v) &= \Ien(-u_1, u_3, u_2, -\alpha_1, -\alpha_2) = (u_1, u_2, u_3, -\alpha_2, -\alpha_1) = \Inik v, \\
+\Idp(\Ien v) &= \Idp(-u_1, u_3, u_2, \alpha_2, \alpha_1) = (u_1, u_2, u_3, -\alpha_2, -\alpha_1) = \Inik v.
+\end{aligned}
+$$
+Because $\Idp$ and $\Ien$ are involutions, $\Idp\circ\Inik = \Ien = \Inik\circ\Idp$ and $\Ien\circ\Inik = \Idp = \Inik\circ\Ien$.
+So the four elements are closed under composition, they commute, and every element has order at most $2$.
+The three involutions are distinct and nontrivial: $\Idp$ and $\Ien$ send $(u_1, 0, 0, 0, 0)$ to $(-u_1, 0, 0, 0, 0)$ and $\Inik$ fixes it, and $\Idp$ sends $(0, 0, 0, \alpha_1, 0)$ to $(0, 0, 0, -\alpha_1, 0)$ while $\Ien$ sends it to $(0, 0, 0, 0, \alpha_1)$.
+A group of order $4$ in which every element has order at most $2$ is isomorphic to $\ZZ_2^2$.
+:::
+
+::: {.notation title="Invariant and coinvariant sublattices of the lattice involutions"}
+
+For $\star\in\theset{\dP, \En, \Nik}$, write $S_\star \definedas \lkt^{I_\star = 1}$ for the invariant sublattice and $T_\star \definedas \lkt^{I_\star = -1}$ for the coinvariant sublattice of $I_\star$, in the sense of @def:invariant_coinvariant_lattices.
+For the Nikulin involution these are also written $L_{\Nik}^{+} = S_{\Nik}$ and $L_{\Nik}^{-} = T_{\Nik}$.
+By @prop:involution_eigenspaces, $S_\star$ and $T_\star$ are orthogonal and rationally span $\lkt_\QQ$.
+:::
+
+::: {.proposition #prop:k3-cover-eigenlattices title="Eigenlattices of the lattice involutions"}
+
+The invariant and coinvariant sublattices of $\Idp$, $\Ien$ and $\Inik$ are even and $2$-elementary.
+Their isometry classes and their invariants $(r,a,\delta)_n$, where $n = n_+$ is the number of positive eigenvalues, are the following [@AEGS25, Sec. 2.3].
 
 | $L$ | Isometry class | $\rank_\ZZ(L)$ | $\operatorname{sig}(L)$ | $(r,a,\delta)_n$ | $A_L$ |
 | --- | --- | --- | --- | --- | --- |
@@ -88,12 +113,7 @@ The $2$-elementarity of both $S_\star$ and $T_\star$ is the content of the coinv
 | $\ten$ | $U \oplus U(2) \oplus E_8(2)$ | $12$ | $(2,10)$ | $(12,10,0)_2$ | $\ZZ_2^{10}$ |
 | $L_{\Nik}^{+}$ | $U^3 \oplus E_8(2)$ | $14$ | $(3,11)$ | $(14,8,0)_3$ | $\ZZ_2^8$ |
 | $L_{\Nik}^{-}$ | $E_8(2)$ | $8$ | $(0,8)$ | $(8,8,0)_0$ | $\ZZ_2^8$ |
-
-: Invariant sublattices $S_\star$ and coinvariant sublattices $T_\star$ of the
-del Pezzo, Enriques, and Nikulin involutions on $\lkt = U^3 \oplus E_8^2$. For
-the Nikulin involution the invariant and coinvariant lattices are written
-$L_{\Nik}^{+}$ and $L_{\Nik}^{-}$; each complementary pair has
-ranks summing to $22 = \rank\lkt$. {#tbl-k3-cover-coinvariant-lattices}
+:::
 
 ## Two constraints on involutions of a K3
 
@@ -105,12 +125,12 @@ Then $H^2(X,\ZZ)^{\iota}$ contains no class of square $-2$, and consequently $\i
 
 ::: {.proof}
 
-With isotropic generators $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
+With an isotropic basis $a,b$ of $U(2)$ satisfying $a\cdot b = 2$, the vectors are $ma+nb$ and have square $4mn$, so $-2$ is not attained; an integral class fixed by $\iota$ lies in $H^2(X,\ZZ)^{\iota}$, and the class of a smooth rational curve fixed by $\iota$ is such a class of square $-2$.
 :::
 
 ::: {.example title="A class of square $-2$ in $\tdp$"}
 
-Let $E,F$ be a hyperbolic basis of $U$ and $a,b$ isotropic generators of $U(2)$ with $a\cdot b=2$.
+Let $E,F$ be a hyperbolic basis of $U$ and $a,b$ an isotropic basis of $U(2)$ with $a\cdot b=2$.
 In $\tdp=U\oplus U(2)\oplus E_8^2$ the class $E+F+a-b$ has square $2-4=-2$.
 So the anti-invariant lattice of an involution as in @prop:del-pezzo-invariant-has-no-roots can contain classes of square $-2$.
 :::
@@ -120,7 +140,6 @@ So the anti-invariant lattice of an involution as in @prop:del-pezzo-invariant-h
 Let $X$ be a K3 surface and let $\iota,\iota'\in\Aut(X)$ be involutions.
 Then $\iota\iota'$ is an involution if and only if $\iota$ and $\iota'$ commute.
 If a generator $\sigma$ of $H^{2,0}(X)$ satisfies $\iota^*\sigma = \iota'^*\sigma = -\sigma$, then $(\iota\iota')^*\sigma = +\sigma$; with commutation as well, $\iota\iota'$ is therefore a symplectic involution.
-The two conclusions are different claims: the second alone does not give the order.
 :::
 
 ::: {.proof}
@@ -128,10 +147,4 @@ The two conclusions are different claims: the second alone does not give the ord
 If $\iota\iota'$ is an involution then $\iota\iota'\iota\iota' = \id$, and multiplying on the left by $\iota$ and on the right by $\iota'$, both of which are their own inverses, gives $\iota'\iota = \iota\iota'$.
 Conversely $(\iota\iota')^2 = \iota\iota'\iota\iota' = \iota^2\iota'^2 = \id$ whenever the two commute, the middle step being the only place commutation is used.
 Independently of commutation, $(\iota\iota')^* = \iota'^*\circ\iota^*$, so $(\iota\iota')^*\sigma = \iota'^*(\iota^*\sigma) = \iota'^*(-\sigma) = \sigma$: the factor $H^{2,0}(X)$ is one dimensional and each involution acts on it by a scalar, so the product acts by $(-1)(-1) = +1$ whatever the order of composition.
-:::
-
-::: {.remark title="Why the order has to be stated"}
-For a product of two involutions, being an involution and being symplectic are two different properties and the first is a hypothesis of the second as a statement about involutions.
-The action on $H^{2,0}$ is forced by the nonsymplectic character of the factors and needs no commutation; the order is exactly equivalent to commutation.
-So a tuple that lists a commuting pair of nonsymplectic involutions and then, separately, the symplectic character of their product, lists a consequence as though it were a condition; and a tuple that lists the symplectic character while leaving commutation open records a property of a product that need not be an involution at all.
 :::

@@ -1,9 +1,5 @@
 # The classifying map and the Enriques involution
 
-::: {.remark}
-The KSBA compactification $\ksbacpt{\fentwo}$ and the separatedness of its limits are [@AEGS25] and [@Kol23a]; Zariski's Main Theorem in the form used below is [@Har77].
-:::
-
 ## Global extension of the Enriques involution
 
 ::: {.conjecture #conj:enriques_involution_extension title="Global extension of the Enriques involution"}
@@ -13,9 +9,17 @@ The fixed-point-free Enriques involution $\ien$ on the smooth fibers extends uni
 This involution preserves the slc pair structure and the ramification divisor $\mcr_B$, and commutes with the del Pezzo involution $\idp$, so the quotient $(\mcx_B, \eps \mcr_B) / \ien$ is a flat family of stable Enriques pairs over $B$.
 :::
 
-::: {.remark}
+::: {.proposition #prop:enriques-involution-extends title="Extension of the Enriques involution and the classifying morphism"}
 
-On the smooth locus the involution is the deck transformation $\ien$ of the canonical cover. The moduli of stable pairs is separated [@AEGS25; @Kol23a], so an automorphism of a family of stable pairs over the smooth locus has at most one extension across the boundary.
+Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$, and let $(\mcx_B, \eps\mcr_B)\to B$ be the pullback of the universal family of KSBA-stable pairs.
+Its general fibre is a pair $(X, \eps R)$ of an Enriques K3 surface $X$ and the ramification divisor $R$ of the del Pezzo involution.
+
+1. By uniqueness of KSBA-stable limits, the Enriques involution $\ien$ of the general fibre extends to an involution of $(\mcx_B, \eps\mcr_B)$.
+   The quotient is a family $(\mcz, \eps\mcr_\mcz)\to B$ over a compact base, which extends the universal family of Enriques surfaces with divisor.
+
+2. The normalization $\normalize{B}$ is a compactification of $\fentwo$ with a universal family of pairs, so there is a classifying morphism $\normalize{B}\to\ksbacpt{\fentwo}$
+
+[@AEGS25, Lem. 2.8 and proof of Thm. 5.9].
 :::
 
 ## Finiteness of the classifying map
@@ -29,13 +33,17 @@ $$
 from the normalization $B^\nu$ of the Noether--Lefschetz closure is finite.
 :::
 
-::: {.remark title="A semifan criterion"}
+::: {.proposition #prop:enriques-semifan-coarsening title="The semifans of the normalized KSBA compactification"}
 
-The normal KSBA compactification induces semifans $\semifan{G}_k$, which are coarsenings of the folded Coxeter semifans $\semifan{F}_k$.
-The map $\phi$ is finite if and only if $\semifan{G}_k = \semifan{F}_k$ for all $k$.
+Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the generalized Coxeter semifans of the folded Coxeter diagrams of the five $0$-cusps of $\fentwo$ [@AEGS25, Def. 5.3, Lem. 5.5].
 
-A strict coarsening identifies in the target two maximal degenerations that differ by a double curve.
-So $\phi$ is finite if the dual complex of a maximally degenerate stable limit determines the limit.
+1. The normalization $\normksbacpt{\fentwo}$ dominates the Baily--Borel compactification $\bbcpt{\fentwo}$, and it is the semitoroidal compactification for a collection of semifans $\semifan{G}_k$ that coarsen the $\semifan{F}_k$.
+
+2. If the maximal cones of the $\semifan{G}_k$ are the maximal cones of the $\semifan{F}_k$, then $\phi$ is finite.
+
+3. A degeneration of $(\mcz, \eps\mcr_\mcz)$ has the maximal number of double curves if and only if the corresponding degeneration of $(\mcx, \eps\mcr)$ has
+
+[@AEGS25, proof of Thm. 5.9].
 :::
 
 ## Zariski's Main Theorem and the classifying isomorphism
@@ -62,5 +70,19 @@ $$
 is an isomorphism.
 :::
 
-The target $\normksbacpt{\fentwo}$ is normal, and $\phi$ is a morphism of proper spaces [@AEGS25; @Kol23a], so $\phi$ is finite if and only if its fibres are finite [@stacks-02LS].
-By @thm:zariski_main_theorem, @conj:classifying_map_isomorphism follows from three statements: $\phi$ is defined over the boundary, which holds if @conj:enriques_involution_extension holds; $\phi$ is an isomorphism over $\fentwo$; and $\phi$ is finite (@conj:classifying_map_finite).
+::: {.proposition #prop:classifying-map-isomorphism-criterion title="A criterion for the classifying map"}
+
+Let $\phi\colon\normalize{B}\to\normksbacpt{\fentwo}$ be a morphism that is an isomorphism over $\fentwo$ and has finite fibres.
+Then $\phi$ is an isomorphism.
+In particular, @conj:classifying_map_finite implies @conj:classifying_map_isomorphism for every such morphism $\phi$.
+:::
+
+::: {.proof}
+
+The space $\ksbacpt{\fentwo}$ is compact, and it is the closure of $\fentwo$ in the KSBA moduli space of stable pairs [@AEGS25, §5.3].
+The space $B$ is closed in the compact space $\ksbacpt{\fttz}$, and $\normalize{B}$ is a compactification of $\fentwo$ (@prop:enriques-involution-extends).
+So $\normalize{B}$ and $\normksbacpt{\fentwo}$ are proper, $\fentwo$ is dense in both, and $\phi$ is proper.
+A proper morphism with finite fibres is finite [@stacks-02LS].
+Since $\phi$ is an isomorphism over the dense open $\fentwo$, it is birational.
+The target $\normksbacpt{\fentwo}$ is normal, so $\phi$ is an isomorphism by @thm:zariski_main_theorem.
+:::

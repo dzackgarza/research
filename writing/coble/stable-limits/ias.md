@@ -1,18 +1,8 @@
 # Integral affine structures {#sec-ias-degenerations}
 
-::: {.remark}
-
-Following [@AEGS25], a **Kulikov model** is a $K$-trivial semistable model $\mcx \to (C, 0)$ of a degeneration of K3 surfaces over a pointed curve $C$.
-For each such degeneration, one can define the dual complex of the central fiber $\Gamma(\mcx_0)$.
-For Type II degenerations of K3 surfaces the dual complex is an interval $\bD^1$, and for Type III it is an integral affine $S^2$ with singularities of total charge $24$.
-The additional data of an integral affine polarization $R_{\mathrm{IA}} \subset \Gamma(\mcx_0)$ describes the KSBA stable limit of a degeneration $(\mcx^*, \varepsilon \mcr^*)$.
-The geometry of such a degeneration is depicted in @fig-moduli-degeneration: the family $\mcx$ is fibred over a curve $C$ in the moduli space $\mcm$, and the stable limit is the fiber over the point where $C$ meets the boundary.
-For Enriques (and hence Coble) surfaces, we take the corresponding dlt models $\mcz \definedas \mcx/\ien$ and half-divisor models $(\mcz, \mcr_{\mcz}) \definedas (\mcx, \mcr)/\ien$ where $\mcx \to (C, 0)$ and $(\mcx, \mcr)$ are Kulikov and divisor models of their K3 covers.
-:::
-
 ::: {.definition #def:singular_ias}
 
-The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model carries a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs.
+The dual complex $\Gamma(\mcx_0)$ of a Type III Kulikov model has a canonical *singular integral affine structure*: away from a finite singular set its charts map to $\RR^2$ with transition functions in $\operatorname{GL}_2(\bZ) \ltimes \RR^2$, and its singularities correspond to the components of positive charge, the non-toric anticanonical pairs.
 The total charge is $24$, which constrains the number and type of singularities; for instance one may have $24$ singularities of type $I_1$.
 :::
 
@@ -32,20 +22,10 @@ produces the integral affine sphere realizing the dual complex $\Gamma(\mcx_0)$;
 A one-parameter family $\mcx \to C$ of surfaces over a curve $C \iscontainedin \mcm$ in the moduli space, with fibers $\mcx_0$ and $\mcx_t$ over interior points and the limit $\mcx_\infty$ over the boundary point $\infty$.
 :::
 
-::: {.remark}
-
-The following is a representation of a Type II degeneration -- it is a chain of surfaces whose dual complex is an interval $\bD^1$, where the ends $V_1$ and $V_n$ are rational and the remaining $V_i$ are isomorphic to $E\times \PP^1$ for a fixed elliptic curve $E$.
-The intersections $V_i \intersect V_{i+1}$ are double curves isomorphic to $E$.
-:::
-
 ::: {#fig-typeiikdg .figure}
 \input{tikz/type_ii_kulikov_degeneration.tikz}
 
 A Type II Kulikov degeneration.
-:::
-
-::: {.remark}
-A Type III degeneration can be represented by a triangulation of $S^2$ with singularities, depicted as follows:
 :::
 
 ::: {#fig-triangulated-sphere-fan .figure}
@@ -54,17 +34,12 @@ A Type III degeneration can be represented by a triangulation of $S^2$ with sing
 A triangulated integral affine sphere.
 :::
 
-::: {.remark}
-
-The following is a combinatorial representation of the Kulikov model of $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13].
-:::
-
 ::: {#fig-ias-sterk3-kulikov-model .figure}
 \begin{tikzpicture}[scale=1.4]
 \pic {object=ias/sterk3-kulikov};
 \end{tikzpicture}
 
-A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
+A combinatorial Kulikov model whose dual complex is $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13].
 :::
 
 ## The integral affine structure $B_3(\ell)$ at Sterk cusp 3
@@ -74,7 +49,7 @@ A combinatorial Kulikov model for $B_3(\ell)$ at Sterk cusp $3$.
 \pic {object=ias/sterk3-ias};
 \end{tikzpicture}
 
-The integral affine structure $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13], drawn in the plane: five integral affine singularities are marked with their multiplicities, solid segments carry the triangulation of the shaded region and dashed segments the lattice lines outside it.
+The integral affine structure $B_3(\ell)$ at Sterk cusp $3$, $\ell = (2, 0^{15}, 2, 4, 6, 4, 0, 4)$ [@AEGS25, Ex. 4.13, Fig. 13], drawn in the plane: five integral affine singularities are marked with their charges, solid segments are the edges of the triangulation of the shaded region, and dashed segments are the lattice lines outside it.
 :::
 
 ::: {#fig-ias2-disc-slice .figure}
@@ -109,32 +84,13 @@ The same polytope after Symington surgeries, marked in red along the boundary.
 The $16$-gon with its boundary lines $\ell_1, \ell_{16}, \dots, \ell_{21}$ labelled.
 :::
 
-::: {.remark}
-
-We leverage the theory of [@AEGS25; @AE22; @AE23; @AET23; @ABE22].
-:::
-
 ## Marked-root structures for the Coble locus
-
-::: {.remark}
-
-For Enriques and Coble surfaces the integral affine data is built on the K3 cover first and only then folded downstairs.
-One starts from the K3 monodromy (Coxeter) data behind the integral affine sphere, imposes the Coble condition by marking a root $r$ and requiring the period to lie on the hyperplane $r^{\perp}$, that is on the Heegner divisor cut out by $r$,
-$$
-\lambda \cdot r = 0,
-$$
-and only afterwards passes to the folded Enriques data and the Coble hyperplane.
-The marked root records the vanishing cycle producing the node on the K3 cover; it is what distinguishes the Coble integral affine structure from an ordinary Enriques boundary structure.
-:::
 
 ::: {.question #qst:equivariant_triangulation}
 
-Does there exist an equivariant triangulation of the integral affine sphere compatible with the marked root $r$?
-Absent such a triangulation, the marked-root prescription remains a construction principle rather than a finished combinatorial model.
-:::
-
-::: {.remark}
-
-By @lem:cusp_map_dP the Coble $0$-cusp maps under $\tilde\eta$ to $(18,0,0)_1$, and Sterk cusp $2$ is the folding of $(18,0,0)_1$ by the reflection $\alpha_k\mapsto\alpha_{20-k}$ of its Coxeter diagram [@AEGS25 Lemma 3.9].
-Under @conj:coble-zero-cusp-sterk-two, the integral-affine and Kulikov models at the Coble $0$-cusp have dual complex a disc, $\Gamma(\mcz_0) \cong \bD^2$, as at Sterk cusp $2$, and not a sphere or $\mathbf{RP}^2$; this agrees with the flowerpot degenerations of Morrison [@Mor81; @AEGS25].
+Let $r$ be a root of the K3 lattice, and let the period lie on the Heegner divisor $r^{\perp}$, so that the monodromy invariant satisfies
+$$
+\lambda \cdot r = 0.
+$$
+Does there exist an equivariant triangulation of the integral affine sphere $B(\lambda)$ compatible with the marked root $r$?
 :::

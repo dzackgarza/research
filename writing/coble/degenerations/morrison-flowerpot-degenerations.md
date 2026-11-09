@@ -1,19 +1,41 @@
 # Morrison's degenerations
 
-::: {.remark title="On Morrison's degenerations"}
+::: {.definition #def:flower-pot-degeneration title="Flowers, stalks, pots and flower pot degenerations"}
 
-As explained in [@Mor81] and the appendix of [@Sha81a], a **flower** is a pair $(\PP^2, C)$ where $C^2 = 4$ is a conic, while a **pot** is a pair $(V, D)$ where $V$ is a rational surface and $D = \Sum C_i$ is a sum of rational curves satisfying $C_i\cdot C_j = -4\delta_{ij}$.
-A **stalk** is a pair $(\Sigma_4, s_0 + s_\infty)$ where $\Sigma_4$ is a rational ruled surface with sections $s_0, s_\infty$ satisfying $s_0^2 = 4$ and $s_\infty^2 = -4$.
-A **stalk assembly** is a flower glued to some number of stalks along boundary double curves, and a **flower pot** is a pot glued to stalk assemblies along double curves.
+A **marked surface** $(V, D)$ is an algebraic surface $V$ with a reduced effective divisor $D\subset V$ with local normal crossings.
+
+- A **flower** is a marked surface $(\PP^2, C)$ with $C\subset\PP^2$ a conic.
+- A **stalk** is a marked surface $(\FF_4, \sigma_0 + \sigma_\infty)$, where $\sigma_0$ and $\sigma_\infty$ are the $0$- and $\infty$-sections of the Hirzebruch surface $\FF_4$, of self-intersection $4$ and $-4$.
+- A **stalk assembly** of length $k$ is a flower joined to $k - 1$ stalks.
+- A **pot** is a rational surface $V$ marked by $D = \Sum C_\alpha$, with each $C_\alpha$ rational and $C_\alpha\cdot C_\beta = -4\delta_{\alpha\beta}$.
+- A **flower pot degeneration** is a semistable degeneration $X\to\Delta$ such that $X_0$ consists of a pot meeting stalk assemblies along its double curves.
+
+[@Mor81, Ex. 1.6; @Sha81a, Appendix].
 :::
 
-::: {.question}
-Check that this is the Hirzebruch surface $F_4$ with only part of its toric boundary.
+::: {.proposition #prop:flower-pot-periods title="Periods of flower pot degenerations"}
+
+Let $\Lambda$ be the $(-1)$-eigenlattice of the covering involution on the second homology of the K3 cover of an Enriques surface, and for $\lambda\in\Lambda$ with $\lambda^2 = -2$ let $H_\lambda\subset\Gamma\backslash D$ be the hypersurface of periods of K3 surfaces on which $\lambda$ is of type $(1,1)$.
+
+1. Let $X\to\Delta$ be a flower pot degeneration, with period map $\Phi\colon\Delta^*\to\Gamma\backslash D$.
+   If $\Phi$ extends to $\Phi\colon\Delta\to\Gamma\backslash D$, then $\Phi(0)\in H_\lambda$ for some $\lambda$ [@Mor81, Lemma 7.1].
+
+2. Let $X\to\Delta$ be a weakly projective flower pot degeneration.
+   Then $2K_{\tilde X}\not\equiv 0$ for every semistable birational model $\tilde X$ of $X$ [@Mor81, Cor. 7.2].
 :::
 
-::: {.remark}
-By [@Mor81 Lem. 7.1, 7.2], some degenerations of Coble surfaces correspond to flower pot degenerations $\mathcal{X}$, since the period of central fiber $\mathcal{X}_0$ of such a degeneration is contained in the Coble divisor $\mathcal{H}_{-2} \iscontainedin \fen$ and $2K_{\mathcal{X}}\neq 0$.
-By [@AEGS25], flowers are the semistable resolutions of the $S_2$-quotients of the ADE singularities in the total space of the smoothing.
-The pots are components of the dlt models of [@AEGS25] along which flowers and stalks are attached.
-Flower pots correspond to type $\mathrm{(i.b)}$ in the classification [@Mor81 Cor. 6.2], which by [@AEGS25 Rmk. 4.12] are Type $\latI$ semistable degenerations of Enriques surfaces with a klt singularity.
+::: {.proposition #prop:morrison-dlt-correspondence title="Morrison's degenerations and dlt models"}
+
+The cases (i a), (i b), (ii a), (ii b), (iii a) and (iii b) of the classification of semistable degenerations of Enriques surfaces [@Mor81, Cor. 6.2] correspond, respectively, to:
+
+- Type $\latI$ degenerations;
+- Type $\latI$ degenerations with a klt singularity;
+- Type $\latII$ degenerations with Enriques involution flipping the segment;
+- Type $\latII$ degenerations with Enriques involution fixing the segment;
+- Type $\mathrm{III}$ degenerations with $\Gamma(Z_0) = \RP^2$ (cusp $1$);
+- Type $\mathrm{III}$ degenerations with $\Gamma(Z_0) = \Dc^2$ (cusps $2$ to $5$).
+
+Case (i b) is the flower pot.
+The flowers and stalk assemblies are the semistable resolutions of the $S_2$-quotients of the $ADE$ singularities in the total space of the smoothing.
+The pots are the components of the dlt models (@def:dlt-model) along which the flower and stalk assembly are attached [@AEGS25, Rem. 4.12].
 :::

@@ -2,7 +2,17 @@
 
 ## dlt models and involution pairs
 
-Here the *dlt model* of a Kulikov model $\mcx \to (C,0)$ on which $\iota_\En$ acts regularly is the quotient $\mcz \definedas \mcx/\iota_\En$ [@AEGS25 Def. 4.7]; the dual complex of $\mcz_0$ is the boundary stratum, and the definition below records the involution pair $(X, D, \iota)$ it comes from.
+::: {.definition #def:dlt-model title="dlt models and half-divisor models"}
+
+Let $\mcx \to (C,0)$, resp. $(\mcx,\mcr)\to(C,0)$, be a Kulikov model, resp. a divisor model (@def:coble-divisor-model), of Enriques K3 surfaces on which the Enriques involution $\iota_\En$ is a regular involution of $\mcx$, resp. a regular involution that preserves $\mcr$.
+The **dlt model**, resp. the **half-divisor model**, is the quotient by the Enriques involution:
+$$
+\mcz \definedas \mcx/\iota_\En,
+\qquad\text{resp.}\qquad
+(\mcz, \mcr_{\mcz}) \definedas (\mcx, \mcr)/\iota_\En
+$$
+[@AEGS25, Def. 4.7].
+:::
 
 ::: {.definition #def:dlt-involution-pair title="dlt models and involution pairs"}
 
@@ -22,15 +32,22 @@ $$
 where $R$ is the ramification divisor of $\pi$.
 :::
 
-::: {.remark title="Dual complex topology"}
+::: {.proposition #prop:enriques-quotient-dual-complex title="Dual complexes of Enriques quotients"}
 
-The topology of the dual complex of the central fiber $Y_0'$ distinguishes the degeneration types:
+Let $\mcx \to (C,0)$ be a Kulikov model of Enriques K3 surfaces, and assume that the Enriques involution of the general fiber extends to an involution $\iota_{\En,0}$ of the central fiber.
 
-- Generic Type III (e.g. Coxeter type $\widetilde{E}_8 + \widetilde{E}_8$): the dual complex of $Y_0'$ is a projective plane $\RP^2$, with the involution acting antipodally on $S^2$.
+1. If $0\in C$ maps to a $0$-cusp of $\overline{F}^{BB}_{(10,10,0)}$, then $\Gamma(\mcx_0)$ is a $2$-sphere.
+   At the $0$-cusp $(10,10,0)_1$ the action of $\iota_{\En,0}$ on $\Gamma(\mcx_0)$ is an antipodal involution, and the quotient is $\RP^2$.
+   At the $0$-cusp $(10,8,0)_1$ the action is a hemispherical involution, and the quotient is a disc $\Dc^2$.
 
-- Other Type III / Type II (e.g. $\widetilde{E}_8 + \widetilde{D}_{10}$): the dual complex is a $2$-disk $\Dc^2$, with the involution acting as a reflection on $S^2$.
+2. In Type $\latII$, $\Gamma(\mcx_0)$ is a segment.
+   At the cusp $(8,8,0)_0$ the involution flips the segment, and at the cusp $(8,6,0)_0$ it fixes the segment
 
-- Special Type II cases: the dual complex reduces to a segment.
+[@AEGS25, Sec. 3.2].
+
+Let $(\mcz,\mcr_\mcz)\to(C,0)$ be a half-divisor model for $\fentwo$ for the divisor models of [@AEGS25, Prop. 4.5].
+In Type $\mathrm{III}$, $\Gamma(\mcz_0) = \RP^2$ at cusp $1$ and $\Gamma(\mcz_0) = \Dc^2$ at cusps $2$ to $5$.
+In Type $\latII$, $\Gamma(\mcz_0)$ is a segment [@AEGS25, Prop. 4.8].
 :::
 
 ## Divisor models
@@ -60,18 +77,16 @@ Among divisor models $(\mcx,\mcr)\to C$ with a fixed Picard--Lefschetz monodromy
 A *half-divisor model* is a pair $(\mcz, \mcr_{\mcz})$ over a base curve $C$ that arises as the quotient of a divisor model $(\mcx, \mcr) \to C$ by a fixed-point-free involution $\tau$ under which $\mcr$ is $\tau$-invariant, $\tau^*\mcr = \mcr$.
 The class $\mcr$ descends to $\mcz$ only up to the $2$-torsion twist $K_{\mcz}$ (the two $\ZZ/2$-linearizations of the invariant $\mcr$ differ by the sign character of $\tau$); this is why $\mcr_{\mcz}$ is Weil but not Cartier, while $2\mcr_{\mcz}$ is Cartier.
 
-This naturally models limits of polarized Enriques surfaces, where the polarization does not descend to a Cartier divisor on the Enriques quotient.
-
 Boundary strata for Enriques stable limits are modeled by pairs $(\mcz_0, \tfrac{1}{2}\mcr_{\mcz_0})$ with $K_{\mcz_0} + \tfrac{1}{2}\mcr_{\mcz_0}$ ample and slc singularities.
 :::
 
-::: {.remark title="Half-divisor models from the Enriques involution"}
+::: {.proposition #prop:half-divisor-stable-limit title="Stable limits from half-divisor models"}
 
-Equivalently, a half-divisor model arises when a divisor model $(\mcx, \mcr)$ admits an Enriques involution $\iota_\En$ preserving $\mcr$; the quotient is
+Let $(\mcz,\mcr_\mcz)\to(C,0)$ be a half-divisor model (@def:dlt-model) for $\fentwo$ for the divisor models of [@AEGS25, Prop. 4.5].
+Then the fibers of $\mcz$ have slc singularities, $K_\mcz + \eps\mcr_\mcz$ is relatively big and nef over $C$, and $\mcr_\mcz$ contains no log canonical centers [@AEGS25, Prop. 4.8].
+The KSBA stable limit of the degeneration $(\mcz^*, \eps\mcr_\mcz^*)\to C^*$ is
 $$
-(\mcz, \mcr_{\mcz})
-= (\mcx, \mcr) / \iota_\En
-.
+\Proj_C \bigoplus_{n\geq0} H^0(\mcz, n\mcr_\mcz)
 $$
-Its KSBA stable limit can be computed directly from the relative $\Proj$ of its section ring.
+[@AEGS25, Cor. 4.9].
 :::

@@ -7,32 +7,21 @@
 Let $\ksbacpt{\fentwo}$ denote the KSBA compactification of the moduli space $\fentwo$ of numerically polarized Enriques surfaces of degree $2$.
 Let $\semitorfan = \theset{\semifan{F}_k}_{k=1}^5$ be the collection of folded semifans for the $0$-cusps.
 
-1. The normalization $\normksbacpt{\fentwo}$ is isomorphic to the semitoroidal compactification $\semifancpt{\fentwo}{\semitorfan}$ [@AEGS25 Thm. 1].
+1. The normalization $\normksbacpt{\fentwo}$ is isomorphic to the semitoroidal compactification $\semifancpt{\fentwo}{\semitorfan}$ [@AEGS25, Thm. 1.1].
 
-2. This compactification is toroidal over the $0$-cusps $2$ and $4$, their adjacent $1$-cusps, and the $1$-cusp $35$, and strictly semitoroidal over all other cusps [@AEGS25 Lem. 5.7].
+2. This compactification is toroidal over the $0$-cusps $2$ and $4$, their adjacent $1$-cusps, and the $1$-cusp $35$, and strictly semitoroidal over all other cusps [@AEGS25, Lem. 5.7].
 
-3. The isomorphism is established via an intermediate normalization $\normalize{B}$ of the Zariski closure of the Noether--Lefschetz locus inside the K3 compactification $\ksbacpt{\fttz}$ [@AEGS25 Sec. 6].
+3. Let $B$ be the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$.
+   There is a classifying morphism $\normalize{B}\to\ksbacpt{\fentwo}$, and it is finite [@AEGS25, proof of Thm. 5.9].
 :::
 
-::: {.proof}
-
-Clause (1) is [@AEGS25, Thm. 1], clause (2) is [@AEGS25, Lem. 5.7], and clause (3) is [@AEGS25, §6].
-
-
-:::
 ::: {.notation #not:sterk-cusp-labels title="Two indexings of the boundary"}
 
 The $0$-cusps carry Sterk's numbering $1,\dots,5$, as in the five-cusp example (@ex:fen2_five_cusps). A $1$-cusp is denoted $i_1\dots i_k$ when its closure contains the $0$-cusps $i_1,\dots,i_k$ [@AEGS25 Not. 3.1]; there are nine of them,
 $$
 12,\quad 13,\quad 14,\quad 15,\quad 245,\quad 34,\quad 35,\quad 45,\quad 55 .
 $$
-In part 2, the $1$-cusp $35$ is the one whose closure contains the $0$-cusps $3$ and $5$; the $0$-cusps $3$ and $5$ are strictly semitoroidal (@ex:fen2_five_cusps).
-:::
-
-::: {.remark}
-
-This theorem records the settled ambient degree-$2$ Enriques picture: the normalized KSBA compactification of $\fentwo$ coincides with an explicit semitoroidal model built from five folded semifans, one per $0$-cusp.
-The proof runs through the K3 moduli space $\fttz$ of the degree-$(2,2,0)$ problem, identifying $\normksbacpt{\fentwo}$ with a normalization of the closure of the relevant Noether--Lefschetz locus; see the normalization lemma (@lem:fen2_normalization) for the corresponding period-domain statement.
+The $1$-cusp $35$ is the one whose closure contains the $0$-cusps $3$ and $5$, and the $0$-cusps $3$ and $5$ are strictly semitoroidal (@ex:fen2_five_cusps).
 :::
 
 ## Normalization inside $\fttz$
@@ -94,8 +83,10 @@ The $0$-cusps of $\fttz$ are distinguished by the divisibility $\mathrm{div}(e)\
 ::: {.example #ex:fen2_five_cusps title="The five $0$-cusps of $\ksbacpt{\fentwo}$"}
 
 The boundary of the KSBA compactification $\ksbacpt{\fentwo}$ has $27$ divisors across five $0$-cusps: $6$ of Type II and $21$ of Type III [@AEGS25 Lem. 5.8].
-The counts recorded per cusp below are *rays*, and a Type II divisor contributes one ray at each $0$-cusp it meets, so the per-cusp Type II counts sum to $13$ rather than to $6$.
-For each $0$-cusp we record the topological type of the reduced dual complex $\Gamma(\mcz_0)$, the number of Type II and Type III rays, and the integral-affine-structure (IAS) involution.
+The per-cusp counts below are counts of *rays*. A Type II divisor contributes one ray at each $0$-cusp it meets, so the per-cusp Type II counts sum to $13$, not to $6$.
+These counts are obtained from the numbers $4+4$, $2+8$, $3+15$, $4+12$, $5+17$ of Type II and Type III rays of the Coxeter fans [@AEGS25, Lem. 5.2] by removing the subgraphs that contain a connected component of irrelevant vertices [@AEGS25, proof of Lem. 5.8].
+Each item gives the topological type of the reduced dual complex $\Gamma(\mcz_0)$ [@AEGS25, Prop. 4.8], the numbers of Type II and Type III rays, and the integral-affine-structure (IAS) involution $\iota_{\En,\IA}$ [@AEGS25, Prop. 4.5].
+The toroidal and semitoroidal cusps are those of @thm:fen2_main(2).
 
 1. **Cusp 1**: Semitoroidal.
    $\Gamma(\mcz_0) = \RP^2$.
@@ -118,43 +109,30 @@ For each $0$-cusp we record the topological type of the reduced dual complex $\G
    $3$ Type II rays, $0$ Type III. IAS involution: flip hemispheres.
 :::
 
-::: {.remark}
-The per-cusp counts above are exactly the ones of [@AEGS25 Lem. 5.8], obtained there from the Coxeter-fan counts $4+4,\ 2+8,\ 3+15,\ 4+12,\ 5+17$ of [@AEGS25 Lem. 5.2] by discarding the subgraphs with a connected component of irrelevant vertices.
-The Type III counts $0,7,7,7,0$ sum to the $21$ distinct Type III divisors; the Type II counts $2,2,2,4,3$ sum to $13$ rays carried by $6$ distinct Type II divisors, each of which is a curve through several $0$-cusps.
-:::
-
-::: {.remark}
-
-This enumeration is the boundary data underlying the folded semifans $\semitorfan$ of the compactification theorem (@thm:fen2_main): each $0$-cusp carries a reduced dual complex, a partition of its rays into the Type II (adjacent $1$-cusp) and Type III (deeper) strata, and the involution of its integral affine structure that folds the covering K3 data onto the Enriques data.
-The precise per-cusp ray counts and IAS involutions should be regarded as provisional pending an independent cusp computation, as should the cusp tables discussed in the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison).
-:::
-
 ## Folded Coxeter diagrams of the five cusps
 
-::: {.remark #rmk:fen2_folded_coxeter title="Folded Coxeter diagrams of $\fentwo$"}
+::: {.proposition #prop:fen2-folded-coxeter title="Folded Coxeter diagrams of $\fentwo$"}
 
-The five $0$-cusps of $\fentwo$ are expected to correspond to five distinct orbits of primitive isotropic vectors in $\ten$, each realized as a folded image of a Coxeter diagram for $\fttz$ under the involution $I = -\Ien$ (the root-folding criterion (@lem:root-folding-tdp), in the sense of the folded-root definition (@def:folded-root)):
+Let $e\in\ten$ be a primitive isotropic vector.
+Let $\overline{T}_{\mathrm{En}} = e^\perp/e$ in $\ten$ and $\overline{T}_{\mathrm{dP}} = e^\perp/e$ in $\tdp$, so that $\overline{T}_{\mathrm{En}}\subset\overline{T}_{\mathrm{dP}}$.
+Let $J = -\overline{I}_{\mathrm{En}}$ be the involution of $\overline{T}_{\mathrm{dP}}$ induced by $-\Ien$, whose $(+1)$-eigenspace is $\overline{T}_{\mathrm{En}}$ [@AEGS25, Def. 3.5].
+The folded diagram $G(\overline{T}_{\mathrm{dP}})^J$ of the Coxeter diagram $G(\overline{T}_{\mathrm{dP}})$ has as nodes the folded roots $\alpha + J(\alpha)$ (@def:folded-root) of the simple roots $\alpha$ for which these vectors are roots of $\overline{T}_{\mathrm{En}}$ (@lem:root-folding-tdp) [@AEGS25, Def. 3.7].
 
-1. **$\eta_1$**: Divisibility $1$, derived from $\tilde\eta_1$ via $180^\circ$ rotation.
-   (Boundary lattice: $U(2) \oplus E_8(2)$.)
+1. Let $\mathfrak{C}$ be a chamber of $W(\Gamma_{\mathrm{dP},e})$ in the positive cone of $\overline{T}_{\mathrm{dP}}$ whose intersection with $\overline{T}_{\mathrm{En}}\otimes\RR$ has maximal dimension.
+   Then $\mathfrak{C}^J = \mathfrak{C}\intersect\overline{T}_{\mathrm{En}}\otimes\RR$ is a fundamental chamber of $W(\Gamma_{\mathrm{En},2,e})$, and its Coxeter diagram is $G(\overline{T}_{\mathrm{dP}})^J$ [@AEGS25, Lem. 3.8].
 
-2. **$\eta_2$**: Divisibility $2$, derived from $\tilde\eta_2$ via vertical reflection.
-   (Boundary lattice: $U \oplus E_8(2)$.)
+2. The following five involutions $J$ give the folded diagrams of the five $0$-cusps, in Sterk's numbering.
+   The simple roots $\alpha_k$ are numbered as in [@AEGS25, Fig. 5].
 
-3. **$\eta_3$**: Divisibility $2$, derived from $\tilde\eta_1$ via diagonal reflection $+$ root swap.
-   (Boundary lattice: $U \oplus E_8(2)$.)
+   | Cusp | $\overline{T}_{\mathrm{dP}}$ | Involution $J$ | $\overline{T}_{\mathrm{dP}}^{J=1}$ |
+   | --- | --- | --- | --- |
+   | $1$ | $(18,2,0)_1$ | rotation of the diagram by $180^\circ$ | $U(2)\oplus E_8(2)$ |
+   | $2$ | $(18,0,0)_1$ | reflection $\alpha_k\mapsto\alpha_{20-k}$ of the diagram about the vertical line | $U\oplus E_8(2)$ |
+   | $3$ | $(18,2,0)_1$ | reflection of the diagram about the diagonal, followed by the reflection in the root $\alpha_{20}$ | $U\oplus E_8(2)$ |
+   | $4$ | $(18,2,0)_1$ | reflection of the diagram about a horizontal line | $U\oplus E_8(2)$ |
+   | $5$ | $(18,2,0)_1$ | composition of the $8$ commuting reflections in the roots $\alpha_1,\alpha_3,\dots,\alpha_{15}$ | $U\oplus E_8(2)$ |
 
-4. **$\eta_4$**: Divisibility $2$, derived from $\tilde\eta_1$ via horizontal reflection.
-   (Boundary lattice: $U \oplus E_8(2)$.)
+   [@AEGS25, Lem. 3.9, Lem. 3.10].
 
-5. **$\eta_5$**: Divisibility $2$, derived from $\tilde\eta_1$ via $8$ commuting reflections.
-   (Boundary lattice: $U \oplus E_8(2)$.)
-:::
-
-::: {.remark}
-
-The folded chamber $\mathfrak{C}^I = \mathfrak{C} \intersect \oT_{\eta, \mathbf{R}}^{I = 1}$ has walls defined by the roots descending from the covering domain (cf. the classical-foldings example (@ex:classical-foldings)).
-
-The polarized Coble boundary problem uses this folded Enriques data only as ambient input.
-The extra marked-root refinement -- the admissibility test for Coble roots at a cusp and the restriction of the ramification semifan to the polarized Coble locus -- is recorded separately in the Coble cusp-admissibility question (@qst:coble_cusp_admissibility) and the restricted-ramification-semifan conjecture (@conj:restricted_ramification_semifan).
+3. These five folded diagrams are precisely the Coxeter diagrams of the reflection groups $W(\Gamma_{\mathrm{En},2,e})$, for the isotropic vectors $e\in\ten$ up to $\Gamma_{\mathrm{En},2}$ [@AEGS25, Cor. 3.12].
 :::
