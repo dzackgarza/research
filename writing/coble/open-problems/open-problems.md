@@ -198,23 +198,48 @@ The open work is to define a regularized theta series for the hyperbolic lattice
 
 ## The GIT and Looijenga models of the Coble moduli space
 
-::: {.theorem #thm:coble-arrangement-empty title="The Coble arrangement is empty, hence the GIT compactification is Baily--Borel"}
-The arrangement $\mch^{*}_{10A_1} = \mch_\infty \intersect D(T_\Co)$ of divisibility-two roots of $\Lambda_1=H^{\perp\lkt}$ is empty. Consequently there are zero $\Gamma_{10A_1}$-orbits in it, and @def:looijenga-compactification returns the Baily--Borel compactification of $\Gamma_{10A_1}\backslash D(T_\Co)$.
+::: {.theorem #thm:coble-arrangement-nonempty title="The Coble arrangement is nonempty, and the GIT compactification is not Baily--Borel"}
+For a singular type $T$, write $\overline{\Sigma}_T$ for the Zariski closure of the nodal stratum in $\PP(\operatorname{Sym}^6 V^\vee)$. The arrangement $\mch_T^*$ is empty if and only if $\overline{\Sigma}_T$ contains no cube $Q^3$ of a **smooth** conic $Q$. This is Yu--Zheng's Proposition 3.7 [@YZ23, p. 10], read together with Remark 2.2 [@YZ23, p. 5] and diagram (8) [@YZ23, p. 9].
+
+For $T=10A_1$, the closure contains such a cube, and hence
+$$
+\mch^{*}_{10A_1} = \mch_\infty \intersect D(T_\Co) \neq \varnothing
+.
+$$
+Consequently the GIT compactification is the proper Looijenga model for this nonempty arrangement, not the Baily--Borel compactification of $\Gamma_{10A_1}\backslash D(T_\Co)$. Its arrangement-indexed boundary divisors are indexed by the $\Gamma_{10A_1}$-orbits on $\mch^{*}_{10A_1}$; the number of those orbits remains open.
 :::
 
 ::: {.proof}
-**Step 1: the type, its lattices, and its group agree with the period setting in this section.** A singular type $T$ in Yu--Zheng is an irreducible component of $\Sigma_n$, whose members are plane sextics with $n$ distinct nodes ([@YZ23, beginning of §3, p. 5]), and the GIT construction subsequently uses its Zariski closure and normalization ([@YZ23, §3.1, p. 6]). For $T=10A_1$, @prop:coble-is-the-ten-nodal-sextic-type gives $P=S_\Co$ and $Q=T_\Co$, with $Q=P^{\perp\lkt}$. Yu--Zheng's period lattice $\Lambda_T$ is the same orthogonal complement, so the arrangement in Proposition 3.7 is the arrangement denoted $\mch^*_{10A_1}$ here. The normalizer description of the arithmetic group agrees with $\Gamma_{10A_1}$: [@YZZ25, Lemma 4.5, p. 13] identifies $\Gamma_W|_Q$ with $\Gamma_T$, and the Weyl group is $\{\pm1\}^{10}$, as recorded after @not:sextic-singular-type. Moreover, [@YZZ25, Lemma 4.8, p. 14] proves that every root of $L$ has divisibility $1$, whereas the roots in $\mch^*_{10A_1}$ would have divisibility $2$, so no sextic-node root lies in this arrangement.
+**Step 1: the type, its lattices, and its group agree with the period setting in this section.** A singular type $T$ in Yu--Zheng is an irreducible component of $\Sigma_n$, whose members are plane sextics with $n$ distinct nodes ([@YZ23, beginning of §3, p. 5]), and the GIT construction uses its Zariski closure and normalization ([@YZ23, §3.1, p. 6]). For $T=10A_1$, @prop:coble-is-the-ten-nodal-sextic-type gives $P=S_\Co$ and $Q=T_\Co$, with $Q=P^{\perp\lkt}$. Yu--Zheng's period lattice $\Lambda_T$ is the same orthogonal complement, so the arrangement in Proposition 3.7 is the arrangement denoted $\mch^*_{10A_1}$ here. The normalizer description of the arithmetic group agrees with $\Gamma_{10A_1}$: [@YZZ25, Lemma 4.5, p. 13] identifies $\Gamma_W|_Q$ with $\Gamma_T$, and the Weyl group is $\{\pm1\}^{10}$, as recorded after @not:sextic-singular-type. Moreover, [@YZZ25, Lemma 4.8, p. 14] proves that every root of $L$ has divisibility $1$, whereas the roots in $\mch^*_{10A_1}$ have divisibility $2$, so no sextic-node root lies in this arrangement.
 
-**Step 2: Proposition 3.7 applies to exactly this nodal stratum, not its closure.** Proposition 3.7 says that $\mathcal H^*$ is empty **if and only if $\Sigma_T$ contains no cube of a quadric polynomial** ([@YZ23, p. 10]). The symbol in the printed proposition is $\Sigma_T$, the component of nodal curves itself. We therefore need not decide whether the Zariski closure contains a triple conic: that is a different statement from the criterion's hypothesis.
+**Step 2: the good parametrizations are dense in the space of degree-six nets.** Let $\mathbb G=\operatorname{Gr}(3,H^0(\PP^1,\OO(6)))$, let $B\subset\mathbb G$ be the open subset of base-point-free nets, and let $c\colon B\to\PP(\operatorname{Sym}^6 V^\vee)$ take a net to its image cycle. Let $U\subset B$ consist of the nets for which $\phi_N\colon\PP^1\to\PP^2$ is birational onto its image and that image has only ordinary nodes. This condition is open: at a node with preimage points $p\neq q$, transversality of the two branches makes the two equations $\phi_N(p)=\phi_N(q)$ regular at $(p,q)$, so the node and its two preimage points persist under a small perturbation; properness and compactness exclude new identifications away from these pairs and the diagonal.
 
-**Step 3: no triple conic belongs to the $10A_1$ stratum.** If $F$ is a quadric polynomial, its cube $F^3$ is a non-reduced sextic. At a general point of its support it is non-reduced, hence singular; in particular, it has infinitely many singular points and is not a sextic with ten isolated ordinary nodes. But every curve in $\Sigma_{10A_1}$ has exactly ten distinct nodes. Therefore $\Sigma_{10A_1}$ contains no cube of a quadric polynomial. By Proposition 3.7, $\mch^{*}_{10A_1}=\varnothing$.
+Dolgachev places the Winger curve at $(\lambda:\mu)=(27,5)$ in the pencil
+$$
+\mu(xy+z^2)^3+\lambda z(x^5+y^5+z^5+5x^2y^2z-5xyz^3+z^5)
+$$
+and, in his coordinates $(x,y,z)=(A_1,A_2,A_0)$, parametrizes it by
+$$
+[u:v]\longmapsto[-v^6+3u^5v:\;u^6+3uv^5:\;-5u^3v^3]
+$$
+[@Dol18, §7, pp. 13--14]. The three forms have no common zero. The ten nodes already account for the total defect $\delta=10$ in the genus formula used to prove @lem:rational_sextic_ten_nodes, so they are the curve's only singularities. The Winger curve therefore belongs to $U$ and to $\Sigma_{10A_1}$. Every other member of $U$ likewise has exactly ten nodes by the same genus count. Since $\mathbb G$ is irreducible, the nonempty open set $U$ is dense in $B$.
 
-**Step 4: the resulting compactification.** @thm:git-equals-looijenga identifies the GIT compactification with the Looijenga model of $\Gamma_{10A_1}\backslash D(T_\Co)$ (the source being [@YZZ25, Theorem 4.11, p. 15]). Proposition 3.7 itself notes, immediately before its statement, that the Looijenga compactification with an empty hyperplane arrangement is Baily--Borel ([@YZ23, p. 10]). Hence the model is the Baily--Borel compactification. There is no root-orbit configuration to index another boundary arrangement.
+**Step 3: a triple smooth conic is in the closure.** The base-point-free net
+$$
+N_0=\generators{u^6,\,-v^6,\,u^3v^3}\in B
+$$
+gives the map $[u:v]\mapsto[u^6:-v^6:u^3v^3]$, the composite of the degree-three map $[u:v]\mapsto[u^3:v^3]$ with the conic parametrization $[a:b]\mapsto[a^2:-b^2:ab]$. Its image cycle is therefore $Q^3$, where
+$$
+Q=(xy+z^2=0)
+$$
+is smooth because its defining quadratic form is nondegenerate. Density of $U$ and continuity of $c$ give $Q^3=c(N_0)\in\overline{c(U)}$. Also $c(U)$ is irreducible and contains the Winger curve, so $c(U)\subseteq\Sigma_{10A_1}$. Thus $Q^3\in\overline{\Sigma}_{10A_1}$, and the criterion in the statement gives $\mch^*_{10A_1}\neq\varnothing$.
+
+**Step 4: the resulting compactification.** @thm:git-equals-looijenga identifies the GIT compactification with the Looijenga model of $\Gamma_{10A_1}\backslash D(T_\Co)$ ([@YZZ25, Theorem 4.11, p. 15]). The nonempty-arrangement case is not the Baily--Borel case described immediately before Proposition 3.7 [@YZ23, p. 10]. The construction above decides nonemptiness only; it does not determine the $\Gamma_{10A_1}$-orbits.
 :::
 
 ::: {.question #qst:semifan-poset-position title="Open problem: the position of the three semifans"}
 
-The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input. By @thm:coble-arrangement-empty the arrangement is empty, so there are zero $\Gamma_{10A_1}$-orbits and no arrangement-indexed boundary divisors. The following three questions are independent of that conclusion:
+The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input. By @thm:coble-arrangement-nonempty the arrangement is nonempty and the compactification is a proper Looijenga model, but the number of $\Gamma_{10A_1}$-orbits, and hence the number of arrangement-indexed boundary divisors, remains open. The following three questions remain:
 
 - is the resulting Looijenga semifan the Coxeter semifan of a reflection group, as it would be if the traces of $\mch^{*}_{10A_1}$ on a cusp boundary were the walls of a chamber?
 
