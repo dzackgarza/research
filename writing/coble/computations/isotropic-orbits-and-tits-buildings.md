@@ -14,31 +14,27 @@ notes: |-
 
 # Orbits of isotropic vectors and the Tits building of a cusp configuration {#sec-isotropic-orbits-and-tits-buildings}
 
+## The Tits building of a lattice of signature $(2,n)$
 
-The enumeration of $\Orth(T)$- and $\Gamma$-orbits of primitive isotropic vectors in $T_\Co$ is left open in [open problems](#sec-open-problems), where it blocks the uniqueness of the Baily--Borel $0$-cusp.
-Two published algorithm families answer that question for indefinite lattices; this page states what each computes and under which hypotheses.
-What the orbits are counted *by*, before any algorithm runs, is [discriminant-form descent](#sec-discriminant-descent): a finite set of classes, and the double-coset fibres of @thm:descent-double-coset.
+::: {.lemma #lem:signature-two-isotropic-dimension title="Totally isotropic subspaces in signature $(2,n)$"}
 
-## Why the orbit count is the cusp count
-
-::: {.remark title="The correspondence and the invariants that separate orbits"}
-
-[The Scattone cusp method](#sec-scattone-cusp-method) records the correspondence and its separating invariants: for $T$ of signature $(2,n)$ and an arithmetic $\Gamma\leq\Orth(T)$, the $0$-cusps of the Baily--Borel compactification are the $\Gamma$-orbits of primitive isotropic lines of $T$ and the $1$-cusps are the $\Gamma$-orbits of primitive isotropic planes, and the pair $\bigl(\div_T(v), [v^*]\bigr)$ of @prop:coble-divisibility-discriminant separates those orbits under the hypotheses of @thm:eichler-criterion and @thm:sterk-orbit.
+Let $T$ be a nondegenerate lattice of signature $(2,n)$.
+Every totally isotropic subspace of $T\tensor\RR$ has dimension at most $2$.
 :::
 
-::: {.remark title="The building of a lattice of signature $(2,n)$"}
+::: {.proof}
 
-For $T$ of signature $(2,n)$ a totally isotropic subspace has dimension at most $2$, so the Tits building of $\Orth(T)$ has rank $2$: its vertices are the isotropic lines and the isotropic planes, its edges are the containments $I\subset J$, and it is a bipartite graph.
-The $\Gamma$-quotient is the incidence graph of the boundary of $\bbcpt{F}$, the $1$-cusps adjacent to a $0$-cusp $[I]$ being the isotropic planes containing $I$; these are the maximal parabolic subdiagrams of the Coxeter--Vinberg diagram at $[I]$ (@def:parabolic-subdiagram), equivalently the ideal vertices of the chamber there (@cor:ideal-vertices-are-parabolic).
-Counting the cusps and computing the building are one computation at two levels of detail.
+Write $T\tensor\RR = P\perp N$ with $P$ positive definite of dimension $2$ and $N$ negative definite of dimension $n$.
+A totally isotropic subspace $W$ meets $N$ only in $0$, because every nonzero vector of $N$ has negative square.
+Hence $\dim W\leq\dim(T\tensor\RR)-\dim N = 2$.
 :::
 
-::: {.remark title="The complement of a vector and what its computation produces"}
+::: {.definition #def:signature-two-tits-building title="The Tits building of a lattice of signature $(2,n)$"}
 
-For a primitive $v$ in a nondegenerate lattice $L$ of rank $n$ with Gram matrix $G$, the pairing $\beta_L(v,-)\colon L\to\ZZ$ has matrix the row $v^{\mathsf T}G$.
-Its invariant factor decomposition produces two things: the single invariant factor of that map, which is $\div_L(v)$, so that the image is $\div_L(v)\ZZ$; and an explicit basis of the kernel $v^{\perp L}$, a free module of rank $n-1$, whose Gram matrix is the restricted form.
-The Smith normal form of $v^{\mathsf T}G$ is the standard means of producing both.
-Every algorithm below descends through this step, and the invariants it compares are read off the result.
+Let $T$ be a nondegenerate lattice of signature $(2,n)$.
+The **Tits building** of $T$ is the bipartite graph whose vertices are the primitive isotropic lines and the primitive totally isotropic planes of $T$, with an edge from a line $I$ to a plane $J$ when $I\subset J$.
+A subgroup $\Gamma\leq\Orth(T)$ acts on it by graph automorphisms.
+By @lem:signature-two-isotropic-dimension these are all the nonzero primitive totally isotropic sublattices of $T$.
 :::
 
 ## Deciding orbit equivalence of two vectors
@@ -53,8 +49,6 @@ Then
 2. $\div_L(v_1) = \div_L(v_2)$, and the isometry induced by $\phi$ on $A_L$ carries $[v_1^*]$ to $[v_2^*]$;
 
 3. $\phi$ restricts to an isometry $v_1^{\perp L}\to v_2^{\perp L}$, so the two complements are isometric and in particular have equal discriminants.
-
-Each holds a fortiori for any subgroup of $\Orth(L)$, so a failure of any one of them refutes equivalence under every group considered here.
 :::
 
 ::: {.proof}
@@ -68,10 +62,6 @@ For the classes: $\phi$ carries $v_1/\div_L(v_1)$ to $v_2/\div_L(v_2)$ because i
 
 (3) $\phi(v_1)=v_2$ gives $\phi(v_1^{\perp L})=v_2^{\perp L}$: if $x\perp v_1$ then $\beta(\phi x,v_2)=\beta(x,v_1)=0$, and conversely by applying $\phi^{-1}$.
 The restriction is an isometry onto, hence an isometry of lattices, so the complements are isometric and by @def:discriminant they have the same discriminant form.
-
-The last sentence is the practical content: each condition is a necessary condition on any orbit, so a pair failing one is separated by every subgroup of $\Orth(L)$ at once, and the computations of this page use that to discard candidates without knowing the group.
-
-The necessary conditions on an isotropic orbit are the invariants of `prop:coble-divisibility-discriminant` together with the building-theoretic restriction that an isotropic vector lies in a chamber of the Tits building determined by its class.
 :::
 
 ::: {.lemma #lem:complement-determinant title="The determinant of a complement is fixed by the square and the divisibility"}
@@ -98,25 +88,26 @@ the quotient on the right being finite of that order because $q(v)\in\div_L(v)\Z
 On the other hand $\det(\ZZ v\oplus v^{\perp L}) = q(v)\cdot\det(v^{\perp L})$ and $\det(\ZZ v\oplus v^{\perp L}) = [L:\ZZ v+v^{\perp L}]^{2}\cdot\det L$; substituting the index gives the formula.
 :::
 
-Two primitive vectors of one lattice with the same square and the same divisibility therefore have complements of equal determinant, and condition (3) of @prop:orbit-necessary-conditions cannot be violated through the determinant alone: a difference between two complements, if there is one, is finer than its discriminant.
+::: {.proposition #prop:dawes-orbit-decision title="Deciding equivalence of non-isotropic vectors"}
 
-::: {.remark title="The definite case"}
+Let $L$ be an even nondegenerate lattice, let $\Gamma\leq\Orth(L)$, and let $v_1, v_2\in L\tensor\QQ$ with $v_1$ non-isotropic.
+Whether $g(v_1) = v_2$ for some $g\in\Gamma$ is decidable in each of the following cases:
 
-Algorithm 2.1 of [@Daw22] decides $\Gamma$-equivalence of $v_1, v_2$ with $v_1^2 = v_2^2 \neq 0$ under the hypothesis that $v_1^{\perp L}$ is definite.
-That hypothesis is what makes the decision terminate: the isometry group of a definite lattice is finite, so the isometries $v_1^{\perp L}\to v_2^{\perp L}$ form a finite set which can be enumerated, and each is tested for extension to an element of $\Gamma$ compatible with $v_1\mapsto v_2$.
-The complement and its form come from the invariant factor decomposition above.
+1. $v_1^{\perp}$ is definite [@Daw22, Alg. 2.1];
+
+2. $v_1^{\perp}$ is indefinite, $\Gamma$ is the preimage in $\Orth(L)$ of a subgroup $\mathcal A\leq\Orth(q_L)$, and $\Orth(L)\too\Orth(q_L)$ is surjective [@Daw22, Alg. 2.2, Alg. 2.3].
 :::
 
-::: {.remark title="The indefinite case"}
+::: {.corollary #cor:dawes-orbit-decision-two-elementary title="The surjectivity hypothesis for $2$-elementary lattices"}
 
-Algorithm 2.3 of [@Daw22] treats $v_1^{\perp L}$ indefinite, where the isometry group is infinite and the enumeration of the definite case is unavailable.
-The decision is made on the discriminant form instead, under the hypothesis that
-$$
-\Orth(L)\too\Orth(q_L)
-$$
-is surjective.
-For an even indefinite $2$-elementary lattice this surjectivity holds with no further hypothesis (@thm:two-elementary-surjectivity), so it is available for $T_\Co$, and it is the hypothesis under which [open problems](#sec-open-problems) reduces the $\Orth(T_\Co)$-orbit problem to $A_{T_\Co}$.
-Without it the discriminant data does not determine the orbit, and the algorithm decides nothing.
+Let $L$ be an even indefinite nondegenerate $2$-elementary lattice.
+Then $\Orth(L)\too\Orth(q_L)$ is surjective, so case 2 of @prop:dawes-orbit-decision applies to every non-isotropic $v_1\in L\tensor\QQ$ with $v_1^\perp$ indefinite.
+In particular it applies to $L = T_\Co$.
+:::
+
+::: {.proof}
+
+The surjectivity is @thm:two-elementary-surjectivity.
 :::
 
 ::: {.example #ex:dawes-u-a3 title="Two specimens in $U\oplus A_3$"}
@@ -168,55 +159,28 @@ The class of $v_1/4$ has $q = 20/16 = 5/4$, so it generates $A_L$.
 Since $v_2 - v_1 = 4\,(8,35,1,-8,21)\in 4L$, the classes of $v_1/4$ and $v_2/4$ in $A_L$ are equal, so $g$ fixes a generator of $A_L$ and acts trivially on $A_L$.
 Since $(v_1, v_2) = 820 > 0$, the vectors $v_1$ and $v_2$ of positive square lie in the same component of $\set{x^2>0}$, and $g$ preserves each component.
 So $g\in\wh{\Orth}^+(L)$.
-If $\wh{\Orth}^+(L)$ is read instead as the isometries acting trivially on $A_L$ and preserving the orientation of negative definite $4$-planes, compose $g$ with the reflection in a root of $N_2$: it fixes $v_2$, acts trivially on $A_L$, and reverses that orientation.
 :::
 
-::: {.remark title="Buildings by descent along a subgroup"}
+::: {.proposition #prop:dawes-building-descent title="Computing quotients of the Tits building"}
 
-[@Daw22] also computes the building $B(G_1)$ of a subgroup $G_1\subset G_2$ from $B(G_2)$, and specializes this to split maximal lattices of signature $(2,n)$, where the building is described directly by its isotropic lines and planes.
-Descent along a subgroup is the shape the Coble problem takes: $\Gamma_\Co$ is cut out of $\Orth(\ten)$ as a stabilizer intersected with a centralizer (@sec-open-problems), so its building is a refinement of one already computed for a larger group.
-The paper's stated applications are the configuration of boundary components of orthogonal modular varieties and the arithmetic of orthogonal modular forms, where a Fourier expansion consumes orbit *representatives* and a multiplication is organized by them.
+Let $T$ be an even nondegenerate lattice of signature $(2,n)$, and for a subgroup $G\leq\Orth^+(T\tensor\QQ)$ let $G\backslash\mathcal B(T)$ be the quotient by $G$ of the Tits building of @def:signature-two-tits-building.
+
+1. If $G_1\leq G_2\leq\Orth^+(T\tensor\QQ)$ with $[G_2:G_1]<\infty$, then $G_1\backslash\mathcal B(T)$ is computable from $G_2\backslash\mathcal B(T)$ and a transversal of $G_2/G_1$ [@Daw22, Alg. 3.1].
+
+2. If $T$ is maximal and $T\iso U\oplus U\oplus T_0$ for a lattice $T_0$, and $n\geq2$, then $\Orth^+(T)\backslash\mathcal B(T)$ is computable [@Daw22, Alg. 3.2].
 :::
 
-## The polarized Enriques computation and its lattice
+## The polarized Enriques computation
 
-::: {.remark title="Three algorithms for indefinite forms"}
+::: {.theorem #thm:sh23-enriques-moduli-groups title="The arithmetic groups of polarized Enriques moduli"}
 
-[@SH23] carries out the corresponding computation for moduli of polarized Enriques surfaces, using three algorithms for indefinite quadratic forms:
+Let $\ten = U\oplus U(2)\oplus E_8(2)$, of signature $(2,10)$.
+For a polarization $h$ of an Enriques surface, let $\Gamma_h^+\leq\Orth^+(\ten)$ be the arithmetic group with $\mathcal M_{\En,h} = \Gamma_h^+\backslash\mathcal D_{\ten}$ [@SH23, §2].
 
-1. representatives for the intersection $G_1\intersect G_2$ of two subgroups of $\GL_n(\ZZ)$;
+1. The groups $\Gamma_h^+$ fall into exactly $87$ conjugacy classes [@SH23, Thm. 3.5].
 
-2. representatives for the orbits of vectors $v$ with $Q(v) = c$ for a fixed indefinite $Q$ and a fixed value $c$, the isotropic case being $c = 0$;
+2. Every moduli space $\mathcal M_{\En,h}$ is dominated by a moduli space of polarized Enriques surfaces of degree $1240$ [@SH23, §3.4].
 
-3. a criterion deciding whether a given $g\in\Orth(L)$ is an Eichler transvection, that is, one of the generators of the group $E(L)$ of @thm:eichler-transvection.
-
-The results reported there are that the arithmetic groups arising from polarized Enriques moduli fall into exactly $87$ conjugacy classes, that every such moduli space is dominated by the one of polarization degree $1240$, and that the Tits buildings of those groups are computed.
+3. The $0$- and $1$-dimensional cusps of $\mathcal M_{\En,h}$ are the $\Gamma_h^+$-orbits of primitive isotropic lines and planes of $\ten$, and $\Gamma_h^+\backslash\mathcal B(\ten)$ is computed for every $h$ [@SH23, §3.6, Tables 1 and 2].
 :::
 
-::: {.observation #obs:enriques-orbit-lattice-is-tdp title="The lattice of that computation is $\tdp$"}
-
-The target lattice is written $U\oplus 2U\oplus 2E_8(-1)$, a shorthand in which the prefix $2$ has two different meanings; its rank $20$ and signature $(2,18)$ are unambiguous.
-Those invariants force the reading
-$$
-M \;=\; U\oplus U(2)\oplus E_8^{\oplus 2},
-$$
-with $E_8$ negative definite, since no other assignment of the shorthand to scalings and multiplicities of $U$ and $E_8$ has rank $20$.
-This is the lattice $L_{20,2,0} = \tdp$ of two-elementary type $(20,2,0)$ in which the root configuration $\Phi_{(18,2,0)}$ and the folded Sterk diagrams are written ([root vectors and folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams)), and in which the embedding chain $T_\Co\injects \ten\injects \tdp$ terminates ([Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates)). The isotropic-orbit algorithms are therefore already stated for the ambient lattice of this project, and the residue is their transport along that chain.
-:::
-
-::: {.remark title="The implementation named in the recipe"}
-
-Step 6 of [the computational toolchain and recipe](#sec-computational-toolchain-and-recipe) computes orbit representatives with the function `vector_orbit_representatives` of `sage-indefinite-port`. That is the second algorithm above; the recipe recognizes the representatives it returns by the separating invariants $\div(v)$ and $v^{\perp}/v$, matched against the table of $2$-elementary lattices keyed by $(r,a,\delta)$.
-:::
-
-## What remains for the Coble lattices
-
-::: {.remark title="The residue"}
-
-The algorithms above decide orbit equivalence for a fixed indefinite form and a fixed group.
-For $T_\Co = \generators{2}\oplus E_{10}(2)$ the remaining inputs are the group and the lift: the orbits are wanted for $\Orth(T_\Co)$, for $\discriminantkernel{T_\Co}$ and for $\Gamma_\Co$, which differ, and the reduction to $A_{T_\Co}\cong(\ZZ/2\ZZ)^{11}$ requires the surjectivity hypothesis above together with the lifting statement of @thm:sterk-orbit.
-Every primitive isotropic vector of $T_\Co$ has $\div_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so the divisibility half of condition (2) of @prop:orbit-necessary-conditions separates nothing there, and the class $[v^*]\in A_{T_\Co}$ is the whole of that invariant.
-The candidate isotropic vectors of $T_\Co$ and the three-way transport of each along $T_\Co\injects \ten\injects \tdp$ are recorded in [Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates); running the orbit solver on them is the step that would replace the vector-by-vector table with a count.
-:::
-
-Related: [Scattone cusp method](#sec-scattone-cusp-method), [Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates), [computational toolchain and recipe](#sec-computational-toolchain-and-recipe), [cusp-correspondence morphism chain](#sec-cusp-correspondence-morphism-chain), [open problems](#sec-open-problems).
