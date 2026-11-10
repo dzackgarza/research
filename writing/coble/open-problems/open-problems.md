@@ -237,16 +237,33 @@ is smooth because its defining quadratic form is nondegenerate. Density of $U$ a
 **Step 4: the resulting compactification.** @thm:git-equals-looijenga identifies the GIT compactification with the Looijenga model of $\Gamma_{10A_1}\backslash D(T_\Co)$ ([@YZZ25, Theorem 4.11, p. 15]). The nonempty-arrangement case is not the Baily--Borel case described immediately before Proposition 3.7 [@YZ23, p. 10]. The construction above decides nonemptiness only; it does not determine the $\Gamma_{10A_1}$-orbits.
 :::
 
-::: {.question #qst:semifan-poset-position title="Open problem: the position of the three semifans"}
+::: {.question #qst:semifan-poset-position title="The position of the three semifans: degeneration cusps settled, two comparisons open"}
 
-The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input. By @thm:coble-arrangement-nonempty the arrangement is nonempty and the compactification is a proper Looijenga model, but the number of $\Gamma_{10A_1}$-orbits, and hence the number of arrangement-indexed boundary divisors, remains open. The following three questions remain:
+The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input. By @thm:coble-arrangement-nonempty the arrangement is nonempty and the compactification is a proper Looijenga model, but the number of $\Gamma_{10A_1}$-orbits remains open.
 
-- is the resulting Looijenga semifan the Coxeter semifan of a reflection group, as it would be if the traces of $\mch^{*}_{10A_1}$ on a cusp boundary were the walls of a chamber?
+**(1) Cusps of Shah's semistable degenerations.** Shah's Theorem 2.4 [@Sha80, pp. 491--492] gives the following assignments for semistable limits occurring in $\overline{\Sigma}_{10A_1}$.
 
-- does the Looijenga semifan refine the KSBA semifan, coarsen it, or is it incomparable?
+| Shah's minimal orbit | Named curve | Coble cusp |
+|:---|:---|:---|
+| Group I | a reduced sextic with no consecutive triple points and no point of multiplicity $\geq4$ | interior, no cusp |
+| Group II(1) | three distinct nonsingular conics | the $1$-cusp $(7,7,1)_0$ |
+| Group II(2) | a double line and four distinct lines | the $1$-cusp $(7,7,1)_0$ |
+| Group II(3) | a nonsingular conic and a quadric meeting it in four distinct points | the $1$-cusp $(7,7,1)_0$ |
+| Group II(4) | the double of a nonsingular cubic, $f_3^2=0$ | the $1$-cusp $(7,7,1)_0$ |
+| Group III(1) | a double nonsingular conic and a different nonsingular conic | the $0$-cusp $(9,9,1)_1$ |
+| Group III(2) | three distinct double lines | the $0$-cusp $(9,9,1)_1$ |
 
-- which sextic degenerations lie over which cusp?
-  Shah's classification of the semistable sextics is explicit [@Sha80], and @thm:cusp_correspondence gives the cusp correspondence, so tracing a named degeneration such as a double cubic to the $0$-cusp $(9,9,1)_1$ or the $1$-cusp $(7,7,1)_0$ is a finite computation.
+In particular the **double cubic lies over the $1$-cusp $(7,7,1)_0$**, not the $0$-cusp. The cusp assignments are made for curves that occur in the ten-nodal closure; Shah's list alone does not assert that every one of these minimal orbits belongs to that smaller closure.
+
+Group IV, the cube $Q^3$ of a nonsingular conic, is different. It occurs in $\overline{\Sigma}_{10A_1}$ by @thm:coble-arrangement-nonempty, but has no family-independent Baily--Borel cusp assignment: Shah's Remark 3.3 [@Sha80, p. 497] allows nilpotence exponents $1$, $2$, and $3$ for families specializing to it. In the Looijenga model it is the special point obtained by contracting the arrangement ([@YZ23, Remark 2.2, p. 5]), not an assignment to either Baily--Borel cusp.
+
+**(2) Is the Looijenga semifan the Coxeter semifan of a reflection group? Open.** @thm:coble-coxeter-semifan supplies the target Coxeter fan at the one $0$-cusp, but does not identify its walls with the traces of $\mch^{*}_{10A_1}$. The obstruction is to compute the $\Gamma_{10A_1}$-orbits of the arrangement and their traces on the cusp boundary, then prove root completeness, reflectivity, the Coxeter-angle conditions, and equality of the resulting chamber tiling. These are precisely the conditions checked separately in Cases A and B of @thm:semifan-restriction (A1--A2, respectively B3--B4), with the Coxeter semifan convention of [@AEGS25, Definition 5.1, p. 609]. The restricted-ramification results proved there do not settle those conditions for the divisibility-two arrangement $\mch^{*}_{10A_1}$.
+
+**(3) Does the Looijenga semifan refine or coarsen the KSBA semifan, or are they incomparable? Open.** The Coble KSBA semifan to which the comparison applies has not yet been formed: @thm:coble-coxeter-semifan explicitly leaves the generalized semifan unformed because the divisor of the Coble stable pair is undefined, and @warn:coble-marking records the missing dictionary from the nine simple roots to curves on the Coble surface. A comparison requires the universal stable pair, the relevance marking of the roots, and the resulting cones of combinatorial constancy; the nonemptiness of $\mch^{*}_{10A_1}$ supplies none of these data. No refinement, coarsening, or incomparability is asserted.
+:::
+
+::: {.proof}
+**Proof of (1).** Shah's Theorem 3.2 [@Sha80, p. 493] assigns nilpotence exponent $2$ to Group II and exponent $3$ to Group III. Alexeev--Engel--Thompson's Definition 2.2 [@AET23, p. 6] identifies these with Type II and Type III Kulikov degenerations, respectively. Their §3B [@AET23, pp. 15--16] gives the Baily--Borel convention used here: Type III corresponds to a primitive isotropic line and hence a $0$-cusp, while Type II corresponds to a primitive isotropic plane and hence a $1$-cusp. @thm:cusp_correspondence then assigns the representative Coble boundary types $(9,9,1)_1$ to the Type III direction and $(7,7,1)_0$ to the Type II direction. Group I has exponent $1$ and lies in the interior. This is the boundary-type correspondence of @thm:cusp_correspondence, not a new bijection between stable orbit sets. Group IV is excluded from that theorem by Shah's Remark 3.3 and is treated separately in the statement.
 :::
 
 ## dlt and KSBA stable models
