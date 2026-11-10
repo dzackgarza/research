@@ -1,0 +1,59 @@
+cusp-2 restricted semifan: projected roots and inherited marking
+Sage 11.0.beta5; exact ZZ/QQ linear algebra
+eta = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]; delta = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]; eta.delta = 0; delta^2 = -2; eta^2 = 0
+the only delta incidence is double 9--10; every other incidence is orthogonal
+  pairing (r_1,delta) = 0
+  pairing (r_2,delta) = 0
+  pairing (r_3,delta) = 0
+  pairing (r_4,delta) = 0
+  pairing (r_5,delta) = 0
+  pairing (r_6,delta) = 0
+  pairing (r_7,delta) = 0
+  pairing (r_8,delta) = 0
+  pairing (r_9,delta) = 2
+restricted basis = (h=e+f,a_1,...,a_8); restricted Gram invariants are (9,9,1)
+restricted basis Gram determinant = 512
+restricted Gram =
+[ 2  0  0  0  0  0  0  0  0]
+[ 0 -4  0  2  0  0  0  0  0]
+[ 0  0 -4  0  2  0  0  0  0]
+[ 0  2  0 -4  2  0  0  0  0]
+[ 0  0  2  2 -4  2  0  0  0]
+[ 0  0  0  0  2 -4  2  0  0]
+[ 0  0  0  0  0  2 -4  2  0]
+[ 0  0  0  0  0  0  2 -4  2]
+[ 0  0  0  0  0  0  0  2 -4]
+w_1 = [0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0]; Sbar coordinates = [0, 0, 0, 0, 1, 0, 0, 0, 0]; square = -4; div_Sbar = 2
+w_2 = [0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0]; Sbar coordinates = [0, 0, 0, 1, 0, 0, 0, 0, 0]; square = -4; div_Sbar = 2
+w_3 = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0]; Sbar coordinates = [0, 1, 0, 0, 0, 0, 0, 0, 0]; square = -4; div_Sbar = 2
+w_4 = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0]; Sbar coordinates = [0, 0, 1, 0, 0, 0, 0, 0, 0]; square = -4; div_Sbar = 2
+w_5 = [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]; Sbar coordinates = [0, 0, 0, 0, 0, 1, 0, 0, 0]; square = -4; div_Sbar = 2
+w_6 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]; Sbar coordinates = [0, 0, 0, 0, 0, 0, 1, 0, 0]; square = -4; div_Sbar = 2
+w_7 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]; Sbar coordinates = [0, 0, 0, 0, 0, 0, 0, 1, 0]; square = -4; div_Sbar = 2
+w_8 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]; Sbar coordinates = [0, 0, 0, 0, 0, 0, 0, 0, 1]; square = -4; div_Sbar = 2
+w_9 = [1, 1, 0, 0, -2, -3, -4, -6, -5, -4, -3, -2]; Sbar coordinates = [1, -2, -3, -4, -6, -5, -4, -3, -2]; square = -2; div_Sbar = 2
+projected wall Gram, in the figure-node order =
+[-4  2  0  2  2  0  0  0  0]
+[ 2 -4  2  0  0  0  0  0  0]
+[ 0  2 -4  0  0  0  0  0  0]
+[ 2  0  0 -4  0  0  0  0  0]
+[ 2  0  0  0 -4  2  0  0  0]
+[ 0  0  0  0  2 -4  2  0  0]
+[ 0  0  0  0  0  2 -4  2  0]
+[ 0  0  0  0  0  0  2 -4  2]
+[ 0  0  0  0  0  0  0  2 -2]
+the same wall Gram in AN order (chain v_1,...,v_8, spur v_9) =
+[-4  2  0  0  0  0  0  0  0]
+[ 2 -4  2  0  0  0  0  0  0]
+[ 0  2 -4  2  0  0  0  0  2]
+[ 0  0  2 -4  2  0  0  0  0]
+[ 0  0  0  2 -4  2  0  0  0]
+[ 0  0  0  0  2 -4  2  0  0]
+[ 0  0  0  0  0  2 -4  2  0]
+[ 0  0  0  0  0  0  2 -2  0]
+[ 0  0  2  0  0  0  0  0 -4]
+all nine induced hyperplanes are distinct and every wall is a root mirror of Sbar
+central dihedral check: R=s_delta s_r9 has order 4 and R^2 restricts to s_w9
+marking: relevant nodes 1,2,3,5,6,7,8,9; irrelevant interior spur 4
+AN marking: v_1,...,v_8 relevant; v_9 (= current node 4) irrelevant; W_irr = S_2
+PYEXIT=0

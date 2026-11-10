@@ -98,23 +98,9 @@ The normalization $\normalize{B}$ is initial among all normalizations, so univer
 Existence of the classifying morphism is a consequence of functoriality and the representability of KSBA moduli stacks.
 :::
 
-::: {.proposition
-    title="{Restriction of Semifans: the Cone Statement, and What It Does Not Give}"
-    #prop:restriction-semifans
-}
-Let $B \hookrightarrow \cpt{\fttz}$ be the Heegner embedding, given at a $0$-cusp by a primitive $(-2)$-vector $\delta$ with $\delta\cdot e = 0$. Then:
+The cone assertion needed here is @thm:semifan-restriction. At cusp $2$ of $\Fen,2$, @thm:coble-restricted-semifan checks all its mirror hypotheses and identifies the restricted generalized Coxeter semifan, including the inherited marking. The restricted facet is also a fundamental chamber of the full group $W^{(2,4)}(\bar S)$, not merely a Coxeter polytope with the AN diagram.
 
-- the period domain $\halfpd{B}$ embeds as a closed linear subdomain of the period domain for $\fttz$, and at the cusp $e$ the relevant lattice is $\bar S = (\delta^{\perp}\cap e^{\perp})/\ZZ e = \bar\delta^{\perp\bar T}$;
-
-- at a $0$-cusp $e$ of $\Fen,2$ the vector $\bar\delta$ is a mirror of the reflection group $W(\Gamma_{\En,2,e})$ of [@AEGS25], Definition 3.6, so Case A of @thm:semifan-restriction does not apply: the facets of the chambers on $\bar\delta^{\perp}$ tile it, but their angles are the induced ones and not the ambient ones, so the restriction of $\semifan{F}_{\ram}$ is the generalized Coxeter semifan of a reflection chamber of $\bar S$ only when those angles are submultiples of $\pi$ --- a condition not verified here;
-
-- the identification of $\normalize{B}$ with the semitoroidal compactification associated to that semifan is **not** a consequence of the cone statement, and is the open problem @prob:restricted-semifan.
-:::
-
-::: {.proof}
-The first clause is the restriction of the period domain to the fixed space of the involution, which is the imposition of involution-invariant lattice conditions cutting out the double covers. The second is @thm:semifan-restriction: under (H) the walls of the restricted chamber are the restricted walls (its (1)), the restricted cone is a Coxeter chamber for the projected roots (its (2)), and the coarsening by irrelevant roots passes through the intersection with no further loss (its (3)--(4)). The third clause is not proved: the cone statement is about semifans, whereas the identification of the normalization with a semitoroidal compactification also needs the saturation of the Heegner branch, the compatibility of the arithmetic action, and the coincidence of the induced contractions with the combinatorial constancy of the stable-pair family, which are items 1--4 and 5 of the list in the research report.
-In Case A of @thm:semifan-restriction, where $\bar\delta$ is not a mirror, the angle condition and the reflectivity of the restricted walls are genuine hypotheses, and @prop:semifan-restriction-obstruction exhibits a lattice and a $(-2)$-vector on which the second fails.
-:::
+As in the research report, the semifan identification and the identification of $\normalize{B}$ with the associated semitoroidal compactification are different statements. Only the first is made here; the second remains @prob:restricted-semifan.
 
 ::: {.construction
     title="{Folded Semifans and Complete Boundary Stratification}"
