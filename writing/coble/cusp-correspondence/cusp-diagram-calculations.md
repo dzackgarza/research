@@ -70,6 +70,31 @@ $$
 where $v_1-\cdots-v_8$ is the source's chain, $v_9$ its node below $v_3$, $v_7-v_8$ its double bond, and $v_8$ its open vertex. The maximal parabolic subdiagrams are the nine one-node deletions; the diagram has no nontrivial automorphism, so distinct deletions are distinct subdiagrams; the deletion whose remaining diagram is affine of type $\wt B_7$ is the facet carrying the adjacent $1$-cusp.
 :::
 
+
+::: {.theorem #thm:coble-coxeter-semifan title="The Coxeter semifan at the one $0$-cusp of $\fco$, and what the generalized semifan still needs"}
+Let $G$ be the nine-node chamber diagram of @thm:coble-cusp-chamber at the one $0$-cusp of $\fco$ and $W = W^{(2,4)}(\bar T)$ its reflection group. Then:
+
+1. the Coxeter semifan $\Fcox$ of [@AEGS25], Definition 5.1, printed p. 609 --- support $C_\QQ$, maximal cones the chambers of $W$ --- is a **fan**, the chamber having finite volume;
+2. its **Type II rays** are the maximal parabolic subdiagrams of $G$, that is the nine one-node deletions of @thm:coble-cusp-chamber; exactly one deletion is affine, of type $\wt B_7$, so there is exactly one Type II ray, and it is the facet carrying the one $1$-cusp adjacent to the $0$-cusp, of boundary lattice $(7,7,1)_0$;
+3. its **Type III cones** are the other eight facets, those whose subdiagram is elliptic.
+
+The generalized Coxeter semifan of [@AEGS25], p. 610 (after [@AET23], §4D) is formed from a split $I\sqcup J$ of the nine nodes into relevant and irrelevant roots, by $C_{\mathrm{gen}} = \bigcup_{h\in W_{\mathrm{irr}}} hC$, the coarsening of $\Fcox$ obtained by deleting the faces $\bigcap_j\alpha_j^\perp\cap C$ spanned by irrelevant roots. **It is not formed here.** [@AEGS25], p. 610 derives the marking of $\Fram$ from the ramification divisor: the relevant roots are those that lie on the boundary of the square, respectively the triangle. The corresponding datum on the Coble side is the divisor $R_{\bar S}$ of a Coble stable pair $(\bar S,\eps R_{\bar S})$, and it is not defined on these pages; see the warning below.
+:::
+
+::: {.proof}
+(1) is [@AEGS25], Definition 5.1, printed p. 609, read with @thm:coble-cusp-chamber. The criterion stated there for the semifan to be a fan is that the Coxeter polyhedron $P$ have finite volume, equivalently that $W$ have finite index in $\Orth(\Lambda)$; the chamber here is a simplex of finite volume with one ideal vertex, its $f$-vector being $(9,36,84,126,126,84,36,9,1)$ and its transcript reporting one vertex at infinity.
+
+(2) By the same definition the Type II rays are the rays $\RR_{\ge0}v$ with $v^2 = 0$ on $\partial C_\QQ$, in bijection with the maximal parabolic subdiagrams of $G$, which by @thm:coble-cusp-chamber are the nine one-node deletions. A facet of a finite-volume chamber lies at infinity exactly when its own reflection group does not have finite covolume, that is when the deletion is affine rather than elliptic. The recorded run `computations/coxiter/logs/9-9-1_1.txt` reports $8$ finite vertices and $1$ vertex at infinity, and a simplex with nine facets has nine vertices; so exactly one of the nine deletions is affine. That facet is the one @thm:coble-cusp-chamber identifies, carrying the adjacent $1$-cusp with boundary lattice $(7,7,1)_0$.
+
+(3) The remaining eight deletions are subdiagrams of a finite-volume diagram in dimension $8$ and are not affine, hence elliptic; by the definition they are the Type III cones.
+:::
+
+::: {.warning #warn:coble-stable-pair-missing title="The definition that is missing for the generalized semifan"}
+The marking cannot be derived from the stable pair because the stable pair is not defined on these pages. What is missing is a definition of the divisor $R_{\bar S}$ of the Coble stable pair $(\bar S,\eps R_{\bar S})$ --- its support as a sum of curves on a Coble surface --- together with its KSBA stability, so that the roots whose walls $R_{\bar S}$ meets can be read off the chamber, as the square and the triangle are read off in [@AEGS25], p. 610. [KSBA stable limits](#sec-ksba) names the intended boundary object and records that establishing that this pair is KSBA stable "remains a research program", and describes $R_{\bar S}$ only as "the descended ramification divisor", without saying which curves of a Coble surface it contains.
+
+Until that definition is in place there is no split $I\sqcup J$, hence no $W_{\mathrm{irr}}$, and the three questions of this unit --- which nodes are relevant, whether $W_{\mathrm{irr}}$ is finite, whether $F_{\mathrm{gen}}$ is a fan and which Type II rays it keeps --- have no answers here. No marking is chosen. The two Enriques-side results do not transfer to $\bar T$ without it: [@AEGS25], Lemma 5.6, printed p. 611, computes $W_{\mathrm{irr}}$ finite at cusps $2$ and $4$ and infinite at $1, 3, 5$ for the Enriques ladders, and Lemma 5.7, p. 611, gives the survival criterion for a Type II ray --- the maximal parabolic diagram has no connected component consisting entirely of irrelevant vertices.
+:::
+
 ::: {.proof}
 The boundary lattice is computed on this page above: $v_0^{\perp}/\generators{v_0}\cong(9,9,1)_1\cong\generators{2}\oplus E_8(2)$, of signature $(1,8)$. By [@AN06], Theorem 3.1 with Table 1, the fundamental chamber $\mathcal M^{(2,4)}$ of $W^{(2,4)}(S)$ for the $2$-elementary even hyperbolic lattice of invariants $(9,9,1)$ is the diagram printed in row $N = 10$ of that table, p. 52: a chain $v_1-\cdots-v_8$ with the single double bond $v_7-v_8$, one further node $v_9$ attached to $v_3$, and $v_8$ drawn open, with $k = 0$ and $l(H) = 0$. Reading its bonds off gives the wall list displayed in the statement, which is the bond list of the recorded input `computations/coxiter/9-9-1_1.coxiter`; the two agree, so the table is the source and the recorded run is the check. Its transcript `computations/coxiter/logs/9-9-1_1.txt` reports nine vertices, the Gram field $\QQ[\sqrt2]$, the $f$-vector $(9,36,84,126,126,84,36,9,1)$ and one vertex at infinity, all consistent with that entry.
 

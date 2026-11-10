@@ -1772,6 +1772,8 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the verified direct Coble Coxeter diagram and the intrinsic relevance marking.
 :::
 
+At the one $0$-cusp of $\fco$ the Coxeter part is now a theorem: the chamber is that of @thm:coble-cusp-chamber and the Coxeter semifan of it is a fan with one Type II ray, @thm:coble-coxeter-semifan. What that theorem records as missing is the marking: the divisor of the Coble stable pair is not defined on the pages, so the generalized semifan is not formed there.
+
 The theorem must determine cusp by cusp whether the irrelevant reflection group is finite, whether the semifan is an actual fan, and whether any Type II parabolic component consists entirely of irrelevant roots.
 
 ### Normalized closure of a subtorus {#sec-subtorus-lemma}
