@@ -106,7 +106,7 @@ Let $B \hookrightarrow \cpt{\fttz}$ be the Heegner embedding, given at a $0$-cus
 
 - the period domain $\halfpd{B}$ embeds as a closed linear subdomain of the period domain for $\fttz$, and at the cusp $e$ the relevant lattice is $\bar S = (\delta^{\perp}\cap e^{\perp})/\ZZ e = \bar\delta^{\perp\bar T}$;
 
-- at a $0$-cusp $e$ of $\Fen,2$ the vector $\bar\delta$ is a mirror of the reflection group $W(\Gamma_{\En,2,e})$ of [@AEGS25], Definition 3.6, so the restriction falls in Case B of @thm:semifan-restriction: the cones of $\semifan{F}_{\ram}$ restrict to the generalized Coxeter semifan of the facet $C\cap\delta^{\perp}$ with the inherited marking, and no hypothesis on the restricted roots is needed;
+- at a $0$-cusp $e$ of $\Fen,2$ the vector $\bar\delta$ is a mirror of the reflection group $W(\Gamma_{\En,2,e})$ of [@AEGS25], Definition 3.6, so Case A of @thm:semifan-restriction does not apply: the facets of the chambers on $\bar\delta^{\perp}$ tile it, but their angles are the induced ones and not the ambient ones, so the restriction of $\semifan{F}_{\ram}$ is the generalized Coxeter semifan of a reflection chamber of $\bar S$ only when those angles are submultiples of $\pi$ --- a condition not verified here;
 
 - the identification of $\normalize{B}$ with the semitoroidal compactification associated to that semifan is **not** a consequence of the cone statement, and is the open problem @prob:restricted-semifan.
 :::
