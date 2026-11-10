@@ -503,6 +503,20 @@ Use the four $M$-orbits $A$, $B$, $C$, $D$ of nonzero isotropic elements of $A_{
 3. Label a plane by the types of the primitive isotropic vectors it contains, as in [@Ste91, §4.3.15].
    The labels of the nine orbits of item 2 are, in the order listed there, $\theset{1,2}$, $\theset{1,3}$, $\theset{1,4}$, $\theset{1,5}$ and $\theset{2,4,5}$, $\theset{4,5}$, $\theset{3,5}$, $\theset{3,4}$, $\theset{5,5}$.
    A plane orbit is incident to a line orbit of type $t$ exactly when $t$ occurs in its label.
+   For a primitive isotropic $v$, the planes containing $v$ correspond to the isotropic lines of $v^\perp/\ZZ v$, and their $\Stab_{\gent}(v)$-orbits correspond to the parabolic subdiagrams of rank $8$, modulo symmetry, of the Vinberg diagram of the reflection subgroup of the image of $\Stab_{\gent}(v)$ in $\Orth(v^\perp/\ZZ v)$ [@Ste91, §4.3.1--4.3.3].
+   The subdiagram of each plane orbit at a vector of each type in its label is:
+
+   | label | type $1$ | type $2$ | type $3$ | type $4$ | type $5$ |
+   | :--- | :--- | :--- | :--- | :--- | :--- |
+   | $\theset{1,2}$ | $\tilde E_8$ | $\tilde E_8$ | | | |
+   | $\theset{1,3}$ | $\tilde E_7\oplus\tilde A_1$ | | $\tilde E_7\oplus\tilde A_1$ | | |
+   | $\theset{1,4}$ | $\tilde D_8$ | | | $\tilde D_8$ | |
+   | $\theset{1,5}$ | $\tilde A_7\oplus\tilde A_1$ | | | | $\tilde A_7\oplus\tilde A_1$ |
+   | $\theset{2,4,5}$ | | $\tilde B_8$ | | $\tilde B_8$ | $\tilde C_8$ |
+   | $\theset{4,5}$ | | | | $\tilde B_4\oplus\tilde B_4$ | $\tilde C_4\oplus\tilde C_4$ |
+   | $\theset{3,5}$ | | | $\tilde B_6\oplus\tilde C_2$ | | $\tilde C_6\oplus\tilde C_2$ |
+   | $\theset{3,4}$ | | | $\tilde C_8$ | $\tilde C_8$ | |
+   | $\theset{5,5}$ | | | | | $\tilde B_3\oplus\tilde B_3\oplus\tilde C_2$ |
 4. For a plane $\varPi$ with label $\lambda$, the intersection of the image of $\Stab_{\gent}(\varPi)$ in $\GL(\varPi)$ with $\SL(\varPi)$ is $\Gamma^1(2)$ for $\lambda = \theset{1,t}$ [@Ste91, §4.3.16]; it is $\Gamma(2)$ for $\theset{2,4,5}$, $\Gamma^1(2)$ for $\theset{4,5}$, $\theset{3,5}$ and $\theset{3,4}$, and $\SL_2(\ZZ)$ for $\theset{5,5}$ [@Ste91, §4.3.17 and the proof of Prop. 4.7].
 5. The orbits of $\gent^+ = \gent\cap\Orth^+(\ten)$ on lines and on planes are the orbits of $\gent$.
 
@@ -531,6 +545,14 @@ For a plane with a vector of divisibility one, every primitive vector of divisib
 For a plane without one, the classes of the primitive vectors are the three nonzero elements of $D(\varPi)$ (@prop:ten-plane-classes(3)).
 By item 1 the type of a vector is read off from the $M$-orbit of its class, which gives the labels.
 A $0$-dimensional boundary component lies in the closure of a $1$-dimensional one exactly when the line is $\gent$-equivalent to a line in the plane [@Ste91, §4.4].
+The diagrams at the vectors of types $1$ to $5$ are those of [@Ste91, Figs. 5, 7, 9, 11, 13]; there are $4$, $2$, $3$, $4$ and $5$ of them, the number of labels that contain each type.
+The plane orbits are matched across types in [@Ste91, §4.3.6--4.3.9].
+The $\tilde E_8$ class at $e'$ is the class of $\ZZ e\oplus\ZZ e'$, the $\tilde E_8$ class at $e$ (§4.3.6), so its label is $\theset{1,2}$.
+The $\tilde E_7\oplus\tilde A_1$ class at type $3$ and the $\tilde D_8$ class at type $4$ are the classes of the same diagrams at $e$, and the $\tilde C_8$ class at type $4$ is the $\tilde C_8$ class at type $3$ (§4.3.7, §4.3.8).
+At type $5$, the classes $\tilde A_7\oplus\tilde A_1$, $\tilde C_8$, $\tilde C_6\oplus\tilde C_2$ and $\tilde C_4\oplus\tilde C_4$ are the classes $\tilde A_7\oplus\tilde A_1$ at type $1$, $\tilde B_8$ at type $2$, $\tilde B_6\oplus\tilde C_2$ at type $3$ and $\tilde B_4\oplus\tilde B_4$ at type $4$ (§4.3.9).
+So the $\tilde A_7\oplus\tilde A_1$ class contains vectors of types $1$ and $5$, and its label is $\theset{1,5}$.
+The four classes at $e$ are distinct, and the $\theset{1,2}$ class is the $\tilde E_8$ class, so the example "$\tilde A_7\oplus\tilde A_1\leftrightarrow\theset{1,2}$" of [@Ste91, §4.3.15] contradicts §4.3.6 and §4.3.9.
+The remaining diagram at type $4$, $\tilde B_8$, belongs to the one remaining label containing $4$, which is $\theset{2,4,5}$; the remaining diagram at type $5$, $\tilde B_3\oplus\tilde B_3\oplus\tilde C_2$, belongs to $\theset{5,5}$.
 
 (4) The nine labels are pairwise distinct.
 The planes of [@Ste91, §4.3.16] are the planes $\ZZ e\oplus\ZZ v$ with $v$ of type $2$, $3$, $4$ or $5$, of labels $\theset{1,t}$, and the planes of [@Ste91, §4.3.17] have the five labels without $1$; the groups are computed there.
