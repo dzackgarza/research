@@ -567,14 +567,36 @@ For $m$ even, $T\notin\ker\sigma_+$, so the conclusion of @cor:middle-cohomology
 
 ## Monodromy that fixes a primitive sublattice {#sec-monodromy-fixing-sublattice}
 
-In this section $\Lambda$ is a unimodular $\ZZ$-lattice (@def:unimodular), $\iota\colon S\injects\Lambda$ is a primitive embedding (@def:primitive-embedding) of a nondegenerate lattice, and
+In this section $\Lambda$ is a nondegenerate $\ZZ$-lattice with form $\beta$, also written $\beta$ on $\Lambda_\QQ$, and $\iota\colon S\injects\Lambda$ is a primitive embedding (@def:primitive-embedding) of a nondegenerate lattice.
+The lattice $S$ is identified with $\iota(S)$, and
 $$
-T\definedas\iota(S)^{\perp\Lambda}.
+T\definedas S^{\perp\Lambda}.
 $$
-The lattice $S$ is identified with $\iota(S)$.
-Because $S$ and $\Lambda$ are nondegenerate, $\Lambda_\QQ=S_\QQ\perp T_\QQ$ and $T$ is nondegenerate.
-For $x\in\Lambda_\QQ$ write $x=x_S+x_T$ with $x_S\in S_\QQ$ and $x_T\in T_\QQ$.
-The metric duals $S^\#\iscontainedin S_\QQ$ and $T^\#\iscontainedin T_\QQ$ are those of @def:metric-dual.
+The metric duals $S^\#\iscontainedin S_\QQ$ and $T^\#\iscontainedin T_\QQ$ are those of @def:metric-dual, and $\rho_T\colon\Orth(T)\to\Orth(A_T)$ is the discriminant representation with kernel $\widetilde\Orth(T)$ (@def:discriminant-rep).
+
+::: {.lemma #lem:components-in-a-primitive-splitting title="The components of an element of $\Lambda$ along $S$ and $T$"}
+
+1. $\Lambda_\QQ=S_\QQ\perp T_\QQ$, the lattice $T$ is nondegenerate, $T=\Lambda\cap T_\QQ$ and $S=T^{\perp\Lambda}$.
+2. For $x\in\Lambda$, write $x=x_S+x_T$ with $x_S\in S_\QQ$ and $x_T\in T_\QQ$. Then $x_S\in S^\#$ and $x_T\in T^\#$.
+3. If $\Lambda$ is unimodular (@def:unimodular), the map $\Lambda\to T^\#$, $x\mapsto x_T$, is surjective.
+:::
+
+::: {.proof}
+
+For (1), $S$ is nondegenerate, so $\Lambda_\QQ=S_\QQ\perp S_\QQ^\perp$.
+Every element of $S_\QQ^\perp$ has a nonzero integer multiple in $\Lambda\cap S_\QQ^\perp=T$, so $S_\QQ^\perp=T_\QQ$; this gives the decomposition and $T=\Lambda\cap T_\QQ$.
+The form on $\Lambda_\QQ$ is nondegenerate and is the orthogonal sum of its restrictions to $S_\QQ$ and $T_\QQ$, so its restriction to $T_\QQ$ is nondegenerate.
+Finally $T^{\perp\Lambda}=\Lambda\cap T_\QQ^\perp=\Lambda\cap S_\QQ$, and $\Lambda\cap S_\QQ=S$ because $\Lambda/S$ is torsion-free.
+
+For (2), let $t\in T$.
+Then $\beta(x_T,t)=\beta(x,t)\in\ZZ$, so $x_T\in T^\#$, and in the same way $x_S\in S^\#$.
+
+For (3), let $y\in T^\#$.
+By (1) the module $\Lambda/T$ is torsion-free; it is finitely generated, hence free, and $T$ is a direct summand of the module $\Lambda$.
+The linear form $\beta(y,-)\colon T\to\ZZ$ therefore extends to a linear form $\lambda\colon\Lambda\to\ZZ$.
+Since $\Lambda$ is unimodular, $\lambda=\beta(x,-)$ for some $x\in\Lambda$.
+Then $\beta(x_T-y,t)=0$ for every $t\in T$, and $T$ is nondegenerate, so $x_T=y$.
+:::
 
 ::: {.definition #def:pointwise-stabilizer-of-sublattice title="Pointwise stabilizer of a sublattice"}
 
@@ -582,15 +604,31 @@ The *pointwise stabilizer* of $S$ in $\Orth(\Lambda)$ is the subgroup
 $$
 \Fix_{\Orth(\Lambda)}(S)\definedas\theset{g\in\Orth(\Lambda)\st g\circ\iota=\iota}.
 $$
-Every $g\in\Fix_{\Orth(\Lambda)}(S)$ preserves $T$, and restriction to $T$ is a group morphism
-$$
-\operatorname{res}_T\colon\Fix_{\Orth(\Lambda)}(S)\too\Orth(T).
-$$
 :::
 
-::: {.lemma #lem:pointwise-stabilizer-is-discriminant-kernel title="The pointwise stabilizer of $S$ is the discriminant kernel of $T$"}
+::: {.lemma #lem:restriction-from-pointwise-stabilizer title="Restriction from the pointwise stabilizer to $T$"}
 
-The morphism $\operatorname{res}_T$ is injective, and its image is the discriminant kernel $\widetilde\Orth(T)$ of @def:discriminant-rep:
+Every $g\in\Fix_{\Orth(\Lambda)}(S)$ satisfies $g(T)=T$, and
+$$
+\operatorname{res}_T\colon\Fix_{\Orth(\Lambda)}(S)\too\Orth(T),
+\qquad
+g\longmapsto g|_T,
+$$
+is an injective group morphism.
+:::
+
+::: {.proof}
+
+Let $g\in\Fix_{\Orth(\Lambda)}(S)$ and $t\in T$.
+For $x\in S$, $\beta(g(t),x)=\beta(g(t),g(x))=\beta(t,x)=0$, so $g(T)\iscontainedin T$; the same holds for $g^{-1}$, so $g(T)=T$ and $g|_T\in\Orth(T)$.
+Restriction is compatible with composition.
+An element $g$ with $g|_S=\id_S$ and $g|_T=\id_T$ is the identity on $S_\QQ+T_\QQ$, which is $\Lambda_\QQ$ by @lem:components-in-a-primitive-splitting (1).
+:::
+
+::: {.theorem #thm:pointwise-stabilizer-is-discriminant-kernel title="For unimodular $\Lambda$, the pointwise stabilizer of $S$ is $\widetilde\Orth(T)$"}
+
+Let $\Lambda$ be unimodular.
+The image of the morphism $\operatorname{res}_T$ of @lem:restriction-from-pointwise-stabilizer is $\widetilde\Orth(T)$:
 $$
 \operatorname{res}_T\colon\Fix_{\Orth(\Lambda)}(S)\iso\widetilde\Orth(T).
 $$
@@ -598,17 +636,8 @@ $$
 
 ::: {.proof}
 
-Let $x\in\Lambda$.
-For $t\in T$ one has $\beta(x_T,t)=\beta(x,t)\in\ZZ$, so $x_T\in T^\#$, and in the same way $x_S\in S^\#$.
-
-The map $\Lambda\to T^\#$, $x\mapsto x_T$, is surjective.
-Let $y\in T^\#$.
-The module $\Lambda/T$ is torsion-free, because $T=\Lambda\cap T_\QQ$; it is therefore free, and $T$ is a direct summand of the module $\Lambda$.
-The linear form $\beta(y,-)\colon T\to\ZZ$ therefore extends to a linear form $\lambda\colon\Lambda\to\ZZ$.
-Since $\Lambda$ is unimodular, $\lambda=\beta(x,-)$ for some $x\in\Lambda$.
-Then $\beta(x_T-y,t)=0$ for every $t\in T$, and $T$ is nondegenerate, so $x_T=y$.
-
-Let $g\in\Fix_{\Orth(\Lambda)}(S)$ and $y\in T^\#$, and choose $x\in\Lambda$ with $x_T=y$.
+Let $g\in\Fix_{\Orth(\Lambda)}(S)$ and $y\in T^\#$.
+By @lem:components-in-a-primitive-splitting (3) there is $x\in\Lambda$ with $x_T=y$.
 The isometry $g_\QQ$ is the identity on $S_\QQ$, so $g_\QQ(x)=x_S+g_\QQ(y)$ and
 $$
 g_\QQ(y)-y=g(x)-x\in\Lambda\cap T_\QQ=T.
@@ -620,32 +649,42 @@ For $x\in\Lambda$,
 $$
 g(x)=x+\qty{b_\QQ(x_T)-x_T},
 $$
-and $b_\QQ(x_T)-x_T\in T$ because $x_T\in T^\#$ and $\rho_T(b)=\id_{A_T}$.
+and $b_\QQ(x_T)-x_T\in T$ because $x_T\in T^\#$ by @lem:components-in-a-primitive-splitting (2) and $\rho_T(b)=\id_{A_T}$.
 Hence $g(\Lambda)\iscontainedin\Lambda$.
 The same argument for $b^{-1}$ gives $g^{-1}(\Lambda)\iscontainedin\Lambda$, so $g$ restricts to an element of $\Fix_{\Orth(\Lambda)}(S)$ with $\operatorname{res}_T(g)=b$.
-
-An isometry of $\Lambda$ is determined by its restrictions to $S$ and to $T$, because $S_\QQ+T_\QQ=\Lambda_\QQ$.
-Hence $\operatorname{res}_T$ is injective.
+Injectivity is @lem:restriction-from-pointwise-stabilizer.
 :::
 
-::: {.remark #rmk:pointwise-stabilizer-mechanism title="Why the discriminant group of $T$ is fixed"}
+::: {.proposition #prop:pointwise-stabilizer-gluing-stabilizer title="The image of $\operatorname{res}_T$ for a nondegenerate $\Lambda$"}
 
-Every class of $A_T=T^\#/T$ is the class of the $T$-component $x_T$ of an element $x\in\Lambda$, and $g\in\Fix_{\Orth(\Lambda)}(S)$ does not move the other component $x_S$.
-The difference $g_\QQ(x_T)-x_T$ is therefore the difference $g(x)-x$ of two elements of $\Lambda$.
-The proof uses of $S$ only that it is primitive and nondegenerate; it uses no property of the isometry class of $S$.
-
-@lem:pointwise-stabilizer-is-discriminant-kernel is the case $\varphi_N=\id_N$ of @cor:lifting-unimodular, with $M=T$ and $N=S$: the condition $\gamma\circ\bar\varphi_M=\bar\varphi_N\circ\gamma$ for the isometry $\gamma\colon A_T\iso A_S(-1)$ is then $\bar\varphi_M=\id_{A_T}$.
-When $\Lambda$ is not unimodular, the map $\Lambda\to T^\#$ is not surjective, and @cor:liftable-automorphisms describes the image of $\operatorname{res}_T$ as the stabilizer of the gluing subobject, which contains $\widetilde\Orth(T)$.
+Let $h\colon(H,0)\injects A_{T\perp S}$ be the gluing datum of @def:gluing-datum-of-a-pair for $M=T$, $N=S$ and $L=\Lambda$.
+The image of $\operatorname{res}_T$ is the group $\Stab_{\Orth(T)}(h)$ of @cor:liftable-automorphisms for $\Gamma=\Orth(T)$, and
+$$
+\widetilde\Orth(T)\iscontainedin\Stab_{\Orth(T)}(h)\iscontainedin\Orth(T).
+$$
 :::
 
-::: {.proposition #prop:monodromy-fixing-sublattice title="Monodromy of the complement of a sublattice of flat classes"}
+::: {.proof}
+
+The inclusions $T\injects\Lambda$ and $S\injects\Lambda$ are primitive with $S=T^{\perp\Lambda}$ by @lem:components-in-a-primitive-splitting (1), so @def:gluing-datum-of-a-pair applies.
+By @cor:liftable-automorphisms, the elements of $\Stab_{\Orth(T)}(h)$ are exactly the isometries of $T$ that extend to an isometry of $\Lambda$ fixing $S$ pointwise, that is, the elements of the image of $\operatorname{res}_T$; the same corollary gives the two inclusions.
+:::
+
+::: {.remark #rmk:pointwise-stabilizer-mechanism title="The step that uses unimodularity"}
+
+In the proof of @thm:pointwise-stabilizer-is-discriminant-kernel, an element $y\in T^\#$ is the component $x_T$ of an element $x\in\Lambda$, the isometry $g$ fixes the other component $x_S$, and $g_\QQ(y)-y$ is the difference $g(x)-x$ of two elements of $\Lambda$.
+Unimodularity enters only through @lem:components-in-a-primitive-splitting (3).
+No hypothesis of the theorem concerns the isometry class of $S$.
+:::
+
+::: {.proposition #prop:monodromy-fixing-sublattice title="Monodromy on the orthogonal complement of a sublattice of flat classes"}
 
 Let $(\bL,\beta)$ be a local system of lattices on $B$ with symmetric stalks, let $s\in B$, and let $\rho$ be its monodromy representation.
-Suppose that $\Lambda=\bL_s$ and that every element of $S$ is the value at $s$ of a global section of $\bL$.
+Suppose that the stalk $\Lambda\definedas\bL_s$ is unimodular, that $S\iscontainedin\Lambda$ is a primitive nondegenerate sublattice with $T\definedas S^{\perp\Lambda}$, and that every element of $S$ is the value at $s$ of a global section of $\bL$.
 
 1. $\rho\qty{\pi_1(B,s)}\iscontainedin\Fix_{\Orth(\Lambda)}(S)$.
-2. The representation $\rho_T\definedas\operatorname{res}_T\circ\rho$ on $T$ takes values in $\widetilde\Orth(T)$.
-3. If $\rho$ takes values in $\Orth^+(\Lambda)$, then $\rho_T$ takes values in
+2. The representation $\operatorname{res}_T\circ\rho$ on $T$ takes values in $\widetilde\Orth(T)$.
+3. If $\rho$ takes values in $\Orth^+(\Lambda)$, then $\operatorname{res}_T\circ\rho$ takes values in
 $$
 \Orth^+(T)\cap\widetilde\Orth(T).
 $$
@@ -655,7 +694,8 @@ $$
 
 For (1), let $x\in S$, let $e$ be a global section of $\bL$ with $e(s)=x$, and let $\gamma$ be a loop at $s$.
 The pullback of $e$ is a section of $\gamma^{-1}\bL$ over $[0,1]$ with value $x$ at both endpoints, so $\gamma^*x=x$ by @def:transport-and-monodromy.
-Statement (2) follows from (1) and @lem:pointwise-stabilizer-is-discriminant-kernel.
+The transport $\gamma^*=\rho(\gamma)$ is an isometry of $\Lambda$ by @prop:local-system-of-lattices-monodromy (1).
+Statement (2) follows from (1) and @thm:pointwise-stabilizer-is-discriminant-kernel.
 
 For (3), let $g\in\rho\qty{\pi_1(B,s)}$.
 By (1), $g_\RR=\id_{S_\RR}\oplus\operatorname{res}_T(g)_\RR$ on $\Lambda_\RR=S_\RR\perp T_\RR$, so $\sigma_+(g)=\sigma_+\qty{\operatorname{res}_T(g)}$ by @prop:orientation-characters-reflections (3).
@@ -675,19 +715,20 @@ $$
 
 The lattice $\lkt$ is unimodular (@prop:k3-lattice).
 By @cor:k3-family-orientation-character and @lem:k3-orientation-character, $\sigma_+\qty{\eta_s\,\rho(\gamma)\,\eta_s^{-1}}=+1$ for every $\gamma$, so the representation takes values in $\Orth^+(\lkt)$ by @prop:orientation-characters-reflections (4).
-Apply @prop:monodromy-fixing-sublattice (3) to the local system $R^2f_*\underline\ZZ_{\mcx}$ with the identification $\eta_s$ of its stalk at $s$ with $\lkt$.
+The sheaf $R^2f_*\underline\ZZ_{\mcx}$ with the cup product is a local system of lattices with symmetric stalks by @prop:primitive-cohomology-vhs (1).
+Apply @prop:monodromy-fixing-sublattice (3) to it, with the identification $\eta_s$ of its stalk at $s$ with $\lkt$.
 :::
 
 ::: {.example #ex:lattice-polarized-k3-monodromy-groups title="The group $\Orth^+(T)\cap\widetilde\Orth(T)$ for three sublattices"}
 
-In @cor:lattice-polarized-k3-monodromy the classes $c_1(\mcl|_{X_s})$ of line bundles $\mcl$ on $\mcx$ are values of global sections of $R^2f_*\underline\ZZ_{\mcx}$.
+In @cor:lattice-polarized-k3-monodromy, a line bundle $\mcl$ on $\mcx$ has a class $c_1(\mcl)\in H^2(\mcx,\ZZ)$, and the image of $c_1(\mcl)$ under $H^2(\mcx,\ZZ)\to\Gamma\qty{B,R^2f_*\underline\ZZ_{\mcx}}$ is a global section with value $c_1(\mcl|_{X_s})$ at $s$.
 
-1. For $S=\ZZ h$ with $h$ primitive and $h^2=2d$, the lattice $T$ is $\lkttd$ of @def:degree-2d-k3-period-data, and the group is $\Orth^+(\lkttd)\cap\widetilde\Orth(\lkttd)$.
-   It is contained in the group $\Orth^+(\lkttd)$ of @prop:polarized-k3-monodromy-positive.
-2. If $S$ is unimodular, then $A_T=0$ by the isometry $A_T\iso A_S(-1)$ of @cor:lifting-unimodular, and $\widetilde\Orth(T)=\Orth(T)$, so the group is $\Orth^+(T)$.
-3. For a primitive sublattice $S$ isometric to $S_\En=E_{10}(2)$, the group is $\Orth^+(T)\cap\widetilde\Orth(T)$, as for every other primitive nondegenerate $S$.
+1. For $S=\ZZ h$ with $h$ the vector of @def:degree-2d-k3-period-data, the lattice $T$ is $\lkttd$, and the group is $\Orth^+(\lkttd)\cap\widetilde\Orth(\lkttd)$.
+   It is a subgroup of $\Orth^+(\lkttd)$, the group in which @prop:polarized-k3-monodromy-positive places the monodromy.
+2. If $S$ is unimodular, then $A_T=0$ by the isometry $A_T\iso A_S(-1)$ of @cor:lifting-unimodular, which applies because $S=T^{\perp\lkt}$ (@lem:components-in-a-primitive-splitting (1)), and $\widetilde\Orth(T)=\Orth(T)$, so the group is $\Orth^+(T)$.
+3. For a primitive sublattice $S$ isometric to $E_{10}(2)$, for the lattice $E_{10}$ of @def:enriques-lattice, the lattice $S$ is nondegenerate because $E_{10}$ is, and the group is again $\Orth^+(T)\cap\widetilde\Orth(T)$: the restricted monodromy acts as the identity on $A_T$, which is isometric to $A_S(-1)$ by @cor:lifting-unimodular.
 
-For $T$ of signature $(2,n)$, the group $\Orth^+(T)\cap\widetilde\Orth(T)$ is $\widetilde\Orth^+(T)$ of @def:simultaneous-discriminant-spinor-kernel, and it is the group $\Orth^+(T)^*$ of @def:type-iv-period-domain.
+For $T$ of signature $(2,n)$ with $n\ge1$, the group $\Orth^+(T)\cap\widetilde\Orth(T)$ is $\widetilde\Orth^+(T)$ of @def:simultaneous-discriminant-spinor-kernel, and it is the group $\Orth^+(T)^*$ of @def:type-iv-period-domain, in which $\discriminantkernel{T}$ denotes $\widetilde\Orth(T)$.
 :::
 
 ## Monodromy and automorphisms of Hodge structures {#sec-monodromy-hodge-automorphisms}
