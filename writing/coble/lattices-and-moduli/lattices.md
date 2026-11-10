@@ -112,53 +112,58 @@ The embeddings of lattices $\eta: T_\Co\injects T_\En$ (resp. $T_{\Co} \injects 
 This follows from [@KK72 §5, Thm.2].
 :::
 
-::: {.definition #def:gamma-co-groups title="The three groups of the Coble lattice, and the divisor at a $(-2)$-vector"}
+::: {.definition #def:gamma-co-groups title="The groups of the Coble lattice"}
 $T_\Co$ is the lattice $N$ of [@DK13, (3.6)], $N = \generators{2}\oplus E(2)$ with $E(2) = U(2)\oplus E_8(2)$; in the notation of @lem:primitive_embedding_eta it is $\generators{h}\oplus E_{10}(2)$. Let $\delta\definedas\tilde e-\tilde f$, a $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = \eta(T_\Co)$; then $T_\En = (T_\Co\perp\ZZ\delta)_H$ is the overlattice glued along $H = \generators{(h/2,\,\delta/2)}$ (@lem:primitive_embedding_eta, @def:gluing-datum-of-a-pair).
 
-1. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, the group of the unpolarized moduli space: $M_\Co$ is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2, p. 513]. Write $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Gamma^{\mathrm{un}}_\Co$.
-2. For $\Gamma$ equal to $\Gamma_\En = \Orth(T_\En)$ [@AEGS25, Def. 2.6] or to $\gent = \rho^{-1}(M)$ with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6; @Ste91, Prop. 2.7], put
-$$
-\Gamma^{\Gamma}_\Co\definedas \text{the image of } \Stab_{\Gamma}(\delta) \text{ in } \Orth(\delta^{\perp T_\En}),
-\qquad
-F^{\Gamma}_\Co\definedas \bD(T_\Co)/\Gamma^{\Gamma}_\Co,
-$$
-the group and the space of the Coble divisor at $\delta$.
-3. $\Gamma_\Co\definedas\Gamma^{\Gamma_\En}_\Co$ with $F_\Co\definedas F^{\Gamma_\En}_\Co$, and $\Gamma_{\Co,2}\definedas\Gamma^{\gent}_\Co$ with $F_{\Co,2}\definedas F^{\gent}_\Co$.
+Three groups act on $\bD(T_\En)$: the stable group $\Gamma_\En\definedas\widetilde\Orth^+(T_\En) = \Orth^+(T_\En)\intersect\discriminantkernel{T_\En}$; the group $\Gamma^K_\En\definedas\Orth(T_\En)$, which is the group that [@AEGS25, Def. 2.6] writes $\Gamma_\En$; and $\gent = \rho^{-1}(M)$, with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6; @Ste91, Prop. 2.7].
 
-A fourth group occurs throughout: the stable subgroup
+1. $\Gamma_\Co\leq\Orth(T_\Co)$ is the monodromy group of the family of unpolarized Coble surfaces: the image of the monodromy representation (@def:transport-and-monodromy) of the local system of lattices with fibre $T_\Co$ (@def:local-system-of-lattices) of that family. The family of unpolarized Enriques surfaces, whose local system of lattices has fibre $T_\En$ and monodromy group $\Gamma_\En$, induces this family and its local system. Put $\fco\definedas\bD(T_\Co)/\Gamma_\Co$.
+2. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, with $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Orth(T_\Co)$: the moduli space $M_\Co$ of Coble surfaces is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2, p. 513].
+3. The stable group
 $$
-\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho,
+\widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho,
 $$
-$\bar\rho$ being the discriminant representation and the star $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ of [@DK13, (2.1)]. It is contained in $\Gamma^{\Gamma}_\Co$ for either $\Gamma$ (@prop:gamma-co-images), and it is strictly smaller than the first: it fixes every class of $A_{T_\Co}$, whereas $\Gamma^{\mathrm{un}}_\Co$ does not.
+$\bar\rho$ being the discriminant representation of $T_\Co$ and $\ker\bar\rho$ the group $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ of [@DK13, (2.1)].
+4. For $\Gamma$ one of $\Gamma_\En$, $\Gamma^K_\En$, $\gent$, the restricted stabilizer
+$$
+R_\Gamma\definedas \text{the image of } \Stab_{\Gamma}(\delta) \text{ in } \Orth(\delta^{\perp T_\En}) = \Orth(T_\Co).
+$$
+5. $\Gamma_{\Co,2}\definedas R_{\gent}$, with $F_{\Co,2}\definedas\bD(T_\Co)/\Gamma_{\Co,2}$.
 
-Which of the four a statement about $\bD(T_\Co)$ uses is named where the statement is made; in particular every count of $0$-cusps names its group.
+A statement about a quotient of $\bD(T_\Co)$ names the group it uses; in particular every count of cusps names its group.
 :::
 
-::: {.proposition #prop:gamma-co-images title="What the two stabilizer images are"}
-With $\delta$, $H$ and $\Gamma^{\Gamma}_\Co$ as in @def:gamma-co-groups, and $\bar\rho$ the discriminant representation of $T_\Co$:
+::: {.conjecture #conj:gamma-co-stable title="The monodromy group of the Coble family is the stable group"}
+$$
+\Gamma_\Co = \widetilde\Orth^+(T_\Co).
+$$
+:::
 
-1. $\Gamma^{\Gamma_\En}_\Co$ is the stabilizer in $\Orth(T_\Co)$ of the class $[h/2]$ of $A_{T_\Co}$:
-$$
-\Gamma^{\Gamma_\En}_\Co = \theset{\varphi\in\Orth(T_\Co)\ \mid\ \bar\rho(\varphi)(h/2) = h/2}.
-$$
-2. $\Gamma^{\gent}_\Co$ is the subgroup of that stabilizer consisting of the $\varphi$ whose image in $\Orth(A_{T_\En}, q_{T_\En})$ preserves the two summands $A_{U(2)}$ and $A_{E_8(2)}$, under the identification $A_{T_\En}\cong A_{E_{10}(2)} = A_{U(2)}\oplus A_{E_8(2)}$ of the proof.
-3. The stabilizer in (1) is all of $\Orth(T_\Co)$: the class $[h/2]$ is the characteristic class of $q_{T_\Co}$, so
-$$
-\Gamma_\Co = \Gamma^{\Gamma_\En}_\Co = \Orth(T_\Co), \qquad [\Orth(T_\Co) : \Gamma_\Co] = 1,
-$$
-and $\Gamma_{\Co,2}$ is the proper subgroup $\bar\rho^{-1}(P)$ of $\Orth(T_\Co)$, $P$ the stabilizer of the decomposition $w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of the proof, of index $[\Orth(T_\Co) : \bar\rho^{-1}(P)] = [\Orth(q_{T_\Co}) : P]$.
+::: {.remark #rmk:gamma-co-status title="What is established about $\Gamma_\Co$"}
+Neither inclusion between $\Gamma_\Co$ and $\widetilde\Orth^+(T_\Co)$ is proved. @prop:gamma-co-images(1) identifies $\widetilde\Orth^+(T_\Co)$ with the restricted stabilizer $R_{\Gamma_\En}$; that is a statement about the lattices $T_\Co\injects T_\En$, and it yields neither inclusion. A statement of this book about $\fco$ that uses more than $\Gamma_\Co\leq\Orth(T_\Co)$ is conditional on @conj:gamma-co-stable and says so.
+:::
 
-Neither group is a discriminant kernel: each contains $\ker\bar\rho$, and each is contained in $\Gamma^{\mathrm{un}}_\Co$.
+::: {.proposition #prop:gamma-co-images title="The three restricted stabilizers"}
+With $\delta$, $H$ and $R_\Gamma$ as in @def:gamma-co-groups, and $\bar\rho$ the discriminant representation of $T_\Co$:
+
+1. $R_{\Gamma_\En} = \widetilde\Orth^+(T_\Co)$.
+2. $R_{\Gamma^K_\En}$ is the stabilizer in $\Orth(T_\Co)$ of the class $[h/2]$ of $A_{T_\Co}$, and that stabilizer is all of $\Orth(T_\Co)$, because $[h/2]$ is the characteristic class of $q_{T_\Co}$:
+$$
+R_{\Gamma^K_\En} = \theset{\varphi\in\Orth(T_\Co)\ \mid\ \bar\rho(\varphi)(h/2) = h/2} = \Orth(T_\Co).
+$$
+3. $R_{\gent} = \bar\rho^{-1}(P)$, where $P\leq\Orth(q_{T_\Co})$ is the stabilizer of the decomposition $[h/2]^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of the proof. It is a subgroup of $\Orth(T_\Co)$ of index $[\Orth(q_{T_\Co}) : P]$, and it contains $\ker\bar\rho$.
 :::
 
 ::: {.proof}
-By Nikulin's gluing theorem (@thm:nikulin-gluing), $A_{T_\En}\cong H^{\perp}/H$ inside $A_{T_\Co}\oplus A_{\ZZ\delta}$. The subgroup $A_{E_{10}(2)}\subseteq A_{T_\Co}$ is orthogonal to $h/2$, because $T_\Co = \generators{h}\perp E_{10}(2)$ is an orthogonal sum; so $x\mapsto (x,0)$ carries $A_{E_{10}(2)}$ into $H^{\perp}$, and the composite $A_{E_{10}(2)}\to H^{\perp}\to H^{\perp}/H$ is injective with image of order $2^{10}\cdot 2/4 = 2^{10} = \abs{A_{T_\En}}$ (as $(x,0)\in H$ forces $x = 0$). Hence it is an isomorphism, and it carries the summands $A_{U(2)}, A_{E_8(2)}$ of $A_{E_{10}(2)}$ to the summands of the same name in $A_{T_\En} = A_{U(2)}\oplus A_{E_8(2)}$ --- the same two lattices sit in $T_\Co$ and in $T_\En$.
+By Nikulin's gluing theorem (@thm:nikulin-gluing), $A_{T_\En}\cong H^{\perp}/H$ inside $A_{T_\Co}\oplus A_{\ZZ\delta}$. The subgroup $A_{E_{10}(2)}\subseteq A_{T_\Co}$ is orthogonal to $h/2$, because $T_\Co = \generators{h}\perp E_{10}(2)$ is an orthogonal sum; so $x\mapsto (x,0)$ carries $A_{E_{10}(2)}$ into $H^{\perp}$, and the composite $A_{E_{10}(2)}\to H^{\perp}\to H^{\perp}/H$ is injective with image of order $2^{10}\cdot 2/4 = 2^{10} = \abs{A_{T_\En}}$ (as $(x,0)\in H$ forces $x = 0$). Hence it is an isomorphism
+$$
+\kappa\colon A_{E_{10}(2)}\isoto A_{T_\En},
+$$
+and it carries the summands $A_{U(2)}, A_{E_8(2)}$ of $A_{E_{10}(2)}$ to the summands of the same name in $A_{T_\En} = A_{U(2)}\oplus A_{E_8(2)}$ --- the same two lattices sit in $T_\Co$ and in $T_\En$.
 
-For (1). Let $g\in\Gamma_\En$ stabilize $\delta$. Then $g$ preserves $\delta^{\perp} = \eta(T_\Co)$, so $g = \varphi\oplus\eps$ with $\varphi = \restrictionof{g}{T_\Co}$ and $\eps = \pm1$ on $\ZZ\delta$, and $g$ preserves the overlattice $T_\En$ exactly when $(\bar\rho(\varphi)\oplus\bar\eps)(H) = H$ (@thm:automorphism-lifting-criterion, applied to the gluing datum of @def:gluing-datum-of-a-pair). The automorphism group of $(A_{\ZZ\delta}, q)$ is trivial, $q(\delta/2) = -1/2$ being nonzero, so $\bar\eps = \id$; and the only element of $H$ with second coordinate $\delta/2$ is its generator, so the condition is $\bar\rho(\varphi)(h/2) = h/2$. Conversely, if $\bar\rho(\varphi)(h/2) = h/2$ then $\varphi\oplus\id$ preserves $H$ and extends to an isometry of $T_\En$ by the same criterion, and that isometry stabilizes $\delta$. This proves (1).
+The stabilizer of $\delta$ in $\Orth(T_\En)$. Let $g\in\Orth(T_\En)$ stabilize $\delta$. Then $g$ preserves $\delta^{\perp} = \eta(T_\Co)$, so $g = \varphi\oplus\id$ with $\varphi = \restrictionof{g}{T_\Co}$, and $\varphi\oplus\id$ preserves the overlattice $T_\En$ exactly when $(\bar\rho(\varphi)\oplus\id)(H) = H$ (@thm:automorphism-lifting-criterion, applied to the gluing datum of @def:gluing-datum-of-a-pair). The only element of $H$ with second coordinate $\delta/2$ is its generator, so the condition is $\bar\rho(\varphi)(h/2) = h/2$. Conversely, if $\bar\rho(\varphi)(h/2) = h/2$ then $\varphi\oplus\id$ preserves $H$ and extends to an isometry of $T_\En$ by the same criterion, and that isometry stabilizes $\delta$. Under $\kappa$, such a $g$ acts on $A_{T_\En}$ by $[(x,0)]\mapsto[(\bar\rho(\varphi)(x),0)]$.
 
-For (2). By definition $\gent = \rho^{-1}(M)$, so a $g\in\Orth(T_\En)$ stabilizing $\delta$ lies in $\gent$ exactly when its image in $\Orth(A_{T_\En},q_{T_\En})$ preserves the two summands. Under the isomorphism above, $g$ acts on $A_{T_\En}$ by $[(x,0)]\mapsto[(\bar\rho(\varphi)(x),0)]$, so the two-summand condition is exactly that $\bar\rho(\varphi)$ preserve $A_{U(2)}$ and $A_{E_8(2)}$. The remainders are immediate: $\bar\rho(\varphi) = \id$ implies both conditions, and both conditions are conditions on $\varphi\in\Orth(T_\Co)$.
-
-For (3). Two facts about $A = A_{T_\Co}$ are used. First, $x\mapsto q(x)\bmod 1$ is a homomorphism $A\to\frac12\ZZ/\ZZ\cong\ZZ/2$: for $u,v\in A$ one has $q(u+v)-q(u)-q(v) = 2b(u,v)$, and $2b(u,v)\in\ZZ$ because $A$ is $2$-elementary and $b$ takes values in $\frac12\ZZ$ on it ([@Nik80, §1.3] for the structure of a $2$-elementary discriminant form). Second, $b$ is nondegenerate on $A$, so a class $w$ with $b(w,x)\equiv q(x)\pmod 1$ for all $x$ is unique.
+For (2). The previous paragraph gives the first equality. For the second, two facts about $A = A_{T_\Co}$ are used. First, $x\mapsto q(x)\bmod 1$ is a homomorphism $A\to\frac12\ZZ/\ZZ\cong\ZZ/2$: for $u,v\in A$ one has $q(u+v)-q(u)-q(v) = 2b(u,v)$, and $2b(u,v)\in\ZZ$ because $A$ is $2$-elementary and $b$ takes values in $\frac12\ZZ$ on it ([@Nik80, §1.3] for the structure of a $2$-elementary discriminant form). Second, $b$ is nondegenerate on $A$, so a class $w$ with $b(w,x)\equiv q(x)\pmod 1$ for all $x$ is unique.
 
 The class $[h/2]$ is such a $w$. Write $A = \generators{h/2}\oplus A_{U(2)}\oplus A_{E_8(2)}$, an orthogonal decomposition because $T_\Co = \generators{h}\perp E_{10}(2)$. On it $q\equiv0\pmod1$ vanishes on the last two summands --- on $A_{E_8(2)}$ because $q(y/2) = y^2/2\in\ZZ$ for $y\in E_8$ --- while $q(h/2) = h^2/4 = 1/2$; and $b(h/2,\cdot)$ vanishes on the same two summands while $b(h/2,h/2) = 1/2$. By additivity of $q\bmod1$ the two agree on all of $A$, that is $b(h/2,x)\equiv q(x)\pmod1$.
 
@@ -166,43 +171,45 @@ Hence every isometry $\sigma$ of $(A,q)$ fixes $[h/2]$: for every $x$,
 $$
 b(\sigma(h/2),x) = b(h/2,\sigma^{-1}x)\equiv q(\sigma^{-1}x) = q(x)\equiv b(h/2,x)\pmod 1,
 $$
-and nondegeneracy of $b$ gives $\sigma(h/2) = h/2$. By (1) the stabilizer of $[h/2]$ is $\Gamma_\Co$, so $\Gamma_\Co = \Orth(T_\Co)$ and the index is $1$.
+and nondegeneracy of $b$ gives $\sigma(h/2) = h/2$. So the stabilizer of $[h/2]$ is $\Orth(T_\Co)$.
 
-For the last claim, every $\sigma\in\Orth(q_{T_\Co})$ fixes $w = [h/2]$, hence preserves $w^{\perp}$, of dimension $10$; so $\Orth(q_{T_\Co})\to\Orth(w^{\perp},q|_{w^{\perp}})$ is defined, and it is injective because an isometry fixing $w^{\perp}$ pointwise and $w$ is the identity ($x\mapsto x+f(x)w$ with $f(x) = 1$ changes $q(x)$ by $q(w) = 1/2$). $P$ is the stabilizer in that group of the decomposition $w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$, and since $\bar\rho$ is onto, the index of $\Gamma_{\Co,2}$ in $\Orth(T_\Co)$ is the index of $P$. The proof does not evaluate that index; it is the number of decompositions of $w^{\perp}$ into a $2$-dimensional summand isometric to $A_{U(2)}$ and an $8$-dimensional one isometric to $A_{E_8(2)}$.
+For (1). Let $g = \varphi\oplus\id\in\Orth(T_\En)$ stabilize $\delta$. By the action formula, $g$ lies in $\discriminantkernel{T_\En}$ exactly when $\bar\rho(\varphi)$ fixes $A_{E_{10}(2)}$ pointwise; since $\bar\rho(\varphi)$ fixes $[h/2]$ by (2) and $A = \generators{h/2}\oplus A_{E_{10}(2)}$, that holds exactly when $\bar\rho(\varphi) = \id$. The vector $\delta$ has negative square, so a maximal positive definite subspace of $T_\Co\tensor_\ZZ\RR$ is one of $T_\En\tensor_\ZZ\RR$, and $g$ acts on it as $\varphi$ does; hence $g\in\Orth^+(T_\En)$ exactly when $\varphi\in\Orth^+(T_\Co)$. So restriction carries $\Stab_{\Gamma_\En}(\delta)$ into $\widetilde\Orth^+(T_\Co)$, and each $\varphi\in\widetilde\Orth^+(T_\Co)$ is the restriction of $\varphi\oplus\id\in\Stab_{\Gamma_\En}(\delta)$.
+
+For (3). By definition $\gent = \rho^{-1}(M)$, so a $g = \varphi\oplus\id\in\Orth(T_\En)$ stabilizing $\delta$ lies in $\gent$ exactly when its image in $\Orth(A_{T_\En},q_{T_\En})$ preserves the two summands. By the action formula, that is exactly the condition that $\bar\rho(\varphi)$ preserve $A_{U(2)}$ and $A_{E_8(2)}$. Every $\sigma\in\Orth(q_{T_\Co})$ fixes $w = [h/2]$, hence preserves $w^{\perp} = A_{E_{10}(2)}$, of dimension $10$; so $\Orth(q_{T_\Co})\to\Orth(w^{\perp},q|_{w^{\perp}})$ is defined, and it is injective because an isometry that fixes $w^{\perp}$ pointwise also fixes $w$ and is the identity. $P$ is the stabilizer in $\Orth(q_{T_\Co})$ of the decomposition $w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$, so $R_{\gent} = \bar\rho^{-1}(P)$, which contains $\ker\bar\rho$. The lattice $T_\Co$ is even, indefinite and $2$-elementary, so $\bar\rho$ is surjective (@thm:two-elementary-surjectivity), and the index of $R_{\gent}$ in $\Orth(T_\Co)$ is the index of $P$. The proof does not evaluate that index; it is the number of decompositions of $w^{\perp}$ into a $2$-dimensional summand isometric to $A_{U(2)}$ and an $8$-dimensional one isometric to $A_{E_8(2)}$.
 :::
 
 ::: {.remark #rmk:gamma-co-counts title="The cusp counts name their group"}
-By @prop:gamma-co-images(3) the group of the Coble divisor is the whole group of the moduli space: $\Gamma_\Co = \Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$, so $\fco$ and $F^{\mathrm{un}}_\Co$ are one quotient, $\bD(T_\Co)/\Orth(T_\Co)$, which [@DK13, Prop. 3.2] identifies with the moduli space of Coble surfaces up to an open subset. In particular $\fco$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), computed by sage-extensions#286 in its $\Orth(T_\Co)$ row, and one $1$-cusp, by @thm:plane-transitivity-tco, certified by the same operation.
+The quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), computed by sage-extensions#286 in its $\Orth(T_\Co)$ row, and one $1$-cusp, by @thm:plane-transitivity-tco, certified by the same operation. The stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $527$ $0$-cusps (@thm:cusp-lifting). The number of orbits of $\Gamma_{\Co,2} = \bar\rho^{-1}(P)$ on the primitive isotropic vectors, the $0$-cusp count of $F_{\Co,2}$, is not computed here.
 
-That is also what the sources force: [@DK13, Prop. 3.2] gives the moduli space as a quotient by $\Orth(N)$, and the sentence after it states that the quotient of the $(-2)$-Heegner divisor by $\Orth(U\oplus E(2))$ is birational to that moduli space; by @thm:normalization that second quotient is $\bD(T_\Co)/\Gamma_\Co$, so the two agree only if $[\Orth(T_\Co) : \Gamma_\Co] = 1$, which is @prop:gamma-co-images(3).
+The cusp counts of $\fco$ are those of the stable quotient if @conj:gamma-co-stable holds. Without it they are not determined.
 
-What remains a proper subgroup is $\Gamma_{\Co,2}$, the group of $F_{\Co,2}$: it is $\bar\rho^{-1}(P)$ of @prop:gamma-co-images(3), of index $[\Orth(q_{T_\Co}) : P]$, and the number of its orbits on the primitive isotropic vectors --- the $0$-cusp count of $F_{\Co,2}$ --- is not computed here. The $527$ recorded in this volume is the count for the stable subgroup $\widetilde\Orth^+(T_\Co)$, and the one orbit recorded for $\Orth(T_\Co)$ is the count for $\fco$.
+[@DK13, Prop. 3.2] gives the moduli space as an open subset of the quotient by $\Orth(N)$, and the sentence after it states that the quotient of the $(-2)$-Heegner divisor by $\Orth(U\oplus E(2))$ is birational to that moduli space. By @thm:normalization for $\Gamma = \Gamma^K_\En$ the normalization of that second quotient is $\bD(T_\Co)/R_{\Gamma^K_\En}$, and $R_{\Gamma^K_\En} = \Orth(T_\Co)$ by @prop:gamma-co-images(2), in agreement with the first.
 :::
 
 ::: {.theorem #thm:normalization}
 
-Let $\Gamma$ be $\Gamma_\En = \Orth(T_\En)$ or $\gent$, and let $\Gamma^{\Gamma}_\Co$ and $F^{\Gamma}_\Co$ be the group and the space of @def:gamma-co-groups, identified in @prop:gamma-co-images. Then the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta,
+Let $\Gamma$ be one of $\Gamma_\En = \widetilde\Orth^+(T_\En)$, $\Gamma^K_\En = \Orth(T_\En)$, $\gent$, and let $R_\Gamma$ be the restricted stabilizer of @def:gamma-co-groups, identified in @prop:gamma-co-images. Write $F^{\Gamma}_\Co\definedas\bD(T_\Co)/R_\Gamma$. Then the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta,
 $$
-f^{\Gamma}\colon F^{\Gamma}_\Co = \bD(T_\Co)/\Gamma^{\Gamma}_\Co \too \bD(\ten)/\Gamma,
+f^{\Gamma}\colon F^{\Gamma}_\Co = \bD(T_\Co)/R_\Gamma \too \bD(\ten)/\Gamma,
 $$
-is defined and finite, its image is the Heegner divisor $\mch_{-2}/\Gamma$ and not the complement $\fen$ of @sec-moduli-construction, and $f^{\Gamma}$ is birational; hence $F^{\Gamma}_\Co$ is the normalization of that divisor.
+is defined and finite, its image is the Heegner divisor $\mch_{-2}/\Gamma$, and $f^{\Gamma}$ is birational; hence $F^{\Gamma}_\Co$ is the normalization of that divisor.
 :::
 
 ::: {.proof}
 
-That $f^{\Gamma}$ is defined is @prop:gamma-co-images: restriction carries $\Stab_{\Gamma}(\delta)$ onto $\Gamma^{\Gamma}_\Co$, so the containment required by the descent criterion (@rmk:descent-of-an-equivariant-inclusion) holds, with equality. The target is the ambient period quotient and not the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $\delta = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f^{\Gamma}$ lies in the Heegner divisor $\mch_{-2}/\Gamma$ and meets no open complement of it. Conflating the two would make the map land outside its own target. Nothing below uses more about $\Gamma^{\Gamma}_\Co$ than that it is this image, so the argument runs for either $\Gamma$. It has three steps: finiteness of the fibres, properness, and generic injectivity.
+That $f^{\Gamma}$ is defined is @prop:gamma-co-images: restriction carries $\Stab_{\Gamma}(\delta)$ onto $R_\Gamma$, so the containment required by the descent criterion (@rmk:descent-of-an-equivariant-inclusion) holds, with equality. The target is the period quotient $\bD(\ten)/\Gamma$ and not the complement $(\bD(\ten)\sm\mch_{-2})/\Gamma$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $\delta = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f^{\Gamma}$ lies in the Heegner divisor $\mch_{-2}/\Gamma$ and does not meet its complement. Nothing below uses more about $R_\Gamma$ than that it is this image, so the argument runs for each $\Gamma$. It has three steps: finiteness of the fibres, properness, and generic injectivity.
 
 Fibres.
 For $x = [\omega]\in\bD(T_\En)$ let $T(x)$ be the smallest primitive sublattice of $T_\En$ whose complexification contains $\omega$, namely $T(x)\definedas\bigl(T_\En\intersect\omega^{\perp_{T_\En\tensor_\ZZ\CC}}\bigr)^{\perp T_\En}$.
 For a primitive sublattice $M\leq T_\En$ of signature $(2,\ast)$ one has $x\in\bD(M)$ if and only if $T(x)\iscontainedin M$.
 
 Fix $y\in\bD(\ten)/\Gamma$ and a lift $\tilde y\in\bD(T_\En)$.
-A point of $\inverseof{f^{\Gamma}}(y)$ is a $\Gamma^{\Gamma}_\Co$-orbit of a point $x = g\tilde y$ with $g\in\Gamma$ and $x\in\bD(T_\Co)$.
+A point of $\inverseof{f^{\Gamma}}(y)$ is a $R_\Gamma$-orbit of a point $x = g\tilde y$ with $g\in\Gamma$ and $x\in\bD(T_\Co)$.
 Writing $M'\definedas \inverseof{g}(T_\Co)$, that last condition says $T(\tilde y)\iscontainedin M'$.
 Now $M'^{\perp T_\En} = \inverseof{g}(\ZZ\delta) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
 The space $T(\tilde y)\tensor_\ZZ\RR$ contains a positive definite plane and $T_\En$ has signature $(2,10)$, so $T(\tilde y)^{\perp T_\En}$ is negative definite and contains only finitely many vectors of square $-2$.
 Each such $v$ determines $M' = v^{\perp T_\En}$, so only finitely many $M'$ occur.
-For a fixed $M'$ the elements $g$ with $\inverseof{g}(T_\Co) = M'$ form one coset of $\Stab_{\Gamma}(\delta)$, whose restrictions to $T_\Co$ all lie in $\Gamma^{\Gamma}_\Co$ by @prop:gamma-co-images; the corresponding points $x$ therefore form a single $\Gamma^{\Gamma}_\Co$-orbit.
+For a fixed $M'$ the elements $g$ with $\inverseof{g}(T_\Co) = M'$ form one coset of $\Stab_{\Gamma}(\delta)$, whose restrictions to $T_\Co$ all lie in $R_\Gamma$ by @prop:gamma-co-images; the corresponding points $x$ therefore form a single $R_\Gamma$-orbit.
 Hence $\inverseof{f^{\Gamma}}(y)$ is finite, of cardinality at most half the number of $(-2)$-vectors of $T(\tilde y)^{\perp T_\En}$.
 
 Properness and finiteness.
@@ -952,8 +959,8 @@ so the two preimages are conjugate in $\Orth(\ten)$.
 
 ::: {.remark #rmk:gamma-en-two-fibres title="What the index does and does not give for the cusps"}
 
-The $0$-cusps of $\fen$ are the $\gent$-orbits of primitive isotropic $v\in\ten$.
-$[\Gamma_\En : \gent]$ being a finite index of an infinite arithmetic group, and equal to the index of $\rho(\gent)$ in the finite orthogonal group, is what lets a discriminant computation say anything here at all; it is not itself a count of orbits, and two further facts are needed.
+The $0$-cusps of $\fentwo$ are the $\gent$-orbits of primitive isotropic $v\in\ten$.
+$[\Gamma^K_\En : \gent]$ being a finite index of an infinite arithmetic group, and equal to the index of $\rho(\gent)$ in the finite orthogonal group, is what lets a discriminant computation say anything here at all; it is not itself a count of orbits, and two further facts are needed.
 
 *Surjectivity of the divisibility map.*
 A primitive isotropic $v$ with $\operatorname{div}(v) = 2$ satisfies $v^2 = 0$, so $v/2\in\ten^*$ has $q_{\ten}([v/2]) = 0$ and $[v/2]\neq 0$; and $\operatorname{div}(v)=1$ gives the class $0$.
@@ -965,20 +972,20 @@ The same argument makes the class $[v/\operatorname{div}(v)]$ an invariant of th
 
 *What is not proved by equivariance alone, and what is.*
 Surjectivity on point sets does not make the map on orbits injective, and the correct criterion is not transitivity of the kernel.
-Let $X$ be a $\Gamma_\En$-orbit of primitive isotropic lines, $x\in X$, $H = \Stab_{\Gamma_\En}(x)$, $c = \varphi(x)$ its class, $M_c = \Stab_M(c)$ for $M = \rho(\gent)$, and $\Gamma_c = \Stab_{\Gamma_\En}(c)$, $\gent_c = \rho^{-1}(M_c)$.
-The $\gent$-orbits on $X$ are the double cosets $\gent\backslash\Gamma_\En/H$, the orbit of $gx$ has size $[\gent : \gent\cap gHg^{-1}]$, and the $\gent$-orbits lying over one $M$-orbit of classes are the double cosets $\gent_c\backslash\Gamma_c/H$.
+Let $X$ be a $\Gamma^K_\En$-orbit of primitive isotropic lines, $x\in X$, $H = \Stab_{\Gamma^K_\En}(x)$, $c = \varphi(x)$ its class, $M_c = \Stab_M(c)$ for $M = \rho(\gent)$, and $\Gamma_c = \Stab_{\Gamma^K_\En}(c)$, $\gent_c = \rho^{-1}(M_c)$.
+The $\gent$-orbits on $X$ are the double cosets $\gent\backslash\Gamma^K_\En/H$, the orbit of $gx$ has size $[\gent : \gent\cap gHg^{-1}]$, and the $\gent$-orbits lying over one $M$-orbit of classes are the double cosets $\gent_c\backslash\Gamma_c/H$.
 There is exactly one of those --- that is, the finite count below is exact on that class --- if and only if
 $$
 \Gamma_c = \gent_c\cdot H
 \quad\Longleftrightarrow\quad
 \rho(\Gamma_c) = M_c\cdot\rho(H)
 \quad\Longleftrightarrow\quad
-\Stab_{\rho(\Gamma_\En)}(c) = M_c\cdot\rho(H),
+\Stab_{\rho(\Gamma^K_\En)}(c) = M_c\cdot\rho(H),
 $$
-the middle equality being the image of the first under $\rho$ and the last a rewriting of it; the criterion is stated in $\rho(\Gamma_\En)$, and replacing that group by all of $\Orth(q_{\ten})$ uses the surjectivity of the discriminant representation (@thm:two-elementary-surjectivity), not the definition.
-It holds in particular when $\rho(H) = \Stab_{\rho(\Gamma_\En)}(c)$: when the discriminant image of the stabilizer of the chosen line is the *whole* stabilizer of its class in the image group.
+the middle equality being the image of the first under $\rho$ and the last a rewriting of it; the criterion is stated in $\rho(\Gamma^K_\En)$, and replacing that group by all of $\Orth(q_{\ten})$ uses the surjectivity of the discriminant representation (@thm:two-elementary-surjectivity), not the definition.
+It holds in particular when $\rho(H) = \Stab_{\rho(\Gamma^K_\En)}(c)$: when the discriminant image of the stabilizer of the chosen line is the *whole* stabilizer of its class in the image group.
 Transitivity of the kernel $K = \ker\rho$ on the fibre is **sufficient** for a single $\gent$-orbit there: $K\subseteq\gent_c$ by @prop:gamma-en-two-index, so $K$ transitive gives $\Gamma_c = K\cdot H$, whence $\rho(\Gamma_c) = \rho(H)$, and the criterion holds because $M_c\subseteq\rho(\Gamma_c)$. It is **not necessary**, and the obstruction is exactly the lifting of $M_c$: $\gent_c/K\cong M_c$ acts on the set of $K$-orbits in the fibre, the fibre is one $\gent_c$-orbit exactly when that action is transitive, and $M_c$ may permute several $K$-orbits cyclically. That is why the criterion is stated with $\rho(H)$ and not with $K$, and why $K$-transitivity is a sufficient but not a necessary condition.
-What the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$: by @lem:line-stabilizer-image that image *is* the stabilizer of the class — $M_c$ at the $\gent$ level — so the criterion holds with equality and the finite count $5 = 1+4$ is the number of $0$-cusps of $\fen$, not merely a count of $\rho(\gent)$-orbits on classes. The computational route through `computations/reports/coble_gammaEn2-cusps-lattice.py` (the stabilizer generators that `T_En.cusps(1)` retains, for both lines) remains as an independent check of the lemma; it is not the proof of it.
+What the criterion needs is the image of $\Stab_{\Orth(\ten)}(x)$: by @lem:line-stabilizer-image that image *is* the stabilizer of the class — $M_c$ at the $\gent$ level — so the criterion holds with equality and the finite count $5 = 1+4$ is the number of $0$-cusps of $\fentwo$, not merely a count of $\rho(\gent)$-orbits on classes. The computational route through `computations/reports/coble_gammaEn2-cusps-lattice.py` (the stabilizer generators that `T_En.cusps(1)` retains, for both lines) remains as an independent check of the lemma; it is not the proof of it.
 
 **A bounded rank-4 search, as evidence only.**
 The enumeration that produced those lines asks a decidable finite question and should be read at exactly its scope. For any lattice $L$ of rank $r$ with basis $B$ of a totally isotropic plane $\varPi$ (a $2\times r$ integer matrix) one has $\varPi^*/\varPi = R^{\mathrm{sat}}/R$ where $R$ is the row space of $BG$ in $\ZZ^r$; and $\varPi$ is primitive in $L$ exactly when that product computed for $B$ alone is $1$.
@@ -997,7 +1004,7 @@ A map of orbit sets $\bar f\colon G_A\backslash A\too G_B\backslash B$ is well d
 That is all a set-theoretic descent needs, and it is strictly weaker than an equivariance statement.
 The strong form is a uniform assignment, for instance a homomorphism $G_A\too G_B$ with $f\circ g_A = g_B\circ f$ for all $g_A$ at once.
 It is not necessary for $\bar f$ to exist, but it is what the geometric statements here use: it makes $f$ equivariant rather than merely orbit-compatible, it is what identifies quotients rather than just producing a map between them, and it is what any comparison of stabilizers or of orbit decompositions has to stand on.
-For the case at hand, $A = \bD(T_\Co)$ with $G_A = \Gamma^{\Gamma}_\Co$ of @def:gamma-co-groups and $B = \bD(T_\En)$ with $G_B = \Gamma$, and what @prop:gamma-co-images supplies is the strong form, with equality: restriction of $\Stab_{\Gamma}(\delta)$ to $T_\Co$ is exactly $\Gamma^{\Gamma}_\Co$, so $g_A\mapsto g_A\oplus\id_{\ZZ\delta}$ is a genuine homomorphism and $f^{\Gamma}$ is $G_A$-equivariant, not merely orbit-compatible.
-It is worth naming what that map is, since the weak form would not have given it: the kernel of restriction is $\{1, s_k\}$, where $s_k$ is the reflection in the $(-2)$-vector $k = \tilde e - \tilde f$ --- it fixes $T_\Co$ pointwise and negates $k$ --- so restriction is two-to-one on the stabilizer and the equivariant assignment is its section, the extension fixing $k$.
+For the case at hand, $A = \bD(T_\Co)$ with $G_A = R_\Gamma$ of @def:gamma-co-groups and $B = \bD(T_\En)$ with $G_B = \Gamma$, and what @prop:gamma-co-images supplies is the strong form, with equality: restriction of $\Stab_{\Gamma}(\delta)$ to $T_\Co$ is exactly $R_\Gamma$, so $g_A\mapsto g_A\oplus\id_{\ZZ\delta}$ is a genuine homomorphism and $f^{\Gamma}$ is $G_A$-equivariant, not merely orbit-compatible.
+On the stabilizer of the sublattice $T_\Co$ the kernel of restriction is $\{1, s_\delta\}$, where $s_\delta$ is the reflection in the $(-2)$-vector $\delta = \tilde e - \tilde f$, which fixes $T_\Co$ pointwise and negates $\delta$. On $\Stab_\Gamma(\delta)$ restriction is injective, and the equivariant assignment is its inverse, the extension that fixes $\delta$.
 Equality of the images does not give injectivity of $\bar f$: two $G_A$-orbits may still be carried into one $G_B$-orbit, and it is the point of $\bD(T_\Co)$ lying on a second translate $\inverseof{g}(T_\Co)$ that the fibre count has to control.
 :::

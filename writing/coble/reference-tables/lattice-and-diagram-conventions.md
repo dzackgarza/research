@@ -134,13 +134,14 @@ Related: [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors
 
 ## The four Coble groups
 
-Four groups act on the period domain of the Coble lattice, and every statement about a quotient of it names the one it uses (@def:gamma-co-groups, @prop:gamma-co-images):
+Four groups act on the period domain of the Coble lattice, and every statement about a quotient of it names the one it uses (@def:gamma-co-groups, @conj:gamma-co-stable, @prop:gamma-co-images):
 
 | group | what defines it | source |
 | --- | --- | --- |
 | $\Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$ | the moduli space of Coble surfaces is an open subset of $\bD(N)/\Orth(N)$, $N = \generators{2}\oplus E(2) = T_\Co$ | [@DK13, (3.6), Prop. 3.2, p. 513] |
-| $\Gamma_\Co = \Gamma^{\Gamma_\En}_\Co$ | the image of $\Stab_{\Gamma_\En}(\delta)$ in $\Orth(\delta^{\perp})$, for $\delta$ the $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = T_\Co$ | [@AEGS25, Def. 2.6] with @prop:gamma-co-images |
-| $\Gamma_{\Co,2} = \Gamma^{\Gent}_\Co$ | the same image for $\Gent$ in place of $\Gamma_\En$ | [@AEGS25, Def. 2.6], [@Ste91, Prop. 2.7] |
-| $\tilde\Orth^+(T_\Co)$ | the stable subgroup $\Orth^+(T_\Co)\intersect\ker\bar\rho$, strictly inside the first three | [@DK13, (2.1)] |
+| $\Gamma_\Co$ | the monodromy group of the family of unpolarized Coble surfaces, which the family of unpolarized Enriques surfaces with monodromy group $\Gamma_\En = \widetilde\Orth^+(T_\En)$ induces | @def:gamma-co-groups |
+| $\Gamma_{\Co,2} = R_{\Gent}$ | the image of $\Stab_{\Gent}(\delta)$ in $\Orth(\delta^{\perp})$, for $\delta$ the $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = T_\Co$ | [@AEGS25, Def. 2.6], [@Ste91, Prop. 2.7] |
+| $\widetilde\Orth^+(T_\Co)$ | the stable subgroup $\Orth^+(T_\Co)\intersect\ker\bar\rho$, equal to the image of $\Stab_{\Gamma_\En}(\delta)$ (@prop:gamma-co-images(1)) | [@DK13, (2.1)] |
 
-The number of orbits on the primitive isotropic vectors of $T_\Co$ depends on which is meant: one for $\Orth(T_\Co)$, which is also $\Gamma_\Co$ (@prop:gamma-co-images(3)); the $527$ recorded for the stable subgroup; and, for $\Gamma_{\Co,2}$, a count not computed here. So a count of $0$-cusps names its group.
+The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable; neither inclusion is proved.
+The number of orbits on the primitive isotropic vectors of $T_\Co$ depends on the group: one for $\Orth(T_\Co)$ (@thm:unpolarized-cusps); $527$ for the stable subgroup (@thm:cusp-lifting); for $\Gamma_{\Co,2}$, a count not computed here; for $\Gamma_\Co$, the count $527$ if @conj:gamma-co-stable holds. So a count of $0$-cusps names its group.

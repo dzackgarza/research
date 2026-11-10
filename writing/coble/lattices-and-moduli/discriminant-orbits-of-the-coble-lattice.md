@@ -268,7 +268,7 @@ By @thm:coble-isotropic-class-orbits, the nonzero isotropic classes form a singl
 
 Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be the isotropic basis vectors of the first hyperbolic summand of $B$, so that in $T_\Co$ they are primitive isotropic vectors with $e\cdot f = 2$.
 Then no $g\in\widetilde\Orth^+(T_\Co)$ satisfies $g(\ZZ e) = \ZZ f$.
-So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the arithmetic group of $\fco$ is not, and $\overline{F_\Co}^{\bb}$ has at least two $0$-cusps.
+So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the stable group $\widetilde\Orth^+(T_\Co)$ is not, and the Baily--Borel compactification of $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has at least two $0$-cusps; the same holds for $\fco$ if @conj:gamma-co-stable holds.
 :::
 
 ::: {.proof}

@@ -1432,7 +1432,7 @@ $$
 
 2. the isotropic subgroups of order $4$ of $A_{T_\Co}$ form the $\Orth(q_{T_\Co})$-orbit of $J$, of size $23\,715$, which the five $G_\Co$-orbits of @tbl-finite-plane-orbits, of sizes $1575, 270, 9450, 3780, 8640$, partition;
 
-3. hence the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps, one fibre of eight over each liftable $J$: a page proof, with the public lattice-orbit computation remaining sage-extensions#286. The $1$-cusps of $\fco$ are the $\Gamma_\Co$-orbits of planes, and $\Gamma_\Co = \Orth(T_\Co)$ (@prop:gamma-co-images(3)), so there is one (@thm:plane-transitivity-tco, certified by the same operation); the count for $F_{\Co,2}$ is open until sage-extensions#286.
+3. hence the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps, one fibre of eight over each liftable $J$: a page proof, with the public lattice-orbit computation remaining sage-extensions#286. The quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ has one $1$-cusp (@thm:plane-transitivity-tco, certified by the same operation); the count for $F_{\Co,2}$ is open until sage-extensions#286; the count for $\fco$ is that of the stable quotient if @conj:gamma-co-stable holds.
 :::
 
 ::: {.proof}

@@ -1001,6 +1001,7 @@ Dropping the degree-$4$ polarization and the del Pezzo involution from the label
 
 The corresponding geometric monodromy group is defined from the direct unpolarized Coble moduli stack.
 The expected equality $\Gamma_{\Co}^{\mathrm{dir}}=O^+(T_{\Co})$ is compatible with the full stabilizer lemma below, but it remains a geometric monodromy statement until the direct period theorem is proved.
+The group $\Gamma_\Co$ of @def:gamma-co-groups is conjecturally $\widetilde\Orth^+(T_\Co)$ (@conj:gamma-co-stable); no relation between $\Gamma_{\Co}^{\mathrm{dir}}$ and $\Gamma_\Co$ is established.
 :::
 
 ::: {.definition #def:hodge-group title="Hodge-theoretic Heegner group"}
@@ -1718,7 +1719,7 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the direct Coble Coxeter diagram of @prob:coxeter-completeness and the intrinsic relevance marking.
 :::
 
-At the one $0$-cusp of $\fco$ the Coxeter part is now a theorem: the chamber is that of @thm:coble-cusp-chamber and the Coxeter semifan of it is a fan with one Type II ray, @thm:coble-coxeter-semifan. What that theorem records as missing is the marking: the divisor of the Coble stable pair is not defined on the pages, so the generalized semifan is not formed there.
+At the one $0$-cusp of $F^{\mathrm{un}}_\Co$ the Coxeter part is a theorem: the chamber is that of @thm:coble-cusp-chamber and the Coxeter semifan of it is a fan with one Type II ray, @thm:coble-coxeter-semifan. What that theorem records as missing is the marking: the divisor of the Coble stable pair is not defined on the pages, so the generalized semifan is not formed there.
 
 The theorem must determine cusp by cusp whether the irrelevant reflection group is finite, whether the semifan is an actual fan, and whether any Type II parabolic component consists entirely of irrelevant roots.
 

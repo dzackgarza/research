@@ -2,7 +2,7 @@
 
 $$
 \begin{aligned}
-\fen &= \bD(\ten)/\Orth^+(\ten)^* &
+\fen &= \bD(\ten)/\Gamma_\En &
 \fentwo &= \bD(\ten)/\gent \\
 F^K_{\En} &= \bD(\ten)/\Gamma^K_{\En} \\
 \fco &= \bD(T_\Co) / \Gamma_\Co &
@@ -15,16 +15,18 @@ where
 $$
 \begin{aligned}
 \gent &= \Orth(\ten) \intersect \Orth(\tdp) \iscontainedin \Orth(\lkt) \\
-\Gamma^K_{\En} &= \Orth(\ten), \qquad \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten} \\
-\Gamma_\Co &= \text{the image of } \Stab_{\Orth(\ten)}(\delta) \text{ in } \Orth(\delta^{\perp}), \quad \delta^2 = -2,\ \delta^{\perp T_\En} = T_\Co \\
-\Gamma_{\Co, 2} &= \text{the same image for } \gent \text{ in place of } \Orth(\ten) \\
+\Gamma_\En &= \widetilde\Orth^+(\ten) = \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten}, \qquad \Gamma^K_{\En} = \Orth(\ten) \\
+\Gamma_\Co &= \text{the monodromy group of the family of unpolarized Coble surfaces} \\
+\Gamma_{\Co, 2} &= \text{the image of } \Stab_{\gent}(\delta) \text{ in } \Orth(\delta^{\perp}), \quad \delta^2 = -2,\ \delta^{\perp T_\En} = T_\Co \\
 F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^*
 \end{aligned}
 $$
 
 Here $\tdp$ is the lattice of [@AEGS25], and $\eta\colon T_\Co\injects\ten$ is the embedding of @lem:primitive_embedding_eta.
-The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Orth(\ten)$ the group $\Gamma_{\mathrm{Enr}}$ of [@AEGS25], has two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$ [@AEGS25, §2]. The quotient $\fentwo = \bD(\ten)/\gent$, with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, has five $0$-cusps [@AEGS25, §3]. Throughout, $\Gamma_\En$ denotes $\Orth^+(\ten)^*$ (@sec-heegner-line, @thm:normalization, @def:gamma-co-en).
-The quotients $\fco = \bD(T_\Co)/\Gamma_\Co$ and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ are the quotients by the images of the stabilizers of $\delta$ (@def:gamma-co-groups, @prop:gamma-co-images).
+The quotient $F^K_{\En} = \bD(\ten)/\Gamma^K_{\En}$, with $\Gamma^K_{\En} = \Orth(\ten)$ the group $\Gamma_{\mathrm{Enr}}$ of [@AEGS25], has two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$ [@AEGS25, §2]. The quotient $\fentwo = \bD(\ten)/\gent$, with $\gent = \Gamma^K_{\En}\intersect\Gamma_{\dP}$, has five $0$-cusps [@AEGS25, §3]. Throughout, $\Gamma_\En$ denotes the stable group $\widetilde\Orth^+(\ten)$, also written $\Orth^+(\ten)^*$ (@def:gamma-co-groups, @sec-heegner-line, @thm:normalization, @def:gamma-co-en).
+The group $\Gamma_\Co$ is the monodromy group of the family of unpolarized Coble surfaces that the family of unpolarized Enriques surfaces induces, and $\fco = \bD(T_\Co)/\Gamma_\Co$ (@def:gamma-co-groups).
+The equality $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$ is @conj:gamma-co-stable, and neither inclusion is proved (@rmk:gamma-co-status).
+The group $\Gamma_{\Co,2}$ of $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ is the image of the stabilizer of $\delta$ in $\gent$ (@prop:gamma-co-images).
 The stable subgroup $\widetilde\Orth^+(T_\Co)$ is the kernel of the action on $A_{T_\Co}$ of each of the groups $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ of @sec-gamma-co-comparison, and both inclusions are strict, of index $\abs{W(E_8)} = 696\,729\,600$ (@prop:gamma-co-heegner-strict, @prop:theta-co-index).
 
 ::: {.question}
@@ -51,7 +53,7 @@ F_{\mathrm{En}}
 ```
 
 The tower relates the degree-$2$ numerically polarized Coble and Enriques moduli $F_{\Co,2}$, $\fentwo$, their unpolarized quotients $\fco$, $\fen$, and the degree-$(2,2,0)$ K3 moduli space $\fttz\injects F_4$.
-The map $F_{\Co,2}\to \fco$ marked $?$ is undetermined, since $\Gamma_{\Co,2}$ has no explicit description.
+The map $F_{\Co,2}\to \fco$ marked $?$ is undetermined: no inclusion between $\Gamma_{\Co,2}$ and $\Gamma_\Co$ is proved.
 
 ## The GIT construction
 
@@ -347,15 +349,14 @@ $$
 
 ::: {.question #qst:sextic-group-comparison title="Which quotient of $D(T_\Co)$ is $\fco$?"}
 
-$\fco$ is the quotient of $D(T_\Co)$ by $\Gamma_\Co = \Orth(T_\Co)$ (@def:gamma-co-groups, @prop:gamma-co-images), and $\mcm_\Co$ is an open subset of it (@prop:coble-period-domain).
-The moduli space $\mcm_{10A_1}$ is a quotient of an open subset of $D(T_\Co)$ by $\Gamma_{10A_1}$, which contains $\widetilde\Orth^+(T_\Co)$ (@thm:occult-period-map-sextics).
-In the chain
+$\fco$ is the quotient of $D(T_\Co)$ by the monodromy group $\Gamma_\Co$ (@def:gamma-co-groups), and $\mcm_\Co$ is an open subset of $F^{\mathrm{un}}_\Co = D(T_\Co)/\Orth(T_\Co)$ (@prop:coble-period-domain).
+The moduli space $\mcm_{10A_1}$ is a quotient of an open subset of $D(T_\Co)$ by $\Gamma_{10A_1}$, and
 $$
-\widetilde\Orth^+(T_\Co) \;\iscontainedin\; \Gamma_\Co \;\iscontainedin\; \Gamma_{10A_1} \;\iscontainedin\; \Orth(T_\Co)
-,
+\widetilde\Orth^+(T_\Co) \;\iscontainedin\; \Gamma_{10A_1} \;\iscontainedin\; \Orth(T_\Co)
 $$
-is either inclusion an equality?
-How do these groups compare with the polarized group $\Gamma_{\Co,2}$?
+(@thm:occult-period-map-sextics).
+Is either inclusion an equality?
+How does $\Gamma_\Co$ compare with $\Gamma_{10A_1}$, with $\widetilde\Orth^+(T_\Co)$ (@conj:gamma-co-stable) and with the polarized group $\Gamma_{\Co,2}$?
 :::
 
 ::: {.proposition #prop:sextic-root-lattice-counts title="Root lattices of plane sextics"}

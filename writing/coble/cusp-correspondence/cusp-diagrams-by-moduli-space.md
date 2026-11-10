@@ -56,12 +56,12 @@ This is a computation in SageMath with exact rational arithmetic.
 
 ## The Coble moduli space
 
-The same mirror moves give the cusp diagram of the moduli space $\fco$ of unpolarized Coble surfaces in @fig-coble-cusps.
+The same mirror moves give the cusp diagram of the quotient $F^{\mathrm{un}}_\Co = \bD(T_\Co)/\Orth(T_\Co)$ (@def:gamma-co-groups) in @fig-coble-cusps.
 
 ::: {#fig-coble-cusps .figure}
 \input{tikz/fig_Cusp_Diagram_Co.tex}
 
-Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \generators{2} \oplus E_{10}(2)$.
+Cusp diagram for $F^{\mathrm{un}}_\Co = F_{(11, 11, 1)}$ where $T_\Co = \generators{2} \oplus E_{10}(2)$.
 :::
 
 @fig-coble-coxeter-diagrams draws the Coxeter diagram of $(9,9,1)_1$; @thm:coble-cusp-chamber states its bond list, its $f$-vector and its one ideal vertex. The Enriques-side diagrams are the folded diagrams of [@AEGS25], Figures 7 and 8.
@@ -78,10 +78,10 @@ The Coxeter diagram $G_{(9,9,1)_1} = G_{\generators{2} \oplus E_8(2)}$.
 ::: {#fig-coble-cusp-9-9-1-parabolics .figure}
 \input{tikz/fig_Maximal_Parabolic_B7_2_Co_9_9_1.tex}
 
-The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, corresponding to single one-cusp $(7, 7, 1)_0$ in $\fco$.
+The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, corresponding to single one-cusp $(7, 7, 1)_0$ in $F^{\mathrm{un}}_\Co$.
 :::
 
-::: {.example #ex:coble-cusp-9-9-1-parabolic title="The 1-cusps adjacent to the 0-cusp of $\fco$"}
+::: {.example #ex:coble-cusp-9-9-1-parabolic title="The 1-cusps adjacent to the 0-cusp of $F^{\mathrm{un}}_\Co$"}
 
 By @thm:coble-cusp-chamber, exactly one of the nine one-node deletions of the Coxeter diagram $G_{(9, 9, 1)_1}$ is parabolic, and it has type $\tilde B_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
 So, for the group $\Orth^+(T_\Co)$, the $0$-cusp represented by $v_0$ is incident to exactly one $1$-cusp, and its boundary lattice is $(7,7,1)_0$.
