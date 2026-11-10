@@ -91,26 +91,63 @@ Let $Y = \PP^1\times\PP^1$ with the involution $\tau(x,y) = (-x,-y)$, and let $B
 
 By passing to the K3 cover, one can embed $\fco$ into an arithmetic quotient of a 9-dimensional Hermitian symmetric domain of type $\rm{IV}$.
 Let $\lkt = U^3 \oplus E_8^2$ be the canonical K3 lattice.
-For any primitively embedded lattice $S\injects \lkt$, letting $T \definedas S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by $$F_S \definedas D_T/\Orth^+(T)^*$$
 
-where $\Orth^+(T)^* \definedas \Orth^+(T) \intersect \ker\qty{\Orth(T) \to \Orth(q_T)}$, the group $\Orth^+(T)$ is the index-two subgroup of $\Orth(T)$ preserving the component $D_T$, and $D_T$ is a connected component of
+::: {.definition #def:type-iv-period-domain title="Type IV period domain and its arithmetic quotients"}
 
+Let $T$ be a lattice of signature $(2,n)$ with $n\geq1$, and let $\Omega_T$ be the set of @def:period-component-character.
+It has two connected components.
+Fix one of them and call it $\bD(T)$.
+By @prop:period-spinor-character, the group $\Orth^+(T)$ of @def:lattice-spinor-kernels is the stabilizer of $\bD(T)$ in $\Orth(T)$.
+For a subgroup $\Gamma\iscontainedin\Orth(T)$, write
 $$
-\Loop_T \definedas \theset{[v]\in \PP(T_\CC) \st v^2=0,\, v\bar v > 0}
+\bD(T)/\Gamma\definedas\bD(T)/\qty{\Gamma\intersect\Orth^+(T)},
+\qquad
+\Orth^+(T)^*\definedas\Orth^+(T)\intersect\discriminantkernel{T}.
+$$
+:::
+
+::: {.lemma #lem:period-quotient-full-domain title="Quotients of the full period domain"}
+
+In the notation of @def:type-iv-period-domain, let $\Gamma\iscontainedin\Orth(T)$ contain an element that exchanges the two components of $\Omega_T$.
+Then the inclusion $\bD(T)\injects\Omega_T$ induces a bijection
+$$
+\bD(T)/\Gamma\iso\Omega_T/\Gamma
+.
+$$
+In particular $\Orth^+(T)$ has index two in $\Orth(T)$.
+:::
+
+::: {.proof}
+
+Let $g\in\Gamma$ exchange the two components.
+Every $\Gamma$-orbit in $\Omega_T$ meets $\bD(T)$: a point of the other component is mapped into $\bD(T)$ by $g$.
+Let $x,y\in\bD(T)$ and $\gamma\in\Gamma$ with $\gamma x=y$.
+The isometry $\gamma$ is a homeomorphism of $\Omega_T$, so it maps the component $\bD(T)$ of $x$ onto the component of $y$, which is $\bD(T)$.
+Hence $\gamma\in\Gamma\intersect\Orth^+(T)$, and the map of orbit sets is injective.
+The last statement is the case $\Gamma=\Orth(T)$: the component character $\Orth(T)\to\theset{\pm1}$ of @def:period-component-character is surjective, and its kernel is $\Orth^+(T)$.
+:::
+
+If $T$ has an orthogonal summand $U$, then $\Gamma$ contains such an element as soon as it contains $\sigma_U\definedas(-\id_U)\oplus\id_{U^{\perp T}}$.
+Indeed $-\id_U=s_{e+f}\circ s_{e-f}$ for a hyperbolic basis $e,f$ of $U$, the vector $e+f$ is positive and $e-f$ is negative, so $\sigma_U$ is the product of one reflection in a positive vector and one in a negative vector, and @prop:period-spinor-character gives it component character $-1$.
+The isometry $\sigma_U$ acts trivially on $A_T$, so it lies in $\discriminantkernel{T}$.
+
+For any primitively embedded lattice $S\injects \lkt$, letting $T \definedas S^{\perp \lkt}$, there is a Hodge-theoretic description of the coarse moduli space $F_S$ of $S$-polarized K3 surfaces given by
+$$
+F_S \definedas \bD(T)/\Orth^+(T)^*
 .
 $$
 
 ::: {.proposition #prop:type-iv-dimension title="Dimension of a type IV domain"}
 
 Let $T$ be a lattice of rank $r$ and signature $(2, r-2)$.
-Then the type IV domain $D_T$ has complex dimension $r - 2$.
+Then the type IV domain $\bD(T)$ has complex dimension $r - 2$.
 :::
 
 ::: {.proof}
 
 The complexification $T_\CC$ has dimension $r$, so $\PP(T_\CC)$ has dimension $r-1$.
 The equation $v^2 = 0$ is a single nondegenerate quadratic equation and cuts out a smooth quadric hypersurface of dimension $r-2$ inside $\PP(T_\CC)$.
-The condition $v\bar v > 0$ is open, so it selects an open subset of that quadric, and $D_T$ is one of its connected components.
+The condition $v\bar v > 0$ is open, so it selects an open subset of that quadric, and $\bD(T)$ is one of its connected components.
 :::
 
 ::: {.corollary #cor:m-polarized-k3-dimension title="Dimension of $M$-polarized K3 moduli"}
@@ -118,10 +155,10 @@ The condition $v\bar v > 0$ is open, so it selects an open subset of that quadri
 Let $M\injects\lkt$ be a primitive embedding of a lattice of signature $(1, \rank(M) - 1)$ with orthogonal complement $T = M^{\perp\lkt}$.
 Then
 $$
-\dim_\CC D_T = \rank(T) - 2 = 20 - \rank(M)
+\dim_\CC \bD(T) = \rank(T) - 2 = 20 - \rank(M)
 .
 $$
-For the Coble lattices $\rank(S_\Co) = 11$, so $\dim_\CC D_{T_\Co} = 9$.
+For the Coble lattices $\rank(S_\Co) = 11$, so $\dim_\CC \bD(T_\Co) = 9$.
 :::
 
 ::: {.proof}
@@ -130,15 +167,15 @@ The K3 lattice has rank $22$ and signature $(3,19)$. The embedding is primitive,
 Ranks add, so $\rank(T)=22-\rank(M)$.
 Signatures add too, by @def:signature applied to the orthogonal sum of the two real forms, so if $M$ has signature $(1,\rank(M)-1)$ then $T$ has signature $(3-1,\,19-(\rank(M)-1))=(2,\,20-\rank(M))$.
 The first index is $2$, so $T$ is of type IV in the sense of @prop:type-iv-dimension, whose dimension for a type IV lattice of signature $(2,m)$ is $m$; with $m=20-\rank(M)$ that is the displayed dimension.
-For $M=S_\Co$ of rank $11$ the complement has signature $(2,9)$, giving $\dim_\CC D_{T_\Co}=9$.
+For $M=S_\Co$ of rank $11$ the complement has signature $(2,9)$, giving $\dim_\CC \bD(T_\Co)=9$.
 :::
 
 ::: {.definition #def:heegner-divisor title="Heegner divisor"}
 
-Let $N$ be an even lattice of signature $(2, m)$, and let $\mathcal{D}(N) = \theset{[\omega]\in\PP(N\tensor\CC) \suchthat \omega\cdot\omega = 0,\ \omega\cdot\bar\omega > 0}$.
-For $d\in\ZZ$, the **$(-2d)$-Heegner divisor** of $\mathcal{D}(N)$ is
+Let $N$ be an even lattice of signature $(2, m)$, and let $\bD(N)$ be its period domain (@def:type-iv-period-domain).
+For $d\in\ZZ$, the **$(-2d)$-Heegner divisor** of $\bD(N)$ is
 $$
-\mch_{-2d} \definedas \Union_{\delta\in N,\ \delta^2 = -2d} \theset{[\omega]\in\mathcal{D}(N) \suchthat \omega\cdot\delta = 0}
+\mch_{-2d} \definedas \Union_{\delta\in N,\ \delta^2 = -2d} \theset{[\omega]\in\bD(N) \suchthat \omega\cdot\delta = 0}
 $$
 [@DK13, §3].
 :::
@@ -149,11 +186,11 @@ Let $\ten = U\oplus E_{10}(2)$ be the orthogonal complement in $\lkt$ of the pul
 The group $\Orth(\ten)$ is the group $\Gamma^K_\En$ of the opening display, and it contains the group $\Orth^+(\ten)^*$ of $\fen$.
 
 1. The period point of the K3 cover of an Enriques surface does not lie in $\mch_{-2}$.
-   The quotient $\mathcal{D}(\ten)/\Orth(\ten)$ is a normal quasi-projective variety of dimension $10$, and $\qty{\mathcal{D}(\ten)\sm\mch_{-2}}/\Orth(\ten)$ is the moduli space $\mcm_\En$ of Enriques surfaces [@DK13, §3].
+   The quotient $\bD(\ten)/\Orth(\ten)$ is a normal quasi-projective variety of dimension $10$, and $\qty{\bD(\ten)\sm\mch_{-2}}/\Orth(\ten)$ is the moduli space $\mcm_\En$ of Enriques surfaces [@DK13, §3].
 2. There are two $\Orth(\ten)$-orbits of $(-4)$-vectors in $\ten$ [@AEGS25, §2.3].
    One orbit consists of the vectors $\delta$ with $\delta^{\perp\ten}\cong T_\Nod = U\oplus\generators{4}\oplus E_8(2)$; let $\mch^{\mathrm{nod}}_{-4}\iscontainedin\mch_{-4}$ be the union of their hyperplanes.
    The divisor $\mcm^{\mathrm{nod}}_\En \definedas \qty{\mch^{\mathrm{nod}}_{-4}\sm\mch_{-2}}/\Orth(\ten)$ parametrizes nodal Enriques surfaces [@AEGS25, §2.3].
-   The quotient $\mathcal{D}(T_\Nod)/\Orth(T_\Nod)$ is a quasi-projective variety of dimension $9$, and $\mcm^{\mathrm{nod}}_\En$ is birationally isomorphic to it [@DK13, §3, Prop. 3.1].
+   The quotient $\bD(T_\Nod)/\Orth(T_\Nod)$ is a quasi-projective variety of dimension $9$, and $\mcm^{\mathrm{nod}}_\En$ is birationally isomorphic to it [@DK13, §3, Prop. 3.1].
    The other orbit gives the divisor of unigonal Enriques surfaces (@prop:coble-and-unigonal-heegner-divisors).
 3. The quotient $\mch_{-2}/\Orth(\ten)$ is birationally isomorphic to the moduli space $\mcm_\Co$ of Coble surfaces (@prop:coble-moduli-heegner-divisor).
 

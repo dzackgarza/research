@@ -137,13 +137,14 @@ So $\varphi$ maps the invariant and coinvariant sublattices of $\iota^*$ isometr
 
 ::: {.proposition #prop:enriques-period-domain title="The Enriques period domain"}
 
-Let $D(\ten)$ be the type IV period domain of $\ten$, that is, a connected component of
+Let
 $$
-\theset{[x]\in\PP(\ten\tensor\CC) \mid x\cdot x = 0,\ x\cdot\bar x > 0}
-.
+\Omega_\ten\definedas\theset{[x]\in\PP(\ten\tensor\CC) \mid x\cdot x = 0,\ x\cdot\bar x > 0}
 $$
-Let $\Gamma^K_{\En} = \Orth(\ten)$, and let $\Delta\subset D(\ten)/\Gamma^K_{\En}$ be the divisor $\alpha^\perp$ of the unique $\Gamma^K_{\En}$-orbit of vectors $\alpha\in\ten$ with $\alpha^2 = -2$.
-Then the points of $(D(\ten)\setminus\Delta)/\Gamma^K_{\En}$ are in bijection with the isomorphism classes of Enriques surfaces [@AEGS25, Defs. 2.5–2.7].
+be the type IV period domain of $\ten$, with its two connected components.
+Let $\Gamma^K_{\En} = \Orth(\ten)$, and let $\widetilde\Delta\subset\Omega_\ten$ be the union of the hyperplane sections $\alpha^\perp$ over the vectors $\alpha\in\ten$ with $\alpha^2 = -2$; these vectors form one $\Gamma^K_{\En}$-orbit.
+Then the points of $(\Omega_\ten\setminus\widetilde\Delta)/\Gamma^K_{\En}$ are in bijection with the isomorphism classes of Enriques surfaces [@AEGS25, Defs. 2.5–2.7].
+The group $\Gamma^K_{\En}$ contains an isometry that exchanges the two components of $\Omega_\ten$, so this quotient is also $(\bD(\ten)\setminus\widetilde\Delta)/\Gamma^K_{\En}$ in the notation of @def:type-iv-period-domain (@lem:period-quotient-full-domain).
 :::
 
 ## $ADE$ and $BC$ surfaces
