@@ -237,25 +237,23 @@ is smooth because its defining quadratic form is nondegenerate. Density of $U$ a
 **Step 4: the resulting compactification.** @thm:git-equals-looijenga identifies the GIT compactification with the Looijenga model of $\Gamma_{10A_1}\backslash D(T_\Co)$ ([@YZZ25, Theorem 4.11, p. 15]). The nonempty-arrangement case is not the Baily--Borel case described immediately before Proposition 3.7 [@YZ23, p. 10]. The construction above decides nonemptiness only; it does not determine the $\Gamma_{10A_1}$-orbits.
 :::
 
-::: {.question #qst:semifan-poset-position title="The position of the three semifans: degeneration cusps settled, two comparisons open"}
+::: {.question #qst:semifan-poset-position title="The position of the three semifans: proved degeneration cusps, two comparisons open"}
 
 The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input. By @thm:coble-arrangement-nonempty the arrangement is nonempty and the compactification is a proper Looijenga model, but the number of $\Gamma_{10A_1}$-orbits remains open.
 
-**(1) Cusps of Shah's semistable degenerations.** Shah's Theorem 2.4 [@Sha80, pp. 491--492] gives the following assignments for semistable limits occurring in $\overline{\Sigma}_{10A_1}$.
+**(1) Closure and cusps of Shah's semistable degenerations.** Shah's Theorem 2.4 [@Sha80, pp. 491--492] lists the minimal-orbit curves, and his Theorem 3.2 [@Sha80, p. 493] supplies the nilpotence exponents; the first theorem does not itself assign a cusp. The double smooth cubic in Group II(4) is **not** in $\overline{\Sigma}_{10A_1}$, so it receives no Coble cusp. The remaining rows have the following proved assignments. Only the orbit information shown is claimed.
 
-| Shah's minimal orbit | Named curve | Coble cusp |
+| Shah row | membership in $\overline{\Sigma}_{10A_1}$ | cusp level |
 |:---|:---|:---|
-| Group I | a reduced sextic with no consecutive triple points and no point of multiplicity $\geq4$ | interior, no cusp |
-| Group II(1) | three distinct nonsingular conics | the $1$-cusp $(7,7,1)_0$ |
-| Group II(2) | a double line and four distinct lines | the $1$-cusp $(7,7,1)_0$ |
-| Group II(3) | a nonsingular conic and a quadric meeting it in four distinct points | the $1$-cusp $(7,7,1)_0$ |
-| Group II(4) | the double of a nonsingular cubic, $f_3^2=0$ | the $1$-cusp $(7,7,1)_0$ |
-| Group III(1) | a double nonsingular conic and a different nonsingular conic | the $0$-cusp $(9,9,1)_1$ |
-| Group III(2) | three distinct double lines | the $0$-cusp $(9,9,1)_1$ |
+| Group I, irreducible ten-nodal curves | the stratum itself | interior |
+| Group II(1), three distinct nonsingular conics $\prod_{i=1}^3(x_0x_2+a_ix_1^2)$ | included | a $1$-cusp |
+| Group II(2), a double line and four distinct lines | included | a $1$-cusp |
+| Group II(3), the double conic $(x_0x_2+x_1^2)^2f_2$ with a quadric $f_2$ meeting it in four distinct points | included | a $1$-cusp |
+| Group III(1), $(x_0x_2+x_1^2)^2(x_0x_2+ax_1^2)$, $a\neq1$ | included | the unique $0$-cusp $(9,9,1)_1$ |
+| Group III(2), three distinct double lines $x_0^2x_1^2x_2^2$ | included | the unique $0$-cusp $(9,9,1)_1$ |
+| Group IV, the cube $Q^3$ of a nonsingular conic | included | the special Looijenga point, not a Baily--Borel cusp |
 
-In particular the **double cubic lies over the $1$-cusp $(7,7,1)_0$**, not the $0$-cusp. The cusp assignments are made for curves that occur in the ten-nodal closure; Shah's list alone does not assert that every one of these minimal orbits belongs to that smaller closure.
-
-Group IV, the cube $Q^3$ of a nonsingular conic, is different. It occurs in $\overline{\Sigma}_{10A_1}$ by @thm:coble-arrangement-nonempty, but has no family-independent Baily--Borel cusp assignment: Shah's Remark 3.3 [@Sha80, p. 497] allows nilpotence exponents $1$, $2$, and $3$ for families specializing to it. In the Looijenga model it is the special point obtained by contracting the arrangement ([@YZ23, Remark 2.2, p. 5]), not an assignment to either Baily--Borel cusp.
+In particular the **double smooth cubic is excluded**, rather than assigned to either cusp. Group II gives *a* $1$-cusp, without selecting a $\Gamma_\Co$-orbit. For Group III, $\Gamma_\Co=\Orth(T_\Co)$ by @prop:gamma-co-images(3), and @thm:unpolarized-cusps gives the unique $\Orth(T_\Co)$-orbit of primitive isotropic vectors, computed in its $\Orth(T_\Co)$ row at commit `963843f735`; that justifies "the" $0$-cusp, whose boundary type is $(9,9,1)_1$ by @thm:cusp_correspondence. Group IV has no family-independent Baily--Borel assignment because Shah's Remark 3.3 [@Sha80, p. 497] permits every exponent $1$, $2$, and $3$; it is the contraction point of [@YZ23, Remark 2.2, p. 5].
 
 **(2) Is the Looijenga semifan the Coxeter semifan of a reflection group? Open.** @thm:coble-coxeter-semifan supplies the target Coxeter fan at the one $0$-cusp, but does not identify its walls with the traces of $\mch^{*}_{10A_1}$. The obstruction is to compute the $\Gamma_{10A_1}$-orbits of the arrangement and their traces on the cusp boundary, then prove root completeness, reflectivity, the Coxeter-angle conditions, and equality of the resulting chamber tiling. These are precisely the conditions checked separately in Cases A and B of @thm:semifan-restriction (A1--A2, respectively B3--B4), with the Coxeter semifan convention of [@AEGS25, Definition 5.1, p. 609]. The restricted-ramification results proved there do not settle those conditions for the divisibility-two arrangement $\mch^{*}_{10A_1}$.
 
@@ -263,7 +261,26 @@ Group IV, the cube $Q^3$ of a nonsingular conic, is different. It occurs in $\ov
 :::
 
 ::: {.proof}
-**Proof of (1).** Shah's Theorem 3.2 [@Sha80, p. 493] assigns nilpotence exponent $2$ to Group II and exponent $3$ to Group III. Alexeev--Engel--Thompson's Definition 2.2 [@AET23, p. 6] identifies these with Type II and Type III Kulikov degenerations, respectively. Their §3B [@AET23, pp. 15--16] gives the Baily--Borel convention used here: Type III corresponds to a primitive isotropic line and hence a $0$-cusp, while Type II corresponds to a primitive isotropic plane and hence a $1$-cusp. @thm:cusp_correspondence then assigns the representative Coble boundary types $(9,9,1)_1$ to the Type III direction and $(7,7,1)_0$ to the Type II direction. Group I has exponent $1$ and lies in the interior. This is the boundary-type correspondence of @thm:cusp_correspondence, not a new bijection between stable orbit sets. Group IV is excluded from that theorem by Shah's Remark 3.3 and is treated separately in the statement.
+**The image-cycle criterion.** Put $M=\overline M_{0,0}(\PP^2,6)$ and write $\Phi(\mu)=\mu_*[D]$ for the image cycle of a stable map $\mu:D\to\PP^2$, with multiplicities retained. Chen--Coskun's Theorem 1.4 [@CC11, p. 4; proof pp. 9--10] makes this a morphism to $\operatorname{Chow}_{6,0,2}$. Fulton--Pandharipande's §0.4 and Theorems 1--3 [@FulPan97, pp. 6--7, 11--12] show that $M$ is irreducible and that its smooth-domain locus is dense.
+
+Let $U\subset M$ consist of birational maps from $\PP^1$ whose images have only ordinary nodes. Transversality makes this condition open: a node has two regular identification equations at its preimage pair, compactness excludes new identifications away from those pairs and the diagonal, and the immersion condition is open. Dolgachev's Winger parametrization ([@Dol18, §7, pp. 13--14]) supplies a point of $U$, so $U$ is dense in $M$. Normalization gives $\Phi(U)=\Sigma_{10A_1}$: the image is an irreducible rational sextic, whose total $\delta$-invariant is $10$, and therefore has exactly ten $A_1$ singularities. Hence continuity and properness of $M$ give
+$$
+\Phi(M)=\overline{\Sigma}_{10A_1}.
+$$
+Every central stable map below therefore certifies closure; curve selection turns it into an algebraic arc whose general members are irreducible ten-nodal sextics.
+
+**Included rows.** Let $h_m(u:v)=(u^m:v^m)$, of degree $m$. For a line $L$ or smooth conic $Q$ choose a birational parametrization $\rho_L$ or $\rho_Q$. Then $(\rho_L\circ h_m)_*[\PP^1]=m[L]$ and $(\rho_Q\circ h_m)_*[\PP^1]=m[Q]$. A nodal tree of $\PP^1$'s has arithmetic genus zero, and the following stable maps have the exact displayed central cycles:
+
+- **II(1).** Three maps $\rho_{Q_i}$ form a chain, glued at the two common points of the conics, with image cycle $Q_1+Q_2+Q_3$. Explicitly, $\rho_{Q_a}(u:v)=[au^2:uv:-v^2]$ parametrizes $Q_a=(x_0x_2+ax_1^2=0)$ birationally.
+- **II(2).** A main map $\rho_L\circ h_2$ and four maps $\rho_{L_i}$, each leaf attached at $L\cap L_i$, give image cycle $2L+\sum_iL_i$.
+- **II(3).** A double cover $\rho_Q\circ h_2$ and a map $\rho_R$ onto the quadric $R$, joined at one of the four points of $Q\cap R$, give image cycle $2Q+R$. If $R$ splits as two lines, use birational parametrizations of those two lines instead of $\rho_R$.
+- **III(1).** The same two-component construction with a double cover of $Q$ and a birational parametrization of the other conic gives image cycle $2Q+R$.
+- **III(2).** Three double covers $\rho_{L_i}\circ h_2$, joined in a chain at $L_1\cap L_2$ and $L_2\cap L_3$, give image cycle $2L_1+2L_2+2L_3$.
+- **IV.** A single $\rho_Q\circ h_3$ gives image cycle $3Q$, the degree-three conic cover already used in @thm:coble-arrangement-nonempty.
+
+**Exclusion of II(4).** Suppose the double smooth cubic $2E$ belonged to $\overline{\Sigma}_{10A_1}$. The image-cycle criterion would give a stable map $\mu:D\to\PP^2$ with $\mu_*[D]=2[E]$. Every domain component has rational normalization, since the connected nodal domain has arithmetic genus zero. At least one nonconstant component must therefore map onto $E$, producing a nonconstant morphism $\PP^1\to E$. No such morphism exists when $E$ is a smooth elliptic cubic. Hence $2E\notin\overline{\Sigma}_{10A_1}$.
+
+**The cusp directions.** Shah's Theorem 3.2 [@Sha80, p. 493] gives exponents $1$, $2$, and $3$ to Groups I, II, and III. Those exponents match Types I, II, and III in Alexeev--Engel--Thompson's Definition 2.2 [@AET23, p. 6]. Their §3B [@AET23, pp. 15--16] then gives the rank-one/Type III/$0$-cusp and rank-two/Type II/$1$-cusp convention. It does not by itself identify a particular $\Gamma_\Co$-orbit, which is why only a $1$-cusp is asserted for Group II. The unique $0$-cusp asserted for Group III uses the full-group record at `963843f735` stated above, not a cusp correspondence between stable orbit sets.
 :::
 
 ## dlt and KSBA stable models
