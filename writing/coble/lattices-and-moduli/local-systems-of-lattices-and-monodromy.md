@@ -291,9 +291,10 @@ The subgroup $\Stab_{G_\ZZ}(D^+)$ of $G_\ZZ$ is the following.
 | --- | --- | --- |
 | $k=2m$ | $h^{m,m}>0$ | $\Orth(L)\cap\ker\sigma_\epsilon$, with $\epsilon=(-1)^{m+1}$ |
 | $k=2m$ | $h^{m,m}=0$ | $\Orth(L)\cap\ker\sigma_+\cap\ker\sigma_-$ |
+| $k$ odd | any | $\Sp(L)$ |
 
-For $k$ odd the form $Q$ is alternating and the monodromy group lies in $G_\ZZ=\Sp(L)$.
-If $m$ is odd, $h^{m,m}>0$ and $L$ is indefinite, then $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$.
+For $k$ odd the domain $D$ is connected, so $D^+=D$.
+If $k=2m$ with $m$ odd, $h^{m,m}>0$ and $L$ is indefinite, then $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$.
 :::
 
 ::: {.proof}
@@ -301,7 +302,10 @@ If $m$ is odd, $h^{m,m}>0$ and $L$ is indefinite, then $\Stab_{G_\ZZ}(D^+)=\Orth
 The image $\widetilde\Phi(\widetilde B)$ is connected and contains $F^\bullet_s$, so it lies in $D^+$.
 For $\gamma\in\pi_1(B,s)$, @eq-period-map-equivariance shows that $\rho(\gamma)$ maps a point of $D^+$ to a point of $D^+$.
 The homeomorphism $\rho(\gamma)$ of $D$ permutes the components, so $\rho(\gamma)D^+=D^+$.
-The table is @thm:period-domain-component-stabilizer, and the last statement is @prop:orientation-characters-reflections (4).
+For $k$ even, the table is @thm:period-domain-component-stabilizer.
+For $k$ odd, the form $Q$ is alternating and $G_\RR=\Sp(L_\RR)$ is the group of real points of a simply connected semisimple algebraic group [@Mil17, Example 23.61], so it is connected [@Mil17, Theorem 25.54].
+It acts transitively on $D$, so $D$ is connected, and $\Stab_{G_\ZZ}(D)=G_\ZZ=\Sp(L)$.
+The last statement is @prop:orientation-characters-reflections (4).
 :::
 
 For weight $2$ the sign is $\epsilon=+1$, and $W^{\mathrm{odd}}_F=\qty{H^{2,0}\oplus H^{0,2}}\cap L_\RR$ is the positive-definite real subspace of dimension $2h^{2,0}$ spanned by the real and imaginary parts of the vectors of $H^{2,0}$.

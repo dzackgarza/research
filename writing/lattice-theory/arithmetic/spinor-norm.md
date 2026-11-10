@@ -9,7 +9,7 @@ s_w(x)
 \definedas
 x-2\frac{\beta(x,w)}{\beta(w,w)}w.
 $$
-By Cartan--Dieudonne, these reflections generate $\Orth(V)$.
+By the Cartan--Dieudonné theorem, these reflections generate the group $\Orth(V)$ [@Mei13, Theorem 1.1].
 
 The normalized spinor norm is
 $$
@@ -136,7 +136,7 @@ Restriction of $\spinornorm_\bR$ to $\Orth(L)$ also takes values in $\theset{\pm
 
 They agree on every reflection. For $w$ with $w^2<0$ one has $\spinornorm_\bR(s_w)=[-\tfrac12 w^2]=[1/2]=1$, and $s_w$ preserves $C(L)$ and each of its components: for $x\in C(L)$ the identity $s_w(x)^2=x^2>0$ keeps $x$ inside $C(L)$, and for a timelike $e$ one computes $\beta(e,s_we)=e^2-2\beta(e,w)^2/w^2>e^2>0$, so $s_we$ stays in the component of $e$. For $w$ with $w^2>0$ one has $\spinornorm_\bR(s_w)=[-\tfrac12 w^2]=[-1/2]=-1$, and $s_w(w)=-w$ carries the component containing $w$ to the other one, so $s_w$ exchanges the two components.
 
-By Cartan--Dieudonne the reflections generate $\Orth(L_\bR)$, so the two homomorphisms agree on $\Orth(L_\bR)$ and hence on $\Orth(L)$: $\chi=\spinornorm_\bR$ there, and $\Orth^+(L)=\Theta_\bR(L)=\ker\spinornorm_\bR=\ker\chi$ preserves each component.
+By the Cartan--Dieudonné theorem [@Mei13, Theorem 1.1] the reflections generate $\Orth(L_\bR)$, so the two homomorphisms agree on $\Orth(L_\bR)$ and hence on $\Orth(L)$: $\chi=\spinornorm_\bR$ there, and $\Orth^+(L)=\Theta_\bR(L)=\ker\spinornorm_\bR=\ker\chi$ preserves each component.
 :::
 
 ## Orientation characters of a real quadratic space {#sec-orientation-characters}
@@ -234,7 +234,7 @@ Then $s_w$ fixes $W$ pointwise, so $\sigma_+(s_w)=+1$.
 The values of $\sigma_-$ follow by replacing $\beta$ with $-\beta$, which does not change $s_w$.
 
 For (2), @def:spinor-norm gives $\spinornorm_\bR(s_w)=[-\beta(w,w)/2]$, which is $-1$ exactly when $\beta(w,w)>0$, and $\det s_w=-1$.
-By (1), the two sides of each equality agree on every reflection, and the reflections generate $\Orth(V)$ by Cartan--Dieudonne.
+By (1), the two sides of each equality agree on every reflection, and the reflections generate $\Orth(V)$ by the Cartan--Dieudonné theorem [@Mei13, Theorem 1.1].
 
 For (3), write each $g_i$ as a composite of reflections $s_w$ of $V_i$.
 For $w\in V_1$, the isometry $s_w\oplus\id_{V_2}$ is the reflection of $V$ in $w$, and likewise for $w\in V_2$; the claim follows from (1).
