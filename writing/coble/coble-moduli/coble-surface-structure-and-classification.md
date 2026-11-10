@@ -10,6 +10,11 @@ tags:
 
 # Structure and classification facts for Coble surfaces
 
+::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
+The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
+:::
+
+
 ::: {.provenance title="Provenance"}
 Archived Coble-surface, Coble-moduli, and introductory reading notes dated 2023-03 to 2024-05. These are the author's notes on Dolgachev-Zhang 1999, Dolgachev's 1988 monograph, Dolgachev-Kondo 2013, and Cossec-Dolgachev-Liedtke.
 :::

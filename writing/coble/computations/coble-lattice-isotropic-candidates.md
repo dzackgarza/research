@@ -12,6 +12,11 @@ notes: >-
 
 # Candidate isotropic vectors in $T_{\Co}$ {#sec-coble-lattice-isotropic-candidates}
 
+::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
+The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
+:::
+
+
 ::: {.remark title="What open problem this addresses"}
 
 [Open problems](#sec-open-problems) records as open the enumeration of $\Gamma_{\Co}$-orbits of primitive isotropic vectors in $T_{\Co}$, and the verification that exactly one $\discriminantkernel{T}$-orbit exists in divisibility 2; the proof of @lem:divisibilityTcoOne currently *assumes* that uniqueness.

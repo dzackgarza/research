@@ -160,3 +160,16 @@ The isotropic split of $A_{E_{10}(2)}$ above is the base case for reducing the $
 :::
 
 Related: [Explicit root vectors and the folded Sterk diagrams](#sec-root-vectors-and-folded-sterk-diagrams), [CoxIter results for the Sterk cusps and the 0-cusp lattices](#sec-coxiter-results-for-cusp-lattices), [Candidate isotropic vectors in $T_{\Co}$](#sec-coble-lattice-isotropic-candidates).
+
+## The four Coble groups
+
+Four groups act on the period domain of the Coble lattice, and every statement about a quotient of it names the one it uses (@def:gamma-co-groups, @prop:gamma-co-images):
+
+| group | what defines it | source |
+| --- | --- | --- |
+| $\Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$ | the moduli space of Coble surfaces is an open subset of $\bD(N)/\Orth(N)$, $N = \generators{2}\oplus E(2) = T_\Co$ | [@DK13, (3.6), Prop. 3.2, p. 513] |
+| $\Gamma_\Co = \Gamma^{\Gamma_\En}_\Co$ | the image of $\Stab_{\Gamma_\En}(\delta)$ in $\Orth(\delta^{\perp})$, for $\delta$ the $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = T_\Co$ | [@AEGS25, Def. 2.6] with @prop:gamma-co-images |
+| $\Gamma_{\Co,2} = \Gamma^{\Gent}_\Co$ | the same image for $\Gent$ in place of $\Gamma_\En$ | [@AEGS25, Def. 2.6], [@Ste91, Prop. 2.7] |
+| $\tilde\Orth^+(T_\Co)$ | the stable subgroup $\Orth^+(T_\Co)\intersect\ker\bar\rho$, strictly inside the first three | [@DK13, (2.1)] |
+
+The number of orbits on the primitive isotropic vectors of $T_\Co$ depends on which is meant --- one for $\Orth(T_\Co)$, the $527$ recorded for the stable subgroup, none computed here for the two middle groups --- so a count of $0$-cusps names its group.

@@ -122,100 +122,94 @@ The embeddings of lattices $\eta: T_\Co\injects T_\En$ (resp. $T_{\Co} \injects 
 This follows from [@KK72 §5, Thm.2].
 :::
 
+::: {.definition #def:gamma-co-groups title="The three groups of the Coble lattice, and the divisor at a $(-2)$-vector"}
+$T_\Co$ is the lattice $N$ of [@DK13, (3.6)], $N = \generators{2}\oplus E(2)$ with $E(2) = U(2)\oplus E_8(2)$; in the notation of @lem:primitive_embedding_eta it is $\generators{h}\oplus E_{10}(2)$. Let $\delta\definedas\tilde e-\tilde f$, a $(-2)$-vector of $T_\En$ with $\delta^{\perp T_\En} = \eta(T_\Co)$; then $T_\En = (T_\Co\perp\ZZ\delta)_H$ is the overlattice glued along $H = \generators{(h/2,\,\delta/2)}$ (@lem:primitive_embedding_eta, @def:gluing-datum-of-a-pair).
+
+1. $\Gamma^{\mathrm{un}}_\Co\definedas\Orth(T_\Co)$, the group of the unpolarized moduli space: $M_\Co$ is isomorphic to an open subset of $\bD(N)/\Orth(N)$ [@DK13, Prop. 3.2, p. 513]. Write $F^{\mathrm{un}}_\Co\definedas\bD(T_\Co)/\Gamma^{\mathrm{un}}_\Co$.
+2. For $\Gamma$ equal to $\Gamma_\En = \Orth(T_\En)$ [@AEGS25, Def. 2.6] or to $\gent = \rho^{-1}(M)$ with $M$ the summand-preserving subgroup of $\Orth(A_{T_\En},q)$ [@AEGS25, Def. 2.6; @Ste91, Prop. 2.7], put
+$$
+\Gamma^{\Gamma}_\Co\definedas \text{the image of } \Stab_{\Gamma}(\delta) \text{ in } \Orth(\delta^{\perp T_\En}),
+\qquad
+F^{\Gamma}_\Co\definedas \bD(T_\Co)/\Gamma^{\Gamma}_\Co,
+$$
+the group and the space of the Coble divisor at $\delta$.
+3. $\Gamma_\Co\definedas\Gamma^{\Gamma_\En}_\Co$ with $F_\Co\definedas F^{\Gamma_\En}_\Co$, and $\Gamma_{\Co,2}\definedas\Gamma^{\gent}_\Co$ with $F_{\Co,2}\definedas F^{\gent}_\Co$.
+
+A fourth group occurs throughout: the stable subgroup
+$$
+\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho,
+$$
+$\bar\rho$ being the discriminant representation and the star $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ of [@DK13, (2.1)]. It is contained in $\Gamma^{\Gamma}_\Co$ for either $\Gamma$ (@prop:gamma-co-images), and it is strictly smaller than the first: it fixes every class of $A_{T_\Co}$, whereas $\Gamma^{\mathrm{un}}_\Co$ does not.
+
+Which of the four a statement about $\bD(T_\Co)$ uses is named where the statement is made; in particular every count of $0$-cusps names its group.
+:::
+
+::: {.proposition #prop:gamma-co-images title="What the two stabilizer images are"}
+With $\delta$, $H$ and $\Gamma^{\Gamma}_\Co$ as in @def:gamma-co-groups, and $\bar\rho$ the discriminant representation of $T_\Co$:
+
+1. $\Gamma^{\Gamma_\En}_\Co$ is the stabilizer in $\Orth(T_\Co)$ of the class $[h/2]$ of $A_{T_\Co}$:
+$$
+\Gamma^{\Gamma_\En}_\Co = \theset{\varphi\in\Orth(T_\Co)\ \mid\ \bar\rho(\varphi)(h/2) = h/2}.
+$$
+2. $\Gamma^{\gent}_\Co$ is the subgroup of that stabilizer consisting of the $\varphi$ whose image in $\Orth(A_{T_\En}, q_{T_\En})$ preserves the two summands $A_{U(2)}$ and $A_{E_8(2)}$, under the identification $A_{T_\En}\cong A_{E_{10}(2)} = A_{U(2)}\oplus A_{E_8(2)}$ of the proof.
+
+Neither group is a discriminant kernel: each contains $\ker\bar\rho$, and each is contained in $\Gamma^{\mathrm{un}}_\Co$.
+:::
+
+::: {.proof}
+By Nikulin's gluing theorem (@thm:nikulin-gluing), $A_{T_\En}\cong H^{\perp}/H$ inside $A_{T_\Co}\oplus A_{\ZZ\delta}$. The subgroup $A_{E_{10}(2)}\subseteq A_{T_\Co}$ is orthogonal to $h/2$, because $T_\Co = \generators{h}\perp E_{10}(2)$ is an orthogonal sum; so $x\mapsto (x,0)$ carries $A_{E_{10}(2)}$ into $H^{\perp}$, and the composite $A_{E_{10}(2)}\to H^{\perp}\to H^{\perp}/H$ is injective with image of order $2^{10}\cdot 2/4 = 2^{10} = \abs{A_{T_\En}}$ (as $(x,0)\in H$ forces $x = 0$). Hence it is an isomorphism, and it carries the summands $A_{U(2)}, A_{E_8(2)}$ of $A_{E_{10}(2)}$ to the summands of the same name in $A_{T_\En} = A_{U(2)}\oplus A_{E_8(2)}$ --- the same two lattices sit in $T_\Co$ and in $T_\En$.
+
+For (1). Let $g\in\Gamma_\En$ stabilize $\delta$. Then $g$ preserves $\delta^{\perp} = \eta(T_\Co)$, so $g = \varphi\oplus\eps$ with $\varphi = \restrictionof{g}{T_\Co}$ and $\eps = \pm1$ on $\ZZ\delta$, and $g$ preserves the overlattice $T_\En$ exactly when $(\bar\rho(\varphi)\oplus\bar\eps)(H) = H$ (@thm:automorphism-lifting-criterion, applied to the gluing datum of @def:gluing-datum-of-a-pair). The automorphism group of $(A_{\ZZ\delta}, q)$ is trivial, $q(\delta/2) = -1/2$ being nonzero, so $\bar\eps = \id$; and the only element of $H$ with second coordinate $\delta/2$ is its generator, so the condition is $\bar\rho(\varphi)(h/2) = h/2$. Conversely, if $\bar\rho(\varphi)(h/2) = h/2$ then $\varphi\oplus\id$ preserves $H$ and extends to an isometry of $T_\En$ by the same criterion, and that isometry stabilizes $\delta$. This proves (1).
+
+For (2). By definition $\gent = \rho^{-1}(M)$, so a $g\in\Orth(T_\En)$ stabilizing $\delta$ lies in $\gent$ exactly when its image in $\Orth(A_{T_\En},q_{T_\En})$ preserves the two summands. Under the isomorphism above, $g$ acts on $A_{T_\En}$ by $[(x,0)]\mapsto[(\bar\rho(\varphi)(x),0)]$, so the two-summand condition is exactly that $\bar\rho(\varphi)$ preserve $A_{U(2)}$ and $A_{E_8(2)}$. The remainders are immediate: $\bar\rho(\varphi) = \id$ implies both conditions, and both conditions are conditions on $\varphi\in\Orth(T_\Co)$.
+:::
+
+::: {.remark #rmk:gamma-co-counts title="The cusp counts name their group"}
+The three groups of @def:gamma-co-groups give three different numbers of orbits on the primitive isotropic vectors of $T_\Co$. For $\Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$ the number is one and for the stable subgroup $\tilde\Orth^+(T_\Co)$ it is the $527$, both recorded in the register of claims this volume certifies through sage-extensions#286; the counts for $\Gamma_\Co$ and $\Gamma_{\Co,2}$ of @prop:gamma-co-images are not computed here. By [@DK13, Prop. 3.2] the space $F^{\mathrm{un}}_\Co$ is the moduli space of Coble surfaces up to an open subset, and by the sentence after it the quotient of the $(-2)$-Heegner divisor by $\Orth(U\oplus E(2)) = \Gamma_\En$ is birational to it --- that is, $F_\Co$ is birational to $F^{\mathrm{un}}_\Co$.
+:::
+
 ::: {.theorem #thm:normalization}
 
-$\fco$ is the normalization of a closed subvariety of the ambient period quotient $\bD(\ten)/\Gamma_\En$, namely of its Heegner divisor $\mch_{-2}/\Gamma_\En$; not of $\fen$, which is the complement of that divisor (@sec-moduli-construction).
+Let $\Gamma$ be $\Gamma_\En = \Orth(T_\En)$ or $\gent$, and let $\Gamma^{\Gamma}_\Co$ and $F^{\Gamma}_\Co$ be the group and the space of @def:gamma-co-groups, identified in @prop:gamma-co-images. Then the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta,
+$$
+f^{\Gamma}\colon F^{\Gamma}_\Co = \bD(T_\Co)/\Gamma^{\Gamma}_\Co \too \bD(\ten)/\Gamma,
+$$
+is defined and finite, its image is the Heegner divisor $\mch_{-2}/\Gamma$ and not the complement $\fen$ of @sec-moduli-construction, and $f^{\Gamma}$ is birational; hence $F^{\Gamma}_\Co$ is the normalization of that divisor.
 :::
 
 ::: {.proof}
 
-Write $\Gamma_\Co\definedas\Orth^+(T_\Co)^*$ and $\Gamma_\En\definedas\Orth^+(T_\En)^*$ --- the stable subgroups of the orthogonal groups of the two lattices, the star being $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ as in [@DK13, (2.1)] and $\Orth(T_\En)$ being $\Gamma_\En$ of [@AEGS25, Def. 2.6] --- and let
-$$
-f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En
-$$
-be the map induced by the embedding $\eta$ of @lem:primitive_embedding_eta. The target is the ambient period quotient and not the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma_\En$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $k = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f$ lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$ and meets no open complement of it. Conflating the two would make the map land outside its own target. The argument has four steps: a gluing computation that identifies the stabilizer of $T_\Co$, finiteness of the fibres, properness, and generic injectivity.
-
-The gluing datum.
-Put $K\definedas \eta(T_\Co)^{\perp T_\En}$.
-Since $\eta(h) = \tilde e+\tilde f$ and $\eta$ is the identity on the $E_{10}(2)$ summand, $K$ is the orthogonal complement of $\tilde e+\tilde f$ in $U = \generators{\tilde e,\tilde f}$, so $K = \ZZ k$ with $k\definedas\tilde e-\tilde f$ and $k^2 = -2$.
-Thus $K\cong\generators{-2}$, and $A_K$ is generated by $k/2$ with $q_K(k/2) = -1/2$.
-Because $\tilde e = \frac12\bigl(\eta(h)+k\bigr)$, the overlattice $T_\En$ of $T_\Co\oplus K$ has gluing group
-$$
-H = \generators{\bigl(h/2,\; k/2\bigr)}\ \leq\ A_{T_\Co}\oplus A_K
-$$
-in the sense of @def:gluing-datum-of-a-pair.
-It has order $2$ and is isotropic, since $q_{T_\Co}(h/2)+q_K(k/2) = \frac12-\frac12 = 0$.
-
-Two features of $A_{T_\Co} = \generators{h/2}\oplus A_{E_{10}(2)}$ are used below.
-First, $A_{E_{10}(2)}$ is orthogonal to $h/2$.
-Second, $q_{T_\Co}(h/2) = \frac12$, whereas $q_{T_\Co}$ takes values in $\ZZ/2\ZZ$ on $A_{E_{10}(2)}$ because $E_{10}$ is even and unimodular.
-
-The stabilizer.
-We claim that restriction to $T_\Co$ carries $\Stab_{\Gamma_\En}(T_\Co)$ onto $\Gamma_\Co$.
-
-Let $g\in\Gamma_\En$ satisfy $g(T_\Co) = T_\Co$.
-Then $g$ preserves $K = T_\Co^{\perp T_\En}$ as well, so $g = \varphi\oplus\eps$ with $\varphi\definedas\restrictionof{g}{T_\Co}\in\Orth(T_\Co)$ and $\eps = \pm 1$ on $K$.
-By @thm:automorphism-lifting-criterion, $g$ preserves $T_\En$ only if $(\bar\varphi\oplus\bar\eps)(H) = H$.
-The group $A_K$ has order $2$, so $\bar\eps = \id$, and the condition on the generator of $H$ reads $\bigl(\bar\varphi(h/2),\,k/2\bigr)\in H$.
-The only element of $H$ with second coordinate $k/2$ is the generator, so
-$$
-\bar\varphi(h/2) = h/2
-.
-$$
-Next let $x\in A_{E_{10}(2)}$.
-Then $(x,0)\in H^{\perp_{A_{T_\Co}\oplus A_K}}$, because $x$ is orthogonal to $h/2$.
-By Nikulin's gluing theorem (@thm:nikulin-gluing) the discriminant group of $T_\En$ is $H^{\perp_{A_{T_\Co}\oplus A_K}}/H$, and $g$ lies in the stable orthogonal group, so $g$ fixes that quotient pointwise; hence $\bigl(\bar\varphi(x)-x,\,0\bigr)\in H$.
-Every nonzero element of $H$ has second coordinate $k/2\neq 0$, so $\bar\varphi(x) = x$.
-The two displays give $\bar\varphi = \id$ on all of $A_{T_\Co}$, that is $\varphi\in\tilde\Orth(T_\Co)$.
-That step uses the stability of $g$ on $A_{T_\En}$, which holds for the stable ambient $\Gamma_\En = \Orth^+(T_\En)^*$ of this book and fails for the full group $\Orth(T_\En) = \Gamma_\En$ of [@AEGS25, Def. 2.6]: for the full group the conclusion is only $\bar\varphi(h/2) = h/2$, a strictly weaker condition, and @rmk:which-group-is-gamma-co records what the two ambients give and which cusp counts belong to which.
-Finally $g$ preserves the component $\bD(T_\En)$, and $\bD(T_\Co) = \bD(T_\En)\intersect\PP(T_\Co\tensor_\ZZ\CC)$, so $\varphi$ preserves $\bD(T_\Co)$ and lies in $\Orth^+(T_\Co)$.
-Therefore $\varphi\in\Gamma_\Co$.
-
-Conversely let $\varphi\in\Gamma_\Co$ and put $g\definedas\varphi\oplus\id_K$.
-Both $\bar\varphi$ and $\bar{\id}_K$ are the identity, so $g$ preserves $H$ and extends to $T_\En$ by @thm:automorphism-lifting-criterion.
-The extension acts trivially on $H^{\perp_{A_{T_\Co}\oplus A_K}}/H = A_{T_\En}$ and preserves $\bD(T_\En)$, so it lies in $\Gamma_\En$; it stabilizes $T_\Co$ and restricts to $\varphi$ there.
-
-In particular the containment required by the descent criterion (@rmk:descent-of-an-equivariant-inclusion) holds, with equality, so $f$ is defined.
+That $f^{\Gamma}$ is defined is @prop:gamma-co-images: restriction carries $\Stab_{\Gamma}(\delta)$ onto $\Gamma^{\Gamma}_\Co$, so the containment required by the descent criterion (@rmk:descent-of-an-equivariant-inclusion) holds, with equality. The target is the ambient period quotient and not the moduli space $\fen = (\bD(\ten)\sm\mch_{-2})/\Gamma$ of @sec-moduli-construction: every period of $T_\Co$ is orthogonal to $\delta = \tilde e-\tilde f$, a vector of square $-2$, so the image of $f^{\Gamma}$ lies in the Heegner divisor $\mch_{-2}/\Gamma$ and meets no open complement of it. Conflating the two would make the map land outside its own target. Nothing below uses more about $\Gamma^{\Gamma}_\Co$ than that it is this image, so the argument runs for either $\Gamma$. It has three steps: finiteness of the fibres, properness, and generic injectivity.
 
 Fibres.
 For $x = [\omega]\in\bD(T_\En)$ let $T(x)$ be the smallest primitive sublattice of $T_\En$ whose complexification contains $\omega$, namely $T(x)\definedas\bigl(T_\En\intersect\omega^{\perp_{T_\En\tensor_\ZZ\CC}}\bigr)^{\perp T_\En}$.
 For a primitive sublattice $M\leq T_\En$ of signature $(2,\ast)$ one has $x\in\bD(M)$ if and only if $T(x)\iscontainedin M$.
 
-Fix $y\in F_\En$ and a lift $\tilde y\in\bD(T_\En)$.
-A point of $\inverseof{f}(y)$ is a $\Gamma_\Co$-orbit of a point $x = g\tilde y$ with $g\in\Gamma_\En$ and $x\in\bD(T_\Co)$.
+Fix $y\in\bD(\ten)/\Gamma$ and a lift $\tilde y\in\bD(T_\En)$.
+A point of $\inverseof{f^{\Gamma}}(y)$ is a $\Gamma^{\Gamma}_\Co$-orbit of a point $x = g\tilde y$ with $g\in\Gamma$ and $x\in\bD(T_\Co)$.
 Writing $M'\definedas \inverseof{g}(T_\Co)$, that last condition says $T(\tilde y)\iscontainedin M'$.
-Now $M'^{\perp T_\En} = \inverseof{g}(K) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
+Now $M'^{\perp T_\En} = \inverseof{g}(\ZZ\delta) = \ZZ v$ with $v^2 = -2$, and $v\perp T(\tilde y)$.
 The space $T(\tilde y)\tensor_\ZZ\RR$ contains a positive definite plane and $T_\En$ has signature $(2,10)$, so $T(\tilde y)^{\perp T_\En}$ is negative definite and contains only finitely many vectors of square $-2$.
 Each such $v$ determines $M' = v^{\perp T_\En}$, so only finitely many $M'$ occur.
-For a fixed $M'$ the elements $g$ with $\inverseof{g}(T_\Co) = M'$ form one coset of $\Stab_{\Gamma_\En}(T_\Co)$, whose restrictions to $T_\Co$ all lie in $\Gamma_\Co$ by the previous step; the corresponding points $x$ therefore form a single $\Gamma_\Co$-orbit.
-Hence $\inverseof{f}(y)$ is finite, of cardinality at most half the number of $(-2)$-vectors of $T(\tilde y)^{\perp T_\En}$.
+For a fixed $M'$ the elements $g$ with $\inverseof{g}(T_\Co) = M'$ form one coset of $\Stab_{\Gamma}(\delta)$, whose restrictions to $T_\Co$ all lie in $\Gamma^{\Gamma}_\Co$ by @prop:gamma-co-images; the corresponding points $x$ therefore form a single $\Gamma^{\Gamma}_\Co$-orbit.
+Hence $\inverseof{f^{\Gamma}}(y)$ is finite, of cardinality at most half the number of $(-2)$-vectors of $T(\tilde y)^{\perp T_\En}$.
 
 Properness and finiteness.
-By @lem:locally_closed_embedding_BB, the map $f$ extends to a morphism $\bar f\colon\overline{F_\Co}^{\operatorname{BB}}\to \overline{F_\En}^{\operatorname{BB}}$ of projective varieties, which is therefore proper.
-A boundary component of $\overline{F_\Co}^{\operatorname{BB}}$ is indexed by a primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
-So $\bar f$ carries boundary to boundary, giving $\inverseof{\bar f}(\fen) = \fco$, and $f$ is proper because properness is stable under base change.
-A proper morphism with finite fibres is finite ([@stacks-02LS]), so $f$ is finite.
-Let $Z\definedas f(\fco)$, which is closed in $\fen$ because a finite morphism is closed.
+By @lem:locally_closed_embedding_BB, the map $f^{\Gamma}$ extends to a morphism $\bar f^{\Gamma}\colon\overline{F^{\Gamma}_\Co}^{\operatorname{BB}}\to \overline{\bD(\ten)/\Gamma}^{\operatorname{BB}}$ of projective varieties, which is therefore proper.
+A boundary component of $\overline{F^{\Gamma}_\Co}^{\operatorname{BB}}$ is indexed by a primitive isotropic sublattice $I\leq T_\Co$ of rank $1$ or $2$, and the saturation of $I$ in $T_\En$ is again primitive isotropic of the same rank.
+So $\bar f^{\Gamma}$ carries boundary to boundary, giving $\inverseof{\bar f^{\Gamma}}(\bD(\ten)/\Gamma) = F^{\Gamma}_\Co$, and $f^{\Gamma}$ is proper because properness is stable under base change.
+A proper morphism with finite fibres is finite ([@stacks-02LS]), so $f^{\Gamma}$ is finite.
+Let $Z\definedas f^{\Gamma}(F^{\Gamma}_\Co)$, which is closed because a finite morphism is closed.
 
 Generic injectivity.
 A proper primitive sublattice $S\subsetneq T_\Co$ of signature $(2,\ast)$ cuts out a proper closed analytic subset $\bD(S)\subsetneq\bD(T_\Co)$, and there are countably many such $S$.
 So the set of $x\in\bD(T_\Co)$ with $T(x) = T_\Co$ is the complement of countably many proper closed analytic subsets, hence dense.
 For such an $x$ the fibre computation allows only $M' = T_\Co$: one has $T_\Co = T(x)\iscontainedin M'$ with both primitive of rank $11$.
 The fibre through $x$ is therefore a single point.
-The locus where a finite morphism of irreducible varieties has more than its generic number of preimages is a proper closed subset, and a dense set is not contained in one, so $f\colon F_\Co\to Z$ has degree $1$ and is birational.
+The locus where a finite morphism of irreducible varieties has more than its generic number of preimages is a proper closed subset, and a dense set is not contained in one, so $f^{\Gamma}$ has degree $1$ and is birational.
 
-Finally $F_\Co$ is normal, being the quotient of a bounded symmetric domain by a properly discontinuous group of automorphisms.
-A finite birational morphism from a normal variety onto a reduced irreducible variety is its normalization, so $F_\Co$ is the normalization of $Z$.
-:::
-
-::: {.remark #rmk:which-group-is-gamma-co title="Which group $\Gamma_\Co$ is, and the two counts"}
-The groups of this proof are the stable subgroups of the sources' orthogonal groups, not the sources' groups themselves. [@DK13, Prop. 3.2, p. 513] identifies the moduli space $M_\Co$ of Coble surfaces with an open subset of $\bD(N)/\Orth(N)$ for $N = \generators{2}\oplus E(2)$ --- $N$ has rank $11$, determinant $-2048$ and signature $(2,9)$, so $N\cong T_\Co$ --- with $\Orth(N)$ the full orthogonal group; and the same passage states that the quotient of the $(-2)$-Heegner divisor in the period domain of Enriques surfaces by the arithmetic subgroup $\Orth(U\oplus E(2)) = \Orth(T_\En)$ is birationally isomorphic to $M_\Co$. [@AEGS25, Def. 2.6] likewise takes $\Gamma_\En = \Orth(T_\En)$ and cuts the polarized group out of it as $\Gamma_\En\intersect\Gamma_\dP$. Neither source's group is $\Orth^+(T_\Co)^*$ or $\Orth^+(T_\En)^*$: those are the discriminant kernels of the cited groups, sitting in them as
-$$
-\tilde\Orth^+(T_\Co)\ \leq\ \Orth^+(T_\Co)\ \leq\ \Orth(T_\Co)
-\qquad\text{and}\qquad
-\gent\ \leq\ \Orth^+(T_\En)\ \leq\ \Orth(T_\En).
-$$
-Each inclusion changes the cusp count, so a count of $0$-cusps of a quotient names the group it counts: on $T_\Co$ the full group has one orbit on the primitive isotropic vectors, the stable subgroup has the $527$ recorded elsewhere in this volume, and no count for a group between them is computed here. The quotients of the three groups are accordingly three different spaces --- the stable $\Fco$ of this book, the quotient by $\Orth(T_\Co)$ that [@DK13] identifies with $M_\Co$, and the polarized $F_{\Co,2}$ of [@sec-moduli-construction] --- related by finite maps whose degrees are the indices above.
+Finally $F^{\Gamma}_\Co$ is normal, being the quotient of a bounded symmetric domain by a properly discontinuous group of automorphisms.
+A finite birational morphism from a normal variety onto a reduced irreducible variety is its normalization, so $F^{\Gamma}_\Co$ is the normalization of $Z$.
 :::
 
 ::: {.remark #rmk:normalization-enriques-analogue title="The same statement one level up"}

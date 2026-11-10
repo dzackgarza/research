@@ -1,5 +1,10 @@
 # Cusp diagrams of the Enriques, Coble and Sterk moduli spaces {#sec-cusp-diagrams-by-moduli-space}
 
+::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
+The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
+:::
+
+
 The mirror move algorithm of @sec-mirror-moves is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fentwo$.
 Each section records the cusp diagram, the Coxeter diagrams of its 0-cusps, and the maximal parabolic subdiagrams that determine the adjacent 1-cusps.
 

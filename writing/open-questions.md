@@ -9,6 +9,11 @@ tags:
 
 # Open questions and conjectures {#sec-open-questions}
 
+::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
+The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
+:::
+
+
 ::: {.remark title="What this page registers"}
 
 This page is the register of the statements in this book and in the dissertation that have no proof: the questions, conjectures, and required theorems whose answer is not known.
