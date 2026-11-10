@@ -252,7 +252,7 @@ But $e$ and $f$ are two elements of a $\ZZ$-basis of $B$, and the coordinates of
 
 ::: {.remark}
 
-The number of $0$-cusps is a property of the pair (lattice, group) and not of the lattice: with $\Orth^+(T_\Co)$ in place of $\widetilde\Orth^+(T_\Co)$ it is one (@thm:unpolarized-cusps). The counts in this section are counts for $\widetilde\Orth^+(T_\Co)$; the group attached to $\fco$ is $\Gamma_\Co$ of @def:gamma-co-groups, which contains it, and the number of $\Gamma_\Co$-orbits is open until sage-extensions#286 computes it.
+The number of $0$-cusps is a property of the pair (lattice, group) and not of the lattice: with $\Orth^+(T_\Co)$ in place of $\widetilde\Orth^+(T_\Co)$ it is one (@thm:unpolarized-cusps). The counts in this section are counts for $\widetilde\Orth^+(T_\Co)$; the group attached to $\fco$ is $\Gamma_\Co = \Orth(T_\Co)$ (@prop:gamma-co-images(3)), whose orbit count is the one of @thm:unpolarized-cusps.
 
 The lemma gives two orbits of the full orthogonal group; for $\widetilde\Orth^+(T_\Co)$ the count is $527$, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting), so the discriminant form does give the exact number and not only a lower bound.
 The $527$ and the $1$ above are **proved in prose only**: no computation record decides either, and the library call that would is sage-extensions#286.
@@ -261,7 +261,7 @@ The $527$ and the $1$ above are **proved in prose only**: no computation record 
 ::: {.proposition #prop:coble-cusp-count title="The $0$-cusp count of the stable quotient"}
 
 Let $\rho_{T_\Co}\colon\Orth(T_\Co)\to\Orth(q_{T_\Co})$ be the discriminant representation and let $v\in T_\Co$ be primitive isotropic.
-Then the number of $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic vectors of $T_\Co$ is $527$, one for each nonzero isotropic class of $A_{T_\Co}$; the number of $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic lines is the same, so the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has exactly $527$ $0$-cusps. These are not the $0$-cusps of $\fco$: that space is $\bD(T_\Co)/\Gamma_\Co$ (@def:gamma-co-groups), its $0$-cusp count is the number of $\Gamma_\Co$-orbits, and that number is open until sage-extensions#286 computes it.
+Then the number of $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic vectors of $T_\Co$ is $527$, one for each nonzero isotropic class of $A_{T_\Co}$; the number of $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic lines is the same, so the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has exactly $527$ $0$-cusps. These are not the $0$-cusps of $\fco$: that space is $\bD(T_\Co)/\Gamma_\Co$ with $\Gamma_\Co = \Orth(T_\Co)$ (@prop:gamma-co-images(3)), so its $0$-cusp count is the $\Orth(T_\Co)$-orbit count, which is one (@thm:unpolarized-cusps).
 This count is **proved in prose only**: no computation record decides it. The computation that would is the library call that returns the $\ker\rho_{T_\Co}$- and $\widetilde\Orth^+(T_\Co)$-orbit counts on $T_\Co$ directly, sage-extensions#286; until that record exists the number stands on the proof of @sec-cusp-lifting and on the class count of @prop:coble-q-fibers, and on nothing computed.
 :::
 

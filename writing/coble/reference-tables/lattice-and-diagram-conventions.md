@@ -172,4 +172,4 @@ Four groups act on the period domain of the Coble lattice, and every statement a
 | $\Gamma_{\Co,2} = \Gamma^{\Gent}_\Co$ | the same image for $\Gent$ in place of $\Gamma_\En$ | [@AEGS25, Def. 2.6], [@Ste91, Prop. 2.7] |
 | $\tilde\Orth^+(T_\Co)$ | the stable subgroup $\Orth^+(T_\Co)\intersect\ker\bar\rho$, strictly inside the first three | [@DK13, (2.1)] |
 
-The number of orbits on the primitive isotropic vectors of $T_\Co$ depends on which is meant --- one for $\Orth(T_\Co)$, the $527$ recorded for the stable subgroup, none computed here for the two middle groups --- so a count of $0$-cusps names its group.
+The number of orbits on the primitive isotropic vectors of $T_\Co$ depends on which is meant: one for $\Orth(T_\Co)$, which is also $\Gamma_\Co$ (@prop:gamma-co-images(3)); the $527$ recorded for the stable subgroup; and, for $\Gamma_{\Co,2}$, a count not computed here. So a count of $0$-cusps names its group.

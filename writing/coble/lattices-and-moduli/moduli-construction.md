@@ -191,7 +191,7 @@ T_\Co \definedas S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \generators{2} \oplus 
 $$
 
 Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@AE22 Thm. 5.10] applied to $S_\Co =(11, 11, 1)_1$.
-We obtain $\fco$ as an open subset of the period domain $D_{T_\Co}/\Gamma_\Co$, a normal quasiprojective variety of dimension 9, by [@DK13, Prop. 3.2, p. 513], which identifies the moduli space with an open subset of $D(N)/\Orth(N)$ for $N = \generators{2}\oplus E(2) = T_\Co$, and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]; the passage from the quotient by $\Orth(T_\Co)$ to the quotient by $\Gamma_\Co$ is the birationality [@DK13] states between the $(-2)$-Heegner divisor modulo $\Orth(U\oplus E(2))$ and that moduli space.
+We obtain $\fco$ as an open subset of the period domain $D_{T_\Co}/\Gamma_\Co$, a normal quasiprojective variety of dimension 9, by [@DK13, Prop. 3.2, p. 513], which identifies the moduli space with an open subset of $D(N)/\Orth(N)$ for $N = \generators{2}\oplus E(2) = T_\Co$, and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]; and the passage from the quotient by $\Orth(T_\Co)$ to the quotient by $\Gamma_\Co$ costs nothing, since $\Gamma_\Co = \Orth(T_\Co)$ (@prop:gamma-co-images(3)).
 We note that [@DK13] shows that $\fco$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
 ## The sextic moduli construction

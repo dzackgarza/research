@@ -152,6 +152,11 @@ $$
 \Gamma^{\Gamma_\En}_\Co = \theset{\varphi\in\Orth(T_\Co)\ \mid\ \bar\rho(\varphi)(h/2) = h/2}.
 $$
 2. $\Gamma^{\gent}_\Co$ is the subgroup of that stabilizer consisting of the $\varphi$ whose image in $\Orth(A_{T_\En}, q_{T_\En})$ preserves the two summands $A_{U(2)}$ and $A_{E_8(2)}$, under the identification $A_{T_\En}\cong A_{E_{10}(2)} = A_{U(2)}\oplus A_{E_8(2)}$ of the proof.
+3. The stabilizer in (1) is all of $\Orth(T_\Co)$: the class $[h/2]$ is the characteristic class of $q_{T_\Co}$, so
+$$
+\Gamma_\Co = \Gamma^{\Gamma_\En}_\Co = \Orth(T_\Co), \qquad [\Orth(T_\Co) : \Gamma_\Co] = 1,
+$$
+and $\Gamma_{\Co,2}$ is the proper subgroup $\bar\rho^{-1}(P)$ of $\Orth(T_\Co)$, $P$ the stabilizer of the decomposition $w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$ of the proof, of index $[\Orth(T_\Co) : \bar\rho^{-1}(P)] = [\Orth(q_{T_\Co}) : P]$.
 
 Neither group is a discriminant kernel: each contains $\ker\bar\rho$, and each is contained in $\Gamma^{\mathrm{un}}_\Co$.
 :::
@@ -162,10 +167,26 @@ By Nikulin's gluing theorem (@thm:nikulin-gluing), $A_{T_\En}\cong H^{\perp}/H$ 
 For (1). Let $g\in\Gamma_\En$ stabilize $\delta$. Then $g$ preserves $\delta^{\perp} = \eta(T_\Co)$, so $g = \varphi\oplus\eps$ with $\varphi = \restrictionof{g}{T_\Co}$ and $\eps = \pm1$ on $\ZZ\delta$, and $g$ preserves the overlattice $T_\En$ exactly when $(\bar\rho(\varphi)\oplus\bar\eps)(H) = H$ (@thm:automorphism-lifting-criterion, applied to the gluing datum of @def:gluing-datum-of-a-pair). The automorphism group of $(A_{\ZZ\delta}, q)$ is trivial, $q(\delta/2) = -1/2$ being nonzero, so $\bar\eps = \id$; and the only element of $H$ with second coordinate $\delta/2$ is its generator, so the condition is $\bar\rho(\varphi)(h/2) = h/2$. Conversely, if $\bar\rho(\varphi)(h/2) = h/2$ then $\varphi\oplus\id$ preserves $H$ and extends to an isometry of $T_\En$ by the same criterion, and that isometry stabilizes $\delta$. This proves (1).
 
 For (2). By definition $\gent = \rho^{-1}(M)$, so a $g\in\Orth(T_\En)$ stabilizing $\delta$ lies in $\gent$ exactly when its image in $\Orth(A_{T_\En},q_{T_\En})$ preserves the two summands. Under the isomorphism above, $g$ acts on $A_{T_\En}$ by $[(x,0)]\mapsto[(\bar\rho(\varphi)(x),0)]$, so the two-summand condition is exactly that $\bar\rho(\varphi)$ preserve $A_{U(2)}$ and $A_{E_8(2)}$. The remainders are immediate: $\bar\rho(\varphi) = \id$ implies both conditions, and both conditions are conditions on $\varphi\in\Orth(T_\Co)$.
+
+For (3). Two facts about $A = A_{T_\Co}$ are used. First, $x\mapsto q(x)\bmod 1$ is a homomorphism $A\to\frac12\ZZ/\ZZ\cong\ZZ/2$: for $u,v\in A$ one has $q(u+v)-q(u)-q(v) = 2b(u,v)$, and $2b(u,v)\in\ZZ$ because $A$ is $2$-elementary and $b$ takes values in $\frac12\ZZ$ on it ([@Nik80, §1.3] for the structure of a $2$-elementary discriminant form). Second, $b$ is nondegenerate on $A$, so a class $w$ with $b(w,x)\equiv q(x)\pmod 1$ for all $x$ is unique.
+
+The class $[h/2]$ is such a $w$. Write $A = \generators{h/2}\oplus A_{U(2)}\oplus A_{E_8(2)}$, an orthogonal decomposition because $T_\Co = \generators{h}\perp E_{10}(2)$. On it $q\equiv0\pmod1$ vanishes on the last two summands --- on $A_{E_8(2)}$ because $q(y/2) = y^2/2\in\ZZ$ for $y\in E_8$ --- while $q(h/2) = h^2/4 = 1/2$; and $b(h/2,\cdot)$ vanishes on the same two summands while $b(h/2,h/2) = 1/2$. By additivity of $q\bmod1$ the two agree on all of $A$, that is $b(h/2,x)\equiv q(x)\pmod1$.
+
+Hence every isometry $\sigma$ of $(A,q)$ fixes $[h/2]$: for every $x$,
+$$
+b(\sigma(h/2),x) = b(h/2,\sigma^{-1}x)\equiv q(\sigma^{-1}x) = q(x)\equiv b(h/2,x)\pmod 1,
+$$
+and nondegeneracy of $b$ gives $\sigma(h/2) = h/2$. By (1) the stabilizer of $[h/2]$ is $\Gamma_\Co$, so $\Gamma_\Co = \Orth(T_\Co)$ and the index is $1$.
+
+For the last claim, every $\sigma\in\Orth(q_{T_\Co})$ fixes $w = [h/2]$, hence preserves $w^{\perp}$, of dimension $10$; so $\Orth(q_{T_\Co})\to\Orth(w^{\perp},q|_{w^{\perp}})$ is defined, and it is injective because an isometry fixing $w^{\perp}$ pointwise and $w$ is the identity ($x\mapsto x+f(x)w$ with $f(x) = 1$ changes $q(x)$ by $q(w) = 1/2$). $P$ is the stabilizer in that group of the decomposition $w^{\perp} = A_{U(2)}\oplus A_{E_8(2)}$, and since $\bar\rho$ is onto, the index of $\Gamma_{\Co,2}$ in $\Orth(T_\Co)$ is the index of $P$. The proof does not evaluate that index; it is the number of decompositions of $w^{\perp}$ into a $2$-dimensional summand isometric to $A_{U(2)}$ and an $8$-dimensional one isometric to $A_{E_8(2)}$.
 :::
 
 ::: {.remark #rmk:gamma-co-counts title="The cusp counts name their group"}
-The three groups of @def:gamma-co-groups give three different numbers of orbits on the primitive isotropic vectors of $T_\Co$. For $\Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$ the number is one and for the stable subgroup $\tilde\Orth^+(T_\Co)$ it is the $527$, both recorded in the register of claims this volume certifies through sage-extensions#286; the counts for $\Gamma_\Co$ and $\Gamma_{\Co,2}$ of @prop:gamma-co-images are not computed here. By [@DK13, Prop. 3.2] the space $F^{\mathrm{un}}_\Co$ is the moduli space of Coble surfaces up to an open subset, and by the sentence after it the quotient of the $(-2)$-Heegner divisor by $\Orth(U\oplus E(2)) = \Gamma_\En$ is birational to it --- that is, $F_\Co$ is birational to $F^{\mathrm{un}}_\Co$.
+By @prop:gamma-co-images(3) the group of the Coble divisor is the whole group of the moduli space: $\Gamma_\Co = \Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$, so $\fco$ and $F^{\mathrm{un}}_\Co$ are one quotient, $\bD(T_\Co)/\Orth(T_\Co)$, which [@DK13, Prop. 3.2] identifies with the moduli space of Coble surfaces up to an open subset. In particular $\fco$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), and one $1$-cusp, by @thm:plane-transitivity-tco.
+
+That is also what the sources force: [@DK13, Prop. 3.2] gives the moduli space as a quotient by $\Orth(N)$, and the sentence after it states that the quotient of the $(-2)$-Heegner divisor by $\Orth(U\oplus E(2))$ is birational to that moduli space; by @thm:normalization that second quotient is $\bD(T_\Co)/\Gamma_\Co$, so the two agree only if $[\Orth(T_\Co) : \Gamma_\Co] = 1$, which is @prop:gamma-co-images(3).
+
+What remains a proper subgroup is $\Gamma_{\Co,2}$, the group of $F_{\Co,2}$: it is $\bar\rho^{-1}(P)$ of @prop:gamma-co-images(3), of index $[\Orth(q_{T_\Co}) : P]$, and the number of its orbits on the primitive isotropic vectors --- the $0$-cusp count of $F_{\Co,2}$ --- is not computed here. The $527$ recorded in this volume is the count for the stable subgroup $\widetilde\Orth^+(T_\Co)$, and the one orbit recorded for $\Orth(T_\Co)$ is the count for $\fco$.
 :::
 
 ::: {.theorem #thm:normalization}
