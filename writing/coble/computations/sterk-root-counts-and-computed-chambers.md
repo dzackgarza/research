@@ -66,17 +66,20 @@ $12\times(-4)$; $9\times(-4)$ and $1\times(-2)$; $10\times(-4)$ and $2\times(-2)
 
 ::: {.proposition #prop:nine-roots-insufficient title="A finite-volume chamber in $\HH^9$ has at least ten walls"}
 
-By @thm:coxeter-polytope-volume(1) a Coxeter polytope of finite volume in $\HH^n_L$ has, in the projective model, closure the convex hull of finitely many points of $\overline{\HH^n_L}$, so it is an $n$-dimensional convex polytope and has at least $n+1$ facets.
-For $n = 9$ a fundamental chamber therefore has at least $10$ walls.
+Let $P\iscontainedin\HH^n_L$ be a Coxeter polytope (@def:coxeter-polytope) of finite volume. Then $P$ has at least $n+1$ walls. In particular a finite-volume Coxeter polytope in $\HH^9_L$ has at least $10$ walls.
 :::
 
 ::: {.proof}
 
-By @thm:coxeter-polytope-volume(1), a Coxeter polytope of finite volume in $\HH^n_L$ has, in the projective model, closure equal to the convex hull of finitely many points of the boundary $\bd\HH^n_L$; in particular it is a bounded polytope in an affine chart and has at least $n+1$ facets.
-Indeed a bounded $n$-dimensional polytope that is not a point has at least $n+1$ facets, since a vertex is the intersection of at least $n$ facets in a simple polytope and a bounded polytope has a vertex, or, equivalently, since with $k\leq n$ facets the polytope spans an affine subspace of dimension at most $k-1$.
+Fix $v_0\in C_L^+$ and use the affine chart $A\definedas\theset{v\in L_\RR \mid \beta_L(v,v_0) = 1}\cong\RR^n$ of $\PP(L_\RR)$. It meets every line of the closed positive cone in one point, so the projective model $\BB^n_L$ of @def:hyperbolic-model is an open ball $B\iscontainedin A$ with boundary sphere $\partial B$, the image of the isotropic cone. Let $\alpha_1,\dots,\alpha_k$ be the roots of the walls of $P$ and $\ell_i\definedas\beta_L(\cdot,\alpha_i)$, affine functions on $A$, signed so that $P = B\intersect Q$ with $Q\definedas\theset{x\in A \mid \ell_i(x)\geq0 \text{ for all } i}$.
 
-With $n=9$ this gives at least $10$ facets, that is at least $10$ walls.
-By @thm:vinberg-algorithm a terminating run on a rank-$10$ hyperbolic lattice returns at least ten roots.
+*The closure is a polytope.* By @thm:coxeter-polytope-volume(1) the closure $\overline P$ of $P$ in $A$ is the convex hull of finitely many points, so it is a polytope [@Zie95, Thm. 2.15]. It is $n$-dimensional, because $P$ is a fundamental domain of a properly discontinuous action and so has nonempty interior.
+
+*Each facet lies in a wall.* Let $F$ be a facet of $\overline P$, with affine hull the hyperplane $\operatorname{aff}F$. The set $\operatorname{aff}F\intersect\partial B$ is a sphere of dimension at most $n-2$ or empty, so it has empty interior in $\operatorname{aff}F$, and the relative interior of $F$ contains a point $x\in B$. Near $x$ the sets $\overline P$ and $Q$ agree, because $\overline P\intersect B = P = B\intersect Q$; so $x$ lies in the boundary of $Q$ and $\ell_i(x) = 0$ for some $i$. The same holds at every point of the dense open subset $F^\circ\setminus\partial B$ of the relative interior $F^\circ$ of $F$, so the closed subsets $F\intersect\theset{\ell_i = 0}$, $1\leq i\leq k$, cover $F$. One of them has nonempty interior in $F$, and then $\operatorname{aff}F = \theset{\ell_i = 0}$. Distinct facets have distinct affine hulls, so $F\mapsto\alpha_i$ is an injection from the set of facets of $\overline P$ to the set of walls of $P$.
+
+*An $n$-polytope has at least $n+1$ facets.* By [@Zie95, Thm. 2.15(7)], $\overline P = \theset{x \mid u_j(x)\leq c_j,\ 1\leq j\leq m}$, one inequality for each of its $m$ facets, with $u_j$ linear. Suppose $m\leq n$. If $u_1,\dots,u_m$ span a subspace of dimension less than $n$, choose $d\neq0$ with $u_j(d) = 0$ for all $j$; otherwise $m = n$, the $u_j$ form a basis of the dual space, and there is $d$ with $u_j(d) = -1$ for all $j$. In both cases $x+td\in\overline P$ for every $x\in\overline P$ and $t\geq0$, which contradicts boundedness. So $m\geq n+1$.
+
+Hence $k\geq m\geq n+1$, and $k\geq10$ when $n = 9$.
 :::
 
 ::: {.corollary #cor:ten-walls-is-simplex title="Exactly ten walls means a simplex"}
