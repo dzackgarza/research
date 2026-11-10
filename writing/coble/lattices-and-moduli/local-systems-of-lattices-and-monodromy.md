@@ -311,6 +311,30 @@ The last statement is @prop:orientation-characters-reflections (4).
 For weight $2$ the sign is $\epsilon=+1$, and $W^{\mathrm{odd}}_F=\qty{H^{2,0}\oplus H^{0,2}}\cap L_\RR$ is the positive-definite real subspace of dimension $2h^{2,0}$ spanned by the real and imaginary parts of the vectors of $H^{2,0}$.
 The primitive local system of a family of polarized K3 surfaces has $h^{1,1}>0$, and the first row of the table is @prop:polarized-k3-monodromy-positive.
 
+::: {.remark #rmk:orth-plus-versus-component-stabilizer title="$\Orth^+(L)$ and $\Stab_{G_\ZZ}(D^+)$ are defined independently"}
+
+Let $k=2m$ and let $L$ be indefinite.
+The lattice $L$ then has two subgroups of $\Orth(L)$ with unrelated definitions.
+
+- The group $\Orth^+(L)$ of @def:lattice-spinor-kernels is the kernel of the real spinor norm $\spinornorm_\bR$ on $\Orth(L)$.
+  It depends only on the lattice $(L,Q)$.
+- The group $\Stab_{G_\ZZ}(D^+)$ is the set of $g\in\Orth(L)$ with $gD^+=D^+$.
+  It depends on $(L,Q)$, on the weight $k$ and on the Hodge numbers, through $D$.
+
+By @prop:orientation-characters-reflections (2) and (4), $\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$ and $\sigma_+\sigma_-=\det$.
+With the table of @cor:vhs-monodromy-stabilizes-component and $\Orth(L)=\Orth(L(-1))$ (@def:form-twist), the comparison is the following.
+
+| $m$ | Hodge numbers | $\Stab_{G_\ZZ}(D^+)$ | equal to $\Orth^+(L)$ |
+| --- | --- | --- | --- |
+| odd | $h^{m,m}>0$ | $\Orth^+(L)$ | always |
+| even | $h^{m,m}>0$ | $\Orth^+(L(-1))$ | exactly when $\det$ is trivial on $\Orth(L)$ |
+| odd or even | $h^{m,m}=0$ | $\Orth^+(L)\cap\ker\det$ | exactly when $\det$ is trivial on $\Orth^+(L)$ |
+
+In the second row, an isometry $g\in\Orth(L)$ with $\det g=-1$ has $\sigma_+(g)\neq\sigma_-(g)$, so it lies in exactly one of $\Orth^+(L)$ and $\Orth^+(L(-1))$.
+In particular the two groups differ when the rank of $L$ is odd, because $\det(-\id_L)=-1$.
+The equality in the first row is a theorem about the components of $D$ (@thm:period-domain-component-stabilizer), and it covers every weight-$2$ period domain with $h^{1,1}>0$, for every value of $h^{2,0}$.
+:::
+
 ::: {.example #ex:weight-zero-vhs title="A weight-zero variation with monodromy outside $\ker\sigma_{-\epsilon}$"}
 
 Let $B=\CC^\times$ and $c\in\pi_1(B,1)$ be as in @ex:monodromy-outside-orth-plus, and let $(\bL,Q)$ be the local system of lattices on $B$ with stalk $(\ZZ,xy)$ and $\rho(c)=-1$ (@prop:local-system-of-lattices-monodromy).
