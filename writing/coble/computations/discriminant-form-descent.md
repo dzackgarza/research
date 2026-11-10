@@ -312,11 +312,11 @@ That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisi
 
 ::: {.proof}
 
-Part 1. The group $Q$ is $\Orth(A_L,q_L)$ by @thm:two-elementary-surjectivity, and $\ker\rho\subseteq\Gamma$ is @prop:gamma-en-two-index.
+Part 1. The group $Q$ is $\Orth(A_L,q_L)$ by @thm:two-elementary-surjectivity, and $\ker\rho\subseteq\Gamma$ is @prop:sterk-group-identification(2).
 Item a is @lem:line-stabilizer-image; since $A_L$ has exponent two, the stabilizer of a class $c$ is the stabilizer of the subgroup $\generators{c}$.
 Item b is @thm:enriques-integral-plane-stabilizers, and the orbit statement is then @thm:descent-double-coset with $(H\cap F)\backslash F/S=(H\cap F)\backslash F/F$, one double coset.
 Item c is @thm:enriques-spinor-orbit-agreement.
-Item d is item 3 of @thm:enriques-degree-two-arithmetic together with @lem:zero-datum-divisibility: by @thm:sterk-line-fibres the line orbit of type $1$ is the divisibility-one orbit, and the four §4.3.16 planes contain a vector of divisibility one while the five §4.3.17 planes do not.
+Item d is items 1, 3 and 4 of @thm:enriques-degree-two-arithmetic together with @lem:zero-datum-divisibility: the line orbit of type $1$ is the divisibility-one orbit, and the plane orbits whose labels contain $1$ are the four planes of [@Ste91, §4.3.16].
 
 Part 2. The group $Q$ is $\Orth(q)$ by @thm:two-elementary-surjectivity.
 Item a holds because $\Gamma_\Co\subseteq\ker\rho$, so $\rho(\Gamma_\Co)=1\leq F_{C,J}$.

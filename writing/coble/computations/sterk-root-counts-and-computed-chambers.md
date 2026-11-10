@@ -17,7 +17,7 @@ notes: |-
 
 ::: {.proposition #prop:sterk-cusp-quotients title="The five cusps and their hyperbolic quotients"}
 
-Let $\Gamma$ be Sterk's group, identified with $\gent$ in @thm:sterk-line-fibres.
+Let $\Gamma$ be Sterk's group, identified with $\gent$ in @prop:sterk-group-identification.
 Every primitive isotropic vector of $\ten = U\oplus E_{10}(2)$ lies in the $\Gamma$-orbit of exactly one of
 $$
 \eta_1 = e,\quad
