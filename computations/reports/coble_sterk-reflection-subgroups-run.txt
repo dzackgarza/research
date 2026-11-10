@@ -1,0 +1,52 @@
+Sage 11.0.beta5
+T_En = U + U(2) + E8(2), rank 12, det 1024
+q on A_{T_En}: 1024 classes, 528 isotropic (527 nonzero)
+the nine recorded generators preserve q: True; preserve both summands: [True, True, True, True, True, True, True, True, True]
+M-orbits on the 528 isotropic classes: 5, sizes [1, 2, 120, 135, 270]
+
+cusp   v                        v^2  class [v/2] in A    M-orbit  |Stab_M| = 696729600/orbit
+ 1     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 0    0000000000       1    696729600
+ 2     [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0] 0    0000000001       2    348364800
+ 3     [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0] 0    0000000111     120    5806080
+ 4     [0, 0, 1, 2, 1, 0, 0, 1, 0, 0, 0, 0] 0    0000100101     270    2580480
+ 5     [2, 2, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0] 0    0000100100     135    5160960
+
+Sterk's 4.3.7-4.3.9 representatives lie in the same M-orbit as the ones used here: [True, True, True, True, True]
+
+Sterk's printed roots and whether each reflection lies in Gamma_En,2:
+  cusp 1: 12 roots, norms [-4], in Gamma 12/12
+  cusp 2: 10 roots, norms [-4, -2], in Gamma 10/10
+  cusp 3: 12 roots, norms [-4, -2], in Gamma 12/12
+  cusp 4: 11 roots, norms [-4, -2], in Gamma 11/11
+  cusp 5: 14 roots, norms [-4, -2], in Gamma 14/14
+
+=== cusp 2   v = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]   K = v^perp/Zv, det -256
+    full group W(K): complete=True, 10 walls, norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -2]  (2.5 s)
+    of those, 10 have their reflection in Gamma_En,2
+    reflection subgroup of G_v: complete=True  walls=10  ideal=2  finite=8
+      norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -2]   weights {3: 8, 4: 1}   (2.7 s, 1 accepted / 0 rejected oracle calls)
+      published: 10 walls, 2 ideal vertices; published weights {3: 8, 4: 1}
+      Sterk's roots among the computed walls: 9/10 (indices not among them: [8])
+      walls (K coordinates): [[0, 0, 1, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, -2, -2, -3, -4, -6, -5, -4, -3, -2]]
+
+=== cusp 3   v = [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]   K = v^perp/Zv, det -256
+    full group W(K): complete=True, 10 walls, norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -2]  (2.4 s)
+    of those, 8 have their reflection in Gamma_En,2
+    reflection subgroup of G_v: complete=True  walls=14  ideal=13  finite=102
+      norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -2, -2, -2, -2]   weights {3: 8, 4: 8, 'inf': 1}   (1.4 s, 5 accepted / 3 rejected oracle calls)
+      published: 12 walls, 4 ideal vertices; published weights {3: 7, 4: 4, 'inf': 1}
+      (different representative from Sterk's here, so his roots are not compared wall by wall; the diagram is compared by its invariants)
+      walls (K coordinates): [[0, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 1, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 1, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, -1, 1, 0, 0, 0, 0, 0, 0], [0, 0, -2, -2, 2, 5, 4, 3, 2, 1], [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0], [0, -2, 1, -1, 0, 0, 0, 0, 0, 0], [0, -2, 2, 2, -3, -6, -5, -4, -3, -2], [-1, -1, 1, 0, -1, -2, -2, -2, -2, -1], [-1, -1, 1, 1, -2, -4, -4, -3, -2, -1], [-1, -1, 2, 1, -3, -5, -4, -3, -2, -1]]
+
+=== cusp 5   v = [2, 2, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]   K = v^perp/Zv, det -256
+    full group W(K): complete=True, 10 walls, norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -2]  (1.5 s)
+    of those, 9 have their reflection in Gamma_En,2
+    reflection subgroup of G_v: complete=True  walls=14  ideal=13  finite=102
+      norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -4, -2, -2, -2, -2]   weights {3: 8, 4: 8, 'inf': 1}   (29.9 s, 6 accepted / 4 rejected oracle calls)
+      published: 14 walls, 13 ideal vertices; published weights {3: 8, 4: 8, 'inf': 1}
+      (different representative from Sterk's here, so his roots are not compared wall by wall; the diagram is compared by its invariants)
+      walls (K coordinates): [[2, 0, 0, 0, 1, 0, 0, 0, 0, 0], [0, 0, 1, -1, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0, 0, 0, 1, 0, 0], [0, 0, 0, 0, 0, 0, 0, 0, 1, 0], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0], [-2, -2, 0, 0, -1, 1, 0, 0, 0, 0], [-2, -2, 0, 0, -1, 0, 1, 0, 0, 0], [-6, -6, 0, 0, -2, 1, 2, 2, 1, 0], [9, 9, -1, 0, 3, -2, -3, -3, -2, -1], [15, 15, -1, -1, 5, -4, -5, -5, -4, -2], [22, 20, -3, -1, 6, -6, -8, -6, -4, -2], [30, 30, -2, -2, 9, -8, -11, -9, -6, -3], [21, 21, -2, -1, 7, -6, -7, -6, -4, -2]]
+
+=== cusp 4   v = [0, 0, 1, 2, 1, 0, 0, 1, 0, 0, 0, 0]   K = v^perp/Zv, det -256
+    full group W(K): complete=True, 10 walls, norms [-4, -4, -4, -4, -4, -4, -4, -4, -4, -2]  (2.7 s)
+    of those, 5 have their reflection in Gamma_En,2

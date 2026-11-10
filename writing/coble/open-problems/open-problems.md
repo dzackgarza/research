@@ -184,7 +184,7 @@ The open work is:
 
 - the relation between $\vol(P)$ and the maximal parabolic structure of $\Sigma$;
 
-- a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup, which is the quantity that would settle the discrepancy between Sterk's published fundamental domains and the computed Vinberg chambers.
+- a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup. The *discrepancy* it was meant to settle is now located without it: @thm:sterk-reflection-subgroups computes the reflection subgroup of each Sterk stabilizer and its chamber, and they agree with the published figures at cusps $2$ and $5$ and differ at cusp $3$, where two chambers of one reflection group cannot differ in facet count and so the index is not one. The numerical index, and the two cusps whose searches had not closed, are what remains.
 :::
 
 ::: {.question #qst:regularized-theta title="Open problem: theta series of indefinite lattices"}
