@@ -107,6 +107,7 @@ and $(S,\Delta)$ is slc, $S$ being smooth and the coefficients $\tfrac12$ and $\
 5. hence $(S,\tfrac12\mathfrak c+\eps W)$ is a KSBA pair with $0<\eps\le\tfrac12$ exactly when $W$ is ample, which is the step the citations do not give; see the warning.
 :::
 
+
 ::: {.proof}
 (1) is [@DK13], §8, printed p. 522: the deck transformation fixes a smooth curve $W$ of genus $4$ and three isolated points, and the anti-canonical curve is mapped to a singular point of $D$; the ramification divisor of a double cover is its fixed curve, so the ramification of $\varphi_h$ is $W$.
 
@@ -119,10 +120,36 @@ and $(S,\Delta)$ is slc, $S$ being smooth and the coefficients $\tfrac12$ and $\
 (5) is the definition of a KSBA pair: slc with $K+\Delta$ ample, and $K_S+\Delta\equiv\eps W$ is ample exactly when $W$ is.
 :::
 
-::: {.warning #warn:coble-stable-pair-missing title="The step that fails: ampleness of the fixed curve"}
-What is not proved is ampleness of $W$. The corresponding statement on the Enriques side is [@AEGS25], Introduction, printed p. 582: for the $2$-divisible polarization $M = L_Z^{\otimes2}$ the ramification divisor $R_Z\in\abs{M}$ of $\rho\colon Z\to W$ "is ample and the pair $(Z,\eps R_Z)$ is log canonical for any $0<\eps\ll1$", and §2, printed p. 585, identifies $R_Z = \tfrac12\psi_*(R)$ with $R = \tfrac12\pi^*(B)$ and concludes that $R_Z$ is ample. That assertion is made for the Enriques double cover, whose lattice $M$ is $2$-divisible of degree $8$ and whose big and nef linear systems are classified; DK13 states no intersection numbers for $W$, and gives no ampleness statement for it. The statement this page would need is one of the following, neither of which is in the sources read: an ampleness criterion for $W\in\abs{2h}$ on a Coble surface --- equivalently, that no curve of $S$ is contracted by $\varphi_h$ --- or the intersection computation of $W$ against the curves of $S$ on a standard model.
+::: {.proposition #prop:coble-pair-class title="The class of the fixed curve, and what Nakai--Moishezon gives for it"}
+With $S$, $h$, $\varphi_h\colon S\to D\subset\PP^4$, $W$ and $\mathfrak c$ as in @prop:coble-pair-boundary, and $\varphi_h^*\mathcal O_D(1) = 2h$:
 
-Without it the marking is not derived: no split $I\sqcup J$ of the nine nodes, hence no $W_{\mathrm{irr}}$; and the three questions of this unit --- which nodes are relevant, whether $W_{\mathrm{irr}}$ is finite, whether $F_{\mathrm{gen}}$ is a fan and which Type II rays it keeps --- have no answers here. No divisor and no marking are chosen beyond the boundary $\Delta$ of @prop:coble-pair-boundary(4). The Enriques-side results do not transfer: [@AEGS25], Lemma 5.6, printed p. 611, computes $W_{\mathrm{irr}}$ finite at cusps $2$ and $4$ and infinite at $1,3,5$, and Lemma 5.7, p. 611, gives the survival criterion for a Type II ray.
+1. $W \equiv K_S + 2h$. Consequently $W^2 = 7$, $K_S\cdot W = -1$, $W\cdot\mathfrak c = 2$, and $2g(W)-2 = W^2 + K_S\cdot W = 6$, that is $g(W) = 4$, which is the genus [@DK13], §8, printed p. 522 assigns to $W$;
+2. $W^2 = 7 > 0$ and $W\cdot\mathfrak c = 2 > 0$;
+3. for every irreducible curve $C\neq\mathfrak c$ one has $W\cdot C = 2\,(h\cdot C) - \tfrac12\,(\mathfrak c\cdot C)$, and $W\cdot C > 0$ for every such $C$ if and only if the branch curve $B\subset D$ of $\varphi_h$ is ample.
+
+The last equivalence is the step not completed here; see the warning.
+:::
+
+::: {.proof}
+(1) Hurwitz's formula for the double cover $\varphi_h$, away from its contracted curve, reads $K_S = \varphi_h^*K_D + R$ with $R$ the ramification divisor, and $R = W$ by @prop:coble-pair-boundary(1). Since $D$ is anticanonically embedded --- a del Pezzo surface of degree $4$ in $\PP^4$ --- one has $K_D = -\mathcal O_D(1)$, so
+$$
+W = R = K_S - \varphi_h^*K_D = K_S + \varphi_h^*\mathcal O_D(1) = K_S + 2h .
+$$
+The formula is applied on $S\smallsetminus\mathfrak c$, where $\varphi_h$ is finite; on $S$ itself the difference $W - K_S - 2h$ is a line bundle trivial off $\mathfrak c$, hence of the form $m\mathfrak c$ for an integer $m$. The cited intersection $W\cdot\mathfrak c = 2$ ([@DK13], §8, p. 522: $W$ meets $\mathfrak c$ in two points) and $h\cdot\mathfrak c = 0$, $K_S\cdot\mathfrak c = 2$ give $2 = 2 + m\,(\mathfrak c^2) = 2 - 4m$, so $m = 0$.
+
+The numbers follow in $K_S^{\perp}$: $h\cdot K_S = 0$ because $h$ is a polarization of $S$ lying in $K_S^{\perp}\cong E$ ([@DK13], §8, p. 522), so $W^2 = K_S^2 + 4h^2 = -1 + 8 = 7$ and $K_S\cdot W = K_S^2 = -1$; and $\mathfrak c = -2K_S$ gives $W\cdot\mathfrak c = -2K_S\cdot W = 2$. Then $2g(W)-2 = W\cdot(W+K_S) = 7 - 1 = 6$, which agrees with the genus $4$ of [@DK13], §8, p. 522.
+
+(2) is the first two displays.
+
+(3) Every irreducible $C\neq\mathfrak c$ is not contracted by $\varphi_h$, so its image is a curve and $W\cdot C = \deg(\varphi_h|_C)\,(B\cdot\varphi_h(C))$, while the class formula of (1) gives $W\cdot C = 2(h\cdot C) - \tfrac12(\mathfrak c\cdot C)$. Both expressions have the sign of the intersection of $B$ with a curve of $D$, so $W\cdot C > 0$ for all $C\neq\mathfrak c$ exactly when $B$ meets every curve of $D$ positively, that is when $B$ is ample.
+:::
+
+::: {.warning #warn:coble-stable-pair-missing title="The step that fails: ampleness of the branch curve on $D$"}
+What is not proved is the ampleness of $B\subset D$. The surface $D$ is a quartic del Pezzo with four nodes, and the covering is branched over $B$ and over the four nodes, one of which is the image of the contracted curve $\mathfrak c$; [@DK13], §8, p. 522, gives no intersection numbers on $D$ and no description of the curves of $D$ that a branch curve must meet. The statement this page needs is one of: an intersection computation of $B$ (equivalently of $W$) against the curves of a model of $S$, or a proof that no irreducible curve of $S$ other than $\mathfrak c$ is contracted by $\varphi_h$ together with $h\cdot C\ge1$ for all remaining $C$, from which $W\cdot C = 2(h\cdot C)-\tfrac12(\mathfrak c\cdot C)$ would have to be shown positive by a bound on $\mathfrak c\cdot C$.
+
+One candidate obstruction is worth recording as a candidate only: an elliptic curve $C$ with $C^2 = 0$, $h\cdot C = 1$ and $\mathfrak c\cdot C = 4$ satisfies $p_a(C) = 1$ and would give $W\cdot C = 2 - 2 = 0$, so $W$ would fail ampleness and the stable model would be the contraction of $C$. No such curve is exhibited here, and none is excluded by the sources read, so neither alternative is asserted.
+
+Without the step the marking is not derived: no split $I\sqcup J$, hence no $W_{\mathrm{irr}}$, and the three questions of this unit have no answers here. No divisor and no marking are chosen beyond the boundary $\Delta$ of @prop:coble-pair-boundary(4). The Enriques-side results do not transfer: [@AEGS25], Lemma 5.6, printed p. 611, computes $W_{\mathrm{irr}}$ finite at cusps $2$ and $4$ and infinite at $1,3,5$, and Lemma 5.7, p. 611, gives the survival criterion for a Type II ray.
 :::
 
 ::: {.proof}
