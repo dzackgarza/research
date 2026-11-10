@@ -56,6 +56,13 @@ writing/coble/**/*.html
 # time like the bibliography and the MathJax macros.
 writing/.book/rendered/
 
+# Other Quarto and link-check render products. None is a source page, a source
+# script, or a computation record.
+writing/.book/index.html
+writing/.book/site_libs/
+writing/category-theory/**/*.html
+writing/**/*_files/
+
 # Agent scratch. A turn's intermediate captures, plan dumps and validation logs
 # live here and are deleted when the turn that made them is finished; nothing
 # under these paths is an input to a later session.
