@@ -129,7 +129,7 @@ $\fco$ is the normalization of a closed subvariety of the ambient period quotien
 
 ::: {.proof}
 
-Write $\Gamma_\Co\definedas\Orth^+(T_\Co)^*$ and $\Gamma_\En\definedas\Orth^+(T_\En)^*$, and let
+Write $\Gamma_\Co\definedas\Orth^+(T_\Co)^*$ and $\Gamma_\En\definedas\Orth^+(T_\En)^*$ --- the stable subgroups of the orthogonal groups of the two lattices, the star being $\ker\bigl(\Orth(L)\to\Orth(A_L)\bigr)$ as in [@DK13, (2.1)] and $\Orth(T_\En)$ being $\Gamma_\En$ of [@AEGS25, Def. 2.6] --- and let
 $$
 f\colon \fco = \bD(T_\Co)/\Gamma_\Co \too \bD(\ten)/\Gamma_\En
 $$
@@ -167,6 +167,7 @@ Then $(x,0)\in H^{\perp_{A_{T_\Co}\oplus A_K}}$, because $x$ is orthogonal to $h
 By Nikulin's gluing theorem (@thm:nikulin-gluing) the discriminant group of $T_\En$ is $H^{\perp_{A_{T_\Co}\oplus A_K}}/H$, and $g$ lies in the stable orthogonal group, so $g$ fixes that quotient pointwise; hence $\bigl(\bar\varphi(x)-x,\,0\bigr)\in H$.
 Every nonzero element of $H$ has second coordinate $k/2\neq 0$, so $\bar\varphi(x) = x$.
 The two displays give $\bar\varphi = \id$ on all of $A_{T_\Co}$, that is $\varphi\in\tilde\Orth(T_\Co)$.
+That step uses the stability of $g$ on $A_{T_\En}$, which holds for the stable ambient $\Gamma_\En = \Orth^+(T_\En)^*$ of this book and fails for the full group $\Orth(T_\En) = \Gamma_\En$ of [@AEGS25, Def. 2.6]: for the full group the conclusion is only $\bar\varphi(h/2) = h/2$, a strictly weaker condition, and @rmk:which-group-is-gamma-co records what the two ambients give and which cusp counts belong to which.
 Finally $g$ preserves the component $\bD(T_\En)$, and $\bD(T_\Co) = \bD(T_\En)\intersect\PP(T_\Co\tensor_\ZZ\CC)$, so $\varphi$ preserves $\bD(T_\Co)$ and lies in $\Orth^+(T_\Co)$.
 Therefore $\varphi\in\Gamma_\Co$.
 
@@ -205,6 +206,16 @@ The locus where a finite morphism of irreducible varieties has more than its gen
 
 Finally $F_\Co$ is normal, being the quotient of a bounded symmetric domain by a properly discontinuous group of automorphisms.
 A finite birational morphism from a normal variety onto a reduced irreducible variety is its normalization, so $F_\Co$ is the normalization of $Z$.
+:::
+
+::: {.remark #rmk:which-group-is-gamma-co title="Which group $\Gamma_\Co$ is, and the two counts"}
+The groups of this proof are the stable subgroups of the sources' orthogonal groups, not the sources' groups themselves. [@DK13, Prop. 3.2, p. 513] identifies the moduli space $M_\Co$ of Coble surfaces with an open subset of $\bD(N)/\Orth(N)$ for $N = \generators{2}\oplus E(2)$ --- $N$ has rank $11$, determinant $-2048$ and signature $(2,9)$, so $N\cong T_\Co$ --- with $\Orth(N)$ the full orthogonal group; and the same passage states that the quotient of the $(-2)$-Heegner divisor in the period domain of Enriques surfaces by the arithmetic subgroup $\Orth(U\oplus E(2)) = \Orth(T_\En)$ is birationally isomorphic to $M_\Co$. [@AEGS25, Def. 2.6] likewise takes $\Gamma_\En = \Orth(T_\En)$ and cuts the polarized group out of it as $\Gamma_\En\intersect\Gamma_\dP$. Neither source's group is $\Orth^+(T_\Co)^*$ or $\Orth^+(T_\En)^*$: those are the discriminant kernels of the cited groups, sitting in them as
+$$
+\tilde\Orth^+(T_\Co)\ \leq\ \Orth^+(T_\Co)\ \leq\ \Orth(T_\Co)
+\qquad\text{and}\qquad
+\gent\ \leq\ \Orth^+(T_\En)\ \leq\ \Orth(T_\En).
+$$
+Each inclusion changes the cusp count, so a count of $0$-cusps of a quotient names the group it counts: on $T_\Co$ the full group has one orbit on the primitive isotropic vectors, the stable subgroup has the $527$ recorded elsewhere in this volume, and no count for a group between them is computed here. The quotients of the three groups are accordingly three different spaces --- the stable $\Fco$ of this book, the quotient by $\Orth(T_\Co)$ that [@DK13] identifies with $M_\Co$, and the polarized $F_{\Co,2}$ of [@sec-moduli-construction] --- related by finite maps whose degrees are the indices above.
 :::
 
 ::: {.remark #rmk:normalization-enriques-analogue title="The same statement one level up"}
