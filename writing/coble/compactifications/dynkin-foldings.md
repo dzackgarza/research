@@ -78,6 +78,7 @@ Then $\beta_{[v]}\in\Phi(\ten)$ if and only if exactly one of the following hold
 3. $v\in\Phi^2(\tdp)$ and $v\cdot I(v) = 0$, in which case $\beta_{[v]} = v + I(v)\in\Phi^4(\ten)$ is the sum of two orthogonal roots in $\Phi^2(\tdp)$.
 
 In particular, a long root $v\in\Phi^4(\tdp)$ with $I(v)\neq v$ never folds to a root of $\ten$.
+Moreover, if $\beta_{[v]}^2<0$, then $\beta_{[v]}\in\Phi(\ten)$.
 :::
 
 ::: {.proof}
@@ -115,7 +116,23 @@ Writing $u = u' + u''$ with $u'\in U$ and $u''\in U(2)$, unimodularity of $U$ gi
 So $v\cdot I(v) = u^2 - 2\,\alpha_1\cdot\alpha_2\in 4\ZZ$, which excludes $v\cdot I(v) = 2$.
 
 The three cases are mutually exclusive: (1) and (2) differ in $v^2$, and in (3) $v\cdot I(v) = 0\neq v^2$, so $I(v)\neq v$.
-This is the forward direction of [@AEGS25, Lemma 3.4], which assumes in addition that $\beta_{[v]}^2 < 0$.
+
+For the last statement, suppose $\beta_{[v]}^2<0$.
+If $I(v)=v$, then $\beta_{[v]}\in\Phi(\ten)$ by the first case.
+Suppose $I(v)\neq v$, that is, $\alpha_1+\alpha_2\neq0$.
+In coordinates,
+$$
+v^2-v\cdot I(v)
+=\alpha_1^2+\alpha_2^2+2\,\alpha_1\cdot\alpha_2
+=(\alpha_1+\alpha_2)^2
+.
+$$
+The lattice $E_8$ is even and negative definite, so $v\cdot I(v)\geq v^2+2$, and $v\cdot I(v)=u^2-2\,\alpha_1\cdot\alpha_2$ is even.
+If $v\in\Phi^2(\tdp)$, then $v\cdot I(v)\geq0$, and $\beta_{[v]}^2=-4+2\,v\cdot I(v)<0$ gives $v\cdot I(v)<2$.
+So $v\cdot I(v)=0$, and $\beta_{[v]}\in\Phi(\ten)$ by (3).
+If $v\in\Phi^4(\tdp)$, then $\alpha_1,\alpha_2\in2E_8$ as above, so $(\alpha_1+\alpha_2)^2\leq-8$ and $v\cdot I(v)\geq4$.
+Then $\beta_{[v]}^2=-8+2\,v\cdot I(v)\geq0$, which contradicts $\beta_{[v]}^2<0$.
+The last statement and the list (1)--(3) together are the forward direction of [@AEGS25, Lemma 3.4].
 :::
 
 ## Mirror moves
