@@ -39,7 +39,7 @@ Let $(W,S)$, $\oC$ and $U$ be as in @def:tits-cone, and for $f\in \oC$ write $I(
 
 ::: {.proof}
 
-Parts (1) and (2) are [@Hum90, §5.13, Theorem]; the four parts together are [@Bou08; @Hum90].
+Parts (1) and (2) are [@Bou08, Ch. V §4 no. 6, Prop. 6 and Cor. of Prop. 5; @Hum90, §5.13, Theorem]. Part (3) is [@Dav08, Theorem D.2.6(iii)], which states that the interior of $U$ is $W\cdot C^f$, where $C^f$ is the union of the open faces of the chamber with finite stabilizers. Part (4) is [@Dav08, App. D.2, "Some Consequences", after Theorem D.2.7].
 :::
 
 ::: {.proposition #prop:tits-cone-spherical title="The Tits cone of a spherical system"}
