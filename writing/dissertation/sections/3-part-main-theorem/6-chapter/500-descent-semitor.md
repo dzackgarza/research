@@ -106,14 +106,14 @@ Let $B \hookrightarrow \cpt{\fttz}$ be the Heegner embedding, given at a $0$-cus
 
 - the period domain $\halfpd{B}$ embeds as a closed linear subdomain of the period domain for $\fttz$, and at the cusp $e$ the relevant lattice is $\bar S = (\delta^{\perp}\cap e^{\perp})/\ZZ e = \bar\delta^{\perp\bar T}$;
 
-- **if** hypothesis (H) of @thm:semifan-restriction holds at $e$ --- every wall of the ambient chamber that meets the interior of the positive cone of $\bar S$ is $\alpha_0^{\perp}$ for a root $\alpha_0$ of $\bar S$ --- **then** the cones of $\semifan{F}_{\ram}$ restrict to the generalized Coxeter semifan of the restricted chamber with the inherited marking, that is $\semifan{F}_B$ is computed by intersecting and no further coarsening occurs;
+- at a $0$-cusp $e$ of $\Fen,2$ the vector $\bar\delta$ is a mirror of the reflection group $W(\Gamma_{\En,2,e})$ of [@AEGS25], Definition 3.6, so the restriction falls in Case B of @thm:semifan-restriction: the cones of $\semifan{F}_{\ram}$ restrict to the generalized Coxeter semifan of the facet $C\cap\delta^{\perp}$ with the inherited marking, and no hypothesis on the restricted roots is needed;
 
 - the identification of $\normalize{B}$ with the semitoroidal compactification associated to that semifan is **not** a consequence of the cone statement, and is the open problem @prob:restricted-semifan.
 :::
 
 ::: {.proof}
 The first clause is the restriction of the period domain to the fixed space of the involution, which is the imposition of involution-invariant lattice conditions cutting out the double covers. The second is @thm:semifan-restriction: under (H) the walls of the restricted chamber are the restricted walls (its (1)), the restricted cone is a Coxeter chamber for the projected roots (its (2)), and the coarsening by irrelevant roots passes through the intersection with no further loss (its (3)--(4)). The third clause is not proved: the cone statement is about semifans, whereas the identification of the normalization with a semitoroidal compactification also needs the saturation of the Heegner branch, the compatibility of the arithmetic action, and the coincidence of the induced contractions with the combinatorial constancy of the stable-pair family, which are items 1--4 and 5 of the list in the research report.
-Without (H) the second clause fails outright, and @prop:semifan-restriction-obstruction exhibits a lattice and a $(-2)$-vector on which it does.
+In Case A of @thm:semifan-restriction, where $\bar\delta$ is not a mirror, the angle condition and the reflectivity of the restricted walls are genuine hypotheses, and @prop:semifan-restriction-obstruction exhibits a lattice and a $(-2)$-vector on which the second fails.
 :::
 
 ::: {.construction

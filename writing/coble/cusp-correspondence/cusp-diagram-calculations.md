@@ -186,7 +186,7 @@ The marking of relevance is **not** read off a boundary divisor by [@AEGS25]. Th
 
 What does survive is a lattice obstruction, and it is a citation. [@AEGS25], Lemmas 3.9 and 3.10 with Corollary 3.12, printed pp. 594--596, give the fixed lattices of the five involutions: $U(2)\oplus E_8(2)$ for cusp $1$ and $U\oplus E_8(2)$ for cusps $2, 3, 4, 5$. Those four quotient lattices are therefore isometric, while by Lemma 5.6, printed p. 611, $W_{\mathrm{irr}}$ is $S_2$ at cusp $2$, $S_2^2$ at cusp $4$ and infinite at cusps $1$, $3$, $5$. A datum that varies across isometric lattices is not a function of the lattice and its chamber: the marking is extra data, and no computation inside $T_\Co$ produces it.
 
-The general statement of how a marking behaves under restricting to a $(-2)$-Heegner sublattice is @thm:semifan-restriction, which needs a hypothesis on the restricted roots --- the analogue of Lemma 3.8 --- that is satisfied in [@AEGS25] by the folding lemma (their Lemma 3.4) and is not verified here for the Coble pair.
+The general statement of how a marking behaves under restriction to a $(-2)$-Heegner sublattice is @thm:semifan-restriction. At a $0$-cusp of $F_{\En,2}$ a $(-2)$-root $\delta\perp e$ has its reflection among the generators of $W(\Gamma_{\En,2,e})$, so $\bar\delta$ is a mirror of $W$ and the restriction is the facet case of that theorem, which needs no hypothesis on the restricted roots: the facet of a Coxeter polyhedron is a Coxeter polyhedron with the induced angles. The Coble $0$-cusp is exactly such a facet, and @thm:coble-cusp-chamber computes its chamber directly.
 :::
 
 ::: {.warning #warn:coble-marking title="The step that fails: the dictionary from the roots of the chamber to curves on $S$"}
