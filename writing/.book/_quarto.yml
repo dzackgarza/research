@@ -142,6 +142,7 @@ book:
         - coble/lattices-and-moduli/nodal-enriques-lattices.md
     - part: Moduli spaces and period domains
       chapters:
+        - coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md
         - coble/lattices-and-moduli/k3-periods-and-monodromy.md
         - coble/lattices-and-moduli/coble-moduli-basics.md
         - coble/lattices-and-moduli/moduli-construction.md
