@@ -1048,10 +1048,11 @@ The two corollaries are @prop:gamma-co-two-definitions(1) and the first isomorph
 
 Let $C = \Pic(S)\cong\latI_{1,10}$, and let $h_\Co = F_1+F_2\in C$, with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, be the degree-$2$ numerical polarization of @def:coble-polarization-classes. Write
 $$
-C \;\iso\; \generators{K}\oplus U\oplus E_8(-1),
+C \;\iso\; \generators{K}\oplus U\oplus E_8,
 \qquad K^2 = -1,
 $$
-with $U = \generators{F_1,F_2}$ the hyperbolic plane and $E_8(-1)$ negative definite (@thm:indefinite-unimodular-classification); the sign of $K$ is forced by the signature, $(0,1)+(1,1)+(0,8) = (1,10)$.
+with $K = K_S$, $U = \generators{F_1,F_2}$ the hyperbolic plane and $E_8$ the negative-definite lattice of @thm:E8-characterization.
+This decomposition holds: $\generators{K_S}$ splits $C$ with complement $K_S^\perp$, even and unimodular of signature $(1,9)$ (@prop:canonical-perp-is-e10); $U\iscontainedin K_S^\perp$ because $F_1,F_2\in K_S^\perp$, and $U$ is unimodular, so it splits $K_S^\perp$ (@prop:unimodular-splits); the complement of $U$ in $K_S^\perp$ is even, unimodular and negative definite of rank $8$, hence isometric to $E_8$ (@thm:E8-characterization).
 The pullback $f^*$ identifies $C(2)$ with $S_\Co = f^*\Pic(S)$, and $\tilde h_\Co = f^*h_\Co$ has $\tilde h_\Co^2 = 2\cdot2 = 4$.
 Put $u\definedas f^*F_1$ and $w\definedas f^*F_2$, so that $u^2 = w^2 = 0$, $u\cdot w = 2$ and $u+w = \tilde h_\Co$, and put $v \definedas u-w = f^*(F_1-F_2)$.
 Then $v^2 = -4$, $v$ is primitive, $b(\tilde h_\Co, v) = 0$, and the reflection $s_v$ is an isometry of $S_\Co$ fixing $\tilde h_\Co$ with $\rho_{S_\Co}(s_v)\neq\id$.
@@ -1096,28 +1097,28 @@ $[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{W(E_8)} = 696\,729\,600$, the same number
 
 ::: {.proof}
 
-By @prop:theta-co-gluing the index is $\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$. Write $C = \generators{K}\oplus U\oplus E_8(-1)$ with $K^2 = -1$ and $h = h_\Co = F_1+F_2$, as in @lem:coble-stabilizer-discriminant-nontrivial. Through $f^*\colon C(2)\iso S_\Co$ one has $\Orth(S_\Co) = \Orth(C)$, and the stabilizer of $\tilde h_\Co = f^*h$ corresponds to the stabilizer of $h$; below, $v = F_1-F_2\in C$.
+By @prop:theta-co-gluing the index is $\abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$. Write $C = \generators{K}\oplus U\oplus E_8$ with $K^2 = -1$ and $h = h_\Co = F_1+F_2$, as in @lem:coble-stabilizer-discriminant-nontrivial. Through $f^*\colon C(2)\iso S_\Co$ one has $\Orth(S_\Co) = \Orth(C)$, and the stabilizer of $\tilde h_\Co = f^*h$ corresponds to the stabilizer of $h$; below, $v = F_1-F_2\in C$.
 
 *The shape of $h^{\perp C}$.*
-$h^{\perp C} = \generators{K}\oplus\generators{v}\oplus E_8(-1)$ with $K^2 = -1$, $v = F_1-F_2$ of square $-2$ and the $E_8(-1)$ form; it is negative definite and has determinant
+$h^{\perp C} = \generators{K}\oplus\generators{v}\oplus E_8$ with $K^2 = -1$, $v = F_1-F_2$ of square $-2$ and the $E_8$ form; it is negative definite and has determinant
 $$
 \det(h^{\perp C}) = \det(C)\cdot\frac{[C:\ZZ h\oplus h^{\perp C}]^2}{\det(\ZZ h)} = 1\cdot\frac{4}{2} = 2,
 $$
 since $\det(\ZZ h) = 2$ and the index is $2$.
-Its root system — the vectors of square $-2$ — is exactly $\theset{\pm v}$ together with the $240$ roots of $E_8(-1)$: a vector $x = aK + bv + e$ has
+Its root system — the vectors of square $-2$ — is exactly $\theset{\pm v}$ together with the $240$ roots of $E_8$: a vector $x = aK + bv + e$ has
 $$
 x^2 = -a^2 - 2b^2 + e^2 = -2,
 $$
-which solves as $e^2 = a^2 + 2b^2 - 2$; since $e^2 \in 2\ZZ_{\leq0}$ we need $a^2 + 2b^2 \leq 2$, and the cases are $a = 0$, $b = 0$ giving $e^2 = -2$ with $e$ a root of $E_8(-1)$; $a = 0$, $b = \pm1$ giving $e = 0$; $a = \pm1$, $b = 0$ giving the odd value $e^2 = -1$; and $a = \pm1$, $b = \pm1$ giving the positive value $e^2 = 1$. The last two do not occur.
+which solves as $e^2 = a^2 + 2b^2 - 2$; since $e^2 \in 2\ZZ_{\leq0}$ we need $a^2 + 2b^2 \leq 2$, and the cases are $a = 0$, $b = 0$ giving $e^2 = -2$ with $e$ a root of $E_8$; $a = 0$, $b = \pm1$ giving $e = 0$; $a = \pm1$, $b = 0$ giving the odd value $e^2 = -1$; and $a = \pm1$, $b = \pm1$ giving the positive value $e^2 = 1$. The last two do not occur.
 
 *The stabilizer.*
 The restriction $\Stab_{\Orth(C)}(h)\to\Orth(h^{\perp C})$ is an isomorphism: an isometry of $h^{\perp C}$ acts trivially on $A_{h^{\perp C}} = \ZZ/2\ZZ$, whose automorphism group is trivial, so the pair $(\id_h,\varphi)$ preserves the glue subgroup of $\ZZ h\oplus h^{\perp C}$ in $C$ and extends by @thm:automorphism-lifting-criterion with $u = \id$.
-On $h^{\perp C}$, an isometry permutes roots, and by the count above the roots are the disjoint union of $\theset{\pm v}$ and the root system of $E_8(-1)$; the two components have different ranks, so an isometry preserves each, hence preserves $\generators{v}$ and also its orthogonal complement $\generators{K}\oplus E_8(-1)$, in which the roots span $E_8(-1)$. It therefore preserves $E_8(-1)$ and fixes $\generators{K}$, which is the orthogonal complement of $\generators{v}\oplus E_8(-1)$.
+On $h^{\perp C}$, an isometry permutes roots, and by the count above the roots are the disjoint union of $\theset{\pm v}$ and the root system of $E_8$; the two components have different ranks, so an isometry preserves each, hence preserves $\generators{v}$ and also its orthogonal complement $\generators{K}\oplus E_8$, in which the roots span $E_8$. It therefore preserves $E_8$ and fixes $\generators{K}$, which is the orthogonal complement of $\generators{v}\oplus E_8$.
 Hence
 $$
-\Stab_{\Orth(S_\Co)}(\tilde h_\Co) \;\iso\; \theset{\pm1}_K\times\langle s_v\rangle\times \Orth(E_8(-1)), \qquad \abs{\cdot} = 2\cdot2\cdot\abs{W(E_8)} = 4\abs{W(E_8)},
+\Stab_{\Orth(S_\Co)}(\tilde h_\Co) \;\iso\; \theset{\pm1}_K\times\langle s_v\rangle\times \Orth(E_8), \qquad \abs{\cdot} = 2\cdot2\cdot\abs{W(E_8)} = 4\abs{W(E_8)},
 $$
-using $\Orth(E_8(-1)) = W(E_8)$, since $-\id = w_0$ lies in $W(E_8)$.
+using $\Orth(E_8) = W(E_8)$, since $-\id = w_0$ lies in $W(E_8)$.
 
 *The image.*
 By @prop:twisted-unimodular-discriminant, $\rho_{S_\Co}(g) = \id$ exactly for $g\equiv\id\bmod 2$ on $C/2C$.
@@ -1224,7 +1225,7 @@ $$
 .$$
 $\Gamma^{\mathrm{Hdg}}_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\Gamma_\Co$ (@prop:gamma-co-in-heegner-group). By @lem:overgroups-of-gamma-co, $\Gamma^{\mathrm{Hdg}}_\Co = \rho_{T_\Co}^{-1}\bigl(\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)\bigr)\intersect\Orth^+(T_\Co)$, while $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ has image $P$. So the two groups are equal if and only if $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co) = P$, that is, by (2), if and only if $\gamma$ is block-compatible.
 
-(4) The first equality is @prop:theta-co-gluing. That $\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)) = P_{S_\Co}$ is the computation of @prop:theta-co-index: the stabilizer is $\theset{\pm1}_K\times\langle s_v\rangle\times\Orth(E_8(-1))$, its factors act in $K$, in $U$ and in $E_8(-1)$ respectively, its image preserves the three blocks of $A_{S_\Co} = C/2C$ and has order $\abs{W(E_8)} = \abs{P_{S_\Co}}$ by (1), so it is $P_{S_\Co}$.
+(4) The first equality is @prop:theta-co-gluing. That $\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)) = P_{S_\Co}$ is the computation of @prop:theta-co-index: the stabilizer is $\theset{\pm1}_K\times\langle s_v\rangle\times\Orth(E_8)$, its factors act in $K$, in $U$ and in $E_8$ respectively, its image preserves the three blocks of $A_{S_\Co} = C/2C$ and has order $\abs{W(E_8)} = \abs{P_{S_\Co}}$ by (1), so it is $P_{S_\Co}$.
 The anti-isometry $\gamma_\Co$ maps $[K/2]$ to $[\zeta/2]$, because these are the classes characterized in @lem:coble-discriminant-blocks(3), so it maps the summand $A^0$ of $A_{S_\Co}$ onto that of $A_{T_\Co}$.
 By @lem:coble-discriminant-blocks(4), $\gamma_\Co P_{S_\Co}\gamma_\Co^{-1}$ is the stabilizer of $\gamma_\Co(A_{U(2)})$, and it is $P$ if and only if $\gamma_\Co$ is block-compatible, by the argument of (2).
 $\Gamma^\theta_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\Gamma_\Co$ (@prop:gamma-co-in-theta-centralizer), so by @lem:overgroups-of-gamma-co and (3), $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ if and only if $\rho_{T_\Co}(\Gamma^\theta_\Co) = P$.

@@ -81,7 +81,7 @@ Let $f\colon X\to S$ be the K3 double cover.
 
 1. The **hyperplane class** is $H\in\Pic(S)$, the pullback of $c_1(\OO_{\PP^2}(1))$, with $H^2 = 1$; its K3 pullback $e_0\definedas f^{*}H\in S_\Co$ has $e_0^2 = 2$ by the K3 double-cover proposition (@prop:double-cover-is-k3).
 
-2. The **degree-$2$ numerical polarization** is a class $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$ of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$.
+2. The **degree-$2$ numerical polarization** is a class $h_\Co\in K_S^{\perp}\iscontainedin\Pic(S)$ of Enriques type: in the non-degenerate case $h_\Co = F_1 + F_2$ with $F_1,F_2\in K_S^{\perp}$, $F_i^2 = 0$ and $F_1\cdot F_2 = 1$, so that $h_\Co^2 = 2$; its K3 pullback $\tilde h_\Co\definedas f^{*}h_\Co$ lies in $f^{*}(K_S^{\perp})\iscontainedin S_\Co$ and has $\tilde h_\Co^2 = 4$. Thus $\tilde h_\Co = f^*F_1 + f^*F_2$ is the sum of the standard basis of $\generators{f^*F_1, f^*F_2}\cong U(2)$, as for the vector $h = e + f$ of [@AEGS25, Def. 2.5].
 
 3. Let $\mathcal C_X\iscontainedin\NS(X)\tensor\RR$ be the component of the positive cone that contains the ample cone $\Amp(X)$ (@lem:k3-positive-cone-component), and let $\Delta_X$ be the set of classes of square $-2$ that are effective on $X$. The **chamber** $\mathfrak c$ of $X$ is the component of $\mathcal C_X\setminus\bigcup_{\delta\in\Delta_X}\delta^{\perp}$ that contains $\Amp(X)$; it exists because $\Amp(X)$ is convex and every ample class is positive on every $\delta\in\Delta_X$.
 :::
