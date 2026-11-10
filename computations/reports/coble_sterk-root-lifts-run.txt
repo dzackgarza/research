@@ -1,0 +1,125 @@
+Sage 11.0.beta5
+T_En = U + U(2) + E8(2), rank 12, det 1024
+T_dP = U + U(2) + E8 + E8, rank 20, det 4
+the embedding T_En -> T_dP preserves the form: True
+those twelve rows and the eight vectors (w,0) form a Z-basis of T_dP: det = 1
+(so T_En is a primitive rank-12 sublattice of T_dP: the quotient is free of rank 8)
+
+divisibility of the five representatives in T_En: eta_1: 1, eta_2: 2, eta_3: 2, eta_4: 2, eta_5: 2
+
+=== cusp 1   Sterk's representative eta_1 = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   K = eta^perp/Zeta, det -1024
+  lab  sq  div(T_En) div(T_dP)  integral on T_En   integral on T_dP   summand test        lift-dependent
+    1   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    2   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    3   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    4   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    5   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    6   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    7   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    8   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+    9   -4       2       2     [-6, -4, -2, 0, 2, 4, 6] [-6, -4, -2, 0, 2, 4, 6]  [-6, -4, -2, 0, 2, 4, 6] no
+   10   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+   11   -4       2       1     [-6, -4, -2, 0, 2, 4, 6] none              [-6, -4, -2, 0, 2, 4, 6] no
+   12   -4       2       2     [-6, -4, -2, 0, 2, 4, 6] [-6, -4, -2, 0, 2, 4, 6]  [-6, -4, -2, 0, 2, 4, 6] no
+  printed roots 12;  certified by the summand test at some lift 12
+  whose reflection is not an isometry of T_dP at any lift: 10 (labels [1, 2, 3, 4, 5, 6, 7, 8, 10, 11])
+  roots whose summand verdict changes with the lift, over the lifts where the reflection is an isometry of T_En: 0
+
+=== cusp 2   Sterk's representative eta_2 = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]   K = eta^perp/Zeta, det -256
+  lab  sq  div(T_En) div(T_dP)  integral on T_En   integral on T_dP   summand test        lift-dependent
+    1   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    2   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    3   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    4   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    5   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    6   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    7   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    8   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    9   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+   10   -2       1       1     all k              all k             all k               no
+  printed roots 10;  certified by the summand test at some lift 10
+  whose reflection is not an isometry of T_dP at any lift: 9 (labels [1, 2, 3, 4, 5, 6, 7, 8, 9])
+  roots whose summand verdict changes with the lift, over the lifts where the reflection is an isometry of T_En: 9 (labels [1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+=== cusp 3   Sterk's representative eta_3 = [0, 0, 1, 1, -2, -3, -4, -6, -5, -4, -3, -2]   K = eta^perp/Zeta, det -256
+  lab  sq  div(T_En) div(T_dP)  integral on T_En   integral on T_dP   summand test        lift-dependent
+    1   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    2   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    3   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    4   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    5   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    6   -4       2       1     all k              none              [-5, -3, -1, 1, 3, 5] yes
+    7   -4       2       1     all k              none              [-5, -3, -1, 1, 3, 5] yes
+    8   -2       1       1     all k              all k             all k               no
+    9   -4       2       2     all k              [-6, -4, -2, 0, 2, 4, 6]  all k               no
+   10   -4       2       2     all k              [-6, -4, -2, 0, 2, 4, 6]  all k               no
+   11   -4       2       1     all k              none              [-5, -3, -1, 1, 3, 5] yes
+   12   -2       1       1     all k              all k             all k               no
+  printed roots 12;  certified by the summand test at some lift 12; of these not at k = 0: [6, 7, 11]
+  whose reflection is not an isometry of T_dP at any lift: 8 (labels [1, 2, 3, 4, 5, 6, 7, 11])
+  roots whose summand verdict changes with the lift, over the lifts where the reflection is an isometry of T_En: 8 (labels [1, 2, 3, 4, 5, 6, 7, 11])
+
+=== cusp 4   Sterk's representative eta_4 = [0, 0, 2, 1, -4, -5, -7, -10, -8, -6, -4, -2]   K = eta^perp/Zeta, det -256
+  lab  sq  div(T_En) div(T_dP)  integral on T_En   integral on T_dP   summand test        lift-dependent
+    1   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    2   -4       2       1     all k              none              [-5, -3, -1, 1, 3, 5] yes
+    3   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    4   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    5   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    6   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+    7   -4       2       1     all k              none              [-5, -3, -1, 1, 3, 5] yes
+    8   -2       1       1     all k              all k             all k               no
+    9   -4       2       1     all k              none              [-6, -4, -2, 0, 2, 4, 6] yes
+   10   -2       1       1     all k              all k             all k               no
+   11   -4       2       1     all k              none              [-5, -3, -1, 1, 3, 5] yes
+  printed roots 11;  certified by the summand test at some lift 11; of these not at k = 0: [2, 7, 11]
+  whose reflection is not an isometry of T_dP at any lift: 9 (labels [1, 2, 3, 4, 5, 6, 7, 9, 11])
+  roots whose summand verdict changes with the lift, over the lifts where the reflection is an isometry of T_En: 9 (labels [1, 2, 3, 4, 5, 6, 7, 9, 11])
+
+=== cusp 5   Sterk's representative eta_5 = [2, 2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2]   K = eta^perp/Zeta, det -256
+  lab  sq  div(T_En) div(T_dP)  integral on T_En   integral on T_dP   summand test        lift-dependent
+    1   -4       2       1     all k              none              all k               no
+    2   -4       2       1     all k              none              all k               no
+    3   -4       2       1     all k              none              all k               no
+    4   -4       2       1     all k              none              all k               no
+    5   -4       2       1     all k              none              all k               no
+    6   -4       2       1     all k              none              all k               no
+    7   -4       2       2     all k              [-6, -4, -2, 0, 2, 4, 6]  [-6, -4, -2, 0, 2, 4, 6] yes
+    8   -4       2       1     all k              none              all k               no
+    9   -4       2       2     all k              [-6, -4, -2, 0, 2, 4, 6]  [-6, -4, -2, 0, 2, 4, 6] yes
+   10   -4       2       1     all k              none              all k               no
+   11   -2       1       1     all k              all k             all k               no
+   12   -2       1       1     all k              all k             all k               no
+   13   -2       1       1     all k              all k             all k               no
+   14   -2       1       1     all k              all k             all k               no
+  printed roots 14;  certified by the summand test at some lift 14
+  whose reflection is not an isometry of T_dP at any lift: 8 (labels [1, 2, 3, 4, 5, 6, 8, 10])
+  roots whose summand verdict changes with the lift, over the lifts where the reflection is an isometry of T_En: 2 (labels [7, 9])
+
+=== the kernel of Stab_{O(T_En)}(eta) -> O(K), evaluated on a lift-dependent root
+cusp 1: no lift-dependent printed root; no kernel element needed
+cusp 2, printed root 1: u = s_(alpha + -5 eta) . s_alpha^-1;
+  u fixes eta: True;  u acts trivially on K = eta^perp/Zeta: True
+  rho(u) fixes every class of A_{T_En}: False
+  rho(u) on the ten classes (bit masks; slots 0,1 = U(2), 2..9 = E8(2)): [1, 7, 4, 8, 17, 32, 64, 128, 256, 512]
+  rho(u) preserves the two summands: False;  u itself is certified by the summand test: False
+
+cusp 3, printed root 1: u = s_(alpha + -5 eta) . s_alpha^-1;
+  u fixes eta: True;  u acts trivially on K = eta^perp/Zeta: True
+  rho(u) fixes every class of A_{T_En}: False
+  rho(u) on the ten classes (bit masks; slots 0,1 = U(2), 2..9 = E8(2)): [334, 333, 4, 8, 347, 32, 64, 128, 256, 847]
+  rho(u) preserves the two summands: False;  u itself is certified by the summand test: False
+
+cusp 4, printed root 1: u = s_(alpha + -5 eta) . s_alpha^-1;
+  u fixes eta: True;  u acts trivially on K = eta^perp/Zeta: True
+  rho(u) fixes every class of A_{T_En}: False
+  rho(u) on the ten classes (bit masks; slots 0,1 = U(2), 2..9 = E8(2)): [19, 2, 22, 8, 16, 58, 64, 128, 256, 512]
+  rho(u) preserves the two summands: False;  u itself is certified by the summand test: False
+
+cusp 5, printed root 7: u = s_(alpha + -5 eta) . s_alpha^-1;
+  u fixes eta: True;  u acts trivially on K = eta^perp/Zeta: True
+  rho(u) fixes every class of A_{T_En}: False
+  rho(u) on the ten classes (bit masks; slots 0,1 = U(2), 2..9 = E8(2)): [25, 26, 31, 8, 16, 32, 64, 128, 256, 512]
+  rho(u) preserves the two summands: False;  u itself is certified by the summand test: False
+
+PYEXIT=0
