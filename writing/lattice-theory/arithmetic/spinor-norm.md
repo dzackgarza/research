@@ -146,9 +146,10 @@ Write $\Gr^+(V)$ for the set of $p$-dimensional subspaces of $V$ on which $\beta
 $$
 \widetilde\Gr^+(V)\too\Gr^+(V)
 $$
-for the two-sheeted covering whose fibre over $W$ is the set of the two orientations of $W$ modulo $\bR_{>0}$ (@def:free-module-orientation).
+for the restriction to $\Gr^+(V)$ of the two-sheeted covering of that Grassmannian by the Grassmannian of oriented $p$-planes; its fibre over $W$ is the set of the two orientations of $W$ modulo $\bR_{>0}$ (@def:free-module-orientation).
 The zero space has $\det(0)=\bR$ and hence the two orientation classes of $\pm1$, so the covering is defined for $p=0$ too.
 The group $\Orth(V)$ acts continuously on both spaces, by $g\cdot(W,o)=(gW,g_*o)$.
+When the form must be named, these spaces are written $\Gr^+(V,\beta)$ and $\widetilde\Gr^+(V,\beta)$.
 
 ::: {.lemma #lem:positive-grassmannian title="Maximal positive-definite subspaces form a contractible space"}
 
@@ -175,7 +176,8 @@ The map $W\mapsto\phi_W$ is therefore a homeomorphism from $\Gr^+(V)$ onto an op
 A covering of a contractible space is trivial, so $\widetilde\Gr^+(V)$ has two components, and they are exchanged by $(W,o)\mapsto(W,-o)$.
 
 For (3), define $c\qty{(W,o),(W',o')}\in\theset{\pm1}$ to be $+1$ when $\pi_W|_{W'}$ carries $o'$ to $o$ and $-1$ otherwise.
-By (1) this function is defined on all of $\widetilde\Gr^+(V)\times\widetilde\Gr^+(V)$; it is continuous, so it is constant on each of the four components of the product.
+By (1) this function is defined on all of $\widetilde\Gr^+(V)\times\widetilde\Gr^+(V)$.
+The isomorphism $\pi_W|_{W'}$ depends continuously on $(W,W')$, so $c$ is locally constant, and it is constant on each of the four components of the product.
 It equals $+1$ on the diagonal and changes sign when $o'$ is replaced by $-o'$.
 Hence $c=+1$ exactly on the two components of the product that meet the diagonal.
 :::
@@ -183,7 +185,7 @@ Hence $c=+1$ exactly on the two components of the product that meet the diagonal
 ::: {.definition #def:orientation-characters title="Orientation characters"}
 
 The two components of $\widetilde\Gr^+(V)$ are the *orientation classes of maximal positive-definite subspaces* of $V$.
-The *positive orientation character* of $(V,\beta)$ is the group morphism
+The *positive orientation character* of $(V,\beta)$ is the map
 $$
 \sigma_+\colon\Orth(V)\too\theset{\pm1}
 $$
@@ -196,6 +198,7 @@ is the positive orientation character of $(V,-\beta)$, under the equality $\Orth
 For a sign $\epsilon\in\theset{\pm1}$, write $\sigma_\epsilon$ for $\sigma_+$ when $\epsilon=+1$ and for $\sigma_-$ when $\epsilon=-1$.
 :::
 
+The maps $\sigma_\pm$ are group morphisms, because $\Orth(V)$ acts on the two-element set of orientation classes.
 By @lem:positive-grassmannian (3), for every $W\in\Gr^+(V)$ and every $g\in\Orth(V)$,
 $$
 \sigma_+(g)=\sgn\det\qty{\pi_W\circ g|_W\colon W\too W},

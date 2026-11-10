@@ -15,36 +15,40 @@ $$
 \gamma^*\colon\bL_{\gamma(0)}\iso\bL_{\gamma(1)}
 $$
 is the *transport along $\gamma$*; it depends only on the homotopy class of $\gamma$ relative to its endpoints [@Voi07, proof of Proposition 3.9].
-For $s\in B$, transport along loops based at $s$ is the *monodromy representation*
+For $s\in B$, the *monodromy representation*
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s)
 $$
-of $\bL$ [@Voi07, Corollary 3.10, Definition 3.13].
+of $\bL$ sends the class of a loop $\gamma$ based at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
+It is a group morphism for the product on $\pi_1(B,s)$ in which $\gamma\delta$ is the loop $\delta$ followed by the loop $\gamma$, since transport along a concatenation is the composite of the transports.
 
 ## Local systems of lattices {#sec-local-systems-of-lattices-definition}
 
 ::: {.definition #def:local-system-of-lattices title="Local system of lattices"}
 
-A *local system of lattices* on $B$ is a pair $(\bL,\beta)$ in which $\bL$ is a local system on $B$ whose stalks are free abelian groups of finite rank and
+A *local system of lattices* on $B$ is a pair $(\bL,\beta)$ in which $\bL$ is a local system on $B$ whose stalks are finitely generated free abelian groups and
 $$
 \beta\colon\bL\tensor_{\underline{\ZZ}_B}\bL\too\underline{\ZZ}_B
 $$
 is a morphism of sheaves of abelian groups.
-Each stalk $(\bL_b,\beta_b)$ is a $\ZZ$-lattice in the sense of @def:lattice.
 A *morphism* $(\bL,\beta)\to(\bL',\beta')$ is a morphism of sheaves $\phi\colon\bL\to\bL'$ with $\beta'\circ(\phi\tensor\phi)=\beta$.
 :::
+
+Each stalk $(\bL_b,\beta_b)$ of a local system of lattices is a $\ZZ$-lattice in the sense of @def:lattice.
 
 ::: {.proposition #prop:local-system-of-lattices-monodromy title="Transport is an isometry"}
 
 Let $(\bL,\beta)$ be a local system of lattices on $B$ and let $s\in B$.
 
 1. For every path $\gamma$ in $B$, the transport $\gamma^*\colon\bL_{\gamma(0)}\to\bL_{\gamma(1)}$ is an isometry for $\beta_{\gamma(0)}$ and $\beta_{\gamma(1)}$.
-   All stalks of $(\bL,\beta)$ are therefore isometric, and the monodromy representation is a group morphism
+   The monodromy representation is therefore a group morphism
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s,\beta_s).
 $$
-2. Let $(L,\beta_L)$ be a $\ZZ$-lattice whose underlying module is free.
-   Every group morphism $\rho\colon\pi_1(B,s)\to\Aut(L,\beta_L)$ is the monodromy representation of a local system of lattices on $B$ whose stalk at $s$ is isometric to $(L,\beta_L)$.
+2. All stalks of $(\bL,\beta)$ are isometric.
+   Symmetry, the alternating property and nondegeneracy of $\beta_b$ (@def:form-axioms), and the signature of a nondegenerate symmetric $\beta_b$ (@def:signature), are independent of $b$.
+3. Let $(L,\beta_L)$ be a $\ZZ$-lattice and choose $\tilde s\in\widetilde B$ over $s$, where $\pi\colon\widetilde B\to B$ is the universal cover.
+   Every group morphism $\rho\colon\pi_1(B,s)\to\Aut(L,\beta_L)$ is the monodromy representation of a local system of lattices $(\bL,\beta)$ on $B$, under an isometry $(\bL_s,\beta_s)\iso(L,\beta_L)$ determined by $\tilde s$.
 :::
 
 ::: {.proof}
@@ -56,44 +60,50 @@ $$
 \beta_{\gamma(0)}(x_0,y_0)=\beta_{\gamma(1)}(x_1,y_1)=\beta_{\gamma(1)}(\gamma^*x_0,\gamma^*y_0).
 $$
 
-For (2), let $\pi\colon\widetilde B\to B$ be the universal cover.
-The local system with monodromy $\rho$ has sections
+Statement (2) follows from (1), because $B$ is arcwise connected.
+
+For (3), the local system with monodromy $\rho$ has sections
 $$
-\Gamma(U,\bL)=\theset{\sigma\colon\pi^{-1}(U)\to L\text{ locally constant}\st\sigma(\gamma u)=\rho(\gamma)\sigma(u)}
+\Gamma(O,\bL)=\theset{\sigma\colon\pi^{-1}(O)\to L\text{ locally constant}\st\sigma(\gamma u)=\rho(\gamma)\sigma(u)}
 $$
-over an open set $U$ [@Voi07, proof of Corollary 3.10, (3.1)].
-For two such sections, the function $u\mapsto\beta_L(\sigma(u),\tau(u))$ on $\pi^{-1}(U)$ is locally constant, and it is invariant under $\pi_1(B,s)$ because each $\rho(\gamma)$ is an isometry.
-It is therefore the pullback of a unique locally constant function $U\to\ZZ$, and this defines $\beta$.
+over an open set $O\iscontainedin B$, and evaluation at $\tilde s$ is an isomorphism $\bL_s\iso L$ [@Voi07, proof of Corollary 3.10, (3.1)].
+For two such sections, the function $u\mapsto\beta_L(\sigma(u),\tau(u))$ on $\pi^{-1}(O)$ is locally constant, and it is invariant under $\pi_1(B,s)$ because each $\rho(\gamma)$ is an isometry.
+It is therefore the pullback of a unique locally constant function $O\to\ZZ$, and this defines $\beta$; evaluation at $\tilde s$ is an isometry by construction.
 :::
 
-Symmetry, the alternating property and nondegeneracy of $\beta_b$ (@def:form-axioms), and the signature of a nondegenerate symmetric $\beta_b$ (@def:signature), are therefore independent of $b$.
 When the stalks are symmetric, $\Aut(\bL_s,\beta_s)$ is the orthogonal group $\Orth(\bL_s)$ of @sec-isometry-groups; when they are alternating and nondegenerate, it is the symplectic group $\Sp(\bL_s)$.
 
-::: {.example #ex:sublocal-system-of-constant-sheaf title="A local system inside a constant sheaf is constant"}
+::: {.lemma #lem:sublocal-system-of-constant-sheaf title="A local system inside a constant sheaf is constant"}
 
 Let $M$ be a $\ZZ$-lattice, and let $(\bL,\beta)$ be a local system of lattices with $\bL\iscontainedin\underline M_B$ a subsheaf and $\beta$ the restriction of $\beta_M$.
-For a loop $\gamma$ at $s$, the sheaf $\gamma^{-1}\bL$ is a subsheaf of $\underline M_{[0,1]}$, whose sections over $[0,1]$ are the constant functions.
-Hence $\gamma^*=\id_{\bL_s}$, the monodromy representation is trivial, and $\bL$ is the constant sheaf $\underline{(\bL_s)}_B$ [@Voi07, Corollary 3.10].
+Then the monodromy representation of $\bL$ is trivial, and $\bL$ is isomorphic to the constant sheaf $\underline{(\bL_s)}_B$.
 :::
 
-## The orientation sheaf {#sec-orientation-sheaf}
+::: {.proof}
+
+For a loop $\gamma$ at $s$, the sheaf $\gamma^{-1}\bL$ is a subsheaf of $\underline M_{[0,1]}$, whose sections over $[0,1]$ are the constant functions.
+Hence $\gamma^*=\id_{\bL_s}$.
+A local system with trivial monodromy representation is constant [@Voi07, Corollary 3.10].
+:::
+
+## The sheaves of orientation classes {#sec-orientation-sheaf}
 
 In this section $(\bL,\beta)$ is a local system of lattices on $B$ whose stalks are symmetric and nondegenerate, and $\sigma_+,\sigma_-$ are the orientation characters of @def:orientation-characters for the real quadratic space $\bL_s\tensor\RR$.
 
-::: {.definition #def:orientation-sheaf title="Orientation sheaf of a local system of lattices"}
+::: {.definition #def:orientation-sheaf title="Sheaves of orientation classes of a local system of lattices"}
 
 For $b\in B$, let $\operatorname{Or}^+_b$ be the two-element set of orientation classes of maximal positive-definite subspaces of $\bL_b\tensor\RR$.
 By @prop:local-system-of-lattices-monodromy, the transport along a path $\gamma$ induces a bijection $\gamma^*\colon\operatorname{Or}^+_{\gamma(0)}\to\operatorname{Or}^+_{\gamma(1)}$.
-The *positive orientation sheaf* $\operatorname{Or}^+_{\bL}$ is the sheaf of sets on $B$ with
+The *sheaf of orientation classes of maximal positive-definite subspaces* $\operatorname{Or}^+_{\bL}$ is the sheaf of sets on $B$ with
 $$
-\Gamma\qty{U,\operatorname{Or}^+_{\bL}}
+\Gamma\qty{O,\operatorname{Or}^+_{\bL}}
 \definedas
-\theset{(o_b)_{b\in U}\st o_b\in\operatorname{Or}^+_b,\ \gamma^*o_{\gamma(0)}=o_{\gamma(1)}\text{ for every path }\gamma\text{ in }U}.
+\theset{(o_b)_{b\in O}\st o_b\in\operatorname{Or}^+_b,\ \gamma^*o_{\gamma(0)}=o_{\gamma(1)}\text{ for every path }\gamma\text{ in }O}.
 $$
-The *negative orientation sheaf* $\operatorname{Or}^-_{\bL}$ is the positive orientation sheaf of $(\bL,-\beta)$.
+The sheaf $\operatorname{Or}^-_{\bL}$ of orientation classes of maximal negative-definite subspaces is $\operatorname{Or}^+$ of $(\bL,-\beta)$.
 :::
 
-::: {.proposition #prop:orientation-sheaf-section title="Monodromy lies in $\ker\sigma_+$ exactly when the orientation sheaf has a global section"}
+::: {.proposition #prop:orientation-sheaf-section title="Monodromy lies in $\ker\sigma_+$ exactly when $\operatorname{Or}^+_{\bL}$ has a global section"}
 
 The following are equivalent.
 
@@ -114,19 +124,24 @@ The condition does not depend on which of the two classes $o_s$ is chosen.
 
 If $\bL_s$ is indefinite, condition (1) says that the monodromy group lies in $\Orth^+(\bL_s)$ (@prop:orientation-characters-reflections).
 
-::: {.example #ex:monodromy-outside-orth-plus title="A local system of lattices with no orientation section"}
+::: {.example #ex:monodromy-outside-orth-plus title="A local system of lattices with no global orientation class"}
 
-Let $B=\CC^\times$, so that $\pi_1(B,1)\cong\ZZ$, and let $U$ be the hyperbolic plane.
-By @prop:local-system-of-lattices-monodromy there is a local system of lattices on $B$ with stalk $U$ whose monodromy representation sends a generator to $-\id_U$.
-The signature of $U$ is $(1,1)$, so $\sigma_+(-\id_U)=\spinornorm_\RR(-\id_U)=-1$ by @lem:minus-identity-spinor-norm.
-The monodromy group is not contained in $\Orth^+(U)$, and neither orientation sheaf has a global section.
+Let $B=\CC^\times$, let $c\in\pi_1(B,1)\cong\ZZ$ be the class of the loop $\theta\mapsto e^{2\pi i\theta}$, which generates this group, and let $U$ be the hyperbolic plane.
+By @prop:local-system-of-lattices-monodromy (3) there is a local system of lattices $(\bL,\beta)$ on $B$ with stalk $U$ and $\rho(c)=-\id_U$.
+The signature of $U$ is $(1,1)$, so by @prop:orientation-characters-reflections (2) and @lem:minus-identity-spinor-norm,
+$$
+\sigma_+(-\id_U)=\spinornorm_\RR(-\id_U)=-1,
+\qquad
+\sigma_-(-\id_U)=\det(-\id_U)\,\sigma_+(-\id_U)=-1.
+$$
+The monodromy group is not contained in $\Orth^+(U)$, and neither $\operatorname{Or}^+_{\bL}$ nor $\operatorname{Or}^-_{\bL}$ has a global section (@prop:orientation-sheaf-section).
 :::
 
 ## Polarized variations of Hodge structure {#sec-polarized-vhs}
 
 ::: {.definition #def:polarized-integral-vhs title="Polarized integral variation of Hodge structure"}
 
-Let $k$ be an integer and let $(L,Q)$ be a $\ZZ$-lattice with $L$ free and $Q$ nondegenerate, symmetric if $k$ is even and alternating if $k$ is odd.
+Let $k$ be an integer and let $(L,Q)$ be a $\ZZ$-lattice with $Q$ nondegenerate, symmetric if $k$ is even and alternating if $k$ is odd.
 A *Hodge structure of weight $k$ on $L$ polarized by $Q$* is a decreasing filtration $F^\bullet$ of $L_\CC$ by complex subspaces such that the subspaces
 $$
 H^{p,q}\definedas F^p\cap\overline{F^q},\qquad p+q=k,
@@ -153,22 +168,22 @@ The polarization form of [@Sch73, (2.10)] is $S=(-1)^{k(k-1)/2}Q$.
 ::: {.lemma #lem:hodge-real-pieces title="Signs of the polarization on the real Hodge pieces"}
 
 Let $F^\bullet$ be a Hodge structure of even weight $k=2m$ on $L$ polarized by $Q$, and put $\epsilon\definedas(-1)^{m+1}$.
-For $0\le j\le m$ define the real subspaces
+For $j\ge0$ define the real subspaces
 $$
 R_j\definedas\qty{H^{m+j,m-j}\oplus H^{m-j,m+j}}\cap L_\RR
 $$
-of $L_\RR$, so that $R_0=H^{m,m}\cap L_\RR$.
+of $L_\RR$, so that $R_0=H^{m,m}\cap L_\RR$; only finitely many are nonzero.
 
-1. $L_\RR=\bigoplus_{j=0}^mR_j$, the summands are pairwise orthogonal for $Q$, and $(-1)^{m+j}Q$ is positive definite on $R_j$.
+1. $L_\RR=\bigoplus_{j\ge0}R_j$, the summands are pairwise orthogonal for $Q$, and $(-1)^{m+j}Q$ is positive definite on $R_j$.
 2. The subspace
 $$
 W^{\mathrm{odd}}_F\definedas\bigoplus_{j\text{ odd}}R_j
 $$
-is a maximal $\epsilon$-definite subspace of $(L_\RR,Q)$, and
+is a subspace of maximal dimension among those on which $\epsilon Q$ is positive definite, and
 $$
 W^{\mathrm{ev}}_F\definedas\bigoplus_{j\text{ even}}R_j
 $$
-is a maximal $(-\epsilon)$-definite subspace.
+is a subspace of maximal dimension among those on which $-\epsilon Q$ is positive definite.
 3. For $j>0$, the map $R_j\to H^{m+j,m-j}$ sending $x$ to its component in $H^{m+j,m-j}$ is an isomorphism of real vector spaces.
 :::
 
@@ -185,7 +200,7 @@ Q(x,x)=2Q(v,\bar v),
 $$
 and the positivity condition of @def:polarized-integral-vhs gives $(-1)^{m+j}Q(x,x)>0$ for $x\neq0$.
 For $j=0$ the same condition applied to $v=x\in R_0$ gives $(-1)^mQ(x,x)>0$.
-Statement (2) follows: $L_\RR=W^{\mathrm{odd}}_F\perp W^{\mathrm{ev}}_F$ with $Q$ definite of sign $\epsilon$ on the first summand and of sign $-\epsilon$ on the second, so their dimensions are the two indices of the signature of $Q$ (@thm:sylvester).
+Statement (2) follows: $L_\RR=W^{\mathrm{odd}}_F\perp W^{\mathrm{ev}}_F$ with $\epsilon Q$ positive definite on the first summand and negative definite on the second, so their dimensions are the two indices of the signature of $Q$ (@thm:sylvester).
 :::
 
 ## Period domains and their components {#sec-period-domain-components}
@@ -217,9 +232,9 @@ $$
 
 ::: {.proof}
 
-The subspaces $H^{p,q}_F$ have constant dimension, so they depend continuously on $F\in D$, and so do $W^{\mathrm{odd}}_F$ and $W^{\mathrm{ev}}_F$.
+The subspaces $F^p$ and $\overline{F^q}$ depend continuously on $F\in D$, and their intersection $H^{p,q}_F$ has constant dimension, so it depends continuously on $F$; so do $W^{\mathrm{odd}}_F$ and $W^{\mathrm{ev}}_F$.
 By @lem:hodge-real-pieces (3), $W^{\mathrm{odd}}_F$ is isomorphic to the complex vector space $\bigoplus_{j\text{ odd}}H^{m+j,m-j}_F$; let $o^{\mathrm{odd}}_F$ be the resulting complex orientation.
-By @lem:hodge-real-pieces (2), the pair $\qty{W^{\mathrm{odd}}_F,o^{\mathrm{odd}}_F}$ is a point of the space $\widetilde\Gr^+$ of @lem:positive-grassmannian for the quadratic space $(L_\RR,\epsilon Q)$, and
+By @lem:hodge-real-pieces (2), the pair $\qty{W^{\mathrm{odd}}_F,o^{\mathrm{odd}}_F}$ is a point of the space $\widetilde\Gr^+(L_\RR,\epsilon Q)$ of @sec-orientation-characters, and
 $$
 \Psi\colon D\too\widetilde\Gr^+(L_\RR,\epsilon Q),
 \qquad
@@ -249,17 +264,18 @@ Hence $gs_w\in\ker\sigma_+\cap\ker\sigma_-=G_\RR^\circ$, and $g\in G_\RR^\circ\c
 :::
 
 Let $(\bL,Q,F^\bullet)$ be a polarized integral variation of Hodge structure of weight $k$ on a connected complex manifold $B$, let $s\in B$, and let $D$ be the period domain of $(\bL_s,Q_s)$ for the Hodge numbers of $F^\bullet_s$.
-Let $\pi\colon\widetilde B\to B$ be the universal cover.
-The pullback $\pi^{-1}\bL$ is constant with stalk $\bL_s$, and the pullback of $F^\bullet$ is a map
+Let $\pi\colon\widetilde B\to B$ be the universal cover and choose $\tilde s\in\widetilde B$ over $s$.
+The pullback $\pi^{-1}\bL$ is constant, and $\tilde s$ determines an isomorphism of it with the constant sheaf of stalk $\bL_s$ [@Voi07, proof of Corollary 3.10].
+Under this isomorphism the pullback of $F^\bullet$ is a map
 $$
 \widetilde\Phi\colon\widetilde B\too D
 $$
-that satisfies
+that satisfies $\widetilde\Phi(\tilde s)=F^\bullet_s$ and
 $$
 \widetilde\Phi(\gamma\tilde t)=\rho(\gamma)\,\widetilde\Phi(\tilde t)
 \qquad\text{for }\tilde t\in\widetilde B,\ \gamma\in\pi_1(B,s)
 $$ {#eq-period-map-equivariance}
-[@Sch73, (3.24)].
+[@Sch73, (3.24)], where $\pi_1(B,s)$ acts on $\widetilde B$ by the deck transformations used in the proof of @prop:local-system-of-lattices-monodromy (3).
 It is holomorphic [@Sch73, Theorem 3.27].
 
 ::: {.corollary #cor:vhs-monodromy-stabilizes-component title="Monodromy stabilizes the component of the period domain"}
@@ -288,27 +304,31 @@ The homeomorphism $\rho(\gamma)$ of $D$ permutes the components, so $\rho(\gamma
 The table is @thm:period-domain-component-stabilizer, and the last statement is @prop:orientation-characters-reflections (4).
 :::
 
-For weight $2$ the sign is $\epsilon=+1$, and $W^{\mathrm{odd}}_F=\qty{H^{2,0}\oplus H^{0,2}}\cap L_\RR$ is the positive-definite real plane spanned by the real and imaginary parts of the vectors of $H^{2,0}$.
+For weight $2$ the sign is $\epsilon=+1$, and $W^{\mathrm{odd}}_F=\qty{H^{2,0}\oplus H^{0,2}}\cap L_\RR$ is the positive-definite real subspace of dimension $2h^{2,0}$ spanned by the real and imaginary parts of the vectors of $H^{2,0}$.
 The primitive local system of a family of polarized K3 surfaces has $h^{1,1}>0$, and the first row of the table is @prop:polarized-k3-monodromy-positive.
 
-::: {.example #ex:weight-zero-vhs title="The character $\sigma_{-\epsilon}$ is not constrained when $h^{m,m}>0$"}
+::: {.example #ex:weight-zero-vhs title="A weight-zero variation with monodromy outside $\ker\sigma_{-\epsilon}$"}
 
-Let $B=\CC^\times$ and let $(\bL,Q)$ be the local system of lattices on $B$ with stalk $(\ZZ,xy)$ whose monodromy representation sends a generator of $\pi_1(B,1)$ to $-1$ (@prop:local-system-of-lattices-monodromy).
+Let $B=\CC^\times$ and $c\in\pi_1(B,1)$ be as in @ex:monodromy-outside-orth-plus, and let $(\bL,Q)$ be the local system of lattices on $B$ with stalk $(\ZZ,xy)$ and $\rho(c)=-1$ (@prop:local-system-of-lattices-monodromy).
 With $F^0=\bL\tensor\OO_B$ and $F^1=0$, the triple $(\bL,Q,F^\bullet)$ is a polarized integral variation of Hodge structure of weight $0$ with $h^{0,0}=1$.
 Here $m=0$ and $\epsilon=-1$.
 The monodromy $-1$ is the reflection in a vector of positive square, so $\sigma_+(-1)=-1$ and $\sigma_-(-1)=+1$ (@prop:orientation-characters-reflections).
+The monodromy group lies in $\ker\sigma_\epsilon$ and not in $\ker\sigma_{-\epsilon}$.
 :::
 
 ## Cohomology of families {#sec-cohomology-of-families-monodromy}
 
 Let $f\colon\mcx\to B$ be a proper holomorphic submersion of complex manifolds with $B$ connected and with fibres $X_b$ of dimension $n$, and let $\omega\in H^2(\mcx,\ZZ)$ be a class whose restriction to every fibre is a Kähler class.
-For $k\le n$ put
+For $0\le k\le2n$ put
 $$
 \bV^k\definedas R^kf_*\underline{\ZZ}_{\mcx}/\text{torsion},
-\qquad
-\bV^k_{\mathrm{prim}}\definedas\ker\qty{L^{n-k+1}\colon\bV^k\too\bV^{2n-k+2}},
 $$
-where $L$ is the cup product with $\omega$, and
+and let $L_\omega\colon\bV^k\to\bV^{k+2}$ be the cup product with $\omega$.
+For $k\le n$ put
+$$
+\bV^k_{\mathrm{prim}}\definedas\ker\qty{L_\omega^{n-k+1}\colon\bV^k\too\bV^{2n-k+2}}
+$$
+and
 $$
 Q(\alpha,\beta)\definedas\int_{X_b}\omega^{n-k}\cupprod\alpha\cupprod\beta
 \qquad\text{for }\alpha,\beta\in\bV^k_b.
@@ -316,13 +336,13 @@ $$
 
 ::: {.proposition #prop:primitive-cohomology-vhs title="Primitive cohomology of a polarized family"}
 
-1. $(\bV^k,Q)$ is a local system of lattices on $B$, and $L$ is a morphism of local systems.
+1. $(\bV^k,Q)$ is a local system of lattices on $B$, and $L_\omega$ is a morphism of local systems.
 2. $\qty{\bV^k_{\mathrm{prim}},Q}$ with the Hodge filtration of the fibres is a polarized integral variation of Hodge structure of weight $k$.
 :::
 
 ::: {.proof}
 
-The local system $R^kf_*\underline\ZZ$ carries the cup product, and the monodromy representation is compatible with it [@Voi07, §3.1.2]; the class $\omega|_{X_b}$ is locally constant, so $L$ and $Q$ are compatible with the local identifications of the stalks [@Voi07a, §10.1.3].
+The local system $R^kf_*\underline\ZZ$ carries the cup product, and the monodromy representation is compatible with it [@Voi07, §3.1.2]; the class $\omega|_{X_b}$ is locally constant, so $L_\omega$ and $Q$ are compatible with the local identifications of the stalks [@Voi07a, §10.1.3].
 The Lefschetz decomposition of each fibre is a decomposition of Hodge structures, and on the primitive part the Hodge filtration satisfies the orthogonality and positivity conditions of @def:polarized-integral-vhs [@Voi07a, Theorem 6.32, §10.1.3].
 The Hodge filtration is a filtration by holomorphic subbundles that satisfies condition (2) of @def:polarized-integral-vhs [@Sch73, §2].
 :::
@@ -331,26 +351,38 @@ The Hodge filtration is a filtration by holomorphic subbundles that satisfies co
 
 Let $n=2m$, so that $Q$ is the intersection form on $\bV^n$, and let $\rho$ be the monodromy representation of $\bV^n$ at $s\in B$.
 
-1. The restriction of $\rho$ to $\bV^n_{\mathrm{prim},s}$ takes values in $\ker\sigma_\epsilon$ with $\epsilon=(-1)^{m+1}$, and in $\ker\sigma_+\cap\ker\sigma_-$ if $h^{m,m}_{\mathrm{prim}}=0$.
-2. If $n=2$, then $\rho$ takes values in $\ker\sigma_+\iscontainedin\Orth\qty{H^2(X_s,\ZZ)/\text{torsion}}$.
+1. The restriction of $\rho$ to $\bV^n_{\mathrm{prim},s}$ takes values in $\ker\sigma_\epsilon$ with $\epsilon=(-1)^{m+1}$, and in $\ker\sigma_+\cap\ker\sigma_-$ if the Hodge number $h^{m,m}$ of $\bV^n_{\mathrm{prim}}$ is zero.
+2. If $n=2$, then $\rho$ takes values in $\Orth\qty{H^2(X_s,\ZZ)/\text{torsion}}\cap\ker\sigma_+$.
 :::
 
 ::: {.proof}
 
 Statement (1) is @cor:vhs-monodromy-stabilizes-component for the variation of @prop:primitive-cohomology-vhs.
 
-For (2), put $h\definedas\omega|_{X_s}$.
-Then $Q(h,h)=\int_{X_s}\omega^2>0$, the class $h$ is fixed by $\rho$, and $\bV^2_{\mathrm{prim},s}=h^\perp$.
-Each $\rho(\gamma)$ is therefore $\id_{\RR h}\oplus g$ on $\RR h\perp\qty{h^\perp}_\RR$, with $g$ the monodromy of the primitive part.
+For (2), put $\kappa\definedas\omega|_{X_s}$.
+Then $Q(\kappa,\kappa)=\int_{X_s}\omega^2>0$, the class $\kappa$ is fixed by $\rho$, and $\bV^2_{\mathrm{prim},s}=\kappa^\perp$.
+Each $\rho(\gamma)$ is therefore $\id_{\RR\kappa}\oplus g$ on $\RR\kappa\perp\qty{\kappa^\perp}_\RR$, with $g$ the monodromy of the primitive part.
 By (1) with $m=1$, $\sigma_+(g)=+1$, and @prop:orientation-characters-reflections (3) gives $\sigma_+(\rho(\gamma))=+1$.
 :::
 
-For the K3 lattice, $\sigma_+$ is the character $\sigma_{\lkt}$ of @def:k3-positive-cone-orientation: both are group morphisms $\Orth(\lkt_\RR)\to\theset{\pm1}$ that take the value $-1$ on the reflections in vectors of positive square and $+1$ on the reflections in vectors of negative square.
-@prop:k3-monodromy-positive is the statement of @cor:middle-cohomology-monodromy (2) for families of K3 surfaces without a class $\omega$.
+::: {.lemma #lem:k3-orientation-character title="The K3 orientation character is $\sigma_+$"}
+
+For the K3 lattice, the character $\sigma_{\lkt}$ of @def:k3-positive-cone-orientation is the positive orientation character $\sigma_+$ of $\lkt_\RR$.
+:::
+
+::: {.proof}
+
+Both are group morphisms $\Orth(\lkt_\RR)\to\theset{\pm1}$, and the reflections generate $\Orth(\lkt_\RR)$ (@def:spinor-norm), so it suffices to compare them on a reflection $s_w$.
+If $w^2<0$, choose a positive-definite three-plane $W_3\iscontainedin w^\perp$; then $s_w$ fixes $W_3\sm\theset{0}$ pointwise, so it fixes the two group generators of $H_2\qty{W_3\sm\theset{0},\ZZ}\cong\ZZ$ and $\sigma_{\lkt}(s_w)=+1$.
+If $w^2>0$, choose $W_3$ containing $w$; then $s_w$ preserves $W_3$ and reverses its orientation, so it exchanges these two group generators and $\sigma_{\lkt}(s_w)=-1$.
+These are the values of $\sigma_+$ in @prop:orientation-characters-reflections (1).
+:::
+
+By @lem:k3-orientation-character, @cor:middle-cohomology-monodromy (2) proves the conclusion of @prop:k3-monodromy-positive for the families of K3 surfaces that admit a class $\omega$.
 
 ::: {.example #ex:picard-lefschetz-orientation title="Picard--Lefschetz reflections"}
 
-Let $f\colon X\to\Delta$ be a Lefschetz degeneration with $X$ smooth of dimension $2m+1$, let $t\in\Delta^*$, and let $T$ be the monodromy of the positive generator of $\pi_1(\Delta^*,t)$ on $H^{2m}(X_t,\ZZ)$ with its intersection form $\langle\ ,\ \rangle$.
+Let $f\colon X\to\Delta$ be a Lefschetz degeneration with $X$ smooth of dimension $2m+1$, let $t\in\Delta^*$, and let $T$ be the monodromy of the class of the positively oriented loop, which generates the group $\pi_1(\Delta^*,t)$, on $H^{2m}(X_t,\ZZ)$ with its intersection form $\langle\ ,\ \rangle$.
 Let $\delta$ be the class of a vanishing sphere.
 The Picard--Lefschetz formula is
 $$
@@ -360,7 +392,7 @@ T(\alpha)=\alpha+\epsilon_{2m+1}\langle\alpha,\delta\rangle\delta,
 \qquad
 \langle\delta,\delta\rangle=2(-1)^m
 $$
-[@Voi07, Theorem 3.16, Remark 3.18, Remark 3.21].
+[@Voi07, Theorem 3.16, Remark 3.18, Remark 3.21]; here $\epsilon_{2m+1}$ is the sign of [@Voi07, Theorem 3.16] for the dimension $2m+1$ of $X$.
 Hence $T$ is the reflection $s_\delta$, and by @prop:orientation-characters-reflections
 $$
 \sigma_+(T)=(-1)^{m+1},
@@ -368,17 +400,17 @@ $$
 \sigma_-(T)=(-1)^m.
 $$
 With $\epsilon=(-1)^{m+1}$ this reads $\sigma_\epsilon(T)=+1$ and $\sigma_{-\epsilon}(T)=-1$.
-For $m$ even, $T$ does not lie in $\ker\sigma_+$: the statement of @cor:middle-cohomology-monodromy (2) does not extend to middle cohomology of fibres of dimension $4$.
 
 A generic pencil of hyperplane sections of a smooth projective variety $Y\iscontainedin\PP^N$ of dimension $2m+1$ is a Lefschetz pencil [@Voi07, Corollary 2.10], and near each of its critical values it is a Lefschetz degeneration whose vanishing class is primitive [@Voi07, Corollary 2.25, Lemma 2.26].
 Such a $T$ is therefore a monodromy operator of the variation $\bV^{2m}_{\mathrm{prim}}$ of @prop:primitive-cohomology-vhs over the set of regular values of the pencil.
+For $m$ even, $T\notin\ker\sigma_+$, so the conclusion of @cor:middle-cohomology-monodromy (2) fails for $n=2m\ge4$ with $m$ even.
 :::
 
 ## Monodromy and automorphisms of Hodge structures {#sec-monodromy-hodge-automorphisms}
 
 Let $(\bL,Q,F^\bullet)$, $s$, $D$ and $\widetilde\Phi$ be as in @sec-period-domain-components.
 For $F\in D$, an *automorphism of the polarized Hodge structure* $F$ is an element $g\in G_\ZZ$ with $gF^p=F^p$ for all $p$; these form the group $G_\ZZ\cap V_F$.
-For a K3 surface these are the Hodge isometries of @sec-k3-automorphisms.
+For the primitive Hodge structure on $h^\perp\iscontainedin H^2(X,\ZZ)$ of a K3 surface $X$ with an ample class $h$, these are the restrictions to $h^\perp$ of the Hodge isometries of $H^2(X,\ZZ)$ (@sec-k3-automorphisms) that fix $h$.
 
 ::: {.proposition #prop:monodromy-hodge-automorphism title="When a monodromy operator is an automorphism of the Hodge structure"}
 
@@ -398,10 +430,11 @@ Statement (2) is @eq-period-map-equivariance, and (3) follows from (1) and (2).
 
 ::: {.example #ex:picard-lefschetz-not-hodge title="Picard--Lefschetz operators"}
 
-Let $f\colon X\to\Delta$ be a Lefschetz degeneration with fibres of odd dimension whose vanishing class $\delta$ is not torsion.
-Then $T$ has infinite order [@Voi07, Corollary 3.17].
-If $f$ is the restriction of a Lefschetz pencil as in @ex:picard-lefschetz-orientation, then by @prop:monodromy-hodge-automorphism the operator $T$ is not an automorphism of the Hodge structure of any fibre.
+Let $(X_t)_{t\in\PP^1}$ be a Lefschetz pencil of hyperplane sections of a smooth projective variety $Y\iscontainedin\PP^N$, let $T$ be the monodromy operator around a critical value on the primitive middle cohomology of the fibres, and let $\delta$ be the vanishing class, which is primitive [@Voi07, Corollary 2.25, Lemma 2.26].
 
-For fibres of even dimension $2m$, the operator $T=s_\delta$ has order $2$ and its $(-1)$-eigenspace is $\CC\delta$.
+If the fibres have odd dimension and $\delta$ is not torsion, then $T$ has infinite order [@Voi07, Corollary 3.17].
+By @prop:monodromy-hodge-automorphism, $T$ is not an automorphism of the primitive Hodge structure of any fibre.
+
+If the fibres have even dimension $2m$, the operator $T=s_\delta$ of @ex:picard-lefschetz-orientation has order $2$ and its $(-1)$-eigenspace is $\CC\delta$.
 It is an automorphism of the Hodge structure $\widetilde\Phi(\tilde t)$ exactly when $\delta\in H^{m,m}$ for that Hodge structure: a one-dimensional sub-Hodge structure of weight $2m$ has type $(m,m)$, and conversely $s_\delta$ preserves each $H^{p,q}$ when $\delta\in H^{m,m}$, as in the proof of @thm:period-domain-component-stabilizer.
 :::
