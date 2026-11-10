@@ -184,7 +184,7 @@ The open work is:
 
 - the relation between $\vol(P)$ and the maximal parabolic structure of $\Sigma$;
 
-- a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup. The *discrepancy* it was meant to settle is now located without it: @thm:sterk-reflection-subgroups computes the reflection subgroup of each Sterk stabilizer and its chamber, and they agree with the published figures at cusps $2$ and $5$ and differ at cusp $3$, where two chambers of one reflection group cannot differ in facet count and so the index is not one. The numerical index, and the two cusps whose searches had not closed, are what remains.
+- a covolume computation sharp enough to decide the index $[W : W_j]$ of a reflection subgroup. What is settled without it is which reflections of the quotient are certainly in the stabilizer: @thm:sterk-reflection-subgroups certifies every root Sterk prints, reproduces his five diagrams' vertex counts, and recovers his chambers exactly at cusps $2$ and $5$. What the covolume would add is the index itself, and what is missing before that is the kernel of the stabilizer's map to $O(K_j)$, which decides whether any reflection of $G_v$ escapes the discriminant criterion.
 :::
 
 ::: {.question #qst:regularized-theta title="Open problem: theta series of indefinite lattices"}

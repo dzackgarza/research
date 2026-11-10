@@ -164,5 +164,6 @@ That operation is no longer needed: the reflection subgroup of $G_v$ is generate
 discriminant class is allowed, and Vinberg's algorithm restricted to that reflection set is
 `computations/reports/coble_sterk-reflection-subgroups.py`, whose transcript
 `coble_sterk-reflection-subgroups-run.txt` gives the chambers. Its result is on the page
-(@thm:sterk-reflection-subgroups): cusps 2, 3 and 5 close, cusp 2 and cusp 5 agree with Sterk's
-figures, and cusp 3 does not — the reflection subgroup there has 14 walls against his 12.
+(@thm:sterk-reflection-subgroups): in Sterk's own representatives all five printed wall sets are certified
+roots of $\gent$ and bound finite-covolume polytopes whose vertex counts match the recorded CoxIter $f$-vectors, and the
+certified subgroup reproduces his chamber exactly at cusps 2 and 5. Cusps 1, 3 and 4 have no certified chamber yet.

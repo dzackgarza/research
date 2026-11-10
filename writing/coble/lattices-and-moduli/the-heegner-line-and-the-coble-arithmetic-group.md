@@ -1434,7 +1434,7 @@ Then
 
 ::: {.remark title="The normality this uses fails on the Enriques side"}
 
-Step 3 uses that $\Gamma_\Co$ is normal in $\Orth(T_\Co)$, so that the stabilizers at two cusps are conjugate in $\Orth(T_\Co)$ and the induced subgroups are carried onto one another. Nothing of the kind holds for $\gent\subset\Orth(T_\En)$, which is a level-two subgroup and not normal: at the four divisibility-two Enriques cusps the stabilizers induce four pairwise inequivalent reflection subgroups, with subgroups of $M$ of orders $348\,364\,800$, $5\,806\,080$, $2\,580\,480$ and $5\,160\,960$ at cusps $2,3,4,5$ respectively (@thm:sterk-reflection-subgroups). The unit of that theorem is the $\gent$-orbit of a $0$-cusp, not the isometry class of the quotient, and this is exactly why the four published Enriques diagrams can differ while their quotient lattices coincide.
+Step 3 uses that $\Gamma_\Co$ is normal in $\Orth(T_\Co)$, so that the stabilizers at two cusps are conjugate in $\Orth(T_\Co)$ and the induced subgroups are carried onto one another. Nothing of the kind holds for $\gent\subset\Orth(T_\En)$, which is a level-two subgroup and not normal: the four divisibility-two Enriques cusps lie in four different $\gent$-orbits, and the class stabilizers inside $M$ have orders $348\,364\,800$, $5\,806\,080$, $2\,580\,480$ and $5\,160\,960$ at cusps $2,3,4,5$ respectively (@thm:sterk-reflection-subgroups). The unit of that theorem is the $\gent$-orbit of a $0$-cusp, not the isometry class of the quotient, which is why the four published Enriques diagrams can differ while their quotient lattices coincide.
 :::
 
 ::: {.proof}
