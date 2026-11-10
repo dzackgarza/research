@@ -603,6 +603,7 @@ Let $b$ be a one-node member of @prop:one-node-family.
 Then
 $$S_{\mathrm{dP},b}\subseteq S_{\Co,b}\subseteq\Pic(\widehat X_b),\qquad \rk S_{\mathrm{dP},b} = 3,\qquad \rk S_{\Co,b} = 11,$$
 and in particular $\rk\Pic(\widehat X_b)\ge11$.
+Moreover $S_{\Co,b}$ is an even $2$-elementary lattice of signature $(1,10)$ with invariants $(r,a,\delta) = (11,11,1)$, so $S_{\Co,b}\cong\latI_{1,10}(2)\cong S_\Co$.
 :::
 
 ::: {.proof}
@@ -615,6 +616,15 @@ By @prop:det-saturation-del-pezzo, $S_{\mathrm{dP},b} = \langle e_b,f_b,[D_b]\ra
 The involution $\iota_\Co$ covers $\tau$, and $\tau$ acts by $[-1]$ on each factor, so $\tau$ fixes each ruling class and $I_{\Co,b}$ fixes $e_b$ and $f_b$.
 The class $[D_b]=\alpha_b$ is fixed by $I_{\Co,b}$ by part (2) of @prop:tuple-of-the-construction.
 Hence $S_{\mathrm{dP},b}\subseteq S_{\Co,b}$.
+
+*The isometry class.*
+$T(\widehat X_b) = \Pic(\widehat X_b)^\perp$ lies in $S_{\Co,b}^\perp$, on which $I_{\Co,b}$ acts by $-1$, and $\Pic(\widehat X_b)^{I_{\Co,b}} = S_{\Co,b}$ because $S_{\Co,b}\subseteq\Pic(\widehat X_b)$.
+So @prop:nikulin-fixed-locus applies to $\widehat\iota_{\Co,b}$ with $M = S_{\Co,b}$: this lattice is $2$-elementary, and $r = 11$.
+Its signature is $(1,10)$, because it contains $H_b$ with $H_b^2 = 4$ and lies in $\Pic(\widehat X_b)$, which is hyperbolic by the Hodge index theorem.
+The fixed locus of $\widehat\iota_{\Co,b}$ is the single $(-2)$-curve $D_b$ (proof of part (5) of @prop:tuple-of-the-construction, with $k = 1$).
+Since $r = 11$, the invariants are neither $(10,10,0)$ nor $(10,8,0)$, so @prop:nikulin-fixed-locus writes the fixed locus as $C^{(g)}+\Sum_{i=1}^{k'}R_i$; a single smooth rational curve forces $g = 0$ and $k' = 0$, that is $22-r-a = 0$ and $r = a$, so $a = 11$.
+The coparity is $\delta = 1$, because $\delta = 0$ requires $p-q\equiv0\pmod4$ and here $p-q = -9$ (@thm:two-elementary-classification).
+The lattice $\latI_{1,10}(2) = S_\Co$ is even and $2$-elementary with the same signature and invariants $(11,11,1)$ (@prop:coble-invariant-lattice), and both lattices are indefinite, so @thm:two-elementary-classification gives $S_{\Co,b}\cong S_\Co$.
 :::
 
 ::: {.proposition #prop:one-node-period-image title="the period map of the one-node family"}
