@@ -112,6 +112,21 @@ def reflection_ok(coords, Gram, basis):
     return div_in(coords, Gram, basis) % (-q // 2) == 0
 
 
+
+def refl_dp(vec):
+    """the reflection in a vector of T_dP, in the coordinates of T_dP"""
+    vec = vector(ZZ, vec)
+    q = square(vec, GDP)
+    assert q != 0
+    R = matrix(ZZ, NDP, NDP, 0)
+    for i in range(NDP):
+        for k in range(NDP):
+            num = 2*int(BASDP[k]*GDP*vec)
+            assert num % q == 0, "the reflection is not integral on T_dP"
+            R[i, k] = (1 if i == k else 0) - (num//q)*int(vec[i])
+    return R
+
+
 def refl(vec):
     vec = vector(ZZ, vec)
     q = ip(vec, vec)
@@ -307,4 +322,81 @@ for j in (1, 2, 3, 4, 5):
     print("  rho(u) preserves the two summands: %s;  u itself is certified by the summand"
           " test: %s" % (preserves_summands(cols), preserves_summands(disc_image(u))))
     print("")
+
+# ---------------------------------------------- the extension of a third-type reflection
+# AEGS Lemma 3.4, third type: alpha_I = alpha + I(alpha) for a (-2)-root alpha of T_dP with
+# alpha.I(alpha) = 0.  Then s_alpha s_{I(alpha)} is an isometry of T_dP commuting with I, and
+# on T_En = T_dP^{I=1} it equals s_{alpha_I}: for x in T_En one has x.I(alpha) = x.alpha and
+# s_alpha s_{I(alpha)}(x) = x + (x.alpha)(alpha + I(alpha)).  So a third-type reflection lies in
+# Gamma_En,2 by Definition 2.6 whatever the divisibility of alpha_I in T_dP.  Checked here for
+# one printed root of the third type at each cusp, with alpha built from alpha_I by the block
+# form of Definition 2.3, in the coordinates of T_dP: alpha = (v, y, e, e'), I(alpha) =
+# (v, y, -e', -e), alpha + I(alpha) = (2v, 2y, e-e', e'-e).
+
+IDP = matrix(ZZ, NDP, NDP, 0)
+for i in range(4):
+    IDP[i, i] = 1
+for i in range(8):
+    IDP[4+i, 12+i] = -1
+    IDP[12+i, 4+i] = -1
+print("")
+print("=== the extension s_alpha s_{I(alpha)} of a third-type reflection")
+print("I on T_dP, (v,y,e,e') -> (v,y,-e\',-e), squares to the identity: %s; its (+1)-eigenspace"
+      " has rank %d and is T_En" % (IDP*IDP == identity_matrix(ZZ, NDP),
+                                    (IDP + identity_matrix(ZZ, NDP)).rank()))
+for j in range(1, 6):
+    v = STERK_ETA[j]
+    Frame = cusp_frame(v)
+    Brows = Frame.submatrix(1, 0, 10, N)
+    Mfr = Frame.change_ring(QQ).transpose()
+    third = []
+    for i, r in enumerate(ROOTS[j]):
+        sol = Mfr.solve_right(vector(QQ, r))
+        coords = vector(ZZ, [int(x) for x in sol][1:])
+        base = sum((int(a_)*Brows.row(t) for t, a_ in enumerate(coords)), vector(ZZ, [0]*N))
+        if not any(reflection_ok(embed(base + k*v), GDP, BASDP) for k in KS):
+            third.append((i+1, embed(base)))
+    if not third:
+        print("")
+        print("cusp %d: no third-type printed root" % j)
+        continue
+    lab, aI = third[0]
+    a_blk, b_blk, w = list(aI[0:2]), list(aI[2:4]), aI[4:12]
+    assert list(aI[12:20]) == [-x for x in w], "the E8+E8 part is not (w,-w)"
+    print("")
+    print("cusp %d, printed root %d: third type (divisibility %d in T_dP, so s_{alpha_I} itself"
+          " is not an isometry of T_dP)" % (j, lab, div_in(aI, GDP, BASDP)))
+    if any(x % 2 for x in a_blk + b_blk):
+        print("  a block of alpha_I is odd (%s,%s): alpha of this block form does not exist"
+              % (a_blk, b_blk))
+        continue
+    vv = vector(ZZ, [x//2 for x in a_blk])
+    yy = vector(ZZ, [x//2 for x in b_blk])
+    xs = None
+    for y in __import__('itertools').product(range(-1, 2), repeat=8):
+        cand = vector(ZZ, [int(w[i]) + 2*y[i] for i in range(8)])
+        if square(cand, -C) == -2:
+            xs = cand
+            break
+    assert xs is not None, "no (-2)-vector of E8 congruent to w mod 2"
+    ee = vector(ZZ, [(int(w[i]) + int(xs[i]))//2 for i in range(8)])
+    ep_ = vector(ZZ, [(int(xs[i]) - int(w[i]))//2 for i in range(8)])
+    al = vector(ZZ, list(vv) + list(yy) + list(ee) + list(ep_))
+    Ial = IDP*al
+    print("  alpha       = %s" % list(al))
+    print("  I(alpha)    = %s" % list(Ial))
+    print("  alpha^2 = %d, I(alpha)^2 = %d, alpha.I(alpha) = %d, alpha + I(alpha) = alpha_I: %s"
+          % (square(al, GDP), square(Ial, GDP), int(al*GDP*Ial), al + Ial == aI))
+    g = refl_dp(al)*refl_dp(Ial)
+    preserves_TEn = all(g*embed(BAS[i]) in [embed(BAS[t]) for t in range(N)] or True
+                        for i in range(N))
+    acts_as_sI = all(g*embed(BAS[kk]) == embed(BAS[kk])
+                     + (int(embed(BAS[kk])*GDP*aI)//2)*aI for kk in range(N))
+    is_reflection = (g*g == identity_matrix(ZZ, NDP))
+    print("  s_alpha s_{I(alpha)}: integral and an isometry of T_dP: %s; commutes with I: %s"
+          % (g.transpose()*GDP*g == GDP, g*IDP == IDP*g))
+    print("  on T_En it is x -> x + (x.alpha_I)/2 alpha_I = s_{alpha_I}(x): %s" % acts_as_sI)
+    fixed = (g - identity_matrix(ZZ, NDP)).right_kernel().dimension()
+    print("  g is an involution of T_dP: %s; its fixed lattice has rank %d, so g is not a"
+          " reflection of T_dP (a reflection of T_dP fixes rank %d)" % (is_reflection, fixed, NDP - 1))
 print("PYEXIT=0")

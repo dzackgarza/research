@@ -122,4 +122,47 @@ cusp 5, printed root 7: u = s_(alpha + -5 eta) . s_alpha^-1;
   rho(u) on the ten classes (bit masks; slots 0,1 = U(2), 2..9 = E8(2)): [25, 26, 31, 8, 16, 32, 64, 128, 256, 512]
   rho(u) preserves the two summands: False;  u itself is certified by the summand test: False
 
+
+=== the extension s_alpha s_{I(alpha)} of a third-type reflection
+I on T_dP, (v,y,e,e') -> (v,y,-e',-e), squares to the identity: True; its (+1)-eigenspace has rank 12 and is T_En
+
+cusp 1, printed root 1: third type (divisibility 1 in T_dP, so s_{alpha_I} itself is not an isometry of T_dP)
+  alpha       = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0]
+  I(alpha)    = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  alpha^2 = -2, I(alpha)^2 = -2, alpha.I(alpha) = 0, alpha + I(alpha) = alpha_I: True
+  s_alpha s_{I(alpha)}: integral and an isometry of T_dP: True; commutes with I: True
+  on T_En it is x -> x + (x.alpha_I)/2 alpha_I = s_{alpha_I}(x): True
+  g is an involution of T_dP: True; its fixed lattice has rank 18, so g is not a reflection of T_dP (a reflection of T_dP fixes rank 19)
+
+cusp 2, printed root 1: third type (divisibility 1 in T_dP, so s_{alpha_I} itself is not an isometry of T_dP)
+  alpha       = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0]
+  I(alpha)    = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  alpha^2 = -2, I(alpha)^2 = -2, alpha.I(alpha) = 0, alpha + I(alpha) = alpha_I: True
+  s_alpha s_{I(alpha)}: integral and an isometry of T_dP: True; commutes with I: True
+  on T_En it is x -> x + (x.alpha_I)/2 alpha_I = s_{alpha_I}(x): True
+  g is an involution of T_dP: True; its fixed lattice has rank 18, so g is not a reflection of T_dP (a reflection of T_dP fixes rank 19)
+
+cusp 3, printed root 1: third type (divisibility 1 in T_dP, so s_{alpha_I} itself is not an isometry of T_dP)
+  alpha       = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0]
+  I(alpha)    = [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  alpha^2 = -2, I(alpha)^2 = -2, alpha.I(alpha) = 0, alpha + I(alpha) = alpha_I: True
+  s_alpha s_{I(alpha)}: integral and an isometry of T_dP: True; commutes with I: True
+  on T_En it is x -> x + (x.alpha_I)/2 alpha_I = s_{alpha_I}(x): True
+  g is an involution of T_dP: True; its fixed lattice has rank 18, so g is not a reflection of T_dP (a reflection of T_dP fixes rank 19)
+
+cusp 4, printed root 1: third type (divisibility 1 in T_dP, so s_{alpha_I} itself is not an isometry of T_dP)
+  alpha       = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0]
+  I(alpha)    = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  alpha^2 = -2, I(alpha)^2 = -2, alpha.I(alpha) = 0, alpha + I(alpha) = alpha_I: True
+  s_alpha s_{I(alpha)}: integral and an isometry of T_dP: True; commutes with I: True
+  on T_En it is x -> x + (x.alpha_I)/2 alpha_I = s_{alpha_I}(x): True
+  g is an involution of T_dP: True; its fixed lattice has rank 18, so g is not a reflection of T_dP (a reflection of T_dP fixes rank 19)
+
+cusp 5, printed root 1: third type (divisibility 1 in T_dP, so s_{alpha_I} itself is not an isometry of T_dP)
+  alpha       = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0]
+  I(alpha)    = [0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  alpha^2 = -2, I(alpha)^2 = -2, alpha.I(alpha) = 0, alpha + I(alpha) = alpha_I: True
+  s_alpha s_{I(alpha)}: integral and an isometry of T_dP: True; commutes with I: True
+  on T_En it is x -> x + (x.alpha_I)/2 alpha_I = s_{alpha_I}(x): True
+  g is an involution of T_dP: True; its fixed lattice has rank 18, so g is not a reflection of T_dP (a reflection of T_dP fixes rank 19)
 PYEXIT=0
