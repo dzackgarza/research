@@ -294,7 +294,6 @@ The subgroup $\Stab_{G_\ZZ}(D^+)$ of $G_\ZZ$ is the following.
 | $k$ odd | any | $\Sp(L)$ |
 
 For $k$ odd the domain $D$ is connected, so $D^+=D$.
-If $k=2m$ with $m$ odd, $h^{m,m}>0$ and $L$ is indefinite, then $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$.
 :::
 
 ::: {.proof}
@@ -305,28 +304,55 @@ The homeomorphism $\rho(\gamma)$ of $D$ permutes the components, so $\rho(\gamma
 For $k$ even, the table is @thm:period-domain-component-stabilizer.
 For $k$ odd, the form $Q$ is alternating and $G_\RR=\Sp(L_\RR)$ is the group of real points of a simply connected semisimple algebraic group [@Mil17, Example 23.61], so it is connected [@Mil17, Theorem 25.54].
 It acts transitively on $D$, so $D$ is connected, and $\Stab_{G_\ZZ}(D)=G_\ZZ=\Sp(L)$.
-The last statement is @prop:orientation-characters-reflections (4).
 :::
 
 For weight $2$ the sign is $\epsilon=+1$, and $W^{\mathrm{odd}}_F=\qty{H^{2,0}\oplus H^{0,2}}\cap L_\RR$ is the positive-definite real subspace of dimension $2h^{2,0}$ spanned by the real and imaginary parts of the vectors of $H^{2,0}$.
 The primitive local system of a family of polarized K3 surfaces has $h^{1,1}>0$, and the first row of the table is @prop:polarized-k3-monodromy-positive.
 
-::: {.remark #rmk:orth-plus-versus-component-stabilizer title="Comparison of $\Stab_{G_\ZZ}(D^+)$ with $\Orth^+(L)$"}
+::: {.proposition #prop:component-stabilizer-versus-orth-plus title="$\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$"}
 
-Let $k=2m$ and let $L$ be indefinite, so that $\Orth^+(L)$ is defined (@def:lattice-spinor-kernels).
-By @prop:orientation-characters-reflections (2) and (4), $\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$ and $\sigma_+\sigma_-=\det$.
-With the table of @cor:vhs-monodromy-stabilizes-component and $\Orth(L)=\Orth(L(-1))$ (@def:form-twist), the comparison is the following.
+Let $k=2m$, let $L$ be indefinite, and let $D^+$ be a connected component of $D$.
 
-| $m$ | Hodge numbers | $\Stab_{G_\ZZ}(D^+)$ | equal to $\Orth^+(L)$ |
-| --- | --- | --- | --- |
-| odd | $h^{m,m}>0$ | $\Orth^+(L)$ | always |
-| even | $h^{m,m}>0$ | $\Orth^+(L(-1))$ | exactly when $\det$ is trivial on $\Orth(L)$ |
-| odd or even | $h^{m,m}=0$ | $\Orth^+(L)\cap\ker\det$ | exactly when $\det$ is trivial on $\Orth^+(L)$ |
-
-In the second row, an isometry $g\in\Orth(L)$ with $\det g=-1$ has $\sigma_+(g)\neq\sigma_-(g)$, so it lies in exactly one of $\Orth^+(L)$ and $\Orth^+(L(-1))$.
-In particular the two groups differ when the rank of $L$ is odd, because $\det(-\id_L)=-1$.
-The equality in the first row is a theorem about the components of $D$ (@thm:period-domain-component-stabilizer), and it covers every weight-$2$ period domain with $h^{1,1}>0$, for every value of $h^{2,0}$.
+1. If $m$ is odd and $h^{m,m}>0$, then
+$$
+\Stab_{G_\ZZ}(D^+)=\Orth^+(L).
+$$
+2. If $m$ is even and $h^{m,m}>0$, then
+$$
+\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-=\Orth^+(L(-1)),
+$$
+and every $g\in\Orth(L)$ with $\det g=-1$ lies in exactly one of $\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$.
+   Consequently $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$ exactly when $\det$ is trivial on $\Orth(L)$, and the two groups differ when the rank of $L$ is odd.
+3. If $h^{m,m}=0$, then
+$$
+\Stab_{G_\ZZ}(D^+)=\Orth^+(L)\cap\ker\det,
+$$
+a subgroup of $\Orth^+(L)$ of index at most $2$, equal to $\Orth^+(L)$ exactly when $\det$ is trivial on $\Orth^+(L)$.
 :::
+
+::: {.proof}
+
+By @prop:orientation-characters-reflections (2) and (4),
+$$
+\Orth^+(L)=\Orth(L)\cap\ker\sigma_+,
+\qquad
+\sigma_+\sigma_-=\det.
+$$
+The sign of @thm:period-domain-component-stabilizer is $\epsilon=(-1)^{m+1}$.
+
+(1) Here $\epsilon=+1$, and the theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_+$.
+
+(2) Here $\epsilon=-1$, and the theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-$.
+The lattice $L(-1)$ of @def:form-twist is indefinite, $\Orth(L(-1))=\Orth(L)$, and the positive orientation character of $L(-1)_\RR$ is $\sigma_-$ (@def:orientation-characters), so $\Orth(L)\cap\ker\sigma_-=\Orth^+(L(-1))$.
+If $\det g=-1$, then $\sigma_+(g)\neq\sigma_-(g)$, so exactly one of $\sigma_+(g)$, $\sigma_-(g)$ is $+1$.
+If $\det$ is trivial on $\Orth(L)$, then $\sigma_+=\sigma_-$ on $\Orth(L)$ and the two kernels are equal.
+The isometry $-\id_L$ has determinant $-1$ when the rank of $L$ is odd.
+
+(3) The theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_+\cap\ker\sigma_-$, and $\ker\sigma_+\cap\ker\sigma_-=\ker\sigma_+\cap\ker\det$.
+The group $\Orth^+(L)\cap\ker\det$ is the kernel of $\det\colon\Orth^+(L)\to\theset{\pm1}$.
+:::
+
+Statement (1) covers every weight-$2$ period domain with $h^{1,1}>0$, for every value of $h^{2,0}$.
 
 ::: {.example #ex:weight-zero-vhs title="A weight-zero variation with monodromy outside $\ker\sigma_{-\epsilon}$"}
 
