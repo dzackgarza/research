@@ -347,8 +347,20 @@ $$
 ::: {.proof}
 
 The local system $R^kf_*\underline\ZZ$ carries the cup product, and the monodromy representation is compatible with it [@Voi07, §3.1.2]; the class $\omega|_{X_b}$ is locally constant, so $L_\omega$ and $Q$ are compatible with the local identifications of the stalks [@Voi07a, §10.1.3].
-The Lefschetz decomposition of each fibre is a decomposition of Hodge structures, and on the primitive part the Hodge filtration satisfies the orthogonality and positivity conditions of @def:polarized-integral-vhs [@Voi07a, Theorem 6.32, §10.1.3].
-The Hodge filtration is a filtration by holomorphic subbundles that satisfies condition (2) of @def:polarized-integral-vhs [@Sch73, §2].
+This proves (1).
+
+For (2), put $\mathcal H^j\definedas\bV^j\tensor_\ZZ\OO_B$, with its flat connection $\nabla$.
+The Hodge filtrations of the fibres form a filtration of $\mathcal H^j$ by holomorphic subbundles $F^p\mathcal H^j$ with $\nabla F^p\mathcal H^j\iscontainedin F^{p-1}\mathcal H^j\tensor\Omega_B$ [@Voi07a, Theorem 10.3].
+The operator $L_\omega^{n-k+1}$ is a flat morphism $\mathcal H^k\to\mathcal H^{2n-k+2}$ that maps $F^p\mathcal H^k$ to $F^{p+n-k+1}\mathcal H^{2n-k+2}$, because $\omega|_{X_b}$ has type $(1,1)$.
+On each fibre the Lefschetz decomposition is a decomposition of Hodge structures [@Voi07a, §6.2.3, §7.1.2], so the kernel of $L_\omega^{n-k+1}$ on $F^pH^k(X_b,\CC)$ is $F^p\cap H^k(X_b,\CC)_{\mathrm{prim}}$, and its dimension is a sum of primitive Hodge numbers.
+The Hodge numbers of the fibres are locally constant [@Voi07a, Proposition 9.20], and so are the primitive Hodge numbers, which are differences of Hodge numbers by the Lefschetz decomposition.
+A morphism of holomorphic vector bundles of constant rank has a holomorphic subbundle as kernel, so
+$$
+F^p\mathcal H^k_{\mathrm{prim}}\definedas F^p\mathcal H^k\cap\qty{\bV^k_{\mathrm{prim}}\tensor_\ZZ\OO_B}
+$$
+is a holomorphic subbundle of $\bV^k_{\mathrm{prim}}\tensor_\ZZ\OO_B$.
+The connection $\nabla$ preserves the flat subbundle $\bV^k_{\mathrm{prim}}\tensor_\ZZ\OO_B$, so condition (2) of @def:polarized-integral-vhs for $F^\bullet\mathcal H^k_{\mathrm{prim}}$ follows from the inclusion $\nabla F^p\mathcal H^k\iscontainedin F^{p-1}\mathcal H^k\tensor\Omega_B$.
+Condition (1) is the pair of Hodge--Riemann bilinear relations for the primitive cohomology of each fibre [@Voi07a, Theorem 6.32, §7.1.2].
 :::
 
 ::: {.corollary #cor:middle-cohomology-monodromy title="Monodromy of even-dimensional middle cohomology"}
@@ -442,3 +454,80 @@ By @prop:monodromy-hodge-automorphism, $T$ is not an automorphism of the primiti
 If the fibres have even dimension $2m$, the operator $T=s_\delta$ of @ex:picard-lefschetz-orientation has order $2$ and its $(-1)$-eigenspace is $\CC\delta$.
 It is an automorphism of the Hodge structure $\widetilde\Phi(\tilde t)$ exactly when $\delta\in H^{m,m}$ for that Hodge structure: a one-dimensional sub-Hodge structure of weight $2m$ has type $(m,m)$, and conversely $s_\delta$ preserves each $H^{p,q}$ when $\delta\in H^{m,m}$, as in the proof of @thm:period-domain-component-stabilizer.
 :::
+
+## Global constraints on the monodromy group {#sec-global-monodromy-constraints}
+
+@cor:vhs-monodromy-stabilizes-component and @prop:monodromy-hodge-automorphism hold on every connected complex manifold $B$.
+The results of this section need a hypothesis on $B$: it is a Zariski-open subset of a compact complex analytic space.
+A smooth connected quasi-projective variety satisfies it.
+
+Let $(\bL,Q,F^\bullet)$ be a polarized integral variation of Hodge structure of weight $k$ on such a $B$, with monodromy representation $\rho$ on $L\definedas\bL_s$, and write
+$$
+L_\QQ^\rho\definedas\theset{v\in L_\QQ\st\rho(\gamma)v=v\text{ for all }\gamma\in\pi_1(B,s)}
+$$
+for the space of invariants.
+Evaluation at $s$ identifies the flat global sections of $\bL\tensor\CC$ with $L_\CC^\rho=L_\QQ^\rho\tensor\CC$.
+
+::: {.theorem #thm:fixed-part title="Theorem of the fixed part"}
+
+Let $e$ be a flat global section of $\bL\tensor\CC$.
+
+1. The Hodge components $e^{p,q}$ of $e$ are flat global sections [@Sch73, Theorem (7.22)].
+2. If $e(b)$ has type $(p,q)$ at one point $b\in B$, then it has type $(p,q)$ at every point [@Sch73, Corollary (7.23)].
+:::
+
+::: {.corollary #cor:invariants-sub-hodge-structure title="The invariants are a constant sub-Hodge structure"}
+
+1. For every $\tilde t\in\widetilde B$, the subspace $L_\QQ^\rho\iscontainedin L_\QQ$ is a sub-Hodge structure of $\widetilde\Phi(\tilde t)$, and the induced Hodge structure on $L_\QQ^\rho$ is independent of $\tilde t$.
+2. The restriction of $Q$ to $L_\QQ^\rho$ is nondegenerate, and
+$$
+L_\QQ=L_\QQ^\rho\perp\qty{L_\QQ^\rho}^\perp
+$$
+is a decomposition into $\pi_1(B,s)$-stable sub-Hodge structures of $\widetilde\Phi(\tilde t)$ for every $\tilde t$.
+:::
+
+::: {.proof}
+
+Let $v\in L_\CC^\rho$ and let $e$ be the flat global section with $e(s)=v$.
+By @thm:fixed-part (1) each $e^{p,q}$ is flat, so its pullback to $\widetilde B$ is a constant vector $v^{p,q}\in L_\CC^\rho$, and $v^{p,q}$ is the $(p,q)$-component of $v$ for the Hodge structure $\widetilde\Phi(\tilde t)$, for every $\tilde t$.
+Hence $L_\CC^\rho=\bigoplus_{p+q=k}\qty{L_\CC^\rho\cap H^{p,q}_{\widetilde\Phi(\tilde t)}}$, and the summands do not depend on $\tilde t$.
+This proves (1).
+
+For (2), let $W\iscontainedin L_\QQ$ be a sub-Hodge structure of a Hodge structure $F$ polarized by $Q$, and put $W^{p,q}\definedas W_\CC\cap H^{p,q}_F$.
+By @def:polarized-integral-vhs the Hermitian form $(v,w)\mapsto Q(v,\bar w)$ is definite on each $H^{p,q}_F$, and $H^{p,q}_F$ and $H^{r,s}_F$ are orthogonal for it when $(p,q)\neq(r,s)$.
+It is therefore nondegenerate on $W_\CC=\bigoplus W^{p,q}$, so $Q$ is nondegenerate on $W$, and $W^\perp$ is a sub-Hodge structure with $L_\QQ=W\perp W^\perp$.
+Apply this to $W=L_\QQ^\rho$; the complement is $\pi_1(B,s)$-stable because $\rho$ takes values in $\Aut(L,Q)$.
+:::
+
+For the cohomology of the fibres of a smooth projective morphism $f\colon\mcx\to B$ of smooth quasi-projective varieties, @cor:invariants-sub-hodge-structure (1) is [@Voi07, Proposition 3.14, Corollary 4.25], and the invariants are the image of the restriction map $H^k\qty{\overline{\mcx},\QQ}\to H^k(X_s,\QQ)$ for every smooth projective compactification $\overline{\mcx}$ of $\mcx$ [@Voi07, Proposition 4.23, Theorem 4.24].
+
+::: {.theorem #thm:monodromy-semisimple title="Deligne's semisimplicity theorem"}
+
+The representation $\rho$ of $\pi_1(B,s)$ on $L_\CC$ is completely reducible [@Sch73, Theorem (7.25)].
+:::
+
+::: {.example #ex:unipotent-monodromy-not-global title="No unipotent global monodromy group"}
+
+Let $T\in\Aut(L,Q)$ be unipotent with $T\neq\id$.
+The cyclic group generated by $T$ is not the monodromy group of a polarized integral variation of Hodge structure on a base $B$ as above: the subspace $\ker(T-\id)\iscontainedin L_\CC$ is stable, nonzero and proper, and it has no stable complement, because $T$ would act on a complement with no fixed vector, whereas a unipotent operator on a nonzero space fixes a nonzero vector.
+For fibres of odd dimension, the operator $T\neq\id$ of @ex:picard-lefschetz-not-hodge is unipotent: $\langle\delta,\delta\rangle=0$, so $(T-\id)^2=0$.
+It is the monodromy operator of a variation on the punctured disc $\Delta^*$, which does not satisfy the hypothesis on $B$.
+The set of regular values of the pencil does satisfy it, so by @thm:monodromy-semisimple the monodromy group of the pencil is not generated by $T$.
+:::
+
+### The Mumford--Tate group of a very general fibre {#sec-mumford-tate-monodromy}
+
+Let $V$ be a rational vector space with a polarizable Hodge structure, and let $h\colon\CC^\times\to\GL(V_\RR)$ be the representation in which $z$ acts on $V^{p,q}$ by $z^p\bar z^q$ [@Huy16, Ch. 3, Remark 1.8].
+The *Mumford--Tate group* $\MT(V)$ is the smallest algebraic subgroup of $\GL(V)$ over $\QQ$ whose group of real points contains $h(\CC^\times)$ [@Huy16, Ch. 3, §3.4].
+A subspace of a tensor space $\bigoplus_iV^{\tensor n_i}\tensor(V^*)^{\tensor m_i}$ is a sub-Hodge structure exactly when $\MT(V)$ preserves it [@Huy16, Ch. 3, §3.4].
+
+For a family of polarized K3 surfaces $f\colon\mcx\to S$ over a smooth connected complex algebraic variety $S$, with monodromy representation $\rho\colon\pi_1(S,t)\to\Orth\qty{H^2(X_t,\QQ)}$, the *algebraic monodromy group* is the Zariski closure of $\rho\qty{\pi_1(S,t)}$ in $\Orth\qty{H^2(X_t,\QQ)}$ [@Huy16, Ch. 6, §4.3].
+
+::: {.theorem #thm:mumford-tate-contains-monodromy title="The Mumford--Tate group contains the algebraic monodromy group up to finite index"}
+
+Let $f\colon\mcx\to S$ be a family of polarized K3 surfaces over a smooth connected complex algebraic variety.
+There is a countable union $S'\subsetneq S$ of proper closed subvarieties such that for $t\in S\sm S'$ the group $\MT\qty{H^2(X_t,\QQ)}$ is constant and contains a subgroup of finite index of the algebraic monodromy group; it contains the identity component of the algebraic monodromy group [@Huy16, Ch. 6, Theorem 4.9].
+:::
+
+@prop:monodromy-hodge-automorphism bounds the monodromy operators that preserve the Hodge structure of one fibre: they form a finite group.
+@thm:mumford-tate-contains-monodromy is the statement in the other direction: at a very general point $t$, a subgroup of finite index of the monodromy group preserves every sub-Hodge structure of every tensor space of $H^2(X_t,\QQ)$, although its elements of infinite order do not preserve the Hodge structure of $H^2(X_t,\QQ)$ itself.
