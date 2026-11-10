@@ -368,10 +368,7 @@ Each generator fixes $e'$ and stabilizes $\varPi_1$, so $\rho(S_0)$ lies in both
 
 Let $L = \rho\bigl(\theset{\id\oplus w \st w\in W(E_8)}\bigr)$.
 In the coordinates of @prop:ten-plane-classes, $A_{E_8(2)} = \tfrac12E_8(2)/E_8(2)$ is $E_8/2E_8$, and $\id\oplus w$ acts as the identity on $A_{U(2)}$ and as the reduction $\bar w$ of $w$ on $E_8/2E_8$.
-If $\bar w = \id$, then for each $r\in E_8$ with $r\cdot r = 2$ the vector $w(r)-r$ lies in $2E_8$, whose nonzero vectors have norm at least $8$, while $(w(r)-r)\cdot(w(r)-r) = 4-2\,w(r)\cdot r\leq 8$ with equality only for $w(r) = -r$.
-So $w(r) = \pm r$ for every such $r$.
-If two simple roots $r_i, r_j$ are joined in the Dynkin diagram, then $r_i+r_j$ is a root, and its sign agrees with the signs of $r_i$ and $r_j$; the diagram is connected, so $w = \pm\id$.
-Hence $\abs{L}\geq\abs{W(E_8)}/2 = 348\,364\,800$.
+By @lem:weyl-E8-mod-two, $w\mapsto\bar w$ has kernel $\theset{\pm\id}$, so $\abs{L} = \abs{W(E_8)}/2 = 348\,364\,800$.
 
 The group $U_{d_1}$ of @lem:half-vector-eichler lies in $\rho(S_0)$ by @lem:half-vector-eichler(1) and (2), and it has order $2^8$.
 Since $d_1^\perp = \generators{d_1}\perp A_{E_8(2)}$, the quotient $d_1^\perp/\generators{d_1}$ is $A_{E_8(2)}$, on which $\id\oplus w$ acts by $\bar w$ and $U_{d_1}$ acts trivially (@lem:half-vector-eichler(4)).

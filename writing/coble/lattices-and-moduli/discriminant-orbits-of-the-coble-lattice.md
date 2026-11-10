@@ -145,6 +145,30 @@ By @lem:f2-quadratic-gauss-sum, $\bar q_M$ is of plus type with $2^{2m-1}+2^{m-1
 For $U$, $E_8$ and $E_{10}$ the rank is $2$, $8$ and $10$, which gives $3$, $136$ and $528$.
 :::
 
+::: {.lemma #lem:weyl-E8-mod-two title="The reduction of $W(E_8)$ modulo $2$"}
+
+Reduction modulo $2$ is a surjective homomorphism from $W(E_8)$ onto the isometry group $\operatorname{GO}^+_8(2)$ of $(E_8/2E_8,\bar q_{E_8})$, with kernel $\theset{\pm\id_{E_8}}$.
+In particular $\abs{\operatorname{GO}^+_8(2)} = \tfrac12\abs{W(E_8)} = 348\,364\,800$.
+:::
+
+::: {.proof}
+
+An isometry $w$ of $E_8$ satisfies $\beta(wx,wx) = \beta(x,x)$ and $w(2E_8) = 2E_8$, so its reduction $\bar w$ is an isometry of $\bar q_{E_8}$, and $w\mapsto\bar w$ is a homomorphism.
+The roots $e_1\pm e_2$, $e_3\pm e_4$, $e_5\pm e_6$, $e_7\pm e_8$ of @ex:E8-roots are pairwise orthogonal and span $E_8\tensor\QQ$, so the product of their reflections is $-\id_{E_8}$; it lies in $W(E_8)$ and reduces to the identity.
+
+Let $\bar w = \id$ and let $r$ be a root, so $r^2 = -2$ and $w(r)-r\in 2E_8$.
+A nonzero $x = 2y\in 2E_8$ has $x^2 = 4y^2\leq -8$, because $E_8$ is even and negative definite (@thm:E8-characterization).
+By the Cauchy--Schwarz inequality for the positive-definite form $-\beta$, $\abs{\beta(w(r),r)}\leq 2$, with $\beta(w(r),r) = 2$ only for $w(r) = -r$.
+So $(w(r)-r)^2 = -4-2\beta(w(r),r)\geq -8$, with equality only for $w(r) = -r$, and therefore $w(r) = \pm r$.
+If two simple roots $r_i$, $r_j$ are joined in the Dynkin diagram, then $r_i+r_j$ has square $-2$ and is a root, so $w(r_i+r_j) = \pm(r_i+r_j)$ forces the signs of $r_i$ and $r_j$ to agree.
+The Dynkin diagram of $E_8$ is connected and the simple roots form a basis of $E_8$, so $w = \pm\id_{E_8}$.
+Hence the kernel is $\theset{\pm\id_{E_8}}$, and the image has order $\tfrac12\abs{W(E_8)} = 348\,364\,800$.
+
+By @lem:even-unimodular-mod-two-form, $\bar q_{E_8}$ is a quadratic form of plus type on $\bF_2^8$ with nondegenerate polar form, so its isometry group is $\operatorname{GO}^+_8(2)$.
+Its order is $2N$ with $N = q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ at $q = 2$, $m = 4$ [@CCN+85, Ch. 2, §4], that is, $2\cdot2^{12}\cdot15\cdot3\cdot15\cdot63 = 348\,364\,800$.
+So the image is all of $\operatorname{GO}^+_8(2)$.
+:::
+
 ::: {.proposition #prop:coble-q-fibers title="The fibers of $Q$"}
 
 The four fibers of $Q$ on the $2^{11} = 2048$ classes of $B/2B$ have cardinalities

@@ -1001,7 +1001,7 @@ So the two images are equal, and by @prop:gamma-co-in-heegner-group(2) the index
 By @prop:polarization-stabilizer-enriques, $\Stab_{\Orth(S_\En)}(h)\iso\Orth(h^{\perp C}) = \Orth\bigl(\generators{-2}\oplus E_8\bigr) = \theset{\pm1}\times W(E_8)$, of order $2\abs{W(E_8)}$; the first factor is the reflection $s_{u_0-w_0}$ in the $\generators{-2}$ direction $u_0-w_0$ of $h^{\perp C}$, and the second is $W(E_8)$ acting on $E_8$.
 In the coordinates of $C$ — the module of $S_\En = C(2)$ — an isometry acts on $A_{S_\En} = C/2C$ by its reduction modulo $2$ (@prop:twisted-unimodular-discriminant), each factor acting trivially on the other's summand.
 The two factors behave differently there: $s_{u_0-w_0}$ acts nontrivially, since it moves the class of $u_0/2$ (@lem:polarization-stabilizer-discriminant-nontrivial), whereas the element $\id_U\oplus(-\id_{E_8})$, which is the image of $-\id_{E_8} = w_0\in W(E_8)$ and not of $s_{u_0-w_0}$, is trivial modulo $2$.
-The $W(E_8)$ factor meets the kernel in $\theset{\pm1}$, because the reduction $W(E_8)\to\Orth(E_8/2E_8)$ has kernel $\theset{\pm1}$ (the identification $W(E_8)\cong 2\Orth^+_8(2)\cdot 2$ of [@CCN+85], under which that reduction is onto $\Orth^+_8(2)\cdot 2$ of order $\abs{W(E_8)}/2$), and $\pm\id_{E_8}$ are the two elements of that kernel.
+The $W(E_8)$ factor meets the kernel in $\theset{\pm\id_{E_8}}$, the kernel of the reduction $W(E_8)\to\Orth(E_8/2E_8)$ (@lem:weyl-E8-mod-two).
 Hence the kernel of $\Stab_{\Orth(S_\En)}(h)\to\Orth(A_{S_\En})$ is $\theset{1,\ \id_U\oplus(-\id_{E_8})}$, of order $2$, and
 $$
 \abs{G_\Co} = \frac{2\abs{W(E_8)}}{2} = \abs{W(E_8)} = 696\,729\,600
@@ -1204,7 +1204,7 @@ Then
 
 (1) $q_{U(2)}$ takes the values $0,0,0,1$ on the four classes of $A_{U(2)}$: the three nonzero classes are $[e'/2]$, $[f'/2]$ and $[(e'+f')/2]$, with squares $0$, $0$ and $1$, and every pair of distinct nonzero classes has $b = \tfrac12$ in $\QQ/\ZZ$.
 An isometry must therefore fix the class of value $1$ and may or may not swap the other two, and both maps preserve $b$; so $\abs{\Orth(q_{U(2)})} = 2$.
-For $A_{E_8(2)} = E_8/2E_8$, the reduction $W(E_8)\to\Orth(E_8/2E_8)$ is onto with kernel $\theset{\pm1}$ ([@CCN+85], as in @prop:gamma-co-heegner-strict), so the image has order $\tfrac12\abs{W(E_8)} = 348\,364\,800$, and that is all of the isometry group, since $\abs{\Orth^+_8(2)} = 2q^{m(m-1)}(q^m-1)\prod_{i=1}^{m-1}(q^{2i}-1)$ at $q = 2$, $m = 4$ is $2\cdot 2^{12}\cdot 15\cdot 3\cdot 15\cdot 63 = 348\,364\,800$.
+For $A_{E_8(2)} = E_8/2E_8$, the isometry group is $\operatorname{GO}^+_8(2)$, the image of the reduction of $W(E_8)$, of order $\tfrac12\abs{W(E_8)} = 348\,364\,800$ (@lem:weyl-E8-mod-two).
 Hence $\abs{P} = 2\cdot 348\,364\,800 = 696\,729\,600 = \abs{W(E_8)}$.
 
 (2) $S_\En = U(2)\oplus E_8(2)$, so $A_{S_\En} = A_{U(2)}\perp A_{E_8(2)}$.
@@ -1270,7 +1270,7 @@ By @lem:odd-unimodular-isotropic-splitting(1), $B = P\perp K$ with $v\in P\cong\
 $K(2)$ is even, indefinite and $2$-elementary of rank $9$, so $\Orth(K)\to\Orth(q_{K(2)})$ is onto (@thm:two-elementary-surjectivity), and $q_{K(2)}\iso q|_{c^{\perp}/c}$. So $\rho(\Stab_{\Orth(B)}(v))$ maps onto $\Stab_{\Orth(q)}(c)/N$, where $N$ is the kernel of $\Stab_{\Orth(q)}(c)\to\Orth(c^{\perp}/c)$.
 By @lem:isotropic-classes-lift(2) and @prop:coble-discriminant-group, $\abs{\Stab_{\Orth(q)}(c)} = \abs{\Orth(q)}/527$, so
 $$
-\abs{N} = \frac{\abs{\Stab_{\Orth(q)}(c)}}{\abs{\Orth(c^{\perp}/c)}} = \frac{\abs{\Orth(q)}/527}{\abs{\Orth^+_8(2)}} = \frac{89\,181\,388\,800}{348\,364\,800} = 2^8 .
+\abs{N} = \frac{\abs{\Stab_{\Orth(q)}(c)}}{\abs{\Orth(c^{\perp}/c)}} = \frac{\abs{\Orth(q)}/527}{\abs{\operatorname{GO}^+_8(2)}} = \frac{89\,181\,388\,800}{348\,364\,800} = 2^8 .
 $$
 The images $\rho(E(v,k))$ lie in $N$, and $\rho(E(v,k)) = \id$ if and only if $k\in\ZZ v+2B$, so they form a group isomorphic to $K_{\mathrm{ev}}/2K$, of order $2^8 = \abs{N}$. Hence $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}(c)$.
 
@@ -1404,7 +1404,7 @@ The map $w\mapsto\rho(E_B(e_1,w))$ is a homomorphism on $\I_{1,8}^{\mathrm{ev}}$
 By [@Vin72, Table 5], $\Orth^+(\I_{1,8})$ is the reflection group of the chamber, whose diagram has no symmetry; so $\Orth(K) = \set{\pm1}\times W$ and $S = \langle W,\ \id_{U_1}\oplus(-\id_K),\ \ker\pi\rangle$.
 The element $\id_{U_1}\oplus(-\id_K)$ is the identity modulo $2B$, so $\rho$ kills it, and $\rho(S) = \rho(W)\cdot\rho(\ker\pi)$, with $\rho(\ker\pi)$ normal because $\ker\pi$ is normal in $S$.
 By @lem:cusp-vector-stabilizer-image(1), @lem:isotropic-classes-lift(2) and @prop:coble-discriminant-group, $\abs{\rho(S)} = \abs{\Stab_{\Orth(q)}([e_1/2])} = \abs{\Orth(q)}/527 = 89\,181\,388\,800$.
-The group $\rho(W) = \rho(\Orth(K))$ acts trivially on $U_1/2U_1$, and on $K/2K$ it is the image of $\Orth(K)\to\Orth(q_{K(2)})$, which is onto by @thm:two-elementary-surjectivity; so $\abs{\rho(W)} = \abs{\Orth(q_{K(2)})} = \abs{\Orth^+_8(2)} = 348\,364\,800$, as in the proof of @lem:cusp-vector-stabilizer-image(1).
+The group $\rho(W) = \rho(\Orth(K))$ acts trivially on $U_1/2U_1$, and on $K/2K$ it is the image of $\Orth(K)\to\Orth(q_{K(2)})$, which is onto by @thm:two-elementary-surjectivity; so $\abs{\rho(W)} = \abs{\Orth(q_{K(2)})} = \abs{\operatorname{GO}^+_8(2)} = 348\,364\,800$, as in the proof of @lem:cusp-vector-stabilizer-image(1).
 Hence $c = \abs{\rho(W)}\cdot\abs{\rho(\ker\pi)}/\abs{\rho(S)} = 348\,364\,800\cdot256/89\,181\,388\,800 = 1$.
 
 (3) The element $g = \id_{U_1}\oplus(-\id_K)$ fixes $e_1$, acts as $-1$ on $K$, is trivial on $A_{T_\Co}$ and so lies in $\ker\rho_{T_\Co}\cap S$; its image in $\Orth(K)$ is $-\id_K$, which is not in $\Orth^+(K)$ because $\I_{1,8}$ has positive index $1$ and $\spinornorm_\bR(-\id) = [(-1)^1] = -1$ (@lem:minus-identity-spinor-norm).
