@@ -242,6 +242,32 @@ For $w\in V_1$, the isometry $s_w\oplus\id_{V_2}$ is the reflection of $V$ in $w
 Statement (4) is (2) together with $\Orth^+(L)=\Theta_\bR(L)$ from @def:lattice-spinor-kernels.
 :::
 
+::: {.proposition #prop:orth-plus-definite title="$\Orth^+$ of a definite lattice"}
+
+Let $L$ be a lattice of signature $(p,q)$.
+
+1. If $p=0$, then
+$$
+\Orth^+(L)=\Orth(L).
+$$
+2. If $q=0$, then
+$$
+\Orth^+(L)=\SO_\bR(L)=\theset{g\in\Orth(L)\st\det g=1}.
+$$
+:::
+
+::: {.proof}
+
+Put $V\definedas L_\bR$.
+By @prop:orientation-characters-reflections (4), $\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$.
+
+(1) If $p=0$, then $\Gr^+(V)=\theset{0}$, and for $W=0$ the map $\pi_W\circ g|_W$ is the identity of the zero space, of determinant $1$.
+The formula $\sigma_+(g)=\sgn\det\qty{\pi_W\circ g|_W}$ after @def:orientation-characters gives $\sigma_+(g)=+1$ for every $g\in\Orth(V)$.
+
+(2) If $q=0$, then (1) for $(V,-\beta)$ gives $\sigma_-(g)=+1$ for every $g\in\Orth(V)$, and $\sigma_+=\sigma_+\sigma_-=\det$ by @prop:orientation-characters-reflections (2).
+The kernel of $\det$ on $\Orth(L)$ is $\SO_\bR(L)$ (@def:lattice-spinor-kernels).
+:::
+
 ::: {.lemma #lem:orientation-characters-identity-component title="The common kernel of the orientation characters is the identity component"}
 
 $$
