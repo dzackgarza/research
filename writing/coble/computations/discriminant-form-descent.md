@@ -16,6 +16,7 @@ notes: |-
 
 # Discriminant-form descent {#sec-discriminant-descent}
 
+
 A counting problem about primitive isotropic vectors of an indefinite lattice is often attacked by passing to the discriminant group, where the set of classes is finite and the isometries act through the representation $\rho_{L,q}$.
 
 ## The mechanism {#sec-descent-mechanism}
@@ -303,11 +304,11 @@ That is @lem:zero-datum-divisibility, which identifies the datum $0$ with divisi
    b. for every primitive isotropic plane $P$, $S=\rho(\Stab_{\Orth(L)}(P))=F=\Stab_Q(D(P))$, so the planes over each $M$-orbit of discriminant images form one $\Gamma$-orbit;
    c. $\Gamma$ and $\Gamma^+$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags;
    d. the divisibility-one line orbit is incident exactly to the four plane orbits of [@Ste91, §4.3.16], although $0\subseteq D(P)$ for all nine plane orbits.
-2. Let $L=T_\Co=B(2)$ with $B=U_1\perp U_2\perp\generators{-1}^{7}$, $\Gamma=\ker\rho$ and $\Gamma^+=\Gamma_\Co=\ker\rho\intersect\Orth^+(B)$. Then $Q=\Orth(q)$, and:
-   a. $\rho(\Gamma_\Co)=1$, so $\Gamma_{(C,J)}=\Gamma_\Co$ for every chain $(C,J)$ of @lem:chain-stabilizer;
+2. Let $L=T_\Co=B(2)$ with $B=U_1\perp U_2\perp\generators{-1}^{7}$, $\Gamma=\ker\rho$ and $\Gamma^+=\widetilde\Orth^+(T_\Co)=\ker\rho\intersect\Orth^+(B)$. Then $Q=\Orth(q)$, and:
+   a. $\rho(\widetilde\Orth^+(T_\Co))=1$, so $\Gamma_{(C,J)}=\widetilde\Orth^+(T_\Co)$ for every chain $(C,J)$ of @lem:chain-stabilizer;
    b. for the standard plane $P=\generators{e_1,e_2}$ with $J=D(P)$, $[F:S]=8$, so the planes over $J$ form eight $\ker\rho$-orbits;
-   c. $\ker\rho$ and $\Gamma_\Co$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags;
-   d. for each $\Gamma_\Co$-orbit of planes over $J$ and each nonzero $c\in J$, there is exactly one $\Gamma_\Co$-orbit of flags $(\ell\subset P')$ with $P'$ in that orbit and $D(\ell)=\generators{c}$.
+   c. $\ker\rho$ and $\widetilde\Orth^+(T_\Co)$ have the same orbits on primitive isotropic lines, on primitive isotropic planes and on flags;
+   d. for each $\widetilde\Orth^+(T_\Co)$-orbit of planes over $J$ and each nonzero $c\in J$, there is exactly one $\widetilde\Orth^+(T_\Co)$-orbit of flags $(\ell\subset P')$ with $P'$ in that orbit and $D(\ell)=\generators{c}$.
 :::
 
 ::: {.proof}
@@ -319,11 +320,11 @@ Item c is @thm:enriques-spinor-orbit-agreement.
 Item d is items 1, 3 and 4 of @thm:enriques-degree-two-arithmetic together with @lem:zero-datum-divisibility: the line orbit of type $1$ is the divisibility-one orbit, and the plane orbits whose labels contain $1$ are the four planes of [@Ste91, §4.3.16].
 
 Part 2. The group $Q$ is $\Orth(q)$ by @thm:two-elementary-surjectivity.
-Item a holds because $\Gamma_\Co\subseteq\ker\rho$, so $\rho(\Gamma_\Co)=1\leq F_{C,J}$.
+Item a holds because $\widetilde\Orth^+(T_\Co)\subseteq\ker\rho$, so $\rho(\widetilde\Orth^+(T_\Co))=1\leq F_{C,J}$.
 Item b is item 4 of @thm:coble-plane-stabilizer-image, and the count is its item 5 with $H=1$: the double cosets $1\backslash F/S$ number $[F:S]=8$.
-The group $\Gamma_\Co$ does not contain $\ker\rho$, so @thm:descent-double-coset is applied at $\Gamma=\ker\rho$ and @prop:descent-spinor-fibre then passes to $\Gamma^+=\Gamma_\Co$.
+The group $\widetilde\Orth^+(T_\Co)$ does not contain $\ker\rho$, so @thm:descent-double-coset is applied at $\Gamma=\ker\rho$ and @prop:descent-spinor-fibre then passes to $\Gamma^+=\widetilde\Orth^+(T_\Co)$.
 Its hypothesis is part 4 of @thm:cusp-lifting: each line, plane and flag has a spinor-negative element of $\ker\rho$ in its stabilizer. This gives item c.
-Item d is item 2 of @prop:coble-arithmetic-flag-incidence, which is item 2 of @prop:flag-incidence-bijection with $\Gamma_{(C,J)}=\Gamma_\Co$ and $\Gamma_{P,C}=\Stab_{\Gamma_\Co}(P)$ by item a.
+Item d is item 2 of @prop:coble-arithmetic-flag-incidence, which is item 2 of @prop:flag-incidence-bijection with $\Gamma_{(C,J)}=\widetilde\Orth^+(T_\Co)$ and $\Gamma_{P,C}=\Stab_{\widetilde\Orth^+(T_\Co)}(P)$ by item a.
 :::
 
 ## The stabilizer's discriminant image is a congruence quotient {#sec-descent-congruence}

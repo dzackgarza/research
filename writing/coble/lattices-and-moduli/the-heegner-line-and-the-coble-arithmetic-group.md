@@ -78,7 +78,7 @@ The double coset set controlling the split of the full $\Orth(\ten)$-orbit by th
 
 For the Heegner vector $\delta$ of @lem:coble-heegner-vector, define
 $$
-\Gamma_\Co^\En(\delta)
+\widetilde\Orth^+(T_\Co)^\En(\delta)
 \definedas \im\Bigl(
 \Stab_{\gent}(\ZZ\delta)
 \too
@@ -824,11 +824,12 @@ The scalar $-1$ holds exactly when $\omega\perp\langle H,b\rangle$. Since $H\in 
 $T_\Co$ has signature $(2,9)$ and $2t$ has negative square, so its orthogonal complement in $T_\Co$ is nondegenerate of rank $10$ and signature $(2,8)$.
 :::
 
-## Which of the arithmetic groups is $\Gamma_\Co$ {#sec-gamma-co-comparison}
+
+## Which of the arithmetic groups is $\widetilde\Orth^+(T_\Co)$ {#sec-gamma-co-comparison}
 
 The **stable group** is
 $$
-\Gamma_\Co \definedas \Orth^+(T_\Co)^* = \Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}.
+\widetilde\Orth^+(T_\Co) \definedas \Orth^+(T_\Co)^* = \Orth^+(T_\Co)\intersect\discriminantkernel{T_\Co}.
 $$
 
 ::: {.proposition #prop:gamma-co-in-heegner-group title="The stable group inside the Heegner group"}
@@ -848,27 +849,27 @@ $$
 the part of the image of @def:gamma-co-en that lies in $\Orth^+(T_\Co)$.
 Then
 
-1. $\Gamma_\Co\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$, by $\varphi\mapsto\varphi\oplus\id_{\ZZ\delta}$;
-2. $\Gamma_\Co = \ker\bigl(\Gamma^{\mathrm{Hdg}}_\Co\too\Orth(A_{T_\Co}, q_{T_\Co})\bigr)$, so $\Gamma_\Co$ is normal in $\Gamma^{\mathrm{Hdg}}_\Co$ and
+1. $\widetilde\Orth^+(T_\Co)\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$, by $\varphi\mapsto\varphi\oplus\id_{\ZZ\delta}$;
+2. $\widetilde\Orth^+(T_\Co) = \ker\bigl(\Gamma^{\mathrm{Hdg}}_\Co\too\Orth(A_{T_\Co}, q_{T_\Co})\bigr)$, so $\widetilde\Orth^+(T_\Co)$ is normal in $\Gamma^{\mathrm{Hdg}}_\Co$ and
    $$
-   [\Gamma^{\mathrm{Hdg}}_\Co : \Gamma_\Co]
+   [\Gamma^{\mathrm{Hdg}}_\Co : \widetilde\Orth^+(T_\Co)]
    = \abs{\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)}
    \leq \abs{W(E_8)} = 696\,729\,600
    ;
    $$
-3. $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma_\Co$ if and only if every element of $\gent$ that preserves the Heegner line acts trivially on the discriminant form of $T_\Co$.
+3. $\Gamma^{\mathrm{Hdg}}_\Co = \widetilde\Orth^+(T_\Co)$ if and only if every element of $\gent$ that preserves the Heegner line acts trivially on the discriminant form of $T_\Co$.
 :::
 
 ::: {.proof}
 
-(1) Let $\varphi\in\Gamma_\Co$.
+(1) Let $\varphi\in\widetilde\Orth^+(T_\Co)$.
 The isometry $g_T \definedas \varphi\oplus\id_{\ZZ\delta}$ of $\ZZ\delta\oplus T_\Co$ acts as the identity on $A_{\ZZ\delta}\oplus A_{T_\Co}$: on the second summand because $\varphi\in\ker\rho_{T_\Co}$, and on the first because $A_{\ZZ\delta}\cong\ZZ/2\ZZ$ has trivial automorphism group.
 It therefore preserves the gluing subgroup $\generators{(\tfrac12\delta, \tfrac12\zeta)}$ of @lem:coble-heegner-vector, and by @cor:liftable-automorphisms it extends over the overlattice $\ten$ while fixing $\ZZ\delta$ pointwise.
 The extension acts trivially on $A_{\ten} = H^{\perp}/H$, since that is a subquotient of the discriminant group on which $g_T$ is the identity.
 In the description of @prop:gamma-en-two-gluing take $g_S = \id_{S_\En}$: it fixes $h$, and $\bar g_T\circ\gamma = \gamma = \gamma\circ\bar g_S$ because $\bar g_T = \id$.
 Hence $g_T\in\gent$ by that proposition, and $g_T(\delta) = \delta$, so $g_T\in\Stab_{\gent}(\ZZ\delta)$ and its restriction to $T_\Co$ is $\varphi$.
 
-(2) An element of $\Gamma^{\mathrm{Hdg}}_\Co$ is an isometry of $T_\Co$, so its image under $\rho_{T_\Co}$ is defined without a choice of lift, and by (1) the kernel is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \Gamma_\Co$.
+(2) An element of $\Gamma^{\mathrm{Hdg}}_\Co$ is an isometry of $T_\Co$, so its image under $\rho_{T_\Co}$ is defined without a choice of lift, and by (1) the kernel is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \widetilde\Orth^+(T_\Co)$.
 The index equals the order of the image by the first isomorphism theorem.
 
 For the bound, the image of $\Stab_{\gent}(\ZZ\delta)$ is a subgroup of that of $\gent$.
@@ -894,7 +895,7 @@ $$
 ,
 $$
 the part of the image of that intersection that lies in $\Orth^+(T_\Co)$.
-Then $\Gamma_\Co\iscontainedin\Gamma^\theta_\Co$, $\Gamma_\Co = \ker\bigl(\Gamma^\theta_\Co\too\Orth(A_{T_\Co},q_{T_\Co})\bigr)$, and $[\Gamma^\theta_\Co : \Gamma_\Co] = \abs{\rho_{T_\Co}(\Gamma^\theta_\Co)}$.
+Then $\widetilde\Orth^+(T_\Co)\iscontainedin\Gamma^\theta_\Co$, $\widetilde\Orth^+(T_\Co) = \ker\bigl(\Gamma^\theta_\Co\too\Orth(A_{T_\Co},q_{T_\Co})\bigr)$, and $[\Gamma^\theta_\Co : \widetilde\Orth^+(T_\Co)] = \abs{\rho_{T_\Co}(\Gamma^\theta_\Co)}$.
 :::
 
 ::: {.proof}
@@ -902,37 +903,37 @@ Then $\Gamma_\Co\iscontainedin\Gamma^\theta_\Co$, $\Gamma_\Co = \ker\bigl(\Gamma
 By @prop:theta-co-exists an isometry of $\lkt$ commutes with $\theta_\Co$ exactly when it preserves both eigenspaces, and by @thm:automorphism-lifting-criterion a pair $(g_S, g_T)\in\Orth(S_\Co)\times\Orth(T_\Co)$ that preserves both extends over the overlattice $\lkt$ of $S_\Co\oplus T_\Co$ exactly when $\bar g_T\circ\gamma_\Co = \gamma_\Co\circ\bar g_S$.
 So $Z_{\Orth(\lkt)}(\theta_\Co)$ is the set of such pairs.
 
-For $\varphi\in\Gamma_\Co$ the pair $(\id_{S_\Co}, \varphi)$ satisfies the condition, since $\bar\varphi = \id$; and $\id_{S_\Co}$ fixes $\tilde h_\Co$.
+For $\varphi\in\widetilde\Orth^+(T_\Co)$ the pair $(\id_{S_\Co}, \varphi)$ satisfies the condition, since $\bar\varphi = \id$; and $\id_{S_\Co}$ fixes $\tilde h_\Co$.
 So $\varphi$ lies in $\Gamma^\theta_\Co$, which is the inclusion.
-An element of $\Gamma^\theta_\Co$ is an isometry of $T_\Co$, so its discriminant image is defined without a choice of lift, and the kernel is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \Gamma_\Co$; the index is the order of the image.
+An element of $\Gamma^\theta_\Co$ is an isometry of $T_\Co$, so its discriminant image is defined without a choice of lift, and the kernel is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \widetilde\Orth^+(T_\Co)$; the index is the order of the image.
 :::
 
 ::: {.lemma #lem:gamma-co-is-tilde-o-plus title="The stable group is $\widetilde\Orth^+(T_\Co)$, definitionally"}
 
 With $\Orth^+(L)\definedas\Theta_\bR(L)$ of @def:lattice-spinor-kernels and $\widetilde\Orth^+(L)$ the pullback of $\widetilde\Orth(L)=\ker\rho_L$ along the inclusion $\Orth^+(L)\injects\Orth(L)$,
 $$
-\Gamma_\Co = \Orth^+(T_\Co)^* = \widetilde\Orth^+(T_\Co)
+\widetilde\Orth^+(T_\Co)
 .$$
 :::
 
 ::: {.proof}
 
-The left side is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ by the definition of $\Gamma_\Co$ above, and the right side is the same intersection by the definition of a pullback along an inclusion: the pullback of $\ker\rho_L$ along $\Orth^+(L)\injects\Orth(L)$ is the set of those $g\in\Orth^+(L)$ whose image lies in $\ker\rho_L$.
+The left side is $\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ by the definition of $\widetilde\Orth^+(T_\Co)$ above, and the right side is the same intersection by the definition of a pullback along an inclusion: the pullback of $\ker\rho_L$ along $\Orth^+(L)\injects\Orth(L)$ is the set of those $g\in\Orth^+(L)$ whose image lies in $\ker\rho_L$.
 :::
 
-::: {.proposition #prop:gamma-co-two-definitions title="The two further descriptions of $\Gamma_\Co$ are decided by their finite images"}
+::: {.proposition #prop:gamma-co-two-definitions title="The two further descriptions of $\widetilde\Orth^+(T_\Co)$ are decided by their finite images"}
 
 Let $\Gamma^{\mathrm{Hdg}}_\Co$ and $\Gamma^\theta_\Co$ be the groups of @prop:gamma-co-in-heegner-group and @prop:gamma-co-in-theta-centralizer.
 Then:
 
-1. $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma_\Co$ if and only if $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) = 1$, and $\Gamma^\theta_\Co = \Gamma_\Co$ if and only if $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr) = 1$;
+1. $\Gamma^{\mathrm{Hdg}}_\Co = \widetilde\Orth^+(T_\Co)$ if and only if $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) = 1$, and $\Gamma^\theta_\Co = \widetilde\Orth^+(T_\Co)$ if and only if $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr) = 1$;
 2. both $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr)$ and $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)$ are subgroups of the finite group $\Orth(A_{T_\Co}, q_{T_\Co})$, of order $46\,998\,591\,897\,600$ by @prop:coble-discriminant-group;
 3. $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr)\neq1$ exactly when some $g\in Z_{\Orth(\lkt)}(\theta_\Co)\intersect\Stab_{\Orth(\lkt)}(\tilde h_\Co)$ has $\restrictionof{g}{T_\Co}$ acting nontrivially on $A_{T_\Co}$, whether or not $\restrictionof{g}{T_\Co}$ lies in $\Orth^+(T_\Co)$.
 :::
 
 ::: {.proof}
 
-(1) is the second claim of each of the two propositions, which identifies $\Gamma_\Co$ with the kernel of the respective finite image, together with the first isomorphism theorem; a kernel is everything exactly when the image is trivial.
+(1) is the second claim of each of the two propositions, which identifies $\widetilde\Orth^+(T_\Co)$ with the kernel of the respective finite image, together with the first isomorphism theorem; a kernel is everything exactly when the image is trivial.
 (2) an isometry of $T_\Co$ has a discriminant image, so each image is a subgroup of the finite group acting on $A_{T_\Co}$, and the order of that group is the one @prop:coble-discriminant-group computes.
 (3) unwinds the definition of $\Gamma^\theta_\Co$ as the set of restrictions of the elements of that intersection, so a nontrivial image is a restriction acting nontrivially on $A_{T_\Co}$, and conversely.
 The definition of $\Gamma^\theta_\Co$ also requires $\restrictionof{g}{T_\Co}\in\Orth^+(T_\Co)$, and this can be arranged. Let $w\in T_\Co$ have $w^2 = 2$ — $\zeta$ of the $\generators{2}$ summand, for instance — so that $s_w\in\ker\rho_{T_\Co}$ and $\spinornorm_\bR(s_w) = [-1]$ by @prop:gamma-co-reflective-set(2) and its proof.
@@ -962,11 +963,11 @@ Hence $\rho_{S_\En}(s_v)\neq\id$ while $s_v(h) = h$, which is the claim.
 
 ::: {.proposition #prop:gamma-co-heegner-strict title="The Heegner description is strictly larger, by exactly $\abs{W(E_8)}$"}
 
-The inclusion $\Gamma_\Co\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group is strict, and
+The inclusion $\widetilde\Orth^+(T_\Co)\iscontainedin\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group is strict, and
 $$
 \rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) \;=\; G_\Co \definedas \rho_{S_\En}\bigl(\Stab_{\Orth(S_\En)}(h)\bigr),
 \qquad
-[\Gamma^{\mathrm{Hdg}}_\Co:\Gamma_\Co] \;=\; \abs{G_\Co} \;=\; \abs{W(E_8)} \;=\; 696\,729\,600
+[\Gamma^{\mathrm{Hdg}}_\Co:\widetilde\Orth^+(T_\Co)] \;=\; \abs{G_\Co} \;=\; \abs{W(E_8)} \;=\; 696\,729\,600
 ,$$
 the two finite images being identified through the gluing anti-isometry $\gamma$.
 :::
@@ -1022,9 +1023,9 @@ $$
 $$
 and consequently
 $$
-\Gamma^\theta_\Co = \Gamma_\Co \iff \rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr) = 1,
+\Gamma^\theta_\Co = \widetilde\Orth^+(T_\Co) \iff \rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr) = 1,
 \qquad
-[\Gamma^\theta_\Co : \Gamma_\Co] = \abs{\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)}.
+[\Gamma^\theta_\Co : \widetilde\Orth^+(T_\Co)] = \abs{\rho_{S_\Co}\bigl(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)\bigr)}.
 $$
 :::
 
@@ -1082,7 +1083,7 @@ Under $A_{S_\Co} = S_\Co/2S_\Co$ — the identification of @prop:twisted-unimodu
 
 ::: {.corollary #cor:theta-co-strict title="The $\theta$-description is strictly larger"}
 
-$\Gamma_\Co\subsetneq\Gamma^\theta_\Co$, with $[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$, which @prop:theta-co-index evaluates as $\abs{W(E_8)} = 696\,729\,600$.
+$\widetilde\Orth^+(T_\Co)\subsetneq\Gamma^\theta_\Co$, with $[\Gamma^\theta_\Co:\widetilde\Orth^+(T_\Co)] = \abs{\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co))}$, which @prop:theta-co-index evaluates as $\abs{W(E_8)} = 696\,729\,600$.
 :::
 
 ::: {.proof}
@@ -1092,7 +1093,7 @@ Immediate from @prop:theta-co-gluing and @lem:coble-stabilizer-discriminant-nont
 
 ::: {.proposition #prop:theta-co-index title="The index of the $\theta$-description"}
 
-$[\Gamma^\theta_\Co:\Gamma_\Co] = \abs{W(E_8)} = 696\,729\,600$, the same number as the Heegner index of @prop:gamma-co-heegner-strict.
+$[\Gamma^\theta_\Co:\widetilde\Orth^+(T_\Co)] = \abs{W(E_8)} = 696\,729\,600$, the same number as the Heegner index of @prop:gamma-co-heegner-strict.
 :::
 
 ::: {.proof}
@@ -1172,18 +1173,18 @@ Let $W\leq A^0$ be a subgroup of order $4$ invariant under $\Orth(q_H)\times\Ort
 
 ::: {.lemma #lem:overgroups-of-gamma-co title="Overgroups of the stable group in $\Orth^+(T_\Co)$"}
 
-Let $G$ be a group with $\Gamma_\Co\leq G\leq\Orth^+(T_\Co)$. Then
+Let $G$ be a group with $\widetilde\Orth^+(T_\Co)\leq G\leq\Orth^+(T_\Co)$. Then
 $$
 G = \rho_{T_\Co}^{-1}\bigl(\rho_{T_\Co}(G)\bigr)\intersect\Orth^+(T_\Co)
 \qquad\text{and}\qquad
-[G:\Gamma_\Co] = \abs{\rho_{T_\Co}(G)}.
+[G:\widetilde\Orth^+(T_\Co)] = \abs{\rho_{T_\Co}(G)}.
 $$
 :::
 
 ::: {.proof}
 
-$\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ (@sec-gamma-co-comparison), so the kernel of $\rho_{T_\Co}$ on $G$ is $\Gamma_\Co$, which gives the index.
-The left side is contained in the right side. Let $x$ be in the right side, and choose $y\in G$ with $\rho_{T_\Co}(y) = \rho_{T_\Co}(x)$. Then $y^{-1}x\in\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \Gamma_\Co\leq G$, so $x\in G$.
+$\widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ (@sec-gamma-co-comparison), so the kernel of $\rho_{T_\Co}$ on $G$ is $\widetilde\Orth^+(T_\Co)$, which gives the index.
+The left side is contained in the right side. Let $x$ be in the right side, and choose $y\in G$ with $\rho_{T_\Co}(y) = \rho_{T_\Co}(x)$. Then $y^{-1}x\in\Orth^+(T_\Co)\intersect\ker\rho_{T_\Co} = \widetilde\Orth^+(T_\Co)\leq G$, so $x\in G$.
 :::
 
 ::: {.proposition #prop:gamma-cong-eq-heegner title="The Heegner description and the congruence description"}
@@ -1196,7 +1197,7 @@ Then
    \abs{P} = 2\cdot 348\,364\,800 = 696\,729\,600 = \abs{W(E_8)}
    ;$$
 2. $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{Hdg}}_\Co\bigr) = \gamma P_{S_\En}\gamma^{-1} = \Stab_{\Orth(q_{T_\Co})}\bigl(\gamma(A_{U(2)})\bigr)$, of order $\abs{W(E_8)}$, and it equals $P$ if and only if $\gamma$ is block-compatible;
-3. $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)\bigr) = P$, so $[\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co):\Gamma_\Co] = \abs{W(E_8)}$ and $[\Gamma^{\mathrm{cong}}_{\Co,2}:\Gamma_\Co] = 2\abs{W(E_8)} = 1\,393\,459\,200$; and $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ if and only if $\gamma$ is block-compatible;
+3. $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)\bigr) = P$, so $[\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co):\widetilde\Orth^+(T_\Co)] = \abs{W(E_8)}$ and $[\Gamma^{\mathrm{cong}}_{\Co,2}:\widetilde\Orth^+(T_\Co)] = 2\abs{W(E_8)} = 1\,393\,459\,200$; and $\Gamma^{\mathrm{Hdg}}_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ if and only if $\gamma$ is block-compatible;
 4. $\rho_{T_\Co}\bigl(\Gamma^\theta_\Co\bigr) = \gamma_\Co P_{S_\Co}\gamma_\Co^{-1} = \Stab_{\Orth(q_{T_\Co})}\bigl(\gamma_\Co(A_{U(2)})\bigr)$, of order $\abs{W(E_8)}$, and $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ if and only if $\gamma_\Co$ is block-compatible.
 :::
 
@@ -1219,16 +1220,16 @@ If $\gamma$ is block-compatible, this is $P$. Conversely, if $\gamma P_{S_\En}\g
 (3) $T_\Co$ is even, indefinite and $2$-elementary, so $\rho_{T_\Co}$ is onto (@thm:two-elementary-surjectivity), and $\rho_{T_\Co}(\Gamma^{\mathrm{cong}}_{\Co,2}) = P$.
 The reflection $s_\zeta$ has $\zeta^2 = 2$, so $\rho_{T_\Co}(s_\zeta) = \id$ — $s_\zeta(x^*) - x^* = -\beta(x^*,\zeta)\zeta$ with $\beta(x^*,\zeta)\in\ZZ$ — while $\spinornorm_\bR(s_\zeta) = [-1]$ (the component step of @prop:gamma-co-heegner-strict).
 $\Orth^+(T_\Co)$ is the kernel of $\spinornorm_\bR$, so for $x\in\Gamma^{\mathrm{cong}}_{\Co,2}$ one of $x$ and $xs_\zeta$ lies in $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$, with the same image under $\rho_{T_\Co}$.
-Hence $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)\bigr) = P$, and the first index is $\abs{P}$ by @lem:overgroups-of-gamma-co. The same element gives $[\ker\rho_{T_\Co}:\Gamma_\Co] = 2$, so
+Hence $\rho_{T_\Co}\bigl(\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)\bigr) = P$, and the first index is $\abs{P}$ by @lem:overgroups-of-gamma-co. The same element gives $[\ker\rho_{T_\Co}:\widetilde\Orth^+(T_\Co)] = 2$, so
 $$
-\bigl[\Gamma^{\mathrm{cong}}_{\Co,2}:\Gamma_\Co\bigr] = 2\abs{P} = 1\,393\,459\,200
+\bigl[\Gamma^{\mathrm{cong}}_{\Co,2}:\widetilde\Orth^+(T_\Co)\bigr] = 2\abs{P} = 1\,393\,459\,200
 .$$
-$\Gamma^{\mathrm{Hdg}}_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\Gamma_\Co$ (@prop:gamma-co-in-heegner-group). By @lem:overgroups-of-gamma-co, $\Gamma^{\mathrm{Hdg}}_\Co = \rho_{T_\Co}^{-1}\bigl(\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)\bigr)\intersect\Orth^+(T_\Co)$, while $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ has image $P$. So the two groups are equal if and only if $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co) = P$, that is, by (2), if and only if $\gamma$ is block-compatible.
+$\Gamma^{\mathrm{Hdg}}_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-in-heegner-group). By @lem:overgroups-of-gamma-co, $\Gamma^{\mathrm{Hdg}}_\Co = \rho_{T_\Co}^{-1}\bigl(\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co)\bigr)\intersect\Orth^+(T_\Co)$, while $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co) = \rho_{T_\Co}^{-1}(P)\intersect\Orth^+(T_\Co)$ has image $P$. So the two groups are equal if and only if $\rho_{T_\Co}(\Gamma^{\mathrm{Hdg}}_\Co) = P$, that is, by (2), if and only if $\gamma$ is block-compatible.
 
 (4) The first equality is @prop:theta-co-gluing. That $\rho_{S_\Co}(\Stab_{\Orth(S_\Co)}(\tilde h_\Co)) = P_{S_\Co}$ is the computation of @prop:theta-co-index: the stabilizer is $\theset{\pm1}_K\times\langle s_v\rangle\times\Orth(E_8)$, its factors act in $K$, in $U$ and in $E_8$ respectively, its image preserves the three blocks of $A_{S_\Co} = C/2C$ and has order $\abs{W(E_8)} = \abs{P_{S_\Co}}$ by (1), so it is $P_{S_\Co}$.
 The anti-isometry $\gamma_\Co$ maps $[K/2]$ to $[\zeta/2]$, because these are the classes characterized in @lem:coble-discriminant-blocks(3), so it maps the summand $A^0$ of $A_{S_\Co}$ onto that of $A_{T_\Co}$.
 By @lem:coble-discriminant-blocks(4), $\gamma_\Co P_{S_\Co}\gamma_\Co^{-1}$ is the stabilizer of $\gamma_\Co(A_{U(2)})$, and it is $P$ if and only if $\gamma_\Co$ is block-compatible, by the argument of (2).
-$\Gamma^\theta_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\Gamma_\Co$ (@prop:gamma-co-in-theta-centralizer), so by @lem:overgroups-of-gamma-co and (3), $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ if and only if $\rho_{T_\Co}(\Gamma^\theta_\Co) = P$.
+$\Gamma^\theta_\Co$ lies in $\Orth^+(T_\Co)$ and contains $\widetilde\Orth^+(T_\Co)$ (@prop:gamma-co-in-theta-centralizer), so by @lem:overgroups-of-gamma-co and (3), $\Gamma^\theta_\Co = \Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ if and only if $\rho_{T_\Co}(\Gamma^\theta_\Co) = P$.
 :::
 
 ::: {.question #qst:kernel-and-root-arrangement title="The root arrangement"}
@@ -1313,7 +1314,7 @@ $$ \bigl(k^{-1}Hk\intersect F\bigr)\bigl\backslash F \big/ S . $$
 In particular:
    a. for $\Gamma = \ker\rho$ there are $\abs{F/S} = 8$ orbits over each $J'$;
    b. for $\Gamma = \Orth(B)$ there is one orbit;
-   c. for $\Gamma_\Co = \Orth^+(B)\intersect\ker\rho$ there are $8$ orbits over each of the $23715$ subgroups of @prop:coble-planecusp-finite, so $8\times 23715 = 189\,720$ orbits of primitive isotropic planes in all.
+   c. for $\widetilde\Orth^+(T_\Co) = \Orth^+(B)\intersect\ker\rho$ there are $8$ orbits over each of the $23715$ subgroups of @prop:coble-planecusp-finite, so $8\times 23715 = 189\,720$ orbits of primitive isotropic planes in all.
 :::
 
 ::: {.proof}
@@ -1336,28 +1337,33 @@ The Levi factor of $\Stab_{\Orth(q)}(J)$ is $S_3\times\Orth^+(6,2)$, and $\Orth^
 $$ \bigl(\Gamma\intersect\rho^{-1}(F)\bigr)\bigl\backslash \rho^{-1}(F) \big/ \Stab_{\rho^{-1}(F)}(P) . $$
 Since $\ker\rho\iscontainedin\Gamma$, they reduce modulo $\ker\rho$ to $(H\intersect F)\backslash F/S$. For $k\in Q$ with a lift $\tilde k\in\Orth(B)$, the planes $P'$ with $J(P') = kJ$ form the orbit of $\tilde k(P)$ under $\rho^{-1}(kFk^{-1})$. Conjugation by $\tilde k$ identifies their $\Gamma$-orbits with the double cosets $(k^{-1}Hk\intersect F)\backslash F/S$.
 For $H = 1$ this is $F/S$, of order $8$ by (4). For $H = Q$ there is one double coset over each $J'$, and $Q$ is transitive on the $J'$ (@prop:coble-planecusp-finite(2)), so there is one orbit.
-For (c), $\Gamma_\Co\iscontainedin\ker\rho$ has index at most $2$, and a $\ker\rho$-orbit of planes is one $\Gamma_\Co$-orbit if the stabilizer in $\ker\rho$ of one of its planes contains an element outside $\Orth^+(B)$. Let $\tau = -\id_{U_1}\oplus\id_{U_2\perp D}$. Then $\tau(e_1) = -e_1$ and $\tau(e_2) = e_2$, so $\tau$ stabilizes $P$. It is the identity modulo $2B$, so $\tau\in\ker\rho$. Its normalized real spinor norm (@sec-lattice-spinor-norm) is $\spinornorm_\bR(-\id_{U_1}) = [(-1)^1] = -1$ by @lem:minus-identity-spinor-norm, since $U_1$ has positive index one. For $k\in\Orth(B)$, $k\tau k^{-1}$ lies in $\ker\rho$, stabilizes $k(P)$ and has spinor norm $-1$. So no $\ker\rho$-orbit splits, and (a) together with @prop:coble-planecusp-finite(3) gives $8\times 23715 = 189\,720$ orbits.
+For (c), $\widetilde\Orth^+(T_\Co)\iscontainedin\ker\rho$ has index at most $2$, and a $\ker\rho$-orbit of planes is one $\widetilde\Orth^+(T_\Co)$-orbit if the stabilizer in $\ker\rho$ of one of its planes contains an element outside $\Orth^+(B)$. Let $\tau = -\id_{U_1}\oplus\id_{U_2\perp D}$. Then $\tau(e_1) = -e_1$ and $\tau(e_2) = e_2$, so $\tau$ stabilizes $P$. It is the identity modulo $2B$, so $\tau\in\ker\rho$. Its normalized real spinor norm (@sec-lattice-spinor-norm) is $\spinornorm_\bR(-\id_{U_1}) = [(-1)^1] = -1$ by @lem:minus-identity-spinor-norm, since $U_1$ has positive index one. For $k\in\Orth(B)$, $k\tau k^{-1}$ lies in $\ker\rho$, stabilizes $k(P)$ and has spinor norm $-1$. So no $\ker\rho$-orbit splits, and (a) together with @prop:coble-planecusp-finite(3) gives $8\times 23715 = 189\,720$ orbits.
 :::
 
 ::: {.proposition #prop:stabilizers-conjugate title="The stabilizers of the polarized $0$-cusps are conjugate"}
 
-Let $T_\Co = B(2)$ and $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, and let $v, v'\in T_\Co$ be primitive isotropic vectors with $v' = gv$ for some $g\in\Orth(T_\Co)$, which exists by @thm:unpolarized-cusps.
+Let $T_\Co = B(2)$ and let $\widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$ be the stable subgroup, and let $v, v'\in T_\Co$ be primitive isotropic vectors with $v' = gv$ for some $g\in\Orth(T_\Co)$, which exists by @thm:unpolarized-cusps.
 Then
 
-1. $\Gamma_\Co$ is normal in $\Orth(T_\Co)$, and $\Stab_{\Gamma_\Co}(v') = g\,\Stab_{\Gamma_\Co}(v)\,g^{-1}$;
+1. $\widetilde\Orth^+(T_\Co)$ is normal in $\Orth(T_\Co)$, and $\Stab_{\widetilde\Orth^+(T_\Co)}(v') = g\,\Stab_{\widetilde\Orth^+(T_\Co)}(v)\,g^{-1}$;
 
 2. the subgroups of $\Orth(v^{\perp T_\Co}/\generators{v})$ and of $\Orth((v')^{\perp T_\Co}/\generators{v'})$ induced by those stabilizers are mapped onto one another by the isometry $\bar g$ that $g$ induces on the quotients;
 
 3. consequently the subgroups $G\leq\Orth(\latI_{1,8}(2))$ of @qst:sterk-reflection-subgroup at the polarized $0$-cusps are conjugate, and they have equal index.
 :::
 
+::: {.remark title="The normality this uses fails on the Enriques side"}
+
+Step 3 uses that $\widetilde\Orth^+(T_\Co)$ is normal in $\Orth(T_\Co)$, so that the stabilizers at two cusps are conjugate in $\Orth(T_\Co)$ and the induced subgroups are carried onto one another. Nothing of the kind holds for $\gent\subset\Orth(T_\En)$, which is a level-two subgroup and not normal: the four divisibility-two Enriques cusps lie in four different $\gent$-orbits, and the class stabilizers inside $M$ have orders $348\,364\,800$, $5\,806\,080$, $2\,580\,480$ and $5\,160\,960$ at cusps $2,3,4,5$ respectively (@thm:sterk-reflection-subgroups). The unit of that theorem is the $\gent$-orbit of a $0$-cusp, not the isometry class of the quotient, which is why the four published Enriques diagrams can differ while their quotient lattices coincide.
+:::
+
 ::: {.proof}
 
-(1) $\Gamma_\Co = \ker\rho_{T_\Co}\cap\ker\varepsilon$ with $\varepsilon$ the orientation character of @prop:spinor-plus-cone-components, so it is the intersection of two kernels and therefore normal.
-For $h\in\Stab_{\Gamma_\Co}(v)$ and $g$ as in the statement, $ghg^{-1}(v') = ghv = gv = v'$, and $ghg^{-1}\in\Gamma_\Co$ by normality; so $g\Stab_{\Gamma_\Co}(v)g^{-1}\subseteq\Stab_{\Gamma_\Co}(v')$, and the reverse inclusion follows by applying the same argument to $g^{-1}$, or by counting cosets of the same index.
+(1) $\widetilde\Orth^+(T_\Co) = \ker\rho_{T_\Co}\cap\ker\varepsilon$ with $\varepsilon$ the orientation character of @prop:spinor-plus-cone-components, so it is the intersection of two kernels and therefore normal.
+For $h\in\Stab_{\widetilde\Orth^+(T_\Co)}(v)$ and $g$ as in the statement, $ghg^{-1}(v') = ghv = gv = v'$, and $ghg^{-1}\in\widetilde\Orth^+(T_\Co)$ by normality; so $g\Stab_{\widetilde\Orth^+(T_\Co)}(v)g^{-1}\subseteq\Stab_{\widetilde\Orth^+(T_\Co)}(v')$, and the reverse inclusion follows by applying the same argument to $g^{-1}$, or by counting cosets of the same index.
 
 (2) An isometry fixing $v$ preserves $v^{\perp}$ and $\generators{v}$, hence descends to the quotient, and the resulting map $g\mapsto\bar g$ is a homomorphism of stabilizers; conjugating on $T_\Co$ becomes conjugating by $\bar g$ on the quotient.
-So the image of $\Stab_{\Gamma_\Co}(v')$ is $\bar g\,\rho_v(\Stab_{\Gamma_\Co}(v))\,\bar g^{-1}$, and $\bar g$ is an isometry of the two cusp lattices.
+So the image of $\Stab_{\widetilde\Orth^+(T_\Co)}(v')$ is $\bar g\,\rho_v(\Stab_{\widetilde\Orth^+(T_\Co)}(v))\,\bar g^{-1}$, and $\bar g$ is an isometry of the two cusp lattices.
 
 (3) By @prop:zero-cusp-lattices the quotient is $\latI_{1,8}(2)$ for every such $v$, so (2) exhibits the images as conjugate inside one isometry group, and conjugate subgroups have equal index.
 :::
@@ -1385,7 +1391,7 @@ $$
 $$
 \frac{\abs{\Orth(q)}}{\abs{\rho(S)}} = \frac{46\,998\,591\,897\,600}{89\,181\,388\,800} = 527 = 527\,c ,
 $$
-$\Gamma_\Co$ has $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class.
+$\widetilde\Orth^+(T_\Co)$ has $527$ orbits of primitive isotropic vectors, one per nonzero isotropic class.
 :::
 
 ::: {.proof}
@@ -1414,9 +1420,9 @@ So $G = \set{\pm1}\cdot G^+$ as subgroups of $\Orth(K) = \set{\pm1}\times\Orth^+
 The orbit count then follows from $\rho$ onto $\Orth(q)$ (@thm:two-elementary-surjectivity): the $\ker\rho$-orbits inside the orbit of $e_1$ are in bijection with $\Orth(q)/\rho(S)$, of order $527$.
 :::
 
-::: {.theorem #thm:plane-fibre title="The plane fibre, the plane classes and the $1$-cusp count of $\fco$"}
+::: {.theorem #thm:plane-fibre title="The plane fibre, the plane classes and the $1$-cusp count of the stable quotient"}
 
-Let $P\subset B = U\perp U\perp \I_{0,7}$ be a primitive isotropic plane, $K_P = P^{\perp B}/P\iso\I_{0,7}$, $J = [P/2]\leq A_{T_\Co}$ the order-$4$ isotropic subgroup it spans, and $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$, whose discriminant image is trivial.
+Let $P\subset B = U\perp U\perp \I_{0,7}$ be a primitive isotropic plane, $K_P = P^{\perp B}/P\iso\I_{0,7}$, $J = [P/2]\leq A_{T_\Co}$ the order-$4$ isotropic subgroup it spans, and $\widetilde\Orth^+(T_\Co)$ the stable subgroup, whose discriminant image is trivial.
 Then
 
 1. $\abs{\Stab_{\Orth(q_{T_\Co})}(J)} = 1\,981\,808\,640$ and $\abs{\rho(\Stab_{\Orth(B)}(P))} = 247\,726\,080$, so the plane fibre has index
@@ -1426,7 +1432,7 @@ $$
 
 2. the isotropic subgroups of order $4$ of $A_{T_\Co}$ form the $\Orth(q_{T_\Co})$-orbit of $J$, of size $23\,715$, which the five $G_\Co$-orbits of @tbl-finite-plane-orbits, of sizes $1575, 270, 9450, 3780, 8640$, partition;
 
-3. hence $\fco$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps for $\Gamma_\Co$, eight over each of these subgroups.
+3. hence the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $23\,715\cdot 8 = 189\,720$ $1$-cusps, one fibre of eight over each liftable $J$: a page proof, with the public lattice-orbit computation remaining sage-extensions#286. The $1$-cusps of $\fco$ are the $\Gamma_\Co$-orbits of planes, and $\Gamma_\Co = \Orth(T_\Co)$ (@prop:gamma-co-images(3)), so there is one (@thm:plane-transitivity-tco, certified by the same operation); the count for $F_{\Co,2}$ is open until sage-extensions#286.
 :::
 
 ::: {.proof}
@@ -1438,40 +1444,40 @@ An integral isometry preserving $P$ maps the classes of $\tfrac12 e_1$ and $\tfr
 
 (2) By @prop:coble-planecusp-finite(2), $\Orth(q)$ is transitive on the isotropic subgroups of order $4$, and by @prop:coble-planecusp-finite(3) they number $23\,715$. Their $G_\Co$-orbits are the five orbits of @ex:gco-finite-orbits, of the sizes listed in @tbl-finite-plane-orbits.
 
-(3) By @thm:coble-plane-stabilizer-image(5), the $\Gamma_\Co$-orbits of primitive isotropic planes over each of the $23\,715$ subgroups $J$ are eight in number.
+(3) By @thm:coble-plane-stabilizer-image(5), the $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic planes over each of the $23\,715$ subgroups $J$ are eight in number.
 :::
 
 ::: {.corollary #cor:coble-zero-one-cusp-incidence title="Incidence of the $0$-cusps and the plane classes"}
-Let $\Gamma_\Co = \widetilde\Orth^+(T_\Co)$. Each isotropic subgroup $J$ of order $4$ of $A_{T_\Co}$ contains exactly three of the $527$ nonzero isotropic classes, each of which is one $0$-cusp of $\Gamma_\Co$, and each nonzero isotropic class lies in exactly $135$ of the $23\,715$ subgroups $J$.
+Let $\widetilde\Orth^+(T_\Co) = \widetilde\Orth^+(T_\Co)$. Each isotropic subgroup $J$ of order $4$ of $A_{T_\Co}$ contains exactly three of the $527$ nonzero isotropic classes, each of which is one $0$-cusp of $\widetilde\Orth^+(T_\Co)$, and each nonzero isotropic class lies in exactly $135$ of the $23\,715$ subgroups $J$.
 :::
 
 ::: {.proof}
 Write $J = [P/2]$ with $P = \langle e_1,e_2\rangle$ a primitive isotropic plane of $B$. By @prop:coble-planecusp-finite(1), the three nonzero elements of $J$ are the classes of $\tfrac12 e_1$, $\tfrac12 e_2$ and $\tfrac12(e_1+e_2)$, the classes of the primitive isotropic vectors $e_1$, $e_2$, $e_1+e_2$ of $T_\Co$, each of divisibility $2$.
-By @thm:plane-half-index(4), the primitive isotropic vectors of $T_\Co$ with one nonzero isotropic class form one $\Gamma_\Co$-orbit, so each of the three classes is one $0$-cusp.
+By @thm:plane-half-index(4), the primitive isotropic vectors of $T_\Co$ with one nonzero isotropic class form one $\widetilde\Orth^+(T_\Co)$-orbit, so each of the three classes is one $0$-cusp.
 For a nonzero isotropic class $u$, the subgroups $J$ that contain $u$ are the subgroups $\langle u,v\rangle$ with $v$ isotropic in $u^\perp\setminus\langle u\rangle$. By @prop:coble-planecusp-finite(3) there are $270$ such $v$, and each subgroup contains two of them, so $u$ lies in $135$ subgroups. This agrees with the double count $23\,715\cdot3/527 = 135$.
 :::
 
 
 ::: {.proposition #prop:coble-arithmetic-flag-incidence title="Line-in-plane flags over one isotropic subgroup of order $4$"}
-Let $P=\langle e_1,e_2\rangle$ be the standard primitive isotropic plane of $B=U_1\perp U_2\perp D$, let $J=[P/2]$, and let $\Gamma_\Co=\ker\rho\intersect\Orth^+(B)$.
+Let $P=\langle e_1,e_2\rangle$ be the standard primitive isotropic plane of $B=U_1\perp U_2\perp D$, let $J=[P/2]$, and let $\widetilde\Orth^+(T_\Co)=\ker\rho\intersect\Orth^+(B)$.
 
-1. The image of $\Stab_{\Gamma_\Co}(P)$ in $GL(P)$ is
+1. The image of $\Stab_{\widetilde\Orth^+(T_\Co)}(P)$ in $GL(P)$ is
 $$ \Gamma(P)\definedas\theset{A\in SL(P): A\equiv I_2\pmod2}. $$
-2. Let $\mathcal P$ be one of the eight $\Gamma_\Co$-orbits of primitive isotropic planes $P'$ with $J(P') = J$ (@thm:coble-plane-stabilizer-image(5)), and let $c\in J$ be nonzero. Then the flags $(P',L)$ with $P'\in\mathcal P$, $L\subset P'$ a primitive line and $[L/2]=c$ form one $\Gamma_\Co$-orbit.
+2. Let $\mathcal P$ be one of the eight $\widetilde\Orth^+(T_\Co)$-orbits of primitive isotropic planes $P'$ with $J(P') = J$ (@thm:coble-plane-stabilizer-image(5)), and let $c\in J$ be nonzero. Then the flags $(P',L)$ with $P'\in\mathcal P$, $L\subset P'$ a primitive line and $[L/2]=c$ form one $\widetilde\Orth^+(T_\Co)$-orbit.
 
-So the $\Gamma_\Co$-orbits of flags $(P',L)$ with $J(P') = J$ are the $3\times8 = 24$ orbits of item 2, one for each pair of an orbit $\mathcal P$ and a nonzero class $c\in J$.
+So the $\widetilde\Orth^+(T_\Co)$-orbits of flags $(P',L)$ with $J(P') = J$ are the $3\times8 = 24$ orbits of item 2, one for each pair of an orbit $\mathcal P$ and a nonzero class $c\in J$.
 :::
 
 ::: {.proof}
 (1) By @thm:coble-plane-stabilizer-image(1), $\Stab_{\Orth(B)}(P) = L\ltimes U$, and the Levi factor acts by $A$ on $P$, by $(A^{-1})^{T}$ on $P^*$ and by an arbitrary $\delta\in\Orth(D)$ on $D$. An element of $\ker\rho$ acts trivially on $J = P/2P$, so its image $A$ satisfies $A\equiv I_2\pmod2$.
 The normalized real spinor norm of such an element is $\det A$. The unipotent group $U$ has connected real points, so it is spinor-positive. $D$ is negative definite, so $\Orth(D)$ is generated by reflections in negative vectors, which are spinor-positive. For $\det A = 1$, the element $A\oplus(A^{-1})^{T}$ lies in the image of the connected group $SL_2(\bR)$, so it is spinor-positive. For $\det A = -1$, write $A = A'\diag(-1,1)$ with $\det A' = 1$; the element $\diag(-1,1)\oplus\diag(-1,1)$ is $-\id_{U_1}\oplus\id_{U_2}$, of spinor norm $-1$ by @lem:minus-identity-spinor-norm.
-So the image of $\Stab_{\Gamma_\Co}(P)$ lies in $\Gamma(P)$. Conversely, for $A\in\Gamma(P)$ the element $A\oplus(A^{-1})^{T}\oplus\id_D$ is the identity modulo $2B$ and spinor-positive, so it lies in $\Stab_{\Gamma_\Co}(P)$.
+So the image of $\Stab_{\widetilde\Orth^+(T_\Co)}(P)$ lies in $\Gamma(P)$. Conversely, for $A\in\Gamma(P)$ the element $A\oplus(A^{-1})^{T}\oplus\id_D$ is the identity modulo $2B$ and spinor-positive, so it lies in $\Stab_{\widetilde\Orth^+(T_\Co)}(P)$.
 
 (2) First, $\Gamma(P)$ is transitive on the primitive lines of $P$ in each nonzero class of $J$. A primitive line of $P$ is $L_{(a,b)}=\ZZ(ae_1+be_2)$ with $\gcd(a,b)=1$, and its class is $(\bar a,\bar b)\in J\sm\{0\}$. By Bezout's identity, each primitive vector $v=(a,b)^T$ is the first column of a matrix $M_v=[v,z_v]\in SL_2(\ZZ)$. Let $w$ be another primitive vector with $w\equiv v\pmod 2$, and let $M_w=[w,z_w]\in SL_2(\ZZ)$. Write $c$ for the common reduction of $v$ and $w$. Then
 $$ \det(c,z_w-z_v)=\det M_w+\det M_v=1+1=0\quad\text{in }\F_2. $$
 The functional $x\mapsto\det(c,x)$ on $\F_2^2$ is nonzero with kernel $\langle c\rangle$, so $z_w-z_v\equiv t c\pmod 2$ for some $t\in\F_2$. Lift $t$ to an integer and replace the second column of $M_w$ by $z_w-t w$. The new $M_w$ has determinant one and $M_w\equiv M_v\pmod2$. So $A=M_wM_v^{-1}$ satisfies $A\equiv I_2\pmod2$ and $Av=w$, that is $A\in\Gamma(P)$ and $A(L_v) = L_w$.
 
-Now fix $P_0\in\mathcal P$. By @thm:plane-transitivity-tco, $P_0 = k(P)$ for some $k\in\Orth(B)$. The group $\Gamma_\Co$ is normal in $\Orth(B)$, so $\Stab_{\Gamma_\Co}(P_0) = k\Stab_{\Gamma_\Co}(P)k^{-1}$, and by (1) and the preceding paragraph it is transitive on the primitive lines $L\subset P_0$ with $[L/2]=c$. Let $(P_1,L_1)$ and $(P_2,L_2)$ be two flags with $P_i\in\mathcal P$ and $[L_i/2] = c$. An element of $\Gamma_\Co$ moves $P_2$ to $P_1$; it lies in $\ker\rho$, so it preserves the class $c$, and it moves $L_2$ to a line of class $c$ in $P_1$. An element of $\Stab_{\Gamma_\Co}(P_1)$ then moves that line to $L_1$.
+Now fix $P_0\in\mathcal P$. By @thm:plane-transitivity-tco, $P_0 = k(P)$ for some $k\in\Orth(B)$. The group $\widetilde\Orth^+(T_\Co)$ is normal in $\Orth(B)$, so $\Stab_{\widetilde\Orth^+(T_\Co)}(P_0) = k\Stab_{\widetilde\Orth^+(T_\Co)}(P)k^{-1}$, and by (1) and the preceding paragraph it is transitive on the primitive lines $L\subset P_0$ with $[L/2]=c$. Let $(P_1,L_1)$ and $(P_2,L_2)$ be two flags with $P_i\in\mathcal P$ and $[L_i/2] = c$. An element of $\widetilde\Orth^+(T_\Co)$ moves $P_2$ to $P_1$; it lies in $\ker\rho$, so it preserves the class $c$, and it moves $L_2$ to a line of class $c$ in $P_1$. An element of $\Stab_{\widetilde\Orth^+(T_\Co)}(P_1)$ then moves that line to $L_1$.
 :::
 
 ### The reflective set of the stable group {#sec-gamma-co-reflective-set}
@@ -1496,20 +1502,20 @@ By @def:2elementary-roots, the roots of the $2$-elementary lattice $T_\Co$ are t
 
 ::: {.proposition #prop:gamma-co-reflective-set title="The reflective set of the stable Coble group"}
 
-Let $T_\Co = B(2)$ be the Coble lattice of @prop:tco-as-twist, even of signature $(2,9)$ and determinant $-2048$, so that every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and let $\Gamma_\Co = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$, with $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ of @def:lattice-spinor-kernels and $\spinornorm_\bR$ the real spinor norm of @def:spinor-norm.
+Let $T_\Co = B(2)$ be the Coble lattice of @prop:tco-as-twist, even of signature $(2,9)$ and determinant $-2048$, so that every primitive vector of $T_\Co$ has divisibility $2$ (@lem:divisibilityAlwaysTwoTco), and let $\widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\rho_{T_\Co}$, with $\Orth^+(T_\Co) = \Theta_\bR(T_\Co)$ of @def:lattice-spinor-kernels and $\spinornorm_\bR$ the real spinor norm of @def:spinor-norm.
 Write $s_v$ for the reflection of @def:spinor-norm in a nonisotropic vector $v$.
 Then, for a primitive $v$, $s_v$ is an isometry of $T_\Co$ exactly for $v^2\in\{2,-2,4,-4\}$, and among those:
 
-1. if $v^2 = -2$ then $s_v\in\Gamma_\Co$; hence the short roots generate a subgroup
+1. if $v^2 = -2$ then $s_v\in\widetilde\Orth^+(T_\Co)$; hence the short roots generate a subgroup
    $$
    W(T_\Co) \definedas \generators{\,s_v \;:\; v \in T_\Co,\ v^2 = -2\,}
-   \iscontainedin \Gamma_\Co
+   \iscontainedin \widetilde\Orth^+(T_\Co)
    ,$$
    which is infinite;
-2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\Gamma_\Co$; for $v^2 = 2$ one has in addition $s_v\in\ker\rho_{T_\Co}$, and for $v^2 = 4$ never;
+2. if $v^2 = 2$ or $v^2 = 4$ then $s_v\notin\Orth^+(T_\Co)$, hence $s_v\notin\widetilde\Orth^+(T_\Co)$; for $v^2 = 2$ one has in addition $s_v\in\ker\rho_{T_\Co}$, and for $v^2 = 4$ never;
 3. if $v^2 = -4$ then $s_v\in\Orth^+(T_\Co)$ and $s_v\notin\ker\rho_{T_\Co}$.
 
-Consequently the reflective set of $\Gamma_\Co$ — the primitive vectors of $T_\Co$ whose reflection lies in $\Gamma_\Co$ — is exactly the set of primitive short roots, which is every vector of square $-2$, and no long root lies in it.
+Consequently the reflective set of $\widetilde\Orth^+(T_\Co)$ — the primitive vectors of $T_\Co$ whose reflection lies in $\widetilde\Orth^+(T_\Co)$ — is exactly the set of primitive short roots, which is every vector of square $-2$, and no long root lies in it.
 :::
 
 ::: {.proof}
@@ -1523,7 +1529,7 @@ The real spinor norm of @def:spinor-norm is $\spinornorm_\bR(s_w) = [-\tfrac12\b
 (1) For $v^2 = -2$ the reflection is $s_v(x) = x + \beta(x,v)v$.
 The spinor norm is $[1]$, so $s_v\in\Theta_\bR(T_\Co)$.
 For $x^*\in T_\Co^*$ the pairing $\beta(x^*,v)$ is an integer, because $x^*$ pairs integrally with every element of $T_\Co$ and $v$ lies in $T_\Co$; hence $s_v(x^*)-x^* = \beta(x^*,v)v\in T_\Co$ and $\rho_{T_\Co}(s_v) = \id$.
-So $s_v\in\Gamma_\Co$.
+So $s_v\in\widetilde\Orth^+(T_\Co)$.
 The group $W(T_\Co)$ is infinite, because distinct lines $\ZZ v$ give distinct reflections and there are infinitely many such lines: for odd $a\in\ZZ$,
 $$
 x_a \definedas a\zeta + e' - \tfrac{a^2+1}{2}f'
@@ -1532,7 +1538,7 @@ x_a^2 = 2a^2 + 4\cdot\Bigl(-\tfrac{a^2+1}{2}\Bigr) = -2
 ,$$
 since $\zeta$ is orthogonal to the $U(2)$ summand and $\beta(e',f') = 2$ there.
 
-(2) Both squares give $\spinornorm_\bR(s_v) = [-1]$, which is not the identity of $\bR^\times/(\bR^\times)^2$, so $s_v\notin\Theta_\bR(T_\Co)$ and hence $s_v\notin\Gamma_\Co$.
+(2) Both squares give $\spinornorm_\bR(s_v) = [-1]$, which is not the identity of $\bR^\times/(\bR^\times)^2$, so $s_v\notin\Theta_\bR(T_\Co)$ and hence $s_v\notin\widetilde\Orth^+(T_\Co)$.
 For $v^2 = 2$ the reflection is $s_v(x) = x - \beta(x,v)v$, and $\beta(x^*,v)\in\ZZ$ for $x^*\in T_\Co^*$, so $s_v(x^*)-x^*\in T_\Co$ and $s_v\in\ker\rho_{T_\Co}$: such a reflection is discriminant-trivial and fails only the component condition.
 For $v^2 = 4$ it never is.
 In the coordinates of $B$ one has $b_B(v,v) = 2$ and $s_v(x) = x - b_B(x,v)v$; $B$ is unimodular and $v$ primitive, so $b_B(\cdot,v)$ is unimodular and some $x$ has $b_B(x,v) = 1$, whence
@@ -1551,11 +1557,11 @@ $$
 s_v(x) - x = v \notin 2B
 ,$$
 because $v$ is primitive.
-Under the convention above, $A_{T_\Co} = B/2B$ and $\rho_{T_\Co}(g) = \id$ means $g\equiv\id\bmod 2$; so $\rho_{T_\Co}(s_v)\neq\id$ and $s_v\notin\Gamma_\Co$.
+Under the convention above, $A_{T_\Co} = B/2B$ and $\rho_{T_\Co}(g) = \id$ means $g\equiv\id\bmod 2$; so $\rho_{T_\Co}(s_v)\neq\id$ and $s_v\notin\widetilde\Orth^+(T_\Co)$.
 With (2) this excludes the two positive squares and the long roots, leaving exactly (1), and the reflective set is the short roots.
 :::
 
 ::: {.question #qst:gamma-co-reflection-index title="The index of the short-root reflection group"}
-Is the index $[\Gamma_\Co : W(T_\Co)]$ finite, and if so, what is it?
+Is the index $[\widetilde\Orth^+(T_\Co) : W(T_\Co)]$ finite, and if so, what is it?
 :::
 

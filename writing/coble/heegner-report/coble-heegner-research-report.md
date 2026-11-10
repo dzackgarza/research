@@ -1056,7 +1056,7 @@ Each equality requires a separate argument: global Torelli and parallel transpor
 :::
 
 With $\alpha$ the vector $\delta$ of @lem:coble-heegner-vector, $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ is the group $\Gamma^{\mathrm{Hdg}}_\Co$ of @prop:gamma-co-in-heegner-group.
-The images of $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in $\Orth(q_{T_\Co})$, their indices over $\Gamma_\Co$, and the condition under which the two groups coincide are @prop:gamma-cong-eq-heegner.
+The images of $\Gamma^{\mathrm{Hdg}}_{\Co,2}$ and $\Gamma^{\mathrm{cong}}_{\Co,2}\intersect\Orth^+(T_\Co)$ in $\Orth(q_{T_\Co})$, their indices over $\widetilde\Orth^+(T_\Co)$, and the condition under which the two groups coincide are @prop:gamma-cong-eq-heegner.
 
 ### A lattice-theoretic stabilizer sequence {#sec-stabilizer-sequence}
 
@@ -1315,7 +1315,7 @@ Let $\Gamma$ be a group with $\ker\rho_{T_\Co}\subseteq\Gamma\subseteq\Orth(T_\C
 3. The map $\Gamma(L\subset P)\mapsto H\cdot(J(P),s(P),[v_L/2])$, with $v_L$ a primitive vector of $L$, is a bijection from the $\Gamma$-orbits of flags of a primitive isotropic line in a primitive isotropic plane onto the $H$-orbits of triples $(J,s,c)$ with $c$ a nonzero element of $J$.
 4. Parts 1–3 hold with $\Gamma\intersect\Orth^+(T_\Co)$ in place of $\Gamma$.
 
-For $\Gamma_\Co = \ker\rho_{T_\Co}\intersect\Orth^+(T_\Co)$ the three counts are $527$, $8\cdot 23\,715 = 189\,720$ and $3\cdot 189\,720 = 569\,160$.
+For $\widetilde\Orth^+(T_\Co) = \ker\rho_{T_\Co}\intersect\Orth^+(T_\Co)$ the three counts are $527$, $8\cdot 23\,715 = 189\,720$ and $3\cdot 189\,720 = 569\,160$.
 For $\rho_{T_\Co}^{-1}(G_\Co)$ they are $4$, $7$ and $13$.
 :::
 
@@ -1323,9 +1323,9 @@ For $\rho_{T_\Co}^{-1}(G_\Co)$ they are $4$, $7$ and $13$.
 Since $\ker\rho\subseteq\Gamma$, each part reduces to the $\ker\rho$-orbits over a fixed finite datum.
 Part 1: every nonzero isotropic class is $[v/2]$ for a primitive isotropic $v$, the zero class is not, and $\rho(\Stab_{\Orth(B)}(v)) = \Stab_{\Orth(q)}([v/2])$ (@lem:isotropic-classes-lift, @lem:cusp-vector-stabilizer-image(1)), so each fibre is one $\ker\rho$-orbit; since $-\id\in\ker\rho$, vector orbits are line orbits.
 Part 2 is @lem:plane-stars(3).
-Part 3: two flags with the same triple lie on planes in one $\ker\rho$-orbit by part 2, and with the plane fixed, the line action of $\Stab_{\Gamma_\Co}(P)$ in the proof of @prop:coble-arithmetic-flag-incidence carries one line of class $c$ to the other.
+Part 3: two flags with the same triple lie on planes in one $\ker\rho$-orbit by part 2, and with the plane fixed, the line action of $\Stab_{\widetilde\Orth^+(T_\Co)}(P)$ in the proof of @prop:coble-arithmetic-flag-incidence carries one line of class $c$ to the other.
 Part 4: the spinor witnesses of @lem:cusp-vector-stabilizer-image(2) and @thm:coble-plane-stabilizer-image(5) lie in $\ker\rho$, lie outside $\Orth^+(T_\Co)$, and stabilize the vector and the plane, and so do their conjugates; so no orbit splits.
-For $\Gamma_\Co$ the group $H$ is trivial.
+For $\widetilde\Orth^+(T_\Co)$ the group $H$ is trivial.
 For $\rho^{-1}(G_\Co)$ the counts are the orbit numbers of @tbl-finite-vector-orbits and of $G_\Co$ on pairs $(J,s)$, of sizes $2160, 3150, 7560, 9450, 22680, 69120, 75600$, and on triples $(J,s,c)$.
 :::
 
@@ -1492,7 +1492,7 @@ For every polarized Coble $0$-cusp:
 5. enumerate all maximal parabolic and elliptic subdiagrams modulo the full arithmetic group.
 :::
 
-The reflections of $T_\Co$ that lie in $\Gamma_\Co$ are given by @prop:gamma-co-reflective-set, and the index in $\Gamma_\Co$ of the group they generate is @qst:gamma-co-generators.
+The reflections of $T_\Co$ that lie in $\widetilde\Orth^+(T_\Co)$ are given by @prop:gamma-co-reflective-set, and the index in $\widetilde\Orth^+(T_\Co)$ of the group they generate is @qst:gamma-co-generators.
 
 ## Integral-affine structures, dlt quotients, and stable models {#sec-integral-affine}
 
@@ -1718,6 +1718,8 @@ For each direct Coble $0$-cusp, define a root to be relevant if a general crossi
 The maximal regions of combinatorial constancy of direct Coble stable pairs are exactly the cones of the generalized Coxeter semifan obtained from the direct Coble Coxeter diagram of @prob:coxeter-completeness and the intrinsic relevance marking.
 :::
 
+At the one $0$-cusp of $\fco$ the Coxeter part is now a theorem: the chamber is that of @thm:coble-cusp-chamber and the Coxeter semifan of it is a fan with one Type II ray, @thm:coble-coxeter-semifan. What that theorem records as missing is the marking: the divisor of the Coble stable pair is not defined on the pages, so the generalized semifan is not formed there.
+
 The theorem must determine cusp by cusp whether the irrelevant reflection group is finite, whether the semifan is an actual fan, and whether any Type II parabolic component consists entirely of irrelevant roots.
 
 ### Normalized closure of a subtorus {#sec-subtorus-lemma}
@@ -1741,29 +1743,15 @@ The toric variety of that fan is normal by construction, and it is the closure u
 This lemma is local and toric.
 It does not by itself identify the normalized closure of a Heegner divisor in a semitoroidal arithmetic quotient.
 
-### Why semitoroidal restriction is not formal {#sec-restriction-not-formal}
+### Semitoroidal normalization after the semifan theorem {#sec-semitoroidal-after-restriction}
 
-To apply the subtorus lemma to the Coble Heegner locus, one must prove all of the following.
-
-1. The local Heegner branch is the asserted saturated subtorus rather than a translated subtorus or a union of branches.
-
-2. The integral unipotent-center lattice for the Coble cusp is the expected sublattice of the Enriques cusp lattice.
-
-3. The arithmetic cusp stabilizer acts compatibly on the induced fan.
-
-4. The induced local constructions agree along every $1$-cusp.
-
-5. Normalization commutes with the prescribed semitoroidal contractions.
-
-6. The AEGS semitoroidal contraction does not identify distinct normalized Coble branches.
-
-7. No additional coarsening occurs after passing to Coble stable pairs.
+@thm:semifan-restriction is a statement about cone complexes and markings, not about the normalization of a Heegner closure. Its hypotheses are the conditions that must be checked to identify a restricted generalized Coxeter semifan; the assertions about branch saturation, arithmetic compatibility, normalization, and nonidentification of Coble branches are not consequences of it. For the Coble case, @thm:coble-restricted-semifan proves the cone and marking statements, leaving the following independent geometric problem.
 
 ::: {.problem #prob:restricted-semifan title="Required theorem (semitoroidal restriction)"}
-After passage to a common toroidal refinement, the normalization of the Heegner closure is obtained by saturated intersection with the Coble cusp subspaces, and the induced semitoroidal contractions coincide with combinatorial constancy for the Coble stable-pair family.
+After passage to a common toroidal refinement, prove that the normalization of the Heegner closure is obtained by saturated intersection with the Coble cusp subspaces, and that the induced semitoroidal contractions coincide with combinatorial constancy for the Coble stable-pair family.
 :::
 
-Without this theorem, “intersect the AEGS semifans” is a candidate construction rather than a compactification theorem.
+Without this theorem, the semifan identification does not by itself identify the normalized semitoroidal compactification.
 
 ## The KSBA moduli space and the two target theorems {#sec-ksba-targets}
 
@@ -2119,6 +2107,205 @@ The required chain is:
 
 This strategy reduces duplication of integral-affine existence theorems but still requires all arithmetic and comparison steps.
 It is not equivalent to simply declaring the Coble compactification to be a closed subspace of the AEGS compactification.
+
+## Restriction of a generalized Coxeter semifan {#sec-semifan-restriction}
+
+::: {.theorem #thm:semifan-restriction title="Restriction of a generalized Coxeter semifan to a $(-2)$-Heegner sublattice"}
+Let $T$ be an even lattice, $e\in T$ primitive isotropic, $\bar T=e^\perp/\ZZ e$, and $\delta\in T$ primitive with $\delta^2=-2$ and $\delta\cdot e=0$. Put
+$$
+H=\bar\delta^\perp,\qquad
+\bar S=(\delta^\perp\cap e^\perp)/\ZZ e=H\cap\bar T,
+$$
+a primitive corank-one sublattice of $\bar T$. Let $W$ be a reflection group on $\bar T$, let $C$ be a chamber for $W$ cut out by a diagram $G$, and let $\Fgen(I\sqcup J)$ be its generalized Coxeter semifan in the sense of [@AEGS25], §5.2, printed p. 610. Write $C_\delta=C\cap H_\RR$ and let $W_\delta$ be generated by the integral reflections of $\bar S$ whose mirrors bound $C_\delta$ in the interior of its positive cone.
+
+**Case A: $\bar\delta$ is not a mirror of $W$.** Assume
+
+- (A1) every wall of $C$ meeting the interior of the positive cone of $\bar S$ is the mirror of an integral root of $\bar S$;
+- (A2) the induced angles between those restricted walls are $\pi/m$ with $m\in\ZZ_{\ge2}$, or the walls do not meet;
+- (A3) no two roots of $G$ with different relevance have the same restricted wall.
+
+**Case B: $\bar\delta$ is a mirror of $W$.** Assume
+
+- (B1) that mirror is relevant;
+- (B2) every finite nonzero angle between $\bar\delta$ and another wall of $C$ is $\pi/(2k)$ for some $k\in\ZZ_{\ge1}$;
+- (B3) every restricted wall bounding $C_\delta$ in the interior of its positive cone is the mirror of an integral root of $\bar S$;
+- (B4) every pair of restricted walls that meets in that interior has induced angle $\pi/m$ with $m\in\ZZ_{\ge2}$ or is parallel;
+- (B5) no two roots of $G$ with different relevance have the same restricted wall.
+
+In either case, the following two conclusions hold:
+
+1. every wall of $C_\delta$ in the interior of the positive cone of $\bar S$ is $\alpha^\perp\cap H_\RR$ for a root $\alpha$ of $G$;
+2. $C_\delta$ is a fundamental chamber for $W_\delta$ on the positive cone of $\bar S$.
+
+In Case B, moreover:
+
+3. $\Fgen(I\sqcup J)\cap H_\RR$ is the generalized Coxeter semifan of $C_\delta$, with the relevance inherited from $I\sqcup J$; and
+4. its Type II rays and Type III cones are the maximal parabolic and elliptic faces of $C_\delta$, respectively, in the sense of [@AEGS25], Definition 5.1, printed p. 609, and its Type II coarsening is governed by the irrelevant components in [@AEGS25], Lemma 5.7, printed p. 611.
+:::
+
+::: {.proof}
+For every $\alpha$ not proportional to $\bar\delta$, $\alpha^\perp\cap H_\RR$ is the hyperplane in $H_\RR$ cut by the orthogonal projection of $\alpha$ to $H_\QQ$. This proves (1), since a wall must meet the interior of the positive cone to contribute a bounding hyperplane of $C_\delta$.
+
+In Case A, (A1) makes each of these hyperplanes the mirror of an integral reflection of $\bar S$, and (A2) is Vinberg's cell criterion: a convex polyhedron whose dihedral angles are submultiples of $\pi$ is a fundamental chamber for the group generated by the reflections in its walls ([@Vin67], §1, printed p. 430, conditions $(\beta)$ and $(\beta')$). Since $C_\delta$ is the intersection of the corresponding half-spaces, this proves (2). No global identification of the restricted arrangement with the $W_\delta$-chambers is asserted in Case A: such an identification is proved below only in Case B, where every generator of $W_\delta$ is induced by an element of the stabilizer of $H_\RR$ in $W$.
+
+It remains to prove (2) and (3) in Case B. Put $K=\Stab_W(H_\RR)$ and let $\alpha\neq\pm\bar\delta$ be a wall of $C$. Suppose first that $\alpha\perp\bar\delta$. Then $s_\alpha\in K$ restricts to reflection of $H_\RR$ in $\alpha^\perp\cap H_\RR$. If $\alpha$ is not orthogonal to $\bar\delta$ but the two hyperplanes meet in the positive cone, write their angle as $\pi/(2k)$ by (B2). On $P=\RR\bar\delta+\RR\alpha$, the product $s_{\bar\delta}s_\alpha$ is rotation through $\pi/k$. Consequently
+$$
+R_\alpha=(s_{\bar\delta}s_\alpha)^k
+$$
+is $-\id$ on $P$ and the identity on $P^\perp$. It therefore preserves $H_\RR=\bar\delta^\perp$, belongs to $K$, and restricts to reflection in $\alpha^\perp\cap H_\RR$. Thick and non-intersecting walls do not contribute a wall in the interior of $C_\delta$. Thus every induced wall reflection is induced by an element of $K$.
+
+By (B3) all these reflections are integral on $\bar S$, and by (B4), with the same Vinberg criterion used above, $C_\delta$ is a fundamental chamber for $W_\delta$. This proves (2).
+
+Let $\mathcal H$ be the set of hyperplanes of $H_\RR$ obtained by intersecting it with mirrors of $W$. The two constructions above place every initial wall of $W_\delta$ in $\mathcal H$ and every generating reflection of $W_\delta$ in the restriction of $K$. Since $K$ preserves $\mathcal H$, every $W_\delta$-wall belongs to $\mathcal H$, and every $W_\delta$-image of $C_\delta$ has no hyperplane of $\mathcal H$ through its interior. Indeed, such a hyperplane would pull back to one through the interior of $C_\delta$, hence to a wall of $W$ through the interior of $C$.
+
+Let $D$ be a $W$-chamber whose intersection with $H_\RR$ meets the interior of some $W_\delta$-chamber $D'$. Every wall of $D'$ is a mirror of $W$, so $D$ lies entirely in the closed half-space of each such wall selected by their common interior point. Hence $D\cap H_\RR\subseteq D'$. Since no hyperplane of $\mathcal H$ crosses the interior of $D'$, also $D'\subseteq D\cap H_\RR$. It follows that $D'=D\cap H_\RR$. The Vinberg tiling by $W_\delta$ covers the positive cone of $\bar S$, so every original chamber intersection arises in this way. Therefore the maximal cones of $\Fcox\cap H_\RR$ and of the Coxeter semifan of $W_\delta$ are identical, not merely combinatorially similar. Intersecting with the rational closure preserves this identification of their supports.
+
+Finally (B1) excludes the deleted mirror itself from the irrelevant roots, and (B5) assigns a unique relevance to every remaining restricted wall. Deleting an original face given by a set of irrelevant walls therefore deletes precisely the face with the same walls in $C_\delta$. Intersection commutes with taking these wall faces, so it identifies the generalized coarsenings and proves (3).
+:::
+
+
+::: {.proposition #prop:semifan-restriction-obstruction title="The hypothesis of Case A is not automatic"}
+Let $\bar T = U\oplus A_3$ with simple roots $\alpha_1,\alpha_2,\alpha_3$ of the $A_3$ summand, and $\bar\delta = \alpha_2$. Then $\bar S = U\oplus\langle\alpha_1-\alpha_3,\ \alpha_2+2\alpha_3\rangle$ has signature $(1,2)$, and the wall cut by $\alpha_1$ is not reflective in $\bar S$: no multiple of the projection $\alpha_1+\tfrac12\alpha_2$ that lies in $\bar S$ has an integral reflection there. So the reflectivity condition (A1) fails and the restricted cone is not cut out by reflections of $\bar S$.
+
+The example $U\oplus A_2$ with $\bar\delta = \alpha_1$ does **not** obstruct: the projection of $\alpha_2$ is $\tfrac12 v$ with $v = \alpha_1+2\alpha_2$ of square $-6$, the two have the same wall $v^{\perp}$ in $\bar S = U\oplus\ZZ v$, and $v\cdot\bar S = 6\ZZ$ makes $s_v(x) = x+\tfrac13(x\cdot v)v$ integral. That is why (H1) is a condition on walls and not on the vectors themselves.
+:::
+
+::: {.proof}
+In $\bar T = U\oplus A_3$ the projection of $\alpha_1$ along $\bar\delta = \alpha_2$ is $\alpha_0 = \alpha_1+\tfrac12\alpha_2$: it has $(\alpha_0,\alpha_2) = 0$ and $\alpha_0 - \alpha_1\in\QQ\alpha_2$. Its square is $-2+1-\tfrac12 = -\tfrac32$. The vectors of the line $\QQ\alpha_0\cap\bar S$ are the multiples $m(2\alpha_0) = m(2\alpha_1+\alpha_2)$: since $\bar S$ is generated by $U$, $\alpha_1-\alpha_3$ and $\alpha_2+2\alpha_3$, one checks $2\alpha_0 = 2(\alpha_1-\alpha_3)+(\alpha_2+2\alpha_3)\in\bar S$ is primitive there, and $\alpha_0\notin\bar S$. For $w = m(2\alpha_0)$ the reflection is integral on $\bar S$ only if $w^2 = -6m^2$ divides $2(x,w) = 4m\,(x,\alpha_0)$ for all $x\in\bar S$, and $(x,\alpha_0)$ takes the value $1$ on $x = \alpha_2+2\alpha_3$; so $6m^2\mid 4m$, which has no positive solution. Hence the wall carries no integral reflection of $\bar S$.
+
+For the second paragraph: $v = \alpha_1+2\alpha_2$ has $v^2 = -6$, its orthogonal complement in $\bar S$ is the same hyperplane as $\alpha_0^{\perp}$ because $\alpha_0 = \tfrac12v$, and $v\cdot\bar S\subseteq 6\ZZ$ since $v\cdot U = 0$, $v\cdot v = -6$ and $v\cdot(\alpha_1+2\alpha_2) = -6$; so $x\mapsto x+\tfrac13(x\cdot v)v$ is an integral reflection of $\bar S$ with mirror $v^{\perp}$. Here (A1) holds although $\alpha_0\notin\bar S$.
+:::
+
+::: {.proposition #prop:facet-angles-aegs title="The induced facet angles at every white node of the AEGS cusp diagrams"}
+Read the nodes of [@AEGS25], Figures 7--8, printed pp. 594--595, using its definition in §3.4, printed p. 591: for simple roots $\alpha_i$,
+$$
+g_{ij}=\frac{(\alpha_i,\alpha_j)}{\sqrt{\alpha_i^2\alpha_j^2}},
+$$
+and a single, double, thick, or dotted bond records respectively $g_{ij}=\tfrac12$, $g_{ij}=\tfrac1{\sqrt2}$, $g_{ij}=1$, or $g_{ij}>1$. The same paragraph states that white nodes are $(-2)$-roots and black nodes $(-4)$-roots. The five diagrams have respectively $12,10,12,11,14$ nodes; the white ones are
+$$
+\begin{array}{c|c|c}
+\text{cusp}&\text{figure node}&\text{printed root in the Sterk transcription}\\ \hline
+2&10&r_{10}\\
+3&5,9&r_8,r_{12}\\
+4&7,9&r_{10},r_8\\
+5&9,10,11,12&r_{14},r_{12},r_{11},r_{13}.
+\end{array}
+$$
+Cusp $1$ has no white node. The node order at each cusp, the coloured bond lists, the exact integral root representatives, and the resulting integral wall Gram matrices are printed in `computations/reports/coble_enriques-white-root-facets-run.txt`; the coloured graph match to Figures 7--8 is checked entry by entry in `computations/reports/coble_enriques-white-root-facets.py`.
+
+Let $\delta$ be a white node and let $i,j$ range over **every** pair of distinct walls other than $\delta^\perp$, including walls orthogonal to $\delta$. Put $\theta_{ij}=\arccos g_{ij}$ and define $\phi_{ij}$ by
+$$
+\cos\phi_{ij}
+ =\frac{g_{ij}+g_{\delta i}g_{\delta j}}
+ {\sqrt{(1-g_{\delta i}^2)(1-g_{\delta j}^2)}}.
+$$
+The value $1$ denotes a parallel pair and a value $>1$ a pair that does not meet. The complete tables of these values have the following multisets.
+$$
+\begin{array}{c|c|c|r|r|r|r|r}
+\text{cusp}&\delta&\text{remaining walls}&\pi/2&\pi/3&\pi/4&
+ \text{parallel}&\text{no intersection}\\ \hline
+2&10& 9&28&7&1&0&0\\
+3& 5&11&44&6&3&1&1\\
+3& 9&11&44&6&3&1&1\\
+4& 7&10&36&7&2&0&0\\
+4& 9&10&36&7&2&0&0\\
+5& 9&13&62&6&7&2&1\\
+5&10&13&62&6&7&2&1\\
+5&11&13&62&6&7&2&1\\
+5&12&13&62&6&7&2&1
+\end{array}
+$$
+Thus every intersecting pair of induced walls has angle $\pi/2$, $\pi/3$, or $\pi/4$. Exactly one of the nine facets is the nine-wall chamber of @thm:coble-cusp-chamber: the facet at node $10$ of cusp $2$. Its bonds are
+$$
+1-2,\quad 2-3,\quad 1-4,\quad 1-5,\quad 5-6,\quad 6-7,\quad 7-8,\quad 8-9,
+$$
+with $8-9$ double and all others single.
+:::
+
+::: {.proof}
+The integral wall Gram matrices in the record are computed from the printed root representatives, and their normalized off-diagonal entries reproduce the coloured bond lists of the printed figures. This verifies the input before any facet is taken. The full pair-by-pair angle tables are in the transcript beside its code.
+
+All nine white nodes have only double incident bonds. If $i,j$ are both orthogonal to $\delta$, then $\phi_{ij}=\theta_{ij}$. If $i$ is joined to $\delta$ by a double bond and $j$ is orthogonal to $\delta$, then $\cos\phi_{ij}=\sqrt2\,g_{ij}$; hence a single, double, or thick bond $i-j$ becomes respectively double, thick, or non-intersecting. If both $i$ and $j$ are double-bonded to $\delta$, then $\cos\phi_{ij}=2g_{ij}+1$; in each printed case $i$ and $j$ are nonadjacent, so the induced bond is single. The remaining pairs are orthogonal. These substitutions give every entry of the table, including the parallel and non-intersecting pairs. In particular, none of the earlier values $\arccos(1/3)$ or $\arccos(1/\sqrt3)$ occurs at a white node, and the deleted angle-sum argument was not a valid test of the spherical link.
+
+At cusp $2$, deletion of the white node $10$ changes the bond $8-9$ from single to double and leaves the displayed nine-wall diagram. The transcript checks this bond list against @thm:coble-cusp-chamber. The other facets have $11$, $10$, or $13$ induced wall restrictions. Even if each listed parallel pair identified two restrictions, the totals would remain at least $10$, $10$, and $11$ respectively, so they cannot produce the nine-wall diagram.
+:::
+
+::: {.lemma #lem:cusp-root-lift-independence title="Lift independence of the perpendicular discriminant form at a white cusp root"}
+Let $\eta\in T_{\En}$ be primitive isotropic and let $\delta\in\eta^\perp$ satisfy $\gcd((\delta,\eta^\perp))=1$. For every $k\in\ZZ$ there is an integral isometry $u_k$ that fixes $\eta$, acts trivially on $\eta^\perp/\ZZ\eta$, and satisfies $u_k(\delta)=\delta-k\eta$. Consequently the lattices $\delta^\perp$ and $(\delta+k\eta)^\perp$ are isometric and have the same discriminant quadratic form.
+:::
+
+::: {.proof}
+Choose $a\in\eta^\perp$ with $(a,\delta)=1$. In the version actually read, arXiv:0810.1614v1, §3.1, Lemma 3.1 and formula (4) give precisely the Eichler transvection displayed next, and the integrality assertion following equation (10), printed pp. 8--9 of that version, applies because $\eta$ and $a$ are integral vectors with $a^2$ even. The *J. Algebra* record cited by the bibliography supplies publication data only. Explicitly,
+$$
+E_{\eta,a}(x)=x+(x,\eta)a-(x,a)\eta-\frac{a^2}{2}(x,\eta)\eta
+$$
+and it is integral on $T_{\En}$. Direct expansion gives $E_{\eta,a}(\eta)=\eta$ and $E_{\eta,a}(\delta)=\delta-\eta$. Moreover, for $x\in\eta^\perp$,
+$$
+E_{\eta,a}(x)-x=-(x,a)\eta,
+$$
+so $E_{\eta,a}$ acts trivially on $\eta^\perp/\ZZ\eta$. Take $u_k=E_{\eta,a}^k$. An isometry $u$ identifies $\delta^\perp$ with $u(\delta)^\perp$, which proves the last assertion.
+:::
+
+::: {.proposition #prop:cusp-white-root-complements title="The perpendicular lattices of the nine white cusp-diagram roots"}
+For each of the nine white roots in @prop:facet-angles-aegs, and for every lift $\delta$ of that root to $\eta^\perp\subset T_{\En}$, the perpendicular $\delta^\perp$ is isometric to
+$$
+T_{\Co}=\langle2\rangle\oplus E(2)
+ =\langle2\rangle\oplus U(2)\oplus E_8(2),
+$$
+the lattice of [@DK13], (3.6), printed p. 513. Its discriminant group is $(\ZZ/2\ZZ)^{11}$, and the normal form of its discriminant quadratic form is
+$$
+\begin{pmatrix}0&1/2\\1/2&0\end{pmatrix}^{\oplus 5}
+  \oplus(1/2),
+$$
+with values in $\QQ/2\ZZ$.
+:::
+
+::: {.proof}
+The exact representatives of the nine roots satisfy $\delta^2=-2$ and $\gcd((\delta,\eta^\perp))=1$, as the transcript prints next to each candidate. By @lem:cusp-root-lift-independence it therefore suffices to compute on those representatives.
+
+For each representative the record prints a $\ZZ$-basis $B$ of $\delta^\perp$ and the Gram matrix $H_\delta=BGB^{\mathit T}$. Every $H_\delta$ has rank $11$ and determinant $-2048$. The same owner call
+`IntegralLattice(H).discriminant_group().normal_form()`
+on each $H_\delta$ and on the displayed model $T_{\Co}$ returns identical value modules, invariants, quadratic matrices, and bilinear matrices; the common output is the normal form in the statement. The nine triples (cusp, figure node, printed root) are listed at the end of the transcript, which terminates with `PYEXIT=0`; their matrices and full normal forms appear in the per-candidate sections.
+
+The perpendicular is even because $T_{\En}$ is even, and it has signature $(p,q)=(2,9)$ because $\delta^2<0$. Its discriminant group has order $2^{11}$, and the final $(1/2)$-summand distinguishes the $2$-elementary invariant $\delta=1$. Thus $a=p+q=11$ and its invariants are $(11,11,1)$. The existence hypotheses of @thm:two-elementary-classification hold directly: $p,q\ge1$, $a=p+q$, $p+q+a=22$ is even, and the further listed conditions impose nothing when $\delta=1$, $a\ne0,1,2$. Its uniqueness clause ([@Nik80, Thm. 3.6.2, printed p. 144]), rather than @prop:coble-transcendental, gives $\delta^\perp\cong T_{\Co}$.
+:::
+
+::: {.theorem #thm:coble-restricted-semifan title="The restricted Coxeter semifan at cusp 2 is the marked Coble semifan"}
+Let $\eta$ be the cusp-$2$ isotropic vector, let $\delta=r_{10}$, let $C_\delta$ be the facet of the AEGS cusp-$2$ chamber computed in @prop:facet-angles-aegs, and put
+$$
+\bar S=(\delta^\perp\cap\eta^\perp)/\ZZ\eta .
+$$
+Then $\bar S\cong\langle2\rangle\oplus E_8(2)$ and:
+
+1. $C_\delta$ is a fundamental chamber of the full reflection group $W^{(2,4)}(\bar S)$, generated by all $(-2)$-roots and all $(-4)$-roots of divisibility $2$ in the sense of [@AN06], Theorem 3.1, printed p. 51, and it is the chamber of [@AN06], Table 1, entry $(9,9,1)$, printed p. 52;
+2. intersection with $\bar\delta^\perp$ identifies the AEGS semifan $\mathcal F^2$ of [@AEGS25], Definitions 5.3 and 5.4, printed pp. 610--611, with the generalized Coxeter semifan of $C_\delta$ whose irrelevant set is the single interior spur, in the manuscript's current wall labels $\{4\}$; and
+3. after reordering the walls as
+$$
+(v_1,v_2,v_3,v_4,v_5,v_6,v_7,v_8,v_9)
+ =(3,2,1,5,6,7,8,9,4),
+$$
+the irrelevant root is $v_9$ and the restricted irrelevant group is $\langle s_{v_9}\rangle\cong S_2$, while $v_1,\dots,v_8$ are relevant.
+:::
+
+::: {.proof}
+The exact representatives give $\bar S=\ZZ(e+f)\oplus E_8(2)$ in the basis used for Figure 7. For $i<10$, the projected normals are $w_i=r_i+\tfrac12(r_i,\delta)\delta$, integral vectors of $\bar S$; only $w_9=r_9+\delta$ differs from $r_i$. The record `computations/reports/coble_cusp2-restricted-semifan.py` and its transcript print these coordinates and verify $w_9^2=-2$, $w_i^2=-4$ for $i<9$, and the divisibility required for each reflection to be integral (divisibility $2$ at $w_9$ and at the eight $(-4)$-vectors). The nine hyperplanes are distinct because their Gram matrix is nonsingular.
+
+All hypotheses of Case B of @thm:semifan-restriction hold. The mirror $r_{10}$ is on the boundary of AEGS Figure 7's folded triangle, hence relevant by Definition 5.4. Its only nonorthogonal incidence is the double bond $9-10$, which has the even label $4$. The projected roots are reflective by the preceding paragraph. @prop:facet-angles-aegs gives only $\pi/2,\pi/3,\pi/4$ as intersecting induced angles, with no parallel pair at this candidate. Relevance is collision-free because the nine restricted hyperplanes are distinct. Therefore $C_\delta$ is a fundamental chamber of $W_\delta$, and intersection is the generalized Coxeter semifan with the inherited marking.
+
+Now let $W_\delta$ be generated by these nine projected reflections. Their Gram matrix in the displayed AN order is exactly that of @thm:coble-cusp-chamber, namely a chain $v_1-\cdots-v_8$ with $v_7-v_8$ double and $v_8$ open, and the additional $v_9$ attached to $v_3$. Mapping the nine projected normals to the corresponding normals of the AN chamber preserves all pairings; it therefore induces an isometry between their real spans and identifies the two simplicial chamber cones. In particular, $C_\delta$ and the AN chamber have the same finite hyperbolic volume, the AN chamber being of finite volume by @thm:coble-cusp-chamber's source in [@AN06], Table 1, printed p. 52. Also $W_\delta\subseteq W^{(2,4)}(\bar S)$ by the checked squares and divisibilities. The fundamental-covolumes of the two groups are the volumes of these chambers, so
+$$
+[W^{(2,4)}(\bar S):W_\delta]
+ =\frac{\operatorname{vol}(C_\delta)}
+        {\operatorname{vol}(C_{\mathrm{AN}})}=1 .
+$$
+The groups are equal and $C_\delta$ is a fundamental chamber of the full group, proving (1).
+
+The marking is AEGS Definition 5.4: roots on the folded triangle's boundary are relevant, and Figure 7's interior spur is the only irrelevant root. Lemma 5.5 attaches that marking to $\mathcal F^2$. It descends unchanged by @thm:semifan-restriction, while @thm:semifan-restriction(3) supplies the generalized fan identification. The only irrelevant reflection is integral and of order $2$, so its group is $S_2$, in agreement with AEGS Lemma 5.6, printed p. 611. Current node $4$ is named $v_9$ by the displayed reordering, proving (2) and (3).
+:::
+
+::: {.remark title="Why the mirror case has a parity hypothesis"}
+In Case B, (B3) is used to make each induced wall reflection integral on $\bar S$, and (B4) is used to make $C_\delta$ a Vinberg chamber. The additional even-incidence condition (B2) serves a different purpose: it supplies the element of $\Stab_W(H_\RR)$ inducing that reflection, hence it makes the $W_\delta$-chambers coincide with the restriction of the original chamber decomposition. Without this compatibility, proving that one facet has Coxeter angles would not prove equality of the two semifans.
+:::
 
 ## Dependency graph for further work {#sec-dependency-graph}
 

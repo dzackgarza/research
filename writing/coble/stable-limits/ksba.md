@@ -1,5 +1,6 @@
 # KSBA stable limits {#sec-ksba}
 
+
 ## How a stable limit is obtained
 
 ::: {.proposition #prop:fen2-limits-are-k3-quotients title="Enriques stable limits are quotients of K3 stable limits"}

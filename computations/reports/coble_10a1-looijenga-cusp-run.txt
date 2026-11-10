@@ -1,0 +1,53 @@
+provenance
+  Sage: 11.0.beta5
+  sage-extensions: .scratch/se-provider-15db925b/src, pin 15db925b0c92
+
+constructed lattices: P = C(2), C = I_{1,10}; Q = B(2), B = U + U + I_{0,7}
+  P: rank 11, det 2048, signature (1, 10); Q: rank 11, det -2048, signature (2, 9)
+
+constructing the gluing anti-isometry A_P -> A_Q(-1)
+  |A_P| = 2048, |A_Q| = 2048
+
+gluing class mask: 1575, support: (0, 1, 2, 5, 9, 10)
+
+finite orthogonal group G = O(A_Q,q)
+  |G| = 46998591897600, agrees with the owner order: True
+
+H_10: the S_10 node-permutation action transported by gamma
+  |H_10| = 3628800; faithful S_10 action: True
+  every adjacent-transposition matrix satisfies the S_10 Coxeter relations: True
+
+R_0: the integral root-stabilizer image at a coordinate root
+  r_0^perp: rank 10, det 1024, signature (2, 8)
+  |O(r_0^perp/2r_0^perp)| = 94755225600
+  |R_0| = 94755225600, agrees with the owner order: True
+
+transport R_0 to the gluing class and form F = Stab_G(c)
+  |F| = 94755225600
+  |R| = 94755225600
+  H_10 and R are both contained in F
+
+double cosets controlling the root orbits
+  stable orbits over the fixed discriminant class: 1
+  Gamma_{10A_1}-orbits of the H_infinity hyperplanes: 1   (0.0 s)
+
+explicit incident root/cusp pair and reflection closure
+  r = [1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1], square -2, divisibility 2
+  [r/2] = gamma([H/2]): True
+  eta = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0], eta^2 = 0, (r,eta) = 0
+  the trace of r modulo eta has square -2 and is a primitive integral root
+  s_r(x)-x belongs to 2Q on every basis vector: True
+  second incident root: [1, 1, 1, 0, 0, -1, 0, 0, 0, 1, 1]
+  (r',r) = 2; s_r(r') = [3, 3, 3, 0, 0, 1, 0, 0, 0, 3, 3]
+  s_r(r') has square -2, the same divided class, and remains in eta^perp: True
+
+MATHEMATICAL CONCLUSION
+  Only pure Q-roots occur in H_infinity intersect D(Q).  The double-coset computation
+  above gives their Gamma_{10A_1}-orbit decomposition and the stable orbit count.
+  At a cusp, only roots orthogonal to the isotropic line contribute.  Every boundary
+  trace is a primitive (-2)-root.  The trace set is closed under its integral
+  reflections and is therefore the complete mirror arrangement of the reflection
+  group they generate.  The resulting Looijenga semifan IS a Coxeter semifan.
+  It is not thereby identified with the full W^(2,4)-Coxeter semifan, which also
+  has (-4)-mirrors.
+PYEXIT=0

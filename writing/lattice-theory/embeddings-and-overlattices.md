@@ -1,5 +1,6 @@
 # Embeddings, overlattices, and gluing {#sec-embeddings-overlattices}
 
+
 Throughout, $S$, $T$, and $L$ denote nondegenerate integral lattices. The notation $A_L$ always denotes the bilinear discriminant form of @def:discriminant; when $L$ is even, $A_{L,q}$ denotes its quadratic discriminant refinement.
 
 ## Primitive and saturated sublattices

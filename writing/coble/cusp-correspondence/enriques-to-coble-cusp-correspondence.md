@@ -1,5 +1,6 @@
 # Enriques to Coble correspondence {#sec-enriques-coble-correspondence}
 
+
 ::: {.theorem #thm:cusp_correspondence}
 
 Let $\eta\colon T_\Co\injects\ten$ be the primitive embedding, $v_1, v_2$ the isotropic vectors of @lem:divisibilityTcoOne and $\tilde J = \generators{\eta(v_1), \eta(v_2)}$. Then $\tilde J$ is an isotropic plane, $\eta(v_1)$ is isotropic with $\div_\ten(\eta(v_1)) = 2$, and
@@ -60,7 +61,7 @@ We then have $\div_{\ten}(w_1) = 2$.
 ::: {.proof}
 
 By @lem:divisibilityAlwaysTwoTco, $v_1$ has divisibility $2$ in $T_\Co$; moreover it is isotropic.
-By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them, so $v_1$ represents *the* $0$-cusp of $\fco$ for the full orthogonal group and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ The arithmetic group $\Gamma_\Co = \Orth^+(T_\Co)^*$ has $527$ orbits of primitive isotropic vectors (@thm:cusp-lifting); they lie in one $\Orth^+(T_\Co)$-orbit, so all $527$ $0$-cusps of $\fco$ have boundary lattice $\latI_{1,8}(2)$.
+By @thm:unpolarized-cusps and @prop:tco-split-maximal, $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors, with quotient $\latI_{1,8}(2)$ at any of them, so $v_1$ represents *the* $0$-cusp of $\fco$ for the full orthogonal group and $$(v_1)^{\perp T_\Co}/v_1 \cong \latI_{1,8}(2) = (9,9,1) \cong \generators{2} \oplus E_8(2).$$ The stable group $\widetilde\Orth^+(T_\Co)$ has $527$ orbits of primitive isotropic vectors (@thm:cusp-lifting); they lie in one $\Orth^+(T_\Co)$-orbit, so all $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ have boundary lattice $\latI_{1,8}(2)$.
 
 Since $\tilde e' \tilde f' = 2$, and $\tilde e'$ is orthogonal to the remaining generators of $\ten$, we have
 
@@ -224,11 +225,11 @@ The images therefore lie in one irreducible component of rank at least $12$, and
 
 Throughout, $\Gamma_\En\definedas\Orth^+(\ten)^*$, as in @thm:normalization, and $\Gamma^K_\En\definedas\Orth(\ten)$ is the group of [@AEGS25].
 
-Let $K = T_\Co^{\perp\ten} = \ZZ k$, with $k = \tilde e - \tilde f$ and $k^2 = -2$. The gluing group of $T_\Co\oplus K\subset\ten$ is $H = \generators{(h/2,\,k/2)}\leq A_{T_\Co}\oplus A_K$, which is isotropic because $q_{T_\Co}(h/2) + q_K(k/2) = \frac12-\frac12 = 0$. Every $\varphi\in\Gamma_\Co$ acts trivially on $A_{T_\Co}$, so $\varphi\oplus\id_K$ preserves $H$ and extends to an element of $\Gamma_\En$ by @thm:automorphism-lifting-criterion, as in the proof of @thm:normalization. This gives a homomorphism
-$$\mathrm{Ext}\colon\Gamma_\Co\too\Stab_{\Gamma_\En}(T_\Co)\subset\Gamma_\En,\qquad \varphi\mapsto\tilde\varphi,\quad \tilde\varphi(k) = k,$$
-with $\mathrm{res}\circ\mathrm{Ext} = \id$. So $\mathrm{Ext}$ is injective, and its image is the stabilizer of the vector $k$ in $\Stab_{\Gamma_\En}(T_\Co)$. The kernel of $\mathrm{res}$ is $\{1, s_k\}$, where $s_k$ is the reflection in $k$, which fixes $T_\Co$ pointwise and negates $k$; so the stabilizer of the line $\ZZ k$ is $\mathrm{Ext}(\Gamma_\Co)\times\generators{s_k}$.
+Let $K = T_\Co^{\perp\ten} = \ZZ k$, with $k = \tilde e - \tilde f$ and $k^2 = -2$. The gluing group of $T_\Co\oplus K\subset\ten$ is $H = \generators{(h/2,\,k/2)}\leq A_{T_\Co}\oplus A_K$, which is isotropic because $q_{T_\Co}(h/2) + q_K(k/2) = \frac12-\frac12 = 0$. Every $\varphi\in\widetilde\Orth^+(T_\Co)$ acts trivially on $A_{T_\Co}$, so $\varphi\oplus\id_K$ preserves $H$ and extends to an element of $\Gamma_\En$ by @thm:automorphism-lifting-criterion, as in the proof of @thm:normalization. This gives a homomorphism
+$$\mathrm{Ext}\colon\widetilde\Orth^+(T_\Co)\too\Stab_{\Gamma_\En}(T_\Co)\subset\Gamma_\En,\qquad \varphi\mapsto\tilde\varphi,\quad \tilde\varphi(k) = k,$$
+with $\mathrm{res}\circ\mathrm{Ext} = \id$. So $\mathrm{Ext}$ is injective, and its image is the stabilizer of the vector $k$ in $\Stab_{\Gamma_\En}(T_\Co)$. The kernel of $\mathrm{res}$ is $\{1, s_k\}$, where $s_k$ is the reflection in $k$, which fixes $T_\Co$ pointwise and negates $k$; so the stabilizer of the line $\ZZ k$ is $\mathrm{Ext}(\widetilde\Orth^+(T_\Co))\times\generators{s_k}$.
 The embedding $\eta$ is equivariant, $\eta(\varphi v) = \mathrm{Ext}(\varphi)\,\eta(v)$, so it induces a map of orbit sets
-$$\Phi\colon\Gamma_\Co\backslash\{\text{primitive isotropic vectors of }T_\Co\}\ \longrightarrow\ \Gamma_\En\backslash\{\text{primitive isotropic vectors of }\ten\}.$$
+$$\Phi\colon\widetilde\Orth^+(T_\Co)\backslash\{\text{primitive isotropic vectors of }T_\Co\}\ \longrightarrow\ \Gamma_\En\backslash\{\text{primitive isotropic vectors of }\ten\}.$$
 
 ::: {.proposition #prop:cusp-map-not-onto}
 
@@ -247,11 +248,11 @@ the second because $\tilde e = \tfrac12(h+k)$ with $\eta(v)\perp k$. Both entrie
 *The fibres of $\Phi$.* The fibre of $\Phi$ over the class $[\tilde w]$ consists of the classes $[v]$ with $\gamma\eta(v) = \tilde w$ for some $\gamma\in\Gamma_\En$. Put
 $$Y = \{\gamma\in\Gamma_\En : \gamma^{-1}\tilde w\in\eta(T_\Co)\}, \qquad v_\gamma \definedas \eta^{-1}\bigl(\gamma^{-1}\tilde w\bigr).$$
 Then the fibre is the double-coset set
-$$\Phi^{-1}\bigl([\tilde w]\bigr) = \Stab_{\Gamma_\En}(\tilde w)\,\backslash\, Y\, /\, \mathrm{Ext}(\Gamma_\Co).$$
-Both actions preserve $Y$. For $h\in\Stab_{\Gamma_\En}(\tilde w)$, $(h\gamma)^{-1}\tilde w = \gamma^{-1}h^{-1}\tilde w = \gamma^{-1}\tilde w$, so $v_{h\gamma} = v_\gamma$. For $\varphi\in\Gamma_\Co$,
+$$\Phi^{-1}\bigl([\tilde w]\bigr) = \Stab_{\Gamma_\En}(\tilde w)\,\backslash\, Y\, /\, \mathrm{Ext}(\widetilde\Orth^+(T_\Co)).$$
+Both actions preserve $Y$. For $h\in\Stab_{\Gamma_\En}(\tilde w)$, $(h\gamma)^{-1}\tilde w = \gamma^{-1}h^{-1}\tilde w = \gamma^{-1}\tilde w$, so $v_{h\gamma} = v_\gamma$. For $\varphi\in\widetilde\Orth^+(T_\Co)$,
 $$\bigl(\gamma\,\mathrm{Ext}(\varphi)\bigr)^{-1}\tilde w = \mathrm{Ext}(\varphi)^{-1}\gamma^{-1}\tilde w = \mathrm{Ext}\bigl(\varphi^{-1}\bigr)\eta(v_\gamma) = \eta\bigl(\varphi^{-1}v_\gamma\bigr),$$
 so $v_{\gamma \mathrm{Ext}(\varphi)} = \varphi^{-1}v_\gamma$.
-Conversely, if $[v_\gamma] = [v_{\gamma'}]$, say $v_{\gamma'} = \varphi v_\gamma$, then $\gamma'^{-1}\tilde w = \eta(\varphi v_\gamma) = \mathrm{Ext}(\varphi)\gamma^{-1}\tilde w$, that is $\gamma \mathrm{Ext}(\varphi)^{-1}\gamma'^{-1}\in\Stab_{\Gamma_\En}(\tilde w)$, which gives $\gamma' \in \Stab_{\Gamma_\En}(\tilde w)\,\gamma\,\mathrm{Ext}(\Gamma_\Co)$. So the double cosets are exactly the classes over $[\tilde w]$, and the fibre is empty exactly when $Y$ is.
+Conversely, if $[v_\gamma] = [v_{\gamma'}]$, say $v_{\gamma'} = \varphi v_\gamma$, then $\gamma'^{-1}\tilde w = \eta(\varphi v_\gamma) = \mathrm{Ext}(\varphi)\gamma^{-1}\tilde w$, that is $\gamma \mathrm{Ext}(\varphi)^{-1}\gamma'^{-1}\in\Stab_{\Gamma_\En}(\tilde w)$, which gives $\gamma' \in \Stab_{\Gamma_\En}(\tilde w)\,\gamma\,\mathrm{Ext}(\widetilde\Orth^+(T_\Co))$. So the double cosets are exactly the classes over $[\tilde w]$, and the fibre is empty exactly when $Y$ is.
 
 ::: {.proposition #prop:cusp-map-separates-mod-two}
 
@@ -267,17 +268,17 @@ is defined, and isotropic because $x^2 = 0$. Then $\gamma(x/2) = x'/2$, and $\ga
 
 ::: {.proposition #prop:cusp-map-injective}
 
-The orbit map $\Phi$ is injective: if $v, v'$ are primitive isotropic vectors of $T_\Co$ and $\eta(v)$, $\eta(v')$ lie in one $\Gamma_\En$-orbit, then $v$ and $v'$ lie in one $\Gamma_\Co$-orbit.
+The orbit map $\Phi$ is injective: if $v, v'$ are primitive isotropic vectors of $T_\Co$ and $\eta(v)$, $\eta(v')$ lie in one $\Gamma_\En$-orbit, then $v$ and $v'$ lie in one $\widetilde\Orth^+(T_\Co)$-orbit.
 :::
 
 ::: {.proof}
 
-By @prop:cusp-map-separates-mod-two, $v\equiv v'\pmod{2T_\Co}$, so $\tfrac12 v - \tfrac12 v'\in T_\Co$ and the classes $v^* = \tfrac12 v + T_\Co$ and $v'^*$ of @prop:coble-primitive-isotropic-classes are equal. By @thm:cusp-lifting, parts 1 and 4 with $\Gamma = \ker\rho_{T_\Co}$, for which $H$ is trivial, the map $\Gamma_\Co v\mapsto v^*$ is injective. Hence $\Gamma_\Co v = \Gamma_\Co v'$.
+By @prop:cusp-map-separates-mod-two, $v\equiv v'\pmod{2T_\Co}$, so $\tfrac12 v - \tfrac12 v'\in T_\Co$ and the classes $v^* = \tfrac12 v + T_\Co$ and $v'^*$ of @prop:coble-primitive-isotropic-classes are equal. By @thm:cusp-lifting, parts 1 and 4 with $\Gamma = \ker\rho_{T_\Co}$, for which $H$ is trivial, the map $\widetilde\Orth^+(T_\Co) v\mapsto v^*$ is injective. Hence $\widetilde\Orth^+(T_\Co) v = \widetilde\Orth^+(T_\Co) v'$.
 :::
 
-So $\Phi$ embeds the $527$ $0$-cusps of $\fco$ into the set of $\Gamma_\En$-orbits of primitive isotropic vectors of divisibility $2$ in $\ten$. The orbit of such a vector $\tilde w$ is in the image exactly when some $\gamma\in\Gamma_\En$ carries $\tilde w$ into $\eta(T_\Co)=k^{\perp\ten}$, that is, when
+So $\Phi$ embeds the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ into the set of $\Gamma_\En$-orbits of primitive isotropic vectors of divisibility $2$ in $\ten$. The orbit of such a vector $\tilde w$ is in the image exactly when some $\gamma\in\Gamma_\En$ carries $\tilde w$ into $\eta(T_\Co)=k^{\perp\ten}$, that is, when
 $$\beta_\ten\bigl(\tilde w,\ \gamma^{-1}k\bigr) = 0$$
 for some $\gamma\in\Gamma_\En$: when $\tilde w$ is orthogonal to a $(-2)$-vector in the $\Gamma_\En$-orbit of $k$.
-For example, by @lem:stable-orthogonal-not-transitive the isotropic generators $e'$ and $f'$ of the $U(2)$ summand lie in different $\Gamma_\Co$-orbits, and $[\tilde e']\neq[\tilde f']$.
+For example, by @lem:stable-orthogonal-not-transitive the isotropic generators $e'$ and $f'$ of the $U(2)$ summand lie in different $\widetilde\Orth^+(T_\Co)$-orbits, and $[\tilde e']\neq[\tilde f']$.
 
 Every period of $T_\Co$ is orthogonal to $k$, so the image of $\fco$ in $\fen = \bD(\ten)/\Gamma_\En$ lies in the Heegner divisor $\mch_{-2}/\Gamma_\En$ (@thm:normalization). The cusp diagram of [@AEGS25, §2], with the two $0$-cusps $(10,10,0)_1$, $(10,8,0)_1$ and the two $1$-cusps $(8,8,0)_0$, $(8,6,0)_0$, is the diagram of $F^K_\En = \bD(\ten)/\Gamma^K_\En$.

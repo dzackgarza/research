@@ -64,7 +64,7 @@ The same mirror moves give the cusp diagram of the moduli space $\fco$ of unpola
 Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \generators{2} \oplus E_{10}(2)$.
 :::
 
-@fig-coble-coxeter-diagrams gives the corresponding Coxeter diagram [@AN06; @AEGS25].
+@fig-coble-coxeter-diagrams draws the Coxeter diagram of $(9,9,1)_1$; @thm:coble-cusp-chamber states its bond list, its $f$-vector and its one ideal vertex. The Enriques-side diagrams are the folded diagrams of [@AEGS25], Figures 7 and 8.
 The 1-cusps are determined by the maximal parabolic subdiagrams of $(9, 9, 1)_1$, in @fig-coble-cusp-9-9-1-parabolics.
 
 ::: {#fig-coble-coxeter-diagrams .figure}
@@ -83,9 +83,10 @@ The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, correspondi
 
 ::: {.example #ex:coble-cusp-9-9-1-parabolic title="The 1-cusps adjacent to the 0-cusp of $\fco$"}
 
-The Coxeter diagram $G_{(9, 9, 1)_1}$ has exactly one maximal parabolic subdiagram, of type $\tilde B_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
-So, for the group $\Orth^+(T_\Co)$, the $0$-cusp represented by $v_0$ is incident to exactly one orbit of adjacent $1$-cusps.
-For the group $\Gamma_\Co$, the primitive isotropic lines of $T_\Co$ form $527$ orbits, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
+By @thm:coble-cusp-chamber, exactly one of the nine one-node deletions of the Coxeter diagram $G_{(9, 9, 1)_1}$ is parabolic, and it has type $\tilde B_7(2)$ (@fig-coble-cusp-9-9-1-parabolics).
+So, for the group $\Orth^+(T_\Co)$, the $0$-cusp represented by $v_0$ is incident to exactly one $1$-cusp, and its boundary lattice is $(7,7,1)_0$.
+For the stable group $\widetilde\Orth^+(T_\Co)$, the primitive isotropic lines of $T_\Co$ form $527$ orbits, one for each nonzero isotropic class of $A_{T_\Co}$ (@thm:cusp-lifting).
+At cusp $2$ of $\fentwo$, the facet of the unique white node $r_{10}$ has the nine-wall diagram $G_{(9,9,1)_1}$ with the induced bond $8-9$ double (@prop:facet-angles-aegs), and all nine white candidates of [@AEGS25], Figures 7--8, have perpendicular lattice $T_\Co$ (@prop:cusp-white-root-complements).
 
 :::
 

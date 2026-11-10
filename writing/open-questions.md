@@ -34,7 +34,7 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **A generating set of the group $\Gamma_\Co$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
+| **A generating set of the group $\widetilde\Orth^+(T_\Co)$** | @qst:gamma-co-generators, @prob:coxeter-completeness |
 | **Equality of the four arithmetic groups** | @prob:group-identification, @sec-four-groups, @sec-gamma-co-comparison, @qst:gamma-co-generators |
 | **Which quotient of $D(T_\Co)$ is the Coble moduli space** | @qst:sextic-group-comparison |
 | **Labeled Coble rigidity** | @prob:coble-rigidity, @qst:chamber-clause-one-node, @qst:reflected-pair-conjugacy, @qst:del-pezzo-saturation-higher-k |
@@ -53,7 +53,7 @@ tags:
 | **KSBA versus semitoroidal** | @conj:coble-ksba-semitoroidal-morphism, @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss, @conj:restricted_ramification_semifan |
 | **Admissibility of Coble roots at a cusp** | @qst:coble_cusp_admissibility |
 | **An equivariant triangulation compatible with the marked root** | @qst:equivariant_triangulation |
-| **Is $\mch^*_{10A_1}$ empty, and where do the three semifans sit** | @qst:coble-arrangement-empty, @qst:semifan-poset-position |
+| **The position of the three Coble semifans** | @qst:semifan-poset-position |
 | **Do the integral-affine data determine the stable limit** | @conj:classification-ia-data |
 | **The semifan of a recognizable divisor** | @qst:recognizable-semifan |
 | **The direct Coble theory** | @sec-status-ledger; @prob:coxeter-completeness, @prob:affine-realization, @prob:algebraic-extension, @prob:dlt-quotient, @prob:stable-proj, @prob:component-classification, @prob:direct-semifan, @prob:restricted-semifan, @prob:autonomous-theorem, @prob:comparison-theorem |

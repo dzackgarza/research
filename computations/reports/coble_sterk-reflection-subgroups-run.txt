@@ -1,0 +1,73 @@
+Sage 11.0.beta5
+T_En = U + U(2) + E8(2), rank 12, det 1024
+A_{T_En}: 1024 classes, 528 isotropic (527 nonzero)
+the nine recorded generators of M preserve q: True; preserve both summands: True
+M-orbits of the 528 isotropic classes: 5, sizes [1, 2, 120, 135, 270]
+
+The representatives used, and the cusp each one is in
+cusp  representative                                   class [v/2]   M-orbit  |Stab_M|
+ 1    Sterk 4.2.3/4.3.x [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   0000000000       1    696729600
+ 1    page 4.2.3 form [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   0000000000       1    696729600
+      cusp 1: the two representatives are in one M-orbit: True
+ 2    Sterk 4.2.3/4.3.x [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]   0000000001       2    348364800
+ 2    page 4.2.3 form [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]   0000000001       2    348364800
+      cusp 2: the two representatives are in one M-orbit: True
+ 3    Sterk 4.2.3/4.3.x [0, 0, 1, 1, -2, -3, -4, -6, -5, -4, -3, -2] 0101001011     120      5806080
+ 3    page 4.2.3 form [0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0]   0000000111     120      5806080
+      cusp 3: the two representatives are in one M-orbit: True
+ 4    Sterk 4.2.3/4.3.x [0, 0, 2, 1, -4, -5, -7, -10, -8, -6, -4, -2] 0000011010     270      2580480
+ 4    page 4.2.3 form [0, 0, 1, 2, 1, 0, 0, 1, 0, 0, 0, 0]   0000100101     270      2580480
+      cusp 4: the two representatives are in one M-orbit: True
+ 5    Sterk 4.2.3/4.3.x [2, 2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2] 0000011000     135      5160960
+ 5    page 4.2.3 form [2, 2, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0]   0000100100     135      5160960
+      cusp 5: the two representatives are in one M-orbit: True
+
+the cusp-3 representative is NOT in the cusp-5 orbit: True
+
+=== cusp 1   Sterk's representative v = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]   K = v^perp/Zv, det -1024
+    class [v/2] = 0000000000, M-orbit size 1
+    his 12 printed roots are integral in this basis of K: True
+    of them, 0 carry a nonzero eta-component (dropped by the class in K)
+    squares [-4]; reflection in Gamma_En,2: 12 of 12
+    his walls bound a polytope of finite covolume (every vertex ray in the closed light cone): True;  vertices 14 finite + 9 ideal = 23
+    his weight multiset {3: 10, 'inf': 3}   (his figure: 12 walls, 9 ideal vertices)
+    unrestricted certified search on this cusp: not run in this batch; the algorithm's own construction (vinal's integer-point box for this basis) did not return for it, so no chamber is claimed here and the completeness of his wall set is left open
+
+=== cusp 2   Sterk's representative v = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]   K = v^perp/Zv, det -256
+    class [v/2] = 0000000001, M-orbit size 2
+    his 10 printed roots are integral in this basis of K: True
+    of them, 0 carry a nonzero eta-component (dropped by the class in K)
+    squares [-4, -2]; reflection in Gamma_En,2: 10 of 10
+    his walls bound a polytope of finite covolume (every vertex ray in the closed light cone): True;  vertices 8 finite + 2 ideal = 10
+    his weight multiset {3: 8, 4: 1}   (his figure: 10 walls, 2 ideal vertices)
+    unrestricted certified search on this cusp: complete=True  walls=10  ideal=2  finite=8  weights {3: 8, 4: 1}  (2 s, 1 accepted / 0 rejected)
+    his walls among the walls of the certified chamber: 9 of 10 (his walls not among them: labels [9])
+
+=== cusp 3   Sterk's representative v = [0, 0, 1, 1, -2, -3, -4, -6, -5, -4, -3, -2]   K = v^perp/Zv, det -256
+    class [v/2] = 0101001011, M-orbit size 120
+    his 12 printed roots are integral in this basis of K: True
+    of them, 5 carry a nonzero eta-component (dropped by the class in K)
+    squares [-4, -2]; reflection in Gamma_En,2: 9 of 12
+    his walls bound a polytope of finite covolume (every vertex ray in the closed light cone): True;  vertices 29 finite + 4 ideal = 33
+    his weight multiset {3: 7, 4: 4, 'inf': 1}   (his figure: 12 walls, 4 ideal vertices)
+    unrestricted certified search on this cusp: not run in this batch; the algorithm's own construction (vinal's integer-point box for this basis) did not return for it, so no chamber is claimed here and the completeness of his wall set is left open
+
+=== cusp 4   Sterk's representative v = [0, 0, 2, 1, -4, -5, -7, -10, -8, -6, -4, -2]   K = v^perp/Zv, det -256
+    class [v/2] = 0000011010, M-orbit size 270
+    his 11 printed roots are integral in this basis of K: True
+    of them, 4 carry a nonzero eta-component (dropped by the class in K)
+    squares [-4, -2]; reflection in Gamma_En,2: 8 of 11
+    his walls bound a polytope of finite covolume (every vertex ray in the closed light cone): True;  vertices 21 finite + 5 ideal = 26
+    his weight multiset {3: 8, 4: 2}   (his figure: 11 walls, 5 ideal vertices)
+    unrestricted certified search on this cusp: not run in this batch; the algorithm's own construction (vinal's integer-point box for this basis) did not return for it, so no chamber is claimed here and the completeness of his wall set is left open
+
+=== cusp 5   Sterk's representative v = [2, 2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2]   K = v^perp/Zv, det -256
+    class [v/2] = 0000011000, M-orbit size 135
+    his 14 printed roots are integral in this basis of K: True
+    of them, 6 carry a nonzero eta-component (dropped by the class in K)
+    squares [-4, -2]; reflection in Gamma_En,2: 14 of 14
+    his walls bound a polytope of finite covolume (every vertex ray in the closed light cone): True;  vertices 102 finite + 13 ideal = 115
+    his weight multiset {3: 8, 4: 8, 'inf': 1}   (his figure: 14 walls, 13 ideal vertices)
+    unrestricted certified search on this cusp: complete=True  walls=14  ideal=13  finite=102  weights {3: 8, 4: 8, 'inf': 1}  (30 s, 6 accepted / 4 rejected)
+    his walls among the walls of the certified chamber: 7 of 14 (his walls not among them: labels [6, 8, 9, 10, 12, 13, 14])
+PYEXIT=0

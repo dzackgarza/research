@@ -267,7 +267,7 @@ By @thm:coble-isotropic-class-orbits, the nonzero isotropic classes form a singl
 ::: {.lemma #lem:stable-orthogonal-not-transitive title="The stable orthogonal group is not transitive on isotropic lines"}
 
 Let $B = U\oplus U\oplus\latI_{0,7}$ and $T_\Co = B(2)$ as in @prop:tco-split-maximal, and let $e, f$ be the isotropic basis vectors of the first hyperbolic summand of $B$, so that in $T_\Co$ they are primitive isotropic vectors with $e\cdot f = 2$.
-Then no $g\in\Gamma_\Co = \Orth^+(T_\Co)^*$ satisfies $g(\ZZ e) = \ZZ f$.
+Then no $g\in\widetilde\Orth^+(T_\Co)$ satisfies $g(\ZZ e) = \ZZ f$.
 So $\Orth^+(T_\Co)$ is transitive on the primitive isotropic vectors of $T_\Co$ (@thm:unpolarized-cusps) while the arithmetic group of $\fco$ is not, and $\overline{F_\Co}^{\bb}$ has at least two $0$-cusps.
 :::
 
@@ -306,21 +306,21 @@ Every $G$-orbit is $Hx\cup H\sigma x$, and these two are either equal or disjoin
 
 ::: {.proposition #prop:discriminant-kernel-orbits title="The discriminant kernel and the stable group have the same isotropic orbits"}
 
-Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the discriminant kernel and $\Gamma_\Co=\Orth^+(T_\Co)\intersect K$. Then
+Let $B=\latI_{2,9}$, $T_\Co=B(2)$, let $K=\discriminantkernel{T_\Co}$ be the discriminant kernel and $\widetilde\Orth^+(T_\Co)=\Orth^+(T_\Co)\intersect K$. Then
 
-1. $K\neq\Gamma_\Co$, and $[K:\Gamma_\Co]=2$;
-2. $K$ and $\Gamma_\Co$ have the same orbits on the primitive isotropic vectors of $T_\Co$, and the same orbits on the primitive isotropic lines.
+1. $K\neq\widetilde\Orth^+(T_\Co)$, and $[K:\widetilde\Orth^+(T_\Co)]=2$;
+2. $K$ and $\widetilde\Orth^+(T_\Co)$ have the same orbits on the primitive isotropic vectors of $T_\Co$, and the same orbits on the primitive isotropic lines.
 :::
 
 ::: {.proof}
 
-*The groups differ.* $B$ is odd, so it has a unit vector $v$ with $v^2=1$, and the reflection $s_v(x) = x-2(x,v)v$ is integral and orthogonal. Modulo $2B$ it is the identity, so $s_v\in K$; and by the reflection computation of @prop:period-spinor-character, $\chi_{\mathrm{per}}(s_v) = \operatorname{sgn}(-q(v)) = -1$, because $q(v) = \tfrac12 > 0$ and $v$ is a positive vector. So $\chi_{\mathrm{per}}$ is nontrivial on $K$, which is therefore not contained in $\Orth^+$, and $[K:\Gamma_\Co]=2$ since $\chi_{\mathrm{per}}$ takes values in $\{\pm1\}$.
+*The groups differ.* $B$ is odd, so it has a unit vector $v$ with $v^2=1$, and the reflection $s_v(x) = x-2(x,v)v$ is integral and orthogonal. Modulo $2B$ it is the identity, so $s_v\in K$; and by the reflection computation of @prop:period-spinor-character, $\chi_{\mathrm{per}}(s_v) = \operatorname{sgn}(-q(v)) = -1$, because $q(v) = \tfrac12 > 0$ and $v$ is a positive vector. So $\chi_{\mathrm{per}}$ is nontrivial on $K$, which is therefore not contained in $\Orth^+$, and $[K:\widetilde\Orth^+(T_\Co)]=2$ since $\chi_{\mathrm{per}}$ takes values in $\{\pm1\}$.
 
 *The orbits agree.* By @lem:character-kernel-orbits, applied to the restriction of $\chi_{\mathrm{per}}$ to $K$, which is surjective by the first part, it is enough to find, for each primitive isotropic $x$, an element of $\Stab_K(x)$ with character $-1$.
 By @thm:unpolarized-cusps there is $g\in\Orth(B)$ with $g(\ZZ e) = \ZZ x$ for the vector $e$ of @prop:tco-split-maximal, and $e^{\perp B} = \ZZ e\oplus M_0$ with $M_0 = U\oplus\latI_{0,7}\cong\latI_{1,8}$; so $x^{\perp B} = \ZZ x\oplus M$ with $M = g(M_0)\cong\latI_{1,8}$.
-Now $\latI_{1,8}$ has a unit vector $v$, and $v\perp x$, so $s_v$ fixes $x$ while lying in $K$ with $\chi_{\mathrm{per}}(s_v)=-1$ by the computation above. Hence every $K$-orbit is $\Gamma_\Co$-stable and the two partitions coincide.
+Now $\latI_{1,8}$ has a unit vector $v$, and $v\perp x$, so $s_v$ fixes $x$ while lying in $K$ with $\chi_{\mathrm{per}}(s_v)=-1$ by the computation above. Hence every $K$-orbit is $\widetilde\Orth^+(T_\Co)$-stable and the two partitions coincide.
 
-*Vectors and lines.* The map from vector-orbits to line-orbits is surjective always, and injective here because $-\id\in\Gamma_\Co$: it acts trivially on $A_{T_\Co}$, which is $2$-torsion, and $\chi_{\mathrm{per}}(-\id)=+1$, its determinant on the positive plane being $(-1)^2$. So each line-orbit carries exactly one vector-orbit for either group.
+*Vectors and lines.* The map from vector-orbits to line-orbits is surjective always, and injective here because $-\id\in\widetilde\Orth^+(T_\Co)$: it acts trivially on $A_{T_\Co}$, which is $2$-torsion, and $\chi_{\mathrm{per}}(-\id)=+1$, its determinant on the positive plane being $(-1)^2$. So each line-orbit carries exactly one vector-orbit for either group.
 :::
 
 ## The Eichler criterion and its hypothesis

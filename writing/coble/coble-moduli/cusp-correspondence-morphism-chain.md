@@ -29,7 +29,7 @@ $$
 \tilde\eta: \bbcpt{\fco} \to \bbcpt{\fttz} .
 $$
 The stratification of $\partial\bbcpt{\fco}$ is obtained by applying the mirror moves of [@AE22] to $S_{\Co} = (11,11,1)_1$.
-On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of $\fco$ to the $0$-cusps of $\fen$ of divisibility $2$ (@prop:cusp-map-injective, @prop:cusp-map-not-onto).
+On $0$-cusps, $\eta$ induces an injective map from the $527$ $0$-cusps of the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ to the $0$-cusps of $\fen$ of divisibility $2$ (@prop:cusp-map-injective, @prop:cusp-map-not-onto).
 :::
 
 ## The two cusp identifications

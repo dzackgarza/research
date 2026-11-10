@@ -98,24 +98,9 @@ The normalization $\normalize{B}$ is initial among all normalizations, so univer
 Existence of the classifying morphism is a consequence of functoriality and the representability of KSBA moduli stacks.
 :::
 
-::: {.proposition
-    title="{Restriction of Semifans and Semitoroidal Compactification}"
-    #prop:restriction-semifans
-}
-The embedding $B \hookrightarrow \cpt{\fttz}$ induces on $\normalize{B}$ a semitoroidal structure as follows:
+The cone assertion needed here is @thm:semifan-restriction. At cusp $2$ of $\Fen,2$, @thm:coble-restricted-semifan checks all its mirror hypotheses and identifies the restricted generalized Coxeter semifan, including the inherited marking. The restricted facet is also a fundamental chamber of the full group $W^{(2,4)}(\bar S)$, not merely a Coxeter polytope with the AN diagram.
 
-- The period domain $\halfpd{B}$ for $\normalize{B}$ embeds as a closed linear subdomain of the period domain for $\fttz$, determined by additional constraints imposed by symmetry under the involution,
-
-- The rational polyhedral cones from the ramification semifan $\semifan{F}_{\ram}$ on $\cpt{\fttz}$ restrict to produce a semifan $\semifan{F}_B$ on $\normalize{B}$,
-
-- The normalization $\normalize{B}$ is isomorphic, as a modular compactification, to the semitoroidal compactification associated to $\semifan{F}_B$.
-:::
-
-::: {.proof}
-The restriction of the period domain reflects the imposition of involution-invariant lattice conditions cutting out Enriques double covers.
-The restriction of the polyhedral structure from $\cpt{\fttz}$ follows functorially from intersecting the hyperplane arrangements of $\semifan{F}_{\ram}$ with the subdomain $\halfpd{B}$, as the arrangement is defined by orthogonality to lattice roots/divisors that may be fixed or permuted by the involution.
-The unique semitoroidal compactification is then determined by the induced semifan structure on the normalization.
-:::
+As in the research report, the semifan identification and the identification of $\normalize{B}$ with the associated semitoroidal compactification are different statements. Only the first is made here; the second remains @prob:restricted-semifan.
 
 ::: {.construction
     title="{Folded Semifans and Complete Boundary Stratification}"
