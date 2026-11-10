@@ -33,7 +33,7 @@ Which of the $527$ $0$-cusps of $\fco$ (@thm:cusp-lifting) carry the Coble stabl
 
 ::: {.question #qst:distinguished-elliptic-fibration title="Open problem: the elliptic fibration distinguished by the Coble structure"}
 
-The Coxeter diagram of $S_\Co$ has exactly two maximal parabolic subdiagrams, $\wE_8(2)\wA_1$ and $\wB_9(2)$ (@thm:coble-picard-parabolics). They correspond to the two $\Orth^+(S_\Co)$-orbits of primitive isotropic vectors of $S_\Co$ (@thm:parabolic-isotropic-correspondence), and so to two classes of elliptic fibrations of the K3 cover (@thm:elliptic-fibrations-isotropic).
+The Coxeter diagram of $S_\Co$ has exactly two maximal parabolic subdiagrams, $\wE_8(2)\wA_1$ and $\wB_9(2)$ (@thm:coble-picard-parabolics). They correspond to the two $\Orth^+(S_\Co)$-orbits of primitive isotropic vectors of $S_\Co$ in the closure of the positive cone (@thm:parabolic-isotropic-correspondence (3)), and so to two classes of elliptic fibrations of the K3 cover (@thm:elliptic-fibrations-isotropic).
 Which of the two classes does the Coble structure distinguish, and how does the pair of subdiagrams match the boundary data of the degree-$2$ polarized moduli space?
 :::
 

@@ -205,16 +205,120 @@ The first assertion is @thm:nonreflective-r-plus-a-22 together with @cor:vinberg
 
 ## Maximal parabolic subdiagrams and cusps
 
-::: {.theorem #thm:parabolic-isotropic-correspondence title="Maximal parabolic subdiagrams classify isotropic vectors"}
+::: {.notation #not:reflective-fundamental-polytope title="The fundamental polytope of $W_r$"}
 
-Let $S$ be a reflective even hyperbolic lattice, so that Vinberg's algorithm terminates and produces a finite diagram $\Gamma_r$.
-Then the $\Orth(S)$-orbits of primitive isotropic vectors of $S$ correspond bijectively to the maximal parabolic subdiagrams of $\Gamma_r$, and the orbits modulo $\Aut\Gamma_r$ to the subdiagrams modulo $\Aut\Gamma_r$.
-If a parabolic subdiagram $\Gamma\iscontainedin\Gamma_r$ corresponds to $v\in S$ with $v^2 = 0$, then the image of $\Gamma$ in $v^{\perp}/v$ spans an elliptic root system: of type $A_n, D_n, E_n$ when every vertex of $\Gamma$ is a short root, and of type $A_n(2), D_n(2), E_n(2)$ when every vertex is a long root.
+Let $S$ be a reflective even hyperbolic $2$-elementary lattice, let $C_S^+$ be the component of its positive cone preserved by $\Orth^+(S)$, and let $P_r\iscontainedin\HH^{r-1}_S$ be a fundamental Coxeter polytope of $W_r(S)$, with walls indexed by the vertex set $I$ of $\Gamma_r$.
+For $s\in I$ let $\alpha_s\in S$ be the root orthogonal to the wall $H_s$, with sign chosen so that $x\cdot\alpha_s\geq 0$ on $P_r$ [@Ale22, §2].
+A root of $S$ is primitive: if $\alpha = m\beta$ with $m\geq 2$, then $\alpha^2\in\theset{-2,-4}$ forces $m = 2$ and $\beta^2 = -1$, which is impossible in an even lattice.
+Write
+$$
+K \definedas \theset{\, x\in\overline{C_S^+} \mid x\cdot\alpha_s\geq 0 \text{ for all } s\in I \,}
+$$
+for the closed cone over $P_r$, and $\Sym(P_r)\leq\Orth^+(S)$ for the stabilizer of $P_r$.
+:::
+
+::: {.proposition #prop:reflective-semidirect title="The symmetry group of the fundamental polytope"}
+
+In @not:reflective-fundamental-polytope:
+
+1. $P_r$ has finite volume, and $\Orth^+(S) = \Sym(P_r)\ltimes W_r(S)$.
+
+2. Each $h\in\Sym(P_r)$ satisfies $h\alpha_s = \alpha_{\bar h(s)}$ for a permutation $\bar h$ of $I$, and $h\mapsto\bar h$ is an injective homomorphism $\Sym(P_r)\to\Aut\Gamma_r$.
 :::
 
 ::: {.proof}
 
-This is [@Ale22 §1, §2].
+(1) The group $\Orth^+(S)$ is a discrete group of motions of $\HH^{r-1}_S$ with a fundamental domain of finite volume [@Vin85, Introduction, 4].
+The set of reflections in roots of $S$ is stable under conjugation by $\Orth^+(S)$, since $g s_\alpha g^{-1} = s_{g\alpha}$ and $g\alpha$ is a root.
+So $\Orth^+(S) = W_r(S)\rtimes\Sym(P_r)$, and $P_r$ has finite volume because $W_r(S)$ has finite index in $\Orth^+(S)$ [@Vin83, §1.1].
+
+(2) An element $h\in\Sym(P_r)$ permutes the walls of $P_r$, say $h(H_s) = H_{\bar h(s)}$.
+Then $h\alpha_s$ is a root orthogonal to $H_{\bar h(s)}$ and nonnegative on $P_r$, and roots are primitive, so $h\alpha_s = \alpha_{\bar h(s)}$.
+Hence $\bar h$ preserves the norms $\alpha_s^2$ and the products $\alpha_s\cdot\alpha_t$, which determine the colours and edges of $\Gamma_r$ [@Ale22, §2], so $\bar h\in\Aut\Gamma_r$.
+Since $P_r$ has finite volume, it is nondegenerate, so no nonzero vector of $S_\RR$ is orthogonal to every $\alpha_s$ [@Vin85, Ch. I, §1.1]; that is, the $\alpha_s$ span $S_\RR$.
+An $h$ with $\bar h = \id$ fixes every $\alpha_s$, so $h = \id$.
+:::
+
+::: {.lemma #lem:reflective-cone-fundamental-domain title="The cone over $P_r$ is a strict fundamental domain"}
+
+In @not:reflective-fundamental-polytope, let $x\in K$ and $w\in W_r(S)$.
+If $wx\in K$, then $wx = x$.
+:::
+
+::: {.proof}
+
+The interior $K^\circ$ of $K$ is the cone over the interior of $P_r$, it is connected, and $K$ is its closure.
+For $w\neq 1$ the polytopes $P_r$ and $wP_r$ have no common interior point [@Vin85, Introduction, 1].
+Consequently, a reflection $r\neq 1$ in $W_r(S)$ fixes no interior point of $P_r$, since such a point would be a common interior point of $P_r$ and $rP_r$.
+
+Choose $v_0\in K^\circ\intersect S$, which exists because $K^\circ$ is a nonempty open cone.
+For $w\in W_r(S)$ put $m(w)\definedas v_0\cdot wv_0$.
+This is an integer, and $m(w)\geq v_0^2 > 0$ by the reverse Cauchy--Schwarz inequality on $C_S^+$ (@def:hyperbolic-model).
+We prove the claim by induction on $m(w)$.
+
+If $w = 1$ there is nothing to prove.
+Let $w\neq 1$.
+Then $w(K^\circ)\not\subseteq K$, since otherwise $w$ maps the interior of $P_r$ into $P_r$, hence into its interior.
+So there are $s\in I$ and $y\in w(K^\circ)$ with $y\cdot\alpha_s < 0$.
+The function $y\mapsto y\cdot\alpha_s$ has no zero on the connected set $w(K^\circ)$: a zero would be an interior point of $P_r$ fixed by the reflection $w^{-1}s_{\alpha_s}w\neq 1$.
+Hence $y\cdot\alpha_s < 0$ on $w(K^\circ)$, and $y\cdot\alpha_s\leq 0$ on its closure $wK$.
+As $wx\in K\intersect wK$, this gives $wx\cdot\alpha_s = 0$, so $s_{\alpha_s}wx = wx$.
+
+For $y = wv_0$ the reflection formula gives
+$$
+m(s_{\alpha_s}w) = v_0\cdot wv_0 - \frac{2\,(wv_0\cdot\alpha_s)(v_0\cdot\alpha_s)}{\alpha_s^2} < m(w)
+,
+$$
+because $wv_0\cdot\alpha_s < 0$, $v_0\cdot\alpha_s > 0$ and $\alpha_s^2 < 0$.
+By induction applied to $s_{\alpha_s}w$, the equality $(s_{\alpha_s}w)x = wx\in K$ gives $(s_{\alpha_s}w)x = x$, so $wx = x$.
+:::
+
+::: {.theorem #thm:parabolic-isotropic-correspondence title="Maximal parabolic subdiagrams classify isotropic vectors"}
+
+In @not:reflective-fundamental-polytope, let $\mathcal I$ be the set of primitive isotropic vectors of $S$ in $\overline{C_S^+}$.
+
+1. Every $W_r(S)$-orbit in $\mathcal I$ meets $K$ in exactly one vector $\eta$, and $[\eta]$ is an ideal vertex of $P_r$.
+   Sending the orbit to the set of walls of $P_r$ through $[\eta]$ is a bijection from $\mathcal I/W_r(S)$ onto the set of maximal parabolic subdiagrams of $\Gamma_r$.
+
+2. This bijection is $\Sym(P_r)$-equivariant, so it induces a bijection from the $\Orth^+(S)$-orbits in $\mathcal I$ onto the maximal parabolic subdiagrams of $\Gamma_r$ modulo the image of $\Sym(P_r)$ in $\Aut\Gamma_r$.
+   The $\Orth(S)$-orbits of primitive isotropic vectors of $S$ are in bijection with the $\Orth^+(S)$-orbits in $\mathcal I$.
+
+3. If $\Aut\Gamma_r = 1$, the $\Orth^+(S)$-orbits in $\mathcal I$ correspond bijectively to the maximal parabolic subdiagrams of $\Gamma_r$.
+   For the lattices of @thm:coxeter-built-on-complete-graphs they correspond bijectively to the maximal parabolic subdiagrams modulo $\Aut\Gamma_r$.
+
+4. Let $\Gamma\iscontainedin\Gamma_r$ be a maximal parabolic subdiagram with vector $v\in\mathcal I$, and let $\Gamma'$ be a connected component of $\Gamma$ of type $\wA_n$, $\wD_n$ or $\wE_n$.
+   Then all vertices of $\Gamma'$ are short roots or all are long roots, and the images in $v^{\perp}/v$ of the roots of $\Gamma'$ span a root system of type $A_n$, $D_n$, $E_n$ in the first case and of type $A_n(2)$, $D_n(2)$, $E_n(2)$ in the second [@Ale22, §2].
+:::
+
+::: {.proof}
+
+(1) Let $\eta_0\in\mathcal I$, and let $v_0\in K^\circ\intersect S$ be as in the proof of @lem:reflective-cone-fundamental-domain.
+For $w\in W_r(S)$ the number $(w\eta_0)\cdot v_0$ is a positive integer, since $w\eta_0$ is a nonzero vector of $\overline{C_S^+}$ and $v_0\in C_S^+$.
+Choose $w$ with $(w\eta_0)\cdot v_0$ minimal, and put $\eta = w\eta_0$.
+If $\eta\cdot\alpha_s < 0$ for some $s\in I$, then
+$$
+(s_{\alpha_s}\eta)\cdot v_0 = \eta\cdot v_0 - \frac{2\,(\eta\cdot\alpha_s)(v_0\cdot\alpha_s)}{\alpha_s^2} < \eta\cdot v_0
+,
+$$
+against the minimality.
+So $\eta\in K$, and it is the only vector of the orbit in $K$ by @lem:reflective-cone-fundamental-domain.
+
+The point $[\eta]$ lies in $\overline{P_r}\intersect\del\HH^{r-1}_S$.
+By @prop:reflective-semidirect(1) and @thm:coxeter-polytope-volume(1), $\overline{P_r}$ is the convex hull of its finitely many ordinary and ideal vertices.
+In an affine chart $\overline{\HH^{r-1}_S}$ is a closed ellipsoid, which is strictly convex, so a point of $\del\HH^{r-1}_S$ in this convex hull is one of the vertices; hence $[\eta]$ is an ideal vertex.
+By @prop:maximal-parabolic-ideal-vertices, sending an ideal vertex to its set of walls is a bijection onto the maximal parabolic subdiagrams, and each ideal vertex is $[\eta]$ for a unique $\eta\in\mathcal I$, which lies in $K$.
+Composing with $\mathcal I/W_r(S)\to K\intersect\mathcal I$ gives the bijection of (1).
+
+(2) An element $h\in\Sym(P_r)$ maps $K$ to $K$ and $\mathcal I$ to $\mathcal I$, so it maps the representative $\eta\in K$ of an orbit to the representative of the image orbit.
+By @prop:reflective-semidirect(2), the walls through $[h\eta]$ are $H_{\bar h(s)}$ for the walls $H_s$ through $[\eta]$, so the bijection is $\Sym(P_r)$-equivariant.
+By @prop:reflective-semidirect(1), $\Orth^+(S) = \Sym(P_r)\ltimes W_r(S)$, so the $\Orth^+(S)$-orbits in $\mathcal I$ are the $\Sym(P_r)$-orbits on $\mathcal I/W_r(S)$.
+Finally $-1\in\Orth(S)$ exchanges the two components of the positive cone, so $\Orth(S) = \Orth^+(S)\times\theset{\pm 1}$; of each primitive isotropic pair $\pm v$ exactly one vector lies in $\mathcal I$, and two vectors of $\mathcal I$ are in one $\Orth(S)$-orbit if and only if they are in one $\Orth^+(S)$-orbit.
+
+(3) If $\Aut\Gamma_r = 1$, then $\Sym(P_r) = 1$ by @prop:reflective-semidirect(2).
+For the lattices of @thm:coxeter-built-on-complete-graphs, $\Orth^+(S) = \Aut G\ltimes W_r(S)$ and $\Aut\Gamma_r\cong\Aut G$ with $G$ finite, so by @prop:reflective-semidirect(1) $\Sym(P_r)\cong\Orth^+(S)/W_r(S)\cong\Aut G$ has the order of $\Aut\Gamma_r$; the injection of @prop:reflective-semidirect(2) is therefore a bijection.
+Both assertions follow from (2).
+
+(4) This is [@Ale22, §2].
 :::
 
 ::: {.theorem #thm:maximal-parabolic-counts title="Counts of maximal parabolic subdiagrams"}
@@ -299,17 +403,17 @@ Let $S\neq\EnriquesInvariants$ be an even $2$-elementary hyperbolic lattice admi
 Then there is an exact sequence
 $$
 0 \to \generators{\iota}\times\Aut'(Y, B) \to \Aut(X) \to
-\Sym\Gamma_r \ltimes W(\Gamma_4) \to 0
+\Sym(P_r) \ltimes W(\Gamma_4) \to 0
 ,
 $$
-where $\Gamma_4\iscontainedin\Gamma_r$ is the subdiagram of long roots.
+where $\Gamma_4\iscontainedin\Gamma_r$ is the subdiagram of long roots and $\Sym(P_r)\leq\Orth^+(S)$ is the stabilizer of a fundamental polytope $P_r$ of $W_r(S)$.
 In particular $\Aut(X)$ is finite if and only if $S_X$ is two-reflective.
 :::
 
 ::: {.proof}
 
 This is [@Ale22, Lem. 4.1], and the last assertion is [@Ale22, §1].
-The proof of [@Ale22, Lem. 4.1] uses the Torelli theorem, by which $\Aut(X)\to\Orth^+(S)/W_2(S)$ has finite kernel and cokernel and the kernel consists of the automorphisms descending to $(Y, B)$; the surjectivity of $\Orth(H)\to\Orth(A_H, q_H)$ for indefinite $2$-elementary $H$ (@thm:two-elementary-surjectivity), which lifts an isometry of $S$ to one of $\lkt$; and @thm:reflection-group-quotient, which identifies $\Orth^+(S)/W_2(S)$ with $\Sym\Gamma_r\ltimes W(\Gamma_4)$.
+The proof of [@Ale22, Lem. 4.1] uses the Torelli theorem, by which $\Aut(X)\to\Orth^+(S)/W_2(S)$ has finite kernel and cokernel and the kernel consists of the automorphisms descending to $(Y, B)$; the surjectivity of $\Orth(H)\to\Orth(A_H, q_H)$ for indefinite $2$-elementary $H$ (@thm:two-elementary-surjectivity), which lifts an isometry of $S$ to one of $\lkt$; and @thm:reflection-group-quotient together with $\Orth^+(S) = \Sym(P_r)\ltimes W_r(S)$ [@Vin83, §1.1], which give $\Orth^+(S)/W_2(S)\cong\Sym(P_r)\ltimes W(\Gamma_4)$.
 :::
 
 ::: {.theorem #thm:long-root-subdiagrams title="Long-root subdiagrams on the line $r + a = 22$"}
@@ -350,7 +454,7 @@ and $\Aut(X)$ is infinite.
 
 $S_\Co$ is reflective by @thm:nonreflective-r-plus-a-22.
 The lattice $S_\Co$ is not $\EnriquesInvariants$, and it embeds primitively in $\lkt$ with the orthogonal complement $N$ of @tbl-coble-lattices (@prop:coble-table-invariants), so @thm:k3-automorphism-sequence applies.
-By @thm:long-root-subdiagrams, the automorphism group $\Sym\Gamma_r = \Aut\Gamma_r$ of the diagram is trivial and $\Gamma_4 = T_{2,3,7}$, which gives the exact sequence.
+By @thm:long-root-subdiagrams, $\Aut\Gamma_r = 1$ and $\Gamma_4 = T_{2,3,7}$, so $\Sym(P_r) = 1$ by @prop:reflective-semidirect(2), which gives the exact sequence.
 The connected diagram $T_{2,3,7}$ has a vertex of valence $3$ and is none of $D_n$, $E_6$, $E_7$, $E_8$, the diagrams of @thm:spherical-classification with such a vertex; so $W(T_{2,3,7})$ is infinite by @thm:coxeter-type-and-geometry (1), and so is $\Aut(X)$.
 By @thm:reflection-group-quotient, $W_r(S_\Co)/W_2(S_\Co)\cong W(T_{2,3,7})$ is infinite, so $W_2(S_\Co)$ has infinite index in $\Orth(S_\Co)$.
 :::
