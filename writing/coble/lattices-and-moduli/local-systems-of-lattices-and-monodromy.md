@@ -1,26 +1,49 @@
 # Local systems of lattices and monodromy {#sec-local-systems-of-lattices}
 
 Throughout this chapter $B$ is an arcwise connected, locally simply connected topological space, and a *local system* on $B$ is a sheaf of abelian groups that is locally isomorphic to a constant sheaf [@Voi07a, Definition 9.8].
-For a local system $\bL$ and a path $\gamma\colon[0,1]\to B$, the sheaf $\gamma^{-1}\bL$ is constant [@Voi07, Lemma 3.6], so both restriction maps
+
+::: {.lemma #lem:local-system-on-interval title="A local system on an interval is constant"}
+
+For a local system $\bL$ and a path $\gamma\colon[0,1]\to B$, the sheaf $\gamma^{-1}\bL$ is constant [@Voi07, Lemma 3.6], and both restriction maps
 $$
 \bL_{\gamma(0)}
-\xleftarrow{\ \sim\ }
+\longleftarrow
 \Gamma\qty{[0,1],\gamma^{-1}\bL}
-\xrightarrow{\ \sim\ }
+\too
 \bL_{\gamma(1)}
 $$
 are isomorphisms.
-Their composite
+:::
+
+::: {.definition #def:transport-and-monodromy title="Transport and the monodromy representation"}
+
+The *transport along $\gamma$* is the composite
 $$
 \gamma^*\colon\bL_{\gamma(0)}\iso\bL_{\gamma(1)}
 $$
-is the *transport along $\gamma$*; it depends only on the homotopy class of $\gamma$ relative to its endpoints [@Voi07, proof of Proposition 3.9].
+of the inverse of the first isomorphism of @lem:local-system-on-interval with the second.
 For $s\in B$, the *monodromy representation*
 $$
 \rho\colon\pi_1(B,s)\too\Aut(\bL_s)
 $$
 of $\bL$ sends the class of a loop $\gamma$ based at $s$ to $\gamma^*$ [@Voi07, Corollary 3.10, Definition 3.13].
-It is a group morphism for the product on $\pi_1(B,s)$ in which $\gamma\delta$ is the loop $\delta$ followed by the loop $\gamma$, since transport along a concatenation is the composite of the transports.
+The product on $\pi_1(B,s)$ is the one in which $\gamma\delta$ is the loop $\delta$ followed by the loop $\gamma$.
+:::
+
+::: {.proposition #prop:transport-homotopy-invariant title="Transport depends only on the homotopy class"}
+
+1. The transport $\gamma^*$ depends only on the homotopy class of $\gamma$ relative to its endpoints [@Voi07, proof of Proposition 3.9].
+2. If the path $\delta$ ends where the path $\gamma$ begins, the transport along $\delta$ followed by $\gamma$ is $\gamma^*\circ\delta^*$.
+3. The monodromy representation $\rho$ is a well-defined group morphism.
+:::
+
+::: {.proof}
+
+Statement (1) is cited.
+For (2), let $\epsilon$ be the path $\delta$ followed by $\gamma$.
+A section of $\epsilon^{-1}\bL$ over $[0,1]$ restricts to sections of $\delta^{-1}\bL$ and of $\gamma^{-1}\bL$ over $[0,1]$ under the two reparametrizations, with the same value at the common point, so $\epsilon^*=\gamma^*\circ\delta^*$.
+Statement (3) follows from (1) and (2).
+:::
 
 ## Local systems of lattices {#sec-local-systems-of-lattices-definition}
 
@@ -122,7 +145,20 @@ The transport along a loop of class $\gamma$ is $\rho(\gamma)$, and $\rho(\gamma
 The condition does not depend on which of the two classes $o_s$ is chosen.
 :::
 
-Condition (1) says that the monodromy group lies in $\Orth^+(\bL_s)$ (@prop:orientation-characters-reflections).
+::: {.corollary #cor:orientation-sheaf-orth-plus title="Monodromy lies in $\Orth^+$ exactly when $\operatorname{Or}^+_{\bL}$ has a global section"}
+
+Let $(\bL,\beta)$ be a local system of lattices on $B$ with nondegenerate symmetric stalks.
+The sheaf $\operatorname{Or}^+_{\bL}$ has a global section exactly when
+$$
+\rho\qty{\pi_1(B,s)}\iscontainedin\Orth^+(\bL_s).
+$$
+:::
+
+::: {.proof}
+
+The representation $\rho$ takes values in $\Orth(\bL_s)$, and $\Orth^+(\bL_s)=\Orth(\bL_s)\cap\ker\sigma_+$ by @prop:orientation-characters-reflections (4).
+Apply @prop:orientation-sheaf-section.
+:::
 
 ::: {.example #ex:monodromy-outside-orth-plus title="A local system of lattices with no global orientation class"}
 
@@ -206,15 +242,27 @@ Statement (2) follows: $L_\RR=W^{\mathrm{odd}}_F\perp W^{\mathrm{ev}}_F$ with $\
 ## Period domains and their components {#sec-period-domain-components}
 
 Fix $k$, a $\ZZ$-lattice $(L,Q)$ as in @def:polarized-integral-vhs, and Hodge numbers $h^{p,q}$.
-The *period domain* $D$ is the set of Hodge structures of weight $k$ on $L$ polarized by $Q$ with these Hodge numbers; it is a complex manifold [@Sch73, §3].
+The *period domain* $D$ is the set of Hodge structures of weight $k$ on $L$ polarized by $Q$ with these Hodge numbers.
 Put
 $$
 G_\RR\definedas\Aut(L_\RR,Q),
 \qquad
-G_\ZZ\definedas\Aut(L,Q)\iscontainedin G_\RR.
+G_\ZZ\definedas\Aut(L,Q)\iscontainedin G_\RR,
 $$
-The group $G_\RR$ acts transitively on $D$, the stabilizer $V_F\iscontainedin G_\RR$ of a point $F\in D$ is compact, and $G_\ZZ$ is discrete in $G_\RR$ [@Sch73, §3, (3.7), (3.8)].
-Every $g\in V_F$ preserves each $H^{p,q}$ of $F$ [@Sch73, §3].
+and for $F\in D$ let $V_F\iscontainedin G_\RR$ be the stabilizer of $F$ for the action $g\cdot F^\bullet\definedas g_\CC F^\bullet$.
+
+::: {.theorem #thm:period-domain-homogeneous title="The period domain is a homogeneous complex manifold"}
+
+1. The set $D$ is a complex manifold, and $G_\RR$ acts transitively on it [@Sch73, §3].
+2. For every $F\in D$ the group $V_F$ is compact, and $G_\ZZ$ is a discrete subgroup of $G_\RR$ [@Sch73, §3, (3.7), (3.8)].
+3. Every $g\in V_F$ preserves each subspace $H^{p,q}_F=F^p\cap\overline{F^q}$ of $L_\CC$.
+:::
+
+::: {.proof}
+
+Statements (1) and (2) are cited.
+For (3), $g_\CC$ commutes with complex conjugation and $g_\CC F^p=F^p$ for all $p$, so $g_\CC\overline{F^q}=\overline{F^q}$.
+:::
 
 ::: {.theorem #thm:period-domain-component-stabilizer title="The stabilizer of a component of an even-weight period domain"}
 
@@ -265,18 +313,27 @@ Hence $gs_w\in\ker\sigma_+\cap\ker\sigma_-=G_\RR^\circ$, and $g\in G_\RR^\circ\c
 
 Let $(\bL,Q,F^\bullet)$ be a polarized integral variation of Hodge structure of weight $k$ on a connected complex manifold $B$, let $s\in B$, and let $D$ be the period domain of $(\bL_s,Q_s)$ for the Hodge numbers of $F^\bullet_s$.
 Let $\pi\colon\widetilde B\to B$ be the universal cover and choose $\tilde s\in\widetilde B$ over $s$.
-The pullback $\pi^{-1}\bL$ is constant, and $\tilde s$ determines an isomorphism of it with the constant sheaf of stalk $\bL_s$ [@Voi07, proof of Corollary 3.10].
-Under this isomorphism the pullback of $F^\bullet$ is a map
-$$
-\widetilde\Phi\colon\widetilde B\too D
-$$
-that satisfies $\widetilde\Phi(\tilde s)=F^\bullet_s$ and
+The group $\pi_1(B,s)$ acts on $\widetilde B$ by the deck transformations used in the proof of @prop:local-system-of-lattices-monodromy (3).
+
+::: {.proposition #prop:lifted-period-map title="The lifted period map"}
+
+1. The sheaf $\pi^{-1}\bL$ is constant, and the restriction $\Gamma\qty{\widetilde B,\pi^{-1}\bL}\to\bL_s$ to the stalk at $\tilde s$ is an isomorphism [@Voi07, proof of Corollary 3.10].
+2. For $\tilde t\in\widetilde B$, let $\widetilde\Phi(\tilde t)$ be the image of the filtration $F^\bullet_{\pi(\tilde t)}$ under the isomorphism $\bL_{\pi(\tilde t)}\iso\bL_s$ of (1). Then $\widetilde\Phi(\tilde t)\in D$ and $\widetilde\Phi(\tilde s)=F^\bullet_s$.
+3. The map $\widetilde\Phi\colon\widetilde B\to D$ satisfies
 $$
 \widetilde\Phi(\gamma\tilde t)=\rho(\gamma)\,\widetilde\Phi(\tilde t)
 \qquad\text{for }\tilde t\in\widetilde B,\ \gamma\in\pi_1(B,s)
 $$ {#eq-period-map-equivariance}
-[@Sch73, (3.24)], where $\pi_1(B,s)$ acts on $\widetilde B$ by the deck transformations used in the proof of @prop:local-system-of-lattices-monodromy (3).
-It is holomorphic [@Sch73, Theorem 3.27].
+[@Sch73, (3.24)].
+4. The map $\widetilde\Phi$ is holomorphic [@Sch73, Theorem 3.27].
+:::
+
+::: {.proof}
+
+Statements (1), (3) and (4) are cited.
+For (2), the isomorphism of (1) is an isometry for $Q$, because $Q$ is a morphism of sheaves, so it carries a Hodge structure polarized by $Q_{\pi(\tilde t)}$ to one polarized by $Q_s$.
+The Hodge numbers of $F^\bullet_b$ are the ranks of the bundles $F^p$ and their conjugates, which are constant on the connected manifold $B$.
+:::
 
 ::: {.corollary #cor:vhs-monodromy-stabilizes-component title="Monodromy stabilizes the component of the period domain"}
 
@@ -306,8 +363,24 @@ For $k$ odd, the form $Q$ is alternating and $G_\RR=\Sp(L_\RR)$ is the group of 
 It acts transitively on $D$, so $D$ is connected, and $\Stab_{G_\ZZ}(D)=G_\ZZ=\Sp(L)$.
 :::
 
-For weight $2$ the sign is $\epsilon=+1$, and $W^{\mathrm{odd}}_F=\qty{H^{2,0}\oplus H^{0,2}}\cap L_\RR$ is the positive-definite real subspace of dimension $2h^{2,0}$ spanned by the real and imaginary parts of the vectors of $H^{2,0}$.
-The primitive local system of a family of polarized K3 surfaces has $h^{1,1}>0$, and the first row of the table is @prop:polarized-k3-monodromy-positive.
+::: {.lemma #lem:weight-two-positive-subspace title="The subspace $W^{\mathrm{odd}}_F$ in weight $2$"}
+
+Let $k=2$ and $F\in D$.
+Then $\epsilon=+1$, and
+$$
+W^{\mathrm{odd}}_F
+=\qty{H^{2,0}_F\oplus H^{0,2}_F}\cap L_\RR
+=\theset{v+\bar v\st v\in H^{2,0}_F}
+$$
+is a subspace of $L_\RR$ of real dimension $2h^{2,0}$ on which $Q$ is positive definite.
+:::
+
+::: {.proof}
+
+Here $m=1$, so $\epsilon=(-1)^{m+1}=+1$, and $R_j=0$ for $j\ge2$, so $W^{\mathrm{odd}}_F=R_1$.
+By @lem:hodge-real-pieces (3) and its proof, $v\mapsto v+\bar v$ is an isomorphism of real vector spaces $H^{2,0}_F\to R_1$, and $H^{2,0}_F$ has real dimension $2h^{2,0}$.
+By @lem:hodge-real-pieces (1), $(-1)^{m+1}Q=Q$ is positive definite on $R_1$.
+:::
 
 ::: {.proposition #prop:component-stabilizer-versus-orth-plus title="$\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$"}
 
@@ -352,7 +425,18 @@ The isometry $-\id_L$ has determinant $-1$ when the rank of $L$ is odd.
 The group $\Orth^+(L)\cap\ker\det$ is the kernel of $\det\colon\Orth^+(L)\to\theset{\pm1}$.
 :::
 
-Statement (1) covers every weight-$2$ period domain with $h^{1,1}>0$, for every value of $h^{2,0}$.
+::: {.corollary #cor:weight-two-component-stabilizer title="The component stabilizer in weight $2$"}
+
+If $k=2$ and $h^{1,1}>0$, then
+$$
+\Stab_{G_\ZZ}(D^+)=\Orth^+(L).
+$$
+:::
+
+::: {.proof}
+
+This is @prop:component-stabilizer-versus-orth-plus (1) with $m=1$.
+:::
 
 ::: {.example #ex:weight-zero-vhs title="A weight-zero variation with monodromy outside $\ker\sigma_{-\epsilon}$"}
 
@@ -437,7 +521,23 @@ If $w^2>0$, choose $W_3$ containing $w$; then $s_w$ preserves $W_3$ and reverses
 These are the values of $\sigma_+$ in @prop:orientation-characters-reflections (1).
 :::
 
-By @lem:k3-orientation-character, @cor:middle-cohomology-monodromy (2) proves the conclusion of @prop:k3-monodromy-positive for the families of K3 surfaces that admit a class $\omega$.
+::: {.corollary #cor:k3-family-orientation-character title="Monodromy of a family of K3 surfaces with a class $\omega$"}
+
+In @cor:middle-cohomology-monodromy let $n=2$, let the fibres be K3 surfaces, and let $\eta_s\colon H^2(X_s,\ZZ)\iso\lkt$ be an isometry.
+Then for every $\gamma\in\pi_1(B,s)$,
+$$
+\sigma_{\lkt}\qty{\eta_s\,\rho(\gamma)\,\eta_s^{-1}}=+1.
+$$
+:::
+
+::: {.proof}
+
+The group $H^2(X_s,\ZZ)$ is torsion-free (@prop:k3-lattice), so $\sigma_+(\rho(\gamma))=+1$ by @cor:middle-cohomology-monodromy (2).
+The isometry $\eta_s$ maps the orientation classes of maximal positive-definite subspaces of $H^2(X_s,\RR)$ to those of $\lkt_\RR$, so $\sigma_+\qty{\eta_s\,\rho(\gamma)\,\eta_s^{-1}}=\sigma_+(\rho(\gamma))$.
+By @lem:k3-orientation-character, $\sigma_+=\sigma_{\lkt}$ on $\Orth(\lkt_\RR)$.
+:::
+
+@prop:k3-monodromy-positive treats the monodromy group of an arbitrary family of K3 surfaces over a connected base.
 
 ::: {.example #ex:picard-lefschetz-orientation title="Picard--Lefschetz reflections"}
 
@@ -469,7 +569,35 @@ For $m$ even, $T\notin\ker\sigma_+$, so the conclusion of @cor:middle-cohomology
 
 Let $(\bL,Q,F^\bullet)$, $s$, $D$ and $\widetilde\Phi$ be as in @sec-period-domain-components.
 For $F\in D$, an *automorphism of the polarized Hodge structure* $F$ is an element $g\in G_\ZZ$ with $gF^p=F^p$ for all $p$; these form the group $G_\ZZ\cap V_F$.
-For the primitive Hodge structure on $h^\perp\iscontainedin H^2(X,\ZZ)$ of a K3 surface $X$ with an ample class $h$, these are the restrictions to $h^\perp$ of the Hodge isometries of $H^2(X,\ZZ)$ (@sec-k3-automorphisms) that fix $h$.
+
+::: {.proposition #prop:k3-primitive-hodge-automorphisms title="Automorphisms of the primitive Hodge structure of a polarized K3 surface"}
+
+Let $X$ be a K3 surface, let $h\in H^2(X,\ZZ)$ be a primitive ample class with $h^2=2d$, and let $G_h$ be the group of Hodge isometries of $H^2(X,\ZZ)$ (@sec-k3-automorphisms) that fix $h$.
+Give $h^\perp$ the Hodge structure with $(p,q)$-part $H^{p,q}(X)\cap h^\perp_\CC$.
+
+1. Restriction to $h^\perp$ is an injective group morphism from $G_h$ to the group of isometries of $h^\perp$ that preserve this Hodge structure.
+2. The isometry $-\id_{h^\perp}$ preserves this Hodge structure, and it is the restriction of an element of $G_h$ exactly when $d=1$.
+:::
+
+::: {.proof}
+
+An element $g\in G_h$ preserves $h^\perp$ and each $H^{p,q}(X)$, so its restriction preserves each $H^{p,q}(X)\cap h^\perp_\CC$.
+Since $h^2\neq0$, $H^2(X,\QQ)=\QQ h\perp h^\perp_\QQ$, so $g$ is determined by $g(h)=h$ and $g|_{h^\perp}$.
+This proves (1).
+
+The map $-\id_{h^\perp}$ is an isometry that preserves every subspace of $h^\perp_\CC$.
+Let $g$ be an isometry of $H^2(X,\ZZ)$ with $g(h)=h$ and $g|_{h^\perp}=-\id$.
+For $x\in H^2(X,\ZZ)$ the vector $2dx-(x,h)h$ lies in $h^\perp$, so
+$$
+2d\,g(x)=(x,h)h-\qty{2dx-(x,h)h},
+\qquad
+d\,g(x)=(x,h)h-dx.
+$$
+Hence $(x,h)h\in d\,H^2(X,\ZZ)$, and $d$ divides $(x,h)$ because $h$ is primitive.
+The lattice $H^2(X,\ZZ)$ is unimodular (@prop:k3-lattice) and $h$ is primitive, so $(x,h)=1$ for some $x$; hence $d=1$.
+Conversely, if $d=1$ then $g(x)\definedas(x,h)h-x$ is the negative of the reflection $s_h$, so it is an isometry of $H^2(X,\ZZ)$; it fixes $h$, and it is $-\id$ on $h^\perp$.
+It maps $H^{2,0}(X)\iscontainedin h^\perp_\CC$ to itself, so it is a Hodge isometry.
+:::
 
 ::: {.proposition #prop:monodromy-hodge-automorphism title="When a monodromy operator is an automorphism of the Hodge structure"}
 
@@ -500,16 +628,37 @@ It is an automorphism of the Hodge structure $\widetilde\Phi(\tilde t)$ exactly 
 
 ## Global constraints on the monodromy group {#sec-global-monodromy-constraints}
 
-@cor:vhs-monodromy-stabilizes-component and @prop:monodromy-hodge-automorphism hold on every connected complex manifold $B$.
-The results of this section need a hypothesis on $B$: it is a Zariski-open subset of a compact complex analytic space.
-A smooth connected quasi-projective variety satisfies it.
+In this section $B$ is a connected complex manifold that is a Zariski-open subset of a compact complex analytic space.
 
-Let $(\bL,Q,F^\bullet)$ be a polarized integral variation of Hodge structure of weight $k$ on such a $B$, with monodromy representation $\rho$ on $L\definedas\bL_s$, and write
+::: {.example #ex:quasi-projective-base title="Quasi-projective bases"}
+
+A smooth connected quasi-projective variety $B$ is a Zariski-open subset of its closure $\overline B$ in a projective space, and $\overline B$ is a compact complex analytic space.
+:::
+
+Let $(\bL,Q,F^\bullet)$ be a polarized integral variation of Hodge structure of weight $k$ on $B$, with monodromy representation $\rho$ on $L\definedas\bL_s$, and for a field $K\in\theset{\QQ,\CC}$ write
 $$
-L_\QQ^\rho\definedas\theset{v\in L_\QQ\st\rho(\gamma)v=v\text{ for all }\gamma\in\pi_1(B,s)}
+L_K^\rho\definedas\theset{v\in L_K\st\rho(\gamma)v=v\text{ for all }\gamma\in\pi_1(B,s)}
 $$
 for the space of invariants.
-Evaluation at $s$ identifies the flat global sections of $\bL\tensor\CC$ with $L_\CC^\rho=L_\QQ^\rho\tensor\CC$.
+
+::: {.lemma #lem:flat-sections-invariants title="Flat global sections are the invariants"}
+
+1. Evaluation at $s$ is a bijection from the set of flat global sections of $\bL\tensor\CC$ onto $L_\CC^\rho$.
+2. $L_\CC^\rho=L_\QQ^\rho\tensor_\QQ\CC$.
+:::
+
+::: {.proof}
+
+A flat global section $e$ of $\bL\tensor\CC$ is a global section of the local system $\bL\tensor_\ZZ\underline\CC_B$.
+For a path $\gamma$ from $s$ to $b$, the pullback of $e$ is a section of $\gamma^{-1}\qty{\bL\tensor\underline\CC}$ over $[0,1]$, so $e(b)=\gamma^*e(s)$.
+Hence $e$ is determined by $e(s)$, and $e(s)$ is fixed by the transport along every loop at $s$.
+Conversely, for $v\in L_\CC^\rho$ the vector $\gamma^*v\in\bL_b\tensor\CC$ does not depend on the path $\gamma$ from $s$ to $b$, and $b\mapsto\gamma^*v$ is a global section, because on a simply connected open set on which $\bL$ is constant the transport is the identification of the stalks.
+This proves (1).
+
+For (2), choose a set $\Sigma$ of group generators of $\pi_1(B,s)$.
+The space $L_\QQ^\rho$ is the kernel of the $\QQ$-linear map $L_\QQ\to\prod_{\gamma\in\Sigma}L_\QQ$ with components $\rho(\gamma)-\id$, and $L_\CC^\rho$ is the kernel of its complexification.
+The functor $-\tensor_\QQ\CC$ is exact, and the intersection of the kernels of a family of linear maps on the finite-dimensional space $L_\QQ$ is the intersection of finitely many of them.
+:::
 
 ::: {.theorem #thm:fixed-part title="Theorem of the fixed part"}
 
@@ -542,7 +691,13 @@ It is therefore nondegenerate on $W_\CC=\bigoplus W^{p,q}$, so $Q$ is nondegener
 Apply this to $W=L_\QQ^\rho$; the complement is $\pi_1(B,s)$-stable because $\rho$ takes values in $\Aut(L,Q)$.
 :::
 
-For the cohomology of the fibres of a smooth projective morphism $f\colon\mcx\to B$ of smooth quasi-projective varieties, @cor:invariants-sub-hodge-structure (1) is [@Voi07, Proposition 3.14, Corollary 4.25], and the invariants are the image of the restriction map $H^k\qty{\overline{\mcx},\QQ}\to H^k(X_s,\QQ)$ for every smooth projective compactification $\overline{\mcx}$ of $\mcx$ [@Voi07, Proposition 4.23, Theorem 4.24].
+::: {.theorem #thm:global-invariant-cycles title="Global invariant cycle theorem"}
+
+Let $f\colon\mcx\to B$ be a smooth projective morphism of smooth quasi-projective varieties, let $s\in B$, and let $\overline{\mcx}$ be a smooth projective compactification of $\mcx$.
+
+1. The space $H^k(X_s,\QQ)^\rho$ of monodromy invariants is the image of the restriction map $H^k\qty{\overline{\mcx},\QQ}\to H^k(X_s,\QQ)$ [@Voi07, Proposition 4.23, Theorem 4.24 and its proof].
+2. The space $H^k(X_s,\QQ)^\rho$ is a sub-Hodge structure of $H^k(X_s,\QQ)$ [@Voi07, Proposition 3.14, Corollary 4.25].
+:::
 
 ::: {.theorem #thm:monodromy-semisimple title="Deligne's semisimplicity theorem"}
 
@@ -562,7 +717,11 @@ The set of regular values of the pencil does satisfy it, so by @thm:monodromy-se
 
 Let $V$ be a rational vector space with a polarizable Hodge structure, and let $h\colon\CC^\times\to\GL(V_\RR)$ be the representation in which $z$ acts on $V^{p,q}$ by $z^p\bar z^q$ [@Huy16, Ch. 3, Remark 1.8].
 The *Mumford--Tate group* $\MT(V)$ is the smallest algebraic subgroup of $\GL(V)$ over $\QQ$ whose group of real points contains $h(\CC^\times)$ [@Huy16, Ch. 3, §3.4].
+
+::: {.proposition #prop:mumford-tate-sub-hodge-structures title="The Mumford--Tate group and sub-Hodge structures"}
+
 A subspace of a tensor space $\bigoplus_iV^{\tensor n_i}\tensor(V^*)^{\tensor m_i}$ is a sub-Hodge structure exactly when $\MT(V)$ preserves it [@Huy16, Ch. 3, §3.4].
+:::
 
 For a family of polarized K3 surfaces $f\colon\mcx\to S$ over a smooth connected complex algebraic variety $S$, with monodromy representation $\rho\colon\pi_1(S,t)\to\Orth\qty{H^2(X_t,\QQ)}$, the *algebraic monodromy group* is the Zariski closure of $\rho\qty{\pi_1(S,t)}$ in $\Orth\qty{H^2(X_t,\QQ)}$ [@Huy16, Ch. 6, §4.3].
 
@@ -572,5 +731,26 @@ Let $f\colon\mcx\to S$ be a family of polarized K3 surfaces over a smooth connec
 There is a countable union $S'\subsetneq S$ of proper closed subvarieties such that for $t\in S\sm S'$ the group $\MT\qty{H^2(X_t,\QQ)}$ is constant and contains a subgroup of finite index of the algebraic monodromy group; it contains the identity component of the algebraic monodromy group [@Huy16, Ch. 6, Theorem 4.9].
 :::
 
-@prop:monodromy-hodge-automorphism bounds the monodromy operators that preserve the Hodge structure of one fibre: they form a finite group.
-@thm:mumford-tate-contains-monodromy is the statement in the other direction: at a very general point $t$, a subgroup of finite index of the monodromy group preserves every sub-Hodge structure of every tensor space of $H^2(X_t,\QQ)$, although its elements of infinite order do not preserve the Hodge structure of $H^2(X_t,\QQ)$ itself.
+::: {.corollary #cor:finite-index-monodromy-hodge-tensors title="Monodromy at a very general fibre of a family of polarized K3 surfaces"}
+
+In @thm:mumford-tate-contains-monodromy let $t\in S\sm S'$, put $V\definedas H^2(X_t,\QQ)$ and $\Gamma\definedas\rho\qty{\pi_1(S,t)}$, and let
+$$
+\Gamma'\definedas\Gamma\cap\MT(V)(\QQ).
+$$
+
+1. The subgroup $\Gamma'$ has finite index in $\Gamma$.
+2. Every element of $\Gamma'$ preserves every sub-Hodge structure of every tensor space $\bigoplus_iV^{\tensor n_i}\tensor(V^*)^{\tensor m_i}$.
+3. The set of $g\in\Gamma$ with $g_\CC H^{2,0}(X_t)=H^{2,0}(X_t)$ is a finite subgroup of $\Gamma$; it contains no element of infinite order.
+:::
+
+::: {.proof}
+
+Let $M$ be the algebraic monodromy group and let $H\iscontainedin M\cap\MT(V)$ be an algebraic subgroup of finite index in $M$, which exists by @thm:mumford-tate-contains-monodromy.
+The map $\Gamma/\qty{\Gamma\cap H(\QQ)}\to M(\overline\QQ)/H(\overline\QQ)$ is injective and its target is finite, so $\Gamma\cap H(\QQ)$ has finite index in $\Gamma$; it is contained in $\Gamma'$.
+This proves (1), and (2) is @prop:mumford-tate-sub-hodge-structures.
+
+For (3), let $h\in H^2(X_t,\ZZ)$ be the class of the polarization.
+It is the value of a flat section, so every $g\in\Gamma$ is an isometry of $H^2(X_t,\ZZ)$ with $g(h)=h$, and $g$ is determined by its restriction to $h^\perp$.
+An isometry $g$ of $H^2(X_t,\ZZ)$ with $g_\CC H^{2,0}(X_t)=H^{2,0}(X_t)$ preserves $H^{0,2}(X_t)=\overline{H^{2,0}(X_t)}$ and $H^{1,1}(X_t)=\qty{H^{2,0}(X_t)\oplus H^{0,2}(X_t)}^\perp$.
+The restrictions to $h^\perp$ of the elements $g$ in (3) therefore lie in the group $G_\ZZ\cap V_F$ for the polarized Hodge structure $F$ on $h^\perp$, which is finite by @prop:monodromy-hodge-automorphism (1).
+:::

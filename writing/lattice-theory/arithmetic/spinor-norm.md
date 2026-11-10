@@ -198,13 +198,39 @@ is the positive orientation character of $(V,-\beta)$, under the equality $\Orth
 For a sign $\epsilon\in\theset{\pm1}$, write $\sigma_\epsilon$ for $\sigma_+$ when $\epsilon=+1$ and for $\sigma_-$ when $\epsilon=-1$.
 :::
 
-The maps $\sigma_\pm$ are group morphisms, because $\Orth(V)$ acts on the two-element set of orientation classes.
-By @lem:positive-grassmannian (3), for every $W\in\Gr^+(V)$ and every $g\in\Orth(V)$,
+::: {.lemma #lem:orientation-characters-determinant title="The orientation characters are continuous group morphisms"}
+
+Let $(p,q)$ be the signature of $(V,\beta)$.
+
+1. The maps $\sigma_+$ and $\sigma_-$ are group morphisms.
+2. For every $W\in\Gr^+(V)$ and every $g\in\Orth(V)$,
 $$
-\sigma_+(g)=\sgn\det\qty{\pi_W\circ g|_W\colon W\too W},
+\sigma_+(g)=\sgn\det\qty{\pi_W\circ g|_W\colon W\too W}.
 $$
-so $\sigma_+$ and $\sigma_-$ are continuous, and both are trivial on the identity component $\Orth(V)^\circ$.
-The character $\sigma_+$ is trivial when $p=0$, and $\sigma_-$ is trivial when $q=0$.
+3. The maps $\sigma_+$ and $\sigma_-$ are continuous, and
+$$
+\Orth(V)^\circ\iscontainedin\ker\sigma_+\cap\ker\sigma_-.
+$$
+4. If $p=0$, then $\sigma_+(g)=+1$ for every $g\in\Orth(V)$.
+   If $q=0$, then $\sigma_-(g)=+1$ for every $g\in\Orth(V)$.
+:::
+
+::: {.proof}
+
+An isometry $g$ maps a maximal positive-definite subspace $W$ with orientation $o$ to the maximal positive-definite subspace $gW$ with orientation $g_*o$.
+This is an action of $\Orth(V)$ on $\widetilde\Gr^+(V)$ by homeomorphisms, so $\Orth(V)$ acts on the two-element set of components, and $\sigma_+$ is the resulting morphism to the group of permutations of a two-element set.
+The same argument for $(V,-\beta)$ gives (1) for $\sigma_-$.
+
+For (2), let $o$ be an orientation of $W$.
+By @lem:positive-grassmannian (3), the points $(gW,g_*o)$ and $(W,o)$ lie in the same component exactly when $\pi_W|_{gW}$ carries $g_*o$ to $o$, that is, when the automorphism $\pi_W\circ g|_W$ of $W$ preserves $o$.
+An automorphism of a real vector space preserves an orientation exactly when its determinant is positive.
+
+For (3), the right side of (2) is a continuous function of $g$ for fixed $W$, so $\sigma_+$ is continuous, and so is $\sigma_-$ by the same argument for $(V,-\beta)$.
+A continuous map to $\theset{\pm1}$ is constant on the connected set $\Orth(V)^\circ$, which contains $\id$.
+
+For (4), if $p=0$ then $W=0$ is the only point of $\Gr^+(V)$, and $\pi_W\circ g|_W$ is the identity of the zero space, of determinant $1$.
+The statement for $q=0$ is this one for $(V,-\beta)$.
+:::
 
 ::: {.proposition #prop:orientation-characters-reflections title="Orientation characters, the determinant, and the real spinor norm"}
 
@@ -261,10 +287,9 @@ $$
 Put $V\definedas L_\bR$.
 By @prop:orientation-characters-reflections (4), $\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$.
 
-(1) If $p=0$, then $\Gr^+(V)=\theset{0}$, and for $W=0$ the map $\pi_W\circ g|_W$ is the identity of the zero space, of determinant $1$.
-The formula $\sigma_+(g)=\sgn\det\qty{\pi_W\circ g|_W}$ after @def:orientation-characters gives $\sigma_+(g)=+1$ for every $g\in\Orth(V)$.
+(1) If $p=0$, then $\sigma_+(g)=+1$ for every $g\in\Orth(V)$ by @lem:orientation-characters-determinant (4).
 
-(2) If $q=0$, then (1) for $(V,-\beta)$ gives $\sigma_-(g)=+1$ for every $g\in\Orth(V)$, and $\sigma_+=\sigma_+\sigma_-=\det$ by @prop:orientation-characters-reflections (2).
+(2) If $q=0$, then $\sigma_-(g)=+1$ for every $g\in\Orth(V)$ by @lem:orientation-characters-determinant (4), and $\sigma_+=\sigma_+\sigma_-=\det$ by @prop:orientation-characters-reflections (2).
 The kernel of $\det$ on $\Orth(L)$ is $\SO_\bR(L)$ (@def:lattice-spinor-kernels).
 :::
 
@@ -277,7 +302,7 @@ $$
 
 ::: {.proof}
 
-The inclusion $\supseteq$ was shown after @def:orientation-characters.
+The inclusion $\supseteq$ is @lem:orientation-characters-determinant (3).
 Let $g\in\ker\sigma_+\cap\ker\sigma_-$, fix $W\in\Gr^+(V)$, and let $\phi\colon W\to W^\perp$ be the linear map whose graph is $gW$ (@lem:positive-grassmannian).
 For $t\in[0,1]$ let $W_t$ be the graph of $t\phi$; it lies in $\Gr^+(V)$, and $W_t^\perp$ is the graph of $t\phi^*\colon W^\perp\to W$, where $\beta(\phi x,y)=-\beta(x,\phi^*y)$.
 Choose bases of $W$ and of $W^\perp$ that are orthonormal for $\beta$ and for $-\beta$.
