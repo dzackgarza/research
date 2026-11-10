@@ -85,7 +85,7 @@ $$
 1.
 $$
 
-For every indefinite $L$ define
+Define
 $$
 \Orth^+(L)\definedas\Theta_\bR(L),
 $$
@@ -221,7 +221,7 @@ $$
 \sigma_+\sigma_-=\det.
 $$
 3. If $V=V_1\perp V_2$ and $g_i\in\Orth(V_i)$, then $\sigma_\pm(g_1\oplus g_2)=\sigma_\pm(g_1)\,\sigma_\pm(g_2)$.
-4. If $L$ is an indefinite lattice, then $\Orth^+(L)$ is the kernel of the restriction of $\sigma_+$ to $\Orth(L)\iscontainedin\Orth(L_\bR)$.
+4. If $L$ is a lattice with $L_\bR=V$, then $\Orth^+(L)$ is the kernel of the restriction of $\sigma_+$ to $\Orth(L)\iscontainedin\Orth(L_\bR)$.
 :::
 
 ::: {.proof}

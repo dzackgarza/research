@@ -122,7 +122,7 @@ The transport along a loop of class $\gamma$ is $\rho(\gamma)$, and $\rho(\gamma
 The condition does not depend on which of the two classes $o_s$ is chosen.
 :::
 
-If $\bL_s$ is indefinite, condition (1) says that the monodromy group lies in $\Orth^+(\bL_s)$ (@prop:orientation-characters-reflections).
+Condition (1) says that the monodromy group lies in $\Orth^+(\bL_s)$ (@prop:orientation-characters-reflections).
 
 ::: {.example #ex:monodromy-outside-orth-plus title="A local system of lattices with no global orientation class"}
 
@@ -311,7 +311,7 @@ The primitive local system of a family of polarized K3 surfaces has $h^{1,1}>0$,
 
 ::: {.proposition #prop:component-stabilizer-versus-orth-plus title="$\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$"}
 
-Let $k=2m$, let $L$ be indefinite, and let $D^+$ be a connected component of $D$.
+Let $k=2m$ and let $D^+$ be a connected component of $D$.
 
 1. If $m$ is odd and $h^{m,m}>0$, then
 $$
@@ -343,7 +343,7 @@ The sign of @thm:period-domain-component-stabilizer is $\epsilon=(-1)^{m+1}$.
 (1) Here $\epsilon=+1$, and the theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_+$.
 
 (2) Here $\epsilon=-1$, and the theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-$.
-The lattice $L(-1)$ of @def:form-twist is indefinite, $\Orth(L(-1))=\Orth(L)$, and the positive orientation character of $L(-1)_\RR$ is $\sigma_-$ (@def:orientation-characters), so $\Orth(L)\cap\ker\sigma_-=\Orth^+(L(-1))$.
+The lattice $L(-1)$ of @def:form-twist has $\Orth(L(-1))=\Orth(L)$, and the positive orientation character of $L(-1)_\RR$ is $\sigma_-$ (@def:orientation-characters), so $\Orth(L)\cap\ker\sigma_-=\Orth^+(L(-1))$.
 If $\det g=-1$, then $\sigma_+(g)\neq\sigma_-(g)$, so exactly one of $\sigma_+(g)$, $\sigma_-(g)$ is $+1$.
 If $\det$ is trivial on $\Orth(L)$, then $\sigma_+=\sigma_-$ on $\Orth(L)$ and the two kernels are equal.
 The isometry $-\id_L$ has determinant $-1$ when the rank of $L$ is odd.
