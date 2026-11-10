@@ -64,7 +64,7 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **The classifying map of $\fentwo$** | @conj:enriques_involution_extension, @conj:classifying_map_isomorphism |
+| **The classifying map of $\fentwo$** | @conj:enriques_involution_extension |
 | **Descent of the semitoroidal data** | @conj:descent_semitoroidal_data_En2, @prob:restricted-semifan |
 
 : {tbl-colwidths="[35,65]"}

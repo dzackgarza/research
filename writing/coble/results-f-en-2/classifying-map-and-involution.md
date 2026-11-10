@@ -61,30 +61,31 @@ Since $Y$ is normal, $A$ is integrally closed in $K$, and $B$ is integral over $
 
 :::
 
-::: {.conjecture #conj:classifying_map_isomorphism title="The classifying map is an isomorphism"}
+::: {.theorem #thm:classifying-map-isomorphism title="The classifying map is an isomorphism onto the normalization"}
 
-The classifying map
+Let $\nu\colon\normksbacpt{\fentwo}\to\ksbacpt{\fentwo}$ be the normalization morphism, and let $\phi\colon\normalize{B}\to\ksbacpt{\fentwo}$ be the classifying morphism of @thm:classifying-map-finite.
+Then there is a unique morphism
 $$
-\phi\colon \normalize{B} \to \normksbacpt{\fentwo}
+\psi\colon\normalize{B}\too\normksbacpt{\fentwo}
 $$
-is an isomorphism.
-:::
-
-::: {.proposition #prop:classifying-map-isomorphism-criterion title="A criterion for the classifying map"}
-
-Let $\phi\colon\normalize{B}\to\normksbacpt{\fentwo}$ be a morphism that is an isomorphism over $\fentwo$ and has finite fibres.
-Then $\phi$ is an isomorphism.
-In particular, let $\psi\colon\normalize{B}\to\normksbacpt{\fentwo}$ be a morphism whose composite with the normalization morphism $\normksbacpt{\fentwo}\to\ksbacpt{\fentwo}$ is the classifying morphism of @thm:classifying-map-finite.
-Each fibre of $\psi$ is contained in a fibre of the classifying morphism, so it is finite.
-So if $\psi$ is an isomorphism over $\fentwo$, then $\psi$ is an isomorphism, and @conj:classifying_map_isomorphism holds.
+with $\nu\circ\psi=\phi$, and $\psi$ is an isomorphism.
 :::
 
 ::: {.proof}
 
-The space $\ksbacpt{\fentwo}$ is compact, and it is the closure of $\fentwo$ in the KSBA moduli space of stable pairs [@AEGS25, §5.3].
-The space $B$ is closed in the compact space $\ksbacpt{\fttz}$, and $\normalize{B}$ is a compactification of $\fentwo$ (@prop:enriques-involution-extends).
-So $\normalize{B}$ and $\normksbacpt{\fentwo}$ are proper, $\fentwo$ is dense in both, and $\phi$ is proper.
-A proper morphism with finite fibres is finite [@stacks-02LS].
-Since $\phi$ is an isomorphism over the dense open $\fentwo$, it is birational.
-The target $\normksbacpt{\fentwo}$ is normal, so $\phi$ is an isomorphism by @thm:zariski_main_theorem.
+The space $\fentwo=\bD(\ten)/\gent$ is the image of the connected complex manifold $\bD(\ten)$, so it is irreducible.
+The space $\ksbacpt{\fentwo}$ is a compactification of $\fentwo$: it is the closure of $\fentwo$ in the moduli space of KSBA-stable pairs, and $\fentwo$ is open in it [@AEGS25, Def. 2.10].
+So $\ksbacpt{\fentwo}$ is irreducible.
+The space $B$ is the closure of the image of $\fentwo$ in $\ksbacpt{\fttz}$, so it is irreducible too, and its normalization $\normalize{B}$ is an integral normal variety [@stacks-035Q, (1)].
+The space $\normalize{B}$ is a compactification of $\fentwo$ that carries a universal family of pairs extending the universal family of Enriques pairs over $\fentwo$ (@prop:enriques-involution-extends, [@AEGS25, proof of Thm. 5.9]).
+Over the open subset $\fentwo\iscontainedin\normalize{B}$, the morphism $\phi$ classifies the universal family of Enriques pairs, so it restricts to the open embedding $\fentwo\injects\ksbacpt{\fentwo}$.
+
+The image of $\phi$ therefore contains the dense subset $\fentwo$, so $\phi$ is dominant.
+By the universal property of normalization [@stacks-035Q, (4)], $\phi$ factors uniquely as $\phi=\nu\circ\psi$.
+The morphism $\phi$ is finite (@thm:classifying-map-finite) and $\nu$ is separated, so $\psi$ is finite [@stacks-035D].
+
+The space $\fentwo$ is normal: it is the open stratum $V_0$ of its Baily--Borel compactification, which is a normal analytic space (@thm:baily-borel-compactification).
+So $\nu$ is an isomorphism over $\fentwo$, and $\psi$ restricts to an isomorphism of the dense open subset $\fentwo$ of $\normalize{B}$ onto the dense open subset $\nu^{-1}(\fentwo)$ of $\normksbacpt{\fentwo}$.
+Hence $\psi$ is birational.
+The variety $\normksbacpt{\fentwo}$ is normal, so the finite birational morphism $\psi$ is an isomorphism by @thm:zariski_main_theorem.
 :::
