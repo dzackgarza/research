@@ -198,27 +198,23 @@ The open work is to define a regularized theta series for the hyperbolic lattice
 
 ## The GIT and Looijenga models of the Coble moduli space
 
-::: {.question #qst:coble-arrangement-empty title="Open problem: is the Coble arrangement $\mch^{*}_{10A_1}$ empty?"}
+::: {.theorem #thm:coble-arrangement-empty title="The Coble arrangement is empty, hence the GIT compactification is Baily--Borel"}
+The arrangement $\mch^{*}_{10A_1} = \mch_\infty \intersect D(T_\Co)$ of divisibility-two roots of $\Lambda_1=H^{\perp\lkt}$ is empty. Consequently there are zero $\Gamma_{10A_1}$-orbits in it, and @def:looijenga-compactification returns the Baily--Borel compactification of $\Gamma_{10A_1}\backslash D(T_\Co)$.
+:::
 
-The GIT compactification of the moduli of ten-nodal sextics is the Looijenga compactification of $\Gamma_{10A_1}\backslash(D(T_\Co) - \mch^{*}_{10A_1})$, for the arrangement
-$$
-\mch^{*}_{10A_1} = \mch_\infty \intersect D(T_\Co)
-$$
-cut out by the divisibility-two roots of $\Lambda_1 = H^{\perp\lkt}$ by @thm:git-equals-looijenga. Whether that arrangement is empty decides the shape of the compactification:
+::: {.proof}
+**Step 1: the type, its lattices, and its group agree with the period setting in this section.** A singular type $T$ in Yu--Zheng is an irreducible component of $\Sigma_n$, whose members are plane sextics with $n$ distinct nodes ([@YZ23, beginning of §3, p. 5]), and the GIT construction subsequently uses its Zariski closure and normalization ([@YZ23, §3.1, p. 6]). For $T=10A_1$, @prop:coble-is-the-ten-nodal-sextic-type gives $P=S_\Co$ and $Q=T_\Co$, with $Q=P^{\perp\lkt}$. Yu--Zheng's period lattice $\Lambda_T$ is the same orthogonal complement, so the arrangement in Proposition 3.7 is the arrangement denoted $\mch^*_{10A_1}$ here. The normalizer description of the arithmetic group agrees with $\Gamma_{10A_1}$: [@YZZ25, Lemma 4.5, p. 13] identifies $\Gamma_W|_Q$ with $\Gamma_T$, and the Weyl group is $\{\pm1\}^{10}$, as recorded after @not:sextic-singular-type. Moreover, [@YZZ25, Lemma 4.8, p. 14] proves that every root of $L$ has divisibility $1$, whereas the roots in $\mch^*_{10A_1}$ would have divisibility $2$, so no sextic-node root lies in this arrangement.
 
-- if $\mch^{*}_{10A_1} = \varnothing$, @def:looijenga-compactification returns the Baily--Borel compactification, so the GIT boundary of the ten-nodal sextics consists of the $0$-cusp point and the $1$-cusp curve and nothing else;
+**Step 2: Proposition 3.7 applies to exactly this nodal stratum, not its closure.** Proposition 3.7 says that $\mathcal H^*$ is empty **if and only if $\Sigma_T$ contains no cube of a quadric polynomial** ([@YZ23, p. 10]). The symbol in the printed proposition is $\Sigma_T$, the component of nodal curves itself. We therefore need not decide whether the Zariski closure contains a triple conic: that is a different statement from the criterion's hypothesis.
 
-- if $\mch^{*}_{10A_1} \neq \varnothing$, the GIT compactification carries a boundary divisor for each $\Gamma_{10A_1}$-orbit in the arrangement, and is a proper semitoroidal model strictly between Baily--Borel and toroidal.
+**Step 3: no triple conic belongs to the $10A_1$ stratum.** If $F$ is a quadric polynomial, its cube $F^3$ is a non-reduced sextic. At a general point of its support it is non-reduced, hence singular; in particular, it has infinitely many singular points and is not a sextic with ten isolated ordinary nodes. But every curve in $\Sigma_{10A_1}$ has exactly ten distinct nodes. Therefore $\Sigma_{10A_1}$ contains no cube of a quadric polynomial. By Proposition 3.7, $\mch^{*}_{10A_1}=\varnothing$.
 
-The question is a lattice computation in $\Lambda_1$: is there a divisibility-two root of $\Lambda_1$ whose orthogonal hyperplane meets $D(T_\Co)$ in a proper hyperplane section?
-@lem:divisibilityAlwaysTwoTco computes divisibility inside $T_\Co$; the remaining question is divisibility inside the larger lattice $\Lambda_1$.
-One reduction is available: every root of the root lattice $L$ has divisibility $1$ in $\Lambda_1$ [@YZZ25 §4.2], so no root arising from a node of the sextic contributes, which is why $\mch^{*}_{10A_1}$ is contained in the larger arrangement $\mch_{10A_1}$ of @thm:occult-period-map-sextics.
+**Step 4: the resulting compactification.** @thm:git-equals-looijenga identifies the GIT compactification with the Looijenga model of $\Gamma_{10A_1}\backslash D(T_\Co)$ (the source being [@YZZ25, Theorem 4.11, p. 15]). Proposition 3.7 itself notes, immediately before its statement, that the Looijenga compactification with an empty hyperplane arrangement is Baily--Borel ([@YZ23, p. 10]). Hence the model is the Baily--Borel compactification. There is no root-orbit configuration to index another boundary arrangement.
 :::
 
 ::: {.question #qst:semifan-poset-position title="Open problem: the position of the three semifans"}
 
-The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input.
-Once $\mch^{*}_{10A_1}$ is computed, three questions remain:
+The Coxeter, KSBA, and Looijenga semifans of the Coble period domain arise from distinct inputs; @def:looijenga-compactification and the following remark record the Looijenga input. By @thm:coble-arrangement-empty the arrangement is empty, so there are zero $\Gamma_{10A_1}$-orbits and no arrangement-indexed boundary divisors. The following three questions are independent of that conclusion:
 
 - is the resulting Looijenga semifan the Coxeter semifan of a reflection group, as it would be if the traces of $\mch^{*}_{10A_1}$ on a cusp boundary were the walls of a chamber?
 
