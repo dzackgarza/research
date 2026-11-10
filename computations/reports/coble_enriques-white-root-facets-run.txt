@@ -1,0 +1,941 @@
+AEGS white roots: wall Gram matrices, complete induced facet angle tables, and complements
+Sage 11.0.beta5; exact ZZ/QQ/quadratic-field arithmetic; networkx 3.7 only for coloured graph matching
+T_En Gram determinant 1024; target T_Co = <2> + U(2) + E8(2)
+T_Co: rank 11, det -2048, discriminant normal form
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+=== cusp 1; eta = [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+figure order: outer square 1..8, then the four diagonal nodes 9..12 from corner 7 to corner 3
+coloured-bond graph match to printed nodes: 1->r1, 2->r3, 3->r4, 4->r5, 5->r6, 6->r7, 7->r8, 8->r11, 9->r10, 10->r9, 11->r12, 12->r2
+bond list from exact roots: [(1, 3, 3), (1, 11, 3), (2, 4, 3), (2, 12, 'inf'), (3, 4, 3), (4, 5, 3), (5, 6, 3), (6, 7, 3), (7, 8, 3), (8, 10, 3), (8, 11, 3), (9, 10, 'inf'), (9, 12, 'inf')]
+wall Gram matrix in figure order:
+[[ -4   2   0   0   0   0   0   2   0   0   0   0]
+ [  2  -4   2   0   0   0   0   0   0   0   0   0]
+ [  0   2  -4   2   0   0   0   0   0   0   0   2]
+ [  0   0   2  -4   2   0   0   0   0   0   0   0]
+ [  0   0   0   2  -4   2   0   0   0   0   0   0]
+ [  0   0   0   0   2  -4   2   0   0   0   0   0]
+ [  0   0   0   0   0   2  -4   2   2   0   0   0]
+ [  2   0   0   0   0   0   2  -4   0   0   0   0]
+ [  0   0   0   0   0   0   2   0  -4   4   0   0]
+ [  0   0   0   0   0   0   0   0   4  -4   4   0]
+ [  0   0   0   0   0   0   0   0   0   4  -4   4]
+ [  0   0   2   0   0   0   0   0   0   0   4  -4]]
+=== cusp 2; eta = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+figure order: the ten-node bond list already used in the manuscript; only node 10 is white
+coloured-bond graph match to printed nodes: 1->r4, 2->r3, 3->r1, 4->r2, 5->r5, 6->r6, 7->r7, 8->r8, 9->r9, 10->r10
+bond list from exact roots: [(1, 3, 3), (2, 4, 3), (3, 4, 3), (4, 5, 3), (5, 6, 3), (6, 7, 3), (7, 8, 3), (8, 9, 3), (9, 10, 4)]
+wall Gram matrix in figure order:
+[[ -4   2   0   2   2   0   0   0   0   0]
+ [  2  -4   2   0   0   0   0   0   0   0]
+ [  0   2  -4   0   0   0   0   0   0   0]
+ [  2   0   0  -4   0   0   0   0   0   0]
+ [  2   0   0   0  -4   2   0   0   0   0]
+ [  0   0   0   0   2  -4   2   0   0   0]
+ [  0   0   0   0   0   2  -4   2   0   0]
+ [  0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   2  -4   2]
+ [  0   0   0   0   0   0   0   0   2  -2]]
+-- white node 10 (printed root r10), delta = [1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=1/2, pi/3
+  facet angle (1,5): cos=1/2, pi/3
+  facet angle (1,6): cos=0, pi/2
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=0, pi/2
+  facet angle (1,9): cos=0, pi/2
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,9): cos=0, pi/2
+  facet angle (3,4): cos=0, pi/2
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,9): cos=0, pi/2
+  facet angle (4,5): cos=0, pi/2
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,9): cos=0, pi/2
+  facet angle (5,6): cos=1/2, pi/3
+  facet angle (5,7): cos=0, pi/2
+  facet angle (5,8): cos=0, pi/2
+  facet angle (5,9): cos=0, pi/2
+  facet angle (6,7): cos=1/2, pi/3
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,9): cos=0, pi/2
+  facet angle (7,8): cos=1/2, pi/3
+  facet angle (7,9): cos=0, pi/2
+  facet angle (8,9): cos=1/2*s, pi/4
+  angle multiset: pi/2=28, pi/3=7, pi/4=1, parallel=0, no-intersection=0
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[  2   0   0   0   0   0   0   0   0   0   0]
+ [  0   0   2   0   0   0   0   0   0   0   0]
+ [  0   2   0   0   0   0   0   0   0   0   0]
+ [  0   0   0  -4   0   2   0   0   0   0   0]
+ [  0   0   0   0  -4   0   2   0   0   0   0]
+ [  0   0   0   2   0  -4   2   0   0   0   0]
+ [  0   0   0   0   2   2  -4   2   0   0   0]
+ [  0   0   0   0   0   0   2  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   0   2  -4   2]
+ [  0   0   0   0   0   0   0   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+=== cusp 3; eta = [0, 0, 1, 1, -2, -3, -4, -6, -5, -4, -3, -2]
+figure order: top row 1..5, left side 6,7,8 then white 9, diagonal 10,11, spur 12
+coloured-bond graph match to printed nodes: 1->r4, 2->r3, 3->r1, 4->r11, 5->r8, 6->r5, 7->r6, 8->r7, 9->r12, 10->r9, 11->r10, 12->r2
+bond list from exact roots: [(1, 3, 3), (1, 11, 3), (2, 4, 3), (3, 4, 3), (4, 5, 3), (5, 6, 3), (6, 7, 3), (7, 12, 4), (8, 10, 4), (8, 11, 4), (9, 10, 'inf'), (9, 12, 4)]
+wall Gram matrix in figure order:
+[[ -4   2   0   0   0   2   0   0   0   0   0   2]
+ [  2  -4   2   0   0   0   0   0   0   0   0   0]
+ [  0   2  -4   2   0   0   0   0   0   0   0   0]
+ [  0   0   2  -4   2   0   0   0   0   0   0   0]
+ [  0   0   0   2  -2   0   0   0   0   0   2   0]
+ [  2   0   0   0   0  -4   2   0   0   0   0   0]
+ [  0   0   0   0   0   2  -4   2   0   0   0   0]
+ [  0   0   0   0   0   0   2  -4   2   0   0   0]
+ [  0   0   0   0   0   0   0   2  -2   2   0   0]
+ [  0   0   0   0   0   0   0   0   2  -4   4   0]
+ [  0   0   0   0   2   0   0   0   0   4  -4   0]
+ [  2   0   0   0   0   0   0   0   0   0   0  -4]]
+-- white node 5 (printed root r8), delta = [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,6): cos=1/2, pi/3
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=0, pi/2
+  facet angle (1,9): cos=0, pi/2
+  facet angle (1,10): cos=0, pi/2
+  facet angle (1,11): cos=0, pi/2
+  facet angle (1,12): cos=1/2, pi/3
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,9): cos=0, pi/2
+  facet angle (2,10): cos=0, pi/2
+  facet angle (2,11): cos=0, pi/2
+  facet angle (2,12): cos=0, pi/2
+  facet angle (3,4): cos=1/2*s, pi/4
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,9): cos=0, pi/2
+  facet angle (3,10): cos=0, pi/2
+  facet angle (3,11): cos=0, pi/2
+  facet angle (3,12): cos=0, pi/2
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,9): cos=0, pi/2
+  facet angle (4,10): cos=0, pi/2
+  facet angle (4,11): cos=1, parallel
+  facet angle (4,12): cos=0, pi/2
+  facet angle (6,7): cos=1/2, pi/3
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,9): cos=0, pi/2
+  facet angle (6,10): cos=0, pi/2
+  facet angle (6,11): cos=0, pi/2
+  facet angle (6,12): cos=0, pi/2
+  facet angle (7,8): cos=1/2, pi/3
+  facet angle (7,9): cos=0, pi/2
+  facet angle (7,10): cos=0, pi/2
+  facet angle (7,11): cos=0, pi/2
+  facet angle (7,12): cos=0, pi/2
+  facet angle (8,9): cos=1/2*s, pi/4
+  facet angle (8,10): cos=0, pi/2
+  facet angle (8,11): cos=0, pi/2
+  facet angle (8,12): cos=0, pi/2
+  facet angle (9,10): cos=1/2*s, pi/4
+  facet angle (9,11): cos=0, pi/2
+  facet angle (9,12): cos=0, pi/2
+  facet angle (10,11): cos=s, no-intersection
+  facet angle (10,12): cos=0, pi/2
+  facet angle (11,12): cos=0, pi/2
+  angle multiset: pi/2=44, pi/3=6, pi/4=3, parallel=1, no-intersection=1
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[  2   0   0   0   0   0   0   0   0   0   0]
+ [  0   0   2   0   0   0   0   0   0   0   0]
+ [  0   2   0   0   0   0   0   0   0   0   0]
+ [  0   0   0  -4   0   2   0   0   0   0   0]
+ [  0   0   0   0  -4   0   2   0   0   0   0]
+ [  0   0   0   2   0  -4   2   0   0   0   0]
+ [  0   0   0   0   2   2  -4   2   0   0   0]
+ [  0   0   0   0   0   0   2  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   0   2  -4   2]
+ [  0   0   0   0   0   0   0   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+-- white node 9 (printed root r12), delta = [1, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 1]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,5): cos=0, pi/2
+  facet angle (1,6): cos=1/2, pi/3
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=0, pi/2
+  facet angle (1,10): cos=0, pi/2
+  facet angle (1,11): cos=0, pi/2
+  facet angle (1,12): cos=1/2, pi/3
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,10): cos=0, pi/2
+  facet angle (2,11): cos=0, pi/2
+  facet angle (2,12): cos=0, pi/2
+  facet angle (3,4): cos=1/2, pi/3
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,10): cos=0, pi/2
+  facet angle (3,11): cos=0, pi/2
+  facet angle (3,12): cos=0, pi/2
+  facet angle (4,5): cos=1/2*s, pi/4
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,10): cos=0, pi/2
+  facet angle (4,11): cos=0, pi/2
+  facet angle (4,12): cos=0, pi/2
+  facet angle (5,6): cos=0, pi/2
+  facet angle (5,7): cos=0, pi/2
+  facet angle (5,8): cos=0, pi/2
+  facet angle (5,10): cos=0, pi/2
+  facet angle (5,11): cos=1/2*s, pi/4
+  facet angle (5,12): cos=0, pi/2
+  facet angle (6,7): cos=1/2, pi/3
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,10): cos=0, pi/2
+  facet angle (6,11): cos=0, pi/2
+  facet angle (6,12): cos=0, pi/2
+  facet angle (7,8): cos=1/2*s, pi/4
+  facet angle (7,10): cos=0, pi/2
+  facet angle (7,11): cos=0, pi/2
+  facet angle (7,12): cos=0, pi/2
+  facet angle (8,10): cos=1, parallel
+  facet angle (8,11): cos=0, pi/2
+  facet angle (8,12): cos=0, pi/2
+  facet angle (10,11): cos=s, no-intersection
+  facet angle (10,12): cos=0, pi/2
+  facet angle (11,12): cos=0, pi/2
+  angle multiset: pi/2=44, pi/3=6, pi/4=3, parallel=1, no-intersection=1
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[ -2  -2  -2   0   0   0   0   0   0   2  -6]
+ [ -2  -4  -2   0   0   0   0   0   0   2  -6]
+ [ -2  -2  -4   2   0   0   0   0   0   2  -6]
+ [  0   0   2   0   0   0   0   0   0   0   0]
+ [  0   0   0   0  -4   0   2   0   0   0   0]
+ [  0   0   0   0   0  -4   0   2   0   0   0]
+ [  0   0   0   0   2   0  -4   2   0   0   0]
+ [  0   0   0   0   0   2   2  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  2   2   2   0   0   0   0   0   2  -4   4]
+ [ -6  -6  -6   0   0   0   0   0   0   4 -12]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+=== cusp 4; eta = [0, 0, 2, 1, -4, -5, -7, -10, -8, -6, -4, -2]
+figure order: top row 1..5, left side 6, white 7, right side 8, white 9, spurs 10,11
+coloured-bond graph match to printed nodes: 1->r3, 2->r4, 3->r5, 4->r6, 5->r7, 6->r2, 7->r10, 8->r11, 9->r8, 10->r1, 11->r9
+bond list from exact roots: [(1, 3, 3), (2, 3, 3), (2, 10, 4), (3, 4, 3), (4, 5, 3), (5, 6, 3), (6, 7, 3), (7, 9, 3), (7, 11, 3), (8, 11, 4)]
+wall Gram matrix in figure order:
+[[ -4   2   0   0   0   2   0   0   0   2   0]
+ [  2  -4   2   0   0   0   0   0   0   0   0]
+ [  0   2  -4   2   0   0   0   0   0   0   0]
+ [  0   0   2  -4   2   0   0   0   0   0   0]
+ [  0   0   0   2  -4   0   0   2   0   0   2]
+ [  2   0   0   0   0  -4   2   0   0   0   0]
+ [  0   0   0   0   0   2  -2   0   0   0   0]
+ [  0   0   0   0   2   0   0  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -2   0   0]
+ [  2   0   0   0   0   0   0   0   0  -4   0]
+ [  0   0   0   0   2   0   0   0   0   0  -4]]
+-- white node 7 (printed root r10), delta = [1, 1, -1, 0, 1, 0, 0, 0, 0, 0, 0, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,5): cos=0, pi/2
+  facet angle (1,6): cos=1/2*s, pi/4
+  facet angle (1,8): cos=0, pi/2
+  facet angle (1,9): cos=0, pi/2
+  facet angle (1,10): cos=1/2, pi/3
+  facet angle (1,11): cos=0, pi/2
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,9): cos=0, pi/2
+  facet angle (2,10): cos=0, pi/2
+  facet angle (2,11): cos=0, pi/2
+  facet angle (3,4): cos=1/2, pi/3
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,9): cos=0, pi/2
+  facet angle (3,10): cos=0, pi/2
+  facet angle (3,11): cos=0, pi/2
+  facet angle (4,5): cos=1/2, pi/3
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,9): cos=0, pi/2
+  facet angle (4,10): cos=0, pi/2
+  facet angle (4,11): cos=0, pi/2
+  facet angle (5,6): cos=0, pi/2
+  facet angle (5,8): cos=1/2, pi/3
+  facet angle (5,9): cos=0, pi/2
+  facet angle (5,10): cos=0, pi/2
+  facet angle (5,11): cos=1/2, pi/3
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,9): cos=0, pi/2
+  facet angle (6,10): cos=0, pi/2
+  facet angle (6,11): cos=0, pi/2
+  facet angle (8,9): cos=1/2*s, pi/4
+  facet angle (8,10): cos=0, pi/2
+  facet angle (8,11): cos=0, pi/2
+  facet angle (9,10): cos=0, pi/2
+  facet angle (9,11): cos=0, pi/2
+  facet angle (10,11): cos=0, pi/2
+  angle multiset: pi/2=36, pi/3=7, pi/4=2, parallel=0, no-intersection=0
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[ -2  -2   0   4   6   0  -2   0   0   0   0]
+ [ -2  -4   0   4   6   0  -2   0   0   0   0]
+ [  0   0   0   2   0   0   0   0   0   0   0]
+ [  4   4   2  -4  -6   0   2   0   0   0   0]
+ [  6   6   0  -6 -12   0   4   0   0   0   0]
+ [  0   0   0   0   0  -4   2   0   0   0   0]
+ [ -2  -2   0   2   4   2  -4   2   0   0   0]
+ [  0   0   0   0   0   0   2  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   0   2  -4   2]
+ [  0   0   0   0   0   0   0   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+-- white node 9 (printed root r8), delta = [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,5): cos=0, pi/2
+  facet angle (1,6): cos=1/2, pi/3
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=0, pi/2
+  facet angle (1,10): cos=1/2, pi/3
+  facet angle (1,11): cos=0, pi/2
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,10): cos=0, pi/2
+  facet angle (2,11): cos=0, pi/2
+  facet angle (3,4): cos=1/2, pi/3
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,10): cos=0, pi/2
+  facet angle (3,11): cos=0, pi/2
+  facet angle (4,5): cos=1/2, pi/3
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,10): cos=0, pi/2
+  facet angle (4,11): cos=0, pi/2
+  facet angle (5,6): cos=0, pi/2
+  facet angle (5,7): cos=0, pi/2
+  facet angle (5,8): cos=1/2*s, pi/4
+  facet angle (5,10): cos=0, pi/2
+  facet angle (5,11): cos=1/2, pi/3
+  facet angle (6,7): cos=1/2*s, pi/4
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,10): cos=0, pi/2
+  facet angle (6,11): cos=0, pi/2
+  facet angle (7,8): cos=0, pi/2
+  facet angle (7,10): cos=0, pi/2
+  facet angle (7,11): cos=0, pi/2
+  facet angle (8,10): cos=0, pi/2
+  facet angle (8,11): cos=0, pi/2
+  facet angle (10,11): cos=0, pi/2
+  angle multiset: pi/2=36, pi/3=7, pi/4=2, parallel=0, no-intersection=0
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[  2   0   0   0   0   0   0   0   0   0   0]
+ [  0   0   2   0   0   0   0   0   0   0   0]
+ [  0   2   0   0   0   0   0   0   0   0   0]
+ [  0   0   0  -4   0   2   0   0   0   0   0]
+ [  0   0   0   0  -4   0   2   0   0   0   0]
+ [  0   0   0   2   0  -4   2   0   0   0   0]
+ [  0   0   0   0   2   2  -4   2   0   0   0]
+ [  0   0   0   0   0   0   2  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   0   2  -4   2]
+ [  0   0   0   0   0   0   0   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+=== cusp 5; eta = [2, 2, 0, 0, -4, -5, -7, -10, -8, -6, -4, -2]
+figure order: outer square 1..8; white diagonal nodes 9,10 left and 11,12 right; central black nodes 13,14
+coloured-bond graph match to printed nodes: 1->r2, 2->r1, 3->r10, 4->r8, 5->r6, 6->r5, 7->r4, 8->r3, 9->r14, 10->r12, 11->r11, 12->r13, 13->r9, 14->r7
+bond list from exact roots: [(1, 2, 3), (1, 10, 3), (2, 3, 3), (2, 14, 4), (3, 4, 3), (4, 5, 3), (4, 12, 4), (5, 6, 3), (6, 8, 3), (6, 13, 4), (7, 9, 'inf'), (7, 13, 4), (7, 14, 4), (8, 10, 3), (9, 11, 4), (9, 12, 4), (10, 11, 4)]
+wall Gram matrix in figure order:
+[[ -4   2   0   0   0   0   0   2   2   0   0   0   0   0]
+ [  2  -4   2   0   0   0   0   0   0   0   0   0   0   0]
+ [  0   2  -4   2   0   0   0   0   0   0   2   0   0   0]
+ [  0   0   2  -4   2   0   0   0   0   0   0   0   0   0]
+ [  0   0   0   2  -4   2   0   0   0   0   0   2   0   0]
+ [  0   0   0   0   2  -4   2   0   0   0   0   0   0   0]
+ [  0   0   0   0   0   2  -4   2   0   2   0   0   0   0]
+ [  2   0   0   0   0   0   2  -4   0   0   0   0   0   0]
+ [  2   0   0   0   0   0   0   0  -2   0   0   0   0   2]
+ [  0   0   0   0   0   0   2   0   0  -2   0   0   2   0]
+ [  0   0   2   0   0   0   0   0   0   0  -2   0   2   0]
+ [  0   0   0   0   2   0   0   0   0   0   0  -2   0   2]
+ [  0   0   0   0   0   0   0   0   0   2   2   0  -4   4]
+ [  0   0   0   0   0   0   0   0   2   0   0   2   4  -4]]
+-- white node 9 (printed root r14), delta = [1, 1, 2, 3, -2, 0, 1, 0, 0, 0, 0, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2*s, pi/4
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,5): cos=0, pi/2
+  facet angle (1,6): cos=0, pi/2
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=1/2*s, pi/4
+  facet angle (1,10): cos=0, pi/2
+  facet angle (1,11): cos=0, pi/2
+  facet angle (1,12): cos=0, pi/2
+  facet angle (1,13): cos=0, pi/2
+  facet angle (1,14): cos=1, parallel
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,10): cos=0, pi/2
+  facet angle (2,11): cos=0, pi/2
+  facet angle (2,12): cos=0, pi/2
+  facet angle (2,13): cos=0, pi/2
+  facet angle (2,14): cos=0, pi/2
+  facet angle (3,4): cos=1/2, pi/3
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,10): cos=0, pi/2
+  facet angle (3,11): cos=1/2*s, pi/4
+  facet angle (3,12): cos=0, pi/2
+  facet angle (3,13): cos=0, pi/2
+  facet angle (3,14): cos=0, pi/2
+  facet angle (4,5): cos=1/2, pi/3
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,10): cos=0, pi/2
+  facet angle (4,11): cos=0, pi/2
+  facet angle (4,12): cos=0, pi/2
+  facet angle (4,13): cos=0, pi/2
+  facet angle (4,14): cos=0, pi/2
+  facet angle (5,6): cos=1/2, pi/3
+  facet angle (5,7): cos=0, pi/2
+  facet angle (5,8): cos=0, pi/2
+  facet angle (5,10): cos=0, pi/2
+  facet angle (5,11): cos=0, pi/2
+  facet angle (5,12): cos=1/2*s, pi/4
+  facet angle (5,13): cos=0, pi/2
+  facet angle (5,14): cos=0, pi/2
+  facet angle (6,7): cos=1/2, pi/3
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,10): cos=0, pi/2
+  facet angle (6,11): cos=0, pi/2
+  facet angle (6,12): cos=0, pi/2
+  facet angle (6,13): cos=0, pi/2
+  facet angle (6,14): cos=0, pi/2
+  facet angle (7,8): cos=1/2, pi/3
+  facet angle (7,10): cos=1/2*s, pi/4
+  facet angle (7,11): cos=0, pi/2
+  facet angle (7,12): cos=0, pi/2
+  facet angle (7,13): cos=0, pi/2
+  facet angle (7,14): cos=0, pi/2
+  facet angle (8,10): cos=0, pi/2
+  facet angle (8,11): cos=0, pi/2
+  facet angle (8,12): cos=0, pi/2
+  facet angle (8,13): cos=0, pi/2
+  facet angle (8,14): cos=0, pi/2
+  facet angle (10,11): cos=0, pi/2
+  facet angle (10,12): cos=0, pi/2
+  facet angle (10,13): cos=1/2*s, pi/4
+  facet angle (10,14): cos=0, pi/2
+  facet angle (11,12): cos=0, pi/2
+  facet angle (11,13): cos=1/2*s, pi/4
+  facet angle (11,14): cos=0, pi/2
+  facet angle (12,13): cos=0, pi/2
+  facet angle (12,14): cos=1, parallel
+  facet angle (13,14): cos=s, no-intersection
+  angle multiset: pi/2=62, pi/3=6, pi/4=7, parallel=2, no-intersection=1
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[ -2  -2 -12  -8 -20  -2  14  -2   0   0   0]
+ [ -2  -4 -12  -8 -20  -2  14  -2   0   0   0]
+ [-12 -12 -36 -22 -60  -6  42  -6   0   0   0]
+ [ -8  -8 -22 -16 -40  -4  28  -4   0   0   0]
+ [-20 -20 -60 -40 -104 -10  72 -10   0   0   0]
+ [ -2  -2  -6  -4 -10  -4   8   0   0   0   0]
+ [ 14  14  42  28  72   8 -52   8   0   0   0]
+ [ -2  -2  -6  -4 -10   0   8  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   0   2  -4   2]
+ [  0   0   0   0   0   0   0   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+-- white node 10 (printed root r12), delta = [1, 1, 3, 3, -2, 1, 2, 2, 1, 0, 0, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,5): cos=0, pi/2
+  facet angle (1,6): cos=0, pi/2
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=1/2, pi/3
+  facet angle (1,9): cos=1/2*s, pi/4
+  facet angle (1,11): cos=0, pi/2
+  facet angle (1,12): cos=0, pi/2
+  facet angle (1,13): cos=0, pi/2
+  facet angle (1,14): cos=0, pi/2
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,9): cos=0, pi/2
+  facet angle (2,11): cos=0, pi/2
+  facet angle (2,12): cos=0, pi/2
+  facet angle (2,13): cos=0, pi/2
+  facet angle (2,14): cos=0, pi/2
+  facet angle (3,4): cos=1/2, pi/3
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,9): cos=0, pi/2
+  facet angle (3,11): cos=1/2*s, pi/4
+  facet angle (3,12): cos=0, pi/2
+  facet angle (3,13): cos=0, pi/2
+  facet angle (3,14): cos=0, pi/2
+  facet angle (4,5): cos=1/2, pi/3
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,9): cos=0, pi/2
+  facet angle (4,11): cos=0, pi/2
+  facet angle (4,12): cos=0, pi/2
+  facet angle (4,13): cos=0, pi/2
+  facet angle (4,14): cos=0, pi/2
+  facet angle (5,6): cos=1/2, pi/3
+  facet angle (5,7): cos=0, pi/2
+  facet angle (5,8): cos=0, pi/2
+  facet angle (5,9): cos=0, pi/2
+  facet angle (5,11): cos=0, pi/2
+  facet angle (5,12): cos=1/2*s, pi/4
+  facet angle (5,13): cos=0, pi/2
+  facet angle (5,14): cos=0, pi/2
+  facet angle (6,7): cos=1/2*s, pi/4
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,9): cos=0, pi/2
+  facet angle (6,11): cos=0, pi/2
+  facet angle (6,12): cos=0, pi/2
+  facet angle (6,13): cos=0, pi/2
+  facet angle (6,14): cos=0, pi/2
+  facet angle (7,8): cos=1/2*s, pi/4
+  facet angle (7,9): cos=0, pi/2
+  facet angle (7,11): cos=0, pi/2
+  facet angle (7,12): cos=0, pi/2
+  facet angle (7,13): cos=1, parallel
+  facet angle (7,14): cos=0, pi/2
+  facet angle (8,9): cos=0, pi/2
+  facet angle (8,11): cos=0, pi/2
+  facet angle (8,12): cos=0, pi/2
+  facet angle (8,13): cos=0, pi/2
+  facet angle (8,14): cos=0, pi/2
+  facet angle (9,11): cos=0, pi/2
+  facet angle (9,12): cos=0, pi/2
+  facet angle (9,13): cos=0, pi/2
+  facet angle (9,14): cos=1/2*s, pi/4
+  facet angle (11,12): cos=0, pi/2
+  facet angle (11,13): cos=1, parallel
+  facet angle (11,14): cos=0, pi/2
+  facet angle (12,13): cos=0, pi/2
+  facet angle (12,14): cos=1/2*s, pi/4
+  facet angle (13,14): cos=s, no-intersection
+  angle multiset: pi/2=62, pi/3=6, pi/4=7, parallel=2, no-intersection=1
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[ -2  -2 -12 -12 -24   0  16   0  -2  -2   0]
+ [ -2  -4 -12 -12 -24   0  16   0  -2  -2   0]
+ [-12 -12 -36 -34 -72   0  48   0  -6  -6   0]
+ [-12 -12 -34 -36 -72   0  48   0  -6  -6   0]
+ [-24 -24 -72 -72 -148   0  98   0 -12 -12   0]
+ [  0   0   0   0   0  -4   0   2   0   0   0]
+ [ 16  16  48  48  98   0 -68   2   8   8   0]
+ [  0   0   0   0   0   2   2  -4   2   0   0]
+ [ -2  -2  -6  -6 -12   0   8   2  -4   0   0]
+ [ -2  -2  -6  -6 -12   0   8   0   0  -4   2]
+ [  0   0   0   0   0   0   0   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+-- white node 11 (printed root r11), delta = [-1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,5): cos=0, pi/2
+  facet angle (1,6): cos=0, pi/2
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=1/2, pi/3
+  facet angle (1,9): cos=1/2*s, pi/4
+  facet angle (1,10): cos=0, pi/2
+  facet angle (1,12): cos=0, pi/2
+  facet angle (1,13): cos=0, pi/2
+  facet angle (1,14): cos=0, pi/2
+  facet angle (2,3): cos=1/2*s, pi/4
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,9): cos=0, pi/2
+  facet angle (2,10): cos=0, pi/2
+  facet angle (2,12): cos=0, pi/2
+  facet angle (2,13): cos=0, pi/2
+  facet angle (2,14): cos=0, pi/2
+  facet angle (3,4): cos=1/2*s, pi/4
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,9): cos=0, pi/2
+  facet angle (3,10): cos=0, pi/2
+  facet angle (3,12): cos=0, pi/2
+  facet angle (3,13): cos=1, parallel
+  facet angle (3,14): cos=0, pi/2
+  facet angle (4,5): cos=1/2, pi/3
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,9): cos=0, pi/2
+  facet angle (4,10): cos=0, pi/2
+  facet angle (4,12): cos=0, pi/2
+  facet angle (4,13): cos=0, pi/2
+  facet angle (4,14): cos=0, pi/2
+  facet angle (5,6): cos=1/2, pi/3
+  facet angle (5,7): cos=0, pi/2
+  facet angle (5,8): cos=0, pi/2
+  facet angle (5,9): cos=0, pi/2
+  facet angle (5,10): cos=0, pi/2
+  facet angle (5,12): cos=1/2*s, pi/4
+  facet angle (5,13): cos=0, pi/2
+  facet angle (5,14): cos=0, pi/2
+  facet angle (6,7): cos=1/2, pi/3
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,9): cos=0, pi/2
+  facet angle (6,10): cos=0, pi/2
+  facet angle (6,12): cos=0, pi/2
+  facet angle (6,13): cos=0, pi/2
+  facet angle (6,14): cos=0, pi/2
+  facet angle (7,8): cos=1/2, pi/3
+  facet angle (7,9): cos=0, pi/2
+  facet angle (7,10): cos=1/2*s, pi/4
+  facet angle (7,12): cos=0, pi/2
+  facet angle (7,13): cos=0, pi/2
+  facet angle (7,14): cos=0, pi/2
+  facet angle (8,9): cos=0, pi/2
+  facet angle (8,10): cos=0, pi/2
+  facet angle (8,12): cos=0, pi/2
+  facet angle (8,13): cos=0, pi/2
+  facet angle (8,14): cos=0, pi/2
+  facet angle (9,10): cos=0, pi/2
+  facet angle (9,12): cos=0, pi/2
+  facet angle (9,13): cos=0, pi/2
+  facet angle (9,14): cos=1/2*s, pi/4
+  facet angle (10,12): cos=0, pi/2
+  facet angle (10,13): cos=1, parallel
+  facet angle (10,14): cos=0, pi/2
+  facet angle (12,13): cos=0, pi/2
+  facet angle (12,14): cos=1/2*s, pi/4
+  facet angle (13,14): cos=s, no-intersection
+  angle multiset: pi/2=62, pi/3=6, pi/4=7, parallel=2, no-intersection=1
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[  2   0   0   0   0   0   0   0   0   0   0]
+ [  0   0   2   0   0   0   0   0   0   0   0]
+ [  0   2   0   0   0   0   0   0   0   0   0]
+ [  0   0   0  -4   0   2   0   0   0   0   0]
+ [  0   0   0   0  -4   0   2   0   0   0   0]
+ [  0   0   0   2   0  -4   2   0   0   0   0]
+ [  0   0   0   0   2   2  -4   2   0   0   0]
+ [  0   0   0   0   0   0   2  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   0   2  -4   2]
+ [  0   0   0   0   0   0   0   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+-- white node 12 (printed root r13), delta = [1, 1, 3, 4, -2, 2, 3, 4, 3, 2, 1, 0]
+delta^2=-2, div_T_En(delta)=1, gcd(delta.e^perp)=1
+  facet angle (1,2): cos=1/2, pi/3
+  facet angle (1,3): cos=0, pi/2
+  facet angle (1,4): cos=0, pi/2
+  facet angle (1,5): cos=0, pi/2
+  facet angle (1,6): cos=0, pi/2
+  facet angle (1,7): cos=0, pi/2
+  facet angle (1,8): cos=1/2, pi/3
+  facet angle (1,9): cos=1/2*s, pi/4
+  facet angle (1,10): cos=0, pi/2
+  facet angle (1,11): cos=0, pi/2
+  facet angle (1,13): cos=0, pi/2
+  facet angle (1,14): cos=0, pi/2
+  facet angle (2,3): cos=1/2, pi/3
+  facet angle (2,4): cos=0, pi/2
+  facet angle (2,5): cos=0, pi/2
+  facet angle (2,6): cos=0, pi/2
+  facet angle (2,7): cos=0, pi/2
+  facet angle (2,8): cos=0, pi/2
+  facet angle (2,9): cos=0, pi/2
+  facet angle (2,10): cos=0, pi/2
+  facet angle (2,11): cos=0, pi/2
+  facet angle (2,13): cos=0, pi/2
+  facet angle (2,14): cos=0, pi/2
+  facet angle (3,4): cos=1/2, pi/3
+  facet angle (3,5): cos=0, pi/2
+  facet angle (3,6): cos=0, pi/2
+  facet angle (3,7): cos=0, pi/2
+  facet angle (3,8): cos=0, pi/2
+  facet angle (3,9): cos=0, pi/2
+  facet angle (3,10): cos=0, pi/2
+  facet angle (3,11): cos=1/2*s, pi/4
+  facet angle (3,13): cos=0, pi/2
+  facet angle (3,14): cos=0, pi/2
+  facet angle (4,5): cos=1/2*s, pi/4
+  facet angle (4,6): cos=0, pi/2
+  facet angle (4,7): cos=0, pi/2
+  facet angle (4,8): cos=0, pi/2
+  facet angle (4,9): cos=0, pi/2
+  facet angle (4,10): cos=0, pi/2
+  facet angle (4,11): cos=0, pi/2
+  facet angle (4,13): cos=0, pi/2
+  facet angle (4,14): cos=0, pi/2
+  facet angle (5,6): cos=1/2*s, pi/4
+  facet angle (5,7): cos=0, pi/2
+  facet angle (5,8): cos=0, pi/2
+  facet angle (5,9): cos=0, pi/2
+  facet angle (5,10): cos=0, pi/2
+  facet angle (5,11): cos=0, pi/2
+  facet angle (5,13): cos=0, pi/2
+  facet angle (5,14): cos=1, parallel
+  facet angle (6,7): cos=1/2, pi/3
+  facet angle (6,8): cos=0, pi/2
+  facet angle (6,9): cos=0, pi/2
+  facet angle (6,10): cos=0, pi/2
+  facet angle (6,11): cos=0, pi/2
+  facet angle (6,13): cos=0, pi/2
+  facet angle (6,14): cos=0, pi/2
+  facet angle (7,8): cos=1/2, pi/3
+  facet angle (7,9): cos=0, pi/2
+  facet angle (7,10): cos=1/2*s, pi/4
+  facet angle (7,11): cos=0, pi/2
+  facet angle (7,13): cos=0, pi/2
+  facet angle (7,14): cos=0, pi/2
+  facet angle (8,9): cos=0, pi/2
+  facet angle (8,10): cos=0, pi/2
+  facet angle (8,11): cos=0, pi/2
+  facet angle (8,13): cos=0, pi/2
+  facet angle (8,14): cos=0, pi/2
+  facet angle (9,10): cos=0, pi/2
+  facet angle (9,11): cos=0, pi/2
+  facet angle (9,13): cos=0, pi/2
+  facet angle (9,14): cos=1, parallel
+  facet angle (10,11): cos=0, pi/2
+  facet angle (10,13): cos=1/2*s, pi/4
+  facet angle (10,14): cos=0, pi/2
+  facet angle (11,13): cos=1/2*s, pi/4
+  facet angle (11,14): cos=0, pi/2
+  facet angle (13,14): cos=s, no-intersection
+  angle multiset: pi/2=62, pi/3=6, pi/4=7, parallel=2, no-intersection=1
+  all induced finite angles are pi/2, pi/3, or pi/4; the table also records every parallel/no-intersection pair
+  Eichler lift-independent perpendicular: explicit isometry for delta -> delta+k eta, k=-2,...,2; E^a fixes eta and is trivial on eta^perp/eta
+  perpendicular Gram matrix:
+[[ -2  -2 -16 -12 -28   0  16   0   0   0  -2]
+ [ -2  -4 -16 -12 -28   0  16   0   0   0  -2]
+ [-16 -16 -64 -46 -112   0  64   0   0   0  -8]
+ [-12 -12 -46 -36 -84   0  48   0   0   0  -6]
+ [-28 -28 -112 -84 -200   0 114   0   0   0 -14]
+ [  0   0   0   0   0  -4   0   2   0   0   0]
+ [ 16  16  64  48 114   0 -68   2   0   0   8]
+ [  0   0   0   0   0   2   2  -4   2   0   0]
+ [  0   0   0   0   0   0   0   2  -4   2   0]
+ [  0   0   0   0   0   0   0   0   2  -4   2]
+ [ -2  -2  -8  -6 -14   0   8   0   0   2  -4]]
+  rank=11 det=-2048; discriminant normal form equals T_Co:
+Finite quadratic module over Integer Ring with invariants (2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)
+Gram matrix of the quadratic form with values in Q/2Z:
+[  0 1/2   0   0   0   0   0   0   0   0   0]
+[1/2   0   0   0   0   0   0   0   0   0   0]
+[  0   0   0 1/2   0   0   0   0   0   0   0]
+[  0   0 1/2   0   0   0   0   0   0   0   0]
+[  0   0   0   0   0 1/2   0   0   0   0   0]
+[  0   0   0   0 1/2   0   0   0   0   0   0]
+[  0   0   0   0   0   0   0 1/2   0   0   0]
+[  0   0   0   0   0   0 1/2   0   0   0   0]
+[  0   0   0   0   0   0   0   0   0 1/2   0]
+[  0   0   0   0   0   0   0   0 1/2   0   0]
+[  0   0   0   0   0   0   0   0   0   0 1/2]
+
+all nine perpendicular discriminant normal forms equal T_Co: [(2, 10, 10), (3, 5, 8), (3, 9, 12), (4, 7, 10), (4, 9, 8), (5, 9, 14), (5, 10, 12), (5, 11, 11), (5, 12, 13)]
+unique match to the nine-node Coble chamber bond list: cusp 2, white figure node 10 (printed root r10)
+PYEXIT=0

@@ -2366,20 +2366,102 @@ In $\bar T = U\oplus A_3$ the projection of $\alpha_1$ along $\bar\delta = \alph
 For the second paragraph: $v = \alpha_1+2\alpha_2$ has $v^2 = -6$, its orthogonal complement in $\bar S$ is the same hyperplane as $\alpha_0^{\perp}$ because $\alpha_0 = \tfrac12v$, and $v\cdot\bar S\subseteq 6\ZZ$ since $v\cdot U = 0$, $v\cdot v = -6$ and $v\cdot(\alpha_1+2\alpha_2) = -6$; so $x\mapsto x+\tfrac13(x\cdot v)v$ is an integral reflection of $\bar S$ with mirror $v^{\perp}$. Here (H1) holds although $\alpha_0\notin\bar S$.
 :::
 
-::: {.proposition #prop:facet-angles-aegs title="The induced angles at the nodes of the AEGS cusp diagrams, and a reading that fails"}
-[@AEGS25], Figure 7, printed p. 594, prints the folded diagram for cusp $2$: ten nodes, of which eight form an outline of the folded square and two the $U$-summand, with one thick bond. Read off the figure, the bond list is
+::: {.proposition #prop:facet-angles-aegs title="The induced facet angles at every white node of the AEGS cusp diagrams"}
+Read the nodes of [@AEGS25], Figures 7--8, printed pp. 594--595, using its definition in §3.4, printed p. 591: for simple roots $\alpha_i$,
 $$
-1-2,\quad 2-3,\quad 1-4,\quad 1-5,\quad 5-6,\quad 6-7,\quad 7-8,\quad 8-9,\quad 9-10 ,
+g_{ij}=\frac{(\alpha_i,\alpha_j)}{\sqrt{\alpha_i^2\alpha_j^2}},
 $$
-all of label $3$ except $9-10$, of label $4$.
+and a single, double, thick, or dotted bond records respectively $g_{ij}=\tfrac12$, $g_{ij}=\tfrac1{\sqrt2}$, $g_{ij}=1$, or $g_{ij}>1$. The same paragraph states that white nodes are $(-2)$-roots and black nodes $(-4)$-roots. The five diagrams have respectively $12,10,12,11,14$ nodes; the white ones are
+$$
+\begin{array}{c|c|c}
+\text{cusp}&\text{figure node}&\text{printed root in the Sterk transcription}\\ \hline
+2&10&r_{10}\\
+3&5,9&r_8,r_{12}\\
+4&7,9&r_{10},r_8\\
+5&9,10,11,12&r_{14},r_{12},r_{11},r_{13}.
+\end{array}
+$$
+Cusp $1$ has no white node. The node order at each cusp, the coloured bond lists, the exact integral root representatives, and the resulting integral wall Gram matrices are printed in `computations/reports/coble_enriques-white-root-facets-run.txt`; the coloured graph match to Figures 7--8 is checked entry by entry in `computations/reports/coble_enriques-white-root-facets.py`.
 
-Applying the mirror-case angle formula to that list gives, at each node, the induced angles of its facet: at the node $1$, whose three neighbours are pairwise non-adjacent, all three induced angles are $\arccos\tfrac13 = 70.53^\circ$; at the nodes $2,5,6,7,8$ the single induced angle is $\arccos\tfrac13$; at the node $9$ it is $\arccos\tfrac1{\sqrt3} = 54.74^\circ$; at the nodes $3,4,10$ the facet has one wall and no angle.
-
-Those values cannot all be right. A facet of a chamber in hyperbolic space is a hyperbolic polyhedron, so its angle sum at any vertex is less than $\pi$; three pairwise meeting walls at $\arccos\tfrac13$ each would sum to $211.6^\circ > \pi$, which no hyperbolic triangle realises. So **this reading of the figure is wrong somewhere**, most likely in the bond labels: Figure 7 prints no numeric labels, only thick and thin strokes, and at the plate resolution the thick stretch of the diagonal cannot be separated from the thin one with confidence. What the computation does establish is the shape of the check: once the bond list is read correctly, the formula gives every induced angle directly, and the facet at a node is Coxeter exactly when they are all submultiples of $\pi$.
+Let $\delta$ be a white node and let $i,j$ range over **every** pair of distinct walls other than $\delta^\perp$, including walls orthogonal to $\delta$. Put $\theta_{ij}=\arccos g_{ij}$ and define $\phi_{ij}$ by
+$$
+\cos\phi_{ij}
+ =\frac{g_{ij}+g_{\delta i}g_{\delta j}}
+ {\sqrt{(1-g_{\delta i}^2)(1-g_{\delta j}^2)}}.
+$$
+The value $1$ denotes a parallel pair and a value $>1$ a pair that does not meet. The complete tables of these values have the following multisets.
+$$
+\begin{array}{c|c|c|r|r|r|r|r}
+\text{cusp}&\delta&\text{remaining walls}&\pi/2&\pi/3&\pi/4&
+ \text{parallel}&\text{no intersection}\\ \hline
+2&10& 9&28&7&1&0&0\\
+3& 5&11&44&6&3&1&1\\
+3& 9&11&44&6&3&1&1\\
+4& 7&10&36&7&2&0&0\\
+4& 9&10&36&7&2&0&0\\
+5& 9&13&62&6&7&2&1\\
+5&10&13&62&6&7&2&1\\
+5&11&13&62&6&7&2&1\\
+5&12&13&62&6&7&2&1
+\end{array}
+$$
+Thus every intersecting pair of induced walls has angle $\pi/2$, $\pi/3$, or $\pi/4$. Exactly one of the nine facets is the nine-wall chamber of @thm:coble-cusp-chamber: the facet at node $10$ of cusp $2$. Its bonds are
+$$
+1-2,\quad 2-3,\quad 1-4,\quad 1-5,\quad 5-6,\quad 6-7,\quad 7-8,\quad 8-9,
+$$
+with $8-9$ double and all others single.
 :::
 
-::: {.warning #warn:coble-node-claim title="A claim of this volume that the figures contradict"}
-[cusp-diagrams-by-moduli-space](#sec-cusp-diagrams-by-moduli-space) states that $G_{(10,8,0)_1}$ is obtained from $G_{(9,9,1)_1}$ by inserting one node, and hence that the Coble nine-node chamber is a facet of the Enriques cusp-$2$ chamber. The computation above makes that claim doubtful: the facets of the Enriques chamber at nodes with two or more walls have induced angles $\arccos\frac13$ and $\arccos\frac1{\sqrt3}$, which are not submultiples of $\pi$, so those facets are not Coxeter polyhedra and in particular not the nine-node Coxeter simplex of @thm:coble-cusp-chamber. The claim is not resolved here in either direction --- the reading failure above prevents a definitive table --- and no marking or identification is chosen on the strength of it.
+::: {.proof}
+The integral wall Gram matrices in the record are computed from the printed root representatives, and their normalized off-diagonal entries reproduce the coloured bond lists of the printed figures. This verifies the input before any facet is taken. The full pair-by-pair angle tables are in the transcript beside its code.
+
+All nine white nodes have only double incident bonds. If $i,j$ are both orthogonal to $\delta$, then $\phi_{ij}=\theta_{ij}$. If $i$ is joined to $\delta$ by a double bond and $j$ is orthogonal to $\delta$, then $\cos\phi_{ij}=\sqrt2\,g_{ij}$; hence a single, double, or thick bond $i-j$ becomes respectively double, thick, or non-intersecting. If both $i$ and $j$ are double-bonded to $\delta$, then $\cos\phi_{ij}=2g_{ij}+1$; in each printed case $i$ and $j$ are nonadjacent, so the induced bond is single. The remaining pairs are orthogonal. These substitutions give every entry of the table, including the parallel and non-intersecting pairs. In particular, none of the earlier values $\arccos(1/3)$ or $\arccos(1/\sqrt3)$ occurs at a white node, and the deleted angle-sum argument was not a valid test of the spherical link.
+
+At cusp $2$, deletion of the white node $10$ changes the bond $8-9$ from single to double and leaves the displayed nine-wall diagram. The transcript checks this bond list against @thm:coble-cusp-chamber. The other facets have $11$, $10$, or $13$ induced wall restrictions. Even if each listed parallel pair identified two restrictions, the totals would remain at least $10$, $10$, and $11$ respectively, so they cannot produce the nine-wall diagram.
+:::
+
+::: {.lemma #lem:cusp-root-lift-independence title="Lift independence of the perpendicular discriminant form at a white cusp root"}
+Let $\eta\in T_{\En}$ be primitive isotropic and let $\delta\in\eta^\perp$ satisfy $\gcd((\delta,\eta^\perp))=1$. For every $k\in\ZZ$ there is an integral isometry $u_k$ that fixes $\eta$, acts trivially on $\eta^\perp/\ZZ\eta$, and satisfies $u_k(\delta)=\delta-k\eta$. Consequently the lattices $\delta^\perp$ and $(\delta+k\eta)^\perp$ are isometric and have the same discriminant quadratic form.
+:::
+
+::: {.proof}
+Choose $a\in\eta^\perp$ with $(a,\delta)=1$. Since $T_{\En}$ is even, the Eichler transvection
+$$
+E_{\eta,a}(x)=x+(x,\eta)a-(x,a)\eta-\frac{a^2}{2}(x,\eta)\eta
+$$
+is integral. Direct expansion gives $E_{\eta,a}(\eta)=\eta$ and $E_{\eta,a}(\delta)=\delta-\eta$. Moreover, for $x\in\eta^\perp$,
+$$
+E_{\eta,a}(x)-x=-(x,a)\eta,
+$$
+so $E_{\eta,a}$ acts trivially on $\eta^\perp/\ZZ\eta$. Take $u_k=E_{\eta,a}^k$. An isometry $u$ identifies $\delta^\perp$ with $u(\delta)^\perp$, which proves the last assertion.
+:::
+
+::: {.proposition #prop:cusp-white-root-complements title="The perpendicular lattices of the nine white cusp-diagram roots"}
+For each of the nine white roots in @prop:facet-angles-aegs, and for every lift $\delta$ of that root to $\eta^\perp\subset T_{\En}$, the perpendicular $\delta^\perp$ is isometric to
+$$
+T_{\Co}=\langle2\rangle\oplus E(2)
+ =\langle2\rangle\oplus U(2)\oplus E_8(2),
+$$
+the lattice of [@DK13], (3.6), printed p. 513. Its discriminant group is $(\ZZ/2\ZZ)^{11}$, and the normal form of its discriminant quadratic form is
+$$
+\begin{pmatrix}0&1/2\\1/2&0\end{pmatrix}^{\oplus 5}
+  \oplus(1/2),
+$$
+with values in $\QQ/2\ZZ$.
+:::
+
+::: {.proof}
+The exact representatives of the nine roots satisfy $\delta^2=-2$ and $\gcd((\delta,\eta^\perp))=1$, as the transcript prints next to each candidate. By @lem:cusp-root-lift-independence it therefore suffices to compute on those representatives.
+
+For each representative the record prints a $\ZZ$-basis $B$ of $\delta^\perp$ and the Gram matrix $H_\delta=BGB^{\mathit T}$. Every $H_\delta$ has rank $11$ and determinant $-2048$. The same owner call
+`IntegralLattice(H).discriminant_group().normal_form()`
+on each $H_\delta$ and on the displayed model $T_{\Co}$ returns identical value modules, invariants, quadratic matrices, and bilinear matrices; the common output is the normal form in the statement. The nine triples (cusp, figure node, printed root) are listed at the end of the transcript, which terminates with `PYEXIT=0`; their matrices and full normal forms appear in the per-candidate sections.
+
+The perpendicular is even because $T_{\En}$ is even, and it has signature $(2,9)$ because $\delta^2<0$. Its discriminant group has order $2^{11}$, and the final $(1/2)$-summand distinguishes the $2$-elementary invariant $\delta=1$. Thus its invariants are $(11,11,1)$; the uniqueness assertion of @prop:coble-transcendental gives $\delta^\perp\cong T_{\Co}$.
+:::
+
+::: {.warning #warn:coble-node-claim title="The corrected cusp-2 facet relation"}
+The earlier assertion in [cusp-diagrams-by-moduli-space](#sec-cusp-diagrams-by-moduli-space) that $G_{(10,8,0)_1}$ is obtained from $G_{(9,9,1)_1}$ merely by inserting one node omits an essential change of type. By @prop:facet-angles-aegs the correct statement is that the facet at the unique white node $r_{10}$ of the cusp-$2$ chamber has the nine-wall Coble diagram: after deletion of $r_{10}$, the induced bond $8-9$ is **double**, not the single bond in the original cusp-$2$ diagram. None of the other eight white candidates has the nine-wall bond list. Independently, all nine have perpendicular lattice $T_{\Co}$ by @prop:cusp-white-root-complements; the discriminant comparison does not select among their facets.
 :::
 
 ::: {.remark title="The mirror case, which is the one the Coble divisor meets"}
@@ -2397,7 +2479,7 @@ whenever the two adjacent walls are not orthogonal to $\bar\delta$; if one of th
 
 *What the restriction is then, and what is owed.* The restriction of the semifan to $\bar\delta^{\perp}$ is the subdivision by the facets together with the coarsening by the irrelevant nodes; it is a generalized Coxeter semifan of a reflection chamber of $\bar S$ only under the hypothesis that all the facet's angles $\phi_{ij}$ are submultiples of $\pi$, in which case the facet is a Coxeter polyhedron by [@Vin67], §1, printed p. 430, and the tiling is the chamber tiling of the group generated by the reflections in the facet's walls. A published treatment of this mirror case, with a numbered statement and page --- Borcherds' Lorentzian-lattice papers are the natural candidates --- was not located: the two Borcherds papers read for this page do not contain it, and [@Vin67], §3 treats faces through their principal submatrices and not through the induced tiling.
 
-*Where the Coble case stops.* At the Enriques $0$-cusp over which the Coble $0$-cusp lies, $\bar\delta$ is a mirror by Definition 3.6, and the facets tile the mirror; whether all the induced angles are submultiples of $\pi$ requires the ambient chamber's Gram entries adjacent to $\bar\delta$, that is the position of the node $\bar\delta$ in the cusp diagram of [@AEGS25], Figures 7--8, together with its labelled bonds. That datum is not on these pages: the AEGS diagrams are printed as figures without a Gram matrix or bond list, and the identification of the Coble Heegner direction with a specific node is not made. The chamber of @thm:coble-cusp-chamber, whose nine bonds are those of a Coxeter simplex, shows that the induced angles are submultiples --- but it is a check on the ambient datum, not a proof of it, and the proof must run the other way.
+*The computed Coble case.* @prop:facet-angles-aegs now carries out precisely this check at every white node of Figures 7--8, with every wall that meets the mirror included. The unique facet with the nine-wall diagram of @thm:coble-cusp-chamber is the facet at cusp $2$, root $r_{10}$. @prop:cusp-white-root-complements proves independently that every white candidate has perpendicular $T_{\Co}$. The published general treatment of the mirror case remains unnamed above; neither the figure computation nor the discriminant comparison supplies it.
 :::
 
 ## Dependency graph for further work {#sec-dependency-graph}
