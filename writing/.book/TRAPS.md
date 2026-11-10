@@ -159,3 +159,15 @@ After adding a figure in another form, look at the rendered page.
 ## `coxiter` reads its graph on standard input
 
 `/usr/local/bin/coxiter` (in the Sage image at that path) takes the Coxeter graph from *standard input*: passing a file path, `-f path`, or an option such as `--help` all give `Error while reading graph: EMPTY_FILE`, even when the file is present inside the proot. The format is one header line `<vertices> <dimension>` and then one line `<i> <j> <m>` per edge, 1-indexed, `m` the Coxeter weight (`0` for infinity, `1` for a dotted edge); unlisted pairs are orthogonal. Worked inputs and full outputs: `computations/reports/coble_TEn-chambers_K1.coxiter`, `_K2.coxiter`, and the run file beside them.
+
+## A one-page render replaces the whole served site
+
+`quarto render <page> --to html` in a book project first empties `output-dir`, then writes the one page. `just docs-lint <page>` therefore leaves `writing/.book/_site`, which nginx serves as the local site, with that page alone, and its post-render copy step then fails:
+
+```
+cp: cannot create regular file '.../writing/.book/_site/category-theory/': Not a directory
+```
+
+Observed on 2026-11-10 with `just docs-lint coble/lattices-and-moduli/local-systems-of-lattices-and-monodromy.md`: `_site` held only `coble/`, `index.html`, `search.json` and `site_libs/` afterwards. A cross-reference to an anchor on a page that was not rendered in the same run (`@sec-orientation-characters`) is also reported as unresolved, although the source check passes.
+
+`just docs-deploy` rebuilds the full site. To check a page's source, run `python3 scripts/docs_check.py --source` alone; it does not touch `_site`.
