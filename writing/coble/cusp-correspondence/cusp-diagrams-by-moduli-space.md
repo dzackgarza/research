@@ -73,7 +73,7 @@ The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, correspondi
 
 By @thm:coble-cusp-chamber the maximal parabolic subdiagrams of $G_{(9,9,1)_1}$ are its nine one-node deletions, the diagram having no nontrivial automorphism; the one that is affine of type $\wt B_7$ is the facet carrying the adjacent $1$-cusp, so the $0$-cusp represented by $v_0$ is incident to that one $1$-cusp, whose boundary lattice is $(7,7,1)_0$.
 The count is read off the Coxeter diagram of $(9,9,1)_1$, so it is an $\Orth^+(T_\Co)$-statement; for $\widetilde\Orth^+(T_\Co)$ the $0$-cusp data is finer: it has $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting; proved in prose only, with sage-extensions#286 the computation owed).
-We also note the correspondence between the maximal parabolic $\tilde B_8(2)$ in $\fen$, and $\tilde B_7(2)$ in $\fco$, and furthermore that $G_{(10, 8, 0)_1}$ can be obtained from $G_{(9, 9, 1)_1}$ by inserting one new node.
+We also note the correspondence between the maximal parabolic $\tilde B_8(2)$ in $\fen$, and $\tilde B_7(2)$ in $\fco$. The further statement that $G_{(10,8,0)_1}$ is obtained from $G_{(9,9,1)_1}$ by inserting one node is **withdrawn as unproved**, and is put in doubt by @prop:facet-angles-aegs: the induced angles at the nodes of the AEGS cusp diagrams that it computes are not submultiples of $\pi$, so the Coble chamber need not be a facet of the Enriques one.
 This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_1}$ into the $\tilde B_8(2)$ subdiagram of $G_{(10, 8, 0)_1}$.
 
 ## Sterk's moduli space and the K3 cusps
