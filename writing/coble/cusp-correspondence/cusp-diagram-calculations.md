@@ -144,12 +144,45 @@ The numbers follow in $K_S^{\perp}$: $h\cdot K_S = 0$ because $h$ is a polarizat
 (3) Every irreducible $C\neq\mathfrak c$ is not contracted by $\varphi_h$, so its image is a curve and $W\cdot C = \deg(\varphi_h|_C)\,(B\cdot\varphi_h(C))$, while the class formula of (1) gives $W\cdot C = 2(h\cdot C) - \tfrac12(\mathfrak c\cdot C)$. Both expressions have the sign of the intersection of $B$ with a curve of $D$, so $W\cdot C > 0$ for all $C\neq\mathfrak c$ exactly when $B$ meets every curve of $D$ positively, that is when $B$ is ample.
 :::
 
-::: {.warning #warn:coble-stable-pair-missing title="The step that fails: ampleness of the branch curve on $D$"}
-What is not proved is the ampleness of $B\subset D$. The surface $D$ is a quartic del Pezzo with four nodes, and the covering is branched over $B$ and over the four nodes, one of which is the image of the contracted curve $\mathfrak c$; [@DK13], §8, p. 522, gives no intersection numbers on $D$ and no description of the curves of $D$ that a branch curve must meet. The statement this page needs is one of: an intersection computation of $B$ (equivalently of $W$) against the curves of a model of $S$, or a proof that no irreducible curve of $S$ other than $\mathfrak c$ is contracted by $\varphi_h$ together with $h\cdot C\ge1$ for all remaining $C$, from which $W\cdot C = 2(h\cdot C)-\tfrac12(\mathfrak c\cdot C)$ would have to be shown positive by a bound on $\mathfrak c\cdot C$.
+::: {.proposition #prop:coble-negative-curves title="The curves of negative square on an unnodal Coble surface, and $W$ on each"}
+Let $S$ be an unnodal Coble surface, so that $\Pic(S) = E\perp\ZZ K_S$ with $E = K_S^{\perp}\cong\II_{1,9}$ even unimodular, and let $C$ be an irreducible curve with $C^2<0$. Write $C = x + mK_S$ with $x\in E$ and $m = -K_S\cdot C$, so that $\mathfrak c\cdot C = 2m$ and $W\cdot C = 2\,(h\cdot x) - m$. Then:
 
-One candidate obstruction is worth recording as a candidate only: an elliptic curve $C$ with $C^2 = 0$, $h\cdot C = 1$ and $\mathfrak c\cdot C = 4$ satisfies $p_a(C) = 1$ and would give $W\cdot C = 2 - 2 = 0$, so $W$ would fail ampleness and the stable model would be the contraction of $C$. No such curve is exhibited here, and none is excluded by the sources read, so neither alternative is asserted.
+1. adjunction gives $p_a(C) = 1 + \tfrac12(C^2 - m)$, so $C^2 \ge m-2$; with $C^2<0$ this forces $m\le1$;
+2. $m\le-1$: then $W\cdot C = 2(h\cdot x) + \abs{m} \ge 1$;
+3. $m = 0$: then $C^2 = -2$ and $p_a(C) = 0$, that is $C$ is a $(-2)$-curve, and there is none;
+4. $m = 1$: then $C^2 = -1$ and $p_a(C) = 0$, that is $C$ is a $(-1)$-curve, $x^2 = 0$, and $h\cdot C = h\cdot x \ge 1$; so $W\cdot C = 2(h\cdot C)-1 \ge 1$.
 
-Without the step the marking is not derived: no split $I\sqcup J$, hence no $W_{\mathrm{irr}}$, and the three questions of this unit have no answers here. No divisor and no marking are chosen beyond the boundary $\Delta$ of @prop:coble-pair-boundary(4). The Enriques-side results do not transfer: [@AEGS25], Lemma 5.6, printed p. 611, computes $W_{\mathrm{irr}}$ finite at cusps $2$ and $4$ and infinite at $1,3,5$, and Lemma 5.7, p. 611, gives the survival criterion for a Type II ray.
+Consequently $W\cdot C>0$ for every irreducible curve of negative square.
+:::
+
+::: {.proof}
+(1) Adjunction on the smooth surface $S$ gives $2p_a(C)-2 = C^2 + K_S\cdot C = C^2 - m$, so $p_a(C) = 1 + \tfrac12(C^2-m)$, which is a non-negative integer; hence $C^2 \ge m-2$, and $C^2<0$ gives $m < 2$.
+
+(2) is the formula $W\cdot C = 2(h\cdot x) - m$ with $m\le-1$ and $h\cdot x = h\cdot C \ge 0$, the latter because $h$ is a polarization and $C$ is effective.
+
+(3) With $m = 0$ the integrality in (1) forces $C^2$ even, and $C^2<0$ with $C^2\ge-2$ leaves $C^2 = -2$, so $p_a(C) = 0$ and $C$ is a smooth rational curve of self-intersection $-2$. The surface is unnodal, so there is none ([@DK13], §8, printed p. 522).
+
+(4) With $m = 1$ the integrality forces $C^2$ odd, and $C^2<0$ with $C^2\ge-1$ leaves $C^2 = -1$, $p_a(C) = 0$. Then $x^2 = C^2 - K_S^2m^2 = -1+1 = 0$, $x\perp K_S$, and $h\cdot C = h\cdot x$. If $h\cdot x = 0$ then $x$ lies in $h^{\perp}\cap E$, which is negative definite because $E$ has signature $(1,9)$ and $h^2 = 2>0$; a vector of square $0$ in a negative definite lattice is $0$, so $x = 0$ and $C = K_S$, which is not effective since $\abs{K_S} = \varnothing$. Hence $h\cdot x\ge1$.
+:::
+
+::: {.theorem #thm:coble-pair-ksba title="The fixed curve is ample, and the Coble pair is a KSBA stable pair"}
+Let $S$ be an unnodal Coble surface, $h$ a degree-$2$ polarization, $W$ the fixed curve of the deck transformation of $\varphi_h$ and $\mathfrak c\in\abs{-2K_S}$. Then $W$ is ample, and for $0<\eps\le\tfrac12$ the pair $\bigl(S,\;\tfrac12\mathfrak c+\eps W\bigr)$ is a KSBA stable pair.
+:::
+
+::: {.proof}
+Ampleness by the Nakai--Moishezon criterion, in the two cases of the sign of $C^2$ for an irreducible curve $C$.
+
+$W^2 = 7>0$ by @prop:coble-pair-class(1).
+
+*$C^2\ge0$.* $W$ is the fixed curve of an involution, hence effective, and $W^2 = 7>0$, so $W$ lies in the interior of the positive cone of $S$; $C$, being effective, lies in its closure. Write $C = aW + C'$ with $C'\perp W$. Since the intersection form is negative definite on $W^{\perp}$ (the Hodge index theorem, $W^2>0$) one has $C'^2\le0$, so $C^2 = 7a^2 + C'^2 \ge 0$ forces $a\neq0$ whenever $C\neq0$; then $W\cdot C = 7a$, and $a>0$ because $W$ and $C$ lie in the same cone. Hence $W\cdot C>0$.
+
+*$C^2<0$.* @prop:coble-negative-curves gives $W\cdot C>0$ in every case of its list.
+
+So $W$ is ample. For the pair: $K_S+\tfrac12\mathfrak c+\eps W\equiv\eps W$ by @prop:coble-pair-boundary(4), which is ample since $W$ is; and $(S,\tfrac12\mathfrak c+\eps W)$ is slc by @prop:coble-pair-boundary(4), the coefficients $\tfrac12$ and $\eps$ lying in $[0,1]$ with $\eps+\tfrac12\le1$ at the two points of $W\cap\mathfrak c$. A pair that is slc with $K+\Delta$ ample is a KSBA stable pair.
+:::
+
+::: {.remark title="What the marking still needs"}
+With @thm:coble-pair-ksba the divisor of the Coble pair is on the page: $R_{\bar S}$ is the fixed curve $W$ of the deck transformation, with $\mathfrak c$ entering at coefficient $\tfrac12$ to make $K+\Delta$ numerically $\eps W$. What is not done here is the reading of the nine-node chamber that [@AEGS25], p. 610, performs for $\Fram$: the roots whose walls $R_{\bar S}$ meets. That is the next unit, and no marking is chosen here.
 :::
 
 ::: {.proof}
