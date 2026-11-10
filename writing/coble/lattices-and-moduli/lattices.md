@@ -182,7 +182,7 @@ For the last claim, every $\sigma\in\Orth(q_{T_\Co})$ fixes $w = [h/2]$, hence p
 :::
 
 ::: {.remark #rmk:gamma-co-counts title="The cusp counts name their group"}
-By @prop:gamma-co-images(3) the group of the Coble divisor is the whole group of the moduli space: $\Gamma_\Co = \Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$, so $\fco$ and $F^{\mathrm{un}}_\Co$ are one quotient, $\bD(T_\Co)/\Orth(T_\Co)$, which [@DK13, Prop. 3.2] identifies with the moduli space of Coble surfaces up to an open subset. In particular $\fco$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), and one $1$-cusp, by @thm:plane-transitivity-tco.
+By @prop:gamma-co-images(3) the group of the Coble divisor is the whole group of the moduli space: $\Gamma_\Co = \Gamma^{\mathrm{un}}_\Co = \Orth(T_\Co)$, so $\fco$ and $F^{\mathrm{un}}_\Co$ are one quotient, $\bD(T_\Co)/\Orth(T_\Co)$, which [@DK13, Prop. 3.2] identifies with the moduli space of Coble surfaces up to an open subset. In particular $\fco$ has one $0$-cusp, $\Orth^+(T_\Co)$ being transitive on the primitive isotropic vectors (@thm:unpolarized-cusps), computed by sage-extensions#286 in its $\Orth(T_\Co)$ row, and one $1$-cusp, by @thm:plane-transitivity-tco, certified by the same operation.
 
 That is also what the sources force: [@DK13, Prop. 3.2] gives the moduli space as a quotient by $\Orth(N)$, and the sentence after it states that the quotient of the $(-2)$-Heegner divisor by $\Orth(U\oplus E(2))$ is birational to that moduli space; by @thm:normalization that second quotient is $\bD(T_\Co)/\Gamma_\Co$, so the two agree only if $[\Orth(T_\Co) : \Gamma_\Co] = 1$, which is @prop:gamma-co-images(3).
 

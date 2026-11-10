@@ -54,7 +54,7 @@ Applying the same mirror moves, we obtain the cusp diagram for $\fco$, the modul
 Cusp diagram for $\fco = F_{(11, 11, 1)}$ where $T_\Co = \generators{2} \oplus E_{10}(2)$.
 :::
 
-The corresponding Coxeter diagrams are computed in [@AN06] and [@AEGS25], and shown in @fig-coble-coxeter-diagrams.
+The Coxeter diagram of $(9,9,1)_1$ is stated with its bond list, its $f$-vector and its one ideal vertex in @thm:coble-cusp-chamber, from the recorded run `computations/coxiter/9-9-1_1.coxiter`, and drawn in @fig-coble-coxeter-diagrams; the Enriques-side diagrams are the folded ones of [@AEGS25], Figures 7 and 8, of rank $10$.
 Only the maximal parabolic subdiagrams of $(9, 9, 1)$ are relevant when determining 1-cusps, and these are shown in @fig-coble-cusp-9-9-1-parabolics.
 
 ::: {#fig-coble-coxeter-diagrams .figure}
@@ -71,7 +71,7 @@ The Coxeter diagram $G_{(9,9,1)_1} = G_{\generators{2} \oplus E_8(2)}$.
 The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, corresponding to single one-cusp $(7, 7, 1)_0$ in $\fco$.
 :::
 
-We note that $G_{(9, 9, 1)_1}$ has precisely one maximal parabolic subdiagram of the form $\tilde B_7(2)$, verifying that the $0$-cusp represented by $v_0$ is incident to exactly one orbit of adjacent $1$-cusps.
+By @thm:coble-cusp-chamber the maximal parabolic subdiagrams of $G_{(9,9,1)_1}$ are its nine one-node deletions, the diagram having no nontrivial automorphism; the one that is affine of type $\wt B_7$ is the facet carrying the adjacent $1$-cusp, so the $0$-cusp represented by $v_0$ is incident to that one $1$-cusp, whose boundary lattice is $(7,7,1)_0$.
 The count is read off the Coxeter diagram of $(9,9,1)_1$, so it is an $\Orth^+(T_\Co)$-statement; for $\widetilde\Orth^+(T_\Co)$ the $0$-cusp data is finer: it has $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting; proved in prose only, with sage-extensions#286 the computation owed).
 We also note the correspondence between the maximal parabolic $\tilde B_8(2)$ in $\fen$, and $\tilde B_7(2)$ in $\fco$, and furthermore that $G_{(10, 8, 0)_1}$ can be obtained from $G_{(9, 9, 1)_1}$ by inserting one new node.
 This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_1}$ into the $\tilde B_8(2)$ subdiagram of $G_{(10, 8, 0)_1}$.
