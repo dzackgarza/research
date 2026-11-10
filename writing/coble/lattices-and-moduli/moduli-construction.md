@@ -1,9 +1,5 @@
 # Constructions of the moduli space {#sec-moduli-construction}
 
-::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
-The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
-:::
-
 
 We summarize the relevant moduli spaces:
 
@@ -12,7 +8,7 @@ $$
 \fen &= \bD(\ten)/\Orth^+(\ten)^* &
 \fentwo &= \bD(\ten)/\gent \\
 F^K_{\En} &= \bD(\ten)/\Gamma^K_{\En} \\
-\fco &= \bD(T_\Co) / \Orth^+(T_\Co)^* &
+\fco &= \bD(T_\Co) / \Gamma_\Co &
 F_{\Co, 2} &= \bD(T_\Co)/\Gamma_{\Co, 2}
 \end{aligned}
 $$
@@ -23,7 +19,8 @@ $$
 \begin{aligned}
 \gent &= \Orth(\ten) \intersect \Orth(\tdp) \iscontainedin \Orth(\lkt) \\
 \Gamma^K_{\En} &= \Orth(\ten), \qquad \Orth^+(\ten)^* = \Orth^+(\ten)\intersect\discriminantkernel{\ten} \\
-\Gamma_{\Co, 2} &= \mathrm{Stab}_{\Orth(\ten)}(T_\Co) \iscontainedin \Orth(\ten) \\
+\Gamma_\Co &= \text{the image of } \Stab_{\Orth(\ten)}(\delta) \text{ in } \Orth(\delta^{\perp}), \quad \delta^2 = -2,\ \delta^{\perp T_\En} = T_\Co \\
+\Gamma_{\Co, 2} &= \text{the same image for } \gent \text{ in place of } \Orth(\ten) \\
 F_{\Nod} &= \bD(T_\Nod)/\Orth^+(T_\Nod)^*
 \end{aligned}
 $$
@@ -35,8 +32,8 @@ The *polarized* quotient is $\fentwo = \bD(\ten)/\gent$ with $\gent = \Gamma^K_{
 Because $\Orth^+(\ten)^*\subseteq\Orth^+(\ten)\subseteq\Gamma^K_{\En}$, the stable orbits are the finest and the $\Gamma^K_{\En}$-orbits the coarsest, so a cusp count made for one of these groups is not a cusp count for another: importing the two-cusp classification of $F^K_{\En}$ into the stable quotient $\fen$ would be exactly the silent change of group that the comparison below must avoid, and the passage from one to the other is not known here.
 The superscript is not decoration: $\Gamma^K_{\En} = \Orth(\ten)$ is [@AEGS25]'s $\Gamma_{\mathrm{Enr}}$, the full group and the outer term of the chain above, whereas $\Gamma_\En$ without it denotes the stable subgroup $\Orth^+(\ten)^*$ throughout this book (@sec-heegner-line, @thm:normalization, @def:gamma-co-en).
 Writing $\Gamma_\En$ for $\Orth(\ten)$ would conflate the two ends of that chain, and a quotient by one of them is the quotient by the other only for the orbit problems in which the difference happens to be invisible.
-The same three-way distinction has to be kept on the Coble side, where $\fco$ is the stable quotient and $F_{\Co,2}$ the polarized one.
-The relation there between the stable Coble group $\Gamma_\Co = \Orth^+(T_\Co)^*$ and the two groups obtained from the Enriques and the Coble markings is @sec-gamma-co-comparison: each marked group contains the stable one as the kernel of its action on $A_{T_\Co}$, hence with finite index, and is determined by $\Gamma_\Co$ together with an explicit subgroup of the finite group $\Orth(A_{T_\Co}, q_{T_\Co})$.
+The same distinction has to be kept on the Coble side. $\fco = \bD(T_\Co)/\Gamma_\Co$ and $F_{\Co,2} = \bD(T_\Co)/\Gamma_{\Co,2}$ are quotients by the **images** of the stabilizers of $\delta$ (@def:gamma-co-groups, @prop:gamma-co-images), not by the stabilizers themselves; the stable subgroup $\widetilde\Orth^+(T_\Co)$ is strictly inside both, and the quotient by it, $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$, is a finite cover of each. Which of the three a cusp count is for is named with the count, and the counts for $\Gamma_\Co$ and $\Gamma_{\Co,2}$ are open until sage-extensions#286 computes them.
+The relation there between the stable Coble group $\widetilde\Orth^+(T_\Co)$ and the two groups obtained from the Enriques and the Coble markings is @sec-gamma-co-comparison: each marked group contains the stable one as the kernel of its action on $A_{T_\Co}$, hence with finite index, and is determined by $\widetilde\Orth^+(T_\Co)$ together with an explicit subgroup of the finite group $\Orth(A_{T_\Co}, q_{T_\Co})$.
 Whether either inclusion is strict is an open question about that finite subgroup, and it is not decided by the subgroup being nontrivial: strictness requires an element of the marked group acting nontrivially on $A_{T_\Co}$, which is an integral statement about the lattice.
 
 where $\tdp$ is described in [@AEGS25].
@@ -194,7 +191,7 @@ T_\Co \definedas S_\Co^{\perp \lkt} = (11, 11, 1)_2 \cong \generators{2} \oplus 
 $$
 
 Alternatively, this follows immediately from the mirror move $S\leadsto T$ of [@AE22 Thm. 5.10] applied to $S_\Co =(11, 11, 1)_1$.
-We obtain $\fco$ as an open subset of the period domain $D_{T_\Co}/\Orth^+(T_\Co)^*$, a normal quasiprojective variety of dimension 9, by [@DK13 Prop. 3.2] and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71].
+We obtain $\fco$ as an open subset of the period domain $D_{T_\Co}/\Gamma_\Co$, a normal quasiprojective variety of dimension 9, by [@DK13, Prop. 3.2, p. 513], which identifies the moduli space with an open subset of $D(N)/\Orth(N)$ for $N = \generators{2}\oplus E(2) = T_\Co$, and an application of the Torelli theorem for algebraic K3 surfaces from [@PS71]; the passage from the quotient by $\Orth(T_\Co)$ to the quotient by $\Gamma_\Co$ is the birationality [@DK13] states between the $(-2)$-Heegner divisor modulo $\Orth(U\oplus E(2))$ and that moduli space.
 We note that [@DK13] shows that $\fco$ is rational by relating it to a codimension one subvariety of a moduli space of certain $A_2$-singular quintics in $\PP^2$.
 
 ## The sextic moduli construction
@@ -306,15 +303,15 @@ W(L) = \theset{\pm 1}^{10},
 ,
 $$
 and the normalizer contains the permutations of the ten nodes, so the induced action on $A_P\cong(\ZZ/2)^{11}$ is through $\mfS_{10}$.
-This is a description of an arithmetic group acting on $D(T_\Co)$ obtained from the ambient degree-$2$ K3 group rather than from the Enriques side, and it is therefore independent of the description of $\Gamma_\Co$ as a stabilizer and centralizer inside $\Orth(\ten)$ recorded in the Open Problems section.
+This is a description of an arithmetic group acting on $D(T_\Co)$ obtained from the ambient degree-$2$ K3 group rather than from the Enriques side, and it is therefore independent of the description of $\widetilde\Orth^+(T_\Co)$ as a stabilizer and centralizer inside $\Orth(\ten)$ recorded in the Open Problems section.
 :::
 
 ::: {.question #qst:sextic-group-comparison title="Which quotient of $D(T_\Co)$ is $\fco$?"}
 
-$\fco$ is defined above as an open subset of $D(T_\Co)/\Orth^+(T_\Co)^*$, a quotient by the stable orthogonal group, whereas $\mcm_{10A_1}$ is a quotient by $\Gamma_{10A_1}$, which contains $\Orth^+(T_\Co)^*$ and may be strictly larger.
+$\fco$ is defined above as an open subset of $D(T_\Co)/\Gamma_\Co$, a quotient by the image of the stabilizer of $\delta$ (@def:gamma-co-groups), whereas $\mcm_{10A_1}$ is a quotient by $\Gamma_{10A_1}$, which contains $\widetilde\Orth^+(T_\Co)$ and may be strictly larger.
 Identifying the two constructions of the Coble moduli space therefore requires the comparison
 $$
-\Orth^+(T_\Co)^* \;\iscontainedin\; \Gamma_{10A_1} \;\iscontainedin\; \Orth(T_\Co)
+\widetilde\Orth^+(T_\Co) \;\iscontainedin\; \Gamma_\Co \;\iscontainedin\; \Gamma_{10A_1} \;\iscontainedin\; \Orth(T_\Co)
 ,
 $$
 together with the comparison of both against the polarized group $\Gamma_{\Co,2}$.

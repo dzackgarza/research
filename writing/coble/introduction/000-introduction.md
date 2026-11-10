@@ -1,9 +1,5 @@
 # Overview
 
-::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
-The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
-:::
-
 
 ::: {.remark}
 
@@ -43,8 +39,8 @@ Although KSBA compactifications admit strong modular interpretations, their boun
 A recent strategy employed in [@ABE22; @AET23; @AE22; @AEGS25] is to simultaneously leverage the advantages of both semitoric and KSBA compactifications by finding comparison morphisms between them.
 This allows the modular boundary of the KSBA compactification to be studied and classified using the combinatorics of toric geometry, lattice theory, and critically, advances in integral affine geometry and mirror symmetry.
 
-The moduli space $F_\Co$ of Coble surfaces with $n=1$ boundary components admits a Hodge-theoretic period domain description of the form $D(T_\Co)/\Gamma_\Co$ where $T_\Co$ is a fixed lattice and $\Gamma_\Co \definedas \Orth^+(T_\Co)^*$ is the stable orthogonal group preserving the period domain component (an arithmetic subgroup of finite index in $\Orth(T_\Co)$). Its Baily-Borel compactification $\overline{F_{\Co}}^{\bb}$ has at least two $0$-cusps: $\Orth^+(T_\Co)$ is transitive on primitive isotropic vectors (@thm:unpolarized-cusps), but $\Gamma_\Co$ is not, the two isotropic generators of the $U(2)$ summand lying in different orbits (@lem:stable-orthogonal-not-transitive).
-The combinatorial data of a semitoroidal compactification is therefore a $\Gamma_\Co$-invariant semifan at each $0$-cusp, and the comparison with the KSBA compactification carried out below is the one at the cusp whose associated lattice is $\latI_{1,8}(2) = (9,9,1)_1$.
+The moduli space $F_\Co$ of Coble surfaces with $n=1$ boundary components admits a Hodge-theoretic period domain description of the form $D(T_\Co)/\Gamma_\Co$, where $T_\Co$ is the lattice $N$ of [@DK13, (3.6)] and $\Gamma_\Co$ is the image in $\Orth(T_\Co)$ of the stabilizer of the $(-2)$-vector $\delta$ with $\delta^{\perp T_\En} = T_\Co$ (@def:gamma-co-groups); the group of the moduli space itself is the whole $\Orth(T_\Co)$, by [@DK13, Prop. 3.2]. The stable subgroup $\widetilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$ inside it is not transitive on the primitive isotropic vectors, the two isotropic generators of the $U(2)$ summand lying in different orbits of it (@lem:stable-orthogonal-not-transitive), while $\Orth^+(T_\Co)$ is transitive (@thm:unpolarized-cusps); so the stable quotient $D(T_\Co)/\widetilde\Orth^+(T_\Co)$ has at least two $0$-cusps, and the number of $0$-cusps of $\fco$ itself --- the number of $\Gamma_\Co$-orbits --- is open until sage-extensions#286 computes it.
+The combinatorial data of a semitoroidal compactification is therefore a $\widetilde\Orth^+(T_\Co)$-invariant semifan at each $0$-cusp, and the comparison with the KSBA compactification carried out below is the one at the cusp whose associated lattice is $\latI_{1,8}(2) = (9,9,1)_1$.
 A canonical choice one can take is the Coxeter fan, formed by a fundamental domain of the action of the lattice's Weyl group, along with its reflections; see @fig-coxeter-fan-cone.
 Perhaps more naturally, one can also search for a semifan $\mcf$ such that the resulting compactification $\overline{F_\Co}^{\mcf}$ is isomorphic to the KSBA compactification $\overline{F_\Co}$ for a suitably chosen divisor, and indeed this is what we do in this paper.
 To this end, we prove the following:

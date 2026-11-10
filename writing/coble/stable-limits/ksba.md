@@ -1,9 +1,5 @@
 # KSBA stable limits {#sec-ksba}
 
-::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
-The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
-:::
-
 
 ## How a stable limit is obtained
 
@@ -83,7 +79,7 @@ Since $T_\Co \cong \delta^{\perp \ten}$ for a $(-2)$-vector $\delta$ [@DK13], th
 
 These notes define $\Gamma_{\Co, 2}$ as the image in $\gent$ of the stabilizer of a marked Coble root $\delta$; @sec-moduli-construction defines it as $\Stab_{\Orth(\ten)}(T_\Co)$.
 The bridge $T_\Co \cong \delta^{\perp \ten}$ identifies the two only after restriction to $T_\Co$, because the ambient groups differ: the first lives in $\gent$, which is a proper subgroup of $\Orth(\ten)$, while the second is taken in the full group $\Gamma^K_\En = \Orth(\ten)$.
-The restriction of $\Stab_{\gent}(\ZZ\delta)$ to $T_\Co$ is $\Gamma_\Co^\En(\delta)$ of @def:gamma-co-en, and its relation to the stable group $\Gamma_\Co$ is @prop:gamma-co-in-heegner-group: it contains $\Gamma_\Co$ as the kernel of its action on $A_{T_\Co}$ and is larger by a finite subgroup.
+The restriction of $\Stab_{\gent}(\ZZ\delta)$ to $T_\Co$ is $\widetilde\Orth^+(T_\Co)^\En(\delta)$ of @def:gamma-co-en, and its relation to the stable group $\widetilde\Orth^+(T_\Co)$ is @prop:gamma-co-in-heegner-group: it contains $\widetilde\Orth^+(T_\Co)$ as the kernel of its action on $A_{T_\Co}$ and is larger by a finite subgroup.
 So the identification of complements settles the line-versus-vector question below and does not by itself identify the two arithmetic groups.
 
 An isometry of $\ten$ fixing $\delta$ preserves $\delta^{\perp} = T_\Co$, so $\Stab(\delta) \iscontainedin \Stab(T_\Co)$.

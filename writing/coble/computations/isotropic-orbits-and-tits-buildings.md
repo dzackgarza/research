@@ -14,10 +14,6 @@ notes: |-
 
 # Orbits of isotropic vectors and the Tits building of a cusp configuration {#sec-isotropic-orbits-and-tits-buildings}
 
-::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
-The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
-:::
-
 
 
 The enumeration of $\Orth(T)$- and $\Gamma$-orbits of primitive isotropic vectors in $T_\Co$ is left open in [open problems](#sec-open-problems), where it blocks the uniqueness of the Baily--Borel $0$-cusp.
@@ -182,7 +178,7 @@ with $\det G_1 = \det G_2 = 5$, $20$ roots of type $A_4$ in each, and both negat
 ::: {.remark title="Buildings by descent along a subgroup"}
 
 [@Daw22] also computes the building $B(G_1)$ of a subgroup $G_1\subset G_2$ from $B(G_2)$, and specializes this to split maximal lattices of signature $(2,n)$, where the building is described directly by its isotropic lines and planes.
-Descent along a subgroup is the shape the Coble problem takes: $\Gamma_\Co$ is cut out of $\Orth(\ten)$ as a stabilizer intersected with a centralizer (@sec-open-problems), so its building is a refinement of one already computed for a larger group.
+Descent along a subgroup is the shape the Coble problem takes: $\widetilde\Orth^+(T_\Co)$ is cut out of $\Orth(\ten)$ as a stabilizer intersected with a centralizer (@sec-open-problems), so its building is a refinement of one already computed for a larger group.
 The paper's stated applications are the configuration of boundary components of orthogonal modular varieties and the arithmetic of orthogonal modular forms, where a Fourier expansion consumes orbit *representatives* and a multiplication is organized by them.
 :::
 
@@ -228,7 +224,7 @@ Step 6 of the recipe in [the computational toolchain and recipe](#sec-computatio
 ::: {.remark title="The residue"}
 
 The algorithms above decide orbit equivalence for a fixed indefinite form and a fixed group.
-For $T_\Co = \generators{2}\oplus E_{10}(2)$ the remaining inputs are the group and the lift: the orbits are wanted for $\Orth(T_\Co)$, for $\discriminantkernel{T_\Co}$ and for $\Gamma_\Co$, which differ, and the reduction to $A_{T_\Co}\cong(\ZZ/2\ZZ)^{11}$ requires the surjectivity hypothesis above together with the lifting statement of @thm:sterk-orbit.
+For $T_\Co = \generators{2}\oplus E_{10}(2)$ the remaining inputs are the group and the lift: the orbits are wanted for $\Orth(T_\Co)$, for $\discriminantkernel{T_\Co}$ and for $\widetilde\Orth^+(T_\Co)$, which differ, and the reduction to $A_{T_\Co}\cong(\ZZ/2\ZZ)^{11}$ requires the surjectivity hypothesis above together with the lifting statement of @thm:sterk-orbit.
 Every primitive isotropic vector of $T_\Co$ has $\div_{T_\Co}(v) = 2$ (@lem:divisibilityAlwaysTwoTco), so the divisibility half of condition (2) of @prop:orbit-necessary-conditions separates nothing there, and the class $[v^*]\in A_{T_\Co}$ is the whole of that invariant.
 The candidate isotropic vectors of $T_\Co$ and the three-way transport of each along $T_\Co\injects \ten\injects \tdp$ are recorded in [Coble lattice isotropic candidates](#sec-coble-lattice-isotropic-candidates); running the orbit solver on them is the step that would replace the vector-by-vector table with a count.
 :::

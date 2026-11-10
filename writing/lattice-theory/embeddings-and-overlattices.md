@@ -1,9 +1,5 @@
 # Embeddings, overlattices, and gluing {#sec-embeddings-overlattices}
 
-::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
-The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
-:::
-
 
 Throughout, $S$, $T$, and $L$ denote nondegenerate integral lattices. The notation $A_L$ always denotes the bilinear discriminant form of @def:discriminant; when $L$ is even, $A_{L,q}$ denotes its quadratic discriminant refinement.
 
@@ -596,7 +592,7 @@ $p-q\equiv1\pmod8$; it is false in general --- in $\latI_{1,1}$ the vector $(1,1
 isotropic, since $1-1\equiv0\pmod8$ --- so the correct general form is that no primitive isotropic vector of
 $\latI_{p,q}$ is characteristic when $p-q\not\equiv0\pmod8$, and nothing here asserts more.
 And the transitivity proved is for the full component-preserving group of the unpolarized lattice; the
-arithmetic subgroup $\Gamma_\Co$ is strictly smaller and its orbits are finer, which is a different question.
+arithmetic subgroup $\widetilde\Orth^+(T_\Co)$ is strictly smaller and its orbits are finer, which is a different question.
 
 The same splitting *is* available for $T_\Co$, by untwisting, and the earlier claim that
 non-unimodularity obstructs it is withdrawn. Write $T_\Co = B(2)$ with $B=\latI_{2,9}$ unimodular

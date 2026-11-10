@@ -1,9 +1,5 @@
 # Cusp Diagrams
 
-::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
-The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
-:::
-
 
 ::: {.remark}
 
@@ -38,7 +34,7 @@ $$
 v_0^{\perp T_{\Co}}/\generators{v_0} \cong (9,9,1)_1 \cong \generators{2} \oplus E_{8}(2)
 $$
 
-The arithmetic group $\Gamma_\Co$ is strictly smaller — the transposition of the two isotropic generators of the $U(2)$ summand is an integral isometry of $T_\Co$ lying in $\Orth^+(T_\Co)$ and not in $\Gamma_\Co$, built and checked through the owner's own operations in `computations/reports/coble_congruence_witness.py` — so its orbit decomposition of primitive isotropic vectors is finer than this one (@lem:stable-orthogonal-not-transitive) and is known exactly: $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting; proved in prose only, with sage-extensions#286 the computation owed); the cusp diagram computed below is the one attached to $v_0$.
+The arithmetic group $\widetilde\Orth^+(T_\Co)$ is strictly smaller — the transposition of the two isotropic generators of the $U(2)$ summand is an integral isometry of $T_\Co$ lying in $\Orth^+(T_\Co)$ and not in $\widetilde\Orth^+(T_\Co)$, built and checked through the owner's own operations in `computations/reports/coble_congruence_witness.py` — so its orbit decomposition of primitive isotropic vectors is finer than this one (@lem:stable-orthogonal-not-transitive) and is known exactly: $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting; proved in prose only, with sage-extensions#286 the computation owed); the cusp diagram computed below is the one attached to $v_0$.
 This $0$-cusp $v_0$ is incident to one $\Orth^+(T_\Co)$-orbit of $1$-cusps, represented by an isotropic plane $J = \generators{v_0, v_1}$ with
 
 $$

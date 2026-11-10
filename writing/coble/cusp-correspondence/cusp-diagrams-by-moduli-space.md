@@ -1,9 +1,5 @@
 # Cusp diagrams of the Enriques, Coble and Sterk moduli spaces {#sec-cusp-diagrams-by-moduli-space}
 
-::: {.remark title="Which group $\Gamma_\Co$ is on this page"}
-The four groups of the Coble lattice are named in @def:gamma-co-groups and tabulated in [lattice and diagram conventions](#sec-lattice-and-diagram-conventions). Where this page writes $\Gamma_\Co$ it means the stable subgroup $\tilde\Orth^+(T_\Co) = \Orth^+(T_\Co)\intersect\ker\bar\rho$, and every count of $0$-cusps below names that group; the group of the Coble divisor and the group of the moduli space are the other two entries of that table.
-:::
-
 
 The mirror move algorithm of @sec-mirror-moves is applied here to the three moduli spaces the correspondence relates: the unpolarized Enriques moduli space $\fen$, the unpolarized Coble moduli space $\fco$, and Sterk's $\fentwo$.
 Each section records the cusp diagram, the Coxeter diagrams of its 0-cusps, and the maximal parabolic subdiagrams that determine the adjacent 1-cusps.
@@ -76,7 +72,7 @@ The unique maximal parabolic subdiagram $\wB_7(2)$ of $(9, 9, 1)_1$, correspondi
 :::
 
 We note that $G_{(9, 9, 1)_1}$ has precisely one maximal parabolic subdiagram of the form $\tilde B_7(2)$, verifying that the $0$-cusp represented by $v_0$ is incident to exactly one orbit of adjacent $1$-cusps.
-The count is read off the Coxeter diagram of $(9,9,1)_1$, so it is an $\Orth^+(T_\Co)$-statement; for $\Gamma_\Co$ the $0$-cusp data is finer: it has $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting; proved in prose only, with sage-extensions#286 the computation owed).
+The count is read off the Coxeter diagram of $(9,9,1)_1$, so it is an $\Orth^+(T_\Co)$-statement; for $\widetilde\Orth^+(T_\Co)$ the $0$-cusp data is finer: it has $527$ orbits, one per nonzero isotropic class of $A_{T_\Co}$ (@sec-cusp-lifting; proved in prose only, with sage-extensions#286 the computation owed).
 We also note the correspondence between the maximal parabolic $\tilde B_8(2)$ in $\fen$, and $\tilde B_7(2)$ in $\fco$, and furthermore that $G_{(10, 8, 0)_1}$ can be obtained from $G_{(9, 9, 1)_1}$ by inserting one new node.
 This correspondingly transforms the $\tilde B_7(2)$ subdiagram of $G_{(9, 9, 1)_1}$ into the $\tilde B_8(2)$ subdiagram of $G_{(10, 8, 0)_1}$.
 
