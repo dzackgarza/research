@@ -1799,21 +1799,19 @@ It does not by itself identify the normalized closure of a Heegner divisor in a 
 
 ### Why semitoroidal restriction is not formal {#sec-restriction-not-formal}
 
-To apply the subtorus lemma to the Coble Heegner locus, one must prove all of the following.
+To apply the subtorus lemma to the Coble Heegner locus, one must prove the following. Two items that stood here are now unnecessary and are deleted: the identification of the integral unipotent-center lattice, which is the lattice $\bar S = (\delta^{\perp}\cap e^{\perp})/\ZZ e$ of @thm:semifan-restriction and is computed rather than assumed; and the agreement of the local constructions along the $1$-cusps, which is @thm:semifan-restriction(4), a statement about Type II rays and their coarsening by [@AEGS25], Lemma 5.7.
 
-1. The local Heegner branch is the asserted saturated subtorus rather than a translated subtorus or a union of branches.
+1. The local Heegner branch is the asserted saturated subtorus rather than a translated subtorus or a union of branches. *Not a statement about semifans*: it concerns the normalization of the Heegner closure, and no semifan theorem settles it.
 
-2. The integral unipotent-center lattice for the Coble cusp is the expected sublattice of the Enriques cusp lattice.
+2. The arithmetic cusp stabilizer acts compatibly on the induced fan. *Not supplied by @thm:semifan-restriction*, which is about cones and not about group actions; for the Coble case this is where the identification of $\Gamma^{\Gamma}_\Co$ with a stabilizer image is used (@prop:gamma-co-images).
 
-3. The arithmetic cusp stabilizer acts compatibly on the induced fan.
+3. Normalization commutes with the prescribed semitoroidal contractions. *Not a semifan statement.*
 
-4. The induced local constructions agree along every $1$-cusp.
+4. The ambient contraction does not identify distinct normalized Coble branches. *Not a semifan statement.*
 
-5. Normalization commutes with the prescribed semitoroidal contractions.
+5. No additional coarsening occurs after passing to Coble stable pairs. *This is the marking question*, and hypothesis (H) of @thm:semifan-restriction neither implies it nor is implied by it: (H) says the restricted chamber is again a reflection chamber, whereas this item says the marking attached to the restricted chamber is the one the Coble stable pairs induce.
 
-6. The ambient contraction does not identify distinct normalized Coble branches.
-
-7. No additional coarsening occurs after passing to Coble stable pairs.
+With @thm:semifan-restriction the remaining content of this section is therefore items 1--4, none of which is about the restriction of a semifan, and item 5, which is the marking.
 
 ::: {.problem #prob:restricted-semifan title="Required theorem (semitoroidal restriction)"}
 After passage to a common toroidal refinement, the normalization of the Heegner closure is obtained by saturated intersection with the Coble cusp subspaces, and the induced semitoroidal contractions coincide with combinatorial constancy for the Coble stable-pair family.
@@ -2327,9 +2325,41 @@ The quotient dlt model can contain $R^\sharp$-trivial curves, components, and co
 The KSBA model is obtained only after the relative Proj of @sec-relative-proj.
 :::
 
-::: {.warning #warn:restrict-semifan title="restriction versus compactification of the restriction"}
-The intersection of an ambient semifan with a Heegner subspace is not automatically the semitoroidal normalization of the Heegner closure.
-The arithmetic, normalization, gluing, and no-further-coarsening statements of @sec-restriction-not-formal are indispensable.
+::: {.theorem #thm:semifan-restriction title="Restriction of a generalized Coxeter semifan to a $(-2)$-Heegner sublattice"}
+Let $T$ be an even lattice, $e\in T$ a primitive isotropic vector, $\bar T = e^{\perp}/\ZZ e$, and $\delta\in T$ a primitive vector with $\delta^2 = -2$ and $\delta\cdot e = 0$; put $\bar S \definedas (\delta^{\perp}\cap e^{\perp})/\ZZ e = \bar\delta^{\perp\bar T}$, a primitive sublattice of $\bar T$ of corank one. Let $G$ be the Coxeter diagram of a chamber $C$ of the reflection group $W(\bar T)$, cut out by its roots, and $\Fgen(I\sqcup J)$ the generalized Coxeter semifan of [@AEGS25], p. 610, for a marking $I\sqcup J$ of the nodes into relevant and irrelevant roots.
+
+**Hypothesis (H).** For every root $\alpha$ of $G$ whose class in $\bar T$ is not a multiple of $\bar\delta$, the projection $\alpha_0 \definedas \alpha - \frac{(\alpha,\bar\delta)}{(\bar\delta,\bar\delta)}\,\bar\delta$ (i) lies in $\bar S$, (ii) is a root there, that is $\alpha_0^2\in\set{-2,-4}$ with $s_{\alpha_0}$ integral on $\bar S$, and (iii) no two roots of $G$ of different status project to the same root.
+
+Then:
+
+1. the hyperplanes $\alpha_0^{\perp}\cap\bar S$ are the walls of $C_\delta \definedas C\cap(\bar S\otimes\RR)$; the wall $\bar\delta^{\perp}$ contains $\bar S$ and cuts nothing, and no other wall is lost;
+2. $C_\delta$ is a fundamental chamber for the reflection group $W_\delta$ generated by the $s_{\alpha_0}$, with diagram $G_\delta$ whose bonds are $\frac{4(\alpha_0\cdot\beta_0)^2}{\alpha_0^2\beta_0^2}$;
+3. $\Fgen(I\sqcup J)\cap(\bar S\otimes\RR)$ is the generalized Coxeter semifan of $C_\delta$ with the marking inherited from $I$ and $J$; and $W_{\mathrm{irr},\delta}\le W_\delta$ generated by the inherited irrelevant roots is a quotient of a subgroup of $W_{\mathrm{irr}}$, so $W_{\mathrm{irr}}$ finite implies $W_{\mathrm{irr},\delta}$ finite;
+4. the Type II rays of the restricted semifan are those of the ambient semifan whose maximal parabolic subdiagram survives in $\bar S$, and an ambient Type II ray is coarsened away exactly when its maximal parabolic diagram has a connected component consisting entirely of irrelevant roots, which is the criterion [@AEGS25], Lemma 5.7, printed p. 611.
+
+Without (H) the conclusion fails; see @prop:semifan-restriction-obstruction.
+:::
+
+::: {.proof}
+For $x\in\bar S$ one has $(x,\alpha) = (x,\alpha_0)$ because $x\perp\bar\delta$ and $\alpha - \alpha_0\in\QQ\bar\delta$; so $\alpha^{\perp}\cap\bar S = \alpha_0^{\perp}\cap\bar S$, which is (1) for $\alpha$ not proportional to $\bar\delta$. If $\alpha = \bar\delta$ then $\alpha^{\perp}\supset\bar S$ and the intersection is all of $\bar S$: that wall cuts nothing, and it is the only one that does, since a wall proportional to $\bar\delta$ is $\pm\bar\delta$ and the diagram has one node per root up to sign.
+
+(2) By (H)(ii) each $s_{\alpha_0}$ is an integral reflection of $\bar S$, and $C_\delta$ is the intersection of the half-spaces $\theset{x\in\bar S : x\cdot\alpha_0\ge0}$ over the roots of $G_\delta$, since the same holds for $C$ and the two cones have the same walls. A convex cone cut out by reflections whose angles are submultiples of $\pi$ --- which holds because the $\alpha_0$ are lattice roots, so $\frac{4(\alpha_0\cdot\beta_0)^2}{\alpha_0^2\beta_0^2}\in\set{0,1,2,3,4}$ --- is a $\Gamma$-cell for the group generated by the reflections in its walls: this is Vinberg's criterion ([@Vin67], Theorem 1, condition $(\beta)$, printed p. 430).
+
+(3) $\Fgen$ is the coarsening of the Coxeter fan obtained by deleting the faces $\bigcap_{j\in J'}\alpha_j^{\perp}\cap C$ spanned by irrelevant roots [@AEGS25], p. 610. Intersecting with $\bar S$, each such face goes to $\bigcap_{j\in J'}\alpha_{j,0}^{\perp}\cap C_\delta$ by (1), and by (H)(iii) the set $J$ maps injectively to a set of irrelevant roots of $G_\delta$; so the intersection is exactly the coarsened fan of $C_\delta$ for the inherited marking, which is the generalized semifan of $C_\delta$ by the same definition. The group generated by the inherited irrelevant roots is generated by the images of the irrelevant reflections, so it is a quotient of a subgroup of $W_{\mathrm{irr}}$.
+
+(4) By [@AEGS25], Definition 5.1, printed p. 609, the Type II rays of a Coxeter semican are the maximal parabolic subdiagrams, and by the coarsening rule of p. 610 a face survives unless it is spanned by irrelevant roots; Lemma 5.7, printed p. 611, states the resulting criterion in the form used above. Under (1)--(3) the same definitions apply verbatim to $C_\delta$ and its inherited marking.
+:::
+
+::: {.proposition #prop:semifan-restriction-obstruction title="The hypothesis is not automatic"}
+Let $\bar T = U\oplus A_2$ with roots $\alpha_1,\alpha_2$ of the $A_2$ summand, and $\bar\delta = \alpha_1$. Then $\bar S = \bar\delta^{\perp\bar T} = U\oplus\ZZ(2\alpha_2+\alpha_1)$ has signature $(1,2)$, and hypothesis (H) fails for both roots of $A_2$ other than $\pm\alpha_1$: the projections of $\alpha_2$ and of $\alpha_1+\alpha_2$ are both $\alpha_2+\tfrac12\alpha_1$, of square $-\tfrac32$, which is not a vector of $\bar S$. Consequently the walls of the chamber of $W(U\oplus A_2)$ restrict to hyperplanes of $\bar S$ that are not the walls of any reflection of $\bar S$, and the intersection of its Coxeter semifan with $\bar S$ is not the generalized Coxeter semifan of a chamber of $\bar S$.
+:::
+
+::: {.proof}
+The projection of a root $\alpha$ is $\alpha_0 = \alpha + \tfrac12(\alpha,\bar\delta)\bar\delta$, since $\bar\delta^2 = -2$. For $\alpha = \alpha_2$ and for $\alpha = \alpha_1+\alpha_2$ one has $(\alpha,\bar\delta) = \mp1$, both odd, so $\alpha_0 = \alpha_2 + \tfrac12\alpha_1$ in either case, and $\alpha_0^2 = -2 + 2\cdot\tfrac12\cdot1 - \tfrac12 = -\tfrac32$. $\bar S$ is generated by $U$ and by $\alpha_1+2\alpha_2$, so the $\alpha_1$-coefficient of an element of $\bar S$ equals its $(\alpha_1+2\alpha_2)$-coefficient; $\alpha_0 = \tfrac12(\alpha_1+2\alpha_2)$ has $\alpha_1$-coefficient $\tfrac12$, so $\alpha_0\notin\bar S$ and (H)(i) fails. The wall $\alpha^{\perp}\cap\bar S$ is the hyperplane annihilated by a vector of $\bar S\otimes\QQ$ that is not in $\bar S$, and no vector of $\bar S$ is perpendicular to it with negative square in $\set{-2,-4}$, so the reflection in that wall is not an integral isometry of $\bar S$: the restricted cone is cut by hyperplanes that are not walls of $W(\bar S)$.
+:::
+
+::: {.remark title="Where (H) comes from in the applications"}
+In [@AEGS25] the restriction is by an involution rather than by a Heegner vector, and the role of (H) is played by their Lemma 3.4, printed p. 593: the folded vector $\alpha_J = \alpha + I(\alpha)$ of a root lies in $T_\En$ and is a root there, so the analogue of (H)(i)--(ii) is a lemma and not an assumption; Lemma 3.8, printed p. 594, then draws the conclusion of the theorem. For the Coble Heegner sublattice no such lemma is available in the sources read, which is the gap recorded in `warn:coble-marking`.
 :::
 
 ## Dependency graph for further work {#sec-dependency-graph}

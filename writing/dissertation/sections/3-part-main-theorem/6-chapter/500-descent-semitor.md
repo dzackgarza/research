@@ -99,22 +99,21 @@ Existence of the classifying morphism is a consequence of functoriality and the 
 :::
 
 ::: {.proposition
-    title="{Restriction of Semifans and Semitoroidal Compactification}"
+    title="{Restriction of Semifans: the Cone Statement, and What It Does Not Give}"
     #prop:restriction-semifans
 }
-The embedding $B \hookrightarrow \cpt{\fttz}$ induces on $\normalize{B}$ a semitoroidal structure as follows:
+Let $B \hookrightarrow \cpt{\fttz}$ be the Heegner embedding, given at a $0$-cusp by a primitive $(-2)$-vector $\delta$ with $\delta\cdot e = 0$. Then:
 
-- The period domain $\halfpd{B}$ for $\normalize{B}$ embeds as a closed linear subdomain of the period domain for $\fttz$, determined by additional constraints imposed by symmetry under the involution,
+- the period domain $\halfpd{B}$ embeds as a closed linear subdomain of the period domain for $\fttz$, and at the cusp $e$ the relevant lattice is $\bar S = (\delta^{\perp}\cap e^{\perp})/\ZZ e = \bar\delta^{\perp\bar T}$;
 
-- The rational polyhedral cones from the ramification semifan $\semifan{F}_{\ram}$ on $\cpt{\fttz}$ restrict to produce a semifan $\semifan{F}_B$ on $\normalize{B}$,
+- **if** hypothesis (H) of @thm:semifan-restriction holds at $e$ --- every wall of the ambient chamber that meets the interior of the positive cone of $\bar S$ is $\alpha_0^{\perp}$ for a root $\alpha_0$ of $\bar S$ --- **then** the cones of $\semifan{F}_{\ram}$ restrict to the generalized Coxeter semifan of the restricted chamber with the inherited marking, that is $\semifan{F}_B$ is computed by intersecting and no further coarsening occurs;
 
-- The normalization $\normalize{B}$ is isomorphic, as a modular compactification, to the semitoroidal compactification associated to $\semifan{F}_B$.
+- the identification of $\normalize{B}$ with the semitoroidal compactification associated to that semifan is **not** a consequence of the cone statement, and is the open problem @prob:restricted-semifan.
 :::
 
 ::: {.proof}
-The restriction of the period domain reflects the imposition of involution-invariant lattice conditions cutting out Enriques double covers.
-The restriction of the polyhedral structure from $\cpt{\fttz}$ follows functorially from intersecting the hyperplane arrangements of $\semifan{F}_{\ram}$ with the subdomain $\halfpd{B}$, as the arrangement is defined by orthogonality to lattice roots/divisors that may be fixed or permuted by the involution.
-The unique semitoroidal compactification is then determined by the induced semifan structure on the normalization.
+The first clause is the restriction of the period domain to the fixed space of the involution, which is the imposition of involution-invariant lattice conditions cutting out the double covers. The second is @thm:semifan-restriction: under (H) the walls of the restricted chamber are the restricted walls (its (1)), the restricted cone is a Coxeter chamber for the projected roots (its (2)), and the coarsening by irrelevant roots passes through the intersection with no further loss (its (3)--(4)). The third clause is not proved: the cone statement is about semifans, whereas the identification of the normalization with a semitoroidal compactification also needs the saturation of the Heegner branch, the compatibility of the arithmetic action, and the coincidence of the induced contractions with the combinatorial constancy of the stable-pair family, which are items 1--4 and 5 of the list in the research report.
+Without (H) the second clause fails outright, and @prop:semifan-restriction-obstruction exhibits a lattice and a $(-2)$-vector on which it does.
 :::
 
 ::: {.construction

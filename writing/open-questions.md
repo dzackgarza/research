@@ -82,7 +82,7 @@ A row leaves this page when its owner holds a proof, a disproof, or a computatio
 | Unknown | Statement of record | Work unit |
 |:---|:---|:---|
 | **The classifying map of $\fentwo$** | @conj:enriques_involution_extension, @conj:classifying_map_finite, @conj:classifying_map_isomorphism; `sections/3-part-main-theorem/6-chapter/600-finite-coarsening.md` | [#680](https://github.com/dzackgarza/research/issues/680) |
-| **Descent of the semitoroidal data** | @conj:descent_semitoroidal_data_En2, @warn:restrict-semifan; `sections/3-part-main-theorem/6-chapter/500-descent-semitor.md` | [#681](https://github.com/dzackgarza/research/issues/681) |
+| **Descent of the semitoroidal data** | @conj:descent_semitoroidal_data_En2, @thm:semifan-restriction; `sections/3-part-main-theorem/6-chapter/500-descent-semitor.md` | [#681](https://github.com/dzackgarza/research/issues/681) |
 
 : {tbl-colwidths="[32,48,20]"}
 
