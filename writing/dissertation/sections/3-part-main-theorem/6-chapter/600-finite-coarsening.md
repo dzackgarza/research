@@ -52,9 +52,10 @@ Then $\normksbacpt{\fentwo}$ and $\semitorcpt{\fentwo}=\normalize{B}$ are both t
 A semitoroidal compactification is determined by its collection of compatible semifans [@AEGS25, §5.2, printed p. 610], so $\psi$ is an isomorphism, and $\phi=\nu\circ\psi$ is finite: $\cpt{\fentwo}$ is a closed subvariety of the projective KSBA coarse moduli space [@AEGS25, Def. 2.10, printed p. 588], so its normalization $\nu$ is finite, as in the proof of @prop:normalization-pullback-family.
 This proves the if directions of (1) and (3).
 Conversely, suppose $\phi$ is finite.
-The published proof states the reduction this supplies: to prove the semifan agreement, it remains to show that $\normalize{B}\to\ksbacpt{\fentwo}$ is a finite map, equivalently, that no moduli are lost when a stable K3 pair $(X, \eps R)$ is quotiented by $\ien$ [@AEGS25, proof of Thm. 5.9, printed p. 612].
-Under this reduction, the finiteness of $\phi$ forces the coarsening to be trivial, that is, $\semifan{G}_k=\semifan{F}_k$ for all $k$.
-This proves the only-if direction of (3), and (1) follows from it: if $\normksbacpt{\fentwo}=\semitorcpt{\fentwo}$ then $\psi$ is an isomorphism, so $\phi=\nu\circ\psi$ is finite, so $\semifan{G}_k=\semifan{F}_k$.
+Since $\phi=\nu\circ\psi$ with $\nu$ finite, $\psi$ is finite: it is proper, both of its spaces being proper -- $\normalize{B}$ by @prop:normalization-pullback-family, and $\normksbacpt{\fentwo}$ as the normalization of the KSBA compactification, which is proper by [@Kol23] -- and its fibers are finite, since for $y\in\normksbacpt{\fentwo}$ one has $\psi^{-1}(y)\subseteq\phi^{-1}(\nu(y))$, a closed subset of a fiber of the finite morphism $\phi$.
+The lift $\psi$ is birational, an isomorphism over the interior $\fentwo$ (@prop:properties-classifying), and its target is normal; a finite birational morphism onto a normal variety is an isomorphism, by Zariski's main theorem in the form of [@AET23, Lem. 3.18, arXiv:1903.09742v3, printed p. 21], whose proof concludes: "The morphism $Z\to X$ is birational, and the condition is that it is finite. By Zariski's Main Theorem $Z\to X$ is an isomorphism."
+Hence $\normalize{B}\cong\normksbacpt{\fentwo}$ over $\fentwo$; the two are then the semitoroidal compactification of $\fentwo$ for the same collection of compatible semifans -- $\semitorcpt{\fentwo}$ for the $\semifan{F}_k$ by construction, $\normksbacpt{\fentwo}$ for the $\semifan{G}_k$ by (2) -- and a semitoroidal compactification is determined by that collection [@AEGS25, §5.2, printed p. 610].
+Therefore $\semifan{G}_k=\semifan{F}_k$ for all $k$, which proves the only-if directions of (3) and of (1).
 :::
 
 #### Maximality, Moduli, and Injectivity: Scheme-Theoretic Proof
