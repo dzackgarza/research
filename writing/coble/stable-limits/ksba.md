@@ -166,10 +166,16 @@ The stable quotient determines its marked Coble root: the $\frac{1}{4}(1,1)$ sin
 The group that the determination is modulo is $\Gamma_{\Co,2} = R_{\gent}$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ (@prop:gamma-co-images, @prop:gamma-co-2-line-stabilizer): the stabilizer of the root line $\ZZ\delta$ in $\gent$.
 It is not the monodromy group $\Gamma_{\Co}$ of @def:gamma-co-groups, whose equality with the stable subgroup $\widetilde{\Orth}^+(T_{\Co})$ is @conj:gamma-co-stable.
 
-The step missing on this page is the injectivity of the restriction of the Enriques semifan $\mathcal{F}_I$ to the hyperplanes of the admissible roots: for two admissible roots $r_1, r_2$ of the boundary lattice $K_I$ that are inequivalent under $\Gamma_{\Co,2}$, the hyperplanes $r_1^{\perp}$ and $r_2^{\perp}$ must cut different faces of $\mathcal{F}_I$, so that the face of the restricted semifan determines the marked root.
-The classification of the KSBA stable pairs by the cusp and the face of the semifan is [@AEGS25, Thm. 5.9, printed p. 31], and the missing step is the passage from that face to the marked root: an isomorphism of stable pairs over the cusp $[I]$ should induce an element of $\Gamma_{\Co,2}$ carrying one marked root to the other, and conversely.
-Neither this page nor [@AEGS25] proves that passage.
-Without it the restricted semifan of @conj:restricted_ramification_semifan would be too fine for the actual KSBA boundary, and the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) would fail.
+**The counterexample.** The injectivity of the restriction of the Enriques semifan $\mathcal{F}_I$ to the hyperplanes of the admissible roots fails at the marked cusps $4$ and $5$, because some admissible roots there are irrelevant.
+At cusp $4$ the admissible roots are Sterk's $8$ and $10$ (the white nodes of `computations/reports/coble_cusp-admissibility-run.txt`), and the irrelevant roots are $9$ and $10$ (`computations/reports/sterk_irrelevant_inertia-run.txt`, from the fold transport of AEGS25 Figure 5): the admissible root $10$ is irrelevant.
+At cusp $5$ the admissible roots are $11, 12, 13, 14$, and the irrelevant roots are $8$ through $13$: the admissible roots $11, 12, 13$ are irrelevant.
+By [@AEGS25, §5.2, printed p. 611] the generalized Coxeter semifan $\mathcal{F}_I$ is the coarsening of the Coxeter fan obtained by removing the faces of the form $\bigcap_{\alpha_j}\alpha_j^{\perp}\intersect C$ for the irrelevant roots $\alpha_j$, so the mirror of an irrelevant root supports no codimension-one face of $\mathcal{F}_I$.
+Two inequivalent admissible roots at cusp $5$ -- the roots $11$ and $12$, both irrelevant -- therefore have hyperplanes that cut the same face of $\mathcal{F}_5$, namely none.
+So the face of the restricted semifan does not determine the marked root: at the cusps $4$ and $5$ the marking (the admissible root) is not recoverable from the face, because some admissible roots are irrelevant and their mirrors support no face.
+
+What survives is the half of the determination at the cusps where every admissible root is relevant: at cusp $3$ the admissible roots $8$ and $12$ are both relevant, their mirrors are distinct hyperplanes, and distinct mirrors support distinct faces of $\mathcal{F}_3$, so that the face determines the root there.
+The classification of the KSBA stable pairs by cusp and face remains [@AEGS25, Thm. 5.9, printed p. 31], and the passage from that face to the marked root is what fails at the cusps $4$ and $5$.
+The ¼(1,1) mechanism of @prop:coble-quarter-singularity still singles out the node, but the node does not determine the face of $\mathcal{F}_I$ at the cusps where the admissible root is irrelevant.
 
 :::
 
