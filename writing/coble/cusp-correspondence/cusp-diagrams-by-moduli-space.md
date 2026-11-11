@@ -122,3 +122,7 @@ The isotropic vectors that represent the cusps of @fig-sterk-cusp-diagram have t
 
 Cusp diagram for $\fttz$.
 :::
+
+::: {.remark #rmk:diagrams-use-the-mechanism title="The mechanism behind these diagrams"}
+The diagrams this page draws are the reflection data at the $0$-cusps of the three moduli spaces; the mechanism by which such data determine the boundary of the compactification, the hypotheses under which it holds, and the replacements in use where the data fail are gathered in @sec-reflection-data-and-replacements.
+:::

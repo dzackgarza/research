@@ -222,6 +222,10 @@ The first two assertions are @thm:nonreflective-r-plus-a-22 together with @cor:v
 Each lattice $M$ of the table is an even $2$-elementary hyperbolic lattice distinct from $\EnriquesInvariants$ that embeds primitively in $\lkt$ with the complement listed in @tbl-coble-lattices, so @thm:k3-automorphism-sequence applies to a K3 surface $X$ with $S_X = M$: $\Aut X$ is finite exactly when $S_X$ is two-reflective, and no lattice of the table is.
 :::
 
+::: {.remark #rmk:reflection-data-hypotheses title="The hypotheses of the mechanism"}
+Reflectivity and two-reflectivity are the hypotheses under which the reflection data determine the boundary of the compactification; the mechanism itself, every failure instance among the sibling work units with its evidence, and the replacements in use for the rows where the data fail are gathered in @sec-reflection-data-and-replacements.
+:::
+
 ## Maximal parabolic subdiagrams and cusps
 
 ::: {.notation #not:reflective-fundamental-polytope title="The fundamental polytope of $W_r$"}

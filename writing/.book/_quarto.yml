@@ -156,6 +156,7 @@ book:
         - coble/compactifications/reflective-two-elementary-lattices.md
         - coble/compactifications/toroidal-and-semitoroidal.md
         - coble/compactifications/scattone-cusp-method.md
+        - coble/compactifications/reflection-data-and-replacements.md
     - part: Degenerations
       chapters:
         - coble/degenerations/kulikov-models.md
