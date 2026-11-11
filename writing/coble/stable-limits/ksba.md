@@ -159,23 +159,35 @@ Under this restriction, a Coble wall is irrelevant precisely when every Enriques
 After normalization, the KSBA compactification of the polarized Coble locus agrees with the semitoroidal compactification induced by the restricted ramification semifan.
 :::
 
+
+::: {.proposition #prop:marking-line-no-coble-lift title="The marking-line root of a marked cusp lies in no $\Gamma_{\Co,2}$-orbit"}
+
+At each marked cusp $[I]$ among Sterk's cusps $3$, $4$ and $5$, with representative $\eta_I \in T_\Co = \delta^{\perp\ten}$ and boundary lattice $K_I = \eta_I^{\perp\ten}/\ZZ\eta_I$, the marking-line root $[\pm\delta] \in K_I$ has $\delta$-pairing $-\delta^2 = 2 \neq 0$.
+Every lift $\pm\delta + k\eta_I$ with $k \in \ZZ$ pairs with $\delta$ as $\pm\delta^2 = \mp 2 \neq 0$, so no lift lies in $T_\Co = \delta^{\perp\ten}$, and the marking-line root lies in no $\Gamma_{\Co,2}$-orbit.
+:::
+
+::: {.proof}
+At the marked cusps the representative is orthogonal to the Coble root, $\eta_I \cdot \delta = 0$ (`computations/reports/coble_cusp-admissibility-run.txt`), and every lift therefore pairs with $\delta$ as $\pm\delta^2 + k(\eta_I \cdot \delta) = \mp 2 + 0 \neq 0$.
+A vector of $T_\Co = \delta^{\perp\ten}$ pairs trivially with $\delta$, so no lift lies in $T_\Co$, and $\Gamma_{\Co,2} = R_{\gent}$ is a subgroup of $\Orth(T_\Co)$ by @prop:gamma-co-images(3): the marking-line root is outside the domain of the group.
+The white nodes certify which root is the marking line: at cusps $3$ and $4$ it is Sterk's label $8$, at cusp $5$ his label $11$, each certified ``is $\pm\delta$: True'', and the root vectors carry $U$-coordinates $(-1, 1)$, of $\delta$-pairing $2$, while the remaining admissible roots carry $U$-coordinates $(1, 1)$, of $\delta$-pairing $0$ (`computations/reports/coble_cusp-admissibility-run.txt`, `computations/reports/coble_enriques-white-root-facets-run.txt`).
+:::
+
 ::: {.conjecture #conj:no_moduli_loss}
 
-The stable quotient determines its marked Coble root: the $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity -- equivalently, the contracted anti-bicanonical $(-4)$-curve of @prop:antibicanonical-system -- recovers it, so that degenerations differing only by their marked root are not identified in the KSBA boundary.
+The stable quotient determines its marked Coble root among the $T_\Co$-roots of each marked cusp: the $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity -- equivalently, the contracted anti-bicanonical $(-4)$-curve of @prop:antibicanonical-system -- recovers it, so that degenerations at a marked cusp whose marked roots are $T_\Co$-roots, inequivalent under $\Gamma_{\Co,2}$, are not identified in the KSBA boundary.
 
 The group that the determination is modulo is $\Gamma_{\Co,2} = R_{\gent}$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ (@prop:gamma-co-images, @prop:gamma-co-2-line-stabilizer): the stabilizer of the root line $\ZZ\delta$ in $\gent$.
 It is not the monodromy group $\Gamma_{\Co}$ of @def:gamma-co-groups, whose equality with the stable subgroup $\widetilde{\Orth}^+(T_{\Co})$ is @conj:gamma-co-stable.
 
-**The counterexample.** The injectivity of the restriction of the Enriques semifan $\mathcal{F}_I$ to the hyperplanes of the admissible roots fails at the marked cusps $4$ and $5$, because some admissible roots there are irrelevant.
-At cusp $4$ the admissible roots are Sterk's $8$ and $10$ (the white nodes of `computations/reports/coble_cusp-admissibility-run.txt`), and the irrelevant roots are $9$ and $10$ (`computations/reports/sterk_irrelevant_inertia-run.txt`, from the fold transport of AEGS25 Figure 5): the admissible root $10$ is irrelevant.
-At cusp $5$ the admissible roots are $11, 12, 13, 14$, and the irrelevant roots are $8$ through $13$: the admissible roots $11, 12, 13$ are irrelevant.
-By [@AEGS25, §5.2, printed p. 611] the generalized Coxeter semifan $\mathcal{F}_I$ is the coarsening of the Coxeter fan obtained by removing the faces of the form $\bigcap_{\alpha_j}\alpha_j^{\perp}\intersect C$ for the irrelevant roots $\alpha_j$, so the mirror of an irrelevant root supports no codimension-one face of $\mathcal{F}_I$.
-Two inequivalent admissible roots at cusp $5$ -- the roots $11$ and $12$, both irrelevant -- therefore have hyperplanes that cut the same face of $\mathcal{F}_5$, namely none.
-So the face of the restricted semifan does not determine the marked root: at the cusps $4$ and $5$ the marking (the admissible root) is not recoverable from the face, because some admissible roots are irrelevant and their mirrors support no face.
+**The withdrawn counterexample of a6e3a2eaac.** The counterexample this page carried before -- the pair of admissible roots $11$ and $12$ at cusp $5$, both irrelevant, whose hyperplanes were said to cut the same face of $\mathcal{F}_5$, namely none -- is withdrawn.
+Root $11$ is the marking-line root $[-\delta]$: by @prop:marking-line-no-coble-lift it has no lift in $T_\Co$ and lies in no $\Gamma_{\Co,2}$-orbit, so the pair is not comparable under the group.
+The object the pair was claimed to share was never defined: for an irrelevant root $r$ the hyperplane $r^{\perp}$ is not a wall of $\mathcal{F}_I$, but it still meets the cone $C$, and neither the restricted fan $r^{\perp}\intersect\mathcal{F}_I$ nor the smallest cone of $\mathcal{F}_I$ that contains $r^{\perp}\intersect C$ was computed for any admissible root.
+At cusp $3$ the admissible roots are not both relevant: the label $12$ lies in the fold-transport irrelevant set $\{10, 11, 12\}$ (`computations/reports/sterk_irrelevant_inertia-run.txt`), the same relevant-versus-irrelevant split as cusp $4$, whose labels $8$ and $10$ are relevant and irrelevant.
 
-What survives is the half of the determination at the cusps where every admissible root is relevant: at cusp $3$ the admissible roots $8$ and $12$ are both relevant, their mirrors are distinct hyperplanes, and distinct mirrors support distinct faces of $\mathcal{F}_3$, so that the face determines the root there.
-The classification of the KSBA stable pairs by cusp and face remains [@AEGS25, Thm. 5.9, printed p. 31], and the passage from that face to the marked root is what fails at the cusps $4$ and $5$.
-The ¼(1,1) mechanism of @prop:coble-quarter-singularity still singles out the node, but the node does not determine the face of $\mathcal{F}_I$ at the cusps where the admissible root is irrelevant.
+**The corrected statement, and what it waits on.** The determination is stated for the $T_\Co$-roots only: the admissible roots of $K_I$ whose lifts are $(-2)$-vectors of $T_\Co$ orthogonal to $\eta_I$ -- at cusp $3$ Sterk's label $12$, at cusp $4$ his label $10$, at cusp $5$ his labels $12$, $13$ and $14$ (`computations/reports/coble_cusp-admissibility-run.txt`, `computations/reports/coble_enriques-white-root-facets-run.txt`).
+The marking-line root $[\pm\delta]$ is not among them by @prop:marking-line-no-coble-lift, and at cusp $2$ the unique admissible root is the marking line itself, so no $T_\Co$-root exists there.
+The proof is open: the injectivity of the map from $\Gamma_{\Co,2}$-orbits of these roots to the objects -- the restricted fan $r^{\perp}\intersect\mathcal{F}_I$, or the smallest cone of $\mathcal{F}_I$ that contains $r^{\perp}\intersect C$ -- waits on the orbit computation of the admissible roots, filed as sage-extensions#370 and blocked by #358, and this page carries neither the orbits nor the objects until that computation exists.
+The classification of the KSBA stable pairs by cusp and face, and the coarsening of the Coxeter fan that defines the irrelevant roots, are both those of the Nagoya Math. J. 259 (2025) text: the classification is [@AEGS25, Thm. 5.9, printed p. 611], and the coarsening is [@AEGS25, §5.2, printed p. 611].
 
 :::
 
