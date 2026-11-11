@@ -1,4 +1,10 @@
 #!/bin/sh
 set -eu
-hooks=$(git config --global --path --get core.hooksPath)
+hooks=$(git config --global --path --get core.hooksPath || true)
+if [ -z "$hooks" ]; then
+    printf '%s\n' \
+        'Commit rejected: the global git hooks are not installed: core.hooksPath is not set globally.' \
+        'Install them: in an ai-review-ci checkout, run `just install-global-git-hooks` (README, "Global Git hooks").' >&2
+    exit 1
+fi
 exec "$hooks/pre-commit" "$@"
