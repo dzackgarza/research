@@ -159,41 +159,18 @@ Under this restriction, a Coble wall is irrelevant precisely when every Enriques
 After normalization, the KSBA compactification of the polarized Coble locus agrees with the semitoroidal compactification induced by the restricted ramification semifan.
 :::
 
-::: {.theorem #thm:no_moduli_loss title="The stable quotient determines its marked Coble root"}
+::: {.conjecture #conj:no_moduli_loss}
 
-Let $\mathcal{C}\iscontainedin\fentwo$ be the Coble locus, the image of the Heegner divisor $\bD(T_\Co) = \bD(\ten)\intersect\delta^{\perp}$, and let $\overline{\mathcal{C}}$ be its closure in the semitoroidal compactification $\overline F^{\En,2}$, whose normalization is the KSBA compactification $\ksbacpt{\fentwo}$ by @thm:fen2-ksba-pair and [@AEGS25, Thm. 5.9, printed p. 31].
-Write $\Gamma_{\Co} = \Stab_{\gent}(\ZZ\delta)$ for the stabilizer of the root line, so that the normalization of $\mathcal{C}$ is $\bD(T_\Co)/\Gamma_{\Co}$ (@cor:coble-root-orbit-unique).
+The stable quotient determines its marked Coble root: the $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity -- equivalently, the contracted anti-bicanonical $(-4)$-curve of @prop:antibicanonical-system -- recovers it, so that degenerations differing only by their marked root are not identified in the KSBA boundary.
 
-1. **The marked root.** For a primitive isotropic line $I = \ZZ e$ of $\ten$ with $\delta\in I^{\perp\ten}$, i.e. for a line representing a marked $0$-cusp of @thm:coble-cusp-admissibility(2), the **marked root** of a boundary point of $\overline{\mathcal{C}}$ over the cusp $[I]$ is the image $\bar\delta = \delta\bmod I\in K_I = e^{\perp\ten}/\ZZ e$, a root of square $-2$.
-The same definition applies at a primitive totally isotropic plane $J$ with $\delta\in J^{\perp\ten}$, with $\bar\delta = \delta\bmod J\in K_J$.
+The group that the determination is modulo is $\Gamma_{\Co,2} = R_{\gent}$, the image of $\Stab_{\gent}(\delta)$ in $\Orth(\delta^{\perp})$ (@prop:gamma-co-images, @prop:gamma-co-2-line-stabilizer): the stabilizer of the root line $\ZZ\delta$ in $\gent$.
+It is not the monodromy group $\Gamma_{\Co}$ of @def:gamma-co-groups, whose equality with the stable subgroup $\widetilde{\Orth}^+(T_{\Co})$ is @conj:gamma-co-stable.
 
-2. **The determination.** The map that sends a KSBA stable pair $(\bar S, \eps R_{\bar S})$ in the closure of $\mathcal{C}$ to its marked root $\bar\delta$ is well defined: the root is determined, up to the action of the group $\gent$ of the Enriques quotient, by the isomorphism class of the pair, and two degenerations of the Coble locus whose marked roots are inequivalent under $\gent$ give nonisomorphic stable pairs.
-Equivalently, the boundary components of the normalization of $\overline{\mathcal{C}}$ over a marked cusp $[I]$ are indexed by the $\gent$-orbits of admissible roots of $K_I$, so that a degeneration of the Coble locus determines its marked root through the pair alone, and degenerations that differ only in their marked root are not identified in the KSBA boundary.
+The step missing on this page is the injectivity of the restriction of the Enriques semifan $\mathcal{F}_I$ to the hyperplanes of the admissible roots: for two admissible roots $r_1, r_2$ of the boundary lattice $K_I$ that are inequivalent under $\Gamma_{\Co,2}$, the hyperplanes $r_1^{\perp}$ and $r_2^{\perp}$ must cut different faces of $\mathcal{F}_I$, so that the face of the restricted semifan determines the marked root.
+The classification of the KSBA stable pairs by the cusp and the face of the semifan is [@AEGS25, Thm. 5.9, printed p. 31], and the missing step is the passage from that face to the marked root: an isomorphism of stable pairs over the cusp $[I]$ should induce an element of $\Gamma_{\Co,2}$ carrying one marked root to the other, and conversely.
+Neither this page nor [@AEGS25] proves that passage.
+Without it the restricted semifan of @conj:restricted_ramification_semifan would be too fine for the actual KSBA boundary, and the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) would fail.
 
-3. **The mechanism.** The $\frac{1}{4}(1,1)$ singularity of @prop:coble-quarter-singularity(2) -- equivalently, the contracted anti-bicanonical $(-4)$-curve of @prop:coble-quarter-singularity(3) and @prop:antibicanonical-system -- is the geometric carrier of the marked root: two degenerations of the Coble locus that differ only in their marked root are not identified in the KSBA boundary.
-Without this injectivity the restricted semifan of @conj:restricted_ramification_semifan would be too fine for the actual KSBA boundary, and the KSBA--semitoroidal comparison conjecture (@conj:ksba_semitoroidal_comparison) would fail.
-
-:::
-
-::: {.proof}
-
-**The two readings.** As written, the conjecture admits a stronger reading in which the determination is required at the level of cusp orbits: that the map from $\Gamma_{\Co}$-orbits of primitive isotropic lines of $T_\Co$ to $\gent$-orbits of marked lines of $\ten$ be injective, so that two cusps of the Coble locus could never contribute to the same cusp of $\fentwo$.
-That reading is false: the stable quotient $\bD(T_\Co)/\widetilde\Orth^+(T_\Co)$ has $527$ $0$-cusps (@thm:cusp-lifting) while $\fentwo$ has five, of which four carry markings (@thm:coble-cusp-admissibility(2)), so the orbit map cannot be injective.
-The comparison @conj:ksba_semitoroidal_comparison does not need it: the semitoroidal model of the polarized Coble locus is $\bD(T_\Co)/\Gamma_{\Co}$ with the restricted semifan, and what it needs is that the fibers of the map to the KSBA boundary carry no two markings of the same cusp -- the reading proved here.
-
-**The marked root is a datum of the pair.** Let $(\bar S, \eps R_{\bar S})$ be a KSBA stable pair in the closure of $\mathcal{C}$, reached along a degeneration whose period points lie in $\bD(T_\Co)$ with marked root $\delta$.
-The degeneration determines a cusp $[I]$ and a face $\sigma$ of the Enriques semifan $\mathcal{F}_I$ that lies in the hyperplane $\bar\delta^{\perp}\intersect C_I$ cut by the marked root, and $\sigma$ is the boundary datum of the stable pair in $\overline F^{\En,2}$.
-By @prop:coble-quarter-singularity(2) the stable quotient $\bar S = X^\sharp/\iota_{\Co}$ carries a $\frac{1}{4}(1,1)$ cyclic quotient singularity at the image of the $A_1$ point of $X^\sharp$, and by @prop:coble-quarter-singularity(3) the morphism $\mu\colon\wV\to\bar S$ contracts the anti-bicanonical curve $C$ with $C^2 = -4$ and $\abs{-2K_{\wV}} = \theset{C}$ to that point and is an isomorphism over its complement.
-So the $\frac{1}{4}(1,1)$ singularity, with the position of the contracted curve, is a well defined datum of the pair $(\bar S, \eps R_{\bar S})$: it is the image of exactly one $A_1$ point of the cover, namely the node fixed by $\iota_{\Co}$, because $\mu$ is an isomorphism over the complement of the point.
-
-**The singularity recovers the root.** The node of $X^\sharp$ is the unique $A_1$ point fixed by the Enriques involution, and the period condition that cuts the Heegner divisor is $\omega\perp\delta$ for the marked root $\delta\in\ten$; the discriminant divisor $\Delta=\alpha^{\perp}\subset\bD(\ten)/\Orth(\ten)$ that it cuts parametrizes quotients of nodal K3 surfaces by an involution fixing a node, and these are rational Coble surfaces with a $\frac{1}{4}(1,1)$ singularity [@AEGS25, §2.3, printed p. 587].
-Transporting $\delta$ to the boundary lattice at the cusp gives the marked root $\bar\delta = \delta\bmod I\in K_I$, and @thm:coble-cusp-admissibility(1) certifies that $\bar\delta$ is an admissible root, that the reflection in every lift of it lies in $\gent$, and that the pair $(I, \bar\delta)$ is $\gent$-equivalent to one marked by $\delta$ itself.
-Conversely, every admissible root $r$ of $K_I$ has a lift in $I^{\perp\ten}$ that lies in the $\gent$-orbit of $\delta$, so the $\gent$-orbit of the marked root is uniquely attached to the cusp by the admissibility test.
-Therefore the node -- recoverable from the pair as the unique preimage of the $\frac{1}{4}(1,1)$ point -- determines the $\gent$-orbit of the marked root, and conversely two degenerations of the Coble locus with inequivalent marked roots have different nodes, hence nonisomorphic stable pairs.
-
-**No identification.** Two degenerations of the Coble locus that differ only in their marked root have different nodes, since the marked root is the period-theoretic avatar of the node: the hyperplanes $\bar\delta_1^{\perp}$ and $\bar\delta_2^{\perp}$ cut different faces of $\mathcal{F}_I$ whenever $\bar\delta_1$ and $\bar\delta_2$ are inequivalent, for the admissibility test of @thm:coble-cusp-admissibility(1) is the certificate.
-The contracted anti-bicanonical curves then lie over different points of the respective stable quotients, so the pairs are not identified in the KSBA boundary.
-This is the injectivity that the restricted semifan needs: without it, the restriction of $\mathcal{F}_I$ to the hyperplane of an admissible root would coarsen or refine a face belonging to another root, and the KSBA--semitoroidal comparison would fail.
 :::
 
 ## Boundary cusp data
