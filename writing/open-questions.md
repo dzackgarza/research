@@ -72,7 +72,7 @@ tags:
 
 | Unknown | Stated in |
 |:---|:---|
-| **The families $F_{\Co,n}$ for $2\leq n\leq 10$** | @sec-coble-families-research-program; the constraint of @sec-reflective-two-elementary |
+| **The families $F_{\Co,n}$ for $2\leq n\leq 10$** | @sec-coble-families-research-program; the constraint of @cor:coble-table-reflectivity |
 | **Nodal Enriques surfaces** | @sec-nodal-enriques-moduli-program |
 | **Halphen surfaces of index $2$** | @sec-halphen-index-2-moduli-program |
 | **The Dolgachev--Zhang classification** | beside @qst:coble-mukai-naturality |
