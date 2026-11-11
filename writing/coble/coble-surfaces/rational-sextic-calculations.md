@@ -55,8 +55,8 @@ K_S^2 = 9e_0^2 + \Sum_{k=1}^{10} e_k^2 = 9 - 10 = -1
 $$
 An $A_1$ singularity of a plane curve is a double point, so $W$ has multiplicity $2$ at each $p_k$.
 The points $p_k$ are distinct points of $\PP^2$, so each blowup is an isomorphism near the other points, and the proper transform of $W$ still has multiplicity $2$ at each point blown up later.
-By [@Har77, V.3.6], the pullback of a curve under the blowup of a point of multiplicity $r$ on it is its proper transform plus $r$ times the exceptional curve.
-Applied ten times, with $W\sim 6h$ for the class $h$ of a line [@Har77, II.6.4], this gives $6e_0 = C + 2\Sum_{k=1}^{10} e_k$ in $\Pic(S)$, so $C \sim 6e_0 - 2\Sum_k e_k = -2K_S$.
+By [@Har10a, V.3.6], the pullback of a curve under the blowup of a point of multiplicity $r$ on it is its proper transform plus $r$ times the exceptional curve.
+Applied ten times, with $W\sim 6h$ for the class $h$ of a line [@Har10a, II.6.4], this gives $6e_0 = C + 2\Sum_{k=1}^{10} e_k$ in $\Pic(S)$, so $C \sim 6e_0 - 2\Sum_k e_k = -2K_S$.
 
 :::
 
@@ -69,13 +69,13 @@ Then $C$ is a smooth rational curve and $C^2 = -4$.
 
 ::: {.proof}
 
-By [@Har77, V Ex. 1.3(a)], $2p_a(C) - 2 = C\cdot(C + K_S)$.
+By [@Har10a, V Ex. 1.3(a)], $2p_a(C) - 2 = C\cdot(C + K_S)$.
 With $C \sim -2K_S$ this gives
 $$
 p_{a}(C)=1+\frac{1}{2}\qty{ C^{2}+C \cdot K_{S} } = 1 + \frac12\qty{4K_S^2 - 2K_S^2} = 1+K_{S}^{2}=0
 .
 $$
-An integral projective curve with $p_a = 0$ is nonsingular and isomorphic to $\PP^1$ [@Har77, IV Ex. 1.8(b)].
+An integral projective curve with $p_a = 0$ is nonsingular and isomorphic to $\PP^1$ [@Har10a, IV Ex. 1.8(b)].
 Finally $C^2 = 4K_S^2 = -4$.
 
 :::
