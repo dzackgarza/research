@@ -51,7 +51,6 @@ tags:
 | Unknown | Stated in |
 |:---|:---|
 | **KSBA versus semitoroidal** | @conj:coble-ksba-semitoroidal-morphism, @conj:ksba_semitoroidal_comparison, @conj:no_moduli_loss, @conj:restricted_ramification_semifan |
-| **Admissibility of Coble roots at a cusp** | @qst:coble_cusp_admissibility |
 | **An equivariant triangulation compatible with the marked root** | @qst:equivariant_triangulation |
 | **The position of the three Coble semifans** | @qst:semifan-poset-position |
 | **Do the integral-affine data determine the stable limit** | @conj:classification-ia-data |

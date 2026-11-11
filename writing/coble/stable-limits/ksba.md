@@ -189,10 +189,64 @@ By @thm:cusp_correspondence the vector $\eta(v_1)$ has divisibility $2$ and boun
 So the divisibility-two $0$-cusp is $(10,8,0)_1$, and $\ZZ\eta(e)$ lies in it.
 :::
 
-::: {.question #qst:coble_cusp_admissibility}
+::: {.theorem #thm:coble-cusp-admissibility title="The admissibility test for Coble roots at a cusp"}
 
-Model a $0$-cusp marked with a Coble root as an orbit of pairs $(I, r)$, with $I$ a primitive isotropic line and $r$ a Coble root compatible with $I$, and a marked $1$-cusp as an orbit of pairs $(J, r)$ with $J$ a primitive isotropic plane; $(I, r)$ is incident to $(J, r)$ when $I \subset J$.
-Admissibility requires at least that $r$ lifts to a $(-2)$ vector of $\ten$, and by @cor:coble-root-orbit-unique every such vector lies in the $\gent$-orbit of the Coble root.
-What is the precise admissibility test for Coble roots at a cusp, formulated against the folded K3-to-Enriques Coxeter data, and is it preserved along each incidence $I \subset J$?
-Sterk cusps $3$ and $5$ are the delicate cases where additional reflection data may intervene.
+Let $\delta\in\ten$ be the $(-2)$ vector of @lem:coble-heegner-vector, so that $\delta^{\perp\ten} = T_\Co$.
+For a primitive isotropic line $I = \ZZ e$ and a primitive totally isotropic plane $J$ of $\ten$, write $K_I = e^{\perp\ten}/\ZZ e$ and $K_J = J^{\perp\ten}/J$ for the boundary lattices of @prop:sterk-cusp-quotients.
+A **marked $0$-cusp** is a $\gent$-orbit of a pair $(I, r)$ with $r$ a root of $K_I$; a **marked $1$-cusp** is a $\gent$-orbit of a pair $(J, r)$ with $r$ a root of $K_J$; $(I, r)$ is **incident** to $(J, r)$ when $I \subset J$ and the two roots have a common lift $\alpha\in J^{\perp\ten}$, whose images in $K_I$ and $K_J$ are the two roots.
+Call the pair **admissible** when some lift of $r$ in $I^{\perp\ten}$, respectively $J^{\perp\ten}$, lies in the $\gent$-orbit of the Coble root $\delta$.
+
+1. **The test.** $(I, r)$, respectively $(J, r)$, is admissible if and only if $r^2 = -2$.
+   Then every lift is a $(-2)$ vector of $\ten$ orthogonal to $I$, respectively $J$, the reflection in every lift lies in $\gent$, and the pair is $\gent$-equivalent to one marked by $\delta$ itself.
+2. **The $0$-cusps.** A $0$-cusp carries a marking if and only if its boundary lattice contains a class of square $-2$.
+   The marked cusps are exactly Sterk's cusps $2,3,4,5$; his representatives $\eta_2,\dots,\eta_5$ are orthogonal to $\delta$, so $\delta$ itself is a lift at each of the four, and among his printed simple systems the admissible roots are exactly the white nodes: cusp $2$: his root $10$; cusp $3$: his roots $8$ and $12$; cusp $4$: his roots $8$ and $10$; cusp $5$: his roots $11$--$14$.
+   His roots $10$, $8$, $8$ and $11$ are $\pm\delta$.
+3. **The $1$-cusps.** A $1$-cusp carries a marking if and only if $J^{\perp\ten}$ contains a $(-2)$ vector of $\ten$, if and only if some $\gent$-translate of the plane lies in $T_\Co$.
+   The four $1$-cusps whose closures contain cusp $1$ --- those of types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$ in the type notation of [@Ste91, §4.3.15, printed p. 26] --- carry none; the remaining five, of types $\{2,4,5\}$, $\{3,4\}$, $\{3,5\}$, $\{4,5\}$ and $\{5,5\}$, each carry markings, and each has exactly $16$ classes of square $-2$ in its boundary lattice.
+4. **Preservation along incidences.** If $(I, r)$ is incident to $(J, r)$, then $(I, r)$ is admissible exactly when $(J, r)$ is.
+   An admissible pair at a $0$-cusp extends to an admissible pair at an incident $1$-cusp if and only if that $1$-cusp carries a marking, so the extension fails exactly along the four incidences from a marked cusp $x\in\{2,3,4,5\}$ to the $1$-cusp of type $\{1,x\}$.
+   In particular the test is **not** preserved along the incidence at Sterk's cusp $3$ to the $1$-cusp $\{1,3\}$, and along the incidence at cusp $5$ to the $1$-cusp $\{1,5\}$.
 :::
+
+::: {.proof}
+
+**(1).** Let $I = \ZZ e$ and let $\alpha\in e^{\perp\ten}$ be a lift of $r$.
+Every lift is $\alpha + ke$ with $k\in\ZZ$, and $(\alpha + ke)^2 = \alpha^2$ because $\alpha\perp e$ and $e^2 = 0$; so the square of every lift equals $r^2$, and the same argument applies at a plane $J$, whose radical $J$ pairs trivially with $J^{\perp\ten}$.
+If $r^2 = -2$, then $\alpha$ is a $(-2)$ vector of $\ten$, and by @cor:coble-root-orbit-unique(1) there is $g\in\gent$ with $g(\delta) = \alpha$, so some lift of $r$ lies in the $\gent$-orbit of $\delta$.
+Conversely, if a lift equals $g(\delta)$, then $r^2 = \delta^2 = -2$.
+For the reflection: a $(-2)$ vector $\alpha$ of $\ten$ has $s_\alpha(x) = x + (x, \alpha)\alpha$ for every $x$ of the dual lattice $\ten^*$, and $(x,\alpha)\in\ZZ$, so $s_\alpha$ maps every class of $A_{\ten} = \ten^*/\ten$ to itself; hence $s_\alpha$ lies in the discriminant kernel, which is contained in $\gent$ by @prop:sterk-group-identification(2).
+This holds for every lift of $r$, each of which is again a $(-2)$ vector by the first paragraph; in contrast to the $(-4)$ roots, no discriminant condition on a lift intervenes (@lem:sterk-reflection-lift-criterion(3)).
+Finally, if $g(\delta) = \alpha\perp e$, then $g^{-1}$ carries the pair $(I, r)$ to the pair $(\ZZ g^{-1}(e), \bar\delta)$, where $\bar\delta$ is the image of $\delta$ in $g^{-1}(e)^{\perp\ten}/\ZZ g^{-1}(e)$ and $g^{-1}(e)$ is an isotropic vector of $T_\Co$.
+
+**(2).** A $0$-cusp $[I]$ carries a marking exactly when some root $r$ of $K_I$ has $r^2 = -2$: such an $r$ is admissible by (1), and an admissible $r$ has that square.
+For cusp $1$, @prop:sterk-cusp-quotients gives $K_{\eta_1} \cong U(2)\oplus E_8(2)$, in which every square is a multiple of $4$: a vector $ae'+bf'$ of the $U(2)$ summand has square $4ab$, and the $E_8(2)$ summand is twice an even lattice.
+So cusp $1$ carries no marking.
+For cusps $2$--$5$ the pairing $\delta\cdot\eta_j$ decides.
+Write $\ten$ in the basis $e, f, e', f', \alpha_1,\dots,\alpha_8$ of @prop:sterk-cusp-quotients, so that $u = e$, $w = f$, $\delta = u - w$, and $\bar\alpha_i$ is the dual basis of the $E_8(2)$ summand.
+Each of $\eta_2 = e'$, $\eta_3 = e'+f'+\bar\alpha_8$ and $\eta_4 = 2e'+f'+\bar\alpha_1$ lies in the $U(2)\oplus E_8(2)$ summand, on which $\delta$ vanishes, and $\eta_5 = 2e+2f+\bar\alpha_1$ has $U$-part $2u+2w$ with $\delta\cdot(2u+2w) = -2+2 = 0$ and $E_8(2)$-part on which $\delta$ vanishes.
+So $\delta\perp\eta_j$ for $j = 2,\dots,5$, the image of $\delta$ in $K_{\eta_j}$ is a root of square $-2$, and $\delta$ itself marks the cusp; cusp $1$ is excluded by the lattice type just given, so the marked cusps are exactly $2,3,4,5$ [@Ste91, Prop. 4.2.3, printed p. 16].
+The inventory of the admissible printed roots, with the identifications of the white nodes with $\pm\delta$, is the first half of `computations/reports/coble_cusp-admissibility-run.txt`, which also verifies that the reflection in every lift $r + k\eta_j$, $-6\leq k\leq 6$, of every white node lies in $\gent$.
+
+**(3).** The first equivalence repeats the argument of (2) at a plane: a marking exists exactly when some root of $K_J$ has square $-2$, and the classes of square $-2$ of $K_J$ are exactly the images of the $(-2)$ vectors of $\ten$ in $J^{\perp\ten}$, because every lift of such a class lies in $J^{\perp\ten}$ with the same square.
+For the second equivalence, if $[J]$ carries a marking with lift $\alpha = g(\delta)$, then $\delta\perp g(J)$, so the translate $g(J)$ lies in $\delta^{\perp\ten} = T_\Co$; conversely a translate contained in $T_\Co$ is orthogonal to $\delta$, and $\delta$ is a $(-2)$ vector.
+For the exclusion of the four types containing $1$: if some translate $g(J)$ lies in $T_\Co$, then every primitive isotropic line of $g(J)$ lies in $T_\Co$ and has even divisibility in $\ten$ by @prop:coble-isotropic-even-in-ten, so no line of the plane represents cusp $1$, and the type of the plane in the notation of [@Ste91, §4.3.15, printed p. 26] avoids $1$.
+The four $1$-cusps whose closures contain cusp $1$ are exactly the four of Sterk's first kind, built from two inequivalent isotropic vectors [@Ste91, §4.3.16, printed p. 27], and they are of types $\{1,2\}$, $\{1,3\}$, $\{1,4\}$, $\{1,5\}$: cusp $1$ is incident with four $1$-cusps [@AEGS25, Lemma 5.2, printed p. 610], all of the first kind, since none of the five remaining types listed at [@Ste91, §4.3.17, printed p. 28] contains $1$, and the four first-kind types are then forced by the incidence counts $4,2,3,4,5$.
+The verdicts, the counts of $16$ classes of square $-2$, and explicit $(-2)$ vectors in $J^{\perp\ten}$ witnessing them, are the second half of `computations/reports/coble_cusp-admissibility-run.txt`: the maximal parabolic subdiagrams of Sterk's five printed diagrams, with their radicals saturated to planes, realize exactly the nine $1$-cusps of the diagram of [@Ste91, §4.4, Fig. 14, printed p. 28], with the incidences that figure shows, and the count of square-$(-2)$ classes is the same for every representative of a given type.
+At each of the five second-kind types the transcript exhibits a printed parabolic subdiagram whose radical is orthogonal to $\delta$, so that the plane of Sterk's representative and that radical lies in $T_\Co$ and is marked by $\delta$ itself.
+
+**(4).** If $(I, r)$ is incident to $(J, r)$ with common lift $\alpha$, then $(I, r)$ is admissible exactly when $r^2 = -2$ exactly when $(J, r)$ is, by (1).
+For the extension statement, let $[I]$ be a marked $0$-cusp, so that after applying an element of $\gent$ the line is spanned by an isotropic vector $e$ of $T_\Co$ and the marking is by $\delta$; let $[J]$ be incident to $[I]$.
+If some representative $J'$ of $[J]$ lies in $T_\Co$ and contains a vector of the class of $[I]$, then $I' \subset J' \subset T_\Co$ with $\delta\perp J'$, and the pair $(I', \bar\delta)$ is incident to the admissible pair $(J', \bar\delta)$.
+Such a $J'$ exists exactly when $[J]$ carries a marking, by (3), and the class of $[I]$ occurs among the lines of $J'$ because the type of $J'$ is the type of $[J]$.
+Conversely, if an admissible pair at $[I]$ is incident to a pair at $[J]$, then that pair is admissible by the first sentence, so $[J]$ carries a marking.
+The four failures are read off the cusp diagram: each marked cusp $x\in\{2,3,4,5\}$ is incident with exactly one $1$-cusp of a type containing $1$ [@Ste91, §4.4, Fig. 14, printed p. 28], that $1$-cusp is unmarked by (3), and every other incidence from $x$ ends at a marked $1$-cusp.
+:::
+
+::: {.remark #rmk:cusp-admissibility-reflection title="Why no reflection data intervenes at cusps $3$ and $5$"}
+
+The question asked whether additional reflection data intervenes at Sterk's cusps $3$ and $5$, where the folding involutions of [@AEGS25, Lemma 3.10, printed p. 594] are composed with lattice reflections.
+For the admissible roots it does not: by @thm:coble-cusp-admissibility(1) the reflection in every lift of a square-$(-2)$ root lies in $\gent$ unconditionally, the discriminant image of a $(-2)$ reflection being trivial, so the lift-dependence that @lem:sterk-reflection-lift-criterion(3) records for the printed $(-4)$ roots at cusps $2$, $3$ and $4$ cannot arise for the marking.
+What fails at cusps $3$ and $5$ --- as at cusps $2$ and $4$ --- is the cusp-level extension along the incidence to the $1$-cusp of type $\{1,3\}$, respectively $\{1,5\}$, which carries no marking at all.
+The transcript `computations/reports/coble_cusp-admissibility-run.txt` also records, for every printed parabolic subdiagram, which white nodes descend along it; that datum is a datum of Sterk's frame rather than of the $\gent$-class, since it says only that the printed root is orthogonal to the printed radical.
+:::
+
