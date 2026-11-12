@@ -4,9 +4,9 @@
 
 For objects $X,Y$ of a higher category $C$, $\operatorname{Equiv}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ is the space of equivalences of @def:equivalence-of-objects.
 The automorphism space is $\Aut_C(X)=\operatorname{Equiv}_C(X,X)$.
-The claims $X\simeq Y$, $X\cong_n Y$, and $X\cong Y$ are conditions on this space (@def:equivalence-of-objects, @def:isomorphism-of-objects).
+The spaces $\operatorname{Equiv}_{C,n}(X,Y)$ of $n$-equivalences and $\operatorname{Isom}_C(X,Y)$ of isomorphisms are those of @def:isomorphism-of-objects.
 
-For a $1$-category, the corresponding set is $\operatorname{Isom}_C(X,Y)$.
+For a $1$-category, $\operatorname{Isom}_C(X,Y)$ is a set.
 Its nonemptiness asserts $X\cong Y$; a chosen element $f\in\operatorname{Isom}_C(X,Y)$ is additional data.
 
 ## Isomorphisms as data {#sec-witnesses}

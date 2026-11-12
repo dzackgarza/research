@@ -730,19 +730,33 @@ be the union of the components that consist of equivalences.
 Write $X\simeq Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty.
 :::
 
-::: {.definition #def:isomorphism-of-objects title="Isomorphism of objects"}
+::: {.definition #def:isomorphism-of-objects title="Isomorphisms and $n$-equivalences"}
 
-Let $C$ be a higher category, let $X,Y\colon*\to C$ be objects, and let $n\geq-2$ be an integer.
-The tower of spaces of equivalences is
-$$
-\operatorname{Equiv}_{C,n}(X,Y):=\tau_{\leq n}\operatorname{Equiv}_C(X,Y)
-$$
-(@def:equivalence-of-objects).
-Write $X\cong_n Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty and the truncation map $\operatorname{Equiv}_C(X,Y)\to\operatorname{Equiv}_{C,n}(X,Y)$ is an equivalence, that is, $\operatorname{Equiv}_C(X,Y)$ is an $n$-truncated type (@def:truncated).
-The *space of isomorphisms* is $\operatorname{Isom}_C(X,Y):=\operatorname{Equiv}_{C,0}(X,Y)$.
-Write $X\cong Y$ for $X\cong_0 Y$: the equivalences form a nonempty set, which is $\operatorname{Isom}_C(X,Y)$.
+Let $C$ be a higher category and let $f\colon x\to y$ be a cell of $C$, with $x,y$ in an iterated hom-object of $C$.
+Define the $n$-equivalences by induction on $n\geq0$ [@OR23, Definitions 1.1.8 and 1.4.3]:
 
-When $C$ is a $1$-category, an object of $\mathbf{Cat}_1$ (@def:infinity-category-universe), each $\operatorname{Map}_C(X,Y)$ is a set, $\operatorname{Isom}_C(X,Y)=\operatorname{Equiv}_C(X,Y)$ is the set of morphisms with a two-sided inverse, and $X\cong Y$ is the claim that it is nonempty.
+- $f$ is an *isomorphism*, or *$0$-equivalence*, if there is a cell $g\colon y\to x$ with $g\circ f=\id_x$ and $f\circ g=\id_y$;
+- for $n\geq1$, $f$ is an *$n$-equivalence* if there are a cell $g\colon y\to x$ and $(n-1)$-equivalences
+$$
+\eta\colon\id_x\too g\circ f\ \text{in}\ [x,x]_C,
+\qquad
+\epsilon\colon f\circ g\too\id_y\ \text{in}\ [y,y]_C.
+$$
+
+For objects $X,Y\colon*\to C$, let $\operatorname{Equiv}_{C,n}(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ be the union of the components that consist of $n$-equivalences, and let $\operatorname{Isom}_C(X,Y):=\operatorname{Equiv}_{C,0}(X,Y)$ be the space of isomorphisms.
+Write $X\simeq_n Y$ when $\operatorname{Equiv}_{C,n}(X,Y)$ is nonempty, and $X\cong Y$ when $\operatorname{Isom}_C(X,Y)$ is nonempty.
+:::
+
+::: {.proposition #prop:isomorphism-is-n-equivalence title="Isomorphisms are $n$-equivalences"}
+Every isomorphism is an $n$-equivalence for every $n\geq0$.
+Hence $X\cong Y$ implies $X\simeq_n Y$ for every $n$.
+:::
+
+::: {.proof}
+Induction on $n$; the case $n=0$ is the definition.
+Let $f$ be an isomorphism with inverse $g$.
+Then $g\circ f=\id_x$ and $f\circ g=\id_y$, so $\eta:=\id_{\id_x}$ and $\epsilon:=\id_{\id_y}$ are cells of the required shape.
+An identity cell is an isomorphism with itself as inverse, so by the induction hypothesis $\eta$ and $\epsilon$ are $(n-1)$-equivalences, and $f$ is an $n$-equivalence.
 :::
 
 ::: {.definition #def:equality-of-objects title="Equality"}
