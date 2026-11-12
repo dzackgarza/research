@@ -18,7 +18,7 @@ $$
 $$
 be the internal hom of @def:internal-hom, and let
 $$
-\operatorname{Eq}(C, D)
+\operatorname{Equiv}(C, D)
 \hookrightarrow
 [C,D]_{\mathbf{Cat}_{\infty,\infty}}
 $$
@@ -26,9 +26,9 @@ be the full $\infty$-subcategory spanned by the *equivalences* $F \colon C \to D
 It retains every higher natural transformation between such functors — it is neither the core nor a truncation.
 Inside it,
 $$
-\operatorname{Way}(C, D) \hookrightarrow \operatorname{Eq}(C, D)
+\operatorname{Way}(C, D) \hookrightarrow \operatorname{Equiv}(C, D)
 $$
-is the subcategory of equivalences that count as *literal identifications* of $C$ and $D$, stable under pre- and post-composition by the internal automorphism categories $\Aut(C) = \operatorname{Eq}(C, C)$ and $\Aut(D) = \operatorname{Eq}(D, D)$.
+is the subcategory of equivalences that count as *literal identifications* of $C$ and $D$, stable under pre- and post-composition by the internal automorphism categories $\Aut(C) = \operatorname{Equiv}(C, C)$ and $\Aut(D) = \operatorname{Equiv}(D, D)$.
 
 ## The equality predicate {#sec-equality-predicate}
 
@@ -46,9 +46,10 @@ Setting
 $$
 Q^0(C, D) := * \times_{Q(C,C) \times Q(D,D)} Q(C, D)
 $$
-— the fiber over $(\id_C, \id_D)$ — the equality predicate is
+— the fiber over $(\id_C, \id_D)$ — is the space of ways $C$ is equal to $D$, written $\operatorname{Eq}(C,D):=Q^0(C,D)$.
+The equality predicate is
 $$
-\boxed{\; C = D \iff Q^0(C, D) \simeq *. \;}
+\boxed{\; C = D \iff \operatorname{Eq}(C, D) \simeq *. \;}
 $$
 Equality thus means: there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 
@@ -65,8 +66,8 @@ $$
 F\longmapsto(F(0),F(1)),
 $$
 and the fiber of $\ev_{0,1}$ over $(C,D)$ is the higher category of adjoint-equivalence data from $C$ to $D$.
-Sending such data to its underlying functor $F(u)$ gives a map from that fiber to $\operatorname{Eq}(C,D)$ whose fiber over a functor is the space of adjoint-equivalence structures on it, which by @sec-inverse-data is contractible for an equivalence and empty otherwise.
-The two presentations of $\operatorname{Eq}(C,D)$ may therefore be used interchangeably, and $\operatorname{Way}$, $Q$, and $Q^0$ may be computed from either.
+Sending such data to its underlying functor $F(u)$ gives a map from that fiber to $\operatorname{Equiv}(C,D)$ whose fiber over a functor is the space of adjoint-equivalence structures on it, which by @sec-inverse-data is contractible for an equivalence and empty otherwise.
+The two presentations of $\operatorname{Equiv}(C,D)$ may therefore be used interchangeably, and $\operatorname{Way}$, $Q$, and $Q^0$ may be computed from either.
 
 ## Properties of the predicate {#sec-equality-properties}
 
@@ -80,7 +81,7 @@ The predicate of @sec-equality-predicate inherits the following from the corresp
 
 For the slice presentation of @sec-equality-universe all three conditions hold, since equivalences over $W$ contain the identities and are closed under composition and inverses.
 
-Equality implies equivalence, since a point of $Q^0(C,D)$ lies over a point of $\operatorname{Eq}(C,D)$.
+Equality implies equivalence, since a point of $Q^0(C,D)$ lies over a point of $\operatorname{Equiv}(C,D)$.
 The converse fails: an equivalence $C\to D$ whose image under $(\bar s,\bar t)$ misses the component of $(\id_C,\id_D)$ contributes no point of $Q^0$.
 If $C$ and $D$ are both terminal objects of the same category of cones, or more generally both satisfy a universal property that determines them up to a unique isomorphism, then the comparison between them is the unique one and $Q^0(C,D)\simeq*$.
 

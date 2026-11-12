@@ -718,40 +718,37 @@ Both $\varnothing$ and $*$ are $(-1)$-truncated: $\operatorname{Map}(Y,*)$ is co
 So $\mathbf{Cat}_{-1}$ contains the two truth values $\varnothing$ and $*$, and the map $\mathbf{Cat}_{-2}\to\mathbf{Cat}_{-1}$ of the tower is the inclusion of $*$.
 :::
 
-::: {.definition #def:ordinary-category-specialization title="Ordinary categories"}
-
-An *ordinary-category structure* on a higher category $C=\int_*h_C$ is a $1$-category structure on $C$: a point
-$$
-\widetilde h_C\colon*\too\mathbf{Cat}_1
-$$
-together with a specified equivalence $\iota_1\circ\widetilde h_C\simeq h_C$.
-An ordinary category may be presented by the point $\widetilde h_C$; its underlying higher category is decoded from $\iota_1\circ\widetilde h_C$.
-:::
-
 ::: {.definition #def:equivalence-of-objects title="Equivalence of objects"}
 
 Let $C$ be a higher category and let $X,Y\colon*\to C$ be objects.
 A morphism $f\colon X\to Y$ is an *equivalence* if the cell $f\colon*\to[X,Y]_C$ is invertible in the sense of @def:equivalence-of-categories.
 Let
 $$
-\operatorname{Eq}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)
+\operatorname{Equiv}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)
 $$
 be the union of the components that consist of equivalences.
-Write $X\simeq Y$ for the claim that $\operatorname{Eq}_C(X,Y)$ is nonempty.
+Write $X\simeq Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty.
 :::
 
 ::: {.definition #def:isomorphism-of-objects title="Isomorphism of objects"}
 
 Let $C$ be a higher category, let $X,Y\colon*\to C$ be objects, and let $n\geq-2$ be an integer.
-Write $X\cong_n Y$ for the claim that $\operatorname{Eq}_C(X,Y)$ (@def:equivalence-of-objects) is nonempty and is an $n$-truncated type (@def:truncated).
-Write $X\cong Y$ for $X\cong_0 Y$: the space of equivalences is a nonempty set.
+The tower of spaces of equivalences is
+$$
+\operatorname{Equiv}_{C,n}(X,Y):=\tau_{\leq n}\operatorname{Equiv}_C(X,Y)
+$$
+(@def:equivalence-of-objects).
+Write $X\cong_n Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty and the truncation map $\operatorname{Equiv}_C(X,Y)\to\operatorname{Equiv}_{C,n}(X,Y)$ is an equivalence, that is, $\operatorname{Equiv}_C(X,Y)$ is an $n$-truncated type (@def:truncated).
+The *space of isomorphisms* is $\operatorname{Isom}_C(X,Y):=\operatorname{Equiv}_{C,0}(X,Y)$.
+Write $X\cong Y$ for $X\cong_0 Y$: the equivalences form a nonempty set, which is $\operatorname{Isom}_C(X,Y)$.
 
-When $C$ has an ordinary-category structure (@def:ordinary-category-specialization), each $\operatorname{Map}_C(X,Y)$ is a set, $\operatorname{Eq}_C(X,Y)$ is the set $\operatorname{Iso}_C(X,Y)$ of morphisms with a two-sided inverse, and $X\cong Y$ is the claim that $\operatorname{Iso}_C(X,Y)$ is nonempty.
+When $C$ is a $1$-category, an object of $\mathbf{Cat}_1$ (@def:infinity-category-universe), each $\operatorname{Map}_C(X,Y)$ is a set, $\operatorname{Isom}_C(X,Y)=\operatorname{Equiv}_C(X,Y)$ is the set of morphisms with a two-sided inverse, and $X\cong Y$ is the claim that it is nonempty.
 :::
 
 ::: {.definition #def:equality-of-objects title="Equality"}
 
 Definitional equality is judgmental equality in the chosen formal language.
-The notation $a=b$ records this claim.
+For objects $X,Y$, the space $\operatorname{Eq}(X,Y)$ of ways $X$ is equal to $Y$ is the space $Q^0(X,Y)$ of @sec-equality-predicate.
+The notation $X=Y$ records that $\operatorname{Eq}(X,Y)$ is contractible.
 No univalence principle is assumed.
 :::

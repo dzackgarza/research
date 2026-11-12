@@ -2,17 +2,17 @@
 
 ## Spaces of equivalences {#sec-equivalence-spaces}
 
-For objects $X,Y$ of a higher category $C$, $\operatorname{Eq}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ is the space of equivalences of @def:equivalence-of-objects.
-The automorphism space is $\Aut_C(X)=\operatorname{Eq}_C(X,X)$.
+For objects $X,Y$ of a higher category $C$, $\operatorname{Equiv}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ is the space of equivalences of @def:equivalence-of-objects.
+The automorphism space is $\Aut_C(X)=\operatorname{Equiv}_C(X,X)$.
 The claims $X\simeq Y$, $X\cong_n Y$, and $X\cong Y$ are conditions on this space (@def:equivalence-of-objects, @def:isomorphism-of-objects).
 
-For an ordinary category, the corresponding set is $\operatorname{Iso}_C(X,Y)$.
-Its nonemptiness asserts $X\cong Y$; a chosen element $f\in\operatorname{Iso}_C(X,Y)$ is additional data.
+For a $1$-category, the corresponding set is $\operatorname{Isom}_C(X,Y)$.
+Its nonemptiness asserts $X\cong Y$; a chosen element $f\in\operatorname{Isom}_C(X,Y)$ is additional data.
 
 ## Isomorphisms as data {#sec-witnesses}
 
-If $\operatorname{Iso}_C(X,Y)$ is nonempty, postcomposition gives a free and transitive left action of $\Aut_C(Y)$ and precomposition gives a free and transitive right action of $\Aut_C(X)$.
-These actions commute, so $\operatorname{Iso}_C(X,Y)$ is an $(\Aut_C(Y),\Aut_C(X))$-bitorsor [@nlab:torsor].
+If $\operatorname{Isom}_C(X,Y)$ is nonempty, postcomposition gives a free and transitive left action of $\Aut_C(Y)$ and precomposition gives a free and transitive right action of $\Aut_C(X)$.
+These actions commute, so $\operatorname{Isom}_C(X,Y)$ is an $(\Aut_C(Y),\Aut_C(X))$-bitorsor [@nlab:torsor].
 
 A construction that transports data from $X$ to $Y$ therefore names the isomorphism it uses unless the relevant comparison is uniquely determined.
 

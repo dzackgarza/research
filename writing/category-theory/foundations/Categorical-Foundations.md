@@ -74,7 +74,7 @@ The two projections send $\langle e,d,f\rangle$ to $e$ and to $d$ [@Mac98, §II.
 Taking $T$ or $S$ to be a functor $\mathbf 1\to\mcc$, that is an object of $\mcc$, gives the coslice $(b\downarrow S)$ and the slice $(T\downarrow a)$; taking both to be $\id_{\mcc}$ gives the arrow category $(\mcc\downarrow\mcc)$, whose objects are the morphisms of $\mcc$; taking both to be objects $a,b$ gives the discrete category $\Hom_{\mcc}(b,a)$.
 :::
 
-For an ordinary category $C$, the arrow category is also $[[1],C]$, and evaluation at the source and target gives a functor to $C\times C$.
+For a $1$-category $C$, the arrow category is also $[[1],C]$, and evaluation at the source and target gives a functor to $C\times C$.
 
 ::: {.definition #def:universal-arrow title="Universal arrows"}
 
@@ -170,7 +170,7 @@ Exactness is a property of a composable pair: $a\xrightarrow{f}b\xrightarrow{g}c
 ::: {.definition #def:endomorphism-monoid title="The endomorphism monoid and the automorphism group"}
 
 For an object $X$ of a category $\mcc$, composition makes $\Hom_{\mcc}(X,X)$ a monoid with unit $\id_X$.
-Its group of invertible elements is $\Aut_{\mcc}(X)$, the automorphism group of $X$, which is $\operatorname{Iso}_{\mcc}(X,X)$ in the notation of @sec-equivalence-spaces.
+Its group of invertible elements is $\Aut_{\mcc}(X)$, the automorphism group of $X$, which is $\operatorname{Isom}_{\mcc}(X,X)$ in the notation of @sec-equivalence-spaces.
 When $\mcc$ is preadditive, $\Hom_{\mcc}(X,X)$ is a ring under composition and the group addition, and $\Aut_{\mcc}(X)$ is its group of units.
 :::
 
