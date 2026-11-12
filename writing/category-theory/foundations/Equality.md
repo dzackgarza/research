@@ -30,7 +30,7 @@ $$
 $$
 is the subcategory of equivalences that count as *literal identifications* of $C$ and $D$, stable under pre- and post-composition by the internal automorphism categories $\Aut(C) = \operatorname{Equiv}(C, C)$ and $\Aut(D) = \operatorname{Equiv}(D, D)$.
 
-## A construction of equality {#sec-equality-predicate}
+## The equality predicate {#sec-equality-predicate}
 
 Form the homotopy double quotient
 $$
@@ -46,12 +46,16 @@ Setting
 $$
 Q^0(C, D) := * \times_{Q(C,C) \times Q(D,D)} Q(C, D)
 $$
-for the fiber over $(\id_C, \id_D)$, and write $C\sim_{Q^0}D$ for $Q^0(C,D)\simeq *$.
+— the fiber over $(\id_C, \id_D)$ — the equality predicate is
+$$
+\boxed{\; C = D \iff Q^0(C, D) \simeq *. \;}
+$$
 
 ::: {.conjecture #conj:equality-construction title="A construction of equality"}
-The proposition type $\operatorname{Eq}(C,D)$ of @def:equality-of-objects is inhabited if and only if $Q^0(C,D)\simeq *$.
+$Q^0$ constructs the proposition type of @def:equality-of-objects: $\operatorname{Eq}(C,D)$ is equivalent to the proposition $Q^0(C,D)\simeq *$.
 :::
-The relation $C\sim_{Q^0}D$ says that there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
+
+Equality says that there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 
 ## Presentation by the walking equivalence {#sec-walking-equivalence}
 
@@ -69,19 +73,19 @@ and the fiber of $\ev_{0,1}$ over $(C,D)$ is the higher category of adjoint-equi
 Sending such data to its underlying functor $F(u)$ gives a map from that fiber to $\operatorname{Equiv}(C,D)$ whose fiber over a functor is the space of adjoint-equivalence structures on it, which by @sec-inverse-data is contractible for an equivalence and empty otherwise.
 The two presentations of $\operatorname{Equiv}(C,D)$ may therefore be used interchangeably, and $\operatorname{Way}$, $Q$, and $Q^0$ may be computed from either.
 
-## Properties of the construction {#sec-equality-properties}
+## Properties of the predicate {#sec-equality-properties}
 
-The relation $\sim_{Q^0}$ of @sec-equality-predicate inherits the following from the corresponding closure conditions on $\operatorname{Way}$.
+The equality predicate of @sec-equality-predicate inherits the following from the corresponding closure conditions on $\operatorname{Way}$.
 
-- $C\sim_{Q^0}C$, given that $\operatorname{Way}(C,C)$ contains $\id_C$: the identity is a point of $Q^0(C,C)$.
+- $C=C$, given that $\operatorname{Way}(C,C)$ contains $\id_C$: the identity is a point of $Q^0(C,C)$.
 
-- $C\sim_{Q^0}D$ implies $D\sim_{Q^0}C$, given that $\operatorname{Way}$ is closed under inverses, which exchanges the two endpoint maps $\bar s$ and $\bar t$.
+- $C=D$ implies $D=C$, given that $\operatorname{Way}$ is closed under inverses, which exchanges the two endpoint maps $\bar s$ and $\bar t$.
 
-- $C\sim_{Q^0}D$ and $D\sim_{Q^0}E$ imply $C\sim_{Q^0}E$, given that $\operatorname{Way}$ is closed under composition.
+- $C=D$ and $D=E$ imply $C=E$, given that $\operatorname{Way}$ is closed under composition.
 
 For the slice presentation of @sec-equality-universe all three conditions hold, since equivalences over $W$ contain the identities and are closed under composition and inverses.
 
-$C\sim_{Q^0}D$ implies $C\simeq D$, since a point of $Q^0(C,D)$ lies over a point of $\operatorname{Equiv}(C,D)$.
+$C=D$ implies $C\simeq D$, since a point of $Q^0(C,D)$ lies over a point of $\operatorname{Equiv}(C,D)$.
 The converse fails: an equivalence $C\to D$ whose image under $(\bar s,\bar t)$ misses the component of $(\id_C,\id_D)$ contributes no point of $Q^0$.
 If $C$ and $D$ are both terminal objects of the same category of cones, or more generally both satisfy a universal property that determines them up to a unique isomorphism, then the comparison between them is the unique one and $Q^0(C,D)\simeq*$.
 
@@ -92,7 +96,7 @@ Such an equivalence lifts $\id_W$.
 
 ::: {.question #qst:canonical-equality-universe title="A canonical equality-bearing universe"}
 Is there a fully canonical choice of $W$, and hence of $\operatorname{Way}$?
-The relation $\sim_{Q^0}$ of @sec-equality-predicate depends on that subcategory.
+The equality predicate of @sec-equality-predicate depends on that subcategory.
 :::
 
 ## Truncation to propositional equality {#sec-equality-reduction}
