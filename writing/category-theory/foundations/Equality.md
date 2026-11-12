@@ -51,10 +51,6 @@ $$
 \boxed{\; C = D \iff Q^0(C, D) \simeq *. \;}
 $$
 
-::: {.conjecture #conj:equality-construction title="A construction of equality"}
-$Q^0$ constructs the proposition type of @def:equality-of-objects: $\operatorname{Eq}(C,D)$ is equivalent to the proposition $Q^0(C,D)\simeq *$.
-:::
-
 Equality says that there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 
 ## Presentation by the walking equivalence {#sec-walking-equivalence}
