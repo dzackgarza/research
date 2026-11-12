@@ -27,7 +27,7 @@ The KSBA stability of fibers is preserved under finite base change, giving the d
     #rmk:non-normality-nl-locus
 }
 Let $B \subset \mcm$ be a Noether–Lefschetz locus with compactification $\cpt{B} \subset \cpt{\mcm}$, and let $\Delta = \cpt{\mcm} \sm \mcm$ denote the boundary divisor.
-The following three mechanisms are visible in the examples; they are recorded here rather than proved, and no claim is made that the list is exhaustive:
+The examples exhibit the following three mechanisms:
 
 - (1) There exist boundary divisors $D \subset \Delta$ such that the period map $\mathsf{P}: \mathcal{X} \to \mcm$ is not unramified over generic points of $D$; precisely, there exist points $x \in D$ for which the fiber $\mathsf{P}^{-1}(\mathsf{P}(x))$ contains multiple distinct analytic branches, so the local ring of $\cpt{B}$ at $x$ is not integrally closed.
       For example, if $D$ corresponds to a boundary component where the monodromy is not trivial, analytic local neighborhoods of $\cpt{B}$ near $x$ may be modeled by $\Spec \CC[u,v]/(uv)$ modulo a nontrivial group action.
@@ -98,9 +98,9 @@ The normalization $\normalize{B}$ is initial among all normalizations, so univer
 Existence of the classifying morphism is a consequence of functoriality and the representability of KSBA moduli stacks.
 :::
 
-The cone assertion needed here is @thm:semifan-restriction. At cusp $2$ of $\Fen,2$, @thm:coble-restricted-semifan checks all its mirror hypotheses and identifies the restricted generalized Coxeter semifan, including the inherited marking. The restricted facet is also a fundamental chamber of the full group $W^{(2,4)}(\bar S)$, not merely a Coxeter polytope with the AN diagram.
+@thm:semifan-restriction gives the cone statement. At cusp $2$ of $\Fen,2$, @thm:coble-restricted-semifan checks all its mirror hypotheses and identifies the restricted generalized Coxeter semifan, including the inherited marking. The restricted facet is a fundamental chamber of the full group $W^{(2,4)}(\bar S)$.
 
-As in the research report, the semifan identification and the identification of $\normalize{B}$ with the associated semitoroidal compactification are different statements. Only the first is made here; the second remains @prob:restricted-semifan.
+The identification of $\normalize{B}$ with the associated semitoroidal compactification is a separate statement; it is @prob:restricted-semifan.
 
 ::: {.construction
     title="{Folded Semifans and Complete Boundary Stratification}"

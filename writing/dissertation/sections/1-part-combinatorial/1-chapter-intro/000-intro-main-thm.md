@@ -29,7 +29,7 @@ The semifans $\torfan_2, \torfan_4$ are fans, while $\semifan{F}_1, \semifan{F}_
 
 ::: {.proof}
 
-This is [@AEGS25, Thm. 1.1], transcribed into the notation of this chapter: the semifans are theirs, one for each of the five $0$-cusps classified in @sec:fent-zero-cusps.
+This is [@AEGS25, Thm. 1.1], in the notation of this chapter: the semifans are theirs, one for each of the five $0$-cusps classified in @sec:fent-zero-cusps.
 :::
 
 We note that the normalization is a technical condition that is often applied in the setting of KSBA compactifications, since the KSBA compactification is not guaranteed to be normal in general.
