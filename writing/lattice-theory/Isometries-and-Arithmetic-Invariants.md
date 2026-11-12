@@ -62,6 +62,15 @@ $$
 is exact.
 :::
 
+::: {.convention #conv:stable-subgroup title="Stable subgroups"}
+
+For a subgroup $G\le\Orth(L)$, define $\widetilde G$ by the pullback
+```tikzcd
+\widetilde G \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & G \arrow[d] \\
+\widetilde\Orth(L) \arrow[r] & \Orth(L).
+```
+:::
+
 ::: {.proposition #prop:lattice-morphisms-monic title="Lattice morphisms are monomorphisms"}
 
 Every morphism $f\colon L\to M$ of $\mathbf{Lat}_R^{\mathrm{nd}}$ has underlying monomorphism $U f\colon U L\injects U M$ in $R\text{-}\mathbf{Mod}$.

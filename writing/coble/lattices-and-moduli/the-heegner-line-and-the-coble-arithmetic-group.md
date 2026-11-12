@@ -1359,7 +1359,7 @@ Step 3 uses that $\widetilde\Orth^+(T_\Co)$ is normal in $\Orth(T_\Co)$, so that
 
 ::: {.proof}
 
-(1) $\widetilde\Orth^+(T_\Co) = \ker\rho_{T_\Co}\cap\ker\varepsilon$ with $\varepsilon$ the orientation character of @prop:spinor-plus-cone-components, so it is the intersection of two kernels and therefore normal.
+(1) By @conv:spinor-positive-subgroup and @def:discriminant-rep, $\widetilde\Orth^+(T_\Co) = \ker\rho_{T_\Co}\cap\ker\spinornorm_\bR$ inside $\Orth(T_\Co)$, so it is the intersection of two kernels and therefore normal.
 For $h\in\Stab_{\widetilde\Orth^+(T_\Co)}(v)$ and $g$ as in the statement, $ghg^{-1}(v') = ghv = gv = v'$, and $ghg^{-1}\in\widetilde\Orth^+(T_\Co)$ by normality; so $g\Stab_{\widetilde\Orth^+(T_\Co)}(v)g^{-1}\subseteq\Stab_{\widetilde\Orth^+(T_\Co)}(v')$, and the reverse inclusion follows by applying the same argument to $g^{-1}$, or by counting cosets of the same index.
 
 (2) An isometry fixing $v$ preserves $v^{\perp}$ and $\generators{v}$, hence descends to the quotient, and the resulting map $g\mapsto\bar g$ is a homomorphism of stabilizers; conjugating on $T_\Co$ becomes conjugating by $\bar g$ on the quotient.

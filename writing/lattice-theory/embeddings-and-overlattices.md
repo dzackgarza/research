@@ -726,7 +726,7 @@ If $L$ is unimodular, then $A_L=0$, so the exact sequence gives $A_{L(m)}\isoto 
 :::
 
 ::: {.definition #def:simultaneous-discriminant-spinor-kernel title="Simultaneous discriminant and spinor kernel"}
-For signature $(2,n)$, let $\Orth^+(L)\injects\Orth(L)$ denote the spinor kernel. Define $\widetilde\Orth^+(L)$ by the pullback
+Let $\Orth^+(L)\injects\Orth(L)$ be the spinor kernel of @def:lattice-spinor-kernels. Define $\widetilde\Orth^+(L)$ by the pullback
 ```tikzcd
 \widetilde\Orth^+(L) \arrow[r] \arrow[d] & \widetilde\Orth(L) \arrow[d] \\
 \Orth^+(L) \arrow[r] & \Orth(L).

@@ -87,14 +87,25 @@ $$
 
 Define
 $$
-\Orth^+(L)\definedas\Theta_\bR(L),
+\Orth^+(L)\definedas\Theta_\bR(L).
 $$
-and define the simultaneous discriminant-and-spinor kernel by the pullback
+:::
+
+::: {.convention #conv:spinor-positive-subgroup title="Spinor-positive subgroups"}
+
+For a subgroup $G\le\Orth(L)$, define $G^+$ by the pullback
+```tikzcd
+G^+ \arrow[r] \arrow[d] \arrow[dr,phantom,very near start,"\lrcorner"] & G \arrow[d] \\
+\Orth^+(L) \arrow[r] & \Orth(L)
+```
+[@GHS08, §1].
+For $G=\SO_\bR(L)$ this defines $\SO^+(L)$, and for $G=\widetilde\Orth(L)$ it defines the simultaneous discriminant-and-spinor kernel
 $$
 \widetilde\Orth^+(L)
 \definedas
-\widetilde\Orth(L)\times_{\Orth(L)}\Orth^+(L).
+\widetilde\Orth(L)\times_{\Orth(L)}\Orth^+(L),
 $$
+which is also the case $G=\Orth^+(L)$ of @conv:stable-subgroup.
 :::
 
 ::: {.lemma #lem:minus-identity-spinor-norm title="The spinor norm of $-\id$"}
@@ -139,7 +150,7 @@ They agree on every reflection. For $w$ with $w^2<0$ one has $\spinornorm_\bR(s_
 By the Cartan--Dieudonné theorem [@Mei13, Theorem 1.1] the reflections generate $\Orth(L_\bR)$, so the two homomorphisms agree on $\Orth(L_\bR)$ and hence on $\Orth(L)$: $\chi=\spinornorm_\bR$ there, and $\Orth^+(L)=\Theta_\bR(L)=\ker\spinornorm_\bR=\ker\chi$ preserves each component.
 :::
 
-## Orientation characters of a real quadratic space {#sec-orientation-characters}
+## Orientation classes of a real quadratic space {#sec-orientation-classes}
 
 Throughout this section $(V,\beta)$ is a finite-dimensional nondegenerate symmetric $\bR$-bilinear space of signature $(p,q)$ in the sense of @def:signature.
 Write $\Gr^+(V)$ for the set of $p$-dimensional subspaces of $V$ on which $\beta$ is positive definite, topologized as a subset of the Grassmannian of $p$-planes in $V$, and write
@@ -182,90 +193,65 @@ It equals $+1$ on the diagonal and changes sign when $o'$ is replaced by $-o'$.
 Hence $c=+1$ exactly on the two components of the product that meet the diagonal.
 :::
 
-::: {.definition #def:orientation-characters title="Orientation characters"}
+::: {.definition #def:orientation-classes title="Orientation classes of maximal positive-definite subspaces"}
 
-The two components of $\widetilde\Gr^+(V)$ are the *orientation classes of maximal positive-definite subspaces* of $V$.
-The *positive orientation character* of $(V,\beta)$ is the map
-$$
-\sigma_+\colon\Orth(V)\too\theset{\pm1}
-$$
-with $\sigma_+(g)=+1$ exactly when $g$ maps each orientation class to itself.
-The *negative orientation character*
-$$
-\sigma_-\colon\Orth(V)\too\theset{\pm1}
-$$
-is the positive orientation character of $(V,-\beta)$, under the equality $\Orth(V,\beta)=\Orth(V,-\beta)$.
-For a sign $\epsilon\in\theset{\pm1}$, write $\sigma_\epsilon$ for $\sigma_+$ when $\epsilon=+1$ and for $\sigma_-$ when $\epsilon=-1$.
+The two components of $\widetilde\Gr^+(V)$ are the *positive orientation classes* of $V$.
+An isometry $g\in\Orth(V)$ *preserves the positive orientation classes* when it maps each of them to itself.
+The *negative orientation classes* of $V$ are the positive orientation classes of the twist $V(-1)$ of @def:form-twist, under the equality $\Orth(V)=\Orth(V(-1))$.
 :::
 
-::: {.lemma #lem:orientation-characters-determinant title="The orientation characters are continuous group morphisms"}
+::: {.lemma #lem:orientation-classes-action title="The action of $\Orth(V)$ on the positive orientation classes"}
 
-Let $(p,q)$ be the signature of $(V,\beta)$.
-
-1. The maps $\sigma_+$ and $\sigma_-$ are group morphisms.
-2. For every $W\in\Gr^+(V)$ and every $g\in\Orth(V)$,
+1. For every $W\in\Gr^+(V)$, an isometry $g\in\Orth(V)$ preserves the positive orientation classes exactly when
 $$
-\sigma_+(g)=\sgn\det\qty{\pi_W\circ g|_W\colon W\too W}.
+\det\qty{\pi_W\circ g|_W\colon W\too W}>0.
 $$
-3. The maps $\sigma_+$ and $\sigma_-$ are continuous, and
-$$
-\Orth(V)^\circ\iscontainedin\ker\sigma_+\cap\ker\sigma_-.
-$$
-4. If $p=0$, then $\sigma_+(g)=+1$ for every $g\in\Orth(V)$.
-   If $q=0$, then $\sigma_-(g)=+1$ for every $g\in\Orth(V)$.
+2. The isometries that preserve the positive orientation classes form a subgroup of $\Orth(V)$ of index at most $2$, and this subgroup contains $\Orth(V)^\circ$.
+3. If $p=0$, then every $g\in\Orth(V)$ preserves the positive orientation classes.
 :::
 
 ::: {.proof}
 
 An isometry $g$ maps a maximal positive-definite subspace $W$ with orientation $o$ to the maximal positive-definite subspace $gW$ with orientation $g_*o$.
-This is an action of $\Orth(V)$ on $\widetilde\Gr^+(V)$ by homeomorphisms, so $\Orth(V)$ acts on the two-element set of components, and $\sigma_+$ is the resulting morphism to the group of permutations of a two-element set.
-The same argument for $(V,-\beta)$ gives (1) for $\sigma_-$.
+This is an action of $\Orth(V)$ on $\widetilde\Gr^+(V)$ by homeomorphisms, so $\Orth(V)$ acts on the two-element set of components.
 
-For (2), let $o$ be an orientation of $W$.
+For (1), let $o$ be an orientation of $W$.
 By @lem:positive-grassmannian (3), the points $(gW,g_*o)$ and $(W,o)$ lie in the same component exactly when $\pi_W|_{gW}$ carries $g_*o$ to $o$, that is, when the automorphism $\pi_W\circ g|_W$ of $W$ preserves $o$.
 An automorphism of a real vector space preserves an orientation exactly when its determinant is positive.
 
-For (3), the right side of (2) is a continuous function of $g$ for fixed $W$, so $\sigma_+$ is continuous, and so is $\sigma_-$ by the same argument for $(V,-\beta)$.
-A continuous map to $\theset{\pm1}$ is constant on the connected set $\Orth(V)^\circ$, which contains $\id$.
+For (2), the subgroup is the kernel of the action on the two-element set of components, so its index is at most $2$.
+For fixed $W$, the determinant in (1) is a continuous function of $g$, so the subgroup is open and closed in $\Orth(V)$; it contains $\id$, and hence it contains the connected component $\Orth(V)^\circ$.
 
-For (4), if $p=0$ then $W=0$ is the only point of $\Gr^+(V)$, and $\pi_W\circ g|_W$ is the identity of the zero space, of determinant $1$.
-The statement for $q=0$ is this one for $(V,-\beta)$.
+For (3), if $p=0$ then $W=0$ is the only point of $\Gr^+(V)$, and $\pi_W\circ g|_W$ is the identity of the zero space, of determinant $1$.
 :::
 
-::: {.proposition #prop:orientation-characters-reflections title="Orientation characters, the determinant, and the real spinor norm"}
+::: {.proposition #prop:spinor-norm-orientation-classes title="The real spinor norm and the orientation classes"}
 
-1. For anisotropic $w\in V$,
-$$
-\sigma_+(s_w)=-\sgn\beta(w,w),
-\qquad
-\sigma_-(s_w)=\sgn\beta(w,w).
-$$
-2. Under the identification $\bR^\times/(\bR^\times)^2=\theset{\pm1}$,
-$$
-\sigma_+=\spinornorm_\bR,
-\qquad
-\sigma_+\sigma_-=\det.
-$$
-3. If $V=V_1\perp V_2$ and $g_i\in\Orth(V_i)$, then $\sigma_\pm(g_1\oplus g_2)=\sigma_\pm(g_1)\,\sigma_\pm(g_2)$.
-4. If $L$ is a lattice with $L_\bR=V$, then $\Orth^+(L)$ is the kernel of the restriction of $\sigma_+$ to $\Orth(L)\iscontainedin\Orth(L_\bR)$.
+Identify $\bR^\times/(\bR^\times)^2$ with $\theset{\pm1}$.
+
+1. An isometry $g\in\Orth(V)$ satisfies $\spinornorm_\bR(g)=+1$ exactly when $g$ preserves the positive orientation classes of $V$.
+2. For $g\in\Orth(V)=\Orth(V(-1))$, the real spinor norm of $g$ as an isometry of $V(-1)$ is $\det(g)\,\spinornorm_\bR(g)$. It is $+1$ exactly when $g$ preserves the negative orientation classes of $V$.
+3. If $V=V_1\perp V_2$ and $g_i\in\Orth(V_i)$, then $\spinornorm_\bR(g_1\oplus g_2)=\spinornorm_\bR(g_1)\,\spinornorm_\bR(g_2)$.
+4. If $L$ is a lattice with $L_\bR=V$, then $\Orth^+(L)$ is the subgroup of $\Orth(L)$ of isometries that preserve the positive orientation classes of $V$, and $\Orth^+(L(-1))$ is the subgroup of isometries that preserve the negative orientation classes of $V$.
 :::
 
 ::: {.proof}
 
-Let $w$ be anisotropic.
+For (1), the action on the two positive orientation classes is a group morphism $\Orth(V)\to\theset{\pm1}$ (@lem:orientation-classes-action (2)), and so is $\spinornorm_\bR$.
+The reflections generate $\Orth(V)$ [@Mei13, Theorem 1.1], so it suffices to compare the two morphisms on a reflection $s_w$.
 If $\beta(w,w)>0$, choose $W\in\Gr^+(V)$ containing $w$.
-Then $s_w$ preserves $W$ and acts on it with determinant $-1$, so $s_w(W,o)=(W,-o)$ and $\sigma_+(s_w)=-1$.
+Then $s_w$ preserves $W$ and acts on it with determinant $-1$, so $s_w(W,o)=(W,-o)$ and $s_w$ exchanges the two classes; also $\spinornorm_\bR(s_w)=[-\beta(w,w)/2]=-1$ (@def:spinor-norm).
 If $\beta(w,w)<0$, the space $w^\perp$ has signature $(p,q-1)$; choose $W\in\Gr^+(V)$ inside $w^\perp$.
-Then $s_w$ fixes $W$ pointwise, so $\sigma_+(s_w)=+1$.
-The values of $\sigma_-$ follow by replacing $\beta$ with $-\beta$, which does not change $s_w$.
+Then $s_w$ fixes $W$ pointwise, so it preserves the two classes; also $\spinornorm_\bR(s_w)=+1$.
 
-For (2), @def:spinor-norm gives $\spinornorm_\bR(s_w)=[-\beta(w,w)/2]$, which is $-1$ exactly when $\beta(w,w)>0$, and $\det s_w=-1$.
-By (1), the two sides of each equality agree on every reflection, and the reflections generate $\Orth(V)$ by the Cartan--Dieudonné theorem [@Mei13, Theorem 1.1].
+For (2), the reflection in an anisotropic vector $w$ is the same isometry for $\beta$ and for $-\beta$, and its real spinor norm for $-\beta$ is $[\beta(w,w)/2]=-\spinornorm_\bR(s_w)=\det(s_w)\,\spinornorm_\bR(s_w)$.
+Both sides of the stated equality are group morphisms that agree on the reflections, which generate $\Orth(V)$.
+The second statement is (1) for $V(-1)$.
 
-For (3), write each $g_i$ as a composite of reflections $s_w$ of $V_i$.
-For $w\in V_1$, the isometry $s_w\oplus\id_{V_2}$ is the reflection of $V$ in $w$, and likewise for $w\in V_2$; the claim follows from (1).
+For (3), write each $g_i$ as a composite of reflections of $V_i$.
+For $w\in V_1$, the isometry $s_w\oplus\id_{V_2}$ is the reflection of $V$ in $w$, and the value $\beta(w,w)$ is the same in $V_1$ and in $V$; the same holds for $w\in V_2$.
 
-Statement (4) is (2) together with $\Orth^+(L)=\Theta_\bR(L)$ from @def:lattice-spinor-kernels.
+Statement (4) is (1) and (2) together with $\Orth^+(L)=\Theta_\bR(L)$ and $\Orth^+(L(-1))=\Theta_\bR(L(-1))$ from @def:lattice-spinor-kernels.
 :::
 
 ::: {.proposition #prop:orth-plus-definite title="$\Orth^+$ of a definite lattice"}
@@ -285,38 +271,40 @@ $$
 ::: {.proof}
 
 Put $V\definedas L_\bR$.
-By @prop:orientation-characters-reflections (4), $\Orth^+(L)=\Orth(L)\cap\ker\sigma_+$.
 
-(1) If $p=0$, then $\sigma_+(g)=+1$ for every $g\in\Orth(V)$ by @lem:orientation-characters-determinant (4).
+(1) If $p=0$, then every $g\in\Orth(V)$ preserves the positive orientation classes by @lem:orientation-classes-action (3), so $\Orth^+(L)=\Orth(L)$ by @prop:spinor-norm-orientation-classes (4).
 
-(2) If $q=0$, then $\sigma_-(g)=+1$ for every $g\in\Orth(V)$ by @lem:orientation-characters-determinant (4), and $\sigma_+=\sigma_+\sigma_-=\det$ by @prop:orientation-characters-reflections (2).
+(2) If $q=0$, then $V(-1)$ has signature $(0,p)$, and @lem:orientation-classes-action (3) for $V(-1)$ shows that every $g\in\Orth(V)$ preserves the negative orientation classes of $V$.
+By @prop:spinor-norm-orientation-classes (2), $\det(g)\,\spinornorm_\bR(g)=+1$, so $\spinornorm_\bR(g)=\det(g)$ for every $g\in\Orth(V)$.
 The kernel of $\det$ on $\Orth(L)$ is $\SO_\bR(L)$ (@def:lattice-spinor-kernels).
 :::
 
-::: {.lemma #lem:orientation-characters-identity-component title="The common kernel of the orientation characters is the identity component"}
+::: {.lemma #lem:spinor-determinant-identity-component title="The common kernel of the determinant and the real spinor norm is the identity component"}
 
 $$
-\ker\sigma_+\cap\ker\sigma_-=\Orth(V)^\circ.
+\SO(V)\cap\Theta_\bR(V)=\Orth(V)^\circ.
 $$
 :::
 
 ::: {.proof}
 
-The inclusion $\supseteq$ is @lem:orientation-characters-determinant (3).
-Let $g\in\ker\sigma_+\cap\ker\sigma_-$, fix $W\in\Gr^+(V)$, and let $\phi\colon W\to W^\perp$ be the linear map whose graph is $gW$ (@lem:positive-grassmannian).
+By @prop:spinor-norm-orientation-classes (1) and (2), an isometry lies in $\SO(V)\cap\Theta_\bR(V)$ exactly when it preserves both the positive and the negative orientation classes of $V$.
+The inclusion $\supseteq$ is therefore @lem:orientation-classes-action (2) for $V$ and for $V(-1)$.
+Let $g\in\SO(V)\cap\Theta_\bR(V)$, fix $W\in\Gr^+(V)$, and let $\phi\colon W\to W^\perp$ be the linear map whose graph is $gW$ (@lem:positive-grassmannian).
 For $t\in[0,1]$ let $W_t$ be the graph of $t\phi$; it lies in $\Gr^+(V)$, and $W_t^\perp$ is the graph of $t\phi^*\colon W^\perp\to W$, where $\beta(\phi x,y)=-\beta(x,\phi^*y)$.
 Choose bases of $W$ and of $W^\perp$ that are orthonormal for $\beta$ and for $-\beta$.
 Applying the Gram--Schmidt process to their images under $x\mapsto x+t\phi x$ and $y\mapsto y+t\phi^*y$ gives bases of $W_t$ and of $W_t^\perp$, orthonormal for $\beta$ and for $-\beta$, that depend continuously on $t$.
 Let $h_t\in\Orth(V)$ carry the chosen bases to these.
 Then $h_0=\id$, so $h_1\in\Orth(V)^\circ$, and $h_1W=gW$.
 
-The isometry $h_1^{-1}g$ preserves $W$ and $W^\perp$; write it as $a\oplus b$ with $a\in\Orth(W)$ and $b\in\Orth(W^\perp)$.
-On the positive-definite space $W$ every reflection has $\sigma_+=-1$ and $\sigma_-=+1$, so $\sigma_+(a)=\det a$ and $\sigma_-(a)=1$; likewise $\sigma_-(b)=\det b$ and $\sigma_+(b)=1$.
-By @prop:orientation-characters-reflections (3),
+The isometry $h_1^{-1}g$ lies in $\SO(V)\cap\Theta_\bR(V)$ and preserves $W$ and $W^\perp$; write it as $a\oplus b$ with $a\in\Orth(W)$ and $b\in\Orth(W^\perp)$.
+On the positive-definite space $W$ every reflection has real spinor norm $-1$ and determinant $-1$, so $\spinornorm_\bR(a)=\det a$.
+On the negative-definite space $W^\perp$ every reflection has real spinor norm $+1$, so $\spinornorm_\bR(b)=+1$.
+By @prop:spinor-norm-orientation-classes (3),
 $$
-\det a=\sigma_+(h_1^{-1}g)=1,
+\det a=\spinornorm_\bR(a)\,\spinornorm_\bR(b)=\spinornorm_\bR(h_1^{-1}g)=1,
 \qquad
-\det b=\sigma_-(h_1^{-1}g)=1.
+\det b=\det(h_1^{-1}g)\,(\det a)^{-1}=1.
 $$
 The group $\SO(W)\times\SO(W^\perp)$ is connected, so $h_1^{-1}g\in\Orth(V)^\circ$, and therefore $g\in\Orth(V)^\circ$.
 :::

@@ -111,11 +111,11 @@ A local system with trivial monodromy representation is constant [@Voi07, Coroll
 
 ## The sheaves of orientation classes {#sec-orientation-sheaf}
 
-In this section $(\bL,\beta)$ is a local system of lattices on $B$ whose stalks are symmetric and nondegenerate, and $\sigma_+,\sigma_-$ are the orientation characters of @def:orientation-characters for the real quadratic space $\bL_s\tensor\RR$.
+In this section $(\bL,\beta)$ is a local system of lattices on $B$ whose stalks are symmetric and nondegenerate.
 
 ::: {.definition #def:orientation-sheaf title="Sheaves of orientation classes of a local system of lattices"}
 
-For $b\in B$, let $\operatorname{Or}^+_b$ be the two-element set of orientation classes of maximal positive-definite subspaces of $\bL_b\tensor\RR$.
+For $b\in B$, let $\operatorname{Or}^+_b$ be the two-element set of positive orientation classes of $\bL_b\tensor\RR$ (@def:orientation-classes).
 By @prop:local-system-of-lattices-monodromy, the transport along a path $\gamma$ induces a bijection $\gamma^*\colon\operatorname{Or}^+_{\gamma(0)}\to\operatorname{Or}^+_{\gamma(1)}$.
 The *sheaf of orientation classes of maximal positive-definite subspaces* $\operatorname{Or}^+_{\bL}$ is the sheaf of sets on $B$ with
 $$
@@ -126,51 +126,32 @@ $$
 The sheaf $\operatorname{Or}^-_{\bL}$ of orientation classes of maximal negative-definite subspaces is $\operatorname{Or}^+$ of $(\bL,-\beta)$.
 :::
 
-::: {.proposition #prop:orientation-sheaf-section title="Monodromy lies in $\ker\sigma_+$ exactly when $\operatorname{Or}^+_{\bL}$ has a global section"}
+::: {.proposition #prop:orientation-sheaf-section title="Monodromy lies in $\Orth^+$ exactly when $\operatorname{Or}^+_{\bL}$ has a global section"}
 
 The following are equivalent.
 
-1. $\rho\qty{\pi_1(B,s)}\iscontainedin\ker\sigma_+$.
+1. $\rho\qty{\pi_1(B,s)}\iscontainedin\Orth^+(\bL_s)$.
 2. The sheaf $\operatorname{Or}^+_{\bL}$ has a global section.
 
 When they hold, $\operatorname{Or}^+_{\bL}$ has exactly two global sections.
-The same statements hold for $\sigma_-$ and $\operatorname{Or}^-_{\bL}$.
+The same statements hold for $\Orth^+(\bL_s(-1))$ and $\operatorname{Or}^-_{\bL}$.
 :::
 
 ::: {.proof}
 
 Since $B$ is arcwise connected, a global section $(o_b)$ is determined by $o_s$, through $o_b=\gamma^*o_s$ for any path $\gamma$ from $s$ to $b$.
 A class $o_s\in\operatorname{Or}^+_s$ extends to a global section exactly when $\gamma^*o_s$ depends only on the endpoint of $\gamma$, that is, when every loop $\gamma$ at $s$ has $\gamma^*o_s=o_s$.
-The transport along a loop of class $\gamma$ is $\rho(\gamma)$, and $\rho(\gamma)$ fixes $o_s$ exactly when $\sigma_+(\rho(\gamma))=+1$.
+The transport along a loop of class $\gamma$ is $\rho(\gamma)\in\Orth(\bL_s)$, and it fixes $o_s$ exactly when $\rho(\gamma)\in\Orth^+(\bL_s)$, by @prop:spinor-norm-orientation-classes (4).
 The condition does not depend on which of the two classes $o_s$ is chosen.
-:::
-
-::: {.corollary #cor:orientation-sheaf-orth-plus title="Monodromy lies in $\Orth^+$ exactly when $\operatorname{Or}^+_{\bL}$ has a global section"}
-
-Let $(\bL,\beta)$ be a local system of lattices on $B$ with nondegenerate symmetric stalks.
-The sheaf $\operatorname{Or}^+_{\bL}$ has a global section exactly when
-$$
-\rho\qty{\pi_1(B,s)}\iscontainedin\Orth^+(\bL_s).
-$$
-:::
-
-::: {.proof}
-
-The representation $\rho$ takes values in $\Orth(\bL_s)$, and $\Orth^+(\bL_s)=\Orth(\bL_s)\cap\ker\sigma_+$ by @prop:orientation-characters-reflections (4).
-Apply @prop:orientation-sheaf-section.
+The sheaf $\operatorname{Or}^-_{\bL}$ is $\operatorname{Or}^+$ of $(\bL,-\beta)$, whose stalk at $s$ is the twist $\bL_s(-1)$ of @def:form-twist.
 :::
 
 ::: {.example #ex:monodromy-outside-orth-plus title="A local system of lattices with no global orientation class"}
 
 Let $B=\CC^\times$, let $c\in\pi_1(B,1)\cong\ZZ$ be the class of the loop $\theta\mapsto e^{2\pi i\theta}$, which generates this group, and let $U$ be the hyperbolic plane.
 By @prop:local-system-of-lattices-monodromy (3) there is a local system of lattices $(\bL,\beta)$ on $B$ with stalk $U$ and $\rho(c)=-\id_U$.
-The signature of $U$ is $(1,1)$, so by @prop:orientation-characters-reflections (2) and @lem:minus-identity-spinor-norm,
-$$
-\sigma_+(-\id_U)=\spinornorm_\RR(-\id_U)=-1,
-\qquad
-\sigma_-(-\id_U)=\det(-\id_U)\,\sigma_+(-\id_U)=-1.
-$$
-The monodromy group is not contained in $\Orth^+(U)$, and neither $\operatorname{Or}^+_{\bL}$ nor $\operatorname{Or}^-_{\bL}$ has a global section (@prop:orientation-sheaf-section).
+Both $U$ and $U(-1)$ have signature $(1,1)$, so $-\id_U$ lies in neither $\Orth^+(U)$ nor $\Orth^+(U(-1))$ by @lem:minus-identity-spinor-norm.
+Neither $\operatorname{Or}^+_{\bL}$ nor $\operatorname{Or}^-_{\bL}$ has a global section (@prop:orientation-sheaf-section).
 :::
 
 ## Polarized variations of Hodge structure {#sec-polarized-vhs}
@@ -270,19 +251,25 @@ Let $k=2m$, let $\epsilon=(-1)^{m+1}$, and let $D^+$ be a connected component of
 
 1. If $h^{m,m}>0$, then
 $$
-\Stab_{G_\RR}(D^+)=\ker\sigma_\epsilon.
+\Stab_{G_\RR}(D^+)=\Theta_\RR(L_\RR,\epsilon Q).
 $$
 2. If $h^{m,m}=0$, then
 $$
-\Stab_{G_\RR}(D^+)=\ker\sigma_+\cap\ker\sigma_-=G_\RR^\circ.
+\Stab_{G_\RR}(D^+)=G_\RR^\circ.
 $$
 :::
 
 ::: {.proof}
 
+By @prop:spinor-norm-orientation-classes (1) for $(L_\RR,\pm\epsilon Q)$, the group $\Theta_\RR(L_\RR,\pm\epsilon Q)$ is the subgroup of $G_\RR$ of isometries that preserve the positive orientation classes of $(L_\RR,\pm\epsilon Q)$.
+By @prop:spinor-norm-orientation-classes (2) and @lem:spinor-determinant-identity-component,
+$$
+\Theta_\RR(L_\RR,\epsilon Q)\cap\Theta_\RR(L_\RR,-\epsilon Q)=\SO(L_\RR)\cap\Theta_\RR(L_\RR,Q)=G_\RR^\circ.
+$$ {#eq-identity-component-two-spinor-kernels}
+
 The subspaces $F^p$ and $\overline{F^q}$ depend continuously on $F\in D$, and their intersection $H^{p,q}_F$ has constant dimension, so it depends continuously on $F$; so do $W^{\mathrm{odd}}_F$ and $W^{\mathrm{ev}}_F$.
 By @lem:hodge-real-pieces (3), $W^{\mathrm{odd}}_F$ is isomorphic to the complex vector space $\bigoplus_{j\text{ odd}}H^{m+j,m-j}_F$; let $o^{\mathrm{odd}}_F$ be the resulting complex orientation.
-By @lem:hodge-real-pieces (2), the pair $\qty{W^{\mathrm{odd}}_F,o^{\mathrm{odd}}_F}$ is a point of the space $\widetilde\Gr^+(L_\RR,\epsilon Q)$ of @sec-orientation-characters, and
+By @lem:hodge-real-pieces (2), the pair $\qty{W^{\mathrm{odd}}_F,o^{\mathrm{odd}}_F}$ is a point of the space $\widetilde\Gr^+(L_\RR,\epsilon Q)$ of @sec-orientation-classes, and
 $$
 \Psi\colon D\too\widetilde\Gr^+(L_\RR,\epsilon Q),
 \qquad
@@ -292,8 +279,8 @@ is continuous.
 It is $G_\RR$-equivariant, because $g\in G_\RR$ maps $H^{p,q}_F$ complex-linearly onto $H^{p,q}_{gF}$.
 
 Let $g\in\Stab_{G_\RR}(D^+)$.
-The connected set $\Psi(D^+)$ lies in one orientation class, and $g$ maps $\Psi(D^+)$ to itself, so $g$ fixes that class: $\sigma_\epsilon(g)=+1$.
-If $h^{m,m}=0$, then $W^{\mathrm{ev}}_F=\bigoplus_{j>0\text{ even}}R_j$ carries a complex orientation in the same way, and the same argument for $(L_\RR,-\epsilon Q)$ gives $\sigma_{-\epsilon}(g)=+1$.
+The connected set $\Psi(D^+)$ lies in one orientation class, and $g$ maps $\Psi(D^+)$ to itself, so $g$ fixes that class, and $g\in\Theta_\RR(L_\RR,\epsilon Q)$.
+If $h^{m,m}=0$, then $W^{\mathrm{ev}}_F=\bigoplus_{j>0\text{ even}}R_j$ carries a complex orientation in the same way, and the same argument for $(L_\RR,-\epsilon Q)$ gives $g\in\Theta_\RR(L_\RR,-\epsilon Q)$; by @eq-identity-component-two-spinor-kernels, $g\in G_\RR^\circ$.
 This proves the inclusions $\iscontainedin$.
 
 For the reverse inclusions, fix $F\in D^+$.
@@ -301,14 +288,15 @@ The connected group $G_\RR^\circ$ maps $D^+$ to itself, and $V_F$ fixes the poin
 $$
 G_\RR^\circ\cdot V_F\iscontainedin\Stab_{G_\RR}(D^+).
 $$
-By @lem:orientation-characters-identity-component, $\ker\sigma_+\cap\ker\sigma_-=G_\RR^\circ$, which proves (2).
-For (1), let $g\in\ker\sigma_\epsilon$.
-If $\sigma_{-\epsilon}(g)=+1$, then $g\in G_\RR^\circ$.
+This proves (2).
+For (1), let $g\in\Theta_\RR(L_\RR,\epsilon Q)$.
+If $g\in\Theta_\RR(L_\RR,-\epsilon Q)$, then $g\in G_\RR^\circ$ by @eq-identity-component-two-spinor-kernels.
 Otherwise choose $0\neq w\in R_0$.
 By @lem:hodge-real-pieces, $Q(w,w)$ has sign $-\epsilon$ and $w$ is orthogonal to $H^{p,q}_F$ for $(p,q)\neq(m,m)$.
 The reflection $s_w$ therefore fixes those subspaces pointwise and preserves $H^{m,m}_F$, so $s_w\in V_F$.
-By @prop:orientation-characters-reflections, $\sigma_{-\epsilon}(s_w)=-1$ and $\sigma_\epsilon(s_w)=+1$.
-Hence $gs_w\in\ker\sigma_+\cap\ker\sigma_-=G_\RR^\circ$, and $g\in G_\RR^\circ\cdot V_F$.
+By @def:spinor-norm, the real spinor norm of $s_w$ is $[-\epsilon Q(w,w)/2]=+1$ for the form $\epsilon Q$ and $[\epsilon Q(w,w)/2]=-1$ for the form $-\epsilon Q$.
+Both $g$ and $s_w$ lie in $\Theta_\RR(L_\RR,\epsilon Q)$ and neither lies in $\Theta_\RR(L_\RR,-\epsilon Q)$, and the real spinor norm is a group morphism for each form, so $gs_w$ lies in both $\Theta_\RR(L_\RR,\epsilon Q)$ and $\Theta_\RR(L_\RR,-\epsilon Q)$.
+Hence $gs_w\in G_\RR^\circ$ by @eq-identity-component-two-spinor-kernels, and $g\in G_\RR^\circ\cdot V_F$.
 :::
 
 Let $(\bL,Q,F^\bullet)$ be a polarized integral variation of Hodge structure of weight $k$ on a connected complex manifold $B$, let $s\in B$, and let $D$ be the period domain of $(\bL_s,Q_s)$ for the Hodge numbers of $F^\bullet_s$.
@@ -342,12 +330,12 @@ Then
 $$
 \rho\qty{\pi_1(B,s)}\iscontainedin\Stab_{G_\ZZ}(D^+).
 $$
-The subgroup $\Stab_{G_\ZZ}(D^+)$ of $G_\ZZ$ is the following.
+The subgroup $\Stab_{G_\ZZ}(D^+)$ of $G_\ZZ$ is the following, with $\epsilon=(-1)^{m+1}$ and $L(\epsilon)$ the twist of @def:form-twist.
 
 | weight | Hodge numbers | $\Stab_{G_\ZZ}(D^+)$ |
 | --- | --- | --- |
-| $k=2m$ | $h^{m,m}>0$ | $\Orth(L)\cap\ker\sigma_\epsilon$, with $\epsilon=(-1)^{m+1}$ |
-| $k=2m$ | $h^{m,m}=0$ | $\Orth(L)\cap\ker\sigma_+\cap\ker\sigma_-$ |
+| $k=2m$ | $h^{m,m}>0$ | $\Orth^+(L(\epsilon))$: $\Orth^+(L)$ for $m$ odd, $\Orth^+(L(-1))$ for $m$ even |
+| $k=2m$ | $h^{m,m}=0$ | $\SO^+(L)$ |
 | $k$ odd | any | $\Sp(L)$ |
 
 For $k$ odd the domain $D$ is connected, so $D^+=D$.
@@ -358,7 +346,9 @@ For $k$ odd the domain $D$ is connected, so $D^+=D$.
 The image $\widetilde\Phi(\widetilde B)$ is connected and contains $F^\bullet_s$, so it lies in $D^+$.
 For $\gamma\in\pi_1(B,s)$, @eq-period-map-equivariance shows that $\rho(\gamma)$ maps a point of $D^+$ to a point of $D^+$.
 The homeomorphism $\rho(\gamma)$ of $D$ permutes the components, so $\rho(\gamma)D^+=D^+$.
-For $k$ even, the table is @thm:period-domain-component-stabilizer.
+For $k$ even, the table is @thm:period-domain-component-stabilizer intersected with $G_\ZZ$.
+If $h^{m,m}>0$, then $G_\ZZ=\Orth(L(\epsilon))$ and $G_\ZZ\cap\Theta_\RR(L_\RR,\epsilon Q)=\Orth^+(L(\epsilon))$ by @def:lattice-spinor-kernels.
+If $h^{m,m}=0$, then $G_\RR^\circ=\SO(L_\RR)\cap\Theta_\RR(L_\RR,Q)$ by @lem:spinor-determinant-identity-component, so $G_\ZZ\cap G_\RR^\circ=\SO^+(L)$ by @def:lattice-spinor-kernels and @conv:spinor-positive-subgroup.
 For $k$ odd, the form $Q$ is alternating and $G_\RR=\Sp(L_\RR)$ is the group of real points of a simply connected semisimple algebraic group [@Mil17, Example 23.61], so it is connected [@Mil17, Theorem 25.54].
 It acts transitively on $D$, so $D$ is connected, and $\Stab_{G_\ZZ}(D)=G_\ZZ=\Sp(L)$.
 :::
@@ -382,69 +372,14 @@ By @lem:hodge-real-pieces (3) and its proof, $v\mapsto v+\bar v$ is an isomorphi
 By @lem:hodge-real-pieces (1), $(-1)^{m+1}Q=Q$ is positive definite on $R_1$.
 :::
 
-::: {.proposition #prop:component-stabilizer-versus-orth-plus title="$\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$"}
-
-Let $k=2m$ and let $D^+$ be a connected component of $D$.
-
-1. If $m$ is odd and $h^{m,m}>0$, then
-$$
-\Stab_{G_\ZZ}(D^+)=\Orth^+(L).
-$$
-2. If $m$ is even and $h^{m,m}>0$, then
-$$
-\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-=\Orth^+(L(-1)),
-$$
-and every $g\in\Orth(L)$ with $\det g=-1$ lies in exactly one of $\Stab_{G_\ZZ}(D^+)$ and $\Orth^+(L)$.
-   Consequently $\Stab_{G_\ZZ}(D^+)=\Orth^+(L)$ exactly when $\det$ is trivial on $\Orth(L)$, and the two groups differ when the rank of $L$ is odd.
-3. If $h^{m,m}=0$, then
-$$
-\Stab_{G_\ZZ}(D^+)=\Orth^+(L)\cap\ker\det,
-$$
-a subgroup of $\Orth^+(L)$ of index at most $2$, equal to $\Orth^+(L)$ exactly when $\det$ is trivial on $\Orth^+(L)$.
-:::
-
-::: {.proof}
-
-By @prop:orientation-characters-reflections (2) and (4),
-$$
-\Orth^+(L)=\Orth(L)\cap\ker\sigma_+,
-\qquad
-\sigma_+\sigma_-=\det.
-$$
-The sign of @thm:period-domain-component-stabilizer is $\epsilon=(-1)^{m+1}$.
-
-(1) Here $\epsilon=+1$, and the theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_+$.
-
-(2) Here $\epsilon=-1$, and the theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_-$.
-The lattice $L(-1)$ of @def:form-twist has $\Orth(L(-1))=\Orth(L)$, and the positive orientation character of $L(-1)_\RR$ is $\sigma_-$ (@def:orientation-characters), so $\Orth(L)\cap\ker\sigma_-=\Orth^+(L(-1))$.
-If $\det g=-1$, then $\sigma_+(g)\neq\sigma_-(g)$, so exactly one of $\sigma_+(g)$, $\sigma_-(g)$ is $+1$.
-If $\det$ is trivial on $\Orth(L)$, then $\sigma_+=\sigma_-$ on $\Orth(L)$ and the two kernels are equal.
-The isometry $-\id_L$ has determinant $-1$ when the rank of $L$ is odd.
-
-(3) The theorem gives $\Stab_{G_\ZZ}(D^+)=\Orth(L)\cap\ker\sigma_+\cap\ker\sigma_-$, and $\ker\sigma_+\cap\ker\sigma_-=\ker\sigma_+\cap\ker\det$.
-The group $\Orth^+(L)\cap\ker\det$ is the kernel of $\det\colon\Orth^+(L)\to\theset{\pm1}$.
-:::
-
-::: {.corollary #cor:weight-two-component-stabilizer title="The component stabilizer in weight $2$"}
-
-If $k=2$ and $h^{1,1}>0$, then
-$$
-\Stab_{G_\ZZ}(D^+)=\Orth^+(L).
-$$
-:::
-
-::: {.proof}
-
-This is @prop:component-stabilizer-versus-orth-plus (1) with $m=1$.
-:::
-
-::: {.example #ex:weight-zero-vhs title="A weight-zero variation with monodromy outside $\ker\sigma_{-\epsilon}$"}
+::: {.example #ex:weight-zero-vhs title="A weight-zero variation with monodromy outside $\Orth^+(L)$"}
 
 Let $B=\CC^\times$ and $c\in\pi_1(B,1)$ be as in @ex:monodromy-outside-orth-plus, and let $(\bL,Q)$ be the local system of lattices on $B$ with stalk $(\ZZ,xy)$ and $\rho(c)=-1$ (@prop:local-system-of-lattices-monodromy).
 With $F^0=\bL\tensor\OO_B$ and $F^1=0$, the triple $(\bL,Q,F^\bullet)$ is a polarized integral variation of Hodge structure of weight $0$ with $h^{0,0}=1$.
 Here $m=0$ and $\epsilon=-1$.
-The monodromy $-1$ is the reflection in a vector of positive square, so $\sigma_+(-1)=-1$ and $\sigma_-(-1)=+1$ (@prop:orientation-characters-reflections).
-The monodromy group lies in $\ker\sigma_\epsilon$ and not in $\ker\sigma_{-\epsilon}$.
+Put $L\definedas(\ZZ,xy)$.
+The monodromy $-1$ is the reflection $s_1$ in the vector $1$ of square $1$, so its real spinor norm is $[-\tfrac12]=-1$ for $L$ and $[\tfrac12]=+1$ for $L(-1)$ (@def:spinor-norm).
+The monodromy group therefore lies in $\Orth^+(L(\epsilon))=\Orth^+(L(-1))$, as @cor:vhs-monodromy-stabilizes-component requires, and not in $\Orth^+(L)$.
 :::
 
 ## Cohomology of families {#sec-cohomology-of-families-monodromy}
@@ -494,8 +429,8 @@ Condition (1) is the pair of Hodge--Riemann bilinear relations for the primitive
 
 Let $n=2m$, so that $Q$ is the intersection form on $\bV^n$, and let $\rho$ be the monodromy representation of $\bV^n$ at $s\in B$.
 
-1. The restriction of $\rho$ to $\bV^n_{\mathrm{prim},s}$ takes values in $\ker\sigma_\epsilon$ with $\epsilon=(-1)^{m+1}$, and in $\ker\sigma_+\cap\ker\sigma_-$ if the Hodge number $h^{m,m}$ of $\bV^n_{\mathrm{prim}}$ is zero.
-2. If $n=2$, then $\rho$ takes values in $\Orth\qty{H^2(X_s,\ZZ)/\text{torsion}}\cap\ker\sigma_+$.
+1. The restriction of $\rho$ to $\bV^n_{\mathrm{prim},s}$ takes values in $\Orth^+\qty{\bV^n_{\mathrm{prim},s}(\epsilon)}$ with $\epsilon=(-1)^{m+1}$, and in $\SO^+\qty{\bV^n_{\mathrm{prim},s}}$ if the Hodge number $h^{m,m}$ of $\bV^n_{\mathrm{prim}}$ is zero.
+2. If $n=2$, then $\rho$ takes values in $\Orth^+\qty{H^2(X_s,\ZZ)/\text{torsion}}$.
 :::
 
 ::: {.proof}
@@ -505,39 +440,9 @@ Statement (1) is @cor:vhs-monodromy-stabilizes-component for the variation of @p
 For (2), put $\kappa\definedas\omega|_{X_s}$.
 Then $Q(\kappa,\kappa)=\int_{X_s}\omega^2>0$, the class $\kappa$ is fixed by $\rho$, and $\bV^2_{\mathrm{prim},s}=\kappa^\perp$.
 Each $\rho(\gamma)$ is therefore $\id_{\RR\kappa}\oplus g$ on $\RR\kappa\perp\qty{\kappa^\perp}_\RR$, with $g$ the monodromy of the primitive part.
-By (1) with $m=1$, $\sigma_+(g)=+1$, and @prop:orientation-characters-reflections (3) gives $\sigma_+(\rho(\gamma))=+1$.
+By (1) with $m=1$ and $\epsilon=+1$, the real spinor norm of $g$ is $+1$, and so is that of $\id_{\RR\kappa}$.
+By @prop:spinor-norm-orientation-classes (3), the real spinor norm of $\rho(\gamma)$ is $+1$, so $\rho(\gamma)\in\Orth^+\qty{H^2(X_s,\ZZ)/\text{torsion}}$ by @def:lattice-spinor-kernels.
 :::
-
-::: {.lemma #lem:k3-orientation-character title="The K3 orientation character is $\sigma_+$"}
-
-For the K3 lattice, the character $\sigma_{\lkt}$ of @def:k3-positive-cone-orientation is the positive orientation character $\sigma_+$ of $\lkt_\RR$.
-:::
-
-::: {.proof}
-
-Both are group morphisms $\Orth(\lkt_\RR)\to\theset{\pm1}$, and the reflections generate $\Orth(\lkt_\RR)$ (@def:spinor-norm), so it suffices to compare them on a reflection $s_w$.
-If $w^2<0$, choose a positive-definite three-plane $W_3\iscontainedin w^\perp$; then $s_w$ fixes $W_3\sm\theset{0}$ pointwise, so it fixes the two group generators of $H_2\qty{W_3\sm\theset{0},\ZZ}\cong\ZZ$ and $\sigma_{\lkt}(s_w)=+1$.
-If $w^2>0$, choose $W_3$ containing $w$; then $s_w$ preserves $W_3$ and reverses its orientation, so it exchanges these two group generators and $\sigma_{\lkt}(s_w)=-1$.
-These are the values of $\sigma_+$ in @prop:orientation-characters-reflections (1).
-:::
-
-::: {.corollary #cor:k3-family-orientation-character title="Monodromy of a family of K3 surfaces with a class $\omega$"}
-
-In @cor:middle-cohomology-monodromy let $n=2$, let the fibres be K3 surfaces, and let $\eta_s\colon H^2(X_s,\ZZ)\iso\lkt$ be an isometry.
-Then for every $\gamma\in\pi_1(B,s)$,
-$$
-\sigma_{\lkt}\qty{\eta_s\,\rho(\gamma)\,\eta_s^{-1}}=+1.
-$$
-:::
-
-::: {.proof}
-
-The group $H^2(X_s,\ZZ)$ is torsion-free (@prop:k3-lattice), so $\sigma_+(\rho(\gamma))=+1$ by @cor:middle-cohomology-monodromy (2).
-The isometry $\eta_s$ maps the orientation classes of maximal positive-definite subspaces of $H^2(X_s,\RR)$ to those of $\lkt_\RR$, so $\sigma_+\qty{\eta_s\,\rho(\gamma)\,\eta_s^{-1}}=\sigma_+(\rho(\gamma))$.
-By @lem:k3-orientation-character, $\sigma_+=\sigma_{\lkt}$ on $\Orth(\lkt_\RR)$.
-:::
-
-@prop:k3-monodromy-positive treats the monodromy group of an arbitrary family of K3 surfaces over a connected base.
 
 ::: {.example #ex:picard-lefschetz-orientation title="Picard--Lefschetz reflections"}
 
@@ -552,17 +457,18 @@ T(\alpha)=\alpha+\epsilon_{2m+1}\langle\alpha,\delta\rangle\delta,
 \langle\delta,\delta\rangle=2(-1)^m
 $$
 [@Voi07, Theorem 3.16, Remark 3.18, Remark 3.21]; here $\epsilon_{2m+1}$ is the sign of [@Voi07, Theorem 3.16] for the dimension $2m+1$ of $X$.
-Hence $T$ is the reflection $s_\delta$, and by @prop:orientation-characters-reflections
+Hence $T$ is the reflection $s_\delta$.
+Put $L\definedas H^{2m}(X_t,\ZZ)$ and $\epsilon\definedas(-1)^{m+1}$.
+By @def:spinor-norm, the real spinor norm of $T$ is
 $$
-\sigma_+(T)=(-1)^{m+1},
-\qquad
-\sigma_-(T)=(-1)^m.
+\qty[-\tfrac12\langle\delta,\delta\rangle]=\qty[(-1)^{m+1}]=\epsilon
 $$
-With $\epsilon=(-1)^{m+1}$ this reads $\sigma_\epsilon(T)=+1$ and $\sigma_{-\epsilon}(T)=-1$.
+for $L$, and it is $\epsilon\cdot\epsilon=+1$ for $L(\epsilon)$ and $-1$ for $L(-\epsilon)$.
+Thus $T\in\Orth^+(L(\epsilon))$ and $T\notin\Orth^+(L(-\epsilon))$.
 
 A generic pencil of hyperplane sections of a smooth projective variety $Y\iscontainedin\PP^N$ of dimension $2m+1$ is a Lefschetz pencil [@Voi07, Corollary 2.10], and near each of its critical values it is a Lefschetz degeneration whose vanishing class is primitive [@Voi07, Corollary 2.25, Lemma 2.26].
 Such a $T$ is therefore a monodromy operator of the variation $\bV^{2m}_{\mathrm{prim}}$ of @prop:primitive-cohomology-vhs over the set of regular values of the pencil.
-For $m$ even, $T\notin\ker\sigma_+$, so the conclusion of @cor:middle-cohomology-monodromy (2) fails for $n=2m\ge4$ with $m$ even.
+For $m$ even, $\epsilon=-1$ and $T\notin\Orth^+(L)$, so the conclusion of @cor:middle-cohomology-monodromy (2) fails for $n=2m\ge4$ with $m$ even.
 :::
 
 ## Monodromy that fixes a primitive sublattice {#sec-monodromy-fixing-sublattice}
@@ -686,7 +592,7 @@ Suppose that the stalk $\Lambda\definedas\bL_s$ is unimodular, that $S\iscontain
 2. The representation $\operatorname{res}_T\circ\rho$ on $T$ takes values in $\widetilde\Orth(T)$.
 3. If $\rho$ takes values in $\Orth^+(\Lambda)$, then $\operatorname{res}_T\circ\rho$ takes values in
 $$
-\Orth^+(T)\cap\widetilde\Orth(T).
+\widetilde\Orth^+(T).
 $$
 :::
 
@@ -698,37 +604,40 @@ The transport $\gamma^*=\rho(\gamma)$ is an isometry of $\Lambda$ by @prop:local
 Statement (2) follows from (1) and @thm:pointwise-stabilizer-is-discriminant-kernel.
 
 For (3), let $g\in\rho\qty{\pi_1(B,s)}$.
-By (1), $g_\RR=\id_{S_\RR}\oplus\operatorname{res}_T(g)_\RR$ on $\Lambda_\RR=S_\RR\perp T_\RR$, so $\sigma_+(g)=\sigma_+\qty{\operatorname{res}_T(g)}$ by @prop:orientation-characters-reflections (3).
-By @prop:orientation-characters-reflections (4), $\sigma_+(g)=+1$, and then $\operatorname{res}_T(g)\in\Orth^+(T)$.
+By (1), $g_\RR=\id_{S_\RR}\oplus\operatorname{res}_T(g)_\RR$ on $\Lambda_\RR=S_\RR\perp T_\RR$, so $\spinornorm_\RR(g)=\spinornorm_\RR\qty{\operatorname{res}_T(g)}$ by @prop:spinor-norm-orientation-classes (3).
+By hypothesis $g\in\Orth^+(\Lambda)$, so $\spinornorm_\RR(g)=+1$, and then $\operatorname{res}_T(g)\in\Orth^+(T)$ by @def:lattice-spinor-kernels.
+With (2), $\operatorname{res}_T(g)\in\widetilde\Orth^+(T)$ by @conv:spinor-positive-subgroup.
 :::
 
 ::: {.corollary #cor:lattice-polarized-k3-monodromy title="Monodromy of a family of K3 surfaces on the complement of a sublattice of flat classes"}
 
-In @cor:k3-family-orientation-character, let $S\iscontainedin\lkt$ be a primitive nondegenerate sublattice with $T\definedas S^{\perp\lkt}$, and suppose that every element of $\eta_s^{-1}(S)$ is the value at $s$ of a global section of $R^2f_*\underline\ZZ_{\mcx}$.
+In @cor:middle-cohomology-monodromy let $n=2$, let the fibres be K3 surfaces, and let $\eta_s\colon H^2(X_s,\ZZ)\iso\lkt$ be an isometry.
+Let $S\iscontainedin\lkt$ be a primitive nondegenerate sublattice with $T\definedas S^{\perp\lkt}$, and suppose that every element of $\eta_s^{-1}(S)$ is the value at $s$ of a global section of $R^2f_*\underline\ZZ_{\mcx}$.
 Then the representation $\gamma\mapsto\eta_s\,\rho(\gamma)\,\eta_s^{-1}$ preserves $T$, and its restriction to $T$ takes values in
 $$
-\Orth^+(T)\cap\widetilde\Orth(T).
+\widetilde\Orth^+(T).
 $$
 :::
 
 ::: {.proof}
 
 The lattice $\lkt$ is unimodular (@prop:k3-lattice).
-By @cor:k3-family-orientation-character and @lem:k3-orientation-character, $\sigma_+\qty{\eta_s\,\rho(\gamma)\,\eta_s^{-1}}=+1$ for every $\gamma$, so the representation takes values in $\Orth^+(\lkt)$ by @prop:orientation-characters-reflections (4).
+The group $H^2(X_s,\ZZ)$ is torsion-free (@prop:k3-lattice), so $\rho$ takes values in $\Orth^+\qty{H^2(X_s,\ZZ)}$ by @cor:middle-cohomology-monodromy (2).
+The isometry $\eta_s$ conjugates $\Orth^+\qty{H^2(X_s,\ZZ)}$ onto $\Orth^+(\lkt)$ (@def:lattice-spinor-kernels), so the representation $\gamma\mapsto\eta_s\,\rho(\gamma)\,\eta_s^{-1}$ takes values in $\Orth^+(\lkt)$.
 The sheaf $R^2f_*\underline\ZZ_{\mcx}$ with the cup product is a local system of lattices with symmetric stalks by @prop:primitive-cohomology-vhs (1).
 Apply @prop:monodromy-fixing-sublattice (3) to it, with the identification $\eta_s$ of its stalk at $s$ with $\lkt$.
 :::
 
-::: {.example #ex:lattice-polarized-k3-monodromy-groups title="The group $\Orth^+(T)\cap\widetilde\Orth(T)$ for three sublattices"}
+::: {.example #ex:lattice-polarized-k3-monodromy-groups title="The group $\widetilde\Orth^+(T)$ for three sublattices"}
 
 In @cor:lattice-polarized-k3-monodromy, a line bundle $\mcl$ on $\mcx$ has a class $c_1(\mcl)\in H^2(\mcx,\ZZ)$, and the image of $c_1(\mcl)$ under $H^2(\mcx,\ZZ)\to\Gamma\qty{B,R^2f_*\underline\ZZ_{\mcx}}$ is a global section with value $c_1(\mcl|_{X_s})$ at $s$.
 
-1. For $S=\ZZ h$ with $h$ the vector of @def:degree-2d-k3-period-data, the lattice $T$ is $\lkttd$, and the group is $\Orth^+(\lkttd)\cap\widetilde\Orth(\lkttd)$.
+1. For $S=\ZZ h$ with $h$ the vector of @def:degree-2d-k3-period-data, the lattice $T$ is $\lkttd$, and the group is $\widetilde\Orth^+(\lkttd)$.
    It is a subgroup of $\Orth^+(\lkttd)$, the group in which @prop:polarized-k3-monodromy-positive places the monodromy.
 2. If $S$ is unimodular, then $A_T=0$ by the isometry $A_T\iso A_S(-1)$ of @cor:lifting-unimodular, which applies because $S=T^{\perp\lkt}$ (@lem:components-in-a-primitive-splitting (1)), and $\widetilde\Orth(T)=\Orth(T)$, so the group is $\Orth^+(T)$.
-3. For a primitive sublattice $S$ isometric to $E_{10}(2)$, for the lattice $E_{10}$ of @def:enriques-lattice, the lattice $S$ is nondegenerate because $E_{10}$ is, and the group is again $\Orth^+(T)\cap\widetilde\Orth(T)$: the restricted monodromy acts as the identity on $A_T$, which is isometric to $A_S(-1)$ by @cor:lifting-unimodular.
+3. For a primitive sublattice $S$ isometric to $E_{10}(2)$, for the lattice $E_{10}$ of @def:enriques-lattice, the lattice $S$ is nondegenerate because $E_{10}$ is, and the group is again $\widetilde\Orth^+(T)$: the restricted monodromy acts as the identity on $A_T$, which is isometric to $A_S(-1)$ by @cor:lifting-unimodular.
 
-For $T$ of signature $(2,n)$ with $n\ge1$, the group $\Orth^+(T)\cap\widetilde\Orth(T)$ is $\widetilde\Orth^+(T)$ of @def:simultaneous-discriminant-spinor-kernel, and it is the group $\Orth^+(T)^*$ of @def:type-iv-period-domain, in which $\discriminantkernel{T}$ denotes $\widetilde\Orth(T)$.
+For $T$ of signature $(2,n)$ with $n\ge1$, the group $\widetilde\Orth^+(T)$ is the group $\Orth^+(T)^*$ of @def:type-iv-period-domain, in which $\discriminantkernel{T}$ denotes $\widetilde\Orth(T)$.
 :::
 
 ## Monodromy and automorphisms of Hodge structures {#sec-monodromy-hodge-automorphisms}
