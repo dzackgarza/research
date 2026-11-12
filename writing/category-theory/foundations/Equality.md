@@ -46,10 +46,11 @@ Setting
 $$
 Q^0(C, D) := * \times_{Q(C,C) \times Q(D,D)} Q(C, D)
 $$
-— the fiber over $(\id_C, \id_D)$ — the equality predicate is
+— the fiber over $(\id_C, \id_D)$ — the proposed construction of the proposition type $\operatorname{Eq}(C,D)$ of @def:equality-of-objects is the proposition $Q^0(C,D)\simeq *$, so that
 $$
 \boxed{\; C = D \iff Q^0(C, D) \simeq *. \;}
 $$
+The construction is conjectural.
 
 Equality says that there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 

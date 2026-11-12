@@ -756,6 +756,7 @@ Write $X\simeq_n Y$ when $\operatorname{Equiv}_{C,n}(X,Y)$ is nonempty, and $X\c
 ::: {.definition #def:equality-of-objects title="Equality"}
 
 Definitional equality is judgmental equality in the chosen formal language.
-For objects $C,D$ of $\mathbf{Cat}_{\infty,\infty}$, $C=D$ is the equality predicate of @sec-equality-predicate, and $\operatorname{Eq}(C,D)$ is that proposition type.
+For objects $X,Y$, $\operatorname{Eq}(X,Y)$ is the proposition type of ways $X$ is equal to $Y$: a $(-1)$-truncated type (@def:truncated).
+The notation $X=Y$ records that $\operatorname{Eq}(X,Y)$ is inhabited.
 No univalence principle is assumed.
 :::
