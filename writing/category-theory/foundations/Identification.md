@@ -2,8 +2,9 @@
 
 ## Spaces of equivalences {#sec-equivalence-spaces}
 
-For objects $X,Y$ of an $\infty$-category $C$, let $\operatorname{Eq}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ be the union of the components consisting of equivalences.
+For objects $X,Y$ of a higher category $C$, $\operatorname{Eq}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ is the space of equivalences of @def:equivalence-of-objects.
 The automorphism space is $\Aut_C(X)=\operatorname{Eq}_C(X,X)$.
+The claims $X\simeq Y$, $X\cong_n Y$, and $X\cong Y$ are conditions on this space (@def:equivalence-of-objects, @def:isomorphism-of-objects).
 
 For an ordinary category, the corresponding set is $\operatorname{Iso}_C(X,Y)$.
 Its nonemptiness asserts $X\cong Y$; a chosen element $f\in\operatorname{Iso}_C(X,Y)$ is additional data.
@@ -42,5 +43,5 @@ For a functor $F\colon C\to D$, an isomorphism or equivalence $X\to Y$ induces o
 A weaker comparison obtained only after applying $F$ is written as a claim in $D$, for example $F(X)\cong F(Y)$.
 Genus, stable equivalence, and isospectrality use different functors and therefore define different relations.
 
-Literal equality, isomorphism, and equivalence retain the meanings fixed in @def:equality-of-objects.
+Literal equality, isomorphism, and equivalence retain the meanings fixed in @def:equality-of-objects, @def:isomorphism-of-objects, and @def:equivalence-of-objects.
 No additional equality predicate is introduced.

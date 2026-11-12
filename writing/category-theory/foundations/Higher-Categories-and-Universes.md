@@ -728,12 +728,30 @@ together with a specified equivalence $\iota_1\circ\widetilde h_C\simeq h_C$.
 An ordinary category may be presented by the point $\widetilde h_C$; its underlying higher category is decoded from $\iota_1\circ\widetilde h_C$.
 :::
 
-::: {.definition #def:equality-of-objects title="Equality, isomorphism, and equivalence"}
+::: {.definition #def:equivalence-of-objects title="Equivalence of objects"}
+
+Let $C$ be a higher category and let $X,Y\colon*\to C$ be objects.
+A morphism $f\colon X\to Y$ is an *equivalence* if the cell $f\colon*\to[X,Y]_C$ is invertible in the sense of @def:equivalence-of-categories.
+Let
+$$
+\operatorname{Eq}_C(X,Y)\subseteq\operatorname{Map}_C(X,Y)
+$$
+be the union of the components that consist of equivalences.
+Write $X\simeq Y$ for the claim that $\operatorname{Eq}_C(X,Y)$ is nonempty.
+:::
+
+::: {.definition #def:isomorphism-of-objects title="Isomorphism of objects"}
+
+Let $C$ be a higher category, let $X,Y\colon*\to C$ be objects, and let $n\geq-2$ be an integer.
+Write $X\cong_n Y$ for the claim that $\operatorname{Eq}_C(X,Y)$ (@def:equivalence-of-objects) is nonempty and is an $n$-truncated type (@def:truncated).
+Write $X\cong Y$ for $X\cong_0 Y$: the space of equivalences is a nonempty set.
+
+When $C$ has an ordinary-category structure (@def:ordinary-category-specialization), each $\operatorname{Map}_C(X,Y)$ is a set, $\operatorname{Eq}_C(X,Y)$ is the set $\operatorname{Iso}_C(X,Y)$ of morphisms with a two-sided inverse, and $X\cong Y$ is the claim that $\operatorname{Iso}_C(X,Y)$ is nonempty.
+:::
+
+::: {.definition #def:equality-of-objects title="Equality"}
 
 Definitional equality is judgmental equality in the chosen formal language.
-An isomorphism in an ordinary category is a morphism with a two-sided inverse.
-An equivalence is a morphism satisfying @def:equivalence-of-categories.
-
-The notation $a=b$, $a\cong b$, and $a\simeq b$ records these three claims.
+The notation $a=b$ records this claim.
 No univalence principle is assumed.
 :::

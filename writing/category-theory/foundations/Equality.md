@@ -22,7 +22,7 @@ $$
 \hookrightarrow
 [C,D]_{\mathbf{Cat}_{\infty,\infty}}
 $$
-be the full $\infty$-subcategory spanned by the *equivalences* $F \colon C \to D$ (@def:equality-of-objects).
+be the full $\infty$-subcategory spanned by the *equivalences* $F \colon C \to D$ (@def:equivalence-of-categories).
 It retains every higher natural transformation between such functors — it is neither the core nor a truncation.
 Inside it,
 $$
@@ -97,5 +97,5 @@ The orbit-and-reflexivity predicate of @sec-equality-predicate depends on that s
 ## Truncation to propositional equality {#sec-equality-reduction}
 
 The homotopy-type functor $\Pi_\infty \colon \mathbf{Cat}_{\infty,\infty} \to \mathcal S = \mathbf{Types}$ (@def:core) strictly loses data.
-For $1$-categories (sets, rings, modules, algebras, lattices), the equality above truncates to the propositional or definitional equality of @def:equality-of-objects, so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
+For $1$-categories (sets, rings, modules, algebras, lattices), the equality above truncates to the definitional equality of @def:equality-of-objects, so that $\sqrt 2 = \sqrt{1 + 1}$ holds without an infinite tower of coherence obligations.
 The truncation loses information exactly at the identification of points carrying nontrivial automorphisms — inertia or stabilizers on a stack.
