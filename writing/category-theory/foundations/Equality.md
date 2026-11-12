@@ -50,7 +50,10 @@ $$
 $$
 \boxed{\; \widetilde{\operatorname{Eq}}(C,D) := \bigl(Q^0(C, D) \simeq *\bigr). \;}
 $$
-The construction is conjectural: it is intended that $\widetilde{\operatorname{Eq}}(C,D)$ is $\operatorname{Eq}(C,D)$.
+
+::: {.conjecture #conj:equality-construction title="The construction of equality"}
+$\widetilde{\operatorname{Eq}}(C,D)\simeq\operatorname{Eq}(C,D)$.
+:::
 
 The proposition $\widetilde{\operatorname{Eq}}(C,D)$ says that there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 
