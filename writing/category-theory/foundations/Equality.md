@@ -52,7 +52,7 @@ $$
 $$
 The construction is conjectural: it is intended that $\widetilde{\operatorname{Eq}}(C,D)$ is $\operatorname{Eq}(C,D)$.
 
-Equality says that there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
+The proposition $\widetilde{\operatorname{Eq}}(C,D)$ says that there is an essentially unique $\Aut(C)$–$\Aut(D)$ orbit of equivalences that count as literal identifications, and it is coherently compatible with the canonical reflexive identifications $C = C$ and $D = D$.
 
 ## Presentation by the walking equivalence {#sec-walking-equivalence}
 
@@ -70,19 +70,19 @@ and the fiber of $\ev_{0,1}$ over $(C,D)$ is the higher category of adjoint-equi
 Sending such data to its underlying functor $F(u)$ gives a map from that fiber to $\operatorname{Equiv}(C,D)$ whose fiber over a functor is the space of adjoint-equivalence structures on it, which by @sec-inverse-data is contractible for an equivalence and empty otherwise.
 The two presentations of $\operatorname{Equiv}(C,D)$ may therefore be used interchangeably, and $\operatorname{Way}$, $Q$, and $Q^0$ may be computed from either.
 
-## Properties of the predicate {#sec-equality-properties}
+## Properties of the construction {#sec-equality-properties}
 
-The equality predicate of @sec-equality-predicate inherits the following from the corresponding closure conditions on $\operatorname{Way}$.
+The construction $\widetilde{\operatorname{Eq}}$ of @sec-equality-predicate inherits the following from the corresponding closure conditions on $\operatorname{Way}$.
 
-- $C=C$, given that $\operatorname{Way}(C,C)$ contains $\id_C$: the identity is a point of $Q^0(C,C)$.
+- $\widetilde{\operatorname{Eq}}(C,C)$ is inhabited, given that $\operatorname{Way}(C,C)$ contains $\id_C$: the identity is a point of $Q^0(C,C)$.
 
-- $C=D$ implies $D=C$, given that $\operatorname{Way}$ is closed under inverses, which exchanges the two endpoint maps $\bar s$ and $\bar t$.
+- $\widetilde{\operatorname{Eq}}(C,D)$ implies $\widetilde{\operatorname{Eq}}(D,C)$, given that $\operatorname{Way}$ is closed under inverses, which exchanges the two endpoint maps $\bar s$ and $\bar t$.
 
-- $C=D$ and $D=E$ imply $C=E$, given that $\operatorname{Way}$ is closed under composition.
+- $\widetilde{\operatorname{Eq}}(C,D)$ and $\widetilde{\operatorname{Eq}}(D,E)$ imply $\widetilde{\operatorname{Eq}}(C,E)$, given that $\operatorname{Way}$ is closed under composition.
 
 For the slice presentation of @sec-equality-universe all three conditions hold, since equivalences over $W$ contain the identities and are closed under composition and inverses.
 
-$C=D$ implies $C\simeq D$, since a point of $Q^0(C,D)$ lies over a point of $\operatorname{Equiv}(C,D)$.
+$\widetilde{\operatorname{Eq}}(C,D)$ implies $C\simeq D$, since a point of $Q^0(C,D)$ lies over a point of $\operatorname{Equiv}(C,D)$.
 The converse fails: an equivalence $C\to D$ whose image under $(\bar s,\bar t)$ misses the component of $(\id_C,\id_D)$ contributes no point of $Q^0$.
 If $C$ and $D$ are both terminal objects of the same category of cones, or more generally both satisfy a universal property that determines them up to a unique isomorphism, then the comparison between them is the unique one and $Q^0(C,D)\simeq*$.
 
