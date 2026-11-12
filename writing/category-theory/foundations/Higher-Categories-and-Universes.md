@@ -735,7 +735,7 @@ Write $X\simeq Y$ for the claim that $\operatorname{Equiv}_C(X,Y)$ is nonempty.
 Let $C$ be a higher category and let $f\colon x\to y$ be a cell of $C$, with $x,y$ in an iterated hom-object of $C$.
 Define the $n$-equivalences by induction on $n\geq0$ [@OR23, Definitions 1.1.8 and 1.4.3]:
 
-- $f$ is an *isomorphism*, or *$0$-equivalence*, if there is a cell $g\colon y\to x$ with $g\circ f=\id_x$ and $f\circ g=\id_y$;
+- $f$ is a *$0$-equivalence* if there is a cell $g\colon y\to x$ with $g\circ f=\id_x$ and $f\circ g=\id_y$;
 - for $n\geq1$, $f$ is an *$n$-equivalence* if there are a cell $g\colon y\to x$ and $(n-1)$-equivalences
 $$
 \eta\colon\id_x\too g\circ f\ \text{in}\ [x,x]_C,
@@ -743,20 +743,14 @@ $$
 \epsilon\colon f\circ g\too\id_y\ \text{in}\ [y,y]_C.
 $$
 
-For objects $X,Y\colon*\to C$, let $\operatorname{Equiv}_{C,n}(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ be the union of the components that consist of $n$-equivalences, and let $\operatorname{Isom}_C(X,Y):=\operatorname{Equiv}_{C,0}(X,Y)$ be the space of isomorphisms.
+The cell $f$ is an *isomorphism* if there is a cell $g\colon y\to x$ with $g\circ f=\id_x$ and $f\circ g=\id_y$ such that, for every $n\geq1$, $g$ together with the identity cells $\eta=\id_{\id_x}$ and $\epsilon=\id_{\id_y}$ exhibits $f$ as an $n$-equivalence.
+
+For objects $X,Y\colon*\to C$, let $\operatorname{Equiv}_{C,n}(X,Y)\subseteq\operatorname{Map}_C(X,Y)$ be the union of the components that consist of $n$-equivalences, and let
+$$
+\operatorname{Isom}_C(X,Y)\subseteq\bigcap_{n\geq0}\operatorname{Equiv}_{C,n}(X,Y)
+$$
+be the union of the components that consist of isomorphisms.
 Write $X\simeq_n Y$ when $\operatorname{Equiv}_{C,n}(X,Y)$ is nonempty, and $X\cong Y$ when $\operatorname{Isom}_C(X,Y)$ is nonempty.
-:::
-
-::: {.proposition #prop:isomorphism-is-n-equivalence title="Isomorphisms are $n$-equivalences"}
-Every isomorphism is an $n$-equivalence for every $n\geq0$.
-Hence $X\cong Y$ implies $X\simeq_n Y$ for every $n$.
-:::
-
-::: {.proof}
-Induction on $n$; the case $n=0$ is the definition.
-Let $f$ be an isomorphism with inverse $g$.
-Then $g\circ f=\id_x$ and $f\circ g=\id_y$, so $\eta:=\id_{\id_x}$ and $\epsilon:=\id_{\id_y}$ are cells of the required shape.
-An identity cell is an isomorphism with itself as inverse, so by the induction hypothesis $\eta$ and $\epsilon$ are $(n-1)$-equivalences, and $f$ is an $n$-equivalence.
 :::
 
 ::: {.definition #def:equality-of-objects title="Equality"}
