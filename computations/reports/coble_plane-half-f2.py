@@ -59,15 +59,11 @@ def mat_of(theta):
 print('\n(2) G = O(q) over F_2')
 start = time.time()
 gensO = list(O.group_generators())
-print('  %d generators from the orthogonal group' % len(gensO))
 G = libgap.Group([libgap(mat_of(t)) for t in gensO])
 order_G = int(libgap.Size(G))
 print('  |G| = %d, equals |O(q)|: %s   (%.0f s)' % (order_G, order_G == order_O, time.time() - start))
 
-print('\n(1) H = <119 lattice generators mod 2>')
-start = time.time()
 gensB = list(B.Isom(B).stabilizer(P, action='setwise').group_generators())
-print('  %d generators of Stab_{O(B)}(P)   (%.0f s)' % (len(gensB), time.time() - start))
 inv = G_B.inverse()
 gens_H = []
 for g in gensB:
