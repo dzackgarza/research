@@ -311,5 +311,38 @@ print("   types 3, 4, 5: div 2 as well, and by [Ste91, Prop. 4.5] the primitive"
 print("   isotropic vectors of T_En form exactly two O(T_En)-orbits, separated by")
 print("   divisibility: type 1 is the div-1 orbit, and types 2, 3, 4, 5 lie in the")
 print("   div-2 orbit, the one represented by e' in the U(2) summand.")
+
+print()
+print("Part E: the same split on T_En, which is what separates Gamma_En from Gamma_{En,2}")
+# A_{T_En} = A_{U(2)} (+) A_{E8(-2)};  2 T_En^* subset T_En, so A sits in (1/2)T_En/T_En.
+classesE = []
+for w in product(range(2), repeat=nE):
+    if all(bil(GE, list(w), [1 if k == j else 0 for k in range(nE)]) % 2 == 0
+           for j in range(nE)):
+        classesE.append(list(w))
+print("   |A_{T_En}| =", len(classesE), "(= 2^10 = 1024)")
+
+def acts_trivially_E(r):
+    rsq = bil(GE, r, r)
+    for w in classesE:
+        x = [F(a, 2) for a in w]
+        c = F(-2 * bil(GE, x, r), rsq)
+        if any((c * r[k]).denominator != 1 for k in range(nE)):
+            return False
+    return True
+
+# a (-2)-root of T_En: delta = e - f, the vector of @def:gamma-co-groups
+mu_E = embE8(c_w)
+r_minus2 = [base(0)[i] - base(1)[i] for i in range(nE)]
+# a (-4)-root of T_En: mu itself, of divisibility 2
+r_minus4 = mu_E
+for r, label in ((r_minus2, "(-2)-root"), (r_minus4, "(-4)-root")):
+    print("   %-10s r^2 = %3d  div = %d  |  in O^+: %s  |  trivial on A_{T_En}: %s"
+          % (label, bil(GE, r, r), div_of(GE, r),
+             bil(GE, r, r) < 0, acts_trivially_E(r)))
+print()
+print("   So for T_En the (-2)-root reflections lie in O^+(T_En) cap ker rho = Gamma_En,")
+print("   while the (-4)-root reflections do not lie in ker rho, and Sterk's generating")
+print("   sets include (-4)-roots (AEGS25, Definition 3.6 with Lemma 3.4).")
 print()
 print("DONE")

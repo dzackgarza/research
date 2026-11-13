@@ -42,5 +42,14 @@ Part D: T_En = U + U(2) + E8(-2), the five cusp representatives
    divisibility: type 1 is the div-1 orbit, and types 2, 3, 4, 5 lie in the
    div-2 orbit, the one represented by e' in the U(2) summand.
 
+Part E: the same split on T_En, which is what separates Gamma_En from Gamma_{En,2}
+   |A_{T_En}| = 1024 (= 2^10 = 1024)
+   (-2)-root  r^2 =  -2  div = 1  |  in O^+: True  |  trivial on A_{T_En}: True
+   (-4)-root  r^2 =  -4  div = 2  |  in O^+: True  |  trivial on A_{T_En}: False
+
+   So for T_En the (-2)-root reflections lie in O^+(T_En) cap ker rho = Gamma_En,
+   while the (-4)-root reflections do not lie in ker rho, and Sterk's generating
+   sets include (-4)-roots (AEGS25, Definition 3.6 with Lemma 3.4).
+
 DONE
 PYEXIT=0
